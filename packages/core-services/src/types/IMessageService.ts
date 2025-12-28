@@ -9,6 +9,30 @@ export interface IMessageService {
 		user: Pick<IUser, '_id' | 'username' | 'name'>,
 		extraData?: Partial<T>,
 	): Promise<IMessage>;
+	saveMessageFromFederation({
+		fromId,
+		rid,
+		federation_event_id,
+		msg,
+		e2e_content,
+		file,
+		files,
+		attachments,
+		thread,
+	}: {
+		fromId: string;
+		rid: string;
+		federation_event_id: string;
+		msg?: string;
+		e2e_content?: {
+			algorithm: string;
+			ciphertext: string;
+		};
+		file?: IMessage['file'];
+		files?: IMessage['files'];
+		attachments?: IMessage['attachments'];
+		thread?: { tmid: string; tshow: boolean };
+	}): Promise<IMessage>;
 	saveSystemMessageAndNotifyUser<T = IMessage>(
 		type: MessageTypesValues,
 		rid: string,

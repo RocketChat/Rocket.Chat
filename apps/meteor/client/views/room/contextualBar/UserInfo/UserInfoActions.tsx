@@ -2,41 +2,44 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { ButtonGroup, IconButton, Skeleton } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { UserInfoAction } from '../../../../components/UserInfo';
 import { useMemberExists } from '../../../hooks/useMemberExists';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type UserInfoActionsProps = {
-	user: Pick<IUser, '_id' | 'username' | 'name'>;
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
 	rid: IRoom['_id'];
-	backToList: () => void;
+	isInvited?: boolean;
+	backToList?: () => void;
 };
 
-const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
-	const t = useTranslation();
+const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsProps): ReactElement => {
+	const { t } = useTranslation();
 	const {
 		data: isMemberData,
 		refetch,
 		isSuccess: membershipCheckSuccess,
-		isLoading,
+		isPending,
 	} = useMemberExists({ roomId: rid, username: user.username as string });
 
 	const isMember = membershipCheckSuccess && isMemberData?.isMember;
+	const { _id: userId, username, name, freeSwitchExtension } = user;
 
-	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
-		{ _id: user._id, username: user.username, name: user.name },
+	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
-		() => {
+		user: { _id: userId, username, name, freeSwitchExtension },
+		size: 2,
+		isMember,
+		isInvited,
+		reload: () => {
 			backToList?.();
 			refetch();
 		},
-		undefined,
-		isMember,
-	);
+	});
 
 	const menu = useMemo(() => {
 		if (!menuOptions?.length) {
@@ -59,14 +62,14 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 
 	// TODO: sanitize Action type to avoid any
 	const actions = useMemo(() => {
-		const mapAction = ([key, { content, icon, onClick }]: any): ReactElement => (
-			<UserInfoAction key={key} title={content} label={content} onClick={onClick} icon={icon} />
+		const mapAction = ([key, { content, title, icon, onClick }]: any): ReactElement => (
+			<UserInfoAction key={key} title={title} label={content} onClick={onClick} icon={icon} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
 
-	if (isLoading) {
+	if (isPending) {
 		return <Skeleton w='full' />;
 	}
 	return <ButtonGroup align='center'>{actions}</ButtonGroup>;

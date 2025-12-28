@@ -1,6 +1,5 @@
 import { Box, Option, RadioButton, Tile } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import type { RadioDropDownProps } from '../definitions/RadioDropDownDefinitions';
 

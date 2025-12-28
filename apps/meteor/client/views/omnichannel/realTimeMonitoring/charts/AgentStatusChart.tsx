@@ -1,15 +1,18 @@
-import type { OperationParams } from '@rocket.chat/rest-typings';
-import type { TranslationContextValue, TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { Chart as ChartType } from 'chart.js';
-import type { MutableRefObject } from 'react';
-import React, { useRef, useEffect } from 'react';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { Box } from '@rocket.chat/fuselage';
+import { useEndpoint, type TranslationKey } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type * as chartjs from 'chart.js';
+import type { TFunction } from 'i18next';
+import type { ComponentPropsWithoutRef, MutableRefObject } from 'react';
+import { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { drawDoughnutChart } from '../../../../../app/livechat/client/lib/chartHandler';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Chart from './Chart';
+import { useChartContext } from './useChartContext';
 import { useUpdateChartData } from './useUpdateChartData';
+import { drawDoughnutChart } from '../../../../../app/livechat/client/lib/chartHandler';
+import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
 const labels = ['Available', 'Away', 'Busy', 'Offline'];
 
@@ -20,7 +23,7 @@ const initialData = {
 	offline: 0,
 };
 
-const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: TranslationContextValue['translate']): Promise<ChartType> =>
+const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'doughnut'> | undefined, t: TFunction) =>
 	drawDoughnutChart(
 		canvas,
 		t('Agents'),
@@ -30,46 +33,48 @@ const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: Tran
 	);
 
 type AgentStatusChartsProps = {
-	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/agents-status'>;
-	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
-};
+	departmentId: ILivechatDepartment['_id'];
+} & ComponentPropsWithoutRef<typeof Box>;
 
-const AgentStatusChart = ({ params, reloadRef, ...props }: AgentStatusChartsProps) => {
-	const t = useTranslation();
+const AgentStatusChart = ({ departmentId, ...props }: AgentStatusChartsProps) => {
+	const { t } = useTranslation();
 
 	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
-	const context: MutableRefObject<ChartType | undefined> = useRef();
+
+	const getAgentStatus = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts/agents-status');
+	const { isSuccess, data: { offline = 0, available = 0, away = 0, busy = 0 } = initialData } = useQuery({
+		queryKey: omnichannelQueryKeys.analytics.agentsStatus(departmentId),
+		queryFn: () => getAgentStatus({ departmentId }),
+		gcTime: 0,
+	});
+
+	const context = useChartContext({
+		canvas,
+		init,
+		t,
+	});
 
 	const updateChartData = useUpdateChartData({
 		context,
 		canvas,
-		t,
 		init,
+		t,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/charts/agents-status', { params });
-
-	reloadRef.current.agentStatusChart = reload;
-
-	const { offline = 0, available = 0, away = 0, busy = 0 } = data ?? initialData;
-
 	useEffect(() => {
-		const initChart = async () => {
-			if (canvas?.current) {
-				context.current = await init(canvas.current, context.current, t);
-			}
-		};
-		initChart();
-	}, [t]);
-
-	useEffect(() => {
-		if (state === AsyncStatePhase.RESOLVED && context.current) {
-			updateChartData(t('Offline'), [offline]);
-			updateChartData(t('Available'), [available]);
-			updateChartData(t('Away'), [away]);
-			updateChartData(t('Busy'), [busy]);
+		if (!context) {
+			return;
 		}
-	}, [available, away, busy, offline, state, t, updateChartData]);
+
+		if (!isSuccess) {
+			return;
+		}
+
+		updateChartData(t('Offline'), [offline]);
+		updateChartData(t('Available'), [available]);
+		updateChartData(t('Away'), [away]);
+		updateChartData(t('Busy'), [busy]);
+	}, [context, available, away, busy, offline, isSuccess, t, updateChartData]);
 
 	return <Chart canvasRef={canvas} {...props} />;
 };

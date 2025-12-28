@@ -1,6 +1,6 @@
-import { OptionColumn, OptionContent, OptionDescription, OptionInput } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { OptionContent, OptionDescription } from '@rocket.chat/fuselage';
+import type { CSSProperties } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type ComposerBoxPopupSlashCommandProps = {
 	_id: string;
@@ -9,17 +9,17 @@ export type ComposerBoxPopupSlashCommandProps = {
 	disabled?: boolean;
 };
 
+const slashCommandDescriptionStyle: CSSProperties = { textAlign: 'right' };
+
 function ComposerBoxPopupSlashCommand({ _id, description, params, disabled }: ComposerBoxPopupSlashCommandProps) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<>
 			<OptionContent>
 				{_id} <OptionDescription>{params}</OptionDescription>
 			</OptionContent>
-			<OptionColumn>
-				<OptionInput>{disabled ? t('Unavailable_in_encrypted_channels') : description}</OptionInput>
-			</OptionColumn>
+			<OptionContent style={slashCommandDescriptionStyle}>{disabled ? t('Unavailable_in_encrypted_channels') : description}</OptionContent>
 		</>
 	);
 }

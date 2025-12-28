@@ -1,8 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Bubble } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type UnreadMessagesIndicatorProps = {
 	count: number;
@@ -18,7 +17,7 @@ const indicatorStyle = css`
 `;
 
 const UnreadMessagesIndicator = ({ count, onJumpButtonClick, onMarkAsReadButtonClick }: UnreadMessagesIndicatorProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Box className={indicatorStyle} mbs={8}>
@@ -28,7 +27,7 @@ const UnreadMessagesIndicator = ({ count, onJumpButtonClick, onMarkAsReadButtonC
 				icon='arrow-up'
 				dismissProps={{ 'title': t('Mark_as_read'), 'aria-label': `${t('Mark_as_read')}` }}
 			>
-				{t('unread_messages', { count })}
+				{t('unread_messages_counter', { count })}
 			</Bubble>
 		</Box>
 	);

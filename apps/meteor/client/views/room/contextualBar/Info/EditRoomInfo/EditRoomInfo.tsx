@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import type { IRoomWithRetentionPolicy, SidepanelItem } from '@rocket.chat/core-typings';
+import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
@@ -21,18 +21,8 @@ import {
 	Box,
 	TextAreaInput,
 	AccordionItem,
-	Divider,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
-import type { ChangeEvent } from 'react';
-import React, { useMemo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-
-import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
@@ -40,15 +30,27 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
-} from '../../../../../components/Contextualbar';
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import type { ChangeEvent } from 'react';
+import { useId, useMemo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+
+import type { EditRoomInfoFormData } from './useEditRoomInitialValues';
+import { useEditRoomInitialValues } from './useEditRoomInitialValues';
+import { useEditRoomPermissions } from './useEditRoomPermissions';
+import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
 import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
+import { links } from '../../../../../lib/links';
+import { roomsQueryKeys } from '../../../../../lib/queryKeys';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
-import { useEditRoomInitialValues } from './useEditRoomInitialValues';
-import { useEditRoomPermissions } from './useEditRoomPermissions';
 
 type EditRoomInfoProps = {
 	room: IRoomWithRetentionPolicy;
@@ -57,10 +59,10 @@ type EditRoomInfoProps = {
 };
 
 const title = {
-	team: 'Edit_team' as TranslationKey,
-	channel: 'Edit_channel' as TranslationKey,
-	discussion: 'Edit_discussion' as TranslationKey,
-};
+	team: 'Edit_team',
+	channel: 'Edit_channel',
+	discussion: 'Edit_discussion',
+} as const;
 
 const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string => {
 	switch (roomType) {
@@ -78,12 +80,12 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const query = useQueryClient();
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const isFederated = useMemo(() => isRoomFederated(room), [room]);
+	const isFederated = isRoomFederated(room);
 	// eslint-disable-next-line no-nested-ternary
 	const roomType = 'prid' in room ? 'discussion' : room.teamMain ? 'team' : 'channel';
 
 	const retentionPolicy = useRetentionPolicy(room);
-	const retentionMaxAgeDefault = msToTimeUnit(TIMEUNIT.days, Number(useSetting<number>(getRetentionSetting(room.t)))) ?? 30;
+	const retentionMaxAgeDefault = msToTimeUnit(TIMEUNIT.days, useSetting(getRetentionSetting(room.t), 2592000000)) ?? 30;
 	const defaultValues = useEditRoomInitialValues(room);
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
@@ -104,7 +106,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		handleSubmit,
 		getFieldState,
 		formState: { isDirty, dirtyFields, errors, isSubmitting },
-	} = useForm({ mode: 'onBlur', defaultValues });
+	} = useForm<EditRoomInfoFormData>({ mode: 'onBlur', defaultValues });
 
 	const sysMesOptions: SelectOption[] = useMemo(
 		() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel as TranslationKey)]),
@@ -122,8 +124,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		retentionOverrideGlobal,
 		roomType: roomTypeP,
 		reactWhenReadOnly,
-		showChannels,
-		showDiscussions,
 	} = watch();
 
 	const {
@@ -132,7 +132,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		canSetReactWhenReadOnly,
 		canEditRoomRetentionPolicy,
 		canArchiveOrUnarchive,
-		canToggleEncryption,
 		canViewName,
 		canViewTopic,
 		canViewAnnouncement,
@@ -142,7 +141,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		canViewReadOnly,
 		canViewHideSysMes,
 		canViewJoinCode,
-		canViewEncrypted,
 	} = useEditRoomPermissions(room);
 
 	const changeArchiving = archived !== !!room.archived;
@@ -163,24 +161,14 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 			retentionFilesOnly,
 			retentionIgnoreThreads,
 			...formData
-		}) => {
+		}: EditRoomInfoFormData) => {
 			const data = getDirtyFields<Partial<typeof defaultValues>>(formData, dirtyFields);
 			delete data.archived;
-			delete data.showChannels;
-			delete data.showDiscussions;
-
-			const sidepanelItems = [showChannels && 'channels', showDiscussions && 'discussions'].filter(Boolean) as [
-				SidepanelItem,
-				SidepanelItem?,
-			];
-
-			const sidepanel = sidepanelItems.length > 0 ? { items: sidepanelItems } : null;
 
 			try {
 				await saveAction({
 					rid: room._id,
 					...data,
-					...(roomType === 'team' ? { sidepanel } : null),
 					...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
 					...((data.systemMessages || !hideSysMes) && {
 						systemMessages: hideSysMes && data.systemMessages,
@@ -196,7 +184,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						}),
 				});
 
-				await query.invalidateQueries(['/v1/rooms.info', room._id]);
+				await query.invalidateQueries({ queryKey: roomsQueryKeys.info(room._id) });
 				dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 				onClickClose();
 			} catch (error) {
@@ -205,7 +193,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		},
 	);
 
-	const handleSave = useEffectEvent((data) =>
+	const handleSave = useEffectEvent((data: EditRoomInfoFormData) =>
 		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
 	);
 
@@ -223,34 +211,31 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		}
 	};
 
-	const formId = useUniqueId();
-	const roomNameField = useUniqueId();
-	const roomDescriptionField = useUniqueId();
-	const roomAnnouncementField = useUniqueId();
-	const roomTopicField = useUniqueId();
-	const roomTypeField = useUniqueId();
-	const readOnlyField = useUniqueId();
-	const reactWhenReadOnlyField = useUniqueId();
-	const archivedField = useUniqueId();
-	const joinCodeRequiredField = useUniqueId();
-	const hideSysMesField = useUniqueId();
-	const encryptedField = useUniqueId();
-	const retentionEnabledField = useUniqueId();
-	const retentionOverrideGlobalField = useUniqueId();
-	const retentionMaxAgeField = useUniqueId();
-	const retentionExcludePinnedField = useUniqueId();
-	const retentionFilesOnlyField = useUniqueId();
-	const retentionIgnoreThreads = useUniqueId();
-	const showDiscussionsField = useUniqueId();
-	const showChannelsField = useUniqueId();
+	const formId = useId();
+	const roomNameField = useId();
+	const roomDescriptionField = useId();
+	const roomAnnouncementField = useId();
+	const roomTopicField = useId();
+	const roomTypeField = useId();
+	const readOnlyField = useId();
+	const reactWhenReadOnlyField = useId();
+	const archivedField = useId();
+	const joinCodeRequiredField = useId();
+	const hideSysMesField = useId();
+	const retentionEnabledField = useId();
+	const retentionOverrideGlobalField = useId();
+	const retentionMaxAgeField = useId();
+	const retentionExcludePinnedField = useId();
+	const retentionFilesOnlyField = useId();
+	const retentionIgnoreThreads = useId();
 
-	const showAdvancedSettings = canViewEncrypted || canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
+	const showAdvancedSettings = canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
 	const showRetentionPolicy = canEditRoomRetentionPolicy && retentionPolicy?.enabled;
 
 	const showAccordion = showAdvancedSettings || showRetentionPolicy;
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
 				<ContextualbarTitle>{t(`${title[roomType]}`)}</ContextualbarTitle>
@@ -374,76 +359,10 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						<Accordion>
 							{showAdvancedSettings && (
 								<AccordionItem title={t('Advanced_settings')}>
-									{roomType === 'team' && (
-										<FeaturePreview feature='sidepanelNavigation'>
-											<FeaturePreviewOff>{null}</FeaturePreviewOff>
-											<FeaturePreviewOn>
-												<FieldGroup>
-													<Box is='h5' fontScale='h5' color='titles-labels'>
-														{t('Navigation')}
-													</Box>
-													<Field>
-														<FieldRow>
-															<FieldLabel htmlFor={showChannelsField}>{t('Channels')}</FieldLabel>
-															<Controller
-																control={control}
-																name='showChannels'
-																render={({ field: { value, ...field } }) => (
-																	<ToggleSwitch id={showChannelsField} checked={value} {...field} />
-																)}
-															/>
-														</FieldRow>
-														<FieldRow>
-															<FieldHint id={`${showChannelsField}-hint`}>{t('Show_channels_description')}</FieldHint>
-														</FieldRow>
-													</Field>
-													<Field>
-														<FieldRow>
-															<FieldLabel htmlFor={showDiscussionsField}>{t('Discussions')}</FieldLabel>
-															<Controller
-																control={control}
-																name='showDiscussions'
-																render={({ field: { value, ...field } }) => (
-																	<ToggleSwitch id={showDiscussionsField} checked={value} {...field} />
-																)}
-															/>
-														</FieldRow>
-														<FieldRow>
-															<FieldHint id={`${showDiscussionsField}-hint`}>{t('Show_discussions_description')}</FieldHint>
-														</FieldRow>
-													</Field>
-												</FieldGroup>
-												<Divider mb={24} />
-											</FeaturePreviewOn>
-										</FeaturePreview>
-									)}
 									<FieldGroup>
 										<Box is='h5' fontScale='h5' color='titles-labels'>
 											{t('Security_and_permissions')}
 										</Box>
-										{canViewEncrypted && (
-											<Field>
-												<FieldRow>
-													<FieldLabel htmlFor={encryptedField}>{t('Encrypted')}</FieldLabel>
-													<Controller
-														control={control}
-														name='encrypted'
-														render={({ field: { value, ...field } }) => (
-															<ToggleSwitch
-																id={encryptedField}
-																aria-describedby={`${encryptedField}-hint`}
-																{...field}
-																disabled={!canToggleEncryption || isFederated}
-																checked={value}
-															/>
-														)}
-													/>
-												</FieldRow>
-												<FieldRow>
-													<FieldHint id={`${encryptedField}-hint`}>{t('Encrypted_field_hint')}</FieldHint>
-												</FieldRow>
-											</Field>
-										)}
 										{canViewReadOnly && (
 											<Field>
 												<FieldRow>
@@ -603,7 +522,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										{retentionOverrideGlobal && (
 											<>
 												<Callout type='danger'>
-													<RawText>{t('RetentionPolicyRoom_ReadTheDocs')}</RawText>
+													<RawText>{t('RetentionPolicyRoom_ReadTheDocs', { retentionPolicyUrl: links.retentionPolicy })}</RawText>
 												</Callout>
 												<Field>
 													<FieldLabel htmlFor={retentionMaxAgeField}>
@@ -678,7 +597,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

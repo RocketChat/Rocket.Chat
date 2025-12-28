@@ -57,7 +57,7 @@ export const isValidIPv4 = (ip: string): boolean => {
 };
 
 export const isValidDomain = (domain: string): boolean => {
-	const domainPattern = /^(?!-)(?!.*--)[A-Za-z0-9-]{1,63}(?<!-)\.?([A-Za-z]{2,63}\.?)*[A-Za-z]{2,63}$/;
+	const domainPattern = /^(?!-)(?!.*--)[A-Za-z0-9-]{1,63}(?<!-)\.?([A-Za-z0-9-]{2,63}\.?)*[A-Za-z]{2,63}$/;
 	if (!domainPattern.test(domain)) {
 		return false;
 	}

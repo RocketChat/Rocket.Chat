@@ -1,6 +1,5 @@
 import styled from '@rocket.chat/styled';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { getEmojiClassNameAndDataTitle } from '../lib/utils/renderEmoji';
 

@@ -1,9 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 
 import RoomMessage from './RoomMessage';
+import { MessageListContext, messageListContextDefaultValue } from '../list/MessageListContext';
 
 const message: IMessage = {
 	ts: new Date('2021-10-27T00:00:00.000Z'),
@@ -57,7 +57,6 @@ it('should show normal message', () => {
 			showUserAvatar={true}
 		/>,
 		{
-			legacyRoot: true,
 			wrapper: mockAppRoot().build(),
 		},
 	);
@@ -79,7 +78,6 @@ it('should show fallback content for ignored user', () => {
 			showUserAvatar={true}
 		/>,
 		{
-			legacyRoot: true,
 			wrapper: mockAppRoot().build(),
 		},
 	);
@@ -101,7 +99,6 @@ it('should show ignored message', () => {
 			showUserAvatar={true}
 		/>,
 		{
-			legacyRoot: true,
 			wrapper: mockAppRoot().build(),
 		},
 	);
@@ -109,4 +106,54 @@ it('should show ignored message', () => {
 	expect(screen.getByRole('figure')).toBeInTheDocument();
 	expect(screen.queryByText('message body')).not.toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'Message_Ignored' })).toBeInTheDocument();
+});
+
+it('should show read receipt', () => {
+	render(
+		<RoomMessage
+			message={message}
+			sequential={false}
+			all={false}
+			mention={false}
+			unread={false}
+			ignoredUser={false}
+			showUserAvatar={true}
+		/>,
+		{
+			wrapper: mockAppRoot()
+				.wrap((children) => (
+					<MessageListContext.Provider value={{ ...messageListContextDefaultValue, readReceipts: { enabled: true, storeUsers: false } }}>
+						{children}
+					</MessageListContext.Provider>
+				))
+				.build(),
+		},
+	);
+
+	expect(screen.getByRole('status', { name: 'Message_viewed' })).toBeInTheDocument();
+});
+
+it('should not show read receipt if receipt is disabled', () => {
+	render(
+		<RoomMessage
+			message={message}
+			sequential={false}
+			all={false}
+			mention={false}
+			unread={false}
+			ignoredUser={false}
+			showUserAvatar={true}
+		/>,
+		{
+			wrapper: mockAppRoot()
+				.wrap((children) => (
+					<MessageListContext.Provider value={{ ...messageListContextDefaultValue, readReceipts: { enabled: false, storeUsers: false } }}>
+						{children}
+					</MessageListContext.Provider>
+				))
+				.build(),
+		},
+	);
+
+	expect(screen.queryByRole('status', { name: 'Message_viewed' })).not.toBeInTheDocument();
 });

@@ -1,7 +1,7 @@
 import { Button } from '@rocket.chat/fuselage';
 import type { ButtonProps } from '@rocket.chat/fuselage/dist/components/Button/Button';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../hooks/useCheckoutUrl';

@@ -1,7 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import { forwardRef, type ComponentProps } from 'react';
+import { forwardRef } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
-const MultiSelectCustomListWrapper = forwardRef<Element, ComponentProps<typeof Box>>(function MultiSelectCustomListWrapper(
+export type MultiSelectCustomListWrapperProps = ComponentPropsWithoutRef<typeof Box>;
+
+const MultiSelectCustomListWrapper = forwardRef<Element, MultiSelectCustomListWrapperProps>(function MultiSelectCustomListWrapper(
 	{ children },
 	ref,
 ) {

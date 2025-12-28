@@ -1,10 +1,10 @@
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useInvalidateLicense } from '@rocket.chat/ui-client';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-
-import { useInvalidateLicense } from '../../../../hooks/useLicense';
+import { useTranslation } from 'react-i18next';
 
 export const useRemoveLicense = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const invalidateLicense = useInvalidateLicense();

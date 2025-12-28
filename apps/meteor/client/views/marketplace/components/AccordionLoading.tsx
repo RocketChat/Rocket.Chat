@@ -1,5 +1,4 @@
 import { Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
 
 const SKELETON_ITEMS = 3;
 

@@ -5,7 +5,7 @@ import type { ITypingDescriptor } from '@rocket.chat/apps-engine/server/bridges/
 import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
 import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Users, Subscriptions, Messages } from '@rocket.chat/models';
+import { Users, Subscriptions } from '@rocket.chat/models';
 
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -44,12 +44,8 @@ export class AppMessageBridge extends MessageBridge {
 			throw new Error('Invalid editor assigned to the message for the update.');
 		}
 
-		if (!message.id || !(await Messages.findOneById(message.id))) {
-			throw new Error('A message must exist to update.');
-		}
-
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
-		const msg: IMessage | undefined = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const msg = await this.orch.getConverters()?.get('messages').convertAppMessage(message, true);
 		const editor = await Users.findOneById(message.editor.id);
 
 		if (!editor) {

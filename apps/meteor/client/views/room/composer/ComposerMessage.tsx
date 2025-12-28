@@ -1,20 +1,18 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { memo, useCallback, useMemo } from 'react';
+import { memo, useMemo, useSyncExternalStore } from 'react';
 
+import ComposerSkeleton from './ComposerSkeleton';
 import { LegacyRoomManager } from '../../../../app/ui-utils/client';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
-import ComposerSkeleton from './ComposerSkeleton';
 import MessageBox from './messageBox/MessageBox';
 
 export type ComposerMessageProps = {
 	tmid?: IMessage['_id'];
 	children?: ReactNode;
 	subscription?: ISubscription;
-	readOnly?: boolean;
 	tshow?: boolean;
 	previewUrls?: string[];
 	onResize?: () => void;
@@ -23,9 +21,10 @@ export type ComposerMessageProps = {
 	onNavigateToNextMessage?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onUploadFiles?: (files: readonly File[]) => void;
+	onClickSelectAll?: () => void;
 };
 
-const ComposerMessage = ({ tmid, readOnly, onSend, ...props }: ComposerMessageProps): ReactElement => {
+const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): ReactElement => {
 	const chat = useChat();
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -81,15 +80,17 @@ const ComposerMessage = ({ tmid, readOnly, onSend, ...props }: ComposerMessagePr
 		[chat?.data, chat?.flows, chat?.action, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, onSend],
 	);
 
-	const publicationReady = useReactiveValue(
-		useCallback(() => LegacyRoomManager.getOpenedRoomByRid(room._id)?.streamActive ?? false, [room._id]),
-	);
+	const { subscribe, getSnapshotValue } = useMemo(() => {
+		return LegacyRoomManager.listenRoomPropsByRid(room._id, 'streamActive');
+	}, [room._id]);
+
+	const publicationReady = useSyncExternalStore(subscribe, getSnapshotValue);
 
 	if (!publicationReady) {
 		return <ComposerSkeleton />;
 	}
 
-	return <MessageBox readOnly={readOnly ?? false} key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
+	return <MessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
 };
 
 export default memo(ComposerMessage);

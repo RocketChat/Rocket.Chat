@@ -1,4 +1,5 @@
-import { TrashRaw } from '../models/raw/Trash';
+import { TrashRaw } from '@rocket.chat/models';
+
 import { db } from './utils';
 
 const Trash = new TrashRaw(db);

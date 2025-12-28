@@ -1,41 +1,39 @@
+import type { Box } from '@rocket.chat/fuselage';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { HeaderToolbarAction } from '@rocket.chat/ui-client';
+import { useRoomToolbox, type RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
+import type { ComponentProps } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { HeaderToolbarAction } from '../../../../components/Header';
 import { roomActionHooksForE2EESetup } from '../../../../ui';
-import { useRoom } from '../../contexts/RoomContext';
-import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
-import { getRoomGroup } from '../../lib/getRoomGroup';
 
-const RoomToolboxE2EESetup = () => {
-	const t = useTranslation();
+type RoomToolboxE2EESetupProps = {
+	className?: ComponentProps<typeof Box>['className'];
+};
+
+const RoomToolboxE2EESetup = ({ className }: RoomToolboxE2EESetupProps) => {
+	const { t } = useTranslation();
 	const toolbox = useRoomToolbox();
-	const room = useRoom();
 
 	const { tab } = toolbox;
 
 	const actions = useStableArray(
 		roomActionHooksForE2EESetup
 			.map((roomActionHook) => roomActionHook())
-			.filter(
-				(roomAction): roomAction is RoomToolboxActionConfig =>
-					!!roomAction && (!roomAction.groups || roomAction.groups.includes(getRoomGroup(room))),
-			),
+			.filter((roomAction): roomAction is RoomToolboxActionConfig => !!roomAction),
 	);
 
 	return (
 		<>
-			{actions.map(({ id, icon, title, action, disabled, tooltip }, index) => (
+			{actions.map(({ id, icon, title, action, disabled, tooltip }) => (
 				<HeaderToolbarAction
 					key={id}
-					index={index}
+					className={className}
 					id={id}
 					icon={icon}
 					title={t(title)}
 					pressed={id === tab?.id}
-					action={action ?? (() => toolbox.openTab(id))}
+					onClick={action ?? (() => toolbox.openTab(id))}
 					disabled={disabled}
 					tooltip={tooltip}
 				/>

@@ -1,11 +1,7 @@
-import type { IMessage, IRoom, MessageAttachment, ReadReceipt, OtrSystemMessages, MessageUrl } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
+import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
 
+import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type ChatSendMessage = {
 	message: Partial<IMessage>;
@@ -92,6 +88,7 @@ const chatFollowMessageSchema = {
 	properties: {
 		mid: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['mid'],
@@ -109,6 +106,7 @@ const chatUnfollowMessageSchema = {
 	properties: {
 		mid: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['mid'],
@@ -126,6 +124,7 @@ const ChatGetMessageSchema = {
 	properties: {
 		msgId: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['msgId'],
@@ -168,40 +167,6 @@ const ChatUnstarMessageSchema = {
 
 export const isChatUnstarMessageProps = ajv.compile<ChatUnstarMessage>(ChatUnstarMessageSchema);
 
-type ChatPinMessage = {
-	messageId: IMessage['_id'];
-};
-
-const ChatPinMessageSchema = {
-	type: 'object',
-	properties: {
-		messageId: {
-			type: 'string',
-		},
-	},
-	required: ['messageId'],
-	additionalProperties: false,
-};
-
-export const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
-
-type ChatUnpinMessage = {
-	messageId: IMessage['_id'];
-};
-
-const ChatUnpinMessageSchema = {
-	type: 'object',
-	properties: {
-		messageId: {
-			type: 'string',
-		},
-	},
-	required: ['messageId'],
-	additionalProperties: false,
-};
-
-export const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
-
 type ChatGetDiscussions = PaginatedRequest<{
 	roomId: IRoom['_id'];
 	text?: string;
@@ -212,18 +177,16 @@ const ChatGetDiscussionsSchema = {
 	properties: {
 		roomId: {
 			type: 'string',
+			minLength: 1,
 		},
 		text: {
 			type: 'string',
-			nullable: true,
 		},
 		offset: {
 			type: 'number',
-			nullable: true,
 		},
 		count: {
 			type: 'number',
-			nullable: true,
 		},
 	},
 	required: ['roomId'],
@@ -255,8 +218,9 @@ export const isChatReportMessageProps = ajv.compile<ChatReportMessage>(ChatRepor
 
 type ChatGetThreadsList = PaginatedRequest<{
 	rid: IRoom['_id'];
-	type: 'unread' | 'following' | 'all';
+	type?: 'unread' | 'following';
 	text?: string;
+	fields?: string;
 }>;
 
 const ChatGetThreadsListSchema = {
@@ -267,6 +231,7 @@ const ChatGetThreadsListSchema = {
 		},
 		type: {
 			type: 'string',
+			enum: ['following', 'unread'],
 			nullable: true,
 		},
 		text: {
@@ -279,6 +244,18 @@ const ChatGetThreadsListSchema = {
 		},
 		count: {
 			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+		fields: {
+			type: 'string',
 			nullable: true,
 		},
 	},
@@ -298,9 +275,11 @@ const ChatSyncThreadsListSchema = {
 	properties: {
 		rid: {
 			type: 'string',
+			minLength: 1,
 		},
 		updatedSince: {
 			type: 'string',
+			format: 'iso-date-time',
 		},
 	},
 	required: ['rid', 'updatedSince'],
@@ -349,6 +328,7 @@ const ChatReactSchema = {
 				},
 				messageId: {
 					type: 'string',
+					minLength: 1,
 				},
 				shouldReact: {
 					type: 'boolean',
@@ -366,6 +346,7 @@ const ChatReactSchema = {
 				},
 				messageId: {
 					type: 'string',
+					minLength: 1,
 				},
 				shouldReact: {
 					type: 'boolean',
@@ -395,12 +376,15 @@ const ChatIgnoreUserSchema = {
 	properties: {
 		rid: {
 			type: 'string',
+			minLength: 1,
 		},
 		userId: {
 			type: 'string',
+			minLength: 1,
 		},
 		ignore: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['rid', 'userId', 'ignore'],
@@ -438,40 +422,129 @@ const ChatSearchSchema = {
 
 export const isChatSearchProps = ajv.compile<ChatSearch>(ChatSearchSchema);
 
-type ChatUpdate = {
+interface IChatUpdate {
 	roomId: IRoom['_id'];
 	msgId: string;
+}
+
+interface IChatUpdateText extends IChatUpdate {
 	text: string;
 	previewUrls?: string[];
-	customFields: IMessage['customFields'];
-};
+	customFields?: IMessage['customFields'];
+}
+
+interface IChatUpdateEncrypted extends IChatUpdate {
+	content: Required<IMessage>['content'];
+	e2eMentions?: IMessage['e2eMentions'];
+}
+
+type ChatUpdate = IChatUpdateText | IChatUpdateEncrypted;
 
 const ChatUpdateSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-		msgId: {
-			type: 'string',
-		},
-		text: {
-			type: 'string',
-		},
-		previewUrls: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			nullable: true,
-		},
-		customFields: {
+	oneOf: [
+		{
 			type: 'object',
-			nullable: true,
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+				msgId: {
+					type: 'string',
+				},
+				text: {
+					type: 'string',
+				},
+				previewUrls: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+			},
+			required: ['roomId', 'msgId', 'text'],
+			additionalProperties: false,
 		},
-	},
-	required: ['roomId', 'msgId', 'text'],
-	additionalProperties: false,
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+				msgId: {
+					type: 'string',
+				},
+				content: {
+					type: 'object',
+					discriminator: {
+						propertyName: 'algorithm',
+					},
+					oneOf: [
+						{
+							type: 'object',
+							properties: {
+								algorithm: {
+									const: 'rc.v1.aes-sha2',
+								},
+								ciphertext: {
+									type: 'string',
+									minLength: 1,
+								},
+							},
+							required: ['algorithm', 'ciphertext'],
+							additionalProperties: false,
+						},
+						{
+							type: 'object',
+							properties: {
+								algorithm: {
+									const: 'rc.v2.aes-sha2',
+								},
+								ciphertext: {
+									type: 'string',
+									minLength: 1,
+								},
+								iv: {
+									type: 'string',
+									minLength: 1,
+								},
+								kid: {
+									type: 'string',
+									minLength: 1,
+								},
+							},
+							required: ['algorithm', 'ciphertext', 'iv', 'kid'],
+							additionalProperties: false,
+						},
+					],
+				},
+				e2eMentions: {
+					type: 'object',
+					properties: {
+						e2eUserMentions: {
+							type: 'array',
+							items: { type: 'string' },
+							nullable: true,
+						},
+						e2eChannelMentions: {
+							type: 'array',
+							items: { type: 'string' },
+							nullable: true,
+						},
+					},
+					required: [],
+					additionalProperties: false,
+					nullable: true,
+				},
+			},
+			required: ['roomId', 'msgId', 'content'],
+			additionalProperties: false,
+		},
+	],
 };
 
 export const isChatUpdateProps = ajv.compile<ChatUpdate>(ChatUpdateSchema);
@@ -505,6 +578,7 @@ const GetStarredMessagesSchema = {
 	properties: {
 		roomId: {
 			type: 'string',
+			minLength: 1,
 		},
 		count: {
 			type: 'number',
@@ -537,6 +611,7 @@ const GetPinnedMessagesSchema = {
 	properties: {
 		roomId: {
 			type: 'string',
+			minLength: 1,
 		},
 		count: {
 			type: 'number',
@@ -569,6 +644,7 @@ const GetMentionedMessagesSchema = {
 	properties: {
 		roomId: {
 			type: 'string',
+			minLength: 1,
 		},
 		count: {
 			type: 'number',
@@ -591,7 +667,11 @@ export const isChatGetMentionedMessagesProps = ajv.compile<GetMentionedMessages>
 
 type ChatSyncMessages = {
 	roomId: IRoom['_id'];
-	lastUpdate: string;
+	lastUpdate?: string;
+	count?: number;
+	next?: string;
+	previous?: string;
+	type?: 'UPDATED' | 'DELETED';
 };
 
 const ChatSyncMessagesSchema = {
@@ -602,9 +682,27 @@ const ChatSyncMessagesSchema = {
 		},
 		lastUpdate: {
 			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		next: {
+			type: 'string',
+			nullable: true,
+		},
+		previous: {
+			type: 'string',
+			nullable: true,
+		},
+		type: {
+			type: 'string',
+			enum: ['UPDATED', 'DELETED'],
+			nullable: true,
 		},
 	},
-	required: ['roomId', 'lastUpdate'],
+	required: ['roomId'],
 	additionalProperties: false,
 };
 
@@ -620,9 +718,11 @@ const ChatSyncThreadMessagesSchema = {
 	properties: {
 		tmid: {
 			type: 'string',
+			minLength: 1,
 		},
 		updatedSince: {
 			type: 'string',
+			format: 'iso-date-time',
 		},
 		count: {
 			type: 'number',
@@ -652,6 +752,7 @@ const ChatGetThreadMessagesSchema = {
 	properties: {
 		tmid: {
 			type: 'string',
+			minLength: 1,
 		},
 		count: {
 			type: 'number',
@@ -682,9 +783,12 @@ const ChatGetDeletedMessagesSchema = {
 	properties: {
 		roomId: {
 			type: 'string',
+			minLength: 1,
 		},
 		since: {
 			type: 'string',
+			minLength: 1,
+			format: 'iso-date-time',
 		},
 		count: {
 			type: 'number',
@@ -764,9 +868,15 @@ const ChatPostMessageSchema = {
 					},
 					nullable: true,
 				},
+				tmid: {
+					type: 'string',
+				},
 				customFields: {
 					type: 'object',
 					nullable: true,
+				},
+				parseUrls: {
+					type: 'boolean',
 				},
 			},
 			required: ['roomId'],
@@ -812,6 +922,9 @@ const ChatPostMessageSchema = {
 				customFields: {
 					type: 'object',
 					nullable: true,
+				},
+				parseUrls: {
+					type: 'boolean',
 				},
 			},
 			required: ['channel'],
@@ -866,14 +979,6 @@ export type ChatEndpoints = {
 	'/v1/chat.unStarMessage': {
 		POST: (params: ChatUnstarMessage) => void;
 	};
-	'/v1/chat.pinMessage': {
-		POST: (params: ChatPinMessage) => {
-			message: IMessage;
-		};
-	};
-	'/v1/chat.unPinMessage': {
-		POST: (params: ChatUnpinMessage) => void;
-	};
 	'/v1/chat.reportMessage': {
 		POST: (params: ChatReportMessage) => void;
 	};
@@ -885,7 +990,7 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.getThreadsList': {
 		GET: (params: ChatGetThreadsList) => {
-			threads: IMessage[];
+			threads: IThreadMainMessage[];
 			total: number;
 		};
 	};
@@ -921,7 +1026,7 @@ export type ChatEndpoints = {
 		};
 	};
 	'/v1/chat.getMessageReadReceipts': {
-		GET: (params: ChatGetMessageReadReceipts) => { receipts: ReadReceipt[] };
+		GET: (params: ChatGetMessageReadReceipts) => { receipts: IReadReceiptWithUser[] };
 	};
 	'/v1/chat.getStarredMessages': {
 		GET: (params: GetStarredMessages) => {
@@ -952,6 +1057,10 @@ export type ChatEndpoints = {
 			result: {
 				updated: IMessage[];
 				deleted: IMessage[];
+				cursor: {
+					next: string | null;
+					previous: string | null;
+				};
 			};
 		};
 	};
@@ -985,9 +1094,6 @@ export type ChatEndpoints = {
 			offset: number;
 			total: number;
 		};
-	};
-	'/v1/chat.otr': {
-		POST: (params: { roomId: string; type: OtrSystemMessages }) => void;
 	};
 	'/v1/chat.getURLPreview': {
 		GET: (params: ChatGetURLPreview) => { urlPreview: MessageUrl };

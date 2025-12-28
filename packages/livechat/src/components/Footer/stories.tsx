@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { Footer, FooterContent, FooterOptions, PoweredBy } from '.';
@@ -30,7 +30,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Footer>>;
 
-export const Simple: Story<ComponentProps<typeof Footer>> = (args) => (
+export const Simple: StoryFn<ComponentProps<typeof Footer>> = (args) => (
 	<Footer {...args}>
 		<FooterContent>
 			<PoweredBy />
@@ -39,7 +39,7 @@ export const Simple: Story<ComponentProps<typeof Footer>> = (args) => (
 );
 Simple.storyName = 'simple';
 
-export const WithComposerAndOptions: Story<ComponentProps<typeof Footer>> = (args) => (
+export const WithComposerAndOptions: StoryFn<ComponentProps<typeof Footer>> = (args) => (
 	<Footer {...args}>
 		<FooterContent>
 			<Composer placeholder='Insert your text here' />

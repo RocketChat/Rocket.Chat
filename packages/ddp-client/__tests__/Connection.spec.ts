@@ -1,8 +1,8 @@
 import WS from 'jest-websocket-mock';
 
+import { handleConnection, handleConnectionAndRejects, handleMethod } from './helpers';
 import { ConnectionImpl } from '../src/Connection';
 import { MinimalDDPClient } from '../src/MinimalDDPClient';
-import { handleConnection, handleConnectionAndRejects, handleMethod } from './helpers';
 
 let server: WS;
 beforeEach(() => {
@@ -53,9 +53,9 @@ it('should trigger a disconnect callback', async () => {
 
 	expect(disconnectCallback).toHaveBeenNthCalledWith(1, 'connecting');
 	expect(disconnectCallback).toHaveBeenNthCalledWith(2, 'connected');
-	expect(disconnectCallback).toBeCalledTimes(2);
+	expect(disconnectCallback).toHaveBeenCalledTimes(2);
 	server.close();
-	expect(disconnectCallback).toBeCalledTimes(3);
+	expect(disconnectCallback).toHaveBeenCalledTimes(3);
 	expect(disconnectCallback).toHaveBeenNthCalledWith(3, 'disconnected');
 	expect(connection.status).toBe('disconnected');
 });

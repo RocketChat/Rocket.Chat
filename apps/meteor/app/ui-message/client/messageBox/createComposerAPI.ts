@@ -1,13 +1,14 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 
-import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
-import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
+import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
+import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
-export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
+export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string, quoteChainLimit: number): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
@@ -31,11 +32,11 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 
 	const persist = withDebouncing({ wait: 300 })(() => {
 		if (input.value) {
-			Meteor._localStorage.setItem(storageID, input.value);
+			Accounts.storageLocation.setItem(storageID, input.value);
 			return;
 		}
 
-		Meteor._localStorage.removeItem(storageID);
+		Accounts.storageLocation.removeItem(storageID);
 	});
 
 	const notifyQuotedMessagesUpdate = (): void => {
@@ -108,7 +109,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 	};
 
 	const quoteMessage = async (message: IMessage): Promise<void> => {
-		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), message];
+		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), limitQuoteChain(message, quoteChainLimit)];
 		notifyQuotedMessagesUpdate();
 		input.focus();
 	};
@@ -262,7 +263,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 
 	const insertNewLine = (): void => insertText('\n');
 
-	setText(Meteor._localStorage.getItem(storageID) ?? '', {
+	setText(Accounts.storageLocation.getItem(storageID) ?? '', {
 		skipFocus: true,
 	});
 

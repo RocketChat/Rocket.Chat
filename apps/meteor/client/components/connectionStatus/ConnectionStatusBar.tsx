@@ -1,7 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Icon, Palette } from '@rocket.chat/fuselage';
 import { useConnectionStatus } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useReconnectCountdown } from './useReconnectCountdown';

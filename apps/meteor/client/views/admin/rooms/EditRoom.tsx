@@ -13,26 +13,28 @@ import {
 	TextAreaInput,
 	FieldError,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
+import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useArchiveRoom } from '../../hooks/roomActions/useArchiveRoom';
 import { useDeleteRoom } from '../../hooks/roomActions/useDeleteRoom';
-import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
 
 type EditRoomProps = {
 	room: IRoom;
 	onChange: () => void;
 	onDelete: () => void;
+	onClose: () => void;
 };
 
-type EditRoomFormValues = {
+type EditRoomFormData = {
 	roomName: IRoom['name'];
 	roomTopic: string;
 	roomType: IRoom['t'];
@@ -47,7 +49,7 @@ type EditRoomFormValues = {
 	archived: boolean;
 };
 
-const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormValues => ({
+const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormData => ({
 	roomName: room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, room),
 	roomType: room.t,
 	readOnly: !!room.ro,
@@ -62,9 +64,8 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormV
 	roomAvatar: undefined,
 });
 
-const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
-	const t = useTranslation();
-	const router = useRouter();
+const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
@@ -73,7 +74,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		reset,
 		handleSubmit,
 		formState: { isDirty, errors, dirtyFields },
-	} = useForm({ values: getInitialValues(room) });
+	} = useForm<EditRoomFormData>({ values: getInitialValues(room) });
 
 	const {
 		canViewName,
@@ -96,44 +97,45 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 	const handleArchive = useArchiveRoom(room);
 
-	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, favorite, ...formData }) => {
+	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, favorite, ...formData }: EditRoomFormData) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		delete data.archived;
-		delete data.favorite;
 
 		try {
 			await saveAction({
+				...data,
 				rid: room._id,
 				default: isDefault,
 				favorite: { defaultValue: isDefault, favorite },
-				...data,
 			});
 
 			dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 			onChange();
-			router.navigate('/admin/rooms');
+			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	const handleSave = useEffectEvent((data) =>
+	const handleSave = useEffectEvent((data: EditRoomFormData) =>
 		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
 	);
 
-	const formId = useUniqueId();
-	const roomNameField = useUniqueId();
-	const ownerField = useUniqueId();
-	const roomDescription = useUniqueId();
-	const roomAnnouncement = useUniqueId();
-	const roomTopicField = useUniqueId();
-	const roomTypeField = useUniqueId();
-	const readOnlyField = useUniqueId();
-	const reactWhenReadOnly = useUniqueId();
-	const archivedField = useUniqueId();
-	const isDefaultField = useUniqueId();
-	const favoriteField = useUniqueId();
-	const featuredField = useUniqueId();
+	const formId = useId();
+	const roomNameField = useId();
+	const ownerField = useId();
+	const roomDescription = useId();
+	const roomAnnouncement = useId();
+	const roomTopicField = useId();
+	const roomTypeField = useId();
+	const readOnlyField = useId();
+	const reactWhenReadOnly = useId();
+	const archivedField = useId();
+	const isDefaultField = useId();
+	const favoriteField = useId();
+	const featuredField = useId();
+
+	const roomIsFederated = isRoomFederated(room);
 
 	return (
 		<>
@@ -144,7 +146,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 							name='roomAvatar'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<RoomAvatarEditor disabled={isRoomFederated(room)} roomAvatar={value} room={room} onChangeAvatar={onChange} />
+								<RoomAvatarEditor disabled={roomIsFederated} roomAvatar={value} room={room} onChangeAvatar={onChange} />
 							)}
 						/>
 					</Box>
@@ -194,7 +196,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 										name='roomDescription'
 										control={control}
 										render={({ field }) => (
-											<TextAreaInput id={roomDescription} {...field} rows={4} disabled={isDeleting || isRoomFederated(room)} />
+											<TextAreaInput id={roomDescription} {...field} rows={4} disabled={isDeleting || roomIsFederated} />
 										)}
 									/>
 								</FieldRow>
@@ -208,7 +210,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 										name='roomAnnouncement'
 										control={control}
 										render={({ field }) => (
-											<TextAreaInput id={roomAnnouncement} {...field} rows={4} disabled={isDeleting || isRoomFederated(room)} />
+											<TextAreaInput id={roomAnnouncement} {...field} rows={4} disabled={isDeleting || roomIsFederated} />
 										)}
 									/>
 								</FieldRow>
@@ -237,7 +239,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 											<ToggleSwitch
 												{...field}
 												id={roomTypeField}
-												disabled={isDeleting || isRoomFederated(room)}
+												disabled={isDeleting || roomIsFederated}
 												checked={roomType === 'p'}
 												onChange={() => onChange(value === 'p' ? 'c' : 'p')}
 												aria-describedby={`${roomTypeField}-hint`}
@@ -259,7 +261,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 											<ToggleSwitch
 												id={readOnlyField}
 												{...field}
-												disabled={isDeleting || isRoomFederated(room)}
+												disabled={isDeleting || roomIsFederated}
 												checked={value}
 												aria-describedby={`${readOnlyField}-hint`}
 											/>
@@ -280,7 +282,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 											<ToggleSwitch
 												id={reactWhenReadOnly}
 												{...field}
-												checked={value || isRoomFederated(room)}
+												checked={value || roomIsFederated}
 												aria-describedby={`${reactWhenReadOnly}-hint`}
 											/>
 										)}
@@ -297,7 +299,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 										name='archived'
 										control={control}
 										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch id={archivedField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
+											<ToggleSwitch id={archivedField} {...field} disabled={isDeleting || roomIsFederated} checked={value} />
 										)}
 									/>
 								</FieldRow>
@@ -312,7 +314,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 							name='isDefault'
 							control={control}
 							render={({ field: { value, ...field } }) => (
-								<ToggleSwitch id={isDefaultField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
+								<ToggleSwitch id={isDefaultField} {...field} disabled={isDeleting || roomIsFederated} checked={value} />
 							)}
 						/>
 					</FieldRow>
@@ -336,7 +338,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 							name='featured'
 							control={control}
 							render={({ field: { value, ...field } }) => (
-								<ToggleSwitch id={featuredField} {...field} disabled={isDeleting || isRoomFederated(room)} checked={value} />
+								<ToggleSwitch id={featuredField} {...field} disabled={isDeleting || roomIsFederated} checked={value} />
 							)}
 						/>
 					</FieldRow>
@@ -353,7 +355,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 				</ButtonGroup>
 				<Box mbs={8}>
 					<ButtonGroup stretch>
-						<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || isRoomFederated(room)} onClick={handleDelete}>
+						<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || roomIsFederated} onClick={handleDelete}>
 							{t('Delete')}
 						</Button>
 					</ButtonGroup>

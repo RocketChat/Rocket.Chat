@@ -1,13 +1,12 @@
 import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { isDirectMessageRoom, isEditedMessage, isOmnichannelRoom, isRoomFederated } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isEditedMessage, isOmnichannelRoom, isRoomFederated, getUserDisplayName } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { ActionsBlock } from '@rocket.chat/ui-kit';
 import moment from 'moment';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { isTruthy } from '../../../../lib/isTruthy';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
@@ -24,7 +23,7 @@ const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: strin
 			actionId: 'add-users',
 			text: {
 				type: 'plain_text',
-				text: i18n.t('Add_them', undefined, lng),
+				text: i18n.t('Add_them', { lng }),
 			},
 		},
 		dismissBlock: {
@@ -35,7 +34,7 @@ const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: strin
 			actionId: 'dismiss',
 			text: {
 				type: 'plain_text',
-				text: i18n.t('Do_nothing', undefined, lng),
+				text: i18n.t('Do_nothing', { lng }),
 			},
 		},
 		dmBlock: {
@@ -46,7 +45,7 @@ const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: strin
 			actionId: 'share-message',
 			text: {
 				type: 'plain_text',
-				text: i18n.t('Let_them_know', undefined, lng),
+				text: i18n.t('Let_them_know', { lng }),
 			},
 		},
 	} as const;
@@ -121,7 +120,7 @@ callbacks.add(
 					type: 'section',
 					text: {
 						type: 'mrkdwn',
-						text: i18n.t(messageLabel, { mentions: mentionsText }, language),
+						text: i18n.t(messageLabel, { mentions: mentionsText, lng: language }),
 					},
 				} as const,
 				Boolean(elements.length) &&

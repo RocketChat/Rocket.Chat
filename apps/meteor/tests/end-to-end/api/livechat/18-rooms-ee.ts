@@ -18,7 +18,7 @@ import {
 	fetchMessages,
 } from '../../../data/livechat/rooms';
 import { sleep } from '../../../data/livechat/utils';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -31,6 +31,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await createAgent();
 		await makeAgentAvailable();
 	});

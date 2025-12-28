@@ -80,4 +80,48 @@ describe('Filter bad words before saving message', () => {
 
 		return expect(result.msg).to.be.equal('hell');
 	});
+
+	it('should filter non ascii bad words', async () => {
+		const badWords = new BeforeSaveBadWords();
+		await badWords.configure('バカ');
+
+		const message = createMessage('hell is バカ');
+
+		const result = await badWords.filterBadWords({ message });
+
+		return expect(result.msg).to.be.equal('**** is **');
+	});
+
+	it('should filter just the non ascii bad words', async () => {
+		const badWords = new BeforeSaveBadWords();
+		await badWords.configure('バカ');
+
+		const message = createMessage('バカ');
+
+		const result = await badWords.filterBadWords({ message });
+
+		return expect(result.msg).to.be.equal('**');
+	});
+
+	it('should filter non ascii bad words with punctuation', async () => {
+		const badWords = new BeforeSaveBadWords();
+		await badWords.configure('バカ');
+
+		const message = createMessage('バカ.');
+
+		const result = await badWords.filterBadWords({ message });
+
+		return expect(result.msg).to.be.equal('**.');
+	});
+
+	it('should not filter non ascii bad words, if part of another word ', async () => {
+		const badWords = new BeforeSaveBadWords();
+		await badWords.configure('バカ');
+
+		const message = createMessage('TESTバカTEST');
+
+		const result = await badWords.filterBadWords({ message });
+
+		return expect(result.msg).to.be.equal('TESTバカTEST');
+	});
 });

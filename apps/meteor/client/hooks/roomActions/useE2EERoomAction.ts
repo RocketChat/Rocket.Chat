@@ -1,44 +1,82 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
+import { imperativeModal } from '@rocket.chat/ui-client';
+import { useSetting, usePermission, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { E2EEState } from '../../../app/e2e/client/E2EEState';
-import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
-import { dispatchToastMessage } from '../../lib/toast';
+import { getRoomTypeTranslation } from '../../lib/getRoomTypeTranslation';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
+import { useE2EERoomState } from '../../views/room/hooks/useE2EERoomState';
 import { useE2EEState } from '../../views/room/hooks/useE2EEState';
-import { useOTR } from '../useOTR';
+import BaseDisableE2EEModal from '../../views/room/modals/E2EEModals/BaseDisableE2EEModal';
+import EnableE2EEModal from '../../views/room/modals/E2EEModals/EnableE2EEModal';
 
 export const useE2EERoomAction = () => {
 	const enabled = useSetting('E2E_Enable', false);
 	const room = useRoom();
 	const subscription = useRoomSubscription();
 	const e2eeState = useE2EEState();
-	const isE2EEReady = e2eeState === E2EEState.READY || e2eeState === E2EEState.SAVE_PASSWORD;
+	const e2eeRoomState = useE2EERoomState(room._id);
+	const isE2EEReady = e2eeState === 'READY' || e2eeState === 'SAVE_PASSWORD';
 	const readyToEncrypt = isE2EEReady || room.encrypted;
 	const permittedToToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id);
 	const permittedToEditRoom = usePermission('edit-room', room._id);
 	const permitted = (room.t === 'd' || (permittedToEditRoom && permittedToToggleEncryption)) && readyToEncrypt;
 	const federated = isRoomFederated(room);
 	const { t } = useTranslation();
-	const { otrState } = useOTR();
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const isE2EERoomNotReady = () => {
+		if (e2eeRoomState === 'NOT_STARTED' || e2eeRoomState === 'DISABLED' || e2eeRoomState === 'ERROR' || e2eeRoomState === 'WAITING_KEYS') {
+			return true;
+		}
+
+		return false;
+	};
+
+	const enabledOnRoom = !!room.encrypted;
+
+	const roomType = useMemo(() => getRoomTypeTranslation(room)?.toLowerCase(), [room]);
+
+	const roomId = room._id;
 
 	const toggleE2E = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
 
+	const canResetRoomKey = enabled && isE2EEReady && (room.t === 'd' || permittedToToggleEncryption) && isE2EERoomNotReady();
+
 	const action = useEffectEvent(async () => {
-		if (otrState === OtrRoomState.ESTABLISHED || otrState === OtrRoomState.ESTABLISHING || otrState === OtrRoomState.REQUESTED) {
-			dispatchToastMessage({ type: 'error', message: t('E2EE_not_available_OTR') });
-
-			return;
+		if (enabledOnRoom) {
+			imperativeModal.open({
+				component: BaseDisableE2EEModal,
+				props: {
+					onClose: imperativeModal.close,
+					onConfirm: handleToogleE2E,
+					roomType,
+					roomId,
+					canResetRoomKey,
+				},
+			});
+		} else {
+			imperativeModal.open({
+				component: EnableE2EEModal,
+				props: {
+					onClose: imperativeModal.close,
+					onConfirm: handleToogleE2E,
+					roomType,
+				},
+			});
 		}
+	});
 
+	const handleToogleE2E = async () => {
 		const { success } = await toggleE2E({ rid: room._id, encrypted: !room.encrypted });
 		if (!success) {
 			return;
 		}
+
+		imperativeModal.close();
 
 		dispatchToastMessage({
 			type: 'success',
@@ -50,9 +88,7 @@ export const useE2EERoomAction = () => {
 		if (subscription?.autoTranslate) {
 			dispatchToastMessage({ type: 'success', message: t('AutoTranslate_Disabled_for_room', { roomName: room.name }) });
 		}
-	});
-
-	const enabledOnRoom = !!room.encrypted;
+	};
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!enabled || !permitted) {
@@ -62,7 +98,7 @@ export const useE2EERoomAction = () => {
 		return {
 			id: 'e2e',
 			groups: ['direct', 'direct_multiple', 'group', 'team'],
-			title: enabledOnRoom ? 'E2E_disable' : 'E2E_enable',
+			title: enabledOnRoom ? 'Disable_E2E_encryption' : 'Enable_E2E_encryption',
 			icon: 'key',
 			order: 13,
 			action,

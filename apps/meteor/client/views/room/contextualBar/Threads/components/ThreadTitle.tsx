@@ -1,15 +1,17 @@
 import type { IThreadMainMessage } from '@rocket.chat/core-typings';
-import React, { useMemo } from 'react';
+import { ContextualbarTitle } from '@rocket.chat/ui-client';
+import { useMemo } from 'react';
 
-import { normalizeThreadTitle } from '../../../../../../app/threads/client/lib/normalizeThreadTitle';
-import { ContextualbarTitle } from '../../../../../components/Contextualbar';
+import { useNormalizedThreadTitleHtml } from '../hooks/useNormalizedThreadTitleHtml';
 
 type ThreadTitleProps = {
 	mainMessage: IThreadMainMessage;
 };
 
 const ThreadTitle = ({ mainMessage }: ThreadTitleProps) => {
-	const innerHTML = useMemo(() => ({ __html: normalizeThreadTitle(mainMessage) ?? '' }), [mainMessage]);
+	const html = useNormalizedThreadTitleHtml(mainMessage);
+
+	const innerHTML = useMemo(() => ({ __html: html }), [html]);
 	return <ContextualbarTitle dangerouslySetInnerHTML={innerHTML} />;
 };
 

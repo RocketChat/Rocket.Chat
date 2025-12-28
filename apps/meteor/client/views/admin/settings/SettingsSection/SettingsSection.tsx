@@ -1,10 +1,10 @@
 import { isSetting, isSettingColor } from '@rocket.chat/core-typings';
-import { Accordion, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { AccordionItem, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useEditableSettings, useEditableSettingsDispatch } from '../../EditableSettingsContext';
 import Setting from '../Setting';
@@ -20,7 +20,7 @@ type SettingsSectionProps = {
 };
 
 function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, solo, help, children }: SettingsSectionProps): ReactElement {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const editableSettings = useEditableSettings(
 		useMemo(
@@ -42,7 +42,7 @@ function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, so
 
 	const dispatch = useEditableSettingsDispatch();
 
-	const reset = useMutableCallback(() => {
+	const reset = useEffectEvent(() => {
 		dispatch(
 			editableSettings
 				.filter(({ disabled }) => !disabled)
@@ -71,7 +71,7 @@ function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, so
 	};
 
 	return (
-		<Accordion.Item
+		<AccordionItem
 			data-qa-section={sectionName}
 			noncollapsible={solo || !sectionName}
 			title={sectionName && t(sectionName as TranslationKey)}
@@ -98,7 +98,7 @@ function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, so
 					onClick={handleResetSectionClick}
 				/>
 			)}
-		</Accordion.Item>
+		</AccordionItem>
 	);
 }
 

@@ -1,7 +1,7 @@
-import { Field, FieldLabel, FieldRow, InputBox, Select } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FormEventHandler, ReactElement } from 'react';
-import React, { useMemo, useState } from 'react';
+import { Field, FieldHint, FieldLabel, FieldRow, InputBox, Select } from '@rocket.chat/fuselage';
+import type { FormEventHandler, Key, ReactElement } from 'react';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { TIMEUNIT, timeUnitToMs, msToTimeUnit } from '../../../../../lib/convertTimeUnit';
 import ResetSettingButton from '../ResetSettingButton';
@@ -39,6 +39,7 @@ function TimespanSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	placeholder,
 	readonly,
 	autocomplete,
@@ -49,7 +50,7 @@ function TimespanSettingInput({
 	onResetButtonClick,
 	packageValue,
 }: TimespanSettingInputProps): ReactElement {
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
 
 	const [timeUnit, setTimeUnit] = useState<TIMEUNIT>(getHighestTimeUnit(Number(value)));
 	const [internalValue, setInternalValue] = useState<number>(msToTimeUnit(timeUnit, Number(value)));
@@ -62,7 +63,7 @@ function TimespanSettingInput({
 		setInternalValue(newValue);
 	};
 
-	const handleChangeTimeUnit = (nextTimeUnit: string | number) => {
+	const handleChangeTimeUnit = (nextTimeUnit: Key) => {
 		if (typeof nextTimeUnit !== 'string') {
 			return;
 		}
@@ -71,8 +72,8 @@ function TimespanSettingInput({
 	};
 
 	const timeUnitOptions = useMemo(() => {
-		return Object.entries(TIMEUNIT).map<readonly [TIMEUNIT, string]>(([label, value]) => [value, t.has(label) ? t(label) : label]); // todo translate
-	}, [t]);
+		return Object.entries(TIMEUNIT).map<readonly [TIMEUNIT, string]>(([label, value]) => [value, i18n.exists(label) ? t(label) : label]); // todo translate
+	}, [i18n, t]);
 
 	const handleResetButtonClick = () => {
 		onResetButtonClick?.();
@@ -105,6 +106,7 @@ function TimespanSettingInput({
 			<FieldRow>
 				<Select value={timeUnit} disabled={disabled} options={timeUnitOptions} onChange={handleChangeTimeUnit} />
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

@@ -5,6 +5,7 @@ import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { FindOptions } from 'mongodb';
 
+import { notifyOnLivechatInquiryChangedByRoom, notifyOnRoomChanged } from '../../../../../../app/lib/server/lib/notifyListener';
 import { logger } from '../../lib/logger';
 
 type FindPriorityParams = {
@@ -24,7 +25,7 @@ export async function findPriority({
 		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
 	};
 
-	const { cursor, totalCount } = await LivechatPriority.findPaginated(query, {
+	const { cursor, totalCount } = LivechatPriority.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
@@ -40,10 +41,7 @@ export async function findPriority({
 	};
 }
 
-export async function updatePriority(
-	_id: string,
-	data: Pick<ILivechatPriority, 'name'> & { reset?: boolean },
-): Promise<ILivechatPriority | null> {
+export async function updatePriority(_id: string, data: Pick<ILivechatPriority, 'name'> & { reset?: boolean }): Promise<ILivechatPriority> {
 	if (data.name) {
 		// If we want to enforce translated duplicates we need to change this
 		const priority = await LivechatPriority.findOneNameUsingRegex(data.name, { projection: { name: 1 } });
@@ -54,12 +52,12 @@ export async function updatePriority(
 
 	const createdResult = await LivechatPriority.updatePriority(_id, data.reset || false, data.name);
 
-	if (!createdResult.ok || !createdResult.value) {
+	if (!createdResult) {
 		logger.error(`Error updating priority: ${_id}. Unsuccessful result from mongodb. Result`, createdResult);
 		throw Error('error-unable-to-update-priority');
 	}
 
-	return createdResult.value;
+	return createdResult;
 }
 
 export const updateRoomPriority = async (
@@ -67,7 +65,7 @@ export const updateRoomPriority = async (
 	user: Required<Pick<IUser, '_id' | 'username' | 'name'>>,
 	priorityId: string,
 ): Promise<void> => {
-	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1 } });
+	const room = await LivechatRooms.findOneById(rid);
 	if (!room) {
 		throw new Error('error-room-does-not-exist');
 	}
@@ -82,10 +80,15 @@ export const updateRoomPriority = async (
 		LivechatInquiry.setPriorityForRoom(rid, priority),
 		addPriorityChangeHistoryToRoom(room._id, user, priority),
 	]);
+
+	void notifyOnRoomChanged({ ...room, priorityId: priority._id, priorityWeight: priority.sortItem }, 'updated');
+	void notifyOnLivechatInquiryChangedByRoom(rid, 'updated');
 };
 
 export const removePriorityFromRoom = async (rid: string, user: Required<Pick<IUser, '_id' | 'username' | 'name'>>): Promise<void> => {
-	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id'>>(rid, { projection: { _id: 1 } });
+	const room = await LivechatRooms.findOneById<Omit<IOmnichannelRoom, 'priorityId' | 'priorityWeight'>>(rid, {
+		projection: { priorityId: 0, priorityWeight: 0 },
+	});
 	if (!room) {
 		throw new Error('error-room-does-not-exist');
 	}
@@ -95,6 +98,9 @@ export const removePriorityFromRoom = async (rid: string, user: Required<Pick<IU
 		LivechatInquiry.unsetPriorityForRoom(rid),
 		addPriorityChangeHistoryToRoom(rid, user),
 	]);
+
+	void notifyOnRoomChanged(room, 'updated');
+	void notifyOnLivechatInquiryChangedByRoom(rid, 'updated');
 };
 
 const addPriorityChangeHistoryToRoom = async (

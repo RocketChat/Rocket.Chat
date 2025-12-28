@@ -1,10 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Imports } from '@rocket.chat/models';
-import type { StartImportParamsPOST } from '@rocket.chat/rest-typings';
+import { isStartImportParamsPOST, type StartImportParamsPOST } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { Importers, Selection, SelectionChannel, SelectionUser } from '..';
+import { Importers } from '..';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 export const executeStartImport = async ({ input }: StartImportParamsPOST, startedByUserId: IUser['_id']) => {
@@ -21,15 +21,7 @@ export const executeStartImport = async ({ input }: StartImportParamsPOST, start
 
 	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
-	const usersSelection = input.users.map(
-		(user) => new SelectionUser(user.user_id, user.username, user.email, user.is_deleted, user.is_bot, user.do_import),
-	);
-	const channelsSelection = input.channels.map(
-		(channel) =>
-			new SelectionChannel(channel.channel_id, channel.name, channel.is_archived, channel.do_import, channel.is_private, channel.is_direct),
-	);
-	const selection = new Selection(importer.name, usersSelection, channelsSelection, 0);
-	await instance.startImport(selection, startedByUserId);
+	await instance.startImport(input, startedByUserId);
 };
 
 declare module '@rocket.chat/ddp-client' {
@@ -41,6 +33,10 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async startImport({ input }: StartImportParamsPOST) {
+		if (!input || typeof input !== 'object' || !isStartImportParamsPOST({ input })) {
+			throw new Meteor.Error(`Invalid Selection data provided to the importer.`);
+		}
+
 		const userId = Meteor.userId();
 		// Takes name and object with users / channels selected to import
 		if (!userId) {

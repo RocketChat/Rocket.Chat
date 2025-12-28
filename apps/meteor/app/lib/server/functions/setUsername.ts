@@ -1,16 +1,13 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Invites, Users } from '@rocket.chat/models';
+import { isUserNativeFederated } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
+import { Invites, Users, Subscriptions } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
+import type { ClientSession } from 'mongodb';
 import _ from 'underscore';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { settings } from '../../../settings/server';
-import { RateLimiter } from '../lib';
-import { notifyOnUserChange } from '../lib/notifyListener';
 import { addUserToRoom } from './addUserToRoom';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
@@ -18,6 +15,18 @@ import { joinDefaultChannels } from './joinDefaultChannels';
 import { saveUserIdentity } from './saveUserIdentity';
 import { setUserAvatar } from './setUserAvatar';
 import { validateUsername } from './validateUsername';
+import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../settings/server';
+import { notifyOnUserChange } from '../lib/notifyListener';
+
+const isUserInFederatedRooms = async (userId: string): Promise<boolean> => {
+	const cursor = Subscriptions.findUserFederatedRoomIds(userId);
+	const hasAny = await cursor.hasNext();
+	await cursor.close();
+	return hasAny;
+};
 
 export const setUsernameWithValidation = async (userId: string, username: string, joinDefaultChannelsSilenced?: boolean): Promise<void> => {
 	if (!username) {
@@ -28,6 +37,12 @@ export const setUsernameWithValidation = async (userId: string, username: string
 
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
+	}
+
+	if (isUserNativeFederated(user) || (await isUserInFederatedRooms(userId))) {
+		throw new Meteor.Error('error-not-allowed', 'Cannot change username for federated users or users in federated rooms', {
+			method: 'setUsername',
+		});
 	}
 
 	if (user.username && !settings.get('Accounts_AllowUsernameChange')) {
@@ -66,7 +81,13 @@ export const setUsernameWithValidation = async (userId: string, username: string
 	void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { username } });
 };
 
-export const _setUsername = async function (userId: string, u: string, fullUser: IUser): Promise<unknown> {
+export const _setUsername = async function (
+	userId: string,
+	u: string,
+	fullUser: IUser,
+	updater?: Updater<IUser>,
+	session?: ClientSession,
+): Promise<unknown> {
 	const username = u.trim();
 
 	if (!userId || !username) {
@@ -77,7 +98,13 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 		return false;
 	}
 
-	const user = fullUser || (await Users.findOneById(userId));
+	if (isUserNativeFederated(fullUser) || (await isUserInFederatedRooms(userId))) {
+		throw new Meteor.Error('error-not-allowed', 'Cannot change username for federated users or users in federated rooms', {
+			method: 'setUsername',
+		});
+	}
+
+	const user = fullUser || (await Users.findOneById(userId, { session }));
 	// User already has desired username, return
 	if (user.username === username) {
 		return user;
@@ -90,17 +117,20 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 		}
 	}
 	// If first time setting username, send Enrollment Email
-	try {
-		if (!previousUsername && user.emails && user.emails.length > 0 && settings.get('Accounts_Enrollment_Email')) {
-			setImmediate(() => {
-				Accounts.sendEnrollmentEmail(user._id);
-			});
-		}
-	} catch (e: any) {
-		SystemLogger.error(e);
+	if (!previousUsername && user.emails && user.emails.length > 0 && settings.get('Accounts_Enrollment_Email')) {
+		await onceTransactionCommitedSuccessfully(() => {
+			try {
+				setImmediate(() => {
+					Accounts.sendEnrollmentEmail(user._id);
+				});
+			} catch (e: any) {
+				SystemLogger.error(e);
+			}
+		}, session);
 	}
 	// Set new username*
-	await Users.setUsername(user._id, username);
+	// TODO: use updater for setting the username and handle possible side effects in addUserToRoom
+	await Users.setUsername(user._id, username, { session });
 	user.username = username;
 
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
@@ -117,30 +147,25 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 		}
 
 		if (avatarData) {
-			await setUserAvatar(user, avatarData.blob, avatarData.contentType, serviceName);
+			await setUserAvatar(user, avatarData.blob, avatarData.contentType, serviceName, undefined, updater, session);
 		}
 	}
 
-	// If it's the first username and the user has an invite Token, then join the invite room
-	if (!previousUsername && user.inviteToken) {
-		const inviteData = await Invites.findOneById(user.inviteToken);
-		if (inviteData?.rid) {
-			await addUserToRoom(inviteData.rid, user);
+	await onceTransactionCommitedSuccessfully(async () => {
+		// If it's the first username and the user has an invite Token, then join the invite room
+		if (!previousUsername && user.inviteToken) {
+			const inviteData = await Invites.findOneById(user.inviteToken);
+			if (inviteData?.rid) {
+				await addUserToRoom(inviteData.rid, user);
+			}
 		}
-	}
 
-	void api.broadcast('user.nameChanged', {
-		_id: user._id,
-		name: user.name,
-		username: user.username,
-	});
+		void api.broadcast('user.nameChanged', {
+			_id: user._id,
+			name: user.name,
+			username: user.username,
+		});
+	}, session);
 
 	return user;
 };
-
-export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
-	async 0() {
-		const userId = Meteor.userId();
-		return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
-	},
-});

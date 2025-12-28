@@ -35,11 +35,10 @@ describe('Message Broadcast Tests', () => {
 		},
 	});
 
-	const coreStubs = (dbWatchersDisabled: boolean) => ({
+	const coreStubs = () => ({
 		api: {
 			broadcast: broadcastStub,
 		},
-		dbWatchersDisabled,
 	});
 
 	beforeEach(() => {
@@ -51,7 +50,7 @@ describe('Message Broadcast Tests', () => {
 
 		const proxyMock = proxyquire.noPreserveCache().load('../../../../../../app/lib/server/lib/notifyListener', {
 			'@rocket.chat/models': modelsStubs(),
-			'@rocket.chat/core-services': coreStubs(false),
+			'@rocket.chat/core-services': coreStubs(),
 			'mem': memStub,
 		});
 
@@ -201,10 +200,10 @@ describe('Message Broadcast Tests', () => {
 	});
 
 	describe('notifyOnMessageChange', () => {
-		const setupProxyMock = (dbWatchersDisabled: boolean) => {
+		const setupProxyMock = () => {
 			const proxyMock = proxyquire.noCallThru().load('../../../../../../app/lib/server/lib/notifyListener', {
 				'@rocket.chat/models': modelsStubs(),
-				'@rocket.chat/core-services': coreStubs(dbWatchersDisabled),
+				'@rocket.chat/core-services': coreStubs(),
 				'mem': memStub,
 			});
 			notifyOnMessageChange = proxyMock.notifyOnMessageChange;
@@ -212,28 +211,20 @@ describe('Message Broadcast Tests', () => {
 
 		const testCases = [
 			{
-				description: 'should broadcast the message if dbWatchersDisabled is true',
-				dbWatchersDisabled: true,
+				description: 'should broadcast the message if there is data attributes',
 				expectBroadcast: true,
 				message: sampleMessage,
 			},
 			{
-				description: 'should not broadcast the message if dbWatchersDisabled is false',
-				dbWatchersDisabled: false,
-				expectBroadcast: false,
-				message: sampleMessage,
-			},
-			{
 				description: 'should not broadcast the message if there is no data attributes',
-				dbWatchersDisabled: true,
 				expectBroadcast: false,
 				message: null,
 			},
 		];
 
-		testCases.forEach(({ description, dbWatchersDisabled, expectBroadcast, message }) => {
+		testCases.forEach(({ description, expectBroadcast, message }) => {
 			it(description, async () => {
-				setupProxyMock(dbWatchersDisabled);
+				setupProxyMock();
 				messagesFindOneStub.resolves(message);
 				getSettingValueByIdStub.resolves([]);
 

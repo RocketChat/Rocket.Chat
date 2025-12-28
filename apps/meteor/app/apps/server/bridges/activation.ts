@@ -1,6 +1,7 @@
 import type { IAppServerOrchestrator, AppStatus } from '@rocket.chat/apps';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import { AppActivationBridge as ActivationBridge } from '@rocket.chat/apps-engine/server/bridges/AppActivationBridge';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 export class AppActivationBridge extends ActivationBridge {
@@ -29,7 +30,7 @@ export class AppActivationBridge extends ActivationBridge {
 	}
 
 	protected async appStatusChanged(app: ProxiedApp, status: AppStatus): Promise<void> {
-		const userStatus = ['auto_enabled', 'manually_enabled'].includes(status) ? 'online' : 'offline';
+		const userStatus = ['auto_enabled', 'manually_enabled'].includes(status) ? UserStatus.ONLINE : UserStatus.OFFLINE;
 
 		await Users.updateStatusByAppId(app.getID(), userStatus);
 

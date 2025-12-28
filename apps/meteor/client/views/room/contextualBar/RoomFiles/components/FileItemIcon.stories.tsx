@@ -1,17 +1,15 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import FileItemIcon from './FileItemIcon';
 
 export default {
-	title: 'Room/Contextual Bar/RoomFiles/FileItemIcon',
 	component: FileItemIcon,
 	parameters: {
 		layout: 'centered',
 	},
-} as ComponentMeta<typeof FileItemIcon>;
+} satisfies Meta<typeof FileItemIcon>;
 
-const Template: ComponentStory<typeof FileItemIcon> = (args) => <FileItemIcon {...args} />;
+const Template: StoryFn<typeof FileItemIcon> = (args) => <FileItemIcon {...args} />;
 
 export const Unknown = Template.bind({});
 

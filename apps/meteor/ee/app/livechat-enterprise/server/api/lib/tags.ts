@@ -1,11 +1,11 @@
-import type { ILivechatTag } from '@rocket.chat/core-typings';
+import type { ILivechatTag, FindTagsResult } from '@rocket.chat/core-typings';
 import { LivechatTag } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Filter, FindOptions } from 'mongodb';
 
+import { getDepartmentsWhichUserCanAccess } from './departments';
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 import { helperLogger } from '../../lib/logger';
-import { getDepartmentsWhichUserCanAccess } from './departments';
 
 type FindTagsParams = {
 	userId: string;
@@ -17,13 +17,6 @@ type FindTagsParams = {
 	};
 	department?: string;
 	viewAll?: boolean;
-};
-
-type FindTagsResult = {
-	tags: ILivechatTag[];
-	count: number;
-	offset: number;
-	total: number;
 };
 
 type FindTagsByIdParams = {
@@ -104,7 +97,7 @@ export async function findTags({
 								...(filteredDepartmentIds.length ? [{ departments: { $in: filteredDepartmentIds } }] : []),
 							],
 						},
-				  ]
+					]
 				: []),
 		],
 	};

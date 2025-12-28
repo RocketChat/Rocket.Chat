@@ -1,8 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
-
-import GenericModal from '../../../../../components/GenericModal';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
 
 type ChannelToTeamConfirmationProps = {
 	onCancel: () => void;
@@ -10,7 +8,7 @@ type ChannelToTeamConfirmationProps = {
 };
 
 const ChannelToTeamConfirmation = ({ onCancel, onConfirm }: ChannelToTeamConfirmationProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<GenericModal

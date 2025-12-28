@@ -11,8 +11,9 @@ import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { adminUsername, password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
-describe('Apps - Send Messages As User', () => {
+(IS_EE ? describe : describe.skip)('Apps - Send Messages As User', () => {
 	let app: App;
 
 	before((done) => getCredentials(done));

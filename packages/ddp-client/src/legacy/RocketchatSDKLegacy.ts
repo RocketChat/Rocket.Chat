@@ -163,11 +163,11 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 					? {
 							msg: message,
 							rid,
-					  }
+						}
 					: {
 							...message,
 							rid,
-					  },
+						},
 		});
 	}
 
@@ -224,8 +224,6 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	subscribeNotifyUser = (): Promise<any> => {
 		return Promise.all([
 			this.stream('notify-user', `${this.account.uid}/message`, (...args) => this.ev.emit('user-message', args)),
-			this.stream('notify-user', `${this.account.uid}/otr`, (...args) => this.ev.emit('otr', args)),
-			this.stream('notify-user', `${this.account.uid}/webrtc`, (...args) => this.ev.emit('webrtc', args)),
 			this.stream('notify-user', `${this.account.uid}/notification`, (...args) => this.ev.emit('notification', args)),
 			this.stream('notify-user', `${this.account.uid}/rooms-changed`, (...args) => this.ev.emit('rooms-changed', args)),
 			this.stream('notify-user', `${this.account.uid}/subscriptions-changed`, (...args) => this.ev.emit('subscriptions-changed', args)),
@@ -253,7 +251,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		return Promise.all(Object.entries(this.client.subscriptions).map(([, subscription]) => this.client.unsubscribe(subscription)));
 	}
 
-	static create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): RocketchatSdkLegacyImpl {
+	static override create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): RocketchatSdkLegacyImpl {
 		const ddp = new DDPDispatcher();
 
 		const connection = ConnectionImpl.create(url, WebSocket, ddp, retryOptions);
@@ -265,7 +263,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		const timeoutControl = TimeoutControl.create(ddp, connection);
 
 		const rest = new (class RestApiClient extends RestClient {
-			getCredentials() {
+			override getCredentials() {
 				if (!account.uid || !account.user?.token) {
 					return;
 				}

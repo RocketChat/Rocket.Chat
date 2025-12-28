@@ -1,30 +1,37 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import { Team, Room } from '@rocket.chat/core-services';
+import { isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import { callbacks } from '../../../../lib/callbacks';
-import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
-import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
+import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../lib/beforeAddUserToRoom';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 
-export const addUserToRoom = async function (
+/**
+ * This function adds user to the given room.
+ * Caution - It does not validates if the user has permission to join room
+ */
+
+export const addUserToRoom = async (
 	rid: string,
-	user: Pick<IUser, '_id'> | string,
+	user: Pick<IUser, '_id' | 'username'>,
 	inviter?: Pick<IUser, '_id' | 'username'>,
 	{
 		skipSystemMessage,
 		skipAlertSound,
+		createAsHidden = false,
 	}: {
 		skipSystemMessage?: boolean;
 		skipAlertSound?: boolean;
+		createAsHidden?: boolean;
 	} = {},
-): Promise<boolean | undefined> {
+): Promise<boolean | undefined> => {
 	const now = new Date();
 	const room = await Rooms.findOneById(rid);
 
@@ -34,11 +41,17 @@ export const addUserToRoom = async function (
 		});
 	}
 
-	const userToBeAdded = typeof user === 'string' ? await Users.findOneByUsername(user.replace('@', '')) : await Users.findOneById(user._id);
+	const userToBeAdded = await Users.findOneById(user._id);
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
 	if (!userToBeAdded) {
 		throw new Meteor.Error('user-not-found');
+	}
+
+	// Check if user is already in room
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
+	if (subscription) {
+		return;
 	}
 
 	if (
@@ -49,18 +62,17 @@ export const addUserToRoom = async function (
 	}
 
 	try {
-		await callbacks.run('federation.beforeAddUserToARoom', { user: userToBeAdded, inviter }, room);
+		const inviterUser = inviter && ((await Users.findOneById(inviter._id)) || undefined);
+		// Not "duplicated": we're moving away from callbacks so this is a patch function. We should migrate the next one to be a patch or use this same patch, instead of calling both
+		await beforeAddUserToRoomPatch([userToBeAdded.username!], room, inviterUser);
+		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter: inviterUser }, room);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}
 
-	await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter });
+	// TODO: are we calling this twice?
 
-	// Check if user is already in room
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
-	if (subscription || !userToBeAdded) {
-		return;
-	}
+	await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter });
 
 	try {
 		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter);
@@ -72,6 +84,12 @@ export const addUserToRoom = async function (
 		throw error;
 	}
 
+	// for federation rooms we stop here since everything else will be handled by the federation invite flow
+	if (isRoomNativeFederated(room)) {
+		return;
+	}
+
+	// TODO: are we calling this twice?
 	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
 		// Add a new event, with an optional inviter
 		await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter }, room);
@@ -80,51 +98,15 @@ export const addUserToRoom = async function (
 		await callbacks.run('beforeJoinRoom', userToBeAdded, room);
 	}
 
-	const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
-
-	const { insertedId } = await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
+	await Room.createUserSubscription({
+		room,
 		ts: now,
-		open: true,
-		alert: !skipAlertSound,
-		unread: 1,
-		userMentions: 1,
-		groupMentions: 0,
-		...autoTranslateConfig,
-		...getDefaultSubscriptionPref(userToBeAdded as IUser),
+		inviter,
+		userToBeAdded,
+		createAsHidden,
+		skipAlertSound,
+		skipSystemMessage,
 	});
-
-	if (insertedId) {
-		void notifyOnSubscriptionChangedById(insertedId, 'inserted');
-	}
-
-	void notifyOnRoomChangedById(rid);
-
-	if (!userToBeAdded.username) {
-		throw new Meteor.Error('error-invalid-user', 'Cannot add an user to a room without a username');
-	}
-
-	if (!skipSystemMessage) {
-		if (inviter) {
-			const extraData = {
-				ts: now,
-				u: {
-					_id: inviter._id,
-					username: inviter.username,
-				},
-			};
-			if (room.teamMain) {
-				await Message.saveSystemMessage('added-user-to-team', rid, userToBeAdded.username, userToBeAdded, extraData);
-			} else {
-				await Message.saveSystemMessage('au', rid, userToBeAdded.username, userToBeAdded, extraData);
-			}
-		} else if (room.prid) {
-			await Message.saveSystemMessage('ut', rid, userToBeAdded.username, userToBeAdded, { ts: now });
-		} else if (room.teamMain) {
-			await Message.saveSystemMessage('ujt', rid, userToBeAdded.username, userToBeAdded, { ts: now });
-		} else {
-			await Message.saveSystemMessage('uj', rid, userToBeAdded.username, userToBeAdded, { ts: now });
-		}
-	}
 
 	if (room.t === 'c' || room.t === 'p') {
 		process.nextTick(async () => {
@@ -147,5 +129,6 @@ export const addUserToRoom = async function (
 		await Rooms.addUserIdToE2EEQueueByRoomIds([room._id], userToBeAdded._id);
 	}
 
+	void notifyOnRoomChangedById(rid);
 	return true;
 };

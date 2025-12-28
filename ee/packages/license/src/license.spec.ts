@@ -271,6 +271,32 @@ describe('Validate License Limits', () => {
 			expect(fairUsageCallback).toHaveBeenCalledTimes(0);
 			expect(preventActionCallback).toHaveBeenCalledTimes(0);
 		});
+
+		it('should check roomsPerGuest with per-user context', async () => {
+			const licenseManager = await getReadyLicenseManager();
+			const license = new MockedLicenseBuilder().withLimits('roomsPerGuest', [
+				{
+					max: 3,
+					behavior: 'prevent_action',
+				},
+			]);
+
+			await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
+
+			licenseManager.setLicenseLimitCounter('roomsPerGuest', (context) => {
+				switch (context?.userId) {
+					case 'user1':
+						return 2;
+					case 'user2':
+						return 3;
+					default:
+						return 0;
+				}
+			});
+
+			await expect(licenseManager.shouldPreventAction('roomsPerGuest', 1, { userId: 'user1' })).resolves.toBe(false);
+			await expect(licenseManager.shouldPreventAction('roomsPerGuest', 1, { userId: 'user2' })).resolves.toBe(true);
+		});
 	});
 });
 
@@ -291,7 +317,7 @@ describe('License.getInfo', () => {
 					})
 				).limits,
 			).toMatchObject({
-				privateApps: { max: 3 },
+				privateApps: { max: 0 },
 				marketplaceApps: { max: 5 },
 			});
 		});
@@ -334,7 +360,7 @@ describe('License.setLicense', () => {
 		licenseManager.on('sync', syncCallback);
 		licenseManager.on('module', moduleCallback);
 
-		const license = await new MockedLicenseBuilder().withGratedModules(['auditing']);
+		const license = await new MockedLicenseBuilder().withGrantedModules(['auditing']);
 
 		await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
 
@@ -354,7 +380,7 @@ describe('License.setLicense', () => {
 		licenseManager.on('sync', syncCallback);
 		licenseManager.on('module', moduleCallback);
 
-		const license = await new MockedLicenseBuilder().withGratedModules(['auditing']).withLimits('activeUsers', [
+		const license = await new MockedLicenseBuilder().withGrantedModules(['auditing']).withLimits('activeUsers', [
 			{
 				max: 10,
 				behavior: 'disable_modules',
@@ -393,7 +419,7 @@ describe('License.setLicense', () => {
 		licenseManager.on('sync', syncCallback);
 		licenseManager.on('module', moduleCallback);
 
-		const license = await new MockedLicenseBuilder().withGratedModules(['auditing']).withLimits('activeUsers', [
+		const license = await new MockedLicenseBuilder().withGrantedModules(['auditing']).withLimits('activeUsers', [
 			{
 				max: 10,
 				behavior: 'disable_modules',
@@ -421,7 +447,7 @@ describe('License.setLicense', () => {
 });
 
 describe('License.removeLicense', () => {
-	it('should trigger the sync event even if the module callback throws an error', async () => {
+	it('should trigger the removed event', async () => {
 		const licenseManager = await getReadyLicenseManager();
 
 		const removeLicense = jest.fn();
@@ -431,7 +457,7 @@ describe('License.removeLicense', () => {
 
 		licenseManager.onModule(moduleCallback);
 
-		const license = await new MockedLicenseBuilder().withGratedModules(['auditing']).withLimits('activeUsers', [
+		const license = await new MockedLicenseBuilder().withGrantedModules(['auditing', 'chat.rocket.test-addon']).withLimits('activeUsers', [
 			{
 				max: 10,
 				behavior: 'disable_modules',
@@ -440,22 +466,34 @@ describe('License.removeLicense', () => {
 		]);
 
 		await expect(licenseManager.setLicense(await license.sign(), true)).resolves.toBe(true);
-		await expect(removeLicense).toHaveBeenCalledTimes(0);
-		await expect(moduleCallback).toHaveBeenNthCalledWith(1, {
+		expect(removeLicense).toHaveBeenCalledTimes(0);
+		expect(moduleCallback).toHaveBeenNthCalledWith(1, {
 			module: 'auditing',
 			valid: true,
+			external: false,
+		});
+		expect(moduleCallback).toHaveBeenNthCalledWith(2, {
+			module: 'chat.rocket.test-addon',
+			valid: true,
+			external: true,
 		});
 
 		removeLicense.mockClear();
 		moduleCallback.mockClear();
-		await licenseManager.remove();
+		licenseManager.remove();
 
-		await expect(removeLicense).toHaveBeenCalledTimes(1);
-		await expect(moduleCallback).toHaveBeenNthCalledWith(1, {
+		expect(removeLicense).toHaveBeenCalledTimes(1);
+		expect(moduleCallback).toHaveBeenNthCalledWith(1, {
 			module: 'auditing',
 			valid: false,
+			external: false,
+		});
+		expect(moduleCallback).toHaveBeenNthCalledWith(2, {
+			module: 'chat.rocket.test-addon',
+			valid: false,
+			external: true,
 		});
 
-		await expect(licenseManager.hasValidLicense()).toBe(false);
+		expect(licenseManager.hasValidLicense()).toBe(false);
 	});
 });

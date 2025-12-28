@@ -1,6 +1,6 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 
 const availablePercentualWidths = [47, 68, 75, 82];
 

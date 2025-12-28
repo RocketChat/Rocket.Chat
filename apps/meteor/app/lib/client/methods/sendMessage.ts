@@ -1,26 +1,27 @@
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { clientCallbacks } from '@rocket.chat/ui-client';
 import { Meteor } from 'meteor/meteor';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
+import { settings } from '../../../../client/lib/settings';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import { callbacks } from '../../../../lib/callbacks';
+import { getUser, getUserId } from '../../../../client/lib/user';
+import { Messages, Rooms } from '../../../../client/stores';
 import { trim } from '../../../../lib/utils/stringUtils';
-import { ChatMessage, ChatRoom } from '../../../models/client';
-import { settings } from '../../../settings/client';
 import { t } from '../../../utils/lib/i18n';
 
 Meteor.methods<ServerMethods>({
 	async sendMessage(message) {
-		const uid = Meteor.userId();
+		const uid = getUserId();
 		if (!uid || trim(message.msg) === '') {
 			return false;
 		}
-		const messageAlreadyExists = message._id && ChatMessage.findOne({ _id: message._id });
+		const messageAlreadyExists = message._id && Messages.state.get(message._id);
 		if (messageAlreadyExists) {
 			return dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') });
 		}
-		const user = Meteor.user() as IUser | null;
+		const user = getUser();
 		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendMessage' });
 		}
@@ -31,19 +32,19 @@ Meteor.methods<ServerMethods>({
 			name: user.name || '',
 		};
 		message.temp = true;
-		if (settings.get('Message_Read_Receipt_Enabled')) {
+		if (settings.peek('Message_Read_Receipt_Enabled')) {
 			message.unread = true;
 		}
 
 		// If the room is federated, send the message to matrix only
-		const room = ChatRoom.findOne({ _id: message.rid }, { fields: { federated: 1, name: 1 } });
+		const room = Rooms.state.get(message.rid);
 		if (room?.federated) {
 			return;
 		}
 
 		await onClientMessageReceived(message as IMessage).then((message) => {
-			ChatMessage.insert(message);
-			return callbacks.run('afterSaveMessage', message, { room });
+			Messages.state.store(message);
+			return clientCallbacks.run('afterSaveMessage', message, { room, user });
 		});
 	},
 });

@@ -1,10 +1,11 @@
 import type { IMessageSearchProvider } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldHint, Icon, TextInput, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
-import { useDebouncedCallback, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect } from 'react';
+import DOMPurify from 'dompurify';
+import { useEffect, useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { getRoomTypeTranslation } from '../../../../../lib/getRoomTypeTranslation';
 import { useRoom } from '../../../contexts/RoomContext';
@@ -28,7 +29,7 @@ const MessageSearchForm = ({ provider, onSearch }: MessageSearchFormProps) => {
 		setFocus('searchText');
 	}, [setFocus]);
 
-	const debouncedOnSearch = useDebouncedCallback(useMutableCallback(onSearch), 300);
+	const debouncedOnSearch = useDebouncedCallback(useEffectEvent(onSearch), 300);
 
 	const submitHandler = handleSubmit(({ searchText, globalSearch }) => {
 		debouncedOnSearch.cancel();
@@ -43,9 +44,9 @@ const MessageSearchForm = ({ provider, onSearch }: MessageSearchFormProps) => {
 	}, [debouncedOnSearch, searchText, globalSearch]);
 
 	const globalSearchEnabled = provider.settings.GlobalSearchEnabled;
-	const globalSearchToggleId = useUniqueId();
+	const globalSearchToggleId = useId();
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Box is='form' onSubmit={submitHandler} w='full'>
@@ -57,7 +58,9 @@ const MessageSearchForm = ({ provider, onSearch }: MessageSearchFormProps) => {
 					autoComplete='off'
 					{...register('searchText')}
 				/>
-				{provider.description && <FieldHint dangerouslySetInnerHTML={{ __html: t(provider.description as TranslationKey) }} />}
+				{provider.description && (
+					<FieldHint dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t(provider.description as TranslationKey)) }} />
+				)}
 			</Field>
 			{globalSearchEnabled && (
 				<Field>

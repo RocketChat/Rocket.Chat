@@ -1,10 +1,10 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
+import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 const subscriptionOptions = {
 	projection: {

@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export const getMomentChartLabelsAndData = (timestamp = Date.now()) => {
 	const timingLabels = [];
@@ -10,5 +10,5 @@ export const getMomentChartLabelsAndData = (timestamp = Date.now()) => {
 		initData.push(0);
 	}
 
-	return [timingLabels, initData];
+	return [timingLabels, initData] as const;
 };

@@ -9,11 +9,11 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   update-pr:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: startsWith(github.head_ref, 'release-')
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.CI_PAT }}
@@ -21,12 +21,13 @@ jobs:
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
-          node-version: 14.21.3
+          node-version: 22.16.0
+          deno-version: 1.43.5
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@v1.5
+      - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Build packages
         run: yarn build

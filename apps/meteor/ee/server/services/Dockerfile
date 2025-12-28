@@ -1,4 +1,4 @@
-FROM node:14.21.3 as build
+FROM node:22.16.0-alpine3.21 as build
 
 WORKDIR /app
 
@@ -15,7 +15,9 @@ COPY ./.yarn/patches .yarn/patches
 COPY ./packages/core-services packages/core-services
 COPY ./packages/core-typings packages/core-typings
 COPY ./packages/eslint-config packages/eslint-config
+COPY ./packages/tsconfig packages/tsconfig
 COPY ./packages/rest-typings packages/rest-typings
+COPY ./packages/media-signaling packages/media-signaling
 COPY ./packages/model-typings packages/model-typings
 COPY ./packages/models packages/models
 
@@ -23,12 +25,10 @@ COPY ./apps/meteor/ee/server/services apps/meteor/ee/server/services
 
 RUN yarn install
 
-COPY ./tsconfig.base.json .
-
 RUN yarn workspace @rocket.chat/core-typings run build \
     && yarn workspace @rocket.chat/rest-typings run build
 
-FROM node:14.21.3-alpine
+FROM node:22.16.0-alpine3.21
 
 ARG SERVICE
 
@@ -42,6 +42,9 @@ COPY --from=build /app/packages/core-typings/dist /app/packages/core-typings/dis
 
 COPY --from=build /app/packages/rest-typings/package.json /app/packages/rest-typings/package.json
 COPY --from=build /app/packages/rest-typings/dist /app/packages/rest-typings/dist
+
+COPY --from=build /app/packages/media-signaling/package.json /app/packages/media-signaling/package.json
+COPY --from=build /app/packages/media-signaling/dist /app/packages/media-signaling/dist
 
 COPY --from=build /app/packages/model-typings/package.json /app/packages/model-typings/package.json
 COPY --from=build /app/packages/model-typings/dist /app/packages/model-typings/dist
@@ -69,7 +72,10 @@ ENV NODE_ENV=production \
 WORKDIR /app/apps/meteor/ee/server/services
 
 RUN apk update && \
-    apk --no-cache --virtual build-dependencies add g++ python3 make && \
+    apk --no-cache --virtual build-dependencies add g++ python3 make py3-setuptools && \
+    # Update OpenSSL
+    # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.21
+    apk upgrade --no-cache openssl && \
     yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
     apk del build-dependencies

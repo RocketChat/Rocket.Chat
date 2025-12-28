@@ -4,10 +4,14 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type ChannelsOnlineProps = { query?: Record<string, any> };
+export type ChannelsOnlineProps = { _id?: string; query?: Record<string, any> };
 const channelsOnlyPropsSchema = {
 	type: 'object',
 	properties: {
+		_id: {
+			type: 'string',
+			nullable: true,
+		},
 		query: {
 			type: 'string',
 			nullable: true,

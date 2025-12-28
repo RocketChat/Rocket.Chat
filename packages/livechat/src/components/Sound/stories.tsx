@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { Sound } from '.';
@@ -18,7 +18,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Sound>>;
 
-const Template: Story<ComponentProps<typeof Sound>> = (args) => <Sound {...args} />;
+const Template: StoryFn<ComponentProps<typeof Sound>> = (args) => <Sound {...args} />;
 
 export const Short = Template.bind({});
 Short.storyName = 'short';

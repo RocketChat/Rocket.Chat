@@ -2,10 +2,8 @@ import { Component, createRef } from 'preact';
 import { Suspense, lazy } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
+import styles from './styles.scss';
 import { Button } from '../../components/Button';
-import { CallIframe } from '../../components/Calls/CallIFrame';
-import { default as CallNotification } from '../../components/Calls/CallNotification';
-import { CallStatus } from '../../components/Calls/CallStatus';
 import { Composer, ComposerAction, ComposerActions } from '../../components/Composer';
 import { FilesDropTarget } from '../../components/FilesDropTarget';
 import { FooterOptions, CharCounter } from '../../components/Footer';
@@ -19,7 +17,6 @@ import PlusIcon from '../../icons/plus.svg';
 import RemoveIcon from '../../icons/remove.svg';
 import SendIcon from '../../icons/send.svg';
 import EmojiIcon from '../../icons/smile.svg';
-import styles from './styles.scss';
 
 import 'emoji-mart/css/emoji-mart.css';
 
@@ -153,10 +150,6 @@ class Chat extends Component {
 		>
 			<FilesDropTarget inputRef={this.inputRef} overlayed overlayText={t('drop_here_to_upload_a_file')} onUpload={onUpload}>
 				<Screen.Content nopadding>
-					{incomingCallAlert && !!incomingCallAlert.show && <CallNotification {...incomingCallAlert} dispatch={dispatch} />}
-					{incomingCallAlert?.show && ongoingCall && ongoingCall.callStatus === CallStatus.IN_PROGRESS_SAME_TAB ? (
-						<CallIframe {...incomingCallAlert} />
-					) : null}
 					<div className={createClassName(styles, 'chat__messages', { atBottom, loading })}>
 						<MessageList
 							ref={this.handleMessagesContainerRef}
@@ -168,8 +161,8 @@ class Chat extends Component {
 							lastReadMessageId={lastReadMessageId}
 							handleEmojiClick={this.handleEmojiClick}
 							dispatch={dispatch}
-							hideSenderAvatar={theme.hideGuestAvatar}
-							hideReceiverAvatar={theme.hideAgentAvatar}
+							hideSenderAvatar={theme?.hideGuestAvatar}
+							hideReceiverAvatar={theme?.hideAgentAvatar}
 							onScrollTo={this.handleScrollTo}
 						/>
 						{this.state.emojiPickerActive && (

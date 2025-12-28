@@ -1,12 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useLicense, useLicenseName } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { useLicense, useLicenseName } from '../../hooks/useLicense';
+import { links } from '../../lib/links';
 
 export const SidebarFooterWatermark = (): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const response = useLicense();
 
@@ -22,13 +22,13 @@ export const SidebarFooterWatermark = (): ReactElement | null => {
 
 	const license = response.data;
 
-	if (license.activeModules.includes('hide-watermark') && !license.trial) {
+	if (license?.activeModules.includes('hide-watermark') && !license.trial) {
 		return null;
 	}
 
 	return (
 		<Box pi={16} pbe={8}>
-			<Box is='a' href='https://rocket.chat/' target='_blank' rel='noopener noreferrer'>
+			<Box is='a' href={links.rocketChat} target='_blank' rel='noopener noreferrer'>
 				<Box fontScale='micro' color='hint' pbe={4}>
 					{t('Powered_by_RocketChat')}
 				</Box>

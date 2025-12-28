@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Mongo } from 'meteor/mongo';
-import type { Filter, RootFilterOperators } from 'mongodb';
+import type { Filter, FindOptions, RootFilterOperators } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
@@ -21,13 +21,14 @@ export async function findUsersToAutocomplete({
 	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 	const exceptions = selector.exceptions || [];
 	const conditions = selector.conditions || {};
-	const options = {
+	const options: FindOptions<IUser> & { limit: number } = {
 		projection: {
 			name: 1,
 			username: 1,
 			nickname: 1,
 			status: 1,
 			avatarETag: 1,
+			freeSwitchExtension: 1,
 		},
 		sort: {
 			username: 1,
@@ -130,6 +131,7 @@ type FindPaginatedUsersByStatusProps = {
 	searchTerm: string;
 	hasLoggedIn: boolean;
 	type: string;
+	inactiveReason?: ('deactivated' | 'pending_approval' | 'idle_too_long')[];
 };
 
 export async function findPaginatedUsersByStatus({
@@ -142,27 +144,11 @@ export async function findPaginatedUsersByStatus({
 	searchTerm,
 	hasLoggedIn,
 	type,
+	inactiveReason,
 }: FindPaginatedUsersByStatusProps) {
-	const projection = {
-		name: 1,
-		username: 1,
-		emails: 1,
-		roles: 1,
-		status: 1,
-		active: 1,
-		avatarETag: 1,
-		lastLogin: 1,
-		type: 1,
-		reason: 1,
-		federated: 1,
-	};
-
 	const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
 	if (sort?.status) {
 		actualSort.active = sort.status;
-	}
-	if (sort?.name) {
-		actualSort.nameInsensitive = sort.name;
 	}
 	const match: Filter<IUser & RootFilterOperators<IUser>> = {};
 	switch (status) {
@@ -184,19 +170,57 @@ export async function findPaginatedUsersByStatus({
 
 	const canSeeAllUserInfo = await hasPermissionAsync(uid, 'view-full-other-user-info');
 
-	match.$or = [
-		...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm || ''), $options: 'i' } }] : []),
-		{
-			username: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
-		},
-		{
-			name: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
-		},
-	];
+	const projection = {
+		name: 1,
+		username: 1,
+		emails: 1,
+		roles: 1,
+		status: 1,
+		active: 1,
+		avatarETag: 1,
+		lastLogin: 1,
+		type: 1,
+		reason: 1,
+		federated: 1,
+		freeSwitchExtension: 1,
+	};
+
+	if (searchTerm?.trim()) {
+		match.$or = [
+			...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm || ''), $options: 'i' } }] : []),
+			{
+				username: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
+			},
+			{
+				name: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
+			},
+		];
+	}
 	if (roles?.length && !roles.includes('all')) {
 		match.roles = { $in: roles };
 	}
-	const { cursor, totalCount } = await Users.findPaginated(
+
+	if (inactiveReason) {
+		const inactiveReasonCondition = {
+			$or: [
+				{ inactiveReason: { $in: inactiveReason } },
+				// This condition is to make it backward compatible with the old behavior
+				// The deactivated users not having the inactiveReason field should be returned as well
+				...(inactiveReason.includes('deactivated') || inactiveReason.includes('idle_too_long')
+					? [{ inactiveReason: { $exists: false } }]
+					: []),
+			],
+		};
+
+		if (match.$or) {
+			match.$and = [{ $or: match.$or }, inactiveReasonCondition];
+			delete match.$or;
+		} else {
+			Object.assign(match, inactiveReasonCondition);
+		}
+	}
+
+	const { cursor, totalCount } = Users.findPaginated(
 		{
 			...match,
 		},

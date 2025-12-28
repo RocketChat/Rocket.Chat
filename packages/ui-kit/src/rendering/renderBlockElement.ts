@@ -1,7 +1,7 @@
-import type { BlockElement } from '../blocks/BlockElement';
 import type { BlockContext } from './BlockContext';
 import type { BlockElementRenderer } from './BlockElementRenderer';
 import type { BlockRenderers } from './BlockRenderers';
+import type { BlockElement } from '../blocks/BlockElement';
 
 const getBlockElementRenderer = <T>(renderers: BlockRenderers<T>, type: BlockElement['type']): BlockElementRenderer<T> | undefined => {
 	const renderer = renderers[type] as BlockElementRenderer<T> | undefined;
@@ -25,6 +25,9 @@ const getBlockElementRenderer = <T>(renderers: BlockRenderers<T>, type: BlockEle
 
 		case 'linear_scale':
 			return renderers.linearScale as BlockElementRenderer<T> | undefined;
+
+		default:
+			return undefined;
 	}
 };
 

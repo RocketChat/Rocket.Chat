@@ -1,10 +1,9 @@
 import { FieldRow, Select, TextInput, type SelectOption, Field, FieldLabel } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import React, { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import type { TriggersPayload } from '../EditTrigger';
 
@@ -15,9 +14,9 @@ type ActionSenderType = ComponentProps<typeof Field> & {
 };
 
 export const ActionSender = ({ control, index, disabled, ...props }: ActionSenderType) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
-	const senderFieldId = useUniqueId();
+	const senderFieldId = useId();
 	const senderFieldName = `actions.${index}.params.sender` as const;
 	const senderNameFieldName = `actions.${index}.params.name` as const;
 	const senderNameFieldValue = useWatch({ control, name: senderFieldName });

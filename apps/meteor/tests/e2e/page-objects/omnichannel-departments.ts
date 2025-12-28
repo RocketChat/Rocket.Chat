@@ -1,15 +1,19 @@
 import type { Page, Locator } from '@playwright/test';
 
-import { OmnichannelSidenav } from './fragments';
+import { OmnichannelSidenav, ToastMessages } from './fragments';
 
 export class OmnichannelDepartments {
 	private readonly page: Page;
 
 	readonly sidenav: OmnichannelSidenav;
 
+	// TODO: This will be inherited from a BasePage Object
+	readonly toastMessage: ToastMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.sidenav = new OmnichannelSidenav(page);
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	get inputSearch() {
@@ -45,10 +49,6 @@ export class OmnichannelDepartments {
 		return this.page.locator('[data-qa="DepartmentEditTextInput-ConversationClosingTags"]');
 	}
 
-	get invalidInputTags() {
-		return this.page.locator('[data-qa="DepartmentEditTextInput-ConversationClosingTags"]:invalid');
-	}
-
 	get invalidInputName() {
 		return this.page.locator('[data-qa="DepartmentEditTextInput-Name"]:invalid');
 	}
@@ -69,10 +69,6 @@ export class OmnichannelDepartments {
 		return this.page.locator('role=button[name="Back"]');
 	}
 
-	get allDepartmentsTab() {
-		return this.page.locator('[role="tab"]:first-child');
-	}
-
 	get archivedDepartmentsTab() {
 		return this.page.locator('[role="tab"]:nth-child(2)');
 	}
@@ -86,7 +82,7 @@ export class OmnichannelDepartments {
 	}
 
 	findDepartment(name: string) {
-		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}`) });
+		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}"`) });
 	}
 
 	selectedDepartmentMenu(name: string) {
@@ -121,10 +117,6 @@ export class OmnichannelDepartments {
 		return this.modalConfirmDelete.locator('role=button[name="Delete"]');
 	}
 
-	get btnModalCancelDelete() {
-		return this.modalConfirmDelete.locator('role=button[name="Cancel"]');
-	}
-
 	get upgradeDepartmentsModal() {
 		return this.page.locator('[data-qa-id="enterprise-departments-modal"]');
 	}
@@ -133,20 +125,9 @@ export class OmnichannelDepartments {
 		return this.page.locator('[data-qa="modal-close"]');
 	}
 
-	get btnUpgradeDepartmentsModalTalkToSales() {
-		return this.page.locator('[data-qa-id="talk-to-sales"]');
-	}
-
-	get btnUpgradeDepartmentsModalUpgrade() {
-		return this.page.locator('[data-qa-id="upgrade-now"]');
-	}
-
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
-	}
-
-	get btnCloseToastSuccess(): Locator {
-		return this.toastSuccess.locator('button');
+	get inputUnit(): Locator {
+		// TODO: Improve PaginatedSelectFiltered to allow for more accessible locators
+		return this.page.locator('[data-qa="autocomplete-unit"] input');
 	}
 
 	btnTag(tagName: string) {
@@ -155,5 +136,30 @@ export class OmnichannelDepartments {
 
 	errorMessage(message: string): Locator {
 		return this.page.locator(`.rcx-field__error >> text="${message}"`);
+	}
+
+	findOption(optionText: string) {
+		return this.page.locator(`role=option[name="${optionText}"]`);
+	}
+
+	async selectUnit(unitName: string) {
+		await this.inputUnit.click();
+		await this.findOption(unitName).click();
+	}
+
+	get fieldGroupAgents() {
+		return this.page.getByLabel('Agents', { exact: true });
+	}
+
+	get inputAgents() {
+		return this.fieldGroupAgents.getByRole('textbox');
+	}
+
+	get btnAddAgent() {
+		return this.fieldGroupAgents.getByRole('button', { name: 'Add', exact: true });
+	}
+
+	findAgentRow(name: string) {
+		return this.page.locator('tr', { has: this.page.getByText(name, { exact: true }) });
 	}
 }

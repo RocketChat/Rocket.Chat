@@ -1,28 +1,50 @@
 {
 	"name": "@rocket.chat/i18n",
-	"version": "0.8.0",
+	"version": "2.0.0-rc.0",
 	"private": true,
-	"devDependencies": {
-		"@rocket.chat/jest-presets": "workspace:~",
-		"eslint": "~8.45.0",
-		"jest": "~29.7.0",
-		"tsup": "^6.7.0",
-		"typescript": "~5.5.4"
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		},
+		"./dist/resources/*": {
+			"default": "./dist/resources/*"
+		},
+		"./dist/languages": {
+			"types": "./dist/languages.d.ts",
+			"import": "./dist/languages.js",
+			"require": "./dist/languages.cjs"
+		}
 	},
-	"scripts": {
-		"build": "node ./src/index.mjs",
-		"lint": "eslint --ext .mjs,.js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .mjs,.js,.jsx,.ts,.tsx . --fix",
-		"test": "jest",
-		"testunit": "jest"
-	},
-	"main": "./dist/index.js",
-	"module": "./dist/index.mjs",
-	"typings": "./dist/index.d.ts",
+	"main": "./dist/index.cjs",
+	"types": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
-	"type": "module",
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json && node --experimental-transform-types ./src/scripts/build.mts",
+		"check": "node --experimental-transform-types ./src/scripts/check.mts",
+		"lint": "eslint . && node --experimental-transform-types ./src/scripts/check.mts",
+		"lint:fix": "eslint . --fix && node --experimental-transform-types ./src/scripts/check.mts --fix",
+		"replace-sprintf": "node --experimental-transform-types ./src/scripts/replace-sprintf.mts",
+		"test": "jest",
+		"testunit": "jest"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tools": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"eslint": "~8.45.0",
+		"i18next": "~23.4.9",
+		"jest": "~30.2.0",
+		"typescript": "~5.9.3"
+	},
+	"peerDependencies": {
+		"@rocket.chat/tools": "workspace:~",
+		"i18next": "*"
+	},
 	"volta": {
 		"extends": "../../package.json"
 	}

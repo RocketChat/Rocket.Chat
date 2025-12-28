@@ -1,23 +1,18 @@
-import type {
-	IRoom,
-	ISubscription,
-	ISupportedLanguage,
-	ITranslatedMessage,
-	IUser,
-	MessageAttachmentDefault,
-} from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, ISupportedLanguage, ITranslatedMessage, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { isTranslatedMessageAttachment } from '@rocket.chat/core-typings';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { settings } from '../../../../client/lib/settings';
+import { getUserId } from '../../../../client/lib/user';
+import { watchUser, watchUserId } from '../../../../client/meteor/user';
+import { Messages, Subscriptions } from '../../../../client/stores';
 import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';
 import { hasPermission } from '../../../authorization/client';
-import { Subscriptions, Messages } from '../../../models/client';
-import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 let userLanguage = 'en';
@@ -25,10 +20,9 @@ let username = '';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		const user: Pick<IUser, 'language' | 'username'> | null = Meteor.user();
-		if (!user) {
-			return;
-		}
+		const user = watchUser();
+		if (!user) return;
+
 		userLanguage = user.language || 'en';
 		username = user.username || '';
 	});
@@ -37,10 +31,10 @@ Meteor.startup(() => {
 export const AutoTranslate = {
 	initialized: false,
 	providersMetadata: {} as { [providerNamer: string]: { name: string; displayName: string } },
-	messageIdsToWait: {} as { [messageId: string]: string },
+	messageIdsToWait: {} as { [messageId: string]: boolean },
 	supportedLanguages: [] as ISupportedLanguage[] | undefined,
 
-	findSubscriptionByRid: mem((rid) => Subscriptions.findOne({ rid })),
+	findSubscriptionByRid: mem((rid) => Subscriptions.state.find((record) => record.rid === rid)),
 
 	getLanguage(rid: IRoom['_id']): string {
 		let subscription: ISubscription | undefined;
@@ -102,8 +96,8 @@ export const AutoTranslate = {
 		}
 
 		Tracker.autorun(async (c) => {
-			const uid = Meteor.userId();
-			if (!settings.get('AutoTranslate_Enabled') || !uid || !hasPermission('auto-translate')) {
+			const uid = watchUserId();
+			if (!settings.watch('AutoTranslate_Enabled') || !uid || !hasPermission('auto-translate')) {
 				return;
 			}
 
@@ -120,12 +114,8 @@ export const AutoTranslate = {
 			}
 		});
 
-		Subscriptions.find().observeChanges({
-			changed: (_id: string, fields: ISubscription) => {
-				if (fields.hasOwnProperty('autoTranslate') || fields.hasOwnProperty('autoTranslateLanguage')) {
-					mem.clear(this.findSubscriptionByRid);
-				}
-			},
+		Subscriptions.use.subscribe(() => {
+			mem.clear(this.findSubscriptionByRid);
 		});
 
 		this.initialized = true;
@@ -136,7 +126,7 @@ export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslate
 	AutoTranslate.init();
 
 	return (message: ITranslatedMessage): void => {
-		if (message.u && message.u._id !== Meteor.userId()) {
+		if (message.u && message.u._id !== getUserId()) {
 			const subscription = AutoTranslate.findSubscriptionByRid(message.rid);
 			const language = AutoTranslate.getLanguage(message.rid);
 			if (
@@ -146,13 +136,26 @@ export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslate
 				(!message.translations ||
 					(!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)))
 			) {
-				// || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
-				Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
+				Messages.state.update(
+					(record) => record._id === message._id,
+					(record) => ({
+						...record,
+						autoTranslateFetching: true,
+					}),
+				);
 			} else if (AutoTranslate.messageIdsToWait[message._id] !== undefined && subscription && subscription.autoTranslate !== true) {
-				Messages.update({ _id: message._id }, { $set: { autoTranslateShowInverse: true }, $unset: { autoTranslateFetching: true } });
+				Messages.state.update(
+					(record) => record._id === message._id,
+					({ autoTranslateFetching: _, ...record }) => ({
+						...record,
+					}),
+				);
 				delete AutoTranslate.messageIdsToWait[message._id];
 			} else if (message.autoTranslateFetching === true) {
-				Messages.update({ _id: message._id }, { $unset: { autoTranslateFetching: true } });
+				Messages.state.update(
+					(record) => record._id === message._id,
+					({ autoTranslateFetching: _, ...record }) => record,
+				);
 			}
 		}
 	};

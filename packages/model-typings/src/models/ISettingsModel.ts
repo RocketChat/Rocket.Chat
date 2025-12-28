@@ -1,4 +1,4 @@
-import type { ISetting, ISettingColor, ISettingSelectOption } from '@rocket.chat/core-typings';
+import type { ISetting, ISettingColor, ISettingSelectOption, SettingValue } from '@rocket.chat/core-typings';
 import type {
 	FindCursor,
 	UpdateFilter,
@@ -6,14 +6,14 @@ import type {
 	Document,
 	FindOptions,
 	FindOneAndUpdateOptions,
-	ModifyResult,
+	WithId,
 	UpdateOptions,
 } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
 export interface ISettingsModel extends IBaseModel<ISetting> {
-	getValueById(_id: string): Promise<ISetting['value'] | undefined>;
+	getValueById<T extends SettingValue = SettingValue>(_id: string): Promise<T | undefined>;
 
 	findNotHidden(params?: { updatedAfter?: Date }): FindCursor<ISetting>;
 
@@ -25,14 +25,14 @@ export interface ISettingsModel extends IBaseModel<ISetting> {
 		_id: string,
 		value: (ISetting['value'] extends undefined ? never : ISetting['value']) | null,
 		options?: UpdateOptions,
-	): Promise<Document | UpdateResult>;
+	): Promise<UpdateResult>;
 
 	resetValueById(
 		_id: string,
 		value?: (ISetting['value'] extends undefined ? never : ISetting['value']) | null,
 	): Promise<Document | UpdateResult | undefined>;
 
-	incrementValueById(_id: ISetting['_id'], value?: ISetting['value'], options?: FindOneAndUpdateOptions): Promise<ModifyResult<ISetting>>;
+	incrementValueById(_id: ISetting['_id'], value?: ISetting['value'], options?: FindOneAndUpdateOptions): Promise<null | WithId<ISetting>>;
 
 	updateOptionsById<T extends ISetting = ISetting>(
 		_id: ISetting['_id'],

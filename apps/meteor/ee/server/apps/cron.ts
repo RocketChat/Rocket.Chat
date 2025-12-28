@@ -2,12 +2,11 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import { cronJobs } from '@rocket.chat/cron';
 import { Settings, Users } from '@rocket.chat/models';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
+import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { i18n } from '../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
-import { Apps } from './orchestrator';
 
 const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApps(apps?: ProxiedApp[]) {
 	if (!apps) {
@@ -22,14 +21,14 @@ const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApp
 
 	const id = 'someAppInInvalidState';
 	const title = 'Warning';
-	const text = 'There is one or more apps in an invalid state. Click here to review.';
-	const rocketCatMessage = 'There is one or more apps in an invalid state. Go to Administration > Apps to review.';
-	const link = '/admin/apps';
+	const link = '/marketplace/installed';
 
 	await sendMessagesToAdmins({
 		msgs: async ({ adminUser }) => ({
-			msg: `*${i18n.t(title, { lng: adminUser.language || 'en' })}*\n${i18n.t(rocketCatMessage, {
+			msg: `*${i18n.t(title, { lng: adminUser.language || 'en' })}*\n${i18n.t('Invalid_apps_admin_message', {
 				lng: adminUser.language || 'en',
+				marketplace: i18n.t('Marketplace', { lng: adminUser.language || 'en' }),
+				installed: i18n.t('Installed', { lng: adminUser.language || 'en' }),
 			})}`,
 		}),
 		banners: async ({ adminUser }) => {
@@ -40,7 +39,7 @@ const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApp
 					id,
 					priority: 10,
 					title,
-					text,
+					text: i18n.t('Invalid_apps_banner_text', { lng: adminUser.language || 'en' }),
 					modifiers: ['danger'],
 					link,
 				},
@@ -64,21 +63,24 @@ const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApp
 		return;
 	}
 
-	const rocketCatMessage = 'There is one or more disabled apps with valid licenses. Go to Administration > Apps to review.';
-
 	await sendMessagesToAdmins({
-		msgs: async ({ adminUser }) => ({ msg: `${i18n.t(rocketCatMessage, { lng: adminUser.language || 'en' })}` }),
+		msgs: async ({ adminUser }) => ({
+			msg: i18n.t('Disabled_apps_admin_message', {
+				lng: adminUser.language || 'en',
+				marketplace: i18n.t('Marketplace', { lng: adminUser.language || 'en' }),
+				installed: i18n.t('Installed', { lng: adminUser.language || 'en' }),
+			}),
+		}),
 	});
 };
 
 const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	const token = await getWorkspaceAccessToken();
-	const baseUrl = Apps.getMarketplaceUrl();
 	const workspaceIdSetting = await Settings.getValueById('Cloud_Workspace_Id');
 
 	const currentSeats = await Users.getActiveLocalUserCount();
 
-	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps`;
+	const fullUrl = `v1/workspaces/${workspaceIdSetting}/apps`;
 	const options = {
 		headers: {
 			Authorization: `Bearer ${token}`,
@@ -91,7 +93,7 @@ const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	let data = [];
 
 	try {
-		const response = await fetch(fullUrl, options);
+		const response = await Apps.getMarketplaceClient().fetch(fullUrl, options);
 
 		const result = await response.json();
 

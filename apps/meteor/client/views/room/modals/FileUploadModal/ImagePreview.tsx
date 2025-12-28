@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import GenericPreview from './GenericPreview';
 import PreviewSkeleton from './PreviewSkeleton';

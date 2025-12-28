@@ -1,14 +1,18 @@
-import type { AtLeast } from '@rocket.chat/core-typings';
-import { type IMessage, type IRoom, isMessageFromMatrixFederation, isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
+import type { AtLeast, IMessage, IRoom } from '@rocket.chat/core-typings';
 
-import { isFederationEnabled, isFederationReady } from '../../federation/utils';
+import { isFederationEnabled } from '../../federation/utils';
 
 export class FederationActions {
-	public static shouldPerformAction(message: IMessage, room: AtLeast<IRoom, 'federated'>): boolean {
-		if (isMessageFromMatrixFederation(message) || isRoomFederated(room)) {
-			return isFederationEnabled() && isFederationReady();
+	public static shouldPerformAction(_message: IMessage, room: AtLeast<IRoom, 'federated'>): boolean {
+		if (!isRoomFederated(room)) {
+			return true;
 		}
 
-		return true;
+		if (!isRoomNativeFederated(room)) {
+			return false;
+		}
+
+		return isFederationEnabled();
 	}
 }

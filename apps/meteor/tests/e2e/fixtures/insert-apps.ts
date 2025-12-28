@@ -1,9 +1,8 @@
 import { request } from '@playwright/test';
 
-import { BASE_API_URL, BASE_URL } from '../config/constants';
 import { Users } from './userStates';
-
-const APP_URL = 'https://github.com/RocketChat/Apps.RocketChat.Tester/blob/master/dist/appsrocketchattester_0.1.0.zip?raw=true';
+import { APP_URL } from '../../data/apps/apps-data';
+import { BASE_API_URL, BASE_URL } from '../config/constants';
 
 export default async function insertApp(): Promise<void> {
 	const api = await request.newContext();

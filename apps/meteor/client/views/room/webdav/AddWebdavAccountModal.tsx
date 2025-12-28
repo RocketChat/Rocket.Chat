@@ -1,10 +1,28 @@
 import type { IWebdavAccountPayload } from '@rocket.chat/core-typings';
-import { Modal, Field, FieldGroup, FieldLabel, FieldRow, FieldError, TextInput, PasswordInput, Button, Box } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	Modal,
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	TextInput,
+	PasswordInput,
+	Button,
+	Box,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 type AddWebdavAccountModalPayload = IWebdavAccountPayload;
 
@@ -22,7 +40,7 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 		handleSubmit,
 		formState: { errors },
 	} = useForm<AddWebdavAccountModalPayload>();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const onSubmit: SubmitHandler<AddWebdavAccountModalPayload> = async (data) => {
 		setIsLoading(true);
@@ -40,11 +58,11 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 
 	return (
 		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}>
-			<Modal.Header>
-				<Modal.Title>{t('Webdav_add_new_account')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle>{t('Webdav_add_new_account')}</ModalTitle>
+				<ModalClose onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<FieldGroup>
 					<Field>
 						<FieldLabel>{t('Name_optional')}</FieldLabel>
@@ -83,17 +101,17 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 						{errors.password && <FieldError>{errors.password.message}</FieldError>}
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button secondary onClick={onClose}>
 						{t('Cancel')}
 					</Button>
 					<Button primary type='submit' loading={isLoading}>
 						{t('Webdav_add_new_account')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

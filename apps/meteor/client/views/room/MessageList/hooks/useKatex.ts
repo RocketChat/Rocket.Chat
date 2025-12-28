@@ -5,9 +5,9 @@ export const useKatex = (): {
 	katexDollarSyntaxEnabled: boolean;
 	katexParenthesisSyntaxEnabled: boolean;
 } => {
-	const katexEnabled = Boolean(useSetting('Katex_Enabled'));
-	const katexDollarSyntaxEnabled = Boolean(useSetting('Katex_Dollar_Syntax')) && katexEnabled;
-	const katexParenthesisSyntaxEnabled = Boolean(useSetting('Katex_Parenthesis_Syntax')) && katexEnabled;
+	const katexEnabled = useSetting('Katex_Enabled', true);
+	const katexDollarSyntaxEnabled = useSetting('Katex_Dollar_Syntax', false) && katexEnabled;
+	const katexParenthesisSyntaxEnabled = useSetting('Katex_Parenthesis_Syntax', true) && katexEnabled;
 
 	return {
 		katexEnabled,

@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	useTranslation,
@@ -44,16 +44,20 @@ export const useAddUserAction = (
 		rid,
 	);
 
+	const roomIsFederated = isRoomFederated(room);
+
+	const isFederationBlocked = room && !isRoomNativeFederated(room);
+
 	const userCanAdd =
-		room && user && isRoomFederated(room)
-			? Federation.isEditableByTheUser(currentUser || undefined, room, subscription)
+		room && user && roomIsFederated
+			? !isFederationBlocked && Federation.isEditableByTheUser(currentUser || undefined, room, subscription)
 			: hasPermissionToAddUsers;
 
 	const { roomCanInvite } = getRoomDirectives({ room, showingUserId: uid, userSubscription: subscription });
 
 	const inviteUser = useEndpoint('POST', inviteUserEndpoints[room.t === 'p' ? 'p' : 'c']);
 
-	const handleAddUser = useEffectEvent(async ({ users }) => {
+	const handleAddUser = useEffectEvent(async ({ users }: { users: string[] }) => {
 		const [username] = users;
 		await inviteUser({ roomId: rid, username });
 		reload?.();
@@ -86,7 +90,7 @@ export const useAddUserAction = (
 						icon: 'user-plus' as const,
 						onClick: addUserOptionAction,
 						type: 'management' as const,
-				  }
+					}
 				: undefined,
 		[roomCanInvite, userCanAdd, room.archived, t, addUserOptionAction],
 	);

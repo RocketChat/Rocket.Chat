@@ -1,22 +1,29 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useLayout, useSetting, useCurrentModal, useRoute, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import type { IRouterPaths } from '@rocket.chat/ui-contexts';
+import { useLayout, useSetting, useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
-import Sidebar from '../../../sidebar';
 import AccessibilityShortcut from './AccessibilityShortcut';
+import MainContent from './MainContent';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
+import NavBar from '../../../navbar';
+import Sidebar from '../../../sidebar';
+import NavigationRegion from '../../navigation';
+import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationProvider';
+
+const INVALID_ROOM_NAME_PREFIXES = ['#', '?'] as const;
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
 
-	const modal = useCurrentModal();
 	const currentRoutePath = useCurrentRoutePath();
-	const channelRoute = useRoute('channel');
+	const router = useRouter();
 	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
-	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Store_Users');
 
-	const firstChannelAfterLogin = useSetting('First_Channel_After_Login');
+	const firstChannelAfterLogin = useSetting<string>('First_Channel_After_Login', '');
+	const roomName = (firstChannelAfterLogin.startsWith('#') ? firstChannelAfterLogin.slice(1) : firstChannelAfterLogin).trim();
 
 	const redirected = useRef(false);
 
@@ -27,7 +34,12 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 			return;
 		}
 
-		if (!firstChannelAfterLogin || typeof firstChannelAfterLogin !== 'string') {
+		if (!roomName) {
+			return;
+		}
+
+		if (INVALID_ROOM_NAME_PREFIXES.some((prefix) => roomName.startsWith(prefix))) {
+			// Because this will break url routing. Eg: /channel/#roomName and /channel/?roomName which will route to path /channel
 			return;
 		}
 
@@ -36,26 +48,34 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 		}
 		redirected.current = true;
 
-		channelRoute.push({ name: firstChannelAfterLogin });
-	}, [channelRoute, currentRoutePath, firstChannelAfterLogin]);
+		router.navigate({ name: `/channel/${roomName}` as keyof IRouterPaths });
+	}, [router, currentRoutePath, roomName]);
 
 	return (
-		<Box
-			bg='surface-light'
-			id='rocket-chat'
-			className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
-			aria-hidden={Boolean(modal)}
-		>
+		<>
 			<AccessibilityShortcut />
-			<MainLayoutStyleTags />
-			{!removeSidenav && <Sidebar />}
-			<main
-				id='main-content'
-				className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}
+			{!embeddedLayout && <NavBar />}
+			<Box
+				bg='surface-light'
+				id='rocket-chat'
+				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			>
-				{children}
-			</main>
-		</Box>
+				<MainLayoutStyleTags />
+				{!removeSidenav && (
+					<FeaturePreview feature='secondarySidebar'>
+						<FeaturePreviewOn>
+							<RoomsNavigationProvider>
+								<NavigationRegion />
+							</RoomsNavigationProvider>
+						</FeaturePreviewOn>
+						<FeaturePreviewOff>
+							<Sidebar />
+						</FeaturePreviewOff>
+					</FeaturePreview>
+				)}
+				<MainContent>{children}</MainContent>
+			</Box>
+		</>
 	);
 };
 

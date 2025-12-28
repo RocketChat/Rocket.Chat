@@ -9,4 +9,6 @@ export const CONSTANTS = {
 	SETTINGS_LEVEL: 'settings',
 } as const;
 
+export const confirmationRequiredPermissions = ['access-permissions'];
+
 export { AuthorizationUtils } from './AuthorizationUtils';

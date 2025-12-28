@@ -1,7 +1,6 @@
 import { Box, FramedIcon } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 
 export type VersionActionItem = {
 	danger?: boolean;

@@ -1,7 +1,7 @@
+import { validateEmail } from '@rocket.chat/tools';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { validateEmail } from '../../../../../../../lib/emailValidator';
 import RegisteredWorkspaceModal from '../RegisteredWorkspaceModal';
 import RegisterWorkspaceSetupStepOneModal from './RegisterWorkspaceSetupStepOneModal';
 import RegisterWorkspaceSetupStepTwoModal from './RegisterWorkspaceSetupStepTwoModal';

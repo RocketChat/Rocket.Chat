@@ -1,4 +1,4 @@
-@import '../../../styles/helpers';
+@use '../../../styles/helpers';
 
 $composer-action-margin: 0 6px;
 
@@ -22,5 +22,5 @@ $composer-action-margin: 0 6px;
 		outline: none;
 	}
 
-	@include pressable-button(1px);
+	@include helpers.pressable-button(1px);
 }

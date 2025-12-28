@@ -2,7 +2,6 @@ import { PasswordInput } from '@rocket.chat/fuselage';
 import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
 import { useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useRoom } from '../contexts/RoomContext';

@@ -1,7 +1,16 @@
-import { Button, Modal } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	Button,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+	ModalHeader,
+	ModalIcon,
+	ModalTitle,
+} from '@rocket.chat/fuselage';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type WarningModalProps = {
 	text: ReactNode;
@@ -13,25 +22,25 @@ type WarningModalProps = {
 };
 
 const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, ...props }: WarningModalProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	return (
 		<Modal open {...props}>
-			<Modal.Header>
-				<Modal.Icon color='danger' name='modal-warning' />
-				<Modal.Title>{t('Are_you_sure')}</Modal.Title>
-				<Modal.Close onClick={close} />
-			</Modal.Header>
-			<Modal.Content fontScale='p2'>{text}</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			<ModalHeader>
+				<ModalIcon color='danger' name='modal-warning' />
+				<ModalTitle>{t('Are_you_sure')}</ModalTitle>
+				<ModalClose onClick={close} />
+			</ModalHeader>
+			<ModalContent fontScale='p2'>{text}</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button secondary onClick={cancel || close}>
 						{cancelText || t('Cancel')}
 					</Button>
 					<Button danger onClick={confirm}>
 						{confirmText}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

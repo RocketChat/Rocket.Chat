@@ -1,10 +1,10 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useRoute, useSetModal, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import RemoveDepartmentModal from './RemoveDepartmentModal';
 
@@ -32,26 +32,30 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 		_id,
 	});
 
-	const handleEdit = useMutableCallback(() => {
+	const handleEdit = useEffectEvent(() => {
 		route.push({ context: 'edit', id: _id });
 	});
 
 	const handleReload = useCallback(async () => {
-		await queryClient.invalidateQueries(['livechat-departments']);
+		await queryClient.invalidateQueries({
+			queryKey: ['livechat-departments'],
+		});
 	}, [queryClient]);
 
-	const handleToggleArchive = useMutableCallback(async () => {
+	const handleToggleArchive = useEffectEvent(async () => {
 		try {
 			await toggleArchive();
 			dispatchToastMessage({ type: 'success', message: archived ? t('Department_unarchived') : t('Department_archived') });
-			queryClient.removeQueries(['/v1/livechat/department/:_id', department._id]);
+			queryClient.removeQueries({
+				queryKey: ['/v1/livechat/department/:_id', department._id],
+			});
 			handleReload();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	const handlePermanentDepartmentRemoval = useMutableCallback(() => {
+	const handlePermanentDepartmentRemoval = useEffectEvent(() => {
 		setModal(<RemoveDepartmentModal _id={_id} reset={handleReload} onClose={() => setModal(null)} name={name} />);
 	});
 

@@ -1,12 +1,8 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { RouteName } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React from 'react';
 
 import { hasPermission } from '../../../app/authorization/client';
-import { ChatRoom, ChatSubscription } from '../../../app/models/client';
-import { settings } from '../../../app/settings/client';
 import type {
 	RoomSettingsEnum,
 	RoomMemberActions,
@@ -18,6 +14,7 @@ import type {
 } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { router } from '../../providers/RouterProvider';
+import { Subscriptions } from '../../stores';
 import RoomRoute from '../../views/room/RoomRoute';
 import MainLayout from '../../views/root/MainLayout';
 import { appLayout } from '../appLayout';
@@ -45,23 +42,17 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			getUiText(_context: ValueOf<typeof UiTextContext>): string {
 				return '';
 			},
-			condition(): boolean {
-				return true;
-			},
 			getAvatarPath(_room): string {
 				return '';
 			},
 			findRoom(_identifier: string): IRoom | undefined {
 				return undefined;
 			},
-			showJoinLink(_roomId: string): boolean {
-				return false;
-			},
 			isLivechatRoom(): boolean {
 				return false;
 			},
-			canSendMessage(rid: string): boolean {
-				return ChatSubscription.find({ rid }).count() > 0;
+			canSendMessage(room: IRoom): boolean {
+				return Subscriptions.state.count((record) => record.rid === room._id) > 0;
 			},
 			...directives,
 			config: roomConfig,
@@ -76,18 +67,18 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		roomType: RoomType,
 		subData: RoomIdentification,
 		queryParams?: Record<string, string>,
-		options: { replace?: boolean } = {},
+		options: { replace?: boolean; routeParamsOverrides?: Record<string, string> } = {},
 	): void {
 		const config = this.getRoomTypeConfig(roomType);
 		if (!config?.route) {
 			return;
 		}
 
-		let routeData = {};
+		let _routeData = {};
 		if (config.route.link) {
-			routeData = config.route.link(subData);
+			_routeData = config.route.link(subData);
 		} else if (subData?.name) {
-			routeData = {
+			_routeData = {
 				name: subData.name,
 			};
 		} else {
@@ -97,7 +88,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		router.navigate(
 			{
 				pattern: config.route.path ?? '/home',
-				params: routeData,
+				params: { ..._routeData, ...options.routeParamsOverrides },
 				search: queryParams,
 			},
 			options,
@@ -112,20 +103,14 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return this.getRoomDirectives(roomType).roomName(roomData) ?? '';
 	}
 
-	public readOnly(rid: string, user: AtLeast<IUser, 'username'>): boolean {
-		const fields = {
-			ro: 1,
-			t: 1,
-			...(user && { muted: 1, unmuted: 1 }),
-		};
-		const room = ChatRoom.findOne({ _id: rid }, { fields });
+	readOnly(room?: IRoom, user?: AtLeast<IUser, 'username'> | null): boolean {
 		if (!room) {
 			return false;
 		}
 
 		const directives = this.getRoomDirectives(room.t);
 		if (directives?.readOnly) {
-			return directives.readOnly(rid, user);
+			return directives.readOnly(room, user);
 		}
 
 		if (!user?.username) {
@@ -155,26 +140,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return false;
 	}
 
-	// #ToDo: Move this out of the RoomCoordinator
-	public archived(rid: string): boolean {
-		const room = ChatRoom.findOne({ _id: rid }, { fields: { archived: 1 } });
-		return Boolean(room?.archived);
-	}
-
-	public verifyCanSendMessage(rid: string): boolean {
-		const room = ChatRoom.findOne({ _id: rid }, { fields: { t: 1, federated: 1 } });
-		if (!room?.t) {
-			return false;
-		}
-		if (!this.getRoomDirectives(room.t).canSendMessage(rid)) {
-			return false;
-		}
-		if (isRoomFederated(room)) {
-			return settings.get('Federation_Matrix_enabled');
-		}
-		return true;
-	}
-
 	private validateRoute<TRouteName extends RouteName>(route: IRoomTypeRouteConfig<TRouteName>): void {
 		const { name, path, link } = route;
 
@@ -191,7 +156,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		}
 	}
 
-	protected validateRoomConfig(roomConfig: IRoomTypeClientConfig): void {
+	protected override validateRoomConfig(roomConfig: IRoomTypeClientConfig): void {
 		super.validateRoomConfig(roomConfig);
 
 		const { route, label } = roomConfig;
@@ -205,7 +170,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		}
 	}
 
-	protected addRoomType(roomConfig: IRoomTypeClientConfig, directives: IRoomTypeClientDirectives): void {
+	protected override addRoomType(roomConfig: IRoomTypeClientConfig, directives: IRoomTypeClientDirectives): void {
 		super.addRoomType(roomConfig, directives);
 
 		if (roomConfig.route?.path && roomConfig.route.name && directives.extractOpenRoomParams) {
@@ -219,7 +184,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 					id: name,
 					element: appLayout.wrap(
 						<MainLayout>
-							<RoomRoute extractOpenRoomParams={extractOpenRoomParams} />
+							<RoomRoute key={name} extractOpenRoomParams={extractOpenRoomParams} />
 						</MainLayout>,
 					),
 				},

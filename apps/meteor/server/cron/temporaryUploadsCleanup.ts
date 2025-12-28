@@ -12,5 +12,5 @@ async function temporaryUploadCleanup(): Promise<void> {
 }
 
 export async function temporaryUploadCleanupCron(): Promise<void> {
-	await cronJobs.add('temporaryUploadCleanup', '31 * * * *', async () => temporaryUploadCleanup());
+	return cronJobs.add('temporaryUploadCleanup', '31 * * * *', async () => temporaryUploadCleanup());
 }

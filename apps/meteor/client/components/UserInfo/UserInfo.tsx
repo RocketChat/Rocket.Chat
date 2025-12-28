@@ -1,15 +1,8 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
-import React, { memo } from 'react';
-
-import { useTimeAgo } from '../../hooks/useTimeAgo';
-import { useUserCustomFields } from '../../hooks/useUserCustomFields';
-import { useUserDisplayName } from '../../hooks/useUserDisplayName';
-import { ContextualbarScrollableContent } from '../Contextualbar';
 import {
+	useUserDisplayName,
+	ContextualbarScrollableContent,
 	InfoPanel,
 	InfoPanelActionGroup,
 	InfoPanelAvatar,
@@ -18,10 +11,18 @@ import {
 	InfoPanelSection,
 	InfoPanelText,
 	InfoPanelTitle,
-} from '../InfoPanel';
+} from '@rocket.chat/ui-client';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ReactNode } from 'react';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useTimeAgo } from '../../hooks/useTimeAgo';
+import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
+import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoAvatar from './UserInfoAvatar';
 
 type UserInfoDataProps = Serialized<
@@ -39,6 +40,8 @@ type UserInfoDataProps = Serialized<
 		| 'statusText'
 		| 'canViewAllInfo'
 		| 'customFields'
+		| 'freeSwitchExtension'
+		| 'abacAttributes'
 	>
 >;
 
@@ -49,6 +52,7 @@ type UserInfoProps = UserInfoDataProps & {
 	actions: ReactElement;
 	roles: ReactElement[];
 	reason?: string;
+	invitationDate?: string;
 };
 
 const UserInfo = ({
@@ -70,9 +74,12 @@ const UserInfo = ({
 	canViewAllInfo,
 	actions,
 	reason,
+	freeSwitchExtension,
+	abacAttributes,
+	invitationDate,
 	...props
 }: UserInfoProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const timeAgo = useTimeAgo();
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
@@ -113,7 +120,7 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{roles.length !== 0 && (
+					{roles?.length !== 0 && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Roles')}</InfoPanelLabel>
 							<UserCardRoles>{roles}</UserCardRoles>
@@ -127,10 +134,12 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{Number.isInteger(utcOffset) && (
+					{utcOffset && Number.isInteger(utcOffset) && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Local_Time')}</InfoPanelLabel>
-							<InfoPanelText>{utcOffset && <UTCClock utcOffset={utcOffset} />}</InfoPanelText>
+							<InfoPanelText>
+								<UTCClock utcOffset={utcOffset} />
+							</InfoPanelText>
 						</InfoPanelField>
 					)}
 
@@ -175,6 +184,19 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
+					{freeSwitchExtension && (
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Voice_call_extension')}</InfoPanelLabel>
+							<InfoPanelText>{freeSwitchExtension}</InfoPanelText>
+						</InfoPanelField>
+					)}
+
+					{abacAttributes && abacAttributes.length > 0 && (
+						<InfoPanelField>
+							<InfoPanelLabel title={t('ABAC_Attributes_description')}>{t('ABAC_Attributes')}</InfoPanelLabel>
+							<UserInfoABACAttributes abacAttributes={abacAttributes} />
+						</InfoPanelField>
+					)}
 					{userCustomFields?.map(
 						(customField) =>
 							customField?.value && (
@@ -185,6 +207,13 @@ const UserInfo = ({
 									</InfoPanelText>
 								</InfoPanelField>
 							),
+					)}
+
+					{invitationDate && (
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Invitation_date')}</InfoPanelLabel>
+							<InfoPanelText>{timeAgo(invitationDate)}</InfoPanelText>
+						</InfoPanelField>
 					)}
 
 					{createdAt && (

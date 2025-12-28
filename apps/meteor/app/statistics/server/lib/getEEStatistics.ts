@@ -90,14 +90,6 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 			return true;
 		}),
 	);
-
-	// Number of PDF transcript requested
-	statsPms.push(
-		LivechatRooms.countRoomsWithPdfTranscriptRequested().then((count) => {
-			statistics.omnichannelPdfTranscriptRequested = count;
-		}),
-	);
-
 	// Number of PDF transcript that succeeded
 	statsPms.push(
 		LivechatRooms.countRoomsWithTranscriptSent().then((count) => {

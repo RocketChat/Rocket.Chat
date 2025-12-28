@@ -1,9 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import { forwardRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type MultiSelectCustomAnchorProps = {
 	collapsed: boolean;
@@ -11,13 +11,13 @@ type MultiSelectCustomAnchorProps = {
 	selectedOptionsTitle: string;
 	selectedOptionsCount: number;
 	maxCount: number;
-} & ComponentProps<typeof Box>;
+} & ComponentPropsWithoutRef<typeof Box>;
 
 const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorProps>(function MultiSelectCustomAnchor(
 	{ className, collapsed, selectedOptionsCount, selectedOptionsTitle, defaultTitle, maxCount, ...props },
 	ref,
 ) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const customStyle = css`
 		&:hover {
 			cursor: pointer;

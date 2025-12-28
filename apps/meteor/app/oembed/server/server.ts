@@ -16,8 +16,8 @@ import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
 import jschardet from 'jschardet';
 
-import { callbacks } from '../../../lib/callbacks';
 import { isURL } from '../../../lib/utils/isURL';
+import { callbacks } from '../../../server/lib/callbacks';
 import { settings } from '../../settings/server';
 import { Info } from '../../utils/rocketchat.info';
 
@@ -107,6 +107,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 			headers: {
 				'User-Agent': `${settings.get('API_Embed_UserAgent')} Rocket.Chat/${Info.version}`,
 				'Accept-Language': settings.get('Language') || 'en',
+				...data.headerOverrides,
 			},
 			size: sizeLimit, // max size of the response body, this was not working as expected so I'm also manually verifying that on the iterator
 		},

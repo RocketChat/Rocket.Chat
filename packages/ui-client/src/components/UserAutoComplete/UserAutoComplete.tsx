@@ -3,7 +3,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import { memo, useMemo, useState } from 'react';
 
 const query = (
@@ -13,19 +13,20 @@ const query = (
 	selector: string;
 } => ({ selector: JSON.stringify({ term, conditions }) });
 
-type UserAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
+type UserAutoCompleteProps = Omit<ComponentPropsWithoutRef<typeof AutoComplete>, 'filter'> & {
 	conditions?: { [key: string]: unknown };
 };
 
-const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps): ReactElement => {
+const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps) => {
 	const { conditions = {} } = props;
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const usersAutoCompleteEndpoint = useEndpoint('GET', '/v1/users.autocomplete');
 
-	const { data } = useQuery(['usersAutoComplete', debouncedFilter, conditions], async () =>
-		usersAutoCompleteEndpoint(query(debouncedFilter, conditions)),
-	);
+	const { data } = useQuery({
+		queryKey: ['usersAutoComplete', debouncedFilter, conditions],
+		queryFn: async () => usersAutoCompleteEndpoint(query(debouncedFilter, conditions)),
+	});
 
 	const options = useMemo(() => data?.items.map((user) => ({ value: user.username, label: user.name || user.username })) || [], [data]);
 
@@ -37,7 +38,7 @@ const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps):
 			filter={filter}
 			setFilter={setFilter}
 			data-qa-id='UserAutoComplete'
-			renderSelected={({ selected: { value, label } }): ReactElement | null => (
+			renderSelected={({ selected: { value, label } }) => (
 				<Chip height='x20' value={value} mie={4}>
 					<UserAvatar size='x20' username={value} />
 					<Box verticalAlign='middle' is='span' margin='none' mi={4}>
@@ -45,7 +46,7 @@ const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps):
 					</Box>
 				</Chip>
 			)}
-			renderItem={({ value, label, ...props }): ReactElement => (
+			renderItem={({ value, label, ...props }) => (
 				<Option key={value} label={label} avatar={<UserAvatar size='x20' username={value} />} {...props} />
 			)}
 			options={options}

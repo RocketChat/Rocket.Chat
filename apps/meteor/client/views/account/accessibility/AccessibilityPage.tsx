@@ -3,6 +3,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	FieldDescription,
 	Accordion,
+	AccordionItem,
 	Box,
 	Button,
 	ButtonGroup,
@@ -15,20 +16,20 @@ import {
 	Select,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { ExternalLink, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useId, useMemo } from 'react';
+import { VisuallyHidden } from 'react-aria';
 import { Controller, useForm } from 'react-hook-form';
 
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
-import { getDirtyFields } from '../../../lib/getDirtyFields';
 import { fontSizes } from './fontSizes';
 import type { AccessibilityPreferencesData } from './hooks/useAcessibilityPreferencesValues';
 import { useAccessiblityPreferencesValues } from './hooks/useAcessibilityPreferencesValues';
 import { useCreateFontStyleElement } from './hooks/useCreateFontStyleElement';
 import { themeItems as themes } from './themeItems';
+import { getDirtyFields } from '../../../lib/getDirtyFields';
+import { links } from '../../../lib/links';
 
 const AccessibilityPage = () => {
 	const t = useTranslation();
@@ -47,13 +48,13 @@ const AccessibilityPage = () => {
 		[t],
 	);
 
-	const pageFormId = useUniqueId();
-	const fontSizeId = useUniqueId();
-	const mentionsWithSymbolId = useUniqueId();
-	const clockModeId = useUniqueId();
-	const hideUsernamesId = useUniqueId();
-	const hideRolesId = useUniqueId();
-	const linkListId = useUniqueId();
+	const pageFormId = useId();
+	const fontSizeId = useId();
+	const mentionsWithSymbolId = useId();
+	const clockModeId = useId();
+	const hideUsernamesId = useId();
+	const hideRolesId = useId();
+	const linkListId = useId();
 
 	const {
 		formState: { isDirty, dirtyFields, isSubmitting },
@@ -96,20 +97,18 @@ const AccessibilityPage = () => {
 						<p id={linkListId}>{t('Learn_more_about_accessibility')}</p>
 						<ul aria-labelledby={linkListId}>
 							<li>
-								<ExternalLink to='https://go.rocket.chat/i/accessibility-statement'>{t('Accessibility_statement')}</ExternalLink>
+								<ExternalLink to={links.go.accessibilityStatement}>{t('Accessibility_statement')}</ExternalLink>
 							</li>
 							<li>
-								<ExternalLink to='https://go.rocket.chat/i/glossary'>{t('Glossary_of_simplified_terms')}</ExternalLink>
+								<ExternalLink to={links.go.glossary}>{t('Glossary_of_simplified_terms')}</ExternalLink>
 							</li>
 							<li>
-								<ExternalLink to='https://go.rocket.chat/i/accessibility-and-appearance'>
-									{t('Accessibility_feature_documentation')}
-								</ExternalLink>
+								<ExternalLink to={links.go.accessibilityAndAppearance}>{t('Accessibility_feature_documentation')}</ExternalLink>
 							</li>
 						</ul>
 					</Box>
 					<Accordion>
-						<Accordion.Item defaultExpanded={true} title={t('Theme')}>
+						<AccordionItem defaultExpanded={true} title={t('Theme')}>
 							{themes.map(({ id, title, description }, index) => {
 								return (
 									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} pbs={index === 0 ? undefined : 'x28'}>
@@ -131,9 +130,12 @@ const AccessibilityPage = () => {
 									</Field>
 								);
 							})}
-						</Accordion.Item>
-						<Accordion.Item title={t('Adjustable_layout')}>
+						</AccordionItem>
+						<AccordionItem title={t('Adjustable_layout')}>
 							<FieldGroup>
+								<VisuallyHidden>
+									<legend>{t('Adjustable_layout')}</legend>
+								</VisuallyHidden>
 								<Field>
 									<FieldLabel htmlFor={fontSizeId} mbe={12}>
 										{t('Font_size')}
@@ -143,7 +145,7 @@ const AccessibilityPage = () => {
 											control={control}
 											name='fontSize'
 											render={({ field: { onChange, value } }) => (
-												<Select id={fontSizeId} value={value} onChange={onChange} options={fontSizes} />
+												<Select id={fontSizeId} value={value} onChange={onChange} options={fontSizes(t)} />
 											)}
 										/>
 									</FieldRow>
@@ -151,7 +153,7 @@ const AccessibilityPage = () => {
 								</Field>
 								<Field>
 									<FieldRow>
-										<FieldLabel htmlFor={fontSizeId}>{t('Mentions_with_@_symbol')}</FieldLabel>
+										<FieldLabel htmlFor={mentionsWithSymbolId}>{t('Mentions_with_@_symbol')}</FieldLabel>
 										<Controller
 											control={control}
 											name='mentionsWithSymbol'
@@ -220,7 +222,7 @@ const AccessibilityPage = () => {
 									</Field>
 								)}
 							</FieldGroup>
-						</Accordion.Item>
+						</AccordionItem>
 					</Accordion>
 				</Box>
 			</PageScrollableContentWithShadow>

@@ -1,5 +1,5 @@
-@import '../../../../styles/colors';
-@import '../../../../styles/variables';
+@use '../../../../styles/colors';
+@use '../../../../styles/variables';
 
 .uikit-context-block {
 	display: flex;
@@ -8,9 +8,9 @@
 
 	letter-spacing: 0.2px;
 
-	color: $color-text-grey;
+	color: colors.$color-text-grey;
 
-	font-family: $font-family;
+	font-family: variables.$font-family;
 	font-size: 0.75rem;
 	font-weight: normal;
 	line-height: 1.25rem;

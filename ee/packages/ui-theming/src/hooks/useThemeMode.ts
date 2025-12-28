@@ -8,7 +8,6 @@ import { useCallback, useState } from 'react';
  * @param defaultThemeMode The default theme mode to use if the user has not set any.
  * @returns [currentThemeMode, setThemeMode, resolvedThemeMode]
  */
-
 export const useThemeMode = (): [ThemeMode, (value: ThemeMode) => () => void, Themes] => {
 	const themeMode = useUserPreference<ThemeMode>('themeAppearence') || 'auto';
 
@@ -34,5 +33,6 @@ export const useThemeMode = (): [ThemeMode, (value: ThemeMode) => () => void, Th
 		}
 		return 'light';
 	};
+
 	return [themeMode, setTheme, useTheme()];
 };

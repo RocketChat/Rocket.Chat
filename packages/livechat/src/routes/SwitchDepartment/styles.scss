@@ -1,4 +1,4 @@
-@import '../../styles/colors';
+@use '../../styles/colors';
 
 .switch-department {
 	&__message {
@@ -6,7 +6,7 @@
 
 		letter-spacing: 0;
 
-		color: $color-text-dark;
+		color: colors.$color-text-dark;
 
 		font-size: 1rem;
 		font-weight: 500;

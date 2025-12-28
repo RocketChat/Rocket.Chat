@@ -1,4 +1,4 @@
-import { Authorization, VideoConf } from '@rocket.chat/core-services';
+import { Authorization, MediaCall, VideoConf } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
@@ -39,8 +39,6 @@ export class NotificationsModule {
 
 	public readonly streamLivechatQueueData: IStreamer<'livechat-inquiry-queue-observer'>;
 
-	public readonly streamStdout: IStreamer<'stdout'>;
-
 	public readonly streamRoomData: IStreamer<'room-data'>;
 
 	public readonly streamLocal: IStreamer<'local'>;
@@ -60,7 +58,6 @@ export class NotificationsModule {
 		this.streamIntegrationHistory = new this.Streamer('integrationHistory');
 		this.streamLivechatRoom = new this.Streamer('livechat-room');
 		this.streamLivechatQueueData = new this.Streamer('livechat-inquiry-queue-observer');
-		this.streamStdout = new this.Streamer('stdout');
 		this.streamRoomData = new this.Streamer('room-data');
 		this.streamPresence = StreamPresence.getInstance(Streamer, 'user-presence');
 		this.streamRoomMessage = new this.Streamer('room-messages');
@@ -101,16 +98,7 @@ export class NotificationsModule {
 				return false;
 			}
 
-			const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId || '' }, extraData);
-			if (!canAccess) {
-				// verify if can preview messages from public channels
-				if (room.t === 'c' && this.userId) {
-					return Authorization.hasPermission(this.userId, 'preview-c-room');
-				}
-				return false;
-			}
-
-			return true;
+			return Authorization.canReadRoom(room, { _id: this.userId || '' }, extraData);
 		});
 
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');
@@ -160,11 +148,7 @@ export class NotificationsModule {
 		this.streamLogged.allowRead('logged');
 
 		this.streamRoom.allowRead(async function (eventName, extraData): Promise<boolean> {
-			const [rid, e] = eventName.split('/');
-
-			if (e === 'webrtc') {
-				return true;
-			}
+			const [rid] = eventName.split('/');
 
 			const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't' | 'v' | '_id'>>(rid, {
 				projection: { 't': 1, 'v.token': 1 },
@@ -239,11 +223,6 @@ export class NotificationsModule {
 		this.streamRoom.allowWrite(async function (eventName, username, _activity, extraData): Promise<boolean> {
 			const [rid, e] = eventName.split('/');
 
-			// TODO should this use WEB_RTC_EVENTS enum?
-			if (e === 'webrtc') {
-				return true;
-			}
-
 			if (e !== 'user-activity') {
 				return false;
 			}
@@ -258,22 +237,7 @@ export class NotificationsModule {
 		this.streamRoomUsers.allowRead('none');
 		this.streamRoomUsers.allowWrite(async function (eventName, ...args: any[]) {
 			const [roomId, e] = eventName.split('/');
-			if (!this.userId) {
-				const room = await Rooms.findOneById<IOmnichannelRoom>(roomId, {
-					projection: { 't': 1, 'servedBy._id': 1 },
-				});
-				if (room && room.t === 'l' && e === 'webrtc' && room.servedBy) {
-					self.notifyUser(room.servedBy._id, e, ...args);
-					return false;
-				}
-			} else if ((await Subscriptions.countByRoomIdAndUserId(roomId, this.userId)) > 0) {
-				const livechatSubscriptions: ISubscription[] = await Subscriptions.findByLivechatRoomIdAndNotUserId(roomId, this.userId, {
-					projection: { 'v._id': 1, '_id': 0 },
-				}).toArray();
-				if (livechatSubscriptions && e === 'webrtc') {
-					livechatSubscriptions.forEach((subscription) => subscription.v && self.notifyUser(subscription.v._id, e, ...args));
-					return false;
-				}
+			if (this.userId && (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId)) > 0) {
 				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, {
 					projection: { 'u._id': 1, '_id': 0 },
 				}).toArray();
@@ -285,13 +249,6 @@ export class NotificationsModule {
 
 		this.streamUser.allowWrite(async function (eventName, data: unknown) {
 			const [, e] = eventName.split('/');
-			if (e === 'otr' && (data === 'handshake' || data === 'acknowledge')) {
-				const isEnable = await Settings.getValueById('OTR_Enable');
-				return Boolean(this.userId) && (isEnable === 'true' || isEnable === true);
-			}
-			if (e === 'webrtc') {
-				return true;
-			}
 			if (e === 'video-conference') {
 				if (!this.userId || !data || typeof data !== 'object') {
 					return false;
@@ -317,18 +274,21 @@ export class NotificationsModule {
 				});
 			}
 
+			if (e === 'media-calls') {
+				if (!this.userId || !data || typeof data !== 'string') {
+					return false;
+				}
+
+				void MediaCall.processSerializedSignal(this.userId, data).catch(() => null);
+
+				// media call signals don't ever need to be broadcasted
+				return false;
+			}
+
 			return Boolean(this.userId);
 		});
 		this.streamUser.allowRead(async function (eventName) {
-			const [userId, e] = eventName.split('/');
-
-			if (e === 'otr') {
-				const isEnable = await Settings.getValueById('OTR_Enable');
-				return Boolean(this.userId) && this.userId === userId && (isEnable === 'true' || isEnable === true);
-			}
-			if (e === 'webrtc') {
-				return true;
-			}
+			const [userId] = eventName.split('/');
 
 			return Boolean(this.userId) && this.userId === userId;
 		});
@@ -383,14 +343,6 @@ export class NotificationsModule {
 		this.streamLivechatQueueData.allowWrite('none');
 		this.streamLivechatQueueData.allowRead(async function () {
 			return this.userId ? Authorization.hasPermission(this.userId, 'view-l-room') : false;
-		});
-
-		this.streamStdout.allowWrite('none');
-		this.streamStdout.allowRead(async function () {
-			if (!this.userId) {
-				return false;
-			}
-			return Authorization.hasPermission(this.userId, 'view-logs');
 		});
 
 		this.streamRoomData.allowWrite('none');

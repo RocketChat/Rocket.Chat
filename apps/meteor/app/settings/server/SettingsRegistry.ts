@@ -4,12 +4,12 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
 import { isEqual } from 'underscore';
 
-import { SystemLogger } from '../../../server/lib/logger/system';
 import type { ICachedSettings } from './CachedSettings';
 import { getSettingDefaults } from './functions/getSettingDefaults';
 import { overrideSetting } from './functions/overrideSetting';
 import { overwriteSetting } from './functions/overwriteSetting';
 import { validateSetting } from './functions/validateSetting';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 const blockedSettings = new Set<string>();
 const hiddenSettings = new Set<string>();
@@ -223,8 +223,8 @@ export class SettingsRegistry {
 
 		if (!this.store.has(_id)) {
 			options.ts = new Date();
-			await this.model.insertOne(options as ISetting);
 			this.store.set(options as ISetting);
+			await this.model.insertOne(options as ISetting);
 		}
 
 		if (!callback) {

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useState } from 'react';
 
-import { useRoomToolbox } from '../room/contexts/RoomToolboxContext';
 import OutlookEventsList from './OutlookEventsList';
 import OutlookSettingsList from './OutlookSettingsList';
 

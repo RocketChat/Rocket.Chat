@@ -1,5 +1,2 @@
-import { hasAllPermission, hasAtLeastOnePermission, hasPermission, userHasAllPermission } from './hasPermission';
-import { hasRole, hasAnyRole } from './hasRole';
-import './restrictedRoles';
-
-export { hasAllPermission, hasAtLeastOnePermission, hasRole, hasAnyRole, hasPermission, userHasAllPermission };
+export { hasAllPermission, hasAtLeastOnePermission, hasPermission, userHasAllPermission } from './hasPermission';
+export { hasRole } from './hasRole';

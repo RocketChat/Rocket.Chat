@@ -1,0 +1,32 @@
+{
+	"name": "@rocket.chat/tracing",
+	"version": "0.0.1",
+	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc",
+		"dev": "tsc --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"testunit": "jest --passWithNoTests"
+	},
+	"dependencies": {
+		"@opentelemetry/api": "^1.9.0",
+		"@opentelemetry/exporter-trace-otlp-grpc": "^0.54.2",
+		"@opentelemetry/sdk-node": "^0.54.2"
+	},
+	"devDependencies": {
+		"@types/jest": "~30.0.0",
+		"eslint": "~8.45.0",
+		"jest": "~30.2.0",
+		"ts-jest": "~29.4.5",
+		"typescript": "~5.9.3"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

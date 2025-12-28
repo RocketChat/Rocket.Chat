@@ -1,10 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { SelectedMessageContext } from '../MessageList/contexts/SelectedMessagesContext';
-
-// data-qa-select
 
 export const selectedMessageStore = new (class SelectMessageStore extends Emitter<
 	{
@@ -14,7 +12,19 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 > {
 	store = new Set<string>();
 
+	availableMessages = new Set<string>();
+
 	isSelecting = false;
+
+	addAvailableMessage(mid: string): void {
+		this.availableMessages.add(mid);
+		this.emit('change');
+	}
+
+	removeAvailableMessage(mid: string): void {
+		this.availableMessages.delete(mid);
+		this.emit('change');
+	}
 
 	setIsSelecting(isSelecting: boolean): void {
 		this.isSelecting = isSelecting;
@@ -49,6 +59,10 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 		return this.store.size;
 	}
 
+	availableMessagesCount(): number {
+		return this.availableMessages.size;
+	}
+
 	clearStore(): void {
 		const selectedMessages = this.getSelectedMessages();
 		this.store.clear();
@@ -60,6 +74,11 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 		this.clearStore();
 		this.isSelecting = false;
 		this.emit('toggleIsSelecting', false);
+	}
+
+	toggleAll(mids: string[]): void {
+		this.store = new Set([...this.store, ...mids]);
+		this.emit('change');
 	}
 })();
 

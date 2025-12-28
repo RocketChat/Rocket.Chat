@@ -3,13 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 
 export const useExternalComponentsQuery = () => {
 	const getExternalComponents = useEndpoint('GET', '/apps/externalComponents');
-	return useQuery(
-		['apps/external-components'],
-		async () => {
-			return (await getExternalComponents()).externalComponents;
+	return useQuery({
+		queryKey: ['apps/external-components'],
+
+		queryFn: async ({ signal }) => {
+			return (await getExternalComponents(undefined, { signal })).externalComponents;
 		},
-		{
-			staleTime: 10_000,
-		},
-	);
+
+		staleTime: 10_000,
+	});
 };

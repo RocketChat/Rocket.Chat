@@ -1,15 +1,14 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useUserId } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import type { ChangeEvent, ReactElement } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
+import DiscussionsList from './DiscussionsList';
+import { useDiscussionsList } from './useDiscussionsList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useRoom } from '../../contexts/RoomContext';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
-import DiscussionsList from './DiscussionsList';
-import { useDiscussionsList } from './useDiscussionsList';
 
 const DiscussionListContextBar = (): ReactElement | null => {
 	const userId = useUserId();
@@ -30,7 +29,7 @@ const DiscussionListContextBar = (): ReactElement | null => {
 	const { discussionsList, loadMoreItems } = useDiscussionsList(options, userId);
 	const { phase, error, items: discussions, itemCount: totalItemCount } = useRecordList<IDiscussionMessage>(discussionsList);
 
-	const handleTextChange = useCallback((e) => {
+	const handleTextChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		setText(e.currentTarget.value);
 	}, []);
 
@@ -41,7 +40,6 @@ const DiscussionListContextBar = (): ReactElement | null => {
 	return (
 		<DiscussionsList
 			onClose={closeTab}
-			userId={userId}
 			error={error}
 			discussions={discussions}
 			total={totalItemCount}

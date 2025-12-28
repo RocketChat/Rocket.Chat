@@ -1,3 +1,5 @@
+import type { Page } from 'playwright-core';
+
 import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
@@ -15,6 +17,7 @@ test.use({ storageState: Users.user1.state });
 test.describe.serial('OC - Livechat', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let poHomeOmnichannel: HomeOmnichannel;
+	let livechatPage: Page;
 
 	test.beforeAll(async ({ api }) => {
 		const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
@@ -22,7 +25,7 @@ test.describe.serial('OC - Livechat', () => {
 	});
 
 	test.beforeAll(async ({ browser, api }) => {
-		const { page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false);
+		({ page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false));
 
 		poLiveChat = new OmnichannelLiveChat(livechatPage, api);
 	});
@@ -31,12 +34,11 @@ test.describe.serial('OC - Livechat', () => {
 		poHomeOmnichannel = new HomeOmnichannel(page);
 
 		await page.goto('/');
-		await page.locator('.main-content').waitFor();
+		await page.locator('#main-content').waitFor();
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.delete('/livechat/users/agent/user1');
-		await poLiveChat.page.close();
+		await Promise.all([api.delete('/livechat/users/agent/user1'), livechatPage.close()]);
 	});
 
 	test('OC - Livechat - Send message to online agent', async () => {
@@ -52,14 +54,14 @@ test.describe.serial('OC - Livechat', () => {
 		});
 
 		await test.step('expect message to be received by agent', async () => {
-			await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
+			await poHomeOmnichannel.navbar.openChat(firstVisitor.name);
 			await expect(poHomeOmnichannel.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 		});
 	});
 
 	test('OC - Livechat - Send message to livechat customer', async () => {
-		await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
+		await poHomeOmnichannel.navbar.openChat(firstVisitor.name);
 
 		await test.step('expect message to be sent by agent', async () => {
 			await poHomeOmnichannel.content.sendMessage('this_a_test_message_from_agent');
@@ -97,13 +99,10 @@ test.describe.serial('OC - Livechat', () => {
 	});
 
 	test('OC - Livechat - Close livechat conversation', async () => {
-		await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
+		await poHomeOmnichannel.navbar.openChat(firstVisitor.name);
 
 		await test.step('expect livechat conversation to be closed by agent', async () => {
-			await poHomeOmnichannel.content.btnCloseChat.click();
-			await poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
-			await poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
-			await expect(poHomeOmnichannel.toastSuccess).toBeVisible();
+			await poHomeOmnichannel.quickActionsRoomToolbar.closeChat({ comment: 'this_is_a_test_comment' });
 		});
 	});
 });
@@ -111,27 +110,32 @@ test.describe.serial('OC - Livechat', () => {
 test.describe.serial('OC - Livechat - Visitors closing the room is disabled', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let poHomeOmnichannel: HomeOmnichannel;
+	let livechatPage: Page;
+	let omniPage: Page;
 
 	test.beforeAll(async ({ api }) => {
 		await api.post('/livechat/users/agent', { username: 'user1' });
 	});
 
 	test.beforeAll(async ({ browser, api }) => {
-		const { page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false);
+		({ page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false));
 
 		poLiveChat = new OmnichannelLiveChat(livechatPage, api);
 	});
 
 	test.beforeAll(async ({ browser, api }) => {
 		await setSettingValueById(api, 'Livechat_allow_visitor_closing_chat', false);
-		const { page: omniPage } = await createAuxContext(browser, Users.user1, '/', true);
+		({ page: omniPage } = await createAuxContext(browser, Users.user1, '/', true));
 		poHomeOmnichannel = new HomeOmnichannel(omniPage);
 	});
 
 	test.afterAll(async ({ api }) => {
-		await setSettingValueById(api, 'Livechat_allow_visitor_closing_chat', true);
-		await api.delete('/livechat/users/agent/user1');
-		await poLiveChat.page.close();
+		await Promise.all([
+			setSettingValueById(api, 'Livechat_allow_visitor_closing_chat', true),
+			api.delete('/livechat/users/agent/user1'),
+			livechatPage.close(),
+			omniPage.close(),
+		]);
 	});
 
 	test('OC - Livechat - Close Chat disabled', async () => {
@@ -148,13 +152,10 @@ test.describe.serial('OC - Livechat - Visitors closing the room is disabled', ()
 	});
 
 	test('OC - Livechat - Close chat disabled, agents can close', async () => {
-		await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
+		await poHomeOmnichannel.navbar.openChat(firstVisitor.name);
 
 		await test.step('expect livechat conversation to be closed by agent', async () => {
-			await poHomeOmnichannel.content.btnCloseChat.click();
-			await poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
-			await poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
-			await expect(poHomeOmnichannel.toastSuccess).toBeVisible();
+			await poHomeOmnichannel.quickActionsRoomToolbar.closeChat({ comment: 'this_is_a_test_comment' });
 		});
 	});
 });
@@ -162,6 +163,8 @@ test.describe.serial('OC - Livechat - Visitors closing the room is disabled', ()
 test.describe.serial('OC - Livechat - Resub after close room', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let poHomeOmnichannel: HomeOmnichannel;
+	let livechatPage: Page;
+	let omniPage: Page;
 
 	test.beforeAll(async ({ api }) => {
 		const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
@@ -170,20 +173,22 @@ test.describe.serial('OC - Livechat - Resub after close room', () => {
 
 	test.beforeAll(async ({ browser, api }) => {
 		await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true });
-		const { page: omniPage } = await createAuxContext(browser, Users.user1, '/', true);
+		({ page: omniPage } = await createAuxContext(browser, Users.user1, '/', true));
 		poHomeOmnichannel = new HomeOmnichannel(omniPage);
 
-		const { page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false);
+		({ page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false));
 		poLiveChat = new OmnichannelLiveChat(livechatPage, api);
 
 		await poLiveChat.sendMessageAndCloseChat(firstVisitor);
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false });
-		await api.delete('/livechat/users/agent/user1');
-		await poLiveChat.page.close();
-		await poHomeOmnichannel.page.close();
+		await Promise.all([
+			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false }),
+			api.delete('/livechat/users/agent/user1'),
+			livechatPage.close(),
+			omniPage.close(),
+		]);
 	});
 
 	test('OC - Livechat - Resub after close room', async () => {
@@ -196,7 +201,7 @@ test.describe.serial('OC - Livechat - Resub after close room', () => {
 		});
 
 		await test.step('expect message to be received by agent', async () => {
-			await poHomeOmnichannel.sidenav.openChat(secondVisitor.name);
+			await poHomeOmnichannel.navbar.openChat(secondVisitor.name);
 			await expect(poHomeOmnichannel.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 		});
@@ -211,6 +216,8 @@ test.describe.serial('OC - Livechat - Resub after close room', () => {
 test.describe('OC - Livechat - Resume chat after closing', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let poHomeOmnichannel: HomeOmnichannel;
+	let livechatPage: Page;
+	let omniPage: Page;
 
 	test.beforeAll(async ({ api }) => {
 		const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
@@ -218,19 +225,17 @@ test.describe('OC - Livechat - Resume chat after closing', () => {
 	});
 
 	test.beforeAll(async ({ browser, api }) => {
-		const { page: omniPage } = await createAuxContext(browser, Users.user1, '/', true);
+		({ page: omniPage } = await createAuxContext(browser, Users.user1, '/', true));
 		poHomeOmnichannel = new HomeOmnichannel(omniPage);
 
-		const { page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false);
+		({ page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false));
 		poLiveChat = new OmnichannelLiveChat(livechatPage, api);
 
 		await poLiveChat.sendMessageAndCloseChat(firstVisitor);
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.delete('/livechat/users/agent/user1');
-		await poLiveChat.page.close();
-		await poHomeOmnichannel.page.close();
+		await Promise.all([api.delete('/livechat/users/agent/user1'), livechatPage.close(), omniPage.close()]);
 	});
 
 	test('OC - Livechat - Resume chat after closing', async () => {
@@ -243,7 +248,7 @@ test.describe('OC - Livechat - Resume chat after closing', () => {
 		});
 
 		await test.step('expect message to be received by agent', async () => {
-			await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
+			await poHomeOmnichannel.navbar.openChat(firstVisitor.name);
 			await expect(poHomeOmnichannel.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannel.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 		});
@@ -257,14 +262,10 @@ test.describe('OC - Livechat - Resume chat after closing', () => {
 
 test.describe('OC - Livechat - Close chat using widget', () => {
 	let poLiveChat: OmnichannelLiveChat;
-	let poHomeOmnichannel: HomeOmnichannel;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
-	test.beforeAll(async ({ browser, api }) => {
+	test.beforeAll(async ({ api }) => {
 		agent = await createAgent(api, 'user1');
-
-		const { page } = await createAuxContext(browser, Users.user1, '/');
-		poHomeOmnichannel = new HomeOmnichannel(page);
 	});
 
 	test.beforeEach(async ({ page, api }) => {
@@ -274,7 +275,6 @@ test.describe('OC - Livechat - Close chat using widget', () => {
 	});
 
 	test.afterAll(async () => {
-		await poHomeOmnichannel.page.close();
 		await agent.delete();
 	});
 

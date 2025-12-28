@@ -1,25 +1,25 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useRolesDescription, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarContent } from '@rocket.chat/ui-client';
+import { useSetting, useRolesDescription, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
+import AdminUserInfoActions from './AdminUserInfoActions';
+import type { AdminUsersTab } from './AdminUsersPage';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import { ContextualbarContent } from '../../../components/Contextualbar';
 import { FormSkeleton } from '../../../components/Skeleton';
 import { UserCardRole } from '../../../components/UserCard';
 import { UserInfo } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
-import AdminUserInfoActions from './AdminUserInfoActions';
-import type { AdminUserTab } from './AdminUsersPage';
 
 type AdminUserInfoWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
-	tab: AdminUserTab;
+	tab: AdminUsersTab;
 };
 
 const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps): ReactElement => {
@@ -31,22 +31,18 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 
 	const query = useMemo(() => ({ userId: uid }), [uid]);
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const { data, isLoading, error, refetch } = useQuery(
-		['users', query, 'admin'],
-		async () => {
+	const { data, isPending, error, refetch } = useQuery({
+		queryKey: ['users', query, 'admin'],
+		queryFn: async () => {
 			const usersInfo = await getUsersInfo(query);
 			return usersInfo;
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+		meta: {
+			apiErrorToastMessage: true,
 		},
-	);
+	});
 
-	const onChange = useMutableCallback(() => {
+	const onChange = useEffectEvent(() => {
 		onReload();
 		refetch();
 	});
@@ -71,6 +67,8 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			nickname,
 			canViewAllInfo,
 			reason,
+			freeSwitchExtension,
+			abacAttributes,
 		} = data.user;
 
 		return {
@@ -94,10 +92,12 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			statusText,
 			nickname,
 			reason,
+			freeSwitchExtension,
+			abacAttributes,
 		};
 	}, [approveManuallyUsers, data, getRoles]);
 
-	if (isLoading) {
+	if (isPending) {
 		return (
 			<ContextualbarContent>
 				<FormSkeleton />

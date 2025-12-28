@@ -3,10 +3,11 @@ import { Settings } from '@rocket.chat/models';
 import moment from 'moment';
 import Queue from 'queue-fifo';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
-import { afterLogoutCleanUpCallback } from '../../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
+import { afterLogoutCleanUpCallback } from '../../../../server/lib/callbacks/afterLogoutCleanUpCallback';
+import { updateAuditedBySystem } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import * as servers from '../servers';
 import * as localCommandHandlers from './localHandlers';
@@ -22,7 +23,9 @@ const updateLastPing = withThrottling({ wait: 10_000 })(() => {
 	}
 
 	void (async () => {
-		const updatedValue = await Settings.updateValueById('IRC_Bridge_Last_Ping', new Date(), { upsert: true });
+		const updatedValue = await updateAuditedBySystem({
+			reason: 'updateLastPing',
+		})(Settings.updateValueById, 'IRC_Bridge_Last_Ping', new Date(), { upsert: true });
 		if (updatedValue.modifiedCount || updatedValue.upsertedCount) {
 			void notifyOnSettingChangedById('IRC_Bridge_Last_Ping');
 		}

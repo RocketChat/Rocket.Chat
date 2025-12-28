@@ -1,3 +1,8 @@
+import './ServerAudit/IAuditServerSettingEvent';
+import './ServerAudit/IAuditUserChangedEvent';
+import './ServerAudit/IAuditServerAbacAction';
+
+export * from './ServerAudit/IAuditUserChangedEvent';
 export * from './Apps';
 export * from './AppOverview';
 export * from './FeaturedApps';
@@ -7,6 +12,7 @@ export * from './IRoom';
 export * from './IMessage';
 export * from './federation';
 export * from './Serialized';
+export * from './Subscribable';
 export * from './ISetting';
 export * from './ISubscription';
 export * from './ITeam';
@@ -42,6 +48,7 @@ export * from './IUserStatus';
 export * from './IUser';
 
 export * from './ee/IAuditLog';
+export * from './ee/IWorkspaceCredentials';
 
 export * from './import';
 export * from './IIncomingMessage';
@@ -59,7 +66,7 @@ export * from './IAvatar';
 export * from './ICustomUserStatus';
 export * from './IEmailMessageHistory';
 
-export * from './ReadReceipt';
+export * from './IReadReceipt';
 export * from './MessageReads';
 export * from './IUpload';
 export * from './IOEmbedCache';
@@ -69,7 +76,7 @@ export * from './IOembed';
 export * from './IEmailInbox';
 export * from './ILoginServiceConfiguration';
 export * from './ISocketConnection';
-export * from './IMethodThisType';
+export * from './IMethodConnection';
 export * from './IPassword';
 export * from './IBaseData';
 export * from './IOAuthApps';
@@ -79,8 +86,6 @@ export * from './IOAuthRefreshToken';
 export * from './ISmarshHistory';
 export * from './IReport';
 
-// export * from './IMethodConnection';
-
 export * from './ldap';
 // TODO: move to separated package
 
@@ -88,7 +93,6 @@ export * from './IOmnichannelBusinessUnit';
 export * from './IOmnichannelCustomAgent';
 
 export * from './ILivechatTag';
-export * from './IPbxEvent';
 export * from './ILivechatMonitor';
 export * from './ILivechatTagRecord';
 export * from './ILivechatTrigger';
@@ -106,13 +110,6 @@ export * from './ILivechatMonitorRecord';
 export * from './ILivechatDepartment';
 export * from './IOmnichannelAgent';
 export * from './OmichannelRoutingConfig';
-export * from './IVoipExtension';
-export * from './voip';
-export * from './ACDQueues';
-export * from './IVoipConnectorResult';
-export * from './IVoipServerConfig';
-export * from './IVoipServerConnectivityStatus';
-export * from './IOmnichannelVoipServiceResult';
 export * from './IInquiry';
 export * from './ILivechatPriority';
 export * from './ILogs';
@@ -142,3 +139,10 @@ export * from './RoomRouteData';
 
 export * as Cloud from './cloud';
 export * from './themes';
+export * from './mediaCalls';
+export * from './ICallHistoryItem';
+export * from './IAbacAttribute';
+export * from './Abac';
+export * from './ServerAudit/IAuditServerAbacAction';
+
+export { schemas } from './Ajv';

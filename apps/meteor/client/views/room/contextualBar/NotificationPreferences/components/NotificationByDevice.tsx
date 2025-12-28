@@ -1,7 +1,7 @@
-import { Box, Accordion, Icon, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, AccordionItem, Icon, FieldGroup } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactElement, ReactNode } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 type NotificationByDeviceProps = {
 	device: string;
@@ -10,7 +10,7 @@ type NotificationByDeviceProps = {
 };
 
 const NotificationByDevice = ({ device, icon, children }: NotificationByDeviceProps): ReactElement => (
-	<Accordion.Item
+	<AccordionItem
 		title={
 			<Box display='flex' alignItems='center'>
 				<Icon name={icon} size='x18' />
@@ -19,10 +19,9 @@ const NotificationByDevice = ({ device, icon, children }: NotificationByDevicePr
 				</Box>
 			</Box>
 		}
-		data-qa-id={`${device}-notifications`}
 	>
 		<FieldGroup>{children}</FieldGroup>
-	</Accordion.Item>
+	</AccordionItem>
 );
 
 export default memo(NotificationByDevice);

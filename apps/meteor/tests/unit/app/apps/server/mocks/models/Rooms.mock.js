@@ -108,6 +108,26 @@ export class RoomsMock extends BaseModelMock {
 			customFields: {},
 		},
 
+		GENERALPartial: {
+			id: 'GENERAL',
+			slugifiedName: 'general',
+			displaySystemMessages: true,
+			updatedAt: new Date('2019-04-10T17:44:34.931Z'),
+		},
+
+		GENERALPartialWithOptionalProps: {
+			id: 'GENERAL',
+			slugifiedName: 'general',
+			displaySystemMessages: true,
+			updatedAt: new Date('2019-04-10T17:44:34.931Z'),
+			messageCount: 40,
+			type: 'c',
+		},
+
+		UpdatedRoom: {
+			customFields: { custom: 'field' },
+		},
+
 		LivechatRoom: {
 			id: 'LivechatRoom',
 			slugifiedName: undefined,

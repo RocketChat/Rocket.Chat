@@ -111,4 +111,36 @@ describe('Imports', () => {
 				});
 		});
 	});
+
+	describe('[/uploadImportFile]', () => {
+		let testUser: any = {};
+		before(async () => {
+			testUser = await createUser();
+		});
+		let testCredentials: any = {};
+		before(async () => {
+			testCredentials = await login(testUser.username, password);
+		});
+		after(async () => {
+			await deleteUser(testUser);
+			testUser = undefined;
+		});
+
+		it('should fail if the user is not authorized', async () => {
+			await request
+				.post(api('uploadImportFile'))
+				.set(testCredentials)
+				.send({
+					binaryContent: 'ZXJzLmNzdlBLBQYAAAAAAQABADcAAAAmAQAAAAA=',
+					contentType: 'application/zip',
+					fileName: 'users11.zip',
+					importerKey: 'csv',
+				})
+				.expect(403)
+				.expect((res: Response) => {
+					expect(res.body.success).to.be.false;
+					expect(res.body.error).to.equal('User does not have the permissions required for this action [error-unauthorized]');
+				});
+		});
+	});
 });

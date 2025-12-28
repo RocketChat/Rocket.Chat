@@ -1,35 +1,34 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from '../../../components/Skeleton';
 import EditOauthApp from './EditOauthApp';
+import { FormSkeleton } from '../../../components/Skeleton';
 
 const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const getOauthApps = useEndpoint('GET', '/v1/oauth-apps.get');
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const { data, isLoading, error, refetch } = useQuery(
-		['oauth-apps', _id],
-		async () => {
+	const { data, isPending, error, refetch } = useQuery({
+		queryKey: ['oauth-apps', _id],
+		queryFn: async () => {
 			const oauthApps = await getOauthApps({ _id });
 			return oauthApps;
 		},
-		{
-			onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
+		meta: {
+			apiErrorToastMessage: true,
 		},
-	);
+	});
 
 	const onChange = useCallback(() => {
 		refetch();
 	}, [refetch]);
 
-	if (isLoading) {
+	if (isPending) {
 		return <FormSkeleton pi={20} />;
 	}
 

@@ -201,7 +201,7 @@ export class RestClient implements RestClientInterface {
 			? {
 					'X-User-Id': credentials['X-User-Id'],
 					'X-Auth-Token': credentials['X-Auth-Token'],
-			  }
+				}
 			: {};
 	}
 

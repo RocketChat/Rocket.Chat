@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react';
-import React from 'react';
 
-import SidebarPortal from '../../sidebar/SidebarPortal';
 import AdminSidebar from './sidebar/AdminSidebar';
+import SidebarPortal from '../../portals/SidebarPortal';
 
 type AdministrationLayoutProps = {
 	children?: ReactNode;

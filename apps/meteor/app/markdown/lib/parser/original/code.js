@@ -4,8 +4,8 @@
  */
 import { unescapeHTML } from '@rocket.chat/string-helpers';
 
-import hljs, { register } from '../../hljs';
 import { addAsToken } from './token';
+import hljs, { register } from '../../hljs';
 
 const inlinecode = (message) => {
 	// Support `text`

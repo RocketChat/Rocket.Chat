@@ -49,6 +49,7 @@ export interface WorkspaceSyncResponse {
 	publicKey: string;
 	license: unknown;
 	removeLicense?: boolean;
+	cloudSyncAnnouncement: unknown;
 }
 
 export interface WorkspaceCommsRequestPayload {

@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 
+import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { expect, test } from '../utils/test';
@@ -7,6 +8,7 @@ import { expect, test } from '../utils/test';
 test.use({ storageState: Users.user1.state });
 
 test.describe.serial('Apps > ContextualBar', () => {
+	test.skip(!IS_EE, 'Premium Only');
 	let poHomeChannel: HomeChannel;
 
 	let page: Page;
@@ -16,7 +18,7 @@ test.describe.serial('Apps > ContextualBar', () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat('general');
+		await poHomeChannel.navbar.openChat('general');
 	});
 
 	test.afterAll(async () => {

@@ -1,21 +1,22 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { memo } from 'react';
-
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
-} from '../../../../components/Contextualbar';
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
+import type { ReactElement } from 'react';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import KeyboardShortcutSection from './KeyboardShortcutSection';
 
 const KeyboardShortcuts = ({ handleClose }: { handleClose: () => void }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='keyboard' />
 				<ContextualbarTitle>{t('Keyboard_Shortcuts_Title')}</ContextualbarTitle>
@@ -31,7 +32,7 @@ const KeyboardShortcuts = ({ handleClose }: { handleClose: () => void }): ReactE
 				<KeyboardShortcutSection title={t('Keyboard_Shortcuts_Move_To_End_Of_Message')} command={t('Keyboard_Shortcuts_Keys_6')} />
 				<KeyboardShortcutSection title={t('Keyboard_Shortcuts_New_Line_In_Message')} command={t('Keyboard_Shortcuts_Keys_7')} />
 			</ContextualbarScrollableContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

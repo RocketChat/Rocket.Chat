@@ -1,11 +1,10 @@
 import { useRouteParameter, useIsPrivilegedSettingsContext, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditableSettingsProvider from './EditableSettingsProvider';
 import SettingsGroupSelector from './SettingsGroupSelector';
 import SettingsPage from './SettingsPage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 export const SettingsRoute = (): ReactElement => {
 	const hasPermission = useIsPrivilegedSettingsContext();

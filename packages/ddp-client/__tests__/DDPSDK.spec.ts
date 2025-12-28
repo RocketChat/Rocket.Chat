@@ -4,8 +4,8 @@ import util from 'util';
 import WS from 'jest-websocket-mock';
 import { WebSocket } from 'ws';
 
-import { DDPSDK } from '../src/DDPSDK';
 import { fireStreamChange, fireStreamAdded, fireStreamRemove, handleConnection, handleSubscription, handleMethod } from './helpers';
+import { DDPSDK } from '../src/DDPSDK';
 
 (global as any).WebSocket = (global as any).WebSocket || WebSocket;
 
@@ -52,11 +52,11 @@ it('should handle a stream of messages', async () => {
 	fireStreamChange(server, streamName, streamParams);
 	fireStreamChange(server, streamName, streamParams);
 
-	expect(cb).toBeCalledTimes(3);
+	expect(cb).toHaveBeenCalledTimes(3);
 
 	fireStreamChange(server, streamName, `${streamParams}-another`);
 
-	expect(cb).toBeCalledTimes(3);
+	expect(cb).toHaveBeenCalledTimes(3);
 
 	expect(cb).toHaveBeenNthCalledWith(1, 1);
 	sdk.connection.close();
@@ -82,7 +82,7 @@ it('should ignore messages other from changed', async () => {
 
 	fireStreamRemove(server, streamName, streamParams);
 
-	expect(cb).toBeCalledTimes(0);
+	expect(cb).toHaveBeenCalledTimes(0);
 	sdk.connection.close();
 });
 
@@ -110,7 +110,7 @@ it('should handle streams after reconnect', async () => {
 
 	await fire(server, streamName, streamParams);
 
-	expect(cb).toBeCalledTimes(3);
+	expect(cb).toHaveBeenCalledTimes(3);
 
 	// Fake timers are used to avoid waiting for the reconnect timeout
 	jest.useFakeTimers();
@@ -130,7 +130,7 @@ it('should handle streams after reconnect', async () => {
 	fire(server, streamName, streamParams);
 	await jest.advanceTimersByTimeAsync(1000);
 
-	expect(cb).toBeCalledTimes(6);
+	expect(cb).toHaveBeenCalledTimes(6);
 
 	jest.useRealTimers();
 	sdk.connection.close();
@@ -162,7 +162,7 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 	fireStreamChange(server, streamName, streamParams);
 	fireStreamChange(server, streamName, streamParams);
 
-	expect(cb).toBeCalledTimes(3);
+	expect(cb).toHaveBeenCalledTimes(3);
 
 	// Fake timers are used to avoid waiting for the reconnect timeout
 	jest.useFakeTimers();
@@ -190,7 +190,7 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 	fireStreamChange(server, streamName, streamParams);
 	jest.advanceTimersByTimeAsync(1000);
 
-	expect(cb).toBeCalledTimes(4);
+	expect(cb).toHaveBeenCalledTimes(4);
 
 	expect(sdk.client.subscriptions.size).toBe(0);
 	jest.useRealTimers();

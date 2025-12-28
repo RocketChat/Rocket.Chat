@@ -1,6 +1,6 @@
 import { registerModel } from '@rocket.chat/models';
 
-import { db } from '../../../server/database/utils';
 import { LivechatUnitMonitorsRaw } from './raw/LivechatUnitMonitors';
+import { db } from '../../../server/database/utils';
 
 registerModel('ILivechatUnitMonitorsModel', new LivechatUnitMonitorsRaw(db));

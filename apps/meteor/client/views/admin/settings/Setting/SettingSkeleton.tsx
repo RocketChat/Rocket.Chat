@@ -1,6 +1,5 @@
-import { Field, FieldLabel, FieldRow, Flex, InputBox, Skeleton } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, Flex, InputBoxSkeleton, Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 const SettingSkeleton = (): ReactElement => (
 	<Field>
@@ -10,7 +9,7 @@ const SettingSkeleton = (): ReactElement => (
 			</FieldLabel>
 		</Flex.Item>
 		<FieldRow>
-			<InputBox.Skeleton />
+			<InputBoxSkeleton />
 		</FieldRow>
 	</Field>
 );

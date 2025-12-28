@@ -2,6 +2,8 @@ import { mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import i18next from 'i18next';
+
 import { PdfWorker } from './index';
 import {
 	bigConversationData,
@@ -9,7 +11,17 @@ import {
 	dataWithMultipleMessagesAndABigMessage,
 	dataWithASingleMessageAndAnImage,
 	dataWithASingleSystemMessage,
+	dataWith2ReallyBigMessages,
 } from './worker.fixtures';
+
+beforeAll(() => {
+	i18next.init({
+		lng: 'en',
+		resources: {
+			en: {},
+		},
+	});
+});
 
 const streamToBuffer = async (stream: NodeJS.ReadableStream) => {
 	const chunks: (string | Buffer)[] = [];
@@ -40,21 +52,21 @@ it('should properly instantiate', () => {
 });
 
 it('should generate a pdf transcript for a big bunch of messages', async () => {
-	const stream = await pdfWorker.renderToStream({ data: bigConversationData });
+	const stream = await pdfWorker.renderToStream({ data: bigConversationData, i18n: i18next });
 	const buffer = await streamToBuffer(stream);
 
 	expect(buffer).toBeTruthy();
 }, 10000);
 
 it('should generate a pdf transcript for a single message, but a really long message', async () => {
-	const stream = await pdfWorker.renderToStream({ data: dataWithASingleMessageButAReallyLongMessage });
+	const stream = await pdfWorker.renderToStream({ data: dataWithASingleMessageButAReallyLongMessage, i18n: i18next });
 	const buffer = await streamToBuffer(stream);
 
 	expect(buffer).toBeTruthy();
 }, 10000);
 
 it('should generate a pdf transcript of a single message with an image', async () => {
-	const stream = await pdfWorker.renderToStream({ data: dataWithASingleMessageAndAnImage });
+	const stream = await pdfWorker.renderToStream({ data: dataWithASingleMessageAndAnImage, i18n: i18next });
 	const buffer = await streamToBuffer(stream);
 
 	expect(buffer).toBeTruthy();
@@ -66,14 +78,21 @@ it('should generate a pdf transcript of a single message with an image', async (
 }, 10000);
 
 it('should generate a pdf transcript for multiple messages, one big message and 2 small messages', async () => {
-	const stream = await pdfWorker.renderToStream({ data: dataWithMultipleMessagesAndABigMessage });
+	const stream = await pdfWorker.renderToStream({ data: dataWithMultipleMessagesAndABigMessage, i18n: i18next });
 	const buffer = await streamToBuffer(stream);
 
 	expect(buffer).toBeTruthy();
 }, 10000);
 
 it('should generate a pdf transcript for a single system message', async () => {
-	const stream = await pdfWorker.renderToStream({ data: dataWithASingleSystemMessage });
+	const stream = await pdfWorker.renderToStream({ data: dataWithASingleSystemMessage, i18n: i18next });
+	const buffer = await streamToBuffer(stream);
+
+	expect(buffer).toBeTruthy();
+});
+
+it('should generate a pdf transcript for rooms with messages consisting of tons of markdown elements', async () => {
+	const stream = await pdfWorker.renderToStream({ data: dataWith2ReallyBigMessages, i18n: i18next });
 	const buffer = await streamToBuffer(stream);
 
 	expect(buffer).toBeTruthy();

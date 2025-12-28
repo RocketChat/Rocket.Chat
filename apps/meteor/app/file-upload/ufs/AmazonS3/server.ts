@@ -52,7 +52,12 @@ class AmazonS3Store extends UploadFS.Store {
 
 		const classOptions = options;
 
-		const s3 = new S3(options.connection);
+		const customUserAgent = process.env.FILE_STORAGE_CUSTOM_USER_AGENT?.trim();
+
+		const s3 = new S3({
+			...(customUserAgent && { customUserAgent }),
+			...options.connection,
+		});
 
 		options.getPath =
 			options.getPath ||
@@ -189,6 +194,10 @@ class AmazonS3Store extends UploadFS.Store {
 			);
 
 			return writeStream;
+		};
+
+		this.getUrlExpiryTimeSpan = async () => {
+			return options.URLExpiryTimeSpan || null;
 		};
 	}
 }

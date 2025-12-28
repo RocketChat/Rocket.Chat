@@ -1,9 +1,10 @@
 import { Box, Option, OptionSkeleton, Tile } from '@rocket.chat/fuselage';
-import { useUniqueId, useContentBoxSize } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useContentBoxSize } from '@rocket.chat/fuselage-hooks';
+import { CustomScrollbars } from '@rocket.chat/ui-client';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useEffect, memo, useMemo, useRef } from 'react';
+import { useEffect, memo, useMemo, useRef, useId } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type ComposerBoxPopupProps<
 	T extends {
@@ -32,8 +33,8 @@ function ComposerBoxPopup<
 	select,
 	renderItem = ({ item }: { item: T }) => <>{JSON.stringify(item)}</>,
 }: ComposerBoxPopupProps<T>): ReactElement | null {
-	const t = useTranslation();
-	const id = useUniqueId();
+	const { t } = useTranslation();
+	const id = useId();
 	const composerBoxPopupRef = useRef<HTMLElement>(null);
 	const popupSizes = useContentBoxSize(composerBoxPopupRef);
 
@@ -84,33 +85,35 @@ function ComposerBoxPopup<
 	}, [focused]);
 
 	return (
-		<Box className='message-popup-position' position='relative'>
-			<Tile ref={composerBoxPopupRef} className='message-popup' padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id}>
+		<Box position='relative'>
+			<Tile ref={composerBoxPopupRef} padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id} name='ComposerBoxPopup'>
 				{title && (
 					<Box bg='tint' pi={16} pb={8} id={id}>
 						{title}
 					</Box>
 				)}
-				<Box pb={8} maxHeight='x320'>
-					{!isLoading && itemsFlat.length === 0 && <Option>{t('No_results_found')}</Option>}
-					{isLoading && <OptionSkeleton />}
-					{itemsFlat.map((item, index) => {
-						return (
-							<Option
-								title={getOptionTitle(item)}
-								onClick={() => select(item)}
-								selected={item === focused}
-								key={index}
-								id={`popup-item-${item._id}`}
-								tabIndex={item === focused ? 0 : -1}
-								aria-selected={item === focused}
-								disabled={item.disabled}
-							>
-								{renderItem({ item: { ...item, variant } })}
-							</Option>
-						);
-					})}
-				</Box>
+				<CustomScrollbars>
+					<Box pb={8} maxHeight='x320'>
+						{!isLoading && itemsFlat.length === 0 && <Option>{t('No_results_found')}</Option>}
+						{isLoading && <OptionSkeleton />}
+						{itemsFlat.map((item, index) => {
+							return (
+								<Option
+									title={getOptionTitle(item)}
+									onClick={() => select(item)}
+									selected={item === focused}
+									key={index}
+									id={`popup-item-${item._id}`}
+									tabIndex={item === focused ? 0 : -1}
+									aria-selected={item === focused}
+									disabled={item.disabled}
+								>
+									{renderItem({ item: { ...item, variant } })}
+								</Option>
+							);
+						})}
+					</Box>
+				</CustomScrollbars>
 			</Tile>
 		</Box>
 	);

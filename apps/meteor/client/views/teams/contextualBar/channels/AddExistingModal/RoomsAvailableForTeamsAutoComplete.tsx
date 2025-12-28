@@ -2,9 +2,9 @@ import { AutoComplete, Box, Option, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
-import React, { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
@@ -16,11 +16,11 @@ const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, ...props }: Rooms
 
 	const roomsAvailableForTeamsAutoCompleteEndpoint = useEndpoint('GET', '/v1/rooms.autocomplete.availableForTeams');
 
-	const { data } = useQuery(
-		['roomsAvailableForTeamsAutoComplete', debouncedFilter],
-		async () => roomsAvailableForTeamsAutoCompleteEndpoint({ name: debouncedFilter }),
-		{ keepPreviousData: true },
-	);
+	const { data } = useQuery({
+		queryKey: ['roomsAvailableForTeamsAutoComplete', debouncedFilter],
+		queryFn: async () => roomsAvailableForTeamsAutoCompleteEndpoint({ name: debouncedFilter }),
+		placeholderData: keepPreviousData,
+	});
 
 	const options = useMemo(() => {
 		if (!data) {
@@ -47,7 +47,7 @@ const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, ...props }: Rooms
 			setFilter={setFilter}
 			renderSelected={({ selected: { value, label }, onRemove }) => (
 				<Chip key={value} height='x20' value={value} onClick={onRemove} mb={2} mie={4}>
-					<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />
+					<RoomAvatar size='x20' room={{ ...label, type: label?.type || 'c', _id: value }} />
 					<Box is='span' margin='none' mis={4}>
 						{label.name}
 					</Box>

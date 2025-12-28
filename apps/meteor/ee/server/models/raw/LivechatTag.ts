@@ -1,15 +1,14 @@
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 import type { ILivechatTagModel } from '@rocket.chat/model-typings';
+import { BaseRaw } from '@rocket.chat/models';
 import type { Db, DeleteResult, FindCursor, FindOptions, IndexDescription } from 'mongodb';
-
-import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
 export class LivechatTagRaw extends BaseRaw<ILivechatTag> implements ILivechatTagModel {
 	constructor(db: Db) {
 		super(db, 'livechat_tag');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: {
@@ -18,12 +17,6 @@ export class LivechatTagRaw extends BaseRaw<ILivechatTag> implements ILivechatTa
 				unique: true,
 			},
 		];
-	}
-
-	findOneById(_id: string, options?: FindOptions<ILivechatTag>): Promise<ILivechatTag | null> {
-		const query = { _id };
-
-		return this.findOne(query, options);
 	}
 
 	findInIds(ids: string[], options?: FindOptions<ILivechatTag>): FindCursor<ILivechatTag> {
@@ -54,7 +47,7 @@ export class LivechatTagRaw extends BaseRaw<ILivechatTag> implements ILivechatTa
 	}
 
 	// REMOVE
-	removeById(_id: string): Promise<DeleteResult> {
+	override removeById(_id: string): Promise<DeleteResult> {
 		const query = { _id };
 
 		return this.deleteOne(query);

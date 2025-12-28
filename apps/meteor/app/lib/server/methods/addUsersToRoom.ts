@@ -1,14 +1,12 @@
 import { api } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { beforeAddUsersToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { i18n } from '../../../../server/lib/i18n';
-import { Federation } from '../../../../server/services/federation/Federation';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';
 
@@ -18,6 +16,15 @@ declare module '@rocket.chat/ddp-client' {
 		addUsersToRoom(data: { rid: string; users: string[] }): boolean;
 	}
 }
+
+export const sanitizeUsername = (username: string) => {
+	const isFederatedUsername = username.includes('@') && username.includes(':');
+	if (isFederatedUsername) {
+		return username;
+	}
+
+	return username.replace(/(^@)|( @)/, '');
+};
 
 export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<boolean> => {
 	if (!userId) {
@@ -45,8 +52,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 	});
 	const userInRoom = subscription != null;
 
-	// Can't add to direct room ever
-	if (room.t === 'd') {
+	if (room.t === 'd' && !isRoomNativeFederated(room)) {
 		throw new Meteor.Error('error-cant-invite-for-direct-room', "Can't invite user to direct rooms", {
 			method: 'addUsersToRoom',
 		});
@@ -76,38 +82,33 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 		});
 	}
 
-	// Validate each user, then add to room
-	if (isRoomFederated(room)) {
-		await callbacks.run('federation.onAddUsersToARoom', { invitees: data.users, inviter: user }, room);
-		return true;
-	}
+	await beforeAddUsersToRoom.run({ usernames: data.users, inviter: user }, room);
 
 	await Promise.all(
 		data.users.map(async (username) => {
-			const newUser = await Users.findOneByUsernameIgnoringCase(username);
-			if (!newUser && !Federation.isAFederatedUsername(username)) {
-				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
+			const sanitizedUsername = sanitizeUsername(username);
+
+			const newUser = await Users.findOneByUsernameIgnoringCase(sanitizedUsername);
+			if (!newUser) {
+				throw new Meteor.Error('error-user-not-found', 'User not found', {
 					method: 'addUsersToRoom',
 				});
 			}
-			const subscription = newUser && (await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id));
+
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
-				await addUserToRoom(data.rid, newUser || username, user);
-			} else {
-				if (!newUser.username) {
-					return;
-				}
-				void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
-					msg: i18n.t(
-						'Username_is_already_in_here',
-						{
-							postProcess: 'sprintf',
-							sprintf: [newUser.username],
-						},
-						user?.language,
-					),
-				});
+				return addUserToRoom(data.rid, newUser, user);
 			}
+			if (!newUser.username) {
+				return;
+			}
+			void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
+				msg: i18n.t('Username_is_already_in_here', {
+					postProcess: 'sprintf',
+					sprintf: [newUser.username],
+					lng: user?.language,
+				}),
+			});
 		}),
 	);
 

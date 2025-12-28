@@ -1,12 +1,24 @@
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.chat/rest-typings';
+import {
+	isGETAgentNextToken,
+	isPOSTLivechatAgentSaveInfoParams,
+	isPOSTLivechatAgentStatusProps,
+	POSTLivechatAgentSaveInfoSuccessResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { hasRoleAsync } from '../../../../authorization/server/functions/hasRole';
 import { RoutingManager } from '../../lib/RoutingManager';
+import { getRequiredDepartment } from '../../lib/departmentsLib';
+import { saveAgentInfo } from '../../lib/omni-users';
+import { setUserStatusLivechat, allowAgentChangeServiceStatus } from '../../lib/utils';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
@@ -36,14 +48,14 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { token } = this.urlParams;
-			const room = await findOpenRoom(token);
+			const room = await findOpenRoom(token, undefined, this.userId);
 			if (room) {
 				return API.v1.success();
 			}
 
 			let { department } = this.queryParams;
 			if (!department) {
-				const requireDepartment = await LivechatTyped.getRequiredDepartment();
+				const requireDepartment = await getRequiredDepartment();
 				if (requireDepartment) {
 					department = requireDepartment._id;
 				}
@@ -95,18 +107,18 @@ API.v1.addRoute(
 				return API.v1.success({ status: agent.statusLivechat });
 			}
 
-			const canChangeStatus = await LivechatTyped.allowAgentChangeServiceStatus(newStatus, agentId);
+			const canChangeStatus = await allowAgentChangeServiceStatus(newStatus, agentId);
 
 			if (agentId !== this.userId) {
 				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				// Silent fail for admins when BH is closed
 				// Next version we'll update this to return an error
 				// And update the FE accordingly
 				if (canChangeStatus) {
-					await LivechatTyped.setUserStatusLivechat(agentId, newStatus);
+					await setUserStatusLivechat(agentId, newStatus);
 					return API.v1.success({ status: newStatus });
 				}
 
@@ -117,9 +129,42 @@ API.v1.addRoute(
 				return API.v1.failure('error-business-hours-are-closed');
 			}
 
-			await LivechatTyped.setUserStatusLivechat(agentId, newStatus);
+			await setUserStatusLivechat(agentId, newStatus);
 
 			return API.v1.success({ status: newStatus });
 		},
 	},
 );
+
+const livechatAgentsEndpoints = API.v1.post(
+	'livechat/agents.saveInfo',
+	{
+		response: {
+			200: POSTLivechatAgentSaveInfoSuccessResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+		authRequired: true,
+		permissionsRequired: ['manage-livechat-agents'],
+		body: isPOSTLivechatAgentSaveInfoParams,
+	},
+	async function action() {
+		const { agentId, agentData, agentDepartments } = this.bodyParams;
+
+		if (!(await hasRoleAsync(agentId, 'livechat-agent'))) {
+			return API.v1.failure('error-user-is-not-agent');
+		}
+
+		await saveAgentInfo(agentId, agentData, agentDepartments);
+
+		return API.v1.success();
+	},
+);
+
+type LivechatAgentsEndpoints = ExtractRoutesFromAPI<typeof livechatAgentsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends LivechatAgentsEndpoints {}
+}

@@ -1,11 +1,11 @@
 import type { BadgeProps } from '@rocket.chat/fuselage';
+import { HeaderToolbarAction, HeaderToolbarActionBadge } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React, { lazy, useMemo } from 'react';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
+import { lazy, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { HeaderToolbarAction, HeaderToolbarActionBadge } from '../../components/Header';
 import { useRoomSubscription } from '../../views/room/contexts/RoomContext';
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const getVariant = (tunreadUser: number, tunreadGroup: number): BadgeProps['variant'] => {
 	if (tunreadUser > 0) {
@@ -45,16 +45,15 @@ export const useThreadRoomAction = () => {
 			icon: 'thread',
 			tabComponent: Threads,
 			order: 2,
-			renderToolboxItem: ({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }) => (
+			renderToolboxItem: ({ id, className, icon, title, toolbox: { tab }, disabled, action, tooltip }) => (
 				<HeaderToolbarAction
 					key={id}
 					className={className}
-					index={index}
 					id={id}
 					icon={icon}
 					title={t(title)}
 					pressed={id === tab?.id}
-					action={action}
+					onClick={action}
 					disabled={disabled}
 					tooltip={tooltip}
 				>

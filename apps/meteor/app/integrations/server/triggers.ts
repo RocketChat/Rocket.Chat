@@ -1,6 +1,6 @@
-import { callbacks } from '../../../lib/callbacks';
-import { afterLeaveRoomCallback } from '../../../lib/callbacks/afterLeaveRoomCallback';
 import { triggerHandler } from './lib/triggerHandler';
+import { callbacks } from '../../../server/lib/callbacks';
+import { afterLeaveRoomCallback } from '../../../server/lib/callbacks/afterLeaveRoomCallback';
 
 const callbackHandler = function _callbackHandler(eventType: string) {
 	return function _wrapperFunction(...args: any[]) {

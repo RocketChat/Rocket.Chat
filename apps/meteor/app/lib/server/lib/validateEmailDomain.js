@@ -1,11 +1,11 @@
 import dns from 'dns';
 import util from 'util';
 
+import { validateEmail } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { validateEmail } from '../../../../lib/emailValidator';
-import { settings } from '../../../settings/server';
 import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
+import { settings } from '../../../settings/server';
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 

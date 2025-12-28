@@ -25,10 +25,7 @@ const emojiCustomDeletePropsSchema = {
 
 export const isEmojiCustomDelete = ajv.compile<emojiCustomDeleteProps>(emojiCustomDeletePropsSchema);
 
-type emojiCustomList = {
-	query: string;
-	updatedSince?: string;
-};
+type emojiCustomList = { query?: string; updatedSince?: string; _updatedAt?: string; _id?: string };
 
 const emojiCustomListSchema = {
 	type: 'object',
@@ -40,8 +37,14 @@ const emojiCustomListSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		_updatedAt: {
+			type: 'string',
+		},
+		_id: {
+			type: 'string',
+		},
 	},
-	required: ['query'],
+	required: [],
 	additionalProperties: false,
 };
 
@@ -49,7 +52,7 @@ export const isEmojiCustomList = ajv.compile<emojiCustomList>(emojiCustomListSch
 
 export type EmojiCustomEndpoints = {
 	'/v1/emoji-custom.all': {
-		GET: (params: PaginatedRequest<{ query: string }, 'name'>) => PaginatedResult<{
+		GET: (params: PaginatedRequest<{ name?: string }, 'name'>) => PaginatedResult<{
 			emojis: IEmojiCustom[];
 		}>;
 	};

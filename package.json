@@ -1,28 +1,19 @@
 {
 	"name": "rocket.chat",
-	"version": "6.13.0",
-	"description": "Rocket.Chat Monorepo",
-	"main": "index.js",
+	"version": "8.1.0-develop",
 	"private": true,
-	"scripts": {
-		"build": "turbo run build",
-		"build:services": "turbo run build --filter=rocketchat-services...",
-		"build:ci": "turbo run build:ci",
-		"testunit": "turbo run testunit",
-		"dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
-		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
-		"lint": "turbo run lint",
-		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
-		"fuselage": "./fuselage.sh",
-		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts"
+	"description": "Rocket.Chat Monorepo",
+	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
 	},
-	"devDependencies": {
-		"@changesets/cli": "^2.26.2",
-		"@types/chart.js": "^2.9.41",
-		"@types/js-yaml": "^4.0.9",
-		"ts-node": "^10.9.2",
-		"turbo": "^2.1.2"
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
 	},
+	"license": "MIT",
+	"author": "",
+	"main": "index.js",
 	"workspaces": [
 		"apps/*",
 		"packages/*",
@@ -30,44 +21,68 @@
 		"ee/packages/*",
 		"apps/meteor/ee/server/services"
 	],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+	"scripts": {
+		"build": "turbo run build",
+		"build:services": "turbo run build --filter=rocketchat-services...",
+		"dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
+		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
+		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts",
+		"fuselage": "./fuselage.sh",
+		"lint": "turbo run lint",
+		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
+		"test-storybook": "turbo run test-storybook",
+		"testunit": "turbo run testunit"
 	},
-	"author": "",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	"resolutions": {
+		"@react-pdf/fns": "2.0.1",
+		"@react-pdf/font": "2.3.7",
+		"@react-pdf/image": "2.2.2",
+		"@react-pdf/layout": "3.6.3",
+		"@react-pdf/pdfkit": "3.0.2",
+		"@react-pdf/png-js": "2.2.0",
+		"@react-pdf/primitives": "3.0.1",
+		"@react-pdf/render": "3.2.7",
+		"@react-pdf/renderer": "3.1.14",
+		"@react-pdf/stylesheet": "4.1.8",
+		"@react-pdf/textkit": "4.2.0",
+		"@react-pdf/types": "2.3.4",
+		"@react-pdf/yoga": "4.1.2",
+		"@sematext/gc-stats@npm:^1.5.9": "patch:@sematext/gc-stats@npm%3A1.5.9#~/.yarn/patches/@sematext-gc-stats-npm-1.5.9-01e77be4d0.patch",
+		"adm-zip": "0.5.9",
+		"cross-spawn": "7.0.6",
+		"drachtio-srf": "patch:drachtio-srf@npm%3A5.0.12#~/.yarn/patches/drachtio-srf-npm-5.0.12-b0b1afaad6.patch",
+		"lodash": "4.17.21",
+		"minimist": "1.2.6",
+		"mongodb": "6.10.0",
+		"underscore": "1.13.7"
 	},
-	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
+	"dependencies": {
+		"@types/stream-buffers": "^3.0.8",
+		"node-gyp": "^10.2.0"
+	},
+	"devDependencies": {
+		"@changesets/cli": "^2.27.11",
+		"@types/chart.js": "^2.9.41",
+		"@types/js-yaml": "^4.0.9",
+		"@types/node": "~22.16.5",
+		"ts-node": "^10.9.2",
+		"turbo": "~2.6.3",
+		"typescript": "~5.9.3"
+	},
+	"packageManager": "yarn@4.11.0",
 	"engines": {
-		"yarn": "3.5.0",
-		"node": "14.21.3",
-		"npm": "Use yarn instead"
+		"node": "22.16.0",
+		"yarn": "4.11.0"
 	},
-	"packageManager": "yarn@3.5.0",
+	"volta": {
+		"node": "22.16.0",
+		"yarn": "4.11.0"
+	},
 	"houston": {
 		"minTag": "0.55.0-rc.0",
 		"updateFiles": [
 			"package.json",
 			"apps/meteor/app/utils/rocketchat.info"
 		]
-	},
-	"volta": {
-		"node": "14.21.3",
-		"yarn": "1.22.18"
-	},
-	"resolutions": {
-		"minimist": "1.2.6",
-		"adm-zip": "0.5.9",
-		"preact@10.15.1": "patch:preact@npm:10.15.1#.yarn/patches/preact-npm-10.15.1-bd458de913.patch",
-		"@storybook/react-docgen-typescript-plugin@1.0.2-canary.6.9d540b91e815f8fc2f8829189deb00553559ff63.0": "patch:@storybook/react-docgen-typescript-plugin@npm%3A1.0.2-canary.6.9d540b91e815f8fc2f8829189deb00553559ff63.0#./.yarn/patches/@storybook-react-docgen-typescript-plugin-npm-1.0.2-canary.6.9d540b91e815f8fc2f8829189deb00553559ff63.0-b31cc57c40.patch",
-		"mongodb@^4.17.1": "patch:mongodb@npm:4.17.1#.yarn/patches/mongodb-npm-4.17.1-a2fe811ff1.patch",
-		"@rocket.chat/forked-matrix-sdk-crypto-nodejs": "0.1.0-beta.13",
-		"typia@~6.9.0": "patch:typia@npm%3A6.9.0#./.yarn/patches/typia-npm-6.9.0-2fd4d85f25.patch",
-		"moleculer@^0.14.34": "patch:moleculer@npm%3A0.14.34#./.yarn/patches/moleculer-npm-0.14.34-440e26767d.patch"
-	},
-	"dependencies": {
-		"node-gyp": "^9.4.1"
 	}
 }

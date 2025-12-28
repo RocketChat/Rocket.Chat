@@ -9,8 +9,8 @@ import type { Filter } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { updateCounter } from '../../../../app/statistics/server';
-import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 
 const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };
@@ -27,15 +27,18 @@ const getRoomInfoByAuditParams = async ({
 	users: usernames,
 	visitor,
 	agent,
+	userId,
 }: {
 	type: string;
 	roomId: IRoom['_id'];
 	users: NonNullable<IUser['username']>[];
 	visitor: ILivechatVisitor['_id'];
 	agent: ILivechatAgent['_id'];
+	userId: string;
 }) => {
 	if (rid) {
-		return getValue(await Rooms.findOne({ _id: rid }));
+		// When ABAC is enabled, only rooms without ABAC attributes are considered for auditing by room ID.
+		return getValue(await Rooms.findOne({ _id: rid, abacAttributes: { $exists: false } }));
 	}
 
 	if (type === 'd') {
@@ -44,7 +47,7 @@ const getRoomInfoByAuditParams = async ({
 
 	if (type === 'l') {
 		console.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');
-		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId });
 		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(
 			visitor,
 			agent,
@@ -160,10 +163,16 @@ Meteor.methods<ServerMethods>({
 		if (type === 'u') {
 			const usersId = await getUsersIdFromUserName(usernames);
 			query['u._id'] = { $in: usersId };
+
+			const abacRooms = await Rooms.findAllPrivateRoomsWithAbacAttributes({ projection: { _id: 1 } })
+				.map((doc) => doc._id)
+				.toArray();
+
+			query.rid = { $nin: abacRooms };
 		} else {
-			const roomInfo = await getRoomInfoByAuditParams({ type, roomId: rid, users: usernames, visitor, agent });
+			const roomInfo = await getRoomInfoByAuditParams({ type, roomId: rid, users: usernames, visitor, agent, userId: user._id });
 			if (!roomInfo) {
-				throw new Meteor.Error('Room doesn`t exist');
+				throw new Meteor.Error(`Room doesn't exist`);
 			}
 
 			rids = roomInfo.rids;

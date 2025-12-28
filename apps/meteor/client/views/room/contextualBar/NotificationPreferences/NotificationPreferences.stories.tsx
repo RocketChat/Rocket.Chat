@@ -1,20 +1,18 @@
+import { Contextualbar } from '@rocket.chat/ui-client';
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
-import { Contextualbar } from '../../../../components/Contextualbar';
 import NotificationsPreferences from './NotificationPreferences';
 
 export default {
-	title: 'Room/Contextual Bar/NotificationsPreferences',
 	component: NotificationsPreferences,
 	parameters: {
 		layout: 'fullscreen',
 	},
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
-} as ComponentMeta<typeof NotificationsPreferences>;
+} satisfies Meta<typeof NotificationsPreferences>;
 
-export const Default: ComponentStory<typeof NotificationsPreferences> = (args) => <NotificationsPreferences {...args} />;
+export const Default: StoryFn<typeof NotificationsPreferences> = (args) => <NotificationsPreferences {...args} />;
 Default.storyName = 'NotificationsPreferences';
 Default.args = {
 	handleClose: action('handleClose'),

@@ -1,11 +1,9 @@
 import { FieldGroup, Box } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import EditTrigger from './EditTrigger';
 
 export default {
-	title: 'Omnichannel/EditTrigger',
 	component: EditTrigger,
 	decorators: [
 		(fn) => (
@@ -14,6 +12,6 @@ export default {
 			</Box>
 		),
 	],
-} as ComponentMeta<typeof EditTrigger>;
+} satisfies Meta<typeof EditTrigger>;
 
-export const Default: ComponentStory<typeof EditTrigger> = (args) => <EditTrigger {...args} />;
+export const Default: StoryFn<typeof EditTrigger> = (args) => <EditTrigger {...args} />;

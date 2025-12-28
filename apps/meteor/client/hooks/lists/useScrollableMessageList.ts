@@ -1,10 +1,10 @@
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
 import { useCallback } from 'react';
 
+import { useScrollableRecordList } from './useScrollableRecordList';
 import type { MessageList } from '../../lib/lists/MessageList';
 import type { RecordListBatchChanges } from '../../lib/lists/RecordList';
 import { mapMessageFromApi } from '../../lib/utils/mapMessageFromApi';
-import { useScrollableRecordList } from './useScrollableRecordList';
 
 export const useScrollableMessageList = (
 	messageList: MessageList,

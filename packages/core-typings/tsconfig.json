@@ -1,10 +1,11 @@
 {
-	"extends": "../../tsconfig.base.server.json",
+	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
 		"lib": ["dom", "dom.iterable"],
 		"declaration": true,
 		"rootDir": "./src",
-		"outDir": "./dist"
+		"outDir": "./dist",
+		"plugins": [{ "transform": "typia/lib/transform" }]
 	},
 	"include": ["./src/**/*"]
 }

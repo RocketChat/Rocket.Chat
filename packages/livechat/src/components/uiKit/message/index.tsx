@@ -1,4 +1,5 @@
 import { uiKitMessage, UiKitParserMessage, BlockContext } from '@rocket.chat/ui-kit';
+import type { ComponentChild } from 'preact';
 import { Suspense } from 'preact/compat';
 
 import ActionsBlock from './ActionsBlock';
@@ -14,7 +15,7 @@ import PlainText from './PlainText';
 import SectionBlock from './SectionBlock';
 import StaticSelectElement from './StaticSelectElement';
 
-class MessageParser extends UiKitParserMessage<JSX.Element> {
+class MessageParser extends UiKitParserMessage<ComponentChild> {
 	divider = (element: any, context: any, index: any) => {
 		if (context !== BlockContext.BLOCK) {
 			return null;
@@ -118,4 +119,4 @@ export const parser = new MessageParser();
 
 export const renderMessageBlocks = uiKitMessage(parser, {
 	engine: 'livechat',
-}) as { (blocks: any): JSX.Element[] };
+}) as { (blocks: any): ComponentChild[] };

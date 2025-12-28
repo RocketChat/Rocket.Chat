@@ -1,4 +1,4 @@
-import { hasPermission } from '../../../app/authorization/client';
+import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 
 export const {
@@ -9,9 +9,9 @@ export const {
 } = createSidebarItems([
 	{
 		href: '/omnichannel/current',
-		icon: 'message',
-		i18nLabel: 'Current_Chats',
-		permissionGranted: (): boolean => hasPermission('view-livechat-current-chats'),
+		icon: 'address-book',
+		i18nLabel: 'Contact_Center',
+		permissionGranted: (): boolean => hasPermission('view-omnichannel-contact-center'),
 	},
 	{
 		href: '/omnichannel/analytics',
@@ -78,5 +78,11 @@ export const {
 		icon: 'clock',
 		i18nLabel: 'Business_Hours',
 		permissionGranted: (): boolean => hasPermission('view-livechat-business-hours'),
+	},
+	{
+		href: '/omnichannel/security-privacy',
+		icon: 'shield-check',
+		i18nLabel: 'Security_and_privacy',
+		permissionGranted: () => hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
 	},
 ]);

@@ -1,19 +1,18 @@
 import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { usePagination, useSort } from '@rocket.chat/ui-client';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useMemo } from 'react';
 
-import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import type { AdminUserTab, UsersTableSortingOptions } from '../AdminUsersPage';
+import type { AdminUsersTab, UsersTableSortingOption } from '../AdminUsersPage';
 
 type UseFilteredUsersOptions = {
 	searchTerm: string;
 	prevSearchTerm: MutableRefObject<string>;
-	tab: AdminUserTab;
+	tab: AdminUsersTab;
 	paginationData: ReturnType<typeof usePagination>;
-	sortData: ReturnType<typeof useSort<UsersTableSortingOptions>>;
+	sortData: ReturnType<typeof useSort<UsersTableSortingOption>>;
 	selectedRoles: string[];
 };
 
@@ -26,19 +25,19 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 			setCurrent(0);
 		}
 
-		const listUsersPayload: Partial<Record<AdminUserTab, UsersListStatusParamsGET>> = {
+		const listUsersPayload: Partial<Record<AdminUsersTab, UsersListStatusParamsGET>> = {
 			all: {},
 			pending: {
-				hasLoggedIn: false,
 				type: 'user',
+				status: 'deactivated',
+				inactiveReason: ['pending_approval'],
 			},
 			active: {
-				hasLoggedIn: true,
 				status: 'active',
 			},
 			deactivated: {
-				hasLoggedIn: true,
 				status: 'deactivated',
+				inactiveReason: ['deactivated', 'idle_too_long'],
 			},
 		};
 
@@ -52,10 +51,11 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 		};
 	}, [current, itemsPerPage, prevSearchTerm, searchTerm, selectedRoles, setCurrent, sortBy, sortDirection, tab]);
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
-	const dispatchToastMessage = useToastMessageDispatch();
-	const usersListQueryResult = useQuery(['users.list', payload, tab], async () => getUsers(payload), {
-		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
+	const usersListQueryResult = useQuery({
+		queryKey: ['users.list', payload, tab],
+		queryFn: async () => getUsers(payload),
+		meta: {
+			apiErrorToastMessage: true,
 		},
 	});
 	return usersListQueryResult;

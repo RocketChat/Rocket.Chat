@@ -6,10 +6,10 @@ import zlib from 'zlib';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 
+import { getContentDisposition } from './helper';
 import { UploadFS } from '../../../../server/ufs';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
-import { getContentDisposition } from './helper';
 
 const logger = new Logger('FileUpload');
 
@@ -28,7 +28,7 @@ class ExtractRange extends stream.Transform {
 		this.bytes_read = 0;
 	}
 
-	_transform(chunk: any, _enc: BufferEncoding, cb: TransformCallback) {
+	override _transform(chunk: any, _enc: BufferEncoding, cb: TransformCallback) {
 		if (this.bytes_read > this.stop) {
 			// done reading
 			this.end();

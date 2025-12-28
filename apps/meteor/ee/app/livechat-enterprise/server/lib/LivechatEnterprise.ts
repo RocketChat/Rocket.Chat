@@ -1,37 +1,41 @@
-import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import { MeteorError } from '@rocket.chat/core-services';
+import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements, IUser, ILivechatTag } from '@rocket.chat/core-typings';
 import { Users, OmnichannelServiceLevelAgreements, LivechatTag, LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
+import { getUnitsFromUser } from '@rocket.chat/omni-core-ee';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../../lib/callbacks';
-import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
-import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
 import { updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
+import { callbacks } from '../../../../../server/lib/callbacks';
+import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
+import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
 
 export const LivechatEnterprise = {
 	async addMonitor(username: string) {
-		check(username, String);
-
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
+		const user = await Users.findOneByUsername<Pick<IUser, '_id' | 'username' | 'roles'>>(username, {
+			projection: { _id: 1, username: 1, roles: 1 },
+		});
 
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new MeteorError('error-invalid-user', 'Invalid user', {
 				method: 'livechat:addMonitor',
 			});
 		}
 
-		if (await addUserRolesAsync(user._id, ['livechat-monitor'])) {
-			return user;
+		if (!(await addUserRolesAsync(user._id, ['livechat-monitor']))) {
+			throw new MeteorError('error-adding-monitor-role', 'Error adding monitor role', {
+				method: 'livechat:addMonitor',
+			});
 		}
 
-		return false;
+		return user;
 	},
 
 	async removeMonitor(username: string) {
-		check(username, String);
-
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+		const user = await Users.findOneByUsername<Pick<IUser, '_id'>>(username, {
+			projection: { _id: 1 },
+		});
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -39,8 +43,7 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		const removeRoleResult = await removeUserFromRolesAsync(user._id, ['livechat-monitor']);
-		if (!removeRoleResult) {
+		if (!(await removeUserFromRolesAsync(user._id, ['livechat-monitor']))) {
 			return false;
 		}
 
@@ -50,16 +53,17 @@ export const LivechatEnterprise = {
 		return true;
 	},
 
-	async removeUnit(_id: string) {
+	async removeUnit(_id: string, userId: string) {
 		check(_id, String);
 
-		const unit = await LivechatUnit.findOneById(_id, { projection: { _id: 1 } });
+		const unitsFromUser = await getUnitsFromUser(userId);
 
-		if (!unit) {
+		const result = await LivechatUnit.removeByIdAndUnit(_id, unitsFromUser);
+		if (!result.deletedCount) {
 			throw new Meteor.Error('unit-not-found', 'Unit not found', { method: 'livechat:removeUnit' });
 		}
 
-		return LivechatUnit.removeById(_id);
+		return result;
 	},
 
 	async saveUnit(
@@ -67,6 +71,7 @@ export const LivechatEnterprise = {
 		unitData: Omit<IOmnichannelBusinessUnit, '_id'>,
 		unitMonitors: { monitorId: string; username: string },
 		unitDepartments: { departmentId: string }[],
+		userId: string,
 	) {
 		check(_id, Match.Maybe(String));
 
@@ -94,7 +99,14 @@ export const LivechatEnterprise = {
 
 		let ancestors: string[] = [];
 		if (_id) {
-			const unit = await LivechatUnit.findOneById(_id);
+			const unitsFromUser = await getUnitsFromUser(userId);
+			const unit = await LivechatUnit.findOneById<Pick<IOmnichannelBusinessUnit, '_id' | 'ancestors'>>(
+				_id,
+				{
+					projection: { _id: 1, ancestors: 1 },
+				},
+				{ unitsFromUser },
+			);
 			if (!unit) {
 				throw new Meteor.Error('error-unit-not-found', 'Unit not found', {
 					method: 'livechat:saveUnit',
@@ -112,16 +124,14 @@ export const LivechatEnterprise = {
 
 		const monitors = validUserMonitors.map(({ _id: monitorId, username }) => ({
 			monitorId,
-			username,
-		})) as { monitorId: string; username: string }[];
+			username: username!,
+		}));
 
 		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, monitors, unitDepartments);
 	},
 
 	async removeTag(_id: string) {
-		check(_id, String);
-
-		const tag = await LivechatTag.findOneById(_id, { projection: { _id: 1, name: 1 } });
+		const tag = await LivechatTag.findOneById<Pick<ILivechatTag, '_id' | 'name'>>(_id, { projection: { _id: 1, name: 1 } });
 
 		if (!tag) {
 			throw new Meteor.Error('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
@@ -131,21 +141,20 @@ export const LivechatEnterprise = {
 		return LivechatTag.removeById(_id);
 	},
 
-	async saveTag(_id: string | undefined, tagData: { name: string; description?: string }, tagDepartments: string[]) {
-		check(_id, Match.Maybe(String));
-
-		check(tagData, {
-			name: String,
-			description: Match.Optional(String),
-		});
-
-		check(tagDepartments, [String]);
-
+	async saveTag(_id: string | undefined, tagData: { name: string; description?: string }, tagDepartments: string[] | undefined) {
 		return LivechatTag.createOrUpdateTag(_id, tagData, tagDepartments);
 	},
 
-	async saveSLA(_id: string | null, slaData: Pick<IOmnichannelServiceLevelAgreements, 'name' | 'description' | 'dueTimeInMinutes'>) {
-		const oldSLA = _id && (await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
+	async saveSLA(
+		_id: string | null,
+		slaData: Pick<IOmnichannelServiceLevelAgreements, 'name' | 'description' | 'dueTimeInMinutes'>,
+		executedBy: string,
+	) {
+		const oldSLA =
+			_id &&
+			(await OmnichannelServiceLevelAgreements.findOneById<Pick<IOmnichannelServiceLevelAgreements, 'dueTimeInMinutes'>>(_id, {
+				projection: { dueTimeInMinutes: 1 },
+			}));
 		const exists = await OmnichannelServiceLevelAgreements.findDuplicate(_id, slaData.name, slaData.dueTimeInMinutes);
 		if (exists) {
 			throw new Error('error-duplicated-sla');
@@ -160,23 +169,18 @@ export const LivechatEnterprise = {
 		const { dueTimeInMinutes } = sla;
 
 		if (oldDueTimeInMinutes !== dueTimeInMinutes) {
-			await updateSLAInquiries(sla);
+			await updateSLAInquiries(executedBy, sla);
 		}
 
 		return sla;
 	},
 
-	async removeSLA(_id: string) {
-		const sla = await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { _id: 1 } });
-		if (!sla) {
+	async removeSLA(executedBy: string, _id: string) {
+		const removedResult = await OmnichannelServiceLevelAgreements.removeById(_id);
+		if (!removedResult || removedResult.deletedCount !== 1) {
 			throw new Error(`SLA with id ${_id} not found`);
 		}
 
-		const removedResult = await OmnichannelServiceLevelAgreements.removeById(_id);
-		if (!removedResult || removedResult.deletedCount !== 1) {
-			throw new Error(`Error removing SLA with id ${_id}`);
-		}
-
-		await removeSLAFromRooms(_id);
+		await removeSLAFromRooms(_id, executedBy);
 	},
 };

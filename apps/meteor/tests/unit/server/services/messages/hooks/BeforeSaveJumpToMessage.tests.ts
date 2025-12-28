@@ -1,8 +1,9 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { BeforeSaveJumpToMessage } from '../../../../../../server/services/messages/hooks/BeforeSaveJumpToMessage';
 
-const createMessage = (msg?: string, extra: any = {}) => ({
+const createMessage = (msg?: string, extra: Partial<IMessage> = {}) => ({
 	_id: 'random',
 	rid: 'GENERAL',
 	ts: new Date(),
@@ -79,7 +80,14 @@ describe('Create attachments for message URLs', () => {
 		});
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
-			message: createMessage('hey', { urls: [{ url: 'https://google.com' }] }),
+			message: createMessage('hey', {
+				urls: [
+					{
+						url: 'https://google.com',
+						meta: {},
+					},
+				],
+			}),
 			user: createUser(),
 			config: {
 				chainLimit: 10,
@@ -101,7 +109,14 @@ describe('Create attachments for message URLs', () => {
 		});
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
-			message: createMessage('hey', { urls: [{ url: 'https://open.rocket.chat' }] }),
+			message: createMessage('hey', {
+				urls: [
+					{
+						url: 'https://open.rocket.chat',
+						meta: {},
+					},
+				],
+			}),
 			user: createUser(),
 			config: {
 				chainLimit: 10,
@@ -123,7 +138,14 @@ describe('Create attachments for message URLs', () => {
 		});
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
-			message: createMessage('hey', { urls: [{ url: 'https://open.rocket.chat/?token=value' }] }),
+			message: createMessage('hey', {
+				urls: [
+					{
+						url: 'https://open.rocket.chat/?token=value',
+						meta: {},
+					},
+				],
+			}),
 			user: createUser(),
 			config: {
 				chainLimit: 10,
@@ -145,7 +167,14 @@ describe('Create attachments for message URLs', () => {
 		});
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
-			message: createMessage('hey', { urls: [{ url: 'https://open.rocket.chat/?msg=value' }] }),
+			message: createMessage('hey', {
+				urls: [
+					{
+						url: 'https://open.rocket.chat/?msg=value',
+						meta: {},
+					},
+				],
+			}),
 			user: createUser(),
 			config: {
 				chainLimit: 10,
@@ -167,7 +196,14 @@ describe('Create attachments for message URLs', () => {
 		});
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
-			message: createMessage('hey', { urls: [{ url: 'https://open.rocket.chat/?msg=value' }] }),
+			message: createMessage('hey', {
+				urls: [
+					{
+						url: 'https://open.rocket.chat/?msg=value',
+						meta: {},
+					},
+				],
+			}),
 			user: createUser(),
 			config: {
 				chainLimit: 10,
@@ -189,7 +225,14 @@ describe('Create attachments for message URLs', () => {
 		});
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
-			message: createMessage('hey', { urls: [{ url: 'https://open.rocket.chat/?msg=value' }] }),
+			message: createMessage('hey', {
+				urls: [
+					{
+						url: 'https://open.rocket.chat/?msg=value',
+						meta: {},
+					},
+				],
+			}),
 			user: createUser(),
 			config: {
 				chainLimit: 10,
@@ -212,7 +255,12 @@ describe('Create attachments for message URLs', () => {
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
 			message: createMessage('hey', {
-				urls: [{ url: 'https://open.rocket.chat/linked?msg=linked' }],
+				urls: [
+					{
+						url: 'https://open.rocket.chat/linked?msg=linked',
+						meta: {},
+					},
+				],
 				attachments: [
 					{
 						text: 'old attachment',
@@ -322,7 +370,14 @@ describe('Create attachments for message URLs', () => {
 		});
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
-			message: createMessage('hey', { urls: [{ url: 'https://open.rocket.chat/linked?msg=linked' }] }),
+			message: createMessage('hey', {
+				urls: [
+					{
+						url: 'https://open.rocket.chat/linked?msg=linked',
+						meta: {},
+					},
+				],
+			}),
 			user: createUser(),
 			config: {
 				chainLimit: 10,
@@ -388,7 +443,12 @@ describe('Create attachments for message URLs', () => {
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
 			message: createMessage('hey', {
-				urls: [{ url: 'https://open.rocket.chat/linked?msg=linked' }],
+				urls: [
+					{
+						url: 'https://open.rocket.chat/linked?msg=linked',
+						meta: {},
+					},
+				],
 			}),
 			user: createUser(),
 			config: {
@@ -405,6 +465,89 @@ describe('Create attachments for message URLs', () => {
 		expect(deep).to.be.eq(3);
 	});
 
+	it('should respect chain limit config but keep the file attachments of last chained message', async () => {
+		const jumpToMessage = new BeforeSaveJumpToMessage({
+			getMessages: async () => [
+				createMessage('linked message', {
+					_id: 'linked',
+					attachments: [
+						{
+							text: 'chained 1',
+							author_name: 'username',
+							author_icon: 'url',
+							ts: new Date(),
+							message_link: 'https://open.rocket.chat/linked?msg=linkedMsgId',
+							attachments: [
+								{
+									text: 'chained 2',
+									author_name: 'username',
+									author_icon: 'url',
+									message_link: 'https://open.rocket.chat/linked?msg=linkedMsgId',
+									ts: new Date(),
+									attachments: [
+										{
+											ts: new Date(),
+											title: 'file.png',
+											title_link: 'title-link',
+											title_link_download: true,
+											image_dimensions: {
+												width: 480,
+												height: 269,
+											},
+											image_preview: 'image-preview',
+											image_url: 'image-url',
+											image_type: 'image/png',
+											image_size: 68016,
+											type: 'file',
+											description: 'chained 3 - file',
+											descriptionMd: [
+												{
+													type: 'PARAGRAPH',
+													value: [
+														{
+															type: 'PLAIN_TEXT',
+															value: 'chained 3 - file',
+														},
+													],
+												},
+											],
+										},
+									],
+								},
+							],
+						},
+					],
+				}),
+			],
+			getRooms: async () => [createRoom()],
+			canAccessRoom: async () => true,
+			getUserAvatarURL: () => 'url',
+		});
+
+		const message = await jumpToMessage.createAttachmentForMessageURLs({
+			message: createMessage('hey', {
+				urls: [
+					{
+						url: 'https://open.rocket.chat/linked?msg=linked',
+						meta: {},
+					},
+				],
+			}),
+			user: createUser(),
+			config: {
+				chainLimit: 3,
+				siteUrl: 'https://open.rocket.chat',
+				useRealName: true,
+			},
+		});
+
+		expect(message).to.have.property('urls').and.to.have.lengthOf(1);
+		expect(message).to.have.property('attachments').and.to.have.lengthOf(1);
+
+		const deep = countDeep(message);
+		expect(deep).to.be.eq(4, 'The chain limit should be respected, but the file attachments of the last chained message should be kept.');
+	});
+
 	it('should create the attachment if cannot access room but message has a livechat token', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
 			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
@@ -415,7 +558,12 @@ describe('Create attachments for message URLs', () => {
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
 			message: createMessage('hey', {
-				urls: [{ url: 'https://open.rocket.chat/linked?msg=linked' }],
+				urls: [
+					{
+						url: 'https://open.rocket.chat/linked?msg=linked',
+						meta: {},
+					},
+				],
 				token: 'livechatToken',
 			}),
 			user: createUser(),
@@ -452,7 +600,12 @@ describe('Create attachments for message URLs', () => {
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
 			message: createMessage('hey', {
-				urls: [{ url: 'https://open.rocket.chat/linked?msg=linked' }],
+				urls: [
+					{
+						url: 'https://open.rocket.chat/linked?msg=linked',
+						meta: {},
+					},
+				],
 				token: 'another-token',
 			}),
 			user: createUser(),
@@ -477,6 +630,7 @@ describe('Create attachments for message URLs', () => {
 							text: 'chained 1',
 							author_name: 'username',
 							author_icon: 'url',
+							message_link: 'https://open.rocket.chat/linked?msg=linkedMsgId1',
 							ts: new Date(),
 						},
 					],
@@ -489,7 +643,12 @@ describe('Create attachments for message URLs', () => {
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
 			message: createMessage('hey', {
-				urls: [{ url: 'https://open.rocket.chat/linked?msg=linkedMsgId' }],
+				urls: [
+					{
+						url: 'https://open.rocket.chat/linked?msg=linkedMsgId',
+						meta: {},
+					},
+				],
 			}),
 			user: createUser(),
 			config: {
@@ -535,7 +694,16 @@ describe('Create attachments for message URLs', () => {
 
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
 			message: createMessage('hey', {
-				urls: [{ url: 'https://open.rocket.chat/linked?msg=msg1' }, { url: 'https://open.rocket.chat/linked?msg=msg2' }],
+				urls: [
+					{
+						url: 'https://open.rocket.chat/linked?msg=msg1',
+						meta: {},
+					},
+					{
+						url: 'https://open.rocket.chat/linked?msg=msg2',
+						meta: {},
+					},
+				],
 			}),
 			user: createUser(),
 			config: {

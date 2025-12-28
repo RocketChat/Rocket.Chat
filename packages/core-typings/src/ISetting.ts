@@ -1,15 +1,11 @@
 import type { IRocketChatAssetConstraint } from './IRocketChatAssets';
-
-export type SettingId = string;
-export type GroupId = SettingId;
-export type TabId = SettingId;
-export type SectionName = string;
+import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export enum SettingEditor {
 	COLOR = 'color',
 	EXPRESSION = 'expression',
 }
-type AssetValue = { defaultUrl?: string };
+
 export type SettingValueMultiSelect = (string | number)[];
 export type SettingValueRoomPick = { _id: string; name?: string }[];
 export type SettingValue =
@@ -19,7 +15,7 @@ export type SettingValue =
 	| SettingValueMultiSelect
 	| SettingValueRoomPick
 	| Date
-	| AssetValue
+	| { url?: string; defaultUrl?: string }
 	| undefined
 	| null;
 
@@ -28,13 +24,11 @@ export interface ISettingSelectOption {
 	i18nLabel: string;
 }
 
-export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction | ISettingAsset;
+export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction | ISettingAsset | ISettingRange;
 
 type EnableQuery = string | { _id: string; value: any } | { _id: string; value: any }[];
 
-export interface ISettingBase {
-	_id: SettingId;
-	_updatedAt: Date;
+export interface ISettingBase extends IRocketChatRecord {
 	type:
 		| 'boolean'
 		| 'timezone'
@@ -54,12 +48,13 @@ export interface ISettingBase {
 		| 'group'
 		| 'date'
 		| 'lookup'
+		| 'range'
 		| 'timespan';
 	public: boolean;
 	env: boolean;
-	group?: GroupId;
-	section?: SectionName;
-	tab?: TabId;
+	group?: string;
+	section?: string;
+	tab?: string;
 	i18nLabel: string;
 	value: SettingValue;
 	packageValue: SettingValue;
@@ -130,9 +125,10 @@ export interface ISettingAction extends ISettingBase {
 	value: string;
 	actionText?: string;
 }
+
 export interface ISettingAsset extends ISettingBase {
 	type: 'asset';
-	value: AssetValue;
+	value: { url?: string; defaultUrl?: string };
 	fileConstraints: IRocketChatAssetConstraint;
 	asset: string;
 }
@@ -140,6 +136,12 @@ export interface ISettingAsset extends ISettingBase {
 export interface ISettingDate extends ISettingBase {
 	type: 'date';
 	value: Date;
+}
+
+export interface ISettingRange extends ISettingBase {
+	type: 'range';
+	minValue: number;
+	maxValue: number;
 }
 
 // Checks if setting has at least the required properties
@@ -165,6 +167,8 @@ export const isSettingAction = (setting: ISettingBase): setting is ISettingActio
 
 export const isSettingAsset = (setting: ISettingBase): setting is ISettingAsset => setting.type === 'asset';
 
+export const isSettingRange = (setting: ISettingBase): setting is ISettingRange => setting.type === 'range';
+
 export interface ISettingStatistics {
 	account2fa?: boolean;
 	cannedResponsesEnabled?: boolean;
@@ -187,7 +191,6 @@ export interface ISettingStatistics {
 	allowBadWordsFilter?: boolean;
 	readReceiptEnabled?: boolean;
 	readReceiptStoreUsers?: boolean;
-	otrEnable?: boolean;
 	pushEnable?: boolean;
 	globalSearchEnabled?: boolean;
 	threadsEnabled?: boolean;
@@ -241,9 +244,6 @@ export interface ISettingStatisticsObject {
 		allowBadWordsFilter?: boolean;
 		readReceiptEnabled?: boolean;
 		readReceiptStoreUsers?: boolean;
-	};
-	otr?: {
-		otrEnable?: boolean;
 	};
 	push?: {
 		pushEnable?: boolean;

@@ -8,10 +8,10 @@ import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { beforeCreateUserCallback } from '../../../../lib/callbacks/beforeCreateUserCallback';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { beforeCreateUserCallback } from '../../../../server/lib/callbacks/beforeCreateUserCallback';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getMaxLoginTokens } from '../../../../server/lib/getMaxLoginTokens';
 import { i18n } from '../../../../server/lib/i18n';
@@ -23,12 +23,24 @@ import { setAvatarFromServiceWithValidation } from '../../../lib/server/function
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
+import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFields';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
 });
+/**
+ * Accounts calls `_initServerPublications` and holds the `_defaultPublishFields`, without Object.assign its not possible
+ * to extend the projection
+ *
+ * the idea is to send all required fields to the client during login
+ * we tried `defaultFieldsSelector` , but it changes all Meteor.userAsync projections which is undesirable
+ *
+ *
+ * we are removing the status here because meteor send 'offline'
+ */
+Object.assign(Accounts._defaultPublishFields.projection, (({ status, ...rest }) => rest)(getBaseUserFields(true)));
 
 Meteor.startup(() => {
 	settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
@@ -192,7 +204,9 @@ const onCreateUserAsync = async function (options, user = {}) {
 	}
 
 	user.status = 'offline';
+
 	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
+	user.inactiveReason = settings.get('Accounts_ManuallyApproveNewUsers') && !user.active ? 'pending_approval' : undefined;
 
 	if (!user.name) {
 		if (options.profile) {
@@ -262,11 +276,12 @@ const onCreateUserAsync = async function (options, user = {}) {
 
 Accounts.onCreateUser(function (...args) {
 	// Depends on meteor support for Async
-	return Promise.await(onCreateUserAsync.call(this, ...args));
+	return onCreateUserAsync.call(this, ...args);
 });
 
 const { insertUserDoc } = Accounts;
-const insertUserDocAsync = async function (options, user) {
+
+Accounts.insertUserDoc = async function (options, user) {
 	const globalRoles = new Set();
 
 	if (Match.test(options.globalRoles, [String]) && options.globalRoles.length > 0) {
@@ -279,7 +294,7 @@ const insertUserDocAsync = async function (options, user) {
 
 	delete user.globalRoles;
 
-	if (user.services && !user.services.password) {
+	if (user.services && !user.services.password && !options.skipAuthServiceDefaultRoles) {
 		const defaultAuthServiceRoles = parseCSV(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles') || '');
 
 		if (defaultAuthServiceRoles.length > 0) {
@@ -294,7 +309,11 @@ const insertUserDocAsync = async function (options, user) {
 		user.type = 'user';
 	}
 
-	if (settings.get('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In')) {
+	if (
+		settings.get('Accounts_TwoFactorAuthentication_Enabled') &&
+		settings.get('Accounts_TwoFactorAuthentication_By_Email_Enabled') &&
+		settings.get('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In')
+	) {
 		user.services = user.services || {};
 		user.services.email2fa = {
 			enabled: true,
@@ -307,7 +326,7 @@ const insertUserDocAsync = async function (options, user) {
 		user.roles = [];
 	}
 
-	const _id = insertUserDoc.call(Accounts, options, user);
+	const _id = await insertUserDoc.call(Accounts, options, user);
 
 	user = await Users.findOne({
 		_id,
@@ -325,6 +344,7 @@ const insertUserDocAsync = async function (options, user) {
 		if (!roles.includes('admin') && !hasAdmin) {
 			roles.push('admin');
 			if (settings.get('Show_Setup_Wizard') === 'pending') {
+				// TODO: audit
 				(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
 					void notifyOnSettingChangedById('Show_Setup_Wizard');
 			}
@@ -366,11 +386,6 @@ const insertUserDocAsync = async function (options, user) {
 	}
 
 	return _id;
-};
-
-Accounts.insertUserDoc = function (...args) {
-	// Depends on meteor support for Async
-	return Promise.await(insertUserDocAsync.call(this, ...args));
 };
 
 const validateLoginAttemptAsync = async function (login) {
@@ -442,7 +457,7 @@ const validateLoginAttemptAsync = async function (login) {
 
 Accounts.validateLoginAttempt(function (...args) {
 	// Depends on meteor support for Async
-	return Promise.await(validateLoginAttemptAsync.call(this, ...args));
+	return validateLoginAttemptAsync.call(this, ...args);
 });
 
 Accounts.validateNewUser((user) => {

@@ -209,6 +209,29 @@ export const createLdapSettings = () =>
 					enableQuery,
 					displayQuery: ldapOnly,
 				});
+
+				await this.add('LDAP_Extension_Field', '', {
+					type: 'string',
+					enableQuery,
+				});
+
+				await this.add('LDAP_FederationHomeServer_Field', '', {
+					type: 'string',
+					enableQuery,
+				});
+
+				await this.add('LDAP_DataSync_UseVariables', false, {
+					type: 'boolean',
+					enableQuery,
+					invalidValue: false,
+				});
+
+				await this.add('LDAP_DataSync_VariableMap', '{}', {
+					type: 'code',
+					multiline: true,
+					enableQuery: [enableQuery, { _id: 'LDAP_DataSync_UseVariables', value: true }],
+					invalidValue: '{}',
+				});
 			});
 
 			await this.section('LDAP_DataSync_Avatar', async function () {

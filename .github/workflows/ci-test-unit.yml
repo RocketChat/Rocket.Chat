@@ -6,6 +6,9 @@ on:
       node-version:
         required: true
         type: string
+      deno-version:
+        required: true
+        type: string
       enterprise-license:
         required: false
         type: string
@@ -20,7 +23,7 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04-arm
 
     name: Unit Tests
 
@@ -31,22 +34,34 @@ jobs:
           theme: dark
           job_summary: true
           comment_on_pr: false
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ inputs.node-version }}
+          deno-version: ${{ inputs.deno-version }}
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@v1.5
+      - uses: rharkor/caching-for-turbo@v1.8
+
+      - name: Restore packages build
+        uses: actions/download-artifact@v7
+        with:
+          name: packages-build
+          path: /tmp
+
+      - name: Unpack packages build
+        shell: bash
+        run: |
+          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
       - name: Unit Test
         run: yarn testunit
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v5
         with:
           flags: unit
           verbose: true

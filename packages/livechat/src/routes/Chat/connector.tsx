@@ -45,8 +45,6 @@ export const ChatConnector: FunctionalComponent<{ path: string; default: boolean
 		lastReadMessageId,
 		triggerAgent,
 		queueInfo,
-		incomingCallAlert,
-		ongoingCall,
 		messageListPosition,
 	} = useContext(StoreContext);
 
@@ -84,15 +82,13 @@ export const ChatConnector: FunctionalComponent<{ path: string; default: boolean
 							spot: queueInfo.spot,
 							estimatedWaitTimeSeconds: queueInfo.estimatedWaitTimeSeconds,
 							message: queueInfo.message,
-					  }
+						}
 					: undefined
 			}
 			registrationFormEnabled={registrationForm}
 			nameFieldRegistrationForm={nameFieldRegistrationForm}
 			emailFieldRegistrationForm={emailFieldRegistrationForm}
 			limitTextLength={limitTextLength}
-			incomingCallAlert={incomingCallAlert}
-			ongoingCall={ongoingCall}
 			messageListPosition={messageListPosition}
 			theme={theme}
 			visitorsCanCloseChat={visitorsCanCloseChat}

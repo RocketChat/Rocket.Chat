@@ -1,5 +1,5 @@
 import type { Item } from '../../Components/DropDown/types';
-import { callout } from '../callout';
+import { callout, calloutWithAction } from '../callout';
 import {
   actionWithButtonDefault,
   actionWithButtonPrimary,
@@ -52,6 +52,7 @@ import {
   sectionWithMenu,
   sectionWithdatePicker,
 } from './section';
+import { infoCardPlain, infoCardMultipleRows } from './infoCard';
 import { disabled, plain, selected } from '../tabNavigation';
 import { actionWithToggleSwitch } from '../action/toggleSwitch';
 import { actionWithTimePicker } from '../action/timePicker';
@@ -232,6 +233,19 @@ const BlocksTree: Item = [
     ],
   },
   {
+    label: 'info card',
+    branches: [
+      {
+        label: 'plain',
+        payload: infoCardPlain,
+      },
+      {
+        label: 'multiple sections',
+        payload: infoCardMultipleRows,
+      },
+    ],
+  },
+  {
     label: 'input',
     branches: [
       {
@@ -323,6 +337,10 @@ const BlocksTree: Item = [
       {
         label: 'Plain',
         payload: callout,
+      },
+      {
+        label: 'With Action',
+        payload: calloutWithAction,
       },
     ],
   },

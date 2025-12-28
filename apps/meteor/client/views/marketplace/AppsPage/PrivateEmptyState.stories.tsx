@@ -1,16 +1,14 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import PrivateEmptyState from './PrivateEmptyState';
 
 export default {
-	title: 'Marketplace/Components/PageEmptyPrivateApps',
 	component: PrivateEmptyState,
 	parameters: {
 		layout: 'fullscreen',
 		controls: { hideNoControlsWarning: true },
 	},
-} as ComponentMeta<typeof PrivateEmptyState>;
+} satisfies Meta<typeof PrivateEmptyState>;
 
-export const Default: ComponentStory<typeof PrivateEmptyState> = () => <PrivateEmptyState />;
+export const Default: StoryFn<typeof PrivateEmptyState> = () => <PrivateEmptyState />;
 Default.storyName = 'PageEmptyPrivateApps';

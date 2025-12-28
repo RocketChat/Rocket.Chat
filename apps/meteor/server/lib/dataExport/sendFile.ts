@@ -48,7 +48,7 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 						...(data.dateFrom && { $gte: data.dateFrom }),
 						...(data.dateTo && { $lte: data.dateTo }),
 					},
-			  };
+				};
 
 	const exportMessages = async (): Promise<void> => {
 		const { fileList } = await exportRoomMessagesToFile(exportPath, assetsPath, exportType, roomsToExport, user, filter, {}, false);

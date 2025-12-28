@@ -1,8 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import { Contextualbar } from '@rocket.chat/ui-client';
+import type { Meta, StoryFn } from '@storybook/react';
 
-import { Contextualbar } from '../../../../components/Contextualbar';
 import TeamsInfo from './TeamsInfo';
 
 const room = {
@@ -17,7 +16,6 @@ const room = {
 } as IRoom;
 
 export default {
-	title: 'Teams/Contextual Bar/TeamsInfo',
 	component: TeamsInfo,
 	parameters: {
 		layout: 'fullscreen',
@@ -26,11 +24,10 @@ export default {
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 	args: {
 		room,
-		icon: 'lock',
 	},
-} as ComponentMeta<typeof TeamsInfo>;
+} satisfies Meta<typeof TeamsInfo>;
 
-const Template: ComponentStory<typeof TeamsInfo> = (args) => <TeamsInfo {...args} />;
+const Template: StoryFn<typeof TeamsInfo> = (args) => <TeamsInfo {...args} />;
 
 export const Default = Template.bind({});
 

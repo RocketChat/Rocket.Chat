@@ -7,9 +7,9 @@ export interface ICalendarService {
 	import(data: Omit<InsertionModel<ICalendarEvent>, 'notificationSent'>): Promise<ICalendarEvent['_id']>;
 	get(eventId: ICalendarEvent['_id']): Promise<ICalendarEvent | null>;
 	list(uid: IUser['_id'], date: Date): Promise<ICalendarEvent[]>;
-	update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult>;
+	update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult | null>;
 	delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult>;
-	findImportedEvent(externalId: Required<ICalendarEvent>['externalId'], uid: ICalendarEvent['uid']): Promise<ICalendarEvent | null>;
-	parseDescriptionForMeetingUrl(description: string): Promise<string | undefined>;
 	setupNextNotification(): Promise<void>;
+	setupNextStatusChange(): Promise<void>;
+	cancelUpcomingStatusChanges(uid: IUser['_id'], endTime?: Date): Promise<void>;
 }

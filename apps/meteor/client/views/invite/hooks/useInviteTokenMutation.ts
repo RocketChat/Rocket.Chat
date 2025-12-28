@@ -1,15 +1,17 @@
-import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 export const useInviteTokenMutation = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const getInviteRoom = useEndpoint('POST', '/v1/useInviteToken');
 
-	const { mutate } = useMutation({
+	return useMutation({
+		mutationKey: ['inviteToken'],
 		mutationFn: (token: string) => getInviteRoom({ token }),
 		onSuccess: (result) => {
 			if (!result.room.name) {
@@ -30,6 +32,4 @@ export const useInviteTokenMutation = () => {
 			router.navigate('/home');
 		},
 	});
-
-	return mutate;
 };

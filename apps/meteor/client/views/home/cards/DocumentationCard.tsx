@@ -1,15 +1,15 @@
 import type { Card } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import { useExternalLink } from '../../../hooks/useExternalLink';
+import { links } from '../../../lib/links';
 
-const DOCS_URL = 'https://go.rocket.chat/i/hp-documentation';
+const DOCS_URL = links.go.documentation;
 
 const DocumentationCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
 
 	return (

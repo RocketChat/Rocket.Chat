@@ -1,3 +1,5 @@
+import type { IAbacAttributeDefinition } from './IAbacAttribute';
+import type { ILivechatDepartment } from './ILivechatDepartment';
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IMessage, MessageTypesValues } from './IMessage';
@@ -5,10 +7,6 @@ import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLe
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
-
-type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
-const sidepanelItemValues = ['channels', 'discussions'] as const;
-export type SidepanelItem = (typeof sidepanelItemValues)[number];
 
 export type RoomID = string;
 export type ChannelName = string;
@@ -34,6 +32,8 @@ export interface IRoom extends IRocketChatRecord {
 		style?: string;
 	};
 	encrypted?: boolean;
+	// The existence of an abac attribute definition indicates that ABAC is enabled for the room
+	abacAttributes?: IAbacAttributeDefinition[];
 	topic?: string;
 
 	reactWhenReadOnly?: boolean;
@@ -47,7 +47,6 @@ export interface IRoom extends IRocketChatRecord {
 	lastMessage?: IMessage;
 	lm?: Date;
 	usersCount: number;
-	callStatus?: CallStatus;
 	webRtcCallStartTime?: Date;
 	servedBy?: {
 		_id: string;
@@ -79,7 +78,6 @@ export interface IRoom extends IRocketChatRecord {
 	favorite?: boolean;
 	archived?: boolean;
 	description?: string;
-	createdOTR?: boolean;
 	e2eKeyId?: string;
 
 	/* @deprecated */
@@ -89,29 +87,11 @@ export interface IRoom extends IRocketChatRecord {
 
 	usersWaitingForE2EKeys?: { userId: IUser['_id']; ts: Date }[];
 
-	sidepanel?: {
-		items: [SidepanelItem, SidepanelItem?];
-	};
+	/**
+	 * @deprecated Using `boolean` is deprecated. Use `number` instead.
+	 */
+	rolePrioritiesCreated?: number | boolean;
 }
-
-export const isSidepanelItem = (item: any): item is SidepanelItem => {
-	return sidepanelItemValues.includes(item);
-};
-
-export const isValidSidepanel = (sidepanel: IRoom['sidepanel']) => {
-	if (sidepanel === null) {
-		return true;
-	}
-	if (!sidepanel?.items) {
-		return false;
-	}
-	return (
-		Array.isArray(sidepanel.items) &&
-		sidepanel.items.length &&
-		sidepanel.items.every(isSidepanelItem) &&
-		sidepanel.items.length === new Set(sidepanel.items).size
-	);
-};
 
 export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>
 	'joinCodeRequired' in room && (room as any).joinCodeRequired === true;
@@ -121,11 +101,29 @@ export interface IRoomWithJoinCode extends IRoom {
 	joinCode: string;
 }
 
+declare const __brand: unique symbol;
+type Brand<B> = { [__brand]: B };
+export type Branded<T, B> = T & Brand<B>;
+
 export interface IRoomFederated extends IRoom {
+	_id: Branded<string, 'IRoomFederated'>;
 	federated: true;
 }
 
-export const isRoomFederated = (room: Partial<IRoom>): room is IRoomFederated => 'federated' in room && (room as any).federated === true;
+export interface IRoomNativeFederated extends IRoomFederated {
+	federation: {
+		version: number;
+		// Matrix's room ID. Example: !XqJXqZxXqJXq:matrix.org
+		mrid: string;
+		origin: string;
+	};
+}
+
+export const isRoomFederated = (room: Partial<IRoom>): room is IRoomFederated => 'federated' in room && room.federated === true;
+
+export const isRoomNativeFederated = (room: Partial<IRoom>): room is IRoomNativeFederated =>
+	isRoomFederated(room) && 'federation' in room && room.federation !== undefined;
+
 export interface ICreatedRoom extends IRoom {
 	rid: string;
 	inserted: boolean;
@@ -180,6 +178,8 @@ export interface IOmnichannelSource {
 	sidebarIcon?: string;
 	// The default sidebar icon
 	defaultIcon?: string;
+	// The destination of the message (e.g widget host, email address, whatsapp number, etc)
+	destination?: string;
 }
 
 export interface IOmnichannelSourceFromApp extends IOmnichannelSource {
@@ -189,10 +189,11 @@ export interface IOmnichannelSourceFromApp extends IOmnichannelSource {
 	sidebarIcon?: string;
 	defaultIcon?: string;
 	alias?: string;
+	destination?: string;
 }
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast'> {
-	t: 'l' | 'v';
+	t: 'l';
 	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity'> & {
 		lastMessageTs?: Date;
 		phone?: string;
@@ -202,7 +203,7 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		inbox: string;
 		thread: string[];
 		replyTo: string;
-		subject: string;
+		subject?: string;
 	};
 	source: IOmnichannelSource;
 
@@ -261,6 +262,8 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	closingMessage?: IMessage;
 
 	departmentAncestors?: string[];
+
+	contactId?: string;
 }
 
 export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
@@ -281,9 +284,6 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	slaId?: string;
 	estimatedWaitingTimeQueue: IOmnichannelServiceLevelAgreements['dueTimeInMinutes']; // It should always have a default value for sorting mechanism to work
 
-	// Signals if the room already has a pdf transcript requested
-	// This prevents the user from requesting a transcript multiple times
-	pdfTranscriptRequested?: boolean;
 	// The ID of the pdf file generated for the transcript
 	// This will help if we want to have this file shown on other places of the UI
 	pdfTranscriptFileId?: string;
@@ -315,49 +315,32 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	// which is controlled by Livechat_auto_transfer_chat_timeout setting
 	autoTransferredAt?: Date;
 	autoTransferOngoing?: boolean;
-}
 
-export interface IVoipRoom extends IOmnichannelGenericRoom {
-	t: 'v';
-	name: string;
-	// The timestamp when call was started
-	callStarted: Date;
-	// The amount of time the call lasted, in milliseconds
-	callDuration?: number;
-	// The amount of time call was in queue in milliseconds
-	callWaitingTime?: number;
-	// The total of hold time for call (calculated at closing time) in seconds
-	callTotalHoldTime?: number;
-	// The pbx queue the call belongs to
-	queue: string;
-	// The ID assigned to the call (opaque ID)
-	callUniqueId?: string;
-	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token'> & { lastMessageTs?: Date; phone?: string };
-	// Outbound means the call was initiated from Rocket.Chat and vise versa
-	direction: 'inbound' | 'outbound';
+	verified?: boolean;
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
 	source: IOmnichannelSourceFromApp;
 }
 
-export type IVoipRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> &
-	Pick<IVoipRoom, 'callDuration' | 'callTotalHoldTime'> & {
-		serviceTimeDuration?: number;
-	};
-
 export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> & {
 	serviceTimeDuration?: number;
 	chatDuration: number;
 };
 
-export const isOmnichannelRoom = (room: Pick<IRoom, 't'>): room is IOmnichannelRoom & IRoom => room.t === 'l';
+export type IOmnichannelRoomWithDepartment = IOmnichannelRoom & { department?: ILivechatDepartment };
 
-export const isVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
+export const isOmnichannelRoom = (room: Pick<IRoom, 't'>): room is IOmnichannelRoom & IRoom => room.t === 'l';
 
 export const isOmnichannelSourceFromApp = (source: IOmnichannelSource): source is IOmnichannelSourceFromApp => {
 	return source?.type === OmnichannelSourceType.APP;
 };
+
+export type IOmnichannelRoomInfo = Pick<Partial<IOmnichannelRoom>, 'sms' | 'email'> & Pick<IOmnichannelRoom, 'source'>;
+
+export type IOmnichannelRoomExtraData = Pick<Partial<IOmnichannelRoom>, 'customFields' | 'source'> & { sla?: string };
+
+export type IOmnichannelInquiryExtraData = IOmnichannelRoomExtraData & { priority?: string };
 
 export type RoomAdminFieldsType =
 	| '_id'
@@ -386,7 +369,8 @@ export type RoomAdminFieldsType =
 	| 'description'
 	| 'broadcast'
 	| 'uids'
-	| 'avatarETag';
+	| 'avatarETag'
+	| 'abacAttributes';
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {
@@ -398,3 +382,10 @@ export interface IRoomWithRetentionPolicy extends IRoom {
 		overrideGlobal?: boolean;
 	};
 }
+
+export const ROOM_ROLE_PRIORITY_MAP = {
+	owner: 0,
+	leader: 250,
+	moderator: 500,
+	default: 10000,
+};

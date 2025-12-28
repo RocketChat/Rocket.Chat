@@ -1,6 +1,7 @@
 import { isMessageFromVisitor } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { removeEmpty } from '@rocket.chat/tools';
 
 import { cachedFunction } from './cachedFunction';
 import { transformMappedData } from './transformMappedData';
@@ -47,6 +48,8 @@ export class AppMessagesConverter {
 			editor: 'editedBy',
 			attachments: getAttachments,
 			sender: 'u',
+			threadMsgCount: 'tcount',
+			type: 't',
 		};
 
 		return transformMappedData(message, map);
@@ -90,6 +93,7 @@ export class AppMessagesConverter {
 			groupable: 'groupable',
 			token: 'token',
 			blocks: 'blocks',
+			type: 't',
 			room: async (message) => {
 				const result = await cache.get('room')(message.rid);
 				delete message.rid;
@@ -134,19 +138,23 @@ export class AppMessagesConverter {
 		return transformMappedData(msgObj, map);
 	}
 
-	async convertAppMessage(message) {
-		if (!message || !message.room) {
+	async convertAppMessage(message, isPartial = false) {
+		if (!message) {
 			return undefined;
 		}
 
-		const room = await Rooms.findOneById(message.room.id);
+		let rid;
+		if (message.room?.id) {
+			const room = await Rooms.findOneById(message.room.id, { projection: { _id: 1 } });
+			rid = room?._id;
+		}
 
-		if (!room) {
+		if (!rid && !isPartial) {
 			throw new Error('Invalid room provided on the message.');
 		}
 
 		let u;
-		if (message.sender && message.sender.id) {
+		if (message.sender?.id) {
 			const user = await Users.findOneById(message.sender.id);
 
 			if (user) {
@@ -175,14 +183,27 @@ export class AppMessagesConverter {
 
 		const attachments = this._convertAppAttachments(message.attachments);
 
+		let _id = message.id;
+		let ts = message.createdAt;
+
+		if (!isPartial) {
+			if (!message.id) {
+				_id = Random.id();
+			}
+
+			if (!message.createdAt) {
+				ts = new Date();
+			}
+		}
+
 		const newMessage = {
-			_id: message.id || Random.id(),
+			_id,
 			...('threadId' in message && { tmid: message.threadId }),
-			rid: room._id,
+			rid,
 			u,
 			msg: message.text,
-			ts: message.createdAt || new Date(),
-			_updatedAt: message.updatedAt || new Date(),
+			ts,
+			_updatedAt: message.updatedAt,
 			...(editedBy && { editedBy }),
 			...('editedAt' in message && { editedAt: message.editedAt }),
 			...('emoji' in message && { emoji: message.emoji }),
@@ -197,7 +218,17 @@ export class AppMessagesConverter {
 			...('token' in message && { token: message.token }),
 		};
 
-		return Object.assign(newMessage, message._unmappedProperties_);
+		if (isPartial) {
+			Object.entries(newMessage).forEach(([key, value]) => {
+				if (typeof value === 'undefined') {
+					delete newMessage[key];
+				}
+			});
+		} else {
+			Object.assign(newMessage, message._unmappedProperties_);
+		}
+
+		return newMessage;
 	}
 
 	_convertAppAttachments(attachments) {
@@ -206,39 +237,37 @@ export class AppMessagesConverter {
 		}
 
 		return attachments.map((attachment) =>
-			Object.assign(
-				{
-					collapsed: attachment.collapsed,
-					color: attachment.color,
-					text: attachment.text,
-					ts: attachment.timestamp ? attachment.timestamp.toJSON() : attachment.timestamp,
-					message_link: attachment.timestampLink,
-					thumb_url: attachment.thumbnailUrl,
-					author_name: attachment.author ? attachment.author.name : undefined,
-					author_link: attachment.author ? attachment.author.link : undefined,
-					author_icon: attachment.author ? attachment.author.icon : undefined,
-					title: attachment.title ? attachment.title.value : undefined,
-					title_link: attachment.title ? attachment.title.link : undefined,
-					title_link_download: attachment.title ? attachment.title.displayDownloadLink : undefined,
-					image_dimensions: attachment.imageDimensions,
-					image_preview: attachment.imagePreview,
-					image_url: attachment.imageUrl,
-					image_type: attachment.imageType,
-					image_size: attachment.imageSize,
-					audio_url: attachment.audioUrl,
-					audio_type: attachment.audioType,
-					audio_size: attachment.audioSize,
-					video_url: attachment.videoUrl,
-					video_type: attachment.videoType,
-					video_size: attachment.videoSize,
-					fields: attachment.fields,
-					button_alignment: attachment.actionButtonsAlignment,
-					actions: attachment.actions,
-					type: attachment.type,
-					description: attachment.description,
-				},
-				attachment._unmappedProperties_,
-			),
+			removeEmpty({
+				collapsed: attachment.collapsed,
+				color: attachment.color,
+				text: attachment.text,
+				ts: attachment.timestamp ? attachment.timestamp.toJSON() : attachment.timestamp,
+				message_link: attachment.timestampLink,
+				thumb_url: attachment.thumbnailUrl,
+				author_name: attachment.author ? attachment.author.name : undefined,
+				author_link: attachment.author ? attachment.author.link : undefined,
+				author_icon: attachment.author ? attachment.author.icon : undefined,
+				title: attachment.title ? attachment.title.value : undefined,
+				title_link: attachment.title ? attachment.title.link : undefined,
+				title_link_download: attachment.title ? attachment.title.displayDownloadLink : undefined,
+				image_dimensions: attachment.imageDimensions,
+				image_preview: attachment.imagePreview,
+				image_url: attachment.imageUrl,
+				image_type: attachment.imageType,
+				image_size: attachment.imageSize,
+				audio_url: attachment.audioUrl,
+				audio_type: attachment.audioType,
+				audio_size: attachment.audioSize,
+				video_url: attachment.videoUrl,
+				video_type: attachment.videoType,
+				video_size: attachment.videoSize,
+				fields: attachment.fields,
+				button_alignment: attachment.actionButtonsAlignment,
+				actions: attachment.actions,
+				type: attachment.type,
+				description: attachment.description,
+				...attachment._unmappedProperties_,
+			}),
 		);
 	}
 

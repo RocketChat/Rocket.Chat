@@ -53,6 +53,7 @@ const getProductivityMetricsAsync = async ({
 			departmentId,
 			utcOffset: user?.utcOffset,
 			language: user?.language || settings.get('Language') || 'en',
+			executedBy: user._id,
 		})) || [];
 	const averageWaitingTime = await findAllAverageWaitingTimeAsync({
 		start: new Date(start),
@@ -111,6 +112,7 @@ const getAgentsProductivityMetricsAsync = async ({
 			departmentId,
 			utcOffset: user.utcOffset,
 			language: user.language || settings.get('Language') || 'en',
+			executedBy: user._id,
 		})) || [];
 
 	const totalOfServiceTime = averageOfServiceTime.departments.length;
@@ -245,13 +247,14 @@ const getConversationsMetricsAsync = async ({
 			...(departmentId && departmentId !== 'undefined' && { departmentId }),
 			utcOffset: user.utcOffset,
 			language: user.language || settings.get('Language') || 'en',
+			executedBy: user._id,
 		})) || [];
 	const metrics = ['Total_conversations', 'Open_conversations', 'On_Hold_conversations', 'Total_messages'];
-	const visitorsCount = await LivechatVisitors.getVisitorsBetweenDate({
+	const visitorsCount = await LivechatVisitors.countVisitorsBetweenDate({
 		start: new Date(start),
 		end: new Date(end),
 		department: departmentId,
-	}).count();
+	});
 	return {
 		totalizers: [
 			...totalizers.filter((metric: { title: string }) => metrics.includes(metric.title)),

@@ -4,7 +4,7 @@ import type { AllHTMLAttributes, ReactElement } from 'react';
 type VideoConfMessageFooterTextProps = Omit<AllHTMLAttributes<HTMLParagraphElement>, 'is'>;
 
 const VideoConfMessageFooterText = ({ children, ...props }: VideoConfMessageFooterTextProps): ReactElement => (
-	<Box {...props} is='p' fontScale='c1' mi={4}>
+	<Box {...props} is='p' fontScale='micro' mi={4}>
 		{children}
 	</Box>
 );

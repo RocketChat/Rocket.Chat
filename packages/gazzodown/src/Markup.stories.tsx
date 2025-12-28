@@ -1,10 +1,11 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, MessageBody, MessageContainer } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { Options, parse } from '@rocket.chat/message-parser';
-import type { ComponentMeta, ComponentStoryFn, StoryFn } from '@storybook/react';
+import type { Options } from '@rocket.chat/message-parser';
+import { parse } from '@rocket.chat/message-parser';
+import type { Meta, StoryFn } from '@storybook/react';
 import outdent from 'outdent';
-import { ReactElement, Suspense } from 'react';
+import { Suspense } from 'react';
 
 import Markup from './Markup';
 import { MarkupInteractionContext } from './MarkupInteractionContext';
@@ -13,9 +14,9 @@ export default {
 	title: 'Markup',
 	component: Markup,
 	decorators: [
-		(Story): ReactElement => (
+		(Story) => (
 			<Suspense fallback={null}>
-				<MarkupInteractionContext.Provider value={{ enableTimestamp: true }}>
+				<MarkupInteractionContext.Provider value={{}}>
 					<MessageContainer>
 						<MessageBody>
 							<Box
@@ -69,9 +70,9 @@ export default {
 			},
 		},
 	},
-} as ComponentMeta<typeof Markup>;
+} satisfies Meta<typeof Markup>;
 
-const Template: ComponentStoryFn<typeof Markup> = (args) => <Markup {...args} />;
+const Template: StoryFn<typeof Markup> = (args) => <Markup {...args} />;
 
 export const Empty = Template.bind({});
 Empty.args = {

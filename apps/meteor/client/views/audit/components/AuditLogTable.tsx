@@ -1,20 +1,14 @@
 import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useTranslation, useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { GenericTable, GenericTableHeaderCell, GenericTableBody, GenericTableLoadingRow, GenericTableHeader } from '@rocket.chat/ui-client';
+import { useTranslation, useMethod } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
+import AuditLogEntry from './AuditLogEntry';
 import GenericNoResults from '../../../components/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableHeaderCell,
-	GenericTableBody,
-	GenericTableLoadingRow,
-	GenericTableHeader,
-} from '../../../components/GenericTable';
 import { createEndOfToday, createStartOfToday } from '../utils/dateRange';
 import type { DateRange } from '../utils/dateRange';
-import AuditLogEntry from './AuditLogEntry';
 import DateRangePicker from './forms/DateRangePicker';
 
 const AuditLogTable = (): ReactElement => {
@@ -25,22 +19,19 @@ const AuditLogTable = (): ReactElement => {
 		end: createEndOfToday(),
 	}));
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
 	const getAudits = useMethod('auditGetAuditions');
 
-	const { data, isLoading, isSuccess } = useQuery(
-		['audits', dateRange],
-		async () => {
+	const { data, isLoading, isSuccess } = useQuery({
+		queryKey: ['audits', dateRange],
+
+		queryFn: async () => {
 			const { start, end } = dateRange;
 			return getAudits({ startDate: start ?? new Date(0), endDate: end ?? new Date() });
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+		meta: {
+			apiErrorToastMessage: true,
 		},
-	);
+	});
 
 	const headers = (
 		<>

@@ -3,14 +3,15 @@ import { useCallback } from 'react';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { links } from '../../../lib/links';
 import { useCheckoutUrl } from '../../../views/admin/subscription/hooks/useCheckoutUrl';
 
-const TALK_TO_SALES_URL = 'https://go.rocket.chat/i/contact-sales';
+const TALK_TO_SALES_URL = links.go.contactSales;
 
 export const useUpsellActions = (hasLicenseModule = false) => {
 	const setModal = useSetModal();
 	const handleOpenLink = useExternalLink();
-	const cloudWorkspaceHadTrial = useSetting<boolean>('Cloud_Workspace_Had_Trial');
+	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial', false);
 
 	const { data } = useIsEnterprise();
 	const shouldShowUpsell = !data?.isEnterprise || !hasLicenseModule;

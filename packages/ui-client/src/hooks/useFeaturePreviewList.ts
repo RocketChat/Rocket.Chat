@@ -1,12 +1,6 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable =
-	| 'quickReactions'
-	| 'navigationBar'
-	| 'enable-timestamp-message-parser'
-	| 'contextualbarResizable'
-	| 'newNavigation'
-	| 'sidepanelNavigation';
+export type FeaturesAvailable = 'secondarySidebar' | 'expandableMessageComposer';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -26,60 +20,13 @@ export type FeaturePreviewProps = {
 // TODO: Move the features preview array to another directory to be accessed from both BE and FE.
 export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	{
-		name: 'quickReactions',
-		i18n: 'Quick_reactions',
-		description: 'Quick_reactions_description',
-		group: 'Message',
-		imageUrl: 'images/featurePreview/quick-reactions.png',
-		value: false,
-		enabled: true,
-	},
-	{
-		name: 'navigationBar',
-		i18n: 'Navigation_bar',
-		description: 'Navigation_bar_description',
+		name: 'secondarySidebar',
+		i18n: 'Filters_and_secondary_sidebar',
+		description: 'Filters_and_secondary_sidebar_description',
 		group: 'Navigation',
-		value: false,
-		enabled: false,
-	},
-	{
-		name: 'enable-timestamp-message-parser',
-		i18n: 'Enable_timestamp',
-		description: 'Enable_timestamp_description',
-		group: 'Message',
-		imageUrl: 'images/featurePreview/timestamp.png',
+		imageUrl: 'images/featurePreview/secondary-sidebar.png',
 		value: false,
 		enabled: true,
-	},
-	{
-		name: 'contextualbarResizable',
-		i18n: 'Contextualbar_resizable',
-		description: 'Contextualbar_resizable_description',
-		group: 'Navigation',
-		imageUrl: 'images/featurePreview/resizable-contextual-bar.png',
-		value: false,
-		enabled: true,
-	},
-	{
-		name: 'newNavigation',
-		i18n: 'New_navigation',
-		description: 'New_navigation_description',
-		group: 'Navigation',
-		imageUrl: 'images/featurePreview/enhanced-navigation.png',
-		value: false,
-		enabled: true,
-	},
-	{
-		name: 'sidepanelNavigation',
-		i18n: 'Sidepanel_navigation',
-		description: 'Sidepanel_navigation_description',
-		group: 'Navigation',
-		value: false,
-		enabled: true,
-		enableQuery: {
-			name: 'newNavigation',
-			value: true,
-		},
 	},
 ];
 
@@ -97,14 +44,20 @@ export const parseSetting = (setting?: FeaturePreviewProps[] | string) => {
 	return setting;
 };
 
-export const useFeaturePreviewList = (featuresList: Pick<FeaturePreviewProps, 'name' | 'value'>[]) => {
+export const useFeaturePreviewList = (featuresList: FeaturePreviewProps[]) => {
 	const unseenFeatures = enabledDefaultFeatures.filter(
 		(defaultFeature) => !featuresList?.find((feature) => feature.name === defaultFeature.name),
 	).length;
 
 	const mergedFeatures = enabledDefaultFeatures.map((defaultFeature) => {
-		const features = featuresList?.find((feature) => feature.name === defaultFeature.name);
-		return { ...defaultFeature, ...features };
+		const feature = featuresList?.find((feature) => feature.name === defaultFeature.name);
+		// overwrite enableQuery and disabled with default value to avoid a migration to remove this from the DB
+		// payload on save now only have `name` and `value`
+		if (feature) {
+			feature.enableQuery = defaultFeature.enableQuery;
+			feature.disabled = defaultFeature.disabled;
+		}
+		return { ...defaultFeature, ...feature };
 	});
 
 	return { unseenFeatures, features: mergedFeatures };

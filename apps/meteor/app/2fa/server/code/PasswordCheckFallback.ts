@@ -1,8 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 
-import { settings } from '../../../settings/server';
 import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
+import { settings } from '../../../settings/server';
 
 export class PasswordCheckFallback implements ICodeCheck {
 	public readonly name = 'password';

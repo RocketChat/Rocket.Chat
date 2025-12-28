@@ -45,11 +45,13 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 	};
 	livechatData?: ILivechatData;
 	contactManager?: {
+		_id?: string;
 		username: string;
+		name?: string;
+		emails?: { address: string }[];
 	};
 	activity?: string[];
 	disabled?: boolean;
-	contactId?: string;
 }
 
 export interface ILivechatVisitorDTO {

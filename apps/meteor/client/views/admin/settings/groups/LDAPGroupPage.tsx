@@ -1,28 +1,30 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Button, Box, TextInput, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useSetting, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useSetModal, useToastMessageDispatch, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../components/GenericModal';
-import { useExternalLink } from '../../../../hooks/useExternalLink';
-import { useEditableSettings } from '../../EditableSettingsContext';
 import BaseGroupPage from './BaseGroupPage';
+import { useExternalLink } from '../../../../hooks/useExternalLink';
+import { links } from '../../../../lib/links';
+import { useEditableSettings } from '../../EditableSettingsContext';
 
 type LDAPGroupPageProps = ISetting & {
 	onClickBack?: () => void;
 };
 
 function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageProps) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const testConnection = useEndpoint('POST', '/v1/ldap.testConnection');
 	const syncNow = useEndpoint('POST', '/v1/ldap.syncNow');
 	const testSearch = useEndpoint('POST', '/v1/ldap.testSearch');
 	const ldapEnabled = useSetting('LDAP_Enable');
 	const setModal = useSetModal();
-	const closeModal = useMutableCallback(() => setModal());
+	const closeModal = useEffectEvent(() => setModal());
 
 	const handleLinkClick = useExternalLink();
 
@@ -139,7 +141,7 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 					<Button children={t('Test_Connection')} disabled={!ldapEnabled || changed} onClick={handleTestConnectionButtonClick} />
 					<Button children={t('Test_LDAP_Search')} disabled={!ldapEnabled || changed} onClick={handleSearchTestButtonClick} />
 					<Button children={t('LDAP_Sync_Now')} disabled={!ldapEnabled || changed} onClick={handleSyncNowButtonClick} />
-					<Button role='link' onClick={() => handleLinkClick('https://go.rocket.chat/i/ldap-docs')}>
+					<Button role='link' onClick={() => handleLinkClick(links.go.ldapDocs)}>
 						{t('LDAP_Documentation')}
 					</Button>
 				</>

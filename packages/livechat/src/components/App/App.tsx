@@ -71,7 +71,7 @@ type AppState = {
 };
 
 export class App extends Component<AppProps, AppState> {
-	state = {
+	override state = {
 		initialized: false,
 		poppedOut: false,
 	};
@@ -96,12 +96,14 @@ export class App extends Component<AppProps, AppState> {
 			setInitCookies();
 
 			if (gdprRequired && !gdprAccepted) {
-				return route('/gdpr');
+				route('/gdpr');
+				return;
 			}
 
 			if (!online) {
 				parentCall('callback', 'no-agent-online');
-				return route('/leave-message');
+				route('/leave-message');
+				return;
 			}
 
 			const showDepartment = departments.some((dept) => dept.showOnRegistration);
@@ -109,7 +111,7 @@ export class App extends Component<AppProps, AppState> {
 			const showRegistrationForm = !user?.token && registrationForm && isAnyFieldVisible && !Triggers.hasTriggersBeforeRegistration();
 
 			if (url === '/' && showRegistrationForm) {
-				return route('/register');
+				route('/register');
 			}
 		}, 100);
 	};
@@ -140,11 +142,14 @@ export class App extends Component<AppProps, AppState> {
 			iframe: { visible },
 			config: { theme },
 			dispatch,
+			undocked,
 		} = this.props;
 
-		parentCall(minimized ? 'minimizeWindow' : 'restoreWindow');
-		parentCall(visible ? 'showWidget' : 'hideWidget');
-		parentCall('setWidgetPosition', theme.position || 'right');
+		if (!undocked) {
+			parentCall(minimized ? 'minimizeWindow' : 'restoreWindow');
+			parentCall(visible ? 'showWidget' : 'hideWidget');
+			parentCall('setWidgetPosition', theme.position || 'right');
+		}
 
 		visibility.addListener(this.handleVisibilityChange);
 
@@ -176,15 +181,15 @@ export class App extends Component<AppProps, AppState> {
 		visibility.removeListener(this.handleVisibilityChange);
 	}
 
-	componentDidMount() {
+	override componentDidMount() {
 		this.initialize();
 	}
 
-	componentWillUnmount() {
+	override componentWillUnmount() {
 		this.finalize();
 	}
 
-	componentDidUpdate() {
+	override componentDidUpdate() {
 		const { i18n } = this.props;
 
 		if (i18n.t) {

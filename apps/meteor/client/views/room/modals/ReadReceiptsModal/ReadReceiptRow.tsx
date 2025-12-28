@@ -1,13 +1,12 @@
-import type { ReadReceipt } from '@rocket.chat/core-typings';
+import type { IReadReceiptWithUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 
-const ReadReceiptRow = ({ user, ts }: ReadReceipt): ReactElement => {
+const ReadReceiptRow = ({ user, ts }: IReadReceiptWithUser): ReactElement => {
 	const displayName = useUserDisplayName(user || {});
 	const formatDateAndTime = useFormatDateAndTime({ withSeconds: true });
 

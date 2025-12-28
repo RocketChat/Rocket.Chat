@@ -7,10 +7,18 @@ import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/Livechat
 import type { ILivechatDepartment, IOmnichannelRoom, SelectedAgent, IMessage, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
+import { registerGuest } from '@rocket.chat/omni-core';
 
-import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
-import { type ILivechatMessage, Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { closeRoom } from '../../../livechat/server/lib/closeRoom';
+import { setCustomFields } from '../../../livechat/server/lib/custom-fields';
+import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';
+import type { ILivechatMessage } from '../../../livechat/server/lib/localTypes';
+import { updateMessage, sendMessage } from '../../../livechat/server/lib/messages';
+import { createRoom } from '../../../livechat/server/lib/rooms';
+import { online } from '../../../livechat/server/lib/service-status';
+import { transfer } from '../../../livechat/server/lib/transfer';
 import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/apps/dist/converters/IAppMessagesConverter' {
@@ -33,11 +41,11 @@ export class AppLivechatBridge extends LivechatBridge {
 	protected isOnline(departmentId?: string): boolean {
 		// This function will be converted to sync inside the apps-engine code
 		// TODO: Track Deprecation
-		return deasyncPromise(LivechatTyped.online(departmentId));
+		return deasyncPromise(online(departmentId));
 	}
 
 	protected async isOnlineAsync(departmentId?: string): Promise<boolean> {
-		return LivechatTyped.online(departmentId);
+		return online(departmentId);
 	}
 
 	protected async createMessage(message: IAppsLivechatMessage, appId: string): Promise<string> {
@@ -52,7 +60,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		const appMessage = (await this.orch.getConverters().get('messages').convertAppMessage(message)) as IMessage | undefined;
 		const livechatMessage = appMessage as ILivechatMessage | undefined;
 
-		const msg = await LivechatTyped.sendMessage({
+		const msg = await sendMessage({
 			guest: guest as ILivechatVisitor,
 			message: livechatMessage as ILivechatMessage,
 			agent: undefined,
@@ -86,7 +94,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		};
 
 		// @ts-expect-error IVisitor vs ILivechatVisitor :(
-		await LivechatTyped.updateMessage(data);
+		await updateMessage(data);
 	}
 
 	protected async createRoom(
@@ -106,7 +114,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			agentRoom = { agentId: user._id, username: user.username };
 		}
 
-		const room = await LivechatTyped.createRoom({
+		const room = await createRoom({
 			visitor: this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			roomInfo: {
 				source: {
@@ -118,6 +126,7 @@ export class AppLivechatBridge extends LivechatBridge {
 							sidebarIcon: source.sidebarIcon,
 							defaultIcon: source.defaultIcon,
 							label: source.label,
+							destination: source.destination,
 						}),
 				},
 			},
@@ -142,7 +151,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			...(visitor && { visitor }),
 		};
 
-		await LivechatTyped.closeRoom(closeData);
+		await closeRoom(closeData);
 
 		return true;
 	}
@@ -198,13 +207,14 @@ export class AppLivechatBridge extends LivechatBridge {
 			name: visitor.name,
 			token: visitor.token,
 			email: '',
-			connectionData: undefined,
 			id: visitor.id,
 			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};
 
-		const livechatVisitor = await LivechatTyped.registerGuest(registerData);
+		const livechatVisitor = await registerGuest(registerData, {
+			shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		});
 
 		if (!livechatVisitor) {
 			throw new Error('Invalid visitor, cannot create');
@@ -222,13 +232,14 @@ export class AppLivechatBridge extends LivechatBridge {
 			name: visitor.name,
 			token: visitor.token,
 			email: '',
-			connectionData: undefined,
 			id: visitor.id,
 			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};
 
-		const livechatVisitor = await LivechatTyped.registerGuest(registerData);
+		const livechatVisitor = await registerGuest(registerData, {
+			shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		});
 
 		return this.orch.getConverters()?.get('visitors').convertVisitor(livechatVisitor);
 	}
@@ -270,7 +281,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		}
 
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
-		return LivechatTyped.transfer(
+		return transfer(
 			(await this.orch.getConverters()?.get('rooms').convertAppRoom(currentRoom)) as IOmnichannelRoom,
 			this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			{ userId, departmentId, transferredBy, transferredTo },
@@ -351,7 +362,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			throw new Error('Could not get the message converter to process livechat room messages');
 		}
 
-		const livechatMessages = await LivechatTyped.getRoomMessages({ rid: roomId });
+		const livechatMessages = await getRoomMessages({ rid: roomId });
 		return Promise.all(await livechatMessages.map((message) => messageConverter.convertMessage(message, livechatMessages)).toArray());
 	}
 
@@ -361,6 +372,6 @@ export class AppLivechatBridge extends LivechatBridge {
 	): Promise<number> {
 		this.orch.debugLog(`The App ${appId} is setting livechat visitor's custom fields.`);
 
-		return LivechatTyped.setCustomFields(data);
+		return setCustomFields(data);
 	}
 }

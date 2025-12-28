@@ -1,11 +1,11 @@
-import { parseISO } from 'date-fns/fp';
-import isToday from 'date-fns/isToday';
+import { parseISO, isToday } from 'date-fns';
 import type { TFunction } from 'i18next';
+import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
-import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
+import { createClassName } from '../../../helpers/createClassName';
 
 const parseDate = (ts: number, t: TFunction) => {
 	const timestamp = new Date(ts).toISOString();
@@ -22,7 +22,7 @@ type MessageTimeProps = {
 	normal?: boolean;
 	inverted?: boolean;
 	className?: string;
-	style?: React.CSSProperties;
+	style?: CSSProperties;
 	t: TFunction;
 };
 const MessageTime = ({ ts, normal, inverted, className, style = {}, t }: MessageTimeProps) => {

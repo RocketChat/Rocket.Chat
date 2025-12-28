@@ -38,18 +38,22 @@ describe('LIVECHAT - business hours', () => {
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_enable_business_hours', true);
+		await updateSetting('Omnichannel_enable_department_removal', true);
 		await createAgent();
+	});
+
+	after(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	let defaultBhId: any;
 	describe('[CE] livechat/business-hour', () => {
 		after(async () => {
+			const { _updatedAt, ts, ...cleanedBusinessHour } = defaultBhId;
 			await saveBusinessHour({
-				...defaultBhId,
-				timezone: {
-					name: 'America/Sao_Paulo',
-					utc: '-03:00',
-				},
+				...cleanedBusinessHour,
+				timezone: 'America/Sao_Paulo',
+				timezoneName: 'America/Sao_Paulo',
 				workHours: getWorkHours(true),
 			});
 		});
@@ -84,8 +88,11 @@ describe('LIVECHAT - business hours', () => {
 			defaultBhId = response.body.businessHour;
 		});
 		it('should not allow a user to be available if BH are closed', async () => {
+			const { _updatedAt, ts, ...cleanedBusinessHour } = defaultBhId;
 			await saveBusinessHour({
-				...defaultBhId,
+				...cleanedBusinessHour,
+				timezone: 'America/Sao_Paulo',
+				timezoneName: 'America/Sao_Paulo',
 				workHours: [
 					{
 						day: 'Monday',
@@ -102,8 +109,11 @@ describe('LIVECHAT - business hours', () => {
 			expect(body.error).to.be.equal('error-business-hours-are-closed');
 		});
 		it('should allow a user to be available if BH are open', async () => {
+			const { _updatedAt, ts, ...cleanedBusinessHour } = defaultBhId;
 			await saveBusinessHour({
-				...defaultBhId,
+				...cleanedBusinessHour,
+				timezone: 'America/Sao_Paulo',
+				timezoneName: 'America/Sao_Paulo',
 				workHours: getWorkHours(true),
 			});
 
@@ -112,12 +122,10 @@ describe('LIVECHAT - business hours', () => {
 			expect(body).to.have.property('success', true);
 		});
 		it('should save a default business hour with proper timezone settings', async () => {
+			const { _updatedAt, ts, ...cleanedBusinessHour } = defaultBhId;
 			await saveBusinessHour({
-				...defaultBhId,
-				timezone: {
-					name: 'Asia/Kolkata',
-					utc: '+05:30',
-				},
+				...cleanedBusinessHour,
+				timezone: 'Asia/Kolkata',
 				workHours: getWorkHours(true),
 				timezoneName: 'Asia/Kolkata',
 			});
@@ -178,21 +186,11 @@ describe('LIVECHAT - business hours', () => {
 				name,
 				active: true,
 				type: LivechatBusinessHourTypes.CUSTOM,
-				workHours: [
-					{
-						day: 'Monday',
-						open: true,
-						// @ts-expect-error - this is valid for endpoint, actual type converts this into an object
-						start: '08:00',
-						// @ts-expect-error - same as previous one
-						finish: '18:00',
-					},
-				],
-				timezone: {
-					name: 'America/Sao_Paulo',
-					utc: '-03:00',
-				},
+				workHours: [{ day: 'Monday', start: '08:00', finish: '18:00', open: true }],
+				daysOpen: ['Monday'],
+				daysTime: [{ day: 'Monday', start: { time: '08:00' }, finish: { time: '18:00' }, open: true }],
 				departmentsToApplyBusinessHour: '',
+				timezone: 'America/Sao_Paulo',
 				timezoneName: 'America/Sao_Paulo',
 			});
 
@@ -217,20 +215,10 @@ describe('LIVECHAT - business hours', () => {
 				name,
 				active: true,
 				type: LivechatBusinessHourTypes.CUSTOM,
-				workHours: [
-					{
-						day: 'Monday',
-						open: true,
-						// @ts-expect-error - this is valid for endpoint, actual type converts this into an object
-						start: '08:00',
-						// @ts-expect-error - same as previous one
-						finish: '08:00',
-					},
-				],
-				timezone: {
-					name: 'America/Sao_Paulo',
-					utc: '-03:00',
-				},
+				workHours: [{ day: 'Monday', open: true, start: '08:00', finish: '08:00' }],
+				daysOpen: ['Monday'],
+				daysTime: [{ day: 'Monday', start: { time: '08:00' }, finish: { time: '08:00' }, open: true }],
+				timezone: 'America/Sao_Paulo',
 				departmentsToApplyBusinessHour: '',
 				timezoneName: 'America/Sao_Paulo',
 			});
@@ -244,20 +232,10 @@ describe('LIVECHAT - business hours', () => {
 				name,
 				active: true,
 				type: LivechatBusinessHourTypes.CUSTOM,
-				workHours: [
-					{
-						day: 'Monday',
-						open: true,
-						// @ts-expect-error - this is valid for endpoint, actual type converts this into an object
-						start: '10:00',
-						// @ts-expect-error - same as previous one
-						finish: '08:00',
-					},
-				],
-				timezone: {
-					name: 'America/Sao_Paulo',
-					utc: '-03:00',
-				},
+				workHours: [{ day: 'Monday', open: true, start: '10:00', finish: '08:00' }],
+				daysOpen: ['Monday'],
+				daysTime: [{ day: 'Monday', start: { time: '10:00' }, finish: { time: '08:00' }, open: true }],
+				timezone: 'America/Sao_Paulo',
 				departmentsToApplyBusinessHour: '',
 				timezoneName: 'America/Sao_Paulo',
 			});
@@ -271,20 +249,10 @@ describe('LIVECHAT - business hours', () => {
 				name,
 				active: true,
 				type: LivechatBusinessHourTypes.CUSTOM,
-				workHours: [
-					{
-						day: 'Monday',
-						open: true,
-						// @ts-expect-error - this is valid for endpoint, actual type converts this into an object
-						start: '20000',
-						// @ts-expect-error - same as previous one
-						finish: 'xxxxx',
-					},
-				],
-				timezone: {
-					name: 'America/Sao_Paulo',
-					utc: '-03:00',
-				},
+				workHours: [{ day: 'Monday', open: true, start: '20000', finish: 'xxxxx' }],
+				daysOpen: ['Monday'],
+				daysTime: [{ day: 'Monday', start: { time: '20000' }, finish: { time: 'xxxxx' }, open: true }],
+				timezone: 'America/Sao_Paulo',
 				departmentsToApplyBusinessHour: '',
 				timezoneName: 'America/Sao_Paulo',
 			});

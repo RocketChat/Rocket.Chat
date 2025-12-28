@@ -1,4 +1,4 @@
-import mitt from 'mitt';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { Livechat } from '../api';
 import store from '../store';
@@ -24,14 +24,14 @@ class Triggers {
 
 	/** @property {boolean} _enabled */
 
-	/** @property {import('mitt').Emitter} callbacks */
+	/** @property {import('@rocket.chat/emitter').Emitter} callbacks */
 
 	constructor() {
 		if (!Triggers.instance) {
 			this._started = false;
 			this._triggers = [];
 			this._enabled = true;
-			this.callbacks = mitt();
+			this.callbacks = new Emitter();
 			Triggers.instance = this;
 		}
 

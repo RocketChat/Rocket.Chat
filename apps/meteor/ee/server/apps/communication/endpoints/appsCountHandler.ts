@@ -2,25 +2,16 @@ import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { License } from '@rocket.chat/license';
 
 import { API } from '../../../../../app/api/server';
-import type { SuccessResult } from '../../../../../app/api/server/definition';
 import { getInstallationSourceFromAppStorageItem } from '../../../../../lib/apps/getInstallationSourceFromAppStorageItem';
 import type { AppsRestApi } from '../rest';
 
-type AppsCountResult = {
-	totalMarketplaceEnabled: number;
-	totalPrivateEnabled: number;
-	maxMarketplaceApps: number;
-	maxPrivateApps: number;
-};
-
-export const appsCountHandler = (apiManager: AppsRestApi) =>
-	[
+export const registerAppsCountHandler = ({ api, _manager }: AppsRestApi) =>
+	void api.addRoute(
+		'count',
+		{ authRequired: false },
 		{
-			authRequired: false,
-		},
-		{
-			async get(): Promise<SuccessResult<AppsCountResult>> {
-				const manager = apiManager._manager as AppManager;
+			async get() {
+				const manager = _manager as AppManager;
 
 				const apps = await manager.get({ enabled: true });
 				const { maxMarketplaceApps, maxPrivateApps } = License.getAppsConfig();
@@ -34,4 +25,4 @@ export const appsCountHandler = (apiManager: AppsRestApi) =>
 				});
 			},
 		},
-	] as const;
+	);

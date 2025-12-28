@@ -4,21 +4,22 @@ import { Random } from '@rocket.chat/random';
 import { parse } from 'csv-parse/lib/sync';
 
 import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';
-import type { IConverterOptions } from '../../importer/server/classes/ImportDataConverter';
+import type { ConverterOptions } from '../../importer/server/classes/ImportDataConverter';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
+import { addParsedContacts } from '../../importer-omnichannel-contacts/server/addParsedContacts';
 import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
 
 export class CsvImporter extends Importer {
-	private csvParser: (csv: string) => string[];
+	private csvParser: (csv: string) => string[][];
 
-	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: IConverterOptions = {}) {
+	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: ConverterOptions = {}) {
 		super(info, importRecord, converterOptions);
 
 		this.csvParser = parse;
 	}
 
-	async prepareUsingLocalFile(fullFilePath: string): Promise<ImporterProgress> {
+	override async prepareUsingLocalFile(fullFilePath: string): Promise<ImporterProgress> {
 		this.logger.debug('start preparing import operation');
 		await this.converter.clearImportData();
 
@@ -39,13 +40,14 @@ export class CsvImporter extends Importer {
 					oldRate = rate;
 				}
 			} catch (e) {
-				this.logger.error(e);
+				this.logger.error({ msg: 'Error while increasing CSV import progress', err: e });
 			}
 		};
 
 		let messagesCount = 0;
 		let usersCount = 0;
 		let channelsCount = 0;
+		let contactsCount = 0;
 		const dmRooms = new Set<string>();
 		const roomIds = new Map<string, string>();
 		const usedUsernames = new Set<string>();
@@ -64,18 +66,18 @@ export class CsvImporter extends Importer {
 		};
 
 		for await (const entry of zip.getEntries()) {
-			this.logger.debug(`Entry: ${entry.entryName}`);
+			this.logger.debug({ msg: 'Entry', entryName: entry.entryName });
 
 			// Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
 			if (entry.entryName.indexOf('__MACOSX') > -1) {
-				this.logger.debug(`Ignoring the file: ${entry.entryName}`);
+				this.logger.debug({ msg: 'Ignoring the file', entryName: entry.entryName });
 				increaseProgressCount();
 				continue;
 			}
 
 			// Directories are ignored, since they are "virtual" in a zip file
 			if (entry.isDirectory) {
-				this.logger.debug(`Ignoring the directory entry: ${entry.entryName}`);
+				this.logger.debug({ msg: 'Ignoring the directory entry', entryName: entry.entryName });
 				increaseProgressCount();
 				continue;
 			}
@@ -140,6 +142,18 @@ export class CsvImporter extends Importer {
 				continue;
 			}
 
+			// Parse the contacts
+			if (entry.entryName.toLowerCase() === 'contacts.csv') {
+				await super.updateProgress(ProgressStep.PREPARING_CONTACTS);
+				const parsedContacts = this.csvParser(entry.getData().toString());
+
+				contactsCount = await addParsedContacts.call(this.converter, parsedContacts);
+
+				await super.updateRecord({ 'count.contacts': contactsCount });
+				increaseProgressCount();
+				continue;
+			}
+
 			// Parse the messages
 			if (entry.entryName.indexOf('/') > -1) {
 				if (this.progress.step !== ProgressStep.PREPARING_MESSAGES) {
@@ -154,7 +168,7 @@ export class CsvImporter extends Importer {
 				try {
 					msgs = this.csvParser(entry.getData().toString());
 				} catch (e) {
-					this.logger.warn(`The file ${entry.entryName} contains invalid syntax`, e);
+					this.logger.warn({ msg: 'The file contains invalid syntax', entryName: entry.entryName, err: e });
 					increaseProgressCount();
 					continue;
 				}
@@ -237,7 +251,7 @@ export class CsvImporter extends Importer {
 		}
 
 		if (usersCount) {
-			const { value } = await Settings.incrementValueById('CSV_Importer_Count', usersCount, { returnDocument: 'after' });
+			const value = await Settings.incrementValueById('CSV_Importer_Count', usersCount, { returnDocument: 'after' });
 			if (value) {
 				void notifyOnSettingChanged(value);
 			}
@@ -258,12 +272,12 @@ export class CsvImporter extends Importer {
 			}
 		}
 
-		await super.addCountToTotal(messagesCount + usersCount + channelsCount);
+		await super.addCountToTotal(messagesCount + usersCount + channelsCount + contactsCount);
 		ImporterWebsocket.progressUpdated({ rate: 100 });
 
-		// Ensure we have at least a single user, channel, or message
-		if (usersCount === 0 && channelsCount === 0 && messagesCount === 0) {
-			this.logger.error('No users, channels, or messages found in the import file.');
+		// Ensure we have at least a single record of any kind
+		if (usersCount === 0 && channelsCount === 0 && messagesCount === 0 && contactsCount === 0) {
+			this.logger.error({ msg: 'No valid record found in the import file.' });
 			await super.updateProgress(ProgressStep.ERROR);
 		}
 

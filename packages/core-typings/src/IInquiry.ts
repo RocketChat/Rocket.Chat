@@ -13,6 +13,7 @@ export interface IInquiry {
 }
 
 export enum LivechatInquiryStatus {
+	VERIFYING = 'verifying',
 	QUEUED = 'queued',
 	TAKEN = 'taken',
 	READY = 'ready',
@@ -37,7 +38,9 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	ts: Date;
 	message: string;
 	status: LivechatInquiryStatus;
-	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'phone' | 'activity'> & { lastMessageTs?: Date };
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'phone' | 'activity'> & {
+		lastMessageTs?: Date;
+	};
 	t: 'l';
 
 	department?: string;
@@ -56,6 +59,13 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	slaId?: string;
 	estimatedWaitingTimeQueue: IOmnichannelServiceLevelAgreements['dueTimeInMinutes'];
 }
+
+export const isLivechatInquiryRecord = (record: unknown): record is ILivechatInquiryRecord =>
+	typeof record === 'object' &&
+	record !== null &&
+	'status' in record &&
+	typeof record.status === 'string' &&
+	['verifying', 'queued', 'taken', 'ready', 'open'].includes(record.status);
 
 export type InquiryWithAgentInfo = Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department' | 'v'> & {
 	position?: number;

@@ -1,18 +1,10 @@
+import './meteor/overrides';
+import './meteor/startup';
 import './serviceWorker';
-import './startup/accounts';
 
-import { FlowRouter } from 'meteor/kadira:flow-router';
-
-FlowRouter.wait();
-
-FlowRouter.notFound = {
-	action: () => undefined,
-};
-
-import('./polyfills')
-	.then(() => import('./meteorOverrides'))
-	.then(() => import('./ecdh'))
+import('./meteor/login')
 	.then(() => import('./importPackages'))
-	.then(() => Promise.all([import('./methods'), import('./startup')]))
-	.then(() => import('./omnichannel'))
-	.then(() => Promise.all([import('./views/admin'), import('./views/marketplace'), import('./views/account')]));
+	.then(() => import('./startup'))
+	.then(() =>
+		Promise.all([import('./views/omnichannel'), import('./views/admin'), import('./views/marketplace'), import('./views/account')]),
+	);

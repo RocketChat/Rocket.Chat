@@ -1,6 +1,14 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 
+type WorkDetails = {
+	rid: IRoom['_id'];
+	userId: IUser['_id'];
+};
+
+type WorkDetailsWithSource = WorkDetails & {
+	from: string;
+};
+
 export interface IOmnichannelTranscriptService {
-	requestTranscript({ details }: { details: { userId: IUser['_id']; rid: IRoom['_id'] } }): Promise<void>;
-	workOnPdf({ template, details }: { template: string; details: any }): Promise<void>;
+	workOnPdf({ details }: { details: WorkDetailsWithSource }): Promise<void>;
 }

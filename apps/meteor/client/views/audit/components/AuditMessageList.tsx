@@ -1,10 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { Fragment, memo } from 'react';
+import { Fragment, memo } from 'react';
 
-import { MessageTypes } from '../../../../app/ui-utils/client';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';

@@ -51,7 +51,7 @@ async function findUsers({
 			sortedResults,
 			totalCount: [{ total } = { total: 0 }],
 		},
-	] = await Users.findAgentsWithDepartments<ILivechatAgent>(role, query, {
+	] = await Users.findAgentsWithDepartments(role, query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,

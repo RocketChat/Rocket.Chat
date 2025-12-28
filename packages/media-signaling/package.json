@@ -1,0 +1,30 @@
+{
+	"name": "@rocket.chat/media-signaling",
+	"version": "0.1.1-rc.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/media-signaling",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest"
+	},
+	"dependencies": {
+		"@rocket.chat/emitter": "~0.31.25",
+		"ajv": "^8.17.1"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/jest": "~30.0.0",
+		"eslint": "~8.45.0",
+		"jest": "~30.2.0",
+		"typescript": "~5.9.3"
+	}
+}

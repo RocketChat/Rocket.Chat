@@ -30,11 +30,13 @@ export function storeQueryFunction(
 			...app,
 			...(installedApp && {
 				private: installedApp.private,
+				clusterStatus: installedApp.clusterStatus,
 				installed: true,
 				status: installedApp.status,
 				version: installedApp.version,
 				licenseValidation: installedApp.licenseValidation,
 				migrated: installedApp.migrated,
+				installedAddon: installedApp.addon,
 			}),
 			bundledIn: app.bundledIn,
 			marketplaceVersion: app.version,

@@ -1,12 +1,20 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { IRoom, IUser, Serialized } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { usePermission, useSetModal, useTranslation, useUser, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { GenericModal } from '@rocket.chat/ui-client';
+import {
+	usePermission,
+	useSetModal,
+	useToastMessageDispatch,
+	useTranslation,
+	useUser,
+	useUserRoom,
+	useUserSubscription,
+} from '@rocket.chat/ui-contexts';
+import { useMemo } from 'react';
 
-import GenericModal from '../../../../../components/GenericModal';
-import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
+import { useEndpointMutation } from '../../../../../hooks/useEndpointMutation';
 import * as Federation from '../../../../../lib/federation/Federation';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import RemoveUsersModal from '../../../../teams/contextualBar/members/RemoveUsersModal';
@@ -17,6 +25,7 @@ export const useRemoveUserAction = (
 	user: Pick<IUser, '_id' | 'username'>,
 	rid: IRoom['_id'],
 	reload?: () => void,
+	invited?: boolean,
 ): UserInfoAction | undefined => {
 	const room = useUserRoom(rid);
 
@@ -31,26 +40,44 @@ export const useRemoveUserAction = (
 	const { _id: uid } = user;
 
 	const hasPermissionToRemove = usePermission('remove-user', rid);
-	const userCanRemove = isRoomFederated(room)
-		? Federation.isEditableByTheUser(currentUser || undefined, room, subscription)
+
+	const roomIsFederated = isRoomFederated(room);
+
+	const isFederationBlocked = room && !isRoomNativeFederated(room);
+	const userCanRemove = roomIsFederated
+		? !isFederationBlocked && Federation.isEditableByTheUser(currentUser || undefined, room, subscription)
 		: hasPermissionToRemove;
 	const setModal = useSetModal();
-	const closeModal = useMutableCallback(() => setModal(null));
+	const closeModal = useEffectEvent(() => setModal(null));
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	const { roomCanRemove } = getRoomDirectives({ room, showingUserId: uid, userSubscription: subscription });
 
-	const removeFromTeam = useEndpointAction('POST', '/v1/teams.removeMember', {
-		successMessage: t('User_has_been_removed_from_team'),
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { mutateAsync: removeFromTeam } = useEndpointMutation('POST', '/v1/teams.removeMember', {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('User_has_been_removed_from_team') });
+		},
+		onSettled: () => {
+			closeModal();
+			reload?.();
+		},
 	});
 
 	const removeFromRoomEndpoint = room.t === 'p' ? '/v1/groups.kick' : '/v1/channels.kick';
-	const removeFromRoom = useEndpointAction('POST', removeFromRoomEndpoint, {
-		successMessage: t('User_has_been_removed_from_s', roomName),
+	const { mutateAsync: removeFromRoom } = useEndpointMutation('POST', removeFromRoomEndpoint, {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('User_has_been_removed_from_s', roomName) });
+		},
+		onSettled: () => {
+			closeModal();
+			reload?.();
+		},
 	});
 
-	const removeUserOptionAction = useMutableCallback(() => {
-		const handleRemoveFromTeam = async (rooms: IRoom[]): Promise<void> => {
+	const removeUserOptionAction = useEffectEvent(() => {
+		const handleRemoveFromTeam = async (rooms: Record<string, Serialized<IRoom>>) => {
 			if (room.teamId) {
 				const roomKeys = Object.keys(rooms);
 				await removeFromTeam({
@@ -58,15 +85,11 @@ export const useRemoveUserAction = (
 					userId: uid,
 					...(roomKeys.length && { rooms: roomKeys }),
 				});
-				closeModal();
-				reload?.();
 			}
 		};
 
-		const handleRemoveFromRoom = async (rid: IRoom['_id'], uid: IUser['_id']): Promise<void> => {
+		const handleRemoveFromRoom = async (rid: IRoom['_id'], uid: IUser['_id']) => {
 			await removeFromRoom({ roomId: rid, userId: uid });
-			closeModal();
-			reload?.();
 		};
 
 		if (room.teamMain && room.teamId) {
@@ -78,7 +101,7 @@ export const useRemoveUserAction = (
 		setModal(
 			<GenericModal
 				variant='danger'
-				confirmText={t('Yes_remove_user')}
+				confirmText={invited ? t('Revoke_invitation') : t('Yes_remove_user')}
 				onClose={closeModal}
 				onCancel={closeModal}
 				onConfirm={(): Promise<void> => handleRemoveFromRoom(rid, uid)}
@@ -88,19 +111,31 @@ export const useRemoveUserAction = (
 		);
 	});
 
-	const removeUserOption = useMemo(
-		() =>
-			roomCanRemove && userCanRemove
-				? {
-						content: room?.teamMain ? t('Remove_from_team') : t('Remove_from_room'),
-						icon: 'cross' as const,
-						onClick: removeUserOptionAction,
-						type: 'moderation' as const,
-						variant: 'danger' as const,
-				  }
-				: undefined,
-		[room, roomCanRemove, userCanRemove, removeUserOptionAction, t],
-	);
+	const content = useMemo(() => {
+		if (invited) {
+			return t('Revoke_invitation');
+		}
+
+		if (room?.teamMain) {
+			return t('Remove_from_team');
+		}
+
+		return t('Remove_from_room');
+	}, [invited, room?.teamMain, t]);
+
+	const removeUserOption = useMemo(() => {
+		if (!roomCanRemove || !userCanRemove) {
+			return undefined;
+		}
+
+		return {
+			content,
+			icon: 'cross' as const,
+			onClick: removeUserOptionAction,
+			type: 'moderation' as const,
+			variant: 'danger' as const,
+		};
+	}, [roomCanRemove, userCanRemove, removeUserOptionAction, content]);
 
 	return removeUserOption;
 };

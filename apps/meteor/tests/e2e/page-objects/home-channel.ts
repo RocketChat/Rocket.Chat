@@ -1,6 +1,8 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
+import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidepanel, RoomSidebar, ToastMessages } from './fragments';
+import { RoomToolbar } from './fragments/toolbar';
+import { VoiceCalls } from './fragments/voice-calls';
 
 export class HomeChannel {
 	public readonly page: Page;
@@ -9,31 +11,47 @@ export class HomeChannel {
 
 	readonly sidenav: HomeSidenav;
 
+	readonly sidebar: RoomSidebar;
+
+	readonly sidepanel: Sidepanel;
+
+	readonly navbar: Navbar;
+
 	readonly tabs: HomeFlextab;
+
+	readonly roomToolbar: RoomToolbar;
+
+	readonly voiceCalls: VoiceCalls;
+
+	readonly toastMessage: ToastMessages;
 
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
 		this.sidenav = new HomeSidenav(page);
+		this.sidebar = new RoomSidebar(page);
+		this.sidepanel = new Sidepanel(page);
+		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);
+		this.roomToolbar = new RoomToolbar(page);
+		this.voiceCalls = new VoiceCalls(page);
+		this.toastMessage = new ToastMessages(page);
 	}
 
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
+	goto() {
+		return this.page.goto('/home');
 	}
 
 	get btnContextualbarClose(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
-	async dismissToast() {
-		// this is a workaround for when the toast is blocking the click of the button
-		await this.toastSuccess.locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
-		await this.page.mouse.move(0, 0);
-	}
-
 	get composer(): Locator {
 		return this.page.locator('textarea[name="msg"]');
+	}
+
+	get composerBoxPopup(): Locator {
+		return this.page.locator('[role="menu"][name="ComposerBoxPopup"]');
 	}
 
 	get userCardToolbar(): Locator {
@@ -49,7 +67,7 @@ export class HomeChannel {
 	}
 
 	get roomHeaderFavoriteBtn(): Locator {
-		return this.page.getByRole('button', { name: 'Favorite' });
+		return this.page.getByRole('main').getByRole('button', { name: 'Favorite' });
 	}
 
 	get readOnlyFooter(): Locator {
@@ -62,5 +80,53 @@ export class HomeChannel {
 
 	get markUnread(): Locator {
 		return this.page.locator('role=menuitem[name="Mark Unread"]');
+	}
+
+	get dialogEnterE2EEPassword(): Locator {
+		return this.page.getByRole('dialog', { name: 'Enter E2EE password' });
+	}
+
+	get dialogSaveE2EEPassword(): Locator {
+		return this.page.getByRole('dialog', { name: 'Save your new E2EE password' });
+	}
+
+	get btnRoomSaveE2EEPassword(): Locator {
+		return this.page.getByRole('main').getByRole('button', { name: 'Save E2EE password' });
+	}
+
+	get btnRoomEnterE2EEPassword(): Locator {
+		return this.page.getByRole('main').getByRole('button', { name: 'Enter your E2E password' });
+	}
+
+	get btnSavedMyPassword(): Locator {
+		return this.dialogSaveE2EEPassword.getByRole('button', { name: 'I saved my password' });
+	}
+
+	get bannerSaveEncryptionPassword(): Locator {
+		return this.page.getByRole('button', { name: 'Save your new E2EE password' });
+	}
+
+	get bannerEnterE2EEPassword(): Locator {
+		return this.page.getByRole('button', { name: 'Enter your E2E password' });
+	}
+
+	get audioRecorder(): Locator {
+		return this.page.getByRole('group', { name: 'Audio recorder', exact: true });
+	}
+
+	get btnJoinRoom(): Locator {
+		return this.page.getByRole('button', { name: 'Join' });
+	}
+
+	get statusUploadIndicator(): Locator {
+		return this.page.getByRole('main').getByRole('status');
+	}
+
+	async waitForHome(): Promise<void> {
+		await this.sidenav.homepageHeader.waitFor({ state: 'visible' });
+	}
+
+	async waitForRoomLoad(): Promise<void> {
+		await this.roomHeaderToolbar.waitFor({ state: 'visible' });
 	}
 }

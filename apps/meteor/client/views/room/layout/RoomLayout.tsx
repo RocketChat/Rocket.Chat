@@ -2,14 +2,11 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import breakpointsDefinitions from '@rocket.chat/fuselage-tokens/breakpoints.json';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { LayoutContext, useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
-import React, { Suspense, useMemo } from 'react';
+import { Suspense, useMemo } from 'react';
 
-import { ContextualbarDialog } from '../../../components/Contextualbar';
 import HeaderSkeleton from '../Header/HeaderSkeleton';
-import HeaderSkeletonV2 from '../HeaderV2/HeaderSkeleton';
 
 type RoomLayoutProps = {
 	header?: ReactNode;
@@ -60,20 +57,7 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 			)}
 		>
 			<Box h='full' w='full' display='flex' flexDirection='column' bg='room' {...props} ref={ref}>
-				<Suspense
-					fallback={
-						<FeaturePreview feature='newNavigation'>
-							<FeaturePreviewOff>
-								<HeaderSkeleton />
-							</FeaturePreviewOff>
-							<FeaturePreviewOn>
-								<HeaderSkeletonV2 />
-							</FeaturePreviewOn>
-						</FeaturePreview>
-					}
-				>
-					{header}
-				</Suspense>
+				<Suspense fallback={<HeaderSkeleton />}>{header}</Suspense>
 				<Box display='flex' flexGrow={1} overflow='hidden' height='full' position='relative'>
 					<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0}>
 						<Box is='div' display='flex' flexDirection='column' flexGrow={1}>
@@ -81,11 +65,7 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 						</Box>
 						{footer && <Suspense fallback={null}>{footer}</Suspense>}
 					</Box>
-					{aside && (
-						<ContextualbarDialog position={contextualbarPosition}>
-							<Suspense fallback={null}>{aside}</Suspense>
-						</ContextualbarDialog>
-					)}
+					{aside && <Suspense fallback={null}>{aside}</Suspense>}
 				</Box>
 			</Box>
 		</LayoutContext.Provider>

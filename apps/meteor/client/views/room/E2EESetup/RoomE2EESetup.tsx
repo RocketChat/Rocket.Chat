@@ -1,14 +1,13 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { Accounts } from 'meteor/accounts-base';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { e2e } from '../../../../app/e2e/client';
-import { E2EEState } from '../../../../app/e2e/client/E2EEState';
-import { E2ERoomState } from '../../../../app/e2e/client/E2ERoomState';
+import RoomE2EENotAllowed from './RoomE2EENotAllowed';
+import { e2e } from '../../../lib/e2ee';
 import RoomBody from '../body/RoomBody';
 import { useRoom } from '../contexts/RoomContext';
 import { useE2EERoomState } from '../hooks/useE2EERoomState';
 import { useE2EEState } from '../hooks/useE2EEState';
-import RoomE2EENotAllowed from './RoomE2EENotAllowed';
 
 const RoomE2EESetup = () => {
 	const room = useRoom();
@@ -16,8 +15,8 @@ const RoomE2EESetup = () => {
 	const e2eeState = useE2EEState();
 	const e2eRoomState = useE2EERoomState(room._id);
 
-	const t = useTranslation();
-	const randomPassword = window.localStorage.getItem('e2e.randomPassword');
+	const { t } = useTranslation();
+	const randomPassword = Accounts.storageLocation.getItem('e2e.randomPassword');
 
 	const onSavePassword = useCallback(() => {
 		if (!randomPassword) {
@@ -29,7 +28,7 @@ const RoomE2EESetup = () => {
 
 	const onEnterE2EEPassword = useCallback(() => e2e.decodePrivateKeyFlow(), []);
 
-	if (e2eeState === E2EEState.SAVE_PASSWORD) {
+	if (e2eeState === 'SAVE_PASSWORD') {
 		return (
 			<RoomE2EENotAllowed
 				title={t('__roomName__is_encrypted', { roomName: room.name })}
@@ -41,7 +40,7 @@ const RoomE2EESetup = () => {
 		);
 	}
 
-	if (e2eeState === E2EEState.ENTER_PASSWORD) {
+	if (e2eeState === 'ENTER_PASSWORD') {
 		return (
 			<RoomE2EENotAllowed
 				title={t('__roomName__is_encrypted', { roomName: room.name })}
@@ -53,7 +52,7 @@ const RoomE2EESetup = () => {
 		);
 	}
 
-	if (e2eRoomState === E2ERoomState.WAITING_KEYS) {
+	if (e2eRoomState === 'WAITING_KEYS') {
 		return (
 			<RoomE2EENotAllowed
 				title={t('Check_back_later')}

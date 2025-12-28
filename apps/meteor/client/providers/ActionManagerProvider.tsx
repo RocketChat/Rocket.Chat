@@ -1,6 +1,5 @@
 import { ActionManagerContext, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement } from 'react';
-import React from 'react';
 
 import { ActionManager } from '../../app/ui-message/client/ActionManager';
 import { useAppActionButtons } from '../hooks/useAppActionButtons';

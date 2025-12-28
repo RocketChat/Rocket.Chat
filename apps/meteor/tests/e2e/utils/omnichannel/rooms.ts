@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 
+import { createFakeVisitor } from '../../../mocks/data';
 import type { BaseTest } from '../test';
 
 type UpdateRoomParams = { roomId: string; visitorId: string; tags: string[] };
@@ -53,23 +54,17 @@ export const createRoom = async (api: BaseTest['api'], { visitorToken, agentId }
 		data: room,
 		async delete() {
 			await closeRoom(api, { roomId: room._id, visitorToken });
-			return api.post('/method.call/livechat:removeRoom', {
-				message: JSON.stringify({
-					msg: 'method',
-					id: '16',
-					method: 'livechat:removeRoom',
-					params: [room._id],
-				}),
-			});
+			return api.post('/livechat/rooms.delete', { roomId: room._id });
 		},
 	};
 };
 
 export const createVisitor = async (api: BaseTest['api'], { name, token, departmentId }: CreateVisitorParams) => {
+	const fakeVisitor = createFakeVisitor();
 	const response = await api.post('/livechat/visitor', {
 		visitor: {
-			name: name || faker.person.fullName(),
-			email: faker.internet.email(),
+			name: name || fakeVisitor.name,
+			email: fakeVisitor.email,
 			token,
 			...(departmentId && { department: departmentId }),
 		},

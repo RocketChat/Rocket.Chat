@@ -4,6 +4,7 @@ import {
 	Box,
 	ToggleSwitch,
 	Accordion,
+	AccordionItem,
 	Field,
 	FieldGroup,
 	FieldLabel,
@@ -12,14 +13,13 @@ import {
 	Callout,
 	Margins,
 } from '@rocket.chat/fuselage';
-import { useDefaultSettingFeaturePreviewList } from '@rocket.chat/ui-client';
+import { useDefaultSettingFeaturePreviewList, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useTranslation, useSettingsDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import { useFeaturePreviewEnableQuery } from '../../../hooks/useFeaturePreviewEnableQuery';
 import { useEditableSetting } from '../EditableSettingsContext';
 import Setting from '../settings/Setting';
@@ -86,7 +86,7 @@ const AdminFeaturePreviewPage = () => {
 					</Box>
 					<Accordion>
 						{grouppedFeaturesPreview?.map(([group, features], index) => (
-							<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
+							<AccordionItem defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
 								<FieldGroup>
 									{features.map((feature) => (
 										<Fragment key={feature.name}>
@@ -107,7 +107,7 @@ const AdminFeaturePreviewPage = () => {
 										</Fragment>
 									))}
 								</FieldGroup>
-							</Accordion.Item>
+							</AccordionItem>
 						))}
 					</Accordion>
 				</Box>

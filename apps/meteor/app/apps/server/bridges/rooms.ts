@@ -1,9 +1,9 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
-import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import type { GetMessagesOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
+import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
@@ -16,6 +16,41 @@ import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+
+const rawRoomProjection: FindOptions<ICoreRoom>['projection'] = {
+	_id: 1,
+	fname: 1,
+	name: 1,
+	usernames: 1,
+	members: 1,
+	uids: 1,
+	default: 1,
+	ro: 1,
+	sysMes: 1,
+	msgs: 1,
+	ts: 1,
+	_updatedAt: 1,
+	closedAt: 1,
+	lm: 1,
+	description: 1,
+	customFields: 1,
+	prid: 1,
+	teamId: 1,
+	teamMain: 1,
+	livechatData: 1,
+	waitingResponse: 1,
+	open: 1,
+	source: 1,
+	closer: 1,
+	t: 1,
+	u: 1,
+	v: 1,
+	contactId: 1,
+	departmentId: 1,
+	closedBy: 1,
+	servedBy: 1,
+	responseBy: 1,
+};
 
 export class AppRoomBridge extends RoomBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
@@ -108,12 +143,14 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getMessages(roomId: string, options: GetMessagesOptions, appId: string): Promise<IMessageRaw[]> {
 		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}" with options:`, options);
 
-		const { limit, skip = 0, sort: _sort } = options;
+		const { limit, skip = 0, sort: _sort, showThreadMessages } = options;
 
 		const messageConverter = this.orch.getConverters()?.get('messages');
 		if (!messageConverter) {
 			throw new Error('Message converter not found');
 		}
+
+		const threadFilterQuery = showThreadMessages ? {} : { tmid: { $exists: false } };
 
 		// We support only one field for now
 		const sort: Sort | undefined = _sort?.createdAt ? { ts: _sort.createdAt } : undefined;
@@ -128,6 +165,7 @@ export class AppRoomBridge extends RoomBridge {
 			rid: roomId,
 			_hidden: { $ne: true },
 			t: { $exists: false },
+			...threadFilterQuery,
 		};
 
 		const cursor = Messages.find(query, messageQueryOptions);
@@ -148,6 +186,37 @@ export class AppRoomBridge extends RoomBridge {
 		return promises as Promise<IUser[]>;
 	}
 
+	protected async getAllRooms(filters: GetRoomsFilters = {}, options: GetRoomsOptions = {}, appId: string): Promise<Array<IRoomRaw>> {
+		this.orch.debugLog(`The App ${appId} is getting all rooms with options`, options);
+
+		const { limit = 100, skip = 0 } = options;
+
+		const findOptions: FindOptions<ICoreRoom> = {
+			sort: { ts: -1 },
+			skip,
+			limit: Math.min(limit, 100),
+			projection: rawRoomProjection,
+		};
+
+		const { types, discussions, teams } = filters;
+
+		const rooms: IRoomRaw[] = [];
+
+		const roomConverter = this.orch.getConverters()?.get('rooms');
+		if (!roomConverter) {
+			throw new Error('Room converter not found');
+		}
+
+		for await (const room of Rooms.findAllByTypesAndDiscussionAndTeam({ types, discussions, teams }, findOptions)) {
+			const converted = await roomConverter.convertRoomRaw(room);
+			if (converted) {
+				rooms.push(converted);
+			}
+		}
+
+		return rooms;
+	}
+
 	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
 		this.orch.debugLog(`The App ${appId} is getting direct room by usernames: "${usernames}"`);
 		const room = await Rooms.findDirectRoomContainingAllUsernames(usernames, {});
@@ -160,13 +229,13 @@ export class AppRoomBridge extends RoomBridge {
 	protected async update(room: IRoom, members: Array<string> = [], appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is updating a room.`);
 
-		if (!room.id || !(await Rooms.findOneById(room.id))) {
-			throw new Error('A room must exist to update.');
+		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room, true);
+
+		const updateResult = await Rooms.updateOne({ _id: room.id }, { $set: rm });
+
+		if (!updateResult.matchedCount) {
+			throw new Error('Room id not found');
 		}
-
-		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
-
-		await Rooms.updateOne({ _id: rm._id }, { $set: rm as Partial<ICoreRoom> });
 
 		for await (const username of members) {
 			const member = await Users.findOneByUsername(username, {});
@@ -175,7 +244,7 @@ export class AppRoomBridge extends RoomBridge {
 				continue;
 			}
 
-			await addUserToRoom(rm._id, member);
+			await addUserToRoom(room.id, member);
 		}
 	}
 
@@ -234,15 +303,72 @@ export class AppRoomBridge extends RoomBridge {
 	}
 
 	private async getUsersByRoomIdAndSubscriptionRole(roomId: string, role: string): Promise<IUser[]> {
-		const subs = (await Subscriptions.findByRoomIdAndRoles(roomId, [role], {
+		const subs = await Subscriptions.findByRoomIdAndRoles<{ uid: string }>(roomId, [role], {
 			projection: { uid: '$u._id', _id: 0 },
-		}).toArray()) as unknown as {
-			uid: string;
-		}[];
+		}).toArray();
 		// Was this a bug?
 		const users = await Users.findByIds(subs.map((user: { uid: string }) => user.uid)).toArray();
 		const userConverter = this.orch.getConverters().get('users');
 		return users.map((user: ICoreUser) => userConverter.convertToApp(user));
+	}
+
+	protected async getUnreadByUser(roomId: string, uid: string, options: GetMessagesOptions, appId: string): Promise<Array<IMessageRaw>> {
+		this.orch.debugLog(`The App ${appId} is getting the unread messages for the user: "${uid}" in the room: "${roomId}"`);
+
+		const messageConverter = this.orch.getConverters()?.get('messages');
+		if (!messageConverter) {
+			throw new Error('Message converter not found');
+		}
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, uid, { projection: { ls: 1 } });
+
+		if (!subscription) {
+			const errorMessage = `No subscription found for user with ID "${uid}" in room with ID "${roomId}". This means the user is not subscribed to the room.`;
+			this.orch.debugLog(errorMessage);
+			throw new Error('User not subscribed to room');
+		}
+
+		const lastSeen = subscription?.ls;
+		if (!lastSeen) {
+			return [];
+		}
+
+		const sort: Sort = options.sort?.createdAt ? { ts: options.sort.createdAt } : { ts: 1 };
+
+		const cursor = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+			roomId,
+			lastSeen,
+			new Date(),
+			[],
+			{
+				limit: options.limit,
+				skip: options.skip,
+				sort,
+			},
+			options.showThreadMessages,
+		);
+
+		const messages = await cursor.toArray();
+		return Promise.all(messages.map((msg) => messageConverter.convertMessageRaw(msg)));
+	}
+
+	protected async getUserUnreadMessageCount(roomId: string, uid: string, appId: string): Promise<number> {
+		this.orch.debugLog(`The App ${appId} is getting the unread messages count of the room: "${roomId}" for the user: "${uid}"`);
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, uid, { projection: { ls: 1 } });
+
+		if (!subscription) {
+			const errorMessage = `No subscription found for user with ID "${uid}" in room with ID "${roomId}". This means the user is not subscribed to the room.`;
+			this.orch.debugLog(errorMessage);
+			throw new Error('User not subscribed to room');
+		}
+
+		const lastSeen = subscription?.ls;
+		if (!lastSeen) {
+			return 0;
+		}
+
+		return Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, lastSeen, new Date(), []);
 	}
 
 	protected async removeUsers(roomId: string, usernames: Array<string>, appId: string): Promise<void> {

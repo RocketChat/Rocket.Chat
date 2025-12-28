@@ -1,32 +1,24 @@
-import { render, screen } from '@testing-library/react';
-import React from 'react';
+import { composeStories } from '@storybook/react';
+import { render } from '@testing-library/react';
+import { axe } from 'jest-axe';
 
-import { createRenteionPolicySettingsMock as createMock } from '../../../tests/mocks/client/mockRetentionPolicySettings';
-import { createFakeRoom } from '../../../tests/mocks/data';
-import RetentionPolicyCallout from './RetentionPolicyCallout';
+import * as stories from './RetentionPolicyCallout.stories';
 
-jest.useFakeTimers();
+const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
-beforeEach(() => {
+test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+	jest.useFakeTimers();
 	jest.setSystemTime(new Date(2024, 5, 1, 0, 0, 0));
+
+	const { baseElement } = render(<Story />);
+	expect(baseElement).toMatchSnapshot();
 });
 
-describe('RetentionPolicyCallout', () => {
-	it('Should render callout if settings are valid', () => {
-		const fakeRoom = createFakeRoom({ t: 'c' });
-		render(<RetentionPolicyCallout room={fakeRoom} />, {
-			legacyRoot: true,
-			wrapper: createMock({ appliesToChannels: true, TTLChannels: 60000 }),
-		});
-		expect(screen.getByRole('alert')).toHaveTextContent('a minute June 1, 2024, 12:30 AM');
-	});
+test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+	// We have to use real timers here because `jest-axe` is breaking otherwise
+	jest.useRealTimers();
+	const { container } = render(<Story />);
 
-	it('Should not render callout if settings are invalid', () => {
-		const fakeRoom = createFakeRoom({ t: 'c' });
-		render(<RetentionPolicyCallout room={fakeRoom} />, {
-			legacyRoot: true,
-			wrapper: createMock({ appliesToChannels: true, TTLChannels: 60000, advancedPrecisionCron: '* * * 12 *', advancedPrecision: true }),
-		});
-		expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-	});
+	const results = await axe(container);
+	expect(results).toHaveNoViolations();
 });

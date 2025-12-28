@@ -1,12 +1,11 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useMethod, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { useState, useEffect, useCallback } from 'react';
+import { clientCallbacks, ContextualbarContent } from '@rocket.chat/ui-client';
+import { useMethod, useTranslation, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useState, useEffect, useCallback, useId } from 'react';
 
-import { callbacks } from '../../../../../../lib/callbacks';
-import { ContextualbarContent } from '../../../../../components/Contextualbar';
+import ThreadMessageList from './ThreadMessageList';
 import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
 import DropTargetOverlay from '../../../body/DropTargetOverlay';
 import { useFileUploadDropTarget } from '../../../body/hooks/useFileUploadDropTarget';
@@ -14,9 +13,7 @@ import ComposerContainer from '../../../composer/ComposerContainer';
 import RoomComposer from '../../../composer/RoomComposer/RoomComposer';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
-import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
 import { DateListProvider } from '../../../providers/DateListProvider';
-import ThreadMessageList from './ThreadMessageList';
 
 type ThreadChatProps = {
 	mainMessage: IThreadMainMessage;
@@ -70,7 +67,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 	const room = useRoom();
 	const readThreads = useMethod('readThreads');
 	useEffect(() => {
-		callbacks.add(
+		clientCallbacks.add(
 			'streamNewMessage',
 			(msg: IMessage) => {
 				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid !== mainMessage._id) {
@@ -79,17 +76,17 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 
 				readThreads(mainMessage._id);
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			`thread-${room._id}`,
 		);
 
 		return () => {
-			callbacks.remove('streamNewMessage', `thread-${room._id}`);
+			clientCallbacks.remove('streamNewMessage', `thread-${room._id}`);
 		};
 	}, [mainMessage._id, readThreads, room._id]);
 
 	const subscription = useRoomSubscription();
-	const sendToChannelID = useUniqueId();
+	const sendToChannelID = useId();
 	const t = useTranslation();
 
 	return (

@@ -10,6 +10,7 @@ import * as constants from './config/constants';
 import { createUserFixture } from './fixtures/collections/users';
 import { Users } from './fixtures/userStates';
 import { Registration } from './page-objects';
+import { convertHexToRGB } from './utils/convertHexToRGB';
 import { createCustomRole, deleteCustomRole } from './utils/custom-role';
 import { getUserInfo } from './utils/getUserInfo';
 import { parseMeteorResponse } from './utils/parseMeteorResponse';
@@ -17,14 +18,30 @@ import { setSettingValueById } from './utils/setSettingValueById';
 import type { BaseTest } from './utils/test';
 import { test, expect } from './utils/test';
 
+const KEY = 'fuselage-sessionStorage-saml_invite_token';
+
 const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupOnly?: boolean } = {}) => {
 	// Reset saml users' data on mongo in the beforeAll hook to allow re-running the tests within the same playwright session
 	// This is needed because those tests will modify this data and running them a second time would trigger different code paths
 	const connection = await MongoClient.connect(constants.URL_MONGODB);
 
-	const usernamesToDelete = [Users.userForSamlMerge, Users.userForSamlMerge2, Users.samluser1, Users.samluser2, Users.samluser4].map(
-		({ data: { username } }) => username,
-	);
+	const usernamesToDelete = [
+		...[
+			Users.userForSamlMerge,
+			Users.userForSamlMerge2,
+			Users.samluser1,
+			Users.samluser2,
+			Users.samluser4,
+			Users.samluser5,
+			Users.samluser6,
+			Users.samluser7,
+			Users.samlusernoname,
+			Users.samlusernoname2,
+		].map(({ data: { username } }) => username),
+		'custom_saml_username',
+		'custom_saml_username2',
+	];
+
 	await connection
 		.db()
 		.collection('users')
@@ -47,6 +64,7 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupO
 
 	const settings = [
 		{ _id: 'Accounts_AllowAnonymousRead', value: false },
+		{ _id: 'Accounts_AllowUsernameChange', value: true },
 		{ _id: 'SAML_Custom_Default_logout_behaviour', value: 'SAML' },
 		{ _id: 'SAML_Custom_Default_immutable_property', value: 'EMail' },
 		{ _id: 'SAML_Custom_Default_mail_overwrite', value: false },
@@ -59,6 +77,8 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupO
 		{ _id: 'SAML_Custom_Default_issuer', value: 'http://localhost:3000/_saml/metadata/test-sp' },
 		{ _id: 'SAML_Custom_Default_entry_point', value: 'http://localhost:8080/simplesaml/saml2/idp/SSOService.php' },
 		{ _id: 'SAML_Custom_Default_idp_slo_redirect_url', value: 'http://localhost:8080/simplesaml/saml2/idp/SingleLogoutService.php' },
+		{ _id: 'SAML_Custom_Default_button_label_text', value: 'SAML test login button' },
+		{ _id: 'SAML_Custom_Default_button_color', value: '#185925' },
 	];
 
 	await Promise.all(settings.map(({ _id, value }) => setSettingValueById(api, _id, value)));
@@ -78,6 +98,8 @@ test.describe('SAML', () => {
 	let targetInviteGroupId: string;
 	let targetInviteGroupName: string;
 	let inviteId: string;
+	let targetChannel: string;
+	let autoCreatedChannel: string;
 
 	const containerPath = path.join(__dirname, 'containers', 'saml');
 
@@ -102,11 +124,18 @@ test.describe('SAML', () => {
 	});
 
 	test.beforeAll(async ({ api }) => {
-		const groupResponse = await api.post('/groups.create', { name: faker.string.uuid() });
+		const [groupResponse, channelResponse] = await Promise.all([
+			api.post('/groups.create', { name: faker.string.uuid() }),
+			api.post('/channels.create', { name: 'saml-channel-1' }),
+		]);
+
 		expect(groupResponse.status()).toBe(200);
+		expect(channelResponse.status()).toBe(200);
+
 		const { group } = await groupResponse.json();
 		targetInviteGroupId = group._id;
 		targetInviteGroupName = group.name;
+		targetChannel = 'saml-channel-1';
 
 		const inviteResponse = await api.post('/findOrCreateInvite', { rid: targetInviteGroupId, days: 1, maxUses: 0 });
 		expect(inviteResponse.status()).toBe(200);
@@ -138,7 +167,11 @@ test.describe('SAML', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		expect((await api.post('/groups.delete', { roomId: targetInviteGroupId })).status()).toBe(200);
+		await Promise.all([
+			api.post('/groups.delete', { roomId: targetInviteGroupId }).then((response) => expect(response.status()).toBe(200)),
+			api.post('/channels.delete', { roomName: targetChannel }).then((response) => expect(response.status()).toBe(200)),
+			api.post('/channels.delete', { roomName: autoCreatedChannel }),
+		]);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -150,6 +183,10 @@ test.describe('SAML', () => {
 	test('Login', async ({ page, api }) => {
 		await test.step('expect to have SAML login button available', async () => {
 			await expect(poRegistration.btnLoginWithSaml).toBeVisible({ timeout: 10000 });
+		});
+
+		await test.step('expect to have SAML login button to have the required background color', async () => {
+			await expect(poRegistration.btnLoginWithSaml).toHaveCSS('background-color', convertHexToRGB('#185925'));
 		});
 
 		await test.step('expect to be redirected to the IdP for login', async () => {
@@ -218,6 +255,27 @@ test.describe('SAML', () => {
 				await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
 			}
 		});
+	};
+
+	const doLoginStepWithUsernameSelection = async (page: Page, username: string) => {
+		await test.step('expect successful login without username to show username selection screen', async () => {
+			await poRegistration.btnLoginWithSaml.click();
+			// Redirect to Idp
+			await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
+
+			// Fill username and password
+			await page.getByLabel('Username').fill(username);
+			await page.getByLabel('Password').fill('password');
+			await page.locator('role=button[name="Login"]').click();
+
+			// Should redirect to username selection screen
+			await expect(poRegistration.username).toBeVisible();
+		});
+	};
+
+	const doUsernameSelection = async (customUsername: string) => {
+		await poRegistration.username.fill(customUsername);
+		await poRegistration.btnRegisterConfirmUsername.click();
 	};
 
 	const doLogoutStep = async (page: Page) => {
@@ -387,11 +445,26 @@ test.describe('SAML', () => {
 		await page.goto(`/invite/${inviteId}`);
 		await page.getByRole('link', { name: 'Back to Login' }).click();
 
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
+
 		await doLoginStep(page, 'samluser1', null);
 
 		await test.step('expect to be redirected to the invited room after succesful login', async () => {
 			await expect(page).toHaveURL(`/group/${targetInviteGroupName}`);
+			expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
 		});
+	});
+
+	test('Remove invite token from session storage if invite is not used', async ({ page }) => {
+		await page.goto(`/invite/${inviteId}`);
+		await page.getByRole('link', { name: 'Back to Login' }).click();
+
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
+
+		await page.goto(`/home`);
+		await doLoginStep(page, 'samluser2');
+
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
 	});
 
 	test('Redirect to home after login when no redirectUrl is provided', async ({ page }) => {
@@ -399,6 +472,103 @@ test.describe('SAML', () => {
 
 		await test.step('expect to be redirected to the homepage after succesful login', async () => {
 			await expect(page).toHaveURL('/home');
+		});
+	});
+
+	test('Respect redirectUrl on multiple parallel logins', async ({ page, browser }) => {
+		const page2 = await browser.newPage();
+		const poRegistration2 = new Registration(page2);
+
+		await page2.goto(`/home`);
+		await expect(page2).toHaveURL('/home');
+
+		await page.goto(`/invite/${inviteId}`);
+		await page.getByRole('link', { name: 'Back to Login' }).click();
+
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
+		expect(await page2.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
+
+		await expect(poRegistration.btnLoginWithSaml).toBeVisible();
+		await poRegistration.btnLoginWithSaml.click();
+		await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
+
+		await expect(page2.getByRole('button', { name: 'User menu' })).not.toBeVisible();
+		await expect(poRegistration2.btnLoginWithSaml).toBeVisible();
+		await poRegistration2.btnLoginWithSaml.click();
+		await expect(page2).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
+
+		await page.getByLabel('Username').fill('samluser1');
+		await page.getByLabel('Password').fill('password');
+		await page.locator('role=button[name="Login"]').click();
+
+		await page2.getByLabel('Username').fill('samluser2');
+		await page2.getByLabel('Password').fill('password');
+		await page2.locator('role=button[name="Login"]').click();
+
+		await expect(page).toHaveURL(`/group/${targetInviteGroupName}`);
+		await expect(page2).toHaveURL('/home');
+
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
+		expect(await page2.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
+
+		await page2.close();
+	});
+
+	test('Login - User without username can set initial username during first login', async ({ page, api }) => {
+		await doLoginStepWithUsernameSelection(page, 'samlusernoname2');
+
+		await test.step('expect to be redirected to the username selection page and set the username', async () => {
+			await expect(poRegistration.btnRegisterConfirmUsername).toBeVisible();
+			await doUsernameSelection('custom_saml_username2');
+		});
+
+		await test.step('expect to be redirected to the homepage after succesful login', async () => {
+			await expect(page).toHaveURL('/home');
+			await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
+		});
+
+		await test.step('expect user data to have been created with custom username', async () => {
+			const user = await getUserInfo(api, 'custom_saml_username2');
+
+			expect(user).toBeDefined();
+			expect(user?.username).toBe('custom_saml_username2');
+			expect(user?.name).toBe('Saml User No Username 2');
+			expect(user?.emails).toBeDefined();
+			expect(user?.emails?.[0].address).toBe('samlusernoname2@example.com');
+		});
+	});
+
+	test.describe('Login - Username selection when allow username change is disabled', () => {
+		test.beforeAll(async ({ api }) => {
+			await expect((await setSettingValueById(api, 'Accounts_AllowUsernameChange', false)).status()).toBe(200);
+		});
+
+		test.afterAll(async ({ api }) => {
+			await expect((await setSettingValueById(api, 'Accounts_AllowUsernameChange', true)).status()).toBe(200);
+		});
+
+		test('User without username can set initial username when username changes are disabled', async ({ page, api }) => {
+			await doLoginStepWithUsernameSelection(page, 'samlusernoname');
+
+			await test.step('expect to be redirected to the username selection page and set the username', async () => {
+				await expect(poRegistration.btnRegisterConfirmUsername).toBeVisible();
+				await doUsernameSelection('custom_saml_username');
+			});
+
+			await test.step('expect to be redirected to the homepage after succesful login', async () => {
+				await expect(page).toHaveURL('/home');
+				await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
+			});
+
+			await test.step('expect user data to have been created with the custom username', async () => {
+				const user = await getUserInfo(api, 'custom_saml_username');
+
+				expect(user).toBeDefined();
+				expect(user?.username).toBe('custom_saml_username');
+				expect(user?.name).toBe('Saml User No Username');
+				expect(user?.emails).toBeDefined();
+				expect(user?.emails?.[0].address).toBe('samlusernoname@example.com');
+			});
 		});
 	});
 
@@ -420,12 +590,97 @@ test.describe('SAML', () => {
 		// Test different variations of the Immutable Property setting
 	});
 
-	test.fixme('Login - User without name', async () => {
-		// Test login with a SAML user with no name
+	test('Login - User without name', async ({ page, api }) => {
+		await test.step('expect user name to fallback to username when displayName is not provided', async () => {
+			await doLoginStep(page, 'samluser5');
+
+			const user = await getUserInfo(api, 'samluser5');
+
+			expect(user).toBeDefined();
+			expect(user?.username).toBe('samluser5');
+			expect(user?.emails).toBeDefined();
+			expect(user?.emails?.[0].address).toBe('samluser5@example.com');
+			// When displayName is not provided, it should fall back to username
+			expect(user?.name).toBe('samluser5');
+			await doLogoutStep(page);
+		});
+
+		await test.step('expect user name to fallback to displayName when provided', async () => {
+			await doLoginStep(page, 'samluser6');
+
+			const user = await getUserInfo(api, 'samluser6');
+
+			expect(user).toBeDefined();
+			expect(user?.username).toBe('samluser6');
+			expect(user?.emails).toBeDefined();
+			expect(user?.emails?.[0].address).toBe('samluser6@example.com');
+			// When displayName is provided, it should fall back to displayName
+			expect(user?.name).toBe('Saml User 6 Display Name');
+		});
 	});
 
-	test.fixme('Login - User with channels attribute', async () => {
-		// Test login with a SAML user with a "channels" attribute
+	test('Login - User with channels attribute', async ({ page, api }) => {
+		autoCreatedChannel = 'saml-channel-2';
+
+		await test.step('Configure SAML to enable channels attribute updates', async () => {
+			expect((await setSettingValueById(api, 'SAML_Custom_Default_channels_update', true)).status()).toBe(200);
+		});
+
+		await doLoginStep(page, 'samluser7');
+
+		await test.step('expect user data to have been mapped correctly', async () => {
+			const user = await getUserInfo(api, 'samluser7');
+
+			expect(user).toBeDefined();
+			expect(user?.username).toBe('samluser7');
+			expect(user?.name).toBe('Saml User 7');
+			expect(user?.emails).toBeDefined();
+			expect(user?.emails?.[0].address).toBe('samluser7@example.com');
+		});
+
+		await test.step('expect auto-created channel to be created automatically', async () => {
+			const channelInfoResponse = await api.get(`/channels.info?roomName=${autoCreatedChannel}`);
+			expect(channelInfoResponse.status()).toBe(200);
+			const { channel } = await channelInfoResponse.json();
+			expect(channel).toBeDefined();
+			expect(channel.name).toBe(autoCreatedChannel);
+		});
+
+		await test.step('expect user to be member of existing channel', async () => {
+			const existingChannelMembersResponse = await api.get(`/channels.members?roomName=${targetChannel}`);
+			expect(existingChannelMembersResponse.status()).toBe(200);
+			const { members: existingMembers } = await existingChannelMembersResponse.json();
+			expect(existingMembers).toBeDefined();
+			expect(existingMembers.some((member: { username: string }) => member.username === 'samluser7')).toBe(true);
+		});
+
+		await test.step('expect user to be member of auto-created channel', async () => {
+			const autoCreatedChannelMembersResponse = await api.get(`/channels.members?roomName=${autoCreatedChannel}`);
+			expect(autoCreatedChannelMembersResponse.status()).toBe(200);
+			const { members: autoCreatedMembers } = await autoCreatedChannelMembersResponse.json();
+			expect(autoCreatedMembers).toBeDefined();
+			expect(autoCreatedMembers.some((member: { username: string }) => member.username === 'samluser7')).toBe(true);
+		});
+
+		await doLogoutStep(page);
+
+		await doLoginStep(page, 'samluser1');
+
+		await test.step('expect user without channels attribute to not be added to existing channel', async () => {
+			const existingChannelMembersResponse = await api.get(`/channels.members?roomName=${targetChannel}`);
+			expect(existingChannelMembersResponse.status()).toBe(200);
+			const { members: existingMembers } = await existingChannelMembersResponse.json();
+			expect(existingMembers).toBeDefined();
+			expect(existingMembers.some((member: { username: string }) => member.username === 'samluser1')).toBe(false);
+		});
+
+		await test.step('expect user without channels attribute to not be added to auto-created channel', async () => {
+			const autoCreatedChannelMembersResponse = await api.get(`/channels.members?roomName=${autoCreatedChannel}`);
+			expect(autoCreatedChannelMembersResponse.status()).toBe(200);
+			const { members: autoCreatedMembers } = await autoCreatedChannelMembersResponse.json();
+			expect(autoCreatedMembers).toBeDefined();
+			expect(autoCreatedMembers.some((member: { username: string }) => member.username === 'samluser1')).toBe(false);
+		});
 	});
 
 	test.fixme('Data Sync - Custom Field Map', async () => {

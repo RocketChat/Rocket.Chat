@@ -1,15 +1,14 @@
 import type { ILivechatUnitMonitor } from '@rocket.chat/core-typings';
 import type { ILivechatUnitMonitorsModel } from '@rocket.chat/model-typings';
+import { BaseRaw } from '@rocket.chat/models';
 import type { Db, FindCursor, UpdateResult, DeleteResult, IndexDescription } from 'mongodb';
-
-import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
 export class LivechatUnitMonitorsRaw extends BaseRaw<ILivechatUnitMonitor> implements ILivechatUnitMonitorsModel {
 	constructor(db: Db) {
 		super(db, 'livechat_unit_monitors');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: {

@@ -1,7 +1,6 @@
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import KeyboardShortcuts from './KeyboardShortcuts';
 
 const KeyboardShortcutsWithData = (): ReactElement => {

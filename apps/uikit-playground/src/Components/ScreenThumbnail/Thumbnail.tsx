@@ -1,16 +1,16 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode, ComponentProps } from 'react';
-import React, { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
-interface ThumbnailProps {
+interface ThumbnailProps extends ComponentProps<typeof Box> {
   of: ReactNode;
 }
 
-const Thumbnail: React.FC<ThumbnailProps & ComponentProps<typeof Box>> = ({
+const Thumbnail = ({
   of,
   ...props
-}) => {
+}: ThumbnailProps) => {
   const parentRef = useRef<HTMLDivElement | null>(null);
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [scale, setScale] = useState(1);

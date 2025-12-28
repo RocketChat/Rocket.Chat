@@ -54,16 +54,22 @@ type FCMError = {
 	};
 };
 
+// The 403 error code is used when the server is refusing to process a request to a specific token due to
+// a SENDER_ID_MISMATCH error. This error is returned when the sender ID provided in the request does not match the sender ID
+// associated with the registration token.
+const SENDER_ID_MISMATCH_ERROR_CODE = 403;
+const NOT_FOUND_ERROR_CODE = 404;
+
 /**
  * Send a push notification using Firebase Cloud Messaging (FCM).
  * implements the Firebase Cloud Messaging HTTP v1 API, and all of its retry logic,
  * see: https://firebase.google.com/docs/reference/fcm/rest/v1/ErrorCode
  *
  * Errors:
- * - For 400, 401, 403 errors: abort, and do not retry.
+ * - For 400, 401 errors: abort, and do not retry.
  * - For 404 errors: remove the token from the database.
  * - For 429 errors: retry after waiting for the duration set in the retry-after header. If no retry-after header is set, default to 60 seconds.
- * - For 500 errors: retry with exponential backoff.
+ * - For 5xx errors: retry with exponential backoff.
  */
 async function fetchWithRetry(url: string, _removeToken: () => void, options: ExtendedFetchOptions, retries = 0): Promise<Response> {
 	const MAX_RETRIES = 5;
@@ -80,8 +86,7 @@ async function fetchWithRetry(url: string, _removeToken: () => void, options: Ex
 
 	const retryAfter = response.headers.get('retry-after');
 	const retryAfterSeconds = retryAfter ? parseInt(retryAfter, 10) : 60;
-
-	if (response.status === 404) {
+	if ([SENDER_ID_MISMATCH_ERROR_CODE, NOT_FOUND_ERROR_CODE].includes(response.status)) {
 		_removeToken();
 		return response;
 	}

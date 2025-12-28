@@ -11,7 +11,7 @@ export const defaultLimits: {
 	privateApps: [
 		{
 			behavior: 'prevent_action',
-			max: 3,
+			max: 0,
 		},
 	],
 	marketplaceApps: [

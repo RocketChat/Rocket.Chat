@@ -1,3 +1,7 @@
 {
-	"extends": "../../tsconfig.base.client.json"
+	"extends": "@rocket.chat/tsconfig/client.json",
+	"compilerOptions": {
+		"rootDirs": ["./src", "./"]
+	},
+	"include": ["./src/**/*", "./jest.config.ts", "./.storybook/**/*"]
 }

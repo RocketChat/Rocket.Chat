@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { TEAM_TYPE, isValidSidepanel } from '@rocket.chat/core-typings';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import {
 	isTeamsConvertToChannelProps,
@@ -15,13 +15,15 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
+import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { eraseTeam } from '../lib/eraseTeam';
 
 API.v1.addRoute(
 	'teams.list',
@@ -45,13 +47,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.listAll',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-all-teams'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-all-teams'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const { records, total } = await Team.listAll({ offset, count });
@@ -68,13 +66,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.create',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['create-team'] },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'create-team'))) {
-				return API.v1.unauthorized();
-			}
-
 			check(
 				this.bodyParams,
 				Match.ObjectIncluding({
@@ -86,11 +80,7 @@ API.v1.addRoute(
 				}),
 			);
 
-			const { name, type, members, room, owner, sidepanel } = this.bodyParams;
-
-			if (sidepanel?.items && !isValidSidepanel(sidepanel)) {
-				throw new Error('error-invalid-sidepanel');
-			}
+			const { name, type, members, room, owner } = this.bodyParams;
 
 			const team = await Team.create(this.userId, {
 				team: {
@@ -100,7 +90,6 @@ API.v1.addRoute(
 				room,
 				members,
 				owner,
-				sidepanel,
 			});
 
 			return API.v1.success({ team });
@@ -137,18 +126,18 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'convert-team', team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const rooms = await Team.getMatchingTeamRooms(team._id, roomsToRemove);
 
 			if (rooms.length) {
 				for await (const room of rooms) {
-					await Meteor.callAsync('eraseRoom', room);
+					await eraseRoom(room, this.userId);
 				}
 			}
 
-			await Promise.all([Team.unsetTeamIdOfRooms(this.userId, team._id), Team.removeAllMembersFromTeam(team._id)]);
+			await Promise.all([Team.unsetTeamIdOfRooms(this.user, team), Team.removeAllMembersFromTeam(team._id)]);
 
 			await Team.deleteById(team._id);
 
@@ -181,8 +170,8 @@ API.v1.addRoute(
 				return API.v1.failure('team-does-not-exist');
 			}
 
-			if (!(await hasPermissionAsync(this.userId, 'add-team-channel', team.roomId))) {
-				return API.v1.unauthorized('error-no-permission-team-channel');
+			if (!(await hasPermissionAsync(this.userId, 'move-room-to-team', team.roomId))) {
+				return API.v1.forbidden('error-no-permission-team-channel');
 			}
 
 			const { rooms } = this.bodyParams;
@@ -208,7 +197,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'remove-team-channel', team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const canRemoveAny = !!(await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId));
@@ -243,9 +232,16 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'edit-team-channel', team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 			const canUpdateAny = !!(await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId));
+
+			if (settings.get('ABAC_Enabled') && isDefault) {
+				const room = await Rooms.findOneByIdAndType(roomId, 'p', { projection: { abacAttributes: 1 } });
+				if (room?.abacAttributes?.length) {
+					return API.v1.failure('error-room-is-abac-managed');
+				}
+			}
 
 			const room = await Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny);
 
@@ -291,10 +287,7 @@ API.v1.addRoute(
 
 			const allowPrivateTeam: boolean = await hasPermissionAsync(this.userId, 'view-all-teams', team.roomId);
 
-			let getAllRooms = false;
-			if (await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId)) {
-				getAllRooms = true;
-			}
+			const getAllRooms = await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId);
 
 			const listFilter = {
 				name: filter ?? undefined,
@@ -357,7 +350,7 @@ API.v1.addRoute(
 			const { userId, canUserDelete } = this.queryParams;
 
 			if (!(this.userId === userId || (await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId)))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const booleanCanUserDelete = canUserDelete === 'true';
@@ -452,9 +445,9 @@ API.v1.addRoute(
 			const canSeeAllMembers = await hasPermissionAsync(this.userId, 'view-all-teams', team.roomId);
 
 			const query = {
-				username: username ? new RegExp(escapeRegExp(username), 'i') : undefined,
-				name: name ? new RegExp(escapeRegExp(name), 'i') : undefined,
-				status: status ? { $in: status as UserStatus[] } : undefined,
+				...(username && { username: new RegExp(escapeRegExp(username), 'i') }),
+				...(name && { name: new RegExp(escapeRegExp(name), 'i') }),
+				...(status && { status: { $in: status as UserStatus[] } }),
 			};
 
 			const { records, total } = await Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, query);
@@ -486,7 +479,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasAtLeastOnePermissionAsync(this.userId, ['add-team-member', 'edit-team-member'], team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			await Team.addMembers(this.userId, team._id, members);
@@ -513,7 +506,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasAtLeastOnePermissionAsync(this.userId, ['edit-team-member'], team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			await Team.updateMember(team._id, member);
@@ -540,7 +533,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasAtLeastOnePermissionAsync(this.userId, ['edit-team-member'], team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const user = await Users.findOneActiveById(userId, {});
@@ -631,7 +624,7 @@ API.v1.addRoute(
 				(await canAccessRoomAsync(room, { _id: this.userId })) || (await hasPermissionAsync(this.userId, 'view-all-teams'));
 
 			if (!canViewInfo) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			return API.v1.success({ teamInfo });
@@ -650,34 +643,16 @@ API.v1.addRoute(
 			const { roomsToRemove = [] } = this.bodyParams;
 
 			const team = await getTeamByIdOrName(this.bodyParams);
+
 			if (!team) {
 				return API.v1.failure('team-does-not-exist');
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'delete-team', team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
-			const rooms: string[] = await Team.getMatchingTeamRooms(team._id, roomsToRemove);
-
-			// If we got a list of rooms to delete along with the team, remove them first
-			if (rooms.length) {
-				for await (const room of rooms) {
-					await Meteor.callAsync('eraseRoom', room);
-				}
-			}
-
-			// Move every other room back to the workspace
-			await Team.unsetTeamIdOfRooms(this.userId, team._id);
-
-			// Remove the team's main room
-			await Meteor.callAsync('eraseRoom', team.roomId);
-
-			// Delete all team memberships
-			await Team.removeAllMembersFromTeam(team._id);
-
-			// And finally delete the team itself
-			await Team.deleteById(team._id);
+			await eraseTeam(this.user, team, roomsToRemove);
 
 			return API.v1.success();
 		},
@@ -721,7 +696,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'edit-team', team.roomId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			await Team.update(this.userId, team._id, data);

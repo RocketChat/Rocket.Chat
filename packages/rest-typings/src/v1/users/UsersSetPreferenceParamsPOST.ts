@@ -19,7 +19,9 @@ export type UsersSetPreferencesParamsPOST = {
 		autoImageLoad?: boolean;
 		emailNotificationMode?: string;
 		unreadAlert?: boolean;
+		masterVolume?: number;
 		notificationsSoundVolume?: number;
+		voipRingerVolume?: number;
 		desktopNotifications?: string;
 		pushNotifications?: string;
 		enableAutoAway?: boolean;
@@ -52,6 +54,7 @@ export type UsersSetPreferencesParamsPOST = {
 		omnichannelHideConversationAfterClosing?: boolean;
 		enableMobileRinging?: boolean;
 		mentionsWithSymbol?: boolean;
+		desktopNotificationVoiceCalls?: boolean;
 	};
 };
 
@@ -110,7 +113,15 @@ const UsersSetPreferencesParamsPostSchema = {
 					type: 'boolean',
 					nullable: true,
 				},
+				masterVolume: {
+					type: 'number',
+					nullable: true,
+				},
 				notificationsSoundVolume: {
+					type: 'number',
+					nullable: true,
+				},
+				voipRingerVolume: {
 					type: 'number',
 					nullable: true,
 				},
@@ -252,6 +263,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				mentionsWithSymbol: {
+					type: 'boolean',
+					nullable: true,
+				},
+				desktopNotificationVoiceCalls: {
 					type: 'boolean',
 					nullable: true,
 				},

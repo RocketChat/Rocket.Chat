@@ -1,5 +1,5 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEffect, useState } from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 type MediaDevices = 'camera' | 'microphone';
 
@@ -13,39 +13,47 @@ const getDeviceKind = (name: MediaDevices): MediaDeviceKind => {
 };
 
 export const useMediaPermissions = (name: MediaDevices): [isPermissionDenied: boolean, setIsPermissionDenied: (state: boolean) => void] => {
-	const [isPermissionDenied, setIsPermissionDenied] = useState(false);
+	const queryClient = useQueryClient();
 
-	const handleMount = useMutableCallback(async (): Promise<void> => {
-		if (navigator.permissions) {
+	const queryKey = ['media-permissions', name];
+
+	const setIsPermissionDenied = useEffectEvent((isDenied: boolean) => {
+		queryClient.setQueryData(queryKey, isDenied);
+	});
+
+	const { data } = useQuery({
+		queryKey,
+		queryFn: async () => {
+			if (navigator.permissions) {
+				try {
+					const permissionStatus = await navigator.permissions.query({ name: name as PermissionName });
+					permissionStatus.onchange = (): void => {
+						queryClient.setQueryData(queryKey, permissionStatus.state === 'denied');
+					};
+					return permissionStatus.state === 'denied';
+				} catch (error) {
+					console.warn(error);
+				}
+			}
+
+			if (!navigator.mediaDevices?.enumerateDevices) {
+				return true;
+			}
+
 			try {
-				const permissionStatus = await navigator.permissions.query({ name: name as PermissionName });
-				setIsPermissionDenied(permissionStatus.state === 'denied');
-				permissionStatus.onchange = (): void => {
-					setIsPermissionDenied(permissionStatus.state === 'denied');
-				};
-				return;
+				if (!(await navigator.mediaDevices.enumerateDevices()).some(({ kind }) => kind === getDeviceKind(name))) {
+					return true;
+				}
 			} catch (error) {
 				console.warn(error);
 			}
-		}
-
-		if (!navigator.mediaDevices?.enumerateDevices) {
-			setIsPermissionDenied(true);
-			return;
-		}
-
-		try {
-			if (!(await navigator.mediaDevices.enumerateDevices()).some(({ kind }) => kind === getDeviceKind(name))) {
-				setIsPermissionDenied(true);
-			}
-		} catch (error) {
-			console.warn(error);
-		}
+		},
+		refetchOnMount: true,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
+		staleTime: Infinity,
+		placeholderData: false,
 	});
 
-	useEffect(() => {
-		handleMount();
-	}, [handleMount]);
-
-	return [isPermissionDenied, setIsPermissionDenied];
+	return [Boolean(data), setIsPermissionDenied];
 };

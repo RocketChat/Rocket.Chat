@@ -1,4 +1,7 @@
-export const CONTACT_SALES_LINK = 'https://go.rocket.chat/i/contact-sales-product';
-export const PRICING_LINK = 'https://go.rocket.chat/i/pricing-product';
-export const DOWNGRADE_LINK = 'https://go.rocket.chat/i/docs-downgrade';
-export const TRIAL_LINK = 'https://go.rocket.chat/i/docs-trial';
+import { links } from '../../../../lib/links';
+
+export const CONTACT_SALES_LINK = links.go.contactSalesProduct;
+export const PRICING_LINK = links.go.pricingProduct;
+export const DOWNGRADE_LINK = links.go.downgrade;
+export const TRIAL_LINK = links.go.trial;
+export const GET_ADDONS_LINK = links.go.getAddons;

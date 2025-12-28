@@ -44,11 +44,11 @@ export class OmnichannelTags extends OmnichannelAdministration {
 	}
 
 	btnDeleteByName(name: string): Locator {
-		return this.page.locator(`role=link[name="${name} Remove"] >> role=button`);
+		return this.page.getByRole('link', { name }).getByRole('button');
 	}
 
 	findRowByName(name: string): Locator {
-		return this.page.locator(`tr:has-text("${name}")`);
+		return this.page.getByRole('link', { name });
 	}
 
 	get inputDepartments(): Locator {
@@ -56,16 +56,16 @@ export class OmnichannelTags extends OmnichannelAdministration {
 	}
 
 	private selectOption(name: string): Locator {
-		return this.page.locator(`[role=option][value="${name}"]`);
+		return this.page.locator('#position-container').getByRole('option', { name });
 	}
 
 	async search(text: string) {
 		await this.inputSearch.fill(text);
 	}
 
-	async selectDepartment({ name, _id }: { name: string; _id: string }) {
+	async selectDepartment(name: string) {
 		await this.inputDepartments.click();
 		await this.inputDepartments.fill(name);
-		await this.selectOption(_id).click();
+		await this.selectOption(name).click();
 	}
 }

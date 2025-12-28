@@ -1,5 +1,4 @@
-import { useCallback, useContext } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useCallback, useContext, useSyncExternalStore } from 'react';
 
 import { RouterContext } from '../RouterContext';
 
@@ -13,7 +12,7 @@ export const useCurrentRoutePath = () => {
 					name,
 					params: router.getRouteParameters(),
 					search: router.getSearchParameters(),
-			  })
+				})
 			: undefined;
 	}, [router]);
 

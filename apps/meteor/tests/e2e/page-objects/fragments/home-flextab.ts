@@ -1,9 +1,12 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { ExportMessagesTab } from './export-messages-tab';
 import { HomeFlextabChannels } from './home-flextab-channels';
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabNotificationPreferences } from './home-flextab-notificationPreferences';
+import { HomeFlextabPruneMessages } from './home-flextab-pruneMessages';
 import { HomeFlextabRoom } from './home-flextab-room';
+import { SearchMessagesFlexTab } from './searchMessages-flextab';
 
 export class HomeFlextab {
 	private readonly page: Page;
@@ -16,24 +19,25 @@ export class HomeFlextab {
 
 	readonly notificationPreferences: HomeFlextabNotificationPreferences;
 
+	readonly exportMessages: ExportMessagesTab;
+
+	readonly pruneMessages: HomeFlextabPruneMessages;
+
+	readonly searchMessages: SearchMessagesFlexTab;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.members = new HomeFlextabMembers(page);
 		this.room = new HomeFlextabRoom(page);
 		this.channels = new HomeFlextabChannels(page);
 		this.notificationPreferences = new HomeFlextabNotificationPreferences(page);
+		this.exportMessages = new ExportMessagesTab(page);
+		this.pruneMessages = new HomeFlextabPruneMessages(page);
+		this.searchMessages = new SearchMessagesFlexTab(page);
 	}
 
-	get btnTabMembers(): Locator {
-		return this.page.locator('[data-qa-id=ToolBoxAction-members]');
-	}
-
-	get btnRoomInfo(): Locator {
-		return this.page.locator('[data-qa-id=ToolBoxAction-info-circled]');
-	}
-
-	get btnChannels(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-hash"]');
+	get toolbarPrimaryActions(): Locator {
+		return this.page.getByRole('toolbar', { name: 'Primary Room actions' });
 	}
 
 	get btnTeamMembers(): Locator {
@@ -41,27 +45,27 @@ export class HomeFlextab {
 	}
 
 	get kebab(): Locator {
-		return this.page.locator('role=button[name="Options"]');
+		return this.toolbarPrimaryActions.locator('role=button[name="Options"]');
 	}
 
 	get btnNotificationPreferences(): Locator {
 		return this.page.locator('role=menuitem[name="Notifications Preferences"]');
 	}
 
-	get btnE2EERoomSetupDisableE2E(): Locator {
-		return this.page.locator('[data-qa-id=ToolBoxAction-key]');
+	get btnExportMessages(): Locator {
+		return this.page.locator('role=menuitem[name="Export messages"]');
+	}
+
+	get btnPruneMessages(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Prune Messages' });
 	}
 
 	get btnDisableE2E(): Locator {
-		return this.page.locator('role=menuitem[name="Disable E2E"]');
+		return this.page.locator('role=menuitem[name="Disable E2E encryption"]');
 	}
 
 	get btnEnableE2E(): Locator {
-		return this.page.locator('role=menuitem[name="Enable E2E"]');
-	}
-
-	get btnEnableOTR(): Locator {
-		return this.page.locator('role=menuitem[name="OTR"]');
+		return this.page.locator('role=menuitem[name="Enable E2E encryption"]');
 	}
 
 	get flexTabViewThreadMessage(): Locator {

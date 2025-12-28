@@ -1,6 +1,6 @@
 import { Box, Bubble } from '@rocket.chat/fuselage';
 import type { Ref } from 'react';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import type { BubbleDateProps } from '../hooks/useDateScroll';

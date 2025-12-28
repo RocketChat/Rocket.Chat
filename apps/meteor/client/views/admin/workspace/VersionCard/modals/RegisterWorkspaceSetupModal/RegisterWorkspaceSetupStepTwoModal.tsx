@@ -1,7 +1,21 @@
-import { Modal, Box, Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useEffect } from 'react';
-import { Trans } from 'react-i18next';
+import {
+	Modal,
+	Box,
+	Field,
+	FieldLabel,
+	FieldRow,
+	TextInput,
+	ModalHeader,
+	ModalHeaderText,
+	ModalTagline,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+} from '@rocket.chat/fuselage';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useCallback, useEffect } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 
 type Props = {
 	email: string;
@@ -19,7 +33,7 @@ type Props = {
 const setIntervalTime = (interval?: number): number => (interval ? interval * 1000 : 0);
 
 const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, intentData, onSuccess, ...props }: Props) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const cloudConfirmationPoll = useEndpoint('GET', '/v1/cloud.confirmationPoll');
@@ -49,7 +63,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 		} catch (error: any) {
 			console.log(error);
 		}
-	}, [cloudConfirmationPoll, intentData.device_code, dispatchToastMessage, t]);
+	}, [cloudConfirmationPoll, intentData.device_code, dispatchToastMessage, t, onSuccess]);
 
 	useEffect(() => {
 		const pollInterval = setInterval(() => getConfirmation(), setIntervalTime(intentData.interval));
@@ -59,14 +73,14 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 
 	return (
 		<Modal {...props}>
-			<Modal.Header>
-				<Modal.HeaderText>
-					<Modal.Tagline>{t('RegisterWorkspace_Setup_Steps', { step, numberOfSteps: 2 })}</Modal.Tagline>
-					<Modal.Title>{t('Awaiting_confirmation')}</Modal.Title>
-				</Modal.HeaderText>
-				<Modal.Close onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTagline>{t('RegisterWorkspace_Setup_Steps', { step, numberOfSteps: 2 })}</ModalTagline>
+					<ModalTitle>{t('Awaiting_confirmation')}</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Box fontSize='p2'>
 					<Box>
 						<Trans i18nKey='RegisterWorkspace_Setup_Email_Confirmation'>
@@ -87,8 +101,9 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 						</FieldRow>
 					</Field>
 				</Box>
-			</Modal.Content>
-			<Modal.Footer>
+			</ModalContent>
+			<ModalFooter>
+				{/* FIXME: missing translation */}
 				<Box is='div' display='flex' justifyContent='start' fontSize='c1' w='full'>
 					Didn’t receive email?{' '}
 					<Box is='a' pi={4} onClick={handleResendRegistrationEmail}>
@@ -99,7 +114,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 						change email
 					</Box>
 				</Box>
-			</Modal.Footer>
+			</ModalFooter>
 		</Modal>
 	);
 };

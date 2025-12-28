@@ -2,7 +2,7 @@ import { Skeleton, TextInput, Callout } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
@@ -18,11 +18,13 @@ const DefaultParentRoomField = ({ defaultParentRoom }: { defaultParentRoom: stri
 
 	const roomsInfoEndpoint = useEndpoint('GET', '/v1/rooms.info');
 
-	const { data, isLoading, isError } = useQuery(['defaultParentRoomInfo', query], async () => roomsInfoEndpoint(query), {
+	const { data, isPending, isError } = useQuery({
+		queryKey: ['defaultParentRoomInfo', query],
+		queryFn: async () => roomsInfoEndpoint(query),
 		refetchOnWindowFocus: false,
 	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <Skeleton width='full' />;
 	}
 

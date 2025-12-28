@@ -1,10 +1,8 @@
 import { Box, CardGroup } from '@rocket.chat/fuselage';
+import { PageScrollableContent, Page } from '@rocket.chat/ui-client';
 import { useAtLeastOnePermission, useSetting, useTranslation, useRole, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
-import Page from '../../components/Page/Page';
-import PageScrollableContent from '../../components/Page/PageScrollableContent';
 import HomePageHeader from './HomePageHeader';
 import AddUsersCard from './cards/AddUsersCard';
 import CreateChannelsCard from './cards/CreateChannelsCard';
@@ -22,8 +20,8 @@ const DefaultHomePage = (): ReactElement => {
 	const isAdmin = useRole('admin');
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const workspaceName = useSetting('Site_Name');
-	const isCustomContentBodyEmpty = useSetting('Layout_Home_Body') === '';
-	const isCustomContentVisible = Boolean(useSetting('Layout_Home_Custom_Block_Visible'));
+	const isCustomContentBodyEmpty = useSetting('Layout_Home_Body', '') === '';
+	const isCustomContentVisible = useSetting('Layout_Home_Custom_Block_Visible', false);
 
 	return (
 		<Page color='default' data-qa='page-home' data-qa-type='default' background='tint'>

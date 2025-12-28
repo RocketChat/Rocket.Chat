@@ -1,8 +1,8 @@
-import { useSession, useUserId, useSetting } from '@rocket.chat/ui-contexts';
+import { useSession, useUser, useSetting } from '@rocket.chat/ui-contexts';
 import RegistrationRoute from '@rocket.chat/web-ui-registration';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 
+import LoggedInArea from './LoggedInArea';
 import LoginPage from './LoginPage';
 import UsernameCheck from './UsernameCheck';
 
@@ -16,12 +16,16 @@ import UsernameCheck from './UsernameCheck';
  * renders the page, without creating an user (not even an anonymous user)
  */
 const AuthenticationCheck = ({ children, guest }: { children: ReactNode; guest?: boolean }): ReactElement => {
-	const uid = useUserId();
+	const user = useUser();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const forceLogin = useSession('forceLogin');
 
-	if (uid) {
-		return <UsernameCheck>{children}</UsernameCheck>;
+	if (user) {
+		return (
+			<LoggedInArea>
+				<UsernameCheck>{children}</UsernameCheck>
+			</LoggedInArea>
+		);
 	}
 
 	if (!forceLogin && guest) {

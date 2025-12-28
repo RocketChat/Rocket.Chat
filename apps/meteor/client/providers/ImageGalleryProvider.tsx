@@ -1,4 +1,4 @@
-import React, { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 
 import { ImageGallery } from '../components/ImageGallery';
 import { ImageGalleryContext } from '../contexts/ImageGalleryContext';

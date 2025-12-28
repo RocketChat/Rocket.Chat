@@ -1,8 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserSubscription } from '@rocket.chat/ui-contexts';
-
-import { useUserDisplayName } from './useUserDisplayName';
 
 /**
  *

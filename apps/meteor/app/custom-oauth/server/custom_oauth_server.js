@@ -9,12 +9,14 @@ import { OAuth } from 'meteor/oauth';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
-import { callbacks } from '../../../lib/callbacks';
+import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { isURL } from '../../../lib/utils/isURL';
+import { client } from '../../../server/database/utils';
+import { callbacks } from '../../../server/lib/callbacks';
+import { saveUserIdentity } from '../../lib/server/functions/saveUserIdentity';
 import { notifyOnUserChange } from '../../lib/server/lib/notifyListener';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { settings } from '../../settings/server';
-import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 
 const logger = new Logger('CustomOAuth');
 
@@ -366,17 +368,55 @@ export class CustomOAuth {
 				}
 
 				const serviceIdKey = `services.${serviceName}.id`;
-				const update = {
-					$set: {
-						name: serviceData.name,
-						...(this.keyField === 'username' && serviceData.email && { emails: [{ address: serviceData.email, verified: true }] }),
-						[serviceIdKey]: serviceData.id,
+				const successCallbacks = [
+					async () => {
+						const updatedUser = await Users.findOneById(user._id, { projection: { name: 1, emails: 1, [serviceIdKey]: 1 } });
+						if (updatedUser) {
+							const { _id, ...diff } = updatedUser;
+							void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff });
+						}
 					},
-				};
+				];
 
-				await Users.update({ _id: user._id }, update);
+				const session = client.startSession();
+				try {
+					// Extend the session to match the ExtendedSession type expected by saveUserIdentity
+					Object.assign(session, {
+						onceSuccesfulCommit: (cb) => {
+							successCallbacks.push(cb);
+						},
+					});
 
-				void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: update });
+					session.startTransaction();
+
+					const updater = Users.getUpdater();
+
+					if (this.keyField === 'username' && serviceData.email) {
+						updater.set('emails', [{ address: serviceData.email, verified: true }]);
+					}
+
+					updater.set(serviceIdKey, serviceData.id);
+
+					await saveUserIdentity({
+						_id: user._id,
+						name: serviceData.name,
+						updater,
+						session,
+						updateUsernameInBackground: true,
+						// Username needs to be included otherwise the name won't be updated in some collections
+						username: user.username,
+					});
+					await Users.updateFromUpdater({ _id: user._id }, updater, { session });
+
+					await session.commitTransaction();
+				} catch (e) {
+					await session.abortTransaction();
+					throw e;
+				} finally {
+					await session.endSession();
+				}
+
+				void Promise.allSettled(successCallbacks.map((cb) => cb()));
 			}
 		});
 
@@ -437,14 +477,19 @@ export class CustomOAuth {
 }
 
 const { updateOrCreateUserFromExternalService } = Accounts;
-const updateOrCreateUserFromExternalServiceAsync = async function (...args /* serviceName, serviceData, options*/) {
+
+Accounts.updateOrCreateUserFromExternalService = async function (...args /* serviceName, serviceData, options*/) {
 	for await (const hook of BeforeUpdateOrCreateUserFromExternalService) {
 		await hook.apply(this, args);
 	}
 
 	const [serviceName, serviceData] = args;
 
-	const user = updateOrCreateUserFromExternalService.apply(this, args);
+	const user = await updateOrCreateUserFromExternalService.apply(this, args);
+	if (!user.userId) {
+		return undefined;
+	}
+
 	const fullUser = await Users.findOneById(user.userId);
 	if (settings.get('LDAP_Update_Data_On_OAuth_Login')) {
 		await LDAP.loginAuthenticatedUserRequest(fullUser.username);
@@ -457,8 +502,4 @@ const updateOrCreateUserFromExternalServiceAsync = async function (...args /* se
 	});
 
 	return user;
-};
-
-Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceName, serviceData, options*/) {
-	return Promise.await(updateOrCreateUserFromExternalServiceAsync.call(this, ...args));
 };

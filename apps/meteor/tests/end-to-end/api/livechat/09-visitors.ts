@@ -1,11 +1,10 @@
 import { faker } from '@faker-js/faker';
-import type { ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
-import moment from 'moment';
 import { type Response } from 'supertest';
 
-import { getCredentials, api, request, credentials, methodCallAnon } from '../../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import {
 	makeAgentAvailable,
@@ -14,10 +13,19 @@ import {
 	createVisitor,
 	startANewLivechatRoomAndTakeIt,
 	closeOmnichannelRoom,
+	createVisitorWithCustomData,
+	sendAgentMessage,
+	sendMessage,
 } from '../../../data/livechat/rooms';
 import { getRandomVisitorToken } from '../../../data/livechat/users';
 import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
-import { updatePermission, updateSetting, removePermissionFromAllRoles, restorePermissionToRoles } from '../../../data/permissions.helper';
+import {
+	updatePermission,
+	updateSetting,
+	removePermissionFromAllRoles,
+	restorePermissionToRoles,
+	updateEESetting,
+} from '../../../data/permissions.helper';
 import { adminUsername } from '../../../data/user';
 import { IS_EE } from '../../../e2e/config/constants';
 
@@ -33,6 +41,7 @@ describe('LIVECHAT - visitors', () => {
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updatePermission('view-livechat-manager', ['admin']);
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await createAgent();
 		await makeAgentAvailable();
 		visitor = await createVisitor();
@@ -56,7 +65,6 @@ describe('LIVECHAT - visitors', () => {
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('visitor');
 			expect(body.visitor).to.have.property('token', 'test');
-			expect(body.visitor).to.have.property('contactId');
 
 			// Ensure all new visitors are created as online :)
 			expect(body.visitor).to.have.property('status', 'online');
@@ -118,6 +126,7 @@ describe('LIVECHAT - visitors', () => {
 			expect(body2.visitor).to.have.property('phone');
 			expect(body2.visitor.phone[0].phoneNumber).to.equal(phone);
 		});
+
 		it('should update a visitor custom fields when customFields key is provided', async () => {
 			const token = `${new Date().getTime()}-test`;
 			const customFieldName = `new_custom_field_${Date.now()}`;
@@ -185,7 +194,7 @@ describe('LIVECHAT - visitors', () => {
 			expect(body.visitor).to.not.have.property('livechatData');
 		});
 
-		it('should not update a custom field whe the overwrite flag is false', async () => {
+		it('should not update a custom field when the overwrite flag is false', async () => {
 			const token = `${new Date().getTime()}-test`;
 			const customFieldName = `new_custom_field_${Date.now()}`;
 			await createCustomField({
@@ -218,6 +227,59 @@ describe('LIVECHAT - visitors', () => {
 			expect(body.visitor.livechatData).to.have.property(customFieldName, 'Not a real address :)');
 		});
 
+		it('should not validate required custom fields if no custom fields are provided', async () => {
+			const token = `${new Date().getTime()}-test`;
+			const customFieldName = `required_custom_field`;
+			await createCustomField({
+				searchable: true,
+				field: customFieldName,
+				label: customFieldName,
+				defaultValue: 'default_value',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+				required: true,
+			});
+			const { body } = await request.post(api('livechat/visitor')).send({ visitor: { token } });
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('visitor');
+			expect(body.visitor).to.have.property('token', token);
+			await deleteCustomField(customFieldName);
+		});
+
+		it('should fail if provided custom fields but are missing required ones', async () => {
+			const token = `${new Date().getTime()}-test`;
+			const optionalCustomFieldName = `optional_custom_field`;
+			await createCustomField({
+				searchable: true,
+				field: optionalCustomFieldName,
+				label: optionalCustomFieldName,
+				defaultValue: 'default_value',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+				required: false,
+			});
+			const requiredCustomFieldName = `required_custom_field`;
+			await createCustomField({
+				searchable: true,
+				field: requiredCustomFieldName,
+				label: requiredCustomFieldName,
+				defaultValue: 'default_value',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+				required: true,
+			});
+			const { body } = await request
+				.post(api('livechat/visitor'))
+				.send({ visitor: { token, customFields: [{ key: optionalCustomFieldName, value: 'test', overwrite: true }] } });
+			expect(body).to.have.property('success', false);
+			expect(body).to.have.property('error');
+			expect(body.error).to.be.equal(`Missing required custom fields: required_custom_field`);
+			await Promise.all([deleteCustomField(optionalCustomFieldName), deleteCustomField(requiredCustomFieldName)]);
+		});
+
 		describe('special cases', () => {
 			before(async () => {
 				await updateSetting('Livechat_Allow_collect_and_store_HTTP_header_informations', true);
@@ -226,19 +288,240 @@ describe('LIVECHAT - visitors', () => {
 				await updateSetting('Livechat_Allow_collect_and_store_HTTP_header_informations', false);
 			});
 
-			// Note: this had to use the meteor method because the endpoint used `req.headers` which we cannot send as empty
-			// method doesn't pass them to the func allowing us to create a test for it
 			it('should allow to create a visitor without passing connectionData when GDPR setting is enabled', async () => {
 				const token = `${new Date().getTime()}-test`;
-				const response = await request
-					.post(methodCallAnon('livechat:registerGuest'))
-					.send({ message: `{"msg":"method","id":"23","method":"livechat:registerGuest","params":[{ "token": "${token}"}]}` });
 
-				expect(response.body).to.have.property('success', true);
-				const r = JSON.parse(response.body.message);
+				const { body } = await request.post(api('livechat/visitor')).send({ visitor: { token } });
 
-				expect(r.result).to.have.property('visitor');
-				expect(r.result.visitor).to.have.property('token', token);
+				expect(body).to.have.property('success', true);
+				expect(body).to.have.property('visitor');
+				expect(body.visitor).to.have.property('token', token);
+			});
+		});
+
+		describe('visitor & contact custom fields', () => {
+			let visitor: ILivechatVisitor;
+			let room: IOmnichannelRoom;
+			const cf1 = `cf1-${Date.now()}_1`;
+			const cf2 = `cf2-${Date.now()}_2`;
+			const cf3 = `cf3-${Date.now()}_3`;
+			before(async () => {
+				await createCustomField({
+					searchable: true,
+					field: cf1,
+					label: cf1,
+					defaultValue: 'test_default_address',
+					scope: 'visitor',
+					visibility: 'public',
+					regexp: '',
+				});
+				await createCustomField({
+					searchable: true,
+					field: cf2,
+					label: cf2,
+					defaultValue: 'test_default_address',
+					scope: 'visitor',
+					visibility: 'public',
+					regexp: '',
+				});
+				await createCustomField({
+					searchable: true,
+					field: cf3,
+					label: cf3,
+					defaultValue: 'test_default_address',
+					scope: 'visitor',
+					visibility: 'public',
+					regexp: '',
+				});
+			});
+			after(async () => {
+				await Promise.all([deleteCustomField(cf1), deleteCustomField(cf2), deleteCustomField(cf3)]);
+			});
+
+			it('should update custom fields on the contact', async () => {
+				const visitor = await createVisitor();
+				const room = await createLivechatRoom(visitor.token);
+
+				const { body } = await request.post(api('livechat/visitor')).send({
+					visitor: {
+						token: visitor.token,
+						customFields: [{ key: cf1, value: 'test', overwrite: true }],
+					},
+				});
+
+				expect(body).to.have.property('success', true);
+
+				await request
+					.get(api(`omnichannel/contacts.get`))
+					.set(credentials)
+					.query({ contactId: room.contactId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('contact');
+						expect(res.body.contact).to.have.property('customFields');
+						expect(res.body.contact.customFields).to.have.property(cf1, 'test');
+					});
+				await closeOmnichannelRoom(room!._id);
+			});
+			it('should update multiple custom fields on a contact after it already has custom fields added', async () => {
+				const visitor = await createVisitor();
+				const room = await createLivechatRoom(visitor.token);
+
+				const { body } = await request.post(api('livechat/visitor')).send({
+					visitor: {
+						token: visitor.token,
+						customFields: [{ key: cf1, value: 'test', overwrite: true }],
+					},
+				});
+
+				expect(body).to.have.property('success', true);
+
+				const { body: body2 } = await request.post(api('livechat/visitor')).send({
+					visitor: {
+						token: visitor.token,
+						customFields: [
+							{ key: cf2, value: 'test', overwrite: true },
+							{ key: cf3, value: 'test', overwrite: false },
+						],
+					},
+				});
+
+				expect(body2).to.have.property('success', true);
+
+				await request
+					.get(api(`omnichannel/contacts.get`))
+					.set(credentials)
+					.query({ contactId: room.contactId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('contact');
+						expect(res.body.contact).to.have.property('customFields');
+						expect(res.body.contact.customFields).to.have.property(cf1, 'test');
+						expect(res.body.contact.customFields).to.have.property(cf2, 'test');
+						expect(res.body.contact.customFields).to.have.property(cf3, 'test');
+					});
+				await closeOmnichannelRoom(room!._id);
+			});
+			it('should overwrite a custom field value when the flag is true', async () => {
+				const visitor = await createVisitor();
+				const room = await createLivechatRoom(visitor.token);
+
+				const { body } = await request.post(api('livechat/visitor')).send({
+					visitor: {
+						token: visitor.token,
+						customFields: [{ key: cf1, value: 'test', overwrite: true }],
+					},
+				});
+
+				expect(body).to.have.property('success', true);
+
+				const { body: body2 } = await request.post(api('livechat/visitor')).send({
+					visitor: {
+						token: visitor.token,
+						customFields: [
+							{ key: cf1, value: 'new test', overwrite: true },
+							{ key: cf3, value: 'test', overwrite: false },
+						],
+					},
+				});
+
+				expect(body2).to.have.property('success', true);
+
+				await request
+					.get(api(`omnichannel/contacts.get`))
+					.set(credentials)
+					.query({ contactId: room.contactId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('contact');
+						expect(res.body.contact).to.have.property('customFields');
+						expect(res.body.contact.customFields).to.have.property(cf1, 'new test');
+						expect(res.body.contact.customFields).to.have.property(cf3, 'test');
+					});
+				await closeOmnichannelRoom(room!._id);
+			});
+			it('should properly conflict a custom field when existing and overwrite is false', async () => {
+				visitor = await createVisitor();
+				room = await createLivechatRoom(visitor.token);
+
+				const { body } = await request.post(api('livechat/visitor')).send({
+					visitor: {
+						token: visitor.token,
+						customFields: [{ key: cf1, value: 'test', overwrite: true }],
+					},
+				});
+
+				expect(body).to.have.property('success', true);
+
+				const { body: body2 } = await request.post(api('livechat/visitor')).send({
+					visitor: {
+						token: visitor.token,
+						customFields: [
+							{ key: cf1, value: 'new test', overwrite: false },
+							{ key: cf2, value: 'test', overwrite: true },
+						],
+					},
+				});
+
+				expect(body2).to.have.property('success', true);
+
+				await request
+					.get(api(`omnichannel/contacts.get`))
+					.set(credentials)
+					.query({ contactId: room.contactId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('contact');
+						expect(res.body.contact).to.have.property('customFields');
+						expect(res.body.contact.customFields).to.have.property(cf1, 'test');
+						expect(res.body.contact.customFields).to.have.property(cf2, 'test');
+						expect(res.body.contact.conflictingFields).to.be.an('array');
+						expect(res.body.contact.conflictingFields[0])
+							.to.be.an('object')
+							.that.is.deep.equal({
+								field: `customFields.${cf1}`,
+								value: 'new test',
+							});
+					});
+			});
+			it('should add more conflicts to a contact custom fields', async () => {
+				const { body: body2 } = await request.post(api('livechat/visitor')).send({
+					visitor: {
+						token: visitor.token,
+						customFields: [
+							{ key: cf1, value: 'new test 2', overwrite: false },
+							{ key: cf2, value: 'test', overwrite: true },
+						],
+					},
+				});
+
+				expect(body2).to.have.property('success', true);
+
+				await request
+					.get(api(`omnichannel/contacts.get`))
+					.set(credentials)
+					.query({ contactId: room.contactId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('contact');
+						expect(res.body.contact).to.have.property('customFields');
+						expect(res.body.contact.customFields).to.have.property(cf1, 'test');
+						expect(res.body.contact.customFields).to.have.property(cf2, 'test');
+						expect(res.body.contact.conflictingFields).to.be.an('array').with.lengthOf(2);
+						expect(res.body.contact.conflictingFields[0])
+							.to.be.an('object')
+							.that.is.deep.equal({
+								field: `customFields.${cf1}`,
+								value: 'new test',
+							});
+						expect(res.body.contact.conflictingFields[1])
+							.to.be.an('object')
+							.that.is.deep.equal({
+								field: `customFields.${cf1}`,
+								value: 'new test 2',
+							});
+					});
+				await closeOmnichannelRoom(room._id);
 			});
 		});
 	});
@@ -467,6 +750,32 @@ describe('LIVECHAT - visitors', () => {
 				.expect(200);
 		});
 
+		it('should remove the rooms associated with the visitor if any', async () => {
+			const createdVisitor = await createVisitor();
+			const room = await createLivechatRoom(createdVisitor.token);
+
+			await request
+				.delete(api(`livechat/visitor/${createdVisitor.token}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request.get(api('livechat/room')).query({ rid: room._id }).set(credentials).expect(400);
+		});
+
+		it('should remove the contact associated with the visitor if any', async () => {
+			const createdVisitor = await createVisitor();
+			const room = await createLivechatRoom(createdVisitor.token);
+
+			await request
+				.delete(api(`livechat/visitor/${createdVisitor.token}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId }).expect(404);
+		});
+
 		it('should return a visitor when the query params is all valid', async () => {
 			const createdVisitor = await createVisitor();
 			await request
@@ -481,27 +790,6 @@ describe('LIVECHAT - visitors', () => {
 					expect(res.body.visitor).to.have.property('ts');
 					expect(res.body.visitor._id).to.be.equal(createdVisitor._id);
 				});
-		});
-
-		it('should return visitor activity field when visitor was active on month', async () => {
-			// Activity is determined by a conversation in which an agent has engaged (sent a message)
-			// For a visitor to be considered active, they must have had a conversation in the last 30 days
-			const period = moment().format('YYYY-MM');
-			const { visitor, room } = await startANewLivechatRoomAndTakeIt();
-			// agent should send a message on the room
-			await request
-				.post(api('chat.sendMessage'))
-				.set(credentials)
-				.send({
-					message: {
-						rid: room._id,
-						msg: 'test',
-					},
-				});
-
-			const activeVisitor = await getLivechatVisitorByToken(visitor.token);
-			expect(activeVisitor).to.have.property('activity');
-			expect(activeVisitor.activity).to.include(period);
 		});
 
 		it('should not affect MAC count when a visitor is removed via GDPR', async () => {
@@ -986,66 +1274,7 @@ describe('LIVECHAT - visitors', () => {
 			expect(res.body.contact).to.be.null;
 		});
 	});
-	// Check if this endpoint is still being used
-	describe('livechat/room.visitor', () => {
-		it('should fail if user doesnt have view-l-room permission', async () => {
-			await updatePermission('view-l-room', []);
-			const res = await request.put(api(`livechat/room.visitor`)).set(credentials).send();
-			expect(res.body).to.have.property('success', false);
-		});
-		it('should fail if rid is not on body params', async () => {
-			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
-			const res = await request.put(api(`livechat/room.visitor`)).set(credentials).send();
-			expect(res.body).to.have.property('success', false);
-		});
-		it('should fail if oldVisitorId is not on body params', async () => {
-			const res = await request.put(api(`livechat/room.visitor`)).set(credentials).send({ rid: 'GENERAL' });
-			expect(res.body).to.have.property('success', false);
-		});
-		it('should fail if newVisitorId is not on body params', async () => {
-			const res = await request.put(api(`livechat/room.visitor`)).set(credentials).send({ rid: 'GENERAL', oldVisitorId: 'GENERAL' });
-			expect(res.body).to.have.property('success', false);
-		});
-		it('should fail if oldVisitorId doesnt point to a valid visitor', async () => {
-			const res = await request
-				.put(api(`livechat/room.visitor`))
-				.set(credentials)
-				.send({ rid: 'GENERAL', oldVisitorId: 'GENERAL', newVisitorId: 'GENERAL' });
-			expect(res.body).to.have.property('success', false);
-		});
-		it('should fail if rid doesnt point to a valid room', async () => {
-			const visitor = await createVisitor();
-			const res = await request
-				.put(api(`livechat/room.visitor`))
-				.set(credentials)
-				.send({ rid: 'GENERAL', oldVisitorId: visitor._id, newVisitorId: visitor._id });
-			expect(res.body).to.have.property('success', false);
-		});
-		it('should fail if oldVisitorId is trying to change a room is not theirs', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			const visitor2 = await createVisitor();
 
-			const res = await request
-				.put(api(`livechat/room.visitor`))
-				.set(credentials)
-				.send({ rid: room._id, oldVisitorId: visitor2._id, newVisitorId: visitor._id });
-			expect(res.body).to.have.property('success', false);
-		});
-		it('should successfully change a room visitor with a new one', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			const visitor2 = await createVisitor();
-
-			const res = await request
-				.put(api(`livechat/room.visitor`))
-				.set(credentials)
-				.send({ rid: room._id, oldVisitorId: visitor._id, newVisitorId: visitor2._id });
-			expect(res.body).to.have.property('success', true);
-			expect(res.body.room).to.have.property('v');
-			expect(res.body.room.v._id).to.equal(visitor2._id);
-		});
-	});
 	describe('livechat/visitors.search', () => {
 		it('should fail if user doesnt have view-l-room permission', async () => {
 			await updatePermission('view-l-room', []);
@@ -1086,6 +1315,7 @@ describe('LIVECHAT - visitors', () => {
 			expect(res.body.visitors[0]).to.have.property('visitorEmails');
 		});
 	});
+
 	describe('omnichannel/contact', () => {
 		let contact: ILivechatVisitor;
 		it('should fail if user doesnt have view-l-room permission', async () => {
@@ -1205,6 +1435,234 @@ describe('LIVECHAT - visitors', () => {
 			contact = await getLivechatVisitorByToken(contact.token);
 			expect(contact).to.have.property('livechatData');
 			expect(contact.livechatData).to.have.property(cfName, 'test');
+		});
+	});
+
+	describe('lead capture', () => {
+		let visitor: ILivechatVisitor;
+		let room: IOmnichannelRoom;
+
+		before(async () => {
+			visitor = await createVisitorWithCustomData({
+				ignoreEmail: true,
+				ignorePhone: true,
+			});
+			room = await createLivechatRoom(visitor.token);
+			await createAgent();
+		});
+		after(async () => {
+			await closeOmnichannelRoom(room._id);
+		});
+
+		it('should capture the data matching the email regex and add it to the visitor', async () => {
+			await sendMessage(room._id, 'My email is random@email.com', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.visitorEmails).to.be.an('array');
+			expect(visitor.visitorEmails).to.have.lengthOf(1);
+			expect(visitor.visitorEmails?.[0].address).to.be.equal('random@email.com');
+		});
+
+		it('should capture more emails when the visitor sends the message', async () => {
+			await sendMessage(room._id, 'Another email is test@teste.com', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.visitorEmails).to.be.an('array');
+			expect(visitor.visitorEmails).to.have.lengthOf(2);
+			const emails = visitor.visitorEmails?.map((e) => e.address);
+			expect(emails).to.include('test@teste.com');
+		});
+
+		it('should capture multiple emails', async () => {
+			await sendMessage(room._id, 'My emails are test@123.com notest@1234.com', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.visitorEmails).to.be.an('array');
+			expect(visitor.visitorEmails).to.have.lengthOf(4);
+			const emails = visitor.visitorEmails?.map((e) => e.address);
+			expect(emails).to.include('test@123.com');
+			expect(emails).to.include('notest@1234.com');
+		});
+
+		it('should not add an email thats already registered', async () => {
+			await sendMessage(room._id, 'My email is test@123.com', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.visitorEmails).to.be.an('array');
+			expect(visitor.visitorEmails).to.have.lengthOf(4);
+		});
+
+		it('should not save emails the agent sends', async () => {
+			await sendAgentMessage(room._id, 'Confirming your email is test@12345.com?', credentials);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.visitorEmails).to.be.an('array');
+			expect(visitor.visitorEmails).to.have.lengthOf(4);
+		});
+
+		it('should save phone numbers matching the regex', async () => {
+			await sendMessage(room._id, 'My phone number is 12345678', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.phone).to.be.an('array');
+			expect(visitor.phone).to.have.lengthOf(1);
+			expect(visitor.phone?.[0].phoneNumber).to.be.equal('12345678');
+		});
+
+		it('should capture more phone numbers when the visitor sends the message', async () => {
+			await sendMessage(room._id, 'Another phone number is 87654321 87654323', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.phone).to.be.an('array');
+			expect(visitor.phone).to.have.lengthOf(3);
+			const phones = visitor.phone?.map((p) => p.phoneNumber);
+			expect(phones).to.include('87654321');
+			expect(phones).to.include('87654323');
+		});
+
+		it('should not add a phone number thats already registered', async () => {
+			await sendMessage(room._id, 'My phone number is 12345678', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.phone).to.be.an('array');
+			expect(visitor.phone).to.have.lengthOf(3);
+		});
+
+		it('should not save phone numbers the agent sends', async () => {
+			await sendAgentMessage(room._id, 'Confirming your phone number is 99999999?', credentials);
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.phone).to.be.an('array');
+			expect(visitor.phone).to.have.lengthOf(3);
+		});
+
+		it('should capture both phones & emails when sent on the same message', async () => {
+			await sendMessage(room._id, 'My email is zardw@asdf.com and my phone is 11223344', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.visitorEmails).to.be.an('array');
+			expect(visitor.visitorEmails).to.have.lengthOf(5);
+			const emails = visitor.visitorEmails?.map((e) => e.address);
+			expect(emails).to.include('zardw@asdf.com');
+
+			expect(visitor.phone).to.be.an('array');
+			expect(visitor.phone).to.have.lengthOf(4);
+			const phones = visitor.phone?.map((p) => p.phoneNumber);
+			expect(phones).to.include('11223344');
+		});
+
+		describe('when settings are empty', () => {
+			before(async () => {
+				await updateSetting('Livechat_lead_phone_regex', '');
+				await updateSetting('Livechat_lead_email_regex', '');
+			});
+
+			after(async () => {
+				// reset settings
+				await updateSetting('Livechat_lead_email_regex', '\\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\\.)+[A-Z]{2,4}\\b');
+				await updateSetting(
+					'Livechat_lead_phone_regex',
+					'((?:\\([0-9]{1,3}\\)|[0-9]{2})[ \\-]*?[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$)|[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$))',
+				);
+			});
+
+			it('should not capture any email or phone no matter what the visitor sends', async () => {
+				await sendMessage(room._id, 'Now my email is this@shalnotpass.com', visitor.token);
+
+				await sendMessage(room._id, 'And my phone number is 55667788', visitor.token);
+
+				visitor = await getLivechatVisitorByToken(visitor.token);
+				const emails = visitor.visitorEmails?.map((e) => e.address);
+				expect(emails || []).to.not.include('this@shalnotpass.com');
+
+				const phones = visitor.phone?.map((p) => p.phoneNumber);
+				expect(phones || []).to.not.include('55667788');
+			});
+		});
+
+		describe('when phone regex is broken', () => {
+			before(async () => {
+				await updateSetting('Livechat_lead_phone_regex', '(');
+			});
+
+			after(async () => {
+				// reset settings
+				await updateSetting(
+					'Livechat_lead_phone_regex',
+					'((?:\\([0-9]{1,3}\\)|[0-9]{2})[ \\-]*?[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$)|[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$))',
+				);
+			});
+
+			it('should capture email', async () => {
+				await sendMessage(room._id, 'Now my email is this@isok.com', visitor.token);
+
+				await sendMessage(room._id, 'And my phone number is 55667799', visitor.token);
+
+				visitor = await getLivechatVisitorByToken(visitor.token);
+
+				expect(visitor.visitorEmails).to.be.an('array');
+				expect(visitor.visitorEmails).to.have.lengthOf(6);
+				const emails = visitor.visitorEmails?.map((e) => e.address);
+				expect(emails).to.include('this@isok.com');
+
+				expect(visitor.phone).to.have.lengthOf(4);
+				const phones = visitor.phone?.map((p) => p.phoneNumber);
+				expect(phones || []).to.not.include('55667788');
+			});
+		});
+
+		describe('when email regex is broken', () => {
+			before(async () => {
+				await updateSetting('Livechat_lead_email_regex', '(');
+			});
+
+			after(async () => {
+				// reset settings
+				await updateSetting('Livechat_lead_email_regex', '\\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\\.)+[A-Z]{2,4}\\b');
+			});
+
+			it('should capture email', async () => {
+				await sendMessage(room._id, 'Now my email is this@shalnotpass.com', visitor.token);
+
+				await sendMessage(room._id, 'And my phone number is 98765432', visitor.token);
+
+				visitor = await getLivechatVisitorByToken(visitor.token);
+
+				expect(visitor.visitorEmails).to.have.lengthOf(6);
+				const emails = visitor.visitorEmails?.map((e) => e.address);
+				expect(emails || []).to.not.include('this@shalnotpass.com');
+
+				expect(visitor.phone).to.be.an('array');
+				expect(visitor.phone).to.have.lengthOf(5);
+				const phones = visitor.phone?.map((p) => p.phoneNumber);
+				expect(phones).to.include('98765432');
+			});
+		});
+
+		describe('when the visitor has emails & phones already', () => {
+			let newVisitor: ILivechatVisitor;
+			let newRoom: IOmnichannelRoom;
+			before(async () => {
+				newVisitor = await createVisitor();
+				newRoom = await createLivechatRoom(newVisitor.token);
+			});
+			after(async () => {
+				await closeOmnichannelRoom(newRoom._id);
+			});
+
+			it('should capture new emails & phones and add them to the existing ones', async () => {
+				await sendMessage(newRoom._id, 'My email is 1234@12344.com and my phone is 11223344', newVisitor.token);
+
+				newVisitor = await getLivechatVisitorByToken(newVisitor.token);
+				expect(newVisitor.visitorEmails).to.be.an('array');
+				expect(newVisitor.visitorEmails).to.have.lengthOf(2);
+				const emails = newVisitor.visitorEmails?.map((e) => e.address);
+				expect(emails).to.include('1234@12344.com');
+
+				expect(newVisitor.phone).to.be.an('array');
+				expect(newVisitor.phone).to.have.lengthOf(2);
+				const phones = newVisitor.phone?.map((p) => p.phoneNumber);
+				expect(phones).to.include('11223344');
+			});
 		});
 	});
 });

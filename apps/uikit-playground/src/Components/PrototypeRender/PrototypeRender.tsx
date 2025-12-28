@@ -21,7 +21,7 @@ const PrototypeRender = ({
   activeActions: idType[];
   onSelectAction: (id: idType) => void;
 }) => {
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const [glowActive, setGlowActive] = useState(false);
   const actionClickHandler = (id: idType) => {

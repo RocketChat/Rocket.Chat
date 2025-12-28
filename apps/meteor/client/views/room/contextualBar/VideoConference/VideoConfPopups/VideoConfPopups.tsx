@@ -1,16 +1,22 @@
 import { useCustomSound } from '@rocket.chat/ui-contexts';
-import { VideoConfPopupBackdrop } from '@rocket.chat/ui-video-conf';
+import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
+import {
+	VideoConfPopupBackdrop,
+	useVideoConfIsCalling,
+	useVideoConfIsRinging,
+	useVideoConfIncomingCalls,
+	VideoConfPopupSkeleton,
+} from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import { lazy, Suspense, useEffect, useMemo } from 'react';
 import { FocusScope } from 'react-aria';
 
-import type { VideoConfPopupPayload } from '../../../../../contexts/VideoConfContext';
-import { useVideoConfIsCalling, useVideoConfIsRinging, useVideoConfIncomingCalls } from '../../../../../contexts/VideoConfContext';
 import VideoConfPopupPortal from '../../../../../portals/VideoConfPopupPortal';
-import VideoConfPopup from './VideoConfPopup';
+
+const VideoConfPopup = lazy(() => import('./VideoConfPopup'));
 
 const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): ReactElement => {
-	const customSound = useCustomSound();
+	const { callSounds } = useCustomSound();
 	const incomingCalls = useVideoConfIncomingCalls();
 	const isRinging = useVideoConfIsRinging();
 	const isCalling = useVideoConfIsCalling();
@@ -25,30 +31,32 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 
 	useEffect(() => {
 		if (isRinging) {
-			customSound.play('ringtone', { loop: true });
+			callSounds.playRinger();
 		}
 
 		if (isCalling) {
-			customSound.play('dialtone', { loop: true });
+			callSounds.playDialer();
 		}
 
 		return (): void => {
-			customSound.stop('ringtone');
-			customSound.stop('dialtone');
+			callSounds.stopRinger();
+			callSounds.stopDialer();
 		};
-	}, [customSound, isRinging, isCalling]);
+	}, [isRinging, isCalling, callSounds]);
 
 	return (
 		<>
 			{(children || popups?.length > 0) && (
 				<VideoConfPopupPortal>
-					<FocusScope autoFocus contain restoreFocus>
-						<VideoConfPopupBackdrop>
-							{(children ? [children, ...popups] : popups).map(({ id, rid, isReceiving }, index = 1) => (
-								<VideoConfPopup key={id} id={id} rid={rid} isReceiving={isReceiving} isCalling={isCalling} position={index * 10} />
-							))}
+					{(children ? [children, ...popups] : popups).map(({ id, rid, isReceiving }, index = 1) => (
+						<VideoConfPopupBackdrop key={id}>
+							<Suspense fallback={<VideoConfPopupSkeleton />}>
+								<FocusScope restoreFocus>
+									<VideoConfPopup id={id} rid={rid} isReceiving={isReceiving} isCalling={isCalling} position={index * 10} />
+								</FocusScope>
+							</Suspense>
 						</VideoConfPopupBackdrop>
-					</FocusScope>
+					))}
 				</VideoConfPopupPortal>
 			)}
 		</>

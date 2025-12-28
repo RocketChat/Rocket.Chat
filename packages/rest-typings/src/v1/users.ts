@@ -114,7 +114,18 @@ export type UserPersonalTokens = Pick<IPersonalAccessToken, 'name' | 'lastTokenP
 
 export type DefaultUserInfo = Pick<
 	IUser,
-	'_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag' | 'lastLogin' | 'type' | 'federated'
+	| '_id'
+	| 'username'
+	| 'name'
+	| 'status'
+	| 'roles'
+	| 'emails'
+	| 'active'
+	| 'avatarETag'
+	| 'lastLogin'
+	| 'type'
+	| 'federated'
+	| 'freeSwitchExtension'
 >;
 
 export type UsersEndpoints = {
@@ -275,15 +286,6 @@ export type UsersEndpoints = {
 	'/v1/users.getPreferences': {
 		GET: () => {
 			preferences: Required<IUser>['settings']['preferences'];
-		};
-	};
-
-	'/v1/users.createToken': {
-		POST: (params: { userId?: string; username?: string; user?: string }) => {
-			data: {
-				userId: string;
-				authToken: string;
-			};
 		};
 	};
 

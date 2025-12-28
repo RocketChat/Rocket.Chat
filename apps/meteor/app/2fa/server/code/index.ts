@@ -5,11 +5,12 @@ import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
 import { EmailCheck } from './EmailCheck';
 import type { ICodeCheck } from './ICodeCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
 import { TOTPCheck } from './TOTPCheck';
+import { normalizeHeaders } from '../../../lib/server/functions/getModifiedHttpHeaders';
+import { settings } from '../../../settings/server';
 
 export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;
@@ -184,9 +185,11 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 		throw new Meteor.Error('totp-user-not-found', 'TOTP User not found');
 	}
 
-	if (!code && !method && connection?.httpHeaders?.['x-2fa-code'] && connection.httpHeaders['x-2fa-method']) {
-		code = connection.httpHeaders['x-2fa-code'];
-		method = connection.httpHeaders['x-2fa-method'];
+	const headers = normalizeHeaders(connection?.httpHeaders);
+
+	if (!code && !method && headers?.['x-2fa-code'] && headers['x-2fa-method']) {
+		code = headers['x-2fa-code'];
+		method = headers['x-2fa-method'];
 	}
 
 	if (connection && isAuthorizedForToken(connection, existingUser, options)) {

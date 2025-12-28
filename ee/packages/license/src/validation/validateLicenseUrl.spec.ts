@@ -4,8 +4,8 @@
 
 import crypto from 'crypto';
 
-import { MockedLicenseBuilder, getReadyLicenseManager } from '../../__tests__/MockedLicenseBuilder';
 import { validateLicenseUrl } from './validateLicenseUrl';
+import { MockedLicenseBuilder, getReadyLicenseManager } from '../../__tests__/MockedLicenseBuilder';
 
 describe('Url Validation', () => {
 	describe('url method', () => {

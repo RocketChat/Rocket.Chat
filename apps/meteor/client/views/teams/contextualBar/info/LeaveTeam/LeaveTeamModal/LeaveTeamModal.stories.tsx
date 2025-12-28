@@ -1,20 +1,18 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import LeaveTeamModal from './LeaveTeamModal';
 import LeaveTeamModalChannels from './LeaveTeamModalChannels';
 import LeaveTeamModalConfirmation from './LeaveTeamModalConfirmation';
 
 export default {
-	title: 'Teams/Contextual Bar/LeaveTeamModal',
 	component: LeaveTeamModal,
 	parameters: {
 		layout: 'fullscreen',
 	},
-} as ComponentMeta<typeof LeaveTeamModal>;
+} satisfies Meta<typeof LeaveTeamModal>;
 
-export const ChannelsStep: ComponentStory<typeof LeaveTeamModalChannels> = (args) => <LeaveTeamModalChannels {...args} />;
+export const ChannelsStep: StoryFn<typeof LeaveTeamModalChannels> = (args) => <LeaveTeamModalChannels {...args} />;
 ChannelsStep.storyName = 'LeaveTeamModalChannels';
 ChannelsStep.args = {
 	rooms: Array.from({ length: 15 }).map((_, i) => ({
@@ -39,7 +37,7 @@ ChannelsStep.args = {
 	onToggleAllRooms: action('onToggleAllRooms'),
 };
 
-export const ConfirmationStep: ComponentStory<typeof LeaveTeamModalConfirmation> = (args) => <LeaveTeamModalConfirmation {...args} />;
+export const ConfirmationStep: StoryFn<typeof LeaveTeamModalConfirmation> = (args) => <LeaveTeamModalConfirmation {...args} />;
 ConfirmationStep.storyName = 'StepTwo';
 ConfirmationStep.args = {
 	onConfirm: action('onConfirm'),

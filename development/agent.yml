@@ -1,0 +1,16 @@
+server:
+  log_level: debug
+
+traces:
+  configs:
+  - name: default
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+    remote_write:
+      - endpoint: tempo:4317
+        insecure: true
+    batch:
+      timeout: 5s
+      send_batch_size: 100

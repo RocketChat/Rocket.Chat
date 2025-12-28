@@ -1,42 +1,38 @@
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box, Button } from '@rocket.chat/fuselage';
-import { useDebouncedState, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import { hashQueryKey } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
-import React, { useMemo, useState } from 'react';
-
-import FilterByText from '../../../../components/FilterByText';
-import GenericNoResults from '../../../../components/GenericNoResults';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableHeader,
-	GenericTableCell,
 	GenericTableBody,
-	GenericTableRow,
 	GenericTableHeaderCell,
-	GenericTableLoadingRow,
-} from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import { useIsCallReady } from '../../../../contexts/CallContext';
-import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhoneNumber';
-import { CallDialpadButton } from '../components/CallDialpadButton';
+	GenericTableLoadingTable,
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
+import { hashKey } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import ContactTableRow from './ContactTableRow';
 import { useCurrentContacts } from './hooks/useCurrentContacts';
+import FilterByText from '../../../../components/FilterByText';
+import GenericNoResults from '../../../../components/GenericNoResults';
+import { links } from '../../../../lib/links';
+import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
-function ContactTable(): ReactElement {
+function ContactTable() {
+	const { t } = useTranslation();
+
+	const [term, setTerm] = useState('');
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
+
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
-	const { sortBy, sortDirection, setSort } = useSort<'username' | 'phone' | 'name' | 'visitorEmails.address' | 'lastChat.ts'>('username');
-	const isCallReady = useIsCallReady();
-
-	const [term, setTerm] = useDebouncedState('', 500);
-
-	const t = useTranslation();
+	const { sortBy, sortDirection, setSort } = useSort<'name' | 'channels.lastChat.ts' | 'contactManager.username' | 'lastChat.ts'>('name');
 
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
-				term,
+				searchText: term,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				...(itemsPerPage && { count: itemsPerPage }),
 				...(current && { offset: current }),
@@ -46,49 +42,40 @@ function ContactTable(): ReactElement {
 		500,
 	);
 
-	const directoryRoute = useRoute('omnichannel-directory');
-	const formatDate = useFormatDate();
-
-	const onButtonNewClick = useMutableCallback(() =>
-		directoryRoute.push({
-			page: 'contacts',
-			bar: 'new',
+	const onButtonNewClick = useEffectEvent(() =>
+		omnichannelDirectoryRouter.navigate({
+			tab: 'contacts',
+			context: 'new',
 		}),
-	);
-
-	const onRowClick = useMutableCallback(
-		(id) => (): void =>
-			directoryRoute.push({
-				page: 'contacts',
-				id,
-				bar: 'info',
-			}),
 	);
 
 	const { data, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query);
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const headers = (
 		<>
-			<GenericTableHeaderCell key='username' direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
-				{t('Username')}
-			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='phone' direction={sortDirection} active={sortBy === 'phone'} onClick={setSort} sort='phone'>
-				{t('Phone')}
+			<GenericTableHeaderCell
+				key='lastChannel'
+				direction={sortDirection}
+				active={sortBy === 'channels.lastChat.ts'}
+				onClick={setSort}
+				sort='channels.lastChat.ts'
+			>
+				{t('Last_channel')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell
-				key='email'
+				key='contactManager'
 				direction={sortDirection}
-				active={sortBy === 'visitorEmails.address'}
+				active={sortBy === 'contactManager.username'}
 				onClick={setSort}
-				sort='visitorEmails.address'
+				sort='contactManager.username'
 			>
-				{t('Email')}
+				{t('Contact_Manager')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell
 				key='lastchat'
@@ -99,14 +86,14 @@ function ContactTable(): ReactElement {
 			>
 				{t('Last_Chat')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='call' width={44} />
+			<GenericTableHeaderCell key='spacer' w={40} />
 		</>
 	);
 
 	return (
 		<>
-			{((isSuccess && data?.visitors.length > 0) || queryHasChanged) && (
-				<FilterByText onChange={setTerm}>
+			{((isSuccess && data?.contacts.length > 0) || queryHasChanged) && (
+				<FilterByText value={term} onChange={(event) => setTerm(event.target.value)}>
 					<Button onClick={onButtonNewClick} primary>
 						{t('New_contact')}
 					</Button>
@@ -116,52 +103,27 @@ function ContactTable(): ReactElement {
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingRow cols={6} />
+						<GenericTableLoadingTable headerCells={headers.props.children.filter(Boolean).length} />
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data?.visitors.length === 0 && queryHasChanged && <GenericNoResults />}
-			{isSuccess && data?.visitors.length === 0 && !queryHasChanged && (
+			{isSuccess && data?.contacts.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data?.contacts.length === 0 && !queryHasChanged && (
 				<GenericNoResults
 					icon='user-plus'
 					title={t('No_contacts_yet')}
 					description={t('No_contacts_yet_description')}
 					buttonTitle={t('New_contact')}
 					buttonAction={onButtonNewClick}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_contacts')}
 				/>
 			)}
-			{isSuccess && data?.visitors.length > 0 && (
+			{isSuccess && data?.contacts.length > 0 && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>
-							{data?.visitors.map(({ _id, username, fname, name, visitorEmails, phone, lastChat }) => {
-								const phoneNumber = (phone?.length && phone[0].phoneNumber) || '';
-								const visitorEmail = visitorEmails?.length && visitorEmails[0].address;
-
-								return (
-									<GenericTableRow
-										action
-										key={_id}
-										tabIndex={0}
-										role='link'
-										height='40px'
-										qa-user-id={_id}
-										rcx-show-call-button-on-hover
-										onClick={onRowClick(_id)}
-									>
-										<GenericTableCell withTruncatedText>{username}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(fname || name)}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(phoneNumber)}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{visitorEmail}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</GenericTableCell>
-										<GenericTableCell>{isCallReady && <CallDialpadButton phoneNumber={phoneNumber} />}</GenericTableCell>
-									</GenericTableRow>
-								);
-							})}
-						</GenericTableBody>
+						<GenericTableBody>{data?.contacts.map((contact) => <ContactTableRow key={contact._id} {...contact} />)}</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider

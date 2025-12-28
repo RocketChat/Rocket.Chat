@@ -1,11 +1,9 @@
 import type { IStats } from '@rocket.chat/core-typings';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import MessagesRoomsCard from './MessagesRoomsCard';
 
 export default {
-	title: 'Admin/Info/MessagesRoomsCard',
 	component: MessagesRoomsCard,
 	parameters: {
 		layout: 'centered',
@@ -23,9 +21,9 @@ export default {
 			totalLivechatMessages: 31,
 		} as IStats,
 	},
-} as ComponentMeta<typeof MessagesRoomsCard>;
+} satisfies Meta<typeof MessagesRoomsCard>;
 
-const Template: ComponentStory<typeof MessagesRoomsCard> = (args) => <MessagesRoomsCard {...args} />;
+const Template: StoryFn<typeof MessagesRoomsCard> = (args) => <MessagesRoomsCard {...args} />;
 
 export const Example = Template.bind({});
 

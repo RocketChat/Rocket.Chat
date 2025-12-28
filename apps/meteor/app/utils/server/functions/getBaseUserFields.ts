@@ -2,7 +2,7 @@ type UserFields = {
 	[k: string]: number;
 };
 
-export const getBaseUserFields = (): UserFields => ({
+export const getBaseUserFields = (allowServiceKeys = false): UserFields => ({
 	'name': 1,
 	'username': 1,
 	'nickname': 1,
@@ -29,6 +29,7 @@ export const getBaseUserFields = (): UserFields => ({
 	'oauth.authorizedClients': 1,
 	'_updatedAt': 1,
 	'avatarETag': 1,
-	'extension': 1,
 	'openBusinessHours': 1,
+	'abacAttributes': 1,
+	...(allowServiceKeys && { 'services.totp.enabled': 1, 'services.email2fa.enabled': 1 }),
 });

@@ -7,6 +7,8 @@ import type { Filter, FindCursor } from 'mongodb';
 
 import { removeUserFromRoomMethod } from '../../../server/methods/removeUserFromRoom';
 import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
+import { addUserToRole } from '../../authorization/server/methods/addUserToRole';
+import { removeUserFromRole } from '../../authorization/server/methods/removeUserFromRole';
 import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
 import { settings } from '../../settings/server';
 
@@ -61,12 +63,12 @@ class BotHelpers {
 		return p;
 	}
 
-	async addUserToRole(userName: string, roleId: string): Promise<void> {
-		await Meteor.callAsync('authorization:addUserToRole', roleId, userName);
+	async addUserToRole(userName: string, roleId: string, userId: string): Promise<void> {
+		await addUserToRole(userId, roleId, userName);
 	}
 
-	async removeUserFromRole(userName: string, roleId: string): Promise<void> {
-		await Meteor.callAsync('authorization:removeUserFromRole', roleId, userName);
+	async removeUserFromRole(userName: string, roleId: string, userId: string): Promise<void> {
+		await removeUserFromRole(userId, roleId, userName);
 	}
 
 	async addUserToRoom(userName: string, room: string): Promise<void> {
@@ -205,7 +207,7 @@ Meteor.methods<ServerMethods>({
 	async botRequest(...args) {
 		const userID = Meteor.userId();
 		if (userID && (await hasRoleAsync(userID, 'bot'))) {
-			return botHelpers.request(...args);
+			return botHelpers.request(...args, userID);
 		}
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'botRequest' });
 	},

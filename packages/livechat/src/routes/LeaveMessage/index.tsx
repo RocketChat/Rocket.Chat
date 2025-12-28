@@ -5,6 +5,7 @@ import type { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import styles from './styles.scss';
 import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { Form, FormField, SelectInput, TextInput } from '../../components/Form';
@@ -20,7 +21,6 @@ import { validateEmail } from '../../lib/email';
 import { parentCall } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { StoreContext } from '../../store';
-import styles from './styles.scss';
 
 const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 	const {

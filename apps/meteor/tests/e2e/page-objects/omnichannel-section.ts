@@ -7,19 +7,11 @@ export class OmnichannelSection {
 		this.page = page;
 	}
 
-	get element(): Locator {
-		return this.page.locator('div[data-qa-id="omncSection"]');
-	}
-
-	get btnVoipToggle(): Locator {
-		return this.page.locator('role=button[name="Enable/Disable VoIP"]');
-	}
-
-	get btnDialpad(): Locator {
-		return this.page.locator('role=button[name="Open Dialpad"]');
-	}
-
 	get btnContactCenter(): Locator {
 		return this.page.locator('role=button[name="Contact Center"]');
+	}
+
+	get tabContacts(): Locator {
+		return this.page.locator('role=tab[name="Contacts"]');
 	}
 }

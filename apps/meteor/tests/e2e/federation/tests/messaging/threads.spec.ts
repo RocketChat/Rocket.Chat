@@ -85,8 +85,8 @@ test.describe.only('Federation - Threads', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer1.content.sendMessage('hello world from server A');
 
 				await poFederationChannelServer2.content.openLastMessageMenu();
@@ -112,8 +112,8 @@ test.describe.only('Federation - Threads', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
 				await poFederationChannelServer1.content.openLastMessageMenu();
@@ -141,8 +141,8 @@ test.describe.only('Federation - Threads', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer1.content.sendMessage('hello world from server A');
 
 				await poFederationChannelServer2.content.openLastMessageMenu();
@@ -169,8 +169,8 @@ test.describe.only('Federation - Threads', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
 				await poFederationChannelServer1.content.openLastMessageMenu();
@@ -197,8 +197,8 @@ test.describe.only('Federation - Threads', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer1.content.sendMessage('hello world from server A');
 
 				await poFederationChannelServer2.content.openLastMessageMenu();
@@ -222,8 +222,8 @@ test.describe.only('Federation - Threads', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
 				await poFederationChannelServer1.content.openLastMessageMenu();
@@ -247,8 +247,8 @@ test.describe.only('Federation - Threads', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer1.content.sendMessage('hello world from server A');
 
 				await poFederationChannelServer2.content.openLastMessageMenu();
@@ -274,8 +274,8 @@ test.describe.only('Federation - Threads', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 				await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
 				await poFederationChannelServer1.content.openLastMessageMenu();
@@ -303,8 +303,8 @@ test.describe.only('Federation - Threads', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				const message = `Message for quote - ${Date.now()}`;
 				await poFederationChannelServer1.content.sendMessage('hello world from server A');
@@ -326,8 +326,8 @@ test.describe.only('Federation - Threads', () => {
 			test('expect to send a thread message quoting a thread message Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				const message = `Message for quote - ${Date.now()}`;
 				await poFederationChannelServer2.content.sendMessage('hello world from server B');
@@ -351,17 +351,17 @@ test.describe.only('Federation - Threads', () => {
 			test('expect to see the thread list sent in the group on Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
 
-				await expect(poFederationChannelServer1.tabs.btnThread).toBeVisible();
+				await expect(poFederationChannelServer1.roomToolbar.btnThreads).toBeVisible();
 			});
 
 			test('expect to see the thread list sent in the group on Server B', async () => {
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
-				await expect(poFederationChannelServer2.tabs.btnThread).toBeVisible();
+				await expect(poFederationChannelServer2.roomToolbar.btnThreads).toBeVisible();
 			});
 		});
 	});

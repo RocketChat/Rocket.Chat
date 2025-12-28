@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
-import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
-import { TEAM_TYPE, isValidSidepanel } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues, ITeam } from '@rocket.chat/core-typings';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
@@ -11,6 +11,7 @@ import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+import { settings } from '../../../settings/server';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
 import { saveRoomCustomFields } from '../functions/saveRoomCustomFields';
@@ -47,7 +48,6 @@ type RoomSettings = {
 		favorite: boolean;
 		defaultValue: boolean;
 	};
-	sidepanel?: IRoom['sidepanel'];
 };
 
 type RoomSettingsValidators = {
@@ -62,10 +62,29 @@ type RoomSettingsValidators = {
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
 	'retention' in room && room.retention !== undefined;
 
+const isAbacManagedRoom = (room: IRoom): boolean => {
+	return room.t === 'p' && settings.get<boolean>('ABAC_Enabled') && Array.isArray(room?.abacAttributes) && room.abacAttributes.length > 0;
+};
+
+const isAbacManagedTeam = (team: Partial<ITeam> | null, teamRoom: IRoom): boolean => {
+	return (
+		team?.type === TEAM_TYPE.PRIVATE &&
+		settings.get<boolean>('ABAC_Enabled') &&
+		Array.isArray(teamRoom?.abacAttributes) &&
+		teamRoom.abacAttributes.length > 0
+	);
+};
+
 const validators: RoomSettingsValidators = {
-	async default({ userId }) {
+	async default({ userId, room, value }) {
 		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Viewing_room_administration',
+			});
+		}
+		if (isAbacManagedRoom(room) && value) {
+			throw new Meteor.Error('error-action-not-allowed', 'Setting an ABAC managed room as default is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Viewing_room_administration',
 			});
@@ -79,38 +98,54 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
-	async sidepanel({ room, userId, value }) {
-		if (!room.teamMain) {
-			throw new Meteor.Error('error-action-not-allowed', 'Invalid room', {
-				method: 'saveRoomSettings',
-			});
-		}
-
-		if (!(await hasPermissionAsync(userId, 'edit-team', room._id))) {
-			throw new Meteor.Error('error-action-not-allowed', 'You do not have permission to change sidepanel items', {
-				method: 'saveRoomSettings',
-			});
-		}
-
-		if (!isValidSidepanel(value)) {
-			throw new Meteor.Error('error-invalid-sidepanel');
-		}
-	},
 
 	async roomType({ userId, room, value }) {
 		if (value === room.t) {
 			return;
 		}
 
-		if (value === 'c' && !(await hasPermissionAsync(userId, 'create-c'))) {
+		if (value === 'c' && !room.teamId && !(await hasPermissionAsync(userId, 'create-c'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a private group to a public channel is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 
-		if (value === 'p' && !(await hasPermissionAsync(userId, 'create-p'))) {
+		if (value === 'p' && !room.teamId && !(await hasPermissionAsync(userId, 'create-p'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a public channel to a private room is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
+		if (isAbacManagedRoom(room) && value !== 'p') {
+			throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private room to public is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
+		if (!room.teamId) {
+			return;
+		}
+		const team = await Team.getInfoById(room.teamId);
+
+		if (value === 'c' && !(await hasPermissionAsync(userId, 'create-team-channel', team?.roomId))) {
+			throw new Meteor.Error('error-action-not-allowed', `Changing a team's private group to a public channel is not allowed`, {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
+		if (value === 'p' && !(await hasPermissionAsync(userId, 'create-team-group', team?.roomId))) {
+			throw new Meteor.Error('error-action-not-allowed', `Changing a team's public channel to a private room is not allowed`, {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
+		if (isAbacManagedTeam(team, room) && value !== 'p') {
+			throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private team room to public is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
@@ -228,11 +263,6 @@ const settingSavers: RoomSettingsSavers = {
 		}
 		if (value !== room.topic) {
 			await saveRoomTopic(rid, value, user);
-		}
-	},
-	async sidepanel({ value, rid, room }) {
-		if (JSON.stringify(value) !== JSON.stringify(room.sidepanel)) {
-			await Rooms.setSidepanelById(rid, value);
 		}
 	},
 	async roomAnnouncement({ value, room, rid, user }) {
@@ -357,7 +387,6 @@ const fields: (keyof RoomSettings)[] = [
 	'retentionOverrideGlobal',
 	'encrypted',
 	'favorite',
-	'sidepanel',
 ];
 
 const validate = <TRoomSetting extends keyof RoomSettings>(

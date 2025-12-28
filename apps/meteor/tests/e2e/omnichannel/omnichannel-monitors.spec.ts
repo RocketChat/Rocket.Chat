@@ -31,7 +31,7 @@ test.describe.serial('OC - Manage Monitors', () => {
 		poMonitors = new OmnichannelMonitors(page);
 
 		await page.goto('/omnichannel');
-		await page.locator('.main-content').waitFor();
+		await page.locator('#main-content').waitFor();
 		await poMonitors.sidenav.linkMonitors.click();
 	});
 

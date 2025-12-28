@@ -7,13 +7,13 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration } from '@rocket.chat/models';
 
+import { logger } from './logger';
 import { CustomOAuth } from '../../../app/custom-oauth/server/custom_oauth_server';
 import {
 	notifyOnLoginServiceConfigurationChanged,
 	notifyOnLoginServiceConfigurationChangedByService,
 } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server/cached';
-import { logger } from './logger';
 
 export async function updateOAuthServices(): Promise<void> {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);

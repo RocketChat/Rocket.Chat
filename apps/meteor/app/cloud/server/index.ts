@@ -1,12 +1,12 @@
 import { cronJobs } from '@rocket.chat/cron';
 import { Meteor } from 'meteor/meteor';
 
-import { SystemLogger } from '../../../server/lib/logger/system';
 import { connectWorkspace } from './functions/connectWorkspace';
 import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceAccessTokenWithScope } from './functions/getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
 import { syncWorkspace } from './functions/syncWorkspace';
+import { SystemLogger } from '../../../server/lib/logger/system';
 import './methods';
 
 const licenseCronName = 'Cloud Workspace Sync';
@@ -41,7 +41,8 @@ Meteor.startup(async () => {
 			SystemLogger.error('An error occurred syncing workspace.', e.message);
 		}
 	});
-	await cronJobs.add(licenseCronName, '0 */12 * * *', async () => {
+	const minute = Math.floor(Math.random() * 60);
+	await cronJobs.add(licenseCronName, `${minute} */12 * * *`, async () => {
 		try {
 			await syncWorkspace();
 		} catch (e: any) {

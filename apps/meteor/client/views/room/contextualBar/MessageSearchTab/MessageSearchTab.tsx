@@ -1,7 +1,4 @@
 import { Callout } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState } from 'react';
-
 import {
 	ContextualbarClose,
 	ContextualbarContent,
@@ -9,8 +6,12 @@ import {
 	ContextualbarTitle,
 	ContextualbarIcon,
 	ContextualbarSection,
-} from '../../../../components/Contextualbar';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import MessageSearch from './components/MessageSearch';
 import MessageSearchForm from './components/MessageSearchForm';
 import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';
@@ -22,10 +23,10 @@ const MessageSearchTab = () => {
 
 	const [{ searchText, globalSearch }, handleSearch] = useState({ searchText: '', globalSearch: false });
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='magnifier' />
 				<ContextualbarTitle>{t('Search_Messages')}</ContextualbarTitle>
@@ -44,7 +45,7 @@ const MessageSearchTab = () => {
 					</Callout>
 				)}
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

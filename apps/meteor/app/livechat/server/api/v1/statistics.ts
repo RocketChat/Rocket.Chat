@@ -27,6 +27,7 @@ API.v1.addRoute(
 					utcOffset: user?.utcOffset || 0,
 					daterange: { from, to },
 					chartOptions: { name },
+					executedBy: this.userId,
 				}),
 			);
 		},
@@ -58,6 +59,7 @@ API.v1.addRoute(
 					daterange: { from, to },
 					analyticsOptions: { name },
 					language,
+					executedBy: this.userId,
 				}),
 			);
 		},

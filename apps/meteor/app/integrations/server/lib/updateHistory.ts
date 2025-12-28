@@ -60,7 +60,7 @@ export const updateHistory = async ({
 						...(userData ? { user: omit(userData, 'services') } : {}),
 						...(roomData ? { room: roomData } : {}),
 					},
-			  }
+				}
 			: {}),
 		...(triggerWord ? { triggerWord } : {}),
 		...(typeof ranPrepareScript !== 'undefined' ? { ranPrepareScript } : {}),

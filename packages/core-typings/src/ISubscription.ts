@@ -5,6 +5,9 @@ import type { RoomType } from './RoomType';
 
 type RoomID = string;
 
+export type OldKey = { e2eKeyId: string; ts: Date; E2EKey: string };
+
+export type SubscriptionStatus = 'INVITED';
 export interface ISubscription extends IRocketChatRecord {
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	v?: Pick<IUser, '_id' | 'username' | 'name' | 'status'> & { token?: string };
@@ -68,6 +71,18 @@ export interface ISubscription extends IRocketChatRecord {
 
 	/* @deprecated */
 	customFields?: Record<string, any>;
+	oldRoomKeys?: OldKey[];
+	suggestedOldRoomKeys?: OldKey[];
+
+	status?: SubscriptionStatus;
+	inviter?: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
+
+	abacLastTimeChecked?: Date;
+}
+
+export interface IInviteSubscription extends ISubscription {
+	status: 'INVITED';
+	inviter: NonNullable<ISubscription['inviter']>;
 }
 
 export interface IOmnichannelSubscription extends ISubscription {
@@ -77,3 +92,7 @@ export interface IOmnichannelSubscription extends ISubscription {
 export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {
 	t: 'd';
 }
+
+export const isInviteSubscription = (subscription: ISubscription): subscription is IInviteSubscription => {
+	return subscription?.status === 'INVITED' && !!subscription.inviter;
+};

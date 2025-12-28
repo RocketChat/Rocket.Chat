@@ -1,17 +1,17 @@
 import type { App } from '@rocket.chat/core-typings';
 import { useEndpoint, useRouteParameter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
+import { isMarketplaceRouteContext, useAppsCountQuery } from './useAppsCountQuery';
+import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 import IframeModal from '../IframeModal';
 import AppInstallModal from '../components/AppInstallModal/AppInstallModal';
 import type { Actions } from '../helpers';
-import { handleAPIError } from '../helpers/handleAPIError';
-import { isMarketplaceRouteContext, useAppsCountQuery } from './useAppsCountQuery';
 import { useAppsOrchestration } from './useAppsOrchestration';
-import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
+import { handleAPIError } from '../helpers/handleAPIError';
 
 export type AppInstallationHandlerParams = {
 	app: App;
@@ -129,7 +129,6 @@ export function useAppInstallationHandler({
 
 		setModal(
 			<AppInstallModal
-				context={context}
 				enabled={appCountQuery.data.enabled}
 				limit={appCountQuery.data.limit}
 				appName={app.name}
@@ -143,17 +142,16 @@ export function useAppInstallationHandler({
 		);
 	}, [
 		app,
-		appsOrchestrator,
 		action,
 		appCountQuery.data,
 		setModal,
-		context,
 		closeModal,
 		acquireApp,
 		openIncompatibleModal,
 		dispatchToastMessage,
 		notifyAdmins,
 		success,
+		appsOrchestrator,
 		onDismiss,
 		openExternalLink,
 		manageSubscriptionUrl,

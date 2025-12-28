@@ -12,18 +12,6 @@ export class OmnichannelTranscript {
 		this.sidenav = new OmnichannelSidenav(page);
 	}
 
-	get checkboxPDF(): Locator {
-		return this.page.locator('//input[@name="transcriptPDF"]//following::i[1]');
-	}
-
-	get exportedPDF(): Locator {
-		return this.page.locator('//div[contains(text(),"PDF Transcript successfully generated")]');
-	}
-
-	get contactCenter(): Locator {
-		return this.page.locator('//button[@data-tooltip="Contact Center"]');
-	}
-
 	get contactCenterChats(): Locator {
 		return this.page.locator('//button[contains(.,"Chats")]');
 	}
@@ -36,8 +24,8 @@ export class OmnichannelTranscript {
 		return this.page.locator('//tr[1]//td[1]');
 	}
 
-	get viewFullConversation(): Locator {
-		return this.page.locator('//button[@title="View full conversation"]/i');
+	get btnOpenChat(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Open chat', exact: true });
 	}
 
 	get DownloadedPDF(): Locator {

@@ -3,7 +3,6 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
 import RoomMenu from './RoomMenu';
 
@@ -40,7 +39,6 @@ const renderOptions = {
 		.withPermission('leave-c')
 		.withPermission('leave-p')
 		.build(),
-	legacyRoot: true,
 };
 
 it('should display all the menu options for regular rooms', async () => {
@@ -49,10 +47,10 @@ it('should display all the menu options for regular rooms', async () => {
 	const menu = screen.queryByRole('button');
 	await userEvent.click(menu as HTMLElement);
 
-	expect(await screen.findByRole('option', { name: 'Hide' })).toBeInTheDocument();
-	expect(await screen.findByRole('option', { name: 'Favorite' })).toBeInTheDocument();
-	expect(await screen.findByRole('option', { name: 'Mark Unread' })).toBeInTheDocument();
-	expect(await screen.findByRole('option', { name: 'Leave' })).toBeInTheDocument();
+	expect(await screen.findByRole('menuitem', { name: 'Hide' })).toBeInTheDocument();
+	expect(await screen.findByRole('menuitem', { name: 'Favorite' })).toBeInTheDocument();
+	expect(await screen.findByRole('menuitem', { name: 'Mark Unread' })).toBeInTheDocument();
+	expect(await screen.findByRole('menuitem', { name: 'Leave' })).toBeInTheDocument();
 });
 
 it('should display only mark unread and favorite for omnichannel rooms', async () => {
@@ -61,7 +59,7 @@ it('should display only mark unread and favorite for omnichannel rooms', async (
 	const menu = screen.queryByRole('button');
 	await userEvent.click(menu as HTMLElement);
 
-	expect(await screen.findAllByRole('option')).toHaveLength(2);
-	expect(screen.queryByRole('option', { name: 'Hide' })).not.toBeInTheDocument();
-	expect(screen.queryByRole('option', { name: 'Leave' })).not.toBeInTheDocument();
+	expect(await screen.findAllByRole('menuitem')).toHaveLength(2);
+	expect(screen.queryByRole('menuitem', { name: 'Hide' })).not.toBeInTheDocument();
+	expect(screen.queryByRole('menuitem', { name: 'Leave' })).not.toBeInTheDocument();
 });

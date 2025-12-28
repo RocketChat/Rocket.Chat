@@ -1,13 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, Dispatch, SetStateAction, SyntheticEvent } from 'react';
-import React, { useMemo } from 'react';
-import { Virtuoso } from 'react-virtuoso';
-
+import { useEffectEvent, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
+	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -16,10 +12,15 @@ import {
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
 	ContextualbarSection,
-} from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
-import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
+import type { ChangeEvent, Dispatch, SetStateAction, SyntheticEvent } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Virtuoso } from 'react-virtuoso';
+
 import TeamsChannelItem from './TeamsChannelItem';
+import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 
 type TeamsChannelsProps = {
 	loading: boolean;
@@ -54,7 +55,7 @@ const TeamsChannels = ({
 	onClickView,
 	reload,
 }: TeamsChannelsProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
 	const options: SelectOption[] = useMemo(
@@ -65,7 +66,7 @@ const TeamsChannels = ({
 		[t],
 	);
 
-	const lm = useMutableCallback((start) => !loading && loadMoreItems(start, Math.min(50, total - start)));
+	const lm = useEffectEvent((start: number) => !loading && loadMoreItems(start, Math.min(50, total - start)));
 
 	const loadMoreChannels = useDebouncedCallback(
 		() => {
@@ -80,7 +81,7 @@ const TeamsChannels = ({
 	);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='hash' />
 				<ContextualbarTitle>{t('Team_Channels')}</ContextualbarTitle>
@@ -111,15 +112,17 @@ const TeamsChannels = ({
 							</Box>
 						</Box>
 						<Box w='full' h='full' role='list' overflow='hidden' flexShrink={1}>
-							<Virtuoso
-								totalCount={total}
-								data={channels}
-								// eslint-disable-next-line react/no-multi-comp
-								components={{ Scroller: VirtuosoScrollbars, Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
-								itemContent={(index, data) => (
-									<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />
-								)}
-							/>
+							<VirtualizedScrollbars>
+								<Virtuoso
+									totalCount={total}
+									data={channels}
+									// eslint-disable-next-line react/no-multi-comp
+									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
+									itemContent={(index, data) => (
+										<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />
+									)}
+								/>
+							</VirtualizedScrollbars>
 						</Box>
 					</>
 				)}
@@ -140,7 +143,7 @@ const TeamsChannels = ({
 					</ButtonGroup>
 				</ContextualbarFooter>
 			)}
-		</>
+		</ContextualbarDialog>
 	);
 };
 

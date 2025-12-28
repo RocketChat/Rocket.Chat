@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import * as fs from 'fs';
 import * as path from 'path';
 

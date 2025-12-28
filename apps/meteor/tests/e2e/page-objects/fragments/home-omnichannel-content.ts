@@ -1,17 +1,13 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelTransferChatModal } from '../omnichannel-transfer-chat-modal';
 import { HomeContent } from './home-content';
-import { OmnichannelCloseChatModal } from './omnichannel-close-chat-modal';
+import { OmnichannelTransferChatModal } from './modals';
 
 export class HomeOmnichannelContent extends HomeContent {
-	readonly closeChatModal: OmnichannelCloseChatModal;
-
 	readonly forwardChatModal: OmnichannelTransferChatModal;
 
 	constructor(page: Page) {
 		super(page);
-		this.closeChatModal = new OmnichannelCloseChatModal(page);
 		this.forwardChatModal = new OmnichannelTransferChatModal(page);
 	}
 
@@ -35,51 +31,38 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('role=button[name="Take it!"]');
 	}
 
-	get inputMessage(): Locator {
+	override get inputMessage(): Locator {
 		return this.page.locator('[name="msg"]');
 	}
 
-	get btnForwardChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-arrow-top-right"]');
-	}
-
-	get btnCloseChat(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-balloon-close-top-right"]');
-	}
-
-	get btnGuestInfo(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
+	get contactContextualBar() {
+		return this.page.getByRole('dialog', { name: 'Contact' });
 	}
 
 	get infoContactEmail(): Locator {
-		return this.page.locator('[data-qa-id="contactInfo-email"]');
+		return this.contactContextualBar.getByRole('list', { name: 'Email' }).getByRole('listitem').first().locator('p');
 	}
 
-	get infoContactName(): Locator {
-		return this.page.locator('[data-qa-id="contactInfo-name"]');
+	get header(): Locator {
+		return this.page.locator('header');
 	}
 
 	get btnReturn(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-back"]');
+		return this.header.getByRole('button', { name: 'Back' });
 	}
 
 	get btnResume(): Locator {
 		return this.page.locator('role=button[name="Resume"]');
 	}
 
-	get modalOnHold(): Locator {
-		return this.page.locator('[data-qa-id="on-hold-modal"]');
-	}
-
-	get btnEditRoomInfo(): Locator {
-		return this.page.locator('button[data-qa-id="room-info-edit"]');
-	}
-
-	get btnOnHoldConfirm(): Locator {
-		return this.modalOnHold.locator('role=button[name="Place chat On-Hold"]');
-	}
-
 	get infoHeaderName(): Locator {
 		return this.page.locator('.rcx-room-header').getByRole('heading');
+	}
+
+	async useCannedResponse(cannedResponseName: string): Promise<void> {
+		await this.inputMessage.pressSequentially('!');
+		await this.page.locator('[role="menu"][name="ComposerBoxPopup"]').waitFor({ state: 'visible' });
+		await this.inputMessage.pressSequentially(cannedResponseName);
+		await this.page.keyboard.press('Enter');
 	}
 }

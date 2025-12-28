@@ -10,7 +10,7 @@ import { getConfig } from '../../../../../lib/utils/getConfig';
 
 export const useThreadsList = (
 	options: ThreadsListOptions,
-	uid: IUser['_id'] | null,
+	uid: IUser['_id'] | undefined,
 ): {
 	threadsList: ThreadsList;
 	initialItemCount: number;
@@ -21,7 +21,7 @@ export const useThreadsList = (
 	const getThreadsList = useEndpoint('GET', '/v1/chat.getThreadsList');
 
 	const fetchMessages = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { threads, total } = await getThreadsList({
 				rid: options.rid,
 				type: options.type,

@@ -1,7 +1,6 @@
 //----- Grid System
 @use 'sass:math';
-
-@import "helpers";
+@use "helpers";
 
 //----- Extends
 %clearfix::after {
@@ -43,8 +42,8 @@ $cols: 12;
 	}
 }
 
-@each $breakpoint, $value in ($breakpoints) {
-	@include md($breakpoint) {
+@each $breakpoint, $value in (helpers.$breakpoints) {
+	@include helpers.md($breakpoint) {
 		@for $i from 1 through $cols {
 			.col-#{$breakpoint}-#{$i},
 			%col-#{$breakpoint}-#{$i} {

@@ -30,8 +30,8 @@ export class HomeFlextabMembers {
 
 	async addUser(username: string) {
 		await this.page.locator('role=button[name="Add"]').click();
-		await this.page.locator('//label[contains(text(), "Choose users")]/..//input').fill(username);
-		await this.page.locator(`[data-qa-type="autocomplete-user-option"] >> text=${username}`).first().click();
+		await this.page.getByRole('textbox', { name: 'Choose users' }).pressSequentially(username);
+		await this.page.getByRole('option', { name: username }).click();
 		await this.page.locator('role=button[name="Add users"]').click();
 	}
 
@@ -62,8 +62,9 @@ export class HomeFlextabMembers {
 	}
 
 	async showAllUsers() {
-		await this.page.locator('.rcx-select >> text=Online').first().click();
-		await this.page.locator('.rcx-option:has-text("All")').first().click();
+		const selectInput = this.page.getByRole('button', { name: 'Online' });
+		await selectInput.click();
+		await this.page.getByRole('listbox').getByRole('option', { name: 'All' }).click();
 	}
 
 	private async ignoreUserAction(action: string, username: string) {

@@ -44,10 +44,11 @@ export function addSettings(): Promise<void> {
 
 				const persistentChatEnabled = { _id: 'VideoConf_Enable_Persistent_Chat', value: true };
 
-				await this.add('VideoConf_Persistent_Chat_Discussion_Name', 'Conference Call Chat History', {
+				await this.add('VideoConf_Persistent_Chat_Discussion_Name', 'Video Call Chat', {
 					type: 'string',
 					public: true,
 					invalidValue: 'Conference Call Chat History',
+					i18nDescription: 'VideoConf_Persistent_Chat_Discussion_Name_Description',
 					enableQuery: [discussionsEnabled, persistentChatEnabled],
 				});
 			},

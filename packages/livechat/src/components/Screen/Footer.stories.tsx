@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import i18next from 'i18next';
 import type { ComponentProps } from 'preact';
 
@@ -41,15 +41,15 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Screen.Footer>>;
 
-export const Empty: Story<ComponentProps<typeof Screen.Footer>> = () => <Screen.Footer />;
+export const Empty: StoryFn<ComponentProps<typeof Screen.Footer>> = () => <Screen.Footer />;
 Empty.storyName = 'empty';
 
-export const WithChildren: Story<ComponentProps<typeof Screen.Footer>> = () => (
+export const WithChildren: StoryFn<ComponentProps<typeof Screen.Footer>> = () => (
 	<Screen.Footer>Lorem ipsum dolor sit amet, his id atqui repudiare.</Screen.Footer>
 );
 WithChildren.storyName = 'with children';
 
-export const WithOptions: Story<ComponentProps<typeof Screen.Footer>> = () => (
+export const WithOptions: StoryFn<ComponentProps<typeof Screen.Footer>> = () => (
 	<Screen.Footer
 		options={
 			<FooterOptions>

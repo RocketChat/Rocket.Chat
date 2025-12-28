@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { Composer, ComposerActions, ComposerAction } from '.';
@@ -25,7 +25,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Composer>>;
 
-const Template: Story<ComponentProps<typeof Composer>> = (args) => <Composer {...args} />;
+const Template: StoryFn<ComponentProps<typeof Composer>> = (args) => <Composer {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

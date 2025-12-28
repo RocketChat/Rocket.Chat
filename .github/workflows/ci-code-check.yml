@@ -6,13 +6,16 @@ on:
       node-version:
         required: true
         type: string
+      deno-version:
+        required: true
+        type: string
 
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
 
 jobs:
   code-check:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04-arm
 
     name: ${{ matrix.check == 'ts' && 'TypeScript' || 'Code Lint' }}
 
@@ -27,26 +30,32 @@ jobs:
         with:
           swap-size-gb: 4
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ inputs.node-version }}
+          deno-version: ${{ inputs.deno-version }}
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # - name: Free disk space
-      #   run: |
-      #     sudo apt clean
-      #     docker rmi $(docker image ls -aq)
-      #     df -h
+      - uses: rharkor/caching-for-turbo@v1.8
 
-      - uses: rharkor/caching-for-turbo@v1.5
+      - name: Restore packages build
+        uses: actions/download-artifact@v7
+        with:
+          name: packages-build
+          path: /tmp
+
+      - name: Unpack packages build
+        shell: bash
+        run: |
+          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
       - name: Cache TypeCheck
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         if: matrix.check == 'ts'
         with:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
@@ -56,12 +65,33 @@ jobs:
             typecheck-cache-${{ runner.OS }}
             typecheck-cache
 
+      - name: Install Meteor
+        if: matrix.check == 'ts'
+        shell: bash
+        run: |
+          # Restore bin from cache
+          set +e
+          METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
+          METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
+          set -e
+          LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
+          if [ -e $LAUNCHER ]
+          then
+            echo "Cached Meteor bin found, restoring it"
+            sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
+          else
+            echo "No cached Meteor bin found."
+          fi
+
+          # only install meteor if bin isn't found
+          command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+
       - name: TS TypeCheck
         if: matrix.check == 'ts'
         run: yarn turbo run typecheck
 
       - name: Cache eslint
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         if: matrix.check == 'lint'
         with:
           path: ./apps/meteor/.eslintcache

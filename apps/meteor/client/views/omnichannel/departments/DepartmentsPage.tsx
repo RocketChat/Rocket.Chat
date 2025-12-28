@@ -1,10 +1,9 @@
 import { Tabs, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRoute, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
-import { Page, PageHeader, PageContent } from '../../../components/Page';
-import DepartmentsTableV2 from './DepartmentsTable';
+import DepartmentsTable from './DepartmentsTable';
 import EditDepartmentWithData from './EditDepartmentWithData';
 import NewDepartment from './NewDepartment';
 
@@ -15,13 +14,17 @@ const DepartmentsPage = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	const handleTabClick = useMutableCallback((tab) =>
-		departmentsRoute.push({
-			context: tab,
-		}),
+	const handleTabClick = useEffectEvent((tab: undefined | 'archived') =>
+		departmentsRoute.push(
+			tab
+				? {
+						context: tab,
+					}
+				: {},
+		),
 	);
 
-	const onAddNew = useMutableCallback(() =>
+	const onAddNew = useEffectEvent(() =>
 		departmentsRoute.push({
 			context: 'new',
 		}),
@@ -50,7 +53,7 @@ const DepartmentsPage = () => {
 					</Tabs.Item>
 				</Tabs>
 				<PageContent>
-					<DepartmentsTableV2 archived={context === 'archived'} />
+					<DepartmentsTable archived={context === 'archived'} />
 				</PageContent>
 			</Page>
 		</Page>

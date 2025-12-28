@@ -1,10 +1,12 @@
-import { createClassName } from '../../../helpers/createClassName';
+import type { CSSProperties } from 'preact/compat';
+
 import styles from './styles.scss';
+import { createClassName } from '../../../helpers/createClassName';
 
 type TypingDotsProps = {
 	text: string;
 	className?: string;
-	style?: React.CSSProperties;
+	style?: CSSProperties;
 };
 
 export const TypingDots = ({ text, className, style = {} }: TypingDotsProps) => (

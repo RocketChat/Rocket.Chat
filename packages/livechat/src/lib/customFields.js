@@ -28,7 +28,6 @@ class CustomFields {
 	reset() {
 		this._initiated = false;
 		this._started = false;
-		this._queue = {};
 		store.off('change', this.handleStoreChange);
 	}
 
@@ -48,18 +47,36 @@ class CustomFields {
 		CustomFields.instance.processCustomFields();
 	}
 
+	addToQueue(key, value, overwrite) {
+		const { customFieldsQueue } = store.state;
+		store.setState({
+			customFieldsQueue: {
+				...customFieldsQueue,
+				[key]: { value, overwrite },
+			},
+		});
+	}
+
+	getQueue() {
+		return store.state.customFieldsQueue;
+	}
+
+	clearQueue() {
+		store.setState({ customFieldsQueue: {} });
+	}
+
 	processCustomFields() {
-		Object.keys(this._queue).forEach((key) => {
-			const { value, overwrite } = this._queue[key];
+		const queue = this.getQueue();
+		Object.entries(queue).forEach(([key, { value, overwrite }]) => {
 			this.setCustomField(key, value, overwrite);
 		});
 
-		this._queue = {};
+		this.clearQueue();
 	}
 
 	setCustomField(key, value, overwrite = true) {
 		if (!this._started) {
-			this._queue[key] = { value, overwrite };
+			this.addToQueue(key, value, overwrite);
 			return;
 		}
 

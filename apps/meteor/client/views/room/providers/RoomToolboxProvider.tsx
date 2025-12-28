@@ -1,14 +1,21 @@
-import { useMutableCallback, useStableArray } from '@rocket.chat/fuselage-hooks';
-import { useUserId, useSetting, useRouter, useRouteParameter, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import { useEffectEvent, useStableArray } from '@rocket.chat/fuselage-hooks';
+import {
+	useUserId,
+	useSetting,
+	useRouter,
+	useRouteParameter,
+	useLayoutHiddenActions,
+	RoomToolboxContext,
+	type RoomToolboxContextValue,
+} from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { useRoom } from '../contexts/RoomContext';
-import { RoomToolboxContext } from '../contexts/RoomToolboxContext';
-import type { RoomToolboxContextValue } from '../contexts/RoomToolboxContext';
 import { getRoomGroup } from '../lib/getRoomGroup';
 import { useAppsRoomActions } from './hooks/useAppsRoomActions';
 import { useCoreRoomActions } from './hooks/useCoreRoomActions';
+import { useCoreRoomRoutes } from './hooks/useCoreRoomRoutes';
 
 type RoomToolboxProviderProps = { children: ReactNode };
 
@@ -17,7 +24,7 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 
 	const router = useRouter();
 
-	const openTab = useMutableCallback((actionId: string, context?: string) => {
+	const openTab = useEffectEvent((actionId: string, context?: string) => {
 		if (actionId === tab?.id && context === undefined) {
 			return closeTab();
 		}
@@ -41,7 +48,7 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 		});
 	});
 
-	const closeTab = useMutableCallback(() => {
+	const closeTab = useEffectEvent(() => {
 		const routeName = router.getRouteName();
 
 		if (!routeName) {
@@ -64,6 +71,9 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 	const coreRoomActions = useCoreRoomActions();
 	const appsRoomActions = useAppsRoomActions();
 
+	// core routes open the contextual bar, but have no button on the header
+	const coreRoomRoutes = useCoreRoomRoutes();
+
 	const allowAnonymousRead = useSetting<boolean>('Accounts_AllowAnonymousRead', false);
 	const uid = useUserId();
 
@@ -83,8 +93,13 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 			return undefined;
 		}
 
+		const coreRouteTab = coreRoomRoutes.find((route) => route.id === tabActionId);
+		if (coreRouteTab) {
+			return coreRouteTab;
+		}
+
 		return actions.find((action) => action.id === tabActionId);
-	}, [actions, tabActionId]);
+	}, [coreRoomRoutes, actions, tabActionId]);
 
 	const contextValue = useMemo(
 		(): RoomToolboxContextValue => ({

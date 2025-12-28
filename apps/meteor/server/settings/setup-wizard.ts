@@ -1223,6 +1223,13 @@ export const createSetupWSettings = () =>
 				secret: true,
 			});
 
+			await this.add('Omnigateway_Url', 'https://omni-gateway.rocket.chat', {
+				type: 'string',
+				hidden: true,
+				secret: true,
+				readonly: true,
+			});
+
 			await this.add('Cloud_Service_Agree_PrivacyTerms', false, {
 				type: 'boolean',
 			});
@@ -1322,28 +1329,6 @@ export const createSetupWSettings = () =>
 				secret: true,
 			});
 
-			await this.add('Cloud_Workspace_Access_Token', '', {
-				type: 'string',
-				hidden: true,
-				readonly: true,
-				enableQuery: {
-					_id: 'Register_Server',
-					value: true,
-				},
-				secret: true,
-			});
-
-			await this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(0), {
-				type: 'date',
-				hidden: true,
-				readonly: true,
-				enableQuery: {
-					_id: 'Register_Server',
-					value: true,
-				},
-				secret: true,
-			});
-
 			await this.add('Cloud_Workspace_Registration_State', '', {
 				type: 'string',
 				hidden: true,
@@ -1362,6 +1347,11 @@ export const createSetupWSettings = () =>
 					_id: 'Register_Server',
 					value: true,
 				},
+				secret: true,
+			});
+			await this.add('Cloud_Sync_Announcement_Payload', 'null', {
+				type: 'string', // TODO: replace setting type string for object once is implemented.
+				hidden: true,
 				secret: true,
 			});
 		});

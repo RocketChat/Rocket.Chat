@@ -1,16 +1,16 @@
 import { Box, Icon, MessageBody } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import type { ReactElement, SyntheticEvent } from 'react';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type IgnoredContentProps = {
 	onShowMessageIgnored: () => void;
 };
 
 const IgnoredContent = ({ onShowMessageIgnored }: IgnoredContentProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
-	const showMessageIgnored = (event: React.SyntheticEvent): void => {
+	const showMessageIgnored = (event: SyntheticEvent): void => {
 		event.stopPropagation();
 
 		onShowMessageIgnored();

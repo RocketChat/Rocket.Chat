@@ -1,8 +1,9 @@
 import type { ComponentChildren } from 'preact';
+import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
 
-import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
+import { createClassName } from '../../../helpers/createClassName';
 
 type MessageContainerProps = {
 	id?: string;
@@ -10,7 +11,7 @@ type MessageContainerProps = {
 	reverse?: boolean;
 	use?: any;
 	className?: string;
-	style?: React.CSSProperties;
+	style?: CSSProperties;
 	system?: boolean;
 	children?: ComponentChildren;
 };

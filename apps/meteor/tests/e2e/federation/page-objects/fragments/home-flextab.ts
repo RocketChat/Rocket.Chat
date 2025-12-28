@@ -28,30 +28,6 @@ export class FederationHomeFlextab {
 		this.dmUserMember = new FederationHomeFlextabDirectMessageMember(page);
 	}
 
-	get btnTabMembers(): Locator {
-		return this.page.locator('[data-qa-id=ToolBoxAction-members]');
-	}
-
-	get btnRoomInfo(): Locator {
-		return this.page.locator('[data-qa-id=ToolBoxAction-info-circled]');
-	}
-
-	get btnUserInfo(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
-	}
-
-	get btnCall(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-phone"]');
-	}
-
-	get btnDiscussion(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-discussion"]');
-	}
-
-	get btnTeam(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-hash"]');
-	}
-
 	get btnAddExistingChannelToTeam(): Locator {
 		return this.page.locator('role=button[name="Add Existing"]');
 	}
@@ -62,43 +38,7 @@ export class FederationHomeFlextab {
 		await this.page.locator('//label[contains(text(), "Channels")]/..//input').type(channelName);
 	}
 
-	get btnThread(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-thread"]');
-	}
-
-	get btnChannels(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-hash"]');
-	}
-
-	get kebab(): Locator {
-		return this.page.locator('[data-qa-id=ToolBox-Menu]');
-	}
-
-	get btnNotificationPreferences(): Locator {
-		return this.page.locator('[data-qa-id=ToolBoxAction-bell]');
-	}
-
 	get userInfoUsername(): Locator {
 		return this.page.locator('[data-qa="UserInfoUserName"]');
-	}
-
-	get btnFileList(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-clip"]');
-	}
-
-	get btnMentionedMessagesList(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-at"]');
-	}
-
-	get btnStarredMessagesList(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-star"]');
-	}
-
-	get btnPinnedMessagesList(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-pin"]');
-	}
-
-	get btnPruneMessages(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-eraser"]');
 	}
 }

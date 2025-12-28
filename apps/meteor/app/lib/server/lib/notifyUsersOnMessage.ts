@@ -2,25 +2,16 @@ import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import moment from 'moment';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings/server';
 import {
 	notifyOnSubscriptionChanged,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
 	notifyOnSubscriptionChangedByRoomIdAndUserIds,
 } from './notifyListener';
-
-function messageContainsHighlight(message: IMessage, highlights: string[]): boolean {
-	if (!highlights || highlights.length === 0) return false;
-
-	return highlights.some((highlight: string) => {
-		const regexp = new RegExp(escapeRegExp(highlight), 'i');
-		return regexp.test(message.msg);
-	});
-}
+import { callbacks } from '../../../../server/lib/callbacks';
+import { settings } from '../../../settings/server';
+import { messageContainsHighlight } from '../functions/notifications/messageContainsHighlight';
 
 export async function getMentions(message: IMessage): Promise<{ toAll: boolean; toHere: boolean; mentionIds: string[] }> {
 	const {
@@ -103,18 +94,40 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	const { toAll, toHere, mentionIds } = mentions;
 	const userIds = [...new Set([...mentionIds, ...highlightIds])];
 	const unreadCount = getUnreadSettingCount(room.t);
+	const unreadAllMessages = unreadCount === 'all_messages';
 
 	const userMentionInc = getUserMentions(room.t, unreadCount as Exclude<UnreadCountType, 'group_mentions_only'>);
 	const groupMentionInc = getGroupMentions(room.t, unreadCount as Exclude<UnreadCountType, 'user_mentions_only'>);
 
-	void Subscriptions.findByRoomIdAndNotAlertOrOpenExcludingUserIds({
+	// find all subscriptions that will need to be notified after the update.
+	// we need to use toArray() here and keep results in memory because we'll update the them later
+	const subs = await Subscriptions.findByRoomIdAndNotAlertOrOpenExcludingUserIds({
 		roomId: room._id,
 		uidsExclude: [message.u._id],
 		uidsInclude: userIds,
-		onlyRead: !toAll && !toHere && unreadCount !== 'all_messages',
-	}).forEach((sub) => {
+		onlyRead: !toAll && !toHere && !unreadAllMessages,
+	}).toArray();
+
+	// Give priority to user mentions over group mentions
+	if (userIds.length) {
+		await Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, userIds, 1, userMentionInc);
+	} else if (toAll || toHere) {
+		await Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, groupMentionInc);
+	}
+
+	if (!toAll && !toHere && unreadAllMessages) {
+		await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
+	}
+
+	// update subscriptions of other members of the room
+	await Promise.all([
+		Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id),
+		Subscriptions.setOpenForRoomIdExcludingUserId(message.rid, message.u._id),
+	]);
+
+	subs.forEach((sub) => {
 		const hasUserMention = userIds.includes(sub.u._id);
-		const shouldIncUnread = hasUserMention || toAll || toHere || unreadCount === 'all_messages';
+		const shouldIncUnread = hasUserMention || toAll || toHere || unreadAllMessages;
 		void notifyOnSubscriptionChanged(
 			{
 				...sub,
@@ -128,25 +141,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 		);
 	});
 
-	// Give priority to user mentions over group mentions
-	if (userIds.length) {
-		await Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, userIds, 1, userMentionInc);
-	} else if (toAll || toHere) {
-		await Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, groupMentionInc);
-	}
-
-	if (!toAll && !toHere && unreadCount === 'all_messages') {
-		await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
-	}
-
-	// update subscriptions of other members of the room
-	await Promise.all([
-		Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id),
-		Subscriptions.setOpenForRoomIdExcludingUserId(message.rid, message.u._id),
-	]);
-
 	// update subscription of the message sender
-	await Subscriptions.setAsReadByRoomIdAndUserId(message.rid, message.u._id);
 	const setAsReadResponse = await Subscriptions.setAsReadByRoomIdAndUserId(message.rid, message.u._id);
 	if (setAsReadResponse.modifiedCount) {
 		void notifyOnSubscriptionChangedByRoomIdAndUserId(message.rid, message.u._id);

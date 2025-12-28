@@ -35,7 +35,7 @@ export type Meta = {
 };
 
 export type PaginatedAppRequests = {
-	data: AppRequest[];
+	data: AppRequest[] | null;
 	meta: Meta;
 };
 

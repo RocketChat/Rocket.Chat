@@ -1,6 +1,6 @@
 import { ModalContext } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ContextType, ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 type ModalContextMockProps = {
 	children: ReactNode;

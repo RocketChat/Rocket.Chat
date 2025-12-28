@@ -1,10 +1,11 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
+import { imperativeModal } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { flushSync } from 'react-dom';
 
-import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
-import { imperativeModal } from '../../../../client/lib/imperativeModal';
-import { settings } from '../../../settings/client';
 import AddLinkComposerActionModal from './AddLinkComposerActionModal';
+import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { settings } from '../../../../client/lib/settings';
 
 type FormattingButtonDefault = { label: TranslationKey; condition?: () => boolean };
 
@@ -44,7 +45,7 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		command: 'i',
 	},
 	{
-		label: 'Strike',
+		label: 'Strikethrough',
 		icon: 'strike',
 		pattern: '~{{text}}~',
 	},
@@ -54,7 +55,7 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		pattern: '`{{text}}`',
 	},
 	{
-		label: 'Multi_line',
+		label: 'Multi_line_code',
 		icon: 'multiline',
 		pattern: '```\n{{text}}\n``` ',
 	},
@@ -72,9 +73,14 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 			};
 
 			const onConfirm = (url: string, text: string) => {
-				onClose();
-				composerApi.replaceText(`[${text}](${url})`, selection);
-				composerApi.setCursorToEnd();
+				// Composer API can't handle the selection of the text while the modal is open
+				flushSync(() => {
+					onClose();
+				});
+				flushSync(() => {
+					composerApi.replaceText(`[${text}](${url})`, selection);
+					composerApi.setCursorToEnd();
+				});
 			};
 
 			imperativeModal.open({ component: AddLinkComposerActionModal, props: { onConfirm, selectedText, onClose } });
@@ -84,17 +90,17 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		label: 'KaTeX' as TranslationKey,
 		icon: 'katex',
 		text: () => {
-			if (!settings.get('Katex_Enabled')) {
+			if (!settings.peek('Katex_Enabled')) {
 				return;
 			}
-			if (settings.get('Katex_Dollar_Syntax')) {
+			if (settings.peek('Katex_Dollar_Syntax')) {
 				return '$$KaTeX$$';
 			}
-			if (settings.get('Katex_Parenthesis_Syntax')) {
+			if (settings.peek('Katex_Parenthesis_Syntax')) {
 				return '\\[KaTeX\\]';
 			}
 		},
 		link: 'https://khan.github.io/KaTeX/function-support.html',
-		condition: () => settings.get('Katex_Enabled'),
+		condition: () => settings.watch('Katex_Enabled') ?? true,
 	},
 ] as const;

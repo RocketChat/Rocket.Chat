@@ -1,26 +1,30 @@
-import { api } from '@rocket.chat/core-services';
-import type { Document } from 'mongodb';
+import { AbacService } from '@rocket.chat/abac';
+import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
+import { registerServiceModels } from '@rocket.chat/models';
+import { startBroker } from '@rocket.chat/network-broker';
+import { startTracing } from '@rocket.chat/tracing';
 import polka from 'polka';
-
-import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
-import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
-import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 
 const PORT = process.env.PORT || 3034;
 
 (async () => {
-	const db = await getConnection();
+	const { db, client } = await getConnection();
 
-	const trash = await getCollection<Document>(Collections.Trash);
+	startTracing({ service: 'authorization-service', db: client });
 
-	registerServiceModels(db, trash);
+	registerServiceModels(db, await getTrashCollection());
 
-	api.setBroker(broker);
+	api.setBroker(startBroker());
 
 	// need to import service after models are registered
 	const { Authorization } = await import('../../../../apps/meteor/server/services/authorization/service');
 
 	api.registerService(new Authorization());
+
+	if (!process.env.USE_EXTERNAL_ABAC_SERVICE) {
+		// Same API as authz service but own core-services proxy
+		api.registerService(new AbacService());
+	}
 
 	await api.start();
 

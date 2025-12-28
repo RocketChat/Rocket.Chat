@@ -1,4 +1,11 @@
 import type {
+	ILivechatDepartmentAgents,
+	ILivechatInquiryRecord,
+	ISetting,
+	ISubscription,
+	RocketChatRecordDeleted,
+} from '@rocket.chat/core-typings';
+import type {
 	IAnalyticsModel,
 	IAvatarsModel,
 	IBannersDismissModel,
@@ -42,7 +49,6 @@ import type {
 	IOAuthAccessTokensModel,
 	IOAuthRefreshTokensModel,
 	IOEmbedCacheModel,
-	IPbxEventsModel,
 	IPushTokenModel,
 	IPermissionsModel,
 	IReadReceiptsModel,
@@ -63,10 +69,7 @@ import type {
 	IUsersSessionsModel,
 	IUsersModel,
 	IVideoConferenceModel,
-	IVoipRoomModel,
 	IWebdavAccountsModel,
-	IMatrixBridgedRoomModel,
-	IMatrixBridgedUserModel,
 	ICalendarEventModel,
 	IOmnichannelServiceLevelAgreementsModel,
 	IAppsModel,
@@ -79,14 +82,50 @@ import type {
 	ICronHistoryModel,
 	IMigrationsModel,
 	IModerationReportsModel,
+	IWorkspaceCredentialsModel,
+	IMediaCallsModel,
+	IMediaCallChannelsModel,
+	IMediaCallNegotiationsModel,
+	ICallHistoryModel,
+	IAbacAttributesModel,
 } from '@rocket.chat/model-typings';
+import type { Collection, Db } from 'mongodb';
 
-import { proxify } from './proxify';
+import {
+	TeamMemberRaw,
+	MessagesRaw,
+	LivechatInquiryRaw,
+	LivechatDepartmentAgentsRaw,
+	PermissionsRaw,
+	LoginServiceConfigurationRaw,
+	InstanceStatusRaw,
+	IntegrationHistoryRaw,
+	IntegrationsRaw,
+	EmailInboxRaw,
+	LivechatRoomsRaw,
+	LivechatPriorityRaw,
+	UploadsRaw,
+	LivechatVisitorsRaw,
+	RolesRaw,
+	RoomsRaw,
+	SettingsRaw,
+	SubscriptionsRaw,
+	TeamRaw,
+	UsersRaw,
+	UsersSessionsRaw,
+	AbacAttributesRaw,
+	ServerEventsRaw,
+} from './modelClasses';
+import { proxify, registerModel } from './proxify';
 
 const prefix = 'rocketchat_';
 export function getCollectionName(name: string): string {
 	return `${prefix}${name}`;
 }
+
+export * from './modelClasses';
+
+export * from './dummy/ReadReceipts';
 
 export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
@@ -99,6 +138,7 @@ export const Analytics = proxify<IAnalyticsModel>('IAnalyticsModel');
 export const Avatars = proxify<IAvatarsModel>('IAvatarsModel');
 export const BannersDismiss = proxify<IBannersDismissModel>('IBannersDismissModel');
 export const Banners = proxify<IBannersModel>('IBannersModel');
+export const CallHistory = proxify<ICallHistoryModel>('ICallHistoryModel');
 export const CannedResponse = proxify<ICannedResponseModel>('ICannedResponseModel');
 export const CredentialTokens = proxify<ICredentialTokensModel>('ICredentialTokensModel');
 export const CustomSounds = proxify<ICustomSoundsModel>('ICustomSoundsModel');
@@ -132,6 +172,9 @@ export const LivechatUnit = proxify<ILivechatUnitModel>('ILivechatUnitModel');
 export const LivechatUnitMonitors = proxify<ILivechatUnitMonitorsModel>('ILivechatUnitMonitorsModel');
 export const LoginServiceConfiguration = proxify<ILoginServiceConfigurationModel>('ILoginServiceConfigurationModel');
 export const Messages = proxify<IMessagesModel>('IMessagesModel');
+export const MediaCalls = proxify<IMediaCallsModel>('IMediaCallsModel');
+export const MediaCallChannels = proxify<IMediaCallChannelsModel>('IMediaCallChannelsModel');
+export const MediaCallNegotiations = proxify<IMediaCallNegotiationsModel>('IMediaCallNegotiationsModel');
 export const NotificationQueue = proxify<INotificationQueueModel>('INotificationQueueModel');
 export const Nps = proxify<INpsModel>('INpsModel');
 export const NpsVote = proxify<INpsVoteModel>('INpsVoteModel');
@@ -140,7 +183,6 @@ export const OAuthAuthCodes = proxify<IOAuthAuthCodesModel>('IOAuthAuthCodesMode
 export const OAuthAccessTokens = proxify<IOAuthAccessTokensModel>('IOAuthAccessTokensModel');
 export const OAuthRefreshTokens = proxify<IOAuthRefreshTokensModel>('IOAuthRefreshTokensModel');
 export const OEmbedCache = proxify<IOEmbedCacheModel>('IOEmbedCacheModel');
-export const PbxEvents = proxify<IPbxEventsModel>('IPbxEventsModel');
 export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
 export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
@@ -161,10 +203,7 @@ export const Uploads = proxify<IUploadsModel>('IUploadsModel');
 export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel');
 export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
 export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceModel');
-export const VoipRoom = proxify<IVoipRoomModel>('IVoipRoomModel');
 export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');
-export const MatrixBridgedRoom = proxify<IMatrixBridgedRoomModel>('IMatrixBridgedRoomModel');
-export const MatrixBridgedUser = proxify<IMatrixBridgedUserModel>('IMatrixBridgedUserModel');
 export const CalendarEvent = proxify<ICalendarEventModel>('ICalendarEventModel');
 export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLevelAgreementsModel>(
 	'IOmnichannelServiceLevelAgreementsModel',
@@ -173,3 +212,41 @@ export const AuditLog = proxify<IAuditLogModel>('IAuditLogModel');
 export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
 export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
+export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
+export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');
+
+export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
+	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
+	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw(db));
+	registerModel('IUsersModel', () => new UsersRaw(db));
+
+	registerModel('IRolesModel', () => new RolesRaw(db));
+	registerModel('IRoomsModel', () => new RoomsRaw(db));
+	registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(db, trash as Collection<RocketChatRecordDeleted<ISubscription>>));
+	registerModel('ITeamModel', () => new TeamRaw(db));
+	registerModel('ITeamMemberModel', () => new TeamMemberRaw(db));
+
+	registerModel('IMessagesModel', () => new MessagesRaw(db));
+
+	registerModel(
+		'ILivechatInquiryModel',
+		() => new LivechatInquiryRaw(db, trash as Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>),
+	);
+	registerModel(
+		'ILivechatDepartmentAgentsModel',
+		() => new LivechatDepartmentAgentsRaw(db, trash as Collection<RocketChatRecordDeleted<ILivechatDepartmentAgents>>),
+	);
+
+	registerModel('IPermissionsModel', () => new PermissionsRaw(db));
+	registerModel('ILoginServiceConfigurationModel', () => new LoginServiceConfigurationRaw(db));
+	registerModel('IInstanceStatusModel', () => new InstanceStatusRaw(db));
+	registerModel('IIntegrationHistoryModel', () => new IntegrationHistoryRaw(db));
+	registerModel('IIntegrationsModel', () => new IntegrationsRaw(db));
+	registerModel('IEmailInboxModel', () => new EmailInboxRaw(db));
+	registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
+	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
+	registerModel('IUploadsModel', () => new UploadsRaw(db));
+	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
+	registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
+	registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
+}

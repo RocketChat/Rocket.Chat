@@ -1,22 +1,22 @@
 import { NumberInput } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
+import { memo } from 'react';
 import type { UseFormRegister } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
-import type { FormValues, IDepartmentAgent } from '../EditDepartment';
+import type { EditDepartmentFormData, IDepartmentAgent } from '../definitions';
 import AgentAvatar from './AgentAvatar';
 import RemoveAgentButton from './RemoveAgentButton';
 
 type AgentRowProps = {
 	agent: IDepartmentAgent;
 	index: number;
-	register: UseFormRegister<FormValues>;
+	register: UseFormRegister<EditDepartmentFormData>;
 	onRemove: (agentId: string) => void;
 };
 
 const AgentRow = ({ index, agent, register, onRemove }: AgentRowProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<GenericTableRow key={agent.agentId} tabIndex={0} role='link' action qa-user-id={agent.agentId}>

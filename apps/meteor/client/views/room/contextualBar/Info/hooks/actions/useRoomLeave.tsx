@@ -1,30 +1,33 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouter, useSetModal, useToastMessageDispatch, useMethod, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useRouter, useSetModal, useToastMessageDispatch, useMethod, usePermission, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
 import { UiTextContext } from '../../../../../../../definition/IRoomTypeConfig';
 import WarningModal from '../../../../../../components/WarningModal';
 import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
 
-// TODO implement joined
-export const useRoomLeave = (room: IRoom, joined = true) => {
-	const t = useTranslation();
+export const useRoomLeave = (room: IRoom) => {
+	const { t } = useTranslation();
+	const subscription = useUserSubscription(room._id);
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRouter();
 
-	const canLeave = usePermission(room.t === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
+	const canLeave = usePermission(room.t === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && Boolean(subscription);
 
-	const handleLeave = useMutableCallback(() => {
+	const handleLeave = useEffectEvent(() => {
 		const leaveAction = async () => {
 			try {
 				await leaveRoom(room._id);
 				router.navigate('/home');
-				LegacyRoomManager.close(room._id);
+
+				if (room.name) {
+					LegacyRoomManager.close(`${room.t}${room.name}`);
+				}
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -35,7 +38,7 @@ export const useRoomLeave = (room: IRoom, joined = true) => {
 
 		setModal(
 			<WarningModal
-				text={t(warnText as TranslationKey, room.fname || room.name)}
+				text={t(warnText as TranslationKey, { roomName: room.fname || room.name })}
 				confirmText={t('Leave_room')}
 				close={() => setModal(null)}
 				cancelText={t('Cancel')}

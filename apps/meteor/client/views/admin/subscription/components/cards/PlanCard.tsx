@@ -1,6 +1,5 @@
 import type { ILicenseV3 } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import PlanCardPremium from './PlanCard/PlanCardPremium';
 import PlanCardTrial from './PlanCard/PlanCardTrial';

@@ -1,7 +1,6 @@
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { isPromptButton, type FormattingButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import type { ComposerAPI } from '../../../../../lib/chats/ChatAPI';
@@ -13,7 +12,7 @@ type FormattingToolbarDropdownProps = {
 };
 
 const FormattingToolbarDropdown = ({ composer, items, disabled }: FormattingToolbarDropdownProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const formattingItems: GenericMenuItemProps[] = items.map((formatter) => {
 		const handleFormattingAction = () => {
@@ -35,9 +34,9 @@ const FormattingToolbarDropdown = ({ composer, items, disabled }: FormattingTool
 		};
 	});
 
-	const sections = [{ title: t('Message_Formatting_Toolbox'), items: formattingItems }];
+	const sections = [{ title: t('Message_Formatting_toolbox'), items: formattingItems }];
 
-	return <GenericMenu title={t('Message_Formatting_Toolbox')} disabled={disabled} detached icon='meatballs' sections={sections} />;
+	return <GenericMenu title={t('Message_Formatting_toolbox')} disabled={disabled} detached icon='meatballs' sections={sections} />;
 };
 
 export default FormattingToolbarDropdown;

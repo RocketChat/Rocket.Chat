@@ -1,13 +1,13 @@
-import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Page, PageHeader, PageContent } from '../../../components/Page';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import ManagersTable from './ManagersTable';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const ManagersRoute = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const canViewManagers = usePermission('manage-livechat-managers');
 
 	if (!canViewManagers) {

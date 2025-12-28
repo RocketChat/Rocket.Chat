@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
@@ -9,10 +9,10 @@ import { useMediaActionTitle } from '../../hooks/useMediaActionTitle';
 import { useMediaPermissions } from '../../hooks/useMediaPermissions';
 
 export const useVideoMessageAction = (disabled: boolean): GenericMenuItemProps => {
-	const isFileUploadEnabled = useSetting('FileUpload_Enabled') as boolean;
-	const isVideoRecorderEnabled = useSetting('Message_VideoRecorderEnabled') as boolean;
-	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList') as string;
-	const fileUploadMediaTypeWhiteList = useSetting('FileUpload_MediaTypeWhiteList') as string;
+	const isFileUploadEnabled = useSetting('FileUpload_Enabled', true);
+	const isVideoRecorderEnabled = useSetting('Message_VideoRecorderEnabled', true);
+	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList', 'image/svg+xml');
+	const fileUploadMediaTypeWhiteList = useSetting('FileUpload_MediaTypeWhiteList', '');
 	const [isPermissionDenied, setIsPermissionDenied] = useMediaPermissions('camera');
 
 	const isAllowed = useMemo(
@@ -40,7 +40,7 @@ export const useVideoMessageAction = (disabled: boolean): GenericMenuItemProps =
 		}
 	};
 
-	const handleDenyVideo = useMutableCallback((isDenied) => {
+	const handleDenyVideo = useEffectEvent((isDenied: boolean) => {
 		if (isDenied) {
 			chat?.composer?.setRecordingVideo(false);
 		}
@@ -55,7 +55,7 @@ export const useVideoMessageAction = (disabled: boolean): GenericMenuItemProps =
 	return {
 		id: 'video-message',
 		content: getMediaActionTitle,
-		icon: 'video',
+		icon: 'video-message',
 		disabled: !isAllowed || Boolean(disabled),
 		onClick: handleOpenVideoMessage,
 	};

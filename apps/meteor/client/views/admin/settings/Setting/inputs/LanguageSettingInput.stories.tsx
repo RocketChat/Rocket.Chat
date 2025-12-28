@@ -1,11 +1,9 @@
 import { Field } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import LanguageSettingInput from './LanguageSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/LanguageSettingInput',
 	component: LanguageSettingInput,
 	parameters: {
 		actions: {
@@ -13,9 +11,9 @@ export default {
 		},
 	},
 	decorators: [(fn) => <Field>{fn()}</Field>],
-} as ComponentMeta<typeof LanguageSettingInput>;
+} satisfies Meta<typeof LanguageSettingInput>;
 
-const Template: ComponentStory<typeof LanguageSettingInput> = (args) => <LanguageSettingInput {...args} />;
+const Template: StoryFn<typeof LanguageSettingInput> = (args) => <LanguageSettingInput {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

@@ -1,11 +1,9 @@
 import { Field } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import StringSettingInput from './StringSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/StringSettingInput',
 	component: StringSettingInput,
 	parameters: {
 		actions: {
@@ -13,9 +11,9 @@ export default {
 		},
 	},
 	decorators: [(fn) => <Field>{fn()}</Field>],
-} as ComponentMeta<typeof StringSettingInput>;
+} satisfies Meta<typeof StringSettingInput>;
 
-const Template: ComponentStory<typeof StringSettingInput> = (args) => <StringSettingInput {...args} />;
+const Template: StoryFn<typeof StringSettingInput> = (args) => <StringSettingInput {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

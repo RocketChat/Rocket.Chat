@@ -1,12 +1,18 @@
 import { RouterContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import React, { useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 
 const logAction = action('RouterContext');
 
 type RouterContextMockProps = {
 	children: ReactNode;
+};
+
+// Ensure Meteor settings are defined
+window.__meteor_runtime_config__ = {
+	ROOT_URL: 'http://localhost:3000',
+	ROOT_URL_PATH_PREFIX: '',
 };
 
 const RouterContextMock = ({ children }: RouterContextMockProps): ReactElement => {

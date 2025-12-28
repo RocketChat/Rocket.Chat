@@ -1,13 +1,13 @@
-@import '../../styles/colors';
-@import '../../styles/helpers';
-@import '../../styles/variables';
+@use '../../styles/colors';
+@use '../../styles/helpers';
+@use '../../styles/variables';
 
-$alert-color: $color-text-lighter;
-$alert-font-family: $font-family;
-$alert-background-color: $bg-color-darker;
-$alert-success-background-color: $color-green;
-$alert-warning-background-color: $color-yellow;
-$alert-error-background-color: $color-red;
+$alert-color: colors.$color-text-lighter;
+$alert-font-family: variables.$font-family;
+$alert-background-color: colors.$bg-color-darker;
+$alert-success-background-color: colors.$color-green;
+$alert-warning-background-color: colors.$color-yellow;
+$alert-error-background-color: colors.$color-red;
 
 .alert {
 	display: flex;
@@ -48,7 +48,7 @@ $alert-error-background-color: $color-red;
 		outline: none;
 		background: none;
 
-		@include pressable-button(1px);
+		@include helpers.pressable-button(1px);
 	}
 
 	&--success {

@@ -1,12 +1,23 @@
-import { type StorybookConfig } from '@storybook/core-common';
+import { dirname, join } from 'path';
 
-const config: StorybookConfig = {
+import type { StorybookConfig } from '@storybook/react-webpack5';
+
+export default {
 	stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
-	addons: ['@storybook/addon-essentials', 'storybook-dark-mode'],
-	features: {
-		postcss: false,
-	},
-	framework: '@storybook/react',
-};
+	addons: [
+		getAbsolutePath('@storybook/addon-essentials'),
+		getAbsolutePath('storybook-dark-mode'),
+		getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
+	],
 
-module.exports = config;
+	framework: {
+		name: getAbsolutePath('@storybook/react-webpack5'),
+		options: {},
+	},
+
+	docs: {},
+} satisfies StorybookConfig;
+
+function getAbsolutePath(value: string): any {
+	return dirname(require.resolve(join(value, 'package.json')));
+}

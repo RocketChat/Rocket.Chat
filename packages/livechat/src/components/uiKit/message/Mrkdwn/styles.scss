@@ -1,4 +1,4 @@
-@import '../../../../styles/colors';
+@use '../../../../styles/colors';
 
 .uikit-mrkdwn {
 	word-wrap: break-word;
@@ -7,7 +7,7 @@
 	a {
 		text-decoration: none;
 
-		color: var(--color, $color-blue);
+		color: var(--color, colors.$color-blue);
 
 		&:hover,
 		&:focus {

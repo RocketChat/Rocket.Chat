@@ -1,76 +1,7 @@
 import { Banner } from '@rocket.chat/core-services';
-import { BannerPlatform } from '@rocket.chat/core-typings';
-import { Match, check } from 'meteor/check';
+import { isBannersDismissProps, isBannersProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
-
-/**
- * @deprecated
- * @openapi
- *  /api/v1/banners.getNew:
- *    get:
- *      description: Gets the banners to be shown to the authenticated user
- *      deprecated: true
- *      security:
- *        $ref: '#/security/authenticated'
- *      parameters:
- *        - name: platform
- *          in: query
- *          description: The platform rendering the banner
- *          required: true
- *          schema:
- *            type: string
- *            enum: [web, mobile]
- *          example: web
- *        - name: bid
- *          in: query
- *          description: The id of a single banner
- *          required: false
- *          schema:
- *            type: string
- *          example: ByehQjC44FwMeiLbX
- *      responses:
- *        200:
- *          description: The banners matching the criteria
- *          content:
- *            application/json:
- *              schema:
- *                allOf:
- *                  - $ref: '#/components/schemas/ApiSuccessV1'
- *                  - type: object
- *                    properties:
- *                      banners:
- *                        type: array
- *                        items:
- *                           $ref: '#/components/schemas/IBanner'
- *        default:
- *          description: Unexpected error
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiFailureV1'
- */
-API.v1.addRoute(
-	'banners.getNew',
-	{ authRequired: true, deprecation: { version: '8.0.0', alternatives: ['banners/:id', 'banners'] } },
-	{
-		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					platform: Match.OneOf(...Object.values(BannerPlatform)),
-					bid: Match.Maybe(String),
-				}),
-			);
-
-			const { platform, bid: bannerId } = this.queryParams;
-
-			const banners = await Banner.getBannersForUser(this.userId, platform, bannerId ?? undefined);
-
-			return API.v1.success({ banners });
-		},
-	},
-);
 
 /**
  * @openapi
@@ -120,23 +51,10 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'banners/:id',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isBannersProps },
 	{
 		// TODO: move to users/:id/banners
 		async get() {
-			check(
-				this.urlParams,
-				Match.ObjectIncluding({
-					id: Match.Where((id: unknown): id is string => typeof id === 'string' && Boolean(id.trim())),
-				}),
-			);
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					platform: Match.OneOf(...Object.values(BannerPlatform)),
-				}),
-			);
-
 			const { platform } = this.queryParams;
 			const { id } = this.urlParams;
 
@@ -186,16 +104,9 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'banners',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isBannersProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					platform: Match.OneOf(...Object.values(BannerPlatform)),
-				}),
-			);
-
 			const { platform } = this.queryParams;
 
 			const banners = await Banner.getBannersForUser(this.userId, platform);
@@ -240,16 +151,9 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'banners.dismiss',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isBannersDismissProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					bannerId: Match.Where((id: unknown): id is string => typeof id === 'string' && Boolean(id.trim())),
-				}),
-			);
-
 			const { bannerId } = this.bodyParams;
 
 			await Banner.dismiss(this.userId, bannerId);

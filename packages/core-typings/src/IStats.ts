@@ -6,6 +6,17 @@ import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
 import type { MACStats } from './omnichannel';
 
+export interface IVoIPPeriodStats {
+	calls?: number;
+	externalInboundCalls?: number;
+	externalOutboundCalls?: number;
+	internalCalls?: number;
+	externalCalls?: number;
+	successfulCalls?: number;
+	failedCalls?: number;
+	callsDuration?: number;
+}
+
 export interface IStats {
 	_id: string;
 	wizard: {
@@ -56,6 +67,8 @@ export interface IStats {
 	totalDirectMessages: number;
 	totalDiscussionsMessages: number;
 	totalLivechatMessages: number;
+	totalLivechatRoomsWithPriority: number;
+	totalLivechatRoomsWithDepartment: number;
 	totalTriggers: number;
 	totalMessages: number;
 	federatedServers: number;
@@ -86,6 +99,7 @@ export interface IStats {
 	enterpriseReady: boolean;
 	uploadsTotal: number;
 	uploadsTotalSize: number;
+	fileStoreType: string;
 	migration: {
 		_id?: string;
 		locked: boolean;
@@ -162,15 +176,18 @@ export interface IStats {
 		priorities?: number;
 		slas?: number;
 		businessUnits?: number;
-		omnichannelPdfTranscriptRequested?: number;
 		omnichannelPdfTranscriptSucceeded?: number;
 		omnichannelRoomsWithSlas?: number;
 		omnichannelRoomsWithPriorities?: number;
 		livechatMonitors?: number;
+		voip?: {
+			total?: IVoIPPeriodStats;
+			lastMonth?: IVoIPPeriodStats;
+			lastWeek?: IVoIPPeriodStats;
+			lastDay?: IVoIPPeriodStats;
+		};
 	};
 	createdAt: Date | string;
-	totalOTR: number;
-	totalOTRRooms: number;
 	slashCommandsJitsi: number;
 	messageAuditApply: number;
 	messageAuditLoad: number;
@@ -235,4 +252,24 @@ export interface IStats {
 	webRTCEnabledForOmnichannel: boolean;
 	omnichannelWebRTCCalls: number;
 	statsToken?: string;
+	contactVerification: {
+		totalContacts: number;
+		totalUnknownContacts: number;
+		totalMergedContacts: number;
+		totalConflicts: number;
+		totalResolvedConflicts: number;
+		totalBlockedContacts: number;
+		totalPartiallyBlockedContacts: number;
+		totalFullyBlockedContacts: number;
+		totalVerifiedContacts: number;
+		avgChannelsPerContact: number;
+		totalContactsWithoutChannels: number;
+		totalImportedContacts: number;
+		totalUpsellViews: number;
+		totalUpsellClicks: number;
+	};
+	abacEnabled?: boolean;
+	abacTotalAttributes?: number;
+	abacTotalAttributeValues?: number;
+	abacRoomsEnrolled?: number;
 }

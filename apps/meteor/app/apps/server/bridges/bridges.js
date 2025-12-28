@@ -4,9 +4,11 @@ import { AppActivationBridge } from './activation';
 import { AppApisBridge } from './api';
 import { AppCloudBridge } from './cloud';
 import { AppCommandsBridge } from './commands';
+import { AppContactBridge } from './contact';
 import { AppDetailChangesBridge } from './details';
 import { AppEmailBridge } from './email';
 import { AppEnvironmentalVariableBridge } from './environmental';
+import { AppExperimentalBridge } from './experimental';
 import { AppHttpBridge } from './http';
 import { AppInternalBridge } from './internal';
 import { AppInternalFederationBridge } from './internalFederation';
@@ -15,6 +17,7 @@ import { AppLivechatBridge } from './livechat';
 import { AppMessageBridge } from './messages';
 import { AppModerationBridge } from './moderation';
 import { AppOAuthAppsBridge } from './oauthApps';
+import { OutboundCommunicationBridge } from './outboundCommunication';
 import { AppPersistenceBridge } from './persistence';
 import { AppRoleBridge } from './roles';
 import { AppRoomBridge } from './rooms';
@@ -55,6 +58,9 @@ export class RealAppBridges extends AppBridges {
 		this._threadBridge = new AppThreadBridge(orch);
 		this._roleBridge = new AppRoleBridge(orch);
 		this._emailBridge = new AppEmailBridge(orch);
+		this._contactBridge = new AppContactBridge(orch);
+		this._outboundMessageBridge = new OutboundCommunicationBridge(orch);
+		this._experimentalBridge = new AppExperimentalBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -137,6 +143,10 @@ export class RealAppBridges extends AppBridges {
 		return this._videoConfBridge;
 	}
 
+	getOutboundMessageBridge() {
+		return this._outboundMessageBridge;
+	}
+
 	getOAuthAppsBridge() {
 		return this._oAuthBridge;
 	}
@@ -155,5 +165,13 @@ export class RealAppBridges extends AppBridges {
 
 	getEmailBridge() {
 		return this._emailBridge;
+	}
+
+	getContactBridge() {
+		return this._contactBridge;
+	}
+
+	getExperimentalBridge() {
+		return this._experimentalBridge;
 	}
 }

@@ -41,7 +41,7 @@ slashCommands.add({
 					: await Rooms.findOne({
 							t: 'd',
 							usernames: { $all: [user.username, strippedRoom] },
-					  });
+						});
 			if (!roomObject) {
 				void api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
 					msg: i18n.t('Channel_doesnt_exist', {

@@ -1,9 +1,27 @@
-import { Box, Button, Field, FieldLabel, Modal } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, useCallback } from 'react';
+import type { IRoom } from '@rocket.chat/core-typings';
+import {
+	Box,
+	Button,
+	Field,
+	FieldLabel,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+	ModalHeader,
+	ModalTitle,
+} from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { memo, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import RoomsAvailableForTeamsAutoComplete from './RoomsAvailableForTeamsAutoComplete';
+
+type AddExistingModalFormData = {
+	rooms: IRoom['_id'][];
+};
 
 type AddExistingModalProps = {
 	teamId: string;
@@ -12,7 +30,7 @@ type AddExistingModalProps = {
 };
 
 const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const addRoomEndpoint = useEndpoint('POST', '/v1/teams.addRooms');
@@ -21,10 +39,10 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 		control,
 		formState: { isDirty },
 		handleSubmit,
-	} = useForm({ defaultValues: { rooms: [] } });
+	} = useForm<AddExistingModalFormData>({ defaultValues: { rooms: [] } });
 
 	const handleAddChannels = useCallback(
-		async ({ rooms }) => {
+		async ({ rooms }: AddExistingModalFormData) => {
 			try {
 				await addRoomEndpoint({
 					rooms,
@@ -44,11 +62,11 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 
 	return (
 		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleAddChannels)} {...props} />}>
-			<Modal.Header>
-				<Modal.Title>{t('Team_Add_existing_channels')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle>{t('Team_Add_existing_channels')}</ModalTitle>
+				<ModalClose onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Field mbe={24}>
 					<FieldLabel>{t('Channels')}</FieldLabel>
 					<Controller
@@ -57,15 +75,15 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 						render={({ field: { value, onChange } }) => <RoomsAvailableForTeamsAutoComplete value={value} onChange={onChange} />}
 					/>
 				</Field>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button disabled={!isDirty} type='submit' primary>
 						{t('Add')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

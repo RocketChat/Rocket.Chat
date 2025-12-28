@@ -1,18 +1,16 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Tag } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { format } from 'date-fns';
-import { useContext, useEffect, useState, type ReactElement } from 'react';
+import { format, intlFormatDistance } from 'date-fns';
+import { useContext, useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { MarkupInteractionContext } from '../../MarkupInteractionContext';
-import { timeAgo } from './timeago';
 
 type BoldSpanProps = {
 	children: MessageParser.Timestamp;
 };
 
-const Timestamp = ({ format, value }: { format: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R'; value: Date }): ReactElement => {
+const Timestamp = ({ format, value }: { format: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R'; value: Date }) => {
 	switch (format) {
 		case 't': // Short time format
 			return <ShortTime value={value} />;
@@ -37,19 +35,11 @@ const Timestamp = ({ format, value }: { format: 't' | 'T' | 'd' | 'D' | 'f' | 'F
 };
 
 // eslint-disable-next-line react/no-multi-comp
-const TimestampWrapper = ({ children }: BoldSpanProps): ReactElement => {
-	const { enableTimestamp } = useContext(MarkupInteractionContext);
-
-	if (!enableTimestamp) {
-		return <>{`<t:${children.value.timestamp}:${children.value.format}>`}</>;
-	}
-
-	return (
-		<ErrorBoundary fallback={<>{new Date(parseInt(children.value.timestamp) * 1000).toUTCString()}</>}>
-			<Timestamp format={children.value.format} value={new Date(parseInt(children.value.timestamp) * 1000)} />
-		</ErrorBoundary>
-	);
-};
+const TimestampWrapper = ({ children }: BoldSpanProps) => (
+	<ErrorBoundary fallback={<>{new Date(parseInt(children.value.timestamp) * 1000).toUTCString()}</>}>
+		<Timestamp format={children.value.format} value={new Date(parseInt(children.value.timestamp) * 1000)} />
+	</ErrorBoundary>
+);
 
 // eslint-disable-next-line react/no-multi-comp
 const ShortTime = ({ value }: { value: Date }) => <Time value={format(value, 'p')} dateTime={value.toISOString()} />;
@@ -87,12 +77,12 @@ const RelativeTime = ({ value }: { value: Date }) => {
 	const time = value.getTime();
 
 	const { language } = useContext(MarkupInteractionContext);
-	const [text, setTime] = useState(() => timeAgo(time, language ?? 'en'));
+	const [text, setTime] = useState(() => intlFormatDistance(time, Date.now(), { locale: language ?? 'en' }));
 	const [timeToRefresh, setTimeToRefresh] = useState(() => getTimeToRefresh(time));
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			setTime(timeAgo(value.getTime(), 'en'));
+			setTime(intlFormatDistance(value.getTime(), Date.now(), { locale: 'en' }));
 			setTimeToRefresh(getTimeToRefresh(time));
 		}, timeToRefresh);
 
