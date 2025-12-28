@@ -103,14 +103,20 @@ API.v1.addRoute(
 
             await saveUser(this.userId, userData);
 
-            if (this.bodyParams.data.customFields) {
-                const flattenedFields = {};
-                Object.keys(this.bodyParams.data.customFields).forEach((key) => {
-                    flattenedFields[`customFields.${key}`] = this.bodyParams.data.customFields[key];
-                });
+            
+        if (this.bodyParams.data.customFields) {
+            
+            validateCustomFields(this.bodyParams.data.customFields);
 
-                await Users.update({ _id: this.bodyParams.userId }, { $set: flattenedFields });
-            }
+            
+            const flattenedFields: Record<string, unknown> = {};
+
+            Object.keys(this.bodyParams.data.customFields).forEach((key) => {
+                flattenedFields[`customFields.${key}`] = this.bodyParams.data.customFields[key];
+            });
+
+            await Users.update({ _id: this.bodyParams.userId }, { $set: flattenedFields });
+        }
 
             if (typeof this.bodyParams.data.active !== 'undefined') {
                 const {
