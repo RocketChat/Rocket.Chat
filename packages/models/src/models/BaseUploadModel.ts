@@ -46,7 +46,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.insertOne(fileData);
 	}
 
-	updateFileComplete(fileId: string, userId: string, file: object): Promise<Document | UpdateResult> | undefined {
+	updateFileComplete(fileId: IUpload['_id'], userId: string, file: object): Promise<Document | UpdateResult> | undefined {
 		if (!fileId) {
 			return;
 		}
@@ -73,7 +73,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
-	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult> | undefined {
+	confirmTemporaryFile(fileId: IUpload['_id'], userId: string): Promise<Document | UpdateResult> | undefined {
 		if (!fileId) {
 			return;
 		}
@@ -111,7 +111,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		);
 	}
 
-	async updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult> {
+	async updateFileNameById(fileId: IUpload['_id'], name: string): Promise<Document | UpdateResult> {
 		const filter = { _id: fileId };
 		const update = {
 			$set: {
@@ -121,7 +121,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
-	async deleteFile(fileId: string, options?: { session?: ClientSession }): Promise<DeleteResult> {
+	async deleteFile(fileId: IUpload['_id'], options?: { session?: ClientSession }): Promise<DeleteResult> {
 		return this.deleteOne({ _id: fileId }, { session: options?.session });
 	}
 }

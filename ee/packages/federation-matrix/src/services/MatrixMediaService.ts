@@ -16,7 +16,7 @@ export interface IRemoteFileReference {
 }
 
 export class MatrixMediaService {
-	static generateMXCUri(fileId: string, serverName: string): string {
+	static generateMXCUri(fileId: IUpload['_id'], serverName: string): string {
 		return `mxc://${serverName}/${fileId}`;
 	}
 
@@ -32,7 +32,7 @@ export class MatrixMediaService {
 		};
 	}
 
-	static async prepareLocalFileForMatrix(fileId: string, serverName: string, matrixRoomId: string): Promise<string> {
+	static async prepareLocalFileForMatrix(fileId: IUpload['_id'], serverName: string, matrixRoomId: string): Promise<string> {
 		try {
 			const file = await Uploads.findOneById(fileId);
 			if (!file) {
@@ -60,7 +60,7 @@ export class MatrixMediaService {
 		}
 	}
 
-	static async getLocalFileForMatrixNode(mediaId: string, serverName: string): Promise<IUpload | null> {
+	static async getLocalFileForMatrixNode(mediaId: IUpload['_id'], serverName: string): Promise<IUpload | null> {
 		try {
 			let file = await Uploads.findByFederationMediaIdAndServerName(mediaId, serverName);
 

@@ -1,5 +1,5 @@
 import type { MessageActionContext } from '@rocket.chat/apps-engine/definition/ui';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUpload } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
@@ -36,7 +36,7 @@ const createMockMessage = (overrides: Partial<IMessage> = {}): IMessage => ({
 	u: { _id: 'user-id', username: 'testuser' },
 	_updatedAt: new Date(),
 	channels: [],
-	file: { _id: 'file-id', name: 'file.txt', type: 'text/plain', size: 100, format: 'text/plain' },
+	file: { _id: 'file-id' as IUpload['_id'], name: 'file.txt', type: 'text/plain', size: 100, format: 'text/plain' },
 	mentions: [],
 	reactions: {},
 	starred: [],

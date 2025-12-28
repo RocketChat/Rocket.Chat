@@ -1,3 +1,4 @@
+import type { IUpload } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, SmarshHistory, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -44,7 +45,7 @@ export const generateEml = async (): Promise<void> => {
 			const data: {
 				users: string[];
 				msgs: number;
-				files: string[];
+				files: IUpload['_id'][];
 				time: number;
 				room: string;
 			} = {

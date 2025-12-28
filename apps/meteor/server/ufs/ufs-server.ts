@@ -4,6 +4,7 @@ import stream from 'stream';
 import URL from 'url';
 import zlib from 'zlib';
 
+import type { IUpload } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import mkdirp from 'mkdirp';
@@ -122,7 +123,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 
 		// Remove file extension from file Id
 		const index = match[2].indexOf('.');
-		const fileId = index !== -1 ? match[2].substr(0, index) : match[2];
+		const fileId = index !== -1 ? (match[2].substr(0, index) as IUpload['_id']) : (match[2] as IUpload['_id']);
 
 		// Get file from database
 		const file = await store.getCollection().findOne({ _id: fileId });

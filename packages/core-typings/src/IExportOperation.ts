@@ -1,5 +1,6 @@
 import type { FileProp } from './IMessage/MessageAttachment/Files/FileProp';
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IUpload } from './IUpload';
 import type { IUser } from './IUser';
 import type { RoomType } from './RoomType';
 
@@ -19,7 +20,7 @@ export interface IExportOperation extends IRocketChatRecord {
 	status: string;
 	fileList: FileProp[];
 	generatedFile?: string;
-	fileId: string;
+	fileId: IUpload['_id'];
 	userNameTable: Record<string, string>;
 	userData: IUser;
 	generatedUserFile: boolean;

@@ -1,8 +1,9 @@
 import type { EncryptedContent } from './IMessage';
 import type { IUser } from './IUser';
+import type { $brand } from './utils';
 
 export interface IUpload {
-	_id: string;
+	_id: string & $brand<'upload-id'>;
 	typeGroup?: string;
 	description?: string;
 	type?: string;
@@ -31,7 +32,7 @@ export interface IUpload {
 	modifiedAt?: Date;
 	url?: string;
 	originalStore?: string;
-	originalId?: string;
+	originalId?: IUpload['_id'];
 	message_id?: string;
 	instanceId?: string;
 	AmazonS3?: {

@@ -1,3 +1,4 @@
+import type { IUploadWithUser } from '@rocket.chat/core-typings';
 import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
@@ -15,7 +16,7 @@ export const Default: StoryFn<typeof FileItem> = (args) => <FileItem {...args} /
 Default.storyName = 'FileItem';
 Default.args = {
 	fileData: {
-		_id: '1',
+		_id: '1' as IUploadWithUser['_id'],
 		name: 'Lorem Ipsum Indolor Dolor',
 		url: '#',
 		uploadedAt: new Date(),

@@ -1,5 +1,7 @@
+import type { IUpload } from '../../../IUpload';
+
 export type FileProp = {
-	_id: string;
+	_id: IUpload['_id'];
 	name: string;
 	type: string;
 	format: string;

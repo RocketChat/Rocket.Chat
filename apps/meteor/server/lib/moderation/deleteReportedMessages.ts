@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { IUser, IMessage } from '@rocket.chat/core-typings';
+import type { IUser, IMessage, IUpload } from '@rocket.chat/core-typings';
 import { Messages, Uploads, ReadReceipts } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../app/file-upload/server';
@@ -10,7 +10,7 @@ import { settings } from '../../../app/settings/server';
 export async function deleteReportedMessages(messages: IMessage[], user: IUser): Promise<void> {
 	const keepHistory = settings.get<boolean>('Message_KeepHistory');
 	const showDeletedStatus = settings.get<boolean>('Message_ShowDeletedStatus');
-	const files: string[] = [];
+	const files: IUpload['_id'][] = [];
 	const messageIds: string[] = [];
 	for (const message of messages) {
 		if (message.file) {

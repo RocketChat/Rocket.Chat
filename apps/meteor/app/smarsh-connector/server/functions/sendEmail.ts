@@ -4,13 +4,14 @@
 // 	subject: 'Rocket.Chat, 17 Users, 24 Messages, 1 File, 799504 Minutes, in #random',
 //  files: ['i3nc9l3mn']
 // }
+import type { IUpload } from '@rocket.chat/core-typings';
 import { Uploads } from '@rocket.chat/models';
 
 import { UploadFS } from '../../../../server/ufs';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 
-export const sendEmail = async (data: { files: string[]; subject: string; body: string }) => {
+export const sendEmail = async (data: { files: IUpload['_id'][]; subject: string; body: string }) => {
 	const attachments = [];
 
 	for await (const fileId of data.files) {

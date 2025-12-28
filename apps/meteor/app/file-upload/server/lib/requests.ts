@@ -1,5 +1,6 @@
 import type { IncomingMessage } from 'http';
 
+import type { IUpload } from '@rocket.chat/core-typings';
 import { Uploads } from '@rocket.chat/models';
 import { WebApp } from 'meteor/webapp';
 
@@ -23,7 +24,7 @@ WebApp.connectHandlers.use(FileUpload.getPath(), async (req, res, next) => {
 	const match = /^\/([^\/]+)\/(.*)/.exec(req.url || '');
 
 	if (match?.[1]) {
-		const file = await Uploads.findOneById(match[1]);
+		const file = await Uploads.findOneById(match[1] as IUpload['_id']);
 
 		if (file) {
 			if (!(await FileUpload.requestCanAccessFiles(req, file))) {

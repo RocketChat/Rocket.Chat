@@ -525,7 +525,7 @@ const RoomsMuteUnmuteUserSchema = {
 export const isRoomsMuteUnmuteUserProps = ajv.compile<RoomsMuteUnmuteUser>(RoomsMuteUnmuteUserSchema);
 export type RoomsImagesProps = {
 	roomId: string;
-	startingFromId?: string;
+	startingFromId?: IUpload['_id'];
 	count?: number;
 	offset?: number;
 };

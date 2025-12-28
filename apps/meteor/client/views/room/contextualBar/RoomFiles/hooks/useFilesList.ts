@@ -1,4 +1,5 @@
 import { Base64 } from '@rocket.chat/base64';
+import type { IUploadWithUser } from '@rocket.chat/core-typings';
 import { useUserRoom, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -56,11 +57,15 @@ export const useFilesList = (
 				}),
 			});
 
-			const items = files.map((file) => ({
-				...file,
-				uploadedAt: file.uploadedAt ? new Date(file.uploadedAt) : undefined,
-				modifiedAt: file.modifiedAt ? new Date(file.modifiedAt) : undefined,
-			}));
+			const items = files.map(
+				(file): IUploadWithUser => ({
+					...file,
+					_id: file._id as IUploadWithUser['_id'],
+					originalId: file.originalId as IUploadWithUser['originalId'],
+					uploadedAt: file.uploadedAt ? new Date(file.uploadedAt) : undefined,
+					modifiedAt: file.modifiedAt ? new Date(file.modifiedAt) : undefined,
+				}),
+			);
 
 			for await (const file of items) {
 				if (file.rid && file.content) {

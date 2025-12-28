@@ -1,4 +1,4 @@
-import type { IMessage, MessageAttachment, FileAttachmentProps, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, MessageAttachment, FileAttachmentProps, MessageQuoteAttachment, IUpload } from '@rocket.chat/core-typings';
 
 import { modifyMessageOnFilesDelete } from './modifyMessageOnFilesDelete';
 
@@ -19,7 +19,7 @@ const messageBase: IMessage = {
 	_id: 'msg1',
 	msg: 'Here is a file',
 	file: {
-		_id: 'file1',
+		_id: 'file1' as IUpload['_id'],
 		name: 'image.png',
 		type: '',
 		format: '',
@@ -27,7 +27,7 @@ const messageBase: IMessage = {
 	},
 	files: [
 		{
-			_id: 'file1',
+			_id: 'file1' as IUpload['_id'],
 			name: 'image.png',
 			type: '',
 			format: '',

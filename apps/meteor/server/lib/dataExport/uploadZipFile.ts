@@ -1,7 +1,7 @@
 import { createReadStream } from 'fs';
 import { stat } from 'fs/promises';
 
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, IUpload } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
@@ -19,7 +19,7 @@ export const uploadZipFile = async (filePath: string, userId: IUser['_id'], expo
 
 	const utcDate = new Date().toISOString().split('T')[0];
 	const fileSuffix = exportType === 'json' ? '-data' : '';
-	const fileId = Random.id();
+	const fileId = Random.id() as IUpload['_id'];
 
 	const newFileName = encodeURIComponent(`${utcDate}-${userDisplayName}${fileSuffix}-${fileId}.zip`);
 

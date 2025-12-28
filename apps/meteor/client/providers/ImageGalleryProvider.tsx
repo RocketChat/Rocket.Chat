@@ -1,3 +1,4 @@
+import type { IUpload } from '@rocket.chat/core-typings';
 import { type ReactNode, useEffect, useState } from 'react';
 
 import { ImageGallery } from '../components/ImageGallery';
@@ -9,7 +10,7 @@ type ImageGalleryProviderProps = {
 };
 
 const ImageGalleryProvider = ({ children }: ImageGalleryProviderProps) => {
-	const [imageId, setImageId] = useState<string>();
+	const [imageId, setImageId] = useState<IUpload['_id']>();
 	const [singleImageUrl, setSingleImageUrl] = useState<string>();
 
 	useEffect(() => {
@@ -23,15 +24,17 @@ const ImageGalleryProvider = ({ children }: ImageGalleryProviderProps) => {
 				return setSingleImageUrl(target.dataset.id);
 			}
 			if (target?.classList.contains('gallery-item')) {
-				const id = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
-				return setImageId(target.dataset.id || id);
+				return setImageId(
+					(target.dataset.id as IUpload['_id']) ||
+						(target.closest('.gallery-item-container')?.getAttribute('data-id') as IUpload['_id'] | undefined) ||
+						undefined,
+				);
 			}
 			if (target?.classList.contains('gallery-item-container')) {
-				return setImageId(target.dataset.id);
+				return setImageId(target.dataset.id as IUpload['_id']);
 			}
 			if (target?.classList.contains('rcx-avatar__element') && target.closest('.gallery-item')) {
-				const avatarTarget = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
-				return setImageId(avatarTarget);
+				return setImageId((target.closest('.gallery-item-container')?.getAttribute('data-id') as IUpload['_id'] | undefined) || undefined);
 			}
 		};
 		document.addEventListener('click', handleImageClick);
@@ -40,10 +43,13 @@ const ImageGalleryProvider = ({ children }: ImageGalleryProviderProps) => {
 	}, []);
 
 	return (
-		<ImageGalleryContext.Provider value={{ imageId: imageId || '', isOpen: !!imageId, onClose: () => setImageId(undefined) }}>
+		<ImageGalleryContext.Provider value={{ imageId, isOpen: !!imageId, onClose: () => setImageId(undefined) }}>
 			{children}
 			{!!singleImageUrl && (
-				<ImageGallery images={[{ _id: singleImageUrl, url: singleImageUrl }]} onClose={() => setSingleImageUrl(undefined)} />
+				<ImageGallery
+					images={[{ _id: singleImageUrl as IUpload['_id'], url: singleImageUrl }]}
+					onClose={() => setSingleImageUrl(undefined)}
+				/>
 			)}
 			{!!imageId && <ImageGalleryData />}
 		</ImageGalleryContext.Provider>

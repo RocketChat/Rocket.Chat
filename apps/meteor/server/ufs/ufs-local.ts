@@ -79,7 +79,7 @@ export class LocalStore extends Store {
 			await this.removeById(fileId, { session: options?.session }, true);
 		};
 
-		this.getReadStream = async (fileId: string, file: IUpload, options?: { start?: number; end?: number }) => {
+		this.getReadStream = async (fileId: IUpload['_id'], file: IUpload, options?: { start?: number; end?: number }) => {
 			options = Object.assign({}, options);
 			return fs.createReadStream(await this.getFilePath(fileId, file), {
 				flags: 'r',
@@ -90,7 +90,7 @@ export class LocalStore extends Store {
 			});
 		};
 
-		this.getWriteStream = async (fileId: string, file: IUpload, options?: { start?: number }) => {
+		this.getWriteStream = async (fileId: IUpload['_id'], file: IUpload, options?: { start?: number }) => {
 			options = Object.assign({}, options);
 			return fs.createWriteStream(await this.getFilePath(fileId, file), {
 				flags: 'a',
@@ -101,7 +101,7 @@ export class LocalStore extends Store {
 		};
 	}
 
-	override async getFilePath(fileId: string, fileParam?: IUpload): Promise<string> {
+	override async getFilePath(fileId: IUpload['_id'], fileParam?: IUpload): Promise<string> {
 		const file = fileParam || (await this.getCollection().findOne(fileId, { projection: { extension: 1 } }));
 		return (file && this.getPath(fileId + (file.extension ? `.${file.extension}` : ''))) || '';
 	}

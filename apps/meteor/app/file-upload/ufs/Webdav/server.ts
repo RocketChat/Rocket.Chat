@@ -68,7 +68,7 @@ class WebdavStore extends UploadFS.Store {
 			check(file, Object);
 
 			if (file._id == null) {
-				file._id = Random.id();
+				file._id = Random.id() as IUpload['_id'];
 			}
 
 			file.Webdav = {

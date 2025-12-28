@@ -1,3 +1,4 @@
+import type { IUploadWithUser } from '@rocket.chat/core-typings';
 import { Contextualbar } from '@rocket.chat/ui-client';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
@@ -19,7 +20,7 @@ export const Default = Template.bind({});
 Default.args = {
 	filesItems: [
 		{
-			_id: '1',
+			_id: '1' as IUploadWithUser['_id'],
 			name: 'Lorem Ipsum Indolor Dolor',
 			url: '#',
 			uploadedAt: new Date(),
@@ -29,7 +30,7 @@ Default.args = {
 			},
 		},
 		{
-			_id: '2',
+			_id: '2' as IUploadWithUser['_id'],
 			name: 'Lorem Ipsum Indolor Dolor',
 			url: '#',
 			uploadedAt: new Date(),

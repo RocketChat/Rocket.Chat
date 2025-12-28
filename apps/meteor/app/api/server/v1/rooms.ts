@@ -269,7 +269,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const file = await Uploads.findOneById(this.urlParams.fileId);
+			const file = await Uploads.findOneById(this.urlParams.fileId as IUpload['_id']);
 
 			if (!file) {
 				throw new Meteor.Error('invalid-file');

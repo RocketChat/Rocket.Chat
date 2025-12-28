@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { DeepWritable, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isVideoConfMessage } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
 
@@ -17,12 +17,6 @@ import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
 import { ReadStateManager } from '../../../../client/lib/chats/readStateManager';
 import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import { setHighlightMessage } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-
-type DeepWritable<T> = T extends (...args: any) => any
-	? T
-	: {
-			-readonly [P in keyof T]: DeepWritable<T[P]>;
-		};
 
 export class ChatMessages implements ChatAPI {
 	public uid: string | undefined;

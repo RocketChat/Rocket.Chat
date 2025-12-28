@@ -22,6 +22,7 @@ import type {
 	ILivechatMonitor,
 	ILivechatContact,
 	ILivechatVisitor,
+	IUpload,
 } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
@@ -264,7 +265,7 @@ export const createFakeLicenseInfo = (partial: Partial<Omit<LicenseInfo, 'licens
 export function createFakeMessageWithAttachment<TMessage extends IMessage>(overrides?: Partial<TMessage>): TMessage;
 export function createFakeMessageWithAttachment(overrides?: Partial<IMessage>): IMessage {
 	const fakeMessage = createFakeMessage(overrides);
-	const fileId = faker.database.mongodbObjectId();
+	const fileId = faker.database.mongodbObjectId() as IUpload['_id'];
 	const fileName = faker.system.commonFileName('txt');
 
 	return {

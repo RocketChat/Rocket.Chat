@@ -1,3 +1,4 @@
+import type { IUpload } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
@@ -85,8 +86,8 @@ describe('FileUpload', () => {
 
 		const fakeMessage = createFakeMessageWithAttachment({
 			files: [
-				{ _id: 'file-id', name: 'image', size: 100, type: 'image/png', format: 'png' },
-				{ _id: 'thumbnail-id', name: 'thumbnail-image', size: 25, type: 'image/png', format: 'png' },
+				{ _id: 'file-id' as IUpload['_id'], name: 'image', size: 100, type: 'image/png', format: 'png' },
+				{ _id: 'thumbnail-id' as IUpload['_id'], name: 'thumbnail-image', size: 25, type: 'image/png', format: 'png' },
 			],
 		});
 		messagesModelStub.find.returns([fakeMessage]);

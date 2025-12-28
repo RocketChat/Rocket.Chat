@@ -1,13 +1,13 @@
+import type { IUpload } from '@rocket.chat/core-typings';
 import { createContext } from 'react';
 
 type ImageGalleryContextValue = {
-	imageId: string;
+	imageId?: IUpload['_id'];
 	isOpen: boolean;
 	onClose: () => void;
 };
 
 export const ImageGalleryContext = createContext<ImageGalleryContextValue>({
-	imageId: '',
 	isOpen: false,
 	onClose: () => undefined,
 });

@@ -186,7 +186,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					this.log.warn(`File ${attachment.title} not found in room ${message.rid}!`);
 					// For some reason, when an image is uploaded from clipboard, it doesn't have a file :(
 					// So, we'll try to get the FILE_ID from the `title_link` prop which has the format `/file-upload/FILE_ID/FILE_NAME` using a regex
-					const fileId = attachment.title_link?.match(/\/file-upload\/(.*)\/.*/)?.[1];
+					const fileId = attachment.title_link?.match(/\/file-upload\/(.*)\/.*/)?.[1] as IUpload['_id'];
 					if (!fileId) {
 						this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
 						// ignore attachments without file

@@ -63,7 +63,7 @@ function createMultipartResponse(
 	};
 }
 
-async function getMediaFile(mediaId: string, serverName: string): Promise<{ file: IUpload; buffer: Buffer } | null> {
+async function getMediaFile(mediaId: IUpload['_id'], serverName: string): Promise<{ file: IUpload; buffer: Buffer } | null> {
 	const file = await MatrixMediaService.getLocalFileForMatrixNode(mediaId, serverName);
 	if (!file) {
 		return null;
@@ -96,7 +96,7 @@ export const getMatrixMediaRoutes = () => {
 					const serverName = federationSDK.getConfig('serverName');
 
 					// TODO: Add file streaming support
-					const result = await getMediaFile(mediaId, serverName);
+					const result = await getMediaFile(mediaId as IUpload['_id'], serverName);
 					if (!result) {
 						return {
 							statusCode: 404,

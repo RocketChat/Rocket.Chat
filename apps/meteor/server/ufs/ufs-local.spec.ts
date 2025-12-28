@@ -1,5 +1,6 @@
 import fs from 'fs';
 
+import type { IUpload } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, beforeEach, afterEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
@@ -98,18 +99,18 @@ describe('LocalStore', () => {
 
 	it('should not throw if file does not exist (ENOENT)', async () => {
 		unlinkStub.rejects(Object.assign(new Error('not found'), { code: 'ENOENT' }));
-		await expect(store.delete('test')).to.be.fulfilled;
+		await expect(store.delete('test' as IUpload['_id'])).to.be.fulfilled;
 		// Should only call unlink once
 		expect(unlinkStub.calledOnce).to.be.true;
 	});
 
 	it('should throw if unlink fails with non-ENOENT error', async () => {
 		unlinkStub.rejects(Object.assign(new Error('fail'), { code: 'EACCES' }));
-		await expect(store.delete('test')).to.be.rejectedWith('fail');
+		await expect(store.delete('test' as IUpload['_id'])).to.be.rejectedWith('fail');
 	});
 
 	it('should call findOne to get file info', async () => {
-		await store.delete('test');
+		await store.delete('test' as IUpload['_id']);
 		expect(fakeCollection.findOne.calledWith('test')).to.be.true;
 	});
 });

@@ -1,4 +1,4 @@
-import type { IMessage, Serialized } from '@rocket.chat/core-typings';
+import type { IMessage, IUpload, Serialized } from '@rocket.chat/core-typings';
 
 export const mapMessageFromApi = ({
 	attachments,
@@ -21,4 +21,14 @@ export const mapMessageFromApi = ({
 			...(attachment as any),
 		})),
 	}),
+	file: message.file
+		? {
+				...message.file,
+				_id: message.file._id as IUpload['_id'],
+			}
+		: undefined,
+	files: message.files?.map((file) => ({
+		...file,
+		_id: file._id as IUpload['_id'],
+	})),
 });

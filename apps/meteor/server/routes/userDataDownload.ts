@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
-import type { IIncomingMessage, IUser, IUserDataFile } from '@rocket.chat/core-typings';
+import type { IIncomingMessage, IUser, IUserDataFile, IUpload } from '@rocket.chat/core-typings';
 import { UserDataFiles, Users } from '@rocket.chat/models';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { WebApp } from 'meteor/webapp';
@@ -56,7 +56,7 @@ const sendUserDataFile = (file: IUserDataFile) => (req: IncomingMessage, res: Se
 	void userDataStore.get(file, req, res, next);
 };
 
-const matchFileRoute = match<{ fileID: string }>('/:fileID', { decode: decodeURIComponent });
+const matchFileRoute = match<{ fileID: IUpload['_id'] }>('/:fileID', { decode: decodeURIComponent });
 
 const userDataDownloadHandler = async (req: IncomingMessage, res: ServerResponse, next: () => void) => {
 	const downloadEnabled = settings.get<boolean>('UserData_EnableDownload');

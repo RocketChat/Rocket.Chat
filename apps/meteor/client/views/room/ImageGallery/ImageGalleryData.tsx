@@ -1,10 +1,10 @@
 import { useContext, useMemo } from 'react';
 
+import { useImagesList } from './hooks/useImagesList';
 import { ImageGallery, ImageGalleryError, ImageGalleryLoading } from '../../../components/ImageGallery';
 import { ImageGalleryContext } from '../../../contexts/ImageGalleryContext';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useRoom } from '../contexts/RoomContext';
-import { useImagesList } from './hooks/useImagesList';
 
 const ImageGalleryData = () => {
 	const { _id: rid } = useRoom();

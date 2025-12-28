@@ -744,7 +744,7 @@ export class FileUploadClass {
 		return modelsAvailable[modelName];
 	}
 
-	async delete(fileId: string, options?: { session?: ClientSession }) {
+	async delete(fileId: IUpload['_id'], options?: { session?: ClientSession }) {
 		// TODO: Remove this method
 		if (this.store?.delete) {
 			await this.store.delete(fileId, { session: options?.session });
@@ -753,7 +753,7 @@ export class FileUploadClass {
 		return this.model.deleteFile(fileId, { session: options?.session });
 	}
 
-	async deleteById(fileId: string) {
+	async deleteById(fileId: IUpload['_id']) {
 		const file = await this.model.findOneById(fileId);
 
 		if (!file) {

@@ -1,3 +1,4 @@
+import type { IUpload } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Uploads } from '@rocket.chat/models';
 import { check } from 'meteor/check';
@@ -10,7 +11,7 @@ import { settings } from '../../../settings/server';
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getS3FileUrl(fileId: string): string;
+		getS3FileUrl(fileId: IUpload['_id']): string;
 	}
 }
 

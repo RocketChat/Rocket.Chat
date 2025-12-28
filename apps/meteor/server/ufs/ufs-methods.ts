@@ -7,7 +7,7 @@ import type { ClientSession } from 'mongodb';
 
 import { UploadFS } from './ufs';
 
-export async function ufsComplete(fileId: string, storeName: string, options?: { session?: ClientSession }): Promise<IUpload> {
+export async function ufsComplete(fileId: IUpload['_id'], storeName: string, options?: { session?: ClientSession }): Promise<IUpload> {
 	check(fileId, String);
 	check(storeName, String);
 

@@ -1,3 +1,4 @@
+import type { IUpload } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages } from '@rocket.chat/models';
 import { check } from 'meteor/check';
@@ -10,7 +11,7 @@ import { deleteMessageValidatingPermission } from '../../app/lib/server/function
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		deleteFileMessage(fileID: string): Promise<void | DeleteResult>;
+		deleteFileMessage(fileID: IUpload['_id']): Promise<void | DeleteResult>;
 	}
 }
 

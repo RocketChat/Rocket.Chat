@@ -1,4 +1,5 @@
 import { Base64 } from '@rocket.chat/base64';
+import type { IUpload } from '@rocket.chat/core-typings';
 import type { RoomsImagesProps } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useState } from 'react';
@@ -42,11 +43,15 @@ export const useImagesList = (
 				count: end,
 			});
 
-			const items = files.map((file) => ({
-				...file,
-				uploadedAt: file.uploadedAt ? new Date(file.uploadedAt) : undefined,
-				modifiedAt: file.modifiedAt ? new Date(file.modifiedAt) : undefined,
-			}));
+			const items = files.map(
+				(file): IUpload => ({
+					...file,
+					_id: file._id as IUpload['_id'],
+					originalId: file.originalId as IUpload['originalId'],
+					uploadedAt: file.uploadedAt ? new Date(file.uploadedAt) : undefined,
+					modifiedAt: file.modifiedAt ? new Date(file.modifiedAt) : undefined,
+				}),
+			);
 
 			for await (const file of items) {
 				if (file.rid && file.content) {

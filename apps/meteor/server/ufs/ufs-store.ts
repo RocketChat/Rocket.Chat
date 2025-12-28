@@ -37,16 +37,16 @@ export class Store {
 	protected options: StoreOptions;
 
 	public copy: (
-		fileId: string,
+		fileId: IUpload['_id'],
 		store: Store,
 		callback?: (err?: Error, copyId?: string, copy?: OptionalId<IUpload>, store?: Store) => void,
 	) => Promise<void>;
 
-	public create: (file: OptionalId<IUpload>, options?: { session?: ClientSession }) => Promise<string>;
+	public create: (file: OptionalId<IUpload>, options?: { session?: ClientSession }) => Promise<IUpload['_id']>;
 
 	public write: (
 		rs: stream.Readable,
-		fileId: string,
+		fileId: IUpload['_id'],
 		callback: (err?: Error, file?: IUpload) => void,
 		options?: { session?: ClientSession },
 	) => Promise<void>;
@@ -229,7 +229,7 @@ export class Store {
 		};
 	}
 
-	async removeById(fileId: string, options?: { session?: ClientSession }, isDeleted = false): Promise<void> {
+	async removeById(fileId: IUpload['_id'], options?: { session?: ClientSession }, isDeleted = false): Promise<void> {
 		// Delete the physical file in the store
 		if (!isDeleted) {
 			await this.delete(fileId);
@@ -248,7 +248,7 @@ export class Store {
 		await this.getCollection().removeById(fileId, { session: options?.session });
 	}
 
-	async delete(_fileId: string, _options?: { session?: ClientSession }): Promise<any> {
+	async delete(_fileId: IUpload['_id'], _options?: { session?: ClientSession }): Promise<any> {
 		throw new Error('delete is not implemented');
 	}
 
@@ -267,16 +267,16 @@ export class Store {
 		return this.options.collection!;
 	}
 
-	async getFilePath(_fileId: string, _file?: IUpload): Promise<string> {
+	async getFilePath(_fileId: IUpload['_id'], _file?: IUpload): Promise<string> {
 		throw new Error('Store.getFilePath is not implemented');
 	}
 
-	async getFileRelativeURL(fileId: string) {
+	async getFileRelativeURL(fileId: IUpload['_id']) {
 		const file = await this.getCollection().findOne(fileId, { projection: { name: 1 } });
 		return file ? this.getRelativeURL(`${fileId}/${file.name}`) : undefined;
 	}
 
-	async getFileURL(fileId: string) {
+	async getFileURL(fileId: IUpload['_id']) {
 		const file = await this.getCollection().findOne(fileId, { projection: { name: 1 } });
 		return file ? this.getURL(`${fileId}/${file.name}`) : undefined;
 	}
