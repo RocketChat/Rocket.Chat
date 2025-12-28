@@ -1,3 +1,4 @@
+import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { EmailInbox, Users } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
 
@@ -63,7 +64,7 @@ API.v1.addRoute(
 
 				_id = insertedId;
 			} else {
-				const emailInbox = await updateEmailInbox({ ...emailInboxParams, _id: emailInboxParams._id });
+				const emailInbox = await updateEmailInbox({ ...emailInboxParams, _id: emailInboxParams._id as IEmailInbox['_id'] });
 
 				if (!emailInbox?._id) {
 					return API.v1.failure('Failed to update email inbox');

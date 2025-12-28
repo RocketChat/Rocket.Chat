@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import { Readable } from 'stream';
 
+import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { EmailInbox } from '@rocket.chat/models';
 import type { ImapMessage, ImapMessageBodyInfo } from 'imap';
 import IMAP from 'imap';
@@ -33,7 +34,7 @@ export class IMAPInterceptor extends EventEmitter {
 
 	private retries = 0;
 
-	private inboxId: string;
+	private inboxId: IEmailInbox['_id'];
 
 	constructor(
 		imapConfig: IMAP.Config,
@@ -43,7 +44,7 @@ export class IMAPInterceptor extends EventEmitter {
 			markSeen: true,
 			maxRetries: 10,
 		},
-		id: string,
+		id: IEmailInbox['_id'],
 	) {
 		super();
 

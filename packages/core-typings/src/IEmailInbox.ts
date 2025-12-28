@@ -1,5 +1,7 @@
+import type { $brand } from './utils';
+
 export interface IEmailInbox {
-	_id: string;
+	_id: string & $brand<'email-inbox-id'>;
 	active: boolean;
 	name: string;
 	email: string;

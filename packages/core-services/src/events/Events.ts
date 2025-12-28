@@ -274,7 +274,7 @@ export type EventSignatures = {
 		id: string;
 	}): void;
 	'watch.integrations'(data: { clientAction: ClientAction; data: Partial<IIntegration>; id: string }): void;
-	'watch.emailInbox'(data: { clientAction: ClientAction; data: Partial<IEmailInbox>; id: string }): void;
+	'watch.emailInbox'(data: { clientAction: ClientAction; data: Partial<IEmailInbox>; id: IEmailInbox['_id'] }): void;
 	'watch.livechatDepartmentAgents'(data: {
 		clientAction: ClientAction;
 		data: Partial<ILivechatDepartmentAgents>;

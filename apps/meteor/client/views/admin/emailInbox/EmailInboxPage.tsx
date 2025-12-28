@@ -1,3 +1,4 @@
+import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
@@ -12,7 +13,7 @@ const EmailInboxPage = (): ReactElement => {
 	const { t } = useTranslation();
 	const router = useRouter();
 
-	const id = useRouteParameter('_id');
+	const id = useRouteParameter('_id') as IEmailInbox['_id'];
 	const context = useRouteParameter('context');
 
 	return (
