@@ -11,6 +11,9 @@ import {
 	Button,
 	TextAreaInput,
 	Callout,
+	Box,
+	CheckBox,
+	Icon,
 } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
@@ -294,6 +297,24 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					{serverError && <Callout type='danger'>{serverError}</Callout>}
 				</FieldGroup>
 			</Form.Container>
+				<Field mbe='x12'>
+							<Box display='flex' alignItems='center' style={{ opacity: 0.8 }}> 
+								<CheckBox 
+									id='remember-me' 
+									checked={true}  
+									disabled       
+								/>
+								<FieldLabel 
+									htmlFor='remember-me' 
+									mis='x8' 
+									title="This allows you to access this website without logging in again, but only on this specific system."
+									style={{ cursor: 'help', color: 'var(--rcx-color-font-annotation, #9EA2A8)' }}
+								>
+									Remember Me
+									<Icon name='info-circled' size='x16' mis='x4' color='hint' />
+								</FieldLabel>
+							</Box>
+                        </Field>
 			<Form.Footer>
 				<ButtonGroup>
 					<Button type='submit' loading={registerUser.isPending} primary>
