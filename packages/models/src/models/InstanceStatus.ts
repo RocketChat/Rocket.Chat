@@ -26,8 +26,8 @@ export class InstanceStatusRaw extends BaseRaw<IInstanceStatus> implements IInst
 		return this.deleteOne({ _id });
 	}
 
-	async setDocumentHeartbeat(documentId: string): Promise<UpdateResult> {
-		return this.updateOne({ _id: documentId }, { $currentDate: { _updatedAt: true } });
+	async setDocumentHeartbeat(_id: IInstanceStatus['_id']): Promise<UpdateResult> {
+		return this.updateOne({ _id }, { $currentDate: { _updatedAt: true } });
 	}
 
 	async upsertInstance(instance: Partial<IInstanceStatus>): Promise<IInstanceStatus | null> {

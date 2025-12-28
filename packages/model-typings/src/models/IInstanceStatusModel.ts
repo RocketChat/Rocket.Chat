@@ -7,7 +7,7 @@ export interface IInstanceStatusModel extends IBaseModel<IInstanceStatus> {
 	getActiveInstanceCount(): Promise<number>;
 	watchActiveInstances(): ChangeStream<IInstanceStatus>;
 	removeInstanceById(_id: IInstanceStatus['_id']): Promise<DeleteResult>;
-	setDocumentHeartbeat(documentId: string): Promise<UpdateResult>;
+	setDocumentHeartbeat(_id: IInstanceStatus['_id']): Promise<UpdateResult>;
 	upsertInstance(instance: Partial<IInstanceStatus>): Promise<IInstanceStatus | null>;
 	updateConnections(_id: IInstanceStatus['_id'], conns: number): Promise<UpdateResult>;
 }

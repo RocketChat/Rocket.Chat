@@ -1,6 +1,8 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { $brand } from './utils';
 
 export interface IInstanceStatus extends IRocketChatRecord {
+	_id: string & $brand<'instance-status-id'>;
 	_createdAt: Date;
 	name: string;
 	pid: number;

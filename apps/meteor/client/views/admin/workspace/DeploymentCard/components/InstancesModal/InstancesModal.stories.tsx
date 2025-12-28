@@ -1,3 +1,4 @@
+import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import InstancesModal from './InstancesModal';
@@ -27,7 +28,7 @@ Default.args = {
 			instanceRecord: {
 				_updatedAt: new Date(),
 				_createdAt: new Date(),
-				_id: 'instance-id',
+				_id: 'instance-id' as IInstanceStatus['_id'],
 				name: 'instance-name',
 				pid: 123,
 				extraInformation: {
