@@ -52,6 +52,7 @@ function MultiSelectSettingInput({
 					// autoComplete={autocomplete === false ? 'off' : undefined}
 					onChange={handleChange}
 					options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}
+					aria-label={_id} // FIXME: Multiselect (fuselage) should be associating the FieldLabel automatically. This is a workaround for accessibility and test locators.
 				/>
 			</FieldRow>
 			{hint && <FieldHint>{hint}</FieldHint>}
