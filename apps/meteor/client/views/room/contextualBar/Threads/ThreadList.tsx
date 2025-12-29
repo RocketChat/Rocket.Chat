@@ -78,33 +78,30 @@ const ThreadList = () => {
 	const uid = useUserId();
 	const tunread = subscription?.tunread?.sort().join(',');
 	const text = useDebouncedValue(searchText, 400);
-	const options: ThreadsListOptions = useDebouncedValue(
-		useMemo(() => {
-			if (type === 'all' || !subscribed || !uid) {
+	const options: ThreadsListOptions = useMemo(() => {
+		if (type === 'all' || !subscribed || !uid) {
+			return {
+				rid,
+				text,
+			};
+		}
+		switch (type) {
+			case 'following':
 				return {
 					rid,
 					text,
+					type,
+					uid,
 				};
-			}
-			switch (type) {
-				case 'following':
-					return {
-						rid,
-						text,
-						type,
-						uid,
-					};
-				case 'unread':
-					return {
-						rid,
-						text,
-						type,
-						tunread: tunread?.split(','),
-					};
-			}
-		}, [rid, subscribed, text, tunread, type, uid]),
-		300,
-	);
+			case 'unread':
+				return {
+					rid,
+					text,
+					type,
+					tunread: tunread?.split(','),
+				};
+		}
+	}, [rid, subscribed, text, tunread, type, uid]);
 
 	const { threadsList, loadMoreItems } = useThreadsList(options, uid);
 	const { phase, error, items, itemCount } = useRecordList(threadsList);
@@ -137,21 +134,21 @@ const ThreadList = () => {
 				</Box>
 			</ContextualbarSection>
 			<ContextualbarContent paddingInline={0}>
-				{phase === AsyncStatePhase.LOADING && (
-					<Box pi={24} pb={12}>
-						<Throbber size='x12' />
-					</Box>
-				)}
+				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' flexDirection='column' ref={ref}>
+					{phase === AsyncStatePhase.LOADING && (
+						<Box pi={24} pb={12}>
+							<Throbber size='x12' />
+						</Box>
+					)}
 
-				{error && (
-					<Callout mi={24} type='danger'>
-						{getErrorMessage(error, t('Something_went_wrong'))}
-					</Callout>
-				)}
+					{error && (
+						<Callout mi={24} type='danger'>
+							{getErrorMessage(error, t('Something_went_wrong'))}
+						</Callout>
+					)}
 
-				{phase !== AsyncStatePhase.LOADING && itemCount === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
+					{phase !== AsyncStatePhase.LOADING && itemCount === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
 					{!error && itemCount > 0 && items.length > 0 && (
 						<VirtualizedScrollbars>
 							<Virtuoso
