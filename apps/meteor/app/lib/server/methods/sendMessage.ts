@@ -46,15 +46,10 @@ export async function executeSendMessage(
 		});
 	}
 
+	const isTimestampFromClient = Boolean(!extraInfo?.ts && message.ts);
 	const now = new Date();
-
-	message.ts ??= now;
-
-	if (extraInfo?.ts) {
-		message.ts = extraInfo.ts;
-	}
-
-	if (![now, extraInfo?.ts].filter(Boolean).includes(message.ts)) {
+	message.ts = extraInfo?.ts ?? message.ts ?? now;
+	if (isTimestampFromClient) {
 		const tsDiff = Math.abs(moment(message.ts).diff(Date.now()));
 		if (tsDiff > 60000) {
 			throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
@@ -64,7 +59,7 @@ export async function executeSendMessage(
 			});
 		}
 		if (tsDiff > 10000) {
-			message.ts = new Date();
+			message.ts = now;
 		}
 	}
 
