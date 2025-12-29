@@ -98,7 +98,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 	const url = data.urlObj.toString();
 	const sizeLimit = 250000;
 
-	log.debug(`Fetching ${url} following redirects ${redirectCount} times`);
+	log.debug({ msg: 'Fetching URL for OEmbed', url, redirectCount });
 	const response = await fetch(
 		url,
 		{
@@ -126,7 +126,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 		}
 	}
 
-	log.debug('Obtained response from server with length of', totalSize);
+	log.debug({ msg: 'Obtained response from server', length: totalSize });
 	const buffer = Buffer.concat(chunks);
 
 	return {
@@ -175,26 +175,26 @@ const getUrlMeta = async function (
 	url: string,
 	withFragment?: boolean,
 ): Promise<OEmbedUrlWithMetadata | OEmbedUrlContentResult | undefined> {
-	log.debug('Obtaining metadata for URL', url);
+	log.debug({ msg: 'Obtaining metadata for URL', url });
 	const urlObj = new URL(url);
 
 	if (withFragment) {
 		urlObj.searchParams.set('_escaped_fragment_', '');
 	}
 
-	log.debug('Fetching url content', urlObj.toString());
+	log.debug({ msg: 'Fetching URL content', url: urlObj.toString() });
 	let content: OEmbedUrlContentResult | undefined;
 	try {
 		content = await getUrlContent(urlObj, 5);
 	} catch (err) {
-		log.error({ msg: 'Error fetching url content', err });
+		log.error({ msg: 'Error fetching URL content', url: urlObj.toString(), err });
 	}
 
 	if (!content) {
 		return;
 	}
 
-	log.debug('Parsing metadata for URL', url);
+	log.debug({ msg: 'Parsing metadata for URL', url });
 	const metas: { [k: string]: string } = {};
 
 	if (content?.body) {
@@ -245,11 +245,11 @@ const getUrlMetaWithCache = async function (
 	url: string,
 	withFragment?: boolean,
 ): Promise<OEmbedUrlWithMetadata | undefined | OEmbedUrlContentResult> {
-	log.debug('Getting oembed metadata for', url);
+	log.debug({ msg: 'Getting OEmbed metadata for URL', url });
 	const cache = await OEmbedCache.findOneById(url);
 
 	if (cache) {
-		log.debug('Found oembed metadata in cache for', url);
+		log.debug({ msg: 'Found OEmbed metadata in cache for URL', url });
 		return cache.data;
 	}
 
@@ -260,7 +260,7 @@ const getUrlMetaWithCache = async function (
 	}
 
 	try {
-		log.debug('Saving oembed metadata in cache for', url);
+		log.debug({ msg: 'Saving OEmbed metadata in cache for URL', url });
 		await OEmbedCache.createWithIdAndData(url, data);
 	} catch (_error) {
 		log.error({ msg: 'OEmbed duplicated record', url });
@@ -287,19 +287,19 @@ const insertMaxWidthInOembedHtml = (oembedHtml?: string): string | undefined =>
 	oembedHtml?.replace('iframe', 'iframe style="max-width: 100%;width:400px;height:225px"');
 
 const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
-	log.debug('Parsing message URLs');
+	log.debug({ msg: 'Parsing message URLs' });
 
 	if (!Array.isArray(message.urls)) {
 		return message;
 	}
 
-	log.debug('URLs found', message.urls.length);
+	log.debug({ msg: 'URLs found in message', count: message.urls.length });
 
 	if (
 		(message.attachments && message.attachments.length > 0) ||
 		message.urls.filter((item) => !item.url.includes(settings.get('Site_Url'))).length > MAX_EXTERNAL_URL_PREVIEWS
 	) {
-		log.debug('All URL ignored');
+		log.debug({ msg: 'All URLs ignored for OEmbed' });
 		return message;
 	}
 
@@ -308,7 +308,7 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	let changed = false;
 	for await (const item of message.urls) {
 		if (item.ignoreParse === true) {
-			log.debug('URL ignored', item.url);
+			log.debug({ msg: 'URL ignored for OEmbed', url: item.url });
 			continue;
 		}
 

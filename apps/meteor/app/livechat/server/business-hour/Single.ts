@@ -30,7 +30,8 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 	async onNewAgentCreated(agentId: string): Promise<void> {
 		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour();
 		if (!defaultBusinessHour) {
-			businessHourLogger.debug('No default business hour found for agentId', {
+			businessHourLogger.debug({
+				msg: 'No default business hour found for agentId',
 				agentId,
 			});
 			return;

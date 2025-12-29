@@ -41,7 +41,7 @@ export async function sendTranscript({
 	subject?: string;
 	user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
 }): Promise<boolean> {
-	logger.debug(`Sending conversation transcript of room ${rid} to user with token ${token}`);
+	logger.debug({ msg: 'Sending conversation transcript', rid, token });
 
 	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'v'>>(rid, { projection: { _id: 1, v: 1 } });
 	if (!room) {
@@ -55,7 +55,7 @@ export async function sendTranscript({
 
 	const userLanguage = settings.get<string>('Language') || 'en';
 	const timezone = getTimezone(user);
-	logger.debug(`Transcript will be sent using ${timezone} as timezone`);
+	logger.debug({ msg: 'Transcript will be sent using timezone', timezone });
 
 	const showAgentInfo = settings.get<boolean>('Livechat_show_agent_info');
 	const showSystemMessages = settings.get<boolean>('Livechat_transcript_show_system_messages');

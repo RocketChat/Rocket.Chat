@@ -113,7 +113,7 @@ Meteor.startup(async () => {
 	settings.watch<boolean>(
 		'Livechat_enable_business_hours',
 		async (value) => {
-			logger.debug(`Starting business hour manager ${value}`);
+			logger.debug({ msg: 'Starting business hour manager', enabled: value });
 			if (value) {
 				await businessHourManager.startManager();
 				return;

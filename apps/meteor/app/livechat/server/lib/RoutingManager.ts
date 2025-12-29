@@ -99,18 +99,18 @@ export const RoutingManager: Routing = {
 		return this.getMethod().getNextAgent(department, ignoreAgentId);
 	},
 
-	async delegateInquiry(inquiry, agent, options = {}, room) {
-		const { department, rid } = inquiry;
-		logger.debug(`Attempting to delegate inquiry ${inquiry._id}`);
+	\tasync delegateInquiry(inquiry, agent, options = {}, room) {
+	\t\tconst { department, rid } = inquiry;
+	\t\tlogger.debug({ msg: 'Attempting to delegate inquiry', inquiryId: inquiry._id });
 		if (
 			!agent ||
 			(agent.username &&
 				!(await Users.findOneOnlineAgentByUserList(agent.username, {}, settings.get<boolean>('Livechat_enabled_when_agent_idle'))) &&
 				!(await allowAgentSkipQueue(agent)))
 		) {
-			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${inquiry._id}`);
-			agent = await this.getNextAgent(department);
-			logger.debug(`Routing method returned agent ${agent?.agentId} for inquiry ${inquiry._id}`);
+			\t\t\tlogger.debug({ msg: 'Agent offline or invalid. Using routing method to get next agent', inquiryId: inquiry._id });
+			\t\t\tagent = await this.getNextAgent(department);
+			\t\t\tlogger.debug({ msg: 'Routing method returned agent for inquiry', inquiryId: inquiry._id, agentId: agent?.agentId });
 		}
 
 		if (!agent) {
@@ -124,7 +124,7 @@ export const RoutingManager: Routing = {
 			throw new Meteor.Error('error-invalid-room');
 		}
 
-		logger.debug(`Inquiry ${inquiry._id} will be taken by agent ${agent.agentId}`);
+		\t\tlogger.debug({ msg: 'Inquiry will be taken by agent', inquiryId: inquiry._id, agentId: agent.agentId });
 		return this.takeInquiry(inquiry, agent, options, room);
 	},
 
@@ -137,7 +137,7 @@ export const RoutingManager: Routing = {
 			}),
 		);
 
-		logger.debug(`Assigning agent ${agent.agentId} to inquiry ${inquiry._id}`);
+		\t\tlogger.debug({ msg: 'Assigning agent to inquiry', agentId: agent.agentId, inquiryId: inquiry._id });
 
 		const { rid, name, v, department } = inquiry;
 		if (!(await createLivechatSubscription(rid, name, v, agent, department))) {
@@ -180,8 +180,8 @@ export const RoutingManager: Routing = {
 			return false;
 		}
 
-		if (departmentId && departmentId !== department) {
-			logger.debug(`Switching department for inquiry ${inquiry._id} [Current: ${department} | Next: ${departmentId}]`);
+		\t\tif (departmentId && departmentId !== department) {
+		\t\t\tlogger.debug({ msg: 'Switching department for inquiry', inquiryId: inquiry._id, currentDepartment: department, nextDepartment: departmentId });
 			await updateChatDepartment({
 				rid,
 				newDepartmentId: departmentId,
@@ -234,7 +234,7 @@ export const RoutingManager: Routing = {
 			}),
 		);
 
-		logger.debug(`Attempting to take Inquiry ${inquiry._id} [Agent ${agent.agentId}] `);
+		\t\tlogger.debug({ msg: 'Attempting to take Inquiry', inquiryId: inquiry._id, agentId: agent.agentId });
 
 		const { _id, rid } = inquiry;
 		if (!room?.open) {
@@ -269,13 +269,14 @@ export const RoutingManager: Routing = {
 			return cbRoom;
 		}
 
-		const result = await LivechatInquiry.takeInquiry(_id, inquiry.lockedAt);
-		if (result.modifiedCount === 0) {
-			logger.error('Failed to take inquiry, could not match lockedAt', { inquiryId: _id, lockedAt: inquiry.lockedAt });
-			throw new Error('error-taking-inquiry-lockedAt-mismatch');
+		\t\tconst result = await LivechatInquiry.takeInquiry(_id, inquiry.lockedAt);
+		\t\tif (result.modifiedCount === 0) {
+		\t\t\tlogger.error({ msg: 'Failed to take inquiry, could not match lockedAt', inquiryId: _id, lockedAt: inquiry.lockedAt });
+		\t\t\tthrow new Error('error-taking-inquiry-lockedAt-mismatch');
+		\t\t}
 		}
 
-		logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
+		\t\tlogger.info({ msg: 'Inquiry taken by agent', inquiryId: inquiry._id, agentId: agent.agentId });
 
 		// assignAgent changes the room data to add the agent serving the conversation. afterTakeInquiry expects room object to be updated
 		const { inquiry: returnedInquiry, user } = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent);
@@ -301,9 +302,9 @@ export const RoutingManager: Routing = {
 	},
 
 	async transferRoom(room, guest, transferData) {
-		logger.debug(`Transfering room ${room._id} by ${transferData.transferredBy._id}`);
-		if (transferData.departmentId) {
-			logger.debug(`Transfering room ${room._id} to department ${transferData.departmentId}`);
+		\t\tlogger.debug({ msg: 'Transferring room', roomId: room._id, transferredBy: transferData.transferredBy._id });
+		\t\tif (transferData.departmentId) {
+		\t\t\tlogger.debug({ msg: 'Transferring room to department', roomId: room._id, departmentId: transferData.departmentId });
 			return forwardRoomToDepartment(room, guest, transferData);
 		}
 
@@ -321,13 +322,13 @@ export const RoutingManager: Routing = {
 			department: inquiry?.department,
 		});
 
-		if (defaultAgent) {
-			logger.debug(`Delegating Inquiry ${inquiry._id} to agent ${defaultAgent.username}`);
+		\t\tif (defaultAgent) {
+		\t\t\tlogger.debug({ msg: 'Delegating Inquiry to agent', inquiryId: inquiry._id, agentUsername: defaultAgent.username });
 			await LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
 			void notifyOnLivechatInquiryChanged(inquiry, 'updated', { defaultAgent });
 		}
 
-		logger.debug(`Queueing inquiry ${inquiry._id}`);
+		\t\tlogger.debug({ msg: 'Queueing inquiry', inquiryId: inquiry._id });
 		await dispatchInquiryQueued(inquiry, defaultAgent);
 		return defaultAgent;
 	},
