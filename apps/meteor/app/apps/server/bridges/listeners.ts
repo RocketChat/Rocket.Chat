@@ -211,7 +211,9 @@ export class AppListenerBridge {
 			.convertAppRoom(result as IAppsRoom);
 	}
 
-	async livechatEvent(inte: keyof IListenerExecutor, data: unknown): Promise<unknown> {
+	async livechatEvent(inte: keyof IListenerExecutor, payload: unknown): Promise<unknown> {
+		const [data] = payload as [unknown];
+
 		switch (inte) {
 			case AppInterface.IPostLivechatAgentAssigned:
 			case AppInterface.IPostLivechatAgentUnassigned:
