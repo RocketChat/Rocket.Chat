@@ -12,7 +12,7 @@ export class AdminSettings extends Admin {
 	}
 
 	get inputSiteURL(): Locator {
-		return this.page.getByRole('textbox', { name: 'Site_Url' });
+		return this.page.getByRole('textbox', { name: 'Site URL' });
 	}
 
 	get btnResetSiteURL(): Locator {

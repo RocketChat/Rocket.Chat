@@ -55,7 +55,7 @@ test.describe.parallel('administration-settings', () => {
 		});
 
 		test('should be able to reset a setting after a change', async () => {
-			await poAdminSettings.inputSiteURL.fill('any_text');
+			await poAdminSettings.inputSiteURL.pressSequentially('any_text');
 			await poAdminSettings.btnResetSiteURL.click();
 
 			await expect(poAdminSettings.inputSiteURL).toHaveValue(inputSiteURLSetting);
