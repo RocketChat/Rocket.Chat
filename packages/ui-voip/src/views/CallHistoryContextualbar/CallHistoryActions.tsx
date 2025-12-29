@@ -4,7 +4,7 @@ import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import type { MediaCallState } from '../../context';
-import { isAbleToMakeCall } from '../../context/MediaCallContext';
+import { isCallingBlocked } from '../../context/MediaCallContext';
 
 type HistoryActions = 'voiceCall' | 'videoCall' | 'jumpToMessage' | 'directMessage' | 'userInfo';
 
@@ -38,7 +38,7 @@ const getItems = (actions: HistoryActionCallbacks, t: TFunction, state: MediaCal
 	return (Object.entries(actions) as [HistoryActions, () => void][])
 		.filter(([_, callback]) => callback)
 		.map(([action, callback]) => {
-			const disabled = action === 'voiceCall' && !isAbleToMakeCall(state);
+			const disabled = action === 'voiceCall' && isCallingBlocked(state);
 			return {
 				id: action,
 				icon: iconDictionary[action],

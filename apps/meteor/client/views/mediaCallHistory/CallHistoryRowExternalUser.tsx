@@ -1,6 +1,6 @@
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { CallHistoryTableExternalContact, CallHistoryTableRowProps } from '@rocket.chat/ui-voip';
-import { CallHistoryTableRow, useMediaCallContext, isAbleToMakeCall } from '@rocket.chat/ui-voip';
+import { CallHistoryTableRow, useMediaCallContext, isCallingBlocked } from '@rocket.chat/ui-voip';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,8 +26,8 @@ const CallHistoryRowExternalUser = ({ _id, contact, type, status, duration, time
 				id: 'voiceCall',
 				icon: 'phone',
 				content: t('Voice_call'),
-				disabled: !isAbleToMakeCall(state),
-				tooltip: !isAbleToMakeCall(state) ? t('Call_in_progress') : undefined,
+				disabled: isCallingBlocked(state),
+				tooltip: isCallingBlocked(state) ? t('Call_in_progress') : undefined,
 				onClick: () => onToggleWidget({ number: contact.number }),
 			} as const,
 		];

@@ -1,7 +1,7 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { CallHistoryTableRowProps, CallHistoryTableInternalContact, MediaCallState } from '@rocket.chat/ui-voip';
-import { CallHistoryTableRow, useMediaCallContext, isAbleToMakeCall } from '@rocket.chat/ui-voip';
+import { CallHistoryTableRow, useMediaCallContext, isCallingBlocked } from '@rocket.chat/ui-voip';
 import type { TFunction } from 'i18next';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -41,7 +41,7 @@ const getItems = (actions: HistoryActionCallbacks, t: TFunction, state: MediaCal
 	return (Object.entries(actions) as [HistoryActions, () => void][])
 		.filter(([_, callback]) => callback)
 		.map(([action, callback]) => {
-			const disabled = action === 'voiceCall' && !isAbleToMakeCall(state);
+			const disabled = action === 'voiceCall' && isCallingBlocked(state);
 			return {
 				id: action,
 				icon: iconDictionary[action],
