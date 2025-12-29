@@ -43,7 +43,7 @@ const { BusinessHourManager } = proxyquire.noCallThru().load('../../../../../../
 const cronAddStub = sinon.stub();
 const cronRemoveStub = sinon.stub();
 
-describe.only('[OC] BusinessHourManager', () => {
+describe('[OC] BusinessHourManager', () => {
 	afterEach(() => sinon.restore());
 	describe('hasDaylightSavingTimeChanged()', () => {
 		const manager = new BusinessHourManager({} as any);
