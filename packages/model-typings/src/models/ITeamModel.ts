@@ -20,31 +20,35 @@ export interface ITeamModel extends IBaseModel<ITeam> {
 	findByIds(ids: Array<string>, options: FindOptions<ITeam>, query?: Filter<ITeam>): FindCursor<ITeam>;
 
 	findByIds<P extends Document>(
-		ids: Array<string>,
+		ids: Array<ITeam['_id']>,
 		options: FindOptions<P extends ITeam ? ITeam : P>,
 		query?: Filter<ITeam>,
 	): FindCursor<P>;
 
 	findByIds<P extends Document>(
-		ids: Array<string>,
+		ids: Array<ITeam['_id']>,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 		query?: Filter<ITeam>,
 	): FindCursor<P> | FindCursor<ITeam>;
 
-	findByIdsPaginated(ids: Array<string>, options?: undefined | FindOptions<ITeam>, query?: Filter<ITeam>): FindPaginated<FindCursor<ITeam>>;
+	findByIdsPaginated(
+		ids: Array<ITeam['_id']>,
+		options?: undefined | FindOptions<ITeam>,
+		query?: Filter<ITeam>,
+	): FindPaginated<FindCursor<ITeam>>;
 
-	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE): FindCursor<ITeam>;
+	findByIdsAndType(ids: Array<ITeam['_id']>, type: TEAM_TYPE): FindCursor<ITeam>;
 
-	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE, options: FindOptions<ITeam>): FindCursor<ITeam>;
+	findByIdsAndType(ids: Array<ITeam['_id']>, type: TEAM_TYPE, options: FindOptions<ITeam>): FindCursor<ITeam>;
 
 	findByIdsAndType<P extends Document>(
-		ids: Array<string>,
+		ids: Array<ITeam['_id']>,
 		type: TEAM_TYPE,
 		options: FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P>;
 
 	findByIdsAndType<P extends Document>(
-		ids: Array<string>,
+		ids: Array<ITeam['_id']>,
 		type: TEAM_TYPE,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P> | FindCursor<ITeam>;
@@ -60,19 +64,19 @@ export interface ITeamModel extends IBaseModel<ITeam> {
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<ITeam> | FindCursor<P>;
 
-	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>): FindCursor<ITeam>;
+	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<ITeam['_id']>): FindCursor<ITeam>;
 
-	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>, options: FindOptions<ITeam>): FindCursor<ITeam>;
+	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<ITeam['_id']>, options: FindOptions<ITeam>): FindCursor<ITeam>;
 
 	findByNameAndTeamIds<P extends Document>(
 		name: string | RegExp,
-		teamIds: Array<string>,
+		teamIds: Array<ITeam['_id']>,
 		options: FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P>;
 
 	findByNameAndTeamIds<P extends Document>(
 		name: string | RegExp,
-		teamIds: Array<string>,
+		teamIds: Array<ITeam['_id']>,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P> | FindCursor<ITeam>;
 
@@ -98,11 +102,11 @@ export interface ITeamModel extends IBaseModel<ITeam> {
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): Promise<P | null> | Promise<ITeam | null>;
 
-	updateMainRoomForTeam(id: string, roomId: string): Promise<UpdateResult>;
+	updateMainRoomForTeam(id: ITeam['_id'], roomId: string): Promise<UpdateResult>;
 
-	deleteOneById(id: string): Promise<DeleteResult>;
+	deleteOneById(id: ITeam['_id']): Promise<DeleteResult>;
 
 	deleteOneByName(name: string): Promise<DeleteResult>;
 
-	updateNameAndType(teamId: string, nameAndType: { name?: string; type?: TEAM_TYPE }): Promise<UpdateResult>;
+	updateNameAndType(teamId: ITeam['_id'], nameAndType: { name?: string; type?: TEAM_TYPE }): Promise<UpdateResult>;
 }

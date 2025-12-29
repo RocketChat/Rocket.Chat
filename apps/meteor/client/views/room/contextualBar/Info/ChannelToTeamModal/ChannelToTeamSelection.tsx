@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { ITeam } from '@rocket.chat/core-typings';
 import { Box, Margins } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import TeamAutocomplete from '../../../../teams/contextualBar/TeamAutocomplete';
 
 type ChannelToTeamSelectionProps = {
-	teamId: IRoom['teamId'];
-	onChange: (value: string | string[]) => void;
+	teamId: ITeam['_id'] | undefined;
+	onChange: (value: ITeam['_id'] | ITeam['_id'][]) => void;
 	onCancel: () => void;
 	onConfirm: () => void;
 };

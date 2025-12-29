@@ -29,18 +29,18 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 		return this.col.find({ name: { $in: names } }, options);
 	}
 
-	findByIds(ids: Array<string>, query?: Filter<ITeam>): FindCursor<ITeam>;
+	findByIds(ids: Array<ITeam['_id']>, query?: Filter<ITeam>): FindCursor<ITeam>;
 
-	findByIds(ids: Array<string>, options: FindOptions<ITeam>, query?: Filter<ITeam>): FindCursor<ITeam>;
+	findByIds(ids: Array<ITeam['_id']>, options: FindOptions<ITeam>, query?: Filter<ITeam>): FindCursor<ITeam>;
 
 	findByIds<P extends Document>(
-		ids: Array<string>,
+		ids: Array<ITeam['_id']>,
 		options: FindOptions<P extends ITeam ? ITeam : P>,
 		query?: Filter<ITeam>,
 	): FindCursor<P>;
 
 	findByIds<P extends Document>(
-		ids: Array<string>,
+		ids: Array<ITeam['_id']>,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 		query?: Filter<ITeam>,
 	): FindCursor<P> | FindCursor<ITeam> {
@@ -52,7 +52,7 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 	}
 
 	findByIdsPaginated(
-		ids: Array<string>,
+		ids: Array<ITeam['_id']>,
 		options?: undefined | FindOptions<ITeam>,
 		query?: Filter<ITeam>,
 	): FindPaginated<FindCursor<ITeam>> {
@@ -63,18 +63,18 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 		return this.findPaginated({ ...query, _id: { $in: ids } }, options);
 	}
 
-	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE): FindCursor<ITeam>;
+	findByIdsAndType(ids: Array<ITeam['_id']>, type: TEAM_TYPE): FindCursor<ITeam>;
 
-	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE, options: FindOptions<ITeam>): FindCursor<ITeam>;
+	findByIdsAndType(ids: Array<ITeam['_id']>, type: TEAM_TYPE, options: FindOptions<ITeam>): FindCursor<ITeam>;
 
 	findByIdsAndType<P extends Document>(
-		ids: Array<string>,
+		ids: Array<ITeam['_id']>,
 		type: TEAM_TYPE,
 		options: FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P>;
 
 	findByIdsAndType<P extends Document>(
-		ids: Array<string>,
+		ids: Array<ITeam['_id']>,
 		type: TEAM_TYPE,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P> | FindCursor<ITeam> {
@@ -100,19 +100,19 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 		return this.col.find({ type }, options);
 	}
 
-	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>): FindCursor<ITeam>;
+	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<ITeam['_id']>): FindCursor<ITeam>;
 
-	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>, options: FindOptions<ITeam>): FindCursor<ITeam>;
+	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<ITeam['_id']>, options: FindOptions<ITeam>): FindCursor<ITeam>;
 
 	findByNameAndTeamIds<P extends Document>(
 		name: string | RegExp,
-		teamIds: Array<string>,
+		teamIds: Array<ITeam['_id']>,
 		options: FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P>;
 
 	findByNameAndTeamIds<P extends Document>(
 		name: string | RegExp,
-		teamIds: Array<string>,
+		teamIds: Array<ITeam['_id']>,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P> | FindCursor<ITeam> {
 		if (options === undefined) {
@@ -177,7 +177,7 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 		return options ? this.col.findOne({ roomId }, options) : this.col.findOne({ roomId });
 	}
 
-	updateMainRoomForTeam(id: string, roomId: string): Promise<UpdateResult> {
+	updateMainRoomForTeam(id: ITeam['_id'], roomId: string): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: id,
@@ -190,7 +190,7 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 		);
 	}
 
-	deleteOneById(id: string): Promise<DeleteResult> {
+	deleteOneById(id: ITeam['_id']): Promise<DeleteResult> {
 		return this.col.deleteOne({
 			_id: id,
 		});
@@ -200,7 +200,7 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 		return this.col.deleteOne({ name });
 	}
 
-	updateNameAndType(teamId: string, nameAndType: { name?: string; type?: TEAM_TYPE }): Promise<UpdateResult> {
+	updateNameAndType(teamId: ITeam['_id'], nameAndType: { name?: string; type?: TEAM_TYPE }): Promise<UpdateResult> {
 		const query = {
 			_id: teamId,
 		};

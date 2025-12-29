@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, ITeam } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Modal,
@@ -42,7 +42,7 @@ import { useIsFederationEnabled } from '../../../hooks/useIsFederationEnabled';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateChannelModalProps = {
-	teamId?: string;
+	teamId?: ITeam['_id'];
 	mainRoom?: IRoom;
 	onClose: () => void;
 	reload?: () => void;
@@ -77,7 +77,7 @@ const getFederationHintKey = (federationModule: boolean, featureToggle: boolean,
 
 const hasExternalMembers = (members: string[]): boolean => members.some((member) => member.startsWith('@'));
 
-const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateChannelModalProps) => {
+const CreateChannelModal = ({ teamId, mainRoom, onClose, reload }: CreateChannelModalProps) => {
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');

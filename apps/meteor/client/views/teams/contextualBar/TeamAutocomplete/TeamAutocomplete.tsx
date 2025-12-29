@@ -1,3 +1,4 @@
+import type { ITeam } from '@rocket.chat/core-typings';
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -5,7 +6,10 @@ import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import { memo, useMemo, useState } from 'react';
 
-type TeamAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
+type TeamAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter' | 'value' | 'onChange'> & {
+	value: ITeam['_id'] | undefined;
+	onChange: (value: ITeam['_id'] | ITeam['_id'][]) => void;
+};
 
 const TeamAutocomplete = ({ value, onChange, ...props }: TeamAutocompleteProps) => {
 	const [filter, setFilter] = useState('');
@@ -31,7 +35,7 @@ const TeamAutocomplete = ({ value, onChange, ...props }: TeamAutocompleteProps) 
 		<AutoComplete
 			{...props}
 			value={value}
-			onChange={onChange}
+			onChange={onChange as (value: string | string[]) => void}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { value, label: room } }) => (

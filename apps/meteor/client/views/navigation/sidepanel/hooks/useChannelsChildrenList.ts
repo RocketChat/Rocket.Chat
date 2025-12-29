@@ -1,3 +1,4 @@
+import type { ITeam } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useShallow } from 'zustand/shallow';
 
@@ -38,7 +39,7 @@ const getMainRoomAndSort = (records: SubscriptionWithRoom[], unreadOnly: boolean
 	return rest;
 };
 
-export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, teamId?: string) => {
+export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, teamId?: ITeam['_id']) => {
 	return Subscriptions.use(
 		useShallow((state) => {
 			const records = state.filter((subscription) => {

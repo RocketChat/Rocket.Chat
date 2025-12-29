@@ -5,6 +5,7 @@ import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { ITeam } from './ITeam';
 import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
 
@@ -56,7 +57,7 @@ export interface IRoom extends IRocketChatRecord {
 	avatarETag?: string;
 
 	teamMain?: boolean;
-	teamId?: string;
+	teamId?: ITeam['_id'];
 	teamDefault?: boolean;
 	open?: boolean;
 
@@ -131,7 +132,7 @@ export interface ICreatedRoom extends IRoom {
 
 export interface ITeamRoom extends IRoom {
 	teamMain: boolean;
-	teamId: string;
+	teamId: ITeam['_id'];
 }
 
 export const isTeamRoom = (room: Partial<IRoom>): room is ITeamRoom => !!room.teamMain;

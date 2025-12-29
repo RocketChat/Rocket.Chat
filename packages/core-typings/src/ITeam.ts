@@ -3,6 +3,7 @@ import type { Document, FindOptions, Filter, SchemaMember } from 'mongodb';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
 import type { IUser } from './IUser';
+import type { $brand } from './utils';
 
 export enum TEAM_TYPE {
 	PUBLIC = 0,
@@ -12,6 +13,7 @@ export enum TEAM_TYPE {
 export type SortType = -1 | 1;
 
 export interface ITeam extends IRocketChatRecord {
+	_id: string & $brand<'team-id'>;
 	name: string;
 	type: TEAM_TYPE;
 	roomId: string;
@@ -20,7 +22,8 @@ export interface ITeam extends IRocketChatRecord {
 }
 
 export interface ITeamMember extends IRocketChatRecord {
-	teamId: string;
+	_id: string & $brand<'team-member-id'>;
+	teamId: ITeam['_id'];
 	userId: string;
 	roles?: Array<IRole['_id']>;
 	createdBy: Pick<IUser, '_id' | 'username'>;

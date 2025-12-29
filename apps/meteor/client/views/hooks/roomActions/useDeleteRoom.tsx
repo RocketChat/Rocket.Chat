@@ -21,8 +21,7 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 	const deleteRoomEndpoint = useEndpoint('POST', '/v1/rooms.delete');
 	const deleteTeamEndpoint = useEndpoint('POST', '/v1/teams.delete');
 
-	const teamId = room.teamId || '';
-	const { data: teamInfo } = useTeamInfoQuery(teamId);
+	const { data: teamInfo } = useTeamInfoQuery(room.teamId);
 
 	const hasPermissionToDeleteRoom = usePermission(`delete-${room.t}`, room._id);
 	const hasPermissionToDeleteTeamRoom = usePermission(`delete-team-${room.t === 'c' ? 'channel' : 'group'}`, teamInfo?.roomId);

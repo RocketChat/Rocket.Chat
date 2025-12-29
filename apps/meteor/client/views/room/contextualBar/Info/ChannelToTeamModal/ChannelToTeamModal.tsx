@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { ITeam } from '@rocket.chat/core-typings';
 import { useState } from 'react';
 
 import ChannelToTeamConfirmation from './ChannelToTeamConfirmation';
@@ -6,7 +6,7 @@ import ChannelToTeamSelection from './ChannelToTeamSelection';
 
 type ChannelToTeamModalProps = {
 	onCancel: () => void;
-	onConfirm: (teamId: IRoom['_id']) => void;
+	onConfirm: (teamId: ITeam['_id']) => void;
 };
 
 const CHANNEL_TO_TEAM_STEPS = {
@@ -16,13 +16,13 @@ const CHANNEL_TO_TEAM_STEPS = {
 
 const ChannelToTeamModal = ({ onCancel, onConfirm }: ChannelToTeamModalProps) => {
 	const [step, setStep] = useState(CHANNEL_TO_TEAM_STEPS.SELECTION);
-	const [teamId, setTeamId] = useState<string>();
+	const [teamId, setTeamId] = useState<ITeam['_id']>();
 
 	if (step === CHANNEL_TO_TEAM_STEPS.CONFIRMATION && teamId) {
 		return <ChannelToTeamConfirmation onCancel={onCancel} onConfirm={() => onConfirm(teamId)} />;
 	}
 
-	const handleChange = (value: string | string[]) => {
+	const handleChange = (value: ITeam['_id'] | ITeam['_id'][]) => {
 		if (typeof value === 'string') {
 			setTeamId(value);
 		}

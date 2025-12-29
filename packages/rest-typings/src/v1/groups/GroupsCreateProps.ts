@@ -1,3 +1,4 @@
+import type { ITeam } from '@rocket.chat/core-typings';
 import Ajv from 'ajv/dist/2019';
 
 const ajv = new Ajv({
@@ -12,7 +13,7 @@ export type GroupsCreateProps = {
 	extraData?: {
 		broadcast: boolean;
 		encrypted: boolean;
-		teamId?: string;
+		teamId?: ITeam['_id'];
 	};
 	excludeSelf?: boolean;
 };

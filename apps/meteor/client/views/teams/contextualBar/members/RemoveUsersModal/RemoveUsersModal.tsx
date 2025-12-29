@@ -1,4 +1,4 @@
-import type { Serialized, IRoom } from '@rocket.chat/core-typings';
+import type { Serialized, IRoom, ITeam } from '@rocket.chat/core-typings';
 import { GenericModalSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -10,7 +10,7 @@ type RemoveUsersModalProps = {
 	onClose: () => void;
 	onCancel: () => void;
 	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;
-	teamId: string;
+	teamId: ITeam['_id'];
 	userId: string;
 };
 

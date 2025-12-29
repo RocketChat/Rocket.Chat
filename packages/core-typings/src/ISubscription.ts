@@ -1,6 +1,7 @@
 import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
+import type { ITeam } from './ITeam';
 import type { IUser } from './IUser';
 import type { RoomType } from './RoomType';
 
@@ -27,7 +28,7 @@ export interface ISubscription extends IRocketChatRecord {
 	hideUnreadStatus?: true;
 	hideMentionStatus?: true;
 	teamMain?: boolean;
-	teamId?: string;
+	teamId?: ITeam['_id'];
 
 	userMentions: number;
 	groupMentions: number;

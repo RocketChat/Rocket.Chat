@@ -14,16 +14,15 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 	const canCreateChannel = usePermission('create-c');
 	const canCreateGroup = usePermission('create-p');
 
-	const teamId = room.teamId || '';
-	const { data: teamInfo } = useTeamInfoQuery(teamId);
+	const { data: teamInfo } = useTeamInfoQuery(room.teamId);
 
 	const canCreateTeamChannel = usePermission('create-team-channel', teamInfo?.roomId);
 	const canCreateTeamGroup = usePermission('create-team-group', teamInfo?.roomId);
 
 	const canChangeType = getCanChangeType(
 		room,
-		teamId ? canCreateTeamChannel : canCreateChannel,
-		teamId ? canCreateTeamGroup : canCreateGroup,
+		room.teamId ? canCreateTeamChannel : canCreateChannel,
+		room.teamId ? canCreateTeamGroup : canCreateGroup,
 		isAdmin,
 	);
 	const canSetReadOnly = usePermission('set-readonly', room._id);
