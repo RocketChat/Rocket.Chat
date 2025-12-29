@@ -58,7 +58,7 @@ export const uploadFiles = async (
 			return;
 		}
 
-		if (!(await e2eRoom.readyToEncrypt())) {
+		if (!e2eRoom.isReady()) {
 			uploadFile(file);
 			return;
 		}
