@@ -95,15 +95,19 @@ export interface IClientMediaCall {
 	/** confirmed indicates if the call exists on the server */
 	readonly confirmed: boolean;
 
+	readonly screenShareRequested: boolean;
+
 	emitter: Emitter<CallEvents>;
 
-	getRemoteMediaStream(): MediaStream;
+	getRemoteMediaStream(): MediaStream | null;
+	getRemoteVideoStream(): MediaStream | null;
 
 	accept(): void;
 	reject(): void;
 	hangup(): void;
 	setMuted(muted: boolean): void;
 	setHeld(onHold: boolean): void;
+	setScreenShareRequested(requested: boolean): void;
 	transfer(callee: { type: CallActorType; id: string }): void;
 
 	sendDTMF(dtmf: string, duration?: number): void;

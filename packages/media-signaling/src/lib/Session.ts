@@ -477,6 +477,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.videoTrack = newVideoTrack;
 
 		for await (const call of this.knownCalls.values()) {
+			// if (Boolean(newVideoTrack) !== call.screenShareRequested && !call.hasVideoTrack()) {
+			// 	continue;
+			// }
+
 			await call.setVideoTrack(newVideoTrack).catch((error) => {
 				if (newVideoTrack) {
 					throw error;
@@ -549,30 +553,26 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		if (!displayMedia) {
-			return this.hangupCallsThatNeedVideo();
+			return this.endAllScreenSharing();
 		}
 
 		const tracks = displayMedia.getVideoTracks();
 		if (!tracks.length) {
-			return this.hangupCallsThatNeedVideo();
+			return this.endAllScreenSharing();
 		}
 
 		return this.setVideoTrack(tracks[0]);
 	}
 
-	private hangupCallsThatNeedVideo(): void {
-		this.config.logger?.debug('MediaSignalingSession.hangupCallsThatNeedVideo');
+	private endAllScreenSharing(): void {
+		this.config.logger?.debug('MediaSignalingSession.endAllScreenSharing');
 
 		for (const call of this.knownCalls.values()) {
-			if (!call.needsVideoTrack()) {
+			if (!call.screenShareRequested) {
 				continue;
 			}
 
-			try {
-				call.hangup('input-error');
-			} catch {
-				//
-			}
+			call.setScreenShareRequested(false);
 		}
 	}
 
@@ -612,6 +612,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('hidden', () => this.onHiddenCall(call));
 		call.emitter.on('active', () => this.onActiveCall(call));
 		call.emitter.on('ended', () => this.onEndedCall(call));
+		call.emitter.on('screenShareRequestChange', () => this.onScreenShareRequestChange(call));
+		call.emitter.on('remoteStreamChange', () => this.onSessionStateChange());
 
 		return call;
 	}
@@ -669,6 +671,16 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private onActiveCall(_call: ClientMediaCall): void {
 		this.config.logger?.debug('MediaSignalingSession.onActiveCall');
+		this.onSessionStateChange();
+	}
+
+	private onScreenShareRequestChange(call: ClientMediaCall): void {
+		this.config.logger?.debug('MediaSignalingSession.onScreenShareRequestChange');
+		if (Boolean(this.videoTrack) === call.screenShareRequested) {
+			void call.setVideoTrack(this.videoTrack).catch(() => null);
+			return;
+		}
+
 		this.onSessionStateChange();
 	}
 

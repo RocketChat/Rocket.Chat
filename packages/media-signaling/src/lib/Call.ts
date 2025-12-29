@@ -152,6 +152,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.localCallId;
 	}
 
+	private _screenShareRequested: boolean;
+
+	public get screenShareRequested(): boolean {
+		return this._screenShareRequested;
+	}
+
 	protected webrtcProcessor: IWebRTCProcessor | null = null;
 
 	private acceptedLocally: boolean;
@@ -228,6 +234,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.mayReportStates = true;
 		this.inputTrack = inputTrack || null;
 		this.videoTrack = videoTrack || null;
+		this._screenShareRequested = Boolean(videoTrack);
 		this.creationTimestamp = new Date();
 
 		this.earlySignals = new Set();
@@ -464,7 +471,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			return false;
 		}
 
-		return true;
+		return this._screenShareRequested;
 	}
 
 	public needsVideoTrack(): boolean {
@@ -476,8 +483,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			return this.hasRemoteData;
 		}
 
-		// return this.busy;
-		return false;
+		return this.busy;
 	}
 
 	public hasVideoTrack(): boolean {
@@ -488,19 +494,32 @@ export class ClientMediaCall implements IClientMediaCall {
 		return !this.hasVideoTrack() && this.mayNeedVideoTrack();
 	}
 
-	public getRemoteMediaStream(): MediaStream {
+	public getRemoteMediaStream(): MediaStream | null {
 		this.config.logger?.debug('ClientMediaCall.getRemoteMediaStream');
-		if (this.hidden) {
-			this.throwError('getRemoteMediaStream is not available for this call');
+		if (!this.mayUseRemoteStreams()) {
+			return null;
 		}
-
-		if (this.shouldIgnoreWebRTC()) {
-			this.throwError('getRemoteMediaStream is not available for this service');
-		}
-
-		this.prepareWebRtcProcessor();
 
 		return this.webrtcProcessor.getRemoteMediaStream();
+	}
+
+	public getRemoteVideoStream(): MediaStream | null {
+		this.config.logger?.debug('ClientMediaCall.getRemoteVideoStream');
+		if (!this.mayUseRemoteStreams()) {
+			return null;
+		}
+
+		const stream = this.webrtcProcessor.getRemoteVideoStream();
+		if (!stream) {
+			return null;
+		}
+
+		const tracks = stream.getVideoTracks();
+		if (!tracks?.length) {
+			return null;
+		}
+
+		return stream;
 	}
 
 	public async processSignal(signal: ServerMediaSignal, oldCall?: ClientMediaCall | null) {
@@ -684,6 +703,11 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (wasOnHold !== this.webrtcProcessor.held) {
 			this.emitter.emit('trackStateChange');
 		}
+	}
+
+	public setScreenShareRequested(requested: boolean): void {
+		this._screenShareRequested = requested;
+		this.emitter.emit('screenShareRequestChange');
 	}
 
 	public setContractState(state: 'signed' | 'ignored') {
@@ -1115,6 +1139,11 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.updateRemoteStates();
 	}
 
+	private onWebRTCTrackAdded(): void {
+		this.config.logger?.debug('ClientMediaCall.onWebRTCTrackAdded');
+		this.emitter.emit('remoteStreamChange');
+	}
+
 	private onNegotiationNeeded(oldNegotiationId: string): void {
 		this.config.logger?.debug('ClientMediaCall.onNegotiationNeeded', oldNegotiationId);
 
@@ -1207,6 +1236,22 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.signed;
 	}
 
+	private mayUseRemoteStreams(): this is ClientMediaCallWebRTC {
+		if (this.hidden || !this.signed) {
+			return false;
+		}
+
+		if (this.shouldIgnoreWebRTC()) {
+			return false;
+		}
+
+		if (!this.webrtcProcessor) {
+			return false;
+		}
+
+		return true;
+	}
+
 	private prepareWebRtcProcessor(): asserts this is ClientMediaCallWebRTC {
 		if (this.webrtcProcessor) {
 			return;
@@ -1232,6 +1277,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
 		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
+		this.webrtcProcessor.emitter.on('trackAdded', () => this.onWebRTCTrackAdded());
 
 		this.negotiationManager.emitter.on('local-sdp', ({ sdp, negotiationId }) => this.deliverSdp({ sdp, negotiationId }));
 		this.negotiationManager.emitter.on('negotiation-needed', ({ oldNegotiationId }) => this.onNegotiationNeeded(oldNegotiationId));

@@ -37,7 +37,7 @@ const OngoingCall = () => {
 		peerInfo,
 		connectionState,
 		expanded,
-		getRemoteStream,
+		getRemoteVideoStream,
 		toggleScreenSharing,
 	} = useMediaCallContext();
 
@@ -49,7 +49,9 @@ const OngoingCall = () => {
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	const [remoteStreamRefCallback] = useMediaStream(getRemoteStream());
+	const videoStream = getRemoteVideoStream();
+
+	const [remoteVideoStreamRefCallback] = useMediaStream(videoStream);
 
 	const onClickShareScreen = () => {
 		toggleScreenSharing();
@@ -62,33 +64,20 @@ const OngoingCall = () => {
 	}
 
 	return (
-		<Widget expanded={expanded}>
+		<Widget expanded={expanded && Boolean(videoStream)}>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer />}>
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
-				<Box display='flex' flexDirection='column' w={432} h={243}>
-					<video controls preload='metadata' style={{ width: '100%', height: '100%' }} ref={remoteStreamRefCallback}>
-						<track kind='captions' />
-					</video>
-				</Box>
-				{/* <Box display='flex' flexDirection='column' flexGrow={1}>
+				{videoStream && (
 					<Box display='flex' flexDirection='column' w={432} h={243}>
-						<video controls preload='metadata' style={{ width: '100%', height: '100%' }}>
+						<video controls preload='metadata' style={{ width: '100%', height: '100%' }} ref={remoteVideoStreamRefCallback}>
 							<track kind='captions' />
 						</video>
 					</Box>
-					<Box display='flex' flexDirection='row' alignItems='center' justifyContent='center' w={432} h={160}>
-						<video controls preload='metadata' style={{ width: '50%', height: '100%' }}>
-							<track kind='captions' />
-						</video>
-						<video controls preload='metadata' style={{ width: '50%', height: '100%' }}>
-							<track kind='captions' />
-						</video>
-					</Box>
-				</Box>*/}
+				)}
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>

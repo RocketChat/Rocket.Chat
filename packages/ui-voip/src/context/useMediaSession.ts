@@ -38,6 +38,7 @@ type MediaSession = SessionInfo & {
 	sendTone: (tone: string) => void;
 
 	getRemoteStream: () => MediaStream | null;
+	getRemoteVideoStream: () => MediaStream | null;
 };
 
 export const getExtensionFromPeerInfo = (peerInfo: PeerInfo): string | undefined => {
@@ -341,11 +342,21 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 					return null;
 				}
 
-				if (mainCall.hidden) {
+				return mainCall.getRemoteMediaStream();
+			} catch (error) {
+				console.error('MediaCall: useMediaStream - Error getting remote media stream', error);
+				return null;
+			}
+		};
+
+		const getRemoteVideoStream = () => {
+			try {
+				const mainCall = instance?.getMainCall();
+				if (!mainCall) {
 					return null;
 				}
 
-				return mainCall.getRemoteMediaStream();
+				return mainCall.getRemoteVideoStream();
 			} catch (error) {
 				console.error('MediaCall: useMediaStream - Error getting remote media stream', error);
 				return null;
@@ -354,10 +365,19 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 
 		const toggleScreenSharing = () => {
 			if (!instance) {
-				return undefined;
+				return;
 			}
 
-			// TODO: Implement screen sharing
+			const mainCall = instance.getMainCall();
+			if (!mainCall) {
+				return;
+			}
+
+			try {
+				mainCall.setScreenShareRequested(!mainCall.screenShareRequested);
+			} catch (error) {
+				console.error('Error toggling screen share', error);
+			}
 		};
 
 		return {
@@ -373,6 +393,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			toggleScreenSharing,
 			acceptCall,
 			getRemoteStream,
+			getRemoteVideoStream,
 		};
 	}, [instance]);
 

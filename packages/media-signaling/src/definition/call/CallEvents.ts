@@ -28,4 +28,10 @@ export type CallEvents = {
 
 	/* Triggered when the call's state on the server changes to 'hangup' */
 	ended: void;
+
+	/* Triggered when screen share is toggled */
+	screenShareRequestChange: void;
+
+	/* Triggered when any of the remote streams has changed (when a new track is received) */
+	remoteStreamChange: void;
 };

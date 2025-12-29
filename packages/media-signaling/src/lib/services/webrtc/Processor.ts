@@ -22,7 +22,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private remoteStream: RemoteStream;
 
+	private videoStream: RemoteStream;
+
 	private remoteMediaStream: MediaStream;
+
+	private remoteVideoStream: MediaStream;
 
 	private iceGatheringWaiters: Set<PromiseWaiterData>;
 
@@ -73,6 +77,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	constructor(private readonly config: WebRTCProcessorConfig) {
 		this.localMediaStream = new MediaStream();
 		this.remoteMediaStream = new MediaStream();
+		this.remoteVideoStream = new MediaStream();
 		this.iceGatheringWaiters = new Set();
 		this.inputTrack = config.inputTrack;
 		this.videoTrack = config.videoTrack || null;
@@ -85,6 +90,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		this.localStream = new LocalStream(this.localMediaStream, this.peer, this.config.logger);
 		this.remoteStream = new RemoteStream(this.remoteMediaStream, this.peer, this.config.logger);
+		this.videoStream = new RemoteStream(this.remoteVideoStream, this.peer, this.config.logger);
 
 		this.emitter = new Emitter();
 		this.registerPeerEvents();
@@ -99,6 +105,10 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	public getRemoteMediaStream() {
 		return this.remoteMediaStream;
+	}
+
+	public getRemoteVideoStream(): MediaStream {
+		return this.remoteVideoStream;
 	}
 
 	public async setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void> {
@@ -700,10 +710,12 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		// Received a remote stream
 
 		if (event.track.kind === 'video') {
-			this.remoteStream.setVideoTrack(event.track);
-			return;
+			this.videoStream.setVideoTrack(event.track);
+		} else {
+			this.remoteStream.setAudioTrack(event.track);
 		}
-		this.remoteStream.setAudioTrack(event.track);
+
+		this.emitter.emit('trackAdded');
 	}
 
 	private onConnectionStateChange() {

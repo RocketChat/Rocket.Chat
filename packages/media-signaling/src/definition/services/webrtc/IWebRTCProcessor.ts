@@ -15,6 +15,7 @@ export type WebRTCInternalStateMap = {
 
 export type WebRTCUniqueEvents = {
 	negotiationNeeded: void;
+	trackAdded: void;
 };
 
 export type WebRTCProcessorEvents = ServiceProcessorEvents<WebRTCInternalStateMap> & WebRTCUniqueEvents;
@@ -39,6 +40,7 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 	getLocalDescription(): RTCSessionDescriptionInit | null;
 
 	getRemoteMediaStream(): MediaStream;
+	getRemoteVideoStream(): MediaStream;
 
 	audioLevel: number;
 	localAudioLevel: number;

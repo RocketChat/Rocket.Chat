@@ -275,6 +275,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 		onSelectPeer,
 		getAutocompleteOptions,
 		getRemoteStream: session.getRemoteStream,
+		getRemoteVideoStream: session.getRemoteVideoStream,
 		toggleScreenSharing: session.toggleScreenSharing,
 		getPeerInfo: () => Promise.resolve(session.peerInfo), // TODO remove this probably
 	};
@@ -287,12 +288,6 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 				</audio>,
 				document.body,
 			)}
-			{/* {createPortal(
-				<video ref={remoteStreamVideoRefCallback}>
-					<track kind='captions' />
-				</video>,
-				document.body,
-			)} */}
 			<AnchorPortal id='rcx-media-call-widget-portal'>
 				<MediaCallWidget />
 			</AnchorPortal>

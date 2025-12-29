@@ -1,30 +1,12 @@
-// import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import { useCallback, useRef } from 'react';
 
-// const getRemoteStream = (instance?: MediaSignalingSession) => {
-// 	try {
-// 		const mainCall = instance?.getMainCall();
-// 		if (!mainCall) {
-// 			return null;
-// 		}
-
-// 		if (mainCall.hidden) {
-// 			return null;
-// 		}
-
-// 		return mainCall.getRemoteMediaStream();
-// 	} catch (error) {
-// 		console.error('MediaCall: useMediaStream - Error getting remote media stream', error);
-// 		return null;
-// 	}
-// };
+type HTMLMediaElement = HTMLAudioElement | HTMLVideoElement;
 
 const useMediaStream = (
 	remoteStream: MediaStream | null,
-): [(node: HTMLAudioElement | null) => void, { current: HTMLAudioElement | null }] => {
-	// const remoteStream = getRemoteStream(instance);
-	const actualRef = useRef<HTMLAudioElement | null>(null);
+): [(node: HTMLMediaElement | null) => void, { current: HTMLMediaElement | null }] => {
+	const actualRef = useRef<HTMLMediaElement | null>(null);
 
 	return [
 		useSafeRefCallback(
