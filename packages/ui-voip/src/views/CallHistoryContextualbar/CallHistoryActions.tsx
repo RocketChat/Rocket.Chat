@@ -4,7 +4,7 @@ import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import type { MediaCallState } from '../../context';
-import { isCallingBlocked } from '../../context/MediaCallContext';
+import { isCallingBlocked, useMediaCallExternalContext } from '../../context/MediaCallContext';
 
 type HistoryActions = 'voiceCall' | 'videoCall' | 'jumpToMessage' | 'directMessage' | 'userInfo';
 
@@ -15,7 +15,6 @@ export type HistoryActionCallbacks = {
 type CallHistoryActionsProps = {
 	onClose: () => void;
 	actions: HistoryActionCallbacks;
-	state: MediaCallState;
 };
 
 const iconDictionary: Record<HistoryActions, IconName> = {
@@ -50,9 +49,10 @@ const getItems = (actions: HistoryActionCallbacks, t: TFunction, state: MediaCal
 		});
 };
 
-const CallHistoryActions = ({ onClose, actions, state }: CallHistoryActionsProps) => {
+const CallHistoryActions = ({ onClose, actions }: CallHistoryActionsProps) => {
 	const { t } = useTranslation();
 
+	const { state } = useMediaCallExternalContext();
 	const items = getItems(actions, t, state);
 	return (
 		<ContextualbarActions>

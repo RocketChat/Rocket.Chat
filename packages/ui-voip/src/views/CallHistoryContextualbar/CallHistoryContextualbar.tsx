@@ -74,7 +74,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 			<ContextualbarHeader>
 				<ContextualbarIcon name='info-circled' />
 				<ContextualbarTitle>{t('Call_info')}</ContextualbarTitle>
-				<CallHistoryActions onClose={onClose} actions={actions} state={state} />
+				<CallHistoryActions onClose={onClose} actions={actions} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<InfoPanel>

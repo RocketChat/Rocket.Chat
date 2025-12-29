@@ -1,9 +1,11 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 import type { ReactElement } from 'react';
 
 import type { HistoryActionCallbacks } from './CallHistoryActions';
 import CallHistoryActions from './CallHistoryActions';
+import { MockedMediaCallProvider } from '../../context';
+import type { State } from '../../context/MediaCallContext';
 
 const noop = () => undefined;
 
@@ -36,34 +38,42 @@ const getArgs = (index: number) => {
 	return Object.fromEntries(actionList.slice(0, index).map((action) => [action, noop])) as HistoryActionCallbacks;
 };
 
+const getDecorator = (state: State) => {
+	return (Story: StoryFn): ReactElement => (
+		<MockedMediaCallProvider state={state}>
+			<Story />
+		</MockedMediaCallProvider>
+	);
+};
+
 export const Default: Story = {
 	args: {
-		state: 'closed',
 		onClose: noop,
 		actions: getArgs(5),
 	},
+	decorators: [getDecorator('closed')],
 };
 
 export const WithLessActions: Story = {
 	args: {
-		state: 'closed',
 		onClose: noop,
 		actions: getArgs(3),
 	},
+	decorators: [getDecorator('closed')],
 };
 
 export const WithSingleAction: Story = {
 	args: {
-		state: 'closed',
 		onClose: noop,
 		actions: getArgs(1),
 	},
+	decorators: [getDecorator('closed')],
 };
 
 export const WithDisabledVoiceCall: Story = {
 	args: {
-		state: 'ongoing',
 		onClose: noop,
 		actions: getArgs(1),
 	},
+	decorators: [getDecorator('ongoing')],
 };
