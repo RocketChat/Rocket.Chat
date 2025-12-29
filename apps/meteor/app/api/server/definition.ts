@@ -56,6 +56,14 @@ export type ForbiddenResult<T> = {
 	};
 };
 
+export type TooManyRequestsResult<T> = {
+	statusCode: 429;
+	body: {
+		success: false;
+		error: T | 'Too many requests';
+	};
+};
+
 export type InternalError<T, StatusCode extends ErrorStatusCodes = 500, D = 'Internal server error'> = {
 	statusCode: StatusCode;
 	body: {

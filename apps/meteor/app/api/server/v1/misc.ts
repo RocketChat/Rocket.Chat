@@ -525,7 +525,22 @@ API.v1.addRoute(
 				if (settings.get('Log_Level') === '2') {
 					Meteor._debug(`Exception while invoking method ${method}`, err);
 				}
-				return API.v1.success(mountResult({ id, error: err }));
+
+				if (err instanceof Meteor.Error) {
+					switch (err.error) {
+						case 'error-too-many-requests':
+							return API.v1.tooManyRequests(mountResult({ id, error: err }));
+						case 'unauthorized':
+						case 'error-unauthorized':
+							return API.v1.unauthorized(mountResult({ id, error: err }));
+						case 'forbidden':
+						case 'error-forbidden':
+							return API.v1.forbidden(mountResult({ id, error: err }));
+						default:
+							return API.v1.failure(mountResult({ id, error: err }));
+					}
+				}
+				return API.v1.failure(mountResult({ id, error: err }));
 			}
 		},
 	},
@@ -580,7 +595,7 @@ API.v1.addRoute(
 				if (settings.get('Log_Level') === '2') {
 					Meteor._debug(`Exception while invoking method ${method}`, err);
 				}
-				return API.v1.success(mountResult({ id, error: err }));
+				return API.v1.failure(mountResult({ id, error: err }));
 			}
 		},
 	},

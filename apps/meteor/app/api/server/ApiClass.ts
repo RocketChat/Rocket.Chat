@@ -37,6 +37,7 @@ import type {
 	RedirectResult,
 	UnavailableResult,
 	GenericRouteExecutionContext,
+	TooManyRequestsResult,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
@@ -383,7 +384,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		};
 	}
 
-	public tooManyRequests(msg?: string): { statusCode: number; body: Record<string, any> & { success?: boolean } } {
+	public tooManyRequests<T>(msg?: T): TooManyRequestsResult<T> {
 		return {
 			statusCode: 429,
 			body: {
