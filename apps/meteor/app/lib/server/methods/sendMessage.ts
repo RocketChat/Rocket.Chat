@@ -48,7 +48,7 @@ export async function executeSendMessage(
 
 	const now = new Date();
 
-	message.ts = now;
+	message.ts ??= now;
 
 	if (extraInfo?.ts) {
 		message.ts = extraInfo.ts;
