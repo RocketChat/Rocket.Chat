@@ -20,6 +20,22 @@
 - If Marketplace errors appear in dev, keep mock fetch enabled:
   `export MARKETPLACE_FETCH_STRATEGY=mock`
 
+## Current Progress (2025-12-27)
+- Build/runtime fixes applied:
+  - Deno runtime pinned to `1.43.5` in `Dockerfile.medsense-source` to match the last working image.
+  - Cloud supported versions endpoint points to `https://releases.rocket.chat/v2/server/supportedVersions`.
+  - Marketplace calls default to mock fetch (no external API calls).
+  - Deployment UI now guards missing `statistics.process` fields to avoid `nodeVersion` crash.
+  - Web Crypto polyfills added for HTTP deployments (randomUUID fallback).
+- Dev env helpers:
+  - `scripts/dev-local-docker.sh` starts Mongo + NATS, initializes RS, and bypasses cloud registration.
+  - `LOCAL_BROKER_TIMEOUT_MS=60000` recommended to avoid LocalBroker startup timeout.
+- Deployment helper:
+  - `D:\medsense-chat-local\deploy-to-droplet.sh` injects `MARKETPLACE_FETCH_STRATEGY=mock` into compose by default.
+- Common commands:
+  - Build image: `docker build --progress=plain -f Dockerfile.medsense-source -t dockerfriend1234/medsense-pharmacy-chat:sha-<git> .`
+  - Push image: `docker push dockerfriend1234/medsense-pharmacy-chat:sha-<git>`
+
 ## CI/CD (essentials)
 - Build app image (from repo root):  
   `docker build -f Dockerfile.medsense-final -t dockerfriend1234/medsense-pharmacy-chat:sha-<gitsha> .`
