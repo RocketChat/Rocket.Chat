@@ -37,7 +37,7 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 					</HeaderToolbar>
 				) : null}
 				{onClickBack && <IconButton small mie={8} icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
-				<Box is='h1' fontScale='h2' flexGrow={1} data-qa-type='PageHeader-title'>
+				<Box is='h1' fontScale='h2' flexGrow={1}>
 					{title}
 				</Box>
 				{children}

@@ -29,7 +29,6 @@ const AutoCompleteUnits = ({ value, placeholder, onChange, ...props }: AutoCompl
 			flexGrow={0}
 			setFilter={setUnitsFilter as (value: string | number | undefined) => void}
 			options={unitItems}
-			data-qa='autocomplete-multiple-unit'
 			onChange={onChange}
 			endReached={() => fetchNextPage()}
 		/>

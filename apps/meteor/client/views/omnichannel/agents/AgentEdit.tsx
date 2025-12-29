@@ -122,11 +122,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 							<Field>
 								<FieldLabel htmlFor={nameField}>{t('Name')}</FieldLabel>
 								<FieldRow>
-									<Controller
-										name='name'
-										control={control}
-										render={({ field }) => <TextInput id={nameField} data-qa-id='agent-edit-name' {...field} readOnly />}
-									/>
+									<Controller name='name' control={control} render={({ field }) => <TextInput id={nameField} {...field} readOnly />} />
 								</FieldRow>
 							</Field>
 							<Field>

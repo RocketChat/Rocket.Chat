@@ -221,7 +221,7 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} data-qa-id='BtnSaveEditCustomFieldsPage' primary type='submit' disabled={!isDirty}>
+					<Button form={formId} primary type='submit' disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

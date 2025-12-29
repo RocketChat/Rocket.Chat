@@ -92,7 +92,6 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	return (
 		<SidebarItem
 			id={id}
-			data-qa='sidebar-item'
 			data-unread={highlighted}
 			unread={highlighted}
 			href={href}

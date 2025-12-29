@@ -60,7 +60,6 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 	return (
 		<Modal
 			aria-labelledby={`${createDMFormId}-title`}
-			data-qa='create-direct-modal'
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
 		>
 			<ModalHeader>

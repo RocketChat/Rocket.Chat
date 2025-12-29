@@ -104,7 +104,7 @@ const CustomFieldsTable = () => {
 
 			{isSuccess && data.customFields.length > 0 && (
 				<>
-					<GenericTable data-qa='GenericTableCustomFieldsInfoBody' aria-busy={isLoading} aria-live='assertive'>
+					<GenericTable aria-busy={isLoading} aria-live='assertive'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.customFields.map(({ label, _id, scope, visibility }) => (

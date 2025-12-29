@@ -196,13 +196,7 @@ export const ChangePassphrase = (): JSX.Element => {
 						</Field>
 					)}
 				</FieldGroup>
-				<Button
-					primary
-					disabled={!(keysExist && valid && isValid)}
-					onClick={handleSubmit(handleSave)}
-					mbs={12}
-					data-qa-type='e2e-encryption-save-password-button'
-				>
+				<Button primary disabled={!(keysExist && valid && isValid)} onClick={handleSubmit(handleSave)} mbs={12}>
 					{t('Save_changes')}
 				</Button>
 			</Box>
