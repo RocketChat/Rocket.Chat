@@ -49,7 +49,7 @@ const UserCard = ({
 	const isLayoutEmbedded = useEmbeddedLayout();
 
 	return (
-		<UserCardDialog data-qa='UserCard' {...props}>
+		<UserCardDialog title={t('User_card')} {...props}>
 			<div>
 				{username && <UserAvatar username={username} etag={etag} size='x124' />}
 				<Box flexGrow={0} display='flex' mbs={12} alignItems='center' justifyContent='center'>
