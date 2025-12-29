@@ -10,7 +10,7 @@ export const getAgentDerivedFromUser = (user: IUser | null, departmentId: string
 	return {
 		agentId: user._id,
 		username: user.username || '',
-		_id: user._id,
+		_id: user._id as ILivechatDepartmentAgents['_id'],
 		_updatedAt: new Date().toISOString(),
 		departmentId,
 		departmentEnabled: true,

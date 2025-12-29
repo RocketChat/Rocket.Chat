@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { faker } from '@faker-js/faker/locale/af_ZA';
+import type { ILivechatDepartmentAgents, Serialized } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
@@ -34,8 +35,9 @@ const providerMock = createFakeProviderMetadata({
 });
 
 const mockAgent = createFakeAgent();
-const mockDepartmentAgent = {
+const mockDepartmentAgent: Serialized<ILivechatDepartmentAgents> = {
 	...mockAgent,
+	_id: mockAgent._id as ILivechatDepartmentAgents['_id'],
 	username: mockAgent.username || '',
 	agentId: mockAgent._id,
 	departmentId: mockDepartment._id,

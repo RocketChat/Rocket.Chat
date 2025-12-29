@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { faker } from '@faker-js/faker';
+import type { ILivechatDepartmentAgents, Serialized } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { WizardContext, StepsLinkedList } from '@rocket.chat/ui-client';
@@ -28,8 +29,9 @@ const mockWizardApi = {
 const mockDepartment = createFakeDepartment({ name: `${faker.commerce.department()} Department` });
 
 const mockAgent = createFakeAgent({ _id: 'agent-1' });
-const mockDepartmentAgent = {
+const mockDepartmentAgent: Serialized<ILivechatDepartmentAgents> = {
 	...mockAgent,
+	_id: mockAgent._id as ILivechatDepartmentAgents['_id'],
 	username: mockAgent.username || '',
 	agentId: mockAgent._id,
 	departmentId: mockDepartment._id,
