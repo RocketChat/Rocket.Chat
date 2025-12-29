@@ -4,7 +4,8 @@ import { federationSDK, type HomeserverEventSignatures, type PduForType } from '
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { createOrUpdateFederatedUser, getUsernameServername } from '../FederationMatrix';
+import { createOrUpdateFederatedUser } from '../helpers/createOrUpdateFederatedUser';
+import { getUsernameServername } from '../helpers/getUsernameServername';
 
 const logger = new Logger('federation-matrix:member');
 

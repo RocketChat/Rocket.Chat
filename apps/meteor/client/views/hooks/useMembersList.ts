@@ -5,6 +5,7 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { calculateRoomRolePriorityFromRoles } from '../../../lib/roles/calculateRoomRolePriorityFromRoles';
+import { roomsQueryKeys } from '../../lib/queryKeys';
 
 type MembersListOptions = {
 	rid: string;
@@ -73,7 +74,7 @@ const updateMemberInCache = (
 	useRealName = false,
 ) => {
 	queryClient.setQueryData(
-		[options.roomType, 'members', options.rid, options.type, options.debouncedText],
+		roomsQueryKeys.members(options.rid, options.roomType, options.type, options.debouncedText),
 		(oldData: InfiniteData<MembersListPage>) => {
 			if (!oldData) {
 				return oldData;
@@ -136,7 +137,7 @@ export const useMembersList = (options: MembersListOptions) => {
 	}, [options, queryClient, subscribeToNotifyLoggedIn, useRealName]);
 
 	return useInfiniteQuery({
-		queryKey: [options.roomType, 'members', options.rid, options.type, options.debouncedText],
+		queryKey: roomsQueryKeys.members(options.rid, options.roomType, options.type, options.debouncedText),
 		queryFn: async ({ pageParam }) => {
 			const start = pageParam ?? 0;
 

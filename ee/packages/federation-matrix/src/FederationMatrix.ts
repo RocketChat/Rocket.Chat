@@ -9,12 +9,15 @@ import {
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationRequestError } from '@rocket.chat/federation-sdk';
-import type { EventID, UserID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
+import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import emojione from 'emojione';
 
+import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser';
+import { extractDomainFromMatrixUserId } from './helpers/extractDomainFromMatrixUserId';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
+import { validateFederatedUsername } from './helpers/validateFederatedUsername';
 import { MatrixMediaService } from './services/MatrixMediaService';
 
 export const fileTypes: Record<string, FileMessageType> = {
@@ -23,115 +26,6 @@ export const fileTypes: Record<string, FileMessageType> = {
 	audio: 'm.audio',
 	file: 'm.file',
 };
-
-/** helper to validate the username format */
-export function validateFederatedUsername(mxid: string): mxid is UserID {
-	if (!mxid.startsWith('@')) return false;
-
-	const parts = mxid.substring(1).split(':');
-	if (parts.length < 2) return false;
-
-	const localpart = parts[0];
-	const domainAndPort = parts.slice(1).join(':');
-
-	const localpartRegex = /^(?:[a-z0-9._\-]|=[0-9a-fA-F]{2}){1,255}$/;
-	if (!localpartRegex.test(localpart)) return false;
-
-	const [domain, port] = domainAndPort.split(':');
-
-	const hostnameRegex = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)*$/i;
-	const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/;
-	const ipv6Regex = /^\[([0-9a-f:.]+)\]$/i;
-
-	if (!(hostnameRegex.test(domain) || ipv4Regex.test(domain) || ipv6Regex.test(domain))) {
-		return false;
-	}
-
-	if (port !== undefined) {
-		const portNum = Number(port);
-		if (!/^[0-9]+$/.test(port) || portNum < 1 || portNum > 65535) {
-			return false;
-		}
-	}
-
-	return true;
-}
-export const extractDomainFromMatrixUserId = (mxid: string): string => {
-	const separatorIndex = mxid.indexOf(':', 1);
-	if (separatorIndex === -1) {
-		throw new Error(`Invalid federated username: ${mxid}`);
-	}
-	return mxid.substring(separatorIndex + 1);
-};
-
-/**
- * Extract the username and the servername from a matrix user id
- * if the serverName is the same as the serverName in the mxid, return only the username (rocket.chat regular username)
- * otherwise, return the full mxid and the servername
- */
-export const getUsernameServername = (mxid: string, serverName: string): [mxid: string, serverName: string, isLocal: boolean] => {
-	const senderServerName = extractDomainFromMatrixUserId(mxid);
-	// if the serverName is the same as the serverName in the mxid, return only the username (rocket.chat regular username)
-	if (serverName === senderServerName) {
-		const separatorIndex = mxid.indexOf(':', 1);
-		if (separatorIndex === -1) {
-			throw new Error(`Invalid federated username: ${mxid}`);
-		}
-		return [mxid.substring(1, separatorIndex), senderServerName, true]; // removers also the @
-	}
-
-	return [mxid, senderServerName, false];
-};
-/**
- * Helper function to create a federated user
- *
- * Because of historical reasons, we can have users only with federated flag but no federation object
- * So we need to upsert the user with the federation object
- */
-export async function createOrUpdateFederatedUser(options: { username: string; name?: string; origin: string }): Promise<IUser> {
-	const { username, name = username, origin } = options;
-
-	// TODO: Have a specific method to handle this upsert
-	const user = await Users.findOneAndUpdate(
-		{
-			username,
-		},
-		{
-			$set: {
-				username,
-				name: name || username,
-				type: 'user' as const,
-				status: UserStatus.OFFLINE,
-				active: true,
-				roles: ['user'],
-				requirePasswordChange: false,
-				federated: true,
-				federation: {
-					version: 1,
-					mui: username,
-					origin,
-				},
-				_updatedAt: new Date(),
-			},
-			$setOnInsert: {
-				createdAt: new Date(),
-			},
-		},
-		{
-			upsert: true,
-			projection: { _id: 1, username: 1 },
-			returnDocument: 'after',
-		},
-	);
-
-	if (!user) {
-		throw new Error(`Failed to create or update federated user: ${username}`);
-	}
-
-	return user;
-}
-
-export { generateEd25519RandomSecretKey } from '@rocket.chat/federation-sdk';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
