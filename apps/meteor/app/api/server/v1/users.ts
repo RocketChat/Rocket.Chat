@@ -276,10 +276,7 @@ API.v1.addRoute(
 			);
 
 			if (!image) {
-				return API.v1.failure({
-					error: 'error-invalid-params',
-					reason: "The 'image' param is required",
-				});
+				return API.v1.failure("The 'image' param is required");
 			}
 
 			const { fields, fileBuffer, mimetype } = image;
