@@ -139,10 +139,7 @@ export async function saveDepartment(
 	// Disable event
 	if (department?.enabled && !departmentDB?.enabled) {
 		await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
-		void Apps.self
-			?.getBridges()
-			?.getListenerBridge()
-			.livechatEvent(AppEvents.IPostLivechatDepartmentDisabled, { department: departmentDB });
+		void Apps.self?.triggerEvent(AppEvents.IPostLivechatDepartmentDisabled, { department: departmentDB });
 	}
 
 	if (departmentUnit) {
