@@ -1,5 +1,6 @@
 import { ServiceStarter } from '@rocket.chat/core-services';
-import { LivechatInquiryStatus, type InquiryWithAgentInfo, type IOmnichannelQueue } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, InquiryWithAgentInfo, IOmnichannelQueue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
@@ -181,7 +182,10 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		void (routingSupportsAutoAssign ? this.start() : this.stop());
 	}
 
-	private async reconciliation(reason: 'closed' | 'taken' | 'missing', { roomId, inquiryId }: { roomId: string; inquiryId: string }) {
+	private async reconciliation(
+		reason: 'closed' | 'taken' | 'missing',
+		{ roomId, inquiryId }: { roomId: string; inquiryId: ILivechatInquiryRecord['_id'] },
+	) {
 		switch (reason) {
 			case 'closed': {
 				queueLogger.debug({

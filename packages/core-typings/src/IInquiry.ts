@@ -5,6 +5,7 @@ import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLe
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IOmnichannelRoom, OmnichannelSourceType } from './IRoom';
 import type { SelectedAgent } from './omnichannel/routing';
+import type { $brand } from './utils';
 
 export interface IInquiry {
 	_id: string;
@@ -33,6 +34,7 @@ export interface IVisitor {
 }
 
 export interface ILivechatInquiryRecord extends IRocketChatRecord {
+	_id: string & $brand<'livechat-inquiry-id'>;
 	rid: string;
 	name: string;
 	ts: Date;

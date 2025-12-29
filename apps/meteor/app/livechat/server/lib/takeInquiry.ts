@@ -1,4 +1,5 @@
 import { Omnichannel } from '@rocket.chat/core-services';
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -9,7 +10,7 @@ import { settings } from '../../../settings/server';
 
 export const takeInquiry = async (
 	userId: string,
-	inquiryId: string,
+	inquiryId: ILivechatInquiryRecord['_id'],
 	options?: { clientAction: boolean; forwardingToDepartment?: { oldDepartmentId: string; transferData: any } },
 ): Promise<void> => {
 	const inquiry = await LivechatInquiry.findOneById(inquiryId);

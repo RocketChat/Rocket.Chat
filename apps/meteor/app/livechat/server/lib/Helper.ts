@@ -236,7 +236,7 @@ export const createLivechatInquiry = async ({
 		}),
 		{
 			$set: {
-				_id: new ObjectId().toHexString(),
+				_id: new ObjectId().toHexString() as ILivechatInquiryRecord['_id'],
 			},
 		},
 		{

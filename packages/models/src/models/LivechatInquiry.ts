@@ -161,7 +161,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			.toArray();
 	}
 
-	async setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null> {
+	async setDepartmentByInquiryId(inquiryId: ILivechatInquiryRecord['_id'], department: string): Promise<ILivechatInquiryRecord | null> {
 		return this.findOneAndUpdate({ _id: inquiryId }, { $set: { department } }, { returnDocument: 'after' });
 	}
 
@@ -176,7 +176,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async setLastMessageById(inquiryId: string, lastMessage: IMessage): Promise<UpdateResult> {
+	async setLastMessageById(inquiryId: ILivechatInquiryRecord['_id'], lastMessage: IMessage): Promise<UpdateResult> {
 		return this.updateOne({ _id: inquiryId }, { $set: { lastMessage } });
 	}
 
@@ -214,7 +214,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async unlock(inquiryId: string): Promise<UpdateResult> {
+	async unlock(inquiryId: ILivechatInquiryRecord['_id']): Promise<UpdateResult> {
 		return this.updateOne({ _id: inquiryId }, { $unset: { locked: 1, lockedAt: 1 } });
 	}
 
@@ -230,7 +230,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		department,
 		queueSortBy,
 	}: {
-		inquiryId?: string;
+		inquiryId?: ILivechatInquiryRecord['_id'];
 		department?: string;
 		queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'];
 	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]> {
@@ -316,7 +316,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.find({ status: LivechatInquiryStatus.QUEUED }, options);
 	}
 
-	takeInquiry(inquiryId: string, lockedAt?: Date): Promise<UpdateResult> {
+	takeInquiry(inquiryId: ILivechatInquiryRecord['_id'], lockedAt?: Date): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: inquiryId,
@@ -329,7 +329,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	openInquiry(inquiryId: string): Promise<UpdateResult> {
+	openInquiry(inquiryId: ILivechatInquiryRecord['_id']): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: inquiryId,
@@ -341,7 +341,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	async queueInquiry(
-		inquiryId: string,
+		inquiryId: ILivechatInquiryRecord['_id'],
 		lastMessage?: IMessage,
 		defaultAgent?: SelectedAgent | null,
 	): Promise<ILivechatInquiryRecord | null> {
@@ -362,7 +362,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	queueInquiryAndRemoveDefaultAgent(inquiryId: string): Promise<UpdateResult> {
+	queueInquiryAndRemoveDefaultAgent(inquiryId: ILivechatInquiryRecord['_id']): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: inquiryId,
@@ -374,7 +374,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	readyInquiry(inquiryId: string): Promise<UpdateResult> {
+	readyInquiry(inquiryId: ILivechatInquiryRecord['_id']): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: inquiryId,
@@ -400,7 +400,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.updateOne(query, updateObj);
 	}
 
-	async getStatus(inquiryId: string): Promise<ILivechatInquiryRecord['status'] | undefined> {
+	async getStatus(inquiryId: ILivechatInquiryRecord['_id']): Promise<ILivechatInquiryRecord['status'] | undefined> {
 		return (await this.findOne({ _id: inquiryId }))?.status;
 	}
 
@@ -419,7 +419,10 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.updateOne(query, update);
 	}
 
-	setDefaultAgentById(inquiryId: string, defaultAgent: ILivechatInquiryRecord['defaultAgent']): Promise<UpdateResult> {
+	setDefaultAgentById(
+		inquiryId: ILivechatInquiryRecord['_id'],
+		defaultAgent: ILivechatInquiryRecord['defaultAgent'],
+	): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: inquiryId,
@@ -432,7 +435,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async setStatusById(inquiryId: string, status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord> {
+	async setStatusById(inquiryId: ILivechatInquiryRecord['_id'], status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord> {
 		const result = await this.findOneAndUpdate(
 			{ _id: inquiryId },
 			{ $set: { status } },
@@ -469,7 +472,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne(query);
 	}
 
-	removeDefaultAgentById(inquiryId: string): Promise<UpdateResult | Document> {
+	removeDefaultAgentById(inquiryId: ILivechatInquiryRecord['_id']): Promise<UpdateResult | Document> {
 		return this.updateOne(
 			{
 				_id: inquiryId,

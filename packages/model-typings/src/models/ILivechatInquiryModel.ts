@@ -14,39 +14,46 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null>;
 	getDistinctQueuedDepartments(options: AggregateOptions): Promise<{ _id: string | null }[]>;
-	setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null>;
+	setDepartmentByInquiryId(inquiryId: ILivechatInquiryRecord['_id'], department: string): Promise<ILivechatInquiryRecord | null>;
 	setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ILivechatInquiryRecord | null>;
-	setLastMessageById(inquiryId: string, lastMessage: IMessage): Promise<UpdateResult>;
+	setLastMessageById(inquiryId: ILivechatInquiryRecord['_id'], lastMessage: IMessage): Promise<UpdateResult>;
 	findNextAndLock(
 		queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'],
 		department: string | null,
 	): Promise<ILivechatInquiryRecord | null>;
-	unlock(inquiryId: string): Promise<UpdateResult>;
+	unlock(inquiryId: ILivechatInquiryRecord['_id']): Promise<UpdateResult>;
 	unlockAll(): Promise<UpdateResult | Document>;
 	findIdsByVisitorId(_id: ILivechatInquiryRecord['v']['_id']): FindCursor<ILivechatInquiryRecord>;
 	getCurrentSortedQueueAsync(props: {
-		inquiryId?: string;
+		inquiryId?: ILivechatInquiryRecord['_id'];
 		department?: string;
 		queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'];
 	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]>;
 	removeByRoomId(rid: string, options?: DeleteOptions): Promise<DeleteResult>;
 	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord>;
-	takeInquiry(inquiryId: string, lockedAt?: Date): Promise<UpdateResult>;
-	openInquiry(inquiryId: string): Promise<UpdateResult>;
-	queueInquiry(inquiryId: string, lastMessage?: IMessage, defaultAgent?: SelectedAgent | null): Promise<ILivechatInquiryRecord | null>;
-	queueInquiryAndRemoveDefaultAgent(inquiryId: string): Promise<UpdateResult>;
-	readyInquiry(inquiryId: string): Promise<UpdateResult>;
+	takeInquiry(inquiryId: ILivechatInquiryRecord['_id'], lockedAt?: Date): Promise<UpdateResult>;
+	openInquiry(inquiryId: ILivechatInquiryRecord['_id']): Promise<UpdateResult>;
+	queueInquiry(
+		inquiryId: ILivechatInquiryRecord['_id'],
+		lastMessage?: IMessage,
+		defaultAgent?: SelectedAgent | null,
+	): Promise<ILivechatInquiryRecord | null>;
+	queueInquiryAndRemoveDefaultAgent(inquiryId: ILivechatInquiryRecord['_id']): Promise<UpdateResult>;
+	readyInquiry(inquiryId: ILivechatInquiryRecord['_id']): Promise<UpdateResult>;
 	changeDepartmentIdByRoomId(rid: string, department: string): Promise<UpdateResult>;
-	getStatus(inquiryId: string): Promise<ILivechatInquiryRecord['status'] | undefined>;
+	getStatus(inquiryId: ILivechatInquiryRecord['_id']): Promise<ILivechatInquiryRecord['status'] | undefined>;
 	updateVisitorStatus(token: string, status: ILivechatInquiryRecord['v']['status']): Promise<UpdateResult>;
-	setDefaultAgentById(inquiryId: string, defaultAgent: ILivechatInquiryRecord['defaultAgent']): Promise<UpdateResult>;
+	setDefaultAgentById(
+		inquiryId: ILivechatInquiryRecord['_id'],
+		defaultAgent: ILivechatInquiryRecord['defaultAgent'],
+	): Promise<UpdateResult>;
 	setNameByRoomId(rid: string, name: string): Promise<UpdateResult>;
 	findOneByToken(token: string): Promise<ILivechatInquiryRecord | null>;
-	removeDefaultAgentById(inquiryId: string): Promise<UpdateResult | Document>;
+	removeDefaultAgentById(inquiryId: ILivechatInquiryRecord['_id']): Promise<UpdateResult | Document>;
 	removeByVisitorToken(token: string): Promise<void>;
 	markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null>;
 	findIdsByVisitorToken(token: ILivechatInquiryRecord['v']['token']): FindCursor<ILivechatInquiryRecord>;
-	setStatusById(inquiryId: string, status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord>;
+	setStatusById(inquiryId: ILivechatInquiryRecord['_id'], status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord>;
 	updateNameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document>;
 	findByVisitorIds(visitorIds: string[], options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord>;
 }
