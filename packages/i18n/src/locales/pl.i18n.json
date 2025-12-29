@@ -738,6 +738,7 @@
   "CROWD_Reject_Unauthorized": "Odrzuć bez autoryzacji",
   "Call": "Zadzwoń",
   "Call_Already_Ended": "Połączenie już zakończone",
+  "Call_Information": "Informacje o połączeniu",
   "Call_declined": "Połączenie odrzucone!",
   "Call_ended": "Połączenie zakończone",
   "Call_provider": "Dostawca połączenia",
