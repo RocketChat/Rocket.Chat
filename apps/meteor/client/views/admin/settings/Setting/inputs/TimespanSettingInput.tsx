@@ -88,7 +88,7 @@ function TimespanSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={handleResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={handleResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<InputBox

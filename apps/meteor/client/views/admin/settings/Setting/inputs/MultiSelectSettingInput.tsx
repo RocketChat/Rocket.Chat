@@ -39,7 +39,7 @@ function MultiSelectSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<Component

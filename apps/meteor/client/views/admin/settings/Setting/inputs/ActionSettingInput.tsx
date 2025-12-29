@@ -33,7 +33,7 @@ function ActionSettingInput({ _id, actionText, value, hint, disabled, sectionCha
 	return (
 		<>
 			<FieldRow>
-				<Button data-qa-setting-id={_id} disabled={disabled || sectionChanged} primary onClick={handleClick}>
+				<Button disabled={disabled || sectionChanged} primary onClick={handleClick}>
 					{t(actionText)}
 				</Button>
 			</FieldRow>

@@ -30,7 +30,7 @@ function BooleanSettingInput({
 					{label}
 				</FieldLabel>
 				<Box display='flex' alignItems='center'>
-					{hasResetButton && <ResetSettingButton mie={8} data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+					{hasResetButton && <ResetSettingButton mie={8} onClick={onResetButtonClick} />}
 					<ToggleSwitch
 						data-qa-setting-id={_id}
 						id={_id}
