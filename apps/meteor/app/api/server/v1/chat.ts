@@ -434,7 +434,7 @@ API.v1.addRoute(
 			}
 
 			const sent = await applyAirGappedRestrictionsValidation(() =>
-				executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, this.bodyParams.previewUrls),
+				executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
 			);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
