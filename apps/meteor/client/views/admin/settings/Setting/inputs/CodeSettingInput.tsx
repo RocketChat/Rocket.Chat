@@ -43,7 +43,6 @@ function CodeSettingInput({
 			{hint && <FieldHint>{hint}</FieldHint>}
 			<CodeMirrorBox label={label}>
 				<CodeMirror
-					data-qa-setting-id={_id}
 					id={_id}
 					mode={code}
 					value={value}

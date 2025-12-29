@@ -13,7 +13,7 @@ type ActionSettingInputProps = SettingInputProps & {
 	sectionChanged: boolean;
 };
 
-function ActionSettingInput({ _id, actionText, value, hint, disabled, sectionChanged }: ActionSettingInputProps): ReactElement {
+function ActionSettingInput({ actionText, value, hint, disabled, sectionChanged }: ActionSettingInputProps): ReactElement {
 	const { t } = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();

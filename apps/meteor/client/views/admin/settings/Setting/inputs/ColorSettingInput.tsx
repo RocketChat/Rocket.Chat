@@ -61,7 +61,6 @@ function ColorSettingInput({
 						<Flex.Item grow={2}>
 							{editor === 'color' && (
 								<InputBox
-									data-qa-setting-id={_id}
 									type='color'
 									id={_id}
 									value={value}
@@ -74,7 +73,6 @@ function ColorSettingInput({
 							)}
 							{editor === 'expression' && (
 								<TextInput
-									data-qa-setting-id={_id}
 									id={_id}
 									value={value}
 									placeholder={placeholder}
@@ -86,7 +84,6 @@ function ColorSettingInput({
 							)}
 						</Flex.Item>
 						<Select
-							data-qa-setting-id={`${_id}_editor`}
 							type='color'
 							id={`${_id}_editor`}
 							value={editor}

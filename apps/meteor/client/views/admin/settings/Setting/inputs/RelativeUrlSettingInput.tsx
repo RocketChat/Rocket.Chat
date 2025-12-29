@@ -36,7 +36,6 @@ function RelativeUrlSettingInput({
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<UrlInput
-				data-qa-setting-id={_id}
 				id={_id}
 				value={getAbsoluteUrl(value || '')}
 				placeholder={placeholder}

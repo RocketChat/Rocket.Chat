@@ -92,7 +92,6 @@ function TimespanSettingInput({
 			</FieldRow>
 			<FieldRow>
 				<InputBox
-					data-qa-setting-id={_id}
 					id={_id}
 					type='number'
 					value={internalValue}

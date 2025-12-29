@@ -39,7 +39,6 @@ function RangeSettingInput({
 			)}
 			<FieldRow>
 				<Slider
-					data-qa-setting-id={_id}
 					disabled={disabled || readonly}
 					minValue={minValue}
 					maxValue={maxValue}

@@ -31,13 +31,7 @@ function BooleanSettingInput({
 				</FieldLabel>
 				<Box display='flex' alignItems='center'>
 					{hasResetButton && <ResetSettingButton mie={8} onClick={onResetButtonClick} />}
-					<ToggleSwitch
-						data-qa-setting-id={_id}
-						id={_id}
-						checked={value === true}
-						disabled={disabled || readonly}
-						onChange={handleChange}
-					/>
+					<ToggleSwitch id={_id} checked={value === true} disabled={disabled || readonly} onChange={handleChange} />
 				</Box>
 			</FieldRow>
 			{hint && <FieldHint>{hint}</FieldHint>}

@@ -42,7 +42,6 @@ function StringSettingInput({
 			<FieldRow>
 				{multiline ? (
 					<TextAreaInput
-						data-qa-setting-id={_id}
 						id={_id}
 						name={name}
 						rows={4}
@@ -56,7 +55,6 @@ function StringSettingInput({
 					/>
 				) : (
 					<TextInput
-						data-qa-setting-id={_id}
 						id={_id}
 						value={value}
 						name={name}

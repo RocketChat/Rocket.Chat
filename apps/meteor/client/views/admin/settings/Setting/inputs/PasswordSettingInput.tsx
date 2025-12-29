@@ -34,7 +34,6 @@ function PasswordSettingInput({
 			</FieldRow>
 			<FieldRow>
 				<PasswordInput
-					data-qa-setting-id={_id}
 					id={_id}
 					value={value}
 					placeholder={placeholder}
