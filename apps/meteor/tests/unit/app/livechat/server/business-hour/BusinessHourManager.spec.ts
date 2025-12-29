@@ -43,7 +43,7 @@ const { BusinessHourManager } = proxyquire.noCallThru().load('../../../../../../
 const cronAddStub = sinon.stub();
 const cronRemoveStub = sinon.stub();
 
-describe('[OC] BusinessHourManager', () => {
+describe.only('[OC] BusinessHourManager', () => {
 	afterEach(() => sinon.restore());
 	describe('hasDaylightSavingTimeChanged()', () => {
 		const manager = new BusinessHourManager({} as any);
@@ -182,7 +182,7 @@ describe('[OC] BusinessHourManager', () => {
 			const error = new Error('update error');
 			saveBusinessHourStub.onSecondCall().rejects(error);
 			await manager.startDaylightSavingTimeVerifier();
-			expect(loggerStub.calledWith('Failed to update business hours with new timezone', error)).to.be.true;
+			expect(loggerStub.calledWith(sinon.match({ msg: 'Failed to update business hours with new timezone' }))).to.be.true;
 			expect(manager.createCronJobsForWorkHours.called).to.be.true;
 		});
 

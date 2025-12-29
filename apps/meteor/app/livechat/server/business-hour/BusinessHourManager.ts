@@ -287,7 +287,7 @@ export class BusinessHourManager {
 		const failed = result.filter((r) => r.status === 'rejected');
 		if (failed.length > 0) {
 			failed.forEach((error: any) => {
-				businessHourLogger.error({ msg: 'Failed to update business hours with new timezone', reason: error.reason });
+				businessHourLogger.error({ msg: 'Failed to update business hours with new timezone', err: error });
 			});
 		}
 
