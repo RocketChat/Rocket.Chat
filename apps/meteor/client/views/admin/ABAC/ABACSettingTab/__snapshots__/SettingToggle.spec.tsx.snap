@@ -82,7 +82,6 @@ exports[`AbacEnabledToggle should render the setting toggle when setting exists 
             >
               <button
                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1rtu0k9"
-                data-qa-reset-setting-id="ABAC_Enabled"
                 title="Reset"
                 type="button"
               >

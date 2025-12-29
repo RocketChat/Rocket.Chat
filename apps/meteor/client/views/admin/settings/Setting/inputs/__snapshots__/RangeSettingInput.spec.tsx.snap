@@ -264,7 +264,6 @@ exports[`renders WithResetButton without crashing 1`] = `
           </label>
           <button
             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-danger rcx-button--square rcx-button--icon rcx-button"
-            data-qa-reset-setting-id="setting_id"
             title="Reset"
             type="button"
           >
