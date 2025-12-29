@@ -31,7 +31,6 @@ exports[`AbacEnabledToggle should be disabled when abac license is not installed
                 <input
                   checked=""
                   class="rcx-box rcx-box--full rcx-toggle-switch__input"
-                  data-qa-setting-id="ABAC_Enabled"
                   disabled=""
                   id="ABAC_Enabled"
                   type="checkbox"
@@ -98,7 +97,6 @@ exports[`AbacEnabledToggle should render the setting toggle when setting exists 
                 <input
                   checked=""
                   class="rcx-box rcx-box--full rcx-toggle-switch__input"
-                  data-qa-setting-id="ABAC_Enabled"
                   id="ABAC_Enabled"
                   type="checkbox"
                 />
