@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { AtLeast, IMessage, IUser, IUploadToConfirm } from '@rocket.chat/core-typings';
+import { type AtLeast, type IMessage, type IUser, type IUploadToConfirm } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import { MessageTypes } from '@rocket.chat/message-types';
@@ -146,10 +146,20 @@ Meteor.methods<ServerMethods>({
 				Match.ObjectIncluding({
 					_id: String,
 					name: Match.Maybe(String),
-					content: Match.Maybe({
-						algorithm: String,
-						ciphertext: String,
-					}),
+					content: Match.Maybe(
+						Match.OneOf(
+							{
+								algorithm: 'rc.v1.aes-sha2',
+								ciphertext: String,
+							},
+							{
+								algorithm: 'rc.v2.aes-sha2',
+								ciphertext: String,
+								kid: String,
+								iv: String,
+							},
+						),
+					),
 				}),
 			]),
 		);
