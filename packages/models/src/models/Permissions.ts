@@ -20,7 +20,7 @@ export class PermissionsRaw extends BaseRaw<IPermission> implements IPermissions
 		];
 	}
 
-	async createOrUpdate(name: string, roles: IRole['_id'][]): Promise<IPermission['_id']> {
+	async createOrUpdate(name: IPermission['_id'], roles: IRole['_id'][]): Promise<IPermission['_id']> {
 		const exists = await this.findOne<Pick<IPermission, '_id'>>(
 			{
 				_id: name,
@@ -38,7 +38,7 @@ export class PermissionsRaw extends BaseRaw<IPermission> implements IPermissions
 		return name;
 	}
 
-	async create(id: string, roles: IRole['_id'][]): Promise<IPermission['_id']> {
+	async create(id: IPermission['_id'], roles: IRole['_id'][]): Promise<IPermission['_id']> {
 		const exists = await this.findOneById<Pick<IPermission, '_id'>>(id, { projection: { _id: 1 } });
 		if (exists) {
 			return exists._id;
@@ -49,15 +49,15 @@ export class PermissionsRaw extends BaseRaw<IPermission> implements IPermissions
 		return id;
 	}
 
-	async addRole(permission: string, role: IRole['_id']): Promise<void> {
+	async addRole(permission: IPermission['_id'], role: IRole['_id']): Promise<void> {
 		await this.updateOne({ _id: permission, roles: { $ne: role } }, { $addToSet: { roles: role } });
 	}
 
-	async setRoles(permission: string, roles: IRole['_id'][]): Promise<void> {
+	async setRoles(permission: IPermission['_id'], roles: IRole['_id'][]): Promise<void> {
 		await this.updateOne({ _id: permission }, { $set: { roles } });
 	}
 
-	async removeRole(permission: string, role: IRole['_id']): Promise<void> {
+	async removeRole(permission: IPermission['_id'], role: IRole['_id']): Promise<void> {
 		await this.updateOne({ _id: permission, roles: role }, { $pull: { roles: role } });
 	}
 

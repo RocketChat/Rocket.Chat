@@ -1,9 +1,10 @@
+import type { IPermission } from '@rocket.chat/core-typings';
 import { Permissions } from '@rocket.chat/models';
 
 import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
 
 export const createPermissions = async () => {
-	const permissions = [
+	const permissions: { _id: IPermission['_id']; roles: string[] }[] = [
 		{ _id: 'can-audit', roles: ['admin', 'auditor'] },
 		{ _id: 'can-audit-log', roles: ['admin', 'auditor-log'] },
 		{ _id: 'view-members-list-all-rooms', roles: ['admin', 'auditor'] },

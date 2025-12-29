@@ -1,3 +1,4 @@
+import type { IPermission } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import mock from 'proxyquire';
@@ -64,7 +65,7 @@ describe('checkPermissionsForInvocation', () => {
 			permissionsRequired: {
 				GET: {
 					operation: 'hasAll',
-					permissions: ['view-all', 'view-none'],
+					permissions: ['view-all' as IPermission['_id'], 'view-none' as IPermission['_id']],
 				},
 			},
 		};
@@ -76,11 +77,11 @@ describe('checkPermissionsForInvocation', () => {
 			permissionsRequired: {
 				'GET': {
 					operation: 'hasAll',
-					permissions: ['view-all', 'view-none'],
+					permissions: ['view-all' as IPermission['_id'], 'view-none' as IPermission['_id']],
 				},
 				'*': {
 					operation: 'hasAll',
-					permissions: ['view-all', 'view-none'],
+					permissions: ['view-all' as IPermission['_id'], 'view-none' as IPermission['_id']],
 				},
 			},
 		};
@@ -92,7 +93,7 @@ describe('checkPermissionsForInvocation', () => {
 			permissionsRequired: {
 				GET: {
 					operation: 'hasAll',
-					permissions: ['view-all', 'view-none'],
+					permissions: ['view-all' as IPermission['_id'], 'view-none' as IPermission['_id']],
 				},
 			},
 		};
@@ -105,7 +106,7 @@ describe('checkPermissionsForInvocation', () => {
 				GET: {
 					// @ts-expect-error - for testing purposes
 					operation: 'invalid',
-					permissions: ['view-all', 'view-none'],
+					permissions: ['view-all' as IPermission['_id'], 'view-none' as IPermission['_id']],
 				},
 			},
 		};
@@ -117,7 +118,7 @@ describe('checkPermissionsForInvocation', () => {
 			permissionsRequired: {
 				GET: {
 					operation: 'hasAny',
-					permissions: ['view-all', 'admin'],
+					permissions: ['view-all' as IPermission['_id'], 'admin' as IPermission['_id']],
 				},
 			},
 		};

@@ -1,3 +1,4 @@
+import type { IPermission } from '@rocket.chat/core-typings';
 import type { ReactNode } from 'react';
 import { lazy } from 'react';
 
@@ -30,7 +31,7 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-const PermissionGuard = ({ children, permission }: { children: ReactNode; permission: string }) => {
+const PermissionGuard = ({ children, permission }: { children: ReactNode; permission: IPermission['_id'] }) => {
 	const canView = hasAllPermission(permission);
 
 	return <>{canView ? children : <NotAuthorizedPage />}</>;

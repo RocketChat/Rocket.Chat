@@ -8,6 +8,7 @@ import type {
 	AtLeast,
 	ISubscription,
 	IOmnichannelRoom,
+	IPermission,
 } from '@rocket.chat/core-typings';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { IRouterPaths, RouteName } from '@rocket.chat/ui-contexts';
@@ -94,7 +95,10 @@ export interface IRoomTypeServerDirectives {
 	allowMemberAction: (room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']) => Promise<boolean>;
 	roomName: (room: IRoom, userId?: string) => Promise<string | undefined>;
 	isGroupChat: (room: IRoom) => boolean;
-	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom) => Promise<boolean>;
+	canBeDeleted: (
+		hasPermission: (permissionId: IPermission['_id'], rid?: string) => Promise<boolean> | boolean,
+		room: IRoom,
+	) => Promise<boolean>;
 	preventRenaming: () => boolean;
 	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => Promise<RoomType>;
 	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => Promise<boolean>;

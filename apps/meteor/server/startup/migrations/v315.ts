@@ -11,7 +11,7 @@ addMigration({
 		// Calling upsertPermissions on purpose so that the new permissions are added before the migration runs
 		await upsertPermissions();
 
-		const addTeamChannelPermission = await Permissions.findOneById<Pick<IPermission, 'roles'>>('add-team-channel', {
+		const addTeamChannelPermission = await Permissions.findOneById<Pick<IPermission, 'roles'>>('add-team-channel' as IPermission['_id'], {
 			projection: { roles: 1 },
 		});
 
@@ -21,7 +21,7 @@ addMigration({
 				{ $set: { roles: addTeamChannelPermission.roles } },
 			);
 
-			await Permissions.deleteOne({ _id: 'add-team-channel' });
+			await Permissions.deleteOne({ _id: 'add-team-channel' as IPermission['_id'] });
 		}
 	},
 });

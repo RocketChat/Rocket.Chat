@@ -1,4 +1,5 @@
 import type { IMessage } from '../IMessage';
+import type { IPermission } from '../IPermission';
 import type { RequiredField } from '../utils';
 
 export type SlashCommandCallbackParams<T> = {
@@ -39,7 +40,7 @@ type SlashCommandPreviewCallback = (
 export type SlashCommandOptions = {
 	params?: string;
 	description?: string;
-	permission?: string | string[];
+	permission?: IPermission['_id'] | IPermission['_id'][];
 	clientOnly?: boolean;
 };
 

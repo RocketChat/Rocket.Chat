@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, IPermission } from '@rocket.chat/core-typings';
 
 import type { ActionThis } from './definition';
 import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../../authorization/server/functions/hasPermission';
@@ -9,17 +9,17 @@ type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | '*';
 export type PermissionsPayload = {
 	[key in RequestMethod]?: {
 		operation: 'hasAll' | 'hasAny';
-		permissions: string[];
+		permissions: IPermission['_id'][];
 	};
 };
 
 type PermissionsPayloadLight = {
-	[key in RequestMethod]?: string[];
+	[key in RequestMethod]?: IPermission['_id'][];
 };
 
-type PermissionsRequiredKey = string[] | PermissionsPayload | PermissionsPayloadLight;
+type PermissionsRequiredKey = IPermission['_id'][] | PermissionsPayload | PermissionsPayloadLight;
 
-const isLegacyPermissionsPayload = (permissionsPayload: PermissionsRequiredKey): permissionsPayload is string[] => {
+const isLegacyPermissionsPayload = (permissionsPayload: PermissionsRequiredKey): permissionsPayload is IPermission['_id'][] => {
 	return Array.isArray(permissionsPayload);
 };
 

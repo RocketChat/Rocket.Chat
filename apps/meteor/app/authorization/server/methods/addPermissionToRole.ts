@@ -1,4 +1,5 @@
 import { License } from '@rocket.chat/core-services';
+import type { IPermission } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Permissions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -10,7 +11,7 @@ import { hasPermissionAsync } from '../functions/hasPermission';
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'authorization:addPermissionToRole'(permissionId: string, role: string): void;
+		'authorization:addPermissionToRole'(permissionId: IPermission['_id'], role: string): void;
 	}
 }
 

@@ -1,4 +1,4 @@
-import type { IPermission } from '@rocket.chat/core-typings';
+import type { IPermission, IRole } from '@rocket.chat/core-typings';
 import { Permissions, Roles } from '@rocket.chat/models';
 import {
 	ajv,
@@ -18,7 +18,7 @@ type PermissionsListAllProps = {
 };
 
 type PermissionsUpdateProps = {
-	permissions: { _id: string; roles: string[] }[];
+	permissions: { _id: IPermission['_id']; roles: IRole['_id'][] }[];
 };
 
 const permissionListAllSchema = {

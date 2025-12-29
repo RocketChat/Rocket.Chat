@@ -1,5 +1,5 @@
 import { getUserDisplayName } from '@rocket.chat/core-typings';
-import type { IRoom, RoomType, IUser, IMessage, IReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
+import type { IRoom, RoomType, IUser, IMessage, IReadReceipt, ValueOf, AtLeast, IPermission } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
@@ -21,10 +21,15 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			isGroupChat(_room: IRoom): boolean {
 				return false;
 			},
-			async canBeDeleted(hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom): Promise<boolean> {
+			async canBeDeleted(
+				hasPermission: (permissionId: IPermission['_id'], rid?: string) => Promise<boolean> | boolean,
+				room: IRoom,
+			): Promise<boolean> {
 				if (!hasPermission && typeof hasPermission !== 'function') {
 					throw new Error('You MUST provide the "hasPermission" to canBeDeleted function');
 				}
+				// FIXME
+				// @ts-expect-error - there is no 'delete-l' permission defined in IPermission
 				return hasPermission(`delete-${room.t}`, room._id);
 			},
 			preventRenaming(): boolean {

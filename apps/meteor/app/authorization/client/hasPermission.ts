@@ -1,4 +1,4 @@
-import type { IUser, IPermission } from '@rocket.chat/core-typings';
+import type { IUser, IPermission, IRole } from '@rocket.chat/core-typings';
 
 import { hasRole } from './hasRole';
 import { PermissionsCachedStore } from '../../../client/cachedStores';
@@ -9,7 +9,7 @@ import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 
 const createPermissionValidator =
 	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
-	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id'], scopedRoles?: IPermission['_id'][]): boolean => {
+	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id'], scopedRoles?: IRole['_id'][]): boolean => {
 		const userRoles = watch(Users.use, (state) => state.get(userId)?.roles);
 
 		const checkEachPermission = quantifier.bind(permissionIds);
@@ -45,10 +45,10 @@ const validatePermissions = (
 		permissionIds: IPermission['_id'][],
 		scope: string | undefined,
 		userId: IUser['_id'],
-		scopedRoles?: IPermission['_id'][],
+		scopedRoles?: IRole['_id'][],
 	) => boolean,
 	userId?: IUser['_id'],
-	scopedRoles?: IPermission['_id'][],
+	scopedRoles?: IRole['_id'][],
 ): boolean => {
 	userId = userId ?? watchUserId() ?? undefined;
 
@@ -66,7 +66,7 @@ const validatePermissions = (
 export const hasAllPermission = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
 	scope?: string,
-	scopedRoles?: IPermission['_id'][],
+	scopedRoles?: IRole['_id'][],
 ): boolean => validatePermissions(permissions, scope, all, undefined, scopedRoles);
 
 export const hasAtLeastOnePermission = (permissions: IPermission['_id'] | IPermission['_id'][], scope?: string): boolean =>

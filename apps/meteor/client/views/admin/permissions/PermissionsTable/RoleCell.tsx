@@ -1,4 +1,4 @@
-import type { IRole } from '@rocket.chat/core-typings';
+import type { IPermission, IRole } from '@rocket.chat/core-typings';
 import { Margins, Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, GenericTableCell } from '@rocket.chat/ui-client';
@@ -14,7 +14,7 @@ type RoleCellProps = {
 	name: IRole['name'];
 	description: IRole['description'];
 	onChange: (roleId: IRole['_id'], granted: boolean) => Promise<boolean>;
-	permissionId: string;
+	permissionId: IPermission['_id'];
 	permissionName: string;
 	grantedRoles: IRole['_id'][];
 };

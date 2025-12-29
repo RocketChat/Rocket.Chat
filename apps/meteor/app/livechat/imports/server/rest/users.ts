@@ -8,15 +8,13 @@ import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/f
 import { findAgents, findManagers } from '../../../server/api/lib/users';
 import { addManager, addAgent, removeAgent, removeManager } from '../../../server/lib/omni-users';
 
-const emptyStringArray: string[] = [];
-
 API.v1.addRoute(
 	'livechat/users/:type',
 	{
 		authRequired: true,
 		permissionsRequired: {
 			'POST': ['view-livechat-manager'],
-			'*': emptyStringArray,
+			'*': [],
 		},
 		validateParams: {
 			GET: isLivechatUsersManagerGETProps,

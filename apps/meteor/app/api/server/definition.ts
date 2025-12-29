@@ -1,4 +1,4 @@
-import type { IUser, LicenseModule } from '@rocket.chat/core-typings';
+import type { IPermission, IUser, LicenseModule } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
@@ -85,7 +85,10 @@ export type NonEnterpriseTwoFactorOptions = {
 	authRequired: true;
 	forceTwoFactorAuthenticationForNonEnterprise: true;
 	twoFactorRequired: true;
-	permissionsRequired?: string[] | { [key in Method]: string[] } | { [key in Method]: { operation: TOperation; permissions: string[] } };
+	permissionsRequired?:
+		| IPermission['_id'][]
+		| { [key in Method]: IPermission['_id'][] }
+		| { [key in Method]: { operation: TOperation; permissions: IPermission['_id'][] } };
 	twoFactorOptions: ITwoFactorOptions;
 };
 
@@ -94,10 +97,10 @@ export type Options = SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>
 export type SharedOptions<TMethod extends string> = (
 	| {
 			permissionsRequired?:
-				| string[]
-				| ({ [key in TMethod]?: string[] } & { '*'?: string[] })
-				| ({ [key in TMethod]?: { operation: TOperation; permissions: string[] } } & {
-						'*'?: { operation: TOperation; permissions: string[] };
+				| IPermission['_id'][]
+				| ({ [key in TMethod]?: IPermission['_id'][] } & { '*'?: IPermission['_id'][] })
+				| ({ [key in TMethod]?: { operation: TOperation; permissions: IPermission['_id'][] } } & {
+						'*'?: { operation: TOperation; permissions: IPermission['_id'][] };
 				  });
 			authRequired?: boolean;
 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
@@ -112,10 +115,10 @@ export type SharedOptions<TMethod extends string> = (
 	  }
 	| {
 			permissionsRequired?:
-				| string[]
-				| ({ [key in TMethod]?: string[] } & { '*'?: string[] })
-				| ({ [key in TMethod]?: { operation: TOperation; permissions: string[] } } & {
-						'*'?: { operation: TOperation; permissions: string[] };
+				| IPermission['_id'][]
+				| ({ [key in TMethod]?: IPermission['_id'][] } & { '*'?: IPermission['_id'][] })
+				| ({ [key in TMethod]?: { operation: TOperation; permissions: IPermission['_id'][] } } & {
+						'*'?: { operation: TOperation; permissions: IPermission['_id'][] };
 				  });
 			authRequired: true;
 			twoFactorRequired: true;

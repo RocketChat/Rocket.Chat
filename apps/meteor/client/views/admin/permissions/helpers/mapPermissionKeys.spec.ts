@@ -26,7 +26,7 @@ describe('mapPermissionKeys', () => {
 					_updatedAt: new Date(),
 				},
 				{
-					_id: 'delete-channel',
+					_id: 'delete-c',
 					roles: ['admin'],
 					_updatedAt: new Date(),
 				},
@@ -43,8 +43,8 @@ describe('mapPermissionKeys', () => {
 				i18nLabels: ['delete-user'],
 			},
 			{
-				_id: 'delete-channel',
-				i18nLabels: ['delete-channel'],
+				_id: 'delete-c',
+				i18nLabels: ['delete-c'],
 			},
 		]);
 	});

@@ -1,3 +1,4 @@
+import type { IPermission } from '@rocket.chat/core-typings';
 import { Settings, Permissions } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
@@ -29,13 +30,13 @@ addMigration({
 		await Permissions.deleteMany({
 			_id: {
 				$in: [
-					'manage-voip-call-settings',
-					'manage-voip-contact-center-settings',
-					'manage-agent-extension-association',
-					'inbound-voip-calls',
-					'spy-voip-calls',
-					'outbound-voip-calls',
-					'view-agent-extension-association',
+					'manage-voip-call-settings' as IPermission['_id'],
+					'manage-voip-contact-center-settings' as IPermission['_id'],
+					'manage-agent-extension-association' as IPermission['_id'],
+					'inbound-voip-calls' as IPermission['_id'],
+					'spy-voip-calls' as IPermission['_id'],
+					'outbound-voip-calls' as IPermission['_id'],
+					'view-agent-extension-association' as IPermission['_id'],
 				],
 			},
 		});

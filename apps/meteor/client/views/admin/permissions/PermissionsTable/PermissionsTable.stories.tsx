@@ -78,22 +78,22 @@ const roles: IRole[] = [
 
 const permissions: IPermission[] = [
 	{
-		_id: '0',
+		_id: '0' as IPermission['_id'],
 		_updatedAt: new Date('2023-01-01'),
 		roles: ['admin'],
 	},
 	{
-		_id: '1',
+		_id: '1' as IPermission['_id'],
 		_updatedAt: new Date('2023-01-01'),
 		roles: ['user'],
 	},
 	{
-		_id: '2',
+		_id: '2' as IPermission['_id'],
 		_updatedAt: new Date('2023-01-01'),
 		roles: ['user'],
 	},
 	{
-		_id: '3',
+		_id: '3' as IPermission['_id'],
 		_updatedAt: new Date('2023-01-01'),
 		roles: ['user'],
 	},

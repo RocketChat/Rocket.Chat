@@ -30,10 +30,8 @@ export const upsertPermissions = async (): Promise<void> => {
 		await createOrUpdateProtectedRoleAsync(role.name, role);
 	}
 
-	const getPreviousPermissions = async function (settingId?: string): Promise<Record<string, IPermission>> {
-		const previousSettingPermissions: {
-			[key: string]: IPermission;
-		} = {};
+	const getPreviousPermissions = async function (settingId?: string): Promise<Partial<Record<IPermission['_id'], IPermission>>> {
+		const previousSettingPermissions: Partial<Record<IPermission['_id'], IPermission>> = {};
 
 		await Permissions.findByLevel('settings', settingId).forEach((permission: IPermission) => {
 			previousSettingPermissions[permission._id] = permission;
@@ -43,9 +41,7 @@ export const upsertPermissions = async (): Promise<void> => {
 
 	const createSettingPermission = async function (
 		setting: ISetting,
-		previousSettingPermissions: {
-			[key: string]: IPermission;
-		},
+		previousSettingPermissions: Partial<Record<IPermission['_id'], IPermission>>,
 	): Promise<void> {
 		const permissionId = getSettingPermissionId(setting._id);
 		const permission: Omit<IPermission, '_id' | '_updatedAt'> = {
@@ -100,7 +96,7 @@ export const upsertPermissions = async (): Promise<void> => {
 		}
 
 		// remove permissions for non-existent settings
-		for await (const obsoletePermission of Object.keys(previousSettingPermissions)) {
+		for await (const obsoletePermission of Object.keys(previousSettingPermissions) as (keyof typeof previousSettingPermissions)[]) {
 			if (previousSettingPermissions.hasOwnProperty(obsoletePermission)) {
 				await Permissions.deleteOne({ _id: obsoletePermission });
 			}

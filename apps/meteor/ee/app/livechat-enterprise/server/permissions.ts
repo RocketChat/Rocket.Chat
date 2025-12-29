@@ -1,3 +1,4 @@
+import type { IPermission } from '@rocket.chat/core-typings';
 import { Permissions, Roles } from '@rocket.chat/models';
 
 import { createOrUpdateProtectedRoleAsync } from '../../../../server/lib/roles/createOrUpdateProtectedRole';
@@ -7,7 +8,7 @@ const livechatManagerRole = 'livechat-manager';
 const adminRole = 'admin';
 const livechatAgentRole = 'livechat-agent';
 
-export const omnichannelEEPermissions = [
+export const omnichannelEEPermissions: { _id: IPermission['_id']; roles: string[] }[] = [
 	{ _id: 'manage-livechat-units', roles: [adminRole, livechatManagerRole] },
 	{ _id: 'manage-livechat-monitors', roles: [adminRole, livechatManagerRole] },
 	{ _id: 'manage-livechat-tags', roles: [adminRole, livechatManagerRole] },

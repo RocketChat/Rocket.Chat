@@ -1,3 +1,4 @@
+import type { IPermission } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import mock from 'proxyquire';
@@ -55,7 +56,7 @@ describe('checkPermissions', () => {
 			permissionsRequired: {
 				GET: {
 					operation: 'hasAll',
-					permissions: ['invalid', 'invalid2'],
+					permissions: ['invalid' as IPermission['_id'], 'invalid2' as IPermission['_id']],
 				},
 			},
 		};
@@ -72,7 +73,7 @@ describe('checkPermissions', () => {
 			permissionsRequired: {
 				GET: {
 					operation: 'hasAny',
-					permissions: ['invalid', 'invalid2'],
+					permissions: ['invalid' as IPermission['_id'], 'invalid2' as IPermission['_id']],
 				},
 			},
 		};
@@ -88,11 +89,11 @@ describe('checkPermissions', () => {
 			permissionsRequired: {
 				GET: {
 					operation: 'hasAll',
-					permissions: ['invalid', 'invalid2'],
+					permissions: ['invalid' as IPermission['_id'], 'invalid2' as IPermission['_id']],
 				},
 				POST: {
 					operation: 'hasAll',
-					permissions: ['invalid', 'invalid2'],
+					permissions: ['invalid' as IPermission['_id'], 'invalid2' as IPermission['_id']],
 				},
 			},
 		};

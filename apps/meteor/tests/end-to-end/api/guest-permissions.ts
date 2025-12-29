@@ -6,7 +6,7 @@ import { restorePermissionToRoles } from '../../data/permissions.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[Guest Permissions]', () => {
-	const guestPermissions = ['view-d-room', 'view-joined-room', 'view-p-room', 'start-discussion', 'mobile-upload-file'];
+	const guestPermissions = ['view-d-room', 'view-joined-room', 'view-p-room', 'start-discussion', 'mobile-upload-file'] as const;
 
 	before((done) => getCredentials(done));
 

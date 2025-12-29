@@ -1,6 +1,6 @@
 import type { IAuthorization, RoomAccessValidator } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
-import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IUser, IRole, IRoom, ISubscription, IPermission } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
 import mem from 'mem';
 
@@ -56,21 +56,21 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		}
 	}
 
-	async hasAllPermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
+	async hasAllPermission(userId: string, permissions: IPermission['_id'][], scope?: string): Promise<boolean> {
 		if (!userId) {
 			return false;
 		}
 		return this.all(userId, permissions, scope);
 	}
 
-	async hasPermission(userId: string, permissionId: string, scope?: string): Promise<boolean> {
+	async hasPermission(userId: string, permissionId: IPermission['_id'], scope?: string): Promise<boolean> {
 		if (!userId) {
 			return false;
 		}
 		return this.all(userId, [permissionId], scope);
 	}
 
-	async hasAtLeastOnePermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
+	async hasAtLeastOnePermission(userId: string, permissions: IPermission['_id'][], scope?: string): Promise<boolean> {
 		if (!userId) {
 			return false;
 		}
@@ -151,7 +151,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		{ maxAge: 10000 },
 	);
 
-	private async rolesHasPermission(permission: string, roles: IRole['_id'][]): Promise<boolean> {
+	private async rolesHasPermission(permission: IPermission['_id'], roles: IRole['_id'][]): Promise<boolean> {
 		if (AuthorizationUtils.isPermissionRestrictedForRoleList(permission, roles)) {
 			return false;
 		}
@@ -169,7 +169,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
 	}
 
-	private async atLeastOne(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
+	private async atLeastOne(uid: string, permissions: IPermission['_id'][] = [], scope?: string): Promise<boolean> {
 		const sortedRoles = await this.getRolesCached(uid, scope);
 		for await (const permission of permissions) {
 			if (await this.rolesHasPermissionCached(permission, sortedRoles)) {
@@ -180,7 +180,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return false;
 	}
 
-	private async all(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
+	private async all(uid: string, permissions: IPermission['_id'][] = [], scope?: string): Promise<boolean> {
 		const sortedRoles = await this.getRolesCached(uid, scope);
 		for await (const permission of permissions) {
 			if (!(await this.rolesHasPermissionCached(permission, sortedRoles))) {

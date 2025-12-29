@@ -1,14 +1,12 @@
-import type { ISetting } from '@rocket.chat/core-typings';
+import type { IPermission, ISetting } from '@rocket.chat/core-typings';
 
-export const getSettingPermissionId = function (settingId: ISetting['_id']) {
-	// setting-based permissions
-	return `change-setting-${settingId}`;
-};
+// setting-based permissions
+export const getSettingPermissionId = (settingId: ISetting['_id']) => `change-setting-${settingId}` as const;
 
 export const CONSTANTS = {
 	SETTINGS_LEVEL: 'settings',
 } as const;
 
-export const confirmationRequiredPermissions = ['access-permissions'];
+export const confirmationRequiredPermissions: IPermission['_id'][] = ['access-permissions'];
 
 export { AuthorizationUtils } from './AuthorizationUtils';
