@@ -51,7 +51,8 @@ RUN echo "[build] meteor build:ci start" \
 FROM node:22.16.0-bullseye
 
 ENV NODE_ENV=production \
-    DENO_VERSION=2.6.3 \
+    DENO_VERSION=1.43.5 \
+    DENO_DIR=/app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/.deno-cache \
     HOME=/tmp
 
 WORKDIR /app/bundle
@@ -85,5 +86,17 @@ USER rocketchat
 RUN echo "[build] npm install --omit=dev start" \
   && cd programs/server && npm install --omit=dev \
   && echo "[build] npm install --omit=dev done"
+
+RUN echo "[build] patch apps-engine deno flags start" \
+  && sed -i "s/--unstable-detect-cjs/--cached-only/" /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/server/runtime/deno/AppsEngineDenoRuntime.js \
+  && sed -i "s/--unstable-detect-cjs/--cached-only/" /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/src/server/runtime/deno/AppsEngineDenoRuntime.ts \
+  && echo "[build] patch apps-engine deno flags done"
+
+RUN echo "[build] deno cache start" \
+  && deno cache /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime/main.ts \
+  && echo "[build] deno cache done"
+
+
+
 
 CMD ["node","main.js"]
