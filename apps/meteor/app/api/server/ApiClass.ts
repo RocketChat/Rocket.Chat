@@ -56,7 +56,7 @@ const logger = new Logger('API');
 // We have some breaking changes planned to the API.
 // To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
 // TODO: MAJOR check if this is still needed
-const applyBreakingChanges = shouldBreakInVersion('8.0.0');
+const applyBreakingChanges = shouldBreakInVersion('9.0.0');
 type MinimalRoute = {
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
 	path: string;
