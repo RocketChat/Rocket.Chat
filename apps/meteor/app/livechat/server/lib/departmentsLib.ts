@@ -272,7 +272,7 @@ export async function removeDepartment(departmentId: string) {
 	}
 
 	await callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds: removedAgents.map(({ agentId }) => agentId) });
-	void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatDepartmentRemoved, { department });
+	void Apps.self?.triggerEvent(AppEvents.IPostLivechatDepartmentRemoved, { department });
 
 	return ret;
 }
