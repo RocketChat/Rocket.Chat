@@ -1,7 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ServerMethods {
 	resetPassword(token: string, password: string): { token: string };
-	setUserPassword(password: string): void;
 	sendConfirmationEmail(to: string): boolean;
 	checkRegistrationSecretURL(hash: string): boolean;
 }

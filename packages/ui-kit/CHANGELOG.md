@@ -1,5 +1,23 @@
 # Change Log
 
+## 0.39.0-rc.0
+
+### Minor Changes
+
+- ([#37726](https://github.com/RocketChat/Rocket.Chat/pull/37726)) Introduces a new variation of the `Icon` element to `ui-kit` through the new `framed` optional property.
+
+## 0.38.0
+
+### Minor Changes
+
+- ([#37398](https://github.com/RocketChat/Rocket.Chat/pull/37398)) Adds new elements for building apps (ui-kit): `icon` (block element), `icon_button` (block element) and `info_card` (layout block).
+
+## 0.38.0-rc.0
+
+### Minor Changes
+
+- ([#37398](https://github.com/RocketChat/Rocket.Chat/pull/37398)) Adds new elements for building apps (ui-kit): `icon` (block element), `icon_button` (block element) and `info_card` (layout block).
+
 ## 0.37.0
 
 ### Minor Changes

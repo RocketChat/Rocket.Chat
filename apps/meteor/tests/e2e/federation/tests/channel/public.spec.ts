@@ -52,7 +52,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 	});
 
 	test.afterEach(async ({ page }) => {
-		await poFederationChannelServer1.sidenav.logout();
+		await poFederationChannelServer1.navbar.logout();
 		await page.close();
 	});
 
@@ -95,11 +95,11 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(channelName);
+				await poFederationChannelServer1.navbar.openChat(channelName);
 				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 
-				await poFederationChannelServer2.sidenav.openChat(channelName);
+				await poFederationChannelServer2.navbar.openChat(channelName);
 				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await poFederationChannelServer2.tabs.members.showAllUsers();
 
@@ -142,11 +142,11 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(channelName);
+				await poFederationChannelServer1.navbar.openChat(channelName);
 				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 
-				await poFederationChannelServer2.sidenav.openChat(channelName);
+				await poFederationChannelServer2.navbar.openChat(channelName);
 				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await poFederationChannelServer2.tabs.members.showAllUsers();
 
@@ -205,11 +205,11 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
-					await poFederationChannelServer1.sidenav.openChat(createdChannel);
+					await poFederationChannelServer1.navbar.openChat(createdChannel);
 					await poFederationChannelServer1.roomToolbar.openMembersTab();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 
-					await poFederationChannelServer2.sidenav.openChat(createdChannel);
+					await poFederationChannelServer2.navbar.openChat(createdChannel);
 					await poFederationChannelServer2.roomToolbar.openMembersTab();
 					await poFederationChannelServer2.tabs.members.showAllUsers();
 
@@ -239,7 +239,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
+					await poFederationChannel1ForUser2.navbar.openChat(createdChannel);
 
 					await poFederationChannel1ForUser2.roomToolbar.openMembersTab();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
@@ -298,11 +298,11 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
-					await poFederationChannelServer1.sidenav.openChat(createdChannel);
+					await poFederationChannelServer1.navbar.openChat(createdChannel);
 					await poFederationChannelServer1.roomToolbar.openMembersTab();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 
-					await poFederationChannelServer2.sidenav.openChat(createdChannel);
+					await poFederationChannelServer2.navbar.openChat(createdChannel);
 					await poFederationChannelServer2.roomToolbar.openMembersTab();
 					await poFederationChannelServer2.tabs.members.showAllUsers();
 
@@ -332,7 +332,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
+					await poFederationChannel1ForUser2.navbar.openChat(createdChannel);
 
 					await poFederationChannel1ForUser2.roomToolbar.openMembersTab();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
@@ -360,7 +360,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
-					await poFederationChannelServer1.sidenav.openChat(createdChannel);
+					await poFederationChannelServer1.navbar.openChat(createdChannel);
 					await poFederationChannelServer1.roomToolbar.openMembersTab();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 
@@ -384,7 +384,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
+					await poFederationChannel1ForUser2.navbar.openChat(createdChannel);
 
 					await poFederationChannel1ForUser2.roomToolbar.openMembersTab();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
@@ -434,13 +434,13 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(channelName);
+				await poFederationChannelServer1.navbar.openChat(channelName);
 				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 				await poFederationChannelServer1.tabs.members.addMultipleUsers([fullUsernameFromServer2]);
 				await poFederationChannelServer1.toastMessage.waitForDisplay();
 
-				await poFederationChannelServer2.sidenav.openChat(channelName);
+				await poFederationChannelServer2.navbar.openChat(channelName);
 				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await poFederationChannelServer2.tabs.members.showAllUsers();
 
@@ -486,13 +486,13 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(channelName);
+				await poFederationChannelServer1.navbar.openChat(channelName);
 				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 				await poFederationChannelServer1.tabs.members.addMultipleUsers([userFromServer2UsernameOnly]);
 				await poFederationChannelServer1.toastMessage.waitForDisplay();
 
-				await poFederationChannelServer2.sidenav.openChat(channelName);
+				await poFederationChannelServer2.navbar.openChat(channelName);
 				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await poFederationChannelServer2.tabs.members.showAllUsers();
 
@@ -548,13 +548,13 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
-					await poFederationChannelServer1.sidenav.openChat(createdChannel);
+					await poFederationChannelServer1.navbar.openChat(createdChannel);
 					await poFederationChannelServer1.roomToolbar.openMembersTab();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 					await poFederationChannelServer1.tabs.members.addMultipleUsers([fullUsernameFromServer2, userFromServer1UsernameOnly]);
 					await poFederationChannelServer1.toastMessage.waitForDisplay();
 
-					await poFederationChannelServer2.sidenav.openChat(createdChannel);
+					await poFederationChannelServer2.navbar.openChat(createdChannel);
 					await poFederationChannelServer2.roomToolbar.openMembersTab();
 					await poFederationChannelServer2.tabs.members.showAllUsers();
 
@@ -584,7 +584,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
+					await poFederationChannel1ForUser2.navbar.openChat(createdChannel);
 
 					await poFederationChannel1ForUser2.roomToolbar.openMembersTab();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
@@ -640,13 +640,13 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
-					await poFederationChannelServer1.sidenav.openChat(createdChannel);
+					await poFederationChannelServer1.navbar.openChat(createdChannel);
 					await poFederationChannelServer1.roomToolbar.openMembersTab();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 					await poFederationChannelServer1.tabs.members.addMultipleUsers([userFromServer1UsernameOnly, userFromServer2UsernameOnly]);
 					await poFederationChannelServer1.toastMessage.waitForDisplay();
 
-					await poFederationChannelServer2.sidenav.openChat(createdChannel);
+					await poFederationChannelServer2.navbar.openChat(createdChannel);
 					await poFederationChannelServer2.roomToolbar.openMembersTab();
 					await poFederationChannelServer2.tabs.members.showAllUsers();
 
@@ -676,7 +676,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
+					await poFederationChannel1ForUser2.navbar.openChat(createdChannel);
 
 					await poFederationChannel1ForUser2.roomToolbar.openMembersTab();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
@@ -702,7 +702,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannel}`);
 
-					await poFederationChannelServer1.sidenav.openChat(createdChannel);
+					await poFederationChannelServer1.navbar.openChat(createdChannel);
 					await poFederationChannelServer1.roomToolbar.openMembersTab();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 					await poFederationChannelServer1.tabs.members.addMultipleUsers([userFromServer1UsernameOnly]);
@@ -729,7 +729,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(createdChannel);
+					await poFederationChannel1ForUser2.navbar.openChat(createdChannel);
 
 					await poFederationChannel1ForUser2.roomToolbar.openMembersTab();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
@@ -782,7 +782,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(channelName);
+				await poFederationChannelServer1.navbar.openChat(channelName);
 				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 
@@ -851,7 +851,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
 
-				await poFederationChannelServer2.sidenav.openChat(channelName);
+				await poFederationChannelServer2.navbar.openChat(channelName);
 				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await poFederationChannelServer2.tabs.members.showAllUsers();
 
@@ -882,8 +882,8 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
+				await poFederationChannelServer1.navbar.openChat(createdChannelName);
+				await poFederationChannelServer2.navbar.openChat(createdChannelName);
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannelName}`);
 
@@ -912,8 +912,8 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
+				await poFederationChannelServer1.navbar.openChat(createdChannelName);
+				await poFederationChannelServer2.navbar.openChat(createdChannelName);
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannelName}`);
 
@@ -942,8 +942,8 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
+				await poFederationChannelServer1.navbar.openChat(createdChannelName);
+				await poFederationChannelServer2.navbar.openChat(createdChannelName);
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannelName}`);
 
@@ -983,8 +983,8 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
+				await poFederationChannelServer1.navbar.openChat(createdChannelName);
+				await poFederationChannelServer2.navbar.openChat(createdChannelName);
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannelName}`);
 
@@ -1028,8 +1028,8 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
+				await poFederationChannelServer1.navbar.openChat(createdChannelName);
+				await poFederationChannelServer2.navbar.openChat(createdChannelName);
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannelName}`);
 
@@ -1065,8 +1065,8 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
-				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
+				await poFederationChannelServer1.navbar.openChat(createdChannelName);
+				await poFederationChannelServer2.navbar.openChat(createdChannelName);
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${createdChannelName}`);
 
@@ -1146,11 +1146,11 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(channelName);
+				await poFederationChannelServer1.navbar.openChat(channelName);
 				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 
-				await poFederationChannelServer2.sidenav.openChat(channelName);
+				await poFederationChannelServer2.navbar.openChat(channelName);
 				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await poFederationChannelServer2.tabs.members.showAllUsers();
 
@@ -1174,7 +1174,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 					constants.RC_SERVER_1.username,
 				);
 
-				await poFederationChannelServer2.sidenav.openChat(channelName);
+				await poFederationChannelServer2.navbar.openChat(channelName);
 				const removedSystemMessageServer2 = await poFederationChannelServer2.content.getSystemMessageByText(
 					`removed ${userFromServer2UsernameOnly}`,
 				);
@@ -1219,9 +1219,9 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/channel/${channelName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(channelName);
+				await poFederationChannelServer1.navbar.openChat(channelName);
 
-				await poFederationChannelServer2.sidenav.openChat(channelName);
+				await poFederationChannelServer2.navbar.openChat(channelName);
 
 				await poFederationChannelServer2.content.sendMessage('hello world');
 				await poFederationChannelServer2.roomToolbar.openRoomInfo();
@@ -1237,7 +1237,7 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				);
 
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-				await poFederationChannelServer2.sidenav.openChat(channelName);
+				await poFederationChannelServer2.navbar.openChat(channelName);
 				const leftChannelSystemMessageServer2 = await poFederationChannelServer1.content.getSystemMessageByText('left the channel');
 				await expect(leftChannelSystemMessageServer2).toBeVisible();
 				await expect(await (await poFederationChannelServer2.content.getLastSystemMessageName()).textContent()).toBe(

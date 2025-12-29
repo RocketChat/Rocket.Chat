@@ -18,6 +18,8 @@ import {
 	Option,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { validateEmail } from '@rocket.chat/tools';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter, usePermission } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, useState } from 'react';
@@ -29,8 +31,6 @@ import type { EditDepartmentFormData } from './definitions';
 import { formatAgentListPayload } from './utils/formatAgentListPayload';
 import { formatEditDepartmentPayload } from './utils/formatEditDepartmentPayload';
 import { getFormInitialValues } from './utils/getFormInititalValues';
-import { validateEmail } from '../../../../lib/emailValidator';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useRoomsList } from '../../../hooks/useRoomsList';
@@ -69,11 +69,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 		register,
 		control,
 		handleSubmit,
-		watch,
 		formState: { errors, isValid, isDirty, isSubmitting },
 	} = useForm<EditDepartmentFormData>({ mode: 'onChange', defaultValues: initialValues });
-
-	const requestTagBeforeClosingChat = watch('requestTagBeforeClosingChat');
 
 	const [fallbackFilter, setFallbackFilter] = useState<string>('');
 	const [isUnitRequired, setUnitRequired] = useState(false);
@@ -414,33 +411,28 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							</FieldRow>
 						</Field>
 
-						{requestTagBeforeClosingChat && (
-							<Field>
-								<FieldLabel htmlFor={chatClosingTagsField} required>
-									{t('Conversation_closing_tags')}
-								</FieldLabel>
-								<Controller
-									control={control}
-									name='chatClosingTags'
-									rules={{ required: t('Required_field', 'tags') }}
-									render={({ field: { value, onChange } }) => (
-										<DepartmentTags
-											id={chatClosingTagsField}
-											value={value}
-											onChange={onChange}
-											error={errors.chatClosingTags?.message as string}
-											aria-describedby={`${chatClosingTagsField}-hint ${chatClosingTagsField}-error`}
-										/>
-									)}
-								/>
-								<FieldHint id={`${chatClosingTagsField}-hint`}>{t('Conversation_closing_tags_description')}</FieldHint>
-								{errors.chatClosingTags && (
-									<FieldError aria-live='assertive' id={`${chatClosingTagsField}-error`}>
-										{errors.chatClosingTags?.message}
-									</FieldError>
+						<Field>
+							<FieldLabel htmlFor={chatClosingTagsField}>{t('Conversation_closing_tags')}</FieldLabel>
+							<Controller
+								control={control}
+								name='chatClosingTags'
+								render={({ field: { value, onChange } }) => (
+									<DepartmentTags
+										id={chatClosingTagsField}
+										value={value}
+										onChange={onChange}
+										error={errors.chatClosingTags?.message as string}
+										aria-describedby={`${chatClosingTagsField}-hint ${chatClosingTagsField}-error`}
+									/>
 								)}
-							</Field>
-						)}
+							/>
+							<FieldHint id={`${chatClosingTagsField}-hint`}>{t('Conversation_closing_tags_description')}</FieldHint>
+							{errors.chatClosingTags && (
+								<FieldError aria-live='assertive' id={`${chatClosingTagsField}-error`}>
+									{errors.chatClosingTags?.message}
+								</FieldError>
+							)}
+						</Field>
 
 						<Field>
 							<FieldRow>

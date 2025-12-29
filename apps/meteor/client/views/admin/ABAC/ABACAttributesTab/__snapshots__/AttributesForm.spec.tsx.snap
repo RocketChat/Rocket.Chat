@@ -1,0 +1,389 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`AttributesForm renders NewAttribute without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1ph8q3"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1svuzur"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+          data-overlayscrollbars="host"
+        >
+          <div
+            class="os-size-observer"
+          >
+            <div
+              class="os-size-observer-listener"
+            />
+          </div>
+          <div
+            class=""
+            data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+            style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+            tabindex="-1"
+          >
+            <form
+              class="rcx-box rcx-box--full rcx-css-zg7o7h"
+              id=":r0:"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1fuhgt0"
+              >
+                Create an attribute that can later be assigned to rooms.
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-css-1jggbrp rcx-css-1fuhgt0"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  for=":r1:"
+                >
+                  Name
+                  <span
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+                  >
+                    *
+                  </span>
+                </label>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <input
+                    aria-invalid="false"
+                    aria-required="true"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                    id=":r1:"
+                    name="name"
+                    size="1"
+                    type="text"
+                  />
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-css-1jggbrp rcx-css-1fuhgt0"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  id=":r2:"
+                >
+                  Values
+                  <span
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+                  >
+                    *
+                  </span>
+                </label>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <input
+                    aria-invalid="false"
+                    aria-labelledby=":r2:"
+                    aria-required="true"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                    name="attributeValues.0.value"
+                    size="1"
+                    type="text"
+                  />
+                </span>
+                <button
+                  class="rcx-box rcx-box--full rcx-button rcx-css-cnkcl9"
+                  disabled=""
+                  type="button"
+                >
+                  <span
+                    class="rcx-button--content"
+                  >
+                    Add Value
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
+          <div
+            class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+          >
+            <div
+              class="os-scrollbar-track"
+            >
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
+          </div>
+          <div
+            class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+          >
+            <div
+              class="os-scrollbar-track"
+            >
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-m843eh"
+      >
+        <div
+          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Cancel
+            </span>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+            disabled=""
+            form=":r0:"
+            type="submit"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Save
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1ph8q3"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1svuzur"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+          data-overlayscrollbars="host"
+        >
+          <div
+            class="os-size-observer"
+          >
+            <div
+              class="os-size-observer-listener"
+            />
+          </div>
+          <div
+            class=""
+            data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+            style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+            tabindex="-1"
+          >
+            <form
+              class="rcx-box rcx-box--full rcx-css-zg7o7h"
+              id=":r3:"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1fuhgt0"
+              >
+                Attribute values cannot be edited, but can be added or deleted.
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-css-1jggbrp rcx-css-1fuhgt0"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  for=":r4:"
+                >
+                  Name
+                  <span
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+                  >
+                    *
+                  </span>
+                </label>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <input
+                    aria-invalid="false"
+                    aria-required="true"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                    id=":r4:"
+                    name="name"
+                    size="1"
+                    type="text"
+                  />
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-css-1jggbrp rcx-css-1fuhgt0"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  id=":r5:"
+                >
+                  Values
+                  <span
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+                  >
+                    *
+                  </span>
+                </label>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <input
+                    aria-invalid="false"
+                    aria-labelledby=":r5:"
+                    aria-required="true"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                    disabled=""
+                    name="lockedAttributes.0.value"
+                    size="1"
+                    type="text"
+                  />
+                </span>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <input
+                    aria-invalid="false"
+                    aria-labelledby=":r5:"
+                    aria-required="true"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                    disabled=""
+                    name="lockedAttributes.1.value"
+                    size="1"
+                    type="text"
+                  />
+                  <button
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
+                    title="ABAC_Remove_attribute"
+                    type="button"
+                  >
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+                    >
+                      
+                    </i>
+                  </button>
+                </span>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <input
+                    aria-invalid="false"
+                    aria-labelledby=":r5:"
+                    aria-required="true"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                    disabled=""
+                    name="lockedAttributes.2.value"
+                    size="1"
+                    type="text"
+                  />
+                  <button
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
+                    title="ABAC_Remove_attribute"
+                    type="button"
+                  >
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+                    >
+                      
+                    </i>
+                  </button>
+                </span>
+                <button
+                  class="rcx-box rcx-box--full rcx-button rcx-css-cnkcl9"
+                  type="button"
+                >
+                  <span
+                    class="rcx-button--content"
+                  >
+                    Add Value
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
+          <div
+            class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+          >
+            <div
+              class="os-scrollbar-track"
+            >
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
+          </div>
+          <div
+            class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+          >
+            <div
+              class="os-scrollbar-track"
+            >
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-m843eh"
+      >
+        <div
+          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Cancel
+            </span>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+            disabled=""
+            form=":r3:"
+            type="submit"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Save
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

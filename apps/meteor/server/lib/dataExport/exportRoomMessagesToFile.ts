@@ -79,6 +79,14 @@ export const getMessageData = (
 		case 'ul':
 			messageObject.msg = i18n.t('User_left_this_channel');
 			break;
+		case 'ui':
+			messageObject.msg = i18n.t('User_invited_to_room', {
+				user_invited: hideUserName(msg.msg, userData, usersMap),
+			});
+			break;
+		case 'uir':
+			messageObject.msg = i18n.t('User_rejected_invitation_to_room');
+			break;
 		case 'ult':
 			messageObject.msg = i18n.t('User_left_this_team');
 			break;
@@ -146,6 +154,9 @@ export const getMessageData = (
 			break;
 		case 'livechat-started':
 			messageObject.msg = i18n.t('Chat_started');
+			break;
+		case 'abac-removed-user-from-room':
+			messageObject.msg = i18n.t('abac_removed_user_from_the_room');
 			break;
 	}
 

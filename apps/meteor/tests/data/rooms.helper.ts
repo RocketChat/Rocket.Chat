@@ -9,42 +9,19 @@ type CreateRoomParams = {
 	name?: IRoom['name'];
 	type: IRoom['t'];
 	username?: string;
-	token?: string;
-	agentId?: string;
 	members?: string[];
 	credentials?: Credentials;
 	extraData?: Record<string, any>;
-	voipCallDirection?: 'inbound' | 'outbound';
 	config?: IRequestConfig;
 };
 
-export const createRoom = ({
-	name,
-	type,
-	username,
-	token,
-	agentId,
-	members,
-	credentials: customCredentials,
-	extraData,
-	voipCallDirection = 'inbound',
-	config,
-}: CreateRoomParams) => {
+export const createRoom = ({ name, type, username, members, credentials: customCredentials, extraData, config }: CreateRoomParams) => {
 	if (!type) {
 		throw new Error('"type" is required in "createRoom.ts" test helper');
 	}
 
 	const requestInstance = config?.request || request;
 	const credentialsInstance = config?.credentials || customCredentials || credentials;
-
-	if (type === 'v') {
-		/* Special handling for voip type of rooms.
-		 * The endpoints below do not have a way to create
-		 * a voip room. Hence creation of a voip room
-		 * is handled separately here.
-		 */
-		return requestInstance.get(api('voip/room')).query({ token, agentId, direction: voipCallDirection }).set(credentialsInstance).send();
-	}
 
 	if (type === 'd' && !username) {
 		throw new Error('To be able to create DM Room, you must provide the username');
@@ -57,8 +34,6 @@ export const createRoom = ({
 	} as const;
 	const params = type === 'd' ? { username } : { name };
 
-	// Safe assertion because we already checked the type is not 'v'
-	// which is the only case where type is not in the endpoints object
 	const roomType = endpoints[type as keyof typeof endpoints];
 
 	return requestInstance
@@ -74,7 +49,7 @@ export const createRoom = ({
 type ActionType = 'delete' | 'close' | 'addOwner' | 'removeOwner';
 export type ActionRoomParams = {
 	action: ActionType;
-	type: Exclude<IRoom['t'], 'v' | 'l'>;
+	type: Exclude<IRoom['t'], 'l'>;
 	roomId: IRoom['_id'];
 	overrideCredentials?: Credentials;
 	extraData?: Record<string, any>;
@@ -112,13 +87,20 @@ export function actionRoom({ action, type, roomId, overrideCredentials = credent
 export const deleteRoom = ({ type, roomId }: { type: ActionRoomParams['type']; roomId: IRoom['_id'] }) =>
 	actionRoom({ action: 'delete', type, roomId, overrideCredentials: credentials });
 
-export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = credentials): Promise<ISubscription> =>
-	new Promise((resolve) => {
-		void request
+export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = credentials, req = request): Promise<ISubscription> =>
+	new Promise((resolve, reject) => {
+		void req
 			.get(api('subscriptions.getOne'))
 			.set(userCredentials)
 			.query({ roomId })
-			.end((_err, res) => {
+			.end((err, res) => {
+				if (err) {
+					return reject(err);
+				}
+				if (!res.body?.subscription) {
+					return reject(new Error('Subscription not found'));
+				}
+
 				resolve(res.body.subscription);
 			});
 	});
@@ -423,4 +405,86 @@ export const loadHistory = async (
 		firstUnread?: IMessage;
 		unreadNotLoaded?: number;
 	};
+};
+
+/**
+ * Accepts a room invite for the authenticated user.
+ *
+ * Processes a room invitation by accepting it, which grants the user
+ * access to the room. This is essential for federated room workflows
+ * where users receive invitations rather than auto-joining.
+ *
+ * @param roomId - The unique identifier of the room
+ * @param config - Optional request configuration for custom domains
+ * @returns Promise resolving to the acceptance response
+ */
+export const acceptRoomInvite = (roomId: IRoom['_id'], config?: IRequestConfig) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+
+	return new Promise<{ success: boolean; error?: string }>((resolve) => {
+		void requestInstance
+			.post(api('rooms.invite'))
+			.set(credentialsInstance)
+			.send({
+				roomId,
+				action: 'accept',
+			})
+			.end((_err: any, req: any) => {
+				resolve(req.body);
+			});
+	});
+};
+
+/**
+ * Retrieves the subscriptions for the authenticated user.
+ *
+ * Fetches the complete list of subscriptions for the authenticated user, which is essential
+ * for verifying federation subscription synchronization and member synchronization.
+ *
+ * @param config - Optional request configuration for custom domains
+ * @returns Promise resolving to the subscriptions response
+ */
+
+export const getSubscriptions = (config?: IRequestConfig) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+
+	return new Promise<ReturnType<Endpoints['/v1/subscriptions.get']['GET']>>((resolve) => {
+		void requestInstance
+			.get(api('subscriptions.get'))
+			.set(credentialsInstance)
+			.end((_err: any, req: any) => {
+				resolve(req.body);
+			});
+	});
+};
+
+/**
+ * Rejects a room invite for the authenticated user.
+ *
+ * Processes a room invitation by rejecting it, which prevents the user
+ * from joining the room and removes them from the invited members list.
+ * This is essential for federated room workflows where users can decline invitations.
+ *
+ * @param roomId - The unique identifier of the room
+ * @param config - Optional request configuration for custom domains
+ * @returns Promise resolving to the rejection response
+ */
+export const rejectRoomInvite = (roomId: IRoom['_id'], config?: IRequestConfig) => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+
+	return new Promise<{ success: boolean; error?: string }>((resolve) => {
+		void requestInstance
+			.post(api('rooms.invite'))
+			.set(credentialsInstance)
+			.send({
+				roomId,
+				action: 'reject',
+			})
+			.end((_err: any, req: any) => {
+				resolve(req.body);
+			});
+	});
 };

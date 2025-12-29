@@ -1,18 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelTransferChatModal } from '../omnichannel-transfer-chat-modal';
 import { HomeContent } from './home-content';
-import { OmnichannelContactReviewModal } from '../omnichannel-contact-review-modal';
+import { OmnichannelTransferChatModal } from './modals';
 
 export class HomeOmnichannelContent extends HomeContent {
 	readonly forwardChatModal: OmnichannelTransferChatModal;
 
-	readonly contactReviewModal: OmnichannelContactReviewModal;
-
 	constructor(page: Page) {
 		super(page);
 		this.forwardChatModal = new OmnichannelTransferChatModal(page);
-		this.contactReviewModal = new OmnichannelContactReviewModal(page);
 	}
 
 	get btnReturnToQueue(): Locator {
@@ -35,7 +31,7 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('role=button[name="Take it!"]');
 	}
 
-	get inputMessage(): Locator {
+	override get inputMessage(): Locator {
 		return this.page.locator('[name="msg"]');
 	}
 
@@ -47,8 +43,12 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.contactContextualBar.getByRole('list', { name: 'Email' }).getByRole('listitem').first().locator('p');
 	}
 
+	get header(): Locator {
+		return this.page.locator('header');
+	}
+
 	get btnReturn(): Locator {
-		return this.page.getByRole('button', { name: 'Back' });
+		return this.header.getByRole('button', { name: 'Back' });
 	}
 
 	get btnResume(): Locator {

@@ -9,7 +9,7 @@ export default {
 	addons: [
 		getAbsolutePath('@storybook/addon-essentials'),
 		getAbsolutePath('@storybook/addon-interactions'),
-		getAbsolutePath('@storybook/addon-webpack5-compiler-babel'),
+		getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 		getAbsolutePath('@storybook/addon-styling-webpack'),
 		getAbsolutePath('@storybook/addon-a11y'),
 	],
@@ -46,7 +46,6 @@ export default {
 		config.plugins?.push(
 			new webpack.NormalModuleReplacementPlugin(/^meteor/, require.resolve('./mocks/meteor.js')),
 			new webpack.NormalModuleReplacementPlugin(/(app)\/*.*\/(server)\/*/, require.resolve('./mocks/empty.ts')),
-			new webpack.NormalModuleReplacementPlugin(/^sip.js/, require.resolve('./mocks/empty.ts')),
 		);
 
 		return config;

@@ -1,12 +1,12 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Select, Margins, Option } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Key } from 'react';
 import { useState, useMemo, useEffect, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { getDateRange } from '../../../lib/utils/getDateRange';
 import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
 import Label from '../components/Label';
