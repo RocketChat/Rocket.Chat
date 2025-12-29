@@ -60,6 +60,8 @@ jobs:
 
       - name: Unit Test
         run: yarn testunit
+        env:
+          DISABLE_V8_COMPILE_CACHE: 1
 
       - uses: codecov/codecov-action@v5
         with:
