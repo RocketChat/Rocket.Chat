@@ -6,6 +6,7 @@ import { useTranslation, useUserId, useUserCard } from '@rocket.chat/ui-contexts
 import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 
+
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import {
@@ -33,6 +34,8 @@ type RoomMessageProps = {
 	ignoredUser?: boolean;
 	searchText?: string;
 } & ComponentProps<typeof Message>;
+
+
 
 const RoomMessage = ({
 	message,
@@ -63,8 +66,8 @@ const RoomMessage = ({
 
 	return (
 		<Message
-			ref={messageRef}
-			id={message._id}
+		    ref={messageRef}
+		    id={message._id}
 			role='listitem'
 			aria-roledescription={t('message')}
 			tabIndex={0}
@@ -84,6 +87,15 @@ const RoomMessage = ({
 			data-qa-type='message'
 			aria-busy={message.temp}
 			{...props}
+			   style={{
+						borderInlineStart: message.u._id === uid
+						? '4px solid var(--rc-color-primary-light)'
+						: undefined,
+						backgroundColor: message.u._id === uid
+						? 'rgba(0, 0, 0, 0.015)'
+						: undefined,
+					}}
+
 		>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && !selecting && showUserAvatar && (
