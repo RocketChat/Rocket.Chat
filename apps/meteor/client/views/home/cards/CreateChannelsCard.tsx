@@ -16,7 +16,6 @@ const CreateChannelsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): R
 			title={t('Create_channels')}
 			body={t('Create_a_public_channel_that_new_workspace_members_can_join')}
 			buttons={[<GenericCardButton key={1} onClick={openCreateChannelModal} children={t('Create_channel')} />]}
-			data-qa-id='homepage-create-channels-card'
 			width='x340'
 			{...props}
 		/>
