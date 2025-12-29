@@ -26,6 +26,10 @@ export const roomsQueryKeys = {
 	threads: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'threads'] as const,
 	roles: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'roles'] as const,
 	info: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'info'] as const,
+	members: (rid: IRoom['_id'], roomType: RoomType, type?: 'all' | 'online', filter?: string) =>
+		!type && !filter
+			? ([...roomsQueryKeys.room(rid), 'members', roomType] as const)
+			: ([...roomsQueryKeys.room(rid), 'members', roomType, type, filter] as const),
 };
 
 export const subscriptionsQueryKeys = {

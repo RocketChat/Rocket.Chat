@@ -78,7 +78,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<InfoPanel>
-					<InfoPanelSection>
+					<InfoPanelSection fontScale='p1b'>
 						{isInternalCallHistoryContact(contact) ? (
 							<CallHistoryInternalUser username={contact.username} name={contact.name} _id={contact._id} />
 						) : (
