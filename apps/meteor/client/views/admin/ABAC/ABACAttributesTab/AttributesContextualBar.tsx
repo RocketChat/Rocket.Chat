@@ -30,7 +30,7 @@ const AttributesContextualBar = ({ attributeData, onClose }: AttributesContextua
 		defaultValues: attributeData
 			? {
 					name: attributeData.key,
-					attributeValues: [{ value: '' }],
+					attributeValues: [],
 					lockedAttributes: attributeData.values.map((value) => ({ value })),
 				}
 			: {
