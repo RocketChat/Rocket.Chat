@@ -7082,5 +7082,7 @@
   "timestamps.longDateDescription": "12/31/2020, 12:00 AM",
   "timestamps.fullDateTimeDescription": "December 31, 2020 12:00 AM",
   "timestamps.fullDateTimeLongDescription": "Thursday, December 31, 2020 12:00:00 AM",
+  "__username__profile_picture": "{{username}}'s profile picture",
+  "User_card": "User card",
   "timestamps.relativeTimeDescription": "1 year ago"
 }

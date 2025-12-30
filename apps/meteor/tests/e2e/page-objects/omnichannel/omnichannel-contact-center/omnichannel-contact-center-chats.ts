@@ -2,23 +2,8 @@ import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelContactCenter } from './omnichannel-contact-center';
 import { FlexTab } from '../../fragments/flextab';
-import { Modal } from '../../fragments/modal';
+import { OmnichannelConfirmRemoveChat } from '../../fragments/modals';
 import { Table } from '../../fragments/table';
-
-class ConfirmRemoveChat extends Modal {
-	constructor(page: Page) {
-		super(page.getByRole('dialog'));
-	}
-
-	private get btnConfirmRemove(): Locator {
-		return this.root.getByRole('button', { name: 'Delete' });
-	}
-
-	async confirm() {
-		await this.btnConfirmRemove.click();
-		await this.waitForDismissal();
-	}
-}
 
 class ConversationFlexTab extends FlexTab {
 	constructor(page: Page) {
@@ -62,7 +47,7 @@ class OmnichannelContactCenterChatsTable extends Table {
 export class OmnichannelContactCenterChats extends OmnichannelContactCenter {
 	readonly filters: OmnichannelChatsFilters;
 
-	readonly confirmRemoveChatModal: ConfirmRemoveChat;
+	readonly confirmRemoveChatModal: OmnichannelConfirmRemoveChat;
 
 	readonly conversation: ConversationFlexTab;
 
@@ -71,7 +56,7 @@ export class OmnichannelContactCenterChats extends OmnichannelContactCenter {
 	constructor(page: Page) {
 		super(page);
 		this.filters = new OmnichannelChatsFilters(page);
-		this.confirmRemoveChatModal = new ConfirmRemoveChat(page);
+		this.confirmRemoveChatModal = new OmnichannelConfirmRemoveChat(page);
 		this.conversation = new ConversationFlexTab(page);
 	}
 
