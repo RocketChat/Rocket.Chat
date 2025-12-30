@@ -19,7 +19,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -42,6 +42,9 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 	const { t } = useTranslation();
 	const getUserData = useEndpoint('GET', '/v1/users.info');
 	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle', true);
+
+	const departmentFieldId = useId();
+	const userFieldId = useId();
 
 	const {
 		getValues,
@@ -93,13 +96,14 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 			<ModalContent fontScale='p2'>
 				<FieldGroup>
 					<Field>
-						<FieldLabel>{t('Forward_to_department')}</FieldLabel>
+						<FieldLabel htmlFor={departmentFieldId}>{t('Forward_to_department')}</FieldLabel>
 						<FieldRow>
 							<AutoCompleteDepartment
+								id={departmentFieldId}
+								aria-label={t('Forward_to_department')}
 								withTitle={false}
 								maxWidth='100%'
 								flexGrow={1}
-								data-qa-id='forward-to-department'
 								onChange={(value: string): void => {
 									setValue('department', value);
 								}}
@@ -108,9 +112,11 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 					</Field>
 					<Divider p={0} children={t('or')} />
 					<Field>
-						<FieldLabel>{t('Forward_to_user')}</FieldLabel>
+						<FieldLabel htmlFor={userFieldId}>{t('Forward_to_user')}</FieldLabel>
 						<FieldRow>
 							<AutoCompleteAgent
+								id={userFieldId}
+								aria-label={t('Forward_to_user')}
 								withTitle
 								onlyAvailable
 								value={getValues().username}
