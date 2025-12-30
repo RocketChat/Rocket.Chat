@@ -14,11 +14,19 @@ export const sendUsageReportAndComputeRestriction = async (statsToken?: string) 
 };
 
 export async function usageReportCron(logger: Logger): Promise<void> {
-	const name = 'Generate and save statistics';
+	// The actual send suppression happens inside `sendUsageReport`, but since this
+	// is the entry point, we log a warning here when reporting is disabled.
+	const shouldSendToCollector = process.env.RC_DISABLE_STATISTICS_REPORTING?.toLowerCase() !== 'true';
+	if (!shouldSendToCollector) {
+		logger.warn(
+			'Statistics reporting disabled via environment variable (RC_DISABLE_STATISTICS_REPORTING). This may impact product improvements.',
+		);
+	}
 
 	const statsToken = await sendUsageReport(logger);
 	await sendUsageReportAndComputeRestriction(statsToken);
 
+	const name = 'Generate and save statistics';
 	const now = new Date();
 
 	return cronJobs.add(name, `12 ${now.getHours()} * * *`, async () => {
