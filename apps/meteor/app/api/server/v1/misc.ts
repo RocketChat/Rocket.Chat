@@ -515,15 +515,8 @@ API.v1.addRoute(
 						timeToReset: rateLimitResult.timeToReset,
 					});
 				}
-				const invocation = await APIClass.createMeteorInvocation(this.connection, this.userId, this.token);
 
-				if (this.twoFactorChecked) {
-					(invocation.invocation as any).twoFactorChecked = true;
-				}
-				const result = await invocation
-					.applyInvocation(() => Meteor.callAsync(method, ...params))
-					.finally(() => invocation[Symbol.asyncDispose]());
-				return API.v1.success(mountResult({ id, result }));
+				return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
 					SystemLogger.error({ msg: 'Exception while invoking method', err, method });
@@ -580,12 +573,7 @@ API.v1.addRoute(
 					});
 				}
 
-				const invocation = await APIClass.createMeteorInvocation(this.connection, this.userId, this.token);
-				// TODO: Meteor does not support `await using` yet, so we need to manually dispose the invocation
-				const result = await invocation
-					.applyInvocation(() => Meteor.callAsync(method, ...params))
-					.finally(() => invocation[Symbol.asyncDispose]());
-				return API.v1.success(mountResult({ id, result }));
+				return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
 					SystemLogger.error({ msg: 'Exception while invoking method', err, method });
