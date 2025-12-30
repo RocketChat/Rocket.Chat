@@ -104,7 +104,7 @@ const parseItalic = getRegexReplacer(
 };
 
 const parseTaskLists = (msg) =>
-	msg.replace(taskRegex, (_, checked, text) => {
+	msg.replace(/^- \[(x| )\] (.*)$/gm, (_, checked, text) => {
 		const safeText = escapeHTML(text);
 
 		return `
@@ -114,6 +114,7 @@ const parseTaskLists = (msg) =>
 			</div>
 		`;
 	});
+
 
 
 const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) => {
