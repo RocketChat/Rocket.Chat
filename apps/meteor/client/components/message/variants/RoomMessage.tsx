@@ -87,12 +87,13 @@ const RoomMessage = ({
 			data-qa-type='message'
 			aria-busy={message.temp}
 			{...props}
-			   style={{
+			style={{
+				        ...props.style,
 						borderInlineStart: message.u._id === uid
 						? '4px solid var(--rc-color-primary-light)'
 						: undefined,
 						backgroundColor: message.u._id === uid
-						? 'rgba(0, 0, 0, 0.015)'
+						?  'color-mix(in srgb, var(--rc-color-primary) 3%, transparent)'
 						: undefined,
 					}}
 
