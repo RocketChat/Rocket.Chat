@@ -3205,7 +3205,7 @@ describe('Meteor.methods', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('success', false);
 						const parsedBody = JSON.parse(res.body.message);
 						expect(parsedBody).to.have.property('error');
 						expect(parsedBody.error).to.have.property('error', 'error-max-rooms-per-guest-reached');
@@ -3229,7 +3229,7 @@ describe('Meteor.methods', () => {
 				})
 				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
 					expect(parsedBody.error).to.have.property('error', 'Invalid setting value NaN');
