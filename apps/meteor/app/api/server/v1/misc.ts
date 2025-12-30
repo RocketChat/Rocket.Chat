@@ -476,6 +476,7 @@ API.v1.addRoute(
 		authRequired: true,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
+		applyMeteorContext: true,
 	},
 	{
 		async post() {
@@ -537,6 +538,7 @@ API.v1.addRoute(
 		authRequired: false,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
+		applyMeteorContext: true,
 	},
 	{
 		async post() {

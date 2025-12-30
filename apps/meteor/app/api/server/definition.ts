@@ -150,6 +150,7 @@ export type SharedOptions<TMethod extends string> = (
 		version: DeprecationLoggerNextPlannedVersion;
 		alternatives?: PathPattern[];
 	};
+	applyMeteorContext?: boolean;
 };
 
 export type GenericRouteExecutionContext = ActionThis<any, any, any>;
