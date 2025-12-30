@@ -12,7 +12,6 @@ import { WebApp } from 'meteor/webapp';
 
 import { authenticationMiddleware } from '../../../../app/api/server/middlewares/authentication';
 import { settings } from '../../../../app/settings/server';
-import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
 
 const apiServer = express();
@@ -213,9 +212,9 @@ export class AppUIKitInteractionApi {
 				const rid = 'rid' in req.body ? req.body.rid : undefined;
 
 				const { visitor } = req.body;
-				const room = await orch.getConverters()?.get('rooms').convertById(rid);
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				const message = mid && (await orch.getConverters()?.get('messages').convertById(mid));
+				const message = mid ? await orch.getConverters()?.get('messages').convertById(mid) : undefined;
+				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
 				const action = {
 					type,
