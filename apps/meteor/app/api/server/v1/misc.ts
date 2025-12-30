@@ -29,7 +29,6 @@ import { settings } from '../../../settings/server';
 import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFields';
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
-import { APIClass } from '../ApiClass';
 import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
