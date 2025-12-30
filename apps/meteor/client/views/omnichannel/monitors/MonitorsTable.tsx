@@ -28,7 +28,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, hashKey, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
@@ -37,6 +37,7 @@ import { links } from '../../../lib/links';
 const MonitorsTable = () => {
 	const t = useTranslation();
 	const setModal = useSetModal();
+	const usernameFieldId = useId();
 
 	const [text, setText] = useState('');
 	const [username, setUsername] = useState('');
@@ -139,9 +140,9 @@ const MonitorsTable = () => {
 		<>
 			<Box display='flex' flexDirection='column'>
 				<Field>
-					<FieldLabel>{t('Username')}</FieldLabel>
+					<FieldLabel htmlFor={usernameFieldId}>{t('Username')}</FieldLabel>
 					<FieldRow>
-						<UserAutoComplete name='monitor' value={username} onChange={setUsername as () => void} />
+						<UserAutoComplete id={usernameFieldId} name='monitor' value={username} onChange={setUsername as () => void} />
 						<Button primary disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()} mis={8}>
 							{t('Add_monitor')}
 						</Button>
