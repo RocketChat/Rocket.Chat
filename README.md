@@ -104,6 +104,9 @@ Join [#support](https://open.rocket.chat/channel/support) and [#general](https:/
 
 Rocket.Chat is an open-source project, and we are very happy to accept community contributions. Refer to the [Contribution guide](https://developer.rocket.chat/docs/contribute-to-rocketchat) for more details.
 
+- **Windows local development:** See [`development/windows-setup.md`](development/windows-setup.md) for a Windows-verified guide explaining the recommended Meteor-based workflow and common setup issues.
+
+
 
 # 💼 Become a Rocketeer
 
