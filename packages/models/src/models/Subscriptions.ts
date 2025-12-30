@@ -157,11 +157,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	}
 
-	countByRoomIdAndUserId(rid: string, uid: string | undefined): Promise<number> {
+	countByRoomIdAndUserId(rid: string, uid: string | undefined, includeInvitations = false): Promise<number> {
 		const query = {
 			rid,
 			'u._id': uid,
-			'$or': [{ status: { $exists: false } }, { status: 'INVITED' as const }],
+			'$or': [{ status: { $exists: false } }, includeInvitations && { status: 'INVITED' as const }].filter(
+				Boolean,
+			) as Filter<ISubscription>[],
 		};
 
 		return this.countDocuments(query);
