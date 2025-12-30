@@ -37,7 +37,6 @@ const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps) 
 			onChange={onChange}
 			filter={filter}
 			setFilter={setFilter}
-			data-qa-id='UserAutoComplete'
 			renderSelected={({ selected: { value, label } }) => (
 				<Chip height='x20' value={value} mie={4}>
 					<UserAvatar size='x20' username={value} />
