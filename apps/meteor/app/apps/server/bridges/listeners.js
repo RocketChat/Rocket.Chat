@@ -1,8 +1,16 @@
+import crypto from 'crypto';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 export class AppListenerBridge {
 	constructor(orch) {
+		/**
+		 * @type {import('@rocket.chat/apps').IAppServerOrchestrator}
+		 */
 		this.orch = orch;
 	}
 
@@ -10,6 +18,9 @@ export class AppListenerBridge {
 		// eslint-disable-next-line complexity
 		const method = (() => {
 			switch (event) {
+				case AppInterface.IPreFileUpload:
+				case AppInterface.IPreFileUploadStream:
+					return 'uploadEvent';
 				case AppInterface.IPostSystemMessageSent:
 				case AppInterface.IPreMessageSentPrevent:
 				case AppInterface.IPreMessageSentExtend:
@@ -70,6 +81,23 @@ export class AppListenerBridge {
 
 	async defaultEvent(inte, payload) {
 		return this.orch.getManager().getListenerManager().executeListener(inte, payload);
+	}
+
+	/**
+	 *
+	 * @param {import('@rocket.chat/apps').AppEvents.IPreFileUpload | import('@rocket.chat/apps').AppEvents.IPreFileUploadStream} inte event interface
+	 * @param {{ file: import('@rocket.chat/core-typings').IUpload; content: Buffer }} payload
+	 * @return void
+	 */
+	async uploadEvent(inte, payload) {
+		const { file, content } = payload;
+
+		const tmpfile = path.join(os.tmpdir(), crypto.randomUUID());
+		await fs.promises.writeFile(tmpfile, content);
+
+		const appFile = await this.orch.getConverters().get('uploads').convertToApp(file);
+
+		await this.orch.getManager().getListenerManager().executeListener(inte, { file: appFile, path: tmpfile });
 	}
 
 	async messageEvent(inte, message, ...payload) {
