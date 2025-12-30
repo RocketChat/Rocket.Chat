@@ -1233,25 +1233,3 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		};
 	}
 }
-
-// const createMeteorInvocation = (connection: IMethodConnection) => {
-// 	const invocation = new DDPCommon.MethodInvocation({
-// 		connection,
-// 		isSimulation: false,
-// 		userId,
-// 	});
-
-// 	Accounts._accountData[connection.id] = {
-// 		connection,
-// 	};
-// 	Accounts._setAccountData(connection.id, 'loginToken', this.token!);
-// 	result = (await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || api.success();
-
-// 	return {
-// 		invocation,
-// 		applyInvocation: () => {},
-// 		[Symbol.asyncDispose]() {
-// 			return Promise.resolve();
-// 		},
-// 	};
-// };
