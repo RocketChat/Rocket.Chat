@@ -1,5 +1,13 @@
 import type { IAbacAttributeDefinition, IRoom, IUser } from '@rocket.chat/core-typings';
-import { registerServiceModels } from '@rocket.chat/models';
+import {
+	registerModel,
+	Subscriptions,
+	SubscriptionsRaw,
+	UsersRaw,
+	RoomsRaw,
+	AbacAttributesRaw,
+	ServerEventsRaw,
+} from '@rocket.chat/models';
 import type { Collection, Db } from 'mongodb';
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -12,7 +20,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 	Room: {
 		// Mimic the DB side-effects of removing a user from a room (no apps/system messages)
 		removeUserFromRoom: async (roomId: string, user: any) => {
-			const { Subscriptions } = await import('@rocket.chat/models');
 			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 		},
 	},
@@ -85,11 +92,12 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		client = await MongoClient.connect(mongo.getUri(), {});
 		db = client.db('abac_integration');
 
-		// Hack to register the models in here with a custom database without having to call every model by one
-		registerServiceModels(db as any);
-
-		// @ts-expect-error - ignore
-		await db.collection('abac_dummy_init').insertOne({ _id: 'init', createdAt: new Date() });
+		// Register only the models we actually need for these tests
+		registerModel('IUsersModel', () => new UsersRaw(db));
+		registerModel('IRoomsModel', () => new RoomsRaw(db));
+		registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
+		registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
+		registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(db));
 
 		service = new AbacService();
 		debugSpy = jest.spyOn((service as any).logger, 'debug').mockImplementation(() => undefined);

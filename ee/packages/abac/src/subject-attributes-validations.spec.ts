@@ -1,5 +1,5 @@
 import type { ILDAPEntry, IUser, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
-import { registerServiceModels, Users } from '@rocket.chat/models';
+import { registerModel, Users, UsersRaw, RoomsRaw, AbacAttributesRaw, ServerEventsRaw } from '@rocket.chat/models';
 import type { Collection, Db } from 'mongodb';
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -40,7 +40,12 @@ describe('Subject Attributes validation', () => {
 		mongo = await MongoMemoryServer.create();
 		client = await MongoClient.connect(mongo.getUri(), {});
 		db = client.db('abac_global');
-		registerServiceModels(db);
+
+		// Register only the models we actually need for these tests
+		registerModel('IUsersModel', () => new UsersRaw(db));
+		registerModel('IRoomsModel', () => new RoomsRaw(db));
+		registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
+		registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
 
 		// @ts-expect-error - ignore
 		await db.collection('abac_dummy_init').insertOne({ _id: 'init', createdAt: new Date() });
