@@ -50,8 +50,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		// TODO this is currently counting deactivated users
-		const total = await Subscriptions.countByRoomIdWhenUsernameExists(rid);
+	const total = await Subscriptions.countByRoomIdWhenUsernameExistsAndActive(rid);
 
 		const { cursor } = findUsersOfRoom({
 			rid,
