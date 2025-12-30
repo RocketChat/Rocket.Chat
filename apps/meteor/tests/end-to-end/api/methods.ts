@@ -152,7 +152,7 @@ describe('Meteor.methods', () => {
 				});
 		});
 
-		describe('[@getReadReceipts] CE', () => {
+		(!IS_EE ? describe : describe.skip)('[@getReadReceipts] CE', () => {
 			it('should fail if there is no enterprise license', async () => {
 				await request
 					.post(methodCall('getReadReceipts'))
