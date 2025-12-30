@@ -45,7 +45,7 @@ export const removeRoomOwner = async (fromUserId: string, rid: string, userId: s
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 
 	if (!subscription) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+		throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
 			method: 'removeRoomOwner',
 		});
 	}
