@@ -1,5 +1,14 @@
 import { addAsToken, isToken, validateAllowedTokens } from './token';
-import { parseTables } from './tables';
+
+const escapeHTML = (str = '') =>
+	str
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
+
+
 const validateUrl = (url, message) => {
 	// Don't render markdown inside links
 	if (message?.tokens?.some((token) => url.includes(token.token))) {
@@ -95,14 +104,16 @@ const parseItalic = getRegexReplacer(
 };
 
 const parseTaskLists = (msg) =>
-	msg.replace(
-		/^- \[(x| )\] (.*)$/gm,
-		(_, checked, text) =>
-			`<div class="task-list-item">
+	msg.replace(taskRegex, (_, checked, text) => {
+		const safeText = escapeHTML(text);
+
+		return `
+			<div class="task-list-item">
 				<input type="checkbox" disabled ${checked === 'x' ? 'checked' : ''} />
-				<span>${text}</span>
-			</div>`,
-	);
+				<span>${safeText}</span>
+			</div>
+		`;
+	});
 
 
 const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) => {
@@ -140,9 +151,7 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 			'<h4>$1</h4>',
 		);
 	}
-    
 
-	msg = parseTaskLists(msg);
 
 	// Support markdown tables
     msg = parseTables(msg);
