@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import {
 	ToggleButton,
-	PeerInfo,
+	// PeerInfo,
 	// Widget,
 	// WidgetFooter,
 	// WidgetHandle,
@@ -15,20 +15,33 @@ import {
 	DevicePicker,
 	ActionButton,
 	// useKeypad,
-	useInfoSlots,
+	// useInfoSlots,
 } from '../../components';
 import { useMediaCallContext } from '../../context';
 import useMediaStream from '../../context/useMediaStream';
+import useRoomView from '../../context/useRoomView';
 
-const RoomCallSection = () => {
+const getSplitStyles = (showChat: boolean) => {
+	if (showChat) {
+		return {
+			maxHeight: '50vh',
+			borderBlockEnd: '1px solid',
+			borderBlockEndColor: 'stroke-light',
+		};
+	}
+	return {
+		height: '100%',
+	};
+};
+
+const RoomCallSection = ({ showChat, onToggleChat }: { showChat: boolean; onToggleChat: () => void }) => {
 	const { t } = useTranslation();
-
 	const [sharingScreen, setSharingScreen] = useState<boolean>(false);
 	const {
 		muted,
 		held,
-		remoteMuted,
-		remoteHeld,
+		// remoteMuted,
+		// remoteHeld,
 		onMute,
 		onHold,
 		onForward,
@@ -37,19 +50,24 @@ const RoomCallSection = () => {
 		peerInfo,
 		connectionState,
 		// expanded,
-		getRemoteStream,
+		// getRemoteStream,
+		getRemoteVideoStream,
 		toggleScreenSharing,
 	} = useMediaCallContext();
 
 	// const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
 
 	// const slots = useInfoSlots(muted, held, connectionState);
-	const remoteSlots = useInfoSlots(remoteMuted, remoteHeld);
+	// const remoteSlots = useInfoSlots(remoteMuted, remoteHeld);
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	const [remoteStreamRefCallback] = useMediaStream(getRemoteStream());
+	const remoteVideoStream = getRemoteVideoStream();
+
+	const [remoteStreamRefCallback] = useMediaStream(remoteVideoStream);
+
+	const onVideoPlaying = useRoomView();
 
 	const onClickShareScreen = () => {
 		toggleScreenSharing();
@@ -64,27 +82,39 @@ const RoomCallSection = () => {
 
 	return (
 		<Box
-			maxHeight='50vh'
 			w='full'
 			bg='hover'
 			flexShrink={0}
 			borderBlockEnd='1px solid'
 			borderBlockEndColor='stroke-light'
+			overflow='hidden'
 			display='flex'
 			flexDirection='column'
 			justifyContent='space-between'
+			alignItems='center'
+			{...getSplitStyles(showChat)}
 		>
-			<Box flexShrink={0}>
+			{/* <Box flexShrink={0}>
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
 				<Timer />
-			</Box>
-			<Box flexGrow={1} flexShrink={1} overflow='hidden' alignItems='center' justifyContent='center'>
-				<video controls preload='metadata' style={{ height: '100%', objectFit: 'contain' }} ref={remoteStreamRefCallback}>
-					<track kind='captions' />
-				</video>
-			</Box>
-			<Box flexShrink={0} mb={8}>
-				<ButtonGroup large align='center'>
+			</Box> */}
+			{remoteVideoStream && (
+				<Box flexGrow={1} flexShrink={1} overflow='hidden' alignItems='center' justifyContent='center' pb={8} pi={8}>
+					<video
+						preload='metadata'
+						style={{ height: '100%', width: '100%', objectFit: 'contain' }}
+						ref={remoteStreamRefCallback}
+						onPlaying={onVideoPlaying}
+					>
+						<track kind='captions' />
+					</video>
+				</Box>
+			)}
+			<Box display='flex' flexDirection='row' justifyContent='space-between' flexShrink={0} mb={8} w='full'>
+				<Box flexGrow={1} color='default' alignContent='center' pis={16}>
+					<Timer />
+				</Box>
+				<ButtonGroup large align='center' style={{ flexGrow: 2 }}>
 					{/* <ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} /> */}
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
 					<ToggleButton
@@ -101,6 +131,15 @@ const RoomCallSection = () => {
 						pressed={held}
 						onToggle={onHold}
 					/>
+					{remoteVideoStream && (
+						<ToggleButton
+							label={t('Chat')}
+							icons={['balloon', 'balloon-off']}
+							titles={[t('Open_chat'), t('Close_chat')]}
+							pressed={showChat}
+							onToggle={onToggleChat}
+						/>
+					)}
 					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
 					<ActionButton
 						label={t('Voice_call__user__hangup', { user: 'userId' in peerInfo ? peerInfo.displayName : peerInfo.number })}
@@ -110,6 +149,7 @@ const RoomCallSection = () => {
 					/>
 					<DevicePicker />
 				</ButtonGroup>
+				<Box flexGrow={1} /> {/* TODO: This is a hack to center the buttons */}
 			</Box>
 		</Box>
 	);

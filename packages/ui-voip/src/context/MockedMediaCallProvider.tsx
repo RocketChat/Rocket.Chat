@@ -126,6 +126,8 @@ const MockedMediaCallProvider = ({
 	const contextValue = {
 		state: widgetState,
 		hidden: false,
+		inRoomView: false,
+		setInRoomView: () => undefined,
 		connectionState: 'CONNECTED' as const,
 		expanded: widgetState === 'ongoing',
 		peerInfo,

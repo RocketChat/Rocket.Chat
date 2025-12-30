@@ -12,7 +12,7 @@ import {
 	useSetting,
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -36,6 +36,8 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const user = useUser();
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+
+	const [inRoomView, setInRoomView] = useState(false);
 
 	const setModal = useSetModal();
 
@@ -263,6 +265,8 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 		remoteMuted: session.remoteMuted,
 		remoteHeld: session.remoteHeld,
 		expanded: session.state === 'ongoing',
+		inRoomView,
+		setInRoomView,
 		onMute,
 		onHold,
 		onDeviceChange,

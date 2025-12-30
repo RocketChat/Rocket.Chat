@@ -12,7 +12,6 @@ import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
-import RoomCallSection from './RoomCallSection';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import RoomAnnouncement from '../RoomAnnouncement';
 import ComposerContainer from '../composer/ComposerContainer';
@@ -190,12 +189,9 @@ const RoomBody = (): ReactElement => {
 	useReadMessageWindowEvents();
 	useQuoteMessageByUrl();
 
-	const callOngoing = true;
-
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} />}
-			{callOngoing && <RoomCallSection />}
 			<Box key={room._id} className={['main-content-flex', listStyle]}>
 				<section
 					role='presentation'

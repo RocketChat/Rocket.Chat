@@ -4,7 +4,7 @@ export { MediaCallContext, useMediaCallExternalContext as useMediaCallContext, t
 
 export { useMediaCallAction } from './hooks';
 
-export { CallHistoryContextualBar, MediaCallRoomSection } from './views';
+export { CallHistoryContextualBar, MediaCallRoomSection, MediaCallRoom } from './views';
 export type { InternalCallHistoryContact, ExternalCallHistoryContact, CallHistoryData } from './views';
 
 export { getHistoryMessagePayload } from './ui-kit/getHistoryMessagePayload';
