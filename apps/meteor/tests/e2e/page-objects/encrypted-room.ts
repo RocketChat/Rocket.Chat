@@ -1,6 +1,6 @@
 import { HomeContent, HomeFlextab } from './fragments';
-import { DisableRoomEncryptionModal, EnableRoomEncryptionModal } from './fragments/e2ee';
 import { Message } from './fragments/message';
+import { DisableRoomEncryptionModal, EnableRoomEncryptionModal } from './fragments/modals';
 
 export class EncryptedRoomPage extends HomeContent {
 	get encryptedTitle() {

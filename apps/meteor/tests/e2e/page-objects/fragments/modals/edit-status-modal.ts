@@ -1,7 +1,7 @@
 import type { Page } from 'playwright-core';
 
 import { Modal } from './modal';
-import { ToastMessages } from './toast-messages';
+import { ToastMessages } from '../toast-messages';
 
 export class EditStatusModal extends Modal {
 	readonly toastMessages: ToastMessages;
