@@ -57,11 +57,7 @@ describe('Subject Attributes validation', () => {
 	});
 
 	describe('AbacService.addSubjectAttributes (unit)', () => {
-		let service: AbacService;
-
-		beforeEach(async () => {
-			service = new AbacService();
-		});
+		const service = new AbacService();
 
 		describe('early returns and no-ops', () => {
 			it('returns early when user has no _id', async () => {

@@ -29,7 +29,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 	let mongo: MongoMemoryServer;
 	let client: MongoClient;
 	let db: Db;
-	let service: AbacService;
+	const service = new AbacService();
 
 	let roomsCol: Collection<IRoom>;
 	let usersCol: Collection<IUser>;
@@ -99,7 +99,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
 		registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(db));
 
-		service = new AbacService();
 		debugSpy = jest.spyOn((service as any).logger, 'debug').mockImplementation(() => undefined);
 		auditSpy = jest.spyOn(Audit, 'actionPerformed').mockResolvedValue();
 
