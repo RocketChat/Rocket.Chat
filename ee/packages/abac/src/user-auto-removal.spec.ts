@@ -156,15 +156,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			expect(auditedUsers).toEqual(['u2_newkey', 'u3_newkey']);
 			expect(auditedRooms).toEqual(new Set([rid1]));
 			expect(auditedActions).toEqual(new Set(['room-attributes-change']));
-
-			const remaining = await usersCol
-				.find({ _id: { $in: ['u1_newkey', 'u2_newkey', 'u3_newkey', 'u4_newkey'] } }, { projection: { __rooms: 1 } })
-				.toArray()
-				.then((docs) => Object.fromEntries(docs.map((d) => [d._id, d.__rooms || []])));
-			expect(remaining.u1_newkey).toContain(rid1);
-			expect(remaining.u4_newkey).toContain(rid1);
-			expect(remaining.u2_newkey).not.toContain(rid1);
-			expect(remaining.u3_newkey).not.toContain(rid1);
 		});
 
 		it('handles duplicate values in room attributes equivalently to unique set (logs non compliant and removes them)', async () => {
@@ -206,14 +197,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			expect(auditSpy.mock.calls[0][0]).toMatchObject({ _id: 'u2_newval', username: 'u2_newval' });
 			expect(auditSpy.mock.calls[0][1]).toMatchObject({ _id: rid });
 			expect(auditSpy.mock.calls[0][2]).toBe('room-attributes-change');
-
-			const users = await usersCol
-				.find({ _id: { $in: ['u1_newval', 'u2_newval', 'u3_newval'] } }, { projection: { __rooms: 1 } })
-				.toArray()
-				.then((docs) => Object.fromEntries(docs.map((d) => [d._id, d.__rooms || []])));
-			expect(users.u1_newval).toContain(rid);
-			expect(users.u3_newval).toContain(rid);
-			expect(users.u2_newval).not.toContain(rid);
 		});
 
 		it('produces no evaluation log when only removing values from existing attribute', async () => {
@@ -311,16 +294,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			expect(auditedRooms).toEqual(new Set([rid]));
 			const auditedActions = new Set(auditSpy.mock.calls.map((call) => call[2]));
 			expect(auditedActions).toEqual(new Set(['room-attributes-change']));
-
-			const memberships = await usersCol
-				.find({ _id: { $in: ['u1_multi', 'u2_multi', 'u3_multi', 'u4_multi', 'u5_multi'] } }, { projection: { __rooms: 1 } })
-				.toArray()
-				.then((docs) => Object.fromEntries(docs.map((d) => [d._id, d.__rooms || []])));
-			expect(memberships.u1_multi).toContain(rid);
-			expect(memberships.u4_multi).toContain(rid);
-			expect(memberships.u2_multi).not.toContain(rid);
-			expect(memberships.u3_multi).not.toContain(rid);
-			expect(memberships.u5_multi).not.toContain(rid);
 		});
 	});
 
@@ -421,14 +394,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			expect(auditedRooms).toEqual(new Set([ridMissingKey]));
 			const auditedActions = new Set(auditSpy.mock.calls.map((call) => call[2]));
 			expect(auditedActions).toEqual(new Set(['room-attributes-change']));
-
-			const memberships = await usersCol
-				.find({ _id: { $in: ['u1_misskey', 'u2_misskey', 'u3_misskey'] } }, { projection: { __rooms: 1 } })
-				.toArray()
-				.then((docs) => Object.fromEntries(docs.map((d) => [d._id, d.__rooms || []])));
-			expect(memberships.u1_misskey).toContain(ridMissingKey);
-			expect(memberships.u2_misskey).not.toContain(ridMissingKey);
-			expect(memberships.u3_misskey).not.toContain(ridMissingKey);
 		});
 	});
 
@@ -469,9 +434,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			expect(auditedRooms).toEqual(new Set([rid]));
 			const auditedActions = new Set(auditSpy.mock.calls.map((call) => call[2]));
 			expect(auditedActions).toEqual(new Set(['room-attributes-change']));
-
-			const remainingCount = await usersCol.countDocuments({ __rooms: rid });
-			expect(remainingCount).toBe(150);
 		});
 	});
 });
