@@ -186,8 +186,8 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rc1AdminRequestConfig,
 					});
 
-					expect(addUserResponse.status).toBe(200);
-					expect(addUserResponse.body).toHaveProperty('success', true);
+					expect(addUserResponse.status).toBe(400);
+					expect(addUserResponse.body).toHaveProperty('success', false);
 					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
 				});
 

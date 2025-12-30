@@ -456,7 +456,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			await starMessage(this.userId, {
+			await starMessage(this.user, {
 				_id: msg._id,
 				rid: msg.rid,
 				starred: true,
@@ -478,7 +478,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			await starMessage(this.userId, {
+			await starMessage(this.user, {
 				_id: msg._id,
 				rid: msg.rid,
 				starred: false,
