@@ -15,7 +15,7 @@ export type WebRTCInternalStateMap = {
 
 export type WebRTCUniqueEvents = {
 	negotiationNeeded: void;
-	trackAdded: void;
+	trackChanged: void;
 };
 
 export type WebRTCProcessorEvents = ServiceProcessorEvents<WebRTCInternalStateMap> & WebRTCUniqueEvents;

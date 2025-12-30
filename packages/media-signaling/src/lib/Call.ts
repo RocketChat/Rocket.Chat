@@ -514,7 +514,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			return null;
 		}
 
-		const tracks = stream.getVideoTracks();
+		const tracks = stream.getVideoTracks()?.filter((track) => !track.muted);
 		if (!tracks?.length) {
 			return null;
 		}
@@ -1139,8 +1139,8 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.updateRemoteStates();
 	}
 
-	private onWebRTCTrackAdded(): void {
-		this.config.logger?.debug('ClientMediaCall.onWebRTCTrackAdded');
+	private onWebRTCTrackChanged(): void {
+		this.config.logger?.debug('ClientMediaCall.onWebRTCTrackChanged');
 		this.emitter.emit('remoteStreamChange');
 	}
 
@@ -1277,7 +1277,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
 		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
-		this.webrtcProcessor.emitter.on('trackAdded', () => this.onWebRTCTrackAdded());
+		this.webrtcProcessor.emitter.on('trackChanged', () => this.onWebRTCTrackChanged());
 
 		this.negotiationManager.emitter.on('local-sdp', ({ sdp, negotiationId }) => this.deliverSdp({ sdp, negotiationId }));
 		this.negotiationManager.emitter.on('negotiation-needed', ({ oldNegotiationId }) => this.onNegotiationNeeded(oldNegotiationId));

@@ -23,6 +23,8 @@ export class LocalStream extends Stream {
 		if (newTrack) {
 			this.mediaStream.addTrack(newTrack);
 			await this.setRemoteTrack(newTrack, kind);
+		} else if (kind === 'video') {
+			await this.setRemoteTrack(newTrack, kind);
 		}
 	}
 

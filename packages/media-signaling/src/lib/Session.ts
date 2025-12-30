@@ -477,10 +477,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.videoTrack = newVideoTrack;
 
 		for await (const call of this.knownCalls.values()) {
-			// if (Boolean(newVideoTrack) !== call.screenShareRequested && !call.hasVideoTrack()) {
-			// 	continue;
-			// }
-
 			await call.setVideoTrack(newVideoTrack).catch((error) => {
 				if (newVideoTrack) {
 					throw error;
