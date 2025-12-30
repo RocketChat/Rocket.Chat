@@ -21,7 +21,6 @@ const MobileAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): React
 				<GenericCardButton key={1} onClick={() => handleOpenLink(GOOGLE_PLAY_URL)} children={t('Google_Play')} role='link' />,
 				<GenericCardButton key={2} onClick={() => handleOpenLink(APP_STORE_URL)} children={t('App_Store')} role='link' />,
 			]}
-			data-qa-id='homepage-mobile-apps-card'
 			width='x340'
 			{...props}
 		/>

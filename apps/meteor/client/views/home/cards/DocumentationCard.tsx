@@ -17,7 +17,6 @@ const DocumentationCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Re
 			title={t('Documentation')}
 			body={t('Learn_how_to_unlock_the_myriad_possibilities_of_rocket_chat')}
 			buttons={[<GenericCardButton key={1} onClick={() => handleOpenLink(DOCS_URL)} children={t('See_documentation')} role='link' />]}
-			data-qa-id='homepage-documentation-card'
 			width='x340'
 			{...props}
 		/>
