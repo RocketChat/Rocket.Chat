@@ -25,7 +25,7 @@ Rocket.Chat supports **different tooling for different purposes**.
 - MongoDB (local install or Docker)
 - Native Node.js tooling
 
-###  Not recomended for Contributors
+###  Not recommended for Contributors
 - Docker Compose–based local development
 - CI or deployment Docker workflows
 
@@ -112,8 +112,9 @@ Ensure Git is installed and configured correctly for Windows:
 
 ```bash
 git config --global core.autocrlf false
-This avoids line-ending issues during builds.
 ```
+This avoids line-ending issues during builds.
+
 
 ### 4. Docker Desktop (Recommended)
 
