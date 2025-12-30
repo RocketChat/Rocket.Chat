@@ -1268,14 +1268,37 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.countDocuments(query);
 	}
 
-	countByRoomIdWhenUsernameExistsAndActive(rid: string): Promise<number> {
-		const query = {
-			rid,
-			'u.username': { $exists: true },
-			'u.active': true,
-		};
+	async countByRoomIdWhenUsernameExistsAndActive(rid: string): Promise<number> {
+		const pipeline = [
+			{
+				$match: {
+					rid,
+					'u.username': { $exists: true },
+				},
+			},
+			{
+				$lookup: {
+					from: 'users',
+					localField: 'u._id',
+					foreignField: '_id',
+					as: 'user',
+				},
+			},
+			{
+				$unwind: '$user',
+			},
+			{
+				$match: {
+					'user.active': true,
+				},
+			},
+			{
+				$count: 'count',
+			},
+		];
 
-		return this.countDocuments(query);
+		const result = await this.col.aggregate<{ count: number }>(pipeline).toArray();
+		return result[0]?.count ?? 0;
 	}
 
 	findUnreadByUserId(userId: string): FindCursor<ISubscription> {
