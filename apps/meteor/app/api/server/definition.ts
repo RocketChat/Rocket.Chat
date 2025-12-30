@@ -191,6 +191,8 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
 	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
 
+	readonly twoFactorChecked: boolean;
+
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
 		/**

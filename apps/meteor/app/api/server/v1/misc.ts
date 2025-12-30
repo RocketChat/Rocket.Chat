@@ -29,6 +29,7 @@ import { settings } from '../../../settings/server';
 import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFields';
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
+import { APIClass } from '../ApiClass';
 import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -514,8 +515,14 @@ API.v1.addRoute(
 						timeToReset: rateLimitResult.timeToReset,
 					});
 				}
+				const invocation = await APIClass.createMeteorInvocation(this.connection, this.userId, this.token);
 
-				const result = await Meteor.callAsync(method, ...params);
+				if (this.twoFactorChecked) {
+					(invocation.invocation as any).twoFactorChecked = true;
+				}
+				const result = await invocation
+					.applyInvocation(() => Meteor.callAsync(method, ...params))
+					.finally(() => invocation[Symbol.asyncDispose]());
 				return API.v1.success(mountResult({ id, result }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
@@ -531,6 +538,7 @@ API.v1.addRoute(
 		},
 	},
 );
+
 API.v1.addRoute(
 	'method.callAnon/:method',
 	{
@@ -572,7 +580,11 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = await Meteor.callAsync(method, ...params);
+				const invocation = await APIClass.createMeteorInvocation(this.connection, this.userId, this.token);
+				// TODO: Meteor does not support `await using` yet, so we need to manually dispose the invocation
+				const result = await invocation
+					.applyInvocation(() => Meteor.callAsync(method, ...params))
+					.finally(() => invocation[Symbol.asyncDispose]());
 				return API.v1.success(mountResult({ id, result }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
