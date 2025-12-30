@@ -1,5 +1,49 @@
 # @rocket.chat/meteor
 
+## 7.10.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37879](https://github.com/RocketChat/Rocket.Chat/pull/37879) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#38010](https://github.com/RocketChat/Rocket.Chat/pull/38010) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where `user-agent` is not properly extracted from the DDP connection headers
+
+- ([#37886](https://github.com/RocketChat/Rocket.Chat/pull/37886) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures presence stays accurate by refreshing connections on heartbeats and removing stale sessions.
+
+- <details><summary>Updated dependencies [25078af46d0fc94d0aefbe48312669d58a2b12c5]:</summary>
+
+  - @rocket.chat/core-services@0.10.6
+  - @rocket.chat/presence@0.2.43
+  - @rocket.chat/network-broker@0.2.22
+  - @rocket.chat/omnichannel-services@0.3.40
+  - @rocket.chat/core-typings@7.10.6
+  - @rocket.chat/rest-typings@7.10.6
+  - @rocket.chat/license@1.0.34
+  - @rocket.chat/pdf-worker@0.3.22
+  - @rocket.chat/api-client@0.2.43
+  - @rocket.chat/apps@0.5.22
+  - @rocket.chat/cron@0.1.43
+  - @rocket.chat/freeswitch@1.2.30
+  - @rocket.chat/fuselage-ui-kit@22.0.6
+  - @rocket.chat/gazzodown@22.0.6
+  - @rocket.chat/http-router@7.9.10
+  - @rocket.chat/model-typings@1.7.6
+  - @rocket.chat/ui-avatar@18.0.6
+  - @rocket.chat/ui-client@22.0.6
+  - @rocket.chat/ui-contexts@22.0.6
+  - @rocket.chat/web-ui-registration@22.0.6
+  - @rocket.chat/models@1.6.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.6
+  - @rocket.chat/ui-voip@12.0.6
+  - @rocket.chat/omni-core-ee@0.0.8
+  - @rocket.chat/instance-status@0.1.43
+  - @rocket.chat/omni-core@0.0.8
+  </details>
+
 ## 7.10.5
 
 ### Patch Changes
