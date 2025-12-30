@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelSidebar, ToastMessages } from '../fragments';
-import { ConfirmDeleteModal } from '../fragments/modal';
+import { ConfirmDeleteModal } from '../fragments/modals';
 
 export abstract class OmnichannelAdmin {
 	protected readonly page: Page;

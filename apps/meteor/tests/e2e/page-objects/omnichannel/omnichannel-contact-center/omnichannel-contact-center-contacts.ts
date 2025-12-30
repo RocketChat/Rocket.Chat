@@ -1,18 +1,18 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelContactInfo } from '../omnichannel-info';
-import { OmnichannelManageContact } from '../omnichannel-manage-contact';
 import { OmnichannelContactCenter } from './omnichannel-contact-center';
+import { OmnichannelEditContactFlaxTab } from '../../fragments/edit-contact-flaxtab';
 
 export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
-	readonly newContact: OmnichannelManageContact;
-
 	readonly contactInfo: OmnichannelContactInfo;
+
+	readonly editContact: OmnichannelEditContactFlaxTab;
 
 	constructor(page: Page) {
 		super(page);
-		this.newContact = new OmnichannelManageContact(page);
 		this.contactInfo = new OmnichannelContactInfo(page);
+		this.editContact = new OmnichannelEditContactFlaxTab(page);
 	}
 
 	get btnNewContact(): Locator {

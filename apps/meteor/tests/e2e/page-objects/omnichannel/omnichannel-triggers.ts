@@ -19,6 +19,11 @@ export class OmnichannelTriggers extends OmnichannelAdmin {
 		return this.page.locator('button >> text="Save"');
 	}
 
+	async save() {
+		await this.btnSave.click();
+		await this.toastMessage.dismissToast();
+	}
+
 	firstRowInTriggerTable(triggersName1: string) {
 		return this.page.locator(`text="${triggersName1}"`);
 	}
@@ -79,7 +84,7 @@ export class OmnichannelTriggers extends OmnichannelAdmin {
 			conditionValue,
 			triggerMessage,
 		});
-		await this.btnSave.click();
+		await this.save();
 	}
 
 	public async updateTrigger(newName: string, triggerMessage: string) {
@@ -91,7 +96,7 @@ export class OmnichannelTriggers extends OmnichannelAdmin {
 			agentName: 'Rocket.cat',
 			triggerMessage,
 		});
-		await this.btnSave.click();
+		await this.save();
 	}
 
 	public async fillTriggerForm(

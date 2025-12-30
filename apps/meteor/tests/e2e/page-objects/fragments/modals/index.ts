@@ -12,6 +12,7 @@ export * from './omnichannel-on-hold-modal';
 export * from './omnichannel-transfer-chat-modal';
 export * from './omnichannel-confirm-remove-chat';
 export * from './omnichannel-contact-review-modal';
+export * from './omnichannel-reset-priorities-modal';
 export * from './report-message-modal';
 export * from './reset-e2ee-password-modal';
 export * from './save-e2ee-password-modal';

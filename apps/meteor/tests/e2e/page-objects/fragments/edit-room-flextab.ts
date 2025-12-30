@@ -8,10 +8,6 @@ export class EditRoomFlexTab extends FlexTab {
 		super(page.getByRole('dialog', { name: 'Room Information' }));
 	}
 
-	get btnSave(): Locator {
-		return this.root.locator('button >> text="Save"');
-	}
-
 	get roomNameInput(): Locator {
 		return this.root.locator('input[name="roomName"]');
 	}
@@ -58,15 +54,11 @@ export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
 
 	constructor(page: Page) {
 		super(page);
-		this.listbox = new Listbox(page);
+		this.listbox = new Listbox(page.getByRole('dialog', { name: 'Room Information' }));
 	}
 
 	get inputTopic(): Locator {
 		return this.root.getByRole('textbox', { name: 'Topic' });
-	}
-
-	get btnSaveEditRoom(): Locator {
-		return this.root.getByRole('button', { name: 'Save' });
 	}
 
 	get inputSLAPolicy(): Locator {
@@ -79,7 +71,7 @@ export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
 
 	async selectSLA(name: string): Promise<void> {
 		await this.inputSLAPolicy.click();
-		await this.listbox.root.getByRole('option', { name, exact: true }).click();
+		await this.listbox.selectOption(name);
 	}
 
 	get inputTags(): Locator {

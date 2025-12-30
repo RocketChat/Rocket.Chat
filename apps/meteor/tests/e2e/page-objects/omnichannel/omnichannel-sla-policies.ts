@@ -46,12 +46,13 @@ export class OmnichannelSlaPolicies extends OmnichannelAdmin {
 		return this.findRowByName(name).locator('button[title="Remove"]');
 	}
 
-	btnCreateSlaPolicy(name: string) {
-		return this.createByName(name);
+	async removeSLA(name: string) {
+		await this.btnRemove(name).click();
+		await this.deleteModal.confirmDelete();
 	}
 
-	get btnDelete() {
-		return this.page.locator('button.rcx-button >> text="Delete"');
+	btnCreateSlaPolicy(name: string) {
+		return this.createByName(name);
 	}
 
 	get txtEmptyState() {

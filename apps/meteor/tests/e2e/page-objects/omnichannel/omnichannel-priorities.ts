@@ -1,57 +1,47 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
-import { Modal } from '../fragments/modal';
+import { ToastMessages } from '../fragments';
+import { FlexTab } from '../fragments/flextab';
+import { OmnichannelResetPrioritiesModal } from '../fragments/modals';
 
-class OmnichannelManagePriority {
-	private readonly page: Page;
+class OmnichannelEditPriorityFlexTab extends FlexTab {
+	readonly toastMessage: ToastMessages;
 
 	constructor(page: Page) {
-		this.page = page;
-	}
-
-	get inputName(): Locator {
-		return this.page.locator('[name="name"]');
-	}
-
-	get btnSave() {
-		return this.page.locator('button.rcx-button >> text="Save"');
-	}
-
-	get btnReset() {
-		return this.page.locator('.rcx-vertical-bar').locator('role=button[name="Reset"]');
+		super(page.getByRole('dialog', { name: 'Priority' }));
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	errorMessage(message: string): Locator {
-		return this.page.locator(`.rcx-field__error >> text="${message}"`);
-	}
-}
-
-export class OmnichannelResetPrioritiesModal extends Modal {
-	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Reset priorities' }));
+		return this.root.locator(`.rcx-field__error >> text="${message}"`);
 	}
 
-	private get btnResetConfirm() {
-		return this.root.getByRole('button', { name: 'Reset' });
-	}
-
-	async reset() {
-		await this.btnResetConfirm.click();
-		await this.waitForDismissal();
+	async save() {
+		await this.btnSave.click();
+		await this.toastMessage.dismissToast();
 	}
 }
 
 export class OmnichannelPriorities extends OmnichannelAdmin {
-	readonly managePriority: OmnichannelManagePriority;
+	readonly editPriority: OmnichannelEditPriorityFlexTab;
+
+	readonly resetPrioritiesModal: OmnichannelResetPrioritiesModal;
 
 	constructor(page: Page) {
 		super(page);
-		this.managePriority = new OmnichannelManagePriority(page);
+		this.resetPrioritiesModal = new OmnichannelResetPrioritiesModal(page);
+		this.editPriority = new OmnichannelEditPriorityFlexTab(page);
 	}
 
 	get btnReset() {
 		return this.page.locator('role=button[name="Reset"]');
+	}
+
+	async resetPriorities() {
+		await this.btnReset.click();
+		await this.resetPrioritiesModal.reset();
+		await this.toastMessage.dismissToast();
 	}
 
 	findPriority(name: string) {

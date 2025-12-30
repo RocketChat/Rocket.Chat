@@ -1,22 +1,24 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeOmnichannelContent, OmnichannelSidenav } from './fragments';
-import { OmnichannelQuickActionsRoomToolbar, OmnichannelRoomToolbar } from './fragments/toolbar';
+import { HomeOmnichannelContent, OmnichannelQuickActionsRoomToolbar, OmnichannelRoomToolbar, OmnichannelSidebar } from './fragments';
+import type { OmnichannelEditRoomFlexTab } from './fragments/edit-room-flextab';
+import { OmnichannelRoomInfoFlexTab } from './fragments/room-info-flextab';
 import { HomeChannel } from './home-channel';
-import { OmnichannelAgents } from './omnichannel-agents';
-import { OmnichannelCannedResponses } from './omnichannel-canned-responses';
-import { OmnichannelChats } from './omnichannel-contact-center-chats';
-import { OmnichannelContacts } from './omnichannel-contacts-list';
-import { OmnichannelManager } from './omnichannel-manager';
-import { OmnichannelMonitors } from './omnichannel-monitors';
-import { OmnichannelRoomInfo } from './omnichannel-room-info';
-import { OmnichannelTranscript } from './omnichannel-transcript';
-import { OmnichannelTriggers } from './omnichannel-triggers';
+import {
+	OmnichannelCannedResponses,
+	OmnichannelManager,
+	OmnichannelMonitors,
+	OmnichannelTranscript,
+	OmnichannelTriggers,
+	OmnichannelContactCenterContacts,
+	OmnichannelAgents,
+	OmnichannelContactCenterChats,
+} from './omnichannel';
 
 export class HomeOmnichannel extends HomeChannel {
 	readonly triggers: OmnichannelTriggers;
 
-	readonly omnisidenav: OmnichannelSidenav;
+	readonly omnisidenav: OmnichannelSidebar;
 
 	readonly transcript: OmnichannelTranscript;
 
@@ -28,11 +30,13 @@ export class HomeOmnichannel extends HomeChannel {
 
 	readonly monitors: OmnichannelMonitors;
 
-	readonly contacts: OmnichannelContacts;
+	readonly contacts: OmnichannelContactCenterContacts;
 
-	readonly chats: OmnichannelChats;
+	readonly chats: OmnichannelContactCenterChats;
 
-	readonly roomInfo: OmnichannelRoomInfo;
+	readonly roomInfo: OmnichannelRoomInfoFlexTab;
+
+	readonly editRoomInfo: OmnichannelEditRoomFlexTab;
 
 	readonly quickActionsRoomToolbar: OmnichannelQuickActionsRoomToolbar;
 
@@ -43,15 +47,15 @@ export class HomeOmnichannel extends HomeChannel {
 	constructor(page: Page) {
 		super(page);
 		this.triggers = new OmnichannelTriggers(page);
-		this.omnisidenav = new OmnichannelSidenav(page);
+		this.omnisidenav = new OmnichannelSidebar(page);
 		this.transcript = new OmnichannelTranscript(page);
 		this.cannedResponses = new OmnichannelCannedResponses(page);
 		this.agents = new OmnichannelAgents(page);
 		this.managers = new OmnichannelManager(page);
 		this.monitors = new OmnichannelMonitors(page);
-		this.contacts = new OmnichannelContacts(page);
-		this.chats = new OmnichannelChats(page);
-		this.roomInfo = new OmnichannelRoomInfo(page);
+		this.contacts = new OmnichannelContactCenterContacts(page);
+		this.chats = new OmnichannelContactCenterChats(page);
+		this.roomInfo = new OmnichannelRoomInfoFlexTab(page);
 		this.quickActionsRoomToolbar = new OmnichannelQuickActionsRoomToolbar(page);
 		this.content = new HomeOmnichannelContent(page);
 		this.roomToolbar = new OmnichannelRoomToolbar(page);

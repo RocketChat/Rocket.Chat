@@ -327,10 +327,6 @@ export class HomeContent {
 		return this.page.getByRole('group').getByRole('button', { name: 'Voice call' });
 	}
 
-	get btnContactEdit(): Locator {
-		return this.page.getByRole('dialog').getByRole('button', { name: 'Edit', exact: true });
-	}
-
 	get btnSendTranscript(): Locator {
 		return this.page.locator('role=button[name="Send transcript"]');
 	}

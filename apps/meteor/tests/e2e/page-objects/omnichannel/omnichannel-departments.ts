@@ -1,10 +1,20 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
+import { Table } from '../fragments/table';
+
+class OmnichannelDepartmentsTable extends Table {
+	constructor(page: Page) {
+		super(page.getByRole('table', { name: 'Departments' }));
+	}
+}
 
 export class OmnichannelDepartments extends OmnichannelAdmin {
+	readonly table: OmnichannelDepartmentsTable;
+
 	constructor(page: Page) {
 		super(page);
+		this.table = new OmnichannelDepartmentsTable(page);
 	}
 
 	headingButtonNew(name: string) {
@@ -51,20 +61,9 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 		return this.page.locator('[role="tab"]:nth-child(2)');
 	}
 
-	get firstRowInTable() {
-		return this.page.locator('table tr:first-child td:first-child');
-	}
-
-	get firstRowInTableMenu() {
-		return this.page.locator('table tr:first-child [data-testid="menu"]');
-	}
-
-	findDepartment(name: string) {
-		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}"`) });
-	}
-
-	selectedDepartmentMenu(name: string) {
-		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}"`) }).locator('[data-testid="menu"]');
+	// TODO: remove data-qa
+	getDepartmentMenuByName(name: string) {
+		return this.table.findRowByName(name).locator('[data-testid="menu"]');
 	}
 
 	get menuEditOption() {
@@ -77,6 +76,12 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 
 	get menuArchiveOption() {
 		return this.page.locator('[role=option][value="archive"]');
+	}
+
+	async archiveDepartmentByName(name: string) {
+		await this.getDepartmentMenuByName(name).click();
+		await this.menuArchiveOption.click();
+		await this.toastMessage.waitForDisplay();
 	}
 
 	get menuUnarchiveOption() {

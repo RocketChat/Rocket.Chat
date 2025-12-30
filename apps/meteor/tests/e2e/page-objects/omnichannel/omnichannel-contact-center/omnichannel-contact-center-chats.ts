@@ -42,6 +42,10 @@ class OmnichannelContactCenterChatsTable extends Table {
 	constructor(page: Page) {
 		super(page.getByRole('table', { name: 'Omnichannel Contact Center Chats' }));
 	}
+
+	btnRemoveByName(name: string): Locator {
+		return this.findRowByName(name).getByRole('button', { name: 'Remove' });
+	}
 }
 
 export class OmnichannelContactCenterChats extends OmnichannelContactCenter {
@@ -60,12 +64,8 @@ export class OmnichannelContactCenterChats extends OmnichannelContactCenter {
 		this.conversation = new ConversationFlexTab(page);
 	}
 
-	btnRemoveByName(name: string): Locator {
-		return this.table.findRowByName(name).getByRole('button', { name: 'Remove' });
-	}
-
 	async removeChatByName(name: string) {
-		await this.btnRemoveByName(name).click();
+		await this.table.btnRemoveByName(name).click();
 		await this.confirmRemoveChatModal.confirm();
 	}
 

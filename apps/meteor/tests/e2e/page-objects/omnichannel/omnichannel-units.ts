@@ -1,37 +1,20 @@
-import type { Locator } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
+import { ConfirmDeleteModal } from '../fragments';
 import { FlexTab } from '../fragments/flextab';
+import { Table } from '../fragments/table';
 
 export class OmnichannelUnitFlexTab extends FlexTab {
+	readonly deleteModal: ConfirmDeleteModal;
+
 	constructor(page: Locator) {
 		super(page);
-	}
-
-	get btnSave() {
-		return this.root.locator('role=button[name="Save"]');
-	}
-
-	get btnCancel() {
-		return this.root.locator('role=button[name="Cancel"]');
-	}
-
-	get btnDelete() {
-		return this.root.locator('role=button[name="Delete"]');
-	}
-}
-
-export class OmnichannelUnits extends OmnichannelAdmin {
-	findRowByName(name: string) {
-		return this.page.locator(`tr[data-qa-id="${name}"]`);
-	}
-
-	get inputName() {
-		return this.page.locator('[name="name"]');
+		this.deleteModal = new ConfirmDeleteModal(page);
 	}
 
 	get fieldDepartments() {
-		return this.page.getByLabel('Departments');
+		return this.root.getByLabel('Departments');
 	}
 
 	get inputDepartments() {
@@ -39,15 +22,15 @@ export class OmnichannelUnits extends OmnichannelAdmin {
 	}
 
 	get inputMonitors() {
-		return this.page.locator('[name="monitors"]');
+		return this.root.locator('[name="monitors"]');
 	}
 
 	get inputVisibility(): Locator {
-		return this.page.locator('button', { has: this.page.locator('select[name="visibility"]') });
+		return this.root.locator('button', { has: this.root.locator('select[name="visibility"]') });
 	}
 
 	private findOption(name: string) {
-		return this.page.locator('#position-container').getByRole('option', { name, exact: true });
+		return this.root.locator('#position-container').getByRole('option', { name, exact: true });
 	}
 
 	public findDepartmentsChipOption(name: string) {
@@ -69,14 +52,43 @@ export class OmnichannelUnits extends OmnichannelAdmin {
 
 	async selectVisibility(option: string) {
 		await this.inputVisibility.click();
-		await this.page.locator(`li.rcx-option[data-key="${option}"]`).click();
+		await this.root.locator(`li.rcx-option[data-key="${option}"]`).click();
+	}
+
+	async deleteUnit() {
+		await this.btnDelete.click();
+		await this.deleteModal?.confirmDelete();
+		await this.waitForDismissal();
+	}
+}
+
+class OmnichannelUnitsTable extends Table {
+	constructor(page: Locator) {
+		super(page);
+	}
+
+	deleteUnitByName(name: string) {
+		return this.findRowByName(name).getByRole('button', { name: 'Remove' });
+	}
+}
+
+export class OmnichannelUnits extends OmnichannelAdmin {
+	readonly editUnit: OmnichannelUnitFlexTab;
+
+	readonly table: OmnichannelUnitsTable;
+
+	constructor(page: Page) {
+		super(page);
+		this.editUnit = new OmnichannelUnitFlexTab(page.getByRole('dialog', { name: 'Edit Unit' }));
+		this.table = new OmnichannelUnitsTable(page.getByRole('table', { name: 'Units' }));
 	}
 
 	get btnCreateUnit() {
 		return this.createByName('unit');
 	}
 
-	btnDeleteByName(name: string) {
-		return this.page.locator(`button[data-qa-id="remove-unit-${name}"]`);
+	async deleteUnit(name: string) {
+		await this.table.deleteUnitByName(name).click();
+		await this.deleteModal.confirmDelete();
 	}
 }

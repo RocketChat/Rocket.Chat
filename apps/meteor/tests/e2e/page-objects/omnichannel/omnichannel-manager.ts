@@ -1,8 +1,22 @@
-import type { Locator } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
+import { Table } from '../fragments/table';
+
+class OmnichannelManagersTable extends Table {
+	constructor(page: Page) {
+		super(page.getByRole('table', { name: 'Managers' }));
+	}
+}
 
 export class OmnichannelManager extends OmnichannelAdmin {
+	readonly table: OmnichannelManagersTable;
+
+	constructor(page: Page) {
+		super(page);
+		this.table = new OmnichannelManagersTable(page);
+	}
+
 	get inputUsername(): Locator {
 		return this.page.getByRole('main').getByLabel('Username');
 	}
@@ -16,11 +30,8 @@ export class OmnichannelManager extends OmnichannelAdmin {
 		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add manager"');
 	}
 
-	findRowByName(name: string) {
-		return this.page.locator('role=table[name="Managers"] >> role=row', { has: this.page.locator(`role=cell[name="${name}"]`) });
-	}
-
-	btnDeleteSelectedAgent(text: string) {
-		return this.page.locator('tr', { has: this.page.locator(`td >> text="${text}"`) }).locator('button[title="Remove"]');
+	async removeManager(name: string) {
+		await this.table.findRowByName(name).getByRole('button', { name: 'Remove' }).click();
+		await this.deleteModal.confirmDelete();
 	}
 }

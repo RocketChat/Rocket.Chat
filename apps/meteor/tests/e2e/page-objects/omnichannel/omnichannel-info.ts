@@ -1,42 +1,38 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelContactReviewModal } from './fragments';
-import { OmnichannelManageContact } from './omnichannel-manage-contact';
+import { FlexTab } from '../fragments/flextab';
+import { OmnichannelContactReviewModal } from '../fragments/modals';
 
-export class OmnichannelContactInfo extends OmnichannelManageContact {
+export class OmnichannelContactInfo extends FlexTab {
 	readonly contactReviewModal: OmnichannelContactReviewModal;
 
 	constructor(page: Page) {
-		super(page);
+		super(page.getByRole('dialog', { name: 'Contact' }));
 		this.contactReviewModal = new OmnichannelContactReviewModal(page);
 	}
 
-	get dialogContactInfo(): Locator {
-		return this.page.getByRole('dialog', { name: 'Contact' });
-	}
-
 	get btnEdit(): Locator {
-		return this.page.locator('role=button[name="Edit"]');
+		return this.root.locator('role=button[name="Edit"]');
 	}
 
 	get tabHistory(): Locator {
-		return this.dialogContactInfo.getByRole('tab', { name: 'History' });
+		return this.root.getByRole('tab', { name: 'History' });
 	}
 
 	get historyItem(): Locator {
-		return this.dialogContactInfo.getByRole('listitem').first();
+		return this.root.getByRole('listitem').first();
 	}
 
 	get historyMessage(): Locator {
-		return this.dialogContactInfo.getByRole('listitem').first();
+		return this.root.getByRole('listitem').first();
 	}
 
 	get btnOpenChat(): Locator {
-		return this.dialogContactInfo.getByRole('button', { name: 'Open chat' });
+		return this.root.getByRole('button', { name: 'Open chat' });
 	}
 
 	get btnSeeConflicts(): Locator {
-		return this.dialogContactInfo.getByRole('button', { name: 'See conflicts' });
+		return this.root.getByRole('button', { name: 'See conflicts' });
 	}
 
 	async solveConflict(field: string, value: string) {

@@ -8,6 +8,6 @@ export class Listbox {
 	}
 
 	public getOption(name: string): Locator {
-		return this.root.getByRole('option', { name });
+		return this.root.getByRole('option', { name, exact: true });
 	}
 }

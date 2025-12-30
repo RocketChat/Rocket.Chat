@@ -1,5 +1,6 @@
 export * from './omnichannel-agents';
 export * from './omnichannel-departments';
+export * from './omnichannel-canned-responses';
 export * from './omnichannel-contact-center';
 export * from './omnichannel-livechat';
 export * from './omnichannel-livechat-appearance';
@@ -11,3 +12,8 @@ export * from './omnichannel-monitors';
 export * from './omnichannel-settings';
 export * from './omnichannel-business-hours';
 export * from './omnichannel-tags';
+export * from './omnichannel-transcript';
+export * from './omnichannel-triggers';
+export * from './omnichannel-priorities';
+export * from './omnichannel-reports';
+export * from './omnichannel-sla-policies';

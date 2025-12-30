@@ -101,6 +101,10 @@ export class RoomSidebar extends Sidebar {
 		return item.getByRole('status', { name: 'unread' });
 	}
 
+	getBadgeIndicator(name: string, title: string): Locator {
+		return this.getSidebarItemByName(name).getByTitle(title);
+	}
+
 	async selectPriority(name: string, priority: string) {
 		const sidebarItem = this.getSidebarItemByName(name);
 		await sidebarItem.hover();
@@ -148,10 +152,6 @@ export class OmnichannelSidebar extends Sidebar {
 	constructor(page: Page) {
 		super(page.getByRole('navigation', { name: 'Omnichannel' }));
 	}
-
-	// openSidebarLink(name: string): Promise<void> {
-	// 	return this.root.getByRole('link', { name }).click();
-	// }
 
 	get linkContactCenterChats(): Locator {
 		return this.root.getByRole('link', { name: 'Contact Center Chats' });

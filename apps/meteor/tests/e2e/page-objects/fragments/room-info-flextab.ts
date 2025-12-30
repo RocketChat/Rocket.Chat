@@ -11,24 +11,8 @@ export class RoomInfoFlexTab extends FlexTab {
 		return this.root.getByRole('button', { name: 'Edit' });
 	}
 
-	get btnSave(): Locator {
-		return this.root.locator('button >> text="Save"');
-	}
-
-	get roomNameInput(): Locator {
-		return this.root.locator('input[name="roomName"]');
-	}
-
 	get privateLabel(): Locator {
 		return this.root.locator(`label >> text=Private`);
-	}
-
-	get privateInput(): Locator {
-		return this.root.locator('input[name="roomType"]');
-	}
-
-	get roomOwnerInput(): Locator {
-		return this.root.locator('input[name="roomOwner"]');
 	}
 
 	get archivedLabel(): Locator {
@@ -37,6 +21,18 @@ export class RoomInfoFlexTab extends FlexTab {
 
 	get archivedInput(): Locator {
 		return this.root.locator('input[name="archived"]');
+	}
+
+	get roomNameInput(): Locator {
+		return this.root.locator('input[name="roomName"]');
+	}
+
+	get privateInput(): Locator {
+		return this.root.locator('input[name="roomType"]');
+	}
+
+	get roomOwnerInput(): Locator {
+		return this.root.locator('input[name="roomOwner"]');
 	}
 
 	get favoriteLabel(): Locator {
@@ -69,9 +65,6 @@ export class OmnichannelRoomInfoFlexTab extends RoomInfoFlexTab {
 		return this.root.getByLabel(label);
 	}
 
-	// getBadgeIndicator(name: string, title: string): Locator {
-	// 	return this.homeSidenav.getSidebarItemByName(name).getByTitle(title);
-	// }
 	getTagInfoByLabel(label: string): Locator {
 		return this.root.getByRole('list', { name: 'Tags' }).getByText(label, { exact: true });
 	}

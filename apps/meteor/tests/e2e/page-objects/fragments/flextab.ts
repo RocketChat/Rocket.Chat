@@ -17,6 +17,26 @@ export abstract class FlexTab {
 		return this.root.getByRole('button', { name: 'Close' });
 	}
 
+	get inputName() {
+		return this.root.getByRole('textbox', { name: 'Name' });
+	}
+
+	get btnSave() {
+		return this.root.getByRole('button', { name: 'Save' });
+	}
+
+	get btnCancel() {
+		return this.root.getByRole('button', { name: 'Cancel' });
+	}
+
+	get btnDelete() {
+		return this.root.locator('role=button[name="Delete"]');
+	}
+
+	get btnReset() {
+		return this.root.getByRole('button', { name: 'Reset' });
+	}
+
 	async close() {
 		await this.btnClose.click();
 		await this.waitForDismissal();
