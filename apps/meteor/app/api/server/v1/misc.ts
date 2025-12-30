@@ -581,7 +581,7 @@ API.v1.addRoute(
 				if (settings.get('Log_Level') === '2') {
 					Meteor._debug(`Exception while invoking method ${method}`, err);
 				}
-				return API.v1.failure(mountResult({ id, error: err }));
+				throw err;
 			}
 		},
 	},
