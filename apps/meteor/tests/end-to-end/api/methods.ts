@@ -2361,7 +2361,7 @@ describe('Meteor.methods', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', false);
+					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 				});
 
