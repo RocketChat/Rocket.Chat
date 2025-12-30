@@ -37,7 +37,7 @@ const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null =>
 					))}
 				</Box>
 			</Flex.Item>
-			<Box display='flex' color='default' fontScale='h4' flexGrow={1} justifyContent='center' mb={16}>
+			<Box display='flex' color='default' fontScale='h4'  flexGrow={1} justifyContent='center' mb={16}   w="80%" mx="auto"  textAlign="center">
 				{t('Direct_message_you_have_joined')}
 			</Box>
 			<Box is='div' flexGrow={1} display='flex' justifyContent='center'>
