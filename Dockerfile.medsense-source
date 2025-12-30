@@ -90,10 +90,13 @@ RUN echo "[build] npm install --omit=dev start" \
 RUN echo "[build] patch apps-engine deno flags start" \
   && sed -i "s/--unstable-detect-cjs/--cached-only/" /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/server/runtime/deno/AppsEngineDenoRuntime.js \
   && sed -i "s/--unstable-detect-cjs/--cached-only/" /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/src/server/runtime/deno/AppsEngineDenoRuntime.ts \
+  && sed -i "s/--cached-only/--cached-only','--no-lock/" /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/server/runtime/deno/AppsEngineDenoRuntime.js \
+  && sed -i "s/--cached-only/--cached-only','--no-lock/" /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/src/server/runtime/deno/AppsEngineDenoRuntime.ts \
+  && rm -f /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime/deno.lock \
   && echo "[build] patch apps-engine deno flags done"
 
 RUN echo "[build] deno cache start" \
-  && deno cache /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime/main.ts \
+  && deno cache --no-lock --config /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime/deno.jsonc /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime/main.ts \
   && echo "[build] deno cache done"
 
 
