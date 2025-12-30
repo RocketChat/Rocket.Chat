@@ -234,11 +234,14 @@ describe('Subject Attributes validation', () => {
 				__rooms: user.__rooms || [],
 			});
 
-		beforeEach(async () => {
-			service = new AbacService();
+		beforeAll(async () => {
 			roomsCol = db.collection('rocketchat_room');
 			usersCol = db.collection('users');
 			await Promise.all([roomsCol.deleteMany({}), usersCol.deleteMany({})]);
+		});
+
+		beforeEach(() => {
+			service = new AbacService();
 		});
 
 		it('removes user from rooms whose attributes become non-compliant after losing a value', async () => {
