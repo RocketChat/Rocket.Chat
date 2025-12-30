@@ -119,25 +119,53 @@ runs:
         echo "Contents of /tmp/meta.json:"
         cat /tmp/meta.json
 
-        SERVICE_SUFFIX=${{ inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+        if [[ "${{ inputs.publish-image }}" == 'true' ]]; then
+          SERVICE_SUFFIX=${{ inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
 
-        mkdir -p /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}
+          mkdir -p /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}
 
-        # Get digest and image info
-        DIGEST=$(jq -r '.["${{ inputs.service }}"].["containerimage.digest"]' "/tmp/meta.json")
-        IMAGE_NO_TAG=$(echo "$IMAGE" | sed 's/:.*$//')
-        FULL_IMAGE="${IMAGE_NO_TAG}@${DIGEST}"
+          # Get digest and image info
+          DIGEST=$(jq -r '.["${{ inputs.service }}"].["containerimage.digest"]' "/tmp/meta.json")
+          IMAGE_NO_TAG=$(echo "$IMAGE" | sed 's/:.*$//')
+          FULL_IMAGE="${IMAGE_NO_TAG}@${DIGEST}"
 
-        echo "Inspecting image: $FULL_IMAGE"
+          echo "Inspecting image: $FULL_IMAGE"
 
-        # Inspect the image and save complete manifest with sizes (using -v for verbose)
-        docker manifest inspect -v "$FULL_IMAGE" > "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
+          # Inspect the image and save complete manifest with sizes (using -v for verbose)
+          docker manifest inspect -v "$FULL_IMAGE" > "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
 
-        echo "Saved manifest to /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
-        cat "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json" | jq '.'
+          echo "Saved manifest to /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
+          cat "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json" | jq '.'
+        fi
+
+    - name: Save Docker image as artifact
+      if: inputs.publish-image == 'false' && inputs.arch == 'amd64'
+      shell: bash
+      run: |
+        set -o xtrace
+
+        # Get image name from docker-compose-ci.yml
+        IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${{ inputs.service }}" '.services[$s].image')
+
+        # Create directory for image archives
+        mkdir -p /tmp/docker-images
+
+        # Save the image to a tar file
+        docker save "${IMAGE}" -o "/tmp/docker-images/${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}.tar"
+
+        echo "Saved image to /tmp/docker-images/${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}.tar"
+        ls -lh /tmp/docker-images/
+
+    - name: Upload Docker image artifact
+      if: inputs.publish-image == 'false'
+      uses: actions/upload-artifact@v4
+      with:
+        name: docker-image-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
+        path: /tmp/docker-images/${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}.tar
+        retention-days: 1
 
     - uses: actions/upload-artifact@v4
-      if: inputs.publish-image == 'true'
+      if: inputs.publish-image == 'true' && inputs.arch == 'amd64'
       with:
         name: manifests-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
         path: /tmp/manifests
