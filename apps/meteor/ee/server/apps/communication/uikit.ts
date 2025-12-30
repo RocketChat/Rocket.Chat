@@ -1,3 +1,4 @@
+import { AppEvents, type IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { UiKitCoreAppPayload } from '@rocket.chat/core-services';
 import { UiKitCoreApp } from '@rocket.chat/core-services';
 import type { OperationParams, UrlParams } from '@rocket.chat/rest-typings';
@@ -193,9 +194,9 @@ router.post('/:id', async (req: UiKitUserInteractionRequest, res, next) => {
 });
 
 export class AppUIKitInteractionApi {
-	orch: AppServerOrchestrator;
+	orch: IAppServerOrchestrator;
 
-	constructor(orch: AppServerOrchestrator) {
+	constructor(orch: IAppServerOrchestrator) {
 		this.orch = orch;
 
 		router.post('/:id', this.routeHandler);
@@ -230,7 +231,7 @@ export class AppUIKitInteractionApi {
 				};
 
 				try {
-					const eventInterface = !visitor ? 'IUIKitInteractionHandler' : 'IUIKitLivechatInteractionHandler';
+					const eventInterface = !visitor ? AppEvents.IUIKitInteractionHandler : AppEvents.IUIKitLivechatInteractionHandler;
 
 					const result = await orch.triggerEvent(eventInterface, action);
 
@@ -261,7 +262,7 @@ export class AppUIKitInteractionApi {
 				};
 
 				try {
-					const result = await orch.triggerEvent('IUIKitInteractionHandler', action);
+					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
 					res.send(result);
 				} catch (e) {
@@ -286,7 +287,7 @@ export class AppUIKitInteractionApi {
 				};
 
 				try {
-					const result = await orch.triggerEvent('IUIKitInteractionHandler', action);
+					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
 					res.send(result);
 				} catch (e) {
@@ -307,9 +308,9 @@ export class AppUIKitInteractionApi {
 					payload: { context, message: msgText },
 				} = req.body;
 
-				const room = await orch.getConverters()?.get('rooms').convertById(rid);
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				const message = mid && (await orch.getConverters()?.get('messages').convertById(mid));
+				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
+				const message = mid ? await orch.getConverters()?.get('messages').convertById(mid) : undefined;
 
 				const action = {
 					type,
@@ -327,7 +328,7 @@ export class AppUIKitInteractionApi {
 				};
 
 				try {
-					const result = await orch.triggerEvent('IUIKitInteractionHandler', action);
+					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
 					res.send(result);
 				} catch (e) {

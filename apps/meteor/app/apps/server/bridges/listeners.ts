@@ -25,7 +25,7 @@ type UserStatusChangedData = {
 
 type UserCrudData = {
 	user: IUser;
-	performedBy: IUser;
+	performedBy?: IUser;
 	previousUser?: IUser;
 };
 
@@ -92,31 +92,33 @@ export class AppListenerBridge {
 		})();
 
 		// Using type assertion here because TypeScript doesn't understand that method is a valid method name
-		return this[method](event as keyof IListenerExecutor, Array.isArray(payload) ? payload : [payload]);
+		return this[method](event as keyof IListenerExecutor, payload);
 	}
 
-	async defaultEvent(inte: keyof IListenerExecutor, payload: unknown): Promise<unknown> {
+	async defaultEvent(inte: keyof IListenerExecutor, payload: unknown[]): Promise<unknown> {
+		const [data] = payload;
+
 		return this.orch
 			.getManager()
 			.getListenerManager()
-			.executeListener(inte, payload as any); // We're delegating the payload validation to the method being called
+			.executeListener(inte, data as any); // We're delegating the payload validation to the method being called
 	}
 
-	async messageEvent(inte: keyof IListenerExecutor, data: unknown): Promise<boolean | IMessage | undefined> {
-		const [message, ...payload] = data as [IMessage, ...unknown[]];
+	async messageEvent(inte: keyof IListenerExecutor, payload: unknown[]): Promise<boolean | IMessage | undefined> {
+		const [message, ...data] = payload as [IMessage, ...unknown[]];
 
 		const msg = await this.orch.getConverters().get('messages').convertMessage(message);
 
 		const params = ((): IAppsMessage | { message: IAppsMessage; user: IAppsUser; [key: string]: any } => {
 			switch (inte) {
 				case AppInterface.IPostMessageDeleted:
-					const [userDeleted] = payload as [IUser];
+					const [userDeleted] = data as [IUser];
 					return {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userDeleted),
 					};
 				case AppInterface.IPostMessageReacted:
-					const [userReacted, reaction, isReacted] = payload as [IUser, string, boolean];
+					const [userReacted, reaction, isReacted] = data as [IUser, string, boolean];
 					return {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userReacted),
@@ -124,28 +126,28 @@ export class AppListenerBridge {
 						isReacted,
 					};
 				case AppInterface.IPostMessageFollowed:
-					const [userFollowed, isUnfollow] = payload as [IUser, boolean];
+					const [userFollowed, isUnfollow] = data as [IUser, boolean];
 					return {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userFollowed),
 						isUnfollow,
 					};
 				case AppInterface.IPostMessagePinned:
-					const [userPinned, isUnpinned] = payload as [IUser, boolean];
+					const [userPinned, isUnpinned] = data as [IUser, boolean];
 					return {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userPinned),
 						isUnpinned,
 					};
 				case AppInterface.IPostMessageStarred:
-					const [userStarred, isStarred] = payload as [IUser, boolean];
+					const [userStarred, isStarred] = data as [IUser, boolean];
 					return {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userStarred),
 						isStarred,
 					};
 				case AppInterface.IPostMessageReported:
-					const [userReported, reason] = payload as [IUser, string];
+					const [userReported, reason] = data as [IUser, string];
 					return {
 						message: msg,
 						user: this.orch.getConverters().get('users').convertToApp(userReported),
@@ -168,8 +170,8 @@ export class AppListenerBridge {
 			.convertAppMessage(result as IAppsMessage);
 	}
 
-	async roomEvent(inte: keyof IListenerExecutor, data: unknown): Promise<boolean | IRoom | IAppsRoom | IAppsLivechatRoom | undefined> {
-		const [room, ...payload] = data as [IRoom, ...unknown[]];
+	async roomEvent(inte: keyof IListenerExecutor, payload: unknown[]): Promise<boolean | IRoom | IAppsRoom | IAppsLivechatRoom | undefined> {
+		const [room, ...data] = payload as [IRoom, ...unknown[]];
 
 		const rm = await this.orch.getConverters().get('rooms').convertRoom(room);
 
@@ -177,7 +179,7 @@ export class AppListenerBridge {
 			switch (inte) {
 				case AppInterface.IPreRoomUserJoined:
 				case AppInterface.IPostRoomUserJoined:
-					const [joiningUser, invitingUser] = payload as [IUser, IUser];
+					const [joiningUser, invitingUser] = data as [IUser, IUser];
 					return {
 						room: rm,
 						joiningUser: this.orch.getConverters().get('users').convertToApp(joiningUser),
@@ -185,7 +187,7 @@ export class AppListenerBridge {
 					};
 				case AppInterface.IPreRoomUserLeave:
 				case AppInterface.IPostRoomUserLeave:
-					const [leavingUser, removedBy] = payload as [IUser, IUser];
+					const [leavingUser, removedBy] = data as [IUser, IUser];
 					return {
 						room: rm,
 						leavingUser: this.orch.getConverters().get('users').convertToApp(leavingUser),
@@ -211,8 +213,8 @@ export class AppListenerBridge {
 			.convertAppRoom(result as IAppsRoom);
 	}
 
-	async livechatEvent(inte: keyof IListenerExecutor, payload: unknown): Promise<unknown> {
-		const [data] = payload as [unknown];
+	async livechatEvent(inte: keyof IListenerExecutor, payload: unknown[]): Promise<unknown> {
+		const [data] = payload;
 
 		switch (inte) {
 			case AppInterface.IPostLivechatAgentAssigned:
@@ -318,7 +320,9 @@ export class AppListenerBridge {
 		}
 	}
 
-	async userEvent(inte: keyof IListenerExecutor, data: unknown): Promise<unknown> {
+	async userEvent(inte: keyof IListenerExecutor, payload: unknown[]): Promise<unknown> {
+		const [data] = payload;
+
 		switch (inte) {
 			case AppInterface.IPostUserLoggedIn:
 			case AppInterface.IPostUserLoggedOut: {
@@ -338,17 +342,22 @@ export class AppListenerBridge {
 				return this.orch.getManager().getListenerManager().executeListener(inte, context);
 			}
 			case AppInterface.IPostUserCreated:
-			case AppInterface.IPostUserUpdated:
 			case AppInterface.IPostUserDeleted: {
 				const crudData = data as UserCrudData;
-				const context: IUserContext | IUserUpdateContext = {
+				const context: IUserContext = {
 					user: this.orch.getConverters().get('users').convertToApp(crudData.user),
 					performedBy: this.orch.getConverters().get('users').convertToApp(crudData.performedBy),
 				};
 
-				if (inte === AppInterface.IPostUserUpdated && crudData.previousUser) {
-					(context as IUserUpdateContext).previousData = this.orch.getConverters().get('users').convertToApp(crudData.previousUser);
-				}
+				return this.orch.getManager().getListenerManager().executeListener(inte, context);
+			}
+			case AppInterface.IPostUserUpdated: {
+				const crudData = data as UserCrudData;
+				const context: IUserUpdateContext = {
+					user: this.orch.getConverters().get('users').convertToApp(crudData.user),
+					performedBy: this.orch.getConverters().get('users').convertToApp(crudData.performedBy),
+					previousData: this.orch.getConverters().get('users').convertToApp(crudData.previousUser),
+				};
 
 				return this.orch.getManager().getListenerManager().executeListener(inte, context);
 			}
