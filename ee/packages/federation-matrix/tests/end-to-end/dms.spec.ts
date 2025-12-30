@@ -646,7 +646,7 @@ const waitForRoomEvent = async (
 						config: rcUserConfig1,
 					});
 
-					expect(response.body).toHaveProperty('success', true);
+					expect(response.body).toHaveProperty('success', false);
 					expect(response.body).toHaveProperty('message');
 
 					// Parse the error message from the DDP response
@@ -1113,7 +1113,7 @@ const waitForRoomEvent = async (
 						config: rcUserConfig2,
 					});
 
-					expect(response.body).toHaveProperty('success', true);
+					expect(response.body).toHaveProperty('success', false);
 					expect(response.body).toHaveProperty('message');
 
 					// Parse the error message from the DDP response
@@ -1664,7 +1664,7 @@ const waitForRoomEvent = async (
 						config: rcUser1.config,
 					});
 
-					expect(response.body).toHaveProperty('success', true);
+					expect(response.body).toHaveProperty('success', false);
 					expect(response.body).toHaveProperty('message');
 
 					// Parse the error message from the DDP response
