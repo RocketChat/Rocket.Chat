@@ -165,10 +165,10 @@ test.describe('OC - Monitor Role', () => {
 
 	test('OC - Monitor Role - Contact Center', async ({ page }) => {
 		await test.step('expect to be able to view only chats from same unit', async () => {
-			await expect(poOmnichannel.chats.findRowByName(ROOM_A)).toBeVisible();
-			await expect(poOmnichannel.chats.findRowByName(ROOM_B)).toBeVisible();
-			await expect(poOmnichannel.chats.findRowByName(ROOM_C)).toBeVisible();
-			await expect(poOmnichannel.chats.findRowByName(ROOM_D)).not.toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_A)).toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_B)).toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_C)).toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_D)).not.toBeVisible();
 		});
 
 		await test.step('expect to be able to join chats from same unit', async () => {
@@ -204,8 +204,8 @@ test.describe('OC - Monitor Role', () => {
 		});
 
 		await test.step('expect not to be able to remove closed room', async () => {
-			await expect(poOmnichannel.chats.findRowByName(ROOM_A)).toBeVisible();
-			await expect(poOmnichannel.chats.btnRemoveByName(ROOM_A)).not.toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_A)).toBeVisible();
+			await expect(poOmnichannel.chats.table.btnRemoveByName(ROOM_A)).not.toBeVisible();
 		});
 	});
 
@@ -217,9 +217,9 @@ test.describe('OC - Monitor Role', () => {
 
 		await test.step('expect not to be able to see chats from removed department', async () => {
 			await test.step('expect rooms from both departments to be visible', async () => {
-				await expect(poOmnichannel.chats.findRowByName(ROOM_B)).toBeVisible();
-				await expect(poOmnichannel.chats.findRowByName(ROOM_C)).toBeVisible();
-				await expect(poOmnichannel.chats.findRowByName(ROOM_D)).not.toBeVisible();
+				await expect(poOmnichannel.chats.table.findRowByName(ROOM_B)).toBeVisible();
+				await expect(poOmnichannel.chats.table.findRowByName(ROOM_C)).toBeVisible();
+				await expect(poOmnichannel.chats.table.findRowByName(ROOM_D)).not.toBeVisible();
 			});
 
 			await test.step('expect to remove departmentB from unit', async () => {
@@ -235,9 +235,9 @@ test.describe('OC - Monitor Role', () => {
 			});
 
 			await test.step('expect to have only room B visible', async () => {
-				await expect(poOmnichannel.chats.findRowByName(ROOM_B)).toBeVisible();
-				await expect(poOmnichannel.chats.findRowByName(ROOM_C)).not.toBeVisible();
-				await expect(poOmnichannel.chats.findRowByName(ROOM_D)).not.toBeVisible();
+				await expect(poOmnichannel.chats.table.findRowByName(ROOM_B)).toBeVisible();
+				await expect(poOmnichannel.chats.table.findRowByName(ROOM_C)).not.toBeVisible();
+				await expect(poOmnichannel.chats.table.findRowByName(ROOM_D)).not.toBeVisible();
 			});
 		});
 
@@ -245,16 +245,16 @@ test.describe('OC - Monitor Role', () => {
 			const res = await unitA.delete();
 			expect(res.status()).toBe(200);
 			await page.reload();
-			await expect(poOmnichannel.chats.findRowByName(ROOM_B)).not.toBeVisible();
-			await expect(poOmnichannel.chats.findRowByName(ROOM_C)).not.toBeVisible();
-			await expect(poOmnichannel.chats.findRowByName(ROOM_D)).not.toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_B)).not.toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_C)).not.toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_D)).not.toBeVisible();
 		});
 
 		await test.step('expect to be able to see all conversations once all units are removed', async () => {
 			const res = await unitB.delete();
 			expect(res.status()).toBe(200);
 			await page.reload();
-			await expect(poOmnichannel.chats.findRowByName(ROOM_D)).toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_D)).toBeVisible();
 		});
 
 		await test.step('expect not to be able to see chats once role is removed', async () => {

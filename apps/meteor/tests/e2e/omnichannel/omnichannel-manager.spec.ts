@@ -1,5 +1,5 @@
 import { Users } from '../fixtures/userStates';
-import { OmnichannelManager } from '../page-objects';
+import { OmnichannelManager } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -11,7 +11,7 @@ test.describe.serial('omnichannel-manager', () => {
 		poOmnichannelManagers = new OmnichannelManager(page);
 
 		await page.goto('/omnichannel');
-		await poOmnichannelManagers.sidenav.linkManagers.click();
+		await poOmnichannelManagers.sidebar.linkManagers.click();
 	});
 
 	test('OC - Manage Managers - Add, Search and Remove', async ({ page }) => {
@@ -24,25 +24,24 @@ test.describe.serial('omnichannel-manager', () => {
 			await poOmnichannelManagers.selectUsername('user1');
 			await poOmnichannelManagers.btnAdd.click();
 
-			await expect(poOmnichannelManagers.findRowByName('user1')).toBeVisible();
+			await expect(poOmnichannelManagers.table.findRowByName('user1')).toBeVisible();
 		});
 
 		await test.step('expect search for manager', async () => {
 			await poOmnichannelManagers.search('user1');
-			await expect(poOmnichannelManagers.findRowByName('user1')).toBeVisible();
+			await expect(poOmnichannelManagers.table.findRowByName('user1')).toBeVisible();
 
 			await poOmnichannelManagers.search('NonExistingUser');
-			await expect(poOmnichannelManagers.findRowByName('user1')).toBeHidden();
+			await expect(poOmnichannelManagers.table.findRowByName('user1')).toBeHidden();
 
 			await poOmnichannelManagers.clearSearch();
 		});
 
 		await test.step('expect remove "user1" as manager', async () => {
 			await poOmnichannelManagers.search('user1');
-			await poOmnichannelManagers.btnDeleteSelectedAgent('user1').click();
-			await poOmnichannelManagers.btnModalRemove.click();
+			await poOmnichannelManagers.removeManager('user1');
 
-			await expect(poOmnichannelManagers.findRowByName('user1')).toBeHidden();
+			await expect(poOmnichannelManagers.table.findRowByName('user1')).toBeHidden();
 		});
 	});
 });

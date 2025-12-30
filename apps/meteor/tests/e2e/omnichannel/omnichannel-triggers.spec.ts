@@ -4,7 +4,8 @@ import type { Page } from '@playwright/test';
 import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.describe.serial('OC - Livechat Triggers', () => {
@@ -74,14 +75,12 @@ test.describe.serial('OC - Livechat Triggers', () => {
 		triggerMessage = 'This is a trigger message time on site';
 		await test.step('expect create new trigger', async () => {
 			await agent.poHomeOmnichannel.triggers.createTrigger(triggersName, triggerMessage, 'time-on-site', 5);
-			await agent.poHomeOmnichannel.triggers.toastMessage.dismissToast();
 		});
 
 		triggerMessage = 'This is a trigger message chat opened by visitor';
 		await test.step('expect update trigger', async () => {
 			await agent.poHomeOmnichannel.triggers.firstRowInTriggerTable(triggersName).click();
 			await agent.poHomeOmnichannel.triggers.updateTrigger(triggersName, triggerMessage);
-			await agent.poHomeOmnichannel.triggers.toastMessage.dismissToast();
 		});
 	});
 
@@ -121,8 +120,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 		await test.step('expect update trigger to after guest registration', async () => {
 			await agent.poHomeOmnichannel.triggers.firstRowInTriggerTable(`edited-${triggersName}`).click();
 			await agent.poHomeOmnichannel.triggers.fillTriggerForm({ condition: 'after-guest-registration', triggerMessage });
-			await agent.poHomeOmnichannel.triggers.btnSave.click();
-			await agent.poHomeOmnichannel.triggers.toastMessage.dismissToast();
+			await agent.poHomeOmnichannel.triggers.save();
 			await agent.page.waitForTimeout(500);
 		});
 

@@ -1,6 +1,6 @@
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelMonitors } from '../page-objects';
+import { OmnichannelMonitors } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -32,22 +32,20 @@ test.describe.serial('OC - Manage Monitors', () => {
 
 		await page.goto('/omnichannel');
 		await page.locator('#main-content').waitFor();
-		await poMonitors.sidenav.linkMonitors.click();
+		await poMonitors.sidebar.linkMonitors.click();
 	});
 
 	test('OC - Manager Monitors - Add monitor', async () => {
 		await test.step('expect to add agent as monitor', async () => {
-			await expect(poMonitors.findRowByName('user1')).not.toBeVisible();
+			await expect(poMonitors.table.findRowByName('user1')).not.toBeVisible();
 			await poMonitors.selectMonitor('user1');
 			await poMonitors.btnAddMonitor.click();
-			await expect(poMonitors.findRowByName('user1')).toBeVisible();
+			await expect(poMonitors.table.findRowByName('user1')).toBeVisible();
 		});
 
 		await test.step('expect to remove agent from monitor', async () => {
-			await poMonitors.btnRemoveByName('user1').click();
-			await expect(poMonitors.modalConfirmRemove).toBeVisible();
-			await poMonitors.btnConfirmRemove.click();
-			await expect(poMonitors.findRowByName('user1')).not.toBeVisible();
+			await poMonitors.removeMonitor('user1');
+			await expect(poMonitors.table.findRowByName('user1')).not.toBeVisible();
 		});
 	});
 
@@ -56,43 +54,37 @@ test.describe.serial('OC - Manage Monitors', () => {
 			await poMonitors.selectMonitor('user1');
 			await poMonitors.btnAddMonitor.click();
 
-			await expect(poMonitors.findRowByName('user1')).toBeVisible();
+			await expect(poMonitors.table.findRowByName('user1')).toBeVisible();
 
 			await poMonitors.selectMonitor('user2');
 			await poMonitors.btnAddMonitor.click();
 
-			await expect(poMonitors.findRowByName('user2')).toBeVisible();
+			await expect(poMonitors.table.findRowByName('user2')).toBeVisible();
 		});
 
 		await test.step('expect to search monitor', async () => {
-			await expect(poMonitors.findRowByName('user1')).toBeVisible();
-			await expect(poMonitors.findRowByName('user2')).toBeVisible();
+			await expect(poMonitors.table.findRowByName('user1')).toBeVisible();
+			await expect(poMonitors.table.findRowByName('user2')).toBeVisible();
 
 			await poMonitors.inputSearch.fill('user1');
-			await expect(poMonitors.findRowByName('user1')).toBeVisible();
-			await expect(poMonitors.findRowByName('user2')).not.toBeVisible();
+			await expect(poMonitors.table.findRowByName('user1')).toBeVisible();
+			await expect(poMonitors.table.findRowByName('user2')).not.toBeVisible();
 
 			await poMonitors.inputSearch.fill('user2');
-			await expect(poMonitors.findRowByName('user1')).not.toBeVisible();
-			await expect(poMonitors.findRowByName('user2')).toBeVisible();
+			await expect(poMonitors.table.findRowByName('user1')).not.toBeVisible();
+			await expect(poMonitors.table.findRowByName('user2')).toBeVisible();
 
 			await poMonitors.inputSearch.fill('');
-			await expect(poMonitors.findRowByName('user1')).toBeVisible();
-			await expect(poMonitors.findRowByName('user2')).toBeVisible();
+			await expect(poMonitors.table.findRowByName('user1')).toBeVisible();
+			await expect(poMonitors.table.findRowByName('user2')).toBeVisible();
 		});
 
 		await test.step('expect to remove monitors', async () => {
-			await poMonitors.btnRemoveByName('user1').click();
-			await expect(poMonitors.modalConfirmRemove).toBeVisible();
-			await poMonitors.btnConfirmRemove.click();
+			await poMonitors.removeMonitor('user1');
+			await expect(poMonitors.table.findRowByName('user1')).not.toBeVisible();
 
-			await expect(poMonitors.findRowByName('user1')).not.toBeVisible();
-
-			await poMonitors.btnRemoveByName('user2').click();
-			await expect(poMonitors.modalConfirmRemove).toBeVisible();
-			await poMonitors.btnConfirmRemove.click();
-
-			await expect(poMonitors.findRowByName('user2')).not.toBeVisible();
+			await poMonitors.removeMonitor('user2');
+			await expect(poMonitors.table.findRowByName('user2')).not.toBeVisible();
 		});
 	});
 });

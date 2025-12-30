@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelDepartments } from '../page-objects';
+import { OmnichannelDepartments } from '../page-objects/omnichannel';
 import { createAgent } from '../utils/omnichannel/agents';
 import { createDepartment, deleteDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
@@ -39,7 +39,7 @@ test.describe('OC - Manage Departments', () => {
 			poOmnichannelDepartments = new OmnichannelDepartments(page);
 
 			await page.goto('/omnichannel');
-			await poOmnichannelDepartments.sidenav.linkDepartments.click();
+			await poOmnichannelDepartments.sidebar.linkDepartments.click();
 		});
 
 		test('Create department', async ({ page }) => {
@@ -104,12 +104,12 @@ test.describe('OC - Manage Departments', () => {
 			await test.step('expect create new department', async () => {
 				await poOmnichannelDepartments.btnSave.click();
 				await poOmnichannelDepartments.search(departmentName);
-				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(departmentName)).toBeVisible();
 			});
 
 			await test.step('expect to delete department', async () => {
 				await poOmnichannelDepartments.search(departmentName);
-				await poOmnichannelDepartments.selectedDepartmentMenu(departmentName).click();
+				await poOmnichannelDepartments.getDepartmentMenuByName(departmentName).click();
 				await poOmnichannelDepartments.menuDeleteOption.click();
 
 				await test.step('expect confirm delete department', async () => {
@@ -129,7 +129,7 @@ test.describe('OC - Manage Departments', () => {
 
 				await test.step('expect department to have been deleted', async () => {
 					await poOmnichannelDepartments.search(departmentName);
-					await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
+					await expect(poOmnichannelDepartments.table.findRowByName(departmentName)).toHaveCount(0);
 				});
 			});
 		});
@@ -152,7 +152,7 @@ test.describe('OC - Manage Departments', () => {
 		test('Edit department', async () => {
 			await test.step('expect create new department', async () => {
 				await poOmnichannelDepartments.search(department.name);
-				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toBeVisible();
 
 				return department;
 			});
@@ -160,55 +160,52 @@ test.describe('OC - Manage Departments', () => {
 			await test.step('expect update department name', async () => {
 				await poOmnichannelDepartments.search(department.name);
 
-				await poOmnichannelDepartments.firstRowInTableMenu.click();
+				await poOmnichannelDepartments.table.findRowByName(department.name).click();
 				await poOmnichannelDepartments.menuEditOption.click();
 
 				await poOmnichannelDepartments.inputName.fill(`edited-${department.name}`);
 				await poOmnichannelDepartments.btnSave.click();
 
 				await poOmnichannelDepartments.search(`edited-${department.name}`);
-				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(`edited-${department.name}`)).toBeVisible();
 			});
 		});
 
 		test('Archive department', async () => {
 			await test.step('expect create new department', async () => {
 				await poOmnichannelDepartments.search(department.name);
-				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toBeVisible();
 			});
 
 			await test.step('expect archive department', async () => {
 				await poOmnichannelDepartments.search(department.name);
+				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toBeVisible();
 
-				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
-				await poOmnichannelDepartments.firstRowInTableMenu.click();
-				await poOmnichannelDepartments.menuArchiveOption.click();
-				await poOmnichannelDepartments.toastMessage.waitForDisplay();
-
+				await poOmnichannelDepartments.archiveDepartmentByName(department.name);
 				await poOmnichannelDepartments.archivedDepartmentsTab.click();
 				await poOmnichannelDepartments.search(department.name);
-				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toBeVisible();
 			});
 
 			await test.step('expect archived department to not be editable', async () => {
-				await poOmnichannelDepartments.firstRowInTableMenu.click();
+				await poOmnichannelDepartments.table.findRowByName(department.name).click();
 				await expect(poOmnichannelDepartments.menuEditOption).not.toBeVisible();
 			});
 
 			await test.step('expect unarchive department', async () => {
 				await poOmnichannelDepartments.menuUnarchiveOption.click();
-				await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
+				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toHaveCount(0);
 			});
 		});
 
 		test('Request tag(s) before closing conversation', async () => {
 			await test.step('should create new department', async () => {
 				await poOmnichannelDepartments.search(department.name);
-				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toBeVisible();
 			});
 
 			const tagName = faker.string.sample(5);
-			await poOmnichannelDepartments.firstRowInTableMenu.click();
+			await poOmnichannelDepartments.table.findRowByName(department.name).click();
 			await poOmnichannelDepartments.menuEditOption.click();
 
 			await test.step('should form save button be disabled', async () => {
@@ -245,12 +242,12 @@ test.describe('OC - Manage Departments', () => {
 		test('Toggle department removal', async ({ api }) => {
 			await test.step('expect create new department', async () => {
 				await poOmnichannelDepartments.search(department.name);
-				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toBeVisible();
 			});
 
 			await test.step('expect to be able to delete department', async () => {
 				await poOmnichannelDepartments.search(department.name);
-				await poOmnichannelDepartments.selectedDepartmentMenu(department.name).click();
+				await poOmnichannelDepartments.getDepartmentMenuByName(department.name).click();
 				await expect(poOmnichannelDepartments.menuDeleteOption).toBeEnabled();
 			});
 
@@ -261,7 +258,7 @@ test.describe('OC - Manage Departments', () => {
 
 			await test.step('expect not to be able to delete department', async () => {
 				await poOmnichannelDepartments.search(department.name);
-				await poOmnichannelDepartments.selectedDepartmentMenu(department.name).click();
+				await poOmnichannelDepartments.getDepartmentMenuByName(department.name).click();
 				await expect(poOmnichannelDepartments.menuDeleteOption).toBeDisabled();
 			});
 

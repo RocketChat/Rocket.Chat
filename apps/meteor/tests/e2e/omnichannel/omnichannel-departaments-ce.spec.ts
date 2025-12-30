@@ -29,7 +29,7 @@ test.describe.serial('OC - Manage Departments (CE)', () => {
 			await poOmnichannelDepartments.createDepartment(departmentName, faker.internet.email());
 
 			await poOmnichannelDepartments.inputSearch.fill(departmentName);
-			await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+			await expect(poOmnichannelDepartments.table.findRowByName(departmentName)).toBeVisible();
 		});
 
 		await test.step('expect to not be possible adding a second department ', async () => {

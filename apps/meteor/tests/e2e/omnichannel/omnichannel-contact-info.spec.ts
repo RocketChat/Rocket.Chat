@@ -48,12 +48,12 @@ test.describe('Omnichannel contact info', () => {
 
 		await test.step('Expect to be able to see contact information and edit', async () => {
 			await agent.poHomeChannel.roomToolbar.openContactInfo();
-			await agent.poHomeChannel.content.btnContactEdit.click();
+			await agent.poHomeChannel.roomInfo.btnEdit.click();
 		});
 
 		await test.step('Expect to update room name and subscription when updating contact name', async () => {
-			await agent.poContacts.newContact.inputName.fill('Edited Contact Name');
-			await agent.poContacts.newContact.btnSave.click();
+			await agent.poContacts.editContact.inputName.fill('Edited Contact Name');
+			await agent.poContacts.editContact.btnSave.click();
 			await expect(agent.poHomeChannel.sidebar.channelsList.getByText('Edited Contact Name')).toBeVisible();
 			await expect(agent.poHomeChannel.content.channelHeader.getByText('Edited Contact Name')).toBeVisible();
 		});

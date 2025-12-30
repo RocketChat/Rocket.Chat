@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelSlaPolicies } from '../page-objects/omnichannel-sla-policies';
+import { OmnichannelSlaPolicies } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 const ERROR = {
@@ -38,7 +38,7 @@ test.describe('Omnichannel SLA Policies', () => {
 		poOmnichannelSlaPolicies = new OmnichannelSlaPolicies(page);
 
 		await page.goto('/omnichannel');
-		await poOmnichannelSlaPolicies.sidenav.linkSlaPolicies.click();
+		await poOmnichannelSlaPolicies.sidebar.linkSlaPolicies.click();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -48,7 +48,7 @@ test.describe('Omnichannel SLA Policies', () => {
 
 	test('Manage SLAs', async () => {
 		await test.step('Add new SLA', async () => {
-			await poOmnichannelSlaPolicies.headingButtonNew('Create SLA policy').click();
+			await poOmnichannelSlaPolicies.createByName('Create SLA policy');
 
 			await test.step('field name is required', async () => {
 				await poOmnichannelSlaPolicies.manageSlaPolicy.inputName.fill('any_text');
@@ -134,9 +134,7 @@ test.describe('Omnichannel SLA Policies', () => {
 		});
 
 		await test.step('Remove SLA', async () => {
-			await poOmnichannelSlaPolicies.btnRemove(EDITED_SLA.name).click();
-			await expect(poOmnichannelSlaPolicies.txtDeleteModalTitle).toBeVisible();
-			await poOmnichannelSlaPolicies.btnDelete.click();
+			await poOmnichannelSlaPolicies.removeSLA(EDITED_SLA.name);
 			await expect(poOmnichannelSlaPolicies.findRowByName(EDITED_SLA.name)).not.toBeVisible();
 		});
 	});
