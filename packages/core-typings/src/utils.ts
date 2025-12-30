@@ -1,3 +1,5 @@
+import * as z from 'zod';
+
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 
 export type ExtractKeys<T, K extends keyof T, U> = T[K] extends U ? K : never;
@@ -50,3 +52,8 @@ export type DeepPartial<T> = {
 };
 
 export const isNotUndefined = <T>(value: T | undefined): value is T => value !== undefined;
+
+export const serializableDate = z.codec(z.iso.datetime(), z.date(), {
+	encode: (date) => date.toISOString(),
+	decode: (isoString) => new Date(isoString),
+});

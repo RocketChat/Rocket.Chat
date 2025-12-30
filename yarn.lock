@@ -8304,6 +8304,7 @@ __metadata:
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.3"
     typia: "npm:~9.7.2"
+    zod: "npm:~4.3.5"
   languageName: unknown
   linkType: soft
 
@@ -9998,6 +9999,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
+    zod: "npm:~4.3.5"
   languageName: unknown
   linkType: soft
 

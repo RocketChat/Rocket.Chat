@@ -15,7 +15,6 @@ import type { CommandsEndpoints } from './v1/commands';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DirectoryEndpoint } from './v1/directory';
 import type { ImEndpoints, DmEndpoints } from './v1/dm';
-import type { E2eEndpoints } from './v1/e2e';
 import type { EmailInboxEndpoints } from './v1/email-inbox';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
 import type { FederationEndpoints } from './v1/federation';
@@ -78,7 +77,6 @@ export interface Endpoints
 		IntegrationHooksEndpoints,
 		VideoConferenceEndpoints,
 		InvitesEndpoints,
-		E2eEndpoints,
 		AssetsEndpoints,
 		EmailInboxEndpoints,
 		MailerEndpoints,
@@ -203,6 +201,7 @@ export type UrlParams<T extends string> = string extends T
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
 export * from './apps';
+export * from './v1/e2e';
 export * from './v1/presence';
 export * from './v1/roles';
 export * from './v1/settings';
@@ -241,10 +240,6 @@ export * from './v1/server-events';
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
 export * from './v1/autotranslate/AutotranslateTranslateMessageParamsPOST';
-export * from './v1/e2e/e2eGetUsersOfRoomWithoutKeyParamsGET';
-export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
-export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
-export * from './v1/e2e';
 export * from './v1/import';
 export * from './v1/email-inbox';
 export * from './v1/calendar';

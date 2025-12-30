@@ -1,14 +1,22 @@
 import { Subscriptions, Users } from '@rocket.chat/models';
 import {
-	ajv,
-	validateUnauthorizedErrorResponse,
-	validateBadRequestErrorResponse,
-	ise2eGetUsersOfRoomWithoutKeyParamsGET,
-	ise2eSetUserPublicAndPrivateKeysParamsPOST,
-	ise2eUpdateGroupKeyParamsPOST,
-	isE2EProvideUsersGroupKeyProps,
-	isE2EFetchUsersWaitingForGroupKeyProps,
-	isE2EResetRoomKeyProps,
+	BadRequestErrorResponseSchema,
+	ForbiddenErrorResponseSchema,
+	UnauthorizedErrorResponseSchema,
+	SuccessResponseSchema,
+	POSTE2ESetRoomKeyIDBodySchema,
+	POSTE2ESetRoomKeyIDResponseSchema,
+	GETE2EFetchMyKeysResponseSchema,
+	GETE2EGetUsersOfRoomWithoutKeyQuerySchema,
+	GETE2EGetUsersOfRoomWithoutKeyResponseSchema,
+	POSTE2ESetUserPublicAndPrivateKeysBodySchema,
+	POSTE2EUpdateGroupKeyBodySchema,
+	POSTE2EAcceptSuggestedGroupKeyBodySchema,
+	POSTE2ERejectSuggestedGroupKeyBodySchema,
+	GETE2EFetchUsersWaitingForGroupKeyQuerySchema,
+	GETE2EFetchUsersWaitingForGroupKeyResponseSchema,
+	POSTE2EProvideUsersSuggestedGroupKeysBodySchema,
+	POSTE2EResetRoomKeyBodySchema,
 } from '@rocket.chat/rest-typings';
 import ExpiryMap from 'expiry-map';
 
@@ -29,232 +37,142 @@ import { API } from '../api';
 // The next reset will be available 10s after
 const LockMap = new ExpiryMap<string, boolean>(10000);
 
-type E2eSetRoomKeyIdProps = {
-	rid: string;
-	keyID: string;
-};
-
-const E2eSetRoomKeyIdSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
+const e2eEndpoints = API.v1
+	.post(
+		'e2e.setRoomKeyID',
+		{
+			authRequired: true,
+			body: POSTE2ESetRoomKeyIDBodySchema,
+			response: {
+				200: POSTE2ESetRoomKeyIDResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
 		},
-		keyID: {
-			type: 'string',
+		async function action() {
+			const { rid, keyID } = this.bodyParams;
+
+			await setRoomKeyIDMethod(this.userId, rid, keyID);
+
+			return API.v1.success();
 		},
-	},
-	required: ['rid', 'keyID'],
-	additionalProperties: false,
-};
-
-const isE2eSetRoomKeyIdProps = ajv.compile<E2eSetRoomKeyIdProps>(E2eSetRoomKeyIdSchema);
-
-const e2eEndpoints = API.v1.post(
-	'e2e.setRoomKeyID',
-	{
-		authRequired: true,
-		body: isE2eSetRoomKeyIdProps,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<void>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['success'],
-			}),
+	)
+	.get(
+		'e2e.fetchMyKeys',
+		{
+			authRequired: true,
+			response: {
+				200: GETE2EFetchMyKeysResponseSchema,
+			},
 		},
-	},
-
-	async function action() {
-		const { rid, keyID } = this.bodyParams;
-
-		await setRoomKeyIDMethod(this.userId, rid, keyID);
-
-		return API.v1.success();
-	},
-);
-
-API.v1.addRoute(
-	'e2e.fetchMyKeys',
-	{
-		authRequired: true,
-	},
-	{
-		async get() {
+		async function action() {
 			const result = await Users.fetchKeysByUserId(this.userId);
 
 			return API.v1.success(result);
 		},
-	},
-);
-
-API.v1.addRoute(
-	'e2e.getUsersOfRoomWithoutKey',
-	{
-		authRequired: true,
-		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
-	},
-	{
-		async get() {
+	)
+	.get(
+		'e2e.getUsersOfRoomWithoutKey',
+		{
+			authRequired: true,
+			query: GETE2EGetUsersOfRoomWithoutKeyQuerySchema,
+			response: {
+				200: GETE2EGetUsersOfRoomWithoutKeyResponseSchema,
+			},
+		},
+		async function action() {
 			const { rid } = this.queryParams;
 
 			const result = await getUsersOfRoomWithoutKeyMethod(this.userId, rid);
 
 			return API.v1.success(result);
 		},
-	},
-);
-
-/**
- * @openapi
- *  /api/v1/e2e.setUserPublicAndPrivateKeys:
- *    post:
- *      description: Sets the end-to-end encryption keys for the authenticated user
- *      security:
- *        - autenticated: {}
- *      requestBody:
- *        description: A tuple containing the public and the private keys
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                public_key:
- *                  type: string
- *                private_key:
- *                  type: string
- *                force:
- *                  type: boolean
- *      responses:
- *        200:
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiSuccessV1'
- *        default:
- *          description: Unexpected error
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiFailureV1'
- */
-API.v1.addRoute(
-	'e2e.setUserPublicAndPrivateKeys',
-	{
-		authRequired: true,
-		validateParams: ise2eSetUserPublicAndPrivateKeysParamsPOST,
-	},
-	{
-		async post() {
-			// eslint-disable-next-line @typescript-eslint/naming-convention
-			const { public_key, private_key, force } = this.bodyParams;
+	)
+	.post(
+		'e2e.setUserPublicAndPrivateKeys',
+		{
+			description: 'Sets the end-to-end encryption public and private keys for the authenticated user.',
+			authRequired: true,
+			body: POSTE2ESetUserPublicAndPrivateKeysBodySchema,
+			response: {
+				200: SuccessResponseSchema,
+				400: BadRequestErrorResponseSchema,
+			},
+		},
+		async function action() {
+			const { public_key: publicKey, private_key: privateKey, force } = this.bodyParams;
 
 			await setUserPublicAndPrivateKeysMethod(this.userId, {
-				public_key,
-				private_key,
+				public_key: publicKey,
+				private_key: privateKey,
 				force,
 			});
 
 			return API.v1.success();
 		},
-	},
-);
-
-/**
- * @openapi
- *  /api/v1/e2e.updateGroupKey:
- *    post:
- *      description: Updates the end-to-end encryption key for a user on a room
- *      security:
- *        - autenticated: {}
- *      requestBody:
- *        description: A tuple containing the user ID, the room ID, and the key
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                uid:
- *                  type: string
- *                rid:
- *                  type: string
- *                key:
- *                  type: string
- *      responses:
- *        200:
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiSuccessV1'
- *        default:
- *          description: Unexpected error
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiFailureV1'
- */
-API.v1.addRoute(
-	'e2e.updateGroupKey',
-	{
-		authRequired: true,
-		validateParams: ise2eUpdateGroupKeyParamsPOST,
-	},
-	{
-		async post() {
+	)
+	.post(
+		'e2e.updateGroupKey',
+		{
+			description: 'Updates the end-to-end encryption key for a user on a room.',
+			authRequired: true,
+			body: POSTE2EUpdateGroupKeyBodySchema,
+			response: {
+				200: SuccessResponseSchema,
+			},
+		},
+		async function action() {
 			const { uid, rid, key } = this.bodyParams;
 
 			await updateGroupKey(rid, uid, key, this.userId);
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'e2e.acceptSuggestedGroupKey',
-	{
-		authRequired: true,
-		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
-	},
-	{
-		async post() {
+	)
+	.post(
+		'e2e.acceptSuggestedGroupKey',
+		{
+			authRequired: true,
+			body: POSTE2EAcceptSuggestedGroupKeyBodySchema,
+			response: {
+				200: SuccessResponseSchema,
+			},
+		},
+		async function action() {
 			const { rid } = this.bodyParams;
 
 			await handleSuggestedGroupKey('accept', rid, this.userId, 'e2e.acceptSuggestedGroupKey');
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'e2e.rejectSuggestedGroupKey',
-	{
-		authRequired: true,
-		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
-	},
-	{
-		async post() {
+	)
+	.post(
+		'e2e.rejectSuggestedGroupKey',
+		{
+			authRequired: true,
+			body: POSTE2ERejectSuggestedGroupKeyBodySchema,
+			response: {
+				200: SuccessResponseSchema,
+			},
+		},
+		async function action() {
 			const { rid } = this.bodyParams;
 
 			await handleSuggestedGroupKey('reject', rid, this.userId, 'e2e.rejectSuggestedGroupKey');
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'e2e.fetchUsersWaitingForGroupKey',
-	{
-		authRequired: true,
-		validateParams: isE2EFetchUsersWaitingForGroupKeyProps,
-	},
-	{
-		async get() {
+	)
+	.get(
+		'e2e.fetchUsersWaitingForGroupKey',
+		{
+			authRequired: true,
+			query: GETE2EFetchUsersWaitingForGroupKeyQuerySchema,
+			response: {
+				200: GETE2EFetchUsersWaitingForGroupKeyResponseSchema,
+			},
+		},
+		async function action() {
 			if (!settings.get('E2E_Enable')) {
 				return API.v1.success({ usersWaitingForE2EKeys: {} });
 			}
@@ -268,17 +186,17 @@ API.v1.addRoute(
 				usersWaitingForE2EKeys,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'e2e.provideUsersSuggestedGroupKeys',
-	{
-		authRequired: true,
-		validateParams: isE2EProvideUsersGroupKeyProps,
-	},
-	{
-		async post() {
+	)
+	.post(
+		'e2e.provideUsersSuggestedGroupKeys',
+		{
+			authRequired: true,
+			body: POSTE2EProvideUsersSuggestedGroupKeysBodySchema,
+			response: {
+				200: SuccessResponseSchema,
+			},
+		},
+		async function action() {
 			if (!settings.get('E2E_Enable')) {
 				return API.v1.success();
 			}
@@ -287,15 +205,20 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-// This should have permissions
-API.v1.addRoute(
-	'e2e.resetRoomKey',
-	{ authRequired: true, validateParams: isE2EResetRoomKeyProps },
-	{
-		async post() {
+	)
+	.post(
+		// This should have permissions
+		'e2e.resetRoomKey',
+		{
+			authRequired: true,
+			body: POSTE2EResetRoomKeyBodySchema,
+			response: {
+				200: SuccessResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				403: ForbiddenErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const { rid, e2eKey, e2eKeyId } = this.bodyParams;
 			if (!(await hasPermissionAsync(this.userId, 'toggle-room-e2e-encryption', rid))) {
 				return API.v1.forbidden();
@@ -320,12 +243,9 @@ API.v1.addRoute(
 				LockMap.delete(rid);
 			}
 		},
-	},
-);
-
-export type E2eEndpoints = ExtractRoutesFromAPI<typeof e2eEndpoints>;
+	);
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends E2eEndpoints {}
+	interface Endpoints extends ExtractRoutesFromAPI<typeof e2eEndpoints> {}
 }
