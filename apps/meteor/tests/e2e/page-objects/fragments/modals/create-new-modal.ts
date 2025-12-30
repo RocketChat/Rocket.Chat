@@ -52,16 +52,14 @@ export class CreateNewChannelModal extends CreateNewModal {
 		return this.root.getByRole('button', { name: 'Advanced settings', exact: true });
 	}
 
-	// TODO: improve locator
 	get autocompleteUser(): Locator {
-		return this.root.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-box--full") and contains(text(), "Add Members")]/..//input');
+		return this.root.getByRole('textbox', { name: 'Add people' });
 	}
 
 	async inviteUserToChannel(username: string) {
 		await this.autocompleteUser.click();
-		await this.autocompleteUser.type(username);
-		await this.root.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).waitFor();
-		await this.root.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).click();
+		await this.autocompleteUser.fill(username);
+		await this.listbox.selectOption(username);
 	}
 }
 
@@ -75,14 +73,13 @@ export class CreateNewDMModal extends CreateNewModal {
 	}
 
 	get autocompleteUser(): Locator {
-		return this.root.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-box--full")]/..//input');
+		return this.root.getByRole('listbox').getByRole('textbox');
 	}
 
 	async inviteUserToDM(username: string) {
 		await this.autocompleteUser.click();
-		await this.autocompleteUser.type(username);
-		await this.root.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).waitFor();
-		await this.root.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).click();
+		await this.autocompleteUser.fill(username);
+		await this.dmListbox.selectOption(username);
 	}
 }
 

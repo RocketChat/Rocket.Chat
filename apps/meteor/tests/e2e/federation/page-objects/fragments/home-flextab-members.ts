@@ -41,9 +41,11 @@ export class FederationHomeFlextabMembers {
 	async addMultipleUsers(usernames: string[]) {
 		await this.addUsersButton.click();
 		for await (const username of usernames) {
-			await this.page.locator('//label[contains(text(), "Choose users")]/..//input').type(username);
-			await this.page.locator(`[data-qa-type="autocomplete-user-option"] >> text=${username}`).waitFor();
-			await this.page.locator(`[data-qa-type="autocomplete-user-option"] >> text=${username}`).first().click();
+			await this.page.getByRole('textbox', { name: 'Choose users' }).click();
+			await this.page.getByRole('textbox', { name: 'Choose users' }).fill(username);
+
+			await this.page.getByRole('listbox').waitFor();
+			await this.page.getByRole('listbox').selectOption(username);
 		}
 		await this.addUsersButton.click();
 	}
