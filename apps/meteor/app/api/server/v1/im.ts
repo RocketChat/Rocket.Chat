@@ -4,14 +4,15 @@
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 import {
-	ajv,
-	validateUnauthorizedErrorResponse,
-	validateBadRequestErrorResponse,
 	isDmFileProps,
 	isDmMemberProps,
 	isDmMessagesProps,
 	isDmCreateProps,
 	isDmHistoryProps,
+	SuccessResponseSchema,
+	BadRequestErrorResponseSchema,
+	UnauthorizedErrorResponseSchema,
+	POSTDMDeleteBodySchema,
 } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -91,56 +92,13 @@ API.v1.addRoute(
 	},
 );
 
-type DmDeleteProps =
-	| {
-			roomId: string;
-	  }
-	| {
-			username: string;
-	  };
-
-const isDmDeleteProps = ajv.compile<DmDeleteProps>({
-	oneOf: [
-		{
-			type: 'object',
-			properties: {
-				roomId: {
-					type: 'string',
-				},
-			},
-			required: ['roomId'],
-			additionalProperties: false,
-		},
-		{
-			type: 'object',
-			properties: {
-				username: {
-					type: 'string',
-				},
-			},
-			required: ['username'],
-			additionalProperties: false,
-		},
-	],
-});
-
 const dmDeleteEndpointsProps = {
 	authRequired: true,
-	body: isDmDeleteProps,
+	body: POSTDMDeleteBodySchema,
 	response: {
-		400: validateBadRequestErrorResponse,
-		401: validateUnauthorizedErrorResponse,
-		200: ajv.compile<void>({
-			type: 'object',
-			properties: {
-				success: {
-					type: 'boolean',
-					enum: [true],
-				},
-			},
-			required: ['success'],
-			additionalProperties: false,
-		}),
+		200: SuccessResponseSchema,
+		400: BadRequestErrorResponseSchema,
+		401: UnauthorizedErrorResponseSchema,
 	},
 } as const;
 
