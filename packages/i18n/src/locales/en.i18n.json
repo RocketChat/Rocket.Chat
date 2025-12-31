@@ -83,6 +83,7 @@
   "ABAC_Managed_description": "Only compliant users have access to attribute-based access controlled rooms. Attributes determine room access.",
   "ABAC_Room_Attributes": "Room Attributes",
   "ABAC_Logs": "Logs",
+  "ABAC_Invalid_attribute": "Invalid characters in attribute name or values",
   "AI_Actions": "AI actions",
   "API": "API",
   "API_Add_Personal_Access_Token": "Add new Personal Access Token",
