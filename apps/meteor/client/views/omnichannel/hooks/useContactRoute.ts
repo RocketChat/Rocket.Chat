@@ -22,7 +22,6 @@ export const useContactRoute = () => {
 					...params,
 				},
 			});
-
 		},
 		[navigate, currentParams, currentRouteName],
 	);
