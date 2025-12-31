@@ -89,7 +89,7 @@ function NewImportPage() {
 	// CSV importer expects ZIP files, Slack Users expects CSV files, most other importers expect ZIP files
 	let acceptedFileTypes = '';
 	if (importer?.key === 'csv') {
-		acceptedFileTypes = '.zip,application/zip,application/x-zip,application/x-zip-compressed';
+		acceptedFileTypes = '.csv,.zip,application/zip,application/x-zip,application/x-zip-compressed';
 	} else if (importer?.key === 'slack-users') {
 		acceptedFileTypes = '.csv,text/csv';
 	} else if (importer) {
