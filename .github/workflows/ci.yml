@@ -325,7 +325,7 @@ jobs:
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[0] }}
           type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
 
       - name: Image ${{ matrix.service[1] || '"skipped"' }}
         uses: ./.github/actions/build-docker
@@ -339,7 +339,7 @@ jobs:
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[1] }}
           type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
           setup-docker: false
 
       - name: Image ${{ matrix.service[2] || '"skipped"' }}
@@ -354,7 +354,7 @@ jobs:
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[2] }}
           type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
           setup-docker: false
 
       - name: Image ${{ matrix.service[3] || '"skipped"' }}
@@ -369,7 +369,7 @@ jobs:
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[3] }}
           type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
           setup-docker: false
 
   build-gh-docker-publish:
@@ -630,7 +630,7 @@ jobs:
       # Download Docker images from build artifacts
       - name: Download Docker images
         uses: actions/download-artifact@v7
-        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' || github.ref != 'refs/heads/develop'
+        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         with:
           pattern: 'docker-image-rocketchat-amd64-coverage'
           path: /tmp/docker-images
@@ -638,7 +638,7 @@ jobs:
 
       # Load Docker images
       - name: Load Docker images
-        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' || github.ref != 'refs/heads/develop'
+        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         shell: bash
         run: |
           set -o xtrace

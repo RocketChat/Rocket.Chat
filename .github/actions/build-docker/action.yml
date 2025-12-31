@@ -157,7 +157,7 @@ runs:
         ls -lh /tmp/docker-images/
 
     - name: Upload Docker image artifact
-      if: inputs.publish-image == 'false'
+      if: inputs.publish-image == 'false' && inputs.arch == 'amd64'
       uses: actions/upload-artifact@v4
       with:
         name: docker-image-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
