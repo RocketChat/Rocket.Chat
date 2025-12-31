@@ -1,7 +1,8 @@
 import { AdminInfoPage } from '@rocket.chat/onboarding-ui';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting, useVerifyPassword, usePasswordPolicy } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
+import { useMemo } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
@@ -18,10 +19,63 @@ const AdminInfoStep = (): ReactElement => {
 
 	const { currentStep, validateEmail, registerAdminUser, maxSteps } = useSetupWizardContext();
 
+	const enabled = useSetting('Accounts_Password_Policy_Enabled', false);
+	const minLength = useSetting('Accounts_Password_Policy_MinLength', 14);
+	const maxLength = useSetting('Accounts_Password_Policy_MaxLength', -1);
+	const forbidRepeatingCharacters = useSetting('Accounts_Password_Policy_ForbidRepeatingCharacters', true);
+	const forbidRepeatingCharactersCount = useSetting('Accounts_Password_Policy_ForbidRepeatingCharactersCount', 3);
+	const mustContainAtLeastOneLowercase = useSetting('Accounts_Password_Policy_AtLeastOneLowercase', true);
+	const mustContainAtLeastOneUppercase = useSetting('Accounts_Password_Policy_AtLeastOneUppercase', true);
+	const mustContainAtLeastOneNumber = useSetting('Accounts_Password_Policy_AtLeastOneNumber', true);
+	const mustContainAtLeastOneSpecialCharacter = useSetting('Accounts_Password_Policy_AtLeastOneSpecialCharacter', true);
+
+	const validatePasswordPolicy = usePasswordPolicy({
+		enabled,
+		minLength,
+		maxLength,
+		forbidRepeatingCharacters,
+		forbidRepeatingCharactersCount,
+		mustContainAtLeastOneLowercase,
+		mustContainAtLeastOneUppercase,
+		mustContainAtLeastOneNumber,
+		mustContainAtLeastOneSpecialCharacter,
+		throwError: false,
+	});
+
+	const passwordPolicyValidations = useVerifyPassword('');
+	const passwordRulesHint = useMemo(() => {
+		if (!passwordPolicyValidations.validations || passwordPolicyValidations.validations.length === 0) {
+			return '';
+		}
+
+		return passwordPolicyValidations.validations
+			.map((validation) => {
+				const labelKey = `${validation.name}-label` as const;
+				if ('limit' in validation) {
+					return t(labelKey, { limit: validation.limit });
+				}
+				return t(labelKey);
+			})
+			.join(', ');
+	}, [passwordPolicyValidations.validations, t]);
+
 	// TODO: check if username exists
 	const validateUsername = (username: string): boolean | string => {
 		if (!usernameRegExp.test(username) || hasBlockedName(username)) {
 			return t('Invalid_username');
+		}
+
+		return true;
+	};
+
+	const validatePassword = (password: string): boolean | string => {
+		if (!password || password.length === 0) {
+			return t('Required_field', { field: t('Password') });
+		}
+
+		const passwordValidation = validatePasswordPolicy(password);
+		if (!passwordValidation.valid) {
+			return t('Password_must_meet_the_complexity_requirements');
 		}
 
 		return true;
@@ -34,8 +88,8 @@ const AdminInfoStep = (): ReactElement => {
 	return (
 		<I18nextProvider i18n={i18n} defaultNS='onboarding'>
 			<AdminInfoPage
-				validatePassword={(password) => password.length > 0}
-				passwordRulesHint=''
+				validatePassword={validatePassword}
+				passwordRulesHint={passwordRulesHint}
 				validateUsername={validateUsername}
 				validateEmail={validateEmail}
 				currentStep={currentStep}
