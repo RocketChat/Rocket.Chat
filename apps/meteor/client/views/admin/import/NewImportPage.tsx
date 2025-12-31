@@ -87,14 +87,18 @@ function NewImportPage() {
 	const [files, setFiles] = useState<File[]>([]);
 
 	// CSV importer expects ZIP files, Slack Users expects CSV files, most other importers expect ZIP files
-	let acceptedFileTypes = '';
-	if (importer?.key === 'csv') {
-		acceptedFileTypes = '.csv,.zip,application/zip,application/x-zip,application/x-zip-compressed';
-	} else if (importer?.key === 'slack-users') {
-		acceptedFileTypes = '.csv,text/csv';
-	} else if (importer) {
-		acceptedFileTypes = '.zip,application/zip,application/x-zip,application/x-zip-compressed';
-	}
+	const acceptedFileTypes = useMemo(() => {
+    if (importer?.key === 'csv') {
+        return '.csv,.zip,text/csv,application/zip,application/x-zip,application/x-zip-compressed';
+    }
+    if (importer?.key === 'slack-users') {
+        return '.csv,text/csv';
+    }
+    if (importer) {
+        return '.zip,application/zip,application/x-zip,application/x-zip-compressed';
+    }
+    return '';
+}, [importer?.key]);
 
 	const isDataTransferEvent = <T extends SyntheticEvent>(event: T): event is T & DragEvent<HTMLInputElement> =>
 		Boolean('dataTransfer' in event && (event as any).dataTransfer.files);
