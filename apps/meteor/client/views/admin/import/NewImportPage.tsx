@@ -19,6 +19,7 @@ import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import type { IImporterInfo } from '@rocket.chat/core-typings';
 import type { ChangeEvent, DragEvent, FormEvent, Key, SyntheticEvent } from 'react';
 import { useState, useMemo, useEffect, useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +37,7 @@ function NewImportPage() {
 	const [fileType, setFileType] = useSafely(useState('upload'));
 
 	const listImportersEndpoint = useEndpoint('GET', '/v1/importers.list');
-	const { data: importers, isPending: isLoadingImporters } = useQuery({
+	const { data: importers, isPending: isLoadingImporters } = useQuery<IImporterInfo[]>({
 		queryKey: ['importers'],
 		queryFn: async () => listImportersEndpoint(),
 		refetchOnWindowFocus: false,
@@ -86,19 +87,7 @@ function NewImportPage() {
 
 	const [files, setFiles] = useState<File[]>([]);
 
-	// CSV importer expects ZIP files, Slack Users expects CSV files, most other importers expect ZIP files
-	const acceptedFileTypes = useMemo(() => {
-    if (importer?.key === 'csv') {
-        return '.csv,.zip,text/csv,application/zip,application/x-zip,application/x-zip-compressed';
-    }
-    if (importer?.key === 'slack-users') {
-        return '.csv,text/csv';
-    }
-    if (importer) {
-        return '.zip,application/zip,application/x-zip,application/x-zip-compressed';
-    }
-    return '';
-}, [importer?.key]);
+	const acceptedFileTypes = importer?.acceptedFileTypes || '';
 
 	const isDataTransferEvent = <T extends SyntheticEvent>(event: T): event is T & DragEvent<HTMLInputElement> =>
 		Boolean('dataTransfer' in event && (event as any).dataTransfer.files);

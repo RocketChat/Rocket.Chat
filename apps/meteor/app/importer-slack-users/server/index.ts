@@ -5,4 +5,5 @@ Importers.add({
 	key: 'slack-users',
 	name: 'Slack_Users',
 	importer: SlackUsersImporter,
+	acceptedFileTypes: '.csv,text/csv',
 });

@@ -8,12 +8,13 @@ export class ImportersContainer {
 		this.importers = new Map();
 	}
 
-	add({ key, name, importer, visible }: Omit<ImporterInfo, 'visible'> & { visible?: boolean }) {
+	add({ key, name, importer, visible, acceptedFileTypes }: Omit<ImporterInfo, 'visible'> & { visible?: boolean }) {
 		this.importers.set(key, {
 			key,
 			name,
 			visible: visible !== false,
 			importer,
+			acceptedFileTypes,
 		});
 	}
 
