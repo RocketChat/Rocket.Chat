@@ -15,6 +15,13 @@ import handleListener from '../listener/handler.ts';
 import handleUIKitInteraction, { uikitInteractions } from '../uikit/handler.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import handleOnUpdate from './handleOnUpdate.ts';
+import handleUploadEvents, { uploadEvents } from './handleUploadEvents.ts';
+
+declare global {
+	interface ReadonlyArray<T> {
+		includes(x: unknown): x is T;
+	}
+}
 
 export default async function handleApp(method: string, params: unknown): Promise<Defined | JsonRpcError> {
 	const [, appMethod] = method.split(':');
@@ -29,6 +36,10 @@ export default async function handleApp(method: string, params: unknown): Promis
 		const app = AppObjectRegistry.get<App>('app');
 
 		app?.getLogger().debug({ msg: `A method is being called...`, appMethod });
+
+		if (uploadEvents.includes(appMethod)) {
+			return handleUploadEvents(appMethod, params);
+		}
 
 		if (uikitInteractions.includes(appMethod)) {
 			return handleUIKitInteraction(appMethod, params).then((result) => {
