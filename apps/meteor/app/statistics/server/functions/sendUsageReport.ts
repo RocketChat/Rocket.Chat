@@ -55,6 +55,8 @@ export async function sendUsageReport(logger: Logger): Promise<string | undefine
 				if (shouldSendToCollector) {
 					return sendStats(logger, last);
 				}
+
+				return;
 			}
 		}
 
