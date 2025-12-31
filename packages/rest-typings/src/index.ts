@@ -202,6 +202,7 @@ export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends an
 
 export * from './apps';
 export * from './v1/e2e';
+export * from './v1/call-history';
 export * from './v1/presence';
 export * from './v1/roles';
 export * from './v1/settings';

@@ -1,53 +1,56 @@
-import type { IMessage } from './IMessage/IMessage';
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IRoom } from './IRoom';
-import type { IUser } from './IUser';
+import * as z from 'zod';
 
-export type CallHistoryItemState =
-	/** One of the users ended the call */
-	| 'ended'
-	/** Call was not answered */
-	| 'not-answered'
-	/** The call could not be established */
-	| 'failed'
-	/** The call was established, but it ended due to an error */
-	| 'error'
-	/** The call ended due to a transfer */
-	| 'transferred';
+import { IMessageSchema } from './IMessage/IMessage';
+import { IRocketChatRecordSchema } from './IRocketChatRecord';
+import { IRoomSchema } from './IRoom';
+import { IUserSchema } from './IUser';
+import { serializableDate } from './utils';
 
-interface ICallHistoryItem extends IRocketChatRecord {
-	uid: IUser['_id'];
-	ts: Date;
+export const CallHistoryItemStateSchema = z.union([
+	z.literal('ended').meta({ description: 'One of the users ended the call' }),
+	z.literal('not-answered').meta({ description: 'Call was not answered' }),
+	z.literal('failed').meta({ description: 'The call could not be established' }),
+	z.literal('error').meta({ description: 'The call was established, but it ended due to an error' }),
+	z.literal('transferred').meta({ description: 'The call ended due to a transfer' }),
+]);
 
-	callId: string;
+export const ICallHistoryItemSchema = IRocketChatRecordSchema.extend({
+	uid: IUserSchema.shape._id,
+	ts: serializableDate,
+	callId: z.string(),
+	direction: z.enum(['inbound', 'outbound']),
+	state: CallHistoryItemStateSchema,
+});
 
-	direction: 'inbound' | 'outbound';
-	state: CallHistoryItemState;
-}
+export const IMediaCallHistoryItemSchema = ICallHistoryItemSchema.extend({
+	type: z.literal('media-call'),
+	external: z.boolean(),
 
-interface IMediaCallHistoryItem extends ICallHistoryItem {
-	type: 'media-call';
-	external: boolean;
+	duration: z.number().meta({ description: "The call's duration, in seconds" }),
+	endedAt: serializableDate,
+});
 
-	/* The call's duration, in seconds */
-	duration: number;
-	endedAt: Date;
-}
+export const IInternalMediaCallHistoryItemSchema = IMediaCallHistoryItemSchema.extend({
+	external: z.literal(false),
+	contactId: IUserSchema.shape._id,
+	contactName: IUserSchema.shape.name.optional(),
+	contactUsername: IUserSchema.shape.username.optional(),
 
-export interface IInternalMediaCallHistoryItem extends IMediaCallHistoryItem {
-	external: false;
-	contactId: IUser['_id'];
-	contactName?: IUser['name'];
-	contactUsername?: IUser['username'];
+	rid: IRoomSchema.shape._id.optional(),
+	messageId: IMessageSchema.shape._id.optional().meta({ description: 'The ID of the message that was sent after the call ended' }),
+});
 
-	rid?: IRoom['_id'];
-	messageId?: IMessage['_id']; // Id of the message that was sent after the call ended
-}
+export const IExternalMediaCallHistoryItemSchema = IMediaCallHistoryItemSchema.extend({
+	external: z.literal(true),
+	contactExtension: z.string(),
+});
 
-export interface IExternalMediaCallHistoryItem extends IMediaCallHistoryItem {
-	external: true;
+export const CallHistoryItemSchema = z.union([IInternalMediaCallHistoryItemSchema, IExternalMediaCallHistoryItemSchema]);
 
-	contactExtension: string;
-}
+export type CallHistoryItemState = z.infer<typeof CallHistoryItemStateSchema>;
 
-export type CallHistoryItem = IInternalMediaCallHistoryItem | IExternalMediaCallHistoryItem;
+export interface IInternalMediaCallHistoryItem extends z.infer<typeof IInternalMediaCallHistoryItemSchema> {}
+
+export interface IExternalMediaCallHistoryItem extends z.infer<typeof IExternalMediaCallHistoryItemSchema> {}
+
+export type CallHistoryItem = z.infer<typeof CallHistoryItemSchema>;

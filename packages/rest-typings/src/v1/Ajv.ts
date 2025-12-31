@@ -64,4 +64,3 @@ export const NotFoundErrorResponseSchema = FailureResponseSchema.extend({
 export const validateBadRequestErrorResponse = createValidatorFor(BadRequestErrorResponseSchema);
 export const validateUnauthorizedErrorResponse = createValidatorFor(UnauthorizedErrorResponseSchema);
 export const validateForbiddenErrorResponse = createValidatorFor(ForbiddenErrorResponseSchema);
-export const validateNotFoundErrorResponse = createValidatorFor(NotFoundErrorResponseSchema);

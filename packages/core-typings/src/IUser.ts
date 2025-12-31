@@ -1,8 +1,11 @@
+import * as z from 'zod';
+
 import type { IAbacAttributeDefinition } from './IAbacAttribute';
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import { IRocketChatRecordSchema } from './IRocketChatRecord';
 import type { IRole } from './IRole';
 import type { Serialized } from './Serialized';
 import type { UserStatus } from './UserStatus';
+import { serializableDate } from './utils';
 
 export interface ILoginToken {
 	hashedToken: string;
@@ -184,9 +187,15 @@ export interface IGetRoomRoles {
 	roles: string[];
 }
 
-export interface IUser extends IRocketChatRecord {
-	_id: string;
-	createdAt: Date;
+// TODO incomplete schema
+export const IUserSchema = IRocketChatRecordSchema.extend({
+	createdAt: serializableDate,
+	username: z.string().optional(),
+	nickname: z.string().optional(),
+	name: z.string().optional(),
+});
+
+export interface IUser extends z.infer<typeof IUserSchema> {
 	roles: IRole['_id'][];
 	type: string;
 	active: boolean;
@@ -209,7 +218,6 @@ export interface IUser extends IRocketChatRecord {
 	oauth?: {
 		authorizedClients: string[];
 	};
-	_updatedAt: Date;
 	e2e?: {
 		private_key: string;
 		public_key: string;

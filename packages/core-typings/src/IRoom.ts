@@ -1,14 +1,15 @@
+import type * as z from 'zod';
+
 import type { IAbacAttributeDefinition } from './IAbacAttribute';
 import type { ILivechatDepartment } from './ILivechatDepartment';
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import { IRocketChatRecordSchema } from './IRocketChatRecord';
 import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
 
-export type RoomID = string;
 export type ChannelName = string;
 interface IRequestTranscript {
 	email: string; // the email address to send the transcript to
@@ -17,8 +18,10 @@ interface IRequestTranscript {
 	requestedBy: Pick<IUser, '_id' | 'username' | 'name' | 'utcOffset'>;
 }
 
-export interface IRoom extends IRocketChatRecord {
-	_id: RoomID;
+// TODO incomplete schema
+export const IRoomSchema = IRocketChatRecordSchema.extend({});
+
+export interface IRoom extends z.infer<typeof IRoomSchema> {
 	t: RoomType;
 	name?: string;
 	fname?: string;

@@ -1,9 +1,14 @@
 import type { WithId } from 'mongodb';
+import * as z from 'zod';
 
-export interface IRocketChatRecord {
-	_id: string;
-	_updatedAt: Date;
-}
+import { serializableDate } from './utils';
+
+export const IRocketChatRecordSchema = z.object({
+	_id: z.string(),
+	_updatedAt: serializableDate,
+});
+
+export interface IRocketChatRecord extends z.infer<typeof IRocketChatRecordSchema> {}
 
 export type RocketChatRecordDeleted<T> = WithId<T> & {
 	_updatedAt: Date;
