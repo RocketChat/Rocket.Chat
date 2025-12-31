@@ -62,6 +62,12 @@ async function saveUserProfile(
 
 	const user = await Users.findOneById(this.userId);
 
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'saveUserProfile',
+		});
+	}
+
 	if (settings.realname || settings.username) {
 		if (
 			!(await saveUserIdentity({
