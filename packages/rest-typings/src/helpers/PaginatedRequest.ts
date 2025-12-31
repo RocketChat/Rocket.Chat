@@ -1,8 +1,18 @@
 import * as z from 'zod';
 
 export const PaginatedRequestSchema = z.object({
-	count: z.number().int().nonnegative().optional(),
-	offset: z.number().int().nonnegative().optional(),
+	count: z
+		.codec(z.string(), z.number().int().nonnegative(), {
+			decode: (val) => parseInt(val, 10),
+			encode: (val) => val.toString(),
+		})
+		.optional(),
+	offset: z
+		.codec(z.string(), z.number().int().nonnegative(), {
+			decode: (val) => parseInt(val, 10),
+			encode: (val) => val.toString(),
+		})
+		.optional(),
 	sort: z.string().optional(),
 	query: z.string().optional().meta({ deprecated: true }),
 });

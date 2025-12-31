@@ -1,4 +1,4 @@
-import type * as z from 'zod';
+import * as z from 'zod';
 
 import type { IAbacAttributeDefinition } from './IAbacAttribute';
 import type { ILivechatDepartment } from './ILivechatDepartment';
@@ -8,7 +8,7 @@ import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import { IRocketChatRecordSchema } from './IRocketChatRecord';
 import type { IUser, Username } from './IUser';
-import type { RoomType } from './RoomType';
+import { RoomTypeSchema } from './RoomType';
 
 export type ChannelName = string;
 interface IRequestTranscript {
@@ -19,13 +19,14 @@ interface IRequestTranscript {
 }
 
 // TODO incomplete schema
-export const IRoomSchema = IRocketChatRecordSchema.extend({});
+export const IRoomSchema = IRocketChatRecordSchema.extend({
+	t: RoomTypeSchema,
+	name: z.string().optional(),
+	fname: z.string().optional(),
+	msgs: z.number(),
+});
 
 export interface IRoom extends z.infer<typeof IRoomSchema> {
-	t: RoomType;
-	name?: string;
-	fname?: string;
-	msgs: number;
 	default?: boolean;
 	broadcast?: true;
 	featured?: true;

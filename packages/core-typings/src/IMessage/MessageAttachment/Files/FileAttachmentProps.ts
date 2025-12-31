@@ -1,13 +1,18 @@
-import type { MessageAttachmentBase } from '../MessageAttachmentBase';
-import type { AudioAttachmentProps } from './AudioAttachmentProps';
-import type { ImageAttachmentProps } from './ImageAttachmentProps';
-import type { VideoAttachmentProps } from './VideoAttachmentProps';
+import * as z from 'zod';
 
-export type FileAttachmentProps =
-	| ({ type: 'file' } & VideoAttachmentProps)
-	| ({ type: 'file' } & ImageAttachmentProps)
-	| ({ type: 'file' } & AudioAttachmentProps)
-	| ({ type: 'file' } & MessageAttachmentBase);
+import { MessageAttachmentBaseSchema, type MessageAttachmentBase } from '../MessageAttachmentBase';
+import { AudioAttachmentPropsSchema } from './AudioAttachmentProps';
+import { ImageAttachmentPropsSchema } from './ImageAttachmentProps';
+import { VideoAttachmentPropsSchema } from './VideoAttachmentProps';
+
+export const FileAttachmentPropsSchema = z.union([
+	z.object({ type: z.literal('file') }).and(MessageAttachmentBaseSchema),
+	z.object({ type: z.literal('file') }).and(AudioAttachmentPropsSchema),
+	z.object({ type: z.literal('file') }).and(ImageAttachmentPropsSchema),
+	z.object({ type: z.literal('file') }).and(VideoAttachmentPropsSchema),
+]);
+
+export type FileAttachmentProps = z.infer<typeof FileAttachmentPropsSchema>;
 
 export const isFileAttachment = (attachment: MessageAttachmentBase): attachment is FileAttachmentProps =>
-	'type' in attachment && (attachment as any).type === 'file';
+	FileAttachmentPropsSchema.safeParse(attachment).success;

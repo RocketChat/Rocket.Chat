@@ -1,4 +1,6 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import * as z from 'zod';
+
+import { IRocketChatRecordSchema } from './IRocketChatRecord';
 
 export enum LivechatPriorityWeight {
 	LOWEST = 5,
@@ -9,13 +11,13 @@ export enum LivechatPriorityWeight {
 	NOT_SPECIFIED = 99,
 }
 
-export interface ILivechatPriority extends IRocketChatRecord {
-	name?: string;
-	i18n: string;
-	sortItem: LivechatPriorityWeight;
+export const ILivechatPrioritySchema = IRocketChatRecordSchema.extend({
+	name: z.string().optional(),
+	i18n: z.string(),
+	sortItem: z.enum(LivechatPriorityWeight),
+	dirty: z.boolean(), // Whether the priority has been modified by the user or not
+});
 
-	// Whether the priority has been modified by the user or not
-	dirty: boolean;
-}
+export interface ILivechatPriority extends z.infer<typeof ILivechatPrioritySchema> {}
 
 export type ILivechatPriorityData = Omit<ILivechatPriority, '_id' | '_updatedAt'>;

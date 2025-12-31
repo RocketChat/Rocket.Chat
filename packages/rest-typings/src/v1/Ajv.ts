@@ -26,7 +26,7 @@ ajv.addKeyword({
 export { ajv };
 
 const createValidatorFor = <Z extends z.ZodType>(schema: Z): ValidateFunction<z.infer<Z>> =>
-	ajv.compile<z.infer<Z>>(schema.toJSONSchema({ target: 'openapi-3.0', io: 'input' }));
+	ajv.compile<z.infer<Z>>(schema.toJSONSchema({ target: 'openapi-3.0', io: 'input', unrepresentable: 'any' }));
 
 export const SuccessResponseSchema = z.object({
 	success: z.literal(true).meta({ description: 'Indicates whether the request was successful.' }),

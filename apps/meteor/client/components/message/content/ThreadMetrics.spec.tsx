@@ -12,7 +12,7 @@ const toggleFollowMock =
 	({ mid }: { mid: string }) => {
 		expect(mid).toBe('mid');
 		done();
-		return null;
+		return { success: true as const };
 	};
 
 global.ResizeObserver = jest.fn().mockImplementation(() => ({

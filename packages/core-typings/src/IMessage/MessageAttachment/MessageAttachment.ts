@@ -1,12 +1,23 @@
-import type { FileProp } from './Files';
-import type { FileAttachmentProps } from './Files/FileAttachmentProps';
-import type { MessageAttachmentAction } from './MessageAttachmentAction';
-import type { MessageAttachmentDefault } from './MessageAttachmentDefault';
-import type { MessageQuoteAttachment } from './MessageQuoteAttachment';
+import * as z from 'zod';
 
-export type MessageAttachment = MessageAttachmentAction | MessageAttachmentDefault | FileAttachmentProps | MessageQuoteAttachment;
+import { FileAttachmentPropsSchema, FilePropSchema } from './Files';
+import { MessageAttachmentActionSchema } from './MessageAttachmentAction';
+import { MessageAttachmentDefaultSchema } from './MessageAttachmentDefault';
+import { MessageQuoteAttachmentSchema } from './MessageQuoteAttachment';
 
-export type FilesAndAttachments = {
-	files: FileProp[];
-	attachments: MessageAttachment[];
-};
+export const MessageAttachmentSchema = z.union([
+	FileAttachmentPropsSchema,
+	MessageAttachmentActionSchema,
+	MessageAttachmentDefaultSchema,
+	MessageQuoteAttachmentSchema,
+]);
+
+export const FilesAndAttachmentsSchema = z.object({
+	files: z.array(FilePropSchema),
+	attachments: z.array(MessageAttachmentSchema),
+});
+
+export type MessageAttachment = z.infer<typeof MessageAttachmentSchema>;
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export interface FilesAndAttachments extends z.infer<typeof FilesAndAttachmentsSchema> {}

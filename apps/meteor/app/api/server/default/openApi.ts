@@ -43,7 +43,7 @@ const getTypedRoutes = (
 };
 
 const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => {
-	const zodSchemas = z.toJSONSchema(z.globalRegistry, { target: 'openapi-3.0', io: 'input' }).schemas;
+	const zodSchemas = z.toJSONSchema(z.globalRegistry, { target: 'openapi-3.0', io: 'input', unrepresentable: 'any' }).schemas;
 
 	return {
 		openapi: '3.0.3',
