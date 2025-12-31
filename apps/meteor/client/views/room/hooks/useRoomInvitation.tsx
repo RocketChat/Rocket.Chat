@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { useRoomRejectInvitationModal } from './useRoomRejectInvitationModal';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
-import { roomsQueryKeys } from '../../../lib/queryKeys';
+import { roomsQueryKeys, subscriptionsQueryKeys } from '../../../lib/queryKeys';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 
 export const useRoomInvitation = (room: IRoomWithFederationOriginalName) => {
@@ -24,6 +24,7 @@ export const useRoomInvitation = (room: IRoomWithFederationOriginalName) => {
 			}
 
 			await queryClient.invalidateQueries({ queryKey: roomsQueryKeys.room(room._id) });
+			await queryClient.invalidateQueries({ queryKey: subscriptionsQueryKeys.subscription(room._id) });
 
 			if (action === 'reject') {
 				router.navigate('/home');

@@ -68,13 +68,11 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 			return;
 		}
 		return subscribeToNotifyUser(`${uid}/subscriptions-changed`, (event, sub) => {
-			if (event !== 'inserted') {
+			if (sub.rid !== rid || event === 'removed') {
 				return;
 			}
 
-			if (sub.rid === rid) {
-				refetch();
-			}
+			refetch();
 		});
 	}, [refetch, rid, subscribeToNotifyUser, uid]);
 
