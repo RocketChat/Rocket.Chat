@@ -23,7 +23,7 @@
 		"ajv": "^8.17.1",
 		"express": "^4.21.2",
 		"hono": "^4.10.7",
-		"qs": "^6.14.0"
+		"qs": "^6.14.1"
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",

@@ -264,7 +264,7 @@
 		"prometheus-gc-stats": "^1.1.0",
 		"proxy-from-env": "^1.1.0",
 		"psl": "^1.10.0",
-		"qs": "^6.14.0",
+		"qs": "^6.14.1",
 		"query-string": "^7.1.3",
 		"queue-fifo": "^0.2.6",
 		"re-resizable": "^6.10.1",
