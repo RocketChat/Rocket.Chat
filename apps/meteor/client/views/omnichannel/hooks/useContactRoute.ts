@@ -13,26 +13,16 @@ export const useContactRoute = () => {
 				return;
 			}
 
-			if (currentRouteName === 'omnichannel-directory') {
-				return navigate({
-					name: currentRouteName,
-					params: {
-						...currentParams,
-						tab: 'contacts',
-						id: id || currentParams.id,
-						...params,
-					},
-				});
-			}
-
-			navigate({
+			return navigate({
 				name: currentRouteName,
 				params: {
 					...currentParams,
-					id: currentParams.id,
+					tab: 'contacts',
+					id: id || currentParams.id,
 					...params,
 				},
 			});
+
 		},
 		[navigate, currentParams, currentRouteName],
 	);
