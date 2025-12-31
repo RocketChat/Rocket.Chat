@@ -1410,9 +1410,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = await (async (): Promise<
-				Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText' | 'roles'> | undefined | null
-			> => {
+			const user = await (async () => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Users.findOneById(this.userId);
 				}
@@ -1429,7 +1427,7 @@ API.v1.addRoute(
 			let { statusText, status } = user;
 
 			if (this.bodyParams.message || this.bodyParams.message === '') {
-				await setStatusText(user._id, this.bodyParams.message, { emit: false });
+				await setStatusText(user, this.bodyParams.message, { emit: false });
 				statusText = this.bodyParams.message;
 			}
 

@@ -17,8 +17,11 @@ slashCommands.add({
 		const user = await Users.findOneById(userId, { projection: { language: 1 } });
 		const lng = user?.language || settings.get('Language') || 'en';
 
+		if (!user) {
+			return;
+		}
 		try {
-			await setUserStatusMethod(userId, undefined, params);
+			await setUserStatusMethod(user, undefined, params);
 
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('StatusMessage_Changed_Successfully', { lng }),

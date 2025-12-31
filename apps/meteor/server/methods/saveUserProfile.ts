@@ -77,11 +77,11 @@ async function saveUserProfile(
 	}
 
 	if (settings.statusText || settings.statusText === '') {
-		await setUserStatusMethod(this.userId, undefined, settings.statusText);
+		await setUserStatusMethod(user, undefined, settings.statusText);
 	}
 
 	if (settings.statusType) {
-		await setUserStatusMethod(this.userId, settings.statusType as UserStatus, undefined);
+		await setUserStatusMethod(user, settings.statusType as UserStatus, undefined);
 	}
 
 	if (user && (settings.bio || settings.bio === '')) {

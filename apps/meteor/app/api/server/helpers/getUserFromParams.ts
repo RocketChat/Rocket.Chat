@@ -3,11 +3,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-export async function getUserFromParams(params: {
-	userId?: string;
-	username?: string;
-	user?: string;
-}): Promise<Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText' | 'roles'>> {
+export async function getUserFromParams(params: { userId?: string; username?: string; user?: string }) {
 	let user;
 
 	const projection = { username: 1, name: 1, status: 1, statusText: 1, roles: 1 };
