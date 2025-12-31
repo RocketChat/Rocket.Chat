@@ -506,12 +506,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 	// Due to that we need to check whether the agent has been changed or not
 	logger.debug(`Forwarding inquiry ${inquiry._id} to agent ${agent.agentId}`);
 	const options = typeof clientAction !== 'undefined' ? { clientAction } : undefined;
-	const roomTaken = await RoutingManager.takeInquiry(
-		inquiry,
-		agent,
-		options,
-		room,
-	);
+const roomTaken = await RoutingManager.takeInquiry(inquiry, agent, options, room);
 	if (!roomTaken) {
 		logger.debug(`Cannot forward inquiry ${inquiry._id}`);
 		return false;
