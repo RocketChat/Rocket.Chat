@@ -21,12 +21,19 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	const createDirectMessage = useMethod('createDirectMessage');
 	const directRoute = useRoute('direct');
 	const openRoom = useOpenRoomMutation();
+	const canViewDirect = usePermission('view-d-room');
 
 	const result = useQuery({
+		enabled: type !== 'd' || canViewDirect !== undefined,
+
 		// we need to add uid and username here because `user` is not loaded all at once (see UserProvider -> Meteor.user())
 		queryKey: roomsQueryKeys.roomReference(reference, type, user?._id, user?.username),
 
 		queryFn: async (): Promise<{ rid: IRoom['_id'] }> => {
+			if(type === 'd' && user && canViewDirect === false) {
+				throw new NotAuthorizedError();
+			}
+
 			if ((user && !user.username) || (!user && !allowAnonymousRead)) {
 				throw new NotAuthorizedError();
 			}
