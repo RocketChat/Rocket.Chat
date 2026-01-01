@@ -96,9 +96,14 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 			}
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
-			if (!subscription) {
-				return addUserToRoom(data.rid, newUser, user);
-			}
+			if (subscription) {
+	           throw new Meteor.Error(
+					'error-user-already-in-room',
+					'User already in room',
+					{ method: 'addUsersToRoom' },
+				);
+            }
+
 			if (!newUser.username) {
 				return;
 			}
