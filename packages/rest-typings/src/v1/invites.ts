@@ -1,6 +1,19 @@
-import type { IInvite, IRoom } from '@rocket.chat/core-typings';
+import { IInviteSchema, IRoomSchema, type IInvite, type IRoom } from '@rocket.chat/core-typings';
 import type { JSONSchemaType } from 'ajv';
 import Ajv from 'ajv';
+import * as z from 'zod';
+
+import { SuccessResponseSchema } from './Ajv';
+
+export const GETListInvitesResponseSchema = z.array(IInviteSchema);
+
+export const POSTFindOrCreateInviteBodySchema = z.object({
+	rid: IRoomSchema.shape._id,
+	days: z.number(),
+	maxUses: z.number(),
+});
+
+export const POSTFindOrCreateInviteResponseSchema = SuccessResponseSchema.and(IInviteSchema);
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -41,25 +54,6 @@ const ValidateInviteTokenPropsSchema: JSONSchemaType<ValidateInviteTokenProps> =
 export const isValidateInviteTokenProps = ajv.compile<ValidateInviteTokenProps>(ValidateInviteTokenPropsSchema);
 
 type FindOrCreateInviteParams = { rid: IRoom['_id']; days: number; maxUses: number };
-
-const FindOrCreateInviteParamsSchema: JSONSchemaType<FindOrCreateInviteParams> = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-		days: {
-			type: 'integer',
-		},
-		maxUses: {
-			type: 'integer',
-		},
-	},
-	required: ['rid', 'days', 'maxUses'],
-	additionalProperties: false,
-};
-
-export const isFindOrCreateInviteParams = ajv.compile<FindOrCreateInviteParams>(FindOrCreateInviteParamsSchema);
 
 type SendInvitationEmailParams = {
 	emails: string[];
