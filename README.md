@@ -68,6 +68,9 @@ Refer to the [Installation guide](https://docs.rocket.chat/docs/desktop-mobile-a
 - [API documentation](https://developer.rocket.chat/apidocs)
 - [YouTube Rocket.Chat Learning Center](https://www.youtube.com/playlist?list=PLee3gqXJQrFVXnNs5GiuoTMy269ydvcOB)
 
+Note: Rocket.Chat documentation is maintained on https://docs.rocket.chat and is no longer updated via GitHub markdown repositories.
+
+
 # 🛡️ Trust and compliance
 
 The architecture of Rocket.Chat is designed to protect sensitive data, enforce rigorous compliance, and ensure secure, reliable communications for governments, defense, and critical infrastructure organizations operating in high-stakes environments.
