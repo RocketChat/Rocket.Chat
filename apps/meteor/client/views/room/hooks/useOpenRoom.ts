@@ -30,7 +30,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 		queryKey: roomsQueryKeys.roomReference(reference, type, user?._id, user?.username),
 
 		queryFn: async (): Promise<{ rid: IRoom['_id'] }> => {
-			if(type === 'd' && user && canViewDirect === false) {
+			if (type === 'd' && user && canViewDirect === false) {
 				throw new NotAuthorizedError();
 			}
 
