@@ -92,8 +92,8 @@ const RoomMembers = ({
 	const { counts, titles, flattenedMembers } = useMemo(() => {
 		
 	const membersWithSortName = members.map((member) => ({
-	...member,
-	sortName: useRealName ? member.name || member.username : member.username,
+		...member,
+		sortName: (useRealName ? member.name || member.username : member.username) ?? '',
 	}));
 
 	const owners = membersWithSortName.filter((m) => m.roles?.includes('owner'));
@@ -106,15 +106,16 @@ const RoomMembers = ({
 			!m.roles?.includes('moderator')
 	);
 
-		const sortGroup = (arr: typeof membersWithSortName)=>
+		const sortGroup = (arr: typeof membersWithSortName) =>
 			[...arr].sort((a,b)=> a.sortName.localeCompare(b.sortName));
+		
 		const sortedOwners=sortGroup(owners);
 		const sortedLeaders=sortGroup(leaders);
 		const sortedModerators=sortGroup(moderators);
 		const sortedNormal=sortGroup(normalMembers);
 		
 		const counts: number[] = [];
-		const titles:ReactElement[] = [];
+		const titles: ReactElement[] = [];
 
 		if (sortedOwners.length) {
 			counts.push(sortedOwners.length);
@@ -135,7 +136,9 @@ const RoomMembers = ({
 			counts.push(sortedNormal.length);
 			titles.push(<MembersListDivider title={t('Members')} count={sortedNormal.length} />);
 		}
-		const flattenedMembers= [...sortedOwners, ...sortedLeaders, ...sortedModerators, ...sortedNormal];
+		
+		const flattenedMembers = [...sortedOwners, ...sortedLeaders, ...sortedModerators, ...sortedNormal];
+		
 		return { counts, titles, flattenedMembers };
 	}, [members, useRealName, t]);
 
