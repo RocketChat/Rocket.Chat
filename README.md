@@ -68,8 +68,7 @@ Refer to the [Installation guide](https://docs.rocket.chat/docs/desktop-mobile-a
 - [API documentation](https://developer.rocket.chat/apidocs)
 - [YouTube Rocket.Chat Learning Center](https://www.youtube.com/playlist?list=PLee3gqXJQrFVXnNs5GiuoTMy269ydvcOB)
 
-Note: Rocket.Chat documentation is maintained on https://docs.rocket.chat and is no longer updated via GitHub markdown repositories.
-
+Note: Rocket.Chat documentation is maintained on [docs.rocket.chat](https://docs.rocket.chat) and is no longer updated via GitHub markdown repositories.
 
 # 🛡️ Trust and compliance
 
