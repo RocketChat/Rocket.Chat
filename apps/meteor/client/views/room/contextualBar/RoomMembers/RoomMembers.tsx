@@ -89,22 +89,16 @@ const RoomMembers = ({
 
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
-	const sortedMembers = useMemo(() => {
-		return [...members].sort((a, b) => {
-			const nameA = useRealName ? a.name || a.username : a.username;
-			const nameB = useRealName ? b.name || b.username : b.username;
-
-			return nameA.localeCompare(nameB);
-		});
-	}, [members, useRealName]);
-
-	const { counts, titles } = useMemo(() => {
+	const { counts, titles, flattenedMembers } = useMemo(() => {
 		const owners: RoomMember[] = [];
 		const leaders: RoomMember[] = [];
 		const moderators: RoomMember[] = [];
 		const normalMembers: RoomMember[] = [];
 
-		sortedMembers.forEach((member) => {
+		members.forEach((member) => {
+			const name = useRealName ? member.name || member.username : member.username;
+			( member as any ).sortName = name;
+			
 			if (member.roles?.includes('owner')) {
 				owners.push(member);
 			} else if (member.roles?.includes('leader')) {
@@ -116,31 +110,37 @@ const RoomMembers = ({
 			}
 		});
 
-		const counts = [];
-		const titles = [];
+		const sortGroup = (arr: RoomMember[])=>
+			arr.sort((a,b)=> ((a as any).sortName as string).localeCompare((b as any).sortName));
+		const sortedOwners=sortGroup(owners);
+		const sortedLeaders=sortGroup(leaders);
+		const sortedModerators=sortGroup(moderators);
+		const sortedNormal=sortGroup(normalMembers);
+		const counts: number[] = [];
+		const titles:ReactElement[] = [];
 
-		if (owners.length > 0) {
-			counts.push(owners.length);
-			titles.push(<MembersListDivider title='Owners' count={owners.length} />);
+		if (sortedOwners.length) {
+			counts.push(sortedOwners.length);
+			titles.push(<MembersListDivider title='Owners' count={sortedOwners.length} />);
 		}
 
-		if (leaders.length > 0) {
-			counts.push(leaders.length);
-			titles.push(<MembersListDivider title='Leaders' count={leaders.length} />);
+		if (sortedLeaders.length) {
+			counts.push(sortedLeaders.length);
+			titles.push(<MembersListDivider title='Leaders' count={sortedLeaders.length} />);
 		}
 
-		if (moderators.length > 0) {
-			counts.push(moderators.length);
-			titles.push(<MembersListDivider title='Moderators' count={moderators.length} />);
+		if (sortedModerators.length) {
+			counts.push(sortedModerators.length);
+			titles.push(<MembersListDivider title='Moderators' count={sortedModerators.length} />);
 		}
 
-		if (normalMembers.length > 0) {
-			counts.push(normalMembers.length);
-			titles.push(<MembersListDivider title='Members' count={normalMembers.length} />);
+		if (sortedNormal.length) {
+			counts.push(sortedNormal.length);
+			titles.push(<MembersListDivider title='Members' count={sortedNormal.length} />);
 		}
-
-		return { counts, titles };
-	}, [sortedMembers]);
+		const flattenedMembers= [...sortedOwners, ...sortedLeaders, ...sortedModerators, ...sortedNormal];
+		return { counts, titles, flattenedMembers };
+	}, [members, useRealName]);
 
 	return (
 		<ContextualbarDialog>
@@ -174,13 +174,13 @@ const RoomMembers = ({
 					</Box>
 				)}
 
-				{!loading && sortedMembers.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
+				{!loading && flattenedMembers.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 
-				{!loading && sortedMembers.length > 0 && (
+				{!loading && flattenedMembers.length > 0 && (
 					<>
 						<Box pi={24} pb={12}>
 							<Box is='span' color='hint' fontScale='p2'>
-								{t('Showing_current_of_total', { current: sortedMembers.length, total })}
+								{t('Showing_current_of_total', { current: flattenedMembers.length, total })}
 							</Box>
 						</Box>
 
@@ -193,11 +193,11 @@ const RoomMembers = ({
 									}}
 									overscan={50}
 									groupCounts={counts}
-									groupContent={(index): ReactElement => titles[index]}
+									groupContent={(index) => titles[index]}
 									// eslint-disable-next-line react/no-multi-comp
 									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
 									itemContent={(index): ReactElement => (
-										<RowComponent useRealName={useRealName} data={itemData} user={sortedMembers[index]} index={index} reload={reload} />
+										<RowComponent useRealName={useRealName} data={itemData} user={flattenedMembers[index]} index={index} reload={reload} />
 									)}
 								/>
 							</VirtualizedScrollbars>
