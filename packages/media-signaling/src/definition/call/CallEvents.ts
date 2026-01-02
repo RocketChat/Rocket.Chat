@@ -32,6 +32,6 @@ export type CallEvents = {
 	/* Triggered when screen share is toggled */
 	screenShareRequestChange: void;
 
-	/* Triggered when any of the remote streams has changed (when a new track is received) */
-	remoteStreamChange: void;
+	/* Triggered when any of the streams or tracks have changed */
+	streamChange: void;
 };

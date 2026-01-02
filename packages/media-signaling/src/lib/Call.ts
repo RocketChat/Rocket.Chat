@@ -17,6 +17,7 @@ import type {
 import type { ClientContractState, ClientState } from '../definition/client';
 import type { IMediaSignalLogger } from '../definition/logger';
 import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
+import type { MediaStreamWrapper } from './media/MediaStreamWrapper';
 import { isPendingState } from './services/states';
 import { serializeError } from './utils/serializeError';
 import type {
@@ -494,13 +495,17 @@ export class ClientMediaCall implements IClientMediaCall {
 		return !this.hasVideoTrack() && this.mayNeedVideoTrack();
 	}
 
+	public getLocalVideoStream(): MediaStreamWrapper | null {
+		return this.webrtcProcessor?.streams.screenShareLocal || null;
+	}
+
 	public getRemoteMediaStream(): MediaStream | null {
 		this.config.logger?.debug('ClientMediaCall.getRemoteMediaStream');
 		if (!this.mayUseRemoteStreams()) {
 			return null;
 		}
 
-		return this.webrtcProcessor.getRemoteMediaStream();
+		return this.webrtcProcessor.streams.mainRemote.stream;
 	}
 
 	public getRemoteVideoStream(): MediaStream | null {
@@ -509,17 +514,11 @@ export class ClientMediaCall implements IClientMediaCall {
 			return null;
 		}
 
-		const stream = this.webrtcProcessor.getRemoteVideoStream();
-		if (!stream) {
+		if (!this.webrtcProcessor.streams.screenShareRemote.hasVideo()) {
 			return null;
 		}
 
-		const tracks = stream.getVideoTracks()?.filter((track) => !track.muted);
-		if (!tracks?.length) {
-			return null;
-		}
-
-		return stream;
+		return this.webrtcProcessor.streams.screenShareRemote.stream;
 	}
 
 	public async processSignal(signal: ServerMediaSignal, oldCall?: ClientMediaCall | null) {
@@ -1139,9 +1138,9 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.updateRemoteStates();
 	}
 
-	private onWebRTCTrackChanged(): void {
-		this.config.logger?.debug('ClientMediaCall.onWebRTCTrackChanged');
-		this.emitter.emit('remoteStreamChange');
+	private onWebRTCStreamChanged(): void {
+		this.config.logger?.debug('ClientMediaCall.onWebRTCStreamChanged');
+		this.emitter.emit('streamChange');
 	}
 
 	private onNegotiationNeeded(oldNegotiationId: string): void {
@@ -1277,7 +1276,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
 		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
-		this.webrtcProcessor.emitter.on('trackChanged', () => this.onWebRTCTrackChanged());
+		this.webrtcProcessor.emitter.on('streamChanged', () => this.onWebRTCStreamChanged());
 
 		this.negotiationManager.emitter.on('local-sdp', ({ sdp, negotiationId }) => this.deliverSdp({ sdp, negotiationId }));
 		this.negotiationManager.emitter.on('negotiation-needed', ({ oldNegotiationId }) => this.onNegotiationNeeded(oldNegotiationId));

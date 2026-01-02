@@ -1,5 +1,6 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
+import type { MediaStreamManager } from '../../../lib/media/MediaStreamManager';
 import type { IClientMediaCall } from '../../call';
 import type { IMediaSignalLogger } from '../../logger';
 import type { IServiceProcessor, ServiceProcessorEvents } from '../IServiceProcessor';
@@ -15,7 +16,7 @@ export type WebRTCInternalStateMap = {
 
 export type WebRTCUniqueEvents = {
 	negotiationNeeded: void;
-	trackChanged: void;
+	streamChanged: void;
 };
 
 export type WebRTCProcessorEvents = ServiceProcessorEvents<WebRTCInternalStateMap> & WebRTCUniqueEvents;
@@ -29,6 +30,9 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 	setHeld(held: boolean): void;
 	stop(): void;
 
+	// TODO: use an interface
+	readonly streams: MediaStreamManager;
+
 	setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void>;
 	setVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void>;
 	createOffer(params: { iceRestart?: boolean }): Promise<RTCSessionDescriptionInit>;
@@ -38,9 +42,6 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 	setRemoteDescription(sdp: RTCSessionDescriptionInit): Promise<void>;
 	waitForIceGathering(): Promise<void>;
 	getLocalDescription(): RTCSessionDescriptionInit | null;
-
-	getRemoteMediaStream(): MediaStream;
-	getRemoteVideoStream(): MediaStream;
 
 	audioLevel: number;
 	localAudioLevel: number;

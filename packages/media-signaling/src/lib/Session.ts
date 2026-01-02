@@ -609,7 +609,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('active', () => this.onActiveCall(call));
 		call.emitter.on('ended', () => this.onEndedCall(call));
 		call.emitter.on('screenShareRequestChange', () => this.onScreenShareRequestChange(call));
-		call.emitter.on('remoteStreamChange', () => this.onSessionStateChange());
+		call.emitter.on('streamChange', () => this.onSessionStateChange());
 
 		return call;
 	}

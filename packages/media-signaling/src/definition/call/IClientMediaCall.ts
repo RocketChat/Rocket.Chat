@@ -1,6 +1,7 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
 import type { CallEvents } from './CallEvents';
+import type { MediaStreamWrapper } from '../../lib/media/MediaStreamWrapper';
 
 export type CallActorType = 'user' | 'sip';
 
@@ -101,6 +102,7 @@ export interface IClientMediaCall {
 
 	getRemoteMediaStream(): MediaStream | null;
 	getRemoteVideoStream(): MediaStream | null;
+	getLocalVideoStream(): MediaStreamWrapper | null;
 
 	accept(): void;
 	reject(): void;
