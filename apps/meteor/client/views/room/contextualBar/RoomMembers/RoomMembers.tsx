@@ -106,7 +106,7 @@ const RoomMembers = ({
 			!m.roles?.includes('moderator')
 	);
 
-		const sortGroup = (arr: typeof memberWithSortName)=>
+		const sortGroup = (arr: typeof membersWithSortName)=>
 			[...arr].sort((a,b)=> a.sortName.localeCompare(b.sortName));
 		const sortedOwners=sortGroup(owners);
 		const sortedLeaders=sortGroup(leaders);
