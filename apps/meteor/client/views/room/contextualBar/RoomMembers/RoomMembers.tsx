@@ -89,13 +89,22 @@ const RoomMembers = ({
 
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
+	const sortedMembers = useMemo(() => {
+		return [...members].sort((a, b) => {
+			const nameA = useRealName ? a.name || a.username : a.username;
+			const nameB = useRealName ? b.name || b.username : b.username;
+
+			return nameA.localeCompare(nameB);
+		});
+	}, [members, useRealName]);
+
 	const { counts, titles } = useMemo(() => {
 		const owners: RoomMember[] = [];
 		const leaders: RoomMember[] = [];
 		const moderators: RoomMember[] = [];
 		const normalMembers: RoomMember[] = [];
 
-		members.forEach((member) => {
+		sortedMembers.forEach((member) => {
 			if (member.roles?.includes('owner')) {
 				owners.push(member);
 			} else if (member.roles?.includes('leader')) {
@@ -131,7 +140,7 @@ const RoomMembers = ({
 		}
 
 		return { counts, titles };
-	}, [members]);
+	}, [sortedMembers]);
 
 	return (
 		<ContextualbarDialog>
@@ -165,13 +174,13 @@ const RoomMembers = ({
 					</Box>
 				)}
 
-				{!loading && members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
+				{!loading && sortedMembers.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 
-				{!loading && members.length > 0 && (
+				{!loading && sortedMembers.length > 0 && (
 					<>
 						<Box pi={24} pb={12}>
 							<Box is='span' color='hint' fontScale='p2'>
-								{t('Showing_current_of_total', { current: members.length, total })}
+								{t('Showing_current_of_total', { current: sortedMembers.length, total })}
 							</Box>
 						</Box>
 
@@ -188,7 +197,7 @@ const RoomMembers = ({
 									// eslint-disable-next-line react/no-multi-comp
 									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
 									itemContent={(index): ReactElement => (
-										<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
+										<RowComponent useRealName={useRealName} data={itemData} user={sortedMembers[index]} index={index} reload={reload} />
 									)}
 								/>
 							</VirtualizedScrollbars>
