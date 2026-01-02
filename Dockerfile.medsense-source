@@ -39,6 +39,11 @@ RUN echo "[build] yarn install --immutable start" \
   && yarn install --immutable \
   && echo "[build] yarn install --immutable done"
 
+RUN echo "[build] ui-kit packages build start" \
+  && yarn workspace @rocket.chat/ui-kit build \
+  && yarn workspace @rocket.chat/fuselage-ui-kit build \
+  && echo "[build] ui-kit packages build done"
+
 RUN echo "[build] meteor build:ci start" \
   && cd apps/meteor \
   && mkdir -p /tmp/meteor-cache /tmp/meteor-local \
