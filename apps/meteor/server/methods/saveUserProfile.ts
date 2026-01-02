@@ -18,13 +18,12 @@ import { settings as rcSettings } from '../../app/settings/server';
 import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
-import { removeOtherTokens } from '../lib/removeOtherTokens';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
 
 async function saveUserProfile(
-	this: Meteor.MethodThisType,
+	this: Meteor.MethodThisType & { token: string },
 	settings: {
 		email?: string;
 		username?: string;
@@ -158,7 +157,7 @@ async function saveUserProfile(
 			);
 
 			try {
-				await removeOtherTokens(this.userId, this.connection?.id || '');
+				await Users.removeNonLoginTokensExcept(this.userId, this.token);
 			} catch (e) {
 				Accounts._clearAllLoginTokens(this.userId);
 			}
@@ -216,7 +215,7 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 export function executeSaveUserProfile(
-	this: Meteor.MethodThisType,
+	this: Meteor.MethodThisType & { token: string },
 	user: IUser,
 	settings: {
 		email?: string;
