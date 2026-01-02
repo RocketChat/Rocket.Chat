@@ -16,6 +16,7 @@ type MockedMediaCallProviderProps = {
 	remoteHeld?: boolean;
 	muted?: boolean;
 	held?: boolean;
+	audioLevel?: number;
 };
 
 const MockedMediaCallProvider = ({
@@ -26,6 +27,7 @@ const MockedMediaCallProvider = ({
 	remoteHeld = false,
 	muted = false,
 	held = false,
+	audioLevel = 0,
 }: MockedMediaCallProviderProps) => {
 	const [peerInfo, setPeerInfo] = useState<PeerInfo | undefined>({
 		displayName: 'John Doe',
@@ -145,6 +147,7 @@ const MockedMediaCallProvider = ({
 		onSelectPeer,
 		getAutocompleteOptions,
 		getPeerInfo,
+		getAudioLevel: () => audioLevel,
 	};
 
 	return <MediaCallContext.Provider value={contextValue}>{children}</MediaCallContext.Provider>;

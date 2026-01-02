@@ -1,6 +1,7 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { Avatar, Box, Icon, StatusBullet } from '@rocket.chat/fuselage';
 
+import { useAudioLevelHighlight } from './useAudioLevelHighlight';
 import type { Slot } from './useInfoSlots';
 
 type InternalUserProps = {
@@ -21,9 +22,15 @@ const getRemoteStatusText = (slots?: Slot[]) => {
 
 const InternalUser = ({ displayName, avatarUrl, callerId, status, slots, remoteMuted }: InternalUserProps) => {
 	const remoteStatusText = getRemoteStatusText(slots);
+
+	const audioLevelRef = useAudioLevelHighlight();
 	return (
 		<Box display='flex' flexDirection='row' id='rcx-media-call-widget-caller-info'>
-			<Box mie={8}>{avatarUrl ? <Avatar url={avatarUrl} size='x20' /> : <Icon name='user' size='x20' />}</Box>
+			<Box mie={8}>
+				<Box ref={audioLevelRef} borderRadius='4px'>
+					{avatarUrl ? <Avatar url={avatarUrl} size='x20' /> : <Icon name='user' size='x20' />}
+				</Box>
+			</Box>
 			<Box display='flex' flexDirection='column' flexGrow={1}>
 				<Box display='flex' flexDirection='row' alignItems='center' fontScale='p2b' color='default' justifyContent='space-between'>
 					<Box is='span' display='flex' flexDirection='row' alignItems='center'>

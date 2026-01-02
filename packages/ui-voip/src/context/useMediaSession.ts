@@ -35,6 +35,7 @@ type MediaSession = SessionInfo & {
 
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
+	getAudioLevel: () => number;
 };
 
 export const getExtensionFromPeerInfo = (peerInfo: PeerInfo): string | undefined => {
@@ -331,6 +332,14 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			}
 		};
 
+		const getAudioLevel = () => {
+			if (!instance) {
+				return 0;
+			}
+
+			return instance.getMainCall()?.audioLevel ?? 0;
+		};
+
 		return {
 			toggleWidget,
 			toggleHold,
@@ -342,6 +351,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			selectPeer,
 			toggleMute,
 			acceptCall,
+			getAudioLevel,
 		};
 	}, [instance]);
 

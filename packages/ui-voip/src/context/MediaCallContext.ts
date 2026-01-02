@@ -59,6 +59,8 @@ type MediaCallContextType = {
 	getAutocompleteOptions: (filter: string) => Promise<PeerAutocompleteOptions[]>;
 	// This is used to get the peer info from the server in case it's not available in the autocomplete options.
 	getPeerInfo: (id: string) => Promise<PeerInfo | undefined>;
+
+	getAudioLevel: () => number;
 };
 
 export const defaultMediaCallContextValue: MediaCallContextType = {
@@ -92,6 +94,7 @@ export const defaultMediaCallContextValue: MediaCallContextType = {
 
 	getAutocompleteOptions: () => Promise.resolve([]),
 	getPeerInfo: () => Promise.resolve(undefined),
+	getAudioLevel: () => 0,
 };
 
 type MediaCallExternalContextType = {
