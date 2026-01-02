@@ -5,6 +5,7 @@ import type { ChannelsSelectElement } from '../blocks/elements/ChannelsSelectEle
 import type { CheckboxElement } from '../blocks/elements/CheckboxElement';
 import type { ConversationsSelectElement } from '../blocks/elements/ConversationsSelectElement';
 import type { DatePickerElement } from '../blocks/elements/DatePickerElement';
+import type { FileUploadElement, FileUploadValue } from '../blocks/elements/FileUploadElement';
 import type { LinearScaleElement } from '../blocks/elements/LinearScaleElement';
 import type { MultiChannelsSelectElement } from '../blocks/elements/MultiChannelsSelectElement';
 import type { MultiConversationsSelectElement } from '../blocks/elements/MultiConversationsSelectElement';
@@ -26,6 +27,8 @@ export type ActionOf<TElement extends ActionableElement> = TElement extends Butt
 			? unknown
 			: TElement extends DatePickerElement
 				? DatePickerElement['initialDate']
+				: TElement extends FileUploadElement
+					? FileUploadValue | FileUploadValue[] | undefined
 				: TElement extends LinearScaleElement
 					? LinearScaleElement['initialValue']
 					: TElement extends MultiChannelsSelectElement

@@ -5,7 +5,7 @@ import { useContext, useMemo, useState } from 'react';
 import { UiKitContext } from '../contexts/UiKitContext';
 import { getInitialValue } from '../utils/getInitialValue';
 
-const getElementValueFromState = (
+const getElementValueFromState = <TValue>(
 	actionId: string,
 	values: Record<
 		string,
@@ -14,8 +14,8 @@ const getElementValueFromState = (
 		  }
 		| undefined
 	>,
-	initialValue: string | number | string[] | undefined,
-) => (values && (values[actionId]?.value as string | number | string[] | undefined)) ?? initialValue;
+	initialValue: TValue,
+) => (values && (values[actionId]?.value as TValue)) ?? initialValue;
 
 type UiKitState<TElement extends UiKit.ActionableElement = UiKit.ActionableElement> = {
 	loading: boolean;
@@ -34,11 +34,11 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 	const { blockId, actionId, appId, dispatchActionConfig } = element;
 	const { action, appId: appIdFromContext = undefined, viewId = undefined, updateState } = useContext(UiKitContext);
 
-	const initialValue = getInitialValue(element);
+	const initialValue = getInitialValue(element) as UiKit.ActionOf<TElement>;
 
 	const { values, errors } = useContext(UiKitContext);
 
-	const _value = getElementValueFromState(actionId, values, initialValue);
+	const _value = getElementValueFromState<UiKit.ActionOf<TElement>>(actionId, values, initialValue);
 	const error = Array.isArray(errors)
 		? errors.find((error) => Object.keys(error).find((key) => key === actionId))?.[actionId]
 		: errors?.[actionId];
@@ -136,6 +136,10 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		element.dispatchActionConfig.includes('on_character_entered')
 	) {
 		return [result, noLoadStateActionFunction];
+	}
+
+	if (element.type === 'file_upload') {
+		return [result, actionFunction];
 	}
 
 	if (

@@ -16,6 +16,7 @@ import ChannelsSelectElement from '../elements/ChannelsSelectElement/ChannelsSel
 import MultiChannelsSelectElement from '../elements/ChannelsSelectElement/MultiChannelsSelectElement';
 import CheckboxElement from '../elements/CheckboxElement';
 import DatePickerElement from '../elements/DatePickerElement';
+import FileUploadElement from '../elements/FileUploadElement';
 import IconButtonElement from '../elements/IconButtonElement';
 import IconElement from '../elements/IconElement';
 import ImageElement from '../elements/ImageElement';
@@ -252,6 +253,18 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 				<LinearScaleElement block={block} context={context} index={index} surfaceRenderer={this} />
 			</AppIdProvider>
 		);
+	}
+
+	file_upload(block: UiKit.FileUploadElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.FORM) {
+			return (
+				<AppIdProvider key={block.actionId || index} appId={block.appId}>
+					<FileUploadElement block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
 	}
 
 	toggle_switch(block: UiKit.ToggleSwitchElement, context: UiKit.BlockContext, index: number): ReactElement | null {

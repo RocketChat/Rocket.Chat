@@ -26,6 +26,7 @@ export enum BlockElementType {
 	CHECKBOX = 'checkbox',
 	TIME_PICKER = 'time_picker',
 	TAB = 'tab',
+	FILE_UPLOAD = 'file_upload',
 
 	ICON = 'icon',
 	ICON_BUTTON = 'icon_button',

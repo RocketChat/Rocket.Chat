@@ -4,6 +4,7 @@ import type { CheckboxElement } from './elements/CheckboxElement';
 import type { ConversationsSelectElement } from './elements/ConversationsSelectElement';
 import type { DatePickerElement } from './elements/DatePickerElement';
 import type { ExperimentalTabElement } from './elements/ExperimentalTabElement';
+import type { FileUploadElement } from './elements/FileUploadElement';
 import type { IconButtonElement } from './elements/IconButtonElement';
 import type { FrameableIconElement } from './elements/IconElement';
 import type { ImageElement } from './elements/ImageElement';
@@ -25,6 +26,7 @@ export type BlockElement =
 	| ChannelsSelectElement
 	| ConversationsSelectElement
 	| DatePickerElement
+	| FileUploadElement
 	| ImageElement
 	| LinearScaleElement
 	| MultiChannelsSelectElement

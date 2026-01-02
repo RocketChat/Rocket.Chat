@@ -12,6 +12,7 @@ export { ButtonElement } from './blocks/elements/ButtonElement';
 export { ChannelsSelectElement } from './blocks/elements/ChannelsSelectElement';
 export { ConversationsSelectElement } from './blocks/elements/ConversationsSelectElement';
 export { DatePickerElement } from './blocks/elements/DatePickerElement';
+export { FileUploadElement, FileUploadValue } from './blocks/elements/FileUploadElement';
 export { ImageElement } from './blocks/elements/ImageElement';
 export { LinearScaleElement } from './blocks/elements/LinearScaleElement';
 export { MultiStaticSelectElement } from './blocks/elements/MultiStaticSelectElement';
