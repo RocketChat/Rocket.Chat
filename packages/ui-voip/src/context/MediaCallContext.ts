@@ -1,5 +1,6 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import type { MediaStreamWrapper } from '@rocket.chat/media-signaling';
 import type { Device } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { createContext, useContext, useState } from 'react';
@@ -46,7 +47,7 @@ type MediaCallContextType = {
 
 	getRemoteStream: () => MediaStream | null;
 	getRemoteVideoStream: () => MediaStream | null;
-	getLocalVideoStream: () => MediaStream | null;
+	getLocalVideoStream: () => MediaStreamWrapper | null;
 	toggleScreenSharing: () => void;
 	onMute: () => void;
 	onHold: () => void;
