@@ -90,7 +90,6 @@ const RoomMembers = ({
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	const { counts, titles, flattenedMembers } = useMemo(() => {
-		
 	const membersWithSortName = members.map((member) => ({
 		...member,
 		sortName: (useRealName ? member.name || member.username : member.username) ?? '',
@@ -107,12 +106,12 @@ const RoomMembers = ({
 	);
 
 		const sortGroup = (arr: typeof membersWithSortName) =>
-			[...arr].sort((a,b)=> a.sortName.localeCompare(b.sortName));
+			[...arr].sort((a, b) => a.sortName.localeCompare(b.sortName));
 		
-		const sortedOwners=sortGroup(owners);
-		const sortedLeaders=sortGroup(leaders);
-		const sortedModerators=sortGroup(moderators);
-		const sortedNormal=sortGroup(normalMembers);
+		const sortedOwners = sortGroup(owners);
+		const sortedLeaders = sortGroup(leaders);
+		const sortedModerators = sortGroup(moderators);
+		const sortedNormal = sortGroup(normalMembers);
 		
 		const counts: number[] = [];
 		const titles: ReactElement[] = [];
