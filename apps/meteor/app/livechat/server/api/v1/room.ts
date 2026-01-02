@@ -24,9 +24,10 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
-	ajv,
+	SuccessResponseSchema,
+	BadRequestErrorResponseSchema,
+	POSTLivechatVisitorDepartmentTransferBodySchema,
 } from '@rocket.chat/rest-typings';
-import { isPOSTLivechatVisitorDepartmentTransferParams } from '@rocket.chat/rest-typings/src/v1/omnichannel';
 import { check } from 'meteor/check';
 
 import { callbacks } from '../../../../../server/lib/callbacks';
@@ -333,21 +334,11 @@ API.v1.addRoute(
 const livechatVisitorDepartmentTransfer = API.v1.post(
 	'livechat/visitor/department.transfer',
 	{
+		body: POSTLivechatVisitorDepartmentTransferBodySchema,
 		response: {
-			200: ajv.compile<void>({
-				type: 'object',
-				properties: {
-					success: {
-						type: 'boolean',
-						enum: [true],
-					},
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-			400: validateBadRequestErrorResponse,
+			200: SuccessResponseSchema,
+			400: BadRequestErrorResponseSchema,
 		},
-		body: isPOSTLivechatVisitorDepartmentTransferParams,
 	},
 	async function action() {
 		const { rid, token, department } = this.bodyParams;
