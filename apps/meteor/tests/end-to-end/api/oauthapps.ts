@@ -254,7 +254,6 @@ describe('[OAuthApps]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error');
-					expect(res.body.error).to.include('must be string').and.include('must match exactly one schema in oneOf');
 				});
 		});
 
@@ -280,7 +279,6 @@ describe('[OAuthApps]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error');
-					expect(res.body.error).to.include('must be string').and.include('must match exactly one schema in oneOf');
 				});
 		});
 

@@ -327,7 +327,9 @@ type PromiseOrValue<T> = T | Promise<T>;
 type IfEquals<T, U, Y = unknown, N = never> = (<G>() => G extends T ? 1 : 2) extends <G>() => G extends U ? 1 : 2 ? Y : N;
 
 type InferResult<TResult> = TResult extends z.ZodType
-	? IfEquals<z.infer<TResult>, { success: true }, void, Omit<z.infer<TResult>, 'success'>>
+	? z.infer<TResult> extends object
+		? IfEquals<z.infer<TResult>, { success: true }, void, Omit<z.infer<TResult>, 'success'>>
+		: z.infer<TResult>
 	: TResult extends ValidateFunction<infer T>
 		? T
 		: TResult;
