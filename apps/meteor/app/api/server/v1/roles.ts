@@ -1,7 +1,12 @@
 import { api, Authorization } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
-import { ajv, isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
+import {
+	isRoleAddUserToRoleProps,
+	isRoleDeleteProps,
+	isRoleRemoveUserFromRoleProps,
+	GETRolesGetUsersInPublicRolesResponseSchema,
+} from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -230,27 +235,9 @@ const rolesRoutes = API.v1.get(
 	{
 		authRequired: true,
 		response: {
-			200: ajv.compile<{
-				users: {
-					_id: string;
-					username: string;
-					roles: string[];
-				}[];
-			}>({
-				type: 'object',
-				properties: {
-					users: {
-						type: 'array',
-						items: {
-							type: 'object',
-							properties: { _id: { type: 'string' }, username: { type: 'string' }, roles: { type: 'array', items: { type: 'string' } } },
-						},
-					},
-				},
-			}),
+			200: GETRolesGetUsersInPublicRolesResponseSchema,
 		},
 	},
-
 	async () => {
 		return API.v1.success({
 			users: await Authorization.getUsersFromPublicRoles(),
@@ -258,9 +245,7 @@ const rolesRoutes = API.v1.get(
 	},
 );
 
-type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesRoutes>;
-
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends RolesEndpoints {}
+	interface Endpoints extends ExtractRoutesFromAPI<typeof rolesRoutes> {}
 }
