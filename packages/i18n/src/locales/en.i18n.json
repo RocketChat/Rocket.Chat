@@ -1626,6 +1626,7 @@
   "Custom_User_Status_Info": "Custom User Status Info",
   "Custom_User_Status_Updated_Successfully": "Custom User Status Updated Successfully",
   "Custom_agent": "Custom agent",
+  "Custom_content": "Custom content",
   "Custom_dates": "Custom Dates",
   "Custom_oauth_helper": "When setting up your OAuth Provider, you'll have to inform a Callback URL. Use <pre>%s</pre> .",
   "Custom_roles": "Custom roles",
