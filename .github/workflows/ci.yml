@@ -220,7 +220,7 @@ jobs:
             $(git ls-files -oi --exclude-standard -- ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.turbo/*' ':(exclude).turbo/*' ':(exclude)**/.yarn/*' ':(exclude).yarn/*' ':(exclude).git/*')
 
       - name: Upload packages build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: packages-build
           path: /tmp/RocketChat-packages-build.tar.gz
@@ -228,7 +228,7 @@ jobs:
 
       - name: Store turbo build
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: turbo-build
           path: .turbo/cache
@@ -314,7 +314,7 @@ jobs:
       # we only build and publish the actual docker images if not a PR from a fork
       - name: Image ${{ matrix.service[0] }}
         uses: ./.github/actions/build-docker
-        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        if: github.actor != 'dependabot[bot]'
         env:
           # add suffix for the extra images with coverage if building for production
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
@@ -325,10 +325,11 @@ jobs:
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[0] }}
           type: ${{ matrix.type }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
 
       - name: Image ${{ matrix.service[1] || '"skipped"' }}
         uses: ./.github/actions/build-docker
-        if: matrix.service[1] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        if: matrix.service[1] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
         with:
@@ -338,11 +339,12 @@ jobs:
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[1] }}
           type: ${{ matrix.type }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
           setup-docker: false
 
       - name: Image ${{ matrix.service[2] || '"skipped"' }}
         uses: ./.github/actions/build-docker
-        if: matrix.service[2] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        if: matrix.service[2] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
         with:
@@ -352,11 +354,12 @@ jobs:
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[2] }}
           type: ${{ matrix.type }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
           setup-docker: false
 
       - name: Image ${{ matrix.service[3] || '"skipped"' }}
         uses: ./.github/actions/build-docker
-        if: matrix.service[3] && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        if: matrix.service[3] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
         with:
@@ -366,6 +369,7 @@ jobs:
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[3] }}
           type: ${{ matrix.type }}
+          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
           setup-docker: false
 
   build-gh-docker-publish:
@@ -452,6 +456,7 @@ jobs:
 
       - name: Track Docker image sizes
         uses: ./.github/actions/docker-image-size-tracker
+        if: github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           ci-pat: ${{ secrets.CI_PAT }}
@@ -566,6 +571,7 @@ jobs:
       shard: '[1, 2, 3, 4, 5]'
       total-shard: 5
       mongodb-version: "['8.2']"
+      coverage: '8.2'
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
@@ -579,10 +585,11 @@ jobs:
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
+
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
     needs: [checks, build-gh-docker-publish, packages-build, release-versions]
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v6
@@ -620,14 +627,57 @@ jobs:
           sudo -- sh -c "echo '127.0.0.1 hs1' >> /etc/hosts"
           sudo -- sh -c "echo '127.0.0.1 rc1' >> /etc/hosts"
 
+      # Download Docker images from build artifacts
+      - name: Download Docker images
+        uses: actions/download-artifact@v7
+        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
+        with:
+          pattern: 'docker-image-rocketchat-amd64-coverage'
+          path: /tmp/docker-images
+          merge-multiple: true
+
+      # Load Docker images
+      - name: Load Docker images
+        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
+        shell: bash
+        run: |
+          set -o xtrace
+
+          # Load all downloaded images
+          for image_file in /tmp/docker-images/*.tar; do
+            if [ -f "$image_file" ]; then
+              echo "Loading image from $image_file"
+              docker load -i "$image_file"
+              rm "$image_file"
+            fi
+          done
+
+          # List loaded images
+          docker images
+
       - name: Run federation integration tests with pre-built image
         working-directory: ./ee/packages/federation-matrix
         env:
-          ROCKETCHAT_IMAGE: ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}
-          ENTERPRISE_LICENSE_RC1: ${{ secrets.ENTERPRISE_LICENSE_RC1 }}
+          ROCKETCHAT_IMAGE: ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}-amd64
+          ENTERPRISE_LICENSE_RC1: ZEuDWcAxkdBZ0iOzn+JIi7Ri0GKPR43hTueeqEEeTjJhzhp1jM7+fA9LiT3aCzU/oJwudwWLFAwqjrtR13axza+Us6lHuAMdfut/1Z6upRWdSgose1LfDP9Nzce6xOVbO3InQonwTQVQJotlYEGRjiry7jn68TSIKhmjMgC6SVYt6v+syEKRgj+r2oT0xNkurQYGGG1AIYHDqGWa1cX0FVd1ddOKU/DNuCJQxH8Rz5aJC2grIKMIzmRVHfBDJAipeTDl6VI28VM5ExEl3w8zDlUk8wCxXawXGCht0A7jZGCd4IQLDNZs/3Zv+nHC4lcDVzjDu+o17vUIEad4m+nhZgGTNlHqkrH3cqEEEPa3bSh8GKBzLmKHB+i0H3dweT9iqGwz56Nue7twyt5yuGq6qYdtrEx0pEKjystU15DUiQxDPqkBL8yRkp5WScsvJIlhiY+4tU6yKI/GAYtU0g+fCYzjzwxXc7tLg5NeY9kiRMdQ+jRytl3ztHGiv5ERhjQKT9ZpUWiCSCmdr8L3njfLLW1e5/AKmXpg00D6HfJvI30xDcoJwmWnCzFvd7KlSbVwNVBlD6KE9+0j6GV1h0JEml1YrpXUxbpEBz5ALdLn2iVPQ3MT5RODRI5yffSX9ikFkwcH360ewU6Zp63WKRkHyfnzE+tsYe96XdaMZowe7Lw=
           QASE_TESTOPS_JEST_API_TOKEN: ${{ secrets.QASE_TESTOPS_JEST_API_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
         run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
+
+      - name: Show rc server logs if tests failed
+        if: failure()
+        working-directory: ./ee/packages/federation-matrix
+        run: docker compose -f docker-compose.test.yml logs rc1-prebuilt
+
+      - name: Show hs server logs if tests failed
+        if: failure()
+        working-directory: ./ee/packages/federation-matrix
+        run: docker compose -f docker-compose.test.yml logs hs1
+
+      - name: Show mongo logs if tests failed
+        if: failure()
+        working-directory: ./ee/packages/federation-matrix
+        run: docker compose -f docker-compose.test.yml logs mongo
 
   report-coverage:
     name: 📊 Report Coverage
@@ -657,7 +707,7 @@ jobs:
           npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/ui --temp-dir=/tmp/coverage/ui
 
       - name: Store coverage-reports
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: reports-coverage
           path: /tmp/coverage_report

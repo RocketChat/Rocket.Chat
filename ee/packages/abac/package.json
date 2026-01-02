@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/abac",
-	"version": "0.0.1",
+	"version": "0.1.0-rc.1",
 	"private": true,
 	"description": "Rocket.Chat - Attribute Based Access Control (ABAC) support utilities",
 	"main": "./dist/index.js",

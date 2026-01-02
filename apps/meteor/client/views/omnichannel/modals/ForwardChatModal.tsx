@@ -81,9 +81,9 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 
 	return (
 		<Modal
+			aria-label={t('Forward_chat')}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}
 			{...props}
-			data-qa-id='forward-chat-modal'
 		>
 			<ModalHeader>
 				<ModalIcon name='baloon-arrow-top-right' />
