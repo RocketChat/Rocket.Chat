@@ -90,57 +90,54 @@ const RoomMembers = ({
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	const { counts, titles, flattenedMembers } = useMemo(() => {
-		const owners: RoomMember[] = [];
-		const leaders: RoomMember[] = [];
-		const moderators: RoomMember[] = [];
-		const normalMembers: RoomMember[] = [];
+		
+	const membersWithSortName = members.map((member) => ({
+	...member,
+	sortName: useRealName ? member.name || member.username : member.username,
+	}));
 
-		members.forEach((member) => {
-			const name = useRealName ? member.name || member.username : member.username;
-			( member as any ).sortName = name;
-			
-			if (member.roles?.includes('owner')) {
-				owners.push(member);
-			} else if (member.roles?.includes('leader')) {
-				leaders.push(member);
-			} else if (member.roles?.includes('moderator')) {
-				moderators.push(member);
-			} else {
-				normalMembers.push(member);
-			}
-		});
+	const owners = membersWithSortName.filter((m) => m.roles?.includes('owner'));
+	const leaders = membersWithSortName.filter((m) => m.roles?.includes('leader'));
+	const moderators = membersWithSortName.filter((m) => m.roles?.includes('moderator'));
+	const normalMembers = membersWithSortName.filter(
+		(m) =>
+			!m.roles?.includes('owner') &&
+			!m.roles?.includes('leader') &&
+			!m.roles?.includes('moderator')
+	);
 
-		const sortGroup = (arr: RoomMember[])=>
-			arr.sort((a,b)=> ((a as any).sortName as string).localeCompare((b as any).sortName));
+		const sortGroup = (arr: typeof memberWithSortName)=>
+			[...arr].sort((a,b)=> a.sortName.localeCompare(b.sortName));
 		const sortedOwners=sortGroup(owners);
 		const sortedLeaders=sortGroup(leaders);
 		const sortedModerators=sortGroup(moderators);
 		const sortedNormal=sortGroup(normalMembers);
+		
 		const counts: number[] = [];
 		const titles:ReactElement[] = [];
 
 		if (sortedOwners.length) {
 			counts.push(sortedOwners.length);
-			titles.push(<MembersListDivider title='Owners' count={sortedOwners.length} />);
+			titles.push(<MembersListDivider title={t('Owners')} count={sortedOwners.length} />);
 		}
 
 		if (sortedLeaders.length) {
 			counts.push(sortedLeaders.length);
-			titles.push(<MembersListDivider title='Leaders' count={sortedLeaders.length} />);
+			titles.push(<MembersListDivider title={t('Leaders')} count={sortedLeaders.length} />);
 		}
 
 		if (sortedModerators.length) {
 			counts.push(sortedModerators.length);
-			titles.push(<MembersListDivider title='Moderators' count={sortedModerators.length} />);
+			titles.push(<MembersListDivider title={t('Moderators')} count={sortedModerators.length} />);
 		}
 
 		if (sortedNormal.length) {
 			counts.push(sortedNormal.length);
-			titles.push(<MembersListDivider title='Members' count={sortedNormal.length} />);
+			titles.push(<MembersListDivider title={t('Members')} count={sortedNormal.length} />);
 		}
 		const flattenedMembers= [...sortedOwners, ...sortedLeaders, ...sortedModerators, ...sortedNormal];
 		return { counts, titles, flattenedMembers };
-	}, [members, useRealName]);
+	}, [members, useRealName, t]);
 
 	return (
 		<ContextualbarDialog>
