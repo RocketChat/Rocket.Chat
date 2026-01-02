@@ -1,5 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 
+import { MediaStreamTrackWrapper } from './MediaStreamTrackWrapper';
 import type { IMediaSignalLogger } from '../../definition/logger';
 
 export type MediaStreamEvents = {
@@ -48,16 +49,9 @@ export class MediaStreamWrapper {
 	 * */
 	private audioEnabled = true;
 
-	/**
-	 * indicates if the audio track is muted on a lower level than what rocket.chat can control (aka muted by the OS or by the peer)
-	 * */
-	private audioMuted = false;
+	private audioTrack: MediaStreamTrackWrapper | null = null;
 
-	private audioTrack: MediaStreamTrack | null = null;
-
-	private videoMuted = false;
-
-	private videoTrack: MediaStreamTrack | null = null;
+	private videoTrack: MediaStreamTrackWrapper | null = null;
 
 	private stopped = false;
 
@@ -78,7 +72,7 @@ export class MediaStreamWrapper {
 	}
 
 	public hasVideo(): boolean {
-		if (!this.videoTrack || this.videoMuted) {
+		if (!this.videoTrack || this.videoTrack.ended || this.videoTrack.muted) {
 			return false;
 		}
 
@@ -91,7 +85,11 @@ export class MediaStreamWrapper {
 	}
 
 	public isAudioMuted(): boolean {
-		return this.audioMuted || !this.audioEnabled;
+		if (!this.audioTrack) {
+			return false;
+		}
+
+		return this.audioTrack.muted || !this.audioEnabled;
 	}
 
 	public isAudioEnabled(): boolean {
@@ -156,49 +154,15 @@ export class MediaStreamWrapper {
 
 		if (newTrack) {
 			this.stream.addTrack(newTrack);
-
-			newTrack.onmute = (_ev) => {
-				if (newTrack === this.audioTrack) {
-					this.audioMuted = true;
-				} else if (newTrack === this.videoTrack) {
-					this.videoMuted = true;
-				}
-
-				console.log('track.onmute', this.remote, this.tag, newTrack.kind);
-				this.emitter.emit('stateChanged');
-			};
-			newTrack.onunmute = (_ev) => {
-				if (newTrack === this.audioTrack) {
-					this.audioMuted = false;
-				} else if (newTrack === this.videoTrack) {
-					this.videoMuted = false;
-				}
-				console.log('track.onunmute', this.remote, this.tag, newTrack.kind);
-				this.emitter.emit('stateChanged');
-			};
-			newTrack.onended = (_ev) => {
-				console.log('track.onended', this.remote, this.tag, newTrack.kind);
-				this.emitter.emit('stateChanged');
-			};
 		}
 
-		if (kind === 'audio') {
-			if (this.local && newTrack) {
-				newTrack.enabled = this.audioEnabled;
-			}
+		this.wrapTrack(kind, newTrack);
 
-			this.audioTrack = newTrack;
-			this.audioMuted = newTrack?.muted ?? false;
-		} else if (kind === 'video') {
-			this.videoTrack = newTrack;
-			this.videoMuted = newTrack?.muted ?? false;
-		}
-
-		await this.syncTrackChange(newTrack, kind);
+		await this.syncTrackChange(kind, newTrack);
 		this.emitter.emit('trackChanged', { track: newTrack, kind });
 	}
 
-	private async syncTrackChange(track: MediaStreamTrack | null, kind: MediaStreamTrack['kind']): Promise<void> {
+	private async syncTrackChange(kind: MediaStreamTrack['kind'], track: MediaStreamTrack | null): Promise<void> {
 		if (this.remote) {
 			return;
 		}
@@ -218,6 +182,36 @@ export class MediaStreamWrapper {
 		// If the peer already has a track of the same kind, we can just replace it with the new track with no issues
 		// TODO: safe guard against edge cases where this would fail (eg: changing number of audio channels or increasing video quality)
 		await sender.replaceTrack(track);
+	}
+
+	private wrapTrack(kind: MediaStreamTrack['kind'], track: MediaStreamTrack | null) {
+		const wrapper = track ? new MediaStreamTrackWrapper(track) : null;
+
+		if (kind === 'audio') {
+			this.audioTrack = wrapper;
+
+			if (this.local && wrapper) {
+				wrapper.enabled = this.audioEnabled;
+			}
+		} else {
+			this.videoTrack = wrapper;
+		}
+
+		if (!wrapper) {
+			return;
+		}
+
+		wrapper.emitter.on('mute', () => {
+			this.emitter.emit('stateChanged');
+		});
+
+		wrapper.emitter.on('unmute', () => {
+			this.emitter.emit('stateChanged');
+		});
+
+		wrapper.emitter.on('ended', () => {
+			this.emitter.emit('stateChanged');
+		});
 	}
 
 	private isSameTrack(trackId: string): boolean {
