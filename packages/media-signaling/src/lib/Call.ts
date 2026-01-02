@@ -438,14 +438,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	public getRemoteMediaStream(): MediaStream {
+	public getRemoteMediaStream(): MediaStream | null {
 		this.config.logger?.debug('ClientMediaCall.getRemoteMediaStream');
-		if (this.hidden) {
-			this.throwError('getRemoteMediaStream is not available for this call');
+		if (this.hidden || !this.signed) {
+			return null;
 		}
 
 		if (this.shouldIgnoreWebRTC()) {
-			this.throwError('getRemoteMediaStream is not available for this service');
+			return null;
 		}
 
 		this.prepareWebRtcProcessor();
