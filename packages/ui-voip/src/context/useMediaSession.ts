@@ -39,6 +39,7 @@ type MediaSession = SessionInfo & {
 
 	getRemoteStream: () => MediaStream | null;
 	getRemoteVideoStream: () => MediaStream | null;
+	getLocalVideoStream: () => MediaStream | null;
 };
 
 export const getExtensionFromPeerInfo = (peerInfo: PeerInfo): string | undefined => {
@@ -363,6 +364,19 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			}
 		};
 
+		const getLocalVideoStream = () => {
+			try {
+				const mainCall = instance?.getMainCall();
+				if (!mainCall) {
+					return null;
+				}
+				return mainCall.getLocalVideoStream();
+			} catch (error) {
+				console.error('MediaCall: useMediaStream - Error getting local media stream', error);
+				return null;
+			}
+		};
+
 		const toggleScreenSharing = () => {
 			if (!instance) {
 				return;
@@ -394,6 +408,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			acceptCall,
 			getRemoteStream,
 			getRemoteVideoStream,
+			getLocalVideoStream,
 		};
 	}, [instance]);
 
