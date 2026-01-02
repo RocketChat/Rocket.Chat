@@ -3,16 +3,13 @@ import { Meteor } from 'meteor/meteor';
 import type { ITwoFactorOptions } from './code/index';
 import { checkCodeForUser } from './code/index';
 
-export function twoFactorRequired<TFunction extends (this: Meteor.MethodThisType & { token: string }, ...args: any[]) => any>(
-	fn: TFunction,
+export const twoFactorRequired = <TFunction extends (this: any, ...args: any) => any>(
+	fn: ThisParameterType<TFunction> extends Meteor.MethodThisType
+		? TFunction
+		: (this: Meteor.MethodThisType, ...args: Parameters<TFunction>) => ReturnType<TFunction>,
 	options?: ITwoFactorOptions,
-): (
-	this: Meteor.MethodThisType & {
-		token: string;
-	},
-	...args: Parameters<TFunction>
-) => Promise<ReturnType<TFunction>> {
-	return async function (this: Meteor.MethodThisType & { token: string }, ...args: Parameters<TFunction>): Promise<ReturnType<TFunction>> {
+) =>
+	async function (this, ...args) {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'twoFactorRequired' });
 		}
@@ -40,5 +37,4 @@ export function twoFactorRequired<TFunction extends (this: Meteor.MethodThisType
 		}
 
 		return fn.apply(this, args);
-	};
-}
+	} as (this: ThisParameterType<TFunction>, ...args: Parameters<TFunction>) => ReturnType<TFunction>;
