@@ -1,14 +1,90 @@
 import * as z from 'zod';
 
-import type { IAbacAttributeDefinition } from './IAbacAttribute';
+import { IAbacAttributeDefinitionSchema } from './IAbacAttribute';
 import type { ILivechatDepartment } from './ILivechatDepartment';
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { ILivechatVisitor } from './ILivechatVisitor';
-import type { IMessage, MessageTypesValues } from './IMessage';
+import { IMessageSchema, MessageTypesSchema, type IMessage } from './IMessage';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import { IRocketChatRecordSchema } from './IRocketChatRecord';
-import type { IUser, Username } from './IUser';
+import { IUserSchema, type IUser, type Username } from './IUser';
 import { RoomTypeSchema } from './RoomType';
+import { serializableDate } from './utils';
+
+export const IRoomSchema = IRocketChatRecordSchema.extend({
+	t: RoomTypeSchema,
+	name: z.string().optional(),
+	fname: z.string().optional(),
+	msgs: z.number(),
+	default: z.boolean().optional(),
+	broadcast: z.literal(true).optional(),
+	featured: z.literal(true).optional(),
+	announcement: z.string().optional(),
+	joinCodeRequired: z.boolean().optional(),
+	announcementDetails: z
+		.object({
+			style: z.string().optional(),
+		})
+		.optional(),
+	encrypted: z.boolean().optional(),
+	// The existence of an abac attribute definition indicates that ABAC is enabled for the room
+	abacAttributes: z.array(IAbacAttributeDefinitionSchema).optional(),
+	topic: z.string().optional(),
+	reactWhenReadOnly: z.boolean().optional(),
+	// TODO: this boolean might be an accident
+	sysMes: z.union([z.array(MessageTypesSchema), z.boolean()]).optional(),
+	u: IUserSchema.pick({ _id: true, username: true, name: true }),
+	uids: z.array(IUserSchema.shape._id).optional(),
+	get lastMessage() {
+		return z.lazy(() => IMessageSchema).optional();
+	},
+	lm: serializableDate.optional(),
+	usersCount: z.number(),
+	webRtcCallStartTime: serializableDate.optional(),
+	servedBy: z
+		.object({
+			_id: z.string(),
+		})
+		.optional(),
+	get prid() {
+		return z.lazy(() => IRoomSchema.shape._id).optional();
+	},
+	avatarETag: z.string().optional(),
+	teamMain: z.boolean().optional(),
+	teamId: z.string().optional(),
+	teamDefault: z.boolean().optional(),
+	open: z.boolean().optional(),
+	autoTranslateLanguage: z.string().optional(),
+	autoTranslate: z.boolean().optional(),
+	unread: z.number().optional(),
+	alert: z.boolean().optional(),
+	hideUnreadStatus: z.boolean().optional(),
+	hideMentionStatus: z.boolean().optional(),
+	muted: z.array(z.string()).optional(),
+	unmuted: z.array(z.string()).optional(),
+	usernames: z.array(z.string()).optional(),
+	ts: serializableDate.optional(),
+	cl: z.boolean().optional(),
+	ro: z.boolean().optional(),
+	favorite: z.boolean().optional(),
+	archived: z.boolean().optional(),
+	description: z.string().optional(),
+	e2eKeyId: z.string().optional(),
+	federated: z.boolean().optional().meta({ deprecated: true }),
+	customFields: z.record(z.any(), z.any()).optional().meta({ deprecated: true }),
+	usersWaitingForE2EKeys: z
+		.array(
+			z.object({
+				userId: IUserSchema.shape._id,
+				ts: serializableDate,
+			}),
+		)
+		.optional(),
+	rolePrioritiesCreated: z
+		.union([z.number(), z.boolean()])
+		.optional()
+		.meta({ description: 'Using `boolean` is deprecated. Use `number` instead.' }),
+});
 
 export type ChannelName = string;
 interface IRequestTranscript {
@@ -17,85 +93,7 @@ interface IRequestTranscript {
 	requestedAt: Date;
 	requestedBy: Pick<IUser, '_id' | 'username' | 'name' | 'utcOffset'>;
 }
-
-// TODO incomplete schema
-export const IRoomSchema = IRocketChatRecordSchema.extend({
-	t: RoomTypeSchema,
-	name: z.string().optional(),
-	fname: z.string().optional(),
-	msgs: z.number(),
-});
-
-export interface IRoom extends z.infer<typeof IRoomSchema> {
-	default?: boolean;
-	broadcast?: true;
-	featured?: true;
-	announcement?: string;
-	joinCodeRequired?: boolean;
-	announcementDetails?: {
-		style?: string;
-	};
-	encrypted?: boolean;
-	// The existence of an abac attribute definition indicates that ABAC is enabled for the room
-	abacAttributes?: IAbacAttributeDefinition[];
-	topic?: string;
-
-	reactWhenReadOnly?: boolean;
-
-	// TODO: this boolean might be an accident
-	sysMes?: MessageTypesValues[] | boolean;
-
-	u: Pick<IUser, '_id' | 'username' | 'name'>;
-	uids?: Array<string>;
-
-	lastMessage?: IMessage;
-	lm?: Date;
-	usersCount: number;
-	webRtcCallStartTime?: Date;
-	servedBy?: {
-		_id: string;
-	};
-
-	prid?: string;
-	avatarETag?: string;
-
-	teamMain?: boolean;
-	teamId?: string;
-	teamDefault?: boolean;
-	open?: boolean;
-
-	autoTranslateLanguage?: string;
-	autoTranslate?: boolean;
-	unread?: number;
-	alert?: boolean;
-	hideUnreadStatus?: boolean;
-	hideMentionStatus?: boolean;
-
-	muted?: string[];
-	unmuted?: string[];
-
-	usernames?: string[];
-	ts?: Date;
-
-	cl?: boolean;
-	ro?: boolean;
-	favorite?: boolean;
-	archived?: boolean;
-	description?: string;
-	e2eKeyId?: string;
-
-	/* @deprecated */
-	federated?: boolean;
-	/* @deprecated */
-	customFields?: Record<string, any>;
-
-	usersWaitingForE2EKeys?: { userId: IUser['_id']; ts: Date }[];
-
-	/**
-	 * @deprecated Using `boolean` is deprecated. Use `number` instead.
-	 */
-	rolePrioritiesCreated?: number | boolean;
-}
+export interface IRoom extends z.infer<typeof IRoomSchema> {}
 
 export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>
 	'joinCodeRequired' in room && (room as any).joinCodeRequired === true;

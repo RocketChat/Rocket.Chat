@@ -4,7 +4,6 @@ import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
-	ajv,
 	isGETRoomsNameExists,
 	isRoomsImagesProps,
 	isRoomsMuteUnmuteUserProps,
@@ -15,9 +14,14 @@ import {
 	isRoomsMembersOrderedByRoleProps,
 	isRoomsChangeArchivationStateProps,
 	isRoomsHideProps,
-	isRoomsInviteProps,
-	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
+	BadRequestErrorResponseSchema,
+	UnauthorizedErrorResponseSchema,
+	SuccessResponseSchema,
+	GETRoomsRolesQuerySchema,
+	GETRoomsRolesResponseSchema,
+	GETRoomsAdminRoomsPrivateRoomsQuerySchema,
+	GETRoomsAdminRoomsPrivateRoomsResponseSchema,
+	POSTRoomsInviteBodySchema,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -28,7 +32,6 @@ import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOfRoomOrderedByRole';
 import { openRoom } from '../../../../server/lib/openRoom';
-import type { RoomRoles } from '../../../../server/lib/roles/getRoomRoles';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { toggleFavoriteMethod } from '../../../../server/methods/toggleFavorite';
@@ -945,48 +948,15 @@ API.v1.addRoute(
 	},
 );
 
-const isRoomGetRolesPropsSchema = {
-	type: 'object',
-	properties: {
-		rid: { type: 'string' },
-	},
-	additionalProperties: false,
-	required: ['rid'],
-};
 export const roomEndpoints = API.v1
 	.get(
 		'rooms.roles',
 		{
 			authRequired: true,
-			query: ajv.compile<{
-				rid: string;
-			}>(isRoomGetRolesPropsSchema),
+			query: GETRoomsRolesQuerySchema,
 			response: {
-				200: ajv.compile<{
-					roles: RoomRoles[];
-				}>({
-					type: 'object',
-					properties: {
-						roles: {
-							type: 'array',
-							items: {
-								type: 'object',
-								properties: {
-									rid: { type: 'string' },
-									u: {
-										type: 'object',
-										properties: { _id: { type: 'string' }, username: { type: 'string' } },
-										required: ['_id', 'username'],
-									},
-									roles: { type: 'array', items: { type: 'string' } },
-								},
-								required: ['rid', 'u', 'roles'],
-							},
-						},
-					},
-					required: ['roles'],
-				}),
-				400: validateBadRequestErrorResponse,
+				200: GETRoomsRolesResponseSchema,
+				400: BadRequestErrorResponseSchema,
 			},
 		},
 		async function () {
@@ -1003,45 +973,12 @@ export const roomEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['view-room-administration'],
-			query: ajv.compile<{
-				filter?: string;
-				offset?: number;
-				count?: number;
-				sort?: string;
-			}>({
-				type: 'object',
-				properties: {
-					filter: { type: 'string' },
-					offset: { type: 'number' },
-					count: { type: 'number' },
-					sort: { type: 'string' },
-				},
-				additionalProperties: true,
-			}),
+			query: GETRoomsAdminRoomsPrivateRoomsQuerySchema,
 			response: {
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				403: validateUnauthorizedErrorResponse,
-				200: ajv.compile<{
-					rooms: IRoom[];
-					count: number;
-					offset: number;
-					total: number;
-				}>({
-					type: 'object',
-					properties: {
-						rooms: {
-							type: 'array',
-							items: { type: 'object' },
-						},
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['rooms', 'count', 'offset', 'total', 'success'],
-					additionalProperties: false,
-				}),
+				200: GETRoomsAdminRoomsPrivateRoomsResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+				403: UnauthorizedErrorResponseSchema,
 			},
 		},
 		async function action() {
@@ -1067,41 +1004,31 @@ export const roomEndpoints = API.v1
 				total,
 			});
 		},
-	);
-
-const roomInviteEndpoints = API.v1.post(
-	'rooms.invite',
-	{
-		authRequired: true,
-		body: isRoomsInviteProps,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<void>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
+	)
+	.post(
+		'rooms.invite',
+		{
+			authRequired: true,
+			body: POSTRoomsInviteBodySchema,
+			response: {
+				200: SuccessResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
 		},
-	},
-	async function action() {
-		const { roomId, action } = this.bodyParams;
+		async function action() {
+			const { roomId, action } = this.bodyParams;
 
-		try {
-			await FederationMatrix.handleInvite(roomId, this.userId, action);
-			return API.v1.success();
-		} catch (error) {
-			return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
-		}
-	},
-);
-
-type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> & ExtractRoutesFromAPI<typeof roomInviteEndpoints>;
+			try {
+				await FederationMatrix.handleInvite(roomId, this.userId, action);
+				return API.v1.success();
+			} catch (error) {
+				return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
+			}
+		},
+	);
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends RoomEndpoints {}
+	interface Endpoints extends ExtractRoutesFromAPI<typeof roomEndpoints> {}
 }

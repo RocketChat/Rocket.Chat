@@ -1,8 +1,84 @@
-import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage, ITeam, ISubscription } from '@rocket.chat/core-typings';
+import {
+	type IMessage,
+	type IRoom,
+	type IUser,
+	type RoomAdminFieldsType,
+	type IUpload,
+	type IE2EEMessage,
+	type ITeam,
+	type ISubscription,
+	IRoleSchema,
+	IRoomSchema,
+} from '@rocket.chat/core-typings';
+import * as z from 'zod';
 
-import { ajv } from './Ajv';
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../helpers/PaginatedResult';
+import { ajv, SuccessResponseSchema } from './Ajv';
+import { PaginatedRequestSchema, type PaginatedRequest } from '../helpers/PaginatedRequest';
+import { PaginatedResultSchema, type PaginatedResult } from '../helpers/PaginatedResult';
+
+export const GETRoomsRolesQuerySchema = z.object({
+	rid: z.string(),
+});
+
+export const GETRoomsRolesResponseSchema = SuccessResponseSchema.extend({
+	roles: z.array(
+		z.object({
+			rid: z.string(),
+			u: z.object({
+				_id: z.string(),
+				username: z.string(),
+			}),
+			roles: z.array(IRoleSchema.shape._id),
+		}),
+	),
+});
+
+export const GETRoomsAdminRoomsPrivateRoomsQuerySchema = z
+	.object({
+		filter: z.string().optional(),
+	})
+	.and(PaginatedRequestSchema);
+
+export const GETRoomsAdminRoomsPrivateRoomsResponseSchema = SuccessResponseSchema.extend({
+	rooms: z.array(
+		IRoomSchema.pick({
+			_id: true,
+			prid: true,
+			fname: true,
+			name: true,
+			t: true,
+			cl: true,
+			u: true,
+			usernames: true,
+			ts: true,
+			usersCount: true,
+			muted: true,
+			unmuted: true,
+			ro: true,
+			reactWhenReadOnly: true,
+			default: true,
+			favorite: true,
+			featured: true,
+			topic: true,
+			msgs: true,
+			archived: true,
+			teamId: true,
+			teamMain: true,
+			announcement: true,
+			description: true,
+			broadcast: true,
+			uids: true,
+			avatarETag: true,
+			federated: true,
+			abacAttributes: true,
+		}),
+	),
+}).and(PaginatedResultSchema);
+
+export const POSTRoomsInviteBodySchema = z.object({
+	roomId: z.string(),
+	action: z.enum(['accept', 'reject']),
+});
 
 type RoomsAutoCompleteChannelAndPrivateProps = { selector: string };
 
@@ -688,29 +764,6 @@ const roomsHideSchema = {
 
 export const isRoomsHideProps = ajv.compile<RoomsHideProps>(roomsHideSchema);
 
-type RoomsInviteProps = {
-	roomId: string;
-	action: 'accept' | 'reject';
-};
-
-const roomsInvitePropsSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-			minLength: 1,
-		},
-		action: {
-			type: 'string',
-			enum: ['accept', 'reject'],
-		},
-	},
-	required: ['roomId', 'action'],
-	additionalProperties: false,
-};
-
-export const isRoomsInviteProps = ajv.compile<RoomsInviteProps>(roomsInvitePropsSchema);
-
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
@@ -876,9 +929,5 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.hide': {
 		POST: (params: RoomsHideProps) => void;
-	};
-
-	'/v1/rooms.invite': {
-		POST: (params: RoomsInviteProps) => void;
 	};
 };
