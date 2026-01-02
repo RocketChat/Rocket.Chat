@@ -215,6 +215,7 @@ export * from './v1/customUserStatus';
 export * from './v1/subscriptionsEndpoints';
 export * from './v1/mailer';
 export * from './v1/oauth-apps';
+export * from './v1/permissions';
 export * from './v1/mailer/MailerParamsPOST';
 export * from './v1/mailer/MailerUnsubscribeParamsPOST';
 export * from './v1/misc';
