@@ -53,6 +53,7 @@ const RoomCallSection = ({ showChat, onToggleChat }: { showChat: boolean; onTogg
 		// getRemoteStream,
 		getRemoteVideoStream,
 		toggleScreenSharing,
+		getLocalVideoStream,
 	} = useMediaCallContext();
 
 	// const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
@@ -64,8 +65,14 @@ const RoomCallSection = ({ showChat, onToggleChat }: { showChat: boolean; onTogg
 	const reconnecting = connectionState === 'RECONNECTING';
 
 	const remoteVideoStream = getRemoteVideoStream();
+	const localVideoStreamWrapper = getLocalVideoStream();
+	const localVideoStream = localVideoStreamWrapper?.stream ?? null;
+
+	console.log('localVideoStream', localVideoStream);
+	console.log('remoteVideoStream', remoteVideoStream);
 
 	const [remoteStreamRefCallback] = useMediaStream(remoteVideoStream);
+	const [localStreamRefCallback] = useMediaStream(localVideoStream);
 
 	const onVideoPlaying = useRoomView();
 
@@ -80,6 +87,7 @@ const RoomCallSection = ({ showChat, onToggleChat }: { showChat: boolean; onTogg
 		// throw new Error('Peer info is required');
 	}
 
+	// TODO: Video element arrangement and "pinning"
 	return (
 		<Box
 			w='full'
@@ -105,6 +113,18 @@ const RoomCallSection = ({ showChat, onToggleChat }: { showChat: boolean; onTogg
 						style={{ height: '100%', width: '100%', objectFit: 'contain' }}
 						ref={remoteStreamRefCallback}
 						onPlaying={onVideoPlaying}
+					>
+						<track kind='captions' />
+					</video>
+				</Box>
+			)}
+			{localVideoStream?.active && (
+				<Box flexGrow={1} flexShrink={1} overflow='hidden' alignItems='center' justifyContent='center' pb={8} pi={8}>
+					<video
+						preload='metadata'
+						style={{ height: '100%', width: '100%', objectFit: 'contain' }}
+						ref={localStreamRefCallback}
+						// onPlaying={onVideoPlaying} // TODO: We might need to wait for both videos to be playing before closing the widget
 					>
 						<track kind='captions' />
 					</video>
