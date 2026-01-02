@@ -1,5 +1,5 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
-import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
@@ -18,7 +18,9 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
-	ajv,
+	BadRequestErrorResponseSchema,
+	POSTUsersCreateTokenBodySchema,
+	POSTUsersCreateTokenResponseSchema,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -767,58 +769,10 @@ const usersEndpoints = API.v1.post(
 	'users.createToken',
 	{
 		authRequired: true,
-		body: ajv.compile<{ userId: string; secret: string }>({
-			type: 'object',
-			properties: {
-				userId: {
-					type: 'string',
-					minLength: 1,
-				},
-				secret: {
-					type: 'string',
-					minLength: 1,
-				},
-			},
-			required: ['userId', 'secret'],
-			additionalProperties: false,
-		}),
+		body: POSTUsersCreateTokenBodySchema,
 		response: {
-			200: ajv.compile<{ data: { userId: string; authToken: string } }>({
-				type: 'object',
-				properties: {
-					data: {
-						type: 'object',
-						properties: {
-							userId: {
-								type: 'string',
-								minLength: 1,
-							},
-							authToken: {
-								type: 'string',
-								minLength: 1,
-							},
-						},
-						required: ['userId'],
-						additionalProperties: false,
-					},
-					success: {
-						type: 'boolean',
-						enum: [true],
-					},
-				},
-				required: ['data', 'success'],
-				additionalProperties: false,
-			}),
-			400: ajv.compile({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
+			200: POSTUsersCreateTokenResponseSchema,
+			400: BadRequestErrorResponseSchema,
 		},
 	},
 	async function action() {

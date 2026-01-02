@@ -1,6 +1,16 @@
-import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken, UserStatus } from '@rocket.chat/core-typings';
+import {
+	type IExportOperation,
+	type ISubscription,
+	type ITeam,
+	type IUser,
+	type IPersonalAccessToken,
+	type UserStatus,
+	IUserSchema,
+} from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
+import * as z from 'zod';
 
+import { SuccessResponseSchema } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
@@ -17,6 +27,18 @@ import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEm
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
 import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
 import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
+
+export const POSTUsersCreateTokenBodySchema = z.object({
+	userId: IUserSchema.shape._id,
+	secret: z.string(),
+});
+
+export const POSTUsersCreateTokenResponseSchema = SuccessResponseSchema.extend({
+	data: z.object({
+		userId: IUserSchema.shape._id,
+		authToken: z.string(),
+	}),
+});
 
 const ajv = new Ajv({
 	coerceTypes: true,
