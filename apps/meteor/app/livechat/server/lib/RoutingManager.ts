@@ -266,7 +266,12 @@ export const RoutingManager: Routing = {
 				inquiry,
 				options,
 			});
-			return cbRoom;
+
+			if (cbRoom && cbRoom.chatQueued) {
+				return cbRoom;
+			}
+
+			return;
 		}
 
 		const result = await LivechatInquiry.takeInquiry(_id, inquiry.lockedAt);
