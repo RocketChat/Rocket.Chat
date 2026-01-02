@@ -13,12 +13,24 @@ export const useContactRoute = () => {
 				return;
 			}
 
-			return navigate({
+			// TODO: Map out all the routes that use this hook and properly handle them
+			if (currentRouteName === 'omnichannel-directory' || currentRouteName === 'omnichannel-current-chats') {
+				return navigate({
+					name: currentRouteName,
+					params: {
+						...currentParams,
+						tab: 'contacts',
+						id: id || currentParams.id,
+						...params,
+					},
+				});
+			}
+
+			navigate({
 				name: currentRouteName,
 				params: {
 					...currentParams,
-					tab: 'contacts',
-					id: id || currentParams.id,
+					id: currentParams.id,
 					...params,
 				},
 			});
