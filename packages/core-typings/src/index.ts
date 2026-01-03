@@ -4,9 +4,6 @@ import './ServerAudit/IAuditServerAbacAction';
 
 export * from './ServerAudit/IAuditUserChangedEvent';
 export * from './Apps';
-export * from './AppOverview';
-export * from './FeaturedApps';
-export * from './AppRequests';
 export * from './MarketplaceRest';
 export * from './IRoom';
 export * from './IMessage';
@@ -125,7 +122,7 @@ export * from './ICalendarEvent';
 
 export * from './search';
 export * from './omnichannel';
-export * from './AppsTokens';
+export * from './IAppsTokens';
 export * from './ILivechatUnitMonitor';
 export * from './ICronHistoryItem';
 
