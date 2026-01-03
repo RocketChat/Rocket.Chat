@@ -7,18 +7,9 @@ import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLe
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
-
-export type RoomID = string;
-export type ChannelName = string;
-interface IRequestTranscript {
-	email: string; // the email address to send the transcript to
-	subject: string; // the subject of the email
-	requestedAt: Date;
-	requestedBy: Pick<IUser, '_id' | 'username' | 'name' | 'utcOffset'>;
-}
+import type { Branded } from './utils';
 
 export interface IRoom extends IRocketChatRecord {
-	_id: RoomID;
 	t: RoomType;
 	name?: string;
 	fname?: string;
@@ -100,10 +91,6 @@ export interface IRoomWithJoinCode extends IRoom {
 	joinCodeRequired: true;
 	joinCode: string;
 }
-
-declare const __brand: unique symbol;
-type Brand<B> = { [__brand]: B };
-export type Branded<T, B> = T & Brand<B>;
 
 export interface IRoomFederated extends IRoom {
 	_id: Branded<string, 'IRoomFederated'>;
@@ -208,7 +195,12 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	source: IOmnichannelSource;
 
 	// Note: this field is used only for email transcripts. For Pdf transcripts, we have a separate field.
-	transcriptRequest?: IRequestTranscript;
+	transcriptRequest?: {
+		email: string; // the email address to send the transcript to
+		subject: string; // the subject of the email
+		requestedAt: Date;
+		requestedBy: Pick<IUser, '_id' | 'username' | 'name' | 'utcOffset'>;
+	};
 
 	servedBy?: {
 		_id: string;
@@ -317,10 +309,6 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	autoTransferOngoing?: boolean;
 
 	verified?: boolean;
-}
-
-export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
-	source: IOmnichannelSourceFromApp;
 }
 
 export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> & {

@@ -50,3 +50,7 @@ export type DeepPartial<T> = {
 };
 
 export const isNotUndefined = <T>(value: T | undefined): value is T => value !== undefined;
+
+declare const __brand: unique symbol;
+type Brand<B> = { [__brand]: B };
+export type Branded<T, B> = T & Brand<B>;

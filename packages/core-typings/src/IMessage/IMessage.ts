@@ -8,7 +8,7 @@ import type { ILivechatPriority } from '../ILivechatPriority';
 import type { ILivechatVisitor } from '../ILivechatVisitor';
 import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { IRoom, RoomID } from '../IRoom';
+import type { IRoom } from '../IRoom';
 import type { IUser } from '../IUser';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
@@ -143,7 +143,7 @@ interface IEncryptedContentFederation extends IEncryptedContent {
 export type EncryptedContent = IEncryptedContentV1 | IEncryptedContentV2 | IEncryptedContentFederation;
 
 export interface IMessage extends IRocketChatRecord {
-	rid: RoomID;
+	rid: IRoom['_id'];
 	msg: string;
 	tmid?: string;
 	tshow?: boolean;
@@ -170,7 +170,7 @@ export interface IMessage extends IRocketChatRecord {
 	pinnedBy?: Pick<IUser, '_id' | 'username'>;
 	unread?: boolean;
 	temp?: boolean;
-	drid?: RoomID;
+	drid?: IRoom['_id'];
 	tlm?: Date;
 
 	dcount?: number;
@@ -385,7 +385,7 @@ export interface IOmnichannelSystemMessage extends IMessage {
 }
 
 export interface IMessageDiscussion extends IMessage {
-	drid: RoomID;
+	drid: IRoom['_id'];
 }
 
 export const isMessageDiscussion = (message: IMessage): message is IMessageDiscussion => {
