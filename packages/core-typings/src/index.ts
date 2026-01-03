@@ -112,7 +112,7 @@ export * from './ILivechatPriority';
 export * from './ILogs';
 export * from './IOmnichannelServiceLevelAgreements';
 
-export * from './IAutoTranslate';
+export * from './autoTranslate';
 export * from './IVideoConference';
 export * from './VideoConferenceCapabilities';
 export * from './VideoConferenceOptions';
