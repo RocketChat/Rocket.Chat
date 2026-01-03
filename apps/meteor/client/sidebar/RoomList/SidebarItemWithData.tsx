@@ -159,54 +159,53 @@ const keys: (keyof RoomListRowProps)[] = ['id', 'style', 't', 'videoConfActions'
 // });
 
 
+const keys: (keyof RoomListRowProps)[] = ['id', 'style', 't', 'videoConfActions'];
+
 // eslint-disable-next-line react/no-multi-comp
 export default memo(SidebarItemWithData, (prevProps, nextProps) => {
-    if (keys.some((key) => prevProps[key] !== nextProps[key])) {
-        return false;
-    }
+	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
+		return false;
+	}
 
-    if (prevProps.room === nextProps.room) {
-        return true;
-    }
+	if (prevProps.room === nextProps.room) {
+		return true;
+	}
 
-    if (prevProps.room._id !== nextProps.room._id) {
-        return false;
-    }
-
-    
-    // This ensures the sidebar re-renders when the avatar is updated
-    if (prevProps.room.avatarETag !== nextProps.room.avatarETag) {
-        return false;
-    }
-    
+	if (prevProps.room._id !== nextProps.room._id) {
+		return false;
+	}
 
 	if (prevProps.room.avatarETag !== nextProps.room.avatarETag) {
-        return false; // Tells React to re-render the sidebar item
-    }
+		return false;
+	}
 
-    if (prevProps.room._updatedAt?.toISOString() !== nextProps.room._updatedAt?.toISOString()) {
-        return false;
-    }
-    if (safeDateNotEqualCheck(prevProps.room.lastMessage?._updatedAt, nextProps.room.lastMessage?._updatedAt)) {
-        return false;
-    }
-    if (prevProps.room.alert !== nextProps.room.alert) {
-        return false;
-    }
-    if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room?.v?.status !== nextProps.room?.v?.status) {
-        return false;
-    }
-    if (prevProps.room.teamMain !== nextProps.room.teamMain) {
-        return false;
-    }
+	if (prevProps.room._updatedAt?.toISOString() !== nextProps.room._updatedAt?.toISOString()) {
+		return false;
+	}
 
-    if (
-        isOmnichannelRoom(prevProps.room) &&
-        isOmnichannelRoom(nextProps.room) &&
-        prevProps.room.priorityWeight !== nextProps.room.priorityWeight
-    ) {
-        return false;
-    }
+	if (safeDateNotEqualCheck(prevProps.room.lastMessage?._updatedAt, nextProps.room.lastMessage?._updatedAt)) {
+		return false;
+	}
 
-    return true;
+	if (prevProps.room.alert !== nextProps.room.alert) {
+		return false;
+	}
+
+	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room?.v?.status !== nextProps.room?.v?.status) {
+		return false;
+	}
+
+	if (prevProps.room.teamMain !== nextProps.room.teamMain) {
+		return false;
+	}
+
+	if (
+		isOmnichannelRoom(prevProps.room) &&
+		isOmnichannelRoom(nextProps.room) &&
+		prevProps.room.priorityWeight !== nextProps.room.priorityWeight
+	) {
+		return false;
+	}
+
+	return true;
 });
