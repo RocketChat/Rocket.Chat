@@ -31,23 +31,30 @@ export const useWorkspaceInfo = ({ refreshStatistics }: { refreshStatistics?: bo
 				placeholderData: keepPreviousData,
 			},
 			{
-				queryKey: ['info', 'instances'],
-				queryFn: () => getInstances(),
-				staleTime: Infinity,
-				placeholderData: keepPreviousData,
-				select(data: unknown) {
-					const { instances } = data as Serialized<{ instances: IInstance[] }>;
-					return instances.map((instance) => ({
+					queryKey: ['info', 'instances'],
+					queryFn: async () => {
+						try {
+						return await getInstances();
+						} catch (e) {
+						return { instances: [] };
+						}
+					},
+					staleTime: Infinity,
+					placeholderData: keepPreviousData,
+					select(data: unknown) {
+						const { instances } = data as Serialized<{ instances: IInstance[] }>;
+						return instances.map((instance) => ({
 						...instance,
 						...(instance.instanceRecord && {
 							instanceRecord: {
-								...instance.instanceRecord,
-								_createdAt: new Date(instance.instanceRecord._createdAt),
+							...instance.instanceRecord,
+							_createdAt: new Date(instance.instanceRecord._createdAt),
 							},
 						}),
-					})) as IInstance[];
-				},
-			},
+						})) as IInstance[];
+					},
+					},
+
 			{
 				queryKey: ['info', 'statistics'],
 				queryFn: () => getStatistics({ refresh: refreshStatistics ? 'true' : 'false' }),
