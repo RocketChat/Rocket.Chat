@@ -65,7 +65,6 @@
 		"Firefox ESR"
 	],
 	"dependencies": {
-		"@babel/plugin-syntax-nullish-coalescing-operator": "^7.8.3",
 		"@babel/runtime": "~7.28.4",
 		"@bugsnag/js": "~7.20.2",
 		"@bugsnag/plugin-react": "~7.19.0",

@@ -116,10 +116,8 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 			integrationData.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
 			integrationData.scriptError = undefined;
 		} catch (e) {
-			integrationData.scriptCompiled = undefined;
-			integrationData.scriptError = e instanceof Error ? _.pick(e, 'name', 'message', 'stack') : undefined;
-
-			// Surfacing the error to the UI to prevent saving a broken integration
+			// If compilation fails, we throw the error to notify the UI.
+			// This prevents the 'insertOne' below from ever executing.
 			throw new Meteor.Error(
 				'error-invalid-script',
 				`Compilation Error: ${e instanceof Error ? e.message : 'Unknown error'}`,
@@ -130,17 +128,17 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 	for await (let channel of channels) {
 		let record;
 		const channelType = channel[0];
-		channel = channel.substr(1);
+		const channelName = channel.substr(1);
 
 		switch (channelType) {
 			case '#':
 				record = await Rooms.findOne({
-					$or: [{ _id: channel }, { name: channel }],
+					$or: [{ _id: channelName }, { name: channelName }],
 				});
 				break;
 			case '@':
 				record = await Users.findOne({
-					$or: [{ _id: channel }, { username: channel }],
+					$or: [{ _id: channelName }, { username: channelName }],
 				});
 				break;
 		}

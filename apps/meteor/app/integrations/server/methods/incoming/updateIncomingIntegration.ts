@@ -73,6 +73,7 @@ export const updateIncomingIntegration = async (
 
 	const oldScriptEngine = currentIntegration.scriptEngine;
 	const scriptEngine = integration.scriptEngine ?? oldScriptEngine ?? 'isolated-vm';
+	
 	if (
 		integration.script?.trim() &&
 		(scriptEngine !== oldScriptEngine || integration.script?.trim() !== currentIntegration.script?.trim())
@@ -82,67 +83,44 @@ export const updateIncomingIntegration = async (
 		});
 	}
 
-const isFrozen = isScriptEngineFrozen(scriptEngine);
-
-if (!isFrozen) {
 	let scriptCompiled: string | undefined;
 	let scriptError: Pick<Error, 'name' | 'message' | 'stack'> | undefined;
+	const isFrozen = isScriptEngineFrozen(scriptEngine);
 
-	if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
+	if (!isFrozen && integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
 		try {
 			let babelOptions = Babel.getDefaultOptions({ runtime: false });
 			babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
 
 			scriptCompiled = Babel.compile(integration.script, babelOptions).code;
 			scriptError = undefined;
-
-			await Integrations.updateOne(
-				{ _id: integrationId },
-				{
-					$set: { scriptCompiled },
-					$unset: { scriptError: 1 as const },
-				},
-			);
 		} catch (e) {
 			scriptCompiled = undefined;
 			if (e instanceof Error) {
 				const { name, message, stack } = e;
 				scriptError = { name, message, stack };
 			}
-
-			await Integrations.updateOne(
-				{ _id: integrationId },
-				{
-					$set: { scriptError },
-					$unset: { scriptCompiled: 1 as const },
-				},
-			);
-
-			// This prevents the "silent failure" and notifies the user
+			
+			// We throw the error to notify the UI. Because we are using findOneAndUpdate 
+			// later, the error state is NOT persisted if we throw here, keeping the DB clean.
 			throw new Meteor.Error('error-invalid-script', `Compilation Error: ${e instanceof Error ? e.message : 'Unknown error'}`);
 		}
 	}
-}
-
-// The loop MUST stay outside the script processing logic
-for await (let channel of channels) {
-    // ... channel validation logic ...
-}
 
 	for await (let channel of channels) {
 		const channelType = channel[0];
-		channel = channel.slice(1);
+		const channelName = channel.slice(1);
 		let record;
 
 		switch (channelType) {
 			case '#':
 				record = await Rooms.findOne({
-					$or: [{ _id: channel }, { name: channel }],
+					$or: [{ _id: channelName }, { name: channelName }],
 				});
 				break;
 			case '@':
 				record = await Users.findOne({
-					$or: [{ _id: channel }, { username: channel }],
+					$or: [{ _id: channelName }, { username: channelName }],
 				});
 				break;
 		}
@@ -191,12 +169,18 @@ for await (let channel of channels) {
 							script: integration.script,
 							scriptEnabled: integration.scriptEnabled,
 							scriptEngine,
+							...(scriptCompiled && { scriptCompiled }),
+							...(scriptError && { scriptError }),
 						}),
 				...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
 					overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
 				}),
 				_updatedAt: new Date(),
 				_updatedBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
+			},
+			$unset: {
+				...(scriptCompiled ? { scriptError: 1 as const } : {}),
+				...(scriptError ? { scriptCompiled: 1 as const } : {}),
 			},
 		},
 		{ returnDocument: 'after' },
@@ -210,7 +194,6 @@ for await (let channel of channels) {
 };
 
 Meteor.methods<ServerMethods>({
-	// eslint-disable-next-line complexity
 	async updateIncomingIntegration(integrationId, integration) {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
