@@ -75,7 +75,6 @@ export * from './ILoginServiceConfiguration';
 export * from './ISocketConnection';
 export * from './IMethodConnection';
 export * from './IPassword';
-export * from './IBaseData';
 export * from './IOAuthApps';
 export * from './IOAuthAuthCode';
 export * from './IOAuthAccessToken';
