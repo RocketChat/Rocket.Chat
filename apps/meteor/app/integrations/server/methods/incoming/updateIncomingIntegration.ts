@@ -84,7 +84,6 @@ export const updateIncomingIntegration = async (
 	}
 
 	let scriptCompiled: string | undefined;
-	let scriptError: Pick<Error, 'name' | 'message' | 'stack'> | undefined;
 	const isFrozen = isScriptEngineFrozen(scriptEngine);
 
 	if (!isFrozen && integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
@@ -93,21 +92,14 @@ export const updateIncomingIntegration = async (
 			babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
 
 			scriptCompiled = Babel.compile(integration.script, babelOptions).code;
-			scriptError = undefined;
 		} catch (e) {
-			scriptCompiled = undefined;
-			if (e instanceof Error) {
-				const { name, message, stack } = e;
-				scriptError = { name, message, stack };
-			}
-			
-			// We throw the error to notify the UI. Because we are using findOneAndUpdate 
-			// later, the error state is NOT persisted if we throw here, keeping the DB clean.
+			// Throwing immediately notifies the UI. Since we exit before findOneAndUpdate,
+			// no broken state is persisted to the database.
 			throw new Meteor.Error('error-invalid-script', `Compilation Error: ${e instanceof Error ? e.message : 'Unknown error'}`);
 		}
 	}
 
-	for await (let channel of channels) {
+	for await (const channel of channels) {
 		const channelType = channel[0];
 		const channelName = channel.slice(1);
 		let record;
@@ -170,7 +162,6 @@ export const updateIncomingIntegration = async (
 							scriptEnabled: integration.scriptEnabled,
 							scriptEngine,
 							...(scriptCompiled && { scriptCompiled }),
-							...(scriptError && { scriptError }),
 						}),
 				...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
 					overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
@@ -179,8 +170,8 @@ export const updateIncomingIntegration = async (
 				_updatedBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
 			},
 			$unset: {
+				// Only unset scriptError on success. If compilation fails, we never reach this point.
 				...(scriptCompiled ? { scriptError: 1 as const } : {}),
-				...(scriptError ? { scriptCompiled: 1 as const } : {}),
 			},
 		},
 		{ returnDocument: 'after' },
@@ -197,7 +188,7 @@ Meteor.methods<ServerMethods>({
 	async updateIncomingIntegration(integrationId, integration) {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'updateOutgoingIntegration',
+				method: 'updateIncomingIntegration',
 			});
 		}
 

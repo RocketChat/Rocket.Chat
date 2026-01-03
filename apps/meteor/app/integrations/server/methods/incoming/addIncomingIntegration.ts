@@ -67,7 +67,7 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 	for (const channel of channels) {
 		if (!validChannelChars.includes(channel[0])) {
 			throw new Meteor.Error('error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', {
-				method: 'updateIncomingIntegration',
+				method: 'addIncomingIntegration',
 			});
 		}
 	}
@@ -102,7 +102,6 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		_createdBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
 	};
 
-	// Only compile the script if it is enabled and using a sandbox that is not frozen
 	if (
 		!isScriptEngineFrozen(integrationData.scriptEngine) &&
 		integration.scriptEnabled === true &&
@@ -114,10 +113,8 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 			babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
 
 			integrationData.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
-			integrationData.scriptError = undefined;
 		} catch (e) {
-			// If compilation fails, we throw the error to notify the UI.
-			// This prevents the 'insertOne' below from ever executing.
+			// Exit immediately on failure to prevent saving a broken integration.
 			throw new Meteor.Error(
 				'error-invalid-script',
 				`Compilation Error: ${e instanceof Error ? e.message : 'Unknown error'}`,
@@ -125,10 +122,10 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		}
 	}
 
-	for await (let channel of channels) {
+	for await (const channel of channels) {
 		let record;
 		const channelType = channel[0];
-		const channelName = channel.substr(1);
+		const channelName = channel.slice(1);
 
 		switch (channelType) {
 			case '#':
