@@ -8,7 +8,7 @@ import type { IUser } from './IUser';
  * There's no update method referencing reports as of now (6.3.0-develop).
  * This means that a possible user or room change will not be reflected in the report.
  */
-export interface IModerationInfo {
+interface IModerationInfo {
 	moderatedBy: IUser['_id'];
 	hiddenAt: Date;
 	action: string;

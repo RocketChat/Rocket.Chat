@@ -93,7 +93,7 @@ export * from './ILivechatMonitor';
 export * from './ILivechatTagRecord';
 export * from './ILivechatTrigger';
 export * from './ILivechatCustomField';
-export * from './IOmnichannel';
+export * from './OmnichannelSortingMechanismSettingType';
 export * from './ILivechatAgentActivity';
 export * from './ILivechatBusinessHour';
 export * from './ILivechatContact';
@@ -107,7 +107,7 @@ export * from './IOmnichannelAgent';
 export * from './OmichannelRoutingConfig';
 export * from './IInquiry';
 export * from './ILivechatPriority';
-export * from './ILogs';
+export * from './ILogItem';
 export * from './IOmnichannelServiceLevelAgreements';
 
 export * from './autoTranslate';

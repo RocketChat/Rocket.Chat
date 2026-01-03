@@ -5,7 +5,7 @@ export interface IRocketChatAssetConstraint {
 	height?: number;
 }
 
-export interface IRocketChatAssetWizard {
+interface IRocketChatAssetWizard {
 	step: number;
 	order: number;
 }
