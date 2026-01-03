@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
 import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues, ITeam } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
@@ -68,7 +68,7 @@ const isAbacManagedRoom = (room: IRoom): boolean => {
 
 const isAbacManagedTeam = (team: Partial<ITeam> | null, teamRoom: IRoom): boolean => {
 	return (
-		team?.type === TEAM_TYPE.PRIVATE &&
+		team?.type === TeamType.PRIVATE &&
 		settings.get<boolean>('ABAC_Enabled') &&
 		Array.isArray(teamRoom?.abacAttributes) &&
 		teamRoom.abacAttributes.length > 0
@@ -251,7 +251,7 @@ const settingSavers: RoomSettingsSavers = {
 
 		if (room.teamId && room.teamMain) {
 			void Team.update(user._id, room.teamId, {
-				type: room.t === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE,
+				type: room.t === 'c' ? TeamType.PUBLIC : TeamType.PRIVATE,
 				name: value,
 				updateRoom: false,
 			});
@@ -296,7 +296,7 @@ const settingSavers: RoomSettingsSavers = {
 		}
 
 		if (room.teamId && room.teamMain) {
-			const type = value === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE;
+			const type = value === 'c' ? TeamType.PUBLIC : TeamType.PRIVATE;
 			void Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
 	},
