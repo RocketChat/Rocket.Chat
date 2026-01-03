@@ -84,6 +84,16 @@ const RoomMessage = ({
 			data-qa-type='message'
 			aria-busy={message.temp}
 			{...props}
+			style={{
+				        ...props.style,
+						borderInlineStart: message.u._id === uid
+						? '4px solid var(--rc-color-primary-light)'
+						: undefined,
+						backgroundColor: message.u._id === uid
+						?  'color-mix(in srgb, var(--rc-color-primary) 3%, transparent)'
+						: undefined,
+					}}
+
 		>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && !selecting && showUserAvatar && (
