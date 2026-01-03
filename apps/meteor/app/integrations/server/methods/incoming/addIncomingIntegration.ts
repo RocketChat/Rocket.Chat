@@ -118,6 +118,12 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		} catch (e) {
 			integrationData.scriptCompiled = undefined;
 			integrationData.scriptError = e instanceof Error ? _.pick(e, 'name', 'message', 'stack') : undefined;
+
+			// Surfacing the error to the UI to prevent saving a broken integration
+			throw new Meteor.Error(
+				'error-invalid-script',
+				`Compilation Error: ${e instanceof Error ? e.message : 'Unknown error'}`,
+			);
 		}
 	}
 

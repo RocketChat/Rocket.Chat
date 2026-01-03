@@ -82,48 +82,52 @@ export const updateIncomingIntegration = async (
 		});
 	}
 
-	const isFrozen = isScriptEngineFrozen(scriptEngine);
+const isFrozen = isScriptEngineFrozen(scriptEngine);
 
-	if (!isFrozen) {
-		let scriptCompiled: string | undefined;
-		let scriptError: Pick<Error, 'name' | 'message' | 'stack'> | undefined;
+if (!isFrozen) {
+	let scriptCompiled: string | undefined;
+	let scriptError: Pick<Error, 'name' | 'message' | 'stack'> | undefined;
 
-		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
-			try {
-				let babelOptions = Babel.getDefaultOptions({ runtime: false });
-				babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
+	if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
+		try {
+			let babelOptions = Babel.getDefaultOptions({ runtime: false });
+			babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
 
-				scriptCompiled = Babel.compile(integration.script, babelOptions).code;
-				scriptError = undefined;
-				await Integrations.updateOne(
-					{ _id: integrationId },
-					{
-						$set: {
-							scriptCompiled,
-						},
-						$unset: { scriptError: 1 as const },
-					},
-				);
-			} catch (e) {
-				scriptCompiled = undefined;
-				if (e instanceof Error) {
-					const { name, message, stack } = e;
-					scriptError = { name, message, stack };
-				}
-				await Integrations.updateOne(
-					{ _id: integrationId },
-					{
-						$set: {
-							scriptError,
-						},
-						$unset: {
-							scriptCompiled: 1 as const,
-						},
-					},
-				);
+			scriptCompiled = Babel.compile(integration.script, babelOptions).code;
+			scriptError = undefined;
+
+			await Integrations.updateOne(
+				{ _id: integrationId },
+				{
+					$set: { scriptCompiled },
+					$unset: { scriptError: 1 as const },
+				},
+			);
+		} catch (e) {
+			scriptCompiled = undefined;
+			if (e instanceof Error) {
+				const { name, message, stack } = e;
+				scriptError = { name, message, stack };
 			}
+
+			await Integrations.updateOne(
+				{ _id: integrationId },
+				{
+					$set: { scriptError },
+					$unset: { scriptCompiled: 1 as const },
+				},
+			);
+
+			// This prevents the "silent failure" and notifies the user
+			throw new Meteor.Error('error-invalid-script', `Compilation Error: ${e instanceof Error ? e.message : 'Unknown error'}`);
 		}
 	}
+}
+
+// The loop MUST stay outside the script processing logic
+for await (let channel of channels) {
+    // ... channel validation logic ...
+}
 
 	for await (let channel of channels) {
 		const channelType = channel[0];
