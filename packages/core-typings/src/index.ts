@@ -102,7 +102,6 @@ export * from './ILivechatDepartmentAgents';
 export * from './ILivechatAgent';
 export * from './ILivechatDepartmentRecord';
 export * from './IOmnichannelCannedResponse';
-export * from './ILivechatMonitorRecord';
 export * from './ILivechatDepartment';
 export * from './IOmnichannelAgent';
 export * from './OmichannelRoutingConfig';
@@ -126,7 +125,7 @@ export * from './ILivechatUnitMonitor';
 export * from './ICronHistoryItem';
 
 export * from './migrations/IControl';
-export * from './ICustomOAuthConfig';
+export * from './OauthConfig';
 
 export * from './IModerationReport';
 export * from './CustomFieldMetadata';
