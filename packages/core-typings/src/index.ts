@@ -1,8 +1,5 @@
-import './ServerAudit/IAuditServerSettingEvent';
-import './ServerAudit/IAuditUserChangedEvent';
-import './ServerAudit/IAuditServerAbacAction';
+export * from './utils';
 
-export * from './ServerAudit/IAuditUserChangedEvent';
 export * from './Apps';
 export * from './IRoom';
 export * from './IMessage';
@@ -23,7 +20,6 @@ export * from './IWorkspaceInfo';
 export * from './IInstanceStatus';
 export * from './IWebdavAccount';
 export * from './IPermission';
-export * from './utils';
 export * from './IRole';
 export * from './IIntegration';
 export * from './IIntegrationHistory';
@@ -135,5 +131,6 @@ export * from './ICallHistoryItem';
 export * from './IAbacAttribute';
 export * from './Abac';
 export * from './ServerAudit/IAuditServerAbacAction';
+export * from './ServerAudit/IAuditUserChangedEvent';
 
 export { schemas } from './Ajv';

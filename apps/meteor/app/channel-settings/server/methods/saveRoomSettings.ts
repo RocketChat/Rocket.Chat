@@ -1,5 +1,5 @@
 import { Team } from '@rocket.chat/core-services';
-import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues, ITeam } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues, ITeam, RequiredField } from '@rocket.chat/core-typings';
 import { TeamType } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
@@ -236,7 +236,7 @@ const validators: RoomSettingsValidators = {
 type RoomSettingsSavers = {
 	[TRoomSetting in keyof RoomSettings]?: (params: {
 		userId: IUser['_id'];
-		user: IUser & Required<Pick<IUser, 'username' | 'name'>>;
+		user: RequiredField<IUser, 'username' | 'name'>;
 		value: RoomSettings[TRoomSetting];
 		room: IRoom;
 		rid: IRoom['_id'];
@@ -406,7 +406,7 @@ async function save<TRoomSetting extends keyof RoomSettings>(
 	setting: TRoomSetting,
 	params: {
 		userId: IUser['_id'];
-		user: IUser & Required<Pick<IUser, 'username' | 'name'>>;
+		user: RequiredField<IUser, 'username' | 'name'>;
 		value: RoomSettings[TRoomSetting];
 		room: IRoom;
 		rid: IRoom['_id'];
@@ -509,7 +509,7 @@ export async function saveRoomSettings(
 	for await (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
 		await save(setting, {
 			userId,
-			user: user as IUser & Required<Pick<IUser, 'username' | 'name'>>,
+			user: user as RequiredField<IUser, 'username' | 'name'>,
 			value: settings[setting],
 			room,
 			rid,
