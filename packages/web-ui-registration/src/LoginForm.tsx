@@ -161,7 +161,12 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								<FieldRow>
 									<TextInput
 										{...register('usernameOrEmail', {
-											required: t('Required_field', { field: t('registration.component.form.emailOrUsername') }),
+											validate: (value) => {
+												if (!value || !value.trim()) {
+													return t('Required_field', { field: t('registration.component.form.emailOrUsername')});
+												}
+												return true;
+											},
 										})}
 										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 										error={errors.usernameOrEmail?.message}
