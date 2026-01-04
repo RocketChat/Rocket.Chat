@@ -15,7 +15,7 @@ import { LivechatContacts, LivechatDepartmentAgents, LivechatVisitors, Users } f
 import { makeFunction } from '@rocket.chat/patch-injection';
 
 import { setUserStatusLivechat } from './utils';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { notifyOnLivechatDepartmentAgentChangedByDepartmentId } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { sendToCRM } from '../hooks/sendToCRM';
@@ -132,3 +132,9 @@ export const afterRoomQueued = makeFunction((room: IOmnichannelRoom) => {
 
 	return sendToCRM('LivechatSessionQueued', room);
 });
+
+export const beforeRouteChat = makeFunction(
+	async (inquiry: ILivechatInquiryRecord, _agent?: SelectedAgent | null): Promise<ILivechatInquiryRecord | null | undefined> => {
+		return inquiry;
+	},
+);

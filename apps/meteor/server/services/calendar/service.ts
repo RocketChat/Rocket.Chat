@@ -290,8 +290,13 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		if (user.status) {
-			await CalendarEvent.updateEvent(event._id, { previousStatus: user.status });
+		const overlappingEvents = await CalendarEvent.findOverlappingEvents(event._id, event.uid, event.startTime, event.endTime)
+			.sort({ startTime: -1 })
+			.toArray();
+		const previousStatus = overlappingEvents.at(0)?.previousStatus ?? user.status;
+
+		if (previousStatus) {
+			await CalendarEvent.updateEvent(event._id, { previousStatus });
 		}
 
 		await applyStatusChange({
@@ -350,6 +355,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			text: event.startTime.toLocaleTimeString(undefined, { hour: 'numeric', minute: 'numeric', dayPeriod: 'narrow' }),
 			payload: {
 				_id: event._id,
+				startTimeUtc: event.startTime.toISOString(),
 			},
 		});
 	}

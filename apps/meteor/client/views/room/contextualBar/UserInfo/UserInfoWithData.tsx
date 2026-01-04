@@ -1,12 +1,5 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import { useRolesDescription } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import UserInfoActions from './UserInfoActions';
-import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
@@ -15,46 +8,44 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useEndpoint, useRolesDescription } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type { ReactElement } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import UserInfoActions from './UserInfoActions';
+import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import { UserCardRole } from '../../../../components/UserCard';
 import { UserInfo } from '../../../../components/UserInfo';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { usersQueryKeys } from '../../../../lib/queryKeys';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
 
 type UserInfoWithDataProps = {
 	uid?: IUser['_id'];
 	username?: IUser['username'];
 	rid: IRoom['_id'];
+	invitationDate?: string;
 	onClose: () => void;
 	onClickBack?: () => void;
 };
 
-const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
+const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
 	const { t } = useTranslation();
 	const getRoles = useRolesDescription();
 
-	const {
-		value: data,
-		phase: state,
-		error,
-	} = useEndpointData('/v1/users.info', {
-		params: useMemo(() => {
-			if (uid) {
-				return { userId: uid };
-			}
-
-			if (username) {
-				return { username };
-			}
-
+	const getUserInfo = useEndpoint('GET', '/v1/users.info');
+	const { isPending, isError, data } = useQuery({
+		queryKey: usersQueryKeys.userInfo({ uid, username }),
+		queryFn: () => {
+			if (uid) return getUserInfo({ userId: uid });
+			if (username) return getUserInfo({ username });
 			throw new Error('userId or username is required');
-		}, [uid, username]),
+		},
 	});
-
-	const isLoading = state === AsyncStatePhase.LOADING;
 
 	const user = useMemo(() => {
 		if (!data?.user) {
@@ -75,6 +66,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			nickname,
 			createdAt,
 			canViewAllInfo,
+			freeSwitchExtension,
 		} = data.user;
 
 		return {
@@ -82,6 +74,9 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			name,
 			username,
 			lastLogin,
+			/**
+			 * TODO: We shouldn't use UserCard components outside UserCard
+			 */
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
@@ -94,6 +89,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			status: <ReactiveUserStatus uid={_id} />,
 			statusText,
 			nickname,
+			freeSwitchExtension,
 		};
 	}, [data, getRoles]);
 
@@ -106,19 +102,25 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 				{onClose && <ContextualbarClose onClick={onClose} />}
 			</ContextualbarHeader>
 
-			{isLoading && (
+			{isPending && (
 				<ContextualbarContent>
 					<FormSkeleton />
 				</ContextualbarContent>
 			)}
 
-			{error && !user && (
+			{isError && !user && (
 				<ContextualbarContent pb={16}>
 					<Callout type='danger'>{t('User_not_found')}</Callout>
 				</ContextualbarContent>
 			)}
 
-			{!isLoading && user && <UserInfo {...user} actions={<UserInfoActions user={user} rid={rid} backToList={onClickBack} />} />}
+			{!isPending && user && (
+				<UserInfo
+					{...user}
+					invitationDate={invitationDate}
+					actions={<UserInfoActions user={user} rid={rid} isInvited={Boolean(invitationDate)} backToList={onClickBack} />}
+				/>
+			)}
 		</ContextualbarDialog>
 	);
 };

@@ -1,5 +1,6 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { AccordionItem, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, Slider, ToggleSwitch } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useCustomSound, useTranslation } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -8,7 +9,7 @@ const PreferencesSoundSection = () => {
 	const t = useTranslation();
 
 	const customSound = useCustomSound();
-	const soundsList: SelectOption[] = customSound.list?.map((value) => [value._id, value.name]) || [];
+	const soundsList: SelectOption[] = customSound.list?.map((value) => [value._id, t(value.name as TranslationKey)]) || [];
 	const { control, watch } = useFormContext();
 	const { newMessageNotification, notificationsSoundVolume = 100, masterVolume = 100, voipRingerVolume = 100 } = watch();
 

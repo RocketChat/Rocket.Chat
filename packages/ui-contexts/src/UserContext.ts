@@ -24,10 +24,12 @@ export type Sort<TSchema extends Document = Document> = Exclude<MongoFindOptions
 export type FindOptions<TSchema extends Document = Document> = {
 	fields?: Fields<TSchema>;
 	sort?: Sort<TSchema>;
+	skip?: number;
+	limit?: number;
 };
 
 export type UserContextValue = {
-	userId: string | null;
+	userId: string | undefined;
 	user: IUser | null;
 	queryPreference: <T>(
 		key: string | ObjectId,
@@ -35,8 +37,6 @@ export type UserContextValue = {
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T | undefined];
 	querySubscription: (
 		query: Filter<Pick<ISubscription, 'rid' | 'name'>>,
-		fields?: MongoFindOptions<ISubscription>['projection'],
-		sort?: MongoFindOptions<ISubscription>['sort'],
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISubscription | undefined];
 	queryRoom: (
 		query: Filter<Pick<IRoom, '_id'>>,
@@ -52,7 +52,7 @@ export type UserContextValue = {
 };
 
 export const UserContext = createContext<UserContextValue>({
-	userId: null,
+	userId: undefined,
 	user: null,
 	queryPreference: () => [() => (): void => undefined, (): undefined => undefined],
 	querySubscription: () => [() => (): void => undefined, (): undefined => undefined],

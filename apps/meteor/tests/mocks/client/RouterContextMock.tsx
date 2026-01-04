@@ -86,6 +86,7 @@ const RouterContextMock = ({
 					getRouteParameters: () => routeParameters,
 					getSearchParameters: () => searchParameters,
 					getRouteName: () => 'home',
+					getPreviousRouteName: () => undefined,
 					buildRoutePath,
 					navigate:
 						navigate ??
@@ -113,11 +114,9 @@ const RouterContextMock = ({
 							}
 						}),
 					defineRoutes: () => () => undefined,
-					getRoutes: () => [],
-					subscribeToRoutesChange: () => () => undefined,
 					getRoomRoute: () => ({ path: '/' }),
 				};
-			}, [currentPath, navigate])}
+			}, [currentPath, navigate, routeParameters, searchParameters])}
 		>
 			{children}
 		</RouterContext.Provider>

@@ -5,7 +5,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import SelectSettingInput from './SelectSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/SelectSettingInput',
 	component: SelectSettingInput,
 	parameters: {
 		actions: {

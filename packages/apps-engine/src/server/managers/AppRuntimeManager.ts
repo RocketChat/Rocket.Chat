@@ -1,5 +1,6 @@
 import type { AppManager } from '../AppManager';
 import type { IParseAppPackageResult } from '../compiler';
+import type { IRuntimeController } from '../runtime/IRuntimeController';
 import { DenoRuntimeSubprocessController } from '../runtime/deno/AppsEngineDenoRuntime';
 import type { IAppStorageItem } from '../storage';
 
@@ -17,25 +18,38 @@ export type ExecRequestOptions = {
 	timeout?: number;
 };
 
-export class AppRuntimeManager {
-	private readonly subprocesses: Record<string, DenoRuntimeSubprocessController> = {};
+const defaultRuntimeFactory = (manager: AppManager, appPackage: IParseAppPackageResult, storageItem: IAppStorageItem) =>
+	new DenoRuntimeSubprocessController(manager, appPackage, storageItem);
 
-	constructor(private readonly manager: AppManager) {}
+export class AppRuntimeManager {
+	private readonly subprocesses: Record<string, IRuntimeController> = {};
+
+	constructor(
+		private readonly manager: AppManager,
+		private readonly runtimeFactory = defaultRuntimeFactory,
+	) {}
 
 	public async startRuntimeForApp(
 		appPackage: IParseAppPackageResult,
 		storageItem: IAppStorageItem,
 		options = { force: false },
-	): Promise<DenoRuntimeSubprocessController> {
+	): Promise<IRuntimeController> {
 		const { id: appId } = appPackage.info;
 
 		if (appId in this.subprocesses && !options.force) {
 			throw new Error('App already has an associated runtime');
 		}
 
-		this.subprocesses[appId] = new DenoRuntimeSubprocessController(this.manager, appPackage, storageItem);
+		this.subprocesses[appId] = this.runtimeFactory(this.manager, appPackage, storageItem);
 
-		await this.subprocesses[appId].setupApp();
+		try {
+			await this.subprocesses[appId].setupApp();
+		} catch (error) {
+			const subprocess = this.subprocesses[appId];
+			delete this.subprocesses[appId];
+			await subprocess.stopApp();
+			throw error;
+		}
 
 		return this.subprocesses[appId];
 	}
@@ -50,7 +64,7 @@ export class AppRuntimeManager {
 		return subprocess.sendRequest(execRequest);
 	}
 
-	public async stopRuntime(controller: DenoRuntimeSubprocessController): Promise<void> {
+	public async stopRuntime(controller: IRuntimeController): Promise<void> {
 		await controller.stopApp();
 
 		const appId = controller.getAppId();

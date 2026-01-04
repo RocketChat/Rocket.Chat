@@ -7,6 +7,7 @@ import type { ContextType, ReactElement, ReactNode } from 'react';
 import { useMemo } from 'react';
 
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
+import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { loginServices } from '../../lib/loginServices';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
@@ -25,6 +26,8 @@ const callLoginMethod = (
 	});
 };
 
+const getLoggingIn = () => Accounts.loggingIn();
+
 const AuthenticationProvider = ({ children }: AuthenticationProviderProps): ReactElement => {
 	const isLdapEnabled = useSetting('LDAP_Enable', false);
 	const isCrowdEnabled = useSetting('CROWD_Enable', false);
@@ -33,12 +36,17 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 
 	useLDAPAndCrowdCollisionWarning();
 
+	const isLoggingIn = useReactiveValue(getLoggingIn);
+
 	const contextValue = useMemo(
 		(): ContextType<typeof AuthenticationContext> => ({
-			loginWithToken: (token: string): Promise<void> =>
+			isLoggingIn,
+			loginWithToken: (token: string, callback): Promise<void> =>
 				new Promise((resolve, reject) =>
 					Meteor.loginWithToken(token, (err) => {
 						if (err) {
+							console.error(err);
+							callback?.(err);
 							return reject(err);
 						}
 						resolve(undefined);
@@ -114,13 +122,12 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 					Accounts._unstoreLoginToken = _unstoreLoginToken;
 				};
 			},
-
 			queryLoginServices: {
 				getCurrentValue: () => loginServices.getLoginServiceButtons(),
 				subscribe: (onStoreChange: () => void) => loginServices.on('changed', onStoreChange),
 			},
 		}),
-		[loginMethod],
+		[isLoggingIn, loginMethod],
 	);
 
 	return <AuthenticationContext.Provider children={children} value={contextValue} />;

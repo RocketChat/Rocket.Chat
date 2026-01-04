@@ -1,6 +1,8 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { MessageTypes } from '@rocket.chat/message-types';
+import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
 import type { ReactElement } from 'react';
@@ -8,9 +10,7 @@ import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
-import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
-import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
 import { BubbleDate } from '../../../BubbleDate';
 import { useJumpToMessageImperative } from '../../../MessageList/hooks/useJumpToMessage';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';

@@ -41,7 +41,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 
 	const appAddon = installed ? installedAddon : addon;
 
-	const workspaceHasAddon = useHasLicenseModule(appAddon);
+	const { data: workspaceHasAddon = false } = useHasLicenseModule(appAddon);
 
 	const openExternalLink = useExternalLink();
 

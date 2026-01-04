@@ -28,11 +28,6 @@ export const createGeneralSettings = () =>
 				enableQuery: { _id: 'API_Enable_CORS', value: true },
 			});
 
-			await this.add('API_Use_REST_For_DDP_Calls', true, {
-				type: 'boolean',
-				public: true,
-			});
-
 			// Should enforce the permission on next Major and remove this setting
 			await this.add('API_Apply_permission_view-outside-room_on_users-list', false, {
 				type: 'boolean',
@@ -264,10 +259,6 @@ export const createGeneralSettings = () =>
 				},
 			],
 			public: true,
-		});
-		await this.add('ECDH_Enabled', false, {
-			type: 'boolean',
-			alert: 'This_feature_is_currently_in_alpha',
 		});
 		await this.section('UTF8', async function () {
 			await this.add('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.]+', {

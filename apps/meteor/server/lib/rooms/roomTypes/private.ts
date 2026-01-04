@@ -1,10 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/server';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getPrivateRoomType } from '../../../../lib/rooms/roomTypes/private';
-import { Federation } from '../../../services/federation/Federation';
+import { isFederationEnabled } from '../../../services/federation/utils';
 import { roomCoordinator } from '../roomCoordinator';
 
 const PrivateRoomType = getPrivateRoomType(roomCoordinator);
@@ -12,7 +12,10 @@ const PrivateRoomType = getPrivateRoomType(roomCoordinator);
 roomCoordinator.add(PrivateRoomType, {
 	allowRoomSettingChange(room, setting) {
 		if (isRoomFederated(room)) {
-			return Federation.isRoomSettingAllowed(room, setting);
+			if (isRoomNativeFederated(room) && isFederationEnabled()) {
+				return true;
+			}
+			return false;
 		}
 		switch (setting) {
 			case RoomSettingsEnum.JOIN_CODE:
@@ -31,9 +34,12 @@ roomCoordinator.add(PrivateRoomType, {
 		}
 	},
 
-	async allowMemberAction(_room, action, userId) {
+	async allowMemberAction(_room, action, _userId) {
 		if (isRoomFederated(_room as IRoom)) {
-			return Federation.actionAllowed(_room, action, userId);
+			if (isRoomNativeFederated(_room) && isFederationEnabled()) {
+				return true;
+			}
+			return false;
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:

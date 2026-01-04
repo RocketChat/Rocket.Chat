@@ -9,7 +9,6 @@ import type {
 	IEmoji,
 	ICustomSound,
 	INotificationDesktop,
-	VoipEventDataSignature,
 	IUser,
 	IOmnichannelRoom,
 	VideoConference,
@@ -24,7 +23,9 @@ import type {
 	LicenseLimitKind,
 	ICustomUserStatus,
 	IWebdavAccount,
+	MessageAttachment,
 } from '@rocket.chat/core-typings';
+import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
@@ -56,7 +57,15 @@ export interface StreamerEvents {
 					users: string[];
 					ids?: string[]; // message ids have priority over ts
 					showDeletedStatus?: boolean;
-				},
+				} & (
+					| {
+							filesOnly: true;
+							replaceFileAttachmentsWith?: MessageAttachment;
+					  }
+					| {
+							filesOnly?: false;
+					  }
+				),
 			];
 		},
 		{ key: `${string}/deleteMessage`; args: [{ _id: IMessage['_id'] }] },
@@ -64,22 +73,6 @@ export interface StreamerEvents {
 		{ key: `${string}/videoconf`; args: [id: string] },
 		{ key: `${string}/messagesRead`; args: [{ until: Date; tmid?: string }] },
 		{ key: `${string}/messagesImported`; args: [null] },
-		{
-			key: `${string}/webrtc`;
-			args: [
-				type: 'status',
-				data: {
-					from?: string;
-					room?: string;
-					to?: string;
-					media: MediaStreamConstraints;
-					remoteConnections: {
-						id: string;
-						media: MediaStreamConstraints;
-					}[];
-				},
-			];
-		},
 		/* @deprecated over videoconf*/
 		// { key: `${string}/${string}`; args: [id: string] },
 	];
@@ -178,71 +171,16 @@ export interface StreamerEvents {
 		},
 		{ key: `${string}/e2ekeyRequest`; args: [string, string] },
 		{ key: `${string}/notification`; args: [INotificationDesktop] },
-		{ key: `${string}/voip.events`; args: [VoipEventDataSignature] },
 		{ key: `${string}/call.hangup`; args: [{ roomId: string }] },
 		{ key: `${string}/uiInteraction`; args: [UiKit.ServerInteraction] },
 		{
 			key: `${string}/video-conference`;
 			args: [{ action: string; params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] } }];
 		},
+		{ key: `${string}/media-signal`; args: [ServerMediaSignal] },
 		{ key: `${string}/userData`; args: [IUserDataEvent] },
 		{ key: `${string}/updateInvites`; args: [unknown] },
 		{ key: `${string}/departmentAgentData`; args: [unknown] },
-		{
-			key: `${string}/webrtc`;
-			args:
-				| [
-						type: 'candidate',
-						data: {
-							from?: string;
-							room?: string;
-							to?: string;
-							candidate: RTCIceCandidateInit;
-						},
-				  ]
-				| [
-						type: 'description',
-						data:
-							| {
-									from?: string;
-									room?: string;
-									to?: string;
-									type: 'offer';
-									ts: number;
-									media: MediaStreamConstraints;
-									description: RTCSessionDescriptionInit;
-							  }
-							| {
-									from?: string;
-									room?: string;
-									to?: string;
-									type: 'answer';
-									ts: number;
-									media?: undefined;
-									description: RTCSessionDescriptionInit;
-							  },
-				  ]
-				| [
-						type: 'join',
-						data: {
-							from?: string;
-							room?: string;
-							to?: string;
-							media?: MediaStreamConstraints;
-							monitor?: boolean;
-						},
-				  ];
-		},
-		{
-			key: `${string}/otr`;
-			args: [
-				'handshake' | 'acknowledge' | 'deny' | 'end',
-				{
-					roomId: IRoom['_id'];
-					userId: IUser['_id'];
-				},
-			];
-		},
 		{ key: `${string}/calendar`; args: [ICalendarNotification] },
 		{ key: `${string}/banners`; args: [IBanner] },
 	];
@@ -268,18 +206,6 @@ export interface StreamerEvents {
 		{ key: 'updateEmojiCustom'; args: [{ emojiData: IEmoji }] },
 		/* @deprecated */
 		{ key: 'new-banner'; args: [{ bannerId: string }] },
-
-		{
-			key: `${string}/otr`;
-			args: [
-				'handshake' | 'acknowledge' | 'deny' | 'end',
-				{
-					roomId: IRoom['_id'];
-					userId: IUser['_id'];
-				},
-			];
-		},
-		{ key: `${string}/webrtc`; args: [unknown] },
 
 		{ key: 'banner-changed'; args: [{ bannerId: string }] },
 		{
@@ -329,11 +255,8 @@ export interface StreamerEvents {
 			args: [{ username: IUser['username']; etag: IUser['avatarETag'] } | { rid: IRoom['_id']; etag: IRoom['avatarETag'] }];
 		},
 
-		{ key: 'voip.statuschanged'; args: [boolean] },
 		{ key: 'omnichannel.priority-changed'; args: [{ id: string; clientAction: ClientAction; name?: string }] },
 	];
-
-	'stdout': [{ key: 'stdout'; args: [{ id: string; string: string; ts: Date }] }];
 
 	'room-data': [{ key: string; args: [IOmnichannelRoom | Pick<IOmnichannelRoom, '_id'>] }];
 
@@ -341,29 +264,6 @@ export interface StreamerEvents {
 		{
 			key: `${string}/video-conference`;
 			args: [{ action: string; params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] } }];
-		},
-		{
-			key: `${string}/webrtc`;
-			args: [
-				type: 'call',
-				data: {
-					from?: string;
-					room?: string;
-					to?: string;
-					media: MediaStreamConstraints;
-					monitor?: boolean;
-				},
-			];
-		},
-		{
-			key: `${string}/otr`;
-			args: [
-				'handshake' | 'acknowledge' | 'deny' | 'end',
-				{
-					roomId: IRoom['_id'];
-					userId: IUser['_id'];
-				},
-			];
 		},
 		{ key: `${string}/userData`; args: unknown[] },
 	];

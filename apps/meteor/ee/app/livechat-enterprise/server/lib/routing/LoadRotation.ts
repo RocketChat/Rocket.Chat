@@ -5,6 +5,7 @@ import { RoutingManager } from '../../../../../../app/livechat/server/lib/Routin
 import { settings } from '../../../../../../app/settings/server';
 import type { IRoutingManagerConfig } from '../../../../../../definition/IRoutingManagerConfig';
 import { getChatLimitsQuery } from '../../hooks/applySimultaneousChatsRestrictions';
+import { logger } from '../logger';
 
 /* Load Rotation Queuing method:
  * Routing method where the agent with the oldest routing time is the next agent to serve incoming chats
@@ -31,6 +32,8 @@ class LoadRotation {
 	public async getNextAgent(department?: string, ignoreAgentId?: string): Promise<IOmnichannelCustomAgent | undefined> {
 		const extraQuery = await getChatLimitsQuery(department);
 		const unavailableUsers = await Users.getUnavailableAgents(department, extraQuery);
+		logger.debug({ msg: 'Ignoring unavailable agents from assignment', unavailableUsers, department });
+
 		const nextAgent = await Users.getLastAvailableAgentRouted(
 			department,
 			ignoreAgentId,

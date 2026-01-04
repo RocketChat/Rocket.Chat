@@ -1,7 +1,7 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import { CustomSounds } from '@rocket.chat/models';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -71,25 +71,7 @@ const customSoundsEndpoints = API.v1.get(
 					sounds: {
 						type: 'array',
 						items: {
-							type: 'object',
-							properties: {
-								_id: {
-									type: 'string',
-								},
-								name: {
-									type: 'string',
-								},
-								extension: {
-									type: 'string',
-								},
-								createdAt: {
-									type: 'string',
-								},
-								_updatedAt: {
-									type: 'object',
-								},
-							},
-							required: ['_id', 'name', 'extension', '_updatedAt'],
+							$ref: '#/components/schemas/ICustomSound',
 						},
 					},
 				},

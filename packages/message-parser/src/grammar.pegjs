@@ -33,6 +33,8 @@
     tasks,
     unorderedList,
     timestamp,
+    timestampFromHours,
+    timestampFromIsoTime,
   } = require('./utils');
 
 let skipBold = false;
@@ -74,12 +76,29 @@ Blockquote = b:BlockquoteLine+ { return quote(b); }
 BlockquoteLine = ">" [ \t]* @Paragraph
 
 // <t:1630360800:?{format}>
+// <t:2025-07-22T10:00:00.000Z?:?{format}>
+// <t:2025-07-22T10:00:00:?{format}>
+// <t:00:00:?{format}>
 
 TimestampType = "t" / "T" / "d" / "D" / "f" / "F" / "R"
 
 Unixtime = d:Digit |10| { return d.join(''); }
 
-Timestamp = "<t:" date:Unixtime ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:Unixtime ">" { return timestamp(date); }
+TimestampHoursMinutesSeconds = hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| tz:Timezone? { return timestampFromHours(hours.join(''), minutes.join(''), seconds.join(''), tz); }
+
+TimestampHoursMinutes = hours:Digit |2| ":" minutes:Digit|2| tz:Timezone? { return timestampFromHours(hours.join(''), minutes.join(''),undefined,  tz); }
+
+
+Timestamp = TimestampHoursMinutesSeconds / TimestampHoursMinutes
+
+Timezone = offset:('+'/'-') tzHour: Digit |2| ':' tzMinute: Digit |2| { return `${offset}${tzHour.join('')}:${tzMinute.join('')}`  }
+
+ISO8601Date = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "." milliseconds:Digit |3| tz:Timezone? { return timestampFromIsoTime({year: year.join(''), month: month.join(''), day: day.join(''), hours: hours.join(''), minutes: minutes.join(''), seconds: seconds.join(''), milliseconds: milliseconds.join(''), timezone: tz}) }
+
+ISO8601DateWithoutMilliseconds = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| tz:Timezone? { return timestampFromIsoTime({year: year.join(''), month: month.join(''), day: day.join(''), hours: hours.join(''), minutes: minutes.join(''), seconds: seconds.join(''), timezone: tz}) }
+
+
+TimestampRules = "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" { return timestamp(date); }
 
 /**
  *
@@ -230,7 +249,7 @@ InlineEmoji = & { return !skipInlineEmoji; } emo:Emoji { return emo; }
 InlineEmoticon = & { return !skipInlineEmoji; } emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { skipInlineEmoji = false; return emo; }
 
 InlineItemPattern = Whitespace
-  / Timestamp
+  / TimestampRules
   / MaybeReferences
   / AutolinkedPhone
   / AutolinkedEmail
@@ -494,7 +513,7 @@ BoldEmoticon = & { return !skipBoldEmoji; } emo:Emoticon & (EmoticonNeighbor / B
 /* Strike */
 Strikethrough = [\x7E] [\x7E] @StrikethroughContent [\x7E] [\x7E] / [\x7E] @StrikethroughContent [\x7E]
 
-StrikethroughContent = text:(Timestamp / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
+StrikethroughContent = text:(TimestampRules / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
       return strike(reducePlainTexts(text));
     }
 

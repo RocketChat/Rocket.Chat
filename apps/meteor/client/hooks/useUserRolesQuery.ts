@@ -1,5 +1,5 @@
 import type { IRole, IUser } from '@rocket.chat/core-typings';
-import { useMethod, useStream, useUserId } from '@rocket.chat/ui-contexts';
+import { useStream, useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -71,14 +71,14 @@ export const useUserRolesQuery = <TData = UserRoles[]>(options?: UseUserRolesQue
 		});
 	}, [enabled, queryClient, subscribeToNotifyLogged, uid]);
 
-	const getUserRoles = useMethod('getUserRoles');
+	const getUserRoles = useEndpoint('GET', '/v1/roles.getUsersInPublicRoles');
 
 	return useQuery({
 		queryKey: rolesQueryKeys.userRoles(),
 		queryFn: async () => {
-			const results = await getUserRoles();
+			const { users } = await getUserRoles();
 
-			return results.map(
+			return users.map(
 				(record): UserRoles => ({
 					uid: record._id,
 					roles: record.roles,

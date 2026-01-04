@@ -1,5 +1,5 @@
 import type { IUser, IRole, IRoom } from '@rocket.chat/core-typings';
-import { useMethod, useStream, useUserId } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
@@ -100,14 +100,16 @@ export const useRoomRolesQuery = <TData = RoomRoles[]>(rid: IRoom['_id'], option
 		});
 	}, [enabled, queryClient, rid, subscribeToNotifyLogged]);
 
-	const getRoomRoles = useMethod('getRoomRoles');
+	const getRoomRoles = useEndpoint('GET', '/v1/rooms.roles');
 
 	return useQuery({
 		queryKey: roomsQueryKeys.roles(rid),
 		queryFn: async () => {
-			const results = await getRoomRoles(rid);
+			const { roles } = await getRoomRoles({
+				rid,
+			});
 
-			return results.map(
+			return roles.map(
 				(record): RoomRoles => ({
 					rid: record.rid,
 					u: record.u,

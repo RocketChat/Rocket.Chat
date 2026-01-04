@@ -1,39 +1,42 @@
 {
 	"name": "@rocket.chat/models",
-	"version": "1.5.4",
+	"version": "2.0.0-rc.1",
 	"private": true,
-	"devDependencies": {
-		"@rocket.chat/jest-presets": "workspace:~",
-		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/jest": "~29.5.14",
-		"@types/node-rsa": "^1.1.4",
-		"eslint": "~8.45.0",
-		"jest": "~30.0.0",
-		"typescript": "~5.8.3"
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc",
+		"dev": "tsc --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit",
+		"unit": "jest"
 	},
 	"dependencies": {
 		"@rocket.chat/model-typings": "workspace:~",
 		"@rocket.chat/random": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/sha256": "workspace:^",
-		"@rocket.chat/string-helpers": "^0.31.25",
+		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/tracing": "workspace:^",
-		"moment": "^2.30.1",
+		"date-fns": "~4.1.0",
 		"node-rsa": "^1.1.1"
 	},
-	"scripts": {
-		"build": "rm -rf dist && tsc",
-		"dev": "tsc --watch --preserveWatchOutput",
-		"typecheck": "tsc --noEmit",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"test": "jest",
-		"unit": "jest",
-		"testunit": "jest"
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/jest": "~30.0.0",
+		"@types/node-rsa": "^1.1.4",
+		"eslint": "~8.45.0",
+		"jest": "~30.2.0",
+		"typescript": "~5.9.3"
 	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	]
+	"volta": {
+		"extends": "../../package.json"
+	}
 }

@@ -11,22 +11,22 @@ import {
 	MessageUsername,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPresence } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement, KeyboardEvent } from 'react';
+import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
+import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MessageTypes } from '../../../../app/ui-utils/client';
 import {
 	useIsSelecting,
 	useToggleSelect,
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import { useUserCard } from '../../../views/room/contexts/UserCardContext';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import {
@@ -59,6 +59,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
+	const buttonProps = useButtonPattern((e) => openUserCard(e, user.username));
 
 	return (
 		<MessageSystem
@@ -78,16 +79,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageNameContainer
-						tabIndex={0}
-						role='button'
-						onClick={(e) => user.username && openUserCard(e, user.username)}
-						onKeyDown={(e: KeyboardEvent<HTMLSpanElement>) => {
-							(e.code === 'Enter' || e.code === 'Space') && openUserCard(e, message.u.username);
-						}}
-						style={{ cursor: 'pointer' }}
-						{...triggerProps}
-					>
+					<MessageNameContainer style={{ cursor: 'pointer' }} {...buttonProps} {...triggerProps}>
 						<MessageSystemName>{displayName}</MessageSystemName>
 						{showUsername && (
 							<>
@@ -96,11 +88,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 							</>
 						)}
 					</MessageNameContainer>
-					{messageType && (
-						<MessageSystemBody data-qa-type='system-message-body'>
-							{t(messageType.message, messageType.data ? messageType.data(message) : {})}
-						</MessageSystemBody>
-					)}
+					{messageType && <MessageSystemBody data-qa-type='system-message-body'>{messageType.text(t, message)}</MessageSystemBody>}
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
 				{message.attachments && (

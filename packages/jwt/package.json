@@ -1,31 +1,31 @@
 {
 	"name": "@rocket.chat/jwt",
-	"version": "0.1.1",
+	"version": "0.2.0-rc.0",
 	"private": true,
-	"devDependencies": {
-		"@rocket.chat/jest-presets": "workspace:~",
-		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/jest": "~29.5.14",
-		"eslint": "~8.45.0",
-		"jest": "~30.0.0",
-		"typescript": "~5.8.3"
-	},
-	"scripts": {
-		"build": "rm -rf dist && tsc",
-		"dev": "tsc --watch --preserveWatchOutput",
-		"typecheck": "tsc --noEmit",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"test": "jest",
-		"testunit": "jest"
-	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
+	"scripts": {
+		"build": "rm -rf dist && tsc",
+		"dev": "tsc --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
 	"dependencies": {
 		"jose": "^4.15.9"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/jest": "~30.0.0",
+		"eslint": "~8.45.0",
+		"jest": "~30.2.0",
+		"typescript": "~5.9.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

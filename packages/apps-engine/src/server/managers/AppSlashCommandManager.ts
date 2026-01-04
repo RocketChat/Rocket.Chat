@@ -333,10 +333,12 @@ export class AppSlashCommandManager {
 
 		const app = this.manager.getOneById(this.touchedCommandsToApps.get(cmd));
 
-		if (!app || AppStatusUtils.isDisabled(await app.getStatus())) {
-			// Just in case someone decides to do something they shouldn't
-			// let's ensure the app actually exists
-			return;
+		if (!app) {
+			throw new Error('App not found');
+		}
+
+		if (!AppStatusUtils.isEnabled(await app.getStatus())) {
+			throw new Error('App not enabled');
 		}
 
 		const appCmd = this.retrieveCommandInfo(cmd, app.getID());

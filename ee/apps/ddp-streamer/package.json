@@ -1,19 +1,23 @@
 {
 	"name": "@rocket.chat/ddp-streamer",
+	"version": "0.3.47-rc.1",
 	"private": true,
-	"version": "0.3.25",
 	"description": "Rocket.Chat DDP-Streamer service",
-	"scripts": {
-		"build": "tsc -p tsconfig.json",
-		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"lint": "eslint src",
-		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
-	},
 	"keywords": [
 		"rocketchat"
 	],
 	"author": "Rocket.Chat",
+	"main": "./dist/service.js",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"lint": "eslint src",
+		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
+	},
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
@@ -24,43 +28,41 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/string-helpers": "~0.31.25",
+		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/tracing": "workspace:^",
 		"colorette": "^1.4.0",
 		"ejson": "^2.2.3",
-		"event-loop-stats": "^1.4.1",
 		"eventemitter3": "^5.0.1",
-		"gc-stats": "^1.4.1",
 		"jaeger-client": "^3.19.0",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.35",
-		"mongodb": "6.10.0",
+		"mongodb": "6.16.0",
 		"nats": "^2.28.2",
 		"pino": "^8.21.0",
 		"polka": "^0.5.2",
+		"prometheus-gc-stats": "^1.1.0",
 		"sharp": "^0.33.5",
 		"underscore": "^1.13.7",
 		"uuid": "^11.0.3",
-		"ws": "^8.18.0"
+		"ws": "~8.18.3"
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/ejson": "^2.2.2",
-		"@types/gc-stats": "^1.4.3",
-		"@types/node": "~22.14.0",
-		"@types/polka": "^0.5.7",
+		"@types/node": "~22.16.5",
+		"@types/polka": "^0.5.8",
+		"@types/prometheus-gc-stats": "^0.6.4",
 		"@types/underscore": "^1.13.0",
 		"@types/uuid": "^10.0.0",
 		"@types/ws": "^8.5.13",
 		"eslint": "~8.45.0",
 		"pino-pretty": "^7.6.1",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.3"
 	},
-	"main": "./dist/service.js",
-	"files": [
-		"/dist"
-	]
+	"volta": {
+		"extends": "../../../package.json"
+	}
 }

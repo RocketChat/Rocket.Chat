@@ -1,8 +1,7 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
-
-import GenericModal from '../../../../../../components/GenericModal';
 
 type SecondStepsProps = {
 	onClose: () => void;

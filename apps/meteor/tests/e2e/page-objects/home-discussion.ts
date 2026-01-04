@@ -1,20 +1,20 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
+import { HomeContent, HomeFlextab, Navbar } from './fragments';
 
 export class HomeDiscussion {
 	private readonly page: Page;
 
 	readonly content: HomeContent;
 
-	readonly sidenav: HomeSidenav;
+	readonly navbar: Navbar;
 
 	readonly tabs: HomeFlextab;
 
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
-		this.sidenav = new HomeSidenav(page);
+		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);
 	}
 

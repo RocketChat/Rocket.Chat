@@ -1,10 +1,9 @@
-import type { ComponentProps, ReactElement } from 'react';
-
+import type { UserStatusProps } from './UserStatus';
 import UserStatus from './UserStatus';
 
-type OfflineProps = Omit<ComponentProps<typeof UserStatus>, 'status'>;
+type OfflineProps = Omit<UserStatusProps, 'status'>;
 
-function Offline(props: OfflineProps): ReactElement {
+function Offline(props: OfflineProps) {
 	return <UserStatus status='offline' {...props} />;
 }
 

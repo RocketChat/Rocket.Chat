@@ -2,6 +2,7 @@ import { Media } from '@rocket.chat/core-services';
 import type { IEmojiCustom } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
 import { isEmojiCustomList } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -79,10 +80,18 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, query } = await this.parseJsonQuery();
+			const { name } = this.queryParams;
 
 			return API.v1.success(
 				await findEmojisCustom({
-					query,
+					query: name
+						? {
+								name: {
+									$regex: escapeRegExp(name),
+									$options: 'i',
+								},
+							}
+						: query,
 					pagination: {
 						offset,
 						count,

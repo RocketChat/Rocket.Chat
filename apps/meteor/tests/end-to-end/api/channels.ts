@@ -5,7 +5,7 @@ import { expect, assert } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, reservedWords } from '../../data/api-data';
-import { pinMessage, sendMessage, starMessage } from '../../data/chat.helper';
+import { pinMessage, sendMessage, starMessage, updateMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -460,26 +460,86 @@ describe('[Channels]', () => {
 			})
 			.end(done);
 	});
-	it('/channels.counters', (done) => {
-		void request
-			.get(api('channels.counters'))
-			.set(credentials)
-			.query({
-				roomId: channel._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('joined', true);
-				expect(res.body).to.have.property('members');
-				expect(res.body).to.have.property('unreads');
-				expect(res.body).to.have.property('unreadsFrom');
-				expect(res.body).to.have.property('msgs');
-				expect(res.body).to.have.property('latest');
-				expect(res.body).to.have.property('userMentions');
-			})
-			.end(done);
+
+	describe('/channels.counters', () => {
+		let room: IRoom;
+		let user1: IUser;
+		let user2: IUser;
+		let user1Creds: { 'X-Auth-Token': string; 'X-User-Id': string };
+
+		before(async () => {
+			// Create two users
+			user1 = await createUser();
+			user2 = await createUser();
+			user1Creds = await login(user1.username, password);
+
+			// Create a new public channel with both users as members
+			room = (
+				await createRoom({
+					type: 'c',
+					name: `counters-test-${Date.now()}`,
+					members: [user1.username as string, user2.username as string],
+				})
+			).body.channel;
+		});
+
+		after(async () => {
+			// Delete room first
+			await deleteRoom({ type: 'c', roomId: room._id });
+			// Then delete users
+			await Promise.all([deleteUser(user1), deleteUser(user2)]);
+		});
+
+		it('should require auth', async () => {
+			await request
+				.get(api('channels.counters'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should require a roomId', async () => {
+			await request
+				.get(api('channels.counters'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should return counters for a channel with correct fields', async () => {
+			await request
+				.get(api('channels.counters'))
+				.set(user1Creds)
+				.query({ roomId: room._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').that.is.a('number').and.equals(3);
+					expect(res.body).to.have.property('unreads').that.is.a('number');
+					expect(res.body).to.have.property('unreadsFrom');
+					expect(res.body).to.have.property('msgs').that.is.a('number');
+					expect(res.body).to.have.property('latest');
+					expect(res.body).to.have.property('joined', true);
+				});
+		});
+
+		it('should not include deactivated users in members count', async () => {
+			// Deactivate the second user
+			await request.post(api('users.setActiveStatus')).set(credentials).send({ userId: user2._id, activeStatus: false });
+
+			const res = await request.get(api('channels.counters')).set(user1Creds).query({ roomId: room._id });
+
+			expect(res.status).to.equal(200);
+			expect(res.body.success).to.be.true;
+			// Only user1 and admin remain active
+			expect(res.body.members).to.equal(2);
+		});
 	});
 
 	it('/channels.rename', async () => {
@@ -2777,6 +2837,87 @@ describe('[Channels]', () => {
 		});
 	});
 
+	describe('auto-join default channels', () => {
+		let defaultChannel1: IRoom;
+		let defaultChannel2: IRoom;
+		let nonDefaultChannel: IRoom;
+		let userWithJoin: TestUser<IUser>;
+		let userWithoutJoin: TestUser<IUser>;
+		let userWithJoinCredentials: Credentials;
+		let userWithoutJoinCredentials: Credentials;
+
+		before(async () => {
+			const timestamp = Date.now();
+			defaultChannel1 = (await createRoom({ type: 'c', name: `auto-join-default-1-${timestamp}` })).body.channel;
+			defaultChannel2 = (await createRoom({ type: 'c', name: `auto-join-default-2-${timestamp}` })).body.channel;
+			nonDefaultChannel = (await createRoom({ type: 'c', name: `auto-join-non-default-${timestamp}` })).body.channel;
+
+			await Promise.all([
+				request.post(api('channels.setDefault')).set(credentials).send({ roomId: defaultChannel1._id, default: true }).expect(200),
+				request.post(api('channels.setDefault')).set(credentials).send({ roomId: defaultChannel2._id, default: true }).expect(200),
+			]);
+
+			[userWithJoin, userWithoutJoin] = await Promise.all([
+				createUser({ joinDefaultChannels: true }),
+				createUser({ joinDefaultChannels: false }),
+			]);
+
+			[userWithJoinCredentials, userWithoutJoinCredentials] = await Promise.all([
+				login(userWithJoin.username, password),
+				login(userWithoutJoin.username, password),
+			]);
+		});
+
+		after(async () => {
+			await Promise.all([
+				deleteUser(userWithJoin),
+				deleteUser(userWithoutJoin),
+				deleteRoom({ type: 'c', roomId: defaultChannel1._id }),
+				deleteRoom({ type: 'c', roomId: defaultChannel2._id }),
+				deleteRoom({ type: 'c', roomId: nonDefaultChannel._id }),
+			]);
+		});
+
+		it('should automatically join new users to default channels when joinDefaultChannels is true', async () => {
+			const [subscription1Response, subscription2Response] = await Promise.all([
+				request.get(api('subscriptions.getOne')).set(userWithJoinCredentials).query({ roomId: defaultChannel1._id }).expect(200),
+				request.get(api('subscriptions.getOne')).set(userWithJoinCredentials).query({ roomId: defaultChannel2._id }).expect(200),
+			]);
+
+			expect(subscription1Response.body).to.have.property('success', true);
+			expect(subscription1Response.body).to.have.property('subscription').that.is.an('object');
+			expect(subscription1Response.body.subscription).to.have.property('rid', defaultChannel1._id);
+
+			expect(subscription2Response.body).to.have.property('success', true);
+			expect(subscription2Response.body).to.have.property('subscription').that.is.an('object');
+			expect(subscription2Response.body.subscription).to.have.property('rid', defaultChannel2._id);
+		});
+
+		it('should not auto-join new users to non-default channels', async () => {
+			const subscriptionResponse = await request
+				.get(api('subscriptions.getOne'))
+				.set(userWithJoinCredentials)
+				.query({ roomId: nonDefaultChannel._id })
+				.expect(200);
+
+			expect(subscriptionResponse.body).to.have.property('success', true);
+			expect(subscriptionResponse.body).to.have.property('subscription').that.is.null;
+		});
+
+		it('should not auto-join users when joinDefaultChannels is false', async () => {
+			const [subscription1Response, subscription2Response] = await Promise.all([
+				request.get(api('subscriptions.getOne')).set(userWithoutJoinCredentials).query({ roomId: defaultChannel1._id }).expect(200),
+				request.get(api('subscriptions.getOne')).set(userWithoutJoinCredentials).query({ roomId: defaultChannel2._id }).expect(200),
+			]);
+
+			expect(subscription1Response.body).to.have.property('success', true);
+			expect(subscription1Response.body).to.have.property('subscription').that.is.null;
+
+			expect(subscription2Response.body).to.have.property('success', true);
+			expect(subscription2Response.body).to.have.property('subscription').that.is.null;
+		});
+	});
+
 	describe('/channels.setType', () => {
 		let testChannel: IRoom;
 		const name = `setType-${Date.now()}`;
@@ -3443,10 +3584,10 @@ describe('[Channels]', () => {
 						roomId: testChannel._id,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(401)
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', false);
-						expect(res.body).to.have.a.property('error', 'Enable "Allow Anonymous Read" [error-not-allowed]');
+						expect(res.body).to.have.a.property('error', 'You must be logged in to do this.');
 					})
 					.end(done);
 			});
@@ -3805,6 +3946,7 @@ describe('[Channels]', () => {
 		let emptyChannel: IRoom;
 		let firstUser: IUser;
 		let secondUser: IUser;
+		let pinnedMessageId: IMessage['_id'];
 
 		before(async () => {
 			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
@@ -3841,6 +3983,7 @@ describe('[Channels]', () => {
 				starMessage({ messageId: starredMessage.body.message._id }),
 				pinMessage({ messageId: pinnedMessage.body.message._id }),
 			]);
+			pinnedMessageId = pinnedMessage.body.message._id;
 		});
 
 		after(async () => {
@@ -3982,6 +4125,79 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.property('count', 1);
 					expect(res.body).to.have.property('total', 1);
 				});
+		});
+
+		describe('_hidden messages behavior when Message_KeepHistory is enabled', async () => {
+			before(async () => {
+				await updateSetting('Message_KeepHistory', true);
+				await pinMessage({ messageId: pinnedMessageId, unpin: true });
+			});
+
+			after(async () => {
+				await updateSetting('Message_KeepHistory', false);
+			});
+
+			it('should return all messages, without any pinned messages', async () => {
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({ roomId: testChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages).to.have.lengthOf(5);
+
+						res.body.messages.forEach((msg: IMessage) => {
+							expect(msg).to.not.have.property('pinned', true);
+							expect(msg).to.not.have.property('_hidden');
+						});
+					});
+			});
+
+			it('should return no pinned messages', async () => {
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+						pinned: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.messages).to.have.lengthOf(0);
+						expect(res.body).to.have.property('count', 0);
+						expect(res.body).to.have.property('total', 0);
+					});
+			});
+
+			it('should not return old message when updating a message', async () => {
+				await updateMessage({ msgId: pinnedMessageId, updatedMessage: 'message was unpinned', roomId: testChannel._id });
+
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({ roomId: testChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages).to.have.lengthOf(5);
+
+						const updatedMessage = res.body.messages.find((msg: IMessage) => msg._id === pinnedMessageId);
+
+						expect(updatedMessage).to.have.property('msg', 'message was unpinned');
+						expect(updatedMessage).to.have.property('editedAt');
+
+						res.body.messages.forEach((msg: IMessage) => {
+							expect(msg).to.not.have.property('_hidden');
+						});
+					});
+			});
 		});
 
 		describe('Additional Visibility Tests', () => {

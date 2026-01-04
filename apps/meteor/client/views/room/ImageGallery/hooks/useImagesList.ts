@@ -3,9 +3,9 @@ import type { RoomsImagesProps } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useState } from 'react';
 
-import { e2e } from '../../../../../app/e2e/client/rocketchat.e2e';
 import { useScrollableRecordList } from '../../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
+import { e2e } from '../../../../lib/e2ee/rocketchat.e2e';
 import { ImagesList } from '../../../../lib/lists/ImagesList';
 
 export const useImagesList = (

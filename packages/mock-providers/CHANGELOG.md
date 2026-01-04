@@ -1,5 +1,565 @@
 # @rocket.chat/mock-providers
 
+## 0.4.7-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@26.0.0-rc.1
+  </details>
+
+## 0.4.7-rc.0
+
+### Patch Changes
+
+- ([#37654](https://github.com/RocketChat/Rocket.Chat/pull/37654)) Fixes an issue that could cause slashcommands to disappear for the user in certain high-availability scenarios
+
+- <details><summary>Updated dependencies [176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 2de4547580c472f4458568629d7bf98fd5faf342, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 0c0258604632342f42fc36cabac2d6cfe0e477c4, ac11ea05ffadeca978c794ff38d5199d9acb2c29, bd5edfc2993c93bd77f42dcd30d38b57eeb50481, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, 611e4cdfa04849416a58071646b853b95e9b817b, f056c451c2926e849f52b95fed957945398ef5f6]:</summary>
+
+  - @rocket.chat/i18n@2.0.0-rc.0
+  - @rocket.chat/ui-contexts@26.0.0-rc.0
+  </details>
+
+## 0.4.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.2
+  </details>
+
+## 0.4.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.1
+  </details>
+
+## 0.4.4
+
+### Patch Changes
+
+- ([#37477](https://github.com/RocketChat/Rocket.Chat/pull/37477)) Fixes an issue where leave room action is available for users without subscription
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 150efb9d3c1a72a16bb9fe5fc4fc97fc441172d0, 7f1b834a55b1240c226afde77713262da47f45dc, 99255057f27b9d854a89da815681a03d0776f846, 04f26855675e199e13d6f05dfdb97be90e89c7e8, 035e0c7c387d6c99703513c7c00bf37e86538b71, f771dd3669ebf8b2065b9faae045b8258e1312d9]:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0
+  - @rocket.chat/i18n@1.13.0
+  </details>
+
+## 0.4.4-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0-rc.2
+  </details>
+
+## 0.4.4-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0-rc.1
+  </details>
+
+## 0.4.4-rc.0
+
+### Patch Changes
+
+- ([#37477](https://github.com/RocketChat/Rocket.Chat/pull/37477)) Fixes an issue where leave room action is available for users without subscription
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 150efb9d3c1a72a16bb9fe5fc4fc97fc441172d0, 7f1b834a55b1240c226afde77713262da47f45dc, 99255057f27b9d854a89da815681a03d0776f846, 04f26855675e199e13d6f05dfdb97be90e89c7e8, 035e0c7c387d6c99703513c7c00bf37e86538b71, f771dd3669ebf8b2065b9faae045b8258e1312d9]:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0-rc.0
+  - @rocket.chat/i18n@1.13.0-rc.0
+  </details>
+
+## 0.4.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.2
+  </details>
+
+## 0.4.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.1
+  </details>
+
+## 0.4.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a25e88c06cafdbe3baf7a40e3bffe3aed5a81cf6, 74f2232bade0e5082097432b740e933a8960af54]:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0
+  - @rocket.chat/i18n@1.12.0
+  </details>
+
+## 0.4.1-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.4
+  </details>
+
+## 0.4.1-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.3
+  </details>
+
+## 0.4.1-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.2
+  </details>
+
+## 0.4.1-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.1
+  </details>
+
+## 0.4.1-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a25e88c06cafdbe3baf7a40e3bffe3aed5a81cf6, 74f2232bade0e5082097432b740e933a8960af54]:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.0
+  - @rocket.chat/i18n@1.12.0-rc.0
+  </details>
+
+## 0.4.0
+
+### Minor Changes
+
+- ([#36397](https://github.com/RocketChat/Rocket.Chat/pull/36397)) Introduces a new flow for requesting device permissions for Voice Calling, prompting the user before the request. Also solves a few issues with the device selection menu.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [752e6d41463a1d24e6478e9a815d096c61bcccd9, 3e177dbd0b65d70bce8587287ba73b30170eb0f7, dca0b3a44b0c780c0f2b3d78e87074599bc7d43c, d0467df80694fa1bac560085fa704a138872b3cb, 5af5203455a41e52dc2a9562d5f30708c7a5e6a5, e82cfaa98321338b86597506c8e872d9f81dc638, feba290fc403de27efb6bb9a571bec43413e976a, b0a4602a4461200b9872b2b073ec56fa55ecb466, 3cbb7da0d8db7f83cd8fa6f9e8f18182b97704f5, 3b2905b476d62817e551ca639600195ebe614c40, c6ef437d9071dbd8c08152984dc39542b1ae7306]:</summary>
+
+  - @rocket.chat/i18n@1.11.0
+  - @rocket.chat/ui-contexts@23.0.0
+  </details>
+
+## 0.4.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.7
+  </details>
+
+## 0.4.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.6
+  </details>
+
+## 0.4.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.5
+  </details>
+
+## 0.4.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.4
+  </details>
+
+## 0.4.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.3
+  </details>
+
+## 0.4.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@23.0.0-rc.2
+  </details>
+
+## 0.4.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.1
+  </details>
+
+## 0.4.0-rc.0
+
+### Minor Changes
+
+- ([#36397](https://github.com/RocketChat/Rocket.Chat/pull/36397)) Introduces a new flow for requesting device permissions for Voice Calling, prompting the user before the request. Also solves a few issues with the device selection menu.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [752e6d41463a1d24e6478e9a815d096c61bcccd9, 3e177dbd0b65d70bce8587287ba73b30170eb0f7, dca0b3a44b0c780c0f2b3d78e87074599bc7d43c, d0467df80694fa1bac560085fa704a138872b3cb, 5af5203455a41e52dc2a9562d5f30708c7a5e6a5, e82cfaa98321338b86597506c8e872d9f81dc638, feba290fc403de27efb6bb9a571bec43413e976a, b0a4602a4461200b9872b2b073ec56fa55ecb466, 3cbb7da0d8db7f83cd8fa6f9e8f18182b97704f5, 3b2905b476d62817e551ca639600195ebe614c40, c6ef437d9071dbd8c08152984dc39542b1ae7306]:</summary>
+
+  - @rocket.chat/i18n@1.11.0-rc.0
+  - @rocket.chat/ui-contexts@23.0.0-rc.0
+  </details>
+
+## 0.3.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@22.0.2
+  </details>
+
+## 0.3.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@22.0.1
+  </details>
+
+## 0.3.0
+
+### Minor Changes
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [8942187a9b062be3aaac8fee4b576dcad467641e, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/i18n@1.10.0
+  - @rocket.chat/ui-contexts@22.0.0
+  </details>
+
+## 0.3.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@22.0.0-rc.6
+  </details>
+
+## 0.3.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@22.0.0-rc.5
+  </details>
+
+## 0.3.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@22.0.0-rc.4
+  </details>
+
+## 0.3.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@22.0.0-rc.3
+  </details>
+
+## 0.3.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@22.0.0-rc.2
+  </details>
+
+## 0.3.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@22.0.0-rc.1
+  </details>
+
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [8942187a9b062be3aaac8fee4b576dcad467641e, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/i18n@1.10.0-rc.0
+  - @rocket.chat/ui-contexts@22.0.0-rc.0
+  </details>
+
+## 0.2.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@21.0.3
+  </details>
+
+## 0.2.14
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@21.0.2
+  </details>
+
+## 0.2.13
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/ui-contexts@21.0.1
+</details>
+
+## 0.2.12
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [adfc1acc06a693b9a1c09bcc660d3909da56b477, 3f000d7381b857eaefcc2a750a8fb64547bd0058, 0ba4d8bc18c6f2183f2fe32e8739d7455aab75e7, 170a413f1f12500e053580f01d43af65e515da42, 208fe33880e1b980fa275ed5be9b5fc0da20e267, 4ec3b92df6cb68072447b1931e89b7f4b92124f5]:</summary>
+
+  - @rocket.chat/i18n@1.9.0
+  - @rocket.chat/ui-contexts@21.0.0
+  </details>
+
+## 0.2.12-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@21.0.0-rc.2
+  </details>
+
+## 0.2.12-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@21.0.0-rc.1
+  </details>
+
+## 0.2.12-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [adfc1acc06a693b9a1c09bcc660d3909da56b477, 3f000d7381b857eaefcc2a750a8fb64547bd0058, 0ba4d8bc18c6f2183f2fe32e8739d7455aab75e7, 170a413f1f12500e053580f01d43af65e515da42, 208fe33880e1b980fa275ed5be9b5fc0da20e267, 4ec3b92df6cb68072447b1931e89b7f4b92124f5]:</summary>
+
+  - @rocket.chat/i18n@1.9.0-rc.0
+  - @rocket.chat/ui-contexts@21.0.0-rc.0
+
+## 0.2.11
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.3
+  </details>
+
+## 0.2.10
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.2
+  </details>
+
+## 0.2.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.1
+  </details>
+
+## 0.2.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [8033bdb1f611eb8954a2626aca2583a285a94b27, c77056f1d5d7269d9fb4bb16d86711b037ec547f, 3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
+
+  - @rocket.chat/i18n@1.8.0
+  - @rocket.chat/ui-contexts@20.0.0
+  </details>
+
+## 0.2.8-rc.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.9
+  </details>
+
+## 0.2.5-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.8
+  </details>
+
+## 0.2.5-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.7
+  </details>
+
+## 0.2.5-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.6
+  </details>
+
+## 0.2.5-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.5
+  </details>
+
+## 0.2.5-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.4
+  </details>
+
+## 0.2.5-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.3
+  </details>
+
+## 0.2.5-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.2
+  </details>
+
+## 0.2.5-rc.1
+
+## 0.2.8-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@20.0.0-rc.1
+  </details>
+
+## 0.2.5-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [8033bdb1f611eb8954a2626aca2583a285a94b27, c77056f1d5d7269d9fb4bb16d86711b037ec547f, 3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
+
+  - @rocket.chat/i18n@1.8.0-rc.0
+  - @rocket.chat/ui-contexts@20.0.0-rc.0
+
+  </details>
+
+## 0.2.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/ui-contexts@19.0.4
+  </details>
+
+## 0.2.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@19.0.3
+  </details>
+
+## 0.2.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@19.0.2
+
+  </details>
+
 ## 0.2.4
 
 ### Patch Changes

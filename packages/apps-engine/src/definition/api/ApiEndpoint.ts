@@ -30,7 +30,7 @@ export abstract class ApiEndpoint implements IApiEndpoint {
 	 * @param reponse
 	 */
 	protected json(response: IApiResponseJSON): IApiResponse {
-		if (!response?.headers['content-type']) {
+		if (!response?.headers?.['content-type']) {
 			response.headers = response.headers || {};
 			response.headers['content-type'] = 'application/json';
 		}

@@ -8,10 +8,10 @@ import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { beforeCreateUserCallback } from '../../../../lib/callbacks/beforeCreateUserCallback';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { beforeCreateUserCallback } from '../../../../server/lib/callbacks/beforeCreateUserCallback';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getMaxLoginTokens } from '../../../../server/lib/getMaxLoginTokens';
 import { i18n } from '../../../../server/lib/i18n';
@@ -204,7 +204,9 @@ const onCreateUserAsync = async function (options, user = {}) {
 	}
 
 	user.status = 'offline';
+
 	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
+	user.inactiveReason = settings.get('Accounts_ManuallyApproveNewUsers') && !user.active ? 'pending_approval' : undefined;
 
 	if (!user.name) {
 		if (options.profile) {
@@ -292,7 +294,7 @@ Accounts.insertUserDoc = async function (options, user) {
 
 	delete user.globalRoles;
 
-	if (user.services && !user.services.password) {
+	if (user.services && !user.services.password && !options.skipAuthServiceDefaultRoles) {
 		const defaultAuthServiceRoles = parseCSV(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles') || '');
 
 		if (defaultAuthServiceRoles.length > 0) {
@@ -307,7 +309,11 @@ Accounts.insertUserDoc = async function (options, user) {
 		user.type = 'user';
 	}
 
-	if (settings.get('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In')) {
+	if (
+		settings.get('Accounts_TwoFactorAuthentication_Enabled') &&
+		settings.get('Accounts_TwoFactorAuthentication_By_Email_Enabled') &&
+		settings.get('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In')
+	) {
 		user.services = user.services || {};
 		user.services.email2fa = {
 			enabled: true,

@@ -1,6 +1,6 @@
 import type { IAppsEngineService } from '@rocket.chat/core-services';
 import { expect } from 'chai';
-import { describe, it, beforeEach, afterEach } from 'mocha';
+import { afterEach, beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -34,7 +34,9 @@ const serviceMocks = {
 	'../../lib/logger/system': { SystemLogger: { error: sinon.stub() } },
 };
 
-const { AppsEngineService } = proxyquire.noCallThru().load('../../../../../server/services/apps-engine/service', serviceMocks);
+const { AppsEngineService, AppsEngineNoNodesFoundError } = proxyquire
+	.noCallThru()
+	.load('../../../../../server/services/apps-engine/service', serviceMocks);
 
 describe('AppsEngineService', () => {
 	let service: IAppsEngineService;
@@ -160,43 +162,26 @@ describe('AppsEngineService', () => {
 			apiMock.nodeList.resolves([{ id: 'node1', local: true }]);
 			apiMock.call.resolves([{ name: 'apps-engine', nodes: ['node1'] }]);
 
-			await expect(service.getAppsStatusInNodes()).to.be.rejectedWith('Not enough Apps-Engine nodes in deployment');
-		});
-
-		it('should not call the service for the local node', async () => {
-			isRunningMsMock.returns(true);
-			apiMock.nodeList.resolves([{ id: 'node1', local: true }]);
-			apiMock.call
-				.onFirstCall()
-				.resolves([{ name: 'apps-engine', nodes: ['node1', 'node2'] }])
-				.onSecondCall()
-				.resolves([
-					{ status: 'enabled', appId: 'app1' },
-					{ status: 'enabled', appId: 'app2' },
-				])
-				.onThirdCall()
-				.rejects(new Error('Should not be called'));
-
-			const result = await service.getAppsStatusInNodes();
-
-			expect(result).to.deep.equal({
-				app1: [{ instanceId: 'node2', status: 'enabled' }],
-				app2: [{ instanceId: 'node2', status: 'enabled' }],
-			});
+			await expect(service.getAppsStatusInNodes()).to.be.rejectedWith(AppsEngineNoNodesFoundError);
 		});
 
 		it('should return status from all nodes', async () => {
 			isRunningMsMock.returns(true);
 			apiMock.nodeList.resolves([{ id: 'node1', local: true }]);
 			apiMock.call
-				.onFirstCall()
+				.onCall(0)
 				.resolves([{ name: 'apps-engine', nodes: ['node1', 'node2', 'node3'] }])
-				.onSecondCall()
+				.onCall(1)
 				.resolves([
 					{ status: 'enabled', appId: 'app1' },
 					{ status: 'enabled', appId: 'app2' },
 				])
-				.onThirdCall()
+				.onCall(2)
+				.resolves([
+					{ status: 'enabled', appId: 'app1' },
+					{ status: 'enabled', appId: 'app2' },
+				])
+				.onCall(3)
 				.resolves([
 					{ status: 'initialized', appId: 'app1' },
 					{ status: 'enabled', appId: 'app2' },
@@ -206,12 +191,14 @@ describe('AppsEngineService', () => {
 
 			expect(result).to.deep.equal({
 				app1: [
-					{ instanceId: 'node2', status: 'enabled' },
-					{ instanceId: 'node3', status: 'initialized' },
+					{ instanceId: 'node1', isLocal: true, status: 'enabled' },
+					{ instanceId: 'node2', isLocal: false, status: 'enabled' },
+					{ instanceId: 'node3', isLocal: false, status: 'initialized' },
 				],
 				app2: [
-					{ instanceId: 'node2', status: 'enabled' },
-					{ instanceId: 'node3', status: 'enabled' },
+					{ instanceId: 'node1', isLocal: true, status: 'enabled' },
+					{ instanceId: 'node2', isLocal: false, status: 'enabled' },
+					{ instanceId: 'node3', isLocal: false, status: 'enabled' },
 				],
 			});
 		});
@@ -223,6 +210,11 @@ describe('AppsEngineService', () => {
 				.onFirstCall()
 				.resolves([{ name: 'apps-engine', nodes: ['node1', 'node2'] }])
 				.onSecondCall()
+				.resolves([
+					{ status: 'enabled', appId: 'app1' },
+					{ status: 'enabled', appId: 'app2' },
+				])
+				.onThirdCall()
 				.resolves(undefined);
 
 			await expect(service.getAppsStatusInNodes()).to.be.rejectedWith('Failed to get apps status from node node2');

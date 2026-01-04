@@ -1,9 +1,10 @@
+import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { MemberListRouter } from '../../views/room';
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 export const useMembersListRoomAction = () => {
 	const room = useRoom();
@@ -11,8 +12,15 @@ export const useMembersListRoomAction = () => {
 	const team = !!room.teamMain;
 	const permittedToViewBroadcastMemberList = usePermission('view-broadcast-member-list', room._id);
 
+	const isFederated = room && isRoomFederated(room);
+	const isFederationBlocked = isFederated && !isRoomNativeFederated(room);
+
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (broadcast && !permittedToViewBroadcastMemberList) {
+			return undefined;
+		}
+
+		if (isFederationBlocked) {
 			return undefined;
 		}
 
@@ -24,5 +32,5 @@ export const useMembersListRoomAction = () => {
 			tabComponent: MemberListRouter,
 			order: 7,
 		};
-	}, [broadcast, permittedToViewBroadcastMemberList, team]);
+	}, [broadcast, permittedToViewBroadcastMemberList, team, isFederationBlocked]);
 };

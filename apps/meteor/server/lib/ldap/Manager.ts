@@ -18,8 +18,8 @@ import { ldapKeyExists } from './ldapKeyExists';
 import type { UserConverterOptions } from '../../../app/importer/server/classes/converters/UserConverter';
 import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
 import { settings } from '../../../app/settings/server';
-import { callbacks } from '../../../lib/callbacks';
 import { omit } from '../../../lib/utils/omit';
+import { callbacks } from '../callbacks';
 
 export class LDAPManager {
 	public static async login(username: string, password: string): Promise<LDAPLoginResult> {
@@ -167,6 +167,7 @@ export class LDAPManager {
 			flagEmailsAsVerified: settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts') ?? false,
 			skipExistingUsers: false,
 			skipUserCallbacks: false,
+			syncVoipExtension: Boolean(settings.get<string>('LDAP_Extension_Field')),
 		};
 	}
 
@@ -197,8 +198,13 @@ export class LDAPManager {
 				},
 			},
 			...(homeServer && {
-				username: `${username}:${homeServer}`,
+				username: `@${username}:${homeServer}`,
 				federated: true,
+				federation: {
+					version: 1,
+					mui: `@${username}:${homeServer}`,
+					origin: homeServer,
+				},
 			}),
 		};
 
@@ -485,7 +491,7 @@ export class LDAPManager {
 	}
 
 	protected static getFederationHomeServer(ldapUser: ILDAPEntry): string | undefined {
-		if (!settings.get<boolean>('Federation_Matrix_enabled')) {
+		if (!settings.get<boolean>('Federation_Service_Enabled')) {
 			return;
 		}
 
@@ -498,23 +504,12 @@ export class LDAPManager {
 
 		logger.debug({ msg: 'User has a federation home server', homeServer });
 
-		const localServer = settings.get<string>('Federation_Matrix_homeserver_domain');
+		const localServer = settings.get<string>('Federation_Service_Domain');
 		if (localServer === homeServer) {
 			return;
 		}
 
 		return homeServer;
-	}
-
-	protected static getFederatedUsername(ldapUser: ILDAPEntry, requestUsername: string): string {
-		const username = this.slugifyUsername(ldapUser, requestUsername);
-		const homeServer = this.getFederationHomeServer(ldapUser);
-
-		if (homeServer) {
-			return `${username}:${homeServer}`;
-		}
-
-		return username;
 	}
 
 	// This method will find existing users by LDAP id or by username.

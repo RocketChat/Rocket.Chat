@@ -99,6 +99,7 @@ export interface IStats {
 	enterpriseReady: boolean;
 	uploadsTotal: number;
 	uploadsTotalSize: number;
+	fileStoreType: string;
 	migration: {
 		_id?: string;
 		locked: boolean;
@@ -175,7 +176,6 @@ export interface IStats {
 		priorities?: number;
 		slas?: number;
 		businessUnits?: number;
-		omnichannelPdfTranscriptRequested?: number;
 		omnichannelPdfTranscriptSucceeded?: number;
 		omnichannelRoomsWithSlas?: number;
 		omnichannelRoomsWithPriorities?: number;
@@ -188,8 +188,6 @@ export interface IStats {
 		};
 	};
 	createdAt: Date | string;
-	totalOTR: number;
-	totalOTRRooms: number;
 	slashCommandsJitsi: number;
 	messageAuditApply: number;
 	messageAuditLoad: number;
@@ -270,4 +268,8 @@ export interface IStats {
 		totalUpsellViews: number;
 		totalUpsellClicks: number;
 	};
+	abacEnabled?: boolean;
+	abacTotalAttributes?: number;
+	abacTotalAttributeValues?: number;
+	abacRoomsEnrolled?: number;
 }

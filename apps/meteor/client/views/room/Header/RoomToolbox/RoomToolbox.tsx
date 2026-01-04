@@ -1,14 +1,12 @@
 import type { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { GenericMenu } from '@rocket.chat/ui-client';
+import { GenericMenu, HeaderToolbarAction, HeaderToolbarDivider } from '@rocket.chat/ui-client';
+import { useRoomToolbox, type RenderToolboxItemParams, type RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRoomToolboxActions } from './hooks/useRoomToolboxActions';
-import { HeaderToolbarAction, HeaderToolbarDivider } from '../../../../components/Header';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
-import type { RenderToolboxItemParams, RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
 
 type RoomToolboxProps = {
 	className?: ComponentProps<typeof Box>['className'];
@@ -23,17 +21,15 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const showKebabMenu = hiddenActions.length > 0;
 
 	const renderDefaultToolboxItem = useEffectEvent(
-		({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }: RenderToolboxItemParams) => {
+		({ id, className, icon, title, toolbox: { tab }, action, disabled, tooltip }: RenderToolboxItemParams) => {
 			return (
 				<HeaderToolbarAction
 					key={id}
 					className={className}
-					index={index}
-					id={id}
 					icon={icon}
 					title={t(title)}
 					pressed={id === tab?.id}
-					action={action}
+					onClick={action}
 					disabled={disabled}
 					tooltip={tooltip}
 				/>
@@ -41,12 +37,11 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 		},
 	);
 
-	const mapToToolboxItem = (action: RoomToolboxActionConfig, index: number) => {
+	const mapToToolboxItem = (action: RoomToolboxActionConfig) => {
 		return (action.renderToolboxItem ?? renderDefaultToolboxItem)?.({
 			...action,
 			action: action.action ?? (() => toolbox.openTab(action.id)),
 			className,
-			index,
 			toolbox,
 		});
 	};
@@ -56,7 +51,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 			{featuredActions.map(mapToToolboxItem)}
 			{featuredActions.length > 0 && <HeaderToolbarDivider />}
 			{visibleActions.map(mapToToolboxItem)}
-			{showKebabMenu && <GenericMenu title={t('Options')} data-qa-id='ToolBox-Menu' sections={hiddenActions} placement='bottom-end' />}
+			{showKebabMenu && <GenericMenu title={t('Options')} sections={hiddenActions} placement='bottom-end' />}
 		</>
 	);
 };

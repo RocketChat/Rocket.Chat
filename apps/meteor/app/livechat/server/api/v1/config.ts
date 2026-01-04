@@ -1,8 +1,10 @@
-import { isGETLivechatConfigParams } from '@rocket.chat/rest-typings';
+import { GETLivechatConfigRouting, isGETLivechatConfigParams } from '@rocket.chat/rest-typings';
 import mem from 'mem';
 
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { settings as serverSettings } from '../../../../settings/server';
+import { RoutingManager } from '../../lib/RoutingManager';
 import { online } from '../../lib/service-status';
 import { settings, findOpenRoom, getExtraConfigInfo, findAgent, findGuestWithoutActivity } from '../lib/livechat';
 
@@ -38,3 +40,25 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const livechatConfigEndpoints = API.v1.get(
+	'livechat/config/routing',
+	{
+		response: {
+			200: GETLivechatConfigRouting,
+		},
+		authRequired: true,
+	},
+	async function action() {
+		const config = RoutingManager.getConfig();
+
+		return API.v1.success({ config });
+	},
+);
+
+type LivechatConfigEndpoints = ExtractRoutesFromAPI<typeof livechatConfigEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends LivechatConfigEndpoints {}
+}

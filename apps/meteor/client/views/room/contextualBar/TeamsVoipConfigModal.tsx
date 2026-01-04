@@ -16,6 +16,7 @@ import {
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
+import { useId } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
@@ -31,25 +32,22 @@ type TeamsVoipConfigModalProps = {
 const TeamsVoipConfigModal = ({ onClose, onConfirm, isAdmin, hasModule }: TeamsVoipConfigModalProps): ReactElement => {
 	const { t } = useTranslation();
 	const openExternalLink = useExternalLink();
+	const teamsVoipConfigModalId = useId();
 
 	const getCalloutWarning = () => {
-		if (isAdmin && !hasModule) {
+		if (isAdmin) {
 			return t('Contact_sales_start_using_VoIP');
 		}
 
-		if (!isAdmin && !hasModule) {
-			return t('Contact_your_workspace_admin_to_start_using_VoIP');
-		}
-
-		return t('VoIP_available_setup_freeswitch_server_details');
+		return t('Contact_your_workspace_admin_to_start_using_VoIP');
 	};
 
 	return (
-		<Modal>
+		<Modal aria-labelledby={`${teamsVoipConfigModalId}-title`}>
 			<ModalHeader>
 				<ModalHeaderText>
 					<ModalTagline>{t('VoIP')}</ModalTagline>
-					<ModalTitle>{t('Team_voice_call')}</ModalTitle>
+					<ModalTitle id={`${teamsVoipConfigModalId}-title`}>{t('Team_voice_call')}</ModalTitle>
 				</ModalHeaderText>
 				<ModalClose title={t('Close')} onClick={onClose} />
 			</ModalHeader>
@@ -89,7 +87,7 @@ const TeamsVoipConfigModal = ({ onClose, onConfirm, isAdmin, hasModule }: TeamsV
 				<Box fontScale='h3' mbs={24}>
 					{t('Required_action')}
 				</Box>
-				<Callout mbs={12} mbe={24} title={!hasModule ? t('Subscription_add-on_required') : t('FreeSwitch_setup_required')} type='warning'>
+				<Callout mbs={12} mbe={24} title={t('Subscription_add-on_required')} type='warning'>
 					{getCalloutWarning()}
 				</Callout>
 			</ModalContent>

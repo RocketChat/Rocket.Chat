@@ -1,8 +1,7 @@
 import { Accordion, AccordionItem, Box, Button } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-
-import GenericModal from '../../../../components/GenericModal';
 
 type DisableE2EEModalProps = {
 	onConfirm: () => void;
@@ -24,6 +23,7 @@ const DisableE2EEModal = ({ onConfirm, onCancel, roomType, canResetRoomKey, onRe
 			onConfirm={onConfirm}
 			onCancel={onCancel}
 			onDismiss={() => undefined}
+			annotation={t('Proceed_with_caution')}
 		>
 			<Box mbe={16} is='p'>
 				<Trans i18nKey='E2E_disable_encryption_description' tOptions={{ roomType }} />

@@ -1,10 +1,10 @@
 import type { ITeam } from '@rocket.chat/core-typings';
+import { GenericModalSkeleton } from '@rocket.chat/ui-client';
 import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 
 import LeaveTeamModal from './LeaveTeamModal/LeaveTeamModal';
-import GenericModalSkeleton from '../../../../../components/GenericModal/GenericModalSkeleton';
 
 type LeaveTeamWithDataProps = {
 	teamId: ITeam['_id'];

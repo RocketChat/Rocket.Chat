@@ -20,6 +20,7 @@ describe('getBSONType', () => {
 describe('compareBSONValues', () => {
 	it('should work for the same types', () => {
 		expect(compareBSONValues(2, 3)).toBe(-1);
+		expect(compareBSONValues(2, 4)).toBe(-2);
 		expect(compareBSONValues('xyz', 'abc')).toBe(1);
 		expect(compareBSONValues({}, {})).toBe(0);
 		expect(compareBSONValues(true, false)).toBe(1);
@@ -30,5 +31,15 @@ describe('compareBSONValues', () => {
 		expect(compareBSONValues(2, null)).toBe(1);
 		expect(compareBSONValues('xyz', {})).toBe(-1);
 		expect(compareBSONValues(false, 3)).toBe(1);
+	});
+
+	it('should handle arrays', () => {
+		expect(compareBSONValues([1, 2], [1, 3])).toBe(-1);
+		expect(compareBSONValues([1, 2], [1, 2])).toBe(0);
+		expect(compareBSONValues([1, 2], [1, 2, 3])).toBe(-1);
+		expect(compareBSONValues([1, 2, 3], [1, 2])).toBe(1);
+		expect(compareBSONValues([], [])).toBe(0);
+		expect(compareBSONValues([10, 20, 30], [5, 15, 25])).toBe(5);
+		expect(compareBSONValues([5, 15, 25], [10, 20, 30])).toBe(-5);
 	});
 });

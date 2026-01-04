@@ -4,8 +4,7 @@ import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, Livechat
 import { makeFunction } from '@rocket.chat/patch-injection';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../../lib/callbacks';
-import { i18n } from '../../../../../server/lib/i18n';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
 import { getInitSettings } from '../../lib/settings';
 
@@ -80,7 +79,6 @@ export async function findOpenRoom(token: string, departmentId?: string, callerI
 			departmentId: 1,
 			servedBy: 1,
 			open: 1,
-			callStatus: 1,
 		},
 	};
 
@@ -146,21 +144,8 @@ export async function settings({ businessUnit = '', userId }: { businessUnit?: s
 			offlineColor: initSettings.Livechat_offline_title_color,
 			position: initSettings.Livechat_widget_position || 'right',
 			background: initSettings.Livechat_background,
+			hideExpandChat: initSettings.Livechat_hide_expand_chat,
 			actionLinks: {
-				webrtc: [
-					{
-						actionLinksAlignment: 'flex-start',
-						i18nLabel: 'Join_call',
-						label: i18n.t('Join_call'),
-						method_id: 'joinLivechatWebRTCCall',
-					},
-					{
-						i18nLabel: 'End_call',
-						label: i18n.t('End_call'),
-						method_id: 'endLivechatWebRTCCall',
-						danger: true,
-					},
-				],
 				jitsi: [
 					{ icon: 'icon-videocam', i18nLabel: 'Accept' },
 					{ icon: 'icon-cancel', i18nLabel: 'Decline' },

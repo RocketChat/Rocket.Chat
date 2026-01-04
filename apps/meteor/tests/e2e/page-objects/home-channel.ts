@@ -1,15 +1,15 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidebar, Sidepanel } from './fragments';
+import { HomeContent, HomeFlextab, Navbar, Sidepanel, RoomSidebar, ToastMessages } from './fragments';
+import { RoomToolbar } from './fragments/toolbar';
+import { VoiceCalls } from './fragments/voice-calls';
 
 export class HomeChannel {
 	public readonly page: Page;
 
 	readonly content: HomeContent;
 
-	readonly sidenav: HomeSidenav;
-
-	readonly sidebar: Sidebar;
+	readonly sidebar: RoomSidebar;
 
 	readonly sidepanel: Sidepanel;
 
@@ -17,28 +17,30 @@ export class HomeChannel {
 
 	readonly tabs: HomeFlextab;
 
+	readonly roomToolbar: RoomToolbar;
+
+	readonly voiceCalls: VoiceCalls;
+
+	readonly toastMessage: ToastMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
-		this.sidenav = new HomeSidenav(page);
-		this.sidebar = new Sidebar(page);
+		this.sidebar = new RoomSidebar(page);
 		this.sidepanel = new Sidepanel(page);
 		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);
+		this.roomToolbar = new RoomToolbar(page);
+		this.voiceCalls = new VoiceCalls(page);
+		this.toastMessage = new ToastMessages(page);
 	}
 
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
+	goto() {
+		return this.page.goto('/home');
 	}
 
 	get btnContextualbarClose(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
-	}
-
-	async dismissToast() {
-		// this is a workaround for when the toast is blocking the click of the button
-		await this.toastSuccess.locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
-		await this.page.mouse.move(0, 0);
 	}
 
 	get composer(): Locator {
@@ -62,7 +64,7 @@ export class HomeChannel {
 	}
 
 	get roomHeaderFavoriteBtn(): Locator {
-		return this.page.getByRole('button', { name: 'Favorite' });
+		return this.page.getByRole('main').getByRole('button', { name: 'Favorite' });
 	}
 
 	get readOnlyFooter(): Locator {
@@ -77,24 +79,12 @@ export class HomeChannel {
 		return this.page.locator('role=menuitem[name="Mark Unread"]');
 	}
 
-	get audioVideoConfRingtone(): Locator {
-		return this.page.locator('#custom-sound-ringtone');
-	}
-
-	get audioVideoConfDialtone(): Locator {
-		return this.page.locator('#custom-sound-dialtone');
-	}
-
 	get dialogEnterE2EEPassword(): Locator {
 		return this.page.getByRole('dialog', { name: 'Enter E2EE password' });
 	}
 
 	get dialogSaveE2EEPassword(): Locator {
-		return this.page.getByRole('dialog', { name: 'Save your encryption password' });
-	}
-
-	get btnSaveE2EEPassword(): Locator {
-		return this.dialogSaveE2EEPassword.getByRole('button', { name: 'Save E2EE password' });
+		return this.page.getByRole('dialog', { name: 'Save your new E2EE password' });
 	}
 
 	get btnRoomSaveE2EEPassword(): Locator {
@@ -109,20 +99,12 @@ export class HomeChannel {
 		return this.dialogSaveE2EEPassword.getByRole('button', { name: 'I saved my password' });
 	}
 
-	get btnEnterE2EEPassword(): Locator {
-		return this.dialogEnterE2EEPassword.getByRole('button', { name: 'Enter your E2E password' });
-	}
-
 	get bannerSaveEncryptionPassword(): Locator {
-		return this.page.getByRole('button', { name: 'Save your encryption password' });
+		return this.page.getByRole('button', { name: 'Save your new E2EE password' });
 	}
 
 	get bannerEnterE2EEPassword(): Locator {
 		return this.page.getByRole('button', { name: 'Enter your E2E password' });
-	}
-
-	get btnNotPossibleDecodeKey(): Locator {
-		return this.page.getByRole('button', { name: "Wasn't possible to decode your encryption key to be imported." });
 	}
 
 	get audioRecorder(): Locator {
@@ -135,5 +117,17 @@ export class HomeChannel {
 
 	get statusUploadIndicator(): Locator {
 		return this.page.getByRole('main').getByRole('status');
+	}
+
+	get homepageHeader(): Locator {
+		return this.page.locator('main').getByRole('heading', { name: 'Home' });
+	}
+
+	async waitForHome(): Promise<void> {
+		await this.homepageHeader.waitFor({ state: 'visible' });
+	}
+
+	async waitForRoomLoad(): Promise<void> {
+		await this.roomHeaderToolbar.waitFor({ state: 'visible' });
 	}
 }

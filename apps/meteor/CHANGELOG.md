@@ -1,5 +1,3622 @@
 # @rocket.chat/meteor
 
+## 8.0.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.1
+  - @rocket.chat/rest-typings@8.0.0-rc.1
+  - @rocket.chat/abac@0.1.0-rc.1
+  - @rocket.chat/federation-matrix@0.0.9-rc.1
+  - @rocket.chat/license@1.1.7-rc.1
+  - @rocket.chat/media-calls@0.2.0-rc.1
+  - @rocket.chat/omnichannel-services@0.3.44-rc.1
+  - @rocket.chat/pdf-worker@0.3.26-rc.1
+  - @rocket.chat/presence@0.2.47-rc.1
+  - @rocket.chat/api-client@0.2.47-rc.1
+  - @rocket.chat/apps@0.6.0-rc.1
+  - @rocket.chat/core-services@0.12.0-rc.1
+  - @rocket.chat/cron@0.1.47-rc.1
+  - @rocket.chat/fuselage-ui-kit@26.0.0-rc.1
+  - @rocket.chat/gazzodown@26.0.0-rc.1
+  - @rocket.chat/http-router@7.9.14-rc.1
+  - @rocket.chat/message-types@0.1.0-rc.0
+  - @rocket.chat/model-typings@2.0.0-rc.1
+  - @rocket.chat/ui-avatar@22.0.0-rc.1
+  - @rocket.chat/ui-client@26.0.0-rc.1
+  - @rocket.chat/ui-contexts@26.0.0-rc.1
+  - @rocket.chat/ui-voip@16.0.0-rc.1
+  - @rocket.chat/web-ui-registration@26.0.0-rc.1
+  - @rocket.chat/models@2.0.0-rc.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.26-rc.1
+  - @rocket.chat/omni-core-ee@0.0.12-rc.1
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@26.0.0-rc.1
+  - @rocket.chat/instance-status@0.1.47-rc.1
+  - @rocket.chat/omni-core@0.0.12-rc.1
+  </details>
+
+## 8.0.0-rc.0
+
+### Major Changes
+
+- ([#36829](https://github.com/RocketChat/Rocket.Chat/pull/36829)) Removes the deprecated sendConfirmationEmail method
+
+- ([#37460](https://github.com/RocketChat/Rocket.Chat/pull/37460)) Removes deprecated `livechat:removeUnit` method
+
+- ([#36836](https://github.com/RocketChat/Rocket.Chat/pull/36836)) Removes the deprecated livechat:getTagsList method
+
+  Removes the deprecated livechat:getUnitsFromUser method
+
+  Removes the deprecated livechat:getFirstRoomMessage method
+
+  Removes the deprecated livechat:getDepartmentForwardRestrictions method
+
+- ([#37672](https://github.com/RocketChat/Rocket.Chat/pull/37672)) Removes deprecated VoIP permissions
+
+- ([#36941](https://github.com/RocketChat/Rocket.Chat/pull/36941)) Makes Voice Calls enabled by default when available
+
+- ([#37672](https://github.com/RocketChat/Rocket.Chat/pull/37672)) Removes deprecated VoIP from Omnichannel
+
+- ([#37461](https://github.com/RocketChat/Rocket.Chat/pull/37461)) Removes deprecated `livechat:saveUnit` method
+
+- ([#36864](https://github.com/RocketChat/Rocket.Chat/pull/36864)) Removes the deprecated `authorization:removeUserFromRole` method
+
+- ([#36976](https://github.com/RocketChat/Rocket.Chat/pull/36976)) Promotes Timestamp Parser from preview state to stable
+
+- ([#37123](https://github.com/RocketChat/Rocket.Chat/pull/37123)) Removes ecdh functionality and related settings
+
+- ([#35436](https://github.com/RocketChat/Rocket.Chat/pull/35436) by [@blackmamba1231](https://github.com/blackmamba1231)) Removes deprecated `canAccessRoom` meteor method
+
+- ([#36925](https://github.com/RocketChat/Rocket.Chat/pull/36925)) Removes deprecated Realtime API method: `livechat:getAnalyticsChartData`
+
+- ([#37392](https://github.com/RocketChat/Rocket.Chat/pull/37392)) Removes deprecated `livechat:returnAsInquiry` method
+
+- ([#37390](https://github.com/RocketChat/Rocket.Chat/pull/37390)) Removes deprecated `removeCustomField` method
+
+- ([#37672](https://github.com/RocketChat/Rocket.Chat/pull/37672)) Removes Deprecated FreeSwitch integration
+
+- ([#36851](https://github.com/RocketChat/Rocket.Chat/pull/36851)) Removes the deprecated `getUserRoles` method in favor of the `/v1/roles.getUsersInPublicRoles` endpoint.
+
+- ([#37388](https://github.com/RocketChat/Rocket.Chat/pull/37388)) Removes deprecated `setAdminStatus` method
+
+- ([#35961](https://github.com/RocketChat/Rocket.Chat/pull/35961)) Removes support of MongoDB versions 5.x and 6.x
+
+- ([#36823](https://github.com/RocketChat/Rocket.Chat/pull/36823)) Removes deprecated meteor method `muteUserInRoom`
+
+- ([#36825](https://github.com/RocketChat/Rocket.Chat/pull/36825)) Removes the deprecated method `createToken`
+
+- ([#37022](https://github.com/RocketChat/Rocket.Chat/pull/37022)) Promotes Resizable Contextualbars from preview state to stable.
+
+- ([#36837](https://github.com/RocketChat/Rocket.Chat/pull/36837)) Removes the deprecated `setReaction` meteor method
+
+- ([#36824](https://github.com/RocketChat/Rocket.Chat/pull/36824)) Removes deprecated Realtime API method: `livechat:closeRoom`
+
+- ([#36832](https://github.com/RocketChat/Rocket.Chat/pull/36832)) Removes the deprecated `setCustomFields` method
+
+- ([#36931](https://github.com/RocketChat/Rocket.Chat/pull/36931)) Removes deprecated Realtime API method: `livechat:removeAllClosedRooms`
+
+- ([#36830](https://github.com/RocketChat/Rocket.Chat/pull/36830)) Removes the deprecated `getAvatarSuggestion` method
+
+- ([#37462](https://github.com/RocketChat/Rocket.Chat/pull/37462)) Removes deprecated `livechat:saveDepartment` method
+
+- ([#37397](https://github.com/RocketChat/Rocket.Chat/pull/37397)) Removes deprecated `livechat:setUpConnection` method
+
+- Removes the deprecated `getRoomRoles` method
+
+- Removes the deprecated `authorization:deleteRole` method
+
+- ([#37391](https://github.com/RocketChat/Rocket.Chat/pull/37391)) Removes deprecated `livechat:removeRoom` method
+
+- ([#36849](https://github.com/RocketChat/Rocket.Chat/pull/36849)) Removes deprecated `appId` parameter from the `oauth-apps.get` endpoint.
+
+- ([#37463](https://github.com/RocketChat/Rocket.Chat/pull/37463)) Removes deprecated `sendFileLivechatMessage` method
+
+- ([#32590](https://github.com/RocketChat/Rocket.Chat/pull/32590)) Removes the setting `API_Use_REST_For_DDP_Calls`. Turning this on meant websocket was only used for realtime data/events, and any other meteor method calls goes over method.call endpoint. For microservice deployments, this had to be turned on. Now method calls will always happen over http endpoints.
+
+- ([#36966](https://github.com/RocketChat/Rocket.Chat/pull/36966)) Promotes quick reactions from preview state to stable
+
+- ([#36821](https://github.com/RocketChat/Rocket.Chat/pull/36821)) Removes `/api/v1/banners.getnew` deprecated endpoint
+
+- ([#36871](https://github.com/RocketChat/Rocket.Chat/pull/36871)) Removes the `livechat:transfer` deprecated method
+  Removes the `livechat/room.transfer` deprecated endpoint
+  Creates the `livechat/visitor.department.transfer` for visitors department transfer use
+- ([#36924](https://github.com/RocketChat/Rocket.Chat/pull/36924)) Removes deprecated Realtime API method: `livechat:getRoutingConfig`
+
+- ([#36809](https://github.com/RocketChat/Rocket.Chat/pull/36809)) Removes deprecated Realtime API method: `livechat:changeLivechatStatus`
+
+- ([#36951](https://github.com/RocketChat/Rocket.Chat/pull/36951)) Removes the deprecated param `hideRoomsWithNoActivity` and adjust the api tests accordingly. Endpoint always returns rooms that are not empty.
+
+- ([#36838](https://github.com/RocketChat/Rocket.Chat/pull/36838)) Removes the deprecated `insertOrUpdateUser` meteor method
+
+- ([#37406](https://github.com/RocketChat/Rocket.Chat/pull/37406)) Removes deprecated `livechat:removeTag` method
+
+- ([#37810](https://github.com/RocketChat/Rocket.Chat/pull/37810)) Fixes role assignment precedence in SAML provisioning, ensuring that SAML-specific default roles take priority over global registration roles, and preventing role merging when both are configured.
+
+- ([#36831](https://github.com/RocketChat/Rocket.Chat/pull/36831)) Removes the deprecated setUsername method
+
+- ([#37446](https://github.com/RocketChat/Rocket.Chat/pull/37446)) Removes deprecated `removeCannedResponse` method
+
+- ([#37405](https://github.com/RocketChat/Rocket.Chat/pull/37405)) Removes deprecated `saveCannedResponse` method
+
+- ([#37396](https://github.com/RocketChat/Rocket.Chat/pull/37396)) Removes deprecated `livechat:sendTranscript` method
+
+- ([#36857](https://github.com/RocketChat/Rocket.Chat/pull/36857)) Removes the deprecated `/api/v1/rooms.upload` endpoint
+
+- ([#36908](https://github.com/RocketChat/Rocket.Chat/pull/36908)) Removes the deprecated livechat:resumeOnHold method
+
+- ([#36935](https://github.com/RocketChat/Rocket.Chat/pull/36935)) Removes `addUserToRole` and `removeUserFromRole` type declaration and deprecation logger
+
+- ([#37393](https://github.com/RocketChat/Rocket.Chat/pull/37393)) Removes deprecated `livechat:saveAgentInfo` method
+
+- ([#36907](https://github.com/RocketChat/Rocket.Chat/pull/36907)) Removes the deprecated `GET` Method from `/api/v1/apps`
+
+- ([#37114](https://github.com/RocketChat/Rocket.Chat/pull/37114)) Removes stdout logging functionality, related components and settings
+
+- ([#36647](https://github.com/RocketChat/Rocket.Chat/pull/36647)) Removes deprecated 'e2e.updateGroupKey' method and related type declarations
+
+- ([#37421](https://github.com/RocketChat/Rocket.Chat/pull/37421)) Removes deprecated `livechat:saveCustomField` method
+
+- ([#36896](https://github.com/RocketChat/Rocket.Chat/pull/36896)) Removes the deprecated roleName parameter from /api/v1/roles.addUserToRole and /api/v1/roles.removeUserFromRole
+
+  Removes the ability to pass a role name to the role parameter type from /api/v1/roles.getUsersInRole
+
+- ([#36828](https://github.com/RocketChat/Rocket.Chat/pull/36828)) Removes the deprecated `setUserPassword` method
+
+- ([#37285](https://github.com/RocketChat/Rocket.Chat/pull/37285)) Promotes Enhanced Navigation from preview state to stable.
+
+- ([#37464](https://github.com/RocketChat/Rocket.Chat/pull/37464)) Removes deprecated `livechat:takeInquiry` method
+
+- ([#36865](https://github.com/RocketChat/Rocket.Chat/pull/36865)) Removes the deprecated `authorization:addUserToRole` method
+
+### Minor Changes
+
+- ([#36570](https://github.com/RocketChat/Rocket.Chat/pull/36570)) REST endpoint `/v1/users.createToken` is not deprecated anymore. It now requires a `secret` parameter to generate a token for a user. This change is part of the effort to enhance security by ensuring that tokens are generated with an additional layer of validation. The `secret` parameter is validated against a new environment variable `CREATE_TOKENS_FOR_USERS_SECRET`.
+
+- ([#37719](https://github.com/RocketChat/Rocket.Chat/pull/37719)) Adds a new method to the Apps-Engine that allows apps to retrieve multiple rooms from database
+
+- ([#37659](https://github.com/RocketChat/Rocket.Chat/pull/37659)) Changes the position of the buttons in Unique ID change detected modal in order to highlight configuration update instead of new workspace
+
+- ([#37233](https://github.com/RocketChat/Rocket.Chat/pull/37233)) Validates attachment fields to require `title` and `value` properties on APIs `chat.postMessage` and `chat.sendMessage`.
+
+- ([#37224](https://github.com/RocketChat/Rocket.Chat/pull/37224)) Enhance user's deactivated state handling to correctly distinguish between pending and deactivated users.
+
+- ([#37091](https://github.com/RocketChat/Rocket.Chat/pull/37091)) Adds Attribute Based Access Control (ABAC) for private channels & private teams.
+
+- ([#37771](https://github.com/RocketChat/Rocket.Chat/pull/37771)) Introduces an info button to voice call's in-chat history message, which opens a contextual bar with more detailed information about the voice call.
+
+### Patch Changes
+
+- ([#37663](https://github.com/RocketChat/Rocket.Chat/pull/37663)) Removes the deprecated meteor method: `livechat:saveTag`
+
+- ([#37688](https://github.com/RocketChat/Rocket.Chat/pull/37688)) Adds deprecation warning for `livechat:removeMonitor` and new endpoint replacing it; `livechat/monitor.remove`
+
+- ([#37690](https://github.com/RocketChat/Rocket.Chat/pull/37690)) Adds a deprecation warning for `livechat:saveBusinessHour` and new endpoint replacing it; `livechat/business-hours.save`
+
+- ([#37612](https://github.com/RocketChat/Rocket.Chat/pull/37612)) Adds invitation request support to rooms
+
+- ([#37745](https://github.com/RocketChat/Rocket.Chat/pull/37745)) Fixes an issue where its not being possible to change the password in account security page
+
+- ([#37721](https://github.com/RocketChat/Rocket.Chat/pull/37721)) Disables read receipts indicators in federated rooms. This feature will be re-enabled when fully compatible with federation.
+
+- ([#37823](https://github.com/RocketChat/Rocket.Chat/pull/37823)) Fixes members tab > add members not removing selected items
+
+- ([#37791](https://github.com/RocketChat/Rocket.Chat/pull/37791)) Fixes an issue where cases of invites that were canceled or disinvited were not being handled.
+
+- ([#37874](https://github.com/RocketChat/Rocket.Chat/pull/37874)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#36822](https://github.com/RocketChat/Rocket.Chat/pull/36822)) Removes deprecated meteor method `unmuteUserInRoom`
+
+- ([#37819](https://github.com/RocketChat/Rocket.Chat/pull/37819)) Removes deprecated method `livechat:removeBusinessHour`
+
+- ([#37654](https://github.com/RocketChat/Rocket.Chat/pull/37654)) Fixes an issue that could cause slashcommands to disappear for the user in certain high-availability scenarios
+
+- ([#37443](https://github.com/RocketChat/Rocket.Chat/pull/37443)) Fixes an issue where custom status is not updating immediately if the value is empty
+
+- ([#37730](https://github.com/RocketChat/Rocket.Chat/pull/37730)) Adds an execution flag to apps-engine runtime that helps prevent the publishing of faulty builds
+
+- ([#37722](https://github.com/RocketChat/Rocket.Chat/pull/37722)) Fixes an issue with the build that prevented Deno runtime to run on air-gapped environments
+
+- ([#37504](https://github.com/RocketChat/Rocket.Chat/pull/37504)) Fixes create channel modal not validating federated access permission
+
+- ([#37523](https://github.com/RocketChat/Rocket.Chat/pull/37523)) Fixes license add-on validations for federated rooms
+
+- ([#37061](https://github.com/RocketChat/Rocket.Chat/pull/37061)) Adds deprecation warning on `livechat:addMonitor` with new endpoint replacing it; `livechat/monitors.create`
+
+- ([#37713](https://github.com/RocketChat/Rocket.Chat/pull/37713)) Fixes a condition where the `SAML_Custom_Default_default_user_role` setting, used to define the default SAML role when none is provided, would fail when a role name was used instead of an ID.
+
+- ([#36827](https://github.com/RocketChat/Rocket.Chat/pull/36827)) Removes deprecated method `saveUserProfile`
+
+- ([#37643](https://github.com/RocketChat/Rocket.Chat/pull/37643)) Adds invitation badge to room members list
+
+- ([#37664](https://github.com/RocketChat/Rocket.Chat/pull/37664)) Removes the deprecated meteor method: `livechat:addMonitor`
+
+- ([#37829](https://github.com/RocketChat/Rocket.Chat/pull/37829)) Fixes an issue where iframe external commands sent via `window.postMessage` were not being handled correctly when Rocket.Chat was embedded inside an iframe.
+
+- ([#37717](https://github.com/RocketChat/Rocket.Chat/pull/37717)) Fixes incorrect URL generation in Global Search "Jump to message" feature, resolving navigation issues when jumping to messages across different channels.
+
+- ([#37845](https://github.com/RocketChat/Rocket.Chat/pull/37845)) Fixes push notifications continuing after logout due to missing token cleanup.
+
+- ([#37822](https://github.com/RocketChat/Rocket.Chat/pull/37822)) Fixes an issue where it‘s not being possible to configure department's `chatClosingTags` without enabling `requestTagBeforeClosingTag`
+
+- ([#37707](https://github.com/RocketChat/Rocket.Chat/pull/37707)) Fixes an issue that caused Third-party login to not work properly
+
+- ([#37662](https://github.com/RocketChat/Rocket.Chat/pull/37662)) removes the deprecated meteor method: `livechat:removeMonitor`
+
+- ([#37852](https://github.com/RocketChat/Rocket.Chat/pull/37852)) Adds improvements to the push notifications logic; the logic now truncates messages and titles larger than 240, and 65 characters respectively.
+
+- ([#37281](https://github.com/RocketChat/Rocket.Chat/pull/37281)) Adds deprecation warning for `livechat:saveTag` and new endpoint to replace it; `livechat/tags.save`
+
+- ([#37656](https://github.com/RocketChat/Rocket.Chat/pull/37656)) Fixes an issue where the client failed to load properly when the “First Channel After Login” setting began with a hash (#), ensuring users are routed to the correct channel.
+
+- ([#37846](https://github.com/RocketChat/Rocket.Chat/pull/37846)) Fixes /v1/users.logout not marking user sessions as logged out, leaving stale sessions active.
+
+- ([#37551](https://github.com/RocketChat/Rocket.Chat/pull/37551)) Ensures presence stays accurate by refreshing connections on heartbeats and removing stale sessions.
+
+- ([#37677](https://github.com/RocketChat/Rocket.Chat/pull/37677)) Fixes an issue where membership updates were not reflected when the user was the first member on their own server.
+
+- ([#37718](https://github.com/RocketChat/Rocket.Chat/pull/37718)) Fixes the missing dispatch of `startup` iframe event on client startup.
+
+- ([#37729](https://github.com/RocketChat/Rocket.Chat/pull/37729)) Fixes inconsistency in roomLeft event payload by aligning it to the standard outgoing events signature.
+
+- ([#37729](https://github.com/RocketChat/Rocket.Chat/pull/37729)) Removes sensitive data from outgoing events debug logs.
+
+- ([#37635](https://github.com/RocketChat/Rocket.Chat/pull/37635)) Adds invitation badge to sidebar
+
+- ([#37772](https://github.com/RocketChat/Rocket.Chat/pull/37772)) Removes deprecated method `livechat:saveBusinessHour`
+
+- ([#37775](https://github.com/RocketChat/Rocket.Chat/pull/37775)) Adds deprecation warning for `livechat:removeBusinessHour` and new endpoint to replace it; `livechat/business-hours.remove`
+
+- <details><summary>Updated dependencies [347b8f973440f3e2239f79c00c2d9b430859eef2, 04d24848bd8733caefc45d42c53f004177865a53, b802430fbfdc7fa69a976468dc6dee6f3c4de26f, 872da49986436d2efa65fc42e416b45d706fd59c, 0ccb9692b434bc88b4bc5009d39e024c03f01b86, 176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 2de4547580c472f4458568629d7bf98fd5faf342, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 1baa03cced8f94584da1224ad59cad86f219707a, 0c0258604632342f42fc36cabac2d6cfe0e477c4, f3f0b273ab49e9d1048ba43d52eb36005274905e, ac11ea05ffadeca978c794ff38d5199d9acb2c29, a1d65f493fdb039d34ef4f65d243a97931763f4b, 70872896b912004dc016297b6e875d873d81dc3a, bd5edfc2993c93bd77f42dcd30d38b57eeb50481, 94b87d9ef40647d77fe83f3f84dca46a94515b39, ddc935727e9a7275813006d9dcaa7fe866610844, 733c94b996204151f580de2dd7f3402124b70977, d3538e7045c41f91b8c561d44e5485ff93b93745, a5a7343a835b04812c70699be1b13e54f0e10d48, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, 611e4cdfa04849416a58071646b853b95e9b817b, 476a070b0099b95e4c463ee85960c4dcfbd87120, 239f4b1171bcf448cfba345cc90c4b5cd7c21afc, 9e03ed5c5ea829c62c2da2de9413a27a4696f8a3, dc67590d14d510b069dee074c55314c56f74bb11, be80b724a636877294b5e5baa501d070941131dd, 4aa3634186d97f4144c39f6b42a65107d3d30df0, 4793aca8796d8a3b4c645a2ed685028067119d8d, 0b660a5933b137ae142d78318d8c4022f1f4f1ca, dccdcc5b4a0da4814f72a020bc4eccb8ea2497d8, 5ac1863be4c6e82666989f4b569928c0805691ff, ec0f8b435dd12c218adffa8892737c7ced4debb8, f056c451c2926e849f52b95fed957945398ef5f6, cb3c5e3455606a045f95f168dae6ed32a387697c, 5b3f93c47a03b628d613a77005e92021cd6cee4b, 8bf0bab1eb84f903976b7833691d17236eac8dcd, 55dc368f3f679e93bffb9f04efe3944832cf3336]:</summary>
+
+  - @rocket.chat/rest-typings@8.0.0-rc.0
+  - @rocket.chat/web-ui-registration@26.0.0-rc.0
+  - @rocket.chat/apps-engine@1.59.0-rc.0
+  - @rocket.chat/apps@0.6.0-rc.0
+  - @rocket.chat/core-typings@8.0.0-rc.0
+  - @rocket.chat/i18n@2.0.0-rc.0
+  - @rocket.chat/media-calls@0.2.0-rc.0
+  - @rocket.chat/model-typings@2.0.0-rc.0
+  - @rocket.chat/ui-contexts@26.0.0-rc.0
+  - @rocket.chat/ui-voip@16.0.0-rc.0
+  - @rocket.chat/models@2.0.0-rc.0
+  - @rocket.chat/core-services@0.12.0-rc.0
+  - @rocket.chat/message-types@0.1.0-rc.0
+  - @rocket.chat/federation-matrix@0.0.9-rc.0
+  - @rocket.chat/gazzodown@26.0.0-rc.0
+  - @rocket.chat/ui-client@26.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@26.0.0-rc.0
+  - @rocket.chat/media-signaling@0.1.1-rc.0
+  - @rocket.chat/ui-kit@0.39.0-rc.0
+  - @rocket.chat/abac@0.1.0-rc.0
+  - @rocket.chat/jwt@0.2.0-rc.0
+  - @rocket.chat/tools@0.2.4-rc.0
+  - @rocket.chat/presence@0.2.47-rc.0
+  - @rocket.chat/logger@1.0.0-rc.0
+  - @rocket.chat/omnichannel-services@0.3.44-rc.0
+  - @rocket.chat/api-client@0.2.47-rc.0
+  - @rocket.chat/http-router@7.9.14-rc.0
+  - @rocket.chat/license@1.1.7-rc.0
+  - @rocket.chat/pdf-worker@0.3.26-rc.0
+  - @rocket.chat/cron@0.1.47-rc.0
+  - @rocket.chat/ui-avatar@22.0.0-rc.0
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@26.0.0-rc.0
+  - @rocket.chat/omni-core-ee@0.0.12-rc.0
+  - @rocket.chat/instance-status@0.1.47-rc.0
+  - @rocket.chat/omni-core@0.0.12-rc.0
+  - @rocket.chat/network-broker@0.2.26-rc.0
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
+## 7.13.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37876](https://github.com/RocketChat/Rocket.Chat/pull/37876) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#37883](https://github.com/RocketChat/Rocket.Chat/pull/37883) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures presence stays accurate by refreshing connections on heartbeats and removing stale sessions.
+
+- <details><summary>Updated dependencies [eef2b390a8e4664ad4b974e7ea579982245efce5]:</summary>
+
+  - @rocket.chat/core-services@0.11.2
+  - @rocket.chat/presence@0.2.46
+  - @rocket.chat/federation-matrix@0.0.8
+  - @rocket.chat/network-broker@0.2.25
+  - @rocket.chat/omni-core-ee@0.0.11
+  - @rocket.chat/omnichannel-services@0.3.43
+  - @rocket.chat/core-typings@7.13.2
+  - @rocket.chat/rest-typings@7.13.2
+  - @rocket.chat/license@1.1.6
+  - @rocket.chat/media-calls@0.1.2
+  - @rocket.chat/pdf-worker@0.3.25
+  - @rocket.chat/api-client@0.2.46
+  - @rocket.chat/apps@0.5.25
+  - @rocket.chat/cron@0.1.46
+  - @rocket.chat/freeswitch@1.2.33
+  - @rocket.chat/fuselage-ui-kit@25.0.2
+  - @rocket.chat/gazzodown@25.0.2
+  - @rocket.chat/http-router@7.9.13
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.9.2
+  - @rocket.chat/ui-avatar@21.0.2
+  - @rocket.chat/ui-client@25.0.2
+  - @rocket.chat/ui-contexts@25.0.2
+  - @rocket.chat/web-ui-registration@25.0.2
+  - @rocket.chat/models@1.8.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@25.0.2
+  - @rocket.chat/ui-voip@15.0.2
+  - @rocket.chat/instance-status@0.1.46
+  - @rocket.chat/omni-core@0.0.11
+  </details>
+
+## 7.13.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37732](https://github.com/RocketChat/Rocket.Chat/pull/37732) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue with the build that prevented Deno runtime to run on air-gapped environments
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.1
+  - @rocket.chat/rest-typings@7.13.1
+  - @rocket.chat/federation-matrix@0.0.7
+  - @rocket.chat/license@1.1.5
+  - @rocket.chat/media-calls@0.1.1
+  - @rocket.chat/omnichannel-services@0.3.42
+  - @rocket.chat/pdf-worker@0.3.24
+  - @rocket.chat/presence@0.2.45
+  - @rocket.chat/api-client@0.2.45
+  - @rocket.chat/apps@0.5.24
+  - @rocket.chat/core-services@0.11.1
+  - @rocket.chat/cron@0.1.45
+  - @rocket.chat/freeswitch@1.2.32
+  - @rocket.chat/fuselage-ui-kit@25.0.1
+  - @rocket.chat/gazzodown@25.0.1
+  - @rocket.chat/http-router@7.9.12
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.9.1
+  - @rocket.chat/ui-avatar@21.0.1
+  - @rocket.chat/ui-client@25.0.1
+  - @rocket.chat/ui-contexts@25.0.1
+  - @rocket.chat/web-ui-registration@25.0.1
+  - @rocket.chat/models@1.8.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.24
+  - @rocket.chat/omni-core-ee@0.0.10
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@25.0.1
+  - @rocket.chat/ui-voip@15.0.1
+  - @rocket.chat/instance-status@0.1.45
+  - @rocket.chat/omni-core@0.0.10
+  </details>
+
+## 7.13.0
+
+### Minor Changes
+
+- ([#37327](https://github.com/RocketChat/Rocket.Chat/pull/37327)) Adds complexity requirements to end-to-end encryption passphrase
+
+- ([#36807](https://github.com/RocketChat/Rocket.Chat/pull/36807) by [@tiagoevanp](https://github.com/tiagoevanp)) Adds a `deletedRooms` field to the `users.delete` endpoint response, indicating which rooms were deleted as part of the user deletion process.
+
+- ([#37547](https://github.com/RocketChat/Rocket.Chat/pull/37547)) Adds the `getUserRoomIds` method to the `UserRead` accessor in the Apps-Engine, graduating it from the experimental bridge to the stable user bridge.
+
+- ([#37368](https://github.com/RocketChat/Rocket.Chat/pull/37368)) Allows users to enable TOTP-based two factor authentication without requiring a verified email address.
+
+- ([#37119](https://github.com/RocketChat/Rocket.Chat/pull/37119) by [@ergot-rp](https://github.com/ergot-rp)) Adds missing legend for fieldset in profile page to meet WCAG compliance
+
+- ([#37524](https://github.com/RocketChat/Rocket.Chat/pull/37524)) Moves the expandable message composer out of feature preview
+
+- ([#37378](https://github.com/RocketChat/Rocket.Chat/pull/37378)) Introduces in-chat messages for when a voice call ends
+
+- ([#37276](https://github.com/RocketChat/Rocket.Chat/pull/37276)) Disables the delete message confirmation button to prevent the action from being triggered while the request is in progress
+
+- ([#37318](https://github.com/RocketChat/Rocket.Chat/pull/37318)) Fixes the time display in calendar event notifications by converting the UTC time to the local time.
+
+- ([#37167](https://github.com/RocketChat/Rocket.Chat/pull/37167)) Changes a behavior that would store the result of every status transition that happened to apps
+
+  This caused intermediate status to be saved to the database, which could prevent apps from being restored to the desired status when restarted or during server startup.
+
+- ([#37245](https://github.com/RocketChat/Rocket.Chat/pull/37245)) Replaces old `Assign Extension` button and modal by introducing a proper input in the user edit form.
+
+- ([#37505](https://github.com/RocketChat/Rocket.Chat/pull/37505)) Introduces a new user preference to enable/disable desktop voice call notifications.
+
+- ([#36807](https://github.com/RocketChat/Rocket.Chat/pull/36807) by [@tiagoevanp](https://github.com/tiagoevanp)) Fix issue where a team would become orphaned when its last owner was deleted.
+
+- ([#37134](https://github.com/RocketChat/Rocket.Chat/pull/37134) by [@ergot-rp](https://github.com/ergot-rp)) Adds missing legend for fieldset in accessibility page to meet WCAG compliance
+
+- ([#36308](https://github.com/RocketChat/Rocket.Chat/pull/36308) by [@sandranymark](https://github.com/sandranymark)) Improves inline error in report message modal to meet WCAG compliance.
+
+- ([#37313](https://github.com/RocketChat/Rocket.Chat/pull/37313)) Includes the voice call extension to the `users.autocomplete` endpoint resulting users properties
+
+- ([#37250](https://github.com/RocketChat/Rocket.Chat/pull/37250)) Updates AutoTranslate to fetch supported languages dynamically from DeepL API.
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37255](https://github.com/RocketChat/Rocket.Chat/pull/37255)) Adds deprecation warning for `livechat:saveUnit`
+
+- ([#36835](https://github.com/RocketChat/Rocket.Chat/pull/36835)) Fixes the capture of lead's email or phone number when the visitor didn't have data already
+
+- ([#37278](https://github.com/RocketChat/Rocket.Chat/pull/37278)) Fixes an issue with LDAP Sync not updating user's VoIP Extensions
+
+- ([#37430](https://github.com/RocketChat/Rocket.Chat/pull/37430)) Fixes an issue where it was not possible to save nickname and bio as empty in user profile
+
+- ([#37387](https://github.com/RocketChat/Rocket.Chat/pull/37387)) Fixes an issue where user data exports requested would remain stuck and never complete.
+
+- ([#37270](https://github.com/RocketChat/Rocket.Chat/pull/37270)) Fixes editing of encrypted message attachment description.
+
+- ([#37493](https://github.com/RocketChat/Rocket.Chat/pull/37493)) Fixes an issue where `user-agent` is not properly extracted from the DDP connection headers
+
+- ([#37350](https://github.com/RocketChat/Rocket.Chat/pull/37350)) Fixes the sidebar collapse breakpoint in enhanced navigation
+
+- ([#37496](https://github.com/RocketChat/Rocket.Chat/pull/37496)) Fixes the ping behavior so it only triggers when the app becomes idle, preventing unnecessary restarts
+
+- ([#37277](https://github.com/RocketChat/Rocket.Chat/pull/37277)) Fixes an issue where updating a private canned response wasn't being shown on canned-response contextualbar.
+
+- ([#37326](https://github.com/RocketChat/Rocket.Chat/pull/37326)) Fixes an issue related to creating new users, it should not auto opt in new users for email two factor authentication if any one of `Accounts_TwoFactorAuthentication_Enabled`, `Accounts_TwoFactorAuthentication_By_Email_Enabled` and `Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In` setting is disabled.
+
+- ([#37380](https://github.com/RocketChat/Rocket.Chat/pull/37380)) Fixes an issue where apps would never get the bio of a user even though the type has the field defined
+
+- ([#37477](https://github.com/RocketChat/Rocket.Chat/pull/37477)) Fixes an issue where leave room action is available for users without subscription
+
+- ([#37486](https://github.com/RocketChat/Rocket.Chat/pull/37486)) Fixes the User Autocomplete's selected option being misaligned
+
+- ([#37290](https://github.com/RocketChat/Rocket.Chat/pull/37290)) Fixes an issue where private channels that a user belongs to were not shown in Directory search results.
+
+- ([#37395](https://github.com/RocketChat/Rocket.Chat/pull/37395)) Fixes client slowdown for users with large amount of channels
+
+- ([#37384](https://github.com/RocketChat/Rocket.Chat/pull/37384)) Fixes a problem in apps-engine debug logs where only 2 depth levels were displayed for objects, which is often not enough for debugging purposes
+
+- ([#37152](https://github.com/RocketChat/Rocket.Chat/pull/37152)) Fixes a bug that would cause apps to go into `invalid_installation_disabled` in some cases
+
+- ([#37345](https://github.com/RocketChat/Rocket.Chat/pull/37345)) Fixes administration settings page not listing the settings after logging out and back into the workspace
+
+- ([#37340](https://github.com/RocketChat/Rocket.Chat/pull/37340)) Fixes `Conversations by Tag` chart alignment to match similar charts in the `Reports` section of Omnichannel.
+
+- ([#37338](https://github.com/RocketChat/Rocket.Chat/pull/37338)) Improves mandatory role-based two-factor authentication setup to always verify available 2FA methods before enforcement.
+
+- ([#37449](https://github.com/RocketChat/Rocket.Chat/pull/37449)) Fixes an issue where voice call button is not displaying in navbar on mobile screen sizes
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+- ([#37550](https://github.com/RocketChat/Rocket.Chat/pull/37550)) Fixes an issue that caused the server to load upload files' contents in-memory twice
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 8596daf01ac84864caa63dd937971e557933d401, 5f075eabe1ed1292e3eda2bcca58b5323936dd13, 78880826d580ed81682a5bf62c80f5d0a8e65aeb, 83642cbe499ba399329449fb8cd652a0405c0795, 150efb9d3c1a72a16bb9fe5fc4fc97fc441172d0, 7f1b834a55b1240c226afde77713262da47f45dc, 20490afe32cf5fd5efac9f59057780ee8c9e927b, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 44ca3b111f13ac1816a82ab0e4720e9886769c34, 99255057f27b9d854a89da815681a03d0776f846, 713ce9295496a43dc2ce757cf014b4af2d6e4e92, ec22d9c102d48908bac33865b00abde4f4738ced, 64a4e8bbb70f28532d8967de6936e3bbe6603f8b, 65fbcbed9f64004b953dd9d4182b3fccb8147339, cd0f72faa58908349b7968a9288d289185d0c770, a05b8f72ca70dfed2959282c35518f78fbeb65cf, 7a7aad5cb1191c0eca61a22dadd620bd4f6c12a2, fcb2d1f806c7f2f5c728ed2542cd1a73231a77fd, 04f26855675e199e13d6f05dfdb97be90e89c7e8, 035e0c7c387d6c99703513c7c00bf37e86538b71, f771dd3669ebf8b2065b9faae045b8258e1312d9, 09551f930f957560203847904c81aaffbf72b3ab]:</summary>
+
+  - @rocket.chat/password-policies@0.1.0
+  - @rocket.chat/ui-client@25.0.0
+  - @rocket.chat/ui-contexts@25.0.0
+  - @rocket.chat/core-services@0.11.0
+  - @rocket.chat/apps-engine@1.58.0
+  - @rocket.chat/favicon@0.0.4
+  - @rocket.chat/models@1.8.0
+  - @rocket.chat/i18n@1.13.0
+  - @rocket.chat/core-typings@7.13.0
+  - @rocket.chat/model-typings@1.9.0
+  - @rocket.chat/media-calls@0.1.0
+  - @rocket.chat/ui-voip@15.0.0
+  - @rocket.chat/fuselage-ui-kit@25.0.0
+  - @rocket.chat/ui-kit@0.38.0
+  - @rocket.chat/media-signaling@0.1.0
+  - @rocket.chat/rest-typings@7.13.0
+  - @rocket.chat/gazzodown@25.0.0
+  - @rocket.chat/web-ui-registration@25.0.0
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-avatar@21.0.0
+  - @rocket.chat/ui-video-conf@25.0.0
+  - @rocket.chat/federation-matrix@0.0.6
+  - @rocket.chat/network-broker@0.2.23
+  - @rocket.chat/omni-core-ee@0.0.9
+  - @rocket.chat/omnichannel-services@0.3.41
+  - @rocket.chat/presence@0.2.44
+  - @rocket.chat/apps@0.5.23
+  - @rocket.chat/cron@0.1.44
+  - @rocket.chat/instance-status@0.1.44
+  - @rocket.chat/omni-core@0.0.9
+  - @rocket.chat/license@1.1.4
+  - @rocket.chat/pdf-worker@0.3.23
+  - @rocket.chat/api-client@0.2.44
+  - @rocket.chat/freeswitch@1.2.31
+  - @rocket.chat/http-router@7.9.11
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
+## 7.13.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.0-rc.2
+  - @rocket.chat/rest-typings@7.13.0-rc.2
+  - @rocket.chat/federation-matrix@0.0.6-rc.2
+  - @rocket.chat/license@1.1.4-rc.2
+  - @rocket.chat/media-calls@0.1.0-rc.2
+  - @rocket.chat/omnichannel-services@0.3.41-rc.2
+  - @rocket.chat/pdf-worker@0.3.23-rc.2
+  - @rocket.chat/presence@0.2.44-rc.2
+  - @rocket.chat/api-client@0.2.44-rc.2
+  - @rocket.chat/apps@0.5.23-rc.2
+  - @rocket.chat/core-services@0.11.0-rc.2
+  - @rocket.chat/cron@0.1.44-rc.2
+  - @rocket.chat/freeswitch@1.2.31-rc.2
+  - @rocket.chat/fuselage-ui-kit@25.0.0-rc.2
+  - @rocket.chat/gazzodown@25.0.0-rc.2
+  - @rocket.chat/http-router@7.9.11-rc.2
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.9.0-rc.2
+  - @rocket.chat/ui-avatar@21.0.0-rc.2
+  - @rocket.chat/ui-client@25.0.0-rc.2
+  - @rocket.chat/ui-contexts@25.0.0-rc.2
+  - @rocket.chat/web-ui-registration@25.0.0-rc.2
+  - @rocket.chat/models@1.8.0-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.23-rc.2
+  - @rocket.chat/omni-core-ee@0.0.9-rc.2
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@25.0.0-rc.2
+  - @rocket.chat/ui-voip@15.0.0-rc.2
+  - @rocket.chat/instance-status@0.1.44-rc.2
+  - @rocket.chat/omni-core@0.0.9-rc.2
+  </details>
+
+## 7.13.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.0-rc.1
+  - @rocket.chat/rest-typings@7.13.0-rc.1
+  - @rocket.chat/federation-matrix@0.0.4-rc.1
+  - @rocket.chat/license@1.1.2-rc.1
+  - @rocket.chat/media-calls@0.1.0-rc.1
+  - @rocket.chat/omnichannel-services@0.3.39-rc.1
+  - @rocket.chat/pdf-worker@0.3.21-rc.1
+  - @rocket.chat/presence@0.2.42-rc.1
+  - @rocket.chat/api-client@0.2.42-rc.1
+  - @rocket.chat/apps@0.5.21-rc.1
+  - @rocket.chat/core-services@0.11.0-rc.1
+  - @rocket.chat/cron@0.1.42-rc.1
+  - @rocket.chat/freeswitch@1.2.29-rc.1
+  - @rocket.chat/fuselage-ui-kit@25.0.0-rc.1
+  - @rocket.chat/gazzodown@25.0.0-rc.1
+  - @rocket.chat/http-router@7.9.9-rc.1
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.9.0-rc.1
+  - @rocket.chat/ui-avatar@21.0.0-rc.1
+  - @rocket.chat/ui-client@25.0.0-rc.1
+  - @rocket.chat/ui-contexts@25.0.0-rc.1
+  - @rocket.chat/web-ui-registration@25.0.0-rc.1
+  - @rocket.chat/models@1.8.0-rc.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.21-rc.1
+  - @rocket.chat/omni-core-ee@0.0.7-rc.1
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@25.0.0-rc.1
+  - @rocket.chat/ui-voip@15.0.0-rc.1
+  - @rocket.chat/instance-status@0.1.42-rc.1
+  - @rocket.chat/omni-core@0.0.7-rc.1
+  </details>
+
+## 7.13.0-rc.0
+
+### Minor Changes
+
+- ([#37327](https://github.com/RocketChat/Rocket.Chat/pull/37327)) Adds complexity requirements to end-to-end encryption passphrase
+
+- ([#36807](https://github.com/RocketChat/Rocket.Chat/pull/36807) by [@tiagoevanp](https://github.com/tiagoevanp)) Adds a `deletedRooms` field to the `users.delete` endpoint response, indicating which rooms were deleted as part of the user deletion process.
+
+- ([#37547](https://github.com/RocketChat/Rocket.Chat/pull/37547)) Adds the `getUserRoomIds` method to the `UserRead` accessor in the Apps-Engine, graduating it from the experimental bridge to the stable user bridge.
+
+- ([#37368](https://github.com/RocketChat/Rocket.Chat/pull/37368)) Allows users to enable TOTP-based two factor authentication without requiring a verified email address.
+
+- ([#37119](https://github.com/RocketChat/Rocket.Chat/pull/37119) by [@ergot-rp](https://github.com/ergot-rp)) Adds missing legend for fieldset in profile page to meet WCAG compliance
+
+- ([#37524](https://github.com/RocketChat/Rocket.Chat/pull/37524)) Moves the expandable message composer out of feature preview
+
+- ([#37378](https://github.com/RocketChat/Rocket.Chat/pull/37378)) Introduces in-chat messages for when a voice call ends
+
+- ([#37276](https://github.com/RocketChat/Rocket.Chat/pull/37276)) Disables the delete message confirmation button to prevent the action from being triggered while the request is in progress
+
+- ([#37318](https://github.com/RocketChat/Rocket.Chat/pull/37318)) Fixes the time display in calendar event notifications by converting the UTC time to the local time.
+
+- ([#37167](https://github.com/RocketChat/Rocket.Chat/pull/37167)) Changes a behavior that would store the result of every status transition that happened to apps
+
+  This caused intermediate status to be saved to the database, which could prevent apps from being restored to the desired status when restarted or during server startup.
+
+- ([#37245](https://github.com/RocketChat/Rocket.Chat/pull/37245)) Replaces old `Assign Extension` button and modal by introducing a proper input in the user edit form.
+
+- ([#37505](https://github.com/RocketChat/Rocket.Chat/pull/37505)) Introduces a new user preference to enable/disable desktop voice call notifications.
+
+- ([#36807](https://github.com/RocketChat/Rocket.Chat/pull/36807) by [@tiagoevanp](https://github.com/tiagoevanp)) Fix issue where a team would become orphaned when its last owner was deleted.
+
+- ([#37134](https://github.com/RocketChat/Rocket.Chat/pull/37134) by [@ergot-rp](https://github.com/ergot-rp)) Adds missing legend for fieldset in accessibility page to meet WCAG compliance
+
+- ([#36308](https://github.com/RocketChat/Rocket.Chat/pull/36308) by [@sandranymark](https://github.com/sandranymark)) Improves inline error in report message modal to meet WCAG compliance.
+
+- ([#37313](https://github.com/RocketChat/Rocket.Chat/pull/37313)) Includes the voice call extension to the `users.autocomplete` endpoint resulting users properties
+
+- ([#37250](https://github.com/RocketChat/Rocket.Chat/pull/37250)) Updates AutoTranslate to fetch supported languages dynamically from DeepL API.
+
+### Patch Changes
+
+- ([#37255](https://github.com/RocketChat/Rocket.Chat/pull/37255)) Adds deprecation warning for `livechat:saveUnit`
+
+- ([#36835](https://github.com/RocketChat/Rocket.Chat/pull/36835)) Fixes the capture of lead's email or phone number when the visitor didn't have data already
+
+- ([#37278](https://github.com/RocketChat/Rocket.Chat/pull/37278)) Fixes an issue with LDAP Sync not updating user's VoIP Extensions
+
+- ([#37430](https://github.com/RocketChat/Rocket.Chat/pull/37430)) Fixes an issue where it was not possible to save nickname and bio as empty in user profile
+
+- ([#37387](https://github.com/RocketChat/Rocket.Chat/pull/37387)) Fixes an issue where user data exports requested would remain stuck and never complete.
+
+- ([#37270](https://github.com/RocketChat/Rocket.Chat/pull/37270)) Fixes editing of encrypted message attachment description.
+
+- ([#37493](https://github.com/RocketChat/Rocket.Chat/pull/37493)) Fixes an issue where `user-agent` is not properly extracted from the DDP connection headers
+
+- ([#37350](https://github.com/RocketChat/Rocket.Chat/pull/37350)) Fixes the sidebar collapse breakpoint in enhanced navigation
+
+- ([#37496](https://github.com/RocketChat/Rocket.Chat/pull/37496)) Fixes the ping behavior so it only triggers when the app becomes idle, preventing unnecessary restarts
+
+- ([#37277](https://github.com/RocketChat/Rocket.Chat/pull/37277)) Fixes an issue where updating a private canned response wasn't being shown on canned-response contextualbar.
+
+- ([#37326](https://github.com/RocketChat/Rocket.Chat/pull/37326)) Fixes an issue related to creating new users, it should not auto opt in new users for email two factor authentication if any one of `Accounts_TwoFactorAuthentication_Enabled`, `Accounts_TwoFactorAuthentication_By_Email_Enabled` and `Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In` setting is disabled.
+
+- ([#37380](https://github.com/RocketChat/Rocket.Chat/pull/37380)) Fixes an issue where apps would never get the bio of a user even though the type has the field defined
+
+- ([#37477](https://github.com/RocketChat/Rocket.Chat/pull/37477)) Fixes an issue where leave room action is available for users without subscription
+
+- ([#37486](https://github.com/RocketChat/Rocket.Chat/pull/37486)) Fixes the User Autocomplete's selected option being misaligned
+
+- ([#37290](https://github.com/RocketChat/Rocket.Chat/pull/37290)) Fixes an issue where private channels that a user belongs to were not shown in Directory search results.
+
+- ([#37395](https://github.com/RocketChat/Rocket.Chat/pull/37395)) Fixes client slowdown for users with large amount of channels
+
+- ([#37384](https://github.com/RocketChat/Rocket.Chat/pull/37384)) Fixes a problem in apps-engine debug logs where only 2 depth levels were displayed for objects, which is often not enough for debugging purposes
+
+- ([#37152](https://github.com/RocketChat/Rocket.Chat/pull/37152)) Fixes a bug that would cause apps to go into `invalid_installation_disabled` in some cases
+
+- ([#37345](https://github.com/RocketChat/Rocket.Chat/pull/37345)) Fixes administration settings page not listing the settings after logging out and back into the workspace
+
+- ([#37340](https://github.com/RocketChat/Rocket.Chat/pull/37340)) Fixes `Conversations by Tag` chart alignment to match similar charts in the `Reports` section of Omnichannel.
+
+- ([#37338](https://github.com/RocketChat/Rocket.Chat/pull/37338)) Improves mandatory role-based two-factor authentication setup to always verify available 2FA methods before enforcement.
+
+- ([#37449](https://github.com/RocketChat/Rocket.Chat/pull/37449)) Fixes an issue where voice call button is not displaying in navbar on mobile screen sizes
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+- ([#37550](https://github.com/RocketChat/Rocket.Chat/pull/37550)) Fixes an issue that caused the server to load upload files' contents in-memory twice
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 8596daf01ac84864caa63dd937971e557933d401, 5f075eabe1ed1292e3eda2bcca58b5323936dd13, 78880826d580ed81682a5bf62c80f5d0a8e65aeb, 83642cbe499ba399329449fb8cd652a0405c0795, 150efb9d3c1a72a16bb9fe5fc4fc97fc441172d0, 7f1b834a55b1240c226afde77713262da47f45dc, 20490afe32cf5fd5efac9f59057780ee8c9e927b, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 44ca3b111f13ac1816a82ab0e4720e9886769c34, 99255057f27b9d854a89da815681a03d0776f846, 713ce9295496a43dc2ce757cf014b4af2d6e4e92, ec22d9c102d48908bac33865b00abde4f4738ced, 64a4e8bbb70f28532d8967de6936e3bbe6603f8b, 65fbcbed9f64004b953dd9d4182b3fccb8147339, cd0f72faa58908349b7968a9288d289185d0c770, a05b8f72ca70dfed2959282c35518f78fbeb65cf, 7a7aad5cb1191c0eca61a22dadd620bd4f6c12a2, fcb2d1f806c7f2f5c728ed2542cd1a73231a77fd, 04f26855675e199e13d6f05dfdb97be90e89c7e8, 035e0c7c387d6c99703513c7c00bf37e86538b71, f771dd3669ebf8b2065b9faae045b8258e1312d9, 09551f930f957560203847904c81aaffbf72b3ab]:</summary>
+
+  - @rocket.chat/password-policies@0.1.0-rc.0
+  - @rocket.chat/ui-client@25.0.0-rc.0
+  - @rocket.chat/ui-contexts@25.0.0-rc.0
+  - @rocket.chat/core-services@0.11.0-rc.0
+  - @rocket.chat/apps-engine@1.58.0-rc.0
+  - @rocket.chat/favicon@0.0.3-rc.0
+  - @rocket.chat/models@1.8.0-rc.0
+  - @rocket.chat/i18n@1.13.0-rc.0
+  - @rocket.chat/core-typings@7.13.0-rc.0
+  - @rocket.chat/model-typings@1.9.0-rc.0
+  - @rocket.chat/media-calls@0.1.0-rc.0
+  - @rocket.chat/ui-voip@15.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@25.0.0-rc.0
+  - @rocket.chat/ui-kit@0.38.0-rc.0
+  - @rocket.chat/media-signaling@0.1.0-rc.0
+  - @rocket.chat/rest-typings@7.13.0-rc.0
+  - @rocket.chat/gazzodown@25.0.0-rc.0
+  - @rocket.chat/web-ui-registration@25.0.0-rc.0
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-avatar@21.0.0-rc.0
+  - @rocket.chat/ui-video-conf@25.0.0-rc.0
+  - @rocket.chat/federation-matrix@0.0.4-rc.0
+  - @rocket.chat/network-broker@0.2.21-rc.0
+  - @rocket.chat/omni-core-ee@0.0.7-rc.0
+  - @rocket.chat/omnichannel-services@0.3.39-rc.0
+  - @rocket.chat/presence@0.2.42-rc.0
+  - @rocket.chat/apps@0.5.21-rc.0
+  - @rocket.chat/cron@0.1.42-rc.0
+  - @rocket.chat/instance-status@0.1.42-rc.0
+  - @rocket.chat/omni-core@0.0.7-rc.0
+  - @rocket.chat/license@1.1.2-rc.0
+  - @rocket.chat/pdf-worker@0.3.21-rc.0
+  - @rocket.chat/api-client@0.2.42-rc.0
+  - @rocket.chat/freeswitch@1.2.29-rc.0
+  - @rocket.chat/http-router@7.9.9-rc.0
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
+## 7.12.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37540](https://github.com/RocketChat/Rocket.Chat/pull/37540) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where `user-agent` is not properly extracted from the DDP connection headers
+
+- ([#37520](https://github.com/RocketChat/Rocket.Chat/pull/37520) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes client slowdown for users with large amount of channels
+
+- <details><summary>Updated dependencies [fadc449607a3506a25294018a607e3c654c33d28]:</summary>
+
+  - @rocket.chat/favicon@0.0.3
+  - @rocket.chat/core-typings@7.12.2
+  - @rocket.chat/rest-typings@7.12.2
+  - @rocket.chat/federation-matrix@0.0.5
+  - @rocket.chat/license@1.1.3
+  - @rocket.chat/media-calls@0.0.5
+  - @rocket.chat/omnichannel-services@0.3.40
+  - @rocket.chat/pdf-worker@0.3.22
+  - @rocket.chat/presence@0.2.43
+  - @rocket.chat/api-client@0.2.43
+  - @rocket.chat/apps@0.5.22
+  - @rocket.chat/core-services@0.10.6
+  - @rocket.chat/cron@0.1.43
+  - @rocket.chat/freeswitch@1.2.30
+  - @rocket.chat/fuselage-ui-kit@24.0.2
+  - @rocket.chat/gazzodown@24.0.2
+  - @rocket.chat/http-router@7.9.10
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.3
+  - @rocket.chat/ui-avatar@20.0.2
+  - @rocket.chat/ui-client@24.0.2
+  - @rocket.chat/ui-contexts@24.0.2
+  - @rocket.chat/web-ui-registration@24.0.2
+  - @rocket.chat/models@1.7.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.22
+  - @rocket.chat/omni-core-ee@0.0.8
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@24.0.2
+  - @rocket.chat/ui-voip@14.0.2
+  - @rocket.chat/instance-status@0.1.43
+  - @rocket.chat/omni-core@0.0.8
+  </details>
+
+## 7.12.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37436](https://github.com/RocketChat/Rocket.Chat/pull/37436) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes the capture of lead's email or phone number when the visitor didn't have data already
+
+- ([#37440](https://github.com/RocketChat/Rocket.Chat/pull/37440) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a problem in apps-engine debug logs where only 2 depth levels were displayed for objects, which is often not enough for debugging purposes
+
+- <details><summary>Updated dependencies [8cbd9bfd0566cbd7d86d8b40ea7d58d6ef382742, e6cc073a99e1aaa7936ef9b29e7bfa31dab86aa3]:</summary>
+
+  - @rocket.chat/models@1.7.2
+  - @rocket.chat/apps-engine@1.57.1
+  - @rocket.chat/federation-matrix@0.0.4
+  - @rocket.chat/media-calls@0.0.4
+  - @rocket.chat/omni-core-ee@0.0.7
+  - @rocket.chat/omnichannel-services@0.3.39
+  - @rocket.chat/presence@0.2.42
+  - @rocket.chat/core-services@0.10.5
+  - @rocket.chat/cron@0.1.42
+  - @rocket.chat/instance-status@0.1.42
+  - @rocket.chat/omni-core@0.0.7
+  - @rocket.chat/apps@0.5.21
+  - @rocket.chat/core-typings@7.12.1
+  - @rocket.chat/fuselage-ui-kit@24.0.1
+  - @rocket.chat/rest-typings@7.12.1
+  - @rocket.chat/network-broker@0.2.21
+  - @rocket.chat/license@1.1.2
+  - @rocket.chat/pdf-worker@0.3.21
+  - @rocket.chat/api-client@0.2.42
+  - @rocket.chat/freeswitch@1.2.29
+  - @rocket.chat/gazzodown@24.0.1
+  - @rocket.chat/http-router@7.9.9
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.2
+  - @rocket.chat/ui-avatar@20.0.1
+  - @rocket.chat/ui-client@24.0.1
+  - @rocket.chat/ui-contexts@24.0.1
+  - @rocket.chat/web-ui-registration@24.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@24.0.1
+  - @rocket.chat/ui-voip@14.0.1
+  </details>
+
+## 7.12.0
+
+### Minor Changes
+
+- ([#37057](https://github.com/RocketChat/Rocket.Chat/pull/37057)) Adds an experimental API to the apps-engine that retrieves the ids of rooms the user is a member of
+
+- ([#37038](https://github.com/RocketChat/Rocket.Chat/pull/37038)) Introduce the `RangeSettingInput` component, providing a new visual input type for settings that accept a range of numeric values. This improves the user experience for adjusting range-based settings in the administration panel.
+
+- ([#37312](https://github.com/RocketChat/Rocket.Chat/pull/37312)) Replaces old `Assign Extension` button and modal by introducing a proper input in the user edit form.
+
+- ([#37073](https://github.com/RocketChat/Rocket.Chat/pull/37073)) Adds a warning modal in order to prevent the `access-permissions` permission from being removed from the last granted role in the permissions table. This hardening measure ensures that administrators cannot accidentally lock themselves out of the system's permission management screen.
+
+### Patch Changes
+
+- ([#37154](https://github.com/RocketChat/Rocket.Chat/pull/37154)) Fixes a GUI crash happening in the admin user page when attempting to display an invalid custom field
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36973](https://github.com/RocketChat/Rocket.Chat/pull/36973)) Adds deprecation warning on `livechat:returnAsInquiry` with new endpoint replacing it; `livechat/inquiries.returnAsInquiry`
+
+- ([#37218](https://github.com/RocketChat/Rocket.Chat/pull/37218)) Adds deprecation warning on `livechat:setupConnection`
+
+- ([#37147](https://github.com/RocketChat/Rocket.Chat/pull/37147)) Fixes client crash on invalid message attachment fields payload.
+
+- ([#37235](https://github.com/RocketChat/Rocket.Chat/pull/37235)) Adds deprecation warning on `sendFileLivechatMessage`
+
+- ([#37158](https://github.com/RocketChat/Rocket.Chat/pull/37158)) Fixes crash in end-to-end encrypted rooms when sending a quote or message link referencing a message outside the room.
+
+- ([#36990](https://github.com/RocketChat/Rocket.Chat/pull/36990)) Change app update strategies to prevent unwanted data changes in database
+
+- ([#37042](https://github.com/RocketChat/Rocket.Chat/pull/37042)) Adjusts custom sound loop on omnichannel continuous notification to play `New room` loop instead of `New message` loop
+
+- ([#37051](https://github.com/RocketChat/Rocket.Chat/pull/37051)) Adds deprecation warning on `removeCannedResponse`;
+
+- ([#37200](https://github.com/RocketChat/Rocket.Chat/pull/37200)) Fixes an issue where messages are not being translated immediately in omnichannel rooms
+
+- ([#37171](https://github.com/RocketChat/Rocket.Chat/pull/37171)) Adds deprecation warning on legacy method: `livechat:removeUnit`
+
+- ([#37229](https://github.com/RocketChat/Rocket.Chat/pull/37229)) Fixes an issue where enabling trace method calls setting was crashing the server.
+
+- ([#37103](https://github.com/RocketChat/Rocket.Chat/pull/37103)) Fixes real-time monitoring displaying incorrect data
+
+- ([#37136](https://github.com/RocketChat/Rocket.Chat/pull/37136)) Adds deprecation warning on `livechat:removeTag` with new endpoint replacing it; `livechat/tags.remove`
+
+- ([#37109](https://github.com/RocketChat/Rocket.Chat/pull/37109)) Fixes an issue where the start call button is available in archived rooms
+
+- ([#36790](https://github.com/RocketChat/Rocket.Chat/pull/36790) by [@tiagoevanp](https://github.com/tiagoevanp)) Fixes an issue where the API method `rooms.delete` inadvertently deletes the main room of a team
+
+- ([#37203](https://github.com/RocketChat/Rocket.Chat/pull/37203)) Fixes an issue where pagination is not working properly in “users in role” table
+
+- ([#37041](https://github.com/RocketChat/Rocket.Chat/pull/37041)) Ensures the formatted volume value is kept between 0 and 1
+
+- ([#36958](https://github.com/RocketChat/Rocket.Chat/pull/36958)) Adds deprecation warning on `livechat:removeRoom` with new endpoint replacing it; `livechat/rooms.delete`
+
+- <details><summary>Updated dependencies [085d6536d23fe5cc293fec2f1454eb7442e8c7f4, 48d1442a07e860fefd6991c97e94d6a9de345afe, c253db3ece80da36fba7b79b3cbe64d705175d6d, f627e675076a49ebd2f7c80cee1c2a3e51cc22fc, a25e88c06cafdbe3baf7a40e3bffe3aed5a81cf6, 74f2232bade0e5082097432b740e933a8960af54, d166e2a1ffba4e59361d5f79e8c376fca5cbf12f, b85e96a2b7968dda91cb192331d6b1e046071037, 4ab2b7fdb9314538d45abdf4474ea9d2409799be, fd4f9b2523dae23518561cdcfa8d931f87d8964d]:</summary>
+
+  - @rocket.chat/ui-client@24.0.0
+  - @rocket.chat/rest-typings@7.12.0
+  - @rocket.chat/apps-engine@1.57.0
+  - @rocket.chat/ui-contexts@24.0.0
+  - @rocket.chat/i18n@1.12.0
+  - @rocket.chat/ui-voip@14.0.0
+  - @rocket.chat/core-typings@7.12.0
+  - @rocket.chat/gazzodown@24.0.0
+  - @rocket.chat/web-ui-registration@24.0.0
+  - @rocket.chat/federation-matrix@0.0.3
+  - @rocket.chat/omnichannel-services@0.3.38
+  - @rocket.chat/presence@0.2.41
+  - @rocket.chat/api-client@0.2.41
+  - @rocket.chat/core-services@0.10.4
+  - @rocket.chat/http-router@7.9.8
+  - @rocket.chat/models@1.7.1
+  - @rocket.chat/apps@0.5.20
+  - @rocket.chat/fuselage-ui-kit@24.0.0
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-avatar@20.0.0
+  - @rocket.chat/ui-video-conf@24.0.0
+  - @rocket.chat/license@1.1.1
+  - @rocket.chat/media-calls@0.0.3
+  - @rocket.chat/pdf-worker@0.3.20
+  - @rocket.chat/cron@0.1.41
+  - @rocket.chat/freeswitch@1.2.28
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.1
+  - @rocket.chat/network-broker@0.2.20
+  - @rocket.chat/omni-core-ee@0.0.6
+  - @rocket.chat/instance-status@0.1.41
+  - @rocket.chat/omni-core@0.0.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
+## 7.12.0-rc.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.0-rc.4
+  - @rocket.chat/rest-typings@7.12.0-rc.4
+  - @rocket.chat/federation-matrix@0.0.3-rc.4
+  - @rocket.chat/license@1.1.1-rc.4
+  - @rocket.chat/media-calls@0.0.3-rc.4
+  - @rocket.chat/omnichannel-services@0.3.38-rc.4
+  - @rocket.chat/pdf-worker@0.3.20-rc.4
+  - @rocket.chat/presence@0.2.41-rc.4
+  - @rocket.chat/api-client@0.2.41-rc.4
+  - @rocket.chat/apps@0.5.20-rc.4
+  - @rocket.chat/core-services@0.10.4-rc.4
+  - @rocket.chat/cron@0.1.41-rc.4
+  - @rocket.chat/freeswitch@1.2.28-rc.4
+  - @rocket.chat/fuselage-ui-kit@24.0.0-rc.4
+  - @rocket.chat/gazzodown@24.0.0-rc.4
+  - @rocket.chat/http-router@7.9.8-rc.4
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.1-rc.4
+  - @rocket.chat/ui-avatar@20.0.0-rc.4
+  - @rocket.chat/ui-client@24.0.0-rc.4
+  - @rocket.chat/ui-contexts@24.0.0-rc.4
+  - @rocket.chat/web-ui-registration@24.0.0-rc.4
+  - @rocket.chat/models@1.7.1-rc.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.20-rc.4
+  - @rocket.chat/omni-core-ee@0.0.6-rc.4
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@24.0.0-rc.4
+  - @rocket.chat/ui-voip@14.0.0-rc.4
+  - @rocket.chat/instance-status@0.1.41-rc.4
+  - @rocket.chat/omni-core@0.0.6-rc.4
+  </details>
+
+## 7.12.0-rc.3
+
+### Minor Changes
+
+- ([#37312](https://github.com/RocketChat/Rocket.Chat/pull/37312)) Replaces old `Assign Extension` button and modal by introducing a proper input in the user edit form.
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.0-rc.3
+  - @rocket.chat/rest-typings@7.12.0-rc.3
+  - @rocket.chat/federation-matrix@0.0.3-rc.3
+  - @rocket.chat/license@1.1.1-rc.3
+  - @rocket.chat/media-calls@0.0.3-rc.3
+  - @rocket.chat/omnichannel-services@0.3.38-rc.3
+  - @rocket.chat/pdf-worker@0.3.20-rc.3
+  - @rocket.chat/presence@0.2.41-rc.3
+  - @rocket.chat/api-client@0.2.41-rc.3
+  - @rocket.chat/apps@0.5.20-rc.3
+  - @rocket.chat/core-services@0.10.4-rc.3
+  - @rocket.chat/cron@0.1.41-rc.3
+  - @rocket.chat/freeswitch@1.2.28-rc.3
+  - @rocket.chat/fuselage-ui-kit@24.0.0-rc.3
+  - @rocket.chat/gazzodown@24.0.0-rc.3
+  - @rocket.chat/http-router@7.9.8-rc.3
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.1-rc.3
+  - @rocket.chat/ui-avatar@20.0.0-rc.3
+  - @rocket.chat/ui-client@24.0.0-rc.3
+  - @rocket.chat/ui-contexts@24.0.0-rc.3
+  - @rocket.chat/web-ui-registration@24.0.0-rc.3
+  - @rocket.chat/models@1.7.1-rc.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.20-rc.3
+  - @rocket.chat/omni-core-ee@0.0.6-rc.3
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@24.0.0-rc.3
+  - @rocket.chat/ui-voip@14.0.0-rc.3
+  - @rocket.chat/instance-status@0.1.41-rc.3
+  - @rocket.chat/omni-core@0.0.6-rc.3
+  </details>
+
+## 7.12.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.0-rc.2
+  - @rocket.chat/rest-typings@7.12.0-rc.2
+  - @rocket.chat/federation-matrix@0.0.3-rc.2
+  - @rocket.chat/license@1.1.1-rc.2
+  - @rocket.chat/media-calls@0.0.3-rc.2
+  - @rocket.chat/omnichannel-services@0.3.38-rc.2
+  - @rocket.chat/pdf-worker@0.3.20-rc.2
+  - @rocket.chat/presence@0.2.41-rc.2
+  - @rocket.chat/api-client@0.2.41-rc.2
+  - @rocket.chat/apps@0.5.20-rc.2
+  - @rocket.chat/core-services@0.10.4-rc.2
+  - @rocket.chat/cron@0.1.41-rc.2
+  - @rocket.chat/freeswitch@1.2.28-rc.2
+  - @rocket.chat/fuselage-ui-kit@24.0.0-rc.2
+  - @rocket.chat/gazzodown@24.0.0-rc.2
+  - @rocket.chat/http-router@7.9.8-rc.2
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.1-rc.2
+  - @rocket.chat/ui-avatar@20.0.0-rc.2
+  - @rocket.chat/ui-client@24.0.0-rc.2
+  - @rocket.chat/ui-contexts@24.0.0-rc.2
+  - @rocket.chat/web-ui-registration@24.0.0-rc.2
+  - @rocket.chat/models@1.7.1-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.20-rc.2
+  - @rocket.chat/omni-core-ee@0.0.6-rc.2
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@24.0.0-rc.2
+  - @rocket.chat/ui-voip@14.0.0-rc.2
+  - @rocket.chat/instance-status@0.1.41-rc.2
+  - @rocket.chat/omni-core@0.0.6-rc.2
+  </details>
+
+## 7.12.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.12.0-rc.1
+  - @rocket.chat/rest-typings@7.12.0-rc.1
+  - @rocket.chat/federation-matrix@0.0.3-rc.1
+  - @rocket.chat/license@1.1.1-rc.1
+  - @rocket.chat/media-calls@0.0.3-rc.1
+  - @rocket.chat/omnichannel-services@0.3.38-rc.1
+  - @rocket.chat/pdf-worker@0.3.20-rc.1
+  - @rocket.chat/presence@0.2.41-rc.1
+  - @rocket.chat/api-client@0.2.41-rc.1
+  - @rocket.chat/apps@0.5.20-rc.1
+  - @rocket.chat/core-services@0.10.4-rc.1
+  - @rocket.chat/cron@0.1.41-rc.1
+  - @rocket.chat/freeswitch@1.2.28-rc.1
+  - @rocket.chat/fuselage-ui-kit@24.0.0-rc.1
+  - @rocket.chat/gazzodown@24.0.0-rc.1
+  - @rocket.chat/http-router@7.9.8-rc.1
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.1-rc.1
+  - @rocket.chat/ui-avatar@20.0.0-rc.1
+  - @rocket.chat/ui-client@24.0.0-rc.1
+  - @rocket.chat/ui-contexts@24.0.0-rc.1
+  - @rocket.chat/web-ui-registration@24.0.0-rc.1
+  - @rocket.chat/models@1.7.1-rc.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.20-rc.1
+  - @rocket.chat/omni-core-ee@0.0.6-rc.1
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@24.0.0-rc.1
+  - @rocket.chat/ui-voip@14.0.0-rc.1
+  - @rocket.chat/instance-status@0.1.41-rc.1
+  - @rocket.chat/omni-core@0.0.6-rc.1
+  </details>
+
+## 7.12.0-rc.0
+
+### Minor Changes
+
+- ([#37057](https://github.com/RocketChat/Rocket.Chat/pull/37057)) Adds an experimental API to the apps-engine that retrieves the ids of rooms the user is a member of
+
+- ([#37038](https://github.com/RocketChat/Rocket.Chat/pull/37038)) Introduce the `RangeSettingInput` component, providing a new visual input type for settings that accept a range of numeric values. This improves the user experience for adjusting range-based settings in the administration panel.
+
+- ([#37073](https://github.com/RocketChat/Rocket.Chat/pull/37073)) Adds a warning modal in order to prevent the `access-permissions` permission from being removed from the last granted role in the permissions table. This hardening measure ensures that administrators cannot accidentally lock themselves out of the system's permission management screen.
+
+### Patch Changes
+
+- ([#37154](https://github.com/RocketChat/Rocket.Chat/pull/37154)) Fixes a GUI crash happening in the admin user page when attempting to display an invalid custom field
+
+- ([#36973](https://github.com/RocketChat/Rocket.Chat/pull/36973)) Adds deprecation warning on `livechat:returnAsInquiry` with new endpoint replacing it; `livechat/inquiries.returnAsInquiry`
+
+- ([#37218](https://github.com/RocketChat/Rocket.Chat/pull/37218)) Adds deprecation warning on `livechat:setupConnection`
+
+- ([#37147](https://github.com/RocketChat/Rocket.Chat/pull/37147)) Fixes client crash on invalid message attachment fields payload.
+
+- ([#37235](https://github.com/RocketChat/Rocket.Chat/pull/37235)) Adds deprecation warning on `sendFileLivechatMessage`
+
+- ([#37158](https://github.com/RocketChat/Rocket.Chat/pull/37158)) Fixes crash in end-to-end encrypted rooms when sending a quote or message link referencing a message outside the room.
+
+- ([#36990](https://github.com/RocketChat/Rocket.Chat/pull/36990)) Change app update strategies to prevent unwanted data changes in database
+
+- ([#37042](https://github.com/RocketChat/Rocket.Chat/pull/37042)) Adjusts custom sound loop on omnichannel continuous notification to play `New room` loop instead of `New message` loop
+
+- ([#37051](https://github.com/RocketChat/Rocket.Chat/pull/37051)) Adds deprecation warning on `removeCannedResponse`;
+
+- ([#37200](https://github.com/RocketChat/Rocket.Chat/pull/37200)) Fixes an issue where messages are not being translated immediately in omnichannel rooms
+
+- ([#37171](https://github.com/RocketChat/Rocket.Chat/pull/37171)) Adds deprecation warning on legacy method: `livechat:removeUnit`
+
+- ([#37229](https://github.com/RocketChat/Rocket.Chat/pull/37229)) Fixes an issue where enabling trace method calls setting was crashing the server.
+
+- ([#37103](https://github.com/RocketChat/Rocket.Chat/pull/37103)) Fixes real-time monitoring displaying incorrect data
+
+- ([#37136](https://github.com/RocketChat/Rocket.Chat/pull/37136)) Adds deprecation warning on `livechat:removeTag` with new endpoint replacing it; `livechat/tags.remove`
+
+- ([#37109](https://github.com/RocketChat/Rocket.Chat/pull/37109)) Fixes an issue where the start call button is available in archived rooms
+
+- ([#36790](https://github.com/RocketChat/Rocket.Chat/pull/36790) by [@tiagoevanp](https://github.com/tiagoevanp)) Fixes an issue where the API method `rooms.delete` inadvertently deletes the main room of a team
+
+- ([#37203](https://github.com/RocketChat/Rocket.Chat/pull/37203)) Fixes an issue where pagination is not working properly in “users in role” table
+
+- ([#37041](https://github.com/RocketChat/Rocket.Chat/pull/37041)) Ensures the formatted volume value is kept between 0 and 1
+
+- ([#36958](https://github.com/RocketChat/Rocket.Chat/pull/36958)) Adds deprecation warning on `livechat:removeRoom` with new endpoint replacing it; `livechat/rooms.delete`
+
+- <details><summary>Updated dependencies [085d6536d23fe5cc293fec2f1454eb7442e8c7f4, 48d1442a07e860fefd6991c97e94d6a9de345afe, c253db3ece80da36fba7b79b3cbe64d705175d6d, f627e675076a49ebd2f7c80cee1c2a3e51cc22fc, a25e88c06cafdbe3baf7a40e3bffe3aed5a81cf6, 74f2232bade0e5082097432b740e933a8960af54, d166e2a1ffba4e59361d5f79e8c376fca5cbf12f, b85e96a2b7968dda91cb192331d6b1e046071037, 4ab2b7fdb9314538d45abdf4474ea9d2409799be, fd4f9b2523dae23518561cdcfa8d931f87d8964d]:</summary>
+
+  - @rocket.chat/ui-client@24.0.0-rc.0
+  - @rocket.chat/rest-typings@7.12.0-rc.0
+  - @rocket.chat/apps-engine@1.57.0-rc.0
+  - @rocket.chat/ui-contexts@24.0.0-rc.0
+  - @rocket.chat/i18n@1.12.0-rc.0
+  - @rocket.chat/ui-voip@14.0.0-rc.0
+  - @rocket.chat/core-typings@7.12.0-rc.0
+  - @rocket.chat/gazzodown@24.0.0-rc.0
+  - @rocket.chat/web-ui-registration@24.0.0-rc.0
+  - @rocket.chat/federation-matrix@0.0.3-rc.0
+  - @rocket.chat/omnichannel-services@0.3.38-rc.0
+  - @rocket.chat/presence@0.2.41-rc.0
+  - @rocket.chat/api-client@0.2.41-rc.0
+  - @rocket.chat/core-services@0.10.4-rc.0
+  - @rocket.chat/http-router@7.9.8-rc.0
+  - @rocket.chat/models@1.7.1-rc.0
+  - @rocket.chat/apps@0.5.20-rc.0
+  - @rocket.chat/fuselage-ui-kit@24.0.0-rc.0
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-avatar@20.0.0-rc.0
+  - @rocket.chat/ui-video-conf@24.0.0-rc.0
+  - @rocket.chat/license@1.1.1-rc.0
+  - @rocket.chat/media-calls@0.0.3-rc.0
+  - @rocket.chat/pdf-worker@0.3.20-rc.0
+  - @rocket.chat/cron@0.1.41-rc.0
+  - @rocket.chat/freeswitch@1.2.28-rc.0
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.1-rc.0
+  - @rocket.chat/network-broker@0.2.20-rc.0
+  - @rocket.chat/omni-core-ee@0.0.6-rc.0
+  - @rocket.chat/instance-status@0.1.41-rc.0
+  - @rocket.chat/omni-core@0.0.6-rc.0
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
+## 7.11.0
+
+### Minor Changes
+
+- ([#36723](https://github.com/RocketChat/Rocket.Chat/pull/36723) by [@tiagoevanp](https://github.com/tiagoevanp)) Fixes search by name in custom emojis list, by adding a correct parameter to the endpoint `emoji-custom.all`
+
+  Now the endpoint `emoji-custom.all` accepts a `name` as parameter, so the filter should work on emojis page withouth the necessity of set `ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS` env var
+
+- ([#36923](https://github.com/RocketChat/Rocket.Chat/pull/36923)) Replaces some texts in order to improve the E2E encryption communication on the UI
+
+- ([#36589](https://github.com/RocketChat/Rocket.Chat/pull/36589)) Adds new endpoint to disable Livechat Contacts by its id, with a new permission `delete-livechat-contact`.
+
+- ([#36820](https://github.com/RocketChat/Rocket.Chat/pull/36820)) Fixes login using iframe authentication.
+
+- ([#36945](https://github.com/RocketChat/Rocket.Chat/pull/36945)) It removes the encrypted input from the edit room panel in order to avoid duplicated configurations with the same purpose
+
+- ([#36778](https://github.com/RocketChat/Rocket.Chat/pull/36778)) Introduces the ability to reset the e2e encrypted password from the enter e2e encrypted password modal
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+- ([#36717](https://github.com/RocketChat/Rocket.Chat/pull/36717)) Introduces a new voice call architecture along with a new and improved call widget experience.
+
+- ([#36397](https://github.com/RocketChat/Rocket.Chat/pull/36397)) Introduces a new flow for requesting device permissions for Voice Calling, prompting the user before the request. Also solves a few issues with the device selection menu.
+
+- ([#36974](https://github.com/RocketChat/Rocket.Chat/pull/36974)) Improves the Outbound Message modal’s scrolling on smaller viewports and with large templates
+
+### Patch Changes
+
+- ([#36861](https://github.com/RocketChat/Rocket.Chat/pull/36861)) Enable room search by Cyrillic characters in channel names (e.g. "тест").
+
+- ([#36967](https://github.com/RocketChat/Rocket.Chat/pull/36967)) Fixes an issue where apps that import node native modules with the optional `node:` specifier would fail to construct
+
+- ([#37031](https://github.com/RocketChat/Rocket.Chat/pull/37031)) Removes deprecated search federated rooms
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36933](https://github.com/RocketChat/Rocket.Chat/pull/36933)) Adds deprecation warning on `livechat:removeCustomField` with new endpoint replacing it; `livechat/custom-fields.delete`
+
+- ([#36975](https://github.com/RocketChat/Rocket.Chat/pull/36975)) Adds deprecation warning on `livechat:saveAgentInfo` with new endpoint replacing it; `livechat/agents.saveInfo`
+
+- ([#36866](https://github.com/RocketChat/Rocket.Chat/pull/36866)) Fixes an issue with iframe authentication where login should always fallback to iframe authentication in case of any erorrs.
+
+- ([#36661](https://github.com/RocketChat/Rocket.Chat/pull/36661)) Fixes `channels.messages`, `groups.messages`, `dm.messages` and `im.messages` APIs to filter out deleted messages.
+
+- ([#37053](https://github.com/RocketChat/Rocket.Chat/pull/37053)) Fixes stale phone numbers being available for outbound message
+
+- ([#37052](https://github.com/RocketChat/Rocket.Chat/pull/37052)) Adds deprecation warning on `saveCannedResponse`
+
+- ([#36812](https://github.com/RocketChat/Rocket.Chat/pull/36812) by [@tiagoevanp](https://github.com/tiagoevanp)) Prevent `Export Messages` tab from closing when selecting messages by clicking outside of it and preference "Hide Contextual Bar by clicking outside of it" is set true.
+
+- ([#36845](https://github.com/RocketChat/Rocket.Chat/pull/36845)) Adds deprecation warning to `livechat:getAnalyticsChartData`, as well as it adds a new endpoint to replace it; `livechat/analytics/dashboards/charts-data`
+
+- ([#36683](https://github.com/RocketChat/Rocket.Chat/pull/36683)) Fixes an issue where deleted messages remain visible until a manual page refresh when "Message removed" is hidden in hidden system messages settings.
+
+- ([#36982](https://github.com/RocketChat/Rocket.Chat/pull/36982)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#36897](https://github.com/RocketChat/Rocket.Chat/pull/36897)) Adds deprecation warning on `livechat:getRoutingConfig`, as well as it adds new endpoint to replace it; `livechat/config/routing`
+
+- ([#37068](https://github.com/RocketChat/Rocket.Chat/pull/37068)) Changes the feedback message when inviting external users to a federated channel
+
+- ([#36995](https://github.com/RocketChat/Rocket.Chat/pull/36995)) Disables cache for outbound message providers to ensure UI is always up to date
+
+- ([#36813](https://github.com/RocketChat/Rocket.Chat/pull/36813)) Fixes an issue where the omnichannel default priorities are not being translated in the sidebar room menu
+
+- ([#36772](https://github.com/RocketChat/Rocket.Chat/pull/36772) by [@tiagoevanp](https://github.com/tiagoevanp)) Fix issue where resending the welcome email could include unresolved placeholders (e.g., `[name]`, `[email]`).
+
+- ([#37065](https://github.com/RocketChat/Rocket.Chat/pull/37065)) Adds missing tooltip when adding users to federated room, indicating verification status
+
+- ([#36799](https://github.com/RocketChat/Rocket.Chat/pull/36799)) Fixes a missing translation on the create channel/team modal
+
+- ([#36993](https://github.com/RocketChat/Rocket.Chat/pull/36993)) Adds deprecation warning on `livechat:removeRoom`, use `livechat/inquiries.take` instead
+
+- ([#36852](https://github.com/RocketChat/Rocket.Chat/pull/36852)) Fixes `teams.addMembers` API to assign team member roles properly.
+
+- ([#36921](https://github.com/RocketChat/Rocket.Chat/pull/36921)) Adds deprecation warning on `livechat:removeAllClosedRooms` with new endpoint replacing it; `livechat/rooms.removeAllClosedRooms`
+
+- ([#36855](https://github.com/RocketChat/Rocket.Chat/pull/36855)) Changes a strict behavior on reporting slash commands provided by apps
+
+- ([#37007](https://github.com/RocketChat/Rocket.Chat/pull/37007)) Fixes reactivity when creating a federated room, that was wrongly showing Join button on composer, requiring a reload or change of route to be able to send a message.
+
+- ([#36780](https://github.com/RocketChat/Rocket.Chat/pull/36780)) Fixes an issue where isn't possible to scroll the discussion list
+
+- ([#36981](https://github.com/RocketChat/Rocket.Chat/pull/36981)) Adds deprecation warning on `livechat:saveDepartment`
+
+- ([#36797](https://github.com/RocketChat/Rocket.Chat/pull/36797)) Fixes an issue where the encryption toggle was incorrectly reset/disabled/enabled in the Teams creation modal when Broadcast or Private was toggled, or when the user lacked unrelated permissions.
+
+- ([#36919](https://github.com/RocketChat/Rocket.Chat/pull/36919)) Show iframe authentication page, when login through iframe authentication API token fails
+
+- ([#37050](https://github.com/RocketChat/Rocket.Chat/pull/37050)) Adds a validation to external users when creating a channel that is not federated
+
+- ([#36814](https://github.com/RocketChat/Rocket.Chat/pull/36814)) Fixes canned messages contextual bar "Create" button not being affected by the correct permission
+
+- ([#36745](https://github.com/RocketChat/Rocket.Chat/pull/36745) by [@tiagoevanp](https://github.com/tiagoevanp)) Fixes intermittent error "Cannot read properties of undefined" when editing messages
+
+- ([#36776](https://github.com/RocketChat/Rocket.Chat/pull/36776)) Fixes an issue where the omnichannel default priorities are not being translated in priorities list
+
+- ([#36870](https://github.com/RocketChat/Rocket.Chat/pull/36870)) Fixes an issue with inconsistent tooltip display in the permission row
+
+- ([#36943](https://github.com/RocketChat/Rocket.Chat/pull/36943)) Fixes an issue where an object reference leak would cause invalid data to be stored in the database during app installation
+
+- ([#36880](https://github.com/RocketChat/Rocket.Chat/pull/36880)) Fixes issue with Login Detection emails showing undefined values instead of the user agent info
+
+- ([#36668](https://github.com/RocketChat/Rocket.Chat/pull/36668) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat chat.unPinMessage API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36971](https://github.com/RocketChat/Rocket.Chat/pull/36971)) Adds deprecation warning on `livechat:saveCustomField` with new endpoint replacing it; `livechat/custom-fields.save`
+
+- ([#37071](https://github.com/RocketChat/Rocket.Chat/pull/37071)) Prevents adding a external user to a non federated room through Members tab
+
+- ([#36883](https://github.com/RocketChat/Rocket.Chat/pull/36883)) Fixes an issue where users table headers are being displayed when there's no results
+
+- ([#36986](https://github.com/RocketChat/Rocket.Chat/pull/36986)) Adds deprecation warning on `livechat:sendTranscript` with endpoint replacing it; `livechat/trasncript`
+
+- ([#36994](https://github.com/RocketChat/Rocket.Chat/pull/36994)) Fixes button `Add members` not being disabled on a federated room memers tab, when no user is selected
+
+- <details><summary>Updated dependencies [c102712222cc18c050f45f9279f8eafcff3e7e8a, f139c0d42790f0df076f32b4184f6b846bcdbc26, d76a5578ed0e14fae2a041c0e09d565b28630d76, 752e6d41463a1d24e6478e9a815d096c61bcccd9, 8d2ad40c46334aaf35816e52a3b28dc2ac23ce2d, ba793542644d2b725924c4cef253e7d84bc2ff71, 3e177dbd0b65d70bce8587287ba73b30170eb0f7, c5ee569cc3120bb616001fd78687dbf623a6a504, 00611aceec7f158064863f2e829c5a6698687512, dca0b3a44b0c780c0f2b3d78e87074599bc7d43c, d0467df80694fa1bac560085fa704a138872b3cb, c15a47ee1d55118342d0f0ece7af77f6f41132b7, 3dfb557f723a395bc1e00f2647675968c46656bc, 276c270f34293729182e9ebab61e1ff2c35398fc, 3484c1fa14beafa62460f00de5a89cbfa4fa0db5, 5af5203455a41e52dc2a9562d5f30708c7a5e6a5, e82cfaa98321338b86597506c8e872d9f81dc638, feba290fc403de27efb6bb9a571bec43413e976a, b0a4602a4461200b9872b2b073ec56fa55ecb466, 3cbb7da0d8db7f83cd8fa6f9e8f18182b97704f5, 3b2905b476d62817e551ca639600195ebe614c40, 72d9474b2f9149d8690d3483237bd2273d6799ac, 80fbb2eb421253e6066207949eaf2b41871e4428, 90a1759df57814306cbc859409fe041b33db7a39, b74ab6f18ff1343f4835975f663211b005ccc5a1, c6ef437d9071dbd8c08152984dc39542b1ae7306, 399ab0233c9cd5d7f25ce955b452feecdc378744]:</summary>
+
+  - @rocket.chat/models@1.7.0
+  - @rocket.chat/apps-engine@1.56.0
+  - @rocket.chat/gazzodown@23.0.0
+  - @rocket.chat/rest-typings@7.11.0
+  - @rocket.chat/i18n@1.11.0
+  - @rocket.chat/model-typings@1.8.0
+  - @rocket.chat/core-services@0.10.3
+  - @rocket.chat/ui-contexts@23.0.0
+  - @rocket.chat/web-ui-registration@23.0.0
+  - @rocket.chat/fuselage-ui-kit@23.0.0
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@23.0.0
+  - @rocket.chat/ui-composer@0.5.3
+  - @rocket.chat/ui-avatar@19.0.0
+  - @rocket.chat/ui-client@23.0.0
+  - @rocket.chat/ui-voip@13.0.0
+  - @rocket.chat/core-typings@7.11.0
+  - @rocket.chat/license@1.1.0
+  - @rocket.chat/federation-matrix@0.0.2
+  - @rocket.chat/media-calls@0.0.2
+  - @rocket.chat/omni-core-ee@0.0.5
+  - @rocket.chat/omnichannel-services@0.3.37
+  - @rocket.chat/presence@0.2.40
+  - @rocket.chat/cron@0.1.40
+  - @rocket.chat/instance-status@0.1.40
+  - @rocket.chat/omni-core@0.0.5
+  - @rocket.chat/apps@0.5.19
+  - @rocket.chat/api-client@0.2.40
+  - @rocket.chat/http-router@7.9.7
+  - @rocket.chat/network-broker@0.2.19
+  - @rocket.chat/pdf-worker@0.3.19
+  - @rocket.chat/freeswitch@1.2.27
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
+## 7.11.0-rc.7
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.7
+  - @rocket.chat/rest-typings@7.11.0-rc.7
+  - @rocket.chat/federation-matrix@0.0.2-rc.7
+  - @rocket.chat/license@1.1.0-rc.7
+  - @rocket.chat/media-calls@0.0.2-rc.7
+  - @rocket.chat/omnichannel-services@0.3.37-rc.7
+  - @rocket.chat/pdf-worker@0.3.19-rc.7
+  - @rocket.chat/presence@0.2.40-rc.7
+  - @rocket.chat/api-client@0.2.40-rc.7
+  - @rocket.chat/apps@0.5.19-rc.7
+  - @rocket.chat/core-services@0.10.3-rc.7
+  - @rocket.chat/cron@0.1.40-rc.7
+  - @rocket.chat/freeswitch@1.2.27-rc.7
+  - @rocket.chat/fuselage-ui-kit@23.0.0-rc.7
+  - @rocket.chat/gazzodown@23.0.0-rc.7
+  - @rocket.chat/http-router@7.9.7-rc.7
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.0-rc.7
+  - @rocket.chat/ui-avatar@19.0.0-rc.7
+  - @rocket.chat/ui-client@23.0.0-rc.7
+  - @rocket.chat/ui-contexts@23.0.0-rc.7
+  - @rocket.chat/web-ui-registration@23.0.0-rc.7
+  - @rocket.chat/models@1.7.0-rc.7
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.19-rc.7
+  - @rocket.chat/omni-core-ee@0.0.5-rc.7
+  - @rocket.chat/ui-theming@0.4.4-rc.0
+  - @rocket.chat/ui-video-conf@23.0.0-rc.7
+  - @rocket.chat/ui-voip@13.0.0-rc.7
+  - @rocket.chat/instance-status@0.1.40-rc.7
+  - @rocket.chat/omni-core@0.0.5-rc.7
+  </details>
+
+## 7.11.0-rc.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.6
+  - @rocket.chat/rest-typings@7.11.0-rc.6
+  - @rocket.chat/federation-matrix@0.0.2-rc.6
+  - @rocket.chat/license@1.1.0-rc.6
+  - @rocket.chat/media-calls@0.0.2-rc.6
+  - @rocket.chat/omnichannel-services@0.3.36-rc.6
+  - @rocket.chat/pdf-worker@0.3.18-rc.6
+  - @rocket.chat/presence@0.2.39-rc.6
+  - @rocket.chat/api-client@0.2.39-rc.6
+  - @rocket.chat/apps@0.5.18-rc.6
+  - @rocket.chat/core-services@0.10.2-rc.6
+  - @rocket.chat/cron@0.1.39-rc.6
+  - @rocket.chat/freeswitch@1.2.26-rc.6
+  - @rocket.chat/fuselage-ui-kit@23.0.0-rc.6
+  - @rocket.chat/gazzodown@23.0.0-rc.6
+  - @rocket.chat/http-router@7.9.6-rc.6
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.0-rc.6
+  - @rocket.chat/ui-avatar@19.0.0-rc.6
+  - @rocket.chat/ui-client@23.0.0-rc.6
+  - @rocket.chat/ui-contexts@23.0.0-rc.6
+  - @rocket.chat/web-ui-registration@23.0.0-rc.6
+  - @rocket.chat/models@1.7.0-rc.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.18-rc.6
+  - @rocket.chat/omni-core-ee@0.0.4-rc.6
+  - @rocket.chat/ui-theming@0.4.4-rc.0
+  - @rocket.chat/ui-video-conf@23.0.0-rc.6
+  - @rocket.chat/ui-voip@13.0.0-rc.6
+  - @rocket.chat/instance-status@0.1.39-rc.6
+  - @rocket.chat/omni-core@0.0.4-rc.6
+  </details>
+
+## 7.11.0-rc.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.5
+  - @rocket.chat/rest-typings@7.11.0-rc.5
+  - @rocket.chat/federation-matrix@0.0.2-rc.5
+  - @rocket.chat/license@1.1.0-rc.5
+  - @rocket.chat/media-calls@0.0.2-rc.5
+  - @rocket.chat/omnichannel-services@0.3.36-rc.5
+  - @rocket.chat/pdf-worker@0.3.18-rc.5
+  - @rocket.chat/presence@0.2.39-rc.5
+  - @rocket.chat/api-client@0.2.39-rc.5
+  - @rocket.chat/apps@0.5.18-rc.5
+  - @rocket.chat/core-services@0.10.2-rc.5
+  - @rocket.chat/cron@0.1.39-rc.5
+  - @rocket.chat/freeswitch@1.2.26-rc.5
+  - @rocket.chat/fuselage-ui-kit@23.0.0-rc.5
+  - @rocket.chat/gazzodown@23.0.0-rc.5
+  - @rocket.chat/http-router@7.9.6-rc.5
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.0-rc.5
+  - @rocket.chat/ui-avatar@19.0.0-rc.5
+  - @rocket.chat/ui-client@23.0.0-rc.5
+  - @rocket.chat/ui-contexts@23.0.0-rc.5
+  - @rocket.chat/web-ui-registration@23.0.0-rc.5
+  - @rocket.chat/models@1.7.0-rc.5
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.18-rc.5
+  - @rocket.chat/omni-core-ee@0.0.4-rc.5
+  - @rocket.chat/ui-theming@0.4.4-rc.0
+  - @rocket.chat/ui-video-conf@23.0.0-rc.5
+  - @rocket.chat/ui-voip@13.0.0-rc.5
+  - @rocket.chat/instance-status@0.1.39-rc.5
+  - @rocket.chat/omni-core@0.0.4-rc.5
+  </details>
+
+## 7.11.0-rc.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.4
+  - @rocket.chat/rest-typings@7.11.0-rc.4
+  - @rocket.chat/federation-matrix@0.0.2-rc.4
+  - @rocket.chat/license@1.1.0-rc.4
+  - @rocket.chat/media-calls@0.0.2-rc.4
+  - @rocket.chat/omnichannel-services@0.3.36-rc.4
+  - @rocket.chat/pdf-worker@0.3.18-rc.4
+  - @rocket.chat/presence@0.2.39-rc.4
+  - @rocket.chat/api-client@0.2.39-rc.4
+  - @rocket.chat/apps@0.5.18-rc.4
+  - @rocket.chat/core-services@0.10.2-rc.4
+  - @rocket.chat/cron@0.1.39-rc.4
+  - @rocket.chat/freeswitch@1.2.26-rc.4
+  - @rocket.chat/fuselage-ui-kit@23.0.0-rc.4
+  - @rocket.chat/gazzodown@23.0.0-rc.4
+  - @rocket.chat/http-router@7.9.6-rc.4
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.0-rc.4
+  - @rocket.chat/ui-avatar@19.0.0-rc.4
+  - @rocket.chat/ui-client@23.0.0-rc.4
+  - @rocket.chat/ui-contexts@23.0.0-rc.4
+  - @rocket.chat/web-ui-registration@23.0.0-rc.4
+  - @rocket.chat/models@1.7.0-rc.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.18-rc.4
+  - @rocket.chat/omni-core-ee@0.0.4-rc.4
+  - @rocket.chat/ui-theming@0.4.4-rc.0
+  - @rocket.chat/ui-video-conf@23.0.0-rc.4
+  - @rocket.chat/ui-voip@13.0.0-rc.4
+  - @rocket.chat/instance-status@0.1.39-rc.4
+  - @rocket.chat/omni-core@0.0.4-rc.4
+  </details>
+
+## 7.11.0-rc.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.3
+  - @rocket.chat/rest-typings@7.11.0-rc.3
+  - @rocket.chat/federation-matrix@0.0.2-rc.3
+  - @rocket.chat/license@1.1.0-rc.3
+  - @rocket.chat/media-calls@0.0.2-rc.3
+  - @rocket.chat/omnichannel-services@0.3.36-rc.3
+  - @rocket.chat/pdf-worker@0.3.18-rc.3
+  - @rocket.chat/presence@0.2.39-rc.3
+  - @rocket.chat/api-client@0.2.39-rc.3
+  - @rocket.chat/apps@0.5.18-rc.3
+  - @rocket.chat/core-services@0.10.2-rc.3
+  - @rocket.chat/cron@0.1.39-rc.3
+  - @rocket.chat/freeswitch@1.2.26-rc.3
+  - @rocket.chat/fuselage-ui-kit@23.0.0-rc.3
+  - @rocket.chat/gazzodown@23.0.0-rc.3
+  - @rocket.chat/http-router@7.9.6-rc.3
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.0-rc.3
+  - @rocket.chat/ui-avatar@19.0.0-rc.3
+  - @rocket.chat/ui-client@23.0.0-rc.3
+  - @rocket.chat/ui-contexts@23.0.0-rc.3
+  - @rocket.chat/web-ui-registration@23.0.0-rc.3
+  - @rocket.chat/models@1.7.0-rc.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.18-rc.3
+  - @rocket.chat/omni-core-ee@0.0.4-rc.3
+  - @rocket.chat/ui-theming@0.4.4-rc.0
+  - @rocket.chat/ui-video-conf@23.0.0-rc.3
+  - @rocket.chat/ui-voip@13.0.0-rc.3
+  - @rocket.chat/instance-status@0.1.39-rc.3
+  - @rocket.chat/omni-core@0.0.4-rc.3
+  </details>
+
+## 7.11.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37053](https://github.com/RocketChat/Rocket.Chat/pull/37053)) Fixes stale phone numbers being available for outbound message
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.2
+  - @rocket.chat/rest-typings@7.11.0-rc.2
+  - @rocket.chat/federation-matrix@0.0.2-rc.2
+  - @rocket.chat/license@1.1.0-rc.2
+  - @rocket.chat/media-calls@0.0.2-rc.2
+  - @rocket.chat/omnichannel-services@0.3.35-rc.2
+  - @rocket.chat/pdf-worker@0.3.17-rc.2
+  - @rocket.chat/presence@0.2.38-rc.2
+  - @rocket.chat/api-client@0.2.38-rc.2
+  - @rocket.chat/apps@0.5.17-rc.2
+  - @rocket.chat/core-services@0.10.1-rc.2
+  - @rocket.chat/cron@0.1.38-rc.2
+  - @rocket.chat/freeswitch@1.2.25-rc.2
+  - @rocket.chat/fuselage-ui-kit@23.0.0-rc.2
+  - @rocket.chat/gazzodown@23.0.0-rc.2
+  - @rocket.chat/http-router@7.9.5-rc.2
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.0-rc.2
+  - @rocket.chat/ui-avatar@19.0.0-rc.2
+  - @rocket.chat/ui-client@23.0.0-rc.2
+  - @rocket.chat/ui-contexts@23.0.0-rc.2
+  - @rocket.chat/web-ui-registration@23.0.0-rc.2
+  - @rocket.chat/models@1.7.0-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.17-rc.2
+  - @rocket.chat/omni-core-ee@0.0.3-rc.2
+  - @rocket.chat/ui-theming@0.4.4-rc.0
+  - @rocket.chat/ui-video-conf@23.0.0-rc.2
+  - @rocket.chat/ui-voip@13.0.0-rc.2
+  - @rocket.chat/instance-status@0.1.38-rc.2
+  - @rocket.chat/omni-core@0.0.3-rc.2
+  </details>
+
+## 7.11.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.11.0-rc.1
+  - @rocket.chat/rest-typings@7.11.0-rc.1
+  - @rocket.chat/federation-service@0.1.1-rc.1
+  - @rocket.chat/federation-matrix@0.0.2-rc.1
+  - @rocket.chat/license@1.1.0-rc.1
+  - @rocket.chat/media-calls@0.0.2-rc.1
+  - @rocket.chat/omnichannel-services@0.3.35-rc.1
+  - @rocket.chat/pdf-worker@0.3.17-rc.1
+  - @rocket.chat/presence@0.2.38-rc.1
+  - @rocket.chat/api-client@0.2.38-rc.1
+  - @rocket.chat/apps@0.5.17-rc.1
+  - @rocket.chat/core-services@0.10.1-rc.1
+  - @rocket.chat/cron@0.1.38-rc.1
+  - @rocket.chat/freeswitch@1.2.25-rc.1
+  - @rocket.chat/fuselage-ui-kit@23.0.0-rc.1
+  - @rocket.chat/gazzodown@23.0.0-rc.1
+  - @rocket.chat/http-router@7.9.5-rc.1
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.0-rc.1
+  - @rocket.chat/ui-avatar@19.0.0-rc.1
+  - @rocket.chat/ui-client@23.0.0-rc.1
+  - @rocket.chat/ui-contexts@23.0.0-rc.1
+  - @rocket.chat/web-ui-registration@23.0.0-rc.1
+  - @rocket.chat/models@1.7.0-rc.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.17-rc.1
+  - @rocket.chat/omni-core-ee@0.0.3-rc.1
+  - @rocket.chat/ui-theming@0.4.4-rc.0
+  - @rocket.chat/ui-video-conf@23.0.0-rc.1
+  - @rocket.chat/ui-voip@13.0.0-rc.1
+  - @rocket.chat/instance-status@0.1.38-rc.1
+  - @rocket.chat/omni-core@0.0.3-rc.1
+  </details>
+
+## 7.11.0-rc.0
+
+### Minor Changes
+
+- ([#36723](https://github.com/RocketChat/Rocket.Chat/pull/36723) by [@tiagoevanp](https://github.com/tiagoevanp)) Fixes search by name in custom emojis list, by adding a correct parameter to the endpoint `emoji-custom.all`
+
+  Now the endpoint `emoji-custom.all` accepts a `name` as parameter, so the filter should work on emojis page withouth the necessity of set `ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS` env var
+
+- ([#36923](https://github.com/RocketChat/Rocket.Chat/pull/36923)) Replaces some texts in order to improve the E2E encryption communication on the UI
+
+- ([#36589](https://github.com/RocketChat/Rocket.Chat/pull/36589)) Adds new endpoint to disable Livechat Contacts by its id, with a new permission `delete-livechat-contact`.
+
+- ([#36820](https://github.com/RocketChat/Rocket.Chat/pull/36820)) Fixes login using iframe authentication.
+
+- ([#36945](https://github.com/RocketChat/Rocket.Chat/pull/36945)) It removes the encrypted input from the edit room panel in order to avoid duplicated configurations with the same purpose
+
+- ([#36778](https://github.com/RocketChat/Rocket.Chat/pull/36778)) Introduces the ability to reset the e2e encrypted password from the enter e2e encrypted password modal
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+- ([#36717](https://github.com/RocketChat/Rocket.Chat/pull/36717)) Introduces a new voice call architecture along with a new and improved call widget experience.
+
+- ([#36397](https://github.com/RocketChat/Rocket.Chat/pull/36397)) Introduces a new flow for requesting device permissions for Voice Calling, prompting the user before the request. Also solves a few issues with the device selection menu.
+
+- ([#36974](https://github.com/RocketChat/Rocket.Chat/pull/36974)) Improves the Outbound Message modal’s scrolling on smaller viewports and with large templates
+
+### Patch Changes
+
+- ([#36861](https://github.com/RocketChat/Rocket.Chat/pull/36861)) Enable room search by Cyrillic characters in channel names (e.g. "тест").
+
+- ([#36967](https://github.com/RocketChat/Rocket.Chat/pull/36967)) Fixes an issue where apps that import node native modules with the optional `node:` specifier would fail to construct
+
+- ([#37031](https://github.com/RocketChat/Rocket.Chat/pull/37031)) Removes deprecated search federated rooms
+
+- ([#36933](https://github.com/RocketChat/Rocket.Chat/pull/36933)) Adds deprecation warning on `livechat:removeCustomField` with new endpoint replacing it; `livechat/custom-fields.delete`
+
+- ([#36975](https://github.com/RocketChat/Rocket.Chat/pull/36975)) Adds deprecation warning on `livechat:saveAgentInfo` with new endpoint replacing it; `livechat/agents.saveInfo`
+
+- ([#36866](https://github.com/RocketChat/Rocket.Chat/pull/36866)) Fixes an issue with iframe authentication where login should always fallback to iframe authentication in case of any erorrs.
+
+- ([#36661](https://github.com/RocketChat/Rocket.Chat/pull/36661)) Fixes `channels.messages`, `groups.messages`, `dm.messages` and `im.messages` APIs to filter out deleted messages.
+
+- ([#37052](https://github.com/RocketChat/Rocket.Chat/pull/37052)) Adds deprecation warning on `saveCannedResponse`
+
+- ([#36812](https://github.com/RocketChat/Rocket.Chat/pull/36812) by [@tiagoevanp](https://github.com/tiagoevanp)) Prevent `Export Messages` tab from closing when selecting messages by clicking outside of it and preference "Hide Contextual Bar by clicking outside of it" is set true.
+
+- ([#36845](https://github.com/RocketChat/Rocket.Chat/pull/36845)) Adds deprecation warning to `livechat:getAnalyticsChartData`, as well as it adds a new endpoint to replace it; `livechat/analytics/dashboards/charts-data`
+
+- ([#36683](https://github.com/RocketChat/Rocket.Chat/pull/36683)) Fixes an issue where deleted messages remain visible until a manual page refresh when "Message removed" is hidden in hidden system messages settings.
+
+- ([#36982](https://github.com/RocketChat/Rocket.Chat/pull/36982)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#36897](https://github.com/RocketChat/Rocket.Chat/pull/36897)) Adds deprecation warning on `livechat:getRoutingConfig`, as well as it adds new endpoint to replace it; `livechat/config/routing`
+
+- ([#37068](https://github.com/RocketChat/Rocket.Chat/pull/37068)) Changes the feedback message when inviting external users to a federated channel
+
+- ([#36995](https://github.com/RocketChat/Rocket.Chat/pull/36995)) Disables cache for outbound message providers to ensure UI is always up to date
+
+- ([#36813](https://github.com/RocketChat/Rocket.Chat/pull/36813)) Fixes an issue where the omnichannel default priorities are not being translated in the sidebar room menu
+
+- ([#36772](https://github.com/RocketChat/Rocket.Chat/pull/36772) by [@tiagoevanp](https://github.com/tiagoevanp)) Fix issue where resending the welcome email could include unresolved placeholders (e.g., `[name]`, `[email]`).
+
+- ([#37065](https://github.com/RocketChat/Rocket.Chat/pull/37065)) Adds missing tooltip when adding users to federated room, indicating verification status
+
+- ([#36799](https://github.com/RocketChat/Rocket.Chat/pull/36799)) Fixes a missing translation on the create channel/team modal
+
+- ([#36993](https://github.com/RocketChat/Rocket.Chat/pull/36993)) Adds deprecation warning on `livechat:removeRoom`, use `livechat/inquiries.take` instead
+
+- ([#36852](https://github.com/RocketChat/Rocket.Chat/pull/36852)) Fixes `teams.addMembers` API to assign team member roles properly.
+
+- ([#36921](https://github.com/RocketChat/Rocket.Chat/pull/36921)) Adds deprecation warning on `livechat:removeAllClosedRooms` with new endpoint replacing it; `livechat/rooms.removeAllClosedRooms`
+
+- ([#36855](https://github.com/RocketChat/Rocket.Chat/pull/36855)) Changes a strict behavior on reporting slash commands provided by apps
+
+- ([#37007](https://github.com/RocketChat/Rocket.Chat/pull/37007)) Fixes reactivity when creating a federated room, that was wrongly showing Join button on composer, requiring a reload or change of route to be able to send a message.
+
+- ([#36780](https://github.com/RocketChat/Rocket.Chat/pull/36780)) Fixes an issue where isn't possible to scroll the discussion list
+
+- ([#36981](https://github.com/RocketChat/Rocket.Chat/pull/36981)) Adds deprecation warning on `livechat:saveDepartment`
+
+- ([#36797](https://github.com/RocketChat/Rocket.Chat/pull/36797)) Fixes an issue where the encryption toggle was incorrectly reset/disabled/enabled in the Teams creation modal when Broadcast or Private was toggled, or when the user lacked unrelated permissions.
+
+- ([#36919](https://github.com/RocketChat/Rocket.Chat/pull/36919)) Show iframe authentication page, when login through iframe authentication API token fails
+
+- ([#37050](https://github.com/RocketChat/Rocket.Chat/pull/37050)) Adds a validation to external users when creating a channel that is not federated
+
+- ([#36814](https://github.com/RocketChat/Rocket.Chat/pull/36814)) Fixes canned messages contextual bar "Create" button not being affected by the correct permission
+
+- ([#36745](https://github.com/RocketChat/Rocket.Chat/pull/36745) by [@tiagoevanp](https://github.com/tiagoevanp)) Fixes intermittent error "Cannot read properties of undefined" when editing messages
+
+- ([#36776](https://github.com/RocketChat/Rocket.Chat/pull/36776)) Fixes an issue where the omnichannel default priorities are not being translated in priorities list
+
+- ([#36870](https://github.com/RocketChat/Rocket.Chat/pull/36870)) Fixes an issue with inconsistent tooltip display in the permission row
+
+- ([#36943](https://github.com/RocketChat/Rocket.Chat/pull/36943)) Fixes an issue where an object reference leak would cause invalid data to be stored in the database during app installation
+
+- ([#36880](https://github.com/RocketChat/Rocket.Chat/pull/36880)) Fixes issue with Login Detection emails showing undefined values instead of the user agent info
+
+- ([#36668](https://github.com/RocketChat/Rocket.Chat/pull/36668) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat chat.unPinMessage API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36971](https://github.com/RocketChat/Rocket.Chat/pull/36971)) Adds deprecation warning on `livechat:saveCustomField` with new endpoint replacing it; `livechat/custom-fields.save`
+
+- ([#37071](https://github.com/RocketChat/Rocket.Chat/pull/37071)) Prevents adding a external user to a non federated room through Members tab
+
+- ([#36883](https://github.com/RocketChat/Rocket.Chat/pull/36883)) Fixes an issue where users table headers are being displayed when there's no results
+
+- ([#36986](https://github.com/RocketChat/Rocket.Chat/pull/36986)) Adds deprecation warning on `livechat:sendTranscript` with endpoint replacing it; `livechat/trasncript`
+
+- ([#36994](https://github.com/RocketChat/Rocket.Chat/pull/36994)) Fixes button `Add members` not being disabled on a federated room memers tab, when no user is selected
+
+- <details><summary>Updated dependencies [c102712222cc18c050f45f9279f8eafcff3e7e8a, f139c0d42790f0df076f32b4184f6b846bcdbc26, d76a5578ed0e14fae2a041c0e09d565b28630d76, 752e6d41463a1d24e6478e9a815d096c61bcccd9, 8d2ad40c46334aaf35816e52a3b28dc2ac23ce2d, ba793542644d2b725924c4cef253e7d84bc2ff71, 3e177dbd0b65d70bce8587287ba73b30170eb0f7, c5ee569cc3120bb616001fd78687dbf623a6a504, 00611aceec7f158064863f2e829c5a6698687512, dca0b3a44b0c780c0f2b3d78e87074599bc7d43c, d0467df80694fa1bac560085fa704a138872b3cb, c15a47ee1d55118342d0f0ece7af77f6f41132b7, 3dfb557f723a395bc1e00f2647675968c46656bc, 276c270f34293729182e9ebab61e1ff2c35398fc, 3484c1fa14beafa62460f00de5a89cbfa4fa0db5, 5af5203455a41e52dc2a9562d5f30708c7a5e6a5, e82cfaa98321338b86597506c8e872d9f81dc638, feba290fc403de27efb6bb9a571bec43413e976a, b0a4602a4461200b9872b2b073ec56fa55ecb466, 3cbb7da0d8db7f83cd8fa6f9e8f18182b97704f5, 3b2905b476d62817e551ca639600195ebe614c40, 72d9474b2f9149d8690d3483237bd2273d6799ac, 80fbb2eb421253e6066207949eaf2b41871e4428, 90a1759df57814306cbc859409fe041b33db7a39, b74ab6f18ff1343f4835975f663211b005ccc5a1, c6ef437d9071dbd8c08152984dc39542b1ae7306, 399ab0233c9cd5d7f25ce955b452feecdc378744]:</summary>
+
+  - @rocket.chat/models@1.7.0-rc.0
+  - @rocket.chat/apps-engine@1.56.0-rc.0
+  - @rocket.chat/gazzodown@23.0.0-rc.0
+  - @rocket.chat/rest-typings@7.11.0-rc.0
+  - @rocket.chat/i18n@1.11.0-rc.0
+  - @rocket.chat/model-typings@1.8.0-rc.0
+  - @rocket.chat/core-services@0.10.1-rc.0
+  - @rocket.chat/ui-contexts@23.0.0-rc.0
+  - @rocket.chat/web-ui-registration@23.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@23.0.0-rc.0
+  - @rocket.chat/ui-theming@0.4.4-rc.0
+  - @rocket.chat/ui-video-conf@23.0.0-rc.0
+  - @rocket.chat/ui-composer@0.5.3-rc.0
+  - @rocket.chat/ui-avatar@19.0.0-rc.0
+  - @rocket.chat/ui-client@23.0.0-rc.0
+  - @rocket.chat/ui-voip@13.0.0-rc.0
+  - @rocket.chat/core-typings@7.11.0-rc.0
+  - @rocket.chat/license@1.1.0-rc.0
+  - @rocket.chat/federation-service@0.1.1-rc.0
+  - @rocket.chat/federation-matrix@0.0.2-rc.0
+  - @rocket.chat/media-calls@0.0.2-rc.0
+  - @rocket.chat/omni-core-ee@0.0.3-rc.0
+  - @rocket.chat/omnichannel-services@0.3.35-rc.0
+  - @rocket.chat/presence@0.2.38-rc.0
+  - @rocket.chat/cron@0.1.38-rc.0
+  - @rocket.chat/instance-status@0.1.38-rc.0
+  - @rocket.chat/omni-core@0.0.3-rc.0
+  - @rocket.chat/apps@0.5.17-rc.0
+  - @rocket.chat/api-client@0.2.38-rc.0
+  - @rocket.chat/http-router@7.9.5-rc.0
+  - @rocket.chat/network-broker@0.2.17-rc.0
+  - @rocket.chat/pdf-worker@0.3.17-rc.0
+  - @rocket.chat/freeswitch@1.2.25-rc.0
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+
+## 7.10.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#37236](https://github.com/RocketChat/Rocket.Chat/pull/37236) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes real-time monitoring displaying incorrect data
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.2
+  - @rocket.chat/rest-typings@7.10.2
+  - @rocket.chat/license@1.0.30
+  - @rocket.chat/omnichannel-services@0.3.36
+  - @rocket.chat/pdf-worker@0.3.18
+  - @rocket.chat/presence@0.2.39
+  - @rocket.chat/api-client@0.2.39
+  - @rocket.chat/apps@0.5.18
+  - @rocket.chat/core-services@0.10.2
+  - @rocket.chat/cron@0.1.39
+  - @rocket.chat/freeswitch@1.2.26
+  - @rocket.chat/fuselage-ui-kit@22.0.2
+  - @rocket.chat/gazzodown@22.0.2
+  - @rocket.chat/http-router@7.9.6
+  - @rocket.chat/model-typings@1.7.2
+  - @rocket.chat/ui-avatar@18.0.2
+  - @rocket.chat/ui-client@22.0.2
+  - @rocket.chat/ui-contexts@22.0.2
+  - @rocket.chat/web-ui-registration@22.0.2
+  - @rocket.chat/models@1.6.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.18
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.2
+  - @rocket.chat/ui-voip@12.0.2
+  - @rocket.chat/omni-core-ee@0.0.4
+  - @rocket.chat/instance-status@0.1.39
+  - @rocket.chat/omni-core@0.0.4
+  </details>
+
+## 7.10.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36962](https://github.com/RocketChat/Rocket.Chat/pull/36962) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes login using iframe authentication.
+
+- ([#37000](https://github.com/RocketChat/Rocket.Chat/pull/37000) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#37028](https://github.com/RocketChat/Rocket.Chat/pull/37028) by [@dionisio-bot](https://github.com/dionisio-bot)) Changes a strict behavior on reporting slash commands provided by apps
+
+- ([#37041](https://github.com/RocketChat/Rocket.Chat/pull/37041)) Ensures the formatted volume value is kept between 0 and 1
+
+- <details><summary>Updated dependencies [42cea259937ceea4ba8ec62627e4ca40e7e02320]:</summary>
+
+  - @rocket.chat/apps-engine@1.55.1
+  - @rocket.chat/presence@0.2.38
+  - @rocket.chat/apps@0.5.17
+  - @rocket.chat/core-services@0.10.1
+  - @rocket.chat/core-typings@7.10.1
+  - @rocket.chat/fuselage-ui-kit@22.0.1
+  - @rocket.chat/rest-typings@7.10.1
+  - @rocket.chat/license@1.0.29
+  - @rocket.chat/omnichannel-services@0.3.35
+  - @rocket.chat/pdf-worker@0.3.17
+  - @rocket.chat/api-client@0.2.38
+  - @rocket.chat/cron@0.1.38
+  - @rocket.chat/freeswitch@1.2.25
+  - @rocket.chat/gazzodown@22.0.1
+  - @rocket.chat/http-router@7.9.5
+  - @rocket.chat/model-typings@1.7.1
+  - @rocket.chat/ui-avatar@18.0.1
+  - @rocket.chat/ui-client@22.0.1
+  - @rocket.chat/ui-contexts@22.0.1
+  - @rocket.chat/web-ui-registration@22.0.1
+  - @rocket.chat/models@1.6.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.17
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.1
+  - @rocket.chat/ui-voip@12.0.1
+  - @rocket.chat/omni-core-ee@0.0.3
+  - @rocket.chat/instance-status@0.1.38
+  - @rocket.chat/omni-core@0.0.3
+
+  </details>
+
+## 7.10.0
+
+### Minor Changes
+
+- ([#36623](https://github.com/RocketChat/Rocket.Chat/pull/36623)) Overrides the scrollbars auto hide behavior from hiding while not scrolling to hiding while not moving
+
+- ([#36556](https://github.com/RocketChat/Rocket.Chat/pull/36556)) Adds a "Clear Filters" Button to the App Logs Filter Contextual Bar
+
+- ([#36424](https://github.com/RocketChat/Rocket.Chat/pull/36424)) Adds an endpoint to fetch a Outbound Comms Provider's metadata.
+
+- ([#36553](https://github.com/RocketChat/Rocket.Chat/pull/36553)) Creates a new endpoint that allows agents to send an outbound message from a registered app provider
+
+- ([#36558](https://github.com/RocketChat/Rocket.Chat/pull/36558)) Adds a "Collapse All" button to the Apps Logs Filter and moves existing "Expand All" button to a kebab menu
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36622](https://github.com/RocketChat/Rocket.Chat/pull/36622)) Fixes an issue where audio and video messages would stop playing if left idle past their link expiration. Now the player automatically refreshes expired links so users can continue listening or watching without reloading the chat.
+
+- ([#36507](https://github.com/RocketChat/Rocket.Chat/pull/36507) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.create API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36585](https://github.com/RocketChat/Rocket.Chat/pull/36585) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.update API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36703](https://github.com/RocketChat/Rocket.Chat/pull/36703)) Fixes an issue where custom room notification sounds were not applied.
+
+- ([#36738](https://github.com/RocketChat/Rocket.Chat/pull/36738)) Addresses an issue where video conference popups don't receive proper focus because FocusScope is mispositioned
+
+- ([#36577](https://github.com/RocketChat/Rocket.Chat/pull/36577)) Fixes an issue where rooms transferred to a department's queue could get stuck—marked as taken but with no agent assigned.
+
+- ([#36020](https://github.com/RocketChat/Rocket.Chat/pull/36020) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat chat.pinMessage API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36617](https://github.com/RocketChat/Rocket.Chat/pull/36617)) Allows agents to set a default agent when the chat being transferred ends up in the queue
+
+- ([#36716](https://github.com/RocketChat/Rocket.Chat/pull/36716) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat e2e.setRoomKeyID endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36625](https://github.com/RocketChat/Rocket.Chat/pull/36625)) Fixes an issue where app installation would fail if the app package contained JS syntax newer than 2017
+
+- ([#36592](https://github.com/RocketChat/Rocket.Chat/pull/36592)) Fixes `create-p` and `create-c` permissions not being applyed in teams creation
+
+- ([#36714](https://github.com/RocketChat/Rocket.Chat/pull/36714)) Fixes an issue where the Encrypted toggle in the `Create Channel Modal` would change unexpectedly or become disabled after switching the Private or Broadcast options when E2E defaults are enabled.
+
+- ([#36611](https://github.com/RocketChat/Rocket.Chat/pull/36611)) Fix an issue where the report exported in the App logs page would not consider the instance id filter
+
+- ([#36815](https://github.com/RocketChat/Rocket.Chat/pull/36815)) Fixes queued conversations not being sorted in real time based on the room's SLA policy
+
+- ([#36606](https://github.com/RocketChat/Rocket.Chat/pull/36606) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.delete API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36802](https://github.com/RocketChat/Rocket.Chat/pull/36802)) Fixes an error on apps loading that would cause an unhandled promise rejection crash during startup in some cases
+
+- ([#36080](https://github.com/RocketChat/Rocket.Chat/pull/36080)) Fixes issue preventing the Security Logs from being accessed using the Enhanced Navbar in feature preview
+
+- ([#36749](https://github.com/RocketChat/Rocket.Chat/pull/36749)) Fixes an issue with Omnichannel inquiries where multiple instances could take the same inquiry from the queue resulting in the same room being assined to multiple agents.
+
+- ([#36527](https://github.com/RocketChat/Rocket.Chat/pull/36527)) Fixes an issue that caused some types of messages to generate an empty thread preview
+
+- ([#36672](https://github.com/RocketChat/Rocket.Chat/pull/36672)) fixes an issue where some apps that don't need permission would have grantedPermissions as null making it impossible to activate the app
+
+- ([#36651](https://github.com/RocketChat/Rocket.Chat/pull/36651)) Fixes some locale loading issues for date-time formatting functionality.
+
+- ([#36747](https://github.com/RocketChat/Rocket.Chat/pull/36747)) Fixes the `onlyMyDepartments` flag that some endpoints accept so it works more consistent across different user roles. Now, for monitors, `onlyMyDepartments` will include departments the user is serving as an agent. For agents, it will filter the ones the user is serving. There's no change for managers and admins, which can see anything.
+
+- ([#36601](https://github.com/RocketChat/Rocket.Chat/pull/36601)) Fixes an issue where user custom status text is being overwritten, causing it not being updated in real time
+
+- ([#36591](https://github.com/RocketChat/Rocket.Chat/pull/36591)) Fixes order on featured room header actions
+
+- ([#36677](https://github.com/RocketChat/Rocket.Chat/pull/36677) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat dm.delete/im.delete API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36569](https://github.com/RocketChat/Rocket.Chat/pull/36569)) Fixes "View Logs" button not filtering logs by instance id
+
+- ([#36662](https://github.com/RocketChat/Rocket.Chat/pull/36662)) Fixes scroll issue when moving between channels or DMs
+
+- ([#36586](https://github.com/RocketChat/Rocket.Chat/pull/36586) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.list API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36598](https://github.com/RocketChat/Rocket.Chat/pull/36598) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.get API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36676](https://github.com/RocketChat/Rocket.Chat/pull/36676)) Fixes an issue where files containing exif data would fail to upload to S3 when `Message_Attachments_Strip_Exif` is enabled.
+
+- ([#36544](https://github.com/RocketChat/Rocket.Chat/pull/36544)) fixes an issue where bussines hours are not working on weekends when the timezone of bh slip into another day
+
+- ([#36627](https://github.com/RocketChat/Rocket.Chat/pull/36627)) fixes an issue where using `/v1/users.updateOwnBasicInfo`, the user was not be able to set the password (not change), even when required
+
+- ([#35985](https://github.com/RocketChat/Rocket.Chat/pull/35985) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat Permissions API endpoints by migrating to a centralized syntax and utilizing shared AJV schemas for validation. This will enhance API documentation and ensure type safety through response validation.
+
+- ([#36670](https://github.com/RocketChat/Rocket.Chat/pull/36670)) Fixes an issue that would cause the chat server to crash with an unhandled rejection in some cases
+
+- ([#36578](https://github.com/RocketChat/Rocket.Chat/pull/36578)) Fixes a bug where the `/api/v1/users.update` API call was replacing the entire `customFields` object instead of merging only the specified properties. The fix ensures that when updating custom fields, existing values are preserved while only specified fields are updated or added.
+
+- <details><summary>Updated dependencies [f040b27ff67c31188026a0aed9ba1e9c4f717f08, a54f8837338246842585d037a0d0327a79245811, c5f0be15b31d1de03256f74bd277ad4ab753ada2, b25f05acd07762387fa45d67a1241b982c192f5d, c86fbce9b44942662dc25a599fc12b009fd40a74, 22498de4e9de4467642f637d00cc8344ba876987, 2fea1a79b831999f148505b9442cd584e1b06d09, 2f162a0dca79274d4458a5853afe64c506a7554f, 128b228fcb0b2fda2967c88b07340be4b34a5470, fd32867fd4949bc2951a22075498ccb551cc6bbc, 759b178946951f10dfcf0c9daf0f45aceb422998, 1ca92c346e45486e9b6afc66566ae38fac65b48f, 580a3c945252666b3b477e1b626ea1001de6f456, c0c8919723c8d1242973625d15db74c994318460, 8942187a9b062be3aaac8fee4b576dcad467641e, 5d7dec3a68f7281b4b4531fa708d7fc7589a863c, 17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, a1c99dfe7bdee81e85164155e61b94b55dcbb752, dc6acda84bf7452d96f375be3cd97748ed016bfc, 42979690f3880d3c700582b7892020e37bc82be3, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/rest-typings@7.10.0
+  - @rocket.chat/model-typings@1.7.0
+  - @rocket.chat/models@1.6.0
+  - @rocket.chat/apps-engine@1.55.0
+  - @rocket.chat/ui-client@22.0.0
+  - @rocket.chat/http-router@7.9.4
+  - @rocket.chat/i18n@1.10.0
+  - @rocket.chat/core-typings@7.10.0
+  - @rocket.chat/core-services@0.10.0
+  - @rocket.chat/ui-contexts@22.0.0
+  - @rocket.chat/omnichannel-services@0.3.34
+  - @rocket.chat/presence@0.2.37
+  - @rocket.chat/api-client@0.2.37
+  - @rocket.chat/web-ui-registration@22.0.0
+  - @rocket.chat/apps@0.5.16
+  - @rocket.chat/omni-core-ee@0.0.2
+  - @rocket.chat/cron@0.1.37
+  - @rocket.chat/instance-status@0.1.37
+  - @rocket.chat/omni-core@0.0.2
+  - @rocket.chat/fuselage-ui-kit@22.0.0
+  - @rocket.chat/gazzodown@22.0.0
+  - @rocket.chat/ui-voip@12.0.0
+  - @rocket.chat/license@1.0.28
+  - @rocket.chat/pdf-worker@0.3.16
+  - @rocket.chat/freeswitch@1.2.24
+  - @rocket.chat/ui-avatar@18.0.0
+  - @rocket.chat/network-broker@0.2.16
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.0
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
+## 7.10.0-rc.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36815](https://github.com/RocketChat/Rocket.Chat/pull/36815)) Fixes queued conversations not being sorted in real time based on the room's SLA policy
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.0-rc.6
+  - @rocket.chat/rest-typings@7.10.0-rc.6
+  - @rocket.chat/license@1.0.28-rc.6
+  - @rocket.chat/omnichannel-services@0.3.34-rc.6
+  - @rocket.chat/pdf-worker@0.3.16-rc.6
+  - @rocket.chat/presence@0.2.37-rc.6
+  - @rocket.chat/api-client@0.2.37-rc.6
+  - @rocket.chat/apps@0.5.16-rc.6
+  - @rocket.chat/core-services@0.10.0-rc.6
+  - @rocket.chat/cron@0.1.37-rc.6
+  - @rocket.chat/freeswitch@1.2.24-rc.6
+  - @rocket.chat/fuselage-ui-kit@22.0.0-rc.6
+  - @rocket.chat/gazzodown@22.0.0-rc.6
+  - @rocket.chat/http-router@7.9.4-rc.6
+  - @rocket.chat/model-typings@1.7.0-rc.6
+  - @rocket.chat/ui-avatar@18.0.0-rc.6
+  - @rocket.chat/ui-client@22.0.0-rc.6
+  - @rocket.chat/ui-contexts@22.0.0-rc.6
+  - @rocket.chat/web-ui-registration@22.0.0-rc.6
+  - @rocket.chat/models@1.6.0-rc.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.16-rc.6
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.0-rc.6
+  - @rocket.chat/ui-voip@12.0.0-rc.6
+  - @rocket.chat/omni-core-ee@0.0.2-rc.6
+  - @rocket.chat/instance-status@0.1.37-rc.6
+  - @rocket.chat/omni-core@0.0.2-rc.6
+  </details>
+
+## 7.10.0-rc.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.10.0-rc.5
+  - @rocket.chat/rest-typings@7.10.0-rc.5
+  - @rocket.chat/license@1.0.25-rc.5
+  - @rocket.chat/omnichannel-services@0.3.31-rc.5
+  - @rocket.chat/pdf-worker@0.3.13-rc.5
+  - @rocket.chat/presence@0.2.34-rc.5
+  - @rocket.chat/api-client@0.2.34-rc.5
+  - @rocket.chat/apps@0.5.13-rc.5
+  - @rocket.chat/core-services@0.10.0-rc.5
+  - @rocket.chat/cron@0.1.34-rc.5
+  - @rocket.chat/freeswitch@1.2.21-rc.5
+  - @rocket.chat/fuselage-ui-kit@22.0.0-rc.5
+  - @rocket.chat/gazzodown@22.0.0-rc.5
+  - @rocket.chat/http-router@7.9.1-rc.5
+  - @rocket.chat/model-typings@1.7.0-rc.5
+  - @rocket.chat/ui-avatar@18.0.0-rc.5
+  - @rocket.chat/ui-client@22.0.0-rc.5
+  - @rocket.chat/ui-contexts@22.0.0-rc.5
+  - @rocket.chat/web-ui-registration@22.0.0-rc.5
+  - @rocket.chat/models@1.6.0-rc.5
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.13-rc.5
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.0-rc.5
+  - @rocket.chat/ui-voip@12.0.0-rc.5
+  - @rocket.chat/omni-core-ee@0.0.2-rc.5
+  - @rocket.chat/instance-status@0.1.34-rc.5
+  - @rocket.chat/omni-core@0.0.2-rc.5
+  </details>
+
+## 7.10.0-rc.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.0-rc.4
+  - @rocket.chat/rest-typings@7.10.0-rc.4
+  - @rocket.chat/license@1.0.25-rc.4
+  - @rocket.chat/omnichannel-services@0.3.31-rc.4
+  - @rocket.chat/pdf-worker@0.3.13-rc.4
+  - @rocket.chat/presence@0.2.34-rc.4
+  - @rocket.chat/api-client@0.2.34-rc.4
+  - @rocket.chat/apps@0.5.13-rc.4
+  - @rocket.chat/core-services@0.10.0-rc.4
+  - @rocket.chat/cron@0.1.34-rc.4
+  - @rocket.chat/freeswitch@1.2.21-rc.4
+  - @rocket.chat/fuselage-ui-kit@22.0.0-rc.4
+  - @rocket.chat/gazzodown@22.0.0-rc.4
+  - @rocket.chat/http-router@7.9.1-rc.4
+  - @rocket.chat/model-typings@1.7.0-rc.4
+  - @rocket.chat/ui-avatar@18.0.0-rc.4
+  - @rocket.chat/ui-client@22.0.0-rc.4
+  - @rocket.chat/ui-contexts@22.0.0-rc.4
+  - @rocket.chat/web-ui-registration@22.0.0-rc.4
+  - @rocket.chat/models@1.6.0-rc.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.13-rc.4
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.0-rc.4
+  - @rocket.chat/ui-voip@12.0.0-rc.4
+  - @rocket.chat/omni-core-ee@0.0.2-rc.4
+  - @rocket.chat/instance-status@0.1.34-rc.4
+  - @rocket.chat/omni-core@0.0.2-rc.4
+  </details>
+
+## 7.10.0-rc.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- ([#36802](https://github.com/RocketChat/Rocket.Chat/pull/36802)) Fixes an error on apps loading that would cause an unhandled promise rejection crash during startup in some cases
+
+- <details><summary>Updated dependencies [128b228fcb0b2fda2967c88b07340be4b34a5470]:</summary>
+
+  - @rocket.chat/apps-engine@1.55.0-rc.1
+  - @rocket.chat/presence@0.2.34-rc.3
+  - @rocket.chat/apps@0.5.13-rc.3
+  - @rocket.chat/core-services@0.10.0-rc.3
+  - @rocket.chat/core-typings@7.10.0-rc.3
+  - @rocket.chat/fuselage-ui-kit@22.0.0-rc.3
+  - @rocket.chat/rest-typings@7.10.0-rc.3
+  - @rocket.chat/license@1.0.25-rc.3
+  - @rocket.chat/omnichannel-services@0.3.31-rc.3
+  - @rocket.chat/pdf-worker@0.3.13-rc.3
+  - @rocket.chat/api-client@0.2.34-rc.3
+  - @rocket.chat/cron@0.1.34-rc.3
+  - @rocket.chat/freeswitch@1.2.21-rc.3
+  - @rocket.chat/gazzodown@22.0.0-rc.3
+  - @rocket.chat/http-router@7.9.1-rc.3
+  - @rocket.chat/model-typings@1.7.0-rc.3
+  - @rocket.chat/ui-avatar@18.0.0-rc.3
+  - @rocket.chat/ui-client@22.0.0-rc.3
+  - @rocket.chat/ui-contexts@22.0.0-rc.3
+  - @rocket.chat/web-ui-registration@22.0.0-rc.3
+  - @rocket.chat/models@1.6.0-rc.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.13-rc.3
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.0-rc.3
+  - @rocket.chat/ui-voip@12.0.0-rc.3
+  - @rocket.chat/omni-core-ee@0.0.2-rc.3
+  - @rocket.chat/instance-status@0.1.34-rc.3
+  - @rocket.chat/omni-core@0.0.2-rc.3
+  </details>
+
+## 7.10.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.0-rc.2
+  - @rocket.chat/rest-typings@7.10.0-rc.2
+  - @rocket.chat/license@1.0.25-rc.2
+  - @rocket.chat/omnichannel-services@0.3.31-rc.2
+  - @rocket.chat/pdf-worker@0.3.13-rc.2
+  - @rocket.chat/presence@0.2.34-rc.2
+  - @rocket.chat/api-client@0.2.34-rc.2
+  - @rocket.chat/apps@0.5.13-rc.2
+  - @rocket.chat/core-services@0.10.0-rc.2
+  - @rocket.chat/cron@0.1.34-rc.2
+  - @rocket.chat/freeswitch@1.2.21-rc.2
+  - @rocket.chat/fuselage-ui-kit@22.0.0-rc.2
+  - @rocket.chat/gazzodown@22.0.0-rc.2
+  - @rocket.chat/http-router@7.9.1-rc.2
+  - @rocket.chat/model-typings@1.7.0-rc.2
+  - @rocket.chat/ui-avatar@18.0.0-rc.2
+  - @rocket.chat/ui-client@22.0.0-rc.2
+  - @rocket.chat/ui-contexts@22.0.0-rc.2
+  - @rocket.chat/web-ui-registration@22.0.0-rc.2
+  - @rocket.chat/models@1.6.0-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.13-rc.2
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.0-rc.2
+  - @rocket.chat/ui-voip@12.0.0-rc.2
+  - @rocket.chat/omni-core-ee@0.0.2-rc.2
+  - @rocket.chat/instance-status@0.1.34-rc.2
+  - @rocket.chat/omni-core@0.0.2-rc.2
+  </details>
+
+## 7.10.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.0-rc.1
+  - @rocket.chat/rest-typings@7.10.0-rc.1
+  - @rocket.chat/license@1.0.25-rc.1
+  - @rocket.chat/omnichannel-services@0.3.31-rc.1
+  - @rocket.chat/pdf-worker@0.3.13-rc.1
+  - @rocket.chat/presence@0.2.34-rc.1
+  - @rocket.chat/api-client@0.2.34-rc.1
+  - @rocket.chat/apps@0.5.13-rc.1
+  - @rocket.chat/core-services@0.10.0-rc.1
+  - @rocket.chat/cron@0.1.34-rc.1
+  - @rocket.chat/freeswitch@1.2.21-rc.1
+  - @rocket.chat/fuselage-ui-kit@22.0.0-rc.1
+  - @rocket.chat/gazzodown@22.0.0-rc.1
+  - @rocket.chat/http-router@7.9.1-rc.1
+  - @rocket.chat/model-typings@1.7.0-rc.1
+  - @rocket.chat/ui-avatar@18.0.0-rc.1
+  - @rocket.chat/ui-client@22.0.0-rc.1
+  - @rocket.chat/ui-contexts@22.0.0-rc.1
+  - @rocket.chat/web-ui-registration@22.0.0-rc.1
+  - @rocket.chat/models@1.6.0-rc.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.13-rc.1
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.0-rc.1
+  - @rocket.chat/ui-voip@12.0.0-rc.1
+  - @rocket.chat/omni-core-ee@0.0.2-rc.1
+  - @rocket.chat/instance-status@0.1.34-rc.1
+  - @rocket.chat/omni-core@0.0.2-rc.1
+  </details>
+
+## 7.10.0-rc.0
+
+### Minor Changes
+
+- ([#36623](https://github.com/RocketChat/Rocket.Chat/pull/36623)) Overrides the scrollbars auto hide behavior from hiding while not scrolling to hiding while not moving
+
+- ([#36556](https://github.com/RocketChat/Rocket.Chat/pull/36556)) Adds a "Clear Filters" Button to the App Logs Filter Contextual Bar
+
+- ([#36424](https://github.com/RocketChat/Rocket.Chat/pull/36424)) Adds an endpoint to fetch a Outbound Comms Provider's metadata.
+
+- ([#36553](https://github.com/RocketChat/Rocket.Chat/pull/36553)) Creates a new endpoint that allows agents to send an outbound message from a registered app provider
+
+- ([#36558](https://github.com/RocketChat/Rocket.Chat/pull/36558)) Adds a "Collapse All" button to the Apps Logs Filter and moves existing "Expand All" button to a kebab menu
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- ([#36622](https://github.com/RocketChat/Rocket.Chat/pull/36622)) Fixes an issue where audio and video messages would stop playing if left idle past their link expiration. Now the player automatically refreshes expired links so users can continue listening or watching without reloading the chat.
+
+- ([#36507](https://github.com/RocketChat/Rocket.Chat/pull/36507) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.create API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36585](https://github.com/RocketChat/Rocket.Chat/pull/36585) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.update API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36703](https://github.com/RocketChat/Rocket.Chat/pull/36703)) Fixes an issue where custom room notification sounds were not applied.
+
+- ([#36738](https://github.com/RocketChat/Rocket.Chat/pull/36738)) Addresses an issue where video conference popups don't receive proper focus because FocusScope is mispositioned
+
+- ([#36577](https://github.com/RocketChat/Rocket.Chat/pull/36577)) Fixes an issue where rooms transferred to a department's queue could get stuck—marked as taken but with no agent assigned.
+
+- ([#36020](https://github.com/RocketChat/Rocket.Chat/pull/36020) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat chat.pinMessage API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36617](https://github.com/RocketChat/Rocket.Chat/pull/36617)) Allows agents to set a default agent when the chat being transferred ends up in the queue
+
+- ([#36716](https://github.com/RocketChat/Rocket.Chat/pull/36716) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat e2e.setRoomKeyID endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36625](https://github.com/RocketChat/Rocket.Chat/pull/36625)) Fixes an issue where app installation would fail if the app package contained JS syntax newer than 2017
+
+- ([#36592](https://github.com/RocketChat/Rocket.Chat/pull/36592)) Fixes `create-p` and `create-c` permissions not being applyed in teams creation
+
+- ([#36714](https://github.com/RocketChat/Rocket.Chat/pull/36714)) Fixes an issue where the Encrypted toggle in the `Create Channel Modal` would change unexpectedly or become disabled after switching the Private or Broadcast options when E2E defaults are enabled.
+
+- ([#36611](https://github.com/RocketChat/Rocket.Chat/pull/36611)) Fix an issue where the report exported in the App logs page would not consider the instance id filter
+
+- ([#36606](https://github.com/RocketChat/Rocket.Chat/pull/36606) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.delete API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36080](https://github.com/RocketChat/Rocket.Chat/pull/36080)) Fixes issue preventing the Security Logs from being accessed using the Enhanced Navbar in feature preview
+
+- ([#36749](https://github.com/RocketChat/Rocket.Chat/pull/36749)) Fixes an issue with Omnichannel inquiries where multiple instances could take the same inquiry from the queue resulting in the same room being assined to multiple agents.
+
+- ([#36527](https://github.com/RocketChat/Rocket.Chat/pull/36527)) Fixes an issue that caused some types of messages to generate an empty thread preview
+
+- ([#36672](https://github.com/RocketChat/Rocket.Chat/pull/36672)) fixes an issue where some apps that don't need permission would have grantedPermissions as null making it impossible to activate the app
+
+- ([#36651](https://github.com/RocketChat/Rocket.Chat/pull/36651)) Fixes some locale loading issues for date-time formatting functionality.
+
+- ([#36747](https://github.com/RocketChat/Rocket.Chat/pull/36747)) Fixes the `onlyMyDepartments` flag that some endpoints accept so it works more consistent across different user roles. Now, for monitors, `onlyMyDepartments` will include departments the user is serving as an agent. For agents, it will filter the ones the user is serving. There's no change for managers and admins, which can see anything.
+
+- ([#36601](https://github.com/RocketChat/Rocket.Chat/pull/36601)) Fixes an issue where user custom status text is being overwritten, causing it not being updated in real time
+
+- ([#36591](https://github.com/RocketChat/Rocket.Chat/pull/36591)) Fixes order on featured room header actions
+
+- ([#36677](https://github.com/RocketChat/Rocket.Chat/pull/36677) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat dm.delete/im.delete API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36569](https://github.com/RocketChat/Rocket.Chat/pull/36569)) Fixes "View Logs" button not filtering logs by instance id
+
+- ([#36662](https://github.com/RocketChat/Rocket.Chat/pull/36662)) Fixes scroll issue when moving between channels or DMs
+
+- ([#36586](https://github.com/RocketChat/Rocket.Chat/pull/36586) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.list API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36598](https://github.com/RocketChat/Rocket.Chat/pull/36598) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.get API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36676](https://github.com/RocketChat/Rocket.Chat/pull/36676)) Fixes an issue where files containing exif data would fail to upload to S3 when `Message_Attachments_Strip_Exif` is enabled.
+
+- ([#36544](https://github.com/RocketChat/Rocket.Chat/pull/36544)) fixes an issue where bussines hours are not working on weekends when the timezone of bh slip into another day
+
+- ([#36627](https://github.com/RocketChat/Rocket.Chat/pull/36627)) fixes an issue where using `/v1/users.updateOwnBasicInfo`, the user was not be able to set the password (not change), even when required
+
+- ([#35985](https://github.com/RocketChat/Rocket.Chat/pull/35985) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat Permissions API endpoints by migrating to a centralized syntax and utilizing shared AJV schemas for validation. This will enhance API documentation and ensure type safety through response validation.
+
+- ([#36670](https://github.com/RocketChat/Rocket.Chat/pull/36670)) Fixes an issue that would cause the chat server to crash with an unhandled rejection in some cases
+
+- ([#36578](https://github.com/RocketChat/Rocket.Chat/pull/36578)) Fixes a bug where the `/api/v1/users.update` API call was replacing the entire `customFields` object instead of merging only the specified properties. The fix ensures that when updating custom fields, existing values are preserved while only specified fields are updated or added.
+
+- <details><summary>Updated dependencies [f040b27ff67c31188026a0aed9ba1e9c4f717f08, a54f8837338246842585d037a0d0327a79245811, c5f0be15b31d1de03256f74bd277ad4ab753ada2, b25f05acd07762387fa45d67a1241b982c192f5d, c86fbce9b44942662dc25a599fc12b009fd40a74, 22498de4e9de4467642f637d00cc8344ba876987, 2fea1a79b831999f148505b9442cd584e1b06d09, 2f162a0dca79274d4458a5853afe64c506a7554f, fd32867fd4949bc2951a22075498ccb551cc6bbc, 759b178946951f10dfcf0c9daf0f45aceb422998, 1ca92c346e45486e9b6afc66566ae38fac65b48f, 580a3c945252666b3b477e1b626ea1001de6f456, c0c8919723c8d1242973625d15db74c994318460, 8942187a9b062be3aaac8fee4b576dcad467641e, 5d7dec3a68f7281b4b4531fa708d7fc7589a863c, 17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, a1c99dfe7bdee81e85164155e61b94b55dcbb752, dc6acda84bf7452d96f375be3cd97748ed016bfc, 42979690f3880d3c700582b7892020e37bc82be3, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/rest-typings@7.10.0-rc.0
+  - @rocket.chat/model-typings@1.7.0-rc.0
+  - @rocket.chat/models@1.6.0-rc.0
+  - @rocket.chat/apps-engine@1.55.0-rc.0
+  - @rocket.chat/ui-client@22.0.0-rc.0
+  - @rocket.chat/http-router@7.9.1-rc.0
+  - @rocket.chat/i18n@1.10.0-rc.0
+  - @rocket.chat/core-typings@7.10.0-rc.0
+  - @rocket.chat/core-services@0.10.0-rc.0
+  - @rocket.chat/ui-contexts@22.0.0-rc.0
+  - @rocket.chat/omnichannel-services@0.3.31-rc.0
+  - @rocket.chat/presence@0.2.34-rc.0
+  - @rocket.chat/api-client@0.2.34-rc.0
+  - @rocket.chat/web-ui-registration@22.0.0-rc.0
+  - @rocket.chat/apps@0.5.13-rc.0
+  - @rocket.chat/omni-core-ee@0.0.2-rc.0
+  - @rocket.chat/cron@0.1.34-rc.0
+  - @rocket.chat/instance-status@0.1.34-rc.0
+  - @rocket.chat/omni-core@0.0.2-rc.0
+  - @rocket.chat/fuselage-ui-kit@22.0.0-rc.0
+  - @rocket.chat/gazzodown@22.0.0-rc.0
+  - @rocket.chat/ui-voip@12.0.0-rc.0
+  - @rocket.chat/license@1.0.25-rc.0
+  - @rocket.chat/pdf-worker@0.3.13-rc.0
+  - @rocket.chat/freeswitch@1.2.21-rc.0
+  - @rocket.chat/ui-avatar@18.0.0-rc.0
+  - @rocket.chat/network-broker@0.2.13-rc.0
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.0-rc.0
+  - @rocket.chat/server-cloud-communication@0.0.2
+
+  </details>
+
+## 7.9.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/core-typings@7.9.3
+  - @rocket.chat/rest-typings@7.9.3
+  - @rocket.chat/license@1.0.27
+  - @rocket.chat/omnichannel-services@0.3.33
+  - @rocket.chat/pdf-worker@0.3.15
+  - @rocket.chat/presence@0.2.36
+  - @rocket.chat/api-client@0.2.36
+  - @rocket.chat/apps@0.5.15
+  - @rocket.chat/core-services@0.9.15
+  - @rocket.chat/cron@0.1.36
+  - @rocket.chat/freeswitch@1.2.23
+  - @rocket.chat/fuselage-ui-kit@21.0.3
+  - @rocket.chat/gazzodown@21.0.3
+  - @rocket.chat/http-router@7.9.3
+  - @rocket.chat/model-typings@1.6.15
+  - @rocket.chat/ui-avatar@17.0.3
+  - @rocket.chat/ui-client@21.0.3
+  - @rocket.chat/ui-contexts@21.0.3
+  - @rocket.chat/web-ui-registration@21.0.3
+  - @rocket.chat/models@1.5.15
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.15
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@21.0.3
+  - @rocket.chat/ui-voip@11.0.3
+  - @rocket.chat/instance-status@0.1.36
+  </details>
+
+## 7.9.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+
+- ([#36680](https://github.com/RocketChat/Rocket.Chat/pull/36680) by [@dionisio-bot](https://github.com/dionisio-bot)) fixes an issue where some apps that don't need permission would have grantedPermissions as null making it impossible to activate the app
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.9.2
+  - @rocket.chat/rest-typings@7.9.2
+  - @rocket.chat/license@1.0.26
+  - @rocket.chat/omnichannel-services@0.3.32
+  - @rocket.chat/pdf-worker@0.3.14
+  - @rocket.chat/presence@0.2.35
+  - @rocket.chat/api-client@0.2.35
+  - @rocket.chat/apps@0.5.14
+  - @rocket.chat/core-services@0.9.14
+  - @rocket.chat/cron@0.1.35
+  - @rocket.chat/freeswitch@1.2.22
+  - @rocket.chat/fuselage-ui-kit@21.0.2
+  - @rocket.chat/gazzodown@21.0.2
+  - @rocket.chat/http-router@7.9.2
+  - @rocket.chat/model-typings@1.6.14
+  - @rocket.chat/ui-avatar@17.0.2
+  - @rocket.chat/ui-client@21.0.2
+  - @rocket.chat/ui-contexts@21.0.2
+  - @rocket.chat/web-ui-registration@21.0.2
+  - @rocket.chat/models@1.5.14
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.14
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@21.0.2
+  - @rocket.chat/ui-voip@11.0.2
+  - @rocket.chat/instance-status@0.1.35
+  </details>
+
+## 7.9.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+
+- ([#36581](https://github.com/RocketChat/Rocket.Chat/pull/36581) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where rooms transferred to a department's queue could get stuck—marked as taken but with no agent assigned.
+
+- ([#36612](https://github.com/RocketChat/Rocket.Chat/pull/36612) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a bug where the `/api/v1/users.update` API call was replacing the entire `customFields` object instead of merging only the specified properties. The fix ensures that when updating custom fields, existing values are preserved while only specified fields are updated or added.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.9.1
+  - @rocket.chat/rest-typings@7.9.1
+  - @rocket.chat/license@1.0.25
+  - @rocket.chat/omnichannel-services@0.3.31
+  - @rocket.chat/pdf-worker@0.3.13
+  - @rocket.chat/presence@0.2.34
+  - @rocket.chat/api-client@0.2.34
+  - @rocket.chat/apps@0.5.13
+  - @rocket.chat/core-services@0.9.13
+  - @rocket.chat/cron@0.1.34
+  - @rocket.chat/freeswitch@1.2.21
+  - @rocket.chat/fuselage-ui-kit@21.0.1
+  - @rocket.chat/gazzodown@21.0.1
+  - @rocket.chat/http-router@7.9.1
+  - @rocket.chat/model-typings@1.6.13
+  - @rocket.chat/ui-avatar@17.0.1
+  - @rocket.chat/ui-client@21.0.1
+  - @rocket.chat/ui-contexts@21.0.1
+  - @rocket.chat/web-ui-registration@21.0.1
+  - @rocket.chat/models@1.5.13
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.13
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@21.0.1
+  - @rocket.chat/ui-voip@11.0.1
+  - @rocket.chat/instance-status@0.1.34
+
+  </details>
+
+## 7.9.0
+
+### Minor Changes
+
+- ([#36321](https://github.com/RocketChat/Rocket.Chat/pull/36321)) Adds theme palette to Application error page
+
+- ([#36288](https://github.com/RocketChat/Rocket.Chat/pull/36288)) Adds a new filter to the Logs tab of the App Details page.
+
+- ([#36359](https://github.com/RocketChat/Rocket.Chat/pull/36359)) Adds a new tab on App Details page to see all instances and it's statuses.
+  Adds a new variant to the status tag, mixed status.
+- ([#36377](https://github.com/RocketChat/Rocket.Chat/pull/36377)) Adds new endpoints for outbound communications
+
+- ([#36142](https://github.com/RocketChat/Rocket.Chat/pull/36142)) Implements new component for Apps Logs View
+
+- ([#36386](https://github.com/RocketChat/Rocket.Chat/pull/36386)) Adds `separateResponse` param to incoming webhooks to return per-channel statuses; when false or omitted, validates all targets and aborts sending to any channel if one fails.
+
+- ([#36339](https://github.com/RocketChat/Rocket.Chat/pull/36339)) Improves the message exportation content for PDF method including images and information about threads and files
+
+- ([#36403](https://github.com/RocketChat/Rocket.Chat/pull/36403)) Adds a button to the apps logs UI that exports logs as a downloadable file
+
+- ([#36413](https://github.com/RocketChat/Rocket.Chat/pull/36413)) Adds 2 new buttons to the App Logs Filters, "Expand all" and "Refresh"
+
+### Patch Changes
+
+- ([#36385](https://github.com/RocketChat/Rocket.Chat/pull/36385)) fixes: v1/updateOwnBasicInfo does not trigger user stream
+
+- ([#36532](https://github.com/RocketChat/Rocket.Chat/pull/36532)) Fixes an issue with SLA policies that caused an inquiry to "dissapear" after its SLA being updated
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36099](https://github.com/RocketChat/Rocket.Chat/pull/36099)) Fixes missing UI updates after pruning messages with "Files only" enabled.
+
+- ([#36105](https://github.com/RocketChat/Rocket.Chat/pull/36105)) Fixes an issue that was causing ddp-streamer process to break if the communication with presence service was interrupted for any reason.
+
+- ([#36317](https://github.com/RocketChat/Rocket.Chat/pull/36317)) Fixes an issue that causes legitimate URLs to return '#' in links
+
+- ([#36494](https://github.com/RocketChat/Rocket.Chat/pull/36494)) Fixes a behavior when transferring a room to another department that was not considering the `waiting queue` setting and attempted to route the chat to an agent instead of leaving it on the department's queue
+
+- ([#36230](https://github.com/RocketChat/Rocket.Chat/pull/36230)) Fixes FreeSwitch event parser to automatically reconnect when connection is lost
+
+- ([#36398](https://github.com/RocketChat/Rocket.Chat/pull/36398)) Fixes missing burger menu in embedded layout page header when using enhanced navigation feature preview
+
+- ([#36333](https://github.com/RocketChat/Rocket.Chat/pull/36333)) Adds `imgAlt`, `imgWidth`, and `imgHeight` props to the `GenericUpsellModal` in order to improve the accessibility of upsell modals by providing alternative text for images and preventing layout shifts during image loading by allowing fixed dimensions.
+
+- ([#36406](https://github.com/RocketChat/Rocket.Chat/pull/36406)) add some missing translations for sound names and font sizes
+
+- ([#36332](https://github.com/RocketChat/Rocket.Chat/pull/36332)) Fixes livechat widget attempting to connect to localhost instead of actual site url
+
+- ([#36345](https://github.com/RocketChat/Rocket.Chat/pull/36345)) Fixes an issue that prevented all custom fields from being saved when multiple updates were issued on a single call
+
+- ([#36265](https://github.com/RocketChat/Rocket.Chat/pull/36265)) Fixes an issue where chat.postMessage returned an error when using the parseUrls flag.
+
+- ([#36404](https://github.com/RocketChat/Rocket.Chat/pull/36404)) fixes the selection of room and users performance when using forward message feature
+
+- ([#35277](https://github.com/RocketChat/Rocket.Chat/pull/35277) by [@Anxhul10](https://github.com/Anxhul10)) Fixes email validation in the registration form to prevent users from registering with an already existing email address.
+
+- ([#36364](https://github.com/RocketChat/Rocket.Chat/pull/36364)) Improves the loading state and accessibility of the `AutoCompleteDepartment` component
+
+- ([#35884](https://github.com/RocketChat/Rocket.Chat/pull/35884) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat Webdav API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36313](https://github.com/RocketChat/Rocket.Chat/pull/36313)) Fixes rate limiter not being enforced for the v1 REST API
+
+- ([#36503](https://github.com/RocketChat/Rocket.Chat/pull/36503)) Fixes missing message text in desktop notifications by ensuring the "Show Message in Notification" setting only affects mobile push notifications.
+
+- ([#35006](https://github.com/RocketChat/Rocket.Chat/pull/35006)) Fixes the parsing of FreeSwitch events to properly generate a history of calls on Rocket.Chat
+
+- ([#36338](https://github.com/RocketChat/Rocket.Chat/pull/36338)) Clears stale data in local storage when login is expired
+
+- ([#36381](https://github.com/RocketChat/Rocket.Chat/pull/36381)) Fixes redirection not being triggered after a required password change
+
+- ([#36449](https://github.com/RocketChat/Rocket.Chat/pull/36449)) Fixes priorities, sla changes & inquiries not being propagated when change streams were not being used
+
+- ([#36256](https://github.com/RocketChat/Rocket.Chat/pull/36256)) Fixes an issue that caused the queue worker to stop processing if something failed when checking MAC limits or while fetching the list of queues
+
+- ([#36259](https://github.com/RocketChat/Rocket.Chat/pull/36259)) Introduces PDF file as an export type for room messages
+
+- ([#36228](https://github.com/RocketChat/Rocket.Chat/pull/36228)) Fixes GDPR contact information removal for Omnichannel.
+
+- ([#36504](https://github.com/RocketChat/Rocket.Chat/pull/36504)) Fixes an issue that would leave an app in an unrecoverable state if the installation failed during the construction of the runtime
+
+- ([#36235](https://github.com/RocketChat/Rocket.Chat/pull/36235)) Fixes the issue of deactivation emails being sent to users that were removed from AD even if they were not active in the workspace
+
+- ([#36346](https://github.com/RocketChat/Rocket.Chat/pull/36346)) Fixes an issue where some error objects sent to apps' method calls would only contain the message '[object Object]'
+
+- <details><summary>Updated dependencies [689f6dfbaaa244e8f6329d6761e608f0e8c0a5a3, 6f4429f1ac0e8a6aaed3b1fb378711388cafc325, ba0cbd32657365abc2a10e50285e02b4e34bf674, 93fef88ee29f27cd533a80109f1cefbc125dd81d, adfc1acc06a693b9a1c09bcc660d3909da56b477, 3f000d7381b857eaefcc2a750a8fb64547bd0058, 459f635a5160fcb0f73fb96b267f76145c11b3e4, 0de9318f344b49cb4afbce6bf8b26f943346343d, 2cec8acd5beddf5ad0c67c29fe632487cb82b026, 0ba4d8bc18c6f2183f2fe32e8739d7455aab75e7, 61b77e4263e5fbbfb73f32521394be29d1ad5b82, 170a413f1f12500e053580f01d43af65e515da42, d4226a564d699e44eb6264095da8de3850071d6b, 6f205101215b4d9890ac62f7acc21257f0cd3cf4, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a, 208fe33880e1b980fa275ed5be9b5fc0da20e267, 93acfbe01460ca01642830ec5dad3a75a53e7eee, 0b4f3d3c2745ded2c3d299aa6aef01e107cb2de0, 4ec3b92df6cb68072447b1931e89b7f4b92124f5, 68426bdfae63f7be8db55d17bd40b076290fd102, cfabf2684046e1e336b1f81d548a081c25419677, e5eda7eb5c3e45ff0798559922c732f5b537d023, 9826bc2ed9a3a4232ce6d5d436c3f489f2d4192b]:</summary>
+
+  - @rocket.chat/ui-voip@11.0.0
+  - @rocket.chat/core-services@0.9.12
+  - @rocket.chat/gazzodown@21.0.0
+  - @rocket.chat/freeswitch@1.2.20
+  - @rocket.chat/i18n@1.9.0
+  - @rocket.chat/model-typings@1.6.12
+  - @rocket.chat/models@1.5.12
+  - @rocket.chat/rest-typings@7.9.0
+  - @rocket.chat/apps-engine@1.54.0
+  - @rocket.chat/core-typings@7.9.0
+  - @rocket.chat/web-ui-registration@21.0.0
+  - @rocket.chat/tools@0.2.3
+  - @rocket.chat/network-broker@0.2.12
+  - @rocket.chat/omnichannel-services@0.3.30
+  - @rocket.chat/presence@0.2.33
+  - @rocket.chat/ui-contexts@21.0.0
+  - @rocket.chat/fuselage-ui-kit@21.0.0
+  - @rocket.chat/apps@0.5.12
+  - @rocket.chat/cron@0.1.33
+  - @rocket.chat/instance-status@0.1.33
+  - @rocket.chat/api-client@0.2.33
+  - @rocket.chat/http-router@7.9.0
+  - @rocket.chat/license@1.0.24
+  - @rocket.chat/pdf-worker@0.3.12
+  - @rocket.chat/ui-avatar@17.0.0
+  - @rocket.chat/ui-client@21.0.0
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@21.0.0
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
+## 7.9.0-rc.2
+
+### Patch Changes
+
+- ([#36532](https://github.com/RocketChat/Rocket.Chat/pull/36532)) Fixes an issue with SLA policies that caused an inquiry to "dissapear" after its SLA being updated
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36494](https://github.com/RocketChat/Rocket.Chat/pull/36494)) Fixes a behavior when transferring a room to another department that was not considering the `waiting queue` setting and attempted to route the chat to an agent instead of leaving it on the department's queue
+
+- ([#36503](https://github.com/RocketChat/Rocket.Chat/pull/36503)) Fixes missing message text in desktop notifications by ensuring the "Show Message in Notification" setting only affects mobile push notifications.
+
+- ([#36504](https://github.com/RocketChat/Rocket.Chat/pull/36504)) Fixes an issue that would leave an app in an unrecoverable state if the installation failed during the construction of the runtime
+
+- <details><summary>Updated dependencies [cfabf2684046e1e336b1f81d548a081c25419677]:</summary>
+
+  - @rocket.chat/apps-engine@1.54.0-rc.1
+  - @rocket.chat/presence@0.2.32-rc.2
+  - @rocket.chat/apps@0.5.11-rc.2
+  - @rocket.chat/core-services@0.9.11-rc.2
+  - @rocket.chat/core-typings@7.9.0-rc.2
+  - @rocket.chat/fuselage-ui-kit@21.0.0-rc.2
+  - @rocket.chat/rest-typings@7.9.0-rc.2
+  - @rocket.chat/license@1.0.23-rc.2
+  - @rocket.chat/omnichannel-services@0.3.29-rc.2
+  - @rocket.chat/pdf-worker@0.3.11-rc.2
+  - @rocket.chat/api-client@0.2.32-rc.2
+  - @rocket.chat/cron@0.1.32-rc.2
+  - @rocket.chat/freeswitch@1.2.19-rc.2
+  - @rocket.chat/gazzodown@21.0.0-rc.2
+  - @rocket.chat/http-router@7.8.3-rc.2
+  - @rocket.chat/model-typings@1.6.11-rc.2
+  - @rocket.chat/ui-avatar@17.0.0-rc.2
+  - @rocket.chat/ui-client@21.0.0-rc.2
+  - @rocket.chat/ui-contexts@21.0.0-rc.2
+  - @rocket.chat/web-ui-registration@21.0.0-rc.2
+  - @rocket.chat/models@1.5.11-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.11-rc.2
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@21.0.0-rc.2
+  - @rocket.chat/ui-voip@11.0.0-rc.2
+  - @rocket.chat/instance-status@0.1.32-rc.2
+  </details>
+
+## 7.9.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.9.0-rc.1
+  - @rocket.chat/rest-typings@7.9.0-rc.1
+  - @rocket.chat/license@1.0.23-rc.1
+  - @rocket.chat/omnichannel-services@0.3.29-rc.1
+  - @rocket.chat/pdf-worker@0.3.11-rc.1
+  - @rocket.chat/presence@0.2.32-rc.1
+  - @rocket.chat/api-client@0.2.32-rc.1
+  - @rocket.chat/apps@0.5.11-rc.1
+  - @rocket.chat/core-services@0.9.11-rc.1
+  - @rocket.chat/cron@0.1.32-rc.1
+  - @rocket.chat/freeswitch@1.2.19-rc.1
+  - @rocket.chat/fuselage-ui-kit@21.0.0-rc.1
+  - @rocket.chat/gazzodown@21.0.0-rc.1
+  - @rocket.chat/http-router@7.8.3-rc.1
+  - @rocket.chat/model-typings@1.6.11-rc.1
+  - @rocket.chat/ui-avatar@17.0.0-rc.1
+  - @rocket.chat/ui-client@21.0.0-rc.1
+  - @rocket.chat/ui-contexts@21.0.0-rc.1
+  - @rocket.chat/web-ui-registration@21.0.0-rc.1
+  - @rocket.chat/models@1.5.11-rc.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.11-rc.1
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@21.0.0-rc.1
+  - @rocket.chat/ui-voip@11.0.0-rc.1
+  - @rocket.chat/instance-status@0.1.32-rc.1
+  </details>
+
+## 7.9.0-rc.0
+
+### Minor Changes
+
+- ([#36321](https://github.com/RocketChat/Rocket.Chat/pull/36321)) Adds theme palette to Application error page
+
+- ([#36288](https://github.com/RocketChat/Rocket.Chat/pull/36288)) Adds a new filter to the Logs tab of the App Details page.
+
+- ([#36359](https://github.com/RocketChat/Rocket.Chat/pull/36359)) Adds a new tab on App Details page to see all instances and it's statuses.
+  Adds a new variant to the status tag, mixed status.
+- ([#36377](https://github.com/RocketChat/Rocket.Chat/pull/36377)) Adds new endpoints for outbound communications
+
+- ([#36142](https://github.com/RocketChat/Rocket.Chat/pull/36142)) Implements new component for Apps Logs View
+
+- ([#36386](https://github.com/RocketChat/Rocket.Chat/pull/36386)) Adds `separateResponse` param to incoming webhooks to return per-channel statuses; when false or omitted, validates all targets and aborts sending to any channel if one fails.
+
+- ([#36339](https://github.com/RocketChat/Rocket.Chat/pull/36339)) Improves the message exportation content for PDF method including images and information about threads and files
+
+- ([#36403](https://github.com/RocketChat/Rocket.Chat/pull/36403)) Adds a button to the apps logs UI that exports logs as a downloadable file
+
+- ([#36413](https://github.com/RocketChat/Rocket.Chat/pull/36413)) Adds 2 new buttons to the App Logs Filters, "Expand all" and "Refresh"
+
+### Patch Changes
+
+- ([#36385](https://github.com/RocketChat/Rocket.Chat/pull/36385)) fixes: v1/updateOwnBasicInfo does not trigger user stream
+
+- ([#36099](https://github.com/RocketChat/Rocket.Chat/pull/36099)) Fixes missing UI updates after pruning messages with "Files only" enabled.
+
+- ([#36105](https://github.com/RocketChat/Rocket.Chat/pull/36105)) Fixes an issue that was causing ddp-streamer process to break if the communication with presence service was interrupted for any reason.
+
+- ([#36317](https://github.com/RocketChat/Rocket.Chat/pull/36317)) Fixes an issue that causes legitimate URLs to return '#' in links
+
+- ([#36230](https://github.com/RocketChat/Rocket.Chat/pull/36230)) Fixes FreeSwitch event parser to automatically reconnect when connection is lost
+
+- ([#36398](https://github.com/RocketChat/Rocket.Chat/pull/36398)) Fixes missing burger menu in embedded layout page header when using enhanced navigation feature preview
+
+- ([#36333](https://github.com/RocketChat/Rocket.Chat/pull/36333)) Adds `imgAlt`, `imgWidth`, and `imgHeight` props to the `GenericUpsellModal` in order to improve the accessibility of upsell modals by providing alternative text for images and preventing layout shifts during image loading by allowing fixed dimensions.
+
+- ([#36406](https://github.com/RocketChat/Rocket.Chat/pull/36406)) add some missing translations for sound names and font sizes
+
+- ([#36332](https://github.com/RocketChat/Rocket.Chat/pull/36332)) Fixes livechat widget attempting to connect to localhost instead of actual site url
+
+- ([#36345](https://github.com/RocketChat/Rocket.Chat/pull/36345)) Fixes an issue that prevented all custom fields from being saved when multiple updates were issued on a single call
+
+- ([#36265](https://github.com/RocketChat/Rocket.Chat/pull/36265)) Fixes an issue where chat.postMessage returned an error when using the parseUrls flag.
+
+- ([#36404](https://github.com/RocketChat/Rocket.Chat/pull/36404)) fixes the selection of room and users performance when using forward message feature
+
+- ([#35277](https://github.com/RocketChat/Rocket.Chat/pull/35277) by [@Anxhul10](https://github.com/Anxhul10)) Fixes email validation in the registration form to prevent users from registering with an already existing email address.
+
+- ([#36364](https://github.com/RocketChat/Rocket.Chat/pull/36364)) Improves the loading state and accessibility of the `AutoCompleteDepartment` component
+
+- ([#35884](https://github.com/RocketChat/Rocket.Chat/pull/35884) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat Webdav API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36313](https://github.com/RocketChat/Rocket.Chat/pull/36313)) Fixes rate limiter not being enforced for the v1 REST API
+
+- ([#35006](https://github.com/RocketChat/Rocket.Chat/pull/35006)) Fixes the parsing of FreeSwitch events to properly generate a history of calls on Rocket.Chat
+
+- ([#36338](https://github.com/RocketChat/Rocket.Chat/pull/36338)) Clears stale data in local storage when login is expired
+
+- ([#36381](https://github.com/RocketChat/Rocket.Chat/pull/36381)) Fixes redirection not being triggered after a required password change
+
+- ([#36449](https://github.com/RocketChat/Rocket.Chat/pull/36449)) Fixes priorities, sla changes & inquiries not being propagated when change streams were not being used
+
+- ([#36256](https://github.com/RocketChat/Rocket.Chat/pull/36256)) Fixes an issue that caused the queue worker to stop processing if something failed when checking MAC limits or while fetching the list of queues
+
+- ([#36259](https://github.com/RocketChat/Rocket.Chat/pull/36259)) Introduces PDF file as an export type for room messages
+
+- ([#36228](https://github.com/RocketChat/Rocket.Chat/pull/36228)) Fixes GDPR contact information removal for Omnichannel.
+
+- ([#36235](https://github.com/RocketChat/Rocket.Chat/pull/36235)) Fixes the issue of deactivation emails being sent to users that were removed from AD even if they were not active in the workspace
+
+- ([#36346](https://github.com/RocketChat/Rocket.Chat/pull/36346)) Fixes an issue where some error objects sent to apps' method calls would only contain the message '[object Object]'
+
+- <details><summary>Updated dependencies [689f6dfbaaa244e8f6329d6761e608f0e8c0a5a3, 6f4429f1ac0e8a6aaed3b1fb378711388cafc325, ba0cbd32657365abc2a10e50285e02b4e34bf674, 93fef88ee29f27cd533a80109f1cefbc125dd81d, adfc1acc06a693b9a1c09bcc660d3909da56b477, 3f000d7381b857eaefcc2a750a8fb64547bd0058, 459f635a5160fcb0f73fb96b267f76145c11b3e4, 0de9318f344b49cb4afbce6bf8b26f943346343d, 2cec8acd5beddf5ad0c67c29fe632487cb82b026, 0ba4d8bc18c6f2183f2fe32e8739d7455aab75e7, 61b77e4263e5fbbfb73f32521394be29d1ad5b82, 170a413f1f12500e053580f01d43af65e515da42, d4226a564d699e44eb6264095da8de3850071d6b, 6f205101215b4d9890ac62f7acc21257f0cd3cf4, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a, 208fe33880e1b980fa275ed5be9b5fc0da20e267, 93acfbe01460ca01642830ec5dad3a75a53e7eee, 0b4f3d3c2745ded2c3d299aa6aef01e107cb2de0, 4ec3b92df6cb68072447b1931e89b7f4b92124f5, 68426bdfae63f7be8db55d17bd40b076290fd102, e5eda7eb5c3e45ff0798559922c732f5b537d023, 9826bc2ed9a3a4232ce6d5d436c3f489f2d4192b]:</summary>
+
+  - @rocket.chat/ui-voip@11.0.0-rc.0
+  - @rocket.chat/core-services@0.9.11-rc.0
+  - @rocket.chat/gazzodown@21.0.0-rc.0
+  - @rocket.chat/freeswitch@1.2.19-rc.0
+  - @rocket.chat/i18n@1.9.0-rc.0
+  - @rocket.chat/model-typings@1.6.11-rc.0
+  - @rocket.chat/models@1.5.11-rc.0
+  - @rocket.chat/rest-typings@7.9.0-rc.0
+  - @rocket.chat/apps-engine@1.54.0-rc.0
+  - @rocket.chat/core-typings@7.9.0-rc.0
+  - @rocket.chat/web-ui-registration@21.0.0-rc.0
+  - @rocket.chat/tools@0.2.3-rc.0
+  - @rocket.chat/network-broker@0.2.11-rc.0
+  - @rocket.chat/omnichannel-services@0.3.29-rc.0
+  - @rocket.chat/presence@0.2.32-rc.0
+  - @rocket.chat/ui-contexts@21.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@21.0.0-rc.0
+  - @rocket.chat/apps@0.5.11-rc.0
+  - @rocket.chat/cron@0.1.32-rc.0
+  - @rocket.chat/instance-status@0.1.32-rc.0
+  - @rocket.chat/api-client@0.2.32-rc.0
+  - @rocket.chat/http-router@7.8.3-rc.0
+  - @rocket.chat/license@1.0.23-rc.0
+  - @rocket.chat/pdf-worker@0.3.11-rc.0
+  - @rocket.chat/ui-avatar@17.0.0-rc.0
+  - @rocket.chat/ui-client@21.0.0-rc.0
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@21.0.0-rc.0
+  - @rocket.chat/server-cloud-communication@0.0.2
+    </details>
+
+## 7.8.3
+
+### Patch Changes
+
+- ([#36538](https://github.com/RocketChat/Rocket.Chat/pull/36538) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue with SLA policies that caused an inquiry to "dissapear" after its SLA being updated
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36534](https://github.com/RocketChat/Rocket.Chat/pull/36534) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a behavior when transferring a room to another department that was not considering the `waiting queue` setting and attempted to route the chat to an agent instead of leaving it on the department's queue
+
+- ([#36545](https://github.com/RocketChat/Rocket.Chat/pull/36545) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes missing message text in desktop notifications by ensuring the "Show Message in Notification" setting only affects mobile push notifications.
+
+- ([#36543](https://github.com/RocketChat/Rocket.Chat/pull/36543)) Fixes an issue that would leave an app in an unrecoverable state if the installation failed during the construction of the runtime
+
+- <details><summary>Updated dependencies [3c914ca4b4f9ae3246b149409c893b7610ae6570]:</summary>
+
+  - @rocket.chat/apps-engine@1.53.1
+  - @rocket.chat/presence@0.2.32
+  - @rocket.chat/apps@0.5.11
+  - @rocket.chat/core-services@0.9.11
+  - @rocket.chat/core-typings@7.8.3
+  - @rocket.chat/fuselage-ui-kit@20.0.3
+  - @rocket.chat/rest-typings@7.8.3
+  - @rocket.chat/license@1.0.23
+  - @rocket.chat/omnichannel-services@0.3.29
+  - @rocket.chat/pdf-worker@0.3.11
+  - @rocket.chat/api-client@0.2.32
+  - @rocket.chat/cron@0.1.32
+  - @rocket.chat/freeswitch@1.2.19
+  - @rocket.chat/gazzodown@20.0.3
+  - @rocket.chat/http-router@7.8.3
+  - @rocket.chat/model-typings@1.6.11
+  - @rocket.chat/ui-contexts@20.0.3
+  - @rocket.chat/models@1.5.11
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.11
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.3
+  - @rocket.chat/ui-client@20.0.3
+  - @rocket.chat/ui-video-conf@20.0.3
+  - @rocket.chat/ui-voip@10.0.3
+  - @rocket.chat/web-ui-registration@20.0.3
+  - @rocket.chat/instance-status@0.1.32
+  </details>
+
+## 7.8.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36474](https://github.com/RocketChat/Rocket.Chat/pull/36474) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes priorities, sla changes & inquiries not being propagated when change streams were not being used
+
+- <details><summary>Updated dependencies [617caa8e7be9c650b96cc1fcc5b836eaa3e7ae39]:</summary>
+
+  - @rocket.chat/model-typings@1.6.10
+  - @rocket.chat/models@1.5.10
+  - @rocket.chat/omnichannel-services@0.3.28
+  - @rocket.chat/apps@0.5.10
+  - @rocket.chat/presence@0.2.31
+  - @rocket.chat/core-services@0.9.10
+  - @rocket.chat/cron@0.1.31
+  - @rocket.chat/instance-status@0.1.31
+  - @rocket.chat/network-broker@0.2.10
+  - @rocket.chat/core-typings@7.8.2
+  - @rocket.chat/rest-typings@7.8.2
+  - @rocket.chat/license@1.0.22
+  - @rocket.chat/pdf-worker@0.3.10
+  - @rocket.chat/api-client@0.2.31
+  - @rocket.chat/freeswitch@1.2.18
+  - @rocket.chat/fuselage-ui-kit@20.0.2
+  - @rocket.chat/gazzodown@20.0.2
+  - @rocket.chat/http-router@7.8.2
+  - @rocket.chat/ui-contexts@20.0.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.2
+  - @rocket.chat/ui-client@20.0.2
+  - @rocket.chat/ui-video-conf@20.0.2
+  - @rocket.chat/ui-voip@10.0.2
+  - @rocket.chat/web-ui-registration@20.0.2
+  </details>
+
+## 7.8.1
+
+### Patch Changes
+
+- ([#36430](https://github.com/RocketChat/Rocket.Chat/pull/36430) by [@dionisio-bot](https://github.com/dionisio-bot)) fixes: v1/updateOwnBasicInfo does not trigger user stream
+
+- fixes an issue where depending on some race conditions the subscription stream was not being updated
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36432](https://github.com/RocketChat/Rocket.Chat/pull/36432) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes redirection not being triggered after a required password change
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.1
+  - @rocket.chat/rest-typings@7.8.1
+  - @rocket.chat/license@1.0.21
+  - @rocket.chat/omnichannel-services@0.3.27
+  - @rocket.chat/pdf-worker@0.3.9
+  - @rocket.chat/presence@0.2.30
+  - @rocket.chat/api-client@0.2.30
+  - @rocket.chat/apps@0.5.9
+  - @rocket.chat/core-services@0.9.9
+  - @rocket.chat/cron@0.1.30
+  - @rocket.chat/freeswitch@1.2.17
+  - @rocket.chat/fuselage-ui-kit@20.0.1
+  - @rocket.chat/gazzodown@20.0.1
+  - @rocket.chat/http-router@7.8.1
+  - @rocket.chat/model-typings@1.6.9
+  - @rocket.chat/ui-contexts@20.0.1
+  - @rocket.chat/models@1.5.9
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.9
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.1
+  - @rocket.chat/ui-client@20.0.1
+  - @rocket.chat/ui-video-conf@20.0.1
+  - @rocket.chat/ui-voip@10.0.1
+  - @rocket.chat/web-ui-registration@20.0.1
+  - @rocket.chat/instance-status@0.1.30
+  </details>
+
+## 7.8.0
+
+### Minor Changes
+
+- ([#36091](https://github.com/RocketChat/Rocket.Chat/pull/36091)) Replaces the cancel button by reset in notification and export messages contextual bar.
+
+- ([#35315](https://github.com/RocketChat/Rocket.Chat/pull/35315) by [@xmaxlad](https://github.com/xmaxlad)) Prevents creation of unnamed Personal Access Tokens by requiring the form's `name` field fullfilment.
+
+- ([#36127](https://github.com/RocketChat/Rocket.Chat/pull/36127)) #### Adds support for hiding the "Expand chat" button in the Livechat widget.
+  This can be configured via the widget API by passing the `hideExpandChat` option to the `setTheme` method, or through the Livechat Appearance settings page by enabling the "Hide 'Expand chat'" option.
+- ([#36169](https://github.com/RocketChat/Rocket.Chat/pull/36169)) Fix an issue where action buttons registered by apps would be displayed even if their apps were disabled
+
+- ([#36067](https://github.com/RocketChat/Rocket.Chat/pull/36067)) Adds pagination to the App/Logs list, allowing the user to see all logs, instead of a subset of the most recent ones
+
+- ([#36013](https://github.com/RocketChat/Rocket.Chat/pull/36013)) Resolves some accessibility violations in the rooms file list context bar, including issues with ARIA attributes and focus management.
+
+- ([#36037](https://github.com/RocketChat/Rocket.Chat/pull/36037)) Adds a new setting to select which algorithm to use when signing SAML requests and responses
+
+- ([#36114](https://github.com/RocketChat/Rocket.Chat/pull/36114)) Improves form fields layout for mobile screens in profile page
+
+- ([#36153](https://github.com/RocketChat/Rocket.Chat/pull/36153)) Adds a new setting to override outlook calendar settings per user email domain
+
+### Patch Changes
+
+- ([#36154](https://github.com/RocketChat/Rocket.Chat/pull/36154)) Fixes an issue that prevented the action of saving an agent when editing a department to work.
+
+- ([#36143](https://github.com/RocketChat/Rocket.Chat/pull/36143)) Fixes message's quote chain limit not being respected for End-to-end encrypted rooms.
+
+- ([#36062](https://github.com/RocketChat/Rocket.Chat/pull/36062)) Removes the `Change to Default` language button from the login page
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36038](https://github.com/RocketChat/Rocket.Chat/pull/36038)) Fixes departments field being limited to 50 entries when adding or editing agents
+
+- ([#36202](https://github.com/RocketChat/Rocket.Chat/pull/36202)) Fixes the usage of `Livechat_enabled_when_agent_idle` setting across the codebase. Goal is to use it wherever is applicable making the feature more predictable.
+
+- ([#36193](https://github.com/RocketChat/Rocket.Chat/pull/36193)) Fixes the condition for firing the `LivechatSessionTaken` webhook event.
+
+- ([#36105](https://github.com/RocketChat/Rocket.Chat/pull/36105)) Fixes an issue that was causing ddp-streamer process to break if the communication with presence service was interrupted for any reason.
+
+- ([#36097](https://github.com/RocketChat/Rocket.Chat/pull/36097)) Fixes `contact.conflictingFields` being updated with nullish values.
+
+- ([#36263](https://github.com/RocketChat/Rocket.Chat/pull/36263)) Fixes an issue, where multiple reconnections would subscribe multiple times to the same stream, only a frontend issue, since the stream cache prevents sending multiple times to the backend, but does not prevent running the callback multiple times
+
+- ([#36095](https://github.com/RocketChat/Rocket.Chat/pull/36095)) Avoids creating font-size tag multiple times
+
+- ([#36035](https://github.com/RocketChat/Rocket.Chat/pull/36035)) Fixes file filtering by name or type not working for non-private channels.
+
+- ([#36224](https://github.com/RocketChat/Rocket.Chat/pull/36224)) fix: Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#36163](https://github.com/RocketChat/Rocket.Chat/pull/36163)) Fixes an issue where incoming webhook messages did not respect the maximum allowed characters per message.
+
+- ([#36111](https://github.com/RocketChat/Rocket.Chat/pull/36111)) Fixes Omnichannel Rest API validation schemas that were flagging `Pagination` properties as invalid
+
+- ([#35947](https://github.com/RocketChat/Rocket.Chat/pull/35947)) Fixes an issue where the slash commands options are not truncating correctly in small screen sizes
+
+- ([#35863](https://github.com/RocketChat/Rocket.Chat/pull/35863)) Fixes encoding of special characters displayed by code blocks in markdown text attachments
+
+- ([#36100](https://github.com/RocketChat/Rocket.Chat/pull/36100)) Disables sorting on non-indexed columns in the "Chats" tab of Omnichannel Contact Center
+
+- ([#36116](https://github.com/RocketChat/Rocket.Chat/pull/36116)) Fixed contacts being marked as `known` after editing a custom field, or resolving conflicts by adding a new model function that only updates the `customFields` or `conflictingFields` prop.
+
+- ([#36171](https://github.com/RocketChat/Rocket.Chat/pull/36171)) Fixes an error message triggered whenever a room is selected on secondary navigation for teams.
+
+- ([#36029](https://github.com/RocketChat/Rocket.Chat/pull/36029)) Fixes issue where department autocomplete did not render options with checkboxes when configured
+
+- ([#36236](https://github.com/RocketChat/Rocket.Chat/pull/36236)) Fixes the `channels.counters`, `groups.counters` and `im.counters` endpoint to include only active users in members count.
+
+- ([#36156](https://github.com/RocketChat/Rocket.Chat/pull/36156)) Fixes an issue where the `Show Message in Notification` and `Show Channel/Group/Username in Notification` setting was ignored in desktop notifications. Also ensures users are redirected to the correct room on interacting with the notifications.
+
+- ([#36004](https://github.com/RocketChat/Rocket.Chat/pull/36004)) Fixes an issue with the Thread List displaying unreadable errors.
+
+- ([#36206](https://github.com/RocketChat/Rocket.Chat/pull/36206)) Fixes an issue where overlapping calendar events could cause the user status to stay busy indefinitely
+
+- ([#36256](https://github.com/RocketChat/Rocket.Chat/pull/36256)) Fixes an issue that caused the queue worker to stop processing if something failed when checking MAC limits or while fetching the list of queues
+
+- ([#36346](https://github.com/RocketChat/Rocket.Chat/pull/36346)) Fixes an issue where some error objects sent to apps' method calls would only contain the message '[object Object]'
+
+- ([#36258](https://github.com/RocketChat/Rocket.Chat/pull/36258)) Fixes an issue that prevented the action of removing an agent when editing a department to work.
+
+- ([#36138](https://github.com/RocketChat/Rocket.Chat/pull/36138)) fixes contextual-bar not working by apps interaction after a page refresh.
+
+- <details><summary>Updated dependencies [5cd7b20d5fb6def0a76743576eaa19fc0bf01c4c, 8de5b66aff3e58af14684db2816410cfe0d3034c, 1eb53d289e1280b5ac4ce4a6995e7fe28d50601a, 8033bdb1f611eb8954a2626aca2583a285a94b27, da288f69a4c169eee942af73f490e7570fe41cc5, 5ac20e2a84200f8002ce454df693ada2653f3827, 2f8213e4c5b64201eb11c97e6e33d2488df9089d, 2de3aa60aa84bb262d3748065654b4ca7a000858, c77056f1d5d7269d9fb4bb16d86711b037ec547f, dc26071ba3e0242d1ea7cf819f05c76ab307b229, 3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c, de4293a1ca5af138437bf01a78e7c0450f437dc7, d58457d25a9a899ebcc7fd0e1fe11d9d370c50d8]:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0
+  - @rocket.chat/web-ui-registration@20.0.0
+  - @rocket.chat/i18n@1.8.0
+  - @rocket.chat/apps-engine@1.53.0
+  - @rocket.chat/model-typings@1.6.8
+  - @rocket.chat/models@1.5.8
+  - @rocket.chat/core-typings@7.8.0
+  - @rocket.chat/omnichannel-services@0.3.26
+  - @rocket.chat/presence@0.2.29
+  - @rocket.chat/api-client@0.2.29
+  - @rocket.chat/core-services@0.9.8
+  - @rocket.chat/http-router@7.8.0
+  - @rocket.chat/ui-contexts@20.0.0
+  - @rocket.chat/apps@0.5.8
+  - @rocket.chat/fuselage-ui-kit@20.0.0
+  - @rocket.chat/cron@0.1.29
+  - @rocket.chat/instance-status@0.1.29
+  - @rocket.chat/license@1.0.20
+  - @rocket.chat/pdf-worker@0.3.8
+  - @rocket.chat/freeswitch@1.2.16
+  - @rocket.chat/gazzodown@20.0.0
+  - @rocket.chat/network-broker@0.2.8
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0
+  - @rocket.chat/ui-client@20.0.0
+  - @rocket.chat/ui-video-conf@20.0.0
+  - @rocket.chat/ui-voip@10.0.0
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
+## 7.8.0-rc.9
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.9
+  - @rocket.chat/rest-typings@7.8.0-rc.9
+  - @rocket.chat/license@1.0.20-rc.9
+  - @rocket.chat/omnichannel-services@0.3.26-rc.9
+  - @rocket.chat/pdf-worker@0.3.8-rc.9
+  - @rocket.chat/presence@0.2.29-rc.9
+  - @rocket.chat/api-client@0.2.29-rc.9
+  - @rocket.chat/apps@0.5.8-rc.9
+  - @rocket.chat/core-services@0.9.8-rc.9
+  - @rocket.chat/cron@0.1.29-rc.9
+  - @rocket.chat/freeswitch@1.2.16-rc.9
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.9
+  - @rocket.chat/gazzodown@20.0.0-rc.9
+  - @rocket.chat/http-router@7.8.0-rc.9
+  - @rocket.chat/model-typings@1.6.8-rc.9
+  - @rocket.chat/ui-contexts@20.0.0-rc.9
+  - @rocket.chat/models@1.5.8-rc.9
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.8-rc.9
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.9
+  - @rocket.chat/ui-client@20.0.0-rc.9
+  - @rocket.chat/ui-video-conf@20.0.0-rc.9
+  - @rocket.chat/ui-voip@10.0.0-rc.9
+  - @rocket.chat/web-ui-registration@20.0.0-rc.9
+  - @rocket.chat/instance-status@0.1.29-rc.9
+  </details>
+
+## 7.8.0-rc.8
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36346](https://github.com/RocketChat/Rocket.Chat/pull/36346)) Fixes an issue where some error objects sent to apps' method calls would only contain the message '[object Object]'
+
+- <details><summary>Updated dependencies [de4293a1ca5af138437bf01a78e7c0450f437dc7]:</summary>
+
+  - @rocket.chat/apps-engine@1.53.0-rc.1
+  - @rocket.chat/presence@0.2.26-rc.8
+  - @rocket.chat/apps@0.5.5-rc.8
+  - @rocket.chat/core-services@0.9.5-rc.8
+  - @rocket.chat/core-typings@7.8.0-rc.8
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.8
+  - @rocket.chat/rest-typings@7.8.0-rc.8
+  - @rocket.chat/license@1.0.17-rc.8
+  - @rocket.chat/omnichannel-services@0.3.23-rc.8
+  - @rocket.chat/pdf-worker@0.3.5-rc.8
+  - @rocket.chat/api-client@0.2.26-rc.8
+  - @rocket.chat/cron@0.1.26-rc.8
+  - @rocket.chat/freeswitch@1.2.13-rc.8
+  - @rocket.chat/gazzodown@20.0.0-rc.8
+  - @rocket.chat/http-router@7.8.0-rc.8
+  - @rocket.chat/model-typings@1.6.5-rc.8
+  - @rocket.chat/ui-contexts@20.0.0-rc.8
+  - @rocket.chat/models@1.5.5-rc.8
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.5-rc.8
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.8
+  - @rocket.chat/ui-client@20.0.0-rc.8
+  - @rocket.chat/ui-video-conf@20.0.0-rc.8
+  - @rocket.chat/ui-voip@10.0.0-rc.8
+  - @rocket.chat/web-ui-registration@20.0.0-rc.8
+  - @rocket.chat/instance-status@0.1.26-rc.8
+  </details>
+
+## 7.8.0-rc.7
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.7
+  - @rocket.chat/rest-typings@7.8.0-rc.7
+  - @rocket.chat/license@1.0.17-rc.7
+  - @rocket.chat/omnichannel-services@0.3.23-rc.7
+  - @rocket.chat/pdf-worker@0.3.5-rc.7
+  - @rocket.chat/presence@0.2.26-rc.7
+  - @rocket.chat/api-client@0.2.26-rc.7
+  - @rocket.chat/apps@0.5.5-rc.7
+  - @rocket.chat/core-services@0.9.5-rc.7
+  - @rocket.chat/cron@0.1.26-rc.7
+  - @rocket.chat/freeswitch@1.2.13-rc.7
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.7
+  - @rocket.chat/gazzodown@20.0.0-rc.7
+  - @rocket.chat/http-router@7.8.0-rc.7
+  - @rocket.chat/model-typings@1.6.5-rc.7
+  - @rocket.chat/ui-contexts@20.0.0-rc.7
+  - @rocket.chat/models@1.5.5-rc.7
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.5-rc.7
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.7
+  - @rocket.chat/ui-client@20.0.0-rc.7
+  - @rocket.chat/ui-video-conf@20.0.0-rc.7
+  - @rocket.chat/ui-voip@10.0.0-rc.7
+  - @rocket.chat/web-ui-registration@20.0.0-rc.7
+  - @rocket.chat/instance-status@0.1.26-rc.7
+  </details>
+
+## 7.8.0-rc.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.6
+  - @rocket.chat/rest-typings@7.8.0-rc.6
+  - @rocket.chat/license@1.0.17-rc.6
+  - @rocket.chat/omnichannel-services@0.3.23-rc.6
+  - @rocket.chat/pdf-worker@0.3.5-rc.6
+  - @rocket.chat/presence@0.2.26-rc.6
+  - @rocket.chat/api-client@0.2.26-rc.6
+  - @rocket.chat/apps@0.5.5-rc.6
+  - @rocket.chat/core-services@0.9.5-rc.6
+  - @rocket.chat/cron@0.1.26-rc.6
+  - @rocket.chat/freeswitch@1.2.13-rc.6
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.6
+  - @rocket.chat/gazzodown@20.0.0-rc.6
+  - @rocket.chat/http-router@7.8.0-rc.6
+  - @rocket.chat/model-typings@1.6.5-rc.6
+  - @rocket.chat/ui-contexts@20.0.0-rc.6
+  - @rocket.chat/models@1.5.5-rc.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.5-rc.6
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.6
+  - @rocket.chat/ui-client@20.0.0-rc.6
+  - @rocket.chat/ui-video-conf@20.0.0-rc.6
+  - @rocket.chat/ui-voip@10.0.0-rc.6
+  - @rocket.chat/web-ui-registration@20.0.0-rc.6
+  - @rocket.chat/instance-status@0.1.26-rc.6
+  </details>
+
+## 7.8.0-rc.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36105](https://github.com/RocketChat/Rocket.Chat/pull/36105)) Fixes an issue that was causing ddp-streamer process to break if the communication with presence service was interrupted for any reason.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.5
+  - @rocket.chat/rest-typings@7.8.0-rc.5
+  - @rocket.chat/license@1.0.17-rc.5
+  - @rocket.chat/omnichannel-services@0.3.23-rc.5
+  - @rocket.chat/pdf-worker@0.3.5-rc.5
+  - @rocket.chat/presence@0.2.26-rc.5
+  - @rocket.chat/api-client@0.2.26-rc.5
+  - @rocket.chat/apps@0.5.5-rc.5
+  - @rocket.chat/core-services@0.9.5-rc.5
+  - @rocket.chat/cron@0.1.26-rc.5
+  - @rocket.chat/freeswitch@1.2.13-rc.5
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.5
+  - @rocket.chat/gazzodown@20.0.0-rc.5
+  - @rocket.chat/http-router@7.8.0-rc.5
+  - @rocket.chat/model-typings@1.6.5-rc.5
+  - @rocket.chat/ui-contexts@20.0.0-rc.5
+  - @rocket.chat/models@1.5.5-rc.5
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.5-rc.5
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.5
+  - @rocket.chat/ui-client@20.0.0-rc.5
+  - @rocket.chat/ui-video-conf@20.0.0-rc.5
+  - @rocket.chat/ui-voip@10.0.0-rc.5
+  - @rocket.chat/web-ui-registration@20.0.0-rc.5
+  - @rocket.chat/instance-status@0.1.26-rc.5
+  </details>
+
+## 7.8.0-rc.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.4
+  - @rocket.chat/rest-typings@7.8.0-rc.4
+  - @rocket.chat/license@1.0.17-rc.4
+  - @rocket.chat/omnichannel-services@0.3.23-rc.4
+  - @rocket.chat/pdf-worker@0.3.5-rc.4
+  - @rocket.chat/presence@0.2.26-rc.4
+  - @rocket.chat/api-client@0.2.26-rc.4
+  - @rocket.chat/apps@0.5.5-rc.4
+  - @rocket.chat/core-services@0.9.5-rc.4
+  - @rocket.chat/cron@0.1.26-rc.4
+  - @rocket.chat/freeswitch@1.2.13-rc.4
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.4
+  - @rocket.chat/gazzodown@20.0.0-rc.4
+  - @rocket.chat/http-router@7.8.0-rc.4
+  - @rocket.chat/model-typings@1.6.5-rc.4
+  - @rocket.chat/ui-contexts@20.0.0-rc.4
+  - @rocket.chat/models@1.5.5-rc.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.5-rc.4
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.4
+  - @rocket.chat/ui-client@20.0.0-rc.4
+  - @rocket.chat/ui-video-conf@20.0.0-rc.4
+  - @rocket.chat/ui-voip@10.0.0-rc.4
+  - @rocket.chat/web-ui-registration@20.0.0-rc.4
+  - @rocket.chat/instance-status@0.1.26-rc.4
+  </details>
+
+## 7.8.0-rc.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36256](https://github.com/RocketChat/Rocket.Chat/pull/36256)) Fixes an issue that caused the queue worker to stop processing if something failed when checking MAC limits or while fetching the list of queues
+
+- ([#36258](https://github.com/RocketChat/Rocket.Chat/pull/36258)) Fixes an issue that prevented the action of removing an agent when editing a department to work.
+
+- <details><summary>Updated dependencies [d58457d25a9a899ebcc7fd0e1fe11d9d370c50d8]:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0-rc.3
+  - @rocket.chat/omnichannel-services@0.3.23-rc.3
+  - @rocket.chat/presence@0.2.26-rc.3
+  - @rocket.chat/api-client@0.2.26-rc.3
+  - @rocket.chat/core-services@0.9.5-rc.3
+  - @rocket.chat/http-router@7.8.0-rc.3
+  - @rocket.chat/models@1.5.5-rc.3
+  - @rocket.chat/ui-contexts@20.0.0-rc.3
+  - @rocket.chat/network-broker@0.2.5-rc.3
+  - @rocket.chat/cron@0.1.26-rc.3
+  - @rocket.chat/instance-status@0.1.26-rc.3
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.3
+  - @rocket.chat/gazzodown@20.0.0-rc.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.3
+  - @rocket.chat/ui-client@20.0.0-rc.3
+  - @rocket.chat/ui-video-conf@20.0.0-rc.3
+  - @rocket.chat/ui-voip@10.0.0-rc.3
+  - @rocket.chat/web-ui-registration@20.0.0-rc.3
+  - @rocket.chat/core-typings@7.8.0-rc.3
+  - @rocket.chat/license@1.0.17-rc.3
+  - @rocket.chat/pdf-worker@0.3.5-rc.3
+  - @rocket.chat/apps@0.5.5-rc.3
+  - @rocket.chat/freeswitch@1.2.13-rc.3
+  - @rocket.chat/model-typings@1.6.5-rc.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
+## 7.8.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.2
+  - @rocket.chat/rest-typings@7.8.0-rc.2
+  - @rocket.chat/license@1.0.17-rc.2
+  - @rocket.chat/omnichannel-services@0.3.23-rc.2
+  - @rocket.chat/pdf-worker@0.3.5-rc.2
+  - @rocket.chat/presence@0.2.26-rc.2
+  - @rocket.chat/api-client@0.2.26-rc.2
+  - @rocket.chat/apps@0.5.5-rc.2
+  - @rocket.chat/core-services@0.9.5-rc.2
+  - @rocket.chat/cron@0.1.26-rc.2
+  - @rocket.chat/freeswitch@1.2.13-rc.2
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.2
+  - @rocket.chat/gazzodown@20.0.0-rc.2
+  - @rocket.chat/http-router@7.8.0-rc.2
+  - @rocket.chat/model-typings@1.6.5-rc.2
+  - @rocket.chat/ui-contexts@20.0.0-rc.2
+  - @rocket.chat/models@1.5.5-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.5-rc.2
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.2
+  - @rocket.chat/ui-client@20.0.0-rc.2
+  - @rocket.chat/ui-video-conf@20.0.0-rc.2
+  - @rocket.chat/ui-voip@10.0.0-rc.2
+  - @rocket.chat/web-ui-registration@20.0.0-rc.2
+  - @rocket.chat/instance-status@0.1.26-rc.2
+  </details>
+
+## 7.8.0-rc.1
+
+- ([#36263](https://github.com/RocketChat/Rocket.Chat/pull/36263)) Fixes an issue, where multiple reconnections would subscribe multiple times to the same stream, only a frontend issue, since the stream cache prevents sending multiple times to the backend, but does not prevent running the callback multiple times
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.1
+  - @rocket.chat/rest-typings@7.8.0-rc.1
+  - @rocket.chat/license@1.0.17-rc.1
+  - @rocket.chat/omnichannel-services@0.3.23-rc.1
+  - @rocket.chat/pdf-worker@0.3.5-rc.1
+  - @rocket.chat/presence@0.2.26-rc.1
+  - @rocket.chat/api-client@0.2.26-rc.1
+  - @rocket.chat/apps@0.5.5-rc.1
+  - @rocket.chat/core-services@0.9.5-rc.1
+  - @rocket.chat/cron@0.1.26-rc.1
+  - @rocket.chat/freeswitch@1.2.13-rc.1
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.1
+  - @rocket.chat/gazzodown@20.0.0-rc.1
+  - @rocket.chat/http-router@7.8.0-rc.1
+  - @rocket.chat/model-typings@1.6.5-rc.1
+  - @rocket.chat/ui-contexts@20.0.0-rc.1
+  - @rocket.chat/models@1.5.5-rc.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.5-rc.1
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.1
+  - @rocket.chat/ui-client@20.0.0-rc.1
+  - @rocket.chat/ui-video-conf@20.0.0-rc.1
+  - @rocket.chat/ui-voip@10.0.0-rc.1
+  - @rocket.chat/web-ui-registration@20.0.0-rc.1
+  - @rocket.chat/instance-status@0.1.26-rc.1
+  </details>
+
+## 7.8.0-rc.0
+
+### Minor Changes
+
+- ([#36091](https://github.com/RocketChat/Rocket.Chat/pull/36091)) Replaces the cancel button by reset in notification and export messages contextual bar.
+
+- ([#35315](https://github.com/RocketChat/Rocket.Chat/pull/35315) by [@xmaxlad](https://github.com/xmaxlad)) Prevents creation of unnamed Personal Access Tokens by requiring the form's `name` field fullfilment.
+
+- ([#36127](https://github.com/RocketChat/Rocket.Chat/pull/36127)) #### Adds support for hiding the "Expand chat" button in the Livechat widget.
+  This can be configured via the widget API by passing the `hideExpandChat` option to the `setTheme` method, or through the Livechat Appearance settings page by enabling the "Hide 'Expand chat'" option.
+- ([#36169](https://github.com/RocketChat/Rocket.Chat/pull/36169)) Fix an issue where action buttons registered by apps would be displayed even if their apps were disabled
+
+- ([#36067](https://github.com/RocketChat/Rocket.Chat/pull/36067)) Adds pagination to the App/Logs list, allowing the user to see all logs, instead of a subset of the most recent ones
+
+- ([#36013](https://github.com/RocketChat/Rocket.Chat/pull/36013)) Resolves some accessibility violations in the rooms file list context bar, including issues with ARIA attributes and focus management.
+
+- ([#36037](https://github.com/RocketChat/Rocket.Chat/pull/36037)) Adds a new setting to select which algorithm to use when signing SAML requests and responses
+
+- ([#36114](https://github.com/RocketChat/Rocket.Chat/pull/36114)) Improves form fields layout for mobile screens in profile page
+
+- ([#36153](https://github.com/RocketChat/Rocket.Chat/pull/36153)) Adds a new setting to override outlook calendar settings per user email domain
+
+### Patch Changes
+
+- ([#36154](https://github.com/RocketChat/Rocket.Chat/pull/36154)) Fixes an issue that prevented the action of saving an agent when editing a department to work.
+
+- ([#36143](https://github.com/RocketChat/Rocket.Chat/pull/36143)) Fixes message's quote chain limit not being respected for End-to-end encrypted rooms.
+
+- ([#36062](https://github.com/RocketChat/Rocket.Chat/pull/36062)) Removes the `Change to Default` language button from the login page
+
+- ([#36038](https://github.com/RocketChat/Rocket.Chat/pull/36038)) Fixes departments field being limited to 50 entries when adding or editing agents
+
+- ([#36202](https://github.com/RocketChat/Rocket.Chat/pull/36202)) Fixes the usage of `Livechat_enabled_when_agent_idle` setting across the codebase. Goal is to use it wherever is applicable making the feature more predictable.
+
+- ([#36193](https://github.com/RocketChat/Rocket.Chat/pull/36193)) Fixes the condition for firing the `LivechatSessionTaken` webhook event.
+
+- ([#36097](https://github.com/RocketChat/Rocket.Chat/pull/36097)) Fixes `contact.conflictingFields` being updated with nullish values.
+
+- ([#36095](https://github.com/RocketChat/Rocket.Chat/pull/36095)) Avoids creating font-size tag multiple times
+
+- ([#36035](https://github.com/RocketChat/Rocket.Chat/pull/36035)) Fixes file filtering by name or type not working for non-private channels.
+
+- ([#36224](https://github.com/RocketChat/Rocket.Chat/pull/36224)) fix: Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#36163](https://github.com/RocketChat/Rocket.Chat/pull/36163)) Fixes an issue where incoming webhook messages did not respect the maximum allowed characters per message.
+
+- ([#36111](https://github.com/RocketChat/Rocket.Chat/pull/36111)) Fixes Omnichannel Rest API validation schemas that were flagging `Pagination` properties as invalid
+
+- ([#35947](https://github.com/RocketChat/Rocket.Chat/pull/35947)) Fixes an issue where the slash commands options are not truncating correctly in small screen sizes
+
+- ([#35863](https://github.com/RocketChat/Rocket.Chat/pull/35863)) Fixes encoding of special characters displayed by code blocks in markdown text attachments
+
+- ([#36100](https://github.com/RocketChat/Rocket.Chat/pull/36100)) Disables sorting on non-indexed columns in the "Chats" tab of Omnichannel Contact Center
+
+- ([#36116](https://github.com/RocketChat/Rocket.Chat/pull/36116)) Fixed contacts being marked as `known` after editing a custom field, or resolving conflicts by adding a new model function that only updates the `customFields` or `conflictingFields` prop.
+
+- ([#36171](https://github.com/RocketChat/Rocket.Chat/pull/36171)) Fixes an error message triggered whenever a room is selected on secondary navigation for teams.
+
+- ([#36029](https://github.com/RocketChat/Rocket.Chat/pull/36029)) Fixes issue where department autocomplete did not render options with checkboxes when configured
+
+- ([#36236](https://github.com/RocketChat/Rocket.Chat/pull/36236)) Fixes the `channels.counters`, `groups.counters` and `im.counters` endpoint to include only active users in members count.
+
+- ([#36156](https://github.com/RocketChat/Rocket.Chat/pull/36156)) Fixes an issue where the `Show Message in Notification` and `Show Channel/Group/Username in Notification` setting was ignored in desktop notifications. Also ensures users are redirected to the correct room on interacting with the notifications.
+
+- ([#36004](https://github.com/RocketChat/Rocket.Chat/pull/36004)) Fixes an issue with the Thread List displaying unreadable errors.
+
+- ([#36206](https://github.com/RocketChat/Rocket.Chat/pull/36206)) Fixes an issue where overlapping calendar events could cause the user status to stay busy indefinitely
+
+- ([#36138](https://github.com/RocketChat/Rocket.Chat/pull/36138)) fixes contextual-bar not working by apps interaction after a page refresh.
+
+- <details><summary>Updated dependencies [5cd7b20d5fb6def0a76743576eaa19fc0bf01c4c, 8de5b66aff3e58af14684db2816410cfe0d3034c, 1eb53d289e1280b5ac4ce4a6995e7fe28d50601a, 8033bdb1f611eb8954a2626aca2583a285a94b27, da288f69a4c169eee942af73f490e7570fe41cc5, 5ac20e2a84200f8002ce454df693ada2653f3827, 2f8213e4c5b64201eb11c97e6e33d2488df9089d, 2de3aa60aa84bb262d3748065654b4ca7a000858, c77056f1d5d7269d9fb4bb16d86711b037ec547f, dc26071ba3e0242d1ea7cf819f05c76ab307b229, 3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0-rc.0
+  - @rocket.chat/web-ui-registration@20.0.0-rc.0
+  - @rocket.chat/i18n@1.8.0-rc.0
+  - @rocket.chat/apps-engine@1.53.0-rc.0
+  - @rocket.chat/model-typings@1.6.5-rc.0
+  - @rocket.chat/models@1.5.5-rc.0
+  - @rocket.chat/core-typings@7.8.0-rc.0
+  - @rocket.chat/omnichannel-services@0.3.23-rc.0
+  - @rocket.chat/presence@0.2.26-rc.0
+  - @rocket.chat/api-client@0.2.26-rc.0
+  - @rocket.chat/core-services@0.9.5-rc.0
+  - @rocket.chat/http-router@7.8.0-rc.0
+  - @rocket.chat/ui-contexts@20.0.0-rc.0
+  - @rocket.chat/apps@0.5.5-rc.0
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.0
+  - @rocket.chat/cron@0.1.26-rc.0
+  - @rocket.chat/instance-status@0.1.26-rc.0
+  - @rocket.chat/license@1.0.17-rc.0
+  - @rocket.chat/pdf-worker@0.3.5-rc.0
+  - @rocket.chat/freeswitch@1.2.13-rc.0
+  - @rocket.chat/gazzodown@20.0.0-rc.0
+  - @rocket.chat/network-broker@0.2.5-rc.0
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.0
+  - @rocket.chat/ui-client@20.0.0-rc.0
+  - @rocket.chat/ui-video-conf@20.0.0-rc.0
+  - @rocket.chat/ui-voip@10.0.0-rc.0
+
+  ### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
+## 7.7.4
+
+- ([#36360](https://github.com/RocketChat/Rocket.Chat/pull/36360) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where some error objects sent to apps' method calls would only contain the message '[object Object]'
+
+- <details><summary>Updated dependencies [46662d78192b438914b2aedb974faa2367225fa5]:</summary>
+
+  - @rocket.chat/apps-engine@1.52.1
+  - @rocket.chat/presence@0.2.28
+  - @rocket.chat/apps@0.5.7
+  - @rocket.chat/core-services@0.9.7
+  - @rocket.chat/core-typings@7.7.4
+  - @rocket.chat/fuselage-ui-kit@19.0.4
+  - @rocket.chat/rest-typings@7.7.4
+  - @rocket.chat/license@1.0.19
+  - @rocket.chat/omnichannel-services@0.3.25
+  - @rocket.chat/pdf-worker@0.3.7
+  - @rocket.chat/api-client@0.2.28
+  - @rocket.chat/cron@0.1.28
+  - @rocket.chat/freeswitch@1.2.15
+  - @rocket.chat/gazzodown@19.0.4
+  - @rocket.chat/model-typings@1.6.7
+  - @rocket.chat/ui-contexts@19.0.4
+  - @rocket.chat/models@1.5.7
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.7
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@15.0.4
+  - @rocket.chat/ui-client@19.0.4
+  - @rocket.chat/ui-video-conf@19.0.4
+  - @rocket.chat/ui-voip@9.0.4
+  - @rocket.chat/web-ui-registration@19.0.4
+  - @rocket.chat/instance-status@0.1.28
+  </details>
+
+## 7.7.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.3
+  - @rocket.chat/rest-typings@7.7.3
+  - @rocket.chat/license@1.0.18
+  - @rocket.chat/omnichannel-services@0.3.24
+  - @rocket.chat/pdf-worker@0.3.6
+  - @rocket.chat/presence@0.2.27
+  - @rocket.chat/api-client@0.2.27
+  - @rocket.chat/apps@0.5.6
+  - @rocket.chat/core-services@0.9.6
+  - @rocket.chat/cron@0.1.27
+  - @rocket.chat/freeswitch@1.2.14
+  - @rocket.chat/fuselage-ui-kit@19.0.3
+  - @rocket.chat/gazzodown@19.0.3
+  - @rocket.chat/model-typings@1.6.6
+  - @rocket.chat/ui-contexts@19.0.3
+  - @rocket.chat/models@1.5.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.6
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@15.0.3
+  - @rocket.chat/ui-client@19.0.3
+  - @rocket.chat/ui-video-conf@19.0.3
+  - @rocket.chat/ui-voip@9.0.3
+  - @rocket.chat/web-ui-registration@19.0.3
+  - @rocket.chat/instance-status@0.1.27
+  </details>
+
+## 7.7.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36323](https://github.com/RocketChat/Rocket.Chat/pull/36323) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that was causing ddp-streamer process to break if the communication with presence service was interrupted for any reason.
+
+- ([#36250](https://github.com/RocketChat/Rocket.Chat/pull/36250) by [@dionisio-bot](https://github.com/dionisio-bot)) fix: Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#36270](https://github.com/RocketChat/Rocket.Chat/pull/36270) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that caused the queue worker to stop processing if something failed when checking MAC limits or while fetching the list of queues
+
+- ([#36298](https://github.com/RocketChat/Rocket.Chat/pull/36298) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that prevented the action of removing an agent when editing a department to work.
+
+- <details><summary>Updated dependencies [8874a5aab72c962f213d128a54393d95f7dabef8]:</summary>
+
+  - @rocket.chat/rest-typings@7.7.2
+  - @rocket.chat/omnichannel-services@0.3.23
+  - @rocket.chat/presence@0.2.26
+  - @rocket.chat/api-client@0.2.26
+  - @rocket.chat/core-services@0.9.5
+  - @rocket.chat/models@1.5.5
+  - @rocket.chat/ui-contexts@19.0.2
+  - @rocket.chat/network-broker@0.2.5
+  - @rocket.chat/cron@0.1.26
+  - @rocket.chat/instance-status@0.1.26
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/fuselage-ui-kit@19.0.2
+  - @rocket.chat/gazzodown@19.0.2
+  - @rocket.chat/ui-avatar@15.0.2
+  - @rocket.chat/ui-client@19.0.2
+  - @rocket.chat/ui-video-conf@19.0.2
+  - @rocket.chat/ui-voip@9.0.2
+  - @rocket.chat/web-ui-registration@19.0.2
+  - @rocket.chat/core-typings@7.7.2
+  - @rocket.chat/license@1.0.17
+  - @rocket.chat/pdf-worker@0.3.5
+  - @rocket.chat/apps@0.5.5
+  - @rocket.chat/freeswitch@1.2.13
+  - @rocket.chat/model-typings@1.6.5
+    - @rocket.chat/server-cloud-communication@0.0.2
+    </details>
+
 ## 7.7.1
 
 ### Patch Changes

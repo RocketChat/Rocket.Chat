@@ -1,12 +1,11 @@
-import { useUserId } from '@rocket.chat/ui-contexts';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { useUser } from '@rocket.chat/ui-contexts';
+import { useCallback } from 'react';
 
-import { Users } from '../../../../../app/models/client';
+import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 
-export const useMessageComposerIsReadOnly = (rid: string): boolean => {
-	const uid = useUserId();
-
-	const isReadOnly = Users.use((state) => Boolean(roomCoordinator.readOnly(rid, (uid ? state.get(uid) : undefined)!)));
-
-	return isReadOnly;
+export const useMessageComposerIsReadOnly = (room: IRoom): boolean => {
+	const user = useUser();
+	return useReactiveValue(useCallback(() => roomCoordinator.readOnly(room, user), [room, user]));
 };

@@ -4,8 +4,8 @@ import { useMethod } from '@rocket.chat/ui-contexts';
 import { useEffect, useState } from 'react';
 import { useShallow } from 'zustand/shallow';
 
-import { Messages } from '../../../../../../app/models/client';
 import { upsertMessageBulk } from '../../../../../../app/ui-utils/client/lib/RoomHistoryManager';
+import { Messages } from '../../../../../stores';
 
 export const useLegacyThreadMessages = (
 	tmid: IThreadMainMessage['_id'],

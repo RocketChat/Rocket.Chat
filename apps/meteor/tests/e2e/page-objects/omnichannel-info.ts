@@ -1,18 +1,22 @@
-import type { Locator } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
+import { OmnichannelContactReviewModal } from './fragments';
 import { OmnichannelManageContact } from './omnichannel-manage-contact';
 
 export class OmnichannelContactInfo extends OmnichannelManageContact {
+	readonly contactReviewModal: OmnichannelContactReviewModal;
+
+	constructor(page: Page) {
+		super(page);
+		this.contactReviewModal = new OmnichannelContactReviewModal(page);
+	}
+
 	get dialogContactInfo(): Locator {
 		return this.page.getByRole('dialog', { name: 'Contact' });
 	}
 
 	get btnEdit(): Locator {
 		return this.page.locator('role=button[name="Edit"]');
-	}
-
-	get btnCall(): Locator {
-		return this.page.locator('role=button[name=Call"]');
 	}
 
 	get tabHistory(): Locator {
@@ -29,5 +33,14 @@ export class OmnichannelContactInfo extends OmnichannelManageContact {
 
 	get btnOpenChat(): Locator {
 		return this.dialogContactInfo.getByRole('button', { name: 'Open chat' });
+	}
+
+	get btnSeeConflicts(): Locator {
+		return this.dialogContactInfo.getByRole('button', { name: 'See conflicts' });
+	}
+
+	async solveConflict(field: string, value: string) {
+		await this.btnSeeConflicts.click();
+		await this.contactReviewModal.solveConfirmation(field, value);
 	}
 }

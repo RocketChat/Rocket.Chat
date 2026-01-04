@@ -126,7 +126,7 @@ class RocketChatIntegrationHandler {
 		room?: IRoom;
 		message: { channel: string; bot?: Record<string, any>; message: Partial<IMessage> };
 		data: IntegrationData;
-	}): Promise<{ channel: string; message: Partial<IMessage> } | undefined> {
+	}): Promise<{ channel: string; message: Partial<IMessage> }[] | undefined> {
 		let user: IUser | null = null;
 		// Try to find the user who we are impersonating
 		if (trigger.impersonateUser) {
@@ -180,12 +180,7 @@ class RocketChatIntegrationHandler {
 			channel: tmpRoom.t === 'd' ? `@${tmpRoom._id}` : `#${tmpRoom._id}`,
 		};
 
-		message = (await processWebhookMessage(
-			message as any,
-			user as IUser & { username: RequiredField<IUser, 'username'> },
-			defaultValues,
-		)) as unknown as { channel: string; message: Partial<IMessage> };
-		return message;
+		return processWebhookMessage(message, user as IUser & { username: RequiredField<IUser, 'username'> }, defaultValues);
 	}
 
 	eventNameArgumentsToObject(...args: unknown[]) {
@@ -221,9 +216,14 @@ class RocketChatIntegrationHandler {
 				}
 				break;
 			case 'roomJoined':
-			case 'roomLeft':
 				if (args.length >= 3) {
 					argObject.user = args[1] as IUser;
+					argObject.room = args[2] as IRoom;
+				}
+				break;
+			case 'roomLeft':
+				if (args.length >= 3) {
+					argObject.user = (args[1] as { user: IUser })?.user;
 					argObject.room = args[2] as IRoom;
 				}
 				break;
@@ -240,7 +240,9 @@ class RocketChatIntegrationHandler {
 
 		outgoingLogger.debug({
 			msg: `Got the event arguments for the event: ${argObject.event}`,
-			argObject,
+			messageId: argObject.message?._id,
+			roomId: argObject.room?._id,
+			userId: argObject.user?._id || argObject.owner?._id,
 		});
 
 		return argObject;
@@ -575,7 +577,7 @@ class RocketChatIntegrationHandler {
 			await updateHistory({
 				historyId,
 				step: 'after-prepare-send-message',
-				prepareSentMessage: [prepareMessage],
+				prepareSentMessage: prepareMessage,
 			});
 		}
 
@@ -669,7 +671,7 @@ class RocketChatIntegrationHandler {
 					await updateHistory({
 						historyId,
 						step: 'after-process-send-message',
-						processSentMessage: [resultMessage],
+						processSentMessage: resultMessage,
 						finished: true,
 					});
 					return;
@@ -765,7 +767,7 @@ class RocketChatIntegrationHandler {
 						await updateHistory({
 							historyId,
 							step: 'url-response-sent-message',
-							resultMessage: [resultMsg],
+							resultMessage: resultMsg,
 							finished: true,
 						});
 					}

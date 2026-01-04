@@ -1,0 +1,817 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+    >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
+      <div
+        style="position: relative; user-select: auto; width: 380px; height: 100%; max-width: 50%; min-width: 380px; min-height: 100%; box-sizing: border-box; flex-shrink: 0;"
+      >
+        <div
+          aria-labelledby="contextualbarTitle"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          role="dialog"
+          tabindex="-1"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-142wtci"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-members rcx-icon rcx-css-1yal9it"
+              >
+                
+              </i>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1spko5i"
+                id="contextualbarTitle"
+              >
+                Members
+              </div>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16mbly4"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+            >
+              <input
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
+                placeholder="Search_by_username"
+                size="1"
+                type="text"
+                value="filter"
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </span>
+            </label>
+            <div
+              class="rcx-box rcx-box--full rcx-css-l1qvi5"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-:r8:"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="online"
+                      >
+                        online
+                      </option>
+                      <option
+                        value="all"
+                      >
+                        all
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-e3nij6"
+                  id="react-aria-:r8:"
+                >
+                  Online
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1wz6xj9"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-1w66n2o"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-nyqak3"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-1848tdm"
+              >
+                Showing_current_of_total
+              </span>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-4k230l"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+              >
+                <div
+                  data-testid="virtuoso-scroller"
+                  data-virtuoso-scroller="true"
+                  style="height: 100%; outline: none; overflow-y: auto; position: relative; width: 100%;"
+                  tabindex="-1"
+                >
+                  <div
+                    style="width: 100%; position: -webkit-sticky; top: 0px; z-index: 1; margin-top: 0px;"
+                  >
+                    <div
+                      data-testid="virtuoso-top-item-list"
+                    />
+                  </div>
+                  <div
+                    data-viewport-type="element"
+                    style="width: 100%; height: 100%; position: absolute; top: 0px;"
+                  >
+                    <div
+                      data-testid="virtuoso-item-list"
+                      style="box-sizing: border-box; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;"
+                    />
+                    <div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-jsq7k5"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-r98g7d"
+            />
+          </div>
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+          />
+        </div>
+      </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Loading without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+    >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
+      <div
+        style="position: relative; user-select: auto; width: 380px; height: 100%; max-width: 50%; min-width: 380px; min-height: 100%; box-sizing: border-box; flex-shrink: 0;"
+      >
+        <div
+          aria-labelledby="contextualbarTitle"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          role="dialog"
+          tabindex="-1"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-142wtci"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-members rcx-icon rcx-css-1yal9it"
+              >
+                
+              </i>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1spko5i"
+                id="contextualbarTitle"
+              >
+                Members
+              </div>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16mbly4"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+            >
+              <input
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
+                placeholder="Search_by_username"
+                size="1"
+                type="text"
+                value=""
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </span>
+            </label>
+            <div
+              class="rcx-box rcx-box--full rcx-css-l1qvi5"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-:rh:"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="online"
+                      >
+                        online
+                      </option>
+                      <option
+                        value="all"
+                      >
+                        all
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-e3nij6"
+                  id="react-aria-:rh:"
+                >
+                  Online
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1wz6xj9"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-1w66n2o"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-nyqak3"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-throbber"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-throbber__circle rcx-css-1xtde58 rcx-css-10wc9to"
+                />
+                <span
+                  class="rcx-box rcx-box--full rcx-throbber__circle rcx-css-1mkyloh rcx-css-10wc9to"
+                />
+                <span
+                  class="rcx-box rcx-box--full rcx-throbber__circle rcx-css-1r9rmv6 rcx-css-10wc9to"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-r98g7d"
+            />
+          </div>
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+          />
+        </div>
+      </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithABACRoom without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+    >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
+      <div
+        style="position: relative; user-select: auto; width: 380px; height: 100%; max-width: 50%; min-width: 380px; min-height: 100%; box-sizing: border-box; flex-shrink: 0;"
+      >
+        <div
+          aria-labelledby="contextualbarTitle"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          role="dialog"
+          tabindex="-1"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-142wtci"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-members rcx-icon rcx-css-1yal9it"
+              >
+                
+              </i>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1spko5i"
+                id="contextualbarTitle"
+              >
+                Members
+              </div>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16mbly4"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+            >
+              <input
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
+                placeholder="Search_by_username"
+                size="1"
+                type="text"
+                value="filter"
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </span>
+            </label>
+            <div
+              class="rcx-box rcx-box--full rcx-css-l1qvi5"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-:rq:"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="online"
+                      >
+                        online
+                      </option>
+                      <option
+                        value="all"
+                      >
+                        all
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-e3nij6"
+                  id="react-aria-:rq:"
+                >
+                  Online
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1wz6xj9"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-1w66n2o"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-nyqak3"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-1848tdm"
+              >
+                Showing_current_of_total
+              </span>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-4k230l"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+              >
+                <div
+                  data-testid="virtuoso-scroller"
+                  data-virtuoso-scroller="true"
+                  style="height: 100%; outline: none; overflow-y: auto; position: relative; width: 100%;"
+                  tabindex="-1"
+                >
+                  <div
+                    style="width: 100%; position: -webkit-sticky; top: 0px; z-index: 1; margin-top: 0px;"
+                  >
+                    <div
+                      data-testid="virtuoso-top-item-list"
+                    />
+                  </div>
+                  <div
+                    data-viewport-type="element"
+                    style="width: 100%; height: 100%; position: absolute; top: 0px;"
+                  >
+                    <div
+                      data-testid="virtuoso-item-list"
+                      style="box-sizing: border-box; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;"
+                    />
+                    <div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-jsq7k5"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-r98g7d"
+            />
+          </div>
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+          />
+        </div>
+      </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithInvitedMember without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+    >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
+      <div
+        style="position: relative; user-select: auto; width: 380px; height: 100%; max-width: 50%; min-width: 380px; min-height: 100%; box-sizing: border-box; flex-shrink: 0;"
+      >
+        <div
+          aria-labelledby="contextualbarTitle"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          role="dialog"
+          tabindex="-1"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-142wtci"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-members rcx-icon rcx-css-1yal9it"
+              >
+                
+              </i>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1spko5i"
+                id="contextualbarTitle"
+              >
+                Members
+              </div>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16mbly4"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+            >
+              <input
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
+                placeholder="Search_by_username"
+                size="1"
+                type="text"
+                value="filter"
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </span>
+            </label>
+            <div
+              class="rcx-box rcx-box--full rcx-css-l1qvi5"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-:r13:"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="online"
+                      >
+                        online
+                      </option>
+                      <option
+                        value="all"
+                      >
+                        all
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-e3nij6"
+                  id="react-aria-:r13:"
+                >
+                  Online
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1wz6xj9"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-1w66n2o"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-nyqak3"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-1848tdm"
+              >
+                Showing_current_of_total
+              </span>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-4k230l"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+              >
+                <div
+                  data-testid="virtuoso-scroller"
+                  data-virtuoso-scroller="true"
+                  style="height: 100%; outline: none; overflow-y: auto; position: relative; width: 100%;"
+                  tabindex="-1"
+                >
+                  <div
+                    style="width: 100%; position: -webkit-sticky; top: 0px; z-index: 1; margin-top: 0px;"
+                  >
+                    <div
+                      data-testid="virtuoso-top-item-list"
+                    />
+                  </div>
+                  <div
+                    data-viewport-type="element"
+                    style="width: 100%; height: 100%; position: absolute; top: 0px;"
+                  >
+                    <div
+                      data-testid="virtuoso-item-list"
+                      style="box-sizing: border-box; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;"
+                    />
+                    <div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-jsq7k5"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-r98g7d"
+            />
+          </div>
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+          />
+          <div
+            class=""
+            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+          />
+        </div>
+      </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
+    </div>
+  </div>
+</body>
+`;

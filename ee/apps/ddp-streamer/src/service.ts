@@ -32,3 +32,39 @@ import { startTracing } from '@rocket.chat/tracing';
 
 	await api.start();
 })();
+
+/**
+ * If some promise is rejected and doesn't have a catch (unhandledRejection) it may cause the process to exit.
+ *
+ * Since unhandled rejections are deprecated in NodeJS:
+ * (node:83382) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future, promise rejections
+ * that are not handled will terminate the Node.js process with a non-zero exit code.
+ * we will start respecting this and exit the process to prevent these kind of problems.
+ */
+
+process.on('unhandledRejection', (error) => {
+	console.error('=== UnHandledPromiseRejection ===');
+	console.error(error);
+	console.error('---------------------------------');
+	console.error(
+		'Setting EXIT_UNHANDLEDPROMISEREJECTION will cause the process to exit allowing your service to automatically restart the process',
+	);
+	console.error('Future node.js versions will automatically exit the process');
+	console.error('=================================');
+
+	if (process.env.TEST_MODE || process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
+		process.exit(1);
+	}
+});
+
+process.on('uncaughtException', async (error) => {
+	console.error('=== UnCaughtException ===');
+	console.error(error);
+	console.error('-------------------------');
+	console.error('Errors like this can cause oplog processing errors.');
+	console.error('===========================');
+
+	if (process.env.TEST_MODE || process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
+		process.exit(1);
+	}
+});

@@ -13,7 +13,6 @@ export const parameters: Parameters = {
 };
 
 export const decorators: Decorator[] = [
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	(Story) => (
 		<div>
 			<style>{`

@@ -457,6 +457,11 @@ export const createAccountSettings = () =>
 				],
 				public: true,
 			});
+			await this.add('Accounts_Default_User_Preferences_desktopNotificationVoiceCalls', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Notification_Desktop_show_voice_calls',
+			});
 			await this.add('Accounts_Default_User_Preferences_pushNotifications', 'all', {
 				type: 'select',
 				values: [
@@ -700,21 +705,24 @@ export const createAccountSettings = () =>
 			});
 
 			await this.add('Accounts_Default_User_Preferences_masterVolume', 100, {
-				type: 'int',
+				type: 'range',
 				public: true,
 				i18nLabel: 'Master_volume',
+				i18nDescription: 'Master_volume_hint',
 			});
 
 			await this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
-				type: 'int',
+				type: 'range',
 				public: true,
 				i18nLabel: 'Notification_volume',
+				i18nDescription: 'Notification_volume_hint',
 			});
 
 			await this.add('Accounts_Default_User_Preferences_voipRingerVolume', 100, {
-				type: 'int',
+				type: 'range',
 				public: true,
 				i18nLabel: 'Call_ringer_volume',
+				i18nDescription: 'Call_ringer_volume_hint',
 			});
 
 			await this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {

@@ -2,35 +2,49 @@
 	"name": "@rocket.chat/jest-presets",
 	"version": "0.0.1",
 	"private": true,
-	"scripts": {
-		"clean": "rm -rf ./dist",
-		"build": "tsc",
-		"lint": "eslint ."
+	"type": "module",
+	"exports": {
+		"./server": {
+			"types": "./dist/server/index.d.ts",
+			"default": "./dist/server/index.js"
+		},
+		"./server/jest-preset": "./dist/server/jest-preset.js",
+		"./client": {
+			"types": "./dist/client/index.d.ts",
+			"default": "./dist/client/index.js"
+		},
+		"./client/jest-preset": "./dist/client/jest-preset.js",
+		"./client/jest-setup": "./dist/client/jest-setup.js"
 	},
 	"files": [
 		"/dist",
 		"/client",
 		"/server"
 	],
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf ./dist",
+		"lint": "eslint ."
+	},
 	"dependencies": {
-		"@swc/core": "~1.12.1",
-		"@swc/jest": "~0.2.38",
-		"@testing-library/jest-dom": "~6.6.3",
+		"@swc/core": "1.15.3",
+		"@swc/jest": "~0.2.39",
+		"@testing-library/jest-dom": "~6.8.0",
 		"@types/jest-axe": "~3.5.9",
 		"identity-obj-proxy": "~3.0.0",
 		"jest-axe": "~10.0.0",
-		"jest-environment-jsdom": "~30.0.0",
-		"jest-environment-node": "~30.0.0",
-		"uuid": "~11.0.3"
+		"jest-environment-jsdom": "~30.2.0",
+		"jest-environment-node": "~30.2.0",
+		"uuid": "~11.0.5"
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@types/identity-obj-proxy": "^3.0.2",
-		"@types/jest": "~29.5.14",
+		"@types/jest": "~30.0.0",
 		"@types/uuid": "^10.0.0",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.0",
-		"typescript": "~5.8.3"
+		"jest": "~30.2.0",
+		"typescript": "~5.9.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

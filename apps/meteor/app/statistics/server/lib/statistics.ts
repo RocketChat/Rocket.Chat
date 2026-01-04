@@ -4,6 +4,7 @@ import os from 'os';
 import { Analytics, Team, VideoConf, Presence } from '@rocket.chat/core-services';
 import type { IRoom, IStats, ISetting } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import {
 	NotificationQueue,
 	Rooms,
@@ -25,6 +26,7 @@ import {
 	Subscriptions,
 	Users,
 	LivechatRooms,
+	AbacAttributes,
 } from '@rocket.chat/models';
 import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
@@ -39,7 +41,6 @@ import { isRunningMs } from '../../../../server/lib/isRunningMs';
 import { getControl } from '../../../../server/lib/migrations';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
 import { getMatrixFederationStatistics } from '../../../../server/services/federation/infrastructure/rocket-chat/adapters/Statistics';
-import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
 import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
@@ -244,43 +245,6 @@ export const statistics = {
 			}),
 		);
 
-		// VoIP Enabled
-		statistics.voipEnabled = settings.get('VoIP_Enabled');
-
-		// Amount of VoIP Calls
-		statsPms.push(
-			Rooms.countByType('v').then((count) => {
-				statistics.voipCalls = count;
-			}),
-		);
-
-		// Amount of VoIP Extensions connected
-		statsPms.push(
-			Users.countDocuments({ extension: { $exists: true } }).then((count) => {
-				statistics.voipExtensions = count;
-			}),
-		);
-
-		// Amount of Calls that ended properly
-		statsPms.push(
-			Messages.countByType('voip-call-wrapup', { readPreference }).then((count) => {
-				statistics.voipSuccessfulCalls = count;
-			}),
-		);
-
-		// Amount of Calls that ended with an error
-		statsPms.push(
-			Messages.countByType('voip-call-ended-unexpectedly', { readPreference }).then((count) => {
-				statistics.voipErrorCalls = count;
-			}),
-		);
-		// Amount of Calls that were put on hold
-		statsPms.push(
-			Messages.countRoomsWithMessageType('voip-call-on-hold', { readPreference }).then((count) => {
-				statistics.voipOnHoldCalls = count;
-			}),
-		);
-
 		const defaultValue = { contactsCount: 0, conversationsCount: 0, sources: [] };
 		const billablePeriod = moment.utc().format('YYYY-MM');
 		statsPms.push(
@@ -354,14 +318,6 @@ export const statistics = {
 			statistics.totalDirectMessages +
 			statistics.totalLivechatMessages;
 
-		// Federation statistics
-		statsPms.push(
-			federationGetStatistics().then((federationOverviewData) => {
-				statistics.federatedServers = federationOverviewData.numberOfServers;
-				statistics.federatedUsers = federationOverviewData.numberOfFederatedUsers;
-			}),
-		);
-
 		statistics.lastLogin = (await Users.getLastLogin())?.toString() || '';
 		statistics.lastMessageSentAt = await Messages.getLastTimestamp();
 		statistics.lastSeenSubscription = (await Subscriptions.getLastSeen())?.toString() || '';
@@ -415,6 +371,8 @@ export const statistics = {
 				}),
 		);
 
+		statistics.fileStoreType = settings.get('FileUpload_Storage_Type');
+
 		statistics.migration = await getControl();
 		statsPms.push(
 			InstanceStatus.countDocuments({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).then((count) => {
@@ -422,9 +380,9 @@ export const statistics = {
 			}),
 		);
 
-		const { oplogEnabled, mongoVersion, mongoStorageEngine } = await getMongoInfo();
+		const { mongoVersion, mongoStorageEngine } = await getMongoInfo();
 		statistics.msEnabled = isRunningMs();
-		statistics.oplogEnabled = oplogEnabled;
+		statistics.oplogEnabled = false;
 		statistics.mongoVersion = mongoVersion;
 		statistics.mongoStorageEngine = mongoStorageEngine || '';
 
@@ -547,8 +505,6 @@ export const statistics = {
 		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
 		statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
 		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
-		statistics.totalOTRRooms = await Rooms.countByCreatedOTR({ readPreference });
-		statistics.totalOTR = settings.get('OTR_Count');
 		statistics.totalBroadcastRooms = await Rooms.countByBroadcast({ readPreference });
 		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
 		statistics.totalRoomsWithStarred = await Messages.countRoomsWithStarredMessages({ readPreference });
@@ -611,10 +567,25 @@ export const statistics = {
 
 		statistics.matrixFederation = await getMatrixFederationStatistics();
 
-		// Omnichannel call stats
-		statistics.webRTCEnabled = settings.get('WebRTC_Enabled');
-		statistics.webRTCEnabledForOmnichannel = settings.get('Omnichannel_call_provider') === 'WebRTC';
-		statistics.omnichannelWebRTCCalls = await Rooms.findCountOfRoomsWithActiveCalls();
+		// ABAC stats
+		if (License.hasModule('abac')) {
+			statistics.abacEnabled = settings.get('ABAC_Enabled');
+			statsPms.push(
+				AbacAttributes.estimatedDocumentCount().then((result) => {
+					statistics.abacTotalAttributes = result;
+				}),
+			);
+			statsPms.push(
+				AbacAttributes.countTotalValues().then((result) => {
+					statistics.abacTotalAttributeValues = result;
+				}),
+			);
+			statsPms.push(
+				Rooms.countAbacEnabled().then((result) => {
+					statistics.abacRoomsEnrolled = result;
+				}),
+			);
+		}
 
 		await Promise.all(statsPms).catch(log);
 

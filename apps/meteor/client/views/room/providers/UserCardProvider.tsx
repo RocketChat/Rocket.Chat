@@ -1,13 +1,12 @@
 import { Popover } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useRoomToolbox, UserCardContext } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode, UIEvent } from 'react';
 import { Suspense, lazy, useCallback, useMemo, useRef, useState } from 'react';
 import { useOverlayTrigger } from 'react-aria';
 import { useOverlayTriggerState } from 'react-stately';
 
 import { useRoom } from '../contexts/RoomContext';
-import { useRoomToolbox } from '../contexts/RoomToolboxContext';
-import { UserCardContext } from '../contexts/UserCardContext';
 
 const UserCard = lazy(() => import('../UserCard'));
 
@@ -26,10 +25,6 @@ const UserCardProvider = ({ children }: { children: ReactNode }) => {
 		switch (room.t) {
 			case 'l':
 				openTab('room-info', username);
-				break;
-
-			case 'v':
-				openTab('voip-room-info', username);
 				break;
 
 			case 'd':

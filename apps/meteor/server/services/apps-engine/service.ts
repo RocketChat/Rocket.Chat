@@ -10,6 +10,12 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import { isRunningMs } from '../../lib/isRunningMs';
 import { SystemLogger } from '../../lib/logger/system';
 
+export class AppsEngineNoNodesFoundError extends Error {
+	constructor(message = 'Not enough Apps-Engine nodes in deployment') {
+		super(message);
+	}
+}
+
 export class AppsEngineService extends ServiceClassInternal implements IAppsEngineService {
 	protected name = 'apps-engine';
 
@@ -166,10 +172,11 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		const services: { name: string; nodes: string[] }[] = await this.api?.call('$node.services', { onlyActive: true });
 
 		// We can filter out the local node because we already know its status
-		const availableNodes = services?.find((service) => service.name === 'apps-engine')?.nodes.filter((node) => node !== localNodeId);
+		const availableNodes = services?.find((service) => service.name === 'apps-engine')?.nodes;
 
-		if (!availableNodes || availableNodes.length < 1) {
-			throw new Error('Not enough Apps-Engine nodes in deployment');
+		// Subtract 1 for the local node
+		if (!availableNodes || availableNodes.length - 1 < 1) {
+			throw new AppsEngineNoNodesFoundError();
 		}
 
 		const statusByApp: AppStatusReport = {};
@@ -190,7 +197,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 					statusByApp[appId] = [];
 				}
 
-				statusByApp[appId].push({ instanceId: nodeID, status });
+				statusByApp[appId].push({ instanceId: nodeID, isLocal: nodeID === localNodeId, status });
 			});
 		});
 

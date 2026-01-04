@@ -1,17 +1,20 @@
 import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
+import type { Route, Router } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
+// eslint-disable-next-line import/no-duplicates
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
+// eslint-disable-next-line import/no-duplicates
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
@@ -25,7 +28,6 @@ import type {
 	NotFoundResult,
 	Operations,
 	Options,
-	PartialThis,
 	SuccessResult,
 	TypedThis,
 	TypedAction,
@@ -34,11 +36,11 @@ import type {
 	RedirectStatusCodes,
 	RedirectResult,
 	UnavailableResult,
+	GenericRouteExecutionContext,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
-import type { Route } from './router';
-import { Router } from './router';
+import { RocketChatAPIRouter } from './router';
 import { license } from '../../../ee/app/api-enterprise/server/middlewares/license';
 import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
@@ -54,7 +56,7 @@ const logger = new Logger('API');
 // We have some breaking changes planned to the API.
 // To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
 // TODO: MAJOR check if this is still needed
-const applyBreakingChanges = shouldBreakInVersion('8.0.0');
+const applyBreakingChanges = shouldBreakInVersion('9.0.0');
 type MinimalRoute = {
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
 	path: string;
@@ -66,14 +68,33 @@ export type Prettify<T> = {
 
 type ExtractValidation<T> = T extends ValidateFunction<infer TSchema> ? TSchema : never;
 
-export type ExtractRoutesFromAPI<T> =
-	T extends APIClass<any, infer TOperations> ? (TOperations extends MinimalRoute ? Prettify<ConvertToRoute<TOperations>> : never) : never;
+type UnionToIntersection<U> = (U extends any ? (x: U) => any : never) extends (x: infer I) => any ? I : never;
+
+export type ExtractRoutesFromAPI<T> = Prettify<
+	UnionToIntersection<
+		T extends APIClass<any, infer TOperations> ? (TOperations extends MinimalRoute ? Prettify<ConvertToRoute<TOperations>> : never) : never
+	>
+>;
 
 type ConvertToRoute<TRoute extends MinimalRoute> = {
 	[K in TRoute['path']]: {
-		[K2 in TRoute['method']]: K2 extends 'GET'
-			? (params: ExtractValidation<TRoute['query']>) => ExtractValidation<TRoute['response'][200]>
-			: (params: ExtractValidation<TRoute['body']>) => ExtractValidation<TRoute['response'][200 | 201]>;
+		[K2 in Extract<TRoute, { path: K }>['method']]: K2 extends 'GET' | 'DELETE'
+			? (
+					...args: [ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>] extends [never]
+						? [params?: never]
+						: [params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>]
+				) => ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['response'][200]>
+			: K2 extends 'POST' | 'PUT'
+				? (
+						params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>,
+					) => ExtractValidation<
+						200 extends keyof Extract<TRoute, { path: K; method: K2 }>['response']
+							? Extract<TRoute, { path: K; method: K2 }>['response'][200]
+							: 201 extends keyof Extract<TRoute, { path: K; method: K2 }>['response']
+								? Extract<TRoute, { path: K; method: K2 }>['response'][201]
+								: never
+					>
+				: never;
 	};
 };
 
@@ -135,12 +156,7 @@ const generateConnection = (
 	clientAddress: ipAddress,
 });
 
-export class APIClass<
-	TBasePath extends string = '',
-	TOperations extends {
-		[x: string]: unknown;
-	} = {},
-> {
+export class APIClass<TBasePath extends string = '', TOperations extends Record<string, unknown> = Record<string, never>> {
 	public typedRoutes: Record<string, Record<string, Route>> = {};
 
 	protected apiPath?: string;
@@ -149,7 +165,7 @@ export class APIClass<
 
 	private _routes: { path: string; options: Options; endpoints: Record<string, string> }[] = [];
 
-	public authMethods: ((...args: any[]) => any)[];
+	public authMethods: ((routeContext: GenericRouteExecutionContext) => Promise<IUser | undefined>)[];
 
 	protected helperMethods: Map<string, () => any> = new Map();
 
@@ -171,7 +187,7 @@ export class APIClass<
 		inviteToken: number;
 	};
 
-	readonly router: Router<any>;
+	readonly router: Router<any, any, any>;
 
 	constructor({ useDefaultAuth, ...properties }: IAPIProperties) {
 		this.version = properties.version;
@@ -206,7 +222,7 @@ export class APIClass<
 			services: 0,
 			inviteToken: 0,
 		};
-		this.router = new Router(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
+		this.router = new RocketChatAPIRouter(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
 
 		if (useDefaultAuth) {
 			this._initAuth();
@@ -227,11 +243,11 @@ export class APIClass<
 		};
 	}
 
-	async parseJsonQuery(this: PartialThis) {
-		return parseJsonQuery(this);
+	async parseJsonQuery(routeContext: GenericRouteExecutionContext) {
+		return parseJsonQuery(routeContext);
 	}
 
-	public addAuthMethod(func: (this: PartialThis, ...args: any[]) => any): void {
+	public addAuthMethod(func: (routeContext: GenericRouteExecutionContext) => Promise<IUser | undefined>): void {
 		this.authMethods.push(func);
 	}
 
@@ -506,7 +522,7 @@ export class APIClass<
 		invocation.twoFactorChecked = true;
 	}
 
-	protected getFullRouteName(route: string, method: string): string {
+	public getFullRouteName(route: string, method: string): string {
 		return `/${this.apiPath || ''}/${route}${method}`;
 	}
 
@@ -564,7 +580,7 @@ export class APIClass<
 		TSubPathPattern extends string,
 		TOptions extends TypedOptions,
 		TPathPattern extends `${TBasePath}/${TSubPathPattern}`,
-	>(method: Method, subpath: TSubPathPattern, options: TOptions): void {
+	>(method: MinimalRoute['method'], subpath: TSubPathPattern, options: TOptions): void {
 		const path = `/${this.apiPath}/${subpath}`.replaceAll('//', '/') as TPathPattern;
 		this.typedRoutes = this.typedRoutes || {};
 		this.typedRoutes[path] = this.typedRoutes[subpath] || {};
@@ -615,17 +631,19 @@ export class APIClass<
 	}
 
 	private method<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
-		method: Method,
+		method: MinimalRoute['method'],
 		subpath: TSubPathPattern,
 		options: TOptions,
 		action: TypedAction<TOptions, TSubPathPattern>,
 	): APIClass<
 		TBasePath,
 		| TOperations
-		| ({
-				method: Method;
-				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: Method;
+					path: TPathPattern;
+				} & Omit<TOptions, 'response'>
+		  >
 	> {
 		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
 		this.registerTypedRoutes(method, subpath, options);
@@ -660,6 +678,12 @@ export class APIClass<
 				method: 'POST';
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: 'POST';
+					path: TPathPattern;
+				} & TOptions
+		  >
 	> {
 		return this.method('POST', subpath, options, action);
 	}
@@ -675,6 +699,12 @@ export class APIClass<
 				method: 'PUT';
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: 'PUT';
+					path: TPathPattern;
+				} & TOptions
+		  >
 	> {
 		return this.method('PUT', subpath, options, action);
 	}
@@ -690,6 +720,12 @@ export class APIClass<
 				method: 'DELETE';
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: 'DELETE';
+					path: TPathPattern;
+				} & TOptions
+		  >
 	> {
 		return this.method('DELETE', subpath, options, action);
 	}
@@ -777,19 +813,31 @@ export class APIClass<
 				}
 				// Add a try/catch for each endpoint
 				const originalAction = (operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action;
+
+				if (options.deprecation && shouldBreakInVersion(options.deprecation.version)) {
+					throw new Meteor.Error('error-deprecated', `The endpoint ${route} should be removed`);
+				}
+
 				// eslint-disable-next-line @typescript-eslint/no-this-alias
 				const api = this;
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action =
 					async function _internalRouteActionHandler() {
+						this.queryOperations = options.queryOperations;
+						this.queryFields = options.queryFields;
+						this.logger = logger;
+
 						if (options.authRequired || options.authOrAnonRequired) {
-							const user = await api.authenticatedRoute.call(this, this.request);
+							const user = await api.authenticatedRoute(this);
 							this.user = user!;
-							this.userId = String(this.request.headers.get('x-user-id'));
+							this.userId = this.user?._id;
 							const authToken = this.request.headers.get('x-auth-token');
 							this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
 						}
 
-						if (!this.user && options.authRequired && !options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead')) {
+						const shouldPreventAnonymousRead = !this.user && options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead');
+						const shouldPreventUserRead = !this.user && options.authRequired;
+
+						if (shouldPreventAnonymousRead || shouldPreventUserRead) {
 							const result = api.unauthorized('You must be logged in to do this.');
 							// compatibility with the old API
 							// TODO: MAJOR
@@ -804,7 +852,7 @@ export class APIClass<
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
-							route: `/${route}${this.request.method.toLowerCase()}`,
+							route: api.getFullRouteName(route, this.request.method.toLowerCase()),
 						};
 
 						let result;
@@ -874,9 +922,7 @@ export class APIClass<
 									connection: connection as unknown as IMethodConnection,
 								}));
 
-							this.queryOperations = options.queryOperations;
-							(this as any).queryFields = options.queryFields;
-							this.parseJsonQuery = api.parseJsonQuery.bind(this as unknown as PartialThis);
+							this.parseJsonQuery = () => api.parseJsonQuery(this);
 
 							result = (await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || api.success();
 						} catch (e: any) {
@@ -928,12 +974,9 @@ export class APIClass<
 		});
 	}
 
-	protected async authenticatedRoute(req: Request): Promise<IUser | null> {
-		const headers = Object.fromEntries(req.headers.entries());
-
-		const { 'x-user-id': userId } = headers;
-
-		const userToken = String(headers['x-auth-token']);
+	protected async authenticatedRoute(routeContext: GenericRouteExecutionContext): Promise<IUser | null> {
+		const userId = routeContext.request.headers.get('x-user-id');
+		const userToken = routeContext.request.headers.get('x-auth-token');
 
 		if (userId && userToken) {
 			return Users.findOne(
@@ -946,6 +989,16 @@ export class APIClass<
 				},
 			);
 		}
+
+		for (const method of this.authMethods) {
+			// eslint-disable-next-line no-await-in-loop -- we want serial execution
+			const user = await method(routeContext);
+
+			if (user) {
+				return user;
+			}
+		}
+
 		return null;
 	}
 

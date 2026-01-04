@@ -13,6 +13,12 @@ import {
 	FieldLabel,
 	FieldRow,
 	FieldError,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -21,6 +27,7 @@ import type { ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { goToRoomById } from '../../lib/utils/goToRoomById';
+import { useEncryptedRoomDescription } from '../../navbar/NavBarPagesGroup/actions/useEncryptedRoomDescription';
 import RoomAutoComplete from '../RoomAutoComplete';
 import UserAutoCompleteMultiple from '../UserAutoCompleteMultiple';
 import DefaultParentRoomField from './DefaultParentRoomField';
@@ -85,6 +92,8 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 		});
 	};
 
+	const getEncryptedHint = useEncryptedRoomDescription('discussion');
+
 	const parentRoomId = useId();
 	const encryptedId = useId();
 	const discussionNameId = useId();
@@ -98,11 +107,11 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			aria-labelledby={`${modalId}-title`}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
 		>
-			<Modal.Header>
-				<Modal.Title id={`${modalId}-title`}>{t('Discussion_title')}</Modal.Title>
-				<Modal.Close tabIndex={-1} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle id={`${modalId}-title`}>{t('Discussion_title')}</ModalTitle>
+				<ModalClose tabIndex={-1} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Box mbe={24}>{t('Discussion_description')}</Box>
 				<FieldGroup>
 					<Field>
@@ -236,22 +245,18 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 								render={({ field: { value, ...field } }) => <ToggleSwitch id={encryptedId} {...field} checked={value} />}
 							/>
 						</FieldRow>
-						{encrypted ? (
-							<FieldHint id={`${encryptedId}-hint`}>{t('Encrypted_messages', { roomType: 'discussion' })}</FieldHint>
-						) : (
-							<FieldHint id={`${encryptedId}-hint`}>{t('Encrypted_messages_false')}</FieldHint>
-						)}
+						<FieldHint id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate: true, encrypted })}</FieldHint>
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button type='submit' primary loading={createDiscussionMutation.isPending}>
 						{t('Create')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

@@ -1,5 +1,6 @@
 import { Expect, Setup, SetupFixture, Test } from 'alsatian';
 
+import type { AppOutboundCommunicationProviderManager } from '../../../server/managers/AppOutboundCommunicationProviderManager';
 import { AppStatus } from '../../../src/definition/AppStatus';
 import type { AppMethod } from '../../../src/definition/metadata';
 import type { AppManager } from '../../../src/server/AppManager';
@@ -84,7 +85,10 @@ export class AppAccessorsTestFixture {
 			getSettingsManager() {
 				return {} as AppSettingsManager;
 			},
-		} as AppManager;
+			getOutboundCommunicationProviderManager() {
+				return {} as AppOutboundCommunicationProviderManager;
+			},
+		} as unknown as AppManager;
 
 		this.mockAccessors = new AppAccessorManager(this.mockManager);
 		const ac = this.mockAccessors;

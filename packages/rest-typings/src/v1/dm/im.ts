@@ -1,8 +1,7 @@
-import type { IMessage, IRoom, IUser, IUploadWithUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, IUploadWithUser, ISubscription } from '@rocket.chat/core-typings';
 
 import type { DmCloseProps } from './DmCloseProps';
 import type { DmCreateProps } from './DmCreateProps';
-import type { DmDeleteProps } from './DmDeleteProps';
 import type { DmFileProps } from './DmFileProps';
 import type { DmHistoryProps } from './DmHistoryProps';
 import type { DmLeaveProps } from './DmLeaveProps';
@@ -16,9 +15,6 @@ export type ImEndpoints = {
 		POST: (params: DmCreateProps) => {
 			room: IRoom & { rid: IRoom['_id'] };
 		};
-	};
-	'/v1/im.delete': {
-		POST: (params: DmDeleteProps) => void;
 	};
 	'/v1/im.close': {
 		POST: (params: DmCloseProps) => void;
@@ -53,7 +49,9 @@ export type ImEndpoints = {
 
 	'/v1/im.members': {
 		GET: (params: DmMemberProps) => PaginatedResult<{
-			members: Pick<IUser, '_id' | 'status' | 'name' | 'username' | 'utcOffset'>[];
+			members: (Pick<IUser, '_id' | 'status' | 'name' | 'username' | 'utcOffset'> & {
+				subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>;
+			})[];
 		}>;
 	};
 	'/v1/im.messages': {

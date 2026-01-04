@@ -23,9 +23,8 @@ export type MessageActionConfig = {
 	icon: IconName;
 	variant?: 'danger' | 'success' | 'warning';
 	label: TranslationKey;
+	tooltip?: string;
 	order: number;
-	/** @deprecated */
-	color?: 'alert';
 	group: MessageActionGroup;
 	context?: MessageActionContext[];
 	action: (e: Pick<Event, 'preventDefault' | 'stopPropagation' | 'currentTarget'> | undefined) => any;

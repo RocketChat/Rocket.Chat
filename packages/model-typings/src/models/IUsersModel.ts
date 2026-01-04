@@ -24,10 +24,15 @@ import type {
 } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection } from '../types/DocumentWithProjection';
 
 export interface IUsersModel extends IBaseModel<IUser> {
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
-	findUsersInRoles(roles: IRole['_id'][] | IRole['_id'], _scope?: null, options?: FindOptions<IUser>): FindCursor<IUser>;
+	findUsersInRoles<T extends Document = IUser, O extends FindOptions<T> = FindOptions<T>>(
+		roles: IRole['_id'][] | IRole['_id'],
+		_scope?: null,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	findPaginatedUsersInRoles(roles: IRole['_id'][] | IRole['_id'], options?: FindOptions<IUser>): FindPaginated<FindCursor<IUser>>;
 	findOneByIdWithEmailAddress(uid: IUser['_id'], options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneByUsername<T extends Document = IUser>(username: string, options?: FindOptions<IUser>): Promise<T | null>;
@@ -86,10 +91,14 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneByLDAPId<T extends Document = IUser>(id: string, attribute?: string): Promise<T | null>;
 
 	findOneByAppId<T extends Document = IUser>(appId: string, options?: FindOptions<IUser>): Promise<T | null>;
+	findUsersByIdentifiers(
+		params: { usernames?: string[]; ids?: string[]; emails?: string[]; ldapIds?: string[] },
+		options?: FindOptions<IUser>,
+	): FindCursor<IUser>;
 
 	findLDAPUsers<T extends Document = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 
-	findLDAPUsersExceptIds<T extends Document = IUser>(userIds: IUser['_id'][], options?: FindOptions<IUser>): FindCursor<T>;
+	findActiveLDAPUsersExceptIds<T extends Document = IUser>(userIds: IUser['_id'][], options?: FindOptions<IUser>): FindCursor<T>;
 
 	findConnectedLDAPUsers<T extends Document = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 
@@ -152,6 +161,9 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	getUserLanguages(): Promise<{ _id: string; total: number }[]>;
 
+	setAbacAttributesById(userId: IUser['_id'], attributes: NonNullable<IUser['abacAttributes']>): Promise<IUser | null>;
+	unsetAbacAttributesById(userId: IUser['_id']): Promise<IUser | null>;
+
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions): Promise<UpdateResult>;
 
 	updateStatusByAppId(appId: string, status: UserStatus): Promise<UpdateResult | Document>;
@@ -193,24 +205,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	isUserInRoleScope(uid: IUser['_id']): Promise<boolean>;
 
 	addBannerById(_id: IUser['_id'], banner: any): Promise<UpdateResult>;
-
-	findOneByAgentUsername(username: any, options: any): any;
-
-	findOneByExtension(extension: any, options?: any): any;
-
-	findByExtensions(extensions: any, options?: any): FindCursor<IUser>;
-
-	getVoipExtensionByUserId(userId: any, options: any): any;
-
-	setExtension(userId: any, extension: any): any;
-
-	unsetExtension(userId: any): any;
-
-	getAvailableAgentsIncludingExt<T extends Document = ILivechatAgent>(
-		includeExt?: string,
-		text?: string,
-		options?: FindOptions<IUser>,
-	): FindPaginated<FindCursor<WithId<T>>>;
 
 	findActiveUsersTOTPEnable(options: any): any;
 
@@ -302,7 +296,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<{ agentId: string; username?: string } | null>;
 	getNextBotAgent(ignoreAgentId?: string): Promise<{ agentId: string; username?: string } | null>;
 	setLivechatStatus(userId: string, status: ILivechatAgentStatus): Promise<UpdateResult>;
-	makeAgentUnavailableAndUnsetExtension(userId: string): Promise<UpdateResult>;
+	makeAgentUnavailable(userId: string): Promise<UpdateResult>;
 	setLivechatData(userId: string, data?: Record<string, any>): Promise<UpdateResult>;
 	getAgentInfo(
 		agentId: IUser['_id'],
@@ -382,7 +376,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setAvatarData(userId: string, origin: string, etag?: Date | null | string, options?: UpdateOptions): Promise<UpdateResult>;
 	unsetAvatarData(userId: string): Promise<UpdateResult>;
 	setUserActive(userId: string, active: boolean): Promise<UpdateResult>;
-	setAllUsersActive(active: boolean): Promise<UpdateResult | Document>;
 	setActiveNotLoggedInAfterWithRole(latestLastLoginDate: Date, role?: string, active?: boolean): Promise<UpdateResult | Document>;
 	unsetRequirePasswordChange(userId: string): Promise<UpdateResult>;
 	resetPasswordAndSetRequirePasswordChange(
@@ -432,14 +425,9 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findAgentsAvailableWithoutBusinessHours(userIds?: IUser['_id'][]): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
 	updateLivechatStatusByAgentIds(userIds: string[], status: ILivechatAgentStatus): Promise<UpdateResult | Document>;
 	findOneByFreeSwitchExtension<T extends Document = IUser>(freeSwitchExtension: string, options?: FindOptions<IUser>): Promise<T | null>;
-	findOneByFreeSwitchExtensions<T extends Document = IUser>(
-		freeSwitchExtensions: string[],
-		options?: FindOptions<IUser>,
-	): Promise<T | null>;
-	setFreeSwitchExtension(userId: string, extension: string | undefined): Promise<UpdateResult>;
-	findAssignedFreeSwitchExtensions(): FindCursor<string | undefined>;
-	findUsersWithAssignedFreeSwitchExtensions<T extends Document = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 	countUsersInRoles(roles: IRole['_id'][]): Promise<number>;
 	countAllUsersWithPendingAvatar(): Promise<number>;
 	findOneByIdAndRole(userId: IUser['_id'], role: string, options: FindOptions<IUser>): Promise<IUser | null>;
+	countActiveUsersInNonDMRoom(rid: string): Promise<number>;
+	countActiveUsersInDMRoom(rid: string): Promise<number>;
 }

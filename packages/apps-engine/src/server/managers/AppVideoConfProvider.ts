@@ -90,7 +90,7 @@ export class AppVideoConfProvider {
 		const provider = this.provider.name;
 
 		try {
-			const result = await this.app.getDenoRuntime().sendRequest({
+			const result = await this.app.getRuntimeController().sendRequest({
 				method: `videoconference:${provider}:${method}`,
 				params: runContextArgs,
 			});

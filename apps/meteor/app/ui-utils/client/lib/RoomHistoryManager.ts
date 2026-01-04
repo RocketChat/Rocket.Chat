@@ -1,16 +1,17 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
+import { differenceInMilliseconds } from 'date-fns';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import type { MutableRefObject } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
+import { getUserId } from '../../../../client/lib/user';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { waitForElement } from '../../../../client/lib/utils/waitForElement';
-import { Messages, Subscriptions } from '../../../models/client';
+import { Messages, Subscriptions } from '../../../../client/stores';
 import { getUserPreference } from '../../../utils/client';
 
 const waitAfterFlush = () => new Promise((resolve) => Tracker.afterFlush(() => resolve(void 0)));
@@ -133,12 +134,12 @@ class RoomHistoryManagerClass extends Emitter {
 
 			let ls = undefined;
 
-			const subscription = Subscriptions.findOne({ rid });
+			const subscription = Subscriptions.state.find((record) => record.rid === rid);
 			if (subscription) {
 				({ ls } = subscription);
 			}
 
-			const showThreadsInMainChannel = getUserPreference(Meteor.userId(), 'showThreadsInMainChannel', false);
+			const showThreadsInMainChannel = getUserPreference(getUserId(), 'showThreadsInMainChannel', false);
 			const result = await callWithErrorHandling(
 				'loadHistory',
 				rid,
@@ -232,7 +233,7 @@ class RoomHistoryManagerClass extends Emitter {
 			(a, b) => b.ts.getTime() - a.ts.getTime(),
 		);
 
-		const subscription = Subscriptions.findOne({ rid });
+		const subscription = Subscriptions.state.find((record) => record.rid === rid);
 
 		if (lastMessage?.ts) {
 			const { ts } = lastMessage;
@@ -308,8 +309,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const room = this.getRoom(message.rid);
 
-		const subscription = Subscriptions.findOne({ rid: message.rid });
-
+		const subscription = Subscriptions.state.find((record) => record.rid === message.rid);
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
 
 		this.clear(message.rid);

@@ -2,11 +2,10 @@ import type { IMessage, ITranslatedMessage, MessageAttachment } from '@rocket.ch
 import {
 	isFileAttachment,
 	isE2EEMessage,
-	isOTRMessage,
-	isOTRAckMessage,
 	isQuoteAttachment,
 	isTranslatedAttachment,
 	isTranslatedMessage,
+	isEncryptedMessageAttachment,
 } from '@rocket.chat/core-typings';
 import type { Options, Root } from '@rocket.chat/message-parser';
 import { parse } from '@rocket.chat/message-parser';
@@ -46,10 +45,7 @@ export const parseMessageTextToAstMarkdown = <
 
 	return {
 		...msg,
-		md:
-			isE2EEMessage(message) || isOTRMessage(message) || isOTRAckMessage(message) || translated
-				? textToMessageToken(text, parseOptions)
-				: (msg.md ?? textToMessageToken(text, parseOptions)),
+		md: isE2EEMessage(message) || translated ? textToMessageToken(text, parseOptions) : (msg.md ?? textToMessageToken(text, parseOptions)),
 		...(msg.attachments && {
 			attachments: parseMessageAttachments(msg.attachments, parseOptions, { autoTranslateLanguage, translated }),
 		}),
@@ -77,9 +73,10 @@ export const parseMessageAttachment = <T extends MessageAttachment>(
 		'';
 
 	if (isFileAttachment(attachment) && attachment.description) {
-		attachment.descriptionMd = translated
-			? textToMessageToken(text, parseOptions)
-			: (attachment.descriptionMd ?? textToMessageToken(text, parseOptions));
+		attachment.descriptionMd =
+			translated || isEncryptedMessageAttachment(attachment)
+				? textToMessageToken(text, parseOptions)
+				: (attachment.descriptionMd ?? textToMessageToken(text, parseOptions));
 	}
 
 	return {

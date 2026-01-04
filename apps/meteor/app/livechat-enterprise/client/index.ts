@@ -5,5 +5,5 @@ void hasLicense('livechat-enterprise').then((enabled) => {
 		return;
 	}
 
-	return Promise.all([import('./views/livechatSideNavItems'), import('./views/business-hours/Multiple'), import('./messageTypes')]);
+	return Promise.all([import('./views/livechatSideNavItems'), import('./views/business-hours/Multiple')]);
 });

@@ -9,6 +9,7 @@ import {
 	BannersDismissRaw,
 	BannersRaw,
 	CalendarEventRaw,
+	CallHistoryRaw,
 	CredentialTokensRaw,
 	CronHistoryRaw,
 	CustomSoundsRaw,
@@ -20,8 +21,6 @@ import {
 	FederationKeysRaw,
 	FederationRoomEventsRaw,
 	FederationServersRaw,
-	FreeSwitchCallRaw,
-	FreeSwitchEventRaw,
 	ImportDataRaw,
 	ImportsModel,
 	InstanceStatusRaw,
@@ -40,8 +39,9 @@ import {
 	LivechatTriggerRaw,
 	LivechatVisitorsRaw,
 	LoginServiceConfigurationRaw,
-	MatrixBridgedRoomRaw,
-	MatrixBridgedUserRaw,
+	MediaCallsRaw,
+	MediaCallChannelsRaw,
+	MediaCallNegotiationsRaw,
 	MessageReadsRaw,
 	MessagesRaw,
 	MigrationsRaw,
@@ -54,7 +54,6 @@ import {
 	OAuthAuthCodesRaw,
 	OAuthRefreshTokensRaw,
 	OEmbedCacheRaw,
-	PbxEventsRaw,
 	PermissionsRaw,
 	PushTokenRaw,
 	ReadReceiptsDummy,
@@ -75,9 +74,9 @@ import {
 	UsersRaw,
 	UsersSessionsRaw,
 	VideoConferenceRaw,
-	VoipRoomRaw,
 	WebdavAccountsRaw,
 	WorkspaceCredentialsRaw,
+	AbacAttributesRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
 
@@ -93,6 +92,7 @@ registerModel('IAvatarsModel', new AvatarsRaw(db));
 registerModel('IBannersDismissModel', new BannersDismissRaw(db));
 registerModel('IBannersModel', new BannersRaw(db));
 registerModel('ICalendarEventModel', new CalendarEventRaw(db));
+registerModel('ICallHistoryModel', new CallHistoryRaw(db));
 registerModel('ICredentialTokensModel', new CredentialTokensRaw(db));
 registerModel('ICronHistoryModel', new CronHistoryRaw(db));
 registerModel('ICustomSoundsModel', new CustomSoundsRaw(db));
@@ -104,8 +104,6 @@ registerModel('IExportOperationsModel', new ExportOperationsRaw(db));
 registerModel('IFederationKeysModel', new FederationKeysRaw(db));
 registerModel('IFederationRoomEventsModel', new FederationRoomEventsRaw(db));
 registerModel('IFederationServersModel', new FederationServersRaw(db));
-registerModel('IFreeSwitchCallModel', new FreeSwitchCallRaw(db));
-registerModel('IFreeSwitchEventModel', new FreeSwitchEventRaw(db));
 registerModel('IImportDataModel', new ImportDataRaw(db));
 registerModel('IImportsModel', new ImportsModel(db));
 registerModel('IInstanceStatusModel', new InstanceStatusRaw(db));
@@ -130,8 +128,9 @@ registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
 registerModel('ILivechatTriggerModel', new LivechatTriggerRaw(db));
 registerModel('ILivechatVisitorsModel', new LivechatVisitorsRaw(db));
 registerModel('ILoginServiceConfigurationModel', new LoginServiceConfigurationRaw(db));
-registerModel('IMatrixBridgedRoomModel', new MatrixBridgedRoomRaw(db));
-registerModel('IMatrixBridgedUserModel', new MatrixBridgedUserRaw(db));
+registerModel('IMediaCallsModel', new MediaCallsRaw(db));
+registerModel('IMediaCallChannelsModel', new MediaCallChannelsRaw(db));
+registerModel('IMediaCallNegotiationsModel', new MediaCallNegotiationsRaw(db));
 registerModel('IMessageReadsModel', new MessageReadsRaw(db));
 registerModel('IMessagesModel', new MessagesRaw(db, trashCollection));
 registerModel('IMigrationsModel', new MigrationsRaw(db));
@@ -144,7 +143,6 @@ registerModel('IOAuthAppsModel', new OAuthAppsRaw(db));
 registerModel('IOAuthAuthCodesModel', new OAuthAuthCodesRaw(db));
 registerModel('IOAuthRefreshTokensModel', new OAuthRefreshTokensRaw(db));
 registerModel('IOEmbedCacheModel', new OEmbedCacheRaw(db));
-registerModel('IPbxEventsModel', new PbxEventsRaw(db));
 registerModel('IPermissionsModel', new PermissionsRaw(db, trashCollection));
 registerModel('IPushTokenModel', new PushTokenRaw(db));
 registerModel('IReadReceiptsModel', new ReadReceiptsDummy(), false);
@@ -164,6 +162,6 @@ registerModel('IUserDataFilesModel', new UserDataFilesRaw(db));
 registerModel('IUsersModel', new UsersRaw(db, trashCollection));
 registerModel('IUsersSessionsModel', new UsersSessionsRaw(db));
 registerModel('IVideoConferenceModel', new VideoConferenceRaw(db));
-registerModel('IVoipRoomModel', new VoipRoomRaw(db, trashCollection));
 registerModel('IWebdavAccountsModel', new WebdavAccountsRaw(db));
 registerModel('IWorkspaceCredentialsModel', new WorkspaceCredentialsRaw(db));
+registerModel('IAbacAttributesModel', new AbacAttributesRaw(db));

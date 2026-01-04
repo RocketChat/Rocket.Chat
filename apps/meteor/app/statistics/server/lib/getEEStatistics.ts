@@ -5,8 +5,6 @@ import type { IStats } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { CannedResponse, OmnichannelServiceLevelAgreements, LivechatRooms, LivechatTag, LivechatUnit, Users } from '@rocket.chat/models';
 
-import { getVoIPStatistics } from './getVoIPStatistics';
-
 type ENTERPRISE_STATISTICS = IStats['enterprise'];
 
 type GenericStats = Pick<ENTERPRISE_STATISTICS, 'modules' | 'tags' | 'seatRequests'>;
@@ -92,20 +90,10 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 			return true;
 		}),
 	);
-
-	// NOTE: keeping this for compatibility with current stats. Will be removed next major
-	statistics.omnichannelPdfTranscriptRequested = 0;
 	// Number of PDF transcript that succeeded
 	statsPms.push(
 		LivechatRooms.countRoomsWithTranscriptSent().then((count) => {
 			statistics.omnichannelPdfTranscriptSucceeded = count;
-		}),
-	);
-
-	// TeamCollab VoIP data
-	statsPms.push(
-		getVoIPStatistics().then((voip) => {
-			statistics.voip = voip;
 		}),
 	);
 

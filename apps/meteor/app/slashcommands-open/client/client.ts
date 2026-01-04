@@ -1,9 +1,8 @@
 import type { RoomType, ISubscription, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
-import type { Filter } from 'mongodb';
 
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { router } from '../../../client/providers/RouterProvider';
-import { Subscriptions } from '../../models/client';
+import { Subscriptions } from '../../../client/stores';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { slashCommands } from '../../utils/client/slashCommand';
 
@@ -18,12 +17,11 @@ slashCommands.add({
 		const room = params.trim().replace(/#|@/, '');
 		const type = dict[params.trim()[0]] || [];
 
-		const query: Filter<ISubscription> = {
-			name: room,
-			...(type && { t: { $in: type } }),
+		const predicate = ({ name, t }: ISubscription) => {
+			return name === room && (type.length ? type.includes(t) : true);
 		};
 
-		const subscription = Subscriptions.findOne(query);
+		const subscription = Subscriptions.state.find(predicate);
 
 		if (subscription) {
 			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters());
@@ -34,7 +32,7 @@ slashCommands.add({
 		}
 		try {
 			await sdk.call('createDirectMessage', room);
-			const subscription = Subscriptions.findOne(query);
+			const subscription = Subscriptions.state.find(predicate);
 			if (!subscription) {
 				return;
 			}

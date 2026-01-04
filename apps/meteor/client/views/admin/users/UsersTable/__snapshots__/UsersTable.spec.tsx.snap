@@ -1,0 +1,1533 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <form
+      class="rcx-box rcx-box--full rcx-css-99h06u"
+    >
+      <label
+        class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-2izecy rcx-css-fvbcso"
+      >
+        <input
+          aria-label="Search_Users"
+          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box rcx-css-2izecy rcx-css-fvxpep"
+          placeholder="Search_Users"
+          size="1"
+          type="text"
+          value=""
+        />
+        <span
+          class="rcx-box rcx-box--full rcx-input-box__addon"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-4pvxx3"
+          >
+            
+          </i>
+        </span>
+      </label>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1itqmjf"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-ci3q89"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-925wj6 rcx-input-box__wrapper rcx-css-kdp66t"
+            role="button"
+            tabindex="0"
+          >
+            All_roles
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1aoxhm7"
+            >
+              
+            </i>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div
+      class="rcx-box rcx-box--full rcx-css-qcmk2x"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+        data-overlayscrollbars="host"
+      >
+        <div
+          class="os-size-observer"
+        >
+          <div
+            class="os-size-observer-listener"
+          />
+        </div>
+        <div
+          class=""
+          data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+          style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+          tabindex="-1"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-table__wrapper"
+          >
+            <table
+              class="rcx-box rcx-box--full rcx-table--sticky rcx-table--fixed rcx-table"
+            >
+              <thead
+                class="rcx-box rcx-box--full rcx-table__head"
+              >
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--clickable rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Name
+                      <svg
+                        class="rcx-box rcx-box--full rcx-css-13s9wy"
+                        fill="none"
+                        viewBox="0 0 16 16"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5.33337 5.99999L8.00004 3.33333L10.6667 5.99999"
+                          stroke="#E4E7EA"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.33333"
+                        />
+                        <path
+                          d="M5.33337 10L8.00004 12.6667L10.6667 10"
+                          stroke="#E4E7EA"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.33333"
+                        />
+                      </svg>
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--clickable rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Username
+                      <svg
+                        class="rcx-box rcx-box--full rcx-css-13s9wy"
+                        fill="none"
+                        viewBox="0 0 16 16"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5.33337 5.99999L8.00004 3.33333L10.6667 5.99999"
+                          stroke="#E4E7EA"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.33333"
+                        />
+                        <path
+                          d="M5.33337 10L8.00004 12.6667L10.6667 10"
+                          stroke="#E4E7EA"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.33333"
+                        />
+                      </svg>
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell rcx-css-1nngkbl"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Actions
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                class="rcx-box rcx-box--full rcx-table__body"
+              >
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row--action rcx-table__row"
+                  qa-user-id="1"
+                  role="link"
+                  tabindex="0"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                    >
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                      >
+                        <img
+                          alt=""
+                          aria-hidden="true"
+                          class="rcx-avatar__element rcx-avatar__element--x28"
+                          data-username="example.user"
+                          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          title="example.user"
+                        />
+                      </figure>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-zha9rn"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-vtu42x"
+                        >
+                          <svg
+                            class="rcx-status-bullet rcx-status-bullet--online undefined "
+                            height="24"
+                            viewBox="0 0 24 24"
+                            width="24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
+                            />
+                          </svg>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1trx29k"
+                        >
+                          Example User
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-xdday2"
+                    >
+                      example.user
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-181p6xx"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        aria-label="More_actions"
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                        id="react-aria-:r0:"
+                        title="More_actions"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row--action rcx-table__row"
+                  qa-user-id="2"
+                  role="link"
+                  tabindex="0"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                    >
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                      >
+                        <img
+                          alt=""
+                          aria-hidden="true"
+                          class="rcx-avatar__element rcx-avatar__element--x28"
+                          data-username="john.doe"
+                          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          title="john.doe"
+                        />
+                      </figure>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-zha9rn"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-vtu42x"
+                        >
+                          <svg
+                            class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                            fill="none"
+                            height="12"
+                            viewBox="0 0 12 12"
+                            width="12"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <circle
+                              class="rcx-status-bullet rcx-status-bullet--offline"
+                              cx="6"
+                              cy="6"
+                              r="5"
+                              stroke-width="2"
+                            />
+                          </svg>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1trx29k"
+                        >
+                          John Doe
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-xdday2"
+                    >
+                      john.doe
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-181p6xx"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        aria-label="More_actions"
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                        id="react-aria-:r2:"
+                        title="More_actions"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row--action rcx-table__row"
+                  qa-user-id="3"
+                  role="link"
+                  tabindex="0"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                    >
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                      >
+                        <img
+                          alt=""
+                          aria-hidden="true"
+                          class="rcx-avatar__element rcx-avatar__element--x28"
+                          data-username="sarah.smith"
+                          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          title="sarah.smith"
+                        />
+                      </figure>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-zha9rn"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-vtu42x"
+                        >
+                          <svg
+                            class="rcx-status-bullet rcx-status-bullet--away undefined "
+                            height="10"
+                            viewBox="0 0 10 10"
+                            width="10"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              clip-rule="evenodd"
+                              d="M5.13337 9.93325C7.78434 9.93325 9.93338 7.78422 9.93338 5.13325C9.93338 2.48229 7.78434 0.333252 5.13337 0.333252C2.48241 0.333252 0.333374 2.48229 0.333374 5.13325C0.333374 7.78422 2.48241 9.93325 5.13337 9.93325ZM5.80004 2.33325C5.80004 1.96506 5.50156 1.66659 5.13337 1.66659C4.76518 1.66659 4.46671 1.96506 4.46671 2.33325V5.13325V5.45367L4.71691 5.65383L6.71691 7.25383C7.00442 7.48384 7.42395 7.43722 7.65395 7.14972C7.88396 6.86221 7.83735 6.44268 7.54984 6.21267L5.80004 4.81284V2.33325Z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1trx29k"
+                        >
+                          Sarah Smith
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-xdday2"
+                    >
+                      sarah.smith
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-181p6xx"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        aria-label="More_actions"
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                        id="react-aria-:r4:"
+                        title="More_actions"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row--action rcx-table__row"
+                  qa-user-id="4"
+                  role="link"
+                  tabindex="0"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                    >
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                      >
+                        <img
+                          alt=""
+                          aria-hidden="true"
+                          class="rcx-avatar__element rcx-avatar__element--x28"
+                          data-username="mike.wilson"
+                          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          title="mike.wilson"
+                        />
+                      </figure>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-zha9rn"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-vtu42x"
+                        >
+                          <svg
+                            class="rcx-status-bullet rcx-status-bullet--busy undefined "
+                            height="10"
+                            viewBox="0 0 10 10"
+                            width="10"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              clip-rule="evenodd"
+                              d="M5.13337 9.93325C7.78434 9.93325 9.93338 7.78422 9.93338 5.13325C9.93338 2.48229 7.78434 0.333252 5.13337 0.333252C2.48241 0.333252 0.333374 2.48229 0.333374 5.13325C0.333374 7.78422 2.48241 9.93325 5.13337 9.93325ZM3.53338 4.46655C3.16519 4.46655 2.86671 4.76503 2.86671 5.13322C2.86671 5.50141 3.16519 5.79989 3.53338 5.79989H6.73338C7.10157 5.79989 7.40004 5.50141 7.40004 5.13322C7.40004 4.76503 7.10157 4.46655 6.73338 4.46655H3.53338Z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1trx29k"
+                        >
+                          Mike Wilson
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-xdday2"
+                    >
+                      mike.wilson
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-181p6xx"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        aria-label="More_actions"
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                        id="react-aria-:r6:"
+                        title="More_actions"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row--action rcx-table__row"
+                  qa-user-id="5"
+                  role="link"
+                  tabindex="0"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                    >
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                      >
+                        <img
+                          alt=""
+                          aria-hidden="true"
+                          class="rcx-avatar__element rcx-avatar__element--x28"
+                          data-username="emma.davis"
+                          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          title="emma.davis"
+                        />
+                      </figure>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-zha9rn"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-vtu42x"
+                        >
+                          <svg
+                            class="rcx-status-bullet rcx-status-bullet--online undefined "
+                            height="24"
+                            viewBox="0 0 24 24"
+                            width="24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
+                            />
+                          </svg>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1trx29k"
+                        >
+                          Emma Davis
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-xdday2"
+                    >
+                      emma.davis
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-181p6xx"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        aria-label="More_actions"
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                        id="react-aria-:r8:"
+                        title="More_actions"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div
+          class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+          style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+        >
+          <div
+            class="os-scrollbar-track"
+          >
+            <div
+              class="os-scrollbar-handle"
+            />
+          </div>
+        </div>
+        <div
+          class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+          style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+        >
+          <div
+            class="os-scrollbar-track"
+          >
+            <div
+              class="os-scrollbar-handle"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav
+      class="rcx-box rcx-box--full rcx-pagination--divider rcx-pagination"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-pagination__left"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-pagination__label"
+        >
+          Items per page:
+        </span>
+        <ol
+          class="rcx-box rcx-box--full rcx-pagination__list"
+        >
+          <li
+            class="rcx-box rcx-box--full rcx-pagination__list-item"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              disabled=""
+              tabindex="-1"
+            >
+              25
+            </button>
+          </li>
+          <li
+            class="rcx-box rcx-box--full rcx-pagination__list-item"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              tabindex="0"
+            >
+              50
+            </button>
+          </li>
+          <li
+            class="rcx-box rcx-box--full rcx-pagination__list-item"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              tabindex="0"
+            >
+              100
+            </button>
+          </li>
+        </ol>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-pagination__right"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-pagination__label"
+        >
+          Showing results 1 - 5 of 5
+        </span>
+        <ol
+          class="rcx-box rcx-box--full rcx-pagination__list"
+        >
+          <li
+            class="rcx-box rcx-box--full rcx-pagination__list-item"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-pagination__back"
+              disabled=""
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-chevron--left rcx-chevron"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </li>
+          <li
+            class="rcx-box rcx-box--full rcx-pagination__list-item"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              disabled=""
+            >
+              1
+            </button>
+          </li>
+          <li
+            class="rcx-box rcx-box--full rcx-pagination__list-item"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-pagination__forward"
+              disabled=""
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-chevron--right rcx-chevron"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </li>
+        </ol>
+      </div>
+    </nav>
+  </div>
+</body>
+`;
+
+exports[`renders Loading without crashing 1`] = `
+<body>
+  <div>
+    <form
+      class="rcx-box rcx-box--full rcx-css-99h06u"
+    >
+      <label
+        class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-2izecy rcx-css-fvbcso"
+      >
+        <input
+          aria-label="Search_Users"
+          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box rcx-css-2izecy rcx-css-fvxpep"
+          placeholder="Search_Users"
+          size="1"
+          type="text"
+          value=""
+        />
+        <span
+          class="rcx-box rcx-box--full rcx-input-box__addon"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-4pvxx3"
+          >
+            
+          </i>
+        </span>
+      </label>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1itqmjf"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-ci3q89"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-925wj6 rcx-input-box__wrapper rcx-css-kdp66t"
+            role="button"
+            tabindex="0"
+          >
+            All_roles
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1aoxhm7"
+            >
+              
+            </i>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div
+      class="rcx-box rcx-box--full rcx-css-qcmk2x"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+        data-overlayscrollbars="host"
+      >
+        <div
+          class="os-size-observer"
+        >
+          <div
+            class="os-size-observer-listener"
+          />
+        </div>
+        <div
+          class=""
+          data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+          style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+          tabindex="-1"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-table__wrapper"
+          >
+            <table
+              class="rcx-box rcx-box--full rcx-table--sticky rcx-table--fixed rcx-table"
+            >
+              <thead
+                class="rcx-box rcx-box--full rcx-table__head"
+              >
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--clickable rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Name
+                      <svg
+                        class="rcx-box rcx-box--full rcx-css-13s9wy"
+                        fill="none"
+                        viewBox="0 0 16 16"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5.33337 5.99999L8.00004 3.33333L10.6667 5.99999"
+                          stroke="#E4E7EA"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.33333"
+                        />
+                        <path
+                          d="M5.33337 10L8.00004 12.6667L10.6667 10"
+                          stroke="#E4E7EA"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.33333"
+                        />
+                      </svg>
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--clickable rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Username
+                      <svg
+                        class="rcx-box rcx-box--full rcx-css-13s9wy"
+                        fill="none"
+                        viewBox="0 0 16 16"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5.33337 5.99999L8.00004 3.33333L10.6667 5.99999"
+                          stroke="#E4E7EA"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.33333"
+                        />
+                        <path
+                          d="M5.33337 10L8.00004 12.6667L10.6667 10"
+                          stroke="#E4E7EA"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.33333"
+                        />
+                      </svg>
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell rcx-css-1nngkbl"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Actions
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                class="rcx-box rcx-box--full rcx-table__body"
+              >
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div
+          class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+          style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+        >
+          <div
+            class="os-scrollbar-track"
+          >
+            <div
+              class="os-scrollbar-handle"
+            />
+          </div>
+        </div>
+        <div
+          class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+          style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+        >
+          <div
+            class="os-scrollbar-track"
+          >
+            <div
+              class="os-scrollbar-handle"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders NoResults without crashing 1`] = `
+<body>
+  <div>
+    <form
+      class="rcx-box rcx-box--full rcx-css-99h06u"
+    >
+      <label
+        class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-2izecy rcx-css-fvbcso"
+      >
+        <input
+          aria-label="Search_Users"
+          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box rcx-css-2izecy rcx-css-fvxpep"
+          placeholder="Search_Users"
+          size="1"
+          type="text"
+          value=""
+        />
+        <span
+          class="rcx-box rcx-box--full rcx-input-box__addon"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-4pvxx3"
+          >
+            
+          </i>
+        </span>
+      </label>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1itqmjf"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-ci3q89"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-925wj6 rcx-input-box__wrapper rcx-css-kdp66t"
+            role="button"
+            tabindex="0"
+          >
+            All_roles
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1aoxhm7"
+            >
+              
+            </i>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div
+      class="rcx-box rcx-box--full rcx-css-16js560"
+    >
+      <div
+        class="rcx-states"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-user rcx-icon rcx-css-d884y5"
+        >
+          
+        </i>
+        <h3
+          class="rcx-states__title"
+        >
+          Users_Table_Generic_No_users
+        </h3>
+        <div
+          class="rcx-states__subtitle"
+        >
+          Users_Table_no_undefined_users_description
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
