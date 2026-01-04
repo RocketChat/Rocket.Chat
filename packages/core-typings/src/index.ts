@@ -7,8 +7,6 @@ export * from './Apps';
 export * from './IRoom';
 export * from './IMessage';
 export * from './federation';
-export * from './Serialized';
-export * from './Subscribable';
 export * from './ISetting';
 export * from './ISubscription';
 export * from './ITeam';
@@ -112,7 +110,6 @@ export * from './IOmnichannelServiceLevelAgreements';
 export * from './autoTranslate';
 export * from './IVideoConference';
 export * from './VideoConferenceCapabilities';
-export * from './VideoConferenceOptions';
 
 export * from './SpotlightUser';
 export * from './ICalendarEvent';

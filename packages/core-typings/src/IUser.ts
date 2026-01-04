@@ -1,8 +1,8 @@
 import type { IAbacAttributeDefinition } from './IAbacAttribute';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
-import type { Serialized } from './Serialized';
 import type { UserStatus } from './UserStatus';
+import type { Serialized } from './utils';
 
 export interface ILoginToken {
 	hashedToken: string;

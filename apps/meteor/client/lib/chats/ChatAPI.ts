@@ -1,9 +1,14 @@
-import type { IMessage, IRoom, ISubscription, IE2EEMessage, IUpload, Subscribable } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
 
 import type { Upload } from './Upload';
 import type { ReadStateManager } from './readStateManager';
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
+
+type Subscribable<T> = {
+	get(): T;
+	subscribe(callback: () => void): () => void;
+};
 
 export type ComposerAPI = {
 	release(): void;
