@@ -162,7 +162,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 									<TextInput
 										{...register('usernameOrEmail', {
 											validate: (value) => {
-												if (!value || !value.trim()) {
+												if (!value?.trim()) {
 													return t('Required_field', { field: t('registration.component.form.emailOrUsername')});
 												}
 												return true;
