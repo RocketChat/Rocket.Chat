@@ -18,12 +18,6 @@ export type AbacAttributeDefinitionChangeType =
 	| 'key-added'
 	| 'key-updated';
 
-export type AbacAttributeDefinitionDiff = {
-	added?: string[];
-	removed?: string[];
-	renamedFrom?: string;
-};
-
 // Since user attributes can grow without limits, we're only logging the diffs
 export interface IServerEventAbacSubjectAttributeChanged
 	extends IAuditServerEventType<
