@@ -4,7 +4,6 @@ import './ServerAudit/IAuditServerAbacAction';
 
 export * from './ServerAudit/IAuditUserChangedEvent';
 export * from './Apps';
-export * from './MarketplaceRest';
 export * from './IRoom';
 export * from './IMessage';
 export * from './federation';
