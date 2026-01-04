@@ -3,8 +3,18 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 import type { IBanner } from '../IBanner';
-import type { Announcement } from './Announcement';
-import type { NpsSurveyAnnouncement } from './NpsSurveyAnnouncement';
+
+export interface Announcement extends IBanner {
+	selector?: {
+		roles?: string[];
+	};
+}
+
+interface NpsSurveyAnnouncement {
+	id: string;
+	startAt: Date;
+	expireAt: Date;
+}
 
 export interface WorkspaceSyncPayload {
 	workspaceId: string;
@@ -52,18 +62,17 @@ export interface WorkspaceSyncResponse {
 	cloudSyncAnnouncement: unknown;
 }
 
-export interface WorkspaceCommsRequestPayload {
-	npsEnabled: boolean;
-	deploymentMethod: string;
-	deploymentPlatform: string;
-	version: string;
+interface IAnnouncement extends IBanner {
+	selector?: {
+		roles?: string[];
+	};
 }
 
 export interface WorkspaceCommsResponsePayload {
 	nps?: NpsSurveyAnnouncement | null; // Potentially consolidate into announcements
 	announcements?: {
-		create: Announcement[];
-		delete: Announcement['_id'][];
+		create: IAnnouncement[];
+		delete: IAnnouncement['_id'][];
 	};
 }
 

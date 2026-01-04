@@ -1,11 +1,9 @@
-export { Announcement } from './Announcement';
-export { NpsSurveyAnnouncement } from './NpsSurveyAnnouncement';
 export { WorkspaceLicensePayload } from './WorkspaceLicensePayload';
 export {
+	Announcement,
 	WorkspaceSyncPayload,
 	WorkspaceSyncRequestPayload,
 	WorkspaceSyncResponse,
-	WorkspaceCommsRequestPayload,
 	WorkspaceCommsResponsePayload,
 	WorkspaceInteractionResponsePayload,
 } from './WorkspaceSyncPayload';
