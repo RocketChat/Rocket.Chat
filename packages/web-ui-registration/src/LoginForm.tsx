@@ -163,7 +163,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 										{...register('usernameOrEmail', {
 											validate: (value) => {
 												if (!value?.trim()) {
-													return t('Required_field', { field: t('registration.component.form.emailOrUsername')});
+													return t('Required_field', { field: t('registration.component.form.emailOrUsername') });
 												}
 												return true;
 											},
