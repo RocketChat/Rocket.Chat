@@ -5,7 +5,7 @@ import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IUser, Username } from './IUser';
+import type { IUser } from './IUser';
 import type { RoomType } from './RoomType';
 import type { Branded } from './utils';
 
@@ -135,7 +135,7 @@ export const isPrivateRoom = (room: Partial<IRoom>): room is IRoom => room.t ===
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
 	uids: Array<string>;
-	usernames: Array<Username>;
+	usernames: Array<NonNullable<IUser['username']>>;
 }
 
 export const isDirectMessageRoom = (room: Partial<IRoom> | IDirectMessageRoom): room is IDirectMessageRoom => room.t === 'd';
