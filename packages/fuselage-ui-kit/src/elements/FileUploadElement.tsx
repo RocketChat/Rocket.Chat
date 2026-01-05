@@ -1,5 +1,5 @@
 import { Box, Button, Throbber } from '@rocket.chat/fuselage';
-import type * as UiKit from '@rocket.chat/ui-kit';
+import * as UiKit from '@rocket.chat/ui-kit';
 import type { ChangeEvent, ReactElement } from 'react';
 import { memo, useMemo, useRef } from 'react';
 

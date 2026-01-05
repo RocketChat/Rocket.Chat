@@ -56,18 +56,18 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 
 		if (Array.isArray(value)) {
 			if (Array.isArray(elValue)) {
-				setValue(elValue);
+				setValue(elValue as UiKit.ActionOf<TElement>);
 			} else {
 				const idx = value.findIndex((value) => value === elValue);
 
 				if (idx > -1) {
-					setValue(value.filter((_, i) => i !== idx));
+					setValue(value.filter((_, i) => i !== idx) as UiKit.ActionOf<TElement>);
 				} else {
-					setValue([...value, elValue]);
+					setValue([...value, elValue] as UiKit.ActionOf<TElement>);
 				}
 			}
 		} else {
-			setValue(elValue);
+			setValue(elValue as UiKit.ActionOf<TElement>);
 		}
 
 		await updateState?.({ blockId, appId, actionId, value: elValue, viewId }, e);
