@@ -108,6 +108,32 @@ const isSemiTransferable = (data: any) => data instanceof ArrayBuffer;
 
 const copyData = <T extends ivm.Transferable | Record<string, any> | any[]>(data: T) => (isTransferable(data) ? data : copyObject(data));
 const makeTransferable = (data: any) => (isTransferable(data) ? data : new ivm.ExternalCopy(copyObject(data)).copyInto());
+const executionLogs: {
+	level: 'log' | 'warn' | 'error';
+	message: string;
+	timestamp: Date;
+}[] = [];
+
+const pushLog = (level: 'log' | 'warn' | 'error', args: unknown[]) => {
+	try {
+		executionLogs.push({
+			level,
+			message: args.map((a) => String(a)).join(' '),
+			timestamp: new Date(),
+		});
+
+		if (executionLogs.length > 20) {
+			executionLogs.shift();
+		}
+	} catch {
+	}
+};
+
+const sandboxConsole = {
+	log: (...args: unknown[]) => pushLog('log', args),
+	warn: (...args: unknown[]) => pushLog('warn', args),
+	error: (...args: unknown[]) => pushLog('error', args),
+};
 
 export const buildSandbox = (context: Context) => {
 	const { global: jail } = context;
@@ -115,7 +141,7 @@ export const buildSandbox = (context: Context) => {
 	jail.setSync('ivm', ivm);
 
 	jail.setSync('s', makeTransferable(s));
-	jail.setSync('console', makeTransferable(console));
+	jail.setSync('console', makeTransferable(sandboxConsole));
 
 	jail.setSync(
 		'serverFetch',
