@@ -42,9 +42,15 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		await onClientMessageReceived(message as IMessage).then((message) => {
+		await onClientMessageReceived(message as IMessage).then(async (message) => {
 			Messages.state.store(message);
-			return clientCallbacks.run('afterSaveMessage', message, { room, user });
+			await clientCallbacks.run('afterSaveMessage', message, { room, user });
+
+			// Now that the message is stored, we can go ahead and mark as sent
+			Messages.state.update(
+				(record) => record._id === message._id && record.temp === true,
+				(record) => ({ ...record, temp: false }),
+			);
 		});
 	},
 });
