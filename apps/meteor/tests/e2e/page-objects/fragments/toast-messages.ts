@@ -11,19 +11,19 @@ export class ToastMessages {
 	};
 
 	async dismissToast(type: 'success' | 'error' = 'success') {
-		await this.toastByType[type].locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
+		await this.toastByType[type].last().getByRole('button', { name: 'Dismiss alert' }).click();
 		await this.page.mouse.move(0, 0);
 	}
 
 	waitForDisplay({ type, message }: { type: 'success' | 'error'; message?: string } = { type: 'success' }) {
 		if (message) {
 			return expect(
-				this.toastByType[type].locator('[role="alert"]', {
+				this.toastByType[type].last().locator('[role="alert"]', {
 					hasText: message,
 				}),
 			).toBeVisible();
 		}
 
-		return expect(this.toastByType[type]).toBeVisible();
+		return expect(this.toastByType[type].last()).toBeVisible();
 	}
 }
