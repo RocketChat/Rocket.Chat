@@ -817,7 +817,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -838,7 +838,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username: 'test$username<>',
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -856,7 +856,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -873,7 +873,7 @@ describe('[Users]', () => {
 					email,
 					name: '</\\name>',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
