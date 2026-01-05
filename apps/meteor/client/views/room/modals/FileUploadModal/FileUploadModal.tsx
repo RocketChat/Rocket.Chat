@@ -53,8 +53,6 @@ const FileUploadModal = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 	const maxMsgSize = useSetting('Message_MaxAllowedSize', 5000);
 	const maxFileSize = useSetting('FileUpload_MaxFileSize', 104857600);
-
-	
 	const hasShownErrorRef = useRef(false);
 
 	const isDescriptionValid = (description: string) =>
@@ -78,8 +76,9 @@ const FileUploadModal = ({
 		if (hasShownErrorRef.current) {
 			return;
 		}
+
 		hasShownErrorRef.current = true;
-		
+
 		if (invalidContentType) {
 			dispatchToastMessage({
 				type: 'error',
