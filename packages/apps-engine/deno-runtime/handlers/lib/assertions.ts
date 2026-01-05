@@ -1,13 +1,12 @@
-import type { App as _App } from '@rocket.chat/apps-engine/definition/App.ts';
+import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import { JsonRpcError } from 'jsonrpc-lite';
 
-import { require } from '../../lib/require.ts';
-const { App } = require('@rocket.chat/apps-engine/definition/App.js') as {
-	App: typeof _App;
-};
+export function isRecord(v: unknown): v is Record<string, unknown> {
+	return !!v && typeof v === 'object';
+}
 
-export function assertAppAvailable(v: unknown): asserts v is _App {
-	if (v instanceof App) return;
+export function assertAppAvailable(v: unknown): asserts v is App {
+	if (v && typeof (v as App)['extendConfiguration'] === 'function') return;
 
 	throw JsonRpcError.internalError({ err: 'App object not available' });
 }
