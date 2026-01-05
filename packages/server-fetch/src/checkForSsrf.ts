@@ -71,6 +71,18 @@ const isIpInAnyRange = (ip: string) => {
 const domainPattern = /^(?!-)(?!.*--)[A-Za-z0-9-]{1,63}(?<!-)\.?([A-Za-z0-9-]{2,63}\.?)*[A-Za-z]{2,63}$/;
 const isValidDomain = (domain: string) => domainPattern.test(domain);
 
+const parseIpv4WithPort = (input: string): { ip: string; port?: string } | null => {
+	const ipv4WithPortPattern = /^(\d+\.\d+\.\d+\.\d+)(?::(\d+))?$/;
+	const match = input.match(ipv4WithPortPattern);
+	if (match) {
+		return {
+			ip: match[1],
+			port: match[2],
+		};
+	}
+	return null;
+};
+
 export const checkForSsrf = async (input: string): Promise<boolean> => {
 	const result = await checkForSsrfWithIp(input);
 	return result.allowed;
@@ -78,17 +90,35 @@ export const checkForSsrf = async (input: string): Promise<boolean> => {
 
 export const checkForSsrfWithIp = async (input: string): Promise<{ allowed: boolean; resolvedIp?: string }> => {
 	let ipOrDomain: string;
+	let port: string | undefined;
+	let wasUrlParsed = false;
 
 	try {
 		const url = new URL(input);
 		if (url.protocol !== 'http:' && url.protocol !== 'https:') return { allowed: false };
 		ipOrDomain = url.hostname;
+		port = url.port || undefined;
+		wasUrlParsed = true;
 	} catch {
-		ipOrDomain = input;
+		const parsed = parseIpv4WithPort(input);
+		if (parsed) {
+			ipOrDomain = parsed.ip;
+			port = parsed.port;
+		} else {
+			ipOrDomain = input;
+		}
 	}
 
 	if (ipOrDomain.startsWith('[') && ipOrDomain.endsWith(']')) {
 		ipOrDomain = ipOrDomain.slice(1, -1);
+	}
+
+	const parsed = parseIpv4WithPort(ipOrDomain);
+	if (parsed) {
+		ipOrDomain = parsed.ip;
+		if (parsed.port && !port) {
+			port = parsed.port;
+		}
 	}
 
 	const ipValid = isIpValid(ipOrDomain);
@@ -102,11 +132,13 @@ export const checkForSsrfWithIp = async (input: string): Promise<{ allowed: bool
 		try {
 			const resolvedIp = await nslookup(ipOrDomain);
 			if (isIpInAnyRange(resolvedIp)) return { allowed: false };
-			return { allowed: true, resolvedIp };
+			const resolvedIpWithPort = !wasUrlParsed && port ? `${resolvedIp}:${port}` : resolvedIp;
+			return { allowed: true, resolvedIp: resolvedIpWithPort };
 		} catch {
 			return { allowed: false };
 		}
 	}
 
-	return { allowed: true, resolvedIp: ipOrDomain };
+	const ipWithPort = !wasUrlParsed && port ? `${ipOrDomain}:${port}` : ipOrDomain;
+	return { allowed: true, resolvedIp: ipWithPort };
 };

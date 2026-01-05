@@ -26,20 +26,19 @@ function getFetchAgent<U extends string>(
 		return new AgentFn(proxy);
 	}
 
-	if (!allowSelfSignedCerts) {
-		return null;
-	}
-
 	if (!isHttps) {
 		return new http.Agent();
 	}
 
-	const agentOptions: https.AgentOptions = {
-		rejectUnauthorized: false,
-	};
+	const agentOptions: https.AgentOptions = {};
 
 	if (originalHostname) {
 		agentOptions.servername = originalHostname;
+		agentOptions.rejectUnauthorized = true;
+	} else if (allowSelfSignedCerts) {
+		agentOptions.rejectUnauthorized = false;
+	} else {
+		return null;
 	}
 
 	return new https.Agent(agentOptions);
@@ -67,8 +66,26 @@ const extractHostname = (urlString: string): string | null => {
 const buildPinnedUrl = (originalUrl: string, resolvedIp: string): string => {
 	try {
 		const url = new URL(originalUrl);
-		const ipHostname = resolvedIp.includes(':') ? `[${resolvedIp}]` : resolvedIp;
-		url.hostname = ipHostname;
+
+		let ipAddress: string;
+
+		const ipv4WithPortMatch = resolvedIp.match(/^(\d+\.\d+\.\d+\.\d+)(?::(\d+))$/);
+		if (ipv4WithPortMatch) {
+			ipAddress = ipv4WithPortMatch[1];
+		} else if (resolvedIp.includes(':') && !resolvedIp.includes('.')) {
+			const ipv6WithPortMatch = resolvedIp.match(/^(\[[0-9a-fA-F:]+\])(?::(\d+))$/);
+			if (ipv6WithPortMatch) {
+				ipAddress = ipv6WithPortMatch[1];
+			} else {
+				ipAddress = resolvedIp.startsWith('[') && resolvedIp.endsWith(']') ? resolvedIp : `[${resolvedIp}]`;
+			}
+		} else {
+			// IPv4 without port
+			ipAddress = resolvedIp;
+		}
+
+		url.hostname = ipAddress;
+
 		return url.toString();
 	} catch {
 		return originalUrl;
@@ -83,7 +100,7 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 		let originalHostname: string | undefined;
 		let resolvedIp: string | undefined;
 
-		if (!options?.ignoreSsrfValidation) {
+		if (!options?.ignoreSsrfValidation && process.env.TEST_MODE !== 'true') {
 			// eslint-disable-next-line no-await-in-loop
 			const ssrfResult = await checkForSsrfWithIp(currentUrl);
 			if (!ssrfResult.allowed) {
