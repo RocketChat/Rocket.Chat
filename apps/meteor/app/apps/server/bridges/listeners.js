@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
@@ -85,19 +84,32 @@ export class AppListenerBridge {
 
 	/**
 	 *
-	 * @param {import('@rocket.chat/apps').AppEvents.IPreFileUpload | import('@rocket.chat/apps').AppEvents.IPreFileUploadStream} inte event interface
 	 * @param {{ file: import('@rocket.chat/core-typings').IUpload; content: Buffer }} payload
 	 * @return void
 	 */
-	async uploadEvent(inte, payload) {
+	async uploadEvent(_, payload) {
 		const { file, content } = payload;
 
-		const tmpfile = path.join(os.tmpdir(), crypto.randomUUID());
-		await fs.promises.writeFile(tmpfile, content);
+		const tmpfile = path.join(this.orch.getManager().getTempFilePath(), crypto.randomUUID());
+		await fs.promises.writeFile(tmpfile, content).catch((err) => {
+			this.orch.getRocketChatLogger().error({ msg: `AppListenerBridge: Could not write temporary file at ${tmpfile}`, err });
+
+			throw new Error('Error sending file to apps', { cause: err });
+		});
 
 		const appFile = await this.orch.getConverters().get('uploads').convertToApp(file);
 
-		await this.orch.getManager().getListenerManager().executeListener(inte, { file: appFile, path: tmpfile });
+		// Execute both events for backward compatibility
+		await Promise.all([
+			this.orch.getManager().getListenerManager().executeListener(AppInterface.IPreFileUpload, { file: appFile, path: tmpfile }),
+			this.orch.getManager().getListenerManager().executeListener(AppInterface.IPreFileUploadStream, { file: appFile, path: tmpfile }),
+		]);
+
+		await fs.promises
+			.unlink(tmpfile)
+			.catch((err) =>
+				this.orch.getRocketChatLogger().warn({ msg: `AppListenerBridge: Could not delete temporary file at ${tmpfile}`, err }),
+			);
 	}
 
 	async messageEvent(inte, message, ...payload) {

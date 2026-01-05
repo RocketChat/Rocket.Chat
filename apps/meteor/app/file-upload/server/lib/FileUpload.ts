@@ -186,9 +186,9 @@ export const FileUpload = {
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
 
-		// App IPreFileUpload event hook
+		// App IPreFileUploadStream event hook
 		try {
-			await Apps.self?.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) });
+			await Apps.self?.triggerEvent(AppEvents.IPreFileUploadStream, { file, content: content || Buffer.from([]) });
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);
