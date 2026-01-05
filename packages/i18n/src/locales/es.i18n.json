@@ -682,6 +682,7 @@
   "CROWD_Reject_Unauthorized": "Rechazar no autorizado",
   "Call": "Llamada",
   "Call_Already_Ended": "Llamada ya finalizada",
+  "Call_Information": "Información de llamada",
   "Call_declined": "Llamada rechazada",
   "Call_provider": "Proveedor de llamadas",
   "Caller": "Llamador",
