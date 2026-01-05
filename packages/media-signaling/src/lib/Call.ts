@@ -349,9 +349,8 @@ export class ClientMediaCall implements IClientMediaCall {
 		// Send an ACK so the server knows that this session exists and is reachable
 		this.acknowledge();
 
-		if (this._role === 'callee' || !this.acceptedLocally) {
-			this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
-		}
+		// Adds a secondary timeout for all sessions of the call; Won't matter if the original caller session is still active, but is needed for transferred calls.
+		this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
 
 		// If the call was requested by this specific session, assume we're signed already.
 		if (
