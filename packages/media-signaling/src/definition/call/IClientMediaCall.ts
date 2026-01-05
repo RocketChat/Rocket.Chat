@@ -97,7 +97,6 @@ export interface IClientMediaCall {
 	readonly confirmed: boolean;
 
 	readonly screenShareRequested: boolean;
-	readonly screenShareReceived: boolean;
 
 	emitter: Emitter<CallEvents>;
 

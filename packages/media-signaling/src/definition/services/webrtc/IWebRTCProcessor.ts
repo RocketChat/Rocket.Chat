@@ -13,7 +13,6 @@ export type WebRTCInternalStateMap = {
 	iceGathering: RTCIceGatheringState;
 	iceUntrickler: 'waiting' | 'not-waiting' | 'timeout';
 	remoteMute: boolean;
-	remoteScreenShare: boolean;
 };
 
 export type WebRTCUniqueEvents = {
@@ -50,7 +49,6 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
 	isRemoteHeld(): boolean;
 	isRemoteMute(): boolean;
-	isReceivingScreenShare(): boolean;
 
 	setRemoteIds(streams: MediaStreamIdentification[]): void;
 	getLocalStreamIds(): MediaStreamIdentification[];

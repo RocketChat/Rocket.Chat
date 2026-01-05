@@ -62,8 +62,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private _remoteMute = false;
 
-	private _remoteScreenShare = false;
-
 	private _dataChannelEnded = false;
 
 	constructor(private readonly config: WebRTCProcessorConfig) {
@@ -273,8 +271,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 				return this.iceGatheringWaiters.size > 0 ? 'waiting' : 'not-waiting';
 			case 'remoteMute':
 				return this._remoteMute;
-			case 'remoteScreenShare':
-				return this._remoteScreenShare;
 		}
 	}
 
@@ -317,10 +313,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	public isRemoteMute(): boolean {
 		return this._remoteMute;
-	}
-
-	public isReceivingScreenShare(): boolean {
-		return this._remoteScreenShare;
 	}
 
 	public isStable(): boolean {
@@ -634,21 +626,12 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 				this._dataChannelEnded = true;
 				break;
 			case 'screen-share.start':
-				this.setRemoteScreenShare(true);
+				this.streams.screenShareRemote.setActive(true);
 				break;
 			case 'screen-share.stop':
-				this.setRemoteScreenShare(false);
+				this.streams.screenShareRemote.setActive(false);
 				break;
 		}
-	}
-
-	private setRemoteScreenShare(sharing: boolean): void {
-		if (sharing === this._remoteScreenShare) {
-			return;
-		}
-
-		this._remoteScreenShare = sharing;
-		this.emitter.emit('internalStateChange', 'remoteScreenShare');
 	}
 
 	private setRemoteMute(muted: boolean): void {
@@ -839,6 +822,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	private async loadVideoTrack(): Promise<void> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.loadVideoTrack');
 		await this.streams.screenShareLocal.setTrack('video', this.videoTrack);
+
+		this.streams.screenShareLocal.setActive(Boolean(this.videoTrack));
 
 		if (this.videoTrack) {
 			this.sendP2PCommand('screen-share.start');

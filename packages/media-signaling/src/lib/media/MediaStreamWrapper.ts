@@ -19,6 +19,12 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		return this.stream.id;
 	}
 
+	private _active: boolean;
+
+	public get active(): boolean {
+		return this._active;
+	}
+
 	private audioEnabled = true;
 
 	private audioTrack: MediaStreamTrackWrapper | null = null;
@@ -39,6 +45,9 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		this.stream = new MediaStream();
 		this.emitter = new Emitter();
 		this.remoteIds = [];
+
+		// Main stream initiates as active, any other initiates as inactive
+		this._active = tag === 'main';
 	}
 
 	public hasAudio(): boolean {
@@ -98,6 +107,15 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		if (this.isAudioMuted() !== wasMuted) {
 			this.emitter.emit('stateChanged');
 		}
+	}
+
+	public setActive(active: boolean) {
+		if (this._active === active) {
+			return;
+		}
+
+		this._active = active;
+		this.emitter.emit('stateChanged');
 	}
 
 	public stop(): void {

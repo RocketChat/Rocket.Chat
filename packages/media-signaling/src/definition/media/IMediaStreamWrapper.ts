@@ -33,6 +33,8 @@ export interface IMediaStreamWrapper {
 
 	readonly localId: string;
 
+	readonly active: boolean;
+
 	/**
 	 * Indicates if there's any track on this stream that is receiving or may receive audio
 	 **/

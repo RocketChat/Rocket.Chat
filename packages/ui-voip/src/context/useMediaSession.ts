@@ -357,11 +357,12 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 					return null;
 				}
 
-				if (!mainCall.screenShareReceived) {
+				const wrapper = mainCall.getRemoteMediaStream('screen-share');
+				if (!wrapper?.active) {
 					return null;
 				}
 
-				return mainCall.getRemoteMediaStream('screen-share')?.stream || null;
+				return wrapper.stream;
 			} catch (error) {
 				console.error('MediaCall: useMediaStream - Error getting remote media stream', error);
 				return null;
