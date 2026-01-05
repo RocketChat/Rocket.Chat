@@ -130,6 +130,7 @@ export class TestInfastructureSetup {
 			getRuntime: () => {
 				return this.runtimeManager;
 			},
+			getTempFilePath: () => 'temp-file-path',
 		} as unknown as AppManager;
 	}
 
