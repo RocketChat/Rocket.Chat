@@ -1,8 +1,7 @@
 import { EventEmitter } from 'events';
-
-import { serverFetch as fetch, Response } from '@rocket.chat/server-fetch';
 import ivm, { type Context } from 'isolated-vm';
-
+import { serverFetch, Response } from '@rocket.chat/server-fetch';
+type ServerFetchOptions = Parameters<typeof serverFetch>[1];
 import * as s from '../../../../../lib/utils/stringUtils';
 
 type SandboxLog = {
@@ -119,17 +118,19 @@ export const buildSandbox = (context: Context) => {
 	global.setSync('ivm', ivm);
 	global.setSync('s', makeTransferable(s));
 	global.setSync('console', makeTransferable(sandboxConsole));
-
 	global.setSync(
-  'console',
-  makeTransferable({
-    log: (...args: any[]) => console.log(...args),
-    info: (...args: any[]) => console.info(...args),
-    warn: (...args: any[]) => console.warn(...args),
-    error: (...args: any[]) => console.error(...args),
-  }),
+	'serverFetch',
+	new ivm.Reference(
+		async (
+			url: string,
+			options?: ServerFetchOptions,
+			allowInvalidCerts?: boolean,
+		) => {
+			const res = await serverFetch(url, options, allowInvalidCerts);
+			return makeTransferable(res);
+		},
+	),
 );
-
 
 	return { logs };
 };

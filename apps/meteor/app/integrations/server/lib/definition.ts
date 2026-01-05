@@ -21,11 +21,7 @@ export type CompiledScript = {
 	_updatedAt: Date;
 };
 
-export type IntegrationExecutionLog = {
-	level: 'log' | 'warn' | 'error';
-	message: string;
-	timestamp: Date;
-};
+export type IntegrationExecutionLog = SandboxLog;
 
 export type CompatibilityScriptResult = IScriptClass & {
 	availableFunctions: (keyof IScriptClass)[];
