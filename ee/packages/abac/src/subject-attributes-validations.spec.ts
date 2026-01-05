@@ -16,13 +16,13 @@ jest.mock('@rocket.chat/core-services', () => ({
 
 const makeUser = (overrides: Partial<IUser> = {}): IUser =>
 	({
-		_id: `user-${Math.random().toString(36).substring(2, 15)}`,
-		username: `user${Math.random().toString(36).substring(2, 15)}`,
+		_id: `user-fixed-id-${Math.random()}`,
+		username: 'user-fixed-username',
 		roles: [],
 		type: 'user',
 		active: true,
-		createdAt: new Date(),
-		_updatedAt: new Date(),
+		createdAt: new Date(0),
+		_updatedAt: new Date(0),
 		...overrides,
 	}) as IUser;
 
@@ -35,6 +35,21 @@ describe('Subject Attributes validation', () => {
 	let db: Db;
 	let mongo: MongoMemoryServer;
 	let client: MongoClient;
+	const service = new AbacService();
+
+	let roomsCol: Collection<any>;
+	let usersCol: Collection<any>;
+
+	const insertRooms = async (rooms: { _id: string; abacAttributes?: IAbacAttributeDefinition[] }[]) => {
+		await roomsCol.insertMany(
+			rooms.map((room) => ({
+				_id: room._id,
+				name: room._id,
+				t: 'p',
+				abacAttributes: room.abacAttributes,
+			})),
+		);
+	};
 
 	beforeAll(async () => {
 		mongo = await MongoMemoryServer.create();
@@ -48,7 +63,10 @@ describe('Subject Attributes validation', () => {
 		registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
 
 		// @ts-expect-error - ignore
-		await db.collection('abac_dummy_init').insertOne({ _id: 'init', createdAt: new Date() });
+		await db.collection('abac_dummy_init').insertOne({ _id: 'init', createdAt: new Date(0) });
+
+		roomsCol = db.collection('rocketchat_room');
+		usersCol = db.collection('users');
 	}, 30_000);
 
 	afterAll(async () => {
@@ -56,9 +74,16 @@ describe('Subject Attributes validation', () => {
 		await mongo.stop();
 	});
 
-	describe('AbacService.addSubjectAttributes (unit)', () => {
-		const service = new AbacService();
+	beforeEach(async () => {
+		// Clear state between tests while reusing the same in-memory DB & models
+		await Promise.all([usersCol.deleteMany({}), roomsCol.deleteMany({})]);
+	});
 
+	const insertUser = async (user: IUser) => {
+		await usersCol.insertOne(user);
+	};
+
+	describe('AbacService.addSubjectAttributes (unit)', () => {
 		describe('early returns and no-ops', () => {
 			it('returns early when user has no _id', async () => {
 				const user = makeUser({ _id: undefined });
@@ -70,7 +95,7 @@ describe('Subject Attributes validation', () => {
 
 			it('does nothing (no update) when map produces no attributes and user had none', async () => {
 				const user = makeUser({ abacAttributes: undefined });
-				await Users.insertOne(user);
+				await insertUser(user);
 				const ldap = makeLdap({ group: '' });
 				await service.addSubjectAttributes(user, ldap, { group: 'dept' });
 				const updated = await Users.findOneById(user._id, { projection: { abacAttributes: 1 } });
@@ -82,7 +107,7 @@ describe('Subject Attributes validation', () => {
 		describe('building and setting attributes', () => {
 			it('merges multiple LDAP keys mapping to the same ABAC key, deduplicating values', async () => {
 				const user = makeUser();
-				await Users.insertOne(user);
+				await insertUser(user);
 				const ldap = makeLdap({
 					memberOf: ['eng', 'sales', 'eng'],
 					department: ['sales', 'support'],
@@ -95,7 +120,7 @@ describe('Subject Attributes validation', () => {
 
 			it('creates distinct ABAC attributes for different mapped keys preserving insertion order', async () => {
 				const user = makeUser();
-				await Users.insertOne(user);
+				await insertUser(user);
 				const ldap = makeLdap({
 					groups: ['alpha', 'beta'],
 					regionCodes: ['emea', 'apac'],
@@ -113,7 +138,7 @@ describe('Subject Attributes validation', () => {
 
 			it('merges array and string LDAP values into one attribute', async () => {
 				const user = makeUser();
-				await Users.insertOne(user);
+				await insertUser(user);
 				const ldap = makeLdap({ deptCode: 'eng', deptName: ['engineering', 'eng'] });
 				const map = { deptCode: 'dept', deptName: 'dept' };
 				await service.addSubjectAttributes(user, ldap, map);
@@ -125,7 +150,7 @@ describe('Subject Attributes validation', () => {
 		describe('unsetting attributes when none extracted', () => {
 			it('unsets abacAttributes when user previously had attributes but now extracts none', async () => {
 				const user = makeUser({ abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] });
-				await Users.insertOne(user);
+				await insertUser(user);
 				const ldap = makeLdap({ other: ['x'] });
 				const map = { missing: 'dept' };
 				await service.addSubjectAttributes(user, ldap, map);
@@ -135,7 +160,7 @@ describe('Subject Attributes validation', () => {
 
 			it('does not unset when user had no prior attributes and extraction yields none', async () => {
 				const user = makeUser({ abacAttributes: [] });
-				await Users.insertOne(user);
+				await insertUser(user);
 				const ldap = makeLdap({});
 				const map = { missing: 'dept' };
 				await service.addSubjectAttributes(user, ldap, map);
@@ -147,7 +172,7 @@ describe('Subject Attributes validation', () => {
 		describe('loss detection triggering hook (attribute changes)', () => {
 			it('updates attributes reducing values on loss', async () => {
 				const user = makeUser({ abacAttributes: [{ key: 'dept', values: ['eng', 'qa'] }] });
-				await Users.insertOne(user);
+				await insertUser(user);
 				const ldap = makeLdap({ memberOf: ['eng'] });
 				await service.addSubjectAttributes(user, ldap, { memberOf: 'dept' });
 				const updated = await Users.findOneById(user._id, { projection: { abacAttributes: 1 } });
@@ -161,7 +186,7 @@ describe('Subject Attributes validation', () => {
 						{ key: 'region', values: ['emea'] },
 					],
 				});
-				await Users.insertOne(user);
+				await insertUser(user);
 				const ldap = makeLdap({ department: ['eng'] });
 				await service.addSubjectAttributes(user, ldap, { department: 'dept' });
 				const updated = await Users.findOneById(user._id, { projection: { abacAttributes: 1 } });
@@ -170,7 +195,7 @@ describe('Subject Attributes validation', () => {
 
 			it('gains new values without triggering loss logic', async () => {
 				const user = makeUser({ abacAttributes: [{ key: 'dept', values: ['eng'] }] });
-				await Users.insertOne(user);
+				await insertUser(user);
 				const ldap = makeLdap({ memberOf: ['eng', 'qa'] });
 				await service.addSubjectAttributes(user, ldap, { memberOf: 'dept' });
 				const updated = await Users.findOneById(user._id, { projection: { abacAttributes: 1 } });
@@ -179,7 +204,7 @@ describe('Subject Attributes validation', () => {
 
 			it('keeps attributes unchanged when only ordering differs', async () => {
 				const user = makeUser({ abacAttributes: [{ key: 'dept', values: ['eng', 'qa'] }] });
-				await Users.insertOne(user);
+				await insertUser(user);
 				const ldap = makeLdap({ memberOf: ['qa', 'eng'] });
 				await service.addSubjectAttributes(user, ldap, { memberOf: 'dept' });
 				const updated = await Users.findOneById(user._id, { projection: { abacAttributes: 1 } });
@@ -189,7 +214,7 @@ describe('Subject Attributes validation', () => {
 
 			it('merges duplicate LDAP mapping keys retaining union of values', async () => {
 				const user = makeUser({ abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] });
-				await Users.insertOne(user);
+				await insertUser(user);
 				const ldap = makeLdap({ deptA: ['eng', 'sales'], deptB: ['eng'] });
 				await service.addSubjectAttributes(user, ldap, { deptA: 'dept', deptB: 'dept' });
 				const updated = await Users.findOneById(user._id, { projection: { abacAttributes: 1 } });
@@ -198,52 +223,41 @@ describe('Subject Attributes validation', () => {
 		});
 
 		describe('input immutability', () => {
+			let sharedUser: IUser;
+			let original: IAbacAttributeDefinition[];
+			let clone: IAbacAttributeDefinition[];
+
+			beforeAll(async () => {
+				original = [{ key: 'dept', values: ['eng', 'sales'] }] as IAbacAttributeDefinition[];
+				clone = JSON.parse(JSON.stringify(original));
+				sharedUser = makeUser({ abacAttributes: original });
+				await insertUser(sharedUser);
+			});
+
+			afterAll(async () => {
+				await usersCol.deleteOne({ _id: sharedUser._id });
+			});
+
 			it('does not mutate original user.abacAttributes array reference contents', async () => {
-				const original = [{ key: 'dept', values: ['eng', 'sales'] }] as IAbacAttributeDefinition[];
-				const user = makeUser({ abacAttributes: original });
-				await Users.insertOne(user);
-				const clone = JSON.parse(JSON.stringify(original));
 				const ldap = makeLdap({ memberOf: ['eng', 'sales', 'support'] });
-				await service.addSubjectAttributes(user, ldap, { memberOf: 'dept' });
+				await service.addSubjectAttributes(sharedUser, ldap, { memberOf: 'dept' });
 				expect(original).toEqual(clone);
 			});
 		});
 	});
 
 	describe('AbacService.addSubjectAttributes (room removals)', () => {
-		let service: AbacService;
-		let roomsCol: Collection<any>;
-		let usersCol: Collection<any>;
-
 		const originalCoreServices = jest.requireMock('@rocket.chat/core-services');
 		originalCoreServices.Room.removeUserFromRoom = async (rid: string, user: IUser) => {
 			// @ts-expect-error - test
 			await usersCol.updateOne({ _id: user._id }, { $pull: { __rooms: rid } });
 		};
 
-		const insertRoom = async (room: { _id: string; abacAttributes?: IAbacAttributeDefinition[] }) =>
-			roomsCol.insertOne({
-				_id: room._id,
-				name: room._id,
-				t: 'p',
-				abacAttributes: room.abacAttributes,
-			});
-
-		const insertUser = async (user: IUser & { __rooms?: string[] }) =>
+		const insertUserForRemovalTests = async (user: IUser & { __rooms?: string[] }) =>
 			usersCol.insertOne({
 				...user,
 				__rooms: user.__rooms || [],
 			});
-
-		beforeAll(async () => {
-			roomsCol = db.collection('rocketchat_room');
-			usersCol = db.collection('users');
-			await Promise.all([roomsCol.deleteMany({}), usersCol.deleteMany({})]);
-		});
-
-		beforeEach(() => {
-			service = new AbacService();
-		});
 
 		it('removes user from rooms whose attributes become non-compliant after losing a value', async () => {
 			const user: IUser = {
@@ -261,12 +275,12 @@ describe('Subject Attributes validation', () => {
 			// Rooms:
 			// rKeep requires only 'eng' (will remain compliant)
 			// rRemove requires both 'eng' and 'qa' (will become non-compliant after loss)
-			await Promise.all([
-				insertRoom({ _id: 'rKeep', abacAttributes: [{ key: 'dept', values: ['eng'] }] }),
-				insertRoom({ _id: 'rRemove', abacAttributes: [{ key: 'dept', values: ['eng', 'qa'] }] }),
+			await insertRooms([
+				{ _id: 'rKeep', abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+				{ _id: 'rRemove', abacAttributes: [{ key: 'dept', values: ['eng', 'qa'] }] },
 			]);
 
-			await insertUser({ ...user, __rooms: ['rKeep', 'rRemove'] });
+			await insertUserForRemovalTests({ ...user, __rooms: ['rKeep', 'rRemove'] });
 
 			const ldap: ILDAPEntry = {
 				memberOf: ['eng'],
@@ -301,19 +315,19 @@ describe('Subject Attributes validation', () => {
 			// rDeptOnly -> only dept (will stay)
 			// rRegionOnly -> region only (will be removed after region key loss)
 			// rBoth -> both dept & region (will be removed)
-			await Promise.all([
-				insertRoom({ _id: 'rDeptOnly', abacAttributes: [{ key: 'dept', values: ['eng'] }] }),
-				insertRoom({ _id: 'rRegionOnly', abacAttributes: [{ key: 'region', values: ['emea'] }] }),
-				insertRoom({
+			await insertRooms([
+				{ _id: 'rDeptOnly', abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+				{ _id: 'rRegionOnly', abacAttributes: [{ key: 'region', values: ['emea'] }] },
+				{
 					_id: 'rBoth',
 					abacAttributes: [
 						{ key: 'dept', values: ['eng'] },
 						{ key: 'region', values: ['emea'] },
 					],
-				}),
+				},
 			]);
 
-			await insertUser({ ...user, __rooms: ['rDeptOnly', 'rRegionOnly', 'rBoth'] });
+			await insertUserForRemovalTests({ ...user, __rooms: ['rDeptOnly', 'rRegionOnly', 'rBoth'] });
 
 			const ldap: ILDAPEntry = {
 				department: ['eng'],
@@ -341,12 +355,12 @@ describe('Subject Attributes validation', () => {
 				__rooms: ['rGrowthA', 'rGrowthB'],
 			};
 
-			await Promise.all([
-				insertRoom({ _id: 'rGrowthA', abacAttributes: [{ key: 'dept', values: ['eng'] }] }),
-				insertRoom({ _id: 'rGrowthB', abacAttributes: [{ key: 'dept', values: ['eng', 'qa'] }] }), // superset; still compliant after growth
+			await insertRooms([
+				{ _id: 'rGrowthA', abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+				{ _id: 'rGrowthB', abacAttributes: [{ key: 'dept', values: ['eng', 'qa'] }] }, // superset; still compliant after growth
 			]);
 
-			await insertUser({ ...user, __rooms: ['rGrowthA', 'rGrowthB'] });
+			await insertUserForRemovalTests({ ...user, __rooms: ['rGrowthA', 'rGrowthB'] });
 
 			const ldap: ILDAPEntry = {
 				memberOf: ['eng', 'qa'],
@@ -376,21 +390,21 @@ describe('Subject Attributes validation', () => {
 				__rooms: ['rExtraKeyRoom', 'rBaseline'],
 			};
 
-			await Promise.all([
-				insertRoom({
+			await insertRooms([
+				{
 					_id: 'rExtraKeyRoom',
 					abacAttributes: [
 						{ key: 'dept', values: ['eng', 'sales'] },
 						{ key: 'project', values: ['X'] },
 					],
-				}),
-				insertRoom({
+				},
+				{
 					_id: 'rBaseline',
 					abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }],
-				}),
+				},
 			]);
 
-			await insertUser({ ...user, __rooms: ['rExtraKeyRoom', 'rBaseline'] });
+			await insertUserForRemovalTests({ ...user, __rooms: ['rExtraKeyRoom', 'rBaseline'] });
 
 			const ldap: ILDAPEntry = {
 				deptCodes: ['eng', 'sales'],
@@ -417,12 +431,12 @@ describe('Subject Attributes validation', () => {
 				__rooms: ['rAny1', 'rAny2'],
 			};
 
-			await Promise.all([
-				insertRoom({ _id: 'rAny1', abacAttributes: [{ key: 'dept', values: ['eng'] }] }),
-				insertRoom({ _id: 'rAny2', abacAttributes: [{ key: 'dept', values: ['eng', 'qa'] }] }),
+			await insertRooms([
+				{ _id: 'rAny1', abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+				{ _id: 'rAny2', abacAttributes: [{ key: 'dept', values: ['eng', 'qa'] }] },
 			]);
 
-			await insertUser({ ...user, __rooms: ['rAny1', 'rAny2'] });
+			await insertUserForRemovalTests({ ...user, __rooms: ['rAny1', 'rAny2'] });
 
 			const ldap: ILDAPEntry = {
 				unrelated: ['x'],
@@ -454,15 +468,17 @@ describe('Subject Attributes validation', () => {
 				__rooms: ['rDeptRegion'],
 			};
 
-			await insertRoom({
-				_id: 'rDeptRegion',
-				abacAttributes: [
-					{ key: 'dept', values: ['eng'] },
-					{ key: 'region', values: ['emea'] },
-				],
-			});
+			await insertRooms([
+				{
+					_id: 'rDeptRegion',
+					abacAttributes: [
+						{ key: 'dept', values: ['eng'] },
+						{ key: 'region', values: ['emea'] },
+					],
+				},
+			]);
 
-			await insertUser({ ...user, __rooms: ['rDeptRegion'] });
+			await insertUserForRemovalTests({ ...user, __rooms: ['rDeptRegion'] });
 
 			const ldap: ILDAPEntry = {
 				department: ['eng', 'ceo'],
