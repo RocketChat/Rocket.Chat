@@ -47,7 +47,7 @@ type Routing = {
 		agent?: SelectedAgent | null,
 		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
 		room?: IOmnichannelRoom,
-	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | void | false>;
+	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | false>;
 	unassignAgent(
 		inquiry: ILivechatInquiryRecord,
 		departmentId?: string,
@@ -62,7 +62,7 @@ type Routing = {
 		agent: SelectedAgent | null,
 		options: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
 		room: IOmnichannelRoom,
-	): Promise<IOmnichannelRoom | null | void | false>;
+	): Promise<IOmnichannelRoom | false>;
 	transferRoom(room: IOmnichannelRoom, guest: ILivechatVisitor, transferData: TransferData): Promise<boolean>;
 	delegateAgent(agent: SelectedAgent | undefined, inquiry: ILivechatInquiryRecord): Promise<SelectedAgent | null | undefined>;
 	removeAllRoomSubscriptions(room: Pick<IOmnichannelRoom, '_id'>, ignoreUser?: { _id: string }): Promise<void>;

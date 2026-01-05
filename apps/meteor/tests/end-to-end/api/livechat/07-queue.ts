@@ -881,4 +881,59 @@ describe('LIVECHAT - Queue', () => {
 		expect(roomInfo.servedBy).to.be.an('object');
 		expect(roomInfo.servedBy?._id).to.be.equal(testUser2.user._id);
 	});
+
+	describe('when forwarding a chat to an agent already at their limit', () => {
+		let forwardingRoom: { _id: string };
+		let otherRoom: { _id: string };
+		let visitor1: any;
+		let visitor2: any;
+
+		before(async () => {
+			await updateLivechatSettingsForUser(testUser.user._id, { maxNumberSimultaneousChat: 1 }, [testDepartment3._id]);
+			await updateLivechatSettingsForUser(testUser2.user._id, { maxNumberSimultaneousChat: 1 }, [testDepartment3._id]);
+
+			visitor1 = await createVisitor(testDepartment3._id);
+			const room1 = await createLivechatRoom(visitor1.token);
+			await sleep(5000);
+			const roomInfo1 = await getLivechatRoomInfo(room1._id);
+			expect(roomInfo1.servedBy).to.be.an('object');
+			expect(roomInfo1.servedBy?._id).to.be.equal(testUser.user._id);
+			otherRoom = room1;
+		});
+
+		before(async () => {
+			visitor2 = await createVisitor(testDepartment3._id);
+			const room2 = await createLivechatRoom(visitor2.token);
+			await sleep(5000);
+			const roomInfo2 = await getLivechatRoomInfo(room2._id);
+			expect(roomInfo2.servedBy).to.be.an('object');
+			expect(roomInfo2.servedBy?._id).to.be.equal(testUser2.user._id);
+
+			forwardingRoom = room2;
+		});
+
+		after(async () => {
+			await closeOmnichannelRoom(forwardingRoom._id);
+			await closeOmnichannelRoom(otherRoom._id);
+		});
+
+		it('should not allow forwarding and should not add system messages to the room', async () => {
+			const res = await request.post(api('livechat/room.forward')).set(testUser2.credentials).send({
+				roomId: forwardingRoom._id,
+				userId: testUser.user._id,
+				clientAction: true,
+				comment: 'forward to agent at limit',
+			});
+
+			expect(res.status).to.equal(400);
+			expect(res.body).to.have.property('success', false);
+
+			const messagesResponse = await request.get(api('channels.messages')).set(credentials).query({ roomId: forwardingRoom._id });
+
+			expect(messagesResponse.status).to.equal(200);
+			expect(messagesResponse.body).to.have.property('messages');
+			const systemMessages = messagesResponse.body.messages.filter((msg: any) => msg.t === 'livechat_transfer_history');
+			expect(systemMessages).to.have.length(0);
+		});
+	});
 });
