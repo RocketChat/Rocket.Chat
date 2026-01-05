@@ -5,123 +5,131 @@ import ivm, { type Context } from 'isolated-vm';
 
 import * as s from '../../../../../lib/utils/stringUtils';
 
-const proxyObject = (obj: Record<string, any>, forbiddenKeys: string[] = []): Record<string, any> => {
-	return copyObject({
-		isProxy: true,
-		get: (key: string) => {
-			if (forbiddenKeys.includes(key)) {
-				return undefined;
-			}
-
-			const value = obj[key];
-
-			if (typeof value === 'function') {
-				return new ivm.Reference(async (...args: any[]) => {
-					const result = (obj[key] as any)(...args);
-
-					if (result && result instanceof Promise) {
-						return new Promise(async (resolve, reject) => {
-							try {
-								const awaitedResult = await result;
-								resolve(makeTransferable(awaitedResult));
-							} catch (e) {
-								reject(e);
-							}
-						});
-					}
-
-					return makeTransferable(result);
-				});
-			}
-
-			return makeTransferable(value);
-		},
-	});
+type SandboxLog = {
+	level: 'log' | 'warn' | 'error';
+	message: string;
+	timestamp: Date;
 };
 
-const copyObject = (obj: Record<string, any> | any[]): Record<string, any> | any[] => {
-	if (Array.isArray(obj)) {
-		return obj.map((data) => copyData(data));
-	}
+const isTransferable = (data: any): boolean => {
+	const type = typeof data;
 
-	if (obj instanceof Response) {
-		return proxyObject(obj, ['clone']);
-	}
-
-	if (isSemiTransferable(obj)) {
-		return obj;
-	}
-
-	if (typeof obj[Symbol.iterator as any] === 'function') {
-		return copyObject(Array.from(obj as any));
-	}
-
-	if (obj instanceof EventEmitter) {
-		return {};
-	}
-
-	const keys = Object.keys(obj);
-
-	return {
-		...Object.fromEntries(
-			keys.map((key) => {
-				const data = obj[key];
-
-				if (typeof data === 'function') {
-					return [key, new ivm.Callback((...args: any[]) => obj[key](...args))];
-				}
-
-				return [key, copyData(data)];
-			}),
-		),
-	};
-};
-
-// Transferable data can be passed to isolates directly
-const isTransferable = (data: any): data is ivm.Transferable => {
-	const dataType = typeof data;
-
-	if (data === ivm) {
-		return true;
-	}
-
-	if (['null', 'undefined', 'string', 'number', 'boolean', 'function'].includes(dataType)) {
-		return true;
-	}
-
-	if (dataType !== 'object') {
-		return false;
-	}
+	if (data === ivm) return true;
+	if (['undefined', 'string', 'number', 'boolean', 'function'].includes(type)) return true;
+	if (type !== 'object' || data === null) return false;
 
 	return (
 		data instanceof ivm.Isolate ||
 		data instanceof ivm.Context ||
 		data instanceof ivm.Script ||
 		data instanceof ivm.ExternalCopy ||
-		data instanceof ivm.Callback ||
-		data instanceof ivm.Reference
+		data instanceof ivm.Reference ||
+		data instanceof ivm.Callback
 	);
 };
 
-// Semi-transferable data can be copied with an ivm.ExternalCopy without needing any manipulation.
-const isSemiTransferable = (data: any) => data instanceof ArrayBuffer;
+const proxyObject = (obj: Record<string, any>, forbidden: string[] = []) => ({
+	isProxy: true,
+	get: (key: string) => {
+		if (forbidden.includes(key)) return undefined;
 
-const copyData = <T extends ivm.Transferable | Record<string, any> | any[]>(data: T) => (isTransferable(data) ? data : copyObject(data));
-const makeTransferable = (data: any) => (isTransferable(data) ? data : new ivm.ExternalCopy(copyObject(data)).copyInto());
+		const value = obj[key];
+		if (typeof value === 'function') {
+			return new ivm.Reference(async (...args: any[]) => {
+				const result = value(...args);
+				return makeTransferable(await Promise.resolve(result));
+			});
+		}
+
+		return makeTransferable(value);
+	},
+});
+
+const copyObject = (obj: any): any => {
+	if (Array.isArray(obj)) {
+		return obj.map(copyObject);
+	}
+
+	if (obj instanceof Response) {
+		return proxyObject(obj, ['clone']);
+	}
+
+	if (obj instanceof ArrayBuffer) {
+		return obj;
+	}
+
+	if (obj instanceof EventEmitter) {
+		return {};
+	}
+
+	if (obj && typeof obj === 'object') {
+		return Object.fromEntries(
+			Object.entries(obj).map(([key, value]) => {
+				if (typeof value === 'function') {
+					return [key, new ivm.Callback((...args: any[]) => value(...args))];
+				}
+				return [key, copyObject(value)];
+			}),
+		);
+	}
+
+	return obj;
+};
+
+const makeTransferable = (data: any): any => {
+	if (isTransferable(data)) {
+		return data;
+	}
+	return new ivm.ExternalCopy(copyObject(data)).copyInto();
+};
 
 export const buildSandbox = (context: Context) => {
-	const { global: jail } = context;
-	jail.setSync('global', jail.derefInto());
-	jail.setSync('ivm', ivm);
+	const { global } = context;
 
-	jail.setSync('s', makeTransferable(s));
-	jail.setSync('console', makeTransferable(console));
+	const logs: SandboxLog[] = [];
 
-	jail.setSync(
-		'serverFetch',
-		new ivm.Reference(async (url: string, ...args: any[]) => {
-			const result = await fetch(url, ...args);
-			return makeTransferable(result);
-		}),
-	);
+	const pushLog = (level: SandboxLog['level'], args: unknown[]) => {
+		const message = args
+			.map((arg) => {
+				if (typeof arg === 'string') {
+					return arg;
+				}
+				try {
+					return JSON.stringify(arg);
+				} catch {
+					return String(arg);
+				}
+			})
+			.join(' ');
+
+		logs.push({
+			level,
+			message,
+			timestamp: new Date(),
+		});
+	};
+
+	const sandboxConsole = {
+		log: (...args: unknown[]) => pushLog('log', args),
+		warn: (...args: unknown[]) => pushLog('warn', args),
+		error: (...args: unknown[]) => pushLog('error', args),
+	};
+
+	global.setSync('global', global.derefInto());
+	global.setSync('ivm', ivm);
+	global.setSync('s', makeTransferable(s));
+	global.setSync('console', makeTransferable(sandboxConsole));
+
+	global.setSync(
+  'console',
+  makeTransferable({
+    log: (...args: any[]) => console.log(...args),
+    info: (...args: any[]) => console.info(...args),
+    warn: (...args: any[]) => console.warn(...args),
+    error: (...args: any[]) => console.error(...args),
+  }),
+);
+
+
+	return { logs };
 };

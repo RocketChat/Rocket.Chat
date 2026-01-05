@@ -551,6 +551,7 @@ class RocketChatIntegrationHandler {
 		outgoingLogger.debug({ data });
 
 		const scriptEngine = this.getEngine(trigger);
+		const engineAny = scriptEngine as any;
 
 		const opts = await this.wrapScriptEngineCall(() =>
 			scriptEngine.prepareOutgoingRequest({
@@ -654,6 +655,17 @@ class RocketChatIntegrationHandler {
 						historyId,
 					}),
 				);
+				const compiled = engineAny.compiledScripts?.[trigger._id];
+				if (compiled?.logs?.length) {
+					await Integrations.updateOne(
+						{ _id: trigger._id },
+						{
+							$set: {
+								lastExecutionLogs: compiled.logs.slice(-20),
+							},
+						},
+					);
+				}
 
 				if (responseContent) {
 					const resultMessage = await this.sendMessage({

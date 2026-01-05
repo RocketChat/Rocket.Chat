@@ -8,10 +8,23 @@ export interface IScriptClass {
 
 export type FullScriptClass = Required<IScriptClass>;
 
+export type SandboxLog = {
+	level: 'log' | 'warn' | 'error';
+	message: string;
+	timestamp: Date;
+};
+
 export type CompiledScript = {
 	script: Partial<IScriptClass>;
 	store: Record<string, any>;
-	_updatedAt: IIntegration['_updatedAt'];
+	logs?: SandboxLog[];
+	_updatedAt: Date;
+};
+
+export type IntegrationExecutionLog = {
+	level: 'log' | 'warn' | 'error';
+	message: string;
+	timestamp: Date;
 };
 
 export type CompatibilityScriptResult = IScriptClass & {
