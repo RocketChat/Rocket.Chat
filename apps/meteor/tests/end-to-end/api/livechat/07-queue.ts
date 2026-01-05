@@ -889,6 +889,7 @@ describe('LIVECHAT - Queue', () => {
 		let visitor2: any;
 
 		before(async () => {
+			await updateSetting('Omnichannel_queue_delay_timeout', 1);
 			await updateLivechatSettingsForUser(testUser.user._id, { maxNumberSimultaneousChat: 1 }, [testDepartment3._id]);
 			await updateLivechatSettingsForUser(testUser2.user._id, { maxNumberSimultaneousChat: 1 }, [testDepartment3._id]);
 
@@ -915,6 +916,7 @@ describe('LIVECHAT - Queue', () => {
 		after(async () => {
 			await closeOmnichannelRoom(forwardingRoom._id);
 			await closeOmnichannelRoom(otherRoom._id);
+			await updateSetting('Omnichannel_queue_delay_timeout', 5);
 		});
 
 		it('should not allow forwarding and should not add system messages to the room', async () => {
