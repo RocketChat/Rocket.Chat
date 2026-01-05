@@ -21,8 +21,9 @@ const encode = (array: ArrayLike<number> | string) => {
 			const ch = str.charCodeAt(i);
 			if (ch > 0xff) {
             throw new Error(
-           `Invalid ASCII character at index ${i}: '${str[i]}' (code ${ch}). Base64.encode only supports ASCII strings.`
-      );
+  `Invalid character at index ${i}: '${str[i]}' (code ${ch}). Base64.encode only supports single-byte (Latin-1) characters.`
+);
+
  }
 
 
