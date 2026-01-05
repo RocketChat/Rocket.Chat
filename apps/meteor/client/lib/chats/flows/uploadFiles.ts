@@ -32,7 +32,7 @@ export const uploadFiles = async (
 	};
 
 	const uploadNextFile = async (): Promise<void> => {
-		const file = queue.pop();
+		const file = queue.shift();
 		if (!file) {
 			chat.composer?.dismissAllQuotedMessages();
 			return;
