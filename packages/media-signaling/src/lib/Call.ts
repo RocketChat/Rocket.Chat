@@ -926,6 +926,10 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.requireWebRTC();
 
+		if (signal.streams) {
+			this.webrtcProcessor.streams.setRemoteIds(signal.streams);
+		}
+
 		if (signal.sdp.type === 'offer') {
 			return this.processAnswerRequest(signal);
 		}
@@ -942,10 +946,18 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.config.logger?.debug('ClientMediaCall.deliverSdp');
 
 		if (!this.hidden) {
-			this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
+			this.config.transporter.sendToServer(this.callId, 'local-sdp', { ...data, streams: this.getLocalStreamIds() });
 		}
 
 		this.updateClientState();
+	}
+
+	protected getLocalStreamIds() {
+		if (!this.webrtcProcessor) {
+			return [];
+		}
+
+		return this.webrtcProcessor.streams.getLocalStreamIds();
 	}
 
 	protected async rejectAsUnavailable(): Promise<void> {

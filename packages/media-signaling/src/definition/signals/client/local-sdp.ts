@@ -8,6 +8,7 @@ export type ClientMediaSignalLocalSDP = {
 
 	sdp: RTCSessionDescriptionInit;
 	negotiationId: string;
+	streams?: { tag: string; id: string }[];
 };
 
 export const clientMediaSignalLocalSDPSchema: JSONSchemaType<ClientMediaSignalLocalSDP> = {
@@ -47,6 +48,25 @@ export const clientMediaSignalLocalSDPSchema: JSONSchemaType<ClientMediaSignalLo
 		negotiationId: {
 			type: 'string',
 			nullable: false,
+		},
+		streams: {
+			type: 'array',
+			nullable: true,
+			items: {
+				type: 'object',
+				properties: {
+					tag: {
+						type: 'string',
+						minLength: 1,
+					},
+					id: {
+						type: 'string',
+						minLength: 1,
+					},
+				},
+				additionalProperties: false,
+				required: ['tag', 'id'],
+			},
 		},
 	},
 	additionalProperties: false,

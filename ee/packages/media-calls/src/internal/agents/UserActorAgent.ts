@@ -44,6 +44,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			type: 'remote-sdp',
 			sdp: negotiation.offer,
 			negotiationId: negotiation._id,
+			streams: negotiation.offerStreams,
 		});
 	}
 
@@ -112,6 +113,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 				type: 'remote-sdp',
 				sdp: negotiation.answer,
 				negotiationId,
+				streams: negotiation.answerStreams,
 			});
 			return;
 		}
@@ -126,6 +128,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			type: 'remote-sdp',
 			sdp: negotiation.offer,
 			negotiationId,
+			streams: negotiation.offerStreams,
 		});
 	}
 

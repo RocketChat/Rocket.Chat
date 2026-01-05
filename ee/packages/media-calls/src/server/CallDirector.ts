@@ -1,4 +1,11 @@
-import type { IMediaCall, IMediaCallNegotiation, MediaCallContact, MediaCallSignedContact, ServerActor } from '@rocket.chat/core-typings';
+import type {
+	IMediaCall,
+	IMediaCallNegotiation,
+	MediaCallContact,
+	MediaCallSignedContact,
+	ServerActor,
+	MediaCallNegotiationStream,
+} from '@rocket.chat/core-typings';
 import type { CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
@@ -131,7 +138,7 @@ class MediaCallDirector {
 	public async saveWebrtcSession(
 		call: IMediaCall,
 		fromAgent: IMediaCallAgent,
-		session: { sdp: RTCSessionDescriptionInit; negotiationId: string },
+		session: { sdp: RTCSessionDescriptionInit; negotiationId: string; streams?: MediaCallNegotiationStream[] },
 		contractId: string,
 	): Promise<void> {
 		logger.debug({ msg: 'MediaCallDirector.saveWebrtcSession', callId: call?._id });
@@ -153,8 +160,8 @@ class MediaCallDirector {
 		}
 
 		const updater = isOffer
-			? MediaCallNegotiations.setOfferById(negotiation._id, session.sdp)
-			: MediaCallNegotiations.setAnswerById(negotiation._id, session.sdp);
+			? MediaCallNegotiations.setOfferById(negotiation._id, session.sdp, session.streams)
+			: MediaCallNegotiations.setAnswerById(negotiation._id, session.sdp, session.streams);
 		const updateResult = await updater;
 
 		if (!updateResult.modifiedCount) {

@@ -752,13 +752,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onTrack', event.track.kind);
-
-		// TODO: Identify the stream by tag
-		if (event.track.kind === 'video') {
-			void this.streams.screenShareRemote.setTrack('video', event.track);
-		} else {
-			void this.streams.mainRemote.setTrack('audio', event.track);
-		}
+		this.streams.addRemoteTrack(event.track, event.streams);
 	}
 
 	private onConnectionStateChange() {

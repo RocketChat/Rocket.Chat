@@ -36,9 +36,11 @@ export class MediaStreamWrapper {
 		return !this.remote;
 	}
 
-	public readonly tag: string | null;
-
 	public readonly stream: MediaStream;
+
+	public get localId(): string {
+		return this.stream.id;
+	}
 
 	public get audioLevel(): number {
 		return 0;
@@ -55,16 +57,18 @@ export class MediaStreamWrapper {
 
 	private stopped = false;
 
+	private remoteIds: string[];
+
 	constructor(
 		remote: boolean,
+		public readonly tag: string,
 		private readonly peer: RTCPeerConnection,
-		tag?: string,
 		private readonly logger?: IMediaSignalLogger,
 	) {
 		this.remote = remote;
-		this.tag = tag || null;
 		this.stream = new MediaStream();
 		this.emitter = new Emitter();
+		this.remoteIds = [];
 	}
 
 	public hasAudio(): boolean {
@@ -130,6 +134,18 @@ export class MediaStreamWrapper {
 		}
 
 		await this.replaceTrack(kind, track);
+	}
+
+	public addRemoteId(id: string): void {
+		if (this.hasRemoteId(id)) {
+			return;
+		}
+
+		this.remoteIds.push(id);
+	}
+
+	public hasRemoteId(id: string): boolean {
+		return this.remoteIds.includes(id);
 	}
 
 	private getTracks(kind?: MediaStreamTrack['kind'] | null): MediaStreamTrack[] {
