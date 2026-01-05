@@ -47,7 +47,7 @@ export type Branded<T, B> = T & Brand<B>;
 type SerializablePrimitive = boolean | number | string | null;
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-type UnserializablePrimitive = Function | bigint | symbol | undefined;
+type UnserializablePrimitive = bigint | symbol | undefined;
 
 type CustomSerializable<T> = {
 	toJSON(key: string): T;
@@ -60,7 +60,7 @@ export type Serialized<T> =
 	T extends CustomSerializable<infer U>
 		? Serialized<U>
 		: T extends [any, ...any] // is T a tuple?
-			? { [K in keyof T]: T extends UnserializablePrimitive ? null : Serialized<T[K]> }
+			? { [K in keyof T]: T[K] extends UnserializablePrimitive ? null : Serialized<T[K]> }
 			: T extends any[]
 				? Serialized<T[number]>[]
 				: T extends object
