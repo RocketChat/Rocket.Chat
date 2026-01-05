@@ -11,7 +11,7 @@ import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
 import { newDecoder } from './codec';
 import { AppStatus, AppStatusUtils } from '../../../definition/AppStatus';
-import type { AppMethod } from '../../../definition/metadata';
+import { AppInterface, AppMethod } from '../../../definition/metadata';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
@@ -115,6 +115,8 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 	private readonly livenessManager: LivenessManager;
 
+	private readonly tempFilePath: string;
+
 	// We need to keep the appSource around in case the Deno process needs to be restarted
 	constructor(
 		manager: AppManager,
@@ -137,6 +139,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		this.api = manager.getApiManager();
 		this.logStorage = manager.getLogStorage();
 		this.bridges = manager.getBridges();
+		this.tempFilePath = manager.getTempFilePath();
 	}
 
 	public spawnProcess(): void {
@@ -151,10 +154,17 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			// process must be able to read in order to include files that use NPM packages
 			const parentNodeModulesDir = path.dirname(path.join(appsEngineDir, '..'));
 
+			const allowedDirs = [appsEngineDir, parentNodeModulesDir];
+
+			// If the app handles file upload events, it needs to be able to read the temp dir
+			if (this.appPackage.implemented.doesImplement(AppInterface.IPreFileUpload) || this.appPackage.implemented.doesImplement(AppInterface.IPreFileUploadStream)) {
+				allowedDirs.push(this.tempFilePath);
+			}
+
 			const options = [
 				'run',
 				'--cached-only',
-				`--allow-read=${appsEngineDir},${parentNodeModulesDir}`,
+				`--allow-read=${allowedDirs.join(',')}`,
 				`--allow-env=${ALLOWED_ENVIRONMENT_VARIABLES.join(',')}`,
 				denoWrapperPath,
 				'--subprocess',
