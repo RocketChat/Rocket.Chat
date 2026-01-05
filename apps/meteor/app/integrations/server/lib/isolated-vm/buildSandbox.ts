@@ -119,18 +119,18 @@ export const buildSandbox = (context: Context) => {
 	global.setSync('s', makeTransferable(s));
 	global.setSync('console', makeTransferable(sandboxConsole));
 	global.setSync(
-	'serverFetch',
-	new ivm.Reference(
-		async (
-			url: string,
-			options?: ServerFetchOptions,
-			allowInvalidCerts?: boolean,
-		) => {
-			const res = await serverFetch(url, options, allowInvalidCerts);
-			return makeTransferable(res);
-		},
-	),
-);
+		'serverFetch',
+		new ivm.Reference(
+			async (
+				url: string,
+				options?: ServerFetchOptions,
+				allowSelfSignedCerts?: boolean,
+			) => {
+				const res = await serverFetch(url, options, allowSelfSignedCerts);
+				return makeTransferable(res);
+			},
+		),
+	);
 
 	return { logs };
 };
