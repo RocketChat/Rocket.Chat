@@ -17,9 +17,9 @@ import type {
 import type { ClientContractState, ClientState } from '../definition/client';
 import type { IMediaSignalLogger } from '../definition/logger';
 import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
-import type { MediaStreamWrapper } from './media/MediaStreamWrapper';
 import { isPendingState } from './services/states';
 import { serializeError } from './utils/serializeError';
+import type { IMediaStreamWrapper } from '../definition/media/IMediaStreamWrapper';
 import type {
 	ServerMediaSignal,
 	ServerMediaSignalNewCall,
@@ -502,34 +502,22 @@ export class ClientMediaCall implements IClientMediaCall {
 		return !this.hasVideoTrack() && this.mayNeedVideoTrack();
 	}
 
-	public getLocalVideoStream(): MediaStreamWrapper | null {
-		return this.webrtcProcessor?.streams.screenShareLocal || null;
+	public getLocalMediaStream(tag?: string): IMediaStreamWrapper | null {
+		this.config.logger?.debug('ClientMediaCall.getLocalMediaStream', tag);
+		if (!this.mayUseStreams()) {
+			return null;
+		}
+
+		return this.webrtcProcessor.streams.getLocalStreamByTag(tag || 'main');
 	}
 
-	public getRemoteMediaStream(): MediaStream | null {
-		this.config.logger?.debug('ClientMediaCall.getRemoteMediaStream');
-		if (!this.mayUseRemoteStreams()) {
+	public getRemoteMediaStream(tag?: string): IMediaStreamWrapper | null {
+		this.config.logger?.debug('ClientMediaCall.getRemoteMediaStream', tag);
+		if (!this.mayUseStreams()) {
 			return null;
 		}
 
-		return this.webrtcProcessor.streams.mainRemote.stream;
-	}
-
-	public getRemoteVideoStream(): MediaStream | null {
-		this.config.logger?.debug('ClientMediaCall.getRemoteVideoStream');
-		if (!this._screenShareReceived) {
-			return null;
-		}
-
-		if (!this.mayUseRemoteStreams()) {
-			return null;
-		}
-
-		if (!this.webrtcProcessor.streams.screenShareRemote.hasVideo()) {
-			return null;
-		}
-
-		return this.webrtcProcessor.streams.screenShareRemote.stream;
+		return this.webrtcProcessor.streams.getRemoteStreamByTag(tag || 'main');
 	}
 
 	public async processSignal(signal: ServerMediaSignal, oldCall?: ClientMediaCall | null) {
@@ -951,7 +939,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.requireWebRTC();
 
 		if (signal.streams) {
-			this.webrtcProcessor.streams.setRemoteIds(signal.streams);
+			this.webrtcProcessor.setRemoteIds(signal.streams);
 		}
 
 		if (signal.sdp.type === 'offer') {
@@ -977,11 +965,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	protected getLocalStreamIds() {
-		if (!this.webrtcProcessor) {
-			return [];
-		}
-
-		return this.webrtcProcessor.streams.getLocalStreamIds();
+		return this.webrtcProcessor?.getLocalStreamIds() || [];
 	}
 
 	protected async rejectAsUnavailable(): Promise<void> {
@@ -1273,7 +1257,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.signed;
 	}
 
-	private mayUseRemoteStreams(): this is ClientMediaCallWebRTC {
+	private mayUseStreams(): this is ClientMediaCallWebRTC {
 		if (this.hidden || !this.signed) {
 			return false;
 		}

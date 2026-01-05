@@ -2,32 +2,9 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { MediaStreamTrackWrapper } from './MediaStreamTrackWrapper';
 import type { IMediaSignalLogger } from '../../definition/logger';
+import type { IMediaStreamWrapper, MediaStreamEvents } from '../../definition/media/IMediaStreamWrapper';
 
-export type MediaStreamEvents = {
-	trackChanged: {
-		track: MediaStreamTrack | null;
-		kind: MediaStreamTrack['kind'];
-	};
-	stateChanged: void;
-};
-
-/**
- * An object that holds a reference to a single MediaStream, plus additional data related to that specific stream
- *
- * We make a few assumptions about the stream based on our intendend use cases; Use multiple streams if you need, but make sure each individual stream follow the rules:
- *
- * 1. A stream MAY be empty (have no tracks)
- *
- * 2. A stream MAY have both an audio track and a video track at the same time, but only if they are related
- *
- * 3. A stream MAY NOT have multiple tracks of the same kind (audio/video).
- *
- * Audio and video are related if they come from the same source. For example: if the user is sharing their screen, the stream with the video may only include audio if that audio is from the user's screen - it may not include the user's mic.
- * The audio from the user's mic and the video from the user's camera also count as being related.
- *
- * We have no control over what remote peers may send us if they are not also a rocket.chat client. If they send us multiple tracks in the same stream, we'll use the first and ignore the rest. It's likely that all tracks would have the same data anyway - just with different encodings.
- * */
-export class MediaStreamWrapper {
+export class MediaStreamWrapper implements IMediaStreamWrapper {
 	public readonly emitter: Emitter<MediaStreamEvents>;
 
 	public readonly remote: boolean;
@@ -42,13 +19,6 @@ export class MediaStreamWrapper {
 		return this.stream.id;
 	}
 
-	public get audioLevel(): number {
-		return 0;
-	}
-
-	/**
-	 * indicates if the audio track is enabled by the rocket.chat client (aka not muted by the user nor placed on hold)
-	 * */
 	private audioEnabled = true;
 
 	private audioTrack: MediaStreamTrackWrapper | null = null;
@@ -72,7 +42,16 @@ export class MediaStreamWrapper {
 	}
 
 	public hasAudio(): boolean {
-		return false;
+		if (!this.audioTrack || this.audioTrack.ended) {
+			return false;
+		}
+
+		const tracks = this.stream.getAudioTracks() || [];
+		if (!tracks?.length) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public hasVideo(): boolean {

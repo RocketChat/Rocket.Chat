@@ -2,12 +2,10 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { MediaStreamWrapper } from './MediaStreamWrapper';
 import type { IMediaSignalLogger } from '../../definition';
+import type { IMediaStreamManager, MediaStreamManagerEvents } from '../../definition/media/IMediaStreamManager';
+import type { MediaStreamIdentification } from '../../definition/media/MediaStreamIdentification';
 
-export type MediaStreamManagerEvents = {
-	streamChanged: void;
-};
-
-export class MediaStreamManager {
+export class MediaStreamManager implements IMediaStreamManager {
 	public readonly emitter: Emitter<MediaStreamManagerEvents>;
 
 	public readonly mainLocal: MediaStreamWrapper;
@@ -34,9 +32,9 @@ export class MediaStreamManager {
 		this.screenShareRemote.stop();
 	}
 
-	public setRemoteIds(streams: { tag: string; id: string }[]): void {
+	public setRemoteIds(streams: MediaStreamIdentification[]): void {
 		for (const stream of streams) {
-			console.log('setting remote id', stream.tag, stream.id);
+			this.logger?.debug('setting remote id', stream.tag, stream.id);
 			const localStream = this.getRemoteStreamByTag(stream.tag);
 			if (!localStream) {
 				continue;
@@ -46,7 +44,7 @@ export class MediaStreamManager {
 		}
 	}
 
-	public getLocalStreamIds() {
+	public getLocalStreamIds(): MediaStreamIdentification[] {
 		return this.getLocalStreams().map((stream) => ({
 			tag: stream.tag,
 			id: stream.stream.id,
@@ -54,13 +52,33 @@ export class MediaStreamManager {
 	}
 
 	public addRemoteTrack(track: MediaStreamTrack, streams: readonly MediaStream[]): void {
-		console.log('addRemoteTrack', track.kind);
+		this.logger?.debug('addRemoteTrack', track.kind);
 		const streamWrappers = this.findStreamWrappersForRemoteTrack(track, streams);
 
 		for (const stream of streamWrappers) {
-			console.log('setRemoteTrack', stream.tag, track.kind);
+			this.logger?.debug('setRemoteTrack', stream.tag, track.kind);
 			void stream.setTrack(track.kind, track);
 		}
+	}
+
+	public getStreams(): MediaStreamWrapper[] {
+		return [...this.getLocalStreams(), ...this.getRemoteStreams()];
+	}
+
+	public getLocalStreams(): MediaStreamWrapper[] {
+		return [this.mainLocal, this.screenShareLocal];
+	}
+
+	public getRemoteStreams(): MediaStreamWrapper[] {
+		return [this.mainRemote, this.screenShareRemote];
+	}
+
+	public getLocalStreamByTag(tag: string): MediaStreamWrapper | null {
+		return this.getLocalStreams().find((stream) => stream.tag === tag) || null;
+	}
+
+	public getRemoteStreamByTag(tag: string): MediaStreamWrapper | null {
+		return this.getRemoteStreams().find((stream) => stream.tag === tag) || null;
 	}
 
 	private findStreamWrappersForRemoteTrack(track: MediaStreamTrack, streams: readonly MediaStream[]): MediaStreamWrapper[] {
@@ -69,18 +87,18 @@ export class MediaStreamManager {
 			.filter((wrapper) => Boolean(wrapper)) as MediaStreamWrapper[];
 
 		if (streamWrappers.length) {
-			console.log('found stream wrappers for track');
+			this.logger?.debug('found stream wrappers for track');
 			return streamWrappers;
 		}
 
 		// If no streams have been found by id and it's an audio track, this is probably an external call so assume the main stream
 		if (track.kind === 'audio') {
-			console.log('default audio to main track');
+			this.logger?.debug('default audio to main track');
 			return [this.mainRemote];
 		}
 
 		// A video track for an unidentified stream, let's ignore it
-		console.log('unidentified stream, ignoring video track');
+		this.logger?.debug('unidentified stream, ignoring video track');
 		return [];
 	}
 
@@ -88,27 +106,15 @@ export class MediaStreamManager {
 		const wrapper = new MediaStreamWrapper(remote, tag, this.peer, this.logger);
 
 		wrapper.emitter.on('trackChanged', () => {
-			console.log('Wrapper.trackChanged', tag, remote);
+			this.logger?.debug('Wrapper.trackChanged', tag, remote);
 			this.emitter.emit('streamChanged');
 		});
 		wrapper.emitter.on('stateChanged', () => {
-			console.log('Wrapper.stateChanged', tag, remote);
+			this.logger?.debug('Wrapper.stateChanged', tag, remote);
 			this.emitter.emit('streamChanged');
 		});
 
 		return wrapper;
-	}
-
-	private getLocalStreams(): MediaStreamWrapper[] {
-		return [this.mainLocal, this.screenShareLocal];
-	}
-
-	private getRemoteStreams(): MediaStreamWrapper[] {
-		return [this.mainRemote, this.screenShareRemote];
-	}
-
-	private getRemoteStreamByTag(tag: string): MediaStreamWrapper | null {
-		return this.getRemoteStreams().find((stream) => stream.tag === tag) || null;
 	}
 
 	private getRemoteStreamById(id: string): MediaStreamWrapper | null {

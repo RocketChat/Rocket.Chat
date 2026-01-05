@@ -1,6 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 
 import type { IWebRTCProcessor, WebRTCInternalStateMap, WebRTCProcessorConfig, WebRTCProcessorEvents } from '../../../definition';
+import type { MediaStreamIdentification } from '../../../definition/media/MediaStreamIdentification';
 import type { ServiceStateValue } from '../../../definition/services/IServiceProcessor';
 import { MediaStreamManager } from '../../media/MediaStreamManager';
 import { getExternalWaiter, type PromiseWaiterData } from '../../utils/getExternalWaiter';
@@ -364,6 +365,14 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.iceGatheringWaiters.add(iceGatheringData);
 		this.changeInternalState('iceUntrickler');
 		await iceGatheringData.promise;
+	}
+
+	public setRemoteIds(streams: MediaStreamIdentification[]): void {
+		return this.streams.setRemoteIds(streams);
+	}
+
+	public getLocalStreamIds(): MediaStreamIdentification[] {
+		return this.streams.getLocalStreamIds();
 	}
 
 	private async initialize(): Promise<void> {

@@ -1,5 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 
+import type { MediaStreamIdentification } from '../../media/MediaStreamIdentification';
+
 /** Client is sending the local session description to the server */
 export type ClientMediaSignalLocalSDP = {
 	callId: string;
@@ -8,7 +10,7 @@ export type ClientMediaSignalLocalSDP = {
 
 	sdp: RTCSessionDescriptionInit;
 	negotiationId: string;
-	streams?: { tag: string; id: string }[];
+	streams?: MediaStreamIdentification[];
 };
 
 export const clientMediaSignalLocalSDPSchema: JSONSchemaType<ClientMediaSignalLocalSDP> = {

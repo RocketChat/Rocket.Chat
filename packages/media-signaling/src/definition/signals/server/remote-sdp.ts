@@ -1,3 +1,5 @@
+import type { MediaStreamIdentification } from '../../media/MediaStreamIdentification';
+
 /** Server is sending the other actor's sdp */
 export type ServerMediaSignalRemoteSDP = {
 	callId: string;
@@ -6,5 +8,5 @@ export type ServerMediaSignalRemoteSDP = {
 
 	sdp: RTCSessionDescriptionInit;
 	negotiationId: string;
-	streams?: { tag: string; id: string }[];
+	streams?: MediaStreamIdentification[];
 };
