@@ -4,12 +4,6 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 
 import type { IBanner } from '../IBanner';
 
-export interface Announcement extends IBanner {
-	selector?: {
-		roles?: string[];
-	};
-}
-
 interface NpsSurveyAnnouncement {
 	id: string;
 	startAt: Date;
@@ -62,7 +56,7 @@ export interface WorkspaceSyncResponse {
 	cloudSyncAnnouncement: unknown;
 }
 
-interface IAnnouncement extends IBanner {
+export interface IAnnouncement extends IBanner {
 	selector?: {
 		roles?: string[];
 	};
