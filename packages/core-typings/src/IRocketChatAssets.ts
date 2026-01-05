@@ -5,11 +5,6 @@ export interface IRocketChatAssetConstraint {
 	height?: number;
 }
 
-interface IRocketChatAssetWizard {
-	step: number;
-	order: number;
-}
-
 export interface IRocketChatAssetCache {
 	path: string;
 	cacheable: boolean;
@@ -30,7 +25,10 @@ export interface IRocketChatAsset {
 	constraints: IRocketChatAssetConstraint;
 	defaultUrl?: string;
 	url?: string;
-	wizard?: IRocketChatAssetWizard;
+	wizard?: {
+		step: number;
+		order: number;
+	};
 	cache?: IRocketChatAssetCache;
 }
 
