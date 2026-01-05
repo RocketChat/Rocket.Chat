@@ -27,15 +27,20 @@ test.describe.serial('settings-persistence-on-ui-navigation', () => {
 
 	test.skip('expect settings to persist in ui when navigating back and forth', async ({ page }) => {
 		const settingInput = page.getByLabel('Hide_System_Messages').getByRole('textbox');
+
 		await settingInput.pressSequentially('User joined');
 		await settingInput.press('Enter');
 
-		await page.getByRole('button', { name: 'Save changes', exact: true }).click();
-		const saveRequestPromise = page.waitForRequest((request) => request.url().includes('/api/v1/method.call/saveSettings'));
-		await saveRequestPromise;
-		await page.getByRole('button', { name: 'Back', exact: true }).click();
+		const responsePromise = page.waitForResponse(
+			(response) => response.url().includes('/api/v1/method.call/saveSettings') && response.status() === 200,
+		);
 
-		await page.getByRole('region', { name: 'Message', exact: true }).getByRole('link', { name: 'Open', exact: true }).click();
+		await page.getByRole('button', { name: 'Save changes' }).click();
+		await page.getByRole('button', { name: 'Back' }).click();
+
+		await responsePromise;
+
+		await page.locator('a[href="/admin/settings/Message"] >> text=Open').click();
 
 		await expect(page.getByLabel('Hide_System_Messages').getByRole('option', { name: 'User joined' })).toBeVisible();
 	});
