@@ -6,7 +6,7 @@ import { MediaStreamManager } from '../../media/MediaStreamManager';
 import { getExternalWaiter, type PromiseWaiterData } from '../../utils/getExternalWaiter';
 
 const DATA_CHANNEL_LABEL = 'rocket.chat';
-type P2PCommand = 'mute' | 'unmute' | 'end';
+type P2PCommand = 'mute' | 'unmute' | 'end' | 'screen-share.start' | 'screen-share.stop';
 
 export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	public readonly emitter: Emitter<WebRTCProcessorEvents>;
@@ -60,6 +60,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	private _dataChannel: RTCDataChannel | null;
 
 	private _remoteMute = false;
+
+	private _remoteScreenShare = false;
 
 	private _dataChannelEnded = false;
 
@@ -270,6 +272,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 				return this.iceGatheringWaiters.size > 0 ? 'waiting' : 'not-waiting';
 			case 'remoteMute':
 				return this._remoteMute;
+			case 'remoteScreenShare':
+				return this._remoteScreenShare;
 		}
 	}
 
@@ -312,6 +316,10 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	public isRemoteMute(): boolean {
 		return this._remoteMute;
+	}
+
+	public isReceivingScreenShare(): boolean {
+		return this._remoteScreenShare;
 	}
 
 	public isStable(): boolean {
@@ -588,7 +596,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	private isValidCommand(command: string): command is P2PCommand {
-		return ['mute', 'unmute', 'end'].includes(command);
+		return ['mute', 'unmute', 'end', 'screen-share.start', 'screen-share.stop'].includes(command);
 	}
 
 	private getCommandFromDataChannelMessage(message: string): P2PCommand | null {
@@ -616,7 +624,22 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			case 'end':
 				this._dataChannelEnded = true;
 				break;
+			case 'screen-share.start':
+				this.setRemoteScreenShare(true);
+				break;
+			case 'screen-share.stop':
+				this.setRemoteScreenShare(false);
+				break;
 		}
+	}
+
+	private setRemoteScreenShare(sharing: boolean): void {
+		if (sharing === this._remoteScreenShare) {
+			return;
+		}
+
+		this._remoteScreenShare = sharing;
+		this.emitter.emit('internalStateChange', 'remoteScreenShare');
 	}
 
 	private setRemoteMute(muted: boolean): void {
@@ -807,6 +830,12 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	private async loadVideoTrack(): Promise<void> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.loadVideoTrack');
 		await this.streams.screenShareLocal.setTrack('video', this.videoTrack);
+
+		if (this.videoTrack) {
+			this.sendP2PCommand('screen-share.start');
+		} else {
+			this.sendP2PCommand('screen-share.stop');
+		}
 	}
 
 	private onIceGatheringComplete() {

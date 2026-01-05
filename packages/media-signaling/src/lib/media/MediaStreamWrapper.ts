@@ -76,7 +76,7 @@ export class MediaStreamWrapper {
 	}
 
 	public hasVideo(): boolean {
-		if (!this.videoTrack || this.videoTrack.ended || this.videoTrack.muted) {
+		if (!this.videoTrack || this.videoTrack.ended) {
 			return false;
 		}
 

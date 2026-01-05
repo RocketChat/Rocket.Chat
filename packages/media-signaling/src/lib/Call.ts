@@ -159,6 +159,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this._screenShareRequested;
 	}
 
+	private _screenShareReceived: boolean;
+
+	public get screenShareReceived(): boolean {
+		return this._screenShareReceived;
+	}
+
 	protected webrtcProcessor: IWebRTCProcessor | null = null;
 
 	private acceptedLocally: boolean;
@@ -236,6 +242,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.inputTrack = inputTrack || null;
 		this.videoTrack = videoTrack || null;
 		this._screenShareRequested = Boolean(videoTrack);
+		this._screenShareReceived = false;
 		this.creationTimestamp = new Date();
 
 		this.earlySignals = new Set();
@@ -510,6 +517,10 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	public getRemoteVideoStream(): MediaStream | null {
 		this.config.logger?.debug('ClientMediaCall.getRemoteVideoStream');
+		if (!this._screenShareReceived) {
+			return null;
+		}
+
 		if (!this.mayUseRemoteStreams()) {
 			return null;
 		}
@@ -705,6 +716,19 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public setScreenShareRequested(requested: boolean): void {
+		if (this.isOver() || this.hidden) {
+			return;
+		}
+		if (!this.webrtcProcessor && !requested) {
+			return;
+		}
+
+		if (this._screenShareRequested === requested) {
+			return;
+		}
+
+		this.requireWebRTC();
+
 		this._screenShareRequested = requested;
 		this.emitter.emit('screenShareRequestChange');
 	}
@@ -1117,13 +1141,15 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		const isRemoteHeld = this.webrtcProcessor.isRemoteHeld();
 		const isRemoteMute = this.webrtcProcessor.isRemoteMute();
+		const isReceivingScreenShare = this.webrtcProcessor.isReceivingScreenShare();
 
-		if (isRemoteHeld === this._remoteHeld && isRemoteMute === this._remoteMute) {
+		if (isRemoteHeld === this._remoteHeld && isRemoteMute === this._remoteMute && isReceivingScreenShare === this._screenShareReceived) {
 			return;
 		}
 
 		this._remoteHeld = isRemoteHeld;
 		this._remoteMute = isRemoteMute;
+		this._screenShareReceived = isReceivingScreenShare;
 		this.emitter.emit('trackStateChange');
 	}
 
