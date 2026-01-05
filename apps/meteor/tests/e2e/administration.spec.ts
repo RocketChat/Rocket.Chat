@@ -75,8 +75,8 @@ test.describe.parallel('administration', () => {
 			await poAdminUsers.editUser.inputName.fill(faker.person.firstName());
 			await poAdminUsers.editUser.inputUserName.fill(faker.internet.userName());
 			await poAdminUsers.editUser.inputSetManually.click();
-			await poAdminUsers.editUser.inputPassword.fill('any_password');
-			await poAdminUsers.editUser.inputConfirmPassword.fill('any_password');
+			await poAdminUsers.editUser.inputPassword.fill('P@ssw0rd1234.!');
+			await poAdminUsers.editUser.inputConfirmPassword.fill('P@ssw0rd1234.!');
 			await expect(poAdminUsers.editUser.userRole).toBeVisible();
 			await poAdminUsers.editUser.btnAddUser.click();
 		});
@@ -95,8 +95,8 @@ test.describe.parallel('administration', () => {
 			await poAdminUsers.editUser.inputUserName.type(username);
 			await poAdminUsers.editUser.inputEmail.type(faker.internet.email());
 			await poAdminUsers.editUser.inputSetManually.click();
-			await poAdminUsers.editUser.inputPassword.type('any_password');
-			await poAdminUsers.editUser.inputConfirmPassword.type('any_password');
+			await poAdminUsers.editUser.inputPassword.type('P@ssw0rd1234.!');
+			await poAdminUsers.editUser.inputConfirmPassword.type('P@ssw0rd1234.!');
 			await expect(poAdminUsers.editUser.userRole).toBeVisible();
 			await expect(poAdminUsers.editUser.joinDefaultChannels).toBeVisible();
 			await poAdminUsers.editUser.btnAddUser.click();

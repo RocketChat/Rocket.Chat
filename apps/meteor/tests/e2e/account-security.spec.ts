@@ -8,7 +8,15 @@ import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-const RANDOM_PASSWORD = faker.string.alphanumeric(10);
+const RANDOM_PASSWORD = faker.helpers
+	.shuffle([
+		faker.string.alpha({ casing: 'upper' }),
+		faker.string.alpha({ casing: 'lower' }),
+		faker.string.numeric(),
+		faker.string.symbol(),
+		faker.string.alphanumeric(10),
+	])
+	.join('');
 
 test.describe.serial('account-security', () => {
 	let poAccountSecurity: AccountSecurity;
