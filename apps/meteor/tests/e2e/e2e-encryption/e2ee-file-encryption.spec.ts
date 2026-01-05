@@ -55,10 +55,10 @@ test.describe('E2EE File Encryption', () => {
 			await poHomeChannel.content.getFileComposerByName('any_file.txt').click();
 			await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
 			await poHomeChannel.content.btnUpdateFileUpload.click();
-			await poHomeChannel.content.btnSendMainComposer.click();
+			await poHomeChannel.content.sendMessage('any_description');
 
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
-			await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
+			await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
 			await expect(poHomeChannel.content.lastMessageFileName).toContainText(updatedFileName);
 		});
 

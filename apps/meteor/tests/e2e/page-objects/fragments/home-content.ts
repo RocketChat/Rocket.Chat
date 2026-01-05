@@ -166,10 +166,6 @@ export class HomeContent {
 		return this.page.getByRole('button', { name: 'Dismiss quoted message' });
 	}
 
-	get descriptionInput(): Locator {
-		return this.page.locator('//div[@id="modal-root"]//fieldset//div[2]//span//input');
-	}
-
 	get getFileDescription(): Locator {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-body"]');
 	}
@@ -424,7 +420,7 @@ export class HomeContent {
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
-	async dragAndDropTxtFileToThread(): Promise<void> {
+	async dragAndDropTxtFileToThread({ waitForResponse = true } = {}): Promise<void> {
 		const contract = await fs.readFile(getFilePath('any_file.txt'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
@@ -436,8 +432,11 @@ export class HomeContent {
 		}, contract);
 
 		await this.inputThreadMessage.dispatchEvent('dragenter', { dataTransfer });
-
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+
+		if (waitForResponse) {
+			await waitForMediaResponse(this.page);
+		}
 	}
 
 	async sendFileMessage(fileName: string, { waitForResponse = true } = {}): Promise<void> {
