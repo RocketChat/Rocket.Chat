@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { Authenticated, Registration } from './page-objects';
+import { AccountPreferences, Authenticated, Registration } from './page-objects';
 import { request } from '../data/api-data';
 import { test, expect } from './utils/test';
 
@@ -8,9 +8,9 @@ test.describe.parallel('register', () => {
 	let poRegistration: Registration;
 	let poAuth: Authenticated;
 
-	test.beforeEach(({ page }) => {
-		poRegistration = new Registration(page);
-		poAuth = new Authenticated(page);
+	test.beforeEach(({ page, t }) => {
+		poRegistration = new Registration(page, t);
+		poAuth = new Authenticated(page, t);
 	});
 
 	test.describe('Registration default flow', async () => {
@@ -221,6 +221,44 @@ test.describe.parallel('register', () => {
 			await page.goto('/register/secret');
 			await page.waitForSelector('role=heading[level=2]');
 			await expect(page.locator('role=heading[level=2][name="The URL provided is invalid."]')).toBeVisible();
+		});
+	});
+
+	test.describe('Language preference persistence', () => {
+		test.use({ locale: 'pt-BR' });
+
+		test('should keep Portuguese selection in account preferences after registration', async ({ page, t }) => {
+			const poAccountPreferences = new AccountPreferences(page, t);
+			const name = faker.person.firstName();
+			const username = faker.string.alphanumeric({ length: 10 }).toLowerCase();
+			const email = `${username}@example.com`;
+			const password = `Passw0rd!${faker.number.int({ min: 1000, max: 9999 })}`;
+
+			await test.step('prepare registration page in English', async () => {
+				await page.goto('/home');
+				await poRegistration.goToRegister.click();
+				await expect(poRegistration.inputName).toBeVisible();
+				await page.getByRole('button', { name: 'Change to English' }).click();
+				await page.getByRole('button', { name: 'Alterar para português (Brasil)' }).click();
+			});
+
+			await test.step('complete registration with Portuguese selected', async () => {
+				await poRegistration.inputName.fill(name);
+				await poRegistration.inputEmail.fill(email);
+				await poRegistration.username.fill(username);
+				await poRegistration.inputPassword.fill(password);
+				await poRegistration.inputPasswordConfirm.fill(password);
+				await poRegistration.btnRegister.click();
+				await poAuth.waitForDisplay();
+			});
+
+			await test.step('verify Portuguese is selected in account preferences', async () => {
+				await page.goto('/account/preferences');
+				await expect(poAccountPreferences.languageSelect).toBeVisible();
+				await expect(poAccountPreferences.hiddenLanguageSelect).toHaveValue('pt-BR');
+				await poAccountPreferences.languageSelect.click();
+				await page.keyboard.press('Escape');
+			});
 		});
 	});
 });

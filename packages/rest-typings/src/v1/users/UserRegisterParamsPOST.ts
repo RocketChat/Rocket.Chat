@@ -12,6 +12,11 @@ export type UserRegisterParamsPOST = {
 	secret?: string;
 	reason?: string;
 	customFields?: object;
+	settings?: {
+		preferences?: {
+			language?: string;
+		};
+	};
 };
 
 const UserRegisterParamsPostSchema = {
@@ -20,7 +25,6 @@ const UserRegisterParamsPostSchema = {
 		username: {
 			type: 'string',
 		},
-
 		name: {
 			type: 'string',
 			nullable: true,
@@ -42,6 +46,19 @@ const UserRegisterParamsPostSchema = {
 		customFields: {
 			type: 'object',
 			nullable: true,
+		},
+		settings: {
+			type: 'object',
+			properties: {
+				preferences: {
+					type: 'object',
+					properties: {
+						language: { type: 'string' },
+					},
+					additionalProperties: false,
+				},
+			},
+			additionalProperties: false,
 		},
 	},
 	required: ['username', 'email', 'pass'],

@@ -1,9 +1,17 @@
 import type { FrameLocator, Locator, Page } from '@playwright/test';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import { expect } from '../utils/test';
 
 abstract class Main {
-	constructor(protected root: Locator) {}
+	protected root: Locator;
+
+	protected t: (key: TranslationKey) => string;
+
+	constructor(root: Locator, t: (key: TranslationKey) => string = (key) => key) {
+		this.root = root;
+		this.t = t;
+	}
 
 	waitForDisplay() {
 		return expect(this.root).toBeVisible();
@@ -15,14 +23,20 @@ abstract class Main {
 }
 
 export class Authenticated extends Main {
-	constructor(protected page: Page) {
-		super(page.locator('#main-content'));
+	protected page: Page;
+
+	constructor(page: Page, t: (key: TranslationKey) => string = (key) => key) {
+		super(page.locator('#main-content'), t);
+		this.page = page;
 	}
 }
 
 export class Registration extends Main {
-	constructor(protected page: Page) {
-		super(page.getByRole('main'));
+	protected page: Page;
+
+	constructor(page: Page, t: (key: TranslationKey) => string = (key) => key) {
+		super(page.getByRole('main'), t);
+		this.page = page;
 	}
 
 	get btnSendInstructions(): Locator {
@@ -54,7 +68,7 @@ export class Registration extends Main {
 	}
 
 	get btnRegister(): Locator {
-		return this.page.locator('role=button[name="Join your team"]');
+		return this.page.getByRole('button', { name: this.t('registration.component.form.joinYourTeam') });
 	}
 
 	get btnRegisterConfirmUsername(): Locator {
@@ -66,19 +80,19 @@ export class Registration extends Main {
 	}
 
 	get username(): Locator {
-		return this.page.locator('role=textbox[name=/username/i]');
+		return this.page.getByRole('textbox', { name: this.t('Username') });
 	}
 
 	get inputName(): Locator {
-		return this.page.locator('[name=name]');
+		return this.page.getByRole('textbox', { name: this.t('Name'), exact: true });
 	}
 
 	get inputEmail(): Locator {
-		return this.page.locator('role=textbox[name=/Email/]');
+		return this.page.getByRole('textbox', { name: this.t('Email') });
 	}
 
 	get inputPassword(): Locator {
-		return this.page.locator('[name=password]');
+		return this.page.getByRole('textbox', { name: this.t('Password'), exact: true });
 	}
 
 	get inputReason(): Locator {

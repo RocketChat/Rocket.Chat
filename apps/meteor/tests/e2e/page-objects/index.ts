@@ -1,3 +1,4 @@
+export * from './account-preferences';
 export * from './account-profile';
 export * from './account-security';
 export * from './admin-email-inboxes';

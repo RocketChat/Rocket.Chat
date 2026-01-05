@@ -5,6 +5,7 @@ import * as path from 'path';
 import AxeBuilder from '@axe-core/playwright';
 import type { Locator, APIResponse, APIRequestContext } from '@playwright/test';
 import { test as baseTest, request as baseRequest } from '@playwright/test';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { v4 as uuid } from 'uuid';
 
 import { BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
@@ -23,6 +24,8 @@ export type BaseTest = {
 		put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
 		delete(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 	};
+	language: string;
+	t: (key: TranslationKey) => string;
 	makeAxeBuilder: () => AxeBuilder;
 };
 declare global {
@@ -36,6 +39,7 @@ declare global {
 let apiContext: APIRequestContext;
 
 const cacheFromCredentials = new Map<string, string>();
+const translationsCache = new Map<string, Record<string, string>>();
 
 export const test = baseTest.extend<BaseTest>({
 	context: async ({ context }, use) => {
@@ -128,6 +132,45 @@ export const test = baseTest.extend<BaseTest>({
 				.include('body')
 				.disableRules([...SELECT_KNOW_ISSUES]);
 		await use(makeAxeBuilder);
+	},
+	language: async ({ page }, use) => {
+		const language = await page.evaluate(() => {
+			return navigator.language;
+		});
+		await use(language);
+	},
+	t: async ({ request, language }, use) => {
+		const loadTranslations = async (language: string): Promise<Record<string, unknown>> => {
+			const cachedLanguage = translationsCache.get(language);
+			if (cachedLanguage) {
+				return cachedLanguage;
+			}
+
+			const resp = await request.get(`/i18n/${language}.json`);
+			const json = await resp.json();
+			translationsCache.set(language, json);
+			return json;
+		};
+
+		const t = (key: string): string => {
+			const translations = translationsCache.get(language);
+
+			if (!translations) {
+				throw new Error(`Translations for language "${language}" not loaded`);
+			}
+
+			const template = translations[key];
+
+			if (typeof template === 'undefined') {
+				throw new Error(`Missing translation for key "${key}" in language "${language}"`);
+			}
+
+			return template;
+		};
+
+		await loadTranslations(language);
+
+		await use(t);
 	},
 });
 

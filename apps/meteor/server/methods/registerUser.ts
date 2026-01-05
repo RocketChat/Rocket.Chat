@@ -63,6 +63,11 @@ export const registerUser = async (
 			name: String,
 			secretURL: Match.Optional(String),
 			reason: Match.Optional(String),
+			settings: Match.Optional({
+				preferences: Match.Optional({
+					language: Match.Optional(String),
+				}),
+			}),
 		}),
 	);
 
@@ -100,6 +105,7 @@ export const registerUser = async (
 		password: formData.pass,
 		name: formData.name,
 		reason: formData.reason,
+		settings: formData.settings,
 	};
 
 	let userId;
@@ -128,6 +134,10 @@ export const registerUser = async (
 		Accounts.sendVerificationEmail(userId, userData.email);
 	} catch (error) {
 		// throw new Meteor.Error 'error-email-send-failed', 'Error trying to send email: ' + error.message, { method: 'registerUser', message: error.message }
+	}
+
+	if (formData.settings?.preferences?.language) {
+		await Users.setPreferences(userId, { language: formData.settings.preferences.language });
 	}
 
 	return userId;

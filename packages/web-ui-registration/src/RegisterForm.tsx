@@ -12,6 +12,7 @@ import {
 	TextAreaInput,
 	Callout,
 } from '@rocket.chat/fuselage';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -43,6 +44,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const usernameOrEmailPlaceholder = useSetting('Accounts_EmailOrUsernamePlaceholder', '');
 	const passwordPlaceholder = useSetting('Accounts_PasswordPlaceholder', '');
 	const passwordConfirmationPlaceholder = useSetting('Accounts_ConfirmPasswordPlaceholder', '');
+	const [preferedLanguage] = useLocalStorage('preferedLanguage', '');
 
 	const formLabelId = useId();
 	const passwordVerifierId = useId();
@@ -84,7 +86,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
 		registerUser.mutate(
-			{ pass: password, ...formData },
+			{ pass: password, ...formData, ...(preferedLanguage && { settings: { preferences: { language: preferedLanguage } } }) },
 			{
 				onError: (error: any) => {
 					if ([error.error, error.errorType].includes('error-invalid-email')) {
