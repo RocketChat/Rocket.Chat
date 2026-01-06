@@ -1105,7 +1105,7 @@ describe('[Users]', () => {
 				email: `me-${Date.now()}@email.com`,
 				name: 'testuser',
 				username: ufsUsername,
-				password: '1234',
+				password,
 			});
 
 			await request
@@ -2171,7 +2171,7 @@ describe('[Users]', () => {
 						.send({
 							userId: targetUser._id,
 							data: {
-								password: 'itsnotworking',
+								password: '1tsn0tw0rkingP@ssw0rd1234.!',
 							},
 						})
 						.expect('Content-Type', 'application/json')
@@ -2193,7 +2193,7 @@ describe('[Users]', () => {
 						.send({
 							userId: targetUser._id,
 							data: {
-								password: 'itsnotworking',
+								password: '1tsn0tw0rkingP@ssw0rd1234.!',
 							},
 						})
 						.expect('Content-Type', 'application/json')
@@ -2700,7 +2700,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.send({
 					data: {
-						newPassword: 'the new pass',
+						newPassword: '1Tsn3wP@ssw0rd1234.!',
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -2851,7 +2851,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.send({
 					data: {
-						newPassword: 'MyNewPassw0rd',
+						newPassword: '1Tsn3wP@ssw0rd1234.!',
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -2891,13 +2891,11 @@ describe('[Users]', () => {
 		describe('[Password Policy]', () => {
 			before(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
-				await updateSetting('Accounts_Password_Policy_Enabled', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 			});
 
 			after(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
-				await updateSetting('Accounts_Password_Policy_Enabled', false);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 			});
 
@@ -3086,7 +3084,7 @@ describe('[Users]', () => {
 					.send({
 						data: {
 							currentPassword,
-							newPassword: '123Abc@!',
+							newPassword: '1Tsn3wP@ssw0rd1234.!',
 						},
 					})
 					.expect('Content-Type', 'application/json')
