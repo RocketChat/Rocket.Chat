@@ -14,13 +14,40 @@ type EmojiProps = MessageParser.Emoji & {
 const Emoji = ({ big = false, preview = false, ...emoji }: EmojiProps): ReactElement => {
 	const { convertAsciiToEmoji, useEmoji } = useContext(MarkupInteractionContext);
 
-	const asciiEmoji = useMemo(
-		() => ('shortCode' in emoji && emoji.value.value !== emoji.shortCode ? emoji.value.value : undefined),
-		[emoji],
-	);
+	const asciiEmoji = useMemo(() => {
+		try {
+			// Defensive checks for potentially undefined properties
+			if ('shortCode' in emoji && emoji.value && typeof emoji.value === 'object' && 'value' in emoji.value) {
+				const { value: emojiValue } = emoji.value;
+				const { shortCode } = emoji;
+
+				// Only treat as different if both exist and are strings
+				if (typeof emojiValue === 'string' && typeof shortCode === 'string' && emojiValue !== shortCode) {
+					return emojiValue;
+				}
+			}
+			return undefined;
+		} catch (error) {
+			console.error('Error computing ascii emoji:', error);
+			return undefined;
+		}
+	}, [emoji]);
 
 	if (!useEmoji && 'shortCode' in emoji) {
-		return <PlainSpan text={emoji.shortCode === emoji.value.value ? `:${emoji.shortCode}:` : emoji.value.value} />;
+		try {
+			// Safely extract shortCode and value with fallbacks
+			const shortCode = typeof emoji.shortCode === 'string' ? emoji.shortCode : '[deleted-emoji]';
+			const valueStr =
+				emoji.value && typeof emoji.value === 'object' && 'value' in emoji.value && typeof emoji.value.value === 'string'
+					? emoji.value.value
+					: shortCode;
+
+			const displayText = shortCode === valueStr ? `:${shortCode}:` : valueStr;
+			return <PlainSpan text={displayText} />;
+		} catch (error) {
+			console.error('Error rendering shortCode emoji:', error);
+			return <PlainSpan text=":emoji:" />;
+		}
 	}
 
 	if (!convertAsciiToEmoji && asciiEmoji) {

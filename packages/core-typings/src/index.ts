@@ -46,6 +46,7 @@ export * from './IUserDataFile';
 export * from './IUserSession';
 export * from './IUserStatus';
 export * from './IUser';
+export * from './SafeEmoji';
 
 export * from './ee/IAuditLog';
 export * from './ee/IWorkspaceCredentials';

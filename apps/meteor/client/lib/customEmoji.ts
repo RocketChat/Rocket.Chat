@@ -15,76 +15,151 @@ const isSetNotNull = (fn: () => unknown) => {
 };
 
 export const updateEmojiCustom = (emojiData: IEmoji) => {
-	const previousExists = isSetNotNull(() => emojiData.previousName);
-	const currentAliases = isSetNotNull(() => emojiData.aliases);
+	try {
+		// Validate emojiData has required name property
+		if (!emojiData || typeof emojiData.name !== 'string' || !emojiData.name) {
+			console.error('Invalid emoji data: missing or invalid name', emojiData);
+			return;
+		}
 
-	if (previousExists && isSetNotNull(() => emoji.list[`:${emojiData.previousName}:`].aliases)) {
-		for (const alias of emoji.list[`:${emojiData.previousName}:`].aliases ?? []) {
-			delete emoji.list[`:${alias}:`];
-			const aliasIndex = emoji.packages.emojiCustom.list?.indexOf(`:${alias}:`) ?? -1;
-			if (aliasIndex !== -1) {
-				emoji.packages.emojiCustom.list?.splice(aliasIndex, 1);
+		const previousExists = isSetNotNull(() => emojiData.previousName);
+		const currentAliases = isSetNotNull(() => emojiData.aliases && Array.isArray(emojiData.aliases) && emojiData.aliases.length > 0);
+
+		if (previousExists && typeof emojiData.previousName === 'string') {
+			try {
+				const previousEmojiKey = `:${emojiData.previousName}:`;
+				const previousEmojiList = emoji.list?.[previousEmojiKey];
+
+				if (previousEmojiList?.aliases && Array.isArray(previousEmojiList.aliases)) {
+					for (const alias of previousEmojiList.aliases) {
+						if (typeof alias === 'string') {
+							delete emoji.list?.[`:${alias}:`];
+							const aliasIndex = emoji.packages.emojiCustom.list?.indexOf(`:${alias}:`) ?? -1;
+							if (aliasIndex !== -1) {
+								emoji.packages.emojiCustom.list?.splice(aliasIndex, 1);
+							}
+						}
+					}
+				}
+			} catch (error) {
+				console.error('Error updating previous emoji aliases:', error);
 			}
 		}
-	}
 
-	if (previousExists && emojiData.name !== emojiData.previousName) {
-		const arrayIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(emojiData.previousName);
-		if (arrayIndex !== -1) {
-			emoji.packages.emojiCustom.emojisByCategory.rocket.splice(arrayIndex, 1);
+		if (previousExists && typeof emojiData.previousName === 'string' && emojiData.name !== emojiData.previousName) {
+			try {
+				const arrayIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(emojiData.previousName);
+				if (arrayIndex !== -1) {
+					emoji.packages.emojiCustom.emojisByCategory.rocket.splice(arrayIndex, 1);
+				}
+				const arrayIndexList = emoji.packages.emojiCustom.list?.indexOf(`:${emojiData.previousName}:`) ?? -1;
+				if (arrayIndexList !== -1) {
+					emoji.packages.emojiCustom.list?.splice(arrayIndexList, 1);
+				}
+				delete emoji.list?.[`:${emojiData.previousName}:`];
+			} catch (error) {
+				console.error('Error removing previous emoji:', error);
+			}
 		}
-		const arrayIndexList = emoji.packages.emojiCustom.list?.indexOf(`:${emojiData.previousName}:`) ?? -1;
-		if (arrayIndexList !== -1) {
-			emoji.packages.emojiCustom.list?.splice(arrayIndexList, 1);
+
+		try {
+			const categoryIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(emojiData.name);
+			if (categoryIndex === -1) {
+				emoji.packages.emojiCustom.emojisByCategory.rocket.push(emojiData.name);
+				emoji.packages.emojiCustom.list?.push(`:${emojiData.name}:`);
+			}
+
+			emoji.list[`:${emojiData.name}:`] = Object.assign(
+				{ emojiPackage: 'emojiCustom' },
+				emoji.list?.[`:${emojiData.name}:`],
+				emojiData,
+			);
+		} catch (error) {
+			console.error('Error updating emoji in list:', error);
 		}
-		delete emoji.list[`:${emojiData.previousName}:`];
-	}
 
-	const categoryIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(`${emojiData.name}`);
-	if (categoryIndex === -1) {
-		emoji.packages.emojiCustom.emojisByCategory.rocket.push(`${emojiData.name}`);
-		emoji.packages.emojiCustom.list?.push(`:${emojiData.name}:`);
-	}
-	emoji.list[`:${emojiData.name}:`] = Object.assign({ emojiPackage: 'emojiCustom' }, emoji.list[`:${emojiData.name}:`], emojiData);
-	if (currentAliases) {
-		for (const alias of emojiData.aliases) {
-			emoji.packages.emojiCustom.list?.push(`:${alias}:`);
-			emoji.list[`:${alias}:`] = {
-				emojiPackage: 'emojiCustom',
-				aliasOf: emojiData.name,
-			};
+		if (currentAliases && Array.isArray(emojiData.aliases)) {
+			try {
+				for (const alias of emojiData.aliases) {
+					if (typeof alias === 'string') {
+						emoji.packages.emojiCustom.list?.push(`:${alias}:`);
+						emoji.list[`:${alias}:`] = {
+							emojiPackage: 'emojiCustom',
+							aliasOf: emojiData.name,
+						};
+					}
+				}
+			} catch (error) {
+				console.error('Error updating emoji aliases:', error);
+			}
 		}
-	}
 
-	if (previousExists) {
-		replaceEmojiInRecent({ oldEmoji: emojiData.previousName, newEmoji: emojiData.name });
-	}
+		if (previousExists && typeof emojiData.previousName === 'string' && typeof emojiData.name === 'string') {
+			try {
+				replaceEmojiInRecent({ oldEmoji: emojiData.previousName, newEmoji: emojiData.name });
+			} catch (error) {
+				console.error('Error updating recent emojis:', error);
+			}
+		}
 
-	emoji.dispatchUpdate();
+		emoji.dispatchUpdate();
+	} catch (error) {
+		console.error('Error in updateEmojiCustom:', error);
+	}
 };
 
 export const deleteEmojiCustom = (emojiData: IEmoji) => {
-	delete emoji.list[`:${emojiData.name}:`];
-	const arrayIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(emojiData.name);
-	if (arrayIndex !== -1) {
-		emoji.packages.emojiCustom.emojisByCategory.rocket.splice(arrayIndex, 1);
-	}
-	const arrayIndexList = emoji.packages.emojiCustom.list?.indexOf(`:${emojiData.name}:`) ?? -1;
-	if (arrayIndexList !== -1) {
-		emoji.packages.emojiCustom.list?.splice(arrayIndexList, 1);
-	}
-	if (emojiData.aliases) {
-		for (const alias of emojiData.aliases) {
-			delete emoji.list[`:${alias}:`];
-			const aliasIndex = emoji.packages.emojiCustom.list?.indexOf(`:${alias}:`) ?? -1;
-			if (aliasIndex !== -1) {
-				emoji.packages.emojiCustom.list?.splice(aliasIndex, 1);
+	try {
+		// Validate emojiData has required name property
+		if (!emojiData || typeof emojiData.name !== 'string' || !emojiData.name) {
+			console.error('Invalid emoji data: missing or invalid name', emojiData);
+			return;
+		}
+
+		try {
+			delete emoji.list?.[`:${emojiData.name}:`];
+
+			const arrayIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(emojiData.name);
+			if (arrayIndex !== -1) {
+				emoji.packages.emojiCustom.emojisByCategory.rocket.splice(arrayIndex, 1);
+			}
+
+			const arrayIndexList = emoji.packages.emojiCustom.list?.indexOf(`:${emojiData.name}:`) ?? -1;
+			if (arrayIndexList !== -1) {
+				emoji.packages.emojiCustom.list?.splice(arrayIndexList, 1);
+			}
+		} catch (error) {
+			console.error('Error removing emoji from lists:', error);
+		}
+
+		if (emojiData.aliases && Array.isArray(emojiData.aliases)) {
+			try {
+				for (const alias of emojiData.aliases) {
+					if (typeof alias === 'string') {
+						delete emoji.list?.[`:${alias}:`];
+						const aliasIndex = emoji.packages.emojiCustom.list?.indexOf(`:${alias}:`) ?? -1;
+						if (aliasIndex !== -1) {
+							emoji.packages.emojiCustom.list?.splice(aliasIndex, 1);
+						}
+					}
+				}
+			} catch (error) {
+				console.error('Error removing emoji aliases:', error);
 			}
 		}
-	}
 
-	removeFromRecent(emojiData.name, emoji.packages.base.emojisByCategory.recent);
-	emoji.dispatchUpdate();
+		try {
+			if (emoji.packages.base?.emojisByCategory?.recent) {
+				removeFromRecent(emojiData.name, emoji.packages.base.emojisByCategory.recent);
+			}
+		} catch (error) {
+			console.error('Error removing emoji from recent:', error);
+		}
+
+		emoji.dispatchUpdate();
+	} catch (error) {
+		console.error('Error in deleteEmojiCustom:', error);
+	}
 };
 
 const getEmojiUrlFromName = (name: string, extension: string, etag?: string) => {
@@ -96,35 +171,101 @@ const getEmojiUrlFromName = (name: string, extension: string, etag?: string) => 
 };
 
 export const customRender = (html: string) => {
-	const emojisMatchGroup = emoji.packages.emojiCustom.list?.map(escapeRegExp).join('|');
-	if (emojisMatchGroup !== emoji.packages.emojiCustom._regexpSignature) {
-		emoji.packages.emojiCustom._regexpSignature = emojisMatchGroup;
-		emoji.packages.emojiCustom._regexp = new RegExp(
-			`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${emojisMatchGroup})`,
-			'gi',
-		);
-		emoji.dispatchUpdate();
+	try {
+		// Validate input
+		if (typeof html !== 'string') {
+			console.error('Invalid html input for customRender:', html);
+			return '';
+		}
+
+		const emojisMatchGroup = emoji.packages.emojiCustom.list?.filter((item) => typeof item === 'string').map(escapeRegExp).join('|');
+
+		if (emojisMatchGroup !== emoji.packages.emojiCustom._regexpSignature) {
+			emoji.packages.emojiCustom._regexpSignature = emojisMatchGroup;
+			try {
+				emoji.packages.emojiCustom._regexp = new RegExp(
+					`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${emojisMatchGroup})`,
+					'gi',
+				);
+			} catch (error) {
+				console.error('Error creating emoji regexp:', error);
+				return html;
+			}
+			emoji.dispatchUpdate();
+		}
+
+		if (!emoji.packages.emojiCustom._regexp) {
+			return html;
+		}
+
+		html = html.replace(emoji.packages.emojiCustom._regexp, (shortname) => {
+			try {
+				// Validate shortname
+				if (typeof shortname !== 'string' || !shortname || (emoji.packages.emojiCustom.list?.indexOf(shortname) ?? -1) === -1) {
+					return shortname;
+				}
+
+				let emojiAlias = shortname.replace(/:/g, '');
+
+				// Safely retrieve emoji data with null checks
+				const dataCheck = emoji.list?.[shortname];
+				if (!dataCheck || typeof dataCheck !== 'object') {
+					console.warn('Invalid emoji data for shortname:', shortname);
+					return shortname;
+				}
+
+				// If this is an alias, get the actual emoji
+				if (dataCheck.aliasOf && typeof dataCheck.aliasOf === 'string') {
+					emojiAlias = dataCheck.aliasOf;
+					const actualEmoji = emoji.list?.[`:${emojiAlias}:`];
+					if (actualEmoji && typeof actualEmoji === 'object') {
+						return `<span class="emoji" style="background-image:url(${getEmojiUrlFromName(
+							emojiAlias,
+							actualEmoji.extension ?? 'png',
+							actualEmoji.etag,
+						)});" data-emoji="${escapeHtml(emojiAlias)}" title="${escapeHtml(shortname)}">${escapeHtml(shortname)}</span>`;
+					}
+				}
+
+				// Validate extension exists
+				if (!dataCheck.extension || typeof dataCheck.extension !== 'string') {
+					console.warn('Missing extension for emoji:', emojiAlias, dataCheck);
+					return shortname;
+				}
+
+				const url = getEmojiUrlFromName(emojiAlias, dataCheck.extension, dataCheck.etag);
+				if (!url) {
+					console.warn('Failed to generate URL for emoji:', emojiAlias);
+					return shortname;
+				}
+
+				return `<span class="emoji" style="background-image:url(${url});" data-emoji="${escapeHtml(emojiAlias)}" title="${escapeHtml(shortname)}">${escapeHtml(shortname)}</span>`;
+			} catch (error) {
+				console.error('Error processing emoji shortname:', shortname, error);
+				return shortname;
+			}
+		});
+
+		return html;
+	} catch (error) {
+		console.error('Error in customRender:', error);
+		return html;
 	}
+};
 
-	html = html.replace(emoji.packages.emojiCustom._regexp!, (shortname) => {
-		if (typeof shortname === 'undefined' || shortname === '' || (emoji.packages.emojiCustom.list?.indexOf(shortname) ?? -1) === -1) {
-			return shortname;
-		}
-
-		let emojiAlias = shortname.replace(/:/g, '');
-
-		let dataCheck = emoji.list[shortname];
-		if (dataCheck.aliasOf) {
-			emojiAlias = dataCheck.aliasOf;
-			dataCheck = emoji.list[`:${emojiAlias}:`];
-		}
-
-		return `<span class="emoji" style="background-image:url(${getEmojiUrlFromName(
-			emojiAlias,
-			dataCheck.extension!,
-			dataCheck.etag,
-		)});" data-emoji="${emojiAlias}" title="${shortname}">${shortname}</span>`;
-	});
-
-	return html;
+/**
+ * Helper to escape HTML special characters to prevent XSS
+ */
+const escapeHtml = (text: string): string => {
+	if (typeof text !== 'string') {
+		return '';
+	}
+	const map: Record<string, string> = {
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'"': '&quot;',
+		"'": '&#039;',
+	};
+	return text.replace(/[&<>"']/g, (char) => map[char] ?? char);
 };
