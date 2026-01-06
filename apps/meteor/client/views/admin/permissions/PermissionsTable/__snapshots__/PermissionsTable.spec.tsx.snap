@@ -8,7 +8,6 @@ exports[`renders Default without crashing 1`] = `
     >
       <input
         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-1ltvj5u"
-        data-qa="PermissionTable-PermissionsTableFilter"
         placeholder="Search"
         size="1"
         type="text"
@@ -1169,7 +1168,6 @@ exports[`renders Empty without crashing 1`] = `
     >
       <input
         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-1ltvj5u"
-        data-qa="PermissionTable-PermissionsTableFilter"
         placeholder="Search"
         size="1"
         type="text"

@@ -150,10 +150,6 @@ export class FederationHomeContent {
 		return this.page.locator('[data-qa-id="menu-more-actions"]');
 	}
 
-	get linkUserCard(): Locator {
-		return this.page.locator('[data-qa="UserCard"] a');
-	}
-
 	get btnContactEdit(): Locator {
 		return this.page.locator('.rcx-vertical-bar button:has-text("Edit")');
 	}
