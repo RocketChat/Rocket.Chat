@@ -10,6 +10,7 @@ import URL from 'url';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { Media } from '@rocket.chat/core-services';
 import { isE2EEUpload, type IUpload } from '@rocket.chat/core-typings';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
@@ -403,6 +404,14 @@ export const FileUpload = {
 		};
 
 		await reorientation();
+
+		const stripExif = settings.get('Message_Attachments_Strip_Exif');
+
+		if (stripExif) {
+			const fileBuffer = fs.readFileSync(tmpFile);
+			const strippedFileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+			fs.writeFileSync(tmpFile, strippedFileBuffer);
+		}
 
 		const { size } = await fs.lstatSync(tmpFile);
 		await this.getCollection().updateOne(

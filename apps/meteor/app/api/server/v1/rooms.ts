@@ -1,4 +1,4 @@
-import { FederationMatrix, Media, MeteorError, Team } from '@rocket.chat/core-services';
+import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
@@ -208,7 +208,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('invalid-field');
 			}
 
-			let { fileBuffer } = file;
+			const { fileBuffer } = file;
 
 			const expiresAt = new Date();
 			expiresAt.setHours(expiresAt.getHours() + 24);
@@ -235,13 +235,6 @@ API.v1.addRoute(
 				content,
 				expiresAt,
 			};
-
-			const stripExif = settings.get('Message_Attachments_Strip_Exif');
-			if (stripExif) {
-				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
-				details.size = fileBuffer.length;
-			}
 
 			const fileStore = FileUpload.getStore('Uploads');
 			const uploadedFile = await fileStore.insert(details, fileBuffer);
