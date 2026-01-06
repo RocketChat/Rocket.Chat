@@ -1,62 +1,66 @@
 {
-  "version": "3",
-  "packages": {
-    "specifiers": {
-      "jsr:@std/cli@^1.0.9": "jsr:@std/cli@1.0.13",
-      "npm:@msgpack/msgpack@3.0.0-beta2": "npm:@msgpack/msgpack@3.0.0-beta2",
-      "npm:@rocket.chat/ui-kit@^0.31.22": "npm:@rocket.chat/ui-kit@0.31.25_@rocket.chat+icons@0.32.0",
-      "npm:acorn-walk@8.2.0": "npm:acorn-walk@8.2.0",
-      "npm:acorn@8.10.0": "npm:acorn@8.10.0",
-      "npm:astring@1.8.6": "npm:astring@1.8.6",
-      "npm:jsonrpc-lite@2.2.0": "npm:jsonrpc-lite@2.2.0",
-      "npm:stack-trace": "npm:stack-trace@0.0.10",
-      "npm:stack-trace@0.0.10": "npm:stack-trace@0.0.10",
-      "npm:uuid@8.3.2": "npm:uuid@8.3.2"
+  "version": "5",
+  "specifiers": {
+    "jsr:@std/cli@^1.0.9": "1.0.13",
+    "npm:@msgpack/msgpack@3.0.0-beta2": "3.0.0-beta2",
+    "npm:@rocket.chat/ui-kit@~0.31.22": "0.31.25_@rocket.chat+icons@0.32.0",
+    "npm:@types/node@*": "22.15.15",
+    "npm:acorn-walk@8.2.0": "8.2.0",
+    "npm:acorn@8.10.0": "8.10.0",
+    "npm:astring@1.8.6": "1.8.6",
+    "npm:jsonrpc-lite@2.2.0": "2.2.0",
+    "npm:stack-trace@*": "0.0.10",
+    "npm:stack-trace@0.0.10": "0.0.10",
+    "npm:uuid@8.3.2": "8.3.2"
+  },
+  "jsr": {
+    "@std/cli@1.0.13": {
+      "integrity": "5db2d95ab2dca3bca9fb6ad3c19908c314e93d6391c8b026725e4892d4615a69"
+    }
+  },
+  "npm": {
+    "@msgpack/msgpack@3.0.0-beta2": {
+      "integrity": "sha512-y+l1PNV0XDyY8sM3YtuMLK5vE3/hkfId+Do8pLo/OPxfxuFAUwcGz3oiiUuV46/aBpwTzZ+mRWVMtlSKbradhw==",
+      "deprecated": true
     },
-    "jsr": {
-      "@std/cli@1.0.13": {
-        "integrity": "5db2d95ab2dca3bca9fb6ad3c19908c314e93d6391c8b026725e4892d4615a69"
-      }
+    "@rocket.chat/icons@0.32.0": {
+      "integrity": "sha512-7yhhELKNLb9kUtXCvau0V+iMXraV2bOsxcPjc/ZtLR5VeeIDTeaflqRWGtLroX6f3bE+J1n5qB5zi8A4YXuH2g=="
     },
-    "npm": {
-      "@msgpack/msgpack@3.0.0-beta2": {
-        "integrity": "sha512-y+l1PNV0XDyY8sM3YtuMLK5vE3/hkfId+Do8pLo/OPxfxuFAUwcGz3oiiUuV46/aBpwTzZ+mRWVMtlSKbradhw==",
-        "dependencies": {}
-      },
-      "@rocket.chat/icons@0.32.0": {
-        "integrity": "sha512-7yhhELKNLb9kUtXCvau0V+iMXraV2bOsxcPjc/ZtLR5VeeIDTeaflqRWGtLroX6f3bE+J1n5qB5zi8A4YXuH2g==",
-        "dependencies": {}
-      },
-      "@rocket.chat/ui-kit@0.31.25_@rocket.chat+icons@0.32.0": {
-        "integrity": "sha512-yTgTKDw9SMlJ6p8n0PDO6zSvox/nHYUrwCIvILQeAK6PvTrgSe/u9CvU7ATTYjnQiQ603yEGR6dxjF4euCGdNA==",
-        "dependencies": {
-          "@rocket.chat/icons": "@rocket.chat/icons@0.32.0"
-        }
-      },
-      "acorn-walk@8.2.0": {
-        "integrity": "sha512-k+iyHEuPgSw6SbuDpGQM+06HQUa04DZ3o+F6CSzXMvvI5KMvnaEqXe+YVe555R9nn6GPt404fos4wcgpw12SDA==",
-        "dependencies": {}
-      },
-      "acorn@8.10.0": {
-        "integrity": "sha512-F0SAmZ8iUtS//m8DmCTA0jlh6TDKkHQyK6xc6V4KDTyZKA9dnvX9/3sRTVQrWm79glUAZbnmmNcdYwUIHWVybw==",
-        "dependencies": {}
-      },
-      "astring@1.8.6": {
-        "integrity": "sha512-ISvCdHdlTDlH5IpxQJIex7BWBywFWgjJSVdwst+/iQCoEYnyOaQ95+X1JGshuBjGp6nxKUy1jMgE3zPqN7fQdg==",
-        "dependencies": {}
-      },
-      "jsonrpc-lite@2.2.0": {
-        "integrity": "sha512-/cbbSxtZWs1O7R4tWqabrCM/t3N8qKUZMAg9IUqpPvUs6UyRvm6pCNYkskyKN/XU0UgffW+NY2ZRr8t0AknX7g==",
-        "dependencies": {}
-      },
-      "stack-trace@0.0.10": {
-        "integrity": "sha512-KGzahc7puUKkzyMt+IqAep+TVNbKP+k2Lmwhub39m1AsTSkaDutx56aDCo+HLDzf/D26BIHTJWNiTG1KAJiQCg==",
-        "dependencies": {}
-      },
-      "uuid@8.3.2": {
-        "integrity": "sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==",
-        "dependencies": {}
-      }
+    "@rocket.chat/ui-kit@0.31.25_@rocket.chat+icons@0.32.0": {
+      "integrity": "sha512-yTgTKDw9SMlJ6p8n0PDO6zSvox/nHYUrwCIvILQeAK6PvTrgSe/u9CvU7ATTYjnQiQ603yEGR6dxjF4euCGdNA==",
+      "dependencies": [
+        "@rocket.chat/icons"
+      ]
+    },
+    "@types/node@22.15.15": {
+      "integrity": "sha512-R5muMcZob3/Jjchn5LcO8jdKwSCbzqmPB6ruBxMcf9kbxtniZHP327s6C37iOfuw8mbKK3cAQa7sEl7afLrQ8A==",
+      "dependencies": [
+        "undici-types"
+      ]
+    },
+    "acorn-walk@8.2.0": {
+      "integrity": "sha512-k+iyHEuPgSw6SbuDpGQM+06HQUa04DZ3o+F6CSzXMvvI5KMvnaEqXe+YVe555R9nn6GPt404fos4wcgpw12SDA=="
+    },
+    "acorn@8.10.0": {
+      "integrity": "sha512-F0SAmZ8iUtS//m8DmCTA0jlh6TDKkHQyK6xc6V4KDTyZKA9dnvX9/3sRTVQrWm79glUAZbnmmNcdYwUIHWVybw==",
+      "bin": true
+    },
+    "astring@1.8.6": {
+      "integrity": "sha512-ISvCdHdlTDlH5IpxQJIex7BWBywFWgjJSVdwst+/iQCoEYnyOaQ95+X1JGshuBjGp6nxKUy1jMgE3zPqN7fQdg==",
+      "bin": true
+    },
+    "jsonrpc-lite@2.2.0": {
+      "integrity": "sha512-/cbbSxtZWs1O7R4tWqabrCM/t3N8qKUZMAg9IUqpPvUs6UyRvm6pCNYkskyKN/XU0UgffW+NY2ZRr8t0AknX7g=="
+    },
+    "stack-trace@0.0.10": {
+      "integrity": "sha512-KGzahc7puUKkzyMt+IqAep+TVNbKP+k2Lmwhub39m1AsTSkaDutx56aDCo+HLDzf/D26BIHTJWNiTG1KAJiQCg=="
+    },
+    "undici-types@6.21.0": {
+      "integrity": "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ=="
+    },
+    "uuid@8.3.2": {
+      "integrity": "sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==",
+      "bin": true
     }
   },
   "remote": {
@@ -103,7 +107,7 @@
     "dependencies": [
       "jsr:@std/cli@^1.0.9",
       "npm:@msgpack/msgpack@3.0.0-beta2",
-      "npm:@rocket.chat/ui-kit@^0.31.22",
+      "npm:@rocket.chat/ui-kit@~0.31.22",
       "npm:acorn-walk@8.2.0",
       "npm:acorn@8.10.0",
       "npm:astring@1.8.6",
