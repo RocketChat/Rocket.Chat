@@ -163,7 +163,18 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 					if (xhr.readyState === xhr.DONE) {
 						if (xhr.status === 400) {
 							const error = JSON.parse(xhr.responseText);
-							this.set(this.uploads.map((upload) => ({ ...upload, error: new Error(error.error) })));
+							this.set(
+								this.uploads.map((upload) => {
+									if (upload.id !== id) {
+										return upload;
+									}
+
+									return {
+										...upload,
+										error: new Error(error.error),
+									};
+								}),
+							);
 							return;
 						}
 
