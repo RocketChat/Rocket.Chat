@@ -52,6 +52,10 @@ RUN echo "[build] core-typings package build start" \
   && yarn workspace @rocket.chat/core-typings build \
   && echo "[build] core-typings package build done"
 
+RUN echo "[build] rest-typings package build start" \
+  && yarn workspace @rocket.chat/rest-typings build \
+  && echo "[build] rest-typings package build done"
+
 RUN echo "[build] model-typings package build start" \
   && yarn workspace @rocket.chat/model-typings build \
   && echo "[build] model-typings package build done"
