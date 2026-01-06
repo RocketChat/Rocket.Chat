@@ -44,6 +44,18 @@ RUN echo "[build] ui-kit packages build start" \
   && yarn workspace @rocket.chat/fuselage-ui-kit build \
   && echo "[build] ui-kit packages build done"
 
+RUN echo "[build] message-parser package build start" \
+  && yarn workspace @rocket.chat/message-parser build \
+  && echo "[build] message-parser package build done"
+
+RUN echo "[build] core-typings package build start" \
+  && yarn workspace @rocket.chat/core-typings build \
+  && echo "[build] core-typings package build done"
+
+RUN echo "[build] model-typings package build start" \
+  && yarn workspace @rocket.chat/model-typings build \
+  && echo "[build] model-typings package build done"
+
 RUN echo "[build] models package build start" \
   && yarn workspace @rocket.chat/models build \
   && echo "[build] models package build done"
