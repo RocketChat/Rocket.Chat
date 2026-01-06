@@ -19,6 +19,7 @@ import {
 	getLivechatRoomInfo,
 	makeAgentAvailable,
 	updateDepartment,
+	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
 import { createAnOnlineAgent, updateLivechatSettingsForUser } from '../../../data/livechat/users';
 import { sleep } from '../../../data/livechat/utils';
@@ -885,30 +886,66 @@ describe('LIVECHAT - Queue', () => {
 	describe('when forwarding a chat to an agent already at their limit', () => {
 		let forwardingRoom: { _id: string };
 		let otherRoom: { _id: string };
-		let visitor1: any;
-		let visitor2: any;
+		let visitor1: ILivechatVisitor;
+		let visitor2: ILivechatVisitor;
+		let forwardingDept: ILivechatDepartment;
+		let forwardUserA: { user: IUser; credentials: Credentials };
+		let forwardUserB: { user: IUser; credentials: Credentials };
 
 		before(async () => {
-			await updateSetting('Omnichannel_queue_delay_timeout', 1);
-			await updateLivechatSettingsForUser(testUser.user._id, { maxNumberSimultaneousChat: 1 }, [testDepartment3._id]);
-			await updateLivechatSettingsForUser(testUser2.user._id, { maxNumberSimultaneousChat: 1 }, [testDepartment3._id]);
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 
-			visitor1 = await createVisitor(testDepartment3._id);
-			const room1 = await createLivechatRoom(visitor1.token);
-			await sleep(5000);
+			const userA = await createUser();
+			const userB = await createUser();
+
+			await createAgent(userA.username);
+			await createAgent(userB.username);
+
+			const credA = await login(userA.username, password);
+			const credB = await login(userB.username, password);
+
+			await makeAgentAvailable(credA);
+			await makeAgentAvailable(credB);
+
+			forwardUserA = { user: userA, credentials: credA };
+			forwardUserB = { user: userB, credentials: credB };
+
+			forwardingDept = await createDepartment(
+				[{ agentId: forwardUserA.user._id }, { agentId: forwardUserB.user._id }],
+				`${new Date().toISOString()}-forward-limit`,
+				true,
+				{
+					maxNumberSimultaneousChat: 1,
+				},
+			);
+
+			await updateLivechatSettingsForUser(forwardUserA.user._id, { maxNumberSimultaneousChat: 1 }, [forwardingDept._id]);
+			await updateLivechatSettingsForUser(forwardUserB.user._id, { maxNumberSimultaneousChat: 1 }, [forwardingDept._id]);
+
+			// Force agent A to take a room on the dedicated department
+			const { room: room1, visitor } = await startANewLivechatRoomAndTakeIt({
+				departmentId: forwardingDept._id,
+				agent: forwardUserA.credentials,
+			});
+			visitor1 = visitor;
+
 			const roomInfo1 = await getLivechatRoomInfo(room1._id);
 			expect(roomInfo1.servedBy).to.be.an('object');
-			expect(roomInfo1.servedBy?._id).to.be.equal(testUser.user._id);
+			expect(roomInfo1.servedBy?._id).to.be.equal(forwardUserA.user._id);
 			otherRoom = room1;
 		});
 
 		before(async () => {
-			visitor2 = await createVisitor(testDepartment3._id);
-			const room2 = await createLivechatRoom(visitor2.token);
-			await sleep(5000);
+			// Force agent B to take another room on the same department
+			const { room: room2, visitor } = await startANewLivechatRoomAndTakeIt({
+				departmentId: forwardingDept!._id,
+				agent: forwardUserB.credentials,
+			});
+			visitor2 = visitor;
+
 			const roomInfo2 = await getLivechatRoomInfo(room2._id);
 			expect(roomInfo2.servedBy).to.be.an('object');
-			expect(roomInfo2.servedBy?._id).to.be.equal(testUser2.user._id);
+			expect(roomInfo2.servedBy?._id).to.be.equal(forwardUserB.user._id);
 
 			forwardingRoom = room2;
 		});
@@ -916,13 +953,17 @@ describe('LIVECHAT - Queue', () => {
 		after(async () => {
 			await closeOmnichannelRoom(forwardingRoom._id);
 			await closeOmnichannelRoom(otherRoom._id);
-			await updateSetting('Omnichannel_queue_delay_timeout', 5);
+			await deleteDepartment(forwardingDept._id);
+			await deleteVisitor(visitor1._id);
+			await deleteVisitor(visitor2._id);
+			await deleteUser(forwardUserA.user);
+			await deleteUser(forwardUserB.user);
 		});
 
 		it('should not allow forwarding and should not add system messages to the room', async () => {
-			const res = await request.post(api('livechat/room.forward')).set(testUser2.credentials).send({
+			const res = await request.post(api('livechat/room.forward')).set(forwardUserB.credentials).send({
 				roomId: forwardingRoom._id,
-				userId: testUser.user._id,
+				userId: forwardUserA.user._id,
 				clientAction: true,
 				comment: 'forward to agent at limit',
 			});
@@ -936,6 +977,27 @@ describe('LIVECHAT - Queue', () => {
 			expect(messagesResponse.body).to.have.property('messages');
 			const systemMessages = messagesResponse.body.messages.filter((msg: any) => msg.t === 'livechat_transfer_history');
 			expect(systemMessages).to.have.length(0);
+		});
+
+		it('should allow forwarding with the waiting queue disabled', async () => {
+			await updateEESetting('Livechat_waiting_queue', false);
+
+			const res = await request.post(api('livechat/room.forward')).set(forwardUserB.credentials).send({
+				roomId: forwardingRoom._id,
+				userId: forwardUserA.user._id,
+				clientAction: true,
+				comment: 'forward to agent at limit with waiting queue disabled',
+			});
+
+			expect(res.status).to.equal(200);
+			expect(res.body).to.have.property('success', true);
+
+			const messagesResponse = await request.get(api('channels.messages')).set(credentials).query({ roomId: forwardingRoom._id });
+
+			expect(messagesResponse.status).to.equal(200);
+			expect(messagesResponse.body).to.have.property('messages');
+			const systemMessages = messagesResponse.body.messages.filter((msg: any) => msg.t === 'livechat_transfer_history');
+			expect(systemMessages).to.have.length.greaterThan(0);
 		});
 	});
 });
