@@ -64,3 +64,4 @@ storybook-static
 development/tempo-data/
 
 .env
+.github/copilot-instructions.md
