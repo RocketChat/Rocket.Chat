@@ -1,14 +1,15 @@
 import { Box, Button, Throbber } from '@rocket.chat/fuselage';
-import * as UiKit from '@rocket.chat/ui-kit';
+import { BlockContext } from '@rocket.chat/ui-kit';
+import type { FileUploadElement as UiKitFileUploadElement, FileUploadValue } from '@rocket.chat/ui-kit';
 import type { ChangeEvent, ReactElement } from 'react';
 import { memo, useMemo, useRef } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type FileUploadElementProps = BlockProps<UiKit.FileUploadElement>;
+type FileUploadElementProps = BlockProps<UiKitFileUploadElement>;
 
-const readFileAsBase64 = (file: File): Promise<UiKit.FileUploadValue> =>
+const readFileAsBase64 = (file: File): Promise<FileUploadValue> =>
 	new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.onerror = () => reject(new Error('Failed to read file'));
@@ -76,7 +77,7 @@ const FileUploadElement = ({ block, context, surfaceRenderer }: FileUploadElemen
 				{loading ? (
 					<Throbber />
 				) : block.text ? (
-					surfaceRenderer.renderTextObject(block.text, 0, UiKit.BlockContext.NONE)
+					surfaceRenderer.renderTextObject(block.text, 0, BlockContext.NONE)
 				) : (
 					'Choose file'
 				)}

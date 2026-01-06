@@ -1,5 +1,6 @@
 import { useEffectEvent, useSafely } from '@rocket.chat/fuselage-hooks';
-import * as UiKit from '@rocket.chat/ui-kit';
+import { BlockContext } from '@rocket.chat/ui-kit';
+import type { ActionOf, ActionableElement } from '@rocket.chat/ui-kit';
 import { useContext, useMemo, useState } from 'react';
 
 import { UiKitContext } from '../contexts/UiKitContext';
@@ -17,33 +18,33 @@ const getElementValueFromState = <TValue>(
 	initialValue: TValue,
 ) => (values && (values[actionId]?.value as TValue)) ?? initialValue;
 
-type UiKitState<TElement extends UiKit.ActionableElement = UiKit.ActionableElement> = {
+type UiKitState<TElement extends ActionableElement = ActionableElement> = {
 	loading: boolean;
 	setLoading: (loading: boolean) => void;
 	error?: string;
-	value: UiKit.ActionOf<TElement>;
+	value: ActionOf<TElement>;
 };
 
-export const useUiKitState = <TElement extends UiKit.ActionableElement>(
+export const useUiKitState = <TElement extends ActionableElement>(
 	element: TElement,
-	context: UiKit.BlockContext,
+	context: BlockContext,
 ): [
 	state: UiKitState<TElement>,
-	action: (pseudoEvent?: Event | { target: EventTarget } | { target: { value: UiKit.ActionOf<TElement> } }) => Promise<void>,
+	action: (pseudoEvent?: Event | { target: EventTarget } | { target: { value: ActionOf<TElement> } }) => Promise<void>,
 ] => {
 	const { blockId, actionId, appId, dispatchActionConfig } = element;
 	const { action, appId: appIdFromContext = undefined, viewId = undefined, updateState } = useContext(UiKitContext);
 
-	const initialValue = getInitialValue(element) as UiKit.ActionOf<TElement>;
+	const initialValue = getInitialValue(element) as ActionOf<TElement>;
 
 	const { values, errors } = useContext(UiKitContext);
 
-	const _value = getElementValueFromState<UiKit.ActionOf<TElement>>(actionId, values, initialValue);
+	const _value = getElementValueFromState<ActionOf<TElement>>(actionId, values, initialValue);
 	const error = Array.isArray(errors)
 		? errors.find((error) => Object.keys(error).find((key) => key === actionId))?.[actionId]
 		: errors?.[actionId];
 
-	const [value, setValue] = useSafely(useState(_value));
+	const [value, setValue] = useSafely(useState<ActionOf<TElement>>(_value));
 	const [loading, setLoading] = useSafely(useState(false));
 
 	const actionFunction = useEffectEvent(async (e: any) => {
@@ -54,20 +55,21 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 
 		setLoading(true);
 
+		const setActionValue = (nextValue: ActionOf<TElement>) => setValue(nextValue);
 		if (Array.isArray(value)) {
 			if (Array.isArray(elValue)) {
-				setValue(elValue as UiKit.ActionOf<TElement>);
+				setActionValue(elValue as ActionOf<TElement>);
 			} else {
 				const idx = value.findIndex((value) => value === elValue);
 
 				if (idx > -1) {
-					setValue(value.filter((_, i) => i !== idx) as UiKit.ActionOf<TElement>);
+					setActionValue(value.filter((_, i) => i !== idx) as ActionOf<TElement>);
 				} else {
-					setValue([...value, elValue] as UiKit.ActionOf<TElement>);
+					setActionValue([...value, elValue] as ActionOf<TElement>);
 				}
 			}
 		} else {
-			setValue(elValue as UiKit.ActionOf<TElement>);
+			setActionValue(elValue as ActionOf<TElement>);
 		}
 
 		await updateState?.({ blockId, appId, actionId, value: elValue, viewId }, e);
@@ -91,7 +93,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		const {
 			target: { value },
 		} = e;
-		setValue(value);
+		setValue(value as ActionOf<TElement>);
 
 		updateState && (await updateState({ blockId, appId, actionId, value, viewId }, e));
 
@@ -114,7 +116,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 			target: { value },
 		} = e;
 
-		setValue(value);
+		setValue(value as ActionOf<TElement>);
 
 		await updateState?.(
 			{
@@ -143,7 +145,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 	}
 
 	if (
-		(context && [UiKit.BlockContext.SECTION, UiKit.BlockContext.ACTION].includes(context)) ||
+		(context && [BlockContext.SECTION, BlockContext.ACTION].includes(context)) ||
 		(Array.isArray(element?.dispatchActionConfig) && element.dispatchActionConfig.includes('on_item_selected'))
 	) {
 		return [result, actionFunction];

@@ -44,6 +44,10 @@ RUN echo "[build] ui-kit packages build start" \
   && yarn workspace @rocket.chat/fuselage-ui-kit build \
   && echo "[build] ui-kit packages build done"
 
+RUN echo "[build] models package build start" \
+  && yarn workspace @rocket.chat/models build \
+  && echo "[build] models package build done"
+
 RUN echo "[build] meteor build:ci start" \
   && cd apps/meteor \
   && mkdir -p /tmp/meteor-cache /tmp/meteor-local \
