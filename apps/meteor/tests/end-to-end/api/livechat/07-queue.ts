@@ -645,6 +645,8 @@ describe('LIVECHAT - Queue', () => {
 		await makeAgentAvailable(credentials3);
 		await makeAgentAvailable(credentials4);
 
+		await updatePermission('transfer-livechat-guest', ['livechat-agent']);
+
 		testUser = {
 			user,
 			credentials: credentials3,
