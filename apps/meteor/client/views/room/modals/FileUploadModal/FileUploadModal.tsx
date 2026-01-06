@@ -72,14 +72,12 @@ const FileUploadModal = ({
 	};
 
 	useEffect(() => {
-		
 		if (hasShownErrorRef.current) {
 			return;
 		}
 
-		hasShownErrorRef.current = true;
-
 		if (invalidContentType) {
+			hasShownErrorRef.current = true;
 			dispatchToastMessage({
 				type: 'error',
 				message: t('FileUpload_MediaType_NotAccepted__type__', { type: file.type }),
@@ -89,6 +87,7 @@ const FileUploadModal = ({
 		}
 
 		if (file.size === 0) {
+			hasShownErrorRef.current = true;
 			dispatchToastMessage({
 				type: 'error',
 				message: t('FileUpload_File_Empty'),
