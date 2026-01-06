@@ -637,6 +637,7 @@ export class AppManager {
 
 		if (!installed) {
 			aff.setStorageError('App installation failed');
+			await Promise.all(undoSteps.map((undoer) => undoer()));
 			return aff;
 		}
 
