@@ -11,6 +11,7 @@ export type ChannelsFilesListProps = PaginatedRequest<
 		name?: string;
 		typeGroup?: string;
 		query?: string;
+		onlyConfirmed?: boolean;
 	}
 >;
 
@@ -47,6 +48,10 @@ const channelsFilesListPropsSchema = {
 		},
 		query: {
 			type: 'string',
+			nullable: true,
+		},
+		onlyConfirmed: {
+			type: 'boolean',
 			nullable: true,
 		},
 	},

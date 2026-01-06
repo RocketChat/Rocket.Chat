@@ -5,7 +5,12 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 const ajv = new Ajv({ coerceTypes: true });
 
 export type DmFileProps = PaginatedRequest<
-	({ roomId: string; username?: string } | { roomId?: string; username: string }) & { name?: string; typeGroup?: string; query?: string }
+	({ roomId: string; username?: string } | { roomId?: string; username: string }) & {
+		name?: string;
+		typeGroup?: string;
+		query?: string;
+		onlyConfirmed?: boolean;
+	}
 >;
 
 const dmFilesListPropsSchema = {
@@ -41,6 +46,10 @@ const dmFilesListPropsSchema = {
 		},
 		query: {
 			type: 'string',
+			nullable: true,
+		},
+		onlyConfirmed: {
+			type: 'boolean',
 			nullable: true,
 		},
 	},
