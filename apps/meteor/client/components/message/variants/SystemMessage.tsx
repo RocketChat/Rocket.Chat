@@ -10,6 +10,7 @@ import {
 	CheckBox,
 	MessageUsername,
 	MessageNameContainer,
+	Box,
 } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
@@ -79,15 +80,17 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageNameContainer style={{ cursor: 'pointer' }} {...buttonProps} {...triggerProps}>
-						<MessageSystemName>{displayName}</MessageSystemName>
-						{showUsername && (
-							<>
-								{' '}
-								<MessageUsername data-username={user.username}>@{user.username}</MessageUsername>
-							</>
-						)}
-					</MessageNameContainer>
+					<Box flexShrink={0}>
+						<MessageNameContainer style={{ cursor: 'pointer' }} {...buttonProps} {...triggerProps}>
+							<MessageSystemName>{displayName}</MessageSystemName>
+							{showUsername && (
+								<>
+									{' '}
+									<MessageUsername data-username={user.username}>@{user.username}</MessageUsername>
+								</>
+							)}
+						</MessageNameContainer>
+					</Box>
 					{messageType && <MessageSystemBody data-qa-type='system-message-body'>{messageType.text(t, message)}</MessageSystemBody>}
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
