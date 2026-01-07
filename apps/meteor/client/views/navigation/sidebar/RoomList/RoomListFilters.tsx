@@ -5,20 +5,24 @@ import { forwardRef, useState, memo } from 'react';
 import type { Components } from 'react-virtuoso';
 import { useTranslation } from 'react-i18next';
 
-import { useSmartSearch } from '../hooks/useSmartSearch';
+import { useSmartSearch } from '../../../../hooks/useSmartSearch';
 import TeamCollabFilters from './TeamCollabFilters';
 
 const RoomListFilters: Components['Header'] = forwardRef(function RoomListFilters(_, ref) {
 	const { t } = useTranslation();
 	const [filterText, setFilterText] = useState('');
 	
-	const getRooms = useEndpoint('GET', '/v1/rooms.get');
+	// FIX: Use the correct autocomplete endpoint for searching
+	const getRoomsAutocomplete = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate');
 
 	const searchProvider = useMutableCallback(async (query: string, signal: AbortSignal) => {
-		return await getRooms({ filter: query }, { signal });
+		const response = await getRoomsAutocomplete({ query }, { signal });
+		return response.items;
 	});
 
-	const { search, loading } = useSmartSearch(searchProvider, 400);
+	// FIX: Destructure results. In a full implementation, these results would 
+	// be passed to a Context or State provider so the RoomList can see them.
+	const { results, search, loading } = useSmartSearch(searchProvider, 400);
 
 	const handleChange = useMutableCallback((e) => {
 		const { value } = e.currentTarget;

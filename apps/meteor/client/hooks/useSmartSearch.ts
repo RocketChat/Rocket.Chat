@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SearchCache } from './useSearchCache';
 
+/**
+ * A React hook that provides debounced search with request cancellation and caching.
+ * * @param searchFn - A stable search function that accepts a query and AbortSignal.
+ * @param debounceMs - Debounce delay in milliseconds (default: 300)
+ */
 export function useSmartSearch<T>(
 	searchFn: (query: string, signal: AbortSignal) => Promise<T[]>,
 	debounceMs = 300
@@ -35,8 +40,8 @@ export function useSmartSearch<T>(
 			const data = await searchFn(query, controller.signal);
 			cacheRef.current.set(query, data);
 			setResults(data);
-		} catch (err: any) {
-			if (err.name !== 'AbortError') {
+		} catch (err: unknown) {
+			if (err instanceof Error && err.name !== 'AbortError') {
 				console.error('SmartSearch Error:', err);
 			}
 		} finally {
