@@ -291,7 +291,7 @@ const chatEndpoints = API.v1
 				200: ajv.compile<{ message: IMessage }>({
 					type: 'object',
 					properties: {
-						message: { $ref: '#/components/schemas/IMessage' },
+						message: { type: 'object' },
 						success: {
 							type: 'boolean',
 							enum: [true],
