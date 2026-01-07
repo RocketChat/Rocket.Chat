@@ -1,8 +1,8 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Modal } from './modal';
-import { ToastMessages } from './toast-messages';
-import { expect } from '../../utils/test';
+import { expect } from '../../../utils/test';
+import { ToastMessages } from '../toast-messages';
 
 export class ReportMessageModal extends Modal {
 	readonly toastMessage: ToastMessages;

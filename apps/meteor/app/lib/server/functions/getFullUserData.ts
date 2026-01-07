@@ -60,7 +60,10 @@ settings.watch<string>('Accounts_CustomFields', (settingValue) => {
 			customFields[`customFields.${key}`] = 1;
 		});
 	} catch (e) {
-		logger.warn(`The JSON specified for "Accounts_CustomFields" is invalid. The following error was thrown: ${e}`);
+		logger.warn({
+			msg: 'The JSON specified for "Accounts_CustomFields" is invalid. The following error was thrown',
+			err: e,
+		});
 	}
 });
 

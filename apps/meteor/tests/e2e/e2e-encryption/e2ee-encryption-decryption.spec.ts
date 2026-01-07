@@ -5,7 +5,7 @@ import { BASE_URL } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { Navbar } from '../page-objects/fragments';
-import { FileUploadModal } from '../page-objects/fragments/file-upload-modal';
+import { FileUploadModal } from '../page-objects/fragments/modals';
 import { LoginPage } from '../page-objects/login';
 import { createTargetGroupAndReturnFullRoom, deleteChannel, deleteRoom } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
