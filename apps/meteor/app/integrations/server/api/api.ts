@@ -251,9 +251,9 @@ async function executeIntegrationRest(
 			return API.v1.success({ responses: messageResponse });
 		}
 		return API.v1.success();
-	} catch ({ error: err, message }: any) {
-		incomingLogger.error({ msg: 'Error processing webhook message', err, message });
-		return API.v1.failure(err || message);
+	} catch (err: any) {
+		incomingLogger.error({ msg: 'Error processing webhook message', err });
+		return API.v1.failure(err.error || err.message);
 	}
 }
 
