@@ -18,6 +18,7 @@ const MessageComposerFileError = ({ fileTitle, error, actionIcon, ...props }: Me
 			fileTitle={fileTitle}
 			fileSubtitle={t('Upload_failed')}
 			actionIcon={actionIcon}
+			title={error.message}
 			{...props}
 		/>
 	);
