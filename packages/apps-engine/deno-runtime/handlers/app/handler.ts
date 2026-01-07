@@ -37,50 +37,35 @@ export default async function handleApp(method: string, params: unknown): Promis
 
 		app?.getLogger().debug({ msg: `A method is being called...`, appMethod });
 
-		if (uploadEvents.includes(appMethod)) {
-			return handleUploadEvents(appMethod, params);
+		const formatResult = (result: Defined | JsonRpcError): Defined | JsonRpcError => {
+			if (result instanceof JsonRpcError) {
+				app?.getLogger().debug({
+					msg: `'${appMethod}' was unsuccessful.`,
+					appMethod,
+					err: result,
+					errorMessage: result.message,
+				});
+			} else {
+				app?.getLogger().debug({
+					msg: `'${appMethod}' was successfully called! The result is:`,
+					appMethod,
+					result,
+				});
+			}
+
+			return result;
 		}
 
-		if (uikitInteractions.includes(appMethod)) {
-			return handleUIKitInteraction(appMethod, params).then((result) => {
-				if (result instanceof JsonRpcError) {
-					app?.getLogger().debug({
-						msg: `Method call was unsuccessful.`,
-						appMethod,
-						err: result,
-						errorMessage: result.message,
-					});
-				} else {
-					app?.getLogger().debug({
-						msg: `Method  was successfully called! The result is:`,
-						appMethod,
-						result,
-					});
-				}
-
-				return result;
-			});
+		if (app && uploadEvents.includes(appMethod)) {
+			return handleUploadEvents(appMethod, params).then(formatResult);
 		}
 
-		if (appMethod.startsWith('check') || appMethod.startsWith('execute')) {
-			return handleListener(appMethod, params).then((result) => {
-				if (result instanceof JsonRpcError) {
-					app?.getLogger().debug({
-						msg: `'${appMethod}' was unsuccessful.`,
-						appMethod,
-						err: result,
-						errorMessage: result.message,
-					});
-				} else {
-					app?.getLogger().debug({
-						msg: `'${appMethod}' was successfully called! The result is:`,
-						appMethod,
-						result,
-					});
-				}
+		if (app && uikitInteractions.includes(appMethod)) {
+			return handleUIKitInteraction(appMethod, params).then(formatResult);
+		}
 
-				return result;
-			});
+		if (app && (appMethod.startsWith('check') || appMethod.startsWith('execute'))) {
+			return handleListener(appMethod, params).then(formatResult);
 		}
 
 		let result: Defined | JsonRpcError;
