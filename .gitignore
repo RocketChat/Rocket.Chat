@@ -50,6 +50,8 @@ storybook-static
 
 .preview
 
+prebuilt/
+
 *.sublime-workspace
 
 **/.vim/

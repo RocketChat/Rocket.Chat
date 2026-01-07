@@ -34,45 +34,44 @@ RUN echo "[build] prepare /app/bundle start" \
 
 USER app
 
-RUN echo "[build] yarn install --immutable start" \
-  && git config --global --add safe.directory /app \
-  && yarn install --immutable \
-  && echo "[build] yarn install --immutable done"
-
-RUN echo "[build] ui-kit packages build start" \
-  && yarn workspace @rocket.chat/ui-kit build \
-  && yarn workspace @rocket.chat/fuselage-ui-kit build \
-  && echo "[build] ui-kit packages build done"
-
-RUN echo "[build] message-parser package build start" \
-  && yarn workspace @rocket.chat/message-parser build \
-  && echo "[build] message-parser package build done"
-
-RUN echo "[build] core-typings package build start" \
-  && yarn workspace @rocket.chat/core-typings build \
-  && echo "[build] core-typings package build done"
-
-RUN echo "[build] rest-typings package build start" \
-  && yarn workspace @rocket.chat/rest-typings build \
-  && echo "[build] rest-typings package build done"
-
-RUN echo "[build] model-typings package build start" \
-  && yarn workspace @rocket.chat/model-typings build \
-  && echo "[build] model-typings package build done"
-
-RUN echo "[build] models package build start" \
-  && yarn workspace @rocket.chat/models build \
-  && echo "[build] models package build done"
-
-RUN echo "[build] meteor build:ci start" \
-  && cd apps/meteor \
-  && mkdir -p /tmp/meteor-cache /tmp/meteor-local \
-  && METEOR_CACHE_DIR=/tmp/meteor-cache METEOR_LOCAL_DIR=/tmp/meteor-local \
-     METEOR_DISABLE_OPTIMISTIC_CACHING=1 METEOR_DEBUG_BUILD=1 yarn build:ci \
-  && rm -rf /app/bundle/* \
-  && cp -a /tmp/dist/bundle/. /app/bundle/ \
-  && echo "[build] meteor build:ci done"
-
+RUN if [ -d /app/prebuilt/bundle ]; then \
+  echo "[build] using prebuilt bundle from /app/prebuilt/bundle"; \
+  mkdir -p /app/bundle; \
+  cp -a /app/prebuilt/bundle/. /app/bundle/; \
+else \
+  echo "[build] no prebuilt bundle found; running full build"; \
+  echo "[build] yarn install --immutable start"; \
+  git config --global --add safe.directory /app; \
+  yarn install --immutable; \
+  echo "[build] yarn install --immutable done"; \
+  echo "[build] ui-kit packages build start"; \
+  yarn workspace @rocket.chat/ui-kit build; \
+  yarn workspace @rocket.chat/fuselage-ui-kit build; \
+  echo "[build] ui-kit packages build done"; \
+  echo "[build] message-parser package build start"; \
+  yarn workspace @rocket.chat/message-parser build; \
+  echo "[build] message-parser package build done"; \
+  echo "[build] core-typings package build start"; \
+  yarn workspace @rocket.chat/core-typings build; \
+  echo "[build] core-typings package build done"; \
+  echo "[build] rest-typings package build start"; \
+  yarn workspace @rocket.chat/rest-typings build; \
+  echo "[build] rest-typings package build done"; \
+  echo "[build] model-typings package build start"; \
+  yarn workspace @rocket.chat/model-typings build; \
+  echo "[build] model-typings package build done"; \
+  echo "[build] models package build start"; \
+  yarn workspace @rocket.chat/models build; \
+  echo "[build] models package build done"; \
+  echo "[build] meteor build:ci start"; \
+  cd apps/meteor; \
+  mkdir -p /tmp/meteor-cache /tmp/meteor-local; \
+  METEOR_CACHE_DIR=/tmp/meteor-cache METEOR_LOCAL_DIR=/tmp/meteor-local \
+     METEOR_DISABLE_OPTIMISTIC_CACHING=1 METEOR_DEBUG_BUILD=1 yarn build:ci; \
+  rm -rf /app/bundle/*; \
+  cp -a /tmp/dist/bundle/. /app/bundle/; \
+  echo "[build] meteor build:ci done"; \
+fi
 FROM node:22.16.0-bullseye
 
 ENV NODE_ENV=production \
