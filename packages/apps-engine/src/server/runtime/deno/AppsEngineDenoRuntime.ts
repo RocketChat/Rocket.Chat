@@ -157,7 +157,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			const allowedDirs = [appsEngineDir, parentNodeModulesDir];
 
 			// If the app handles file upload events, it needs to be able to read the temp dir
-			if (this.appPackage.implemented.doesImplement(AppInterface.IPreFileUpload) || this.appPackage.implemented.doesImplement(AppInterface.IPreFileUploadStream)) {
+			if (this.appPackage.implemented.doesImplement(AppInterface.IPreFileUpload)) {
 				allowedDirs.push(this.tempFilePath);
 			}
 

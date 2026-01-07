@@ -9,8 +9,3 @@ export interface IFileUploadContext {
 	file: IUploadDetails;
 	content: Buffer;
 }
-
-export interface IFileUploadStreamContext {
-	file: IUploadDetails;
-	stream: ReadableStream;
-}

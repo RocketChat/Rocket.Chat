@@ -98,7 +98,6 @@ export enum AppMethod {
 	EXECUTE_POST_LIVECHAT_DEPARTMENT_REMOVED = 'executePostLivechatDepartmentRemoved',
 	// FileUpload
 	EXECUTE_PRE_FILE_UPLOAD = 'executePreFileUpload',
-	EXECUTE_PRE_FILE_UPLOAD_STREAM = 'executePreFileUploadStream',
 	// Email
 	EXECUTE_PRE_EMAIL_SENT = 'executePreEmailSent',
 	// User

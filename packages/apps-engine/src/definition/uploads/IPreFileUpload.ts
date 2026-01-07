@@ -14,8 +14,6 @@ import type { IFileUploadContext } from './IFileUploadContext';
  * To prevent the upload from completing, an app should throw a
  * `FileUploadNotAllowedException` with a message specifying the
  * reason for rejection.
- *
- * @deprecated This method requires the entire file to be loaded into memory. Use IPreFileUploadStream instead.
  */
 export interface IPreFileUpload {
 	[AppMethod.EXECUTE_PRE_FILE_UPLOAD](

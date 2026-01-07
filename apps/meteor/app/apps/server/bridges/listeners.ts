@@ -170,7 +170,7 @@ type HandleDefaultEvent =
 	  };
 
 type HandleFileUploadEvent = {
-	event: AppInterface.IPreFileUpload | AppInterface.IPreFileUploadStream;
+	event: AppInterface.IPreFileUpload;
 	payload: [file: IUpload, content: Buffer];
 };
 
@@ -189,7 +189,6 @@ export class AppListenerBridge {
 	async handleEvent(args: HandleEvent): Promise<any> {
 		switch (args.event) {
 			case AppInterface.IPreFileUpload:
-			case AppInterface.IPreFileUploadStream:
 				return this.uploadEvent(args);
 			case AppInterface.IPostMessageDeleted:
 			case AppInterface.IPostMessageReacted:
@@ -263,10 +262,7 @@ export class AppListenerBridge {
 		const appFile = await this.orch.getConverters().get('uploads').convertToApp(file);
 
 		// Execute both events for backward compatibility
-		await Promise.all([
-			this.orch.getManager().getListenerManager().executeListener(AppInterface.IPreFileUpload, { file: appFile, path: tmpfile }),
-			this.orch.getManager().getListenerManager().executeListener(AppInterface.IPreFileUploadStream, { file: appFile, path: tmpfile }),
-		]);
+		await this.orch.getManager().getListenerManager().executeListener(AppInterface.IPreFileUpload, { file: appFile, path: tmpfile });
 
 		await fs.promises
 			.unlink(tmpfile)

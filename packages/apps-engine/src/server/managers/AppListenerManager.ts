@@ -208,10 +208,6 @@ export interface IListenerExecutor {
 		args: [IFileUploadInternalContext];
 		result: void;
 	};
-	[AppInterface.IPreFileUploadStream]: {
-		args: [IFileUploadInternalContext];
-		result: void;
-	};
 	// Email
 	[AppInterface.IPreEmailSent]: {
 		args: [IPreEmailSentContext];
@@ -453,8 +449,6 @@ export class AppListenerManager {
 			// FileUpload
 			case AppInterface.IPreFileUpload:
 				return this.executePreFileUpload(data as IFileUploadInternalContext);
-			case AppInterface.IPreFileUploadStream:
-				return this.executePreFileUploadStream(data as IFileUploadInternalContext);
 			// Email
 			case AppInterface.IPreEmailSent:
 				return this.executePreEmailSent(data as IPreEmailSentContext);
@@ -1181,14 +1175,6 @@ export class AppListenerManager {
 			const app = this.manager.getOneById(appId);
 
 			await app.call(AppMethod.EXECUTE_PRE_FILE_UPLOAD, data);
-		}
-	}
-
-	private async executePreFileUploadStream(data: IFileUploadInternalContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPreFileUploadStream)) {
-			const app = this.manager.getOneById(appId);
-
-			await app.call(AppMethod.EXECUTE_PRE_FILE_UPLOAD_STREAM, data);
 		}
 	}
 

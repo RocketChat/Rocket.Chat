@@ -52,11 +52,7 @@ export enum AppInterface {
 	IPostLivechatDepartmentRemoved = 'IPostLivechatDepartmentRemoved',
 	IPostLivechatDepartmentDisabled = 'IPostLivechatDepartmentDisabled',
 	// FileUpload
-	/**
-	 * @deprecated use IPreFileUploadStream instead
-	 */
 	IPreFileUpload = 'IPreFileUpload',
-	IPreFileUploadStream = 'IPreFileUploadStream',
 	// Email
 	IPreEmailSent = 'IPreEmailSent',
 	IPostUserCreated = 'IPostUserCreated',

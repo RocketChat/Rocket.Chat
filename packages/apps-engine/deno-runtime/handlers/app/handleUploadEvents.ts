@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer';
 
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException.ts';
-import type { IFileUploadContext, IFileUploadStreamContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext.ts'
+import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext.ts'
 import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads/IUpload.ts'
 import { toArrayBuffer } from '@std/streams';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
@@ -11,7 +11,7 @@ import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { assertAppAvailable, assertHandlerFunction, isRecord } from '../lib/assertions.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
 
-export const uploadEvents = ['executePreFileUpload', 'executePreFileUploadStream'] as const;
+export const uploadEvents = ['executePreFileUpload'] as const;
 
 function assertIsUpload(v: unknown): asserts v is IUpload {
 	if (isRecord(v) && isRecord(v.user) && isRecord(v.room)) return;
@@ -38,7 +38,7 @@ export default async function handleUploadEvents(method: typeof uploadEvents[num
 		assertString(path);
 
 		using tempFile = await Deno.open(path, { read: true, create: false });
-		let context: IFileUploadContext | IFileUploadStreamContext;
+		let context: IFileUploadContext;
 
 		switch (method) {
 			case 'executePreFileUpload': {
@@ -46,9 +46,6 @@ export default async function handleUploadEvents(method: typeof uploadEvents[num
 				context = { file, content: Buffer.from(fileContents) };
 				break;
 			}
-			case 'executePreFileUploadStream':
-				context = { file, stream: tempFile.readable };
-				break;
 		}
 
 		return await handlerFunction.call(
