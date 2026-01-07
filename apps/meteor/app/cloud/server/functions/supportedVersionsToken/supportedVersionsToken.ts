@@ -119,7 +119,7 @@ const getSupportedVersionsFromCloud = async () => {
 	);
 
 	if (!response.success) {
-		SystemLogger.error({
+		SystemLogger.debug({
 			msg: 'Failed to communicate with Rocket.Chat Cloud',
 			url: releaseEndpoint,
 			err: response.error,
