@@ -1,5 +1,11 @@
 # @rocket.chat/media-signaling
 
+## 0.1.1-rc.1
+
+### Patch Changes
+
+- ([#38025](https://github.com/RocketChat/Rocket.Chat/pull/38025)) Adds a timeout to ensure transferred calls stop ringing if there's no response from the final user
+
 ## 0.1.1-rc.0
 
 ### Patch Changes
