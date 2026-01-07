@@ -1,19 +1,10 @@
 import type { IAbacAttributeDefinition, IRoom, IUser } from '@rocket.chat/core-typings';
-import {
-	registerModel,
-	Subscriptions,
-	SubscriptionsRaw,
-	UsersRaw,
-	RoomsRaw,
-	AbacAttributesRaw,
-	ServerEventsRaw,
-} from '@rocket.chat/models';
+import { Subscriptions } from '@rocket.chat/models';
 import type { Collection, Db } from 'mongodb';
-import { MongoClient } from 'mongodb';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { Audit } from './audit';
 import { AbacService } from './index';
+import { acquireSharedInMemoryMongo, SHARED_ABAC_TEST_DB, type SharedMongoConnection } from './test-helpers/mongoMemoryServer';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	ServiceClass: class {},
@@ -26,8 +17,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 }));
 
 describe('AbacService integration (onRoomAttributesChanged)', () => {
-	let mongo: MongoMemoryServer;
-	let client: MongoClient;
+	let sharedMongo: SharedMongoConnection;
 	let db: Db;
 	const service = new AbacService();
 
@@ -87,16 +77,8 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 	let auditSpy: jest.SpyInstance;
 
 	beforeAll(async () => {
-		mongo = await MongoMemoryServer.create();
-		client = await MongoClient.connect(mongo.getUri(), {});
-		db = client.db('abac_integration');
-
-		// Register only the models we actually need for these tests
-		registerModel('IUsersModel', () => new UsersRaw(db));
-		registerModel('IRoomsModel', () => new RoomsRaw(db));
-		registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
-		registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
-		registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(db));
+		sharedMongo = await acquireSharedInMemoryMongo(SHARED_ABAC_TEST_DB);
+		db = sharedMongo.db;
 
 		debugSpy = jest.spyOn((service as any).logger, 'debug').mockImplementation(() => undefined);
 		auditSpy = jest.spyOn(Audit, 'actionPerformed').mockResolvedValue();
@@ -106,8 +88,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 	}, 30_000);
 
 	afterAll(async () => {
-		await client.close();
-		await mongo.stop();
+		await sharedMongo.release();
 	});
 
 	beforeEach(async () => {

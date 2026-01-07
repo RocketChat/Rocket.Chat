@@ -1,10 +1,9 @@
 import type { ILDAPEntry, IUser, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
-import { registerModel, Users, UsersRaw, RoomsRaw, AbacAttributesRaw, ServerEventsRaw } from '@rocket.chat/models';
+import { Users } from '@rocket.chat/models';
 import type { Collection, Db } from 'mongodb';
-import { MongoClient } from 'mongodb';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { AbacService } from './index';
+import { acquireSharedInMemoryMongo, SHARED_ABAC_TEST_DB, type SharedMongoConnection } from './test-helpers/mongoMemoryServer';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	ServiceClass: class {},
@@ -33,8 +32,7 @@ const makeLdap = (overrides: Partial<ILDAPEntry> = {}): ILDAPEntry =>
 
 describe('Subject Attributes validation', () => {
 	let db: Db;
-	let mongo: MongoMemoryServer;
-	let client: MongoClient;
+	let sharedMongo: SharedMongoConnection;
 	const service = new AbacService();
 
 	let roomsCol: Collection<any>;
@@ -52,26 +50,15 @@ describe('Subject Attributes validation', () => {
 	};
 
 	beforeAll(async () => {
-		mongo = await MongoMemoryServer.create();
-		client = await MongoClient.connect(mongo.getUri(), {});
-		db = client.db('abac_global');
-
-		// Register only the models we actually need for these tests
-		registerModel('IUsersModel', () => new UsersRaw(db));
-		registerModel('IRoomsModel', () => new RoomsRaw(db));
-		registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
-		registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
-
-		// @ts-expect-error - ignore
-		await db.collection('abac_dummy_init').insertOne({ _id: 'init', createdAt: new Date(0) });
+		sharedMongo = await acquireSharedInMemoryMongo(SHARED_ABAC_TEST_DB);
+		db = sharedMongo.db;
 
 		roomsCol = db.collection('rocketchat_room');
 		usersCol = db.collection('users');
 	}, 30_000);
 
 	afterAll(async () => {
-		await client.close();
-		await mongo.stop();
+		await sharedMongo.release();
 	});
 
 	beforeEach(async () => {
