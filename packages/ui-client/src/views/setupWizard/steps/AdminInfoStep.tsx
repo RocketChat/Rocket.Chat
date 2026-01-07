@@ -1,6 +1,6 @@
 import { AdminInfoPage } from '@rocket.chat/onboarding-ui';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useSetting, useVerifyPassword, usePasswordPolicy } from '@rocket.chat/ui-contexts';
+import { useSetting, useVerifyPassword, usePasswordPolicy, usePasswordPolicyOptions } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import { useMemo } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
@@ -19,28 +19,8 @@ const AdminInfoStep = (): ReactElement => {
 
 	const { currentStep, validateEmail, registerAdminUser, maxSteps } = useSetupWizardContext();
 
-	const enabled = useSetting('Accounts_Password_Policy_Enabled', false);
-	const minLength = useSetting('Accounts_Password_Policy_MinLength', 14);
-	const maxLength = useSetting('Accounts_Password_Policy_MaxLength', -1);
-	const forbidRepeatingCharacters = useSetting('Accounts_Password_Policy_ForbidRepeatingCharacters', true);
-	const forbidRepeatingCharactersCount = useSetting('Accounts_Password_Policy_ForbidRepeatingCharactersCount', 3);
-	const mustContainAtLeastOneLowercase = useSetting('Accounts_Password_Policy_AtLeastOneLowercase', true);
-	const mustContainAtLeastOneUppercase = useSetting('Accounts_Password_Policy_AtLeastOneUppercase', true);
-	const mustContainAtLeastOneNumber = useSetting('Accounts_Password_Policy_AtLeastOneNumber', true);
-	const mustContainAtLeastOneSpecialCharacter = useSetting('Accounts_Password_Policy_AtLeastOneSpecialCharacter', true);
-
-	const validatePasswordPolicy = usePasswordPolicy({
-		enabled,
-		minLength,
-		maxLength,
-		forbidRepeatingCharacters,
-		forbidRepeatingCharactersCount,
-		mustContainAtLeastOneLowercase,
-		mustContainAtLeastOneUppercase,
-		mustContainAtLeastOneNumber,
-		mustContainAtLeastOneSpecialCharacter,
-		throwError: false,
-	});
+	const passwordPolicyOptions = usePasswordPolicyOptions();
+	const validatePasswordPolicy = usePasswordPolicy(passwordPolicyOptions);
 
 	const passwordPolicyValidations = useVerifyPassword('');
 	const passwordRulesHint = useMemo(() => {
