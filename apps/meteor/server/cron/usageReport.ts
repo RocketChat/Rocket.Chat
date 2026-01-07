@@ -13,11 +13,12 @@ export const sendUsageReportAndComputeRestriction = async (statsToken?: string) 
 	void AirGappedRestriction.computeRestriction(token);
 };
 
+export const shouldReportStatistics = () => process.env.RC_DISABLE_STATISTICS_REPORTING?.toLowerCase() !== 'true';
+
 export async function usageReportCron(logger: Logger): Promise<void> {
 	// The actual send suppression happens inside `sendUsageReport`, but since this
 	// is the entry point, we log a warning here when reporting is disabled.
-	const shouldSendToCollector = process.env.RC_DISABLE_STATISTICS_REPORTING?.toLowerCase() !== 'true';
-	if (!shouldSendToCollector) {
+	if (!shouldReportStatistics()) {
 		logger.warn(
 			'Statistics reporting disabled via environment variable (RC_DISABLE_STATISTICS_REPORTING). This may impact product improvements.',
 		);

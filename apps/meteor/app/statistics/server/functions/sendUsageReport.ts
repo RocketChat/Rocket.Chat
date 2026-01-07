@@ -6,6 +6,7 @@ import { tracerSpan } from '@rocket.chat/tracing';
 import { Meteor } from 'meteor/meteor';
 
 import { statistics } from '..';
+import { shouldReportStatistics } from '../../../../server/cron/usageReport';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
 
 async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string | undefined> {
@@ -36,7 +37,7 @@ async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string
 export async function sendUsageReport(logger: Logger): Promise<string | undefined> {
 	// Even when disabled, we still generate statistics locally to avoid breaking
 	// internal processes, such as restriction checks for air-gapped workspaces.
-	const shouldSendToCollector = process.env.RC_DISABLE_STATISTICS_REPORTING?.toLowerCase() !== 'true';
+	const shouldSendToCollector = shouldReportStatistics();
 
 	return tracerSpan('generateStatistics', {}, async () => {
 		const last = await Statistics.findLast();
