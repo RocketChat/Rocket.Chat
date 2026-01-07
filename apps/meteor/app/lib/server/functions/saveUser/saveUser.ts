@@ -235,16 +235,15 @@ const _saveUser = (session?: ClientSession) =>
 		return true;
 	};
 
-const isBroken = shouldBreakInVersion('8.0.0');
+const isBroken = shouldBreakInVersion('9.0.0');
 export const saveUser = (() => {
-	if (isBroken) {
-		throw new Error('DEBUG_DISABLE_USER_AUDIT flag is deprecated and should be removed');
-	}
-
 	if (!process.env.DEBUG_DISABLE_USER_AUDIT) {
 		return wrapInSessionTransaction(_saveUser);
 	}
 
+	if (isBroken) {
+		throw new Error('DEBUG_DISABLE_USER_AUDIT flag is deprecated and should be removed');
+	}
 	const saveUserNoSession = _saveUser();
 	return function saveUser(userId: IUser['_id'], userData: SaveUserData, _options?: any) {
 		return saveUserNoSession(userId, userData);

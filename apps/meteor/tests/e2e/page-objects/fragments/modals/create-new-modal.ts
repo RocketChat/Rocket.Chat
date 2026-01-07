@@ -1,14 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { Listbox } from './fragments/listbox';
-import { Modal } from './fragments/modal';
+import { Listbox } from '../listbox';
+import { Modal } from './modal';
 
-export class CreateNewModal extends Modal {
-	readonly listbox: Locator;
+export abstract class CreateNewModal extends Modal {
+	readonly listbox: Listbox;
 
 	constructor(root: Locator, page: Page) {
 		super(root, page);
-		this.listbox = new Listbox(page).root;
+		this.listbox = new Listbox(page.getByRole('listbox'));
 	}
 
 	get inputName(): Locator {
@@ -38,7 +38,7 @@ export class CreateNewModal extends Modal {
 	async addMember(memberName: string): Promise<void> {
 		await this.root.getByRole('textbox', { name: 'Add people' }).click();
 		await this.root.getByRole('textbox', { name: 'Add people' }).fill(memberName, { force: true });
-		await this.listbox.getByRole('option', { name: memberName }).click();
+		await this.listbox.selectOption(memberName);
 		await this.root.getByRole('textbox', { name: 'Add people' }).click();
 	}
 }
@@ -106,7 +106,7 @@ export class CreateNewDiscussionModal extends CreateNewModal {
 	}
 
 	getParentRoomListItem(name: string): Locator {
-		return this.listbox.getByRole('option', { name });
+		return this.listbox.getOption(name);
 	}
 
 	get inputMessage(): Locator {

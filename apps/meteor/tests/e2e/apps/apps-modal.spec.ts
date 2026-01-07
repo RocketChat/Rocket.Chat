@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
-import { AppsModal } from '../page-objects/fragments/apps-modal';
+import { AppsModal } from '../page-objects/fragments/modals';
 import { expect, test } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });

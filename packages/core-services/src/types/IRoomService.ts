@@ -69,5 +69,5 @@ export interface IRoomService {
 		status?: 'INVITED';
 		roles?: ISubscription['roles'];
 	}): Promise<string | undefined>;
-	updateDirectMessageRoomName(room: IRoom): Promise<boolean>;
+	updateDirectMessageRoomName(room: IRoom, ignoreStatusFromSubs?: string[]): Promise<boolean>;
 }

@@ -14,6 +14,7 @@ import {
 } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { type IRequestConfig, getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
+import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
 import { federationConfig } from '../helper/config';
 import { createDDPListener } from '../helper/ddp-listener';
 import { SynapseClient } from '../helper/synapse-client';
@@ -1612,13 +1613,20 @@ import { SynapseClient } from '../helper/synapse-client';
 
 				describe('It should reflect all the members and messagens on the rocket.chat side', () => {
 					it('It should show all the three users in the members list', async () => {
-						const members = await getRoomMembers(rid, rc1AdminRequestConfig);
-						expect(members.members.length).toBe(3);
-						expect(members.members.find((member: IUser) => member.username === federationConfig.rc1.adminUser)).not.toBeNull();
-						expect(
-							members.members.find((member: IUser) => member.username === federationConfig.rc1.additionalUser1.username),
-						).not.toBeNull();
-						expect(members.members.find((member: IUser) => member.username === federationConfig.hs1.adminMatrixUserId)).not.toBeNull();
+						await retry(
+							'Getting room members until all are present',
+							async () => {
+								const members = await getRoomMembers(rid, rc1AdminRequestConfig);
+
+								expect(members.members.length).toBe(3);
+								expect(members.members.find((member: IUser) => member.username === federationConfig.rc1.adminUser)).not.toBeNull();
+								expect(
+									members.members.find((member: IUser) => member.username === federationConfig.rc1.additionalUser1.username),
+								).not.toBeNull();
+								expect(members.members.find((member: IUser) => member.username === federationConfig.hs1.adminMatrixUserId)).not.toBeNull();
+							},
+							{ delayMs: 200 },
+						);
 					});
 				});
 			});

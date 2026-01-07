@@ -23,7 +23,8 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
 	let agents: Awaited<ReturnType<typeof createAgent>>[];
-	let tags: Awaited<ReturnType<typeof createTag>>[];
+	let tagA: Awaited<ReturnType<typeof createTag>>;
+	let tagB: Awaited<ReturnType<typeof createTag>>;
 
 	// Allow manual on hold
 	test.beforeAll(async ({ api }) => {
@@ -62,9 +63,10 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 
 	// Create tags
 	test.beforeAll(async ({ api }) => {
-		tags = await Promise.all([createTag(api, { name: 'tagA' }), createTag(api, { name: 'tagB' })]);
+		tagA = await createTag(api);
+		tagB = await createTag(api);
 
-		tags.forEach((res) => expect(res.response.status()).toBe(200));
+		[tagA, tagB].forEach((res) => expect(res.response.status()).toBe(200));
 	});
 
 	// Create rooms
@@ -96,12 +98,12 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 			updateRoom(api, {
 				roomId: conversationA.room._id,
 				visitorId: conversationA.visitor._id,
-				tags: ['tagA'],
+				tags: [tagA.data.name],
 			}),
 			updateRoom(api, {
 				roomId: conversationB.room._id,
 				visitorId: conversationB.visitor._id,
-				tags: ['tagB'],
+				tags: [tagB.data.name],
 			}),
 		]);
 	});
@@ -122,7 +124,7 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 			// Delete agents
 			...agents.map((agent) => agent.delete()),
 			// Delete tags
-			...tags.map((tag) => tag.delete()),
+			...[tagA, tagB].map((tag) => tag.delete()),
 			// Reset setting
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }),
 			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: true }),

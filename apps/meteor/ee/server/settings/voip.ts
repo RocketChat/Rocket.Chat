@@ -33,6 +33,7 @@ export function addSettings(): Promise<void> {
 						type: 'boolean',
 						public: true,
 						invalidValue: false,
+						alert: 'VoIP_TeamCollab_Internal_SIP_Beta_Alert',
 					});
 
 					await this.add('VoIP_TeamCollab_Drachtio_Host', '', {

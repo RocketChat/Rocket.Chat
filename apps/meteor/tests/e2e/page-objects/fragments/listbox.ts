@@ -1,9 +1,13 @@
-import type { Locator, Page } from 'playwright-core';
+import type { Locator } from 'playwright-core';
 
 export class Listbox {
-	readonly root: Locator;
+	constructor(private root: Locator) {}
 
-	constructor(page: Page) {
-		this.root = page.getByRole('listbox');
+	async selectOption(name: string) {
+		return this.root.getByRole('option', { name }).click();
+	}
+
+	public getOption(name: string): Locator {
+		return this.root.getByRole('option', { name });
 	}
 }

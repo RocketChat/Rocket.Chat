@@ -897,7 +897,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			uids: { $size: uid.length, $all: uid },
 		};
 
-		return this.findOne<IRoom>(query, options);
+		return this.findOne<IRoom>(query, {
+			...options,
+			sort: {
+				federated: 1,
+				ts: 1,
+			},
+		});
 	}
 
 	findFederatedRooms(options: FindOptions<IRoom> = {}): FindCursor<IRoomFederated> {
@@ -2035,7 +2041,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		_id: IRoom['_id'],
 		type: IRoom['t'],
 		name: IRoom['name'],
-		extraData?: Record<string, string>,
+		extraData?: Record<string, unknown>,
 	): Promise<IRoom> {
 		const room: IRoom = {
 			_id,

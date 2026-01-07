@@ -1,5 +1,319 @@
 # @rocket.chat/meteor
 
+## 8.0.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.1
+  - @rocket.chat/rest-typings@8.0.0-rc.1
+  - @rocket.chat/abac@0.1.0-rc.1
+  - @rocket.chat/federation-matrix@0.0.9-rc.1
+  - @rocket.chat/license@1.1.7-rc.1
+  - @rocket.chat/media-calls@0.2.0-rc.1
+  - @rocket.chat/omnichannel-services@0.3.44-rc.1
+  - @rocket.chat/pdf-worker@0.3.26-rc.1
+  - @rocket.chat/presence@0.2.47-rc.1
+  - @rocket.chat/api-client@0.2.47-rc.1
+  - @rocket.chat/apps@0.6.0-rc.1
+  - @rocket.chat/core-services@0.12.0-rc.1
+  - @rocket.chat/cron@0.1.47-rc.1
+  - @rocket.chat/fuselage-ui-kit@26.0.0-rc.1
+  - @rocket.chat/gazzodown@26.0.0-rc.1
+  - @rocket.chat/http-router@7.9.14-rc.1
+  - @rocket.chat/message-types@0.1.0-rc.0
+  - @rocket.chat/model-typings@2.0.0-rc.1
+  - @rocket.chat/ui-avatar@22.0.0-rc.1
+  - @rocket.chat/ui-client@26.0.0-rc.1
+  - @rocket.chat/ui-contexts@26.0.0-rc.1
+  - @rocket.chat/ui-voip@16.0.0-rc.1
+  - @rocket.chat/web-ui-registration@26.0.0-rc.1
+  - @rocket.chat/models@2.0.0-rc.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.26-rc.1
+  - @rocket.chat/omni-core-ee@0.0.12-rc.1
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@26.0.0-rc.1
+  - @rocket.chat/instance-status@0.1.47-rc.1
+  - @rocket.chat/omni-core@0.0.12-rc.1
+  </details>
+
+## 8.0.0-rc.0
+
+### Major Changes
+
+- ([#36829](https://github.com/RocketChat/Rocket.Chat/pull/36829)) Removes the deprecated sendConfirmationEmail method
+
+- ([#37460](https://github.com/RocketChat/Rocket.Chat/pull/37460)) Removes deprecated `livechat:removeUnit` method
+
+- ([#36836](https://github.com/RocketChat/Rocket.Chat/pull/36836)) Removes the deprecated livechat:getTagsList method
+
+  Removes the deprecated livechat:getUnitsFromUser method
+
+  Removes the deprecated livechat:getFirstRoomMessage method
+
+  Removes the deprecated livechat:getDepartmentForwardRestrictions method
+
+- ([#37672](https://github.com/RocketChat/Rocket.Chat/pull/37672)) Removes deprecated VoIP permissions
+
+- ([#36941](https://github.com/RocketChat/Rocket.Chat/pull/36941)) Makes Voice Calls enabled by default when available
+
+- ([#37672](https://github.com/RocketChat/Rocket.Chat/pull/37672)) Removes deprecated VoIP from Omnichannel
+
+- ([#37461](https://github.com/RocketChat/Rocket.Chat/pull/37461)) Removes deprecated `livechat:saveUnit` method
+
+- ([#36864](https://github.com/RocketChat/Rocket.Chat/pull/36864)) Removes the deprecated `authorization:removeUserFromRole` method
+
+- ([#36976](https://github.com/RocketChat/Rocket.Chat/pull/36976)) Promotes Timestamp Parser from preview state to stable
+
+- ([#37123](https://github.com/RocketChat/Rocket.Chat/pull/37123)) Removes ecdh functionality and related settings
+
+- ([#35436](https://github.com/RocketChat/Rocket.Chat/pull/35436) by [@blackmamba1231](https://github.com/blackmamba1231)) Removes deprecated `canAccessRoom` meteor method
+
+- ([#36925](https://github.com/RocketChat/Rocket.Chat/pull/36925)) Removes deprecated Realtime API method: `livechat:getAnalyticsChartData`
+
+- ([#37392](https://github.com/RocketChat/Rocket.Chat/pull/37392)) Removes deprecated `livechat:returnAsInquiry` method
+
+- ([#37390](https://github.com/RocketChat/Rocket.Chat/pull/37390)) Removes deprecated `removeCustomField` method
+
+- ([#37672](https://github.com/RocketChat/Rocket.Chat/pull/37672)) Removes Deprecated FreeSwitch integration
+
+- ([#36851](https://github.com/RocketChat/Rocket.Chat/pull/36851)) Removes the deprecated `getUserRoles` method in favor of the `/v1/roles.getUsersInPublicRoles` endpoint.
+
+- ([#37388](https://github.com/RocketChat/Rocket.Chat/pull/37388)) Removes deprecated `setAdminStatus` method
+
+- ([#35961](https://github.com/RocketChat/Rocket.Chat/pull/35961)) Removes support of MongoDB versions 5.x and 6.x
+
+- ([#36823](https://github.com/RocketChat/Rocket.Chat/pull/36823)) Removes deprecated meteor method `muteUserInRoom`
+
+- ([#36825](https://github.com/RocketChat/Rocket.Chat/pull/36825)) Removes the deprecated method `createToken`
+
+- ([#37022](https://github.com/RocketChat/Rocket.Chat/pull/37022)) Promotes Resizable Contextualbars from preview state to stable.
+
+- ([#36837](https://github.com/RocketChat/Rocket.Chat/pull/36837)) Removes the deprecated `setReaction` meteor method
+
+- ([#36824](https://github.com/RocketChat/Rocket.Chat/pull/36824)) Removes deprecated Realtime API method: `livechat:closeRoom`
+
+- ([#36832](https://github.com/RocketChat/Rocket.Chat/pull/36832)) Removes the deprecated `setCustomFields` method
+
+- ([#36931](https://github.com/RocketChat/Rocket.Chat/pull/36931)) Removes deprecated Realtime API method: `livechat:removeAllClosedRooms`
+
+- ([#36830](https://github.com/RocketChat/Rocket.Chat/pull/36830)) Removes the deprecated `getAvatarSuggestion` method
+
+- ([#37462](https://github.com/RocketChat/Rocket.Chat/pull/37462)) Removes deprecated `livechat:saveDepartment` method
+
+- ([#37397](https://github.com/RocketChat/Rocket.Chat/pull/37397)) Removes deprecated `livechat:setUpConnection` method
+
+- Removes the deprecated `getRoomRoles` method
+
+- Removes the deprecated `authorization:deleteRole` method
+
+- ([#37391](https://github.com/RocketChat/Rocket.Chat/pull/37391)) Removes deprecated `livechat:removeRoom` method
+
+- ([#36849](https://github.com/RocketChat/Rocket.Chat/pull/36849)) Removes deprecated `appId` parameter from the `oauth-apps.get` endpoint.
+
+- ([#37463](https://github.com/RocketChat/Rocket.Chat/pull/37463)) Removes deprecated `sendFileLivechatMessage` method
+
+- ([#32590](https://github.com/RocketChat/Rocket.Chat/pull/32590)) Removes the setting `API_Use_REST_For_DDP_Calls`. Turning this on meant websocket was only used for realtime data/events, and any other meteor method calls goes over method.call endpoint. For microservice deployments, this had to be turned on. Now method calls will always happen over http endpoints.
+
+- ([#36966](https://github.com/RocketChat/Rocket.Chat/pull/36966)) Promotes quick reactions from preview state to stable
+
+- ([#36821](https://github.com/RocketChat/Rocket.Chat/pull/36821)) Removes `/api/v1/banners.getnew` deprecated endpoint
+
+- ([#36871](https://github.com/RocketChat/Rocket.Chat/pull/36871)) Removes the `livechat:transfer` deprecated method
+  Removes the `livechat/room.transfer` deprecated endpoint
+  Creates the `livechat/visitor.department.transfer` for visitors department transfer use
+- ([#36924](https://github.com/RocketChat/Rocket.Chat/pull/36924)) Removes deprecated Realtime API method: `livechat:getRoutingConfig`
+
+- ([#36809](https://github.com/RocketChat/Rocket.Chat/pull/36809)) Removes deprecated Realtime API method: `livechat:changeLivechatStatus`
+
+- ([#36951](https://github.com/RocketChat/Rocket.Chat/pull/36951)) Removes the deprecated param `hideRoomsWithNoActivity` and adjust the api tests accordingly. Endpoint always returns rooms that are not empty.
+
+- ([#36838](https://github.com/RocketChat/Rocket.Chat/pull/36838)) Removes the deprecated `insertOrUpdateUser` meteor method
+
+- ([#37406](https://github.com/RocketChat/Rocket.Chat/pull/37406)) Removes deprecated `livechat:removeTag` method
+
+- ([#37810](https://github.com/RocketChat/Rocket.Chat/pull/37810)) Fixes role assignment precedence in SAML provisioning, ensuring that SAML-specific default roles take priority over global registration roles, and preventing role merging when both are configured.
+
+- ([#36831](https://github.com/RocketChat/Rocket.Chat/pull/36831)) Removes the deprecated setUsername method
+
+- ([#37446](https://github.com/RocketChat/Rocket.Chat/pull/37446)) Removes deprecated `removeCannedResponse` method
+
+- ([#37405](https://github.com/RocketChat/Rocket.Chat/pull/37405)) Removes deprecated `saveCannedResponse` method
+
+- ([#37396](https://github.com/RocketChat/Rocket.Chat/pull/37396)) Removes deprecated `livechat:sendTranscript` method
+
+- ([#36857](https://github.com/RocketChat/Rocket.Chat/pull/36857)) Removes the deprecated `/api/v1/rooms.upload` endpoint
+
+- ([#36908](https://github.com/RocketChat/Rocket.Chat/pull/36908)) Removes the deprecated livechat:resumeOnHold method
+
+- ([#36935](https://github.com/RocketChat/Rocket.Chat/pull/36935)) Removes `addUserToRole` and `removeUserFromRole` type declaration and deprecation logger
+
+- ([#37393](https://github.com/RocketChat/Rocket.Chat/pull/37393)) Removes deprecated `livechat:saveAgentInfo` method
+
+- ([#36907](https://github.com/RocketChat/Rocket.Chat/pull/36907)) Removes the deprecated `GET` Method from `/api/v1/apps`
+
+- ([#37114](https://github.com/RocketChat/Rocket.Chat/pull/37114)) Removes stdout logging functionality, related components and settings
+
+- ([#36647](https://github.com/RocketChat/Rocket.Chat/pull/36647)) Removes deprecated 'e2e.updateGroupKey' method and related type declarations
+
+- ([#37421](https://github.com/RocketChat/Rocket.Chat/pull/37421)) Removes deprecated `livechat:saveCustomField` method
+
+- ([#36896](https://github.com/RocketChat/Rocket.Chat/pull/36896)) Removes the deprecated roleName parameter from /api/v1/roles.addUserToRole and /api/v1/roles.removeUserFromRole
+
+  Removes the ability to pass a role name to the role parameter type from /api/v1/roles.getUsersInRole
+
+- ([#36828](https://github.com/RocketChat/Rocket.Chat/pull/36828)) Removes the deprecated `setUserPassword` method
+
+- ([#37285](https://github.com/RocketChat/Rocket.Chat/pull/37285)) Promotes Enhanced Navigation from preview state to stable.
+
+- ([#37464](https://github.com/RocketChat/Rocket.Chat/pull/37464)) Removes deprecated `livechat:takeInquiry` method
+
+- ([#36865](https://github.com/RocketChat/Rocket.Chat/pull/36865)) Removes the deprecated `authorization:addUserToRole` method
+
+### Minor Changes
+
+- ([#36570](https://github.com/RocketChat/Rocket.Chat/pull/36570)) REST endpoint `/v1/users.createToken` is not deprecated anymore. It now requires a `secret` parameter to generate a token for a user. This change is part of the effort to enhance security by ensuring that tokens are generated with an additional layer of validation. The `secret` parameter is validated against a new environment variable `CREATE_TOKENS_FOR_USERS_SECRET`.
+
+- ([#37719](https://github.com/RocketChat/Rocket.Chat/pull/37719)) Adds a new method to the Apps-Engine that allows apps to retrieve multiple rooms from database
+
+- ([#37659](https://github.com/RocketChat/Rocket.Chat/pull/37659)) Changes the position of the buttons in Unique ID change detected modal in order to highlight configuration update instead of new workspace
+
+- ([#37233](https://github.com/RocketChat/Rocket.Chat/pull/37233)) Validates attachment fields to require `title` and `value` properties on APIs `chat.postMessage` and `chat.sendMessage`.
+
+- ([#37224](https://github.com/RocketChat/Rocket.Chat/pull/37224)) Enhance user's deactivated state handling to correctly distinguish between pending and deactivated users.
+
+- ([#37091](https://github.com/RocketChat/Rocket.Chat/pull/37091)) Adds Attribute Based Access Control (ABAC) for private channels & private teams.
+
+- ([#37771](https://github.com/RocketChat/Rocket.Chat/pull/37771)) Introduces an info button to voice call's in-chat history message, which opens a contextual bar with more detailed information about the voice call.
+
+### Patch Changes
+
+- ([#37663](https://github.com/RocketChat/Rocket.Chat/pull/37663)) Removes the deprecated meteor method: `livechat:saveTag`
+
+- ([#37688](https://github.com/RocketChat/Rocket.Chat/pull/37688)) Adds deprecation warning for `livechat:removeMonitor` and new endpoint replacing it; `livechat/monitor.remove`
+
+- ([#37690](https://github.com/RocketChat/Rocket.Chat/pull/37690)) Adds a deprecation warning for `livechat:saveBusinessHour` and new endpoint replacing it; `livechat/business-hours.save`
+
+- ([#37612](https://github.com/RocketChat/Rocket.Chat/pull/37612)) Adds invitation request support to rooms
+
+- ([#37745](https://github.com/RocketChat/Rocket.Chat/pull/37745)) Fixes an issue where its not being possible to change the password in account security page
+
+- ([#37721](https://github.com/RocketChat/Rocket.Chat/pull/37721)) Disables read receipts indicators in federated rooms. This feature will be re-enabled when fully compatible with federation.
+
+- ([#37823](https://github.com/RocketChat/Rocket.Chat/pull/37823)) Fixes members tab > add members not removing selected items
+
+- ([#37791](https://github.com/RocketChat/Rocket.Chat/pull/37791)) Fixes an issue where cases of invites that were canceled or disinvited were not being handled.
+
+- ([#37874](https://github.com/RocketChat/Rocket.Chat/pull/37874)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#36822](https://github.com/RocketChat/Rocket.Chat/pull/36822)) Removes deprecated meteor method `unmuteUserInRoom`
+
+- ([#37819](https://github.com/RocketChat/Rocket.Chat/pull/37819)) Removes deprecated method `livechat:removeBusinessHour`
+
+- ([#37654](https://github.com/RocketChat/Rocket.Chat/pull/37654)) Fixes an issue that could cause slashcommands to disappear for the user in certain high-availability scenarios
+
+- ([#37443](https://github.com/RocketChat/Rocket.Chat/pull/37443)) Fixes an issue where custom status is not updating immediately if the value is empty
+
+- ([#37730](https://github.com/RocketChat/Rocket.Chat/pull/37730)) Adds an execution flag to apps-engine runtime that helps prevent the publishing of faulty builds
+
+- ([#37722](https://github.com/RocketChat/Rocket.Chat/pull/37722)) Fixes an issue with the build that prevented Deno runtime to run on air-gapped environments
+
+- ([#37504](https://github.com/RocketChat/Rocket.Chat/pull/37504)) Fixes create channel modal not validating federated access permission
+
+- ([#37523](https://github.com/RocketChat/Rocket.Chat/pull/37523)) Fixes license add-on validations for federated rooms
+
+- ([#37061](https://github.com/RocketChat/Rocket.Chat/pull/37061)) Adds deprecation warning on `livechat:addMonitor` with new endpoint replacing it; `livechat/monitors.create`
+
+- ([#37713](https://github.com/RocketChat/Rocket.Chat/pull/37713)) Fixes a condition where the `SAML_Custom_Default_default_user_role` setting, used to define the default SAML role when none is provided, would fail when a role name was used instead of an ID.
+
+- ([#36827](https://github.com/RocketChat/Rocket.Chat/pull/36827)) Removes deprecated method `saveUserProfile`
+
+- ([#37643](https://github.com/RocketChat/Rocket.Chat/pull/37643)) Adds invitation badge to room members list
+
+- ([#37664](https://github.com/RocketChat/Rocket.Chat/pull/37664)) Removes the deprecated meteor method: `livechat:addMonitor`
+
+- ([#37829](https://github.com/RocketChat/Rocket.Chat/pull/37829)) Fixes an issue where iframe external commands sent via `window.postMessage` were not being handled correctly when Rocket.Chat was embedded inside an iframe.
+
+- ([#37717](https://github.com/RocketChat/Rocket.Chat/pull/37717)) Fixes incorrect URL generation in Global Search "Jump to message" feature, resolving navigation issues when jumping to messages across different channels.
+
+- ([#37845](https://github.com/RocketChat/Rocket.Chat/pull/37845)) Fixes push notifications continuing after logout due to missing token cleanup.
+
+- ([#37822](https://github.com/RocketChat/Rocket.Chat/pull/37822)) Fixes an issue where it‘s not being possible to configure department's `chatClosingTags` without enabling `requestTagBeforeClosingTag`
+
+- ([#37707](https://github.com/RocketChat/Rocket.Chat/pull/37707)) Fixes an issue that caused Third-party login to not work properly
+
+- ([#37662](https://github.com/RocketChat/Rocket.Chat/pull/37662)) removes the deprecated meteor method: `livechat:removeMonitor`
+
+- ([#37852](https://github.com/RocketChat/Rocket.Chat/pull/37852)) Adds improvements to the push notifications logic; the logic now truncates messages and titles larger than 240, and 65 characters respectively.
+
+- ([#37281](https://github.com/RocketChat/Rocket.Chat/pull/37281)) Adds deprecation warning for `livechat:saveTag` and new endpoint to replace it; `livechat/tags.save`
+
+- ([#37656](https://github.com/RocketChat/Rocket.Chat/pull/37656)) Fixes an issue where the client failed to load properly when the “First Channel After Login” setting began with a hash (#), ensuring users are routed to the correct channel.
+
+- ([#37846](https://github.com/RocketChat/Rocket.Chat/pull/37846)) Fixes /v1/users.logout not marking user sessions as logged out, leaving stale sessions active.
+
+- ([#37551](https://github.com/RocketChat/Rocket.Chat/pull/37551)) Ensures presence stays accurate by refreshing connections on heartbeats and removing stale sessions.
+
+- ([#37677](https://github.com/RocketChat/Rocket.Chat/pull/37677)) Fixes an issue where membership updates were not reflected when the user was the first member on their own server.
+
+- ([#37718](https://github.com/RocketChat/Rocket.Chat/pull/37718)) Fixes the missing dispatch of `startup` iframe event on client startup.
+
+- ([#37729](https://github.com/RocketChat/Rocket.Chat/pull/37729)) Fixes inconsistency in roomLeft event payload by aligning it to the standard outgoing events signature.
+
+- ([#37729](https://github.com/RocketChat/Rocket.Chat/pull/37729)) Removes sensitive data from outgoing events debug logs.
+
+- ([#37635](https://github.com/RocketChat/Rocket.Chat/pull/37635)) Adds invitation badge to sidebar
+
+- ([#37772](https://github.com/RocketChat/Rocket.Chat/pull/37772)) Removes deprecated method `livechat:saveBusinessHour`
+
+- ([#37775](https://github.com/RocketChat/Rocket.Chat/pull/37775)) Adds deprecation warning for `livechat:removeBusinessHour` and new endpoint to replace it; `livechat/business-hours.remove`
+
+- <details><summary>Updated dependencies [347b8f973440f3e2239f79c00c2d9b430859eef2, 04d24848bd8733caefc45d42c53f004177865a53, b802430fbfdc7fa69a976468dc6dee6f3c4de26f, 872da49986436d2efa65fc42e416b45d706fd59c, 0ccb9692b434bc88b4bc5009d39e024c03f01b86, 176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 2de4547580c472f4458568629d7bf98fd5faf342, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 1baa03cced8f94584da1224ad59cad86f219707a, 0c0258604632342f42fc36cabac2d6cfe0e477c4, f3f0b273ab49e9d1048ba43d52eb36005274905e, ac11ea05ffadeca978c794ff38d5199d9acb2c29, a1d65f493fdb039d34ef4f65d243a97931763f4b, 70872896b912004dc016297b6e875d873d81dc3a, bd5edfc2993c93bd77f42dcd30d38b57eeb50481, 94b87d9ef40647d77fe83f3f84dca46a94515b39, ddc935727e9a7275813006d9dcaa7fe866610844, 733c94b996204151f580de2dd7f3402124b70977, d3538e7045c41f91b8c561d44e5485ff93b93745, a5a7343a835b04812c70699be1b13e54f0e10d48, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, 611e4cdfa04849416a58071646b853b95e9b817b, 476a070b0099b95e4c463ee85960c4dcfbd87120, 239f4b1171bcf448cfba345cc90c4b5cd7c21afc, 9e03ed5c5ea829c62c2da2de9413a27a4696f8a3, dc67590d14d510b069dee074c55314c56f74bb11, be80b724a636877294b5e5baa501d070941131dd, 4aa3634186d97f4144c39f6b42a65107d3d30df0, 4793aca8796d8a3b4c645a2ed685028067119d8d, 0b660a5933b137ae142d78318d8c4022f1f4f1ca, dccdcc5b4a0da4814f72a020bc4eccb8ea2497d8, 5ac1863be4c6e82666989f4b569928c0805691ff, ec0f8b435dd12c218adffa8892737c7ced4debb8, f056c451c2926e849f52b95fed957945398ef5f6, cb3c5e3455606a045f95f168dae6ed32a387697c, 5b3f93c47a03b628d613a77005e92021cd6cee4b, 8bf0bab1eb84f903976b7833691d17236eac8dcd, 55dc368f3f679e93bffb9f04efe3944832cf3336]:</summary>
+
+  - @rocket.chat/rest-typings@8.0.0-rc.0
+  - @rocket.chat/web-ui-registration@26.0.0-rc.0
+  - @rocket.chat/apps-engine@1.59.0-rc.0
+  - @rocket.chat/apps@0.6.0-rc.0
+  - @rocket.chat/core-typings@8.0.0-rc.0
+  - @rocket.chat/i18n@2.0.0-rc.0
+  - @rocket.chat/media-calls@0.2.0-rc.0
+  - @rocket.chat/model-typings@2.0.0-rc.0
+  - @rocket.chat/ui-contexts@26.0.0-rc.0
+  - @rocket.chat/ui-voip@16.0.0-rc.0
+  - @rocket.chat/models@2.0.0-rc.0
+  - @rocket.chat/core-services@0.12.0-rc.0
+  - @rocket.chat/message-types@0.1.0-rc.0
+  - @rocket.chat/federation-matrix@0.0.9-rc.0
+  - @rocket.chat/gazzodown@26.0.0-rc.0
+  - @rocket.chat/ui-client@26.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@26.0.0-rc.0
+  - @rocket.chat/media-signaling@0.1.1-rc.0
+  - @rocket.chat/ui-kit@0.39.0-rc.0
+  - @rocket.chat/abac@0.1.0-rc.0
+  - @rocket.chat/jwt@0.2.0-rc.0
+  - @rocket.chat/tools@0.2.4-rc.0
+  - @rocket.chat/presence@0.2.47-rc.0
+  - @rocket.chat/logger@1.0.0-rc.0
+  - @rocket.chat/omnichannel-services@0.3.44-rc.0
+  - @rocket.chat/api-client@0.2.47-rc.0
+  - @rocket.chat/http-router@7.9.14-rc.0
+  - @rocket.chat/license@1.1.7-rc.0
+  - @rocket.chat/pdf-worker@0.3.26-rc.0
+  - @rocket.chat/cron@0.1.47-rc.0
+  - @rocket.chat/ui-avatar@22.0.0-rc.0
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@26.0.0-rc.0
+  - @rocket.chat/omni-core-ee@0.0.12-rc.0
+  - @rocket.chat/instance-status@0.1.47-rc.0
+  - @rocket.chat/omni-core@0.0.12-rc.0
+  - @rocket.chat/network-broker@0.2.26-rc.0
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
 ## 7.13.2
 
 ### Patch Changes
