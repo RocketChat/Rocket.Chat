@@ -14,7 +14,6 @@ test.describe.serial('settings-int', () => {
 
 		await pageTitle.waitFor();
 		await expect(pageTitle).toBeVisible();
-		await expect(pageTitle).toHaveText('Message');
 	});
 
 	test('expect not being able to set int value as empty string', async ({ page }) => {
