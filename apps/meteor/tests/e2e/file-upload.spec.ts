@@ -86,6 +86,76 @@ test.describe.serial('file-upload', () => {
 
 		await expect(poHomeChannel.content.getFileComposerByName(fileName)).toHaveAttribute('readonly');
 	});
+
+	test.describe.serial('file upload fails', () => {
+		test.beforeAll(async ({ api }) => {
+			await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'application/octet-stream');
+		});
+
+		test.afterAll(async ({ api }) => {
+			await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
+		});
+
+		test('should open warning modal when all file uploads fail', async () => {
+			const invalidFile1 = 'empty_file.txt';
+			const invalidFile2 = 'diagram.drawio';
+
+			await poHomeChannel.content.sendFileMessage(invalidFile1, { waitForResponse: false });
+			await poHomeChannel.content.sendFileMessage(invalidFile2, { waitForResponse: false });
+
+			await expect(poHomeChannel.content.getFileComposerByName(invalidFile1)).toHaveAttribute('readonly');
+			await expect(poHomeChannel.content.getFileComposerByName(invalidFile2)).toHaveAttribute('readonly');
+
+			await poHomeChannel.content.btnSendMainComposer.click();
+			const warningModal = poHomeChannel.page.getByRole('dialog', { name: 'Warning' });
+			await expect(warningModal).toBeVisible();
+			await expect(warningModal).toContainText('2 files failed to upload');
+			await expect(warningModal.getByRole('button', { name: 'Ok' })).toBeVisible();
+			await expect(warningModal.getByRole('button', { name: 'Send anyway' })).not.toBeVisible();
+		});
+
+		test('should handle multiple files with one failing upload', async () => {
+			const validFile = 'any_file.txt';
+			const invalidFile = 'empty_file.txt';
+
+			await test.step('should only mark as "Upload failed" the specific file that failed to upload', async () => {
+				await poHomeChannel.content.sendFileMessage(validFile, { waitForResponse: false });
+				await poHomeChannel.content.sendFileMessage(invalidFile, { waitForResponse: false });
+
+				await expect(poHomeChannel.content.getFileComposerByName(validFile)).not.toHaveAttribute('readonly');
+				await expect(poHomeChannel.content.getFileComposerByName(invalidFile)).toHaveAttribute('readonly');
+			});
+
+			await test.step('should open warning modal', async () => {
+				await poHomeChannel.content.btnSendMainComposer.click();
+
+				const warningModal = poHomeChannel.page.getByRole('dialog', { name: 'Are you sure' });
+				await expect(warningModal).toBeVisible();
+				await expect(warningModal).toContainText('One file failed to upload');
+			});
+
+			await test.step('should close modal when clicking "Cancel" button', async () => {
+				const warningModal = poHomeChannel.page.getByRole('dialog', { name: 'Are you sure' });
+				await warningModal.getByRole('button', { name: 'Cancel' }).click();
+
+				await expect(warningModal).not.toBeVisible();
+				await expect(poHomeChannel.content.getFileComposerByName(invalidFile)).toBeVisible();
+				await expect(poHomeChannel.content.getFileComposerByName(validFile)).toBeVisible();
+			});
+
+			await test.step('should send message with the valid file when confirming "Send anyway"', async () => {
+				await poHomeChannel.content.btnSendMainComposer.click();
+
+				const warningModal = poHomeChannel.page.getByRole('dialog', { name: 'Are you sure' });
+
+				await warningModal.getByRole('button', { name: 'Send anyway' }).click();
+
+				await expect(warningModal).not.toBeVisible();
+				await expect(poHomeChannel.content.lastMessageFileName).toContainText(validFile);
+				await expect(poHomeChannel.content.getFileComposerByName(invalidFile)).not.toBeVisible();
+			});
+		});
+	});
 });
 
 test.describe('file-upload-not-member', () => {
