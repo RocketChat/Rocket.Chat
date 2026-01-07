@@ -37,32 +37,26 @@ export default async function handleApp(method: string, params: unknown): Promis
 
 		app?.getLogger().debug(`'${appMethod}' is being called...`);
 
-		if (uploadEvents.includes(appMethod)) {
-			return handleUploadEvents(appMethod, params);
+		const formatResult = (result: Defined | JsonRpcError): Defined | JsonRpcError => {
+			if (result instanceof JsonRpcError) {
+				app?.getLogger().debug(`'${appMethod}' was unsuccessful.`, result.message);
+			} else {
+				app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
+			}
+
+			return result;
 		}
 
-		if (uikitInteractions.includes(appMethod)) {
-			return handleUIKitInteraction(appMethod, params).then((result) => {
-				if (result instanceof JsonRpcError) {
-					app?.getLogger().debug(`'${appMethod}' was unsuccessful.`, result.message);
-				} else {
-					app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
-				}
-
-				return result;
-			});
+		if (app && uploadEvents.includes(appMethod)) {
+			return handleUploadEvents(appMethod, params).then(formatResult);
 		}
 
-		if (appMethod.startsWith('check') || appMethod.startsWith('execute')) {
-			return handleListener(appMethod, params).then((result) => {
-				if (result instanceof JsonRpcError) {
-					app?.getLogger().debug(`'${appMethod}' was unsuccessful.`, result.message);
-				} else {
-					app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
-				}
+		if (app && uikitInteractions.includes(appMethod)) {
+			return handleUIKitInteraction(appMethod, params).then(formatResult);
+		}
 
-				return result;
-			});
+		if (app && (appMethod.startsWith('check') || appMethod.startsWith('execute'))) {
+			return handleListener(appMethod, params).then(formatResult);
 		}
 
 		let result: Defined | JsonRpcError;
