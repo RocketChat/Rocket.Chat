@@ -132,30 +132,40 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 	};
 
 	const configureStaticUsers = async (users: TestUserSeed[]) => {
-		await Promise.all(
-			users.map(async (user) => {
-				const setPayload: Partial<IUser> = {
-					__rooms: user.extraRooms ?? [],
-					_updatedAt: new Date(),
-				};
-				if (user.abacAttributes !== undefined) {
-					setPayload.abacAttributes = user.abacAttributes;
-				}
-				const update: {
-					$set: Partial<IUser>;
-					$unset?: Record<string, 1>;
-				} = {
-					$set: setPayload,
-				};
-				if (user.abacAttributes === undefined) {
-					update.$unset = { abacAttributes: 1 };
-				}
-				const result = await usersCol.updateOne({ _id: user._id }, update);
-				if (result.matchedCount === 0) {
-					throw new Error(`Static test user ${user._id} not initialized`);
-				}
-			}),
-		);
+		const operations = users.map((user) => {
+			const setPayload: Partial<IUser> = {
+				__rooms: user.extraRooms ?? [],
+				_updatedAt: new Date(),
+			};
+
+			if (user.abacAttributes !== undefined) {
+				setPayload.abacAttributes = user.abacAttributes;
+			}
+
+			const update: {
+				$set: Partial<IUser>;
+				$unset?: Record<string, 1>;
+			} = {
+				$set: setPayload,
+			};
+
+			if (user.abacAttributes === undefined) {
+				update.$unset = { abacAttributes: 1 };
+			}
+
+			return {
+				updateOne: {
+					filter: { _id: user._id },
+					update,
+				},
+			};
+		});
+
+		if (!operations.length) {
+			return;
+		}
+
+		await usersCol.bulkWrite(operations);
 	};
 
 	let debugSpy: jest.SpyInstance;

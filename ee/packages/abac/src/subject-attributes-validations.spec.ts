@@ -112,34 +112,37 @@ const configureStaticUsers = async (users: StaticUserUpdate[]) => {
 	if (!usersCol) {
 		throw new Error('users collection not initialized');
 	}
-	await Promise.all(
-		users.map(async ({ _id, ...fields }) => {
-			const update: { $set: Record<string, any>; $unset?: Record<string, 1> } = {
-				$set: { _updatedAt: new Date() },
-			};
 
-			for (const [key, value] of Object.entries(fields)) {
-				if (key === 'abacAttributes') {
-					if (value === undefined) {
-						update.$unset = { ...(update.$unset || {}), abacAttributes: 1 };
-					} else {
-						update.$set.abacAttributes = value;
-					}
-					continue;
-				}
-				if (key === '__rooms') {
-					update.$set.__rooms = value ?? [];
-					continue;
-				}
-				update.$set[key] = value;
-			}
+	const operations = users.map(({ _id, ...fields }) => {
+		const update: { $set: Record<string, any>; $unset?: Record<string, 1> } = {
+			$set: { _updatedAt: new Date() },
+		};
 
-			const result = await usersCol.updateOne({ _id }, update);
-			if (!result.matchedCount) {
-				throw new Error(`Static test user ${_id} not initialized`);
+		for (const [key, value] of Object.entries(fields)) {
+			if (key === 'abacAttributes') {
+				if (value === undefined) {
+					update.$unset = { ...(update.$unset || {}), abacAttributes: 1 };
+				} else {
+					update.$set.abacAttributes = value;
+				}
+				continue;
 			}
-		}),
-	);
+			if (key === '__rooms') {
+				update.$set.__rooms = value ?? [];
+				continue;
+			}
+			update.$set[key] = value;
+		}
+
+		return {
+			updateOne: {
+				filter: { _id },
+				update,
+			},
+		};
+	});
+
+	await usersCol.bulkWrite(operations);
 };
 
 const makeLdapEntry = makeLdap; // preserve existing helper naming intent
