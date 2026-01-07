@@ -20,7 +20,7 @@ export class FederationHomeFlextabMembers {
 	}
 
 	get btnMenuUserInfo(): Locator {
-		return this.page.locator('[data-qa="UserUserInfo-menu"]');
+		return this.page.getByRole('dialog', { name: 'User Info', exact: true }).getByRole('button', { name: 'More', exact: true });
 	}
 
 	getKebabMenuForUser(username: string): Locator {
