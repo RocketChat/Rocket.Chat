@@ -253,7 +253,7 @@ async function executeIntegrationRest(
 		return API.v1.success();
 	} catch (err: any) {
 		incomingLogger.error({ msg: 'Error processing webhook message', err });
-		return API.v1.failure(err.error || err.message);
+		return API.v1.failure(err?.error || err?.message || 'Unknown error');
 	}
 }
 
