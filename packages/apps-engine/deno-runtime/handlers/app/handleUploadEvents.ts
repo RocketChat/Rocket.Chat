@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer';
 
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException.ts';
 import type { IFileUploadContext, IFileUploadStreamContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext.ts'
 import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads/IUpload.ts'
 import { toArrayBuffer } from '@std/streams';
@@ -13,7 +14,7 @@ import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
 export const uploadEvents = ['executePreFileUpload', 'executePreFileUploadStream'] as const;
 
 function assertIsUpload(v: unknown): asserts v is IUpload {
-	if (isRecord(v) && typeof v.name === 'string' && isRecord(v.user) && isRecord(v.room)) return;
+	if (isRecord(v) && isRecord(v.user) && isRecord(v.room)) return;
 
 	throw JsonRpcError.invalidParams({ err: `Invalid 'file' parameter. Expected IUploadDetails, got`, value: v });
 }
@@ -59,6 +60,10 @@ export default async function handleUploadEvents(method: typeof uploadEvents[num
 			AppAccessorsInstance.getModifier(),
 		);
 	} catch(e) {
+		if (e?.name === AppsEngineException.name) {
+			return new JsonRpcError(e.message, AppsEngineException.JSONRPC_ERROR_CODE, { name: e.name });
+		}
+
 		if (e instanceof JsonRpcError) {
 			return e;
 		}
