@@ -50,26 +50,111 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		return rid;
 	};
 
-	const insertUsers = async (
-		users: Array<{
-			_id: string;
-			abacAttributes?: IAbacAttributeDefinition[];
-			member?: boolean;
-			extraRooms?: string[];
-		}>,
-	) => {
+	type TestUserSeed = {
+		_id: string;
+		abacAttributes?: IAbacAttributeDefinition[];
+		member?: boolean;
+		extraRooms?: string[];
+	};
+
+	const insertUsers = async (users: TestUserSeed[]) => {
 		await usersCol.insertMany(
-			users.map((u) => ({
-				_id: u._id,
-				username: u._id,
-				type: 'user',
-				roles: [],
-				active: true,
-				createdAt: new Date(),
-				_updatedAt: new Date(),
-				abacAttributes: u.abacAttributes,
-				__rooms: u.extraRooms || [],
-			})),
+			users.map((u) => {
+				const doc: Partial<IUser> & {
+					_id: string;
+					username: string;
+					type: IUser['type'];
+					roles: IUser['roles'];
+					active: boolean;
+					createdAt: Date;
+					_updatedAt: Date;
+					__rooms: string[];
+				} = {
+					_id: u._id,
+					username: u._id,
+					type: 'user',
+					roles: [],
+					active: true,
+					createdAt: new Date(),
+					_updatedAt: new Date(),
+					__rooms: u.extraRooms || [],
+				};
+				if (u.abacAttributes !== undefined) {
+					doc.abacAttributes = u.abacAttributes;
+				}
+				return doc as IUser;
+			}),
+		);
+	};
+
+	const staticUserIds = [
+		'u1_newkey',
+		'u2_newkey',
+		'u3_newkey',
+		'u4_newkey',
+		'u5_newkey',
+		'u1_dupvals',
+		'u2_dupvals',
+		'u1_newval',
+		'u2_newval',
+		'u3_newval',
+		'u1_rmval',
+		'u2_rmval',
+		'u1_multi',
+		'u2_multi',
+		'u3_multi',
+		'u4_multi',
+		'u5_multi',
+		'u1_idem',
+		'u2_idem',
+		'u1_superset',
+		'u2_superset',
+		'u1_misskey',
+		'u2_misskey',
+		'u3_misskey',
+	];
+
+	const staticTestUsers: TestUserSeed[] = staticUserIds.map((_id) => ({ _id }));
+
+	const resetStaticUsers = async () => {
+		await usersCol.updateMany(
+			{ _id: { $in: staticUserIds } },
+			{
+				$set: {
+					__rooms: [],
+					_updatedAt: new Date(),
+				},
+				$unset: {
+					abacAttributes: 1,
+				},
+			},
+		);
+	};
+
+	const configureStaticUsers = async (users: TestUserSeed[]) => {
+		await Promise.all(
+			users.map(async (user) => {
+				const setPayload: Partial<IUser> = {
+					__rooms: user.extraRooms ?? [],
+					_updatedAt: new Date(),
+				};
+				if (user.abacAttributes !== undefined) {
+					setPayload.abacAttributes = user.abacAttributes;
+				}
+				const update: {
+					$set: Partial<IUser>;
+					$unset?: Record<string, 1>;
+				} = {
+					$set: setPayload,
+				};
+				if (user.abacAttributes === undefined) {
+					update.$unset = { abacAttributes: 1 };
+				}
+				const result = await usersCol.updateOne({ _id: user._id }, update);
+				if (result.matchedCount === 0) {
+					throw new Error(`Static test user ${user._id} not initialized`);
+				}
+			}),
 		);
 	};
 
@@ -85,15 +170,19 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 		roomsCol = db.collection<IRoom>('rocketchat_room');
 		usersCol = db.collection<IUser>('users');
+		await usersCol.deleteMany({ _id: { $in: staticUserIds } });
+		await insertUsers(staticTestUsers);
 	}, 30_000);
 
 	afterAll(async () => {
+		await usersCol.deleteMany({ _id: { $in: staticUserIds } });
 		await sharedMongo.release();
 	});
 
 	beforeEach(async () => {
 		debugSpy.mockClear();
 		auditSpy.mockClear();
+		await resetStaticUsers();
 	});
 
 	describe('setRoomAbacAttributes - new key addition', () => {
@@ -109,7 +198,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 				{ key: 'dep2t', values: ['eng', 'sales'] },
 			]);
 
-			await insertUsers([
+			await configureStaticUsers([
 				{ _id: 'u1_newkey', member: true, extraRooms: [rid1], abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] }, // compliant
 				{ _id: 'u2_newkey', member: true, extraRooms: [rid1], abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing sales
 				{ _id: 'u3_newkey', member: true, extraRooms: [rid1], abacAttributes: [{ key: 'location', values: ['emea'] }] }, // missing dept key
@@ -121,11 +210,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		afterEach(async () => {
-			await usersCol.deleteMany({
-				_id: {
-					$in: ['u1_newkey', 'u2_newkey', 'u3_newkey', 'u4_newkey', 'u5_newkey', 'u1_dupvals', 'u2_dupvals'],
-				},
-			});
 			await roomsCol.deleteMany({ _id: { $in: [rid1, rid2] } });
 		});
 
@@ -171,7 +255,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 				rid = await insertRoom([{ key: 'dept', values: ['eng'] }]);
 
 				await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
-				await insertUsers([
+				await configureStaticUsers([
 					{ _id: 'u1_newval', member: true, extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] }, // already superset
 					{ _id: 'u2_newval', member: true, extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing new value
 					{ _id: 'u3_newval', member: true, extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng', 'sales', 'hr'] }] }, // superset
@@ -179,11 +263,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			});
 
 			afterEach(async () => {
-				await usersCol.deleteMany({
-					_id: {
-						$in: ['u1_newval', 'u2_newval', 'u3_newval'],
-					},
-				});
 				await roomsCol.deleteOne({ _id: rid });
 			});
 
@@ -204,18 +283,13 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 				rid = await insertRoom([{ key: 'dept', values: ['eng', 'sales'] }]);
 
 				await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
-				await insertUsers([
+				await configureStaticUsers([
 					{ _id: 'u1_rmval', member: true, extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng'] }] },
 					{ _id: 'u2_rmval', member: true, extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] },
 				]);
 			});
 
 			afterEach(async () => {
-				await usersCol.deleteMany({
-					_id: {
-						$in: ['u1_rmval', 'u2_rmval'],
-					},
-				});
 				await roomsCol.deleteOne({ _id: rid });
 			});
 
@@ -244,7 +318,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 				{ key: 'region', values: ['emea', 'apac'] },
 			]);
 
-			await insertUsers([
+			await configureStaticUsers([
 				{
 					_id: 'u1_multi',
 					member: true,
@@ -288,11 +362,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		afterEach(async () => {
-			await usersCol.deleteMany({
-				_id: {
-					$in: ['u1_multi', 'u2_multi', 'u3_multi', 'u4_multi', 'u5_multi'],
-				},
-			});
 			await roomsCol.deleteOne({ _id: rid });
 		});
 
@@ -323,17 +392,12 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			rid = await insertRoom([]);
 
 			await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
-			await insertUsers([
+			await configureStaticUsers([
 				{ _id: 'u1_idem', member: true, extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] },
 				{ _id: 'u2_idem', member: true, extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // will be removed on first pass
 			]);
 		});
 		afterEach(async () => {
-			await usersCol.deleteMany({
-				_id: {
-					$in: ['u1_idem', 'u2_idem'],
-				},
-			});
 			await roomsCol.deleteOne({ _id: rid });
 		});
 
@@ -371,7 +435,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			ridSuperset = await insertRoom([]);
 
 			await insertDefinitions([{ key: 'dept', values: ['eng', 'sales', 'hr'] }]);
-			await insertUsers([
+			await configureStaticUsers([
 				{
 					_id: 'u1_superset',
 					member: true,
@@ -384,7 +448,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			ridMissingKey = await insertRoom([]);
 
 			await insertDefinitions([{ key: 'region', values: ['emea', 'apac'] }]);
-			await insertUsers([
+			await configureStaticUsers([
 				{ _id: 'u1_misskey', member: true, extraRooms: [ridMissingKey], abacAttributes: [{ key: 'region', values: ['emea'] }] },
 				{ _id: 'u2_misskey', member: true, extraRooms: [ridMissingKey], abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing region
 				{ _id: 'u3_misskey', member: true, extraRooms: [ridMissingKey] }, // no abacAttributes field
@@ -392,11 +456,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		afterEach(async () => {
-			await usersCol.deleteMany({
-				_id: {
-					$in: ['u1_superset', 'u2_superset', 'u1_misskey', 'u2_misskey', 'u3_misskey'],
-				},
-			});
 			await roomsCol.deleteMany({ _id: { $in: [ridSuperset, ridMissingKey] } });
 		});
 
