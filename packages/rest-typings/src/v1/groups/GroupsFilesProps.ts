@@ -50,7 +50,6 @@ const GroupsFilesPropsSchema = {
 		},
 		onlyConfirmed: {
 			type: 'boolean',
-			nullable: true,
 		},
 	},
 	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],

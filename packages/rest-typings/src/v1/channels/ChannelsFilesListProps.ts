@@ -52,7 +52,6 @@ const channelsFilesListPropsSchema = {
 		},
 		onlyConfirmed: {
 			type: 'boolean',
-			nullable: true,
 		},
 	},
 	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],

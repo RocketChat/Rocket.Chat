@@ -50,7 +50,6 @@ const dmFilesListPropsSchema = {
 		},
 		onlyConfirmed: {
 			type: 'boolean',
-			nullable: true,
 		},
 	},
 	oneOf: [{ required: ['roomId'] }, { required: ['username'] }],
