@@ -4781,6 +4781,7 @@
   "Selecting_users": "Selecting users",
   "Self_managed_hosting": "Self-managed hosting",
   "Send": "Send",
+  "Send_anyway": "Send anyway",
   "Send_Email_SMTP_Warning": "Set up the SMTP server in <a href=\"{{url}}\">email settings</a> to enable.",
   "Send_Test": "Send Test",
   "Send_Test_Email": "Send test email",
@@ -7033,6 +7034,10 @@
   "__count__file_pruned": {
     "one": "{{count}} file pruned",
     "other": "{{count}} files pruned"
+  },
+  "__count__files_failed_to_upload": {
+    "one": "One file failed to upload and will not be sent: {{name}}",
+    "other": "{{count}} files failed to upload and will not be sent."
   },
   "__count__follower": {
     "one": "+{{count}} follower",

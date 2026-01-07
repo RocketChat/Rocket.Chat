@@ -98,16 +98,16 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		try {
 			await new Promise((resolve, reject) => {
 				if (file.size === 0) {
-					return reject(new Error(i18n.t('FileUpload_File_Empty')));
+					reject(new Error(i18n.t('FileUpload_File_Empty')));
 				}
 
 				// -1 maxFileSize means there is no limit
 				if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
-					return reject(new Error(i18n.t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })));
+					reject(new Error(i18n.t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })));
 				}
 
 				if (invalidContentType) {
-					return reject(new Error(i18n.t('FileUpload_MediaType_NotAccepted__type__', { type: file.type })));
+					reject(new Error(i18n.t('FileUpload_MediaType_NotAccepted__type__', { type: file.type })));
 				}
 
 				const xhr = sdk.rest.upload(

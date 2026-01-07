@@ -1,6 +1,8 @@
 import type { AtLeast, FileAttachmentProps, IMessage, IUploadToConfirm } from '@rocket.chat/core-typings';
+import { imperativeModal, GenericModal } from '@rocket.chat/ui-client';
 
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
+import { t } from '../../../../app/utils/lib/i18n';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import { e2e } from '../../e2ee/rocketchat.e2e';
 import type { E2ERoom } from '../../e2ee/rocketchat.e2e.room';
@@ -84,7 +86,7 @@ const getEncryptedContent = async (filesToUpload: readonly EncryptedUpload[], e2
 	});
 };
 
-export const processMessageUploads = async (chat: ChatAPI, message: IMessage) => {
+export const processMessageUploads = async (chat: ChatAPI, message: IMessage): Promise<boolean> => {
 	const { tmid, msg } = message;
 	const room = await chat.data.getRoom();
 	const e2eRoom = await e2e.getInstanceByRoomId(room._id);
@@ -96,49 +98,101 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage) =>
 		return false;
 	}
 
-	const fileUrls: string[] = [];
-	const filesToConfirm: IUploadToConfirm[] = [];
+	const failedUploads = filesToUpload.filter((upload) => upload.error);
 
-	for await (const upload of filesToUpload) {
-		if (!upload.url || !upload.id) {
-			continue;
+	if (!failedUploads.length) {
+		return continueSendingMessage();
+	}
+
+	if (failedUploads.length > 0) {
+		const allUploadsFailed = failedUploads.length === filesToUpload.length;
+
+		return new Promise((resolve) => {
+			imperativeModal.open({
+				component: GenericModal,
+				props: {
+					variant: 'warning',
+					children: t('__count__files_failed_to_upload', {
+						count: failedUploads.length,
+						...(failedUploads.length === 1 && { name: failedUploads[0].file.name }),
+					}),
+					...(allUploadsFailed && {
+						title: t('Warning'),
+						confirmText: t('Ok'),
+						onConfirm: () => {
+							imperativeModal.close();
+							resolve(true);
+						},
+					}),
+					...(!allUploadsFailed && {
+						title: t('Are_you_sure'),
+						confirmText: t('Send_anyway'),
+						cancelText: t('Cancel'),
+						onConfirm: () => {
+							imperativeModal.close();
+							resolve(continueSendingMessage());
+						},
+						onCancel: () => {
+							imperativeModal.close();
+							resolve(true);
+						},
+					}),
+					onClose: () => {
+						imperativeModal.close();
+						resolve(true);
+					},
+				},
+			});
+		});
+	}
+
+	return continueSendingMessage();
+
+	async function continueSendingMessage() {
+		const fileUrls: string[] = [];
+		const filesToConfirm: IUploadToConfirm[] = [];
+
+		for await (const upload of filesToUpload) {
+			if (!upload.url || !upload.id) {
+				continue;
+			}
+
+			let content;
+			if (e2eRoom && isEncryptedUpload(upload)) {
+				content = await e2eRoom.encryptMessageContent(upload.metadataForEncryption);
+			}
+
+			fileUrls.push(upload.url);
+			filesToConfirm.push({ _id: upload.id, name: upload.file.name, content });
 		}
+
+		const shouldConvertSentMessages = await e2eRoom?.shouldConvertSentMessages({ msg });
 
 		let content;
-		if (e2eRoom && isEncryptedUpload(upload)) {
-			content = await e2eRoom.encryptMessageContent(upload.metadataForEncryption);
+		if (e2eRoom && shouldConvertSentMessages) {
+			content = await getEncryptedContent(filesToUpload as EncryptedUpload[], e2eRoom, msg);
 		}
 
-		fileUrls.push(upload.url);
-		filesToConfirm.push({ _id: upload.id, name: upload.file.name, content });
+		const composedMessage: AtLeast<IMessage, 'msg' | '_id' | 'rid'> = {
+			...message,
+			tmid,
+			msg,
+			content,
+			...(e2eRoom && {
+				t: 'e2e',
+				msg: '',
+			}),
+		} as const;
+
+		try {
+			await sdk.call('sendMessage', composedMessage, fileUrls, filesToConfirm);
+			store.clear();
+		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			chat.action.stop('uploading');
+		}
+
+		return true;
 	}
-
-	const shouldConvertSentMessages = await e2eRoom?.shouldConvertSentMessages({ msg });
-
-	let content;
-	if (e2eRoom && shouldConvertSentMessages) {
-		content = await getEncryptedContent(filesToUpload as EncryptedUpload[], e2eRoom, msg);
-	}
-
-	const composedMessage: AtLeast<IMessage, 'msg' | '_id' | 'rid'> = {
-		...message,
-		tmid,
-		msg,
-		content,
-		...(e2eRoom && {
-			t: 'e2e',
-			msg: '',
-		}),
-	} as const;
-
-	try {
-		await sdk.call('sendMessage', composedMessage, fileUrls, filesToConfirm);
-		store.clear();
-	} catch (error: unknown) {
-		dispatchToastMessage({ type: 'error', message: error });
-	} finally {
-		chat.action.stop('uploading');
-	}
-
-	return true;
 };
