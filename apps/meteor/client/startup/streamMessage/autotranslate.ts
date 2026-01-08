@@ -10,14 +10,19 @@ Meteor.startup(() => {
 		const isEnabled = settings.watch('AutoTranslate_Enabled') && hasPermission('auto-translate');
 
 		if (!isEnabled) {
-			clientCallbacks.remove('streamMessage', 'autotranslate-stream');
+			clientCallbacks?.remove('streamMessage', 'autotranslate-stream');
 			return;
 		}
 
 		import('../../../app/autotranslate/client').then(({ createAutoTranslateMessageStreamHandler }) => {
 			const streamMessage = createAutoTranslateMessageStreamHandler();
+			if (!clientCallbacks) {
+				return;
+			}
+
+			const priority = clientCallbacks.priority?.HIGH ?? 0;
 			clientCallbacks.remove('streamMessage', 'autotranslate-stream');
-			clientCallbacks.add('streamMessage', streamMessage, clientCallbacks.priority.HIGH - 3, 'autotranslate-stream');
+			clientCallbacks.add('streamMessage', streamMessage, priority - 3, 'autotranslate-stream');
 		});
 	});
 });
