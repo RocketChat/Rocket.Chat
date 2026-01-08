@@ -109,8 +109,7 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 	}
 
 	get inputUnit(): Locator {
-		// TODO: Improve PaginatedSelectFiltered to allow for more accessible locators
-		return this.page.locator('[data-qa="autocomplete-unit"] input');
+		return this.page.getByLabel('Unit').getByRole('textbox', { name: 'Select an option' });
 	}
 
 	btnTag(tagName: string) {

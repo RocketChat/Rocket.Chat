@@ -79,7 +79,7 @@ export class OmnichannelAgents extends OmnichannelAdmin {
 	}
 
 	get inputUsername(): Locator {
-		return this.page.locator('[data-qa-id="UserAutoComplete"]');
+		return this.page.getByRole('textbox', { name: 'Username' });
 	}
 
 	get btnAdd(): Locator {

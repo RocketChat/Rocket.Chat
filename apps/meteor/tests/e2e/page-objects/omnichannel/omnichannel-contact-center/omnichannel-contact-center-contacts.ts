@@ -156,10 +156,6 @@ export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
 		return this.page.locator('[data-qa="current-chats-status"]');
 	}
 
-	get inputDepartmentValue(): Locator {
-		return this.page.locator('[data-qa="autocomplete-department"] span');
-	}
-
 	get modalConfirmRemoveAllClosed(): Locator {
 		return this.page.locator('[data-qa-id="current-chats-modal-remove-all-closed"]');
 	}
