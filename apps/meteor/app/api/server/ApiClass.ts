@@ -6,7 +6,7 @@ import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings';
-import { wrapExceptions } from '@rocket.chat/tools';
+import { isObject, wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
@@ -17,6 +17,7 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 // eslint-disable-next-line import/no-duplicates
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
+import * as z from 'zod';
 
 import type { PermissionsPayload } from './api.helpers';
 import { checkPermissionsForInvocation, checkPermissions, parseDeprecation } from './api.helpers';
@@ -43,7 +44,6 @@ import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
 import { RocketChatAPIRouter } from './router';
 import { license } from '../../../ee/app/api-enterprise/server/middlewares/license';
-import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
 import { shouldBreakInVersion } from '../../../server/lib/shouldBreakInVersion';
 import { checkCodeForUser } from '../../2fa/server/code';
@@ -67,7 +67,7 @@ export type Prettify<T> = {
 	[K in keyof T]: T[K];
 } & unknown;
 
-type ExtractValidation<T> = T extends ValidateFunction<infer TSchema> ? TSchema : never;
+type ExtractValidation<T> = T extends z.ZodType<infer U> ? U : T extends ValidateFunction<infer U> ? U : never;
 
 type UnionToIntersection<U> = (U extends any ? (x: U) => any : never) extends (x: infer I) => any ? I : never;
 
@@ -231,13 +231,10 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 	}
 
 	public setLimitedCustomFields(customFields: string[]): void {
-		const nonPublicFieds = customFields.reduce(
-			(acc, customField) => {
-				acc[`customFields.${customField}`] = 0;
-				return acc;
-			},
-			{} as Record<string, any>,
-		);
+		const nonPublicFieds = customFields.reduce<Record<string, any>>((acc, customField) => {
+			acc[`customFields.${customField}`] = 0;
+			return acc;
+		}, {});
 		this.limitedUserFieldsToExclude = {
 			...this.defaultLimitedUserFieldsToExclude,
 			...nonPublicFieds,
@@ -266,17 +263,15 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 	public success<T>(result: T): SuccessResult<T>;
 
-	public success<T>(result: T = {} as T): SuccessResult<T> {
+	public success(result: unknown = {}) {
 		if (isObject(result)) {
-			(result as Record<string, any>).success = true;
+			Object.assign(result, { success: true });
 		}
 
-		const finalResult = {
+		return {
 			statusCode: 200,
 			body: result,
-		} as SuccessResult<T>;
-
-		return finalResult as SuccessResult<T>;
+		};
 	}
 
 	public redirect<T, C extends RedirectStatusCodes>(code: C, result: T): RedirectResult<T, C> {
@@ -288,14 +283,14 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 	public failure<T>(result?: T): FailureResult<T>;
 
-	public failure<T, TErrorType extends string, TStack extends string, TErrorDetails>(
+	public failure<T, TErrorType extends string, TStack extends string, TErrorDetails extends string>(
 		result?: T,
 		errorType?: TErrorType,
 		stack?: TStack,
 		error?: { details: TErrorDetails },
 	): FailureResult<T, TErrorType, TStack, TErrorDetails>;
 
-	public failure<T, TErrorType extends string, TStack extends string, TErrorDetails>(
+	public failure<T, TErrorType extends string, TStack extends string, TErrorDetails extends string>(
 		result?: T,
 		errorType?: TErrorType,
 		stack?: TStack,
@@ -321,7 +316,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 			if (error && typeof error === 'object' && 'details' in error && error?.details) {
 				try {
-					response.body.details = JSON.parse(error.details as unknown as string);
+					response.body.details = JSON.parse(error.details);
 				} catch (e) {
 					response.body.details = error.details;
 				}
@@ -370,6 +365,10 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			},
 		};
 	}
+
+	public forbidden(): ForbiddenResult<'forbidden' | 'unauthorized'>;
+
+	public forbidden<T>(msg: T): ForbiddenResult<T>;
 
 	public forbidden<T>(msg?: T): ForbiddenResult<T> {
 		return {
@@ -544,22 +543,18 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			authRequired,
 			...(validateParams &&
 				method.toLowerCase() === 'get' &&
-				('GET' in validateParams
-					? { query: validateParams.GET }
-					: {
-							query: validateParams as ValidateFunction<any>,
-						})),
+				('_def' in validateParams || typeof validateParams === 'function' ? { query: validateParams } : { query: validateParams.GET })),
 
 			...(validateParams &&
 				method.toLowerCase() === 'post' &&
-				('POST' in validateParams ? { query: validateParams.POST } : { body: validateParams as ValidateFunction<any> })),
+				('_def' in validateParams || typeof validateParams === 'function' ? { body: validateParams } : { body: validateParams.POST })),
 
 			...(validateParams &&
 				method.toLowerCase() === 'put' &&
-				('PUT' in validateParams ? { query: validateParams.PUT } : { body: validateParams as ValidateFunction<any> })),
+				('_def' in validateParams || typeof validateParams === 'function' ? { query: validateParams } : { body: validateParams.PUT })),
 			...(validateParams &&
 				method.toLowerCase() === 'delete' &&
-				('DELETE' in validateParams ? { query: validateParams.DELETE } : { body: validateParams as ValidateFunction<any> })),
+				('_def' in validateParams || typeof validateParams === 'function' ? { query: validateParams } : { body: validateParams.DELETE })),
 
 			tags: ['Missing Documentation'],
 			response: {
@@ -575,6 +570,14 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		};
 
 		this.registerTypedRoutes(method, subpath, opt);
+	}
+
+	private extractJSONSchema(validator: ValidateFunction | z.ZodType) {
+		if ('_def' in validator) {
+			return { schema: z.toJSONSchema(validator, { target: 'openapi-3.0', io: 'input', unrepresentable: 'any' }) };
+		}
+
+		return { schema: validator.schema };
 	}
 
 	private registerTypedRoutes<
@@ -594,7 +597,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						{
 							description: '',
 							content: {
-								'application/json': 'schema' in schema ? { schema: schema.schema } : schema,
+								'application/json': this.extractJSONSchema(schema),
 							},
 						},
 					]),
@@ -603,7 +606,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			...(query && {
 				parameters: [
 					{
-						schema: query.schema,
+						...this.extractJSONSchema(query),
 						in: 'query',
 						name: 'query',
 						required: true,
@@ -614,7 +617,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				requestBody: {
 					required: true,
 					content: {
-						'application/json': { schema: body.schema },
+						'application/json': this.extractJSONSchema(body),
 					},
 				},
 			}),
@@ -870,11 +873,30 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 							if (_options.validateParams) {
 								const requestMethod = this.request.method as Method;
-								const validatorFunc =
-									typeof _options.validateParams === 'function' ? _options.validateParams : _options.validateParams[requestMethod];
+								const validated = requestMethod === 'GET' ? this.queryParams : this.bodyParams;
+								const validator =
+									'_def' in _options.validateParams || typeof _options.validateParams === 'function'
+										? _options.validateParams
+										: _options.validateParams[requestMethod];
 
-								if (validatorFunc && !validatorFunc(requestMethod === 'GET' ? this.queryParams : this.bodyParams)) {
-									throw new Meteor.Error('invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
+								if (validator && '_def' in validator) {
+									const result = validator.safeParse(validated);
+
+									if (!result.success) {
+										throw new Meteor.Error('invalid-params', z.prettifyError(result.error));
+									}
+
+									// Zod schemas may transform data, so we need to reassign the transformed data back to the params
+									if (requestMethod === 'GET') {
+										this.queryParams = result.data;
+									} else {
+										this.bodyParams = result.data;
+									}
+								}
+
+								// Ajv mutates the data object passed to it (if coerceTypes is true), so no need to reassign here
+								if (validator && typeof validator === 'function' && !validator(validated)) {
+									throw new Meteor.Error('invalid-params', validator.errors?.map((error: any) => error.message).join('\n '));
 								}
 							}
 							if (shouldVerifyPermissions) {

@@ -61,7 +61,7 @@ const QueryProfileResponseSchema = {
 	},
 };
 
-const isQueryProfileResponseProps = ajv.compile(QueryProfileResponseSchema);
+const isQueryProfileResponseProps = ajv.compile<unknown>(QueryProfileResponseSchema);
 
 const QueryKeysBodySchema = {
 	type: 'object',
