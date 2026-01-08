@@ -166,25 +166,16 @@ export class Store {
 			};
 
 			const finishHandler = async () => {
-				let size = 0;
-				const readStream = await this.getReadStream(fileId, file);
+				if (file.complete) {
+					return;
+				}
 
-				readStream.on('error', (error: Error) => {
-					callback.call(this, error);
-				});
-				readStream.on('data', (data) => {
-					size += data.length;
-				});
-				readStream.on('end', async () => {
-					if (file.complete) {
-						return;
-					}
+				try {
 					// Set file attribute
 					file.complete = true;
 					file.etag = UploadFS.generateEtag();
 					file.path = await this.getFileRelativeURL(fileId);
 					file.progress = 1;
-					file.size = size;
 					file.token = this.generateToken();
 					file.uploading = false;
 					file.uploadedAt = new Date();
@@ -217,7 +208,9 @@ export class Store {
 
 					// Return file info
 					callback.call(this, undefined, file);
-				});
+				} catch (error) {
+					callback.call(this, error as Error);
+				}
 			};
 
 			const ws = await this.getWriteStream(fileId, file);
