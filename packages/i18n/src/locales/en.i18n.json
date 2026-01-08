@@ -7087,5 +7087,7 @@
   "__username__profile_picture": "{{username}}'s profile picture",
   "User_card": "User card",
   "timestamps.relativeTimeDescription": "1 year ago",
-  "Message_composer": "Message composer"
+  "Message_composer": "Message composer",
+  "Thread_composer": "Thread composer",
+  "Room_composer": "Room composer"
 }

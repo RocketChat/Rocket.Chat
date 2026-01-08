@@ -3,7 +3,7 @@ import { resolve, join, relative } from 'node:path';
 
 import type { Locator, Page } from '@playwright/test';
 
-import { MessageComposer, ThreadMessageComposer } from './composer';
+import { RoomComposer, ThreadComposer } from './composer';
 import { expect } from '../../utils/test';
 
 const FIXTURES_PATH = relative(process.cwd(), resolve(__dirname, '../../fixtures/files'));
@@ -15,14 +15,14 @@ export function getFilePath(fileName: string): string {
 export class HomeContent {
 	protected readonly page: Page;
 
-	protected readonly composer: MessageComposer;
+	protected readonly composer: RoomComposer;
 
-	protected readonly threadComposer: ThreadMessageComposer;
+	protected readonly threadComposer: ThreadComposer;
 
 	constructor(page: Page) {
 		this.page = page;
-		this.composer = new MessageComposer(page);
-		this.threadComposer = new ThreadMessageComposer(page);
+		this.composer = new RoomComposer(page);
+		this.threadComposer = new ThreadComposer(page);
 	}
 
 	get channelHeader(): Locator {
@@ -73,10 +73,6 @@ export class HomeContent {
 		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
 	}
 
-	async joinRoom(): Promise<void> {
-		await this.composer.btnJoinRoom.click();
-	}
-
 	async joinRoomIfNeeded(): Promise<void> {
 		if (await this.composer.inputMessage.isEnabled()) {
 			return;
@@ -84,7 +80,7 @@ export class HomeContent {
 		if (!(await this.composer.btnJoinRoom.isVisible())) {
 			return;
 		}
-		await this.joinRoom();
+		await this.composer.btnJoinRoom.click();
 	}
 
 	async sendMessage(text: string, enforce = true): Promise<void> {

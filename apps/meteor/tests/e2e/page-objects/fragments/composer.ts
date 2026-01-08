@@ -9,12 +9,16 @@ export abstract class Composer {
 		this.page = page;
 	}
 
+	private get msgComposer(): Locator {
+		return this.root.getByRole('group', { name: 'Message composer' });
+	}
+
 	get inputMessage(): Locator {
-		return this.root.locator('[name="msg"]');
+		return this.msgComposer.locator('[name="msg"]');
 	}
 
 	get toolbarPrimaryActions(): Locator {
-		return this.root.getByRole('toolbar', { name: 'Composer Primary Actions' });
+		return this.msgComposer.getByRole('toolbar', { name: 'Composer Primary Actions' });
 	}
 
 	get allPrimaryActions(): Locator {
@@ -30,7 +34,7 @@ export abstract class Composer {
 	}
 
 	get btnSend(): Locator {
-		return this.root.getByRole('button', { name: 'Send', exact: true });
+		return this.msgComposer.getByRole('button', { name: 'Send', exact: true });
 	}
 
 	get btnOptionFileUpload(): Locator {
@@ -42,14 +46,14 @@ export abstract class Composer {
 	}
 }
 
-export class MessageComposer extends Composer {
+export class RoomComposer extends Composer {
 	constructor(page: Page) {
-		super(page.getByRole('group', { name: 'Message composer' }));
+		super(page.locator('footer[aria-label="Room composer"]'));
 	}
 }
 
-export class ThreadMessageComposer extends Composer {
+export class ThreadComposer extends Composer {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'thread' }).getByRole('group', { name: 'Message composer' }));
+		super(page.getByRole('dialog', { name: 'thread' }).locator('footer[aria-label="Thread composer"]'));
 	}
 }

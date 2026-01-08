@@ -7,8 +7,8 @@ import {
 	Sidepanel,
 	RoomSidebar,
 	ToastMessages,
-	MessageComposer,
-	ThreadMessageComposer,
+	RoomComposer,
+	ThreadComposer,
 } from './fragments';
 import { RoomToolbar } from './fragments/toolbar';
 import { VoiceCalls } from './fragments/voice-calls';
@@ -32,9 +32,9 @@ export class HomeChannel {
 
 	readonly toastMessage: ToastMessages;
 
-	readonly composer: MessageComposer;
+	readonly composer: RoomComposer;
 
-	readonly threadComposer: ThreadMessageComposer;
+	readonly threadComposer: ThreadComposer;
 
 	constructor(page: Page) {
 		this.page = page;
@@ -46,8 +46,8 @@ export class HomeChannel {
 		this.roomToolbar = new RoomToolbar(page);
 		this.voiceCalls = new VoiceCalls(page);
 		this.toastMessage = new ToastMessages(page);
-		this.composer = new MessageComposer(page);
-		this.threadComposer = new ThreadMessageComposer(page);
+		this.composer = new RoomComposer(page);
+		this.threadComposer = new ThreadComposer(page);
 	}
 
 	goto() {
