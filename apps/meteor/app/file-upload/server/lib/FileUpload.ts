@@ -5,6 +5,7 @@ import { unlink, rename, writeFile } from 'fs/promises';
 import type * as http from 'http';
 import type * as https from 'https';
 import stream from 'stream';
+import { finished } from 'stream/promises';
 import URL from 'url';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
@@ -789,20 +790,6 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	private async _streamToTmpFile(inputStream: stream.Readable, targetPath: string): Promise<void> {
-		const writeStream = fs.createWriteStream(targetPath);
-
-		return new Promise((resolve, reject) => {
-			if ('isPaused' in inputStream && inputStream.isPaused()) {
-				inputStream.resume();
-			}
-			inputStream.pipe(writeStream);
-			writeStream.on('finish', () => resolve());
-			writeStream.on('error', (err) => reject(err));
-			inputStream.on('error', (err) => reject(err));
-		});
-	}
-
 	private async _validateFile(
 		fileData: OptionalId<IUpload>,
 		content: stream.Readable | Buffer | string,
@@ -847,7 +834,7 @@ export class FileUploadClass {
 			} else if (content instanceof Uint8Array) {
 				await fs.promises.writeFile(tmpFile, Buffer.from(content));
 			} else if (content instanceof stream.Readable) {
-				await this._streamToTmpFile(content, tmpFile);
+				await finished(content.pipe(fs.createWriteStream(tmpFile)), { cleanup: true });
 			} else {
 				throw new Error('Invalid file type');
 			}
