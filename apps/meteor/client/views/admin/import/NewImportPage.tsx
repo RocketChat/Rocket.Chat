@@ -17,7 +17,13 @@ import {
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
+import {
+	useToastMessageDispatch,
+	useRouter,
+	useRouteParameter,
+	useSetting,
+	useEndpoint,
+} from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ChangeEvent, DragEvent, FormEvent, Key, SyntheticEvent } from 'react';
 import { useState, useMemo, useEffect, useId } from 'react';
@@ -26,86 +32,85 @@ import { useTranslation } from 'react-i18next';
 import { useErrorHandler } from './useErrorHandler';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 
-// TODO: review inner logic
+const ALLOWED_EXTENSIONS = ['csv', 'zip'];
+
 function NewImportPage() {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const handleError = useErrorHandler();
+	const router = useRouter();
 
 	const [isLoading, setLoading] = useSafely(useState(false));
 	const [fileType, setFileType] = useSafely(useState('upload'));
-
-	const listImportersEndpoint = useEndpoint('GET', '/v1/importers.list');
-	const { data: importers, isPending: isLoadingImporters } = useQuery({
-		queryKey: ['importers'],
-		queryFn: async () => listImportersEndpoint(),
-		refetchOnWindowFocus: false,
-	});
-
-	const options = useMemo(() => importers?.map(({ key, name }) => [key, t(name as TranslationKey)] as const) || [], [importers, t]);
+	const [files, setFiles] = useState<File[]>([]);
+	const [fileUrl, setFileUrl] = useSafely(useState(''));
+	const [filePath, setFilePath] = useSafely(useState(''));
 
 	const importerKey = useRouteParameter('importerKey');
-	const importer = useMemo(() => (importers || []).find(({ key }) => key === importerKey), [importerKey, importers]);
-
 	const maxFileSize = useSetting('FileUpload_MaxFileSize', 0);
+	const formatMemorySize = useFormatMemorySize();
 
-	const router = useRouter();
-
+	const listImportersEndpoint = useEndpoint('GET', '/v1/importers.list');
 	const uploadImportFile = useEndpoint('POST', '/v1/uploadImportFile');
 	const downloadPublicImportFile = useEndpoint('POST', '/v1/downloadPublicImportFile');
 
+	const { data: importers, isPending } = useQuery({
+		queryKey: ['importers'],
+		queryFn: () => listImportersEndpoint(),
+		refetchOnWindowFocus: false,
+	});
+
+	const importer = useMemo(
+		() => importers?.find(({ key }) => key === importerKey),
+		[importerKey, importers],
+	);
+
+	const options = useMemo(
+		() => importers?.map(({ key, name }) => [key, t(name as TranslationKey)] as const) || [],
+		[importers, t],
+	);
+
 	useEffect(() => {
-		if (importerKey && !importer && !isLoadingImporters) {
+		if (importerKey && !importer && !isPending) {
 			router.navigate('/admin/import/new', { replace: true });
 		}
-	}, [importer, importerKey, router, isLoadingImporters]);
+	}, [importerKey, importer, isPending, router]);
 
-	const formatMemorySize = useFormatMemorySize();
+	const isDataTransferEvent = <T extends SyntheticEvent>(
+		event: T,
+	): event is T & DragEvent<HTMLInputElement> =>
+		Boolean('dataTransfer' in event && (event as any).dataTransfer?.files);
 
-	const handleImporterKeyChange = (importerKey: Key) => {
-		if (typeof importerKey !== 'string') {
-			return;
+	/* =========================
+	   FILE VALIDATION LOGIC
+	   ========================= */
+	const handleImportFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+		let selectedFiles = event.target.files;
+
+		if ((!selectedFiles || selectedFiles.length === 0) && isDataTransferEvent(event)) {
+			selectedFiles = event.dataTransfer.files;
 		}
 
-		router.navigate(
-			{
-				pattern: '/admin/import/new/:importerKey?',
-				params: { importerKey },
-			},
-			{ replace: true },
-		);
-	};
-
-	const handleFileTypeChange = (fileType: Key) => {
-		if (typeof fileType !== 'string') {
-			return;
-		}
-
-		setFileType(fileType);
-	};
-
-	const [files, setFiles] = useState<File[]>([]);
-
-	const isDataTransferEvent = <T extends SyntheticEvent>(event: T): event is T & DragEvent<HTMLInputElement> =>
-		Boolean('dataTransfer' in event && (event as any).dataTransfer.files);
-
-	const handleImportFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-		let { files } = event.target;
-		if (!files || files.length === 0) {
-			if (isDataTransferEvent(event)) {
-				files = event.dataTransfer.files;
+		const validFiles = Array.from(selectedFiles ?? []).filter((file) => {
+			const ext = file.name.split('.').pop()?.toLowerCase();
+			if (!ext || !ALLOWED_EXTENSIONS.includes(ext)) {
+				dispatchToastMessage({
+					type: 'error',
+					message: t('Only .csv or .zip files are supported'),
+				});
+				return false;
 			}
-		}
+			return true;
+		});
 
-		setFiles(Array.from(files ?? []));
+		setFiles(validFiles);
 	};
 
-	const handleFileUploadChipClick = (file: File) => () => {
-		setFiles((files) => files.filter((_file) => _file !== file));
-	};
+	const handleRemoveFile = (file: File) => () =>
+		setFiles((prev) => prev.filter((f) => f !== file));
 
-	const handleFileUploadImportButtonClick = async () => {
-		if (!importerKey) {
+	const handleUpload = async () => {
+		if (!importerKey || files.length === 0) {
 			return;
 		}
 
@@ -113,17 +118,15 @@ function NewImportPage() {
 
 		try {
 			await Promise.all(
-				Array.from(
-					files,
+				files.map(
 					(file) =>
 						new Promise<void>((resolve) => {
 							const reader = new FileReader();
 							reader.readAsDataURL(file);
 							reader.onloadend = async () => {
-								const result = reader.result as string;
 								try {
 									await uploadImportFile({
-										binaryContent: result.split(';base64,')[1],
+										binaryContent: (reader.result as string).split(';base64,')[1],
 										contentType: file.type,
 										fileName: file.name,
 										importerKey,
@@ -134,121 +137,95 @@ function NewImportPage() {
 									resolve();
 								}
 							};
-							reader.onerror = () => resolve();
 						}),
 				),
 			);
+
 			router.navigate('/admin/import/prepare');
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	const [fileUrl, setFileUrl] = useSafely(useState(''));
+	const handleImportClick =
+		(fileType === 'upload' && handleUpload) ||
+		(fileType === 'url' &&
+			(async () => {
+				setLoading(true);
+				try {
+					await downloadPublicImportFile({ importerKey, fileUrl });
+					router.navigate('/admin/import/prepare');
+				} catch (error) {
+					handleError(error, t('Failed_To_upload_Import_File'));
+				} finally {
+					setLoading(false);
+				}
+			})) ||
+		(fileType === 'path' &&
+			(async () => {
+				setLoading(true);
+				try {
+					await downloadPublicImportFile({ importerKey, fileUrl: filePath });
+					router.navigate('/admin/import/prepare');
+				} catch (error) {
+					handleError(error, t('Failed_To_upload_Import_File'));
+				} finally {
+					setLoading(false);
+				}
+			}));
 
-	const handleFileUrlChange = (event: FormEvent<HTMLInputElement>) => {
-		setFileUrl(event.currentTarget.value);
-	};
-
-	const handleFileUrlImportButtonClick = async () => {
-		if (!importerKey) {
-			return;
-		}
-
-		setLoading(true);
-
-		try {
-			await downloadPublicImportFile({ importerKey, fileUrl });
-			dispatchToastMessage({ type: 'success', message: t('Import_requested_successfully') });
-			router.navigate('/admin/import/prepare');
-		} catch (error) {
-			handleError(error, t('Failed_To_upload_Import_File'));
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	const [filePath, setFilePath] = useSafely(useState(''));
-
-	const handleFilePathChange = (event: FormEvent<HTMLInputElement>) => {
-		setFilePath(event.currentTarget.value);
-	};
-
-	const handleFilePathImportButtonClick = async () => {
-		if (!importerKey) {
-			return;
-		}
-
-		setLoading(true);
-
-		try {
-			await downloadPublicImportFile({ importerKey, fileUrl: filePath });
-			dispatchToastMessage({ type: 'success', message: t('Import_requested_successfully') });
-			router.navigate('/admin/import/prepare');
-		} catch (error) {
-			handleError(error, t('Failed_To_upload_Import_File'));
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	const importerKeySelectId = useId();
+	const importerSelectId = useId();
 	const fileTypeSelectId = useId();
-	const fileSourceInputId = useId();
-	const handleImportButtonClick =
-		(fileType === 'upload' && handleFileUploadImportButtonClick) ||
-		(fileType === 'url' && handleFileUrlImportButtonClick) ||
-		(fileType === 'path' && handleFilePathImportButtonClick) ||
-		undefined;
+	const fileInputId = useId();
 
 	return (
 		<Page>
 			<PageHeader title={t('Import_New_File')} onClickBack={() => router.navigate('/admin/import')}>
 				<ButtonGroup>
 					{importer && (
-						<Button primary minHeight='x40' loading={isLoading} onClick={handleImportButtonClick}>
+						<Button primary loading={isLoading} onClick={handleImportClick}>
 							{t('Import')}
 						</Button>
 					)}
 				</ButtonGroup>
 			</PageHeader>
+
 			<PageScrollableContentWithShadow>
-				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
+				<Box maxWidth='x580' marginInline='auto'>
 					<Margins block='x24'>
 						<Field>
-							<FieldLabel alignSelf='stretch' htmlFor={importerKeySelectId}>
-								{t('Import_Type')}
-							</FieldLabel>
+							<FieldLabel htmlFor={importerSelectId}>{t('Import_Type')}</FieldLabel>
 							<FieldRow>
 								<Select
-									id={importerKeySelectId}
+									id={importerSelectId}
 									value={importerKey}
-									disabled={isLoading}
-									placeholder={t('Select_an_option')}
-									onChange={handleImporterKeyChange}
+									onChange={(key) =>
+										typeof key === 'string' &&
+										router.navigate(`/admin/import/new/${key}`, { replace: true })
+									}
 									options={options}
 								/>
 							</FieldRow>
 							{importer && (
 								<FieldHint>
-									{importer.key === 'csv'
-										? t('Importer_From_Description_CSV')
-										: t('Importer_From_Description', { from: t(importer.name as TranslationKey) })}
+									{t(
+										importer.key === 'csv'
+											? 'Importer_From_Description_CSV'
+											: 'Importer_From_Description',
+										{ from: t(importer.name as TranslationKey) },
+									)}
 								</FieldHint>
 							)}
 						</Field>
+
 						{importer && (
 							<Field>
-								<FieldLabel alignSelf='stretch' htmlFor={fileTypeSelectId}>
-									{t('File_Type')}
-								</FieldLabel>
+								<FieldLabel htmlFor={fileTypeSelectId}>{t('File_Type')}</FieldLabel>
 								<FieldRow>
 									<Select
 										id={fileTypeSelectId}
 										value={fileType}
-										disabled={isLoading}
-										placeholder={t('Select_an_option')}
-										onChange={handleFileTypeChange}
+										onChange={(key) => typeof key === 'string' && setFileType(key)}
 										options={[
 											['upload', t('Upload')],
 											['url', t('Public_URL')],
@@ -258,61 +235,57 @@ function NewImportPage() {
 								</FieldRow>
 							</Field>
 						)}
-						{importer && (
+
+						{fileType === 'upload' && (
 							<>
-								{fileType === 'upload' && (
-									<>
-										{maxFileSize > 0 ? (
-											<Callout type='warning' marginBlock='x16'>
-												{t('Importer_Upload_FileSize_Message', {
-													maxFileSize: formatMemorySize(maxFileSize),
-												})}
-											</Callout>
-										) : (
-											<Callout type='info' marginBlock='x16'>
-												{t('Importer_Upload_Unlimited_FileSize')}
-											</Callout>
-										)}
-										<Field>
-											<FieldLabel alignSelf='stretch' htmlFor={fileSourceInputId}>
-												{t('Importer_Source_File')}
-											</FieldLabel>
-											<FieldRow>
-												<InputBox type='file' id={fileSourceInputId} onChange={handleImportFileChange} />
-											</FieldRow>
-											{files?.length > 0 && (
-												<FieldRow>
-													{files.map((file, i) => (
-														<Chip key={i} onClick={handleFileUploadChipClick(file)}>
-															{file.name}
-														</Chip>
-													))}
-												</FieldRow>
-											)}
-										</Field>
-									</>
-								)}
-								{fileType === 'url' && (
-									<Field>
-										<FieldLabel alignSelf='stretch' htmlFor={fileSourceInputId}>
-											{t('File_URL')}
-										</FieldLabel>
+								<Callout type='info'>
+									{maxFileSize > 0
+										? t('Importer_Upload_FileSize_Message', {
+												maxFileSize: formatMemorySize(maxFileSize),
+											})
+										: t('Importer_Upload_Unlimited_FileSize')}
+								</Callout>
+
+								<Field>
+									<FieldLabel htmlFor={fileInputId}>{t('Importer_Source_File')}</FieldLabel>
+									<FieldRow>
+										<InputBox
+											id={fileInputId}
+											type='file'
+											accept='.csv,.zip'
+											onChange={handleImportFileChange}
+										/>
+									</FieldRow>
+
+									{files.length > 0 && (
 										<FieldRow>
-											<UrlInput id={fileSourceInputId} value={fileUrl} onChange={handleFileUrlChange} />
+											{files.map((file) => (
+												<Chip key={file.name} onClick={handleRemoveFile(file)}>
+													{file.name}
+												</Chip>
+											))}
 										</FieldRow>
-									</Field>
-								)}
-								{fileType === 'path' && (
-									<Field>
-										<FieldLabel alignSelf='stretch' htmlFor={fileSourceInputId}>
-											{t('File_Path')}
-										</FieldLabel>
-										<FieldRow>
-											<TextInput id={fileSourceInputId} value={filePath} onChange={handleFilePathChange} />
-										</FieldRow>
-									</Field>
-								)}
+									)}
+								</Field>
 							</>
+						)}
+
+						{fileType === 'url' && (
+							<Field>
+								<FieldLabel>{t('File_URL')}</FieldLabel>
+								<FieldRow>
+									<UrlInput value={fileUrl} onChange={(e) => setFileUrl(e.currentTarget.value)} />
+								</FieldRow>
+							</Field>
+						)}
+
+						{fileType === 'path' && (
+							<Field>
+								<FieldLabel>{t('File_Path')}</FieldLabel>
+								<FieldRow>
+									<TextInput value={filePath} onChange={(e) => setFilePath(e.currentTarget.value)} />
+								</FieldRow>
+							</Field>
 						)}
 					</Margins>
 				</Box>
