@@ -54,6 +54,7 @@ export const useFilesList = (
 				...(options.type !== 'all' && {
 					typeGroup: options.type,
 				}),
+				onlyConfirmed: true,
 			});
 
 			const items = files.map((file) => ({
