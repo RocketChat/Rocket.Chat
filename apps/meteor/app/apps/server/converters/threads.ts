@@ -82,6 +82,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 			avatarUrl: 'avatar',
 			alias: 'alias',
 			file: 'file',
+			files: 'files',
 			customFields: 'customFields',
 			groupable: 'groupable',
 			token: 'token',

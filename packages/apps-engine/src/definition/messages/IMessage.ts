@@ -21,7 +21,9 @@ export interface IMessage {
 	emoji?: string;
 	avatarUrl?: string;
 	alias?: string;
+	/** @deprecated Deprecated in favor of files */
 	file?: IMessageFile;
+	files?: IMessageFile;
 	attachments?: Array<IMessageAttachment>;
 	reactions?: IMessageReactions;
 	groupable?: boolean;
