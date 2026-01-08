@@ -1,3 +1,5 @@
+import { readFile } from 'fs/promises';
+
 import { Settings } from '@rocket.chat/models';
 import { isAssetsUnsetAssetProps } from '@rocket.chat/rest-typings';
 
@@ -6,7 +8,7 @@ import { RocketChatAssets, refreshClients } from '../../../assets/server';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
-import { getUploadFormData } from '../lib/getUploadFormData';
+import { UploadService } from '../lib/UploadService';
 
 API.v1.addRoute(
 	'assets.setAsset',
@@ -16,18 +18,18 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const asset = await getUploadFormData(
-				{
-					request: this.request,
-				},
-				{ field: 'asset', sizeLimit: settings.get('FileUpload_MaxFileSize') },
-			);
+			const { file, fields } = await UploadService.parse(this.rawRequest, {
+				field: 'asset',
+				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
+			});
 
-			const { fileBuffer, fields, filename, mimetype } = asset;
+			if (!file) {
+				throw new Error('No file was uploaded');
+			}
 
 			const { refreshAllClients, assetName: customName } = fields;
 
-			const assetName = customName || filename;
+			const assetName = customName || file.filename;
 			const assetsKeys = Object.keys(RocketChatAssets.assets);
 
 			const isValidAsset = assetsKeys.includes(assetName);
@@ -35,7 +37,8 @@ API.v1.addRoute(
 				throw new Error('Invalid asset');
 			}
 
-			const { key, value } = await RocketChatAssets.setAssetWithBuffer(fileBuffer, mimetype, assetName);
+			const fileBuffer = await readFile(file.tempFilePath);
+			const { key, value } = await RocketChatAssets.setAssetWithBuffer(fileBuffer, file.mimetype, assetName);
 
 			const { modifiedCount } = await updateAuditedByUser({
 				_id: this.userId,

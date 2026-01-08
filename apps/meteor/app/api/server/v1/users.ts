@@ -1,3 +1,5 @@
+import { readFile } from 'fs/promises';
+
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
 import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
@@ -75,7 +77,7 @@ import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
-import { getUploadFormData } from '../lib/getUploadFormData';
+import { UploadService } from '../lib/UploadService';
 import { isValidQuery } from '../lib/isValidQuery';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
@@ -270,18 +272,14 @@ API.v1.addRoute(
 				return API.v1.success();
 			}
 
-			const image = await getUploadFormData(
-				{
-					request: this.request,
-				},
-				{ field: 'image', sizeLimit: settings.get('FileUpload_MaxFileSize') },
-			);
+			const { file, fields } = await UploadService.parse(this.rawRequest, {
+				field: 'image',
+				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
+			});
 
-			if (!image) {
+			if (!file) {
 				return API.v1.failure("The 'image' param is required");
 			}
-
-			const { fields, fileBuffer, mimetype } = image;
 
 			const sentTheUserByFormData = fields.userId || fields.username;
 			if (sentTheUserByFormData) {
@@ -303,7 +301,7 @@ API.v1.addRoute(
 				}
 			}
 
-			await setUserAvatar(user, fileBuffer, mimetype, 'rest');
+			await setUserAvatar(user, await readFile(file.tempFilePath), file.mimetype, 'rest');
 
 			return API.v1.success();
 		},
