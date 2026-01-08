@@ -94,7 +94,7 @@ export class HomeContent {
 					/api\/v1\/method.call\/sendMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
 			);
 
-			await this.page.getByRole('button', { name: 'Send', exact: true }).click();
+			await this.composer.btnSend.click();
 
 			const response = await (await responsePromise).json();
 
@@ -289,14 +289,6 @@ export class HomeContent {
 
 	get btnVoiceCall(): Locator {
 		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Voice call' });
-	}
-
-	get btnRecordAudio(): Locator {
-		return this.page.locator('[data-qa-id="audio-message"]');
-	}
-
-	get btnMenuMoreActions() {
-		return this.page.getByRole('button', { name: 'More actions', exact: true });
 	}
 
 	get userCard(): Locator {
@@ -523,6 +515,11 @@ export class HomeContent {
 	}
 
 	async sendMessageInThread(text: string): Promise<void> {
+		await this.threadComposer.inputMessage.fill(text);
+		await this.threadComposer.btnSend.click();
+	}
+
+	async sendMessageInVideoConfPopup(text: string): Promise<void> {
 		await this.page.getByRole('dialog').getByRole('textbox', { name: 'Message' }).fill(text);
 		await this.page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).click();
 	}
@@ -537,10 +534,6 @@ export class HomeContent {
 
 	get btnClearSelection() {
 		return this.page.getByRole('button', { name: 'Clear selection' });
-	}
-
-	get btnJoinChannel() {
-		return this.page.getByRole('button', { name: 'Join channel' });
 	}
 
 	get contactUnknownCallout() {

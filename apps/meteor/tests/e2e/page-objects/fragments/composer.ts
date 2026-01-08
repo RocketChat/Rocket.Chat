@@ -17,6 +17,10 @@ export abstract class Composer {
 		return this.msgComposer.locator('[name="msg"]');
 	}
 
+	get btnJoinRoom(): Locator {
+		return this.root.getByRole('button', { name: 'Join' });
+	}
+
 	get toolbarPrimaryActions(): Locator {
 		return this.msgComposer.getByRole('toolbar', { name: 'Composer Primary Actions' });
 	}
@@ -26,11 +30,11 @@ export abstract class Composer {
 	}
 
 	get btnComposerEmoji(): Locator {
-		return this.toolbarPrimaryActions.getByRole('button', { name: 'Emoji' });
+		return this.toolbarPrimaryActions.getByRole('button', { name: 'Emoji', exact: true });
 	}
 
-	get btnJoinRoom(): Locator {
-		return this.root.getByRole('button', { name: 'Join' });
+	get btnAudioMessage(): Locator {
+		return this.toolbarPrimaryActions.getByRole('button', { name: 'Audio message', exact: true });
 	}
 
 	get btnSend(): Locator {
@@ -38,11 +42,23 @@ export abstract class Composer {
 	}
 
 	get btnOptionFileUpload(): Locator {
-		return this.toolbarPrimaryActions.getByRole('button', { name: 'Upload file' });
+		return this.toolbarPrimaryActions.getByRole('button', { name: 'Upload file', exact: true });
 	}
 
 	get btnVideoMessage(): Locator {
-		return this.toolbarPrimaryActions.getByRole('button', { name: 'Video message' });
+		return this.toolbarPrimaryActions.getByRole('button', { name: 'Video message', exact: true });
+	}
+
+	get btnMenuMoreActions() {
+		return this.toolbarPrimaryActions.getByRole('button', { name: 'More actions', exact: true });
+	}
+
+	get boxPopup(): Locator {
+		return this.root.locator('[role="menu"][name="ComposerBoxPopup"]');
+	}
+
+	get readOnlyFooter(): Locator {
+		return this.root.getByText('This room is read only');
 	}
 }
 
@@ -54,6 +70,6 @@ export class RoomComposer extends Composer {
 
 export class ThreadComposer extends Composer {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'thread' }).locator('footer[aria-label="Thread composer"]'));
+		super(page.locator('footer[aria-label="Thread composer"]'));
 	}
 }

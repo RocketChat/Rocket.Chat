@@ -1,15 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import {
-	HomeContent,
-	HomeFlextab,
-	Navbar,
-	Sidepanel,
-	RoomSidebar,
-	ToastMessages,
-	RoomComposer,
-	ThreadComposer,
-} from './fragments';
+import { HomeContent, HomeFlextab, Navbar, Sidepanel, RoomSidebar, ToastMessages, RoomComposer, ThreadComposer } from './fragments';
 import { RoomToolbar } from './fragments/toolbar';
 import { VoiceCalls } from './fragments/voice-calls';
 
@@ -58,25 +49,12 @@ export class HomeChannel {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
-	// TODO: move to Composer fragment
-	get composerBoxPopup(): Locator {
-		return this.page.locator('[role="menu"][name="ComposerBoxPopup"]');
-	}
-
 	get userCardToolbar(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="User card actions"]');
 	}
 
-	get composerToolbar(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="Composer Primary Actions"]');
-	}
-
 	get roomHeaderFavoriteBtn(): Locator {
 		return this.page.getByRole('main').getByRole('button', { name: 'Favorite' });
-	}
-
-	get readOnlyFooter(): Locator {
-		return this.page.locator('footer', { hasText: 'This room is read only' });
 	}
 
 	get roomHeaderToolbar(): Locator {

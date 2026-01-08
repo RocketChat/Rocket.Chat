@@ -157,7 +157,7 @@ test.describe.serial('permissions', () => {
 
 		test('expect option (upload audio) not be visible', async () => {
 			await poHomeChannel.navbar.openChat(targetChannel);
-			await expect(poHomeChannel.content.btnRecordAudio).toBeDisabled();
+			await expect(poHomeChannel.composer.btnAudioMessage).toBeDisabled();
 		});
 
 		test.afterAll(async ({ api }) => {
