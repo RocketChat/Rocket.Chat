@@ -210,7 +210,7 @@ test.describe.serial('channel-management', () => {
 			const user1Channel = new HomeChannel(user1Page);
 			await user1Page.goto(`/channel/${targetChannel}`);
 			await user1Channel.content.waitForChannel();
-			await expect(user1Channel.composer).toBeVisible();
+			await expect(user1Channel.composer.inputMessage).toBeVisible();
 		});
 
 		test('should set user1 as moderator', async () => {

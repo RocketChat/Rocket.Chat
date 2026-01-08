@@ -49,7 +49,7 @@ test.describe('Preview public channel', () => {
 			await poHomeChannel.navbar.openChat(Users.user2.data.username);
 
 			await expect(poHomeChannel.content.btnJoinChannel).not.toBeVisible();
-			await expect(poHomeChannel.composer).toBeEnabled();
+			await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
 		});
 
 		test('should not let user role preview public rooms', async ({ api }) => {
@@ -74,7 +74,7 @@ test.describe('Preview public channel', () => {
 
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText(targetChannelMessage);
 
-			await poHomeChannel.btnJoinRoom.click();
+			await poHomeChannel.composer.btnJoinRoom.click();
 
 			await expect(
 				page.locator('[role="alert"]', {
