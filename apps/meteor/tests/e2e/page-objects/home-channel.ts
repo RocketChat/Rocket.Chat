@@ -119,10 +119,6 @@ export class HomeChannel {
 		return this.page.getByRole('group', { name: 'Audio recorder', exact: true });
 	}
 
-	get btnJoinRoom(): Locator {
-		return this.page.getByRole('button', { name: 'Join' });
-	}
-
 	get statusUploadIndicator(): Locator {
 		return this.page.getByRole('main').getByRole('status');
 	}

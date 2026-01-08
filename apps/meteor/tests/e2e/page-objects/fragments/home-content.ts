@@ -11,6 +11,7 @@ const FIXTURES_PATH = relative(process.cwd(), resolve(__dirname, '../../fixtures
 export function getFilePath(fileName: string): string {
 	return join(FIXTURES_PATH, fileName);
 }
+
 export class HomeContent {
 	protected readonly page: Page;
 
@@ -72,19 +73,15 @@ export class HomeContent {
 		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
 	}
 
-	get btnJoinRoom(): Locator {
-		return this.page.locator('role=button[name="Join"]');
-	}
-
 	async joinRoom(): Promise<void> {
-		await this.btnJoinRoom.click();
+		await this.composer.btnJoinRoom.click();
 	}
 
 	async joinRoomIfNeeded(): Promise<void> {
 		if (await this.composer.inputMessage.isEnabled()) {
 			return;
 		}
-		if (!(await this.btnJoinRoom.isVisible())) {
+		if (!(await this.composer.btnJoinRoom.isVisible())) {
 			return;
 		}
 		await this.joinRoom();
@@ -92,8 +89,8 @@ export class HomeContent {
 
 	async sendMessage(text: string, enforce = true): Promise<void> {
 		await this.joinRoomIfNeeded();
-		await this.page.waitForSelector('[name="msg"]:not([disabled])');
-		await this.page.locator('[name="msg"]').fill(text);
+		await expect(this.composer.inputMessage).toBeEnabled();
+		await this.composer.inputMessage.fill(text);
 
 		if (enforce) {
 			const responsePromise = this.page.waitForResponse(
@@ -111,15 +108,16 @@ export class HomeContent {
 			await expect(messageLocator).toBeVisible();
 			await expect(messageLocator).not.toHaveClass('rcx-message--pending');
 		} else {
-			await this.page.getByRole('button', { name: 'Send', exact: true }).click();
+			await this.composer.btnSend.click();
 		}
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
 		await this.joinRoomIfNeeded();
-		await this.page.waitForSelector('[name="msg"]:not([disabled])');
-		await this.page.locator('[name="msg"]').fill('');
-		await this.page.locator('[name="msg"]').fill(text);
+		await expect(this.composer.inputMessage).toBeEnabled();
+
+		await this.composer.inputMessage.fill('');
+		await this.composer.inputMessage.fill(text);
 		await this.page.keyboard.press('Enter');
 		await this.page.keyboard.press('Enter');
 	}
@@ -135,6 +133,7 @@ export class HomeContent {
 		await this.page.locator('role=button[name="Forward"]').click();
 	}
 
+	// TODO: use modal fragments -----------------------------------------
 	get btnModalCancel(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
 	}
@@ -184,6 +183,8 @@ export class HomeContent {
 	get fileNameInput(): Locator {
 		return this.page.locator('//div[@id="modal-root"]//fieldset//div[1]//span//input');
 	}
+
+	// -----------------------------------------
 
 	get lastMessageFileName(): Locator {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
@@ -265,6 +266,7 @@ export class HomeContent {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="attachment-title-link"]');
 	}
 
+	// TODO: improve locator specificity
 	get menuMore(): Locator {
 		return this.page.getByRole('menu', { name: 'More', exact: true });
 	}
@@ -287,14 +289,6 @@ export class HomeContent {
 
 	get btnOptionStarMessage(): Locator {
 		return this.menuMore.getByRole('menuitem', { name: 'Star', exact: true });
-	}
-
-	get btnOptionFileUpload(): Locator {
-		return this.page.locator('[data-qa-id="file-upload"]');
-	}
-
-	get btnVideoMessage(): Locator {
-		return this.page.locator('[data-qa-id="video-message"]');
 	}
 
 	get btnVoiceCall(): Locator {

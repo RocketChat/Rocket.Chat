@@ -28,6 +28,18 @@ export abstract class Composer {
 	get btnJoinRoom(): Locator {
 		return this.root.getByRole('button', { name: 'Join' });
 	}
+
+	get btnSend(): Locator {
+		return this.root.getByRole('button', { name: 'Send', exact: true });
+	}
+
+	get btnOptionFileUpload(): Locator {
+		return this.toolbarPrimaryActions.getByRole('button', { name: 'Upload file' });
+	}
+
+	get btnVideoMessage(): Locator {
+		return this.toolbarPrimaryActions.getByRole('button', { name: 'Video message' });
+	}
 }
 
 export class MessageComposer extends Composer {
