@@ -1,6 +1,6 @@
 {
-	"name": "@rocket.chat/ui-client",
-	"version": "26.0.0-rc.1",
+	"name": "@rocket.chat/livechat",
+	"version": "1.0.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -19,7 +19,9 @@
 	},
 	"dependencies": {
 		"@rocket.chat/onboarding-ui": "~0.36.0",
-		"dompurify": "~3.2.7"
+		"@rocket.chat/ui-client": "workspace:~",
+		"dompurify": "~3.2.7",
+		"react-error-boundary": "^5.0.0"
 	},
 	"devDependencies": {
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
@@ -54,6 +56,7 @@
 		"jest": "~30.2.0",
 		"overlayscrollbars": "^2.11.4",
 		"overlayscrollbars-react": "^0.5.6",
+		"preact": "^10.0.0",
 		"re-resizable": "^6.10.1",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",

@@ -27,6 +27,8 @@ import type { Dispatch, StoreState } from '../../store';
 import { ScreenProvider } from '../Screen/ScreenProvider';
 import { GlobalErrorFallback } from '../../../../ui-client/src/components/errors/ErrorFallbacks';
 import { errorTrackingService } from '../../../../ui-client/src/services/ErrorTrackingService';
+import { ScreenProvider } from '../Screen/ScreenProvider';
+import { GlobalErrorFallback, errorTrackingService } from '@rocket.chat/ui-client';
 
 type AppProps = {
 	config: {
