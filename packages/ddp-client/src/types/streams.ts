@@ -154,7 +154,6 @@ export interface StreamerEvents {
 							| 'tunread'
 							| 'tunreadGroup'
 							| 'tunreadUser'
-							| 'status'
 
 							// Omnichannel fields
 							| 'department'
