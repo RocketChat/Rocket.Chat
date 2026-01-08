@@ -1,8 +1,10 @@
 import type { IMessage, FileAttachmentProps, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { imperativeModal } from '@rocket.chat/ui-client';
+import { getI18n } from 'react-i18next';
 
 import { fileUploadIsValidContentType } from '../../../../app/utils/client';
+import { getMimeTypeFromFileName } from '../../../../app/utils/lib/mimeTypes';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import FileUploadModal from '../../../views/room/modals/FileUploadModal';
 import { e2e } from '../../e2ee';
@@ -32,6 +34,15 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 
 	const queue = [...files];
 
+	const prepareFile = (currentFileName: string, originalFileName: string, file: File): File => {
+		const originalFileExtension = getFileExtension(originalFileName);
+		const _file = new File([file], currentFileName, {
+			type: originalFileExtension !== getFileExtension(currentFileName) ? getMimeTypeFromFileName(currentFileName) : file.type,
+		});
+
+		return _file;
+	};
+
 	const uploadFile = (
 		file: File,
 		extraData?: Pick<IMessage, 't' | 'e2e'> & { description?: string },
@@ -53,8 +64,8 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 	};
 
 	const uploadNextFile = (): void => {
-		const file = queue.pop();
-		if (!file) {
+		const nextFile = queue.pop();
+		if (!nextFile) {
 			chat.composer?.dismissAllQuotedMessages();
 			return;
 		}
@@ -62,19 +73,26 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 		imperativeModal.open({
 			component: FileUploadModal,
 			props: {
-				file,
-				fileName: file.name,
+				file: nextFile,
+				fileName: nextFile.name,
 				fileDescription: chat.composer?.text ?? '',
 				showDescription: room && !isRoomFederated(room),
 				onClose: (): void => {
 					imperativeModal.close();
 					uploadNextFile();
 				},
-				onSubmit: async (fileName: string, description?: string): Promise<void> => {
-					Object.defineProperty(file, 'name', {
-						writable: true,
-						value: fileName,
-					});
+				onSubmit: async (fileName, description, dispatchToastMessage): Promise<void> => {
+					const file = prepareFile(fileName, nextFile.name, nextFile);
+
+					if (!fileUploadIsValidContentType(file.type)) {
+						dispatchToastMessage?.({
+							type: 'error',
+							message: getI18n().t('FileUpload_MediaType_NotAccepted__type__', { type: file.type }),
+						});
+						imperativeModal.close();
+						uploadNextFile();
+						return;
+					}
 
 					// encrypt attachment description
 					const e2eRoom = await e2e.getInstanceByRoomId(room._id);
@@ -196,7 +214,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 						);
 					}
 				},
-				invalidContentType: !fileUploadIsValidContentType(file?.type),
+				invalidContentType: !fileUploadIsValidContentType(nextFile?.type),
 			},
 		});
 	};

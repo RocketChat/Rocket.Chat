@@ -26,7 +26,7 @@ import FilePreview from './FilePreview';
 
 type FileUploadModalProps = {
 	onClose: () => void;
-	onSubmit: (name: string, description?: string) => void;
+	onSubmit: (name: string, description?: string, dispatchToastMessage?: ReturnType<typeof useToastMessageDispatch>) => void;
 	file: File;
 	fileName: string;
 	fileDescription?: string;
@@ -67,7 +67,7 @@ const FileUploadModal = ({
 			});
 		}
 
-		onSubmit(name, description);
+		onSubmit(name, description, dispatchToastMessage);
 	};
 
 	useEffect(() => {
