@@ -49,11 +49,10 @@ export const useRoomInvitation = (room: IRoomWithFederationOriginalName) => {
 				return;
 			}
 
-			if (event !== 'removed' && data.status !== undefined) {
-				return;
+			// Only invalidate when subscription is removed OR invite is accepted (status cleared)
+			if (event === 'removed' || data.status === undefined) {
+				await invalidateQueries();
 			}
-
-			await invalidateQueries();
 		});
 	}, [room._id, user._id, invalidateQueries, replyInvite.isPending, subscribeToNotifyUser]);
 
