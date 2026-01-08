@@ -135,7 +135,7 @@ class Bridge {
 		// Get the command
 		const item = this.queue.dequeue();
 
-		this.logQueue(`Processing "${item.command}" command from "${item.from}"`);
+		this.logQueue({ msg: 'Processing command from source', command: item.command, from: item.from });
 
 		// Handle the command accordingly
 		try {
