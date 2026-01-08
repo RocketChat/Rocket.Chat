@@ -392,7 +392,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isGroupsFilesProps },
 	{
 		async get() {
-			const { typeGroup, name, roomId, roomName } = this.queryParams;
+			const { typeGroup, name, roomId, roomName, onlyConfirmed } = this.queryParams;
 
 			const findResult = await findPrivateGroupByIdOrName({
 				params: roomId ? { roomId } : { roomName },
@@ -408,6 +408,7 @@ API.v1.addRoute(
 				rid: findResult.rid,
 				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
+				...(onlyConfirmed && { expiresAt: { $exists: false } }),
 			};
 
 			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
