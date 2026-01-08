@@ -17,8 +17,8 @@ test.describe.parallel('Reset Password', () => {
 	});
 
 	test('should confirm password be invalid', async () => {
-		await poRegistration.inputPassword.fill('123456');
-		await poRegistration.inputPasswordConfirm.fill('123455');
+		await poRegistration.inputPassword.fill('P@ssw0rd1234.!');
+		await poRegistration.inputPasswordConfirm.fill('Password4321.!');
 		await poRegistration.btnReset.click();
 		await expect(poRegistration.inputPasswordConfirm).toBeInvalid();
 	});
