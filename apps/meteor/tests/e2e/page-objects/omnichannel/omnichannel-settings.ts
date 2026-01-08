@@ -24,6 +24,6 @@ export class OmnichannelSettings extends OmnichannelAdmin {
 	}
 
 	get labelHideWatermark(): Locator {
-		return this.page.locator('label', { has: this.page.locator('[data-qa-setting-id="Livechat_hide_watermark"]') });
+		return this.page.locator('label').getByText('Hide "powered by Rocket.Chat"');
 	}
 }
