@@ -19,14 +19,10 @@ export async function ufsComplete(fileId: string, storeName: string, options?: {
 
 	const tmpFile = UploadFS.getTempFilePath(fileId);
 
-	const removeTempFile = function () {
-		fs.stat(tmpFile, (err) => {
-			!err &&
-				fs.unlink(tmpFile, (err2) => {
-					err2 && console.error(`ufs: cannot delete temp file "${tmpFile}" (${err2.message})`);
-				});
+	const removeTempFile = () =>
+		fs.promises.unlink(tmpFile).catch(() => {
+			console.warn(`[ufsComplete] Failed to remove temp file: ${tmpFile}`);
 		});
-	};
 
 	return new Promise(async (resolve, reject) => {
 		try {
@@ -61,7 +57,7 @@ export async function ufsComplete(fileId: string, storeName: string, options?: {
 				rs,
 				fileId,
 				(err, file) => {
-					removeTempFile();
+					void removeTempFile();
 
 					if (err) {
 						return reject(err);
@@ -76,7 +72,7 @@ export async function ufsComplete(fileId: string, storeName: string, options?: {
 		} catch (err: any) {
 			// If write failed, remove the file
 			await store.removeById(fileId, { session: options?.session });
-			// removeTempFile(); // todo remove temp file on error or try again ?
+			void removeTempFile();
 			reject(new Meteor.Error('ufs: cannot upload file', err));
 		}
 	});
