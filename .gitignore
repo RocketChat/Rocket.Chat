@@ -41,7 +41,6 @@ storybook-static
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-yarn.lock
 deno.lock
 
 .nvmrc
@@ -65,3 +64,6 @@ development/tempo-data/
 
 .env
 .github/copilot-instructions.md
+
+.vscode/
+.CLAUDE.md
