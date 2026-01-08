@@ -16,12 +16,7 @@ import handleUIKitInteraction, { uikitInteractions } from '../uikit/handler.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import handleOnUpdate from './handleOnUpdate.ts';
 import handleUploadEvents, { uploadEvents } from './handleUploadEvents.ts';
-
-declare global {
-	interface ReadonlyArray<T> {
-		includes(x: unknown): x is T;
-	}
-}
+import { isOneOf } from '../lib/assertions.ts';
 
 export default async function handleApp(method: string, params: unknown): Promise<Defined | JsonRpcError> {
 	const [, appMethod] = method.split(':');
@@ -54,13 +49,13 @@ export default async function handleApp(method: string, params: unknown): Promis
 			}
 
 			return result;
-		}
+		};
 
-		if (app && uploadEvents.includes(appMethod)) {
+		if (app && isOneOf(appMethod, uploadEvents)) {
 			return handleUploadEvents(appMethod, params).then(formatResult);
 		}
 
-		if (app && uikitInteractions.includes(appMethod)) {
+		if (app && isOneOf(appMethod, uikitInteractions)) {
 			return handleUIKitInteraction(appMethod, params).then(formatResult);
 		}
 

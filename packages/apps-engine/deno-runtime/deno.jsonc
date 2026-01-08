@@ -4,7 +4,7 @@
 		"@rocket.chat/apps-engine/": "./../src/",
 		"@rocket.chat/ui-kit": "npm:@rocket.chat/ui-kit@^0.31.22",
 		"@std/cli": "jsr:@std/cli@^1.0.9",
-		"@std/streams": "jsr:@std/streams@1.0.16",
+		"@std/streams": "jsr:@std/streams@^1.0.16",
 		"acorn": "npm:acorn@8.10.0",
 		"acorn-walk": "npm:acorn-walk@8.2.0",
 		"astring": "npm:astring@1.8.6",

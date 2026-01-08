@@ -4,7 +4,7 @@
     "specifiers": {
       "jsr:@std/bytes@^1.0.6": "jsr:@std/bytes@1.0.6",
       "jsr:@std/cli@^1.0.9": "jsr:@std/cli@1.0.13",
-      "jsr:@std/streams@1.0.16": "jsr:@std/streams@1.0.16",
+      "jsr:@std/streams@^1.0.16": "jsr:@std/streams@1.0.16",
       "npm:@msgpack/msgpack@3.0.0-beta2": "npm:@msgpack/msgpack@3.0.0-beta2",
       "npm:@rocket.chat/ui-kit@^0.31.22": "npm:@rocket.chat/ui-kit@0.31.25_@rocket.chat+icons@0.32.0",
       "npm:acorn-walk@8.2.0": "npm:acorn-walk@8.2.0",
@@ -113,7 +113,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/cli@^1.0.9",
-      "jsr:@std/streams@1.0.16",
+      "jsr:@std/streams@^1.0.16",
       "npm:@msgpack/msgpack@3.0.0-beta2",
       "npm:@rocket.chat/ui-kit@^0.31.22",
       "npm:acorn-walk@8.2.0",

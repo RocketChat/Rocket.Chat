@@ -259,16 +259,18 @@ export class AppListenerBridge {
 			throw new Error('Error sending file to apps', { cause: err });
 		});
 
-		const appFile = await this.orch.getConverters().get('uploads').convertToApp(file);
+		try {
+			const appFile = await this.orch.getConverters().get('uploads').convertToApp(file);
 
-		// Execute both events for backward compatibility
-		await this.orch.getManager().getListenerManager().executeListener(AppInterface.IPreFileUpload, { file: appFile, path: tmpfile });
-
-		await fs.promises
-			.unlink(tmpfile)
-			.catch((err) =>
-				this.orch.getRocketChatLogger().warn({ msg: `AppListenerBridge: Could not delete temporary file at ${tmpfile}`, err }),
-			);
+			// Execute both events for backward compatibility
+			await this.orch.getManager().getListenerManager().executeListener(AppInterface.IPreFileUpload, { file: appFile, path: tmpfile });
+		} finally {
+			await fs.promises
+				.unlink(tmpfile)
+				.catch((err) =>
+					this.orch.getRocketChatLogger().warn({ msg: `AppListenerBridge: Could not delete temporary file at ${tmpfile}`, err }),
+				);
+		}
 	}
 
 	async messageEvent(args: HandleMessageEvent): Promise<boolean | IMessage | undefined> {

@@ -2,7 +2,21 @@ import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import { JsonRpcError } from 'jsonrpc-lite';
 
 export function isRecord(v: unknown): v is Record<string, unknown> {
-	return !!v && typeof v === 'object';
+	if (!v || typeof v !== 'object') {
+		return false;
+	}
+
+	const prototype = Object.getPrototypeOf(v);
+
+	return prototype === null || prototype.constructor === Object;
+}
+
+/**
+ * Type guard function to check if a value is included in a readonly array
+ * and narrow its type accordingly.
+ */
+export function isOneOf<T>(value: unknown, array: readonly T[]): value is T {
+	return array.includes(value as T);
 }
 
 export function assertAppAvailable(v: unknown): asserts v is App {

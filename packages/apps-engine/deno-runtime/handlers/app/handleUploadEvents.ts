@@ -16,7 +16,7 @@ export const uploadEvents = ['executePreFileUpload'] as const;
 function assertIsUpload(v: unknown): asserts v is IUpload {
 	if (isRecord(v) && isRecord(v.user) && isRecord(v.room)) return;
 
-	throw JsonRpcError.invalidParams({ err: `Invalid 'file' parameter. Expected IUploadDetails, got`, value: v });
+	throw JsonRpcError.invalidParams({ err: `Invalid 'file' parameter. Expected IUpload, got`, value: v });
 }
 
 function assertString(v: unknown): asserts v is string {
