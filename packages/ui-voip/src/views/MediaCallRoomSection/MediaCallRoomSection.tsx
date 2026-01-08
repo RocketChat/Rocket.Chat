@@ -2,6 +2,8 @@ import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import GenericCard from './GenericCard';
+import PeerCard from './PeerCard';
 import {
 	ToggleButton,
 	// PeerInfo,
@@ -34,14 +36,23 @@ const getSplitStyles = (showChat: boolean) => {
 	};
 };
 
-const RoomCallSection = ({ showChat, onToggleChat }: { showChat: boolean; onToggleChat: () => void }) => {
+type RoomCallSectionProps = {
+	showChat: boolean;
+	onToggleChat: () => void;
+	user: {
+		displayName: string;
+		avatarUrl: string;
+	};
+};
+
+const RoomCallSection = ({ showChat, onToggleChat, user }: RoomCallSectionProps) => {
 	const { t } = useTranslation();
 	const [sharingScreen, setSharingScreen] = useState<boolean>(false);
 	const {
 		muted,
 		held,
-		// remoteMuted,
-		// remoteHeld,
+		remoteMuted,
+		remoteHeld,
 		onMute,
 		onHold,
 		onForward,
@@ -74,7 +85,7 @@ const RoomCallSection = ({ showChat, onToggleChat }: { showChat: boolean; onTogg
 	const [remoteStreamRefCallback] = useMediaStream(remoteVideoStream);
 	const [localStreamRefCallback] = useMediaStream(localVideoStream);
 
-	const onVideoPlaying = useRoomView();
+	useRoomView();
 
 	const onClickShareScreen = () => {
 		toggleScreenSharing();
@@ -82,7 +93,8 @@ const RoomCallSection = ({ showChat, onToggleChat }: { showChat: boolean; onTogg
 	};
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
-	if (!peerInfo) {
+	// TODO flter out external peer info
+	if (!peerInfo || 'number' in peerInfo) {
 		return null;
 		// throw new Error('Peer info is required');
 	}
@@ -92,84 +104,105 @@ const RoomCallSection = ({ showChat, onToggleChat }: { showChat: boolean; onTogg
 		<Box
 			w='full'
 			bg='hover'
-			flexShrink={0}
+			// flexShrink={1}
+			// flexGrow={1}
 			borderBlockEnd='1px solid'
 			borderBlockEndColor='stroke-light'
 			overflow='hidden'
-			display='flex'
-			flexDirection='column'
-			justifyContent='space-between'
-			alignItems='center'
+			display='block'
 			{...getSplitStyles(showChat)}
 		>
-			{/* <Box flexShrink={0}>
-				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
-				<Timer />
-			</Box> */}
-			{remoteVideoStream && (
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' alignItems='center' justifyContent='center' pb={8} pi={8}>
-					<video
-						preload='metadata'
-						style={{ height: '100%', width: '100%', objectFit: 'contain' }}
-						ref={remoteStreamRefCallback}
-						onPlaying={onVideoPlaying}
-					>
-						<track kind='captions' />
-					</video>
-				</Box>
-			)}
-			{localVideoStream?.active && (
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' alignItems='center' justifyContent='center' pb={8} pi={8}>
-					<video
-						preload='metadata'
-						style={{ height: '100%', width: '100%', objectFit: 'contain' }}
-						ref={localStreamRefCallback}
-						// onPlaying={onVideoPlaying} // TODO: We might need to wait for both videos to be playing before closing the widget
-					>
-						<track kind='captions' />
-					</video>
-				</Box>
-			)}
-			<Box display='flex' flexDirection='row' justifyContent='space-between' flexShrink={0} mb={8} w='full'>
-				<Box flexGrow={1} color='default' alignContent='center' pis={16}>
-					<Timer />
-				</Box>
-				<ButtonGroup large align='center' style={{ flexGrow: 2 }}>
-					{/* <ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} /> */}
-					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
-					<ToggleButton
-						label={t('Screen_sharing')}
-						icons={['computer', 'computer']}
-						titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
-						pressed={sharingScreen}
-						onToggle={onClickShareScreen}
+			{/* TODO wrapper component for the cards */}
+			<Box display='flex' w='full' flexWrap='wrap' mbe={8} overflow='hidden'>
+				<Box
+					display='flex'
+					flexGrow={1}
+					flexShrink={0}
+					overflow='hidden'
+					flexDirection='row'
+					justifyContent='center'
+					h='100%'
+					flexBasis='100%'
+					flexWrap='wrap'
+				>
+					{/* Own user card */}
+					<PeerCard
+						displayName={user.displayName}
+						avatarUrl={user.avatarUrl}
+						muted={muted}
+						held={held}
+						sharing={localVideoStream?.active ?? false}
 					/>
-					<ToggleButton
-						label={t('Hold')}
-						icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
-						titles={[t('Hold'), t('Resume')]}
-						pressed={held}
-						onToggle={onHold}
+					{/* Remote user card */}
+					<PeerCard
+						displayName={peerInfo.displayName}
+						avatarUrl={peerInfo.avatarUrl}
+						muted={remoteMuted}
+						held={remoteHeld}
+						sharing={remoteVideoStream?.active ?? false}
 					/>
 					{remoteVideoStream && (
-						<ToggleButton
-							label={t('Chat')}
-							icons={['balloon', 'balloon-off']}
-							titles={[t('Open_chat'), t('Close_chat')]}
-							pressed={showChat}
-							onToggle={onToggleChat}
-						/>
+						<GenericCard title='Remote Video' slots={{ topLeft: <Timer /> }}>
+							<video preload='metadata' style={{ objectFit: 'contain' }} ref={remoteStreamRefCallback}>
+								<track kind='captions' />
+							</video>
+						</GenericCard>
 					)}
-					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
-					<ActionButton
-						label={t('Voice_call__user__hangup', { user: 'userId' in peerInfo ? peerInfo.displayName : peerInfo.number })}
-						icon='phone-off'
-						danger
-						onClick={onEndCall}
-					/>
-					<DevicePicker />
-				</ButtonGroup>
-				<Box flexGrow={1} /> {/* TODO: This is a hack to center the buttons */}
+					{localVideoStream?.active && (
+						<GenericCard title='Local Video'>
+							<video preload='metadata' style={{ objectFit: 'contain' }} ref={localStreamRefCallback}>
+								<track kind='captions' />
+							</video>
+						</GenericCard>
+					)}
+				</Box>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' flexShrink={0} mb={8} w='full'>
+					<Box flexGrow={1} color='default' alignContent='center' pis={16}>
+						<Timer />
+					</Box>
+					<ButtonGroup large align='center' style={{ flexGrow: 2 }}>
+						{/* <ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} /> */}
+						<ToggleButton
+							label={t('Mute')}
+							icons={['mic', 'mic-off']}
+							titles={[t('Mute'), t('Unmute')]}
+							pressed={muted}
+							onToggle={onMute}
+						/>
+						<ToggleButton
+							label={t('Screen_sharing')}
+							icons={['computer', 'computer']}
+							titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
+							pressed={sharingScreen}
+							onToggle={onClickShareScreen}
+						/>
+						<ToggleButton
+							label={t('Hold')}
+							icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
+							titles={[t('Hold'), t('Resume')]}
+							pressed={held}
+							onToggle={onHold}
+						/>
+						{remoteVideoStream && (
+							<ToggleButton
+								label={t('Chat')}
+								icons={['balloon', 'balloon-off']}
+								titles={[t('Open_chat'), t('Close_chat')]}
+								pressed={showChat}
+								onToggle={onToggleChat}
+							/>
+						)}
+						<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
+						<ActionButton
+							label={t('Voice_call__user__hangup', { user: peerInfo.displayName })}
+							icon='phone-off'
+							danger
+							onClick={onEndCall}
+						/>
+						<DevicePicker />
+					</ButtonGroup>
+					<Box flexGrow={1} /> {/* TODO: This is a hack to center the buttons */}
+				</Box>
 			</Box>
 		</Box>
 	);
