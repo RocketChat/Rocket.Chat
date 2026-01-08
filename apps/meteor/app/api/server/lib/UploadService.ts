@@ -51,19 +51,16 @@ export class UploadService {
 		const strippedPath = `${tempFilePath}.stripped`;
 
 		try {
-			await pipelineAsync(fs.createReadStream(tempFilePath), new ExifTransformer(), fs.createWriteStream(strippedPath));
+			const writeStream = fs.createWriteStream(strippedPath);
 
-			const stats = await fs.promises.stat(strippedPath);
+			await pipelineAsync(fs.createReadStream(tempFilePath), new ExifTransformer(), writeStream);
 
 			await fs.promises.rename(strippedPath, tempFilePath);
 
-			return stats.size;
+			return writeStream.bytesWritten;
 		} catch (error) {
-			try {
-				await fs.promises.unlink(strippedPath);
-			} catch {
-				// Ignore cleanup errors
-			}
+			void this.cleanup(strippedPath);
+
 			throw error;
 		}
 	}
