@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-Prevent rare cascading of language preference updates when multiple tabs reload
+Fixes browser slowdowns by preventing a rare cascading of language preference updates when multiple tabs reload
