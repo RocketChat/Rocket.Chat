@@ -22,14 +22,14 @@ test.describe.serial('emoji', () => {
 
 	test('should display emoji picker properly', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
-		await poHomeChannel.content.btnComposerEmoji.click();
+		await poHomeChannel.composer.btnComposerEmoji.click();
 
 		await test.step('should display scroller', async () => {
-			await expect(poHomeChannel.content.scrollerEmojiPicker).toBeVisible();
+			await expect(poHomeChannel.scrollerEmojiPicker).toBeVisible();
 		});
 
 		await test.step('should focus the active emoji tab category', async () => {
-			const activityEmojiTab = poHomeChannel.content.getEmojiPickerTabByName('Activity');
+			const activityEmojiTab = poHomeChannel.getEmojiPickerTabByName('Activity');
 			await activityEmojiTab.click();
 
 			await expect(activityEmojiTab).toBeFocused();
@@ -37,7 +37,7 @@ test.describe.serial('emoji', () => {
 
 		await test.step('should pick and send grinning emoji', async () => {
 			await poHomeChannel.navbar.openChat(targetChannel);
-			await poHomeChannel.content.pickEmoji('grinning');
+			await poHomeChannel.pickEmoji('grinning');
 			await page.keyboard.press('Enter');
 
 			await expect(poHomeChannel.content.lastUserMessage).toContainText('😀');

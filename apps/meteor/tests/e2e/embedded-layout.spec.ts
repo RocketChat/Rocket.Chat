@@ -65,8 +65,8 @@ test.describe('embedded-layout', () => {
 			await poHomeChannel.navbar.openChat(targetChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
-			await expect(poHomeChannel.composer).toBeVisible();
-			await expect(poHomeChannel.composer).toBeEnabled();
+			await expect(poHomeChannel.composer.inputMessage).toBeVisible();
+			await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
 			await expect(poHomeChannel.btnJoinRoom).not.toBeVisible();
 		});
 
@@ -85,14 +85,14 @@ test.describe('embedded-layout', () => {
 			await poHomeChannel.navbar.openChat(targetChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
-			await expect(poHomeChannel.composer).toBeVisible();
-			await expect(poHomeChannel.composerToolbar).toBeVisible();
+			await expect(poHomeChannel.composer.inputMessage).toBeVisible();
+			await expect(poHomeChannel.composer.toolbarPrimaryActions).toBeVisible();
 
-			await poHomeChannel.composer.fill('Test message');
-			await expect(poHomeChannel.composer).toHaveValue('Test message');
+			await poHomeChannel.composer.inputMessage.fill('Test message');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('Test message');
 
-			await poHomeChannel.composer.fill('');
-			await expect(poHomeChannel.composer).toHaveValue('');
+			await poHomeChannel.composer.inputMessage.fill('');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
 		});
 	});
 
@@ -102,7 +102,7 @@ test.describe('embedded-layout', () => {
 			await poHomeChannel.navbar.openChat(notMemberChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
-			await expect(poHomeChannel.composer).toBeDisabled();
+			await expect(poHomeChannel.composer.inputMessage).toBeDisabled();
 			await expect(poHomeChannel.btnJoinRoom).toBeVisible();
 		});
 
@@ -114,8 +114,8 @@ test.describe('embedded-layout', () => {
 			await poHomeChannel.btnJoinRoom.click();
 
 			await expect(poHomeChannel.btnJoinRoom).not.toBeVisible();
-			await expect(poHomeChannel.composer).toBeVisible();
-			await expect(poHomeChannel.composer).toBeEnabled();
+			await expect(poHomeChannel.composer.inputMessage).toBeVisible();
+			await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
 
 			const joinMessage = `Joined and sent message ${Date.now()}`;
 			await poHomeChannel.content.sendMessage(joinMessage);
@@ -130,8 +130,8 @@ test.describe('embedded-layout', () => {
 			await poHomeChannel.navbar.openChat(Users.user2.data.username);
 			await page.goto(embeddedLayoutURL(page.url()));
 
-			await expect(poHomeChannel.composer).toBeVisible();
-			await expect(poHomeChannel.composer).toBeEnabled();
+			await expect(poHomeChannel.composer.inputMessage).toBeVisible();
+			await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
 			await expect(poHomeChannel.btnJoinRoom).not.toBeVisible();
 
 			const dmMessage = `Embedded DM test ${Date.now()}`;

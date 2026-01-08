@@ -3,6 +3,7 @@ import { resolve, join, relative } from 'node:path';
 
 import type { Locator, Page } from '@playwright/test';
 
+import { MessageComposer, ThreadMessageComposer } from './composer';
 import { expect } from '../../utils/test';
 
 const FIXTURES_PATH = relative(process.cwd(), resolve(__dirname, '../../fixtures/files'));
@@ -10,12 +11,17 @@ const FIXTURES_PATH = relative(process.cwd(), resolve(__dirname, '../../fixtures
 export function getFilePath(fileName: string): string {
 	return join(FIXTURES_PATH, fileName);
 }
-
 export class HomeContent {
 	protected readonly page: Page;
 
+	protected readonly composer: MessageComposer;
+
+	protected readonly threadComposer: ThreadMessageComposer;
+
 	constructor(page: Page) {
 		this.page = page;
+		this.composer = new MessageComposer(page);
+		this.threadComposer = new ThreadMessageComposer(page);
 	}
 
 	get channelHeader(): Locator {
@@ -28,14 +34,6 @@ export class HomeContent {
 
 	get channelRetentionPolicyWarning(): Locator {
 		return this.page.locator('main').getByRole('alert', { name: 'Retention policy warning banner' });
-	}
-
-	get inputMessage(): Locator {
-		return this.page.locator('[name="msg"]');
-	}
-
-	get inputThreadMessage(): Locator {
-		return this.page.getByRole('dialog').locator('[name="msg"]').last();
 	}
 
 	get messagePopupUsers(): Locator {
@@ -83,7 +81,7 @@ export class HomeContent {
 	}
 
 	async joinRoomIfNeeded(): Promise<void> {
-		if (await this.inputMessage.isEnabled()) {
+		if (await this.composer.inputMessage.isEnabled()) {
 			return;
 		}
 		if (!(await this.btnJoinRoom.isVisible())) {
@@ -359,32 +357,6 @@ export class HomeContent {
 		return this.imageGallery.locator(`button[name="${name}"]`);
 	}
 
-	get btnComposerEmoji(): Locator {
-		return this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]');
-	}
-
-	get dialogEmojiPicker(): Locator {
-		return this.page.getByRole('dialog', { name: 'Emoji picker' });
-	}
-
-	get scrollerEmojiPicker(): Locator {
-		return this.dialogEmojiPicker.locator('[data-overlayscrollbars]');
-	}
-
-	getEmojiPickerTabByName(name: string) {
-		return this.dialogEmojiPicker.locator(`role=tablist >> role=tab[name="${name}"]`);
-	}
-
-	getEmojiByName(name: string) {
-		return this.dialogEmojiPicker.locator(`role=tabpanel >> role=button[name="${name}"]`);
-	}
-
-	async pickEmoji(emoji: string, section = 'Smileys & People') {
-		await this.btnComposerEmoji.click();
-		await this.getEmojiPickerTabByName(section).click();
-		await this.getEmojiByName(emoji).click();
-	}
-
 	async dragAndDropTxtFile(): Promise<void> {
 		const contract = await fs.readFile(getFilePath('any_file.txt'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
@@ -396,7 +368,7 @@ export class HomeContent {
 			return data;
 		}, contract);
 
-		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+		await this.composer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
@@ -412,7 +384,7 @@ export class HomeContent {
 			return data;
 		}, contract);
 
-		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+		await this.composer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
@@ -428,7 +400,7 @@ export class HomeContent {
 			return data;
 		}, contract);
 
-		await this.inputThreadMessage.dispatchEvent('dragenter', { dataTransfer });
+		await this.threadComposer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}

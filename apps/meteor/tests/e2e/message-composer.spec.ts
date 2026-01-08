@@ -25,14 +25,14 @@ test.describe.serial('message-composer', () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
-		await expect(poHomeChannel.composerToolbarActions).toHaveCount(12);
+		await expect(poHomeChannel.composer.allPrimaryActions).toHaveCount(12);
 	});
 
 	test('should have only the main formatter and the main action', async ({ page }) => {
 		await page.setViewportSize({ width: 768, height: 600 });
 		await poHomeChannel.navbar.openChat(targetChannel);
 
-		await expect(poHomeChannel.composerToolbarActions).toHaveCount(6);
+		await expect(poHomeChannel.composer.allPrimaryActions).toHaveCount(6);
 	});
 
 	test('should navigate on toolbar using arrow keys', async ({ page }) => {
@@ -41,10 +41,10 @@ test.describe.serial('message-composer', () => {
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('ArrowRight');
 		await page.keyboard.press('ArrowRight');
-		await expect(poHomeChannel.composerToolbar.getByRole('button', { name: 'Italic' })).toBeFocused();
+		await expect(poHomeChannel.composer.toolbarPrimaryActions.getByRole('button', { name: 'Italic' })).toBeFocused();
 
 		await page.keyboard.press('ArrowLeft');
-		await expect(poHomeChannel.composerToolbar.getByRole('button', { name: 'Bold' })).toBeFocused();
+		await expect(poHomeChannel.composer.toolbarPrimaryActions.getByRole('button', { name: 'Bold' })).toBeFocused();
 	});
 
 	test('should move the focus away from toolbar using tab key', async ({ page }) => {
@@ -53,7 +53,7 @@ test.describe.serial('message-composer', () => {
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 
-		await expect(poHomeChannel.composerToolbar.getByRole('button', { name: 'Emoji' })).not.toBeFocused();
+		await expect(poHomeChannel.composer.toolbarPrimaryActions.getByRole('button', { name: 'Emoji' })).not.toBeFocused();
 	});
 
 	test('should add a link to the selected text', async ({ page }) => {
@@ -63,11 +63,11 @@ test.describe.serial('message-composer', () => {
 		await page.keyboard.type('hello composer');
 		await page.keyboard.press('Control+A'); // on Windows and Linux
 		await page.keyboard.press('Meta+A'); // on macOS
-		await poHomeChannel.composerToolbar.getByRole('button', { name: 'Link' }).click();
+		await poHomeChannel.composer.toolbarPrimaryActions.getByRole('button', { name: 'Link' }).click();
 		await page.keyboard.type(url);
 		await page.keyboard.press('Enter');
 
-		await expect(poHomeChannel.composer).toHaveValue(`[hello composer](${url})`);
+		await expect(poHomeChannel.composer.inputMessage).toHaveValue(`[hello composer](${url})`);
 	});
 
 	test('should select popup item and not send the message when pressing enter', async ({ page }) => {
@@ -79,9 +79,9 @@ test.describe.serial('message-composer', () => {
 
 			await page.keyboard.press('Enter');
 
-			await expect(poHomeChannel.composer).toHaveValue('hello composer @all ');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer @all ');
 
-			await poHomeChannel.composer.fill('');
+			await poHomeChannel.composer.inputMessage.fill('');
 		});
 
 		await test.step('emoji popup', async () => {
@@ -89,9 +89,9 @@ test.describe.serial('message-composer', () => {
 
 			await page.keyboard.press('Enter');
 
-			await expect(poHomeChannel.composer).toHaveValue('hello composer :flag_br: ');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer :flag_br: ');
 
-			await poHomeChannel.composer.fill('');
+			await poHomeChannel.composer.inputMessage.fill('');
 		});
 
 		await test.step('slash command', async () => {
@@ -99,9 +99,9 @@ test.describe.serial('message-composer', () => {
 
 			await page.keyboard.press('Enter');
 
-			await expect(poHomeChannel.composer).toHaveValue('/gimme ');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('/gimme ');
 
-			await poHomeChannel.composer.fill('');
+			await poHomeChannel.composer.inputMessage.fill('');
 		});
 	});
 

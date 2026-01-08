@@ -1,6 +1,15 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeFlextab, Navbar, Sidepanel, RoomSidebar, ToastMessages } from './fragments';
+import {
+	HomeContent,
+	HomeFlextab,
+	Navbar,
+	Sidepanel,
+	RoomSidebar,
+	ToastMessages,
+	MessageComposer,
+	ThreadMessageComposer,
+} from './fragments';
 import { RoomToolbar } from './fragments/toolbar';
 import { VoiceCalls } from './fragments/voice-calls';
 
@@ -23,6 +32,10 @@ export class HomeChannel {
 
 	readonly toastMessage: ToastMessages;
 
+	readonly composer: MessageComposer;
+
+	readonly threadComposer: ThreadMessageComposer;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
@@ -33,6 +46,8 @@ export class HomeChannel {
 		this.roomToolbar = new RoomToolbar(page);
 		this.voiceCalls = new VoiceCalls(page);
 		this.toastMessage = new ToastMessages(page);
+		this.composer = new MessageComposer(page);
+		this.threadComposer = new ThreadMessageComposer(page);
 	}
 
 	goto() {
@@ -43,10 +58,7 @@ export class HomeChannel {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
-	get composer(): Locator {
-		return this.page.locator('textarea[name="msg"]');
-	}
-
+	// TODO: move to Composer fragment
 	get composerBoxPopup(): Locator {
 		return this.page.locator('[role="menu"][name="ComposerBoxPopup"]');
 	}
@@ -57,10 +69,6 @@ export class HomeChannel {
 
 	get composerToolbar(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="Composer Primary Actions"]');
-	}
-
-	get composerToolbarActions(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="Composer Primary Actions"] button');
 	}
 
 	get roomHeaderFavoriteBtn(): Locator {
@@ -121,6 +129,28 @@ export class HomeChannel {
 
 	get homepageHeader(): Locator {
 		return this.page.locator('main').getByRole('heading', { name: 'Home' });
+	}
+
+	get dialogEmojiPicker(): Locator {
+		return this.page.getByRole('dialog', { name: 'Emoji picker' });
+	}
+
+	get scrollerEmojiPicker(): Locator {
+		return this.dialogEmojiPicker.locator('[data-overlayscrollbars]');
+	}
+
+	getEmojiPickerTabByName(name: string) {
+		return this.dialogEmojiPicker.locator(`role=tablist >> role=tab[name="${name}"]`);
+	}
+
+	getEmojiByName(name: string) {
+		return this.dialogEmojiPicker.locator(`role=tabpanel >> role=button[name="${name}"]`);
+	}
+
+	async pickEmoji(emoji: string, section = 'Smileys & People') {
+		await this.composer.inputMessage.click();
+		await this.getEmojiPickerTabByName(section).click();
+		await this.getEmojiByName(emoji).click();
 	}
 
 	async waitForHome(): Promise<void> {
