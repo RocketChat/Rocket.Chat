@@ -788,14 +788,21 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
-			'file._id': { $exists: true },
+			$or: [
+				{
+					'file._id': { $exists: true },
+				},
+				{
+					'files._id': { $exists: true },
+				},
+			],
 			...(excludePinned ? { pinned: { $ne: true } } : {}),
 			...(ignoreThreads ? { tmid: { $exists: false }, tcount: { $exists: false } } : {}),
 			...(ignoreDiscussion ? { drid: { $exists: false } } : {}),
 			...(users.length ? { 'u.username': { $in: users } } : {}),
 		};
 
-		return this.find(query, { projection: { 'file._id': 1 }, ...options });
+		return this.find(query, options);
 	}
 
 	findDiscussionByRoomIdPinnedTimestampAndUsers(
