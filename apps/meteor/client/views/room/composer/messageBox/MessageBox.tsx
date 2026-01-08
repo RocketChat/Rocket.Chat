@@ -421,7 +421,7 @@ const MessageBox = ({
 				isMobile={isMobile}
 			/>
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
-			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
+			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined} aria-label={t('Message_composer')}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInputExpandable
 					dimensions={sizes}
