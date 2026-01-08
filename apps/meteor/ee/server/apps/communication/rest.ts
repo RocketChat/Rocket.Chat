@@ -1,3 +1,5 @@
+import { readFile } from 'fs/promises';
+
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
@@ -19,7 +21,7 @@ import { registerAppLogsHandler } from './endpoints/appLogsHandler';
 import { registerAppsCountHandler } from './endpoints/appsCountHandler';
 import { API } from '../../../../app/api/server';
 import type { APIClass } from '../../../../app/api/server/ApiClass';
-import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
+import { UploadService } from '../../../../app/api/server/lib/UploadService';
 import { loggerMiddleware } from '../../../../app/api/server/middlewares/logger';
 import { metricsMiddleware } from '../../../../app/api/server/middlewares/metrics';
 import { tracerSpanMiddleware } from '../../../../app/api/server/middlewares/tracer';
@@ -326,16 +328,16 @@ export class AppsRestApi {
 							return API.v1.failure({ error: message });
 						}
 					} else {
-						const app = await getUploadFormData(
-							{
-								request: this.request,
-							},
-							{ field: 'app', sizeLimit: settings.get('FileUpload_MaxFileSize') },
-						);
+						const { file, fields: formData } = await UploadService.parse(this.rawRequest, {
+							field: 'app',
+							maxSize: settings.get<number>('FileUpload_MaxFileSize'),
+						});
 
-						const { fields: formData } = app;
+						if (!file) {
+							return API.v1.failure({ error: 'No file was uploaded' });
+						}
 
-						buff = app.fileBuffer;
+						buff = await readFile(file.tempFilePath);
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
@@ -831,16 +833,16 @@ export class AppsRestApi {
 					} else {
 						isPrivateAppUpload = true;
 
-						const app = await getUploadFormData(
-							{
-								request: this.request,
-							},
-							{ field: 'app', sizeLimit: settings.get('FileUpload_MaxFileSize') },
-						);
+						const { file, fields: formData } = await UploadService.parse(this.rawRequest, {
+							field: 'app',
+							maxSize: settings.get<number>('FileUpload_MaxFileSize'),
+						});
 
-						const { fields: formData } = app;
+						if (!file) {
+							return API.v1.failure({ error: 'No file was uploaded' });
+						}
 
-						buff = app.fileBuffer;
+						buff = await readFile(file.tempFilePath);
 						permissionsGranted = (() => {
 							try {
 								const permissions = JSON.parse(formData?.permissions || '');
