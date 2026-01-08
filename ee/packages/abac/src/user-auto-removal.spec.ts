@@ -168,6 +168,42 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		await usersCol.bulkWrite(operations);
 	};
 
+	// It's utterly incredible i have to do this so the tests are "fast" because mongo is not warm
+	// I could have increased the timeout for the first test too but...
+	const dbWarmup = async () => {
+		const uniqueSuffix = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+		const warmupAttributeKey = `warmup_seed_${uniqueSuffix}`;
+		const warmupUserId = `warmup-abac-user-${uniqueSuffix}`;
+		const warmupRid = await insertRoom([]);
+		const subscriptionCol = db.collection<any>('rocketchat_subscription');
+		const seedSubscriptionId = `warmup-${uniqueSuffix}`;
+
+		await subscriptionCol.insertOne({
+			_id: seedSubscriptionId,
+			rid: `warmup-room-${uniqueSuffix}`,
+			u: { _id: `warmup-user-${uniqueSuffix}` },
+		} as any);
+		await insertDefinitions([{ key: warmupAttributeKey, values: ['a'] }]);
+		await insertUsers([{ _id: warmupUserId, member: true, extraRooms: [warmupRid] }]);
+		await subscriptionCol.insertOne({
+			_id: `warmup-sub-${uniqueSuffix}`,
+			rid: warmupRid,
+			u: { _id: warmupUserId },
+		} as any);
+
+		try {
+			await service.setRoomAbacAttributes(warmupRid, { [warmupAttributeKey]: ['a'] }, fakeActor);
+		} finally {
+			await roomsCol.deleteOne({ _id: warmupRid });
+			await usersCol.deleteOne({ _id: warmupUserId });
+			await subscriptionCol.deleteMany({
+				_id: { $in: [seedSubscriptionId, `warmup-sub-${uniqueSuffix}`] },
+			});
+			await subscriptionCol.deleteMany({ rid: warmupRid });
+			await db.collection<any>('rocketchat_abac_attributes').deleteOne({ key: warmupAttributeKey });
+		}
+	};
+
 	let debugSpy: jest.SpyInstance;
 	let auditSpy: jest.SpyInstance;
 
@@ -182,6 +218,8 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		usersCol = db.collection<IUser>('users');
 		await usersCol.deleteMany({ _id: { $in: staticUserIds } });
 		await insertUsers(staticTestUsers);
+
+		await dbWarmup();
 	}, 30_000);
 
 	afterAll(async () => {
