@@ -11,7 +11,7 @@ test.describe.serial('file-upload', () => {
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
-		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList,', 'image/svg+xml');
+		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
 	});
 
