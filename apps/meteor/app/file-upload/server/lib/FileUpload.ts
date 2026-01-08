@@ -789,51 +789,81 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
+	private async _streamToTmpFile(inputStream: stream.Readable, targetPath: string): Promise<void> {
+		const writeStream = fs.createWriteStream(targetPath);
+
+		return new Promise((resolve, reject) => {
+			if ('isPaused' in inputStream && inputStream.isPaused()) {
+				inputStream.resume();
+			}
+			inputStream.pipe(writeStream);
+			writeStream.on('finish', () => resolve());
+			writeStream.on('error', (err) => reject(err));
+			inputStream.on('error', (err) => reject(err));
+		});
+	}
+
+	private async _validateFile(
+		fileData: OptionalId<IUpload>,
+		content: stream.Readable | Buffer | string,
+	): Promise<stream.Readable | Buffer | string> {
+		const filter = this.store.getFilter();
+		if (!filter?.check) {
+			return content;
+		}
+
+		if (content instanceof stream.Readable) {
+			// Currently, only the Slack Adapter passes a stream.Readable here
+			// We can't use _streamToTmpFile at this stage since the file hasn't been validated yet,
+			// and for security reasons we must not write it to disk before validation
+			content = await streamToBuffer(content);
+		} else if (content instanceof Uint8Array && !(content instanceof Buffer)) {
+			// Services compat - convert Uint8Array to Buffer
+			content = Buffer.from(content);
+		}
+
+		try {
+			// TODO: Make filter.check accept file path as string - check Apps Engine IPreFileUpload hook
+			await filter.check(fileData, typeof content === 'string' ? undefined : content);
+			return content;
+		} catch (e) {
+			throw e;
+		}
+	}
+
 	async _doInsert(
 		fileData: OptionalId<IUpload>,
-		streamOrBuffer: ReadableStream | stream | Buffer,
+		content: stream.Readable | Buffer | string,
 		options?: { session?: ClientSession },
 	): Promise<IUpload> {
 		const fileId = await this.store.create(fileData, { session: options?.session });
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
 		try {
-			if (streamOrBuffer instanceof stream) {
-				streamOrBuffer.pipe(fs.createWriteStream(tmpFile));
-			} else if (streamOrBuffer instanceof Buffer) {
-				fs.writeFileSync(tmpFile, streamOrBuffer);
+			if (typeof content === 'string') {
+				await fs.promises.rename(content, tmpFile);
+			} else if (content instanceof Buffer) {
+				await fs.promises.writeFile(tmpFile, content);
+			} else if (content instanceof Uint8Array) {
+				await fs.promises.writeFile(tmpFile, Buffer.from(content));
+			} else if (content instanceof stream.Readable) {
+				await this._streamToTmpFile(content, tmpFile);
 			} else {
 				throw new Error('Invalid file type');
 			}
 
-			const file = await ufsComplete(fileId, this.name, { session: options?.session });
-
-			return file;
-		} catch (e: any) {
+			return ufsComplete(fileId, this.name, { session: options?.session });
+		} catch (e) {
 			throw e;
 		}
 	}
 
 	async insert(
 		fileData: OptionalId<IUpload>,
-		streamOrBuffer: ReadableStream | stream.Readable | Buffer,
+		streamOrBuffer: stream.Readable | Buffer | string,
 		options?: { session?: ClientSession },
-	) {
-		if (streamOrBuffer instanceof stream) {
-			streamOrBuffer = await streamToBuffer(streamOrBuffer);
-		}
-
-		if (streamOrBuffer instanceof Uint8Array) {
-			// Services compat :)
-			streamOrBuffer = Buffer.from(streamOrBuffer);
-		}
-
-		// Check if the fileData matches store filter
-		const filter = this.store.getFilter();
-		if (filter?.check) {
-			await filter.check(fileData, streamOrBuffer);
-		}
-
-		return this._doInsert(fileData, streamOrBuffer, { session: options?.session });
+	): Promise<IUpload> {
+		streamOrBuffer = await this._validateFile(fileData, streamOrBuffer);
+		return this._doInsert(fileData, streamOrBuffer, options);
 	}
 }
