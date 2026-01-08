@@ -23,7 +23,7 @@ export interface IMessage {
 	alias?: string;
 	/** @deprecated Deprecated in favor of files */
 	file?: IMessageFile;
-	files?: IMessageFile;
+	files?: Array<IMessageFile>;
 	attachments?: Array<IMessageAttachment>;
 	reactions?: IMessageReactions;
 	groupable?: boolean;
