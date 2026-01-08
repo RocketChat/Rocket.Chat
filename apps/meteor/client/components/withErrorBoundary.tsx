@@ -1,8 +1,8 @@
 import React, { ComponentType, ReactNode, ComponentProps } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { ComponentErrorFallback } from '../components/errors/ErrorFallbacks';
-import { errorTrackingService } from '../services/ErrorTrackingService';
+import { ComponentErrorFallback } from '@rocket.chat/ui-client';
+import { errorTrackingService } from '@rocket.chat/ui-client';
 
 export function withErrorBoundary<T extends object>(
 	Component: ComponentType<T>,
@@ -11,12 +11,18 @@ export function withErrorBoundary<T extends object>(
 ) {
 	const WrappedComponent = (props: ComponentProps<typeof Component>) => (
 		<ErrorBoundary
-			fallback={<>{fallback}</>}
+			fallback={fallback} 
 			onError={(error) => {
+				const severityMap = {
+					global: 'critical' as const,
+					feature: 'high' as const,
+					component: 'medium' as const,
+				};
+
 				errorTrackingService.reportError(error, {
 					scope,
-					severity: scope === 'global' ? 'critical' : 'high',
-					recoverable: true,
+					severity: severityMap[scope],
+					recoverable: scope !== 'global',
 					componentPath: Component.displayName || Component.name,
 				});
 			}}

@@ -2,7 +2,7 @@ import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, St
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-/** Global Fallback: For when the entire App crashes */
+/** Tier 1: Global Fallback - Full application crash */
 export const GlobalErrorFallback = () => {
 	const { t } = useTranslation();
 	return (
@@ -19,7 +19,7 @@ export const GlobalErrorFallback = () => {
 	);
 };
 
-/** Feature Fallback: For major sections (Admin, Chat, etc.) */
+/** Tier 2: Feature Fallback - Major sections (Admin, Chat, etc.) */
 export const FeatureErrorFallback = ({ resetErrorBoundary }: { resetErrorBoundary: () => void }) => {
 	const { t } = useTranslation();
 	return (
@@ -36,20 +36,23 @@ export const FeatureErrorFallback = ({ resetErrorBoundary }: { resetErrorBoundar
 	);
 };
 
-/** Component Fallback: Minimal indicator for small items (Avatars, Blocks) */
-export const ComponentErrorFallback = () => (
-	<Box 
-		display='inline-flex' 
-		alignItems='center' 
-		justifyContent='center' 
-		color='danger' 
-		title='Component error'
-		borderWidth='default'
-		borderColor='danger'
-		borderRadius='x4'
-		p='x2'
-		m='x2'
-	>
-		⚠️
-	</Box>
-);
+/** Tier 3: Component Fallback - Small UI blocks/widgets */
+export const ComponentErrorFallback = () => {
+	const { t } = useTranslation();
+	return (
+		<Box 
+			display='inline-flex' 
+			alignItems='center' 
+			justifyContent='center' 
+			color='danger' 
+			title={t('Component_error')}
+			borderWidth='default'
+			borderColor='danger'
+			borderRadius='x4'
+			p='x2'
+			m='x2'
+		>
+			⚠️
+		</Box>
+	);
+};

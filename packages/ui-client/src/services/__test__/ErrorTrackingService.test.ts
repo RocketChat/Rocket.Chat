@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { errorTrackingService, ErrorMetadata } from '../ErrorTrackingService';
+import { errorTrackingService } from '../ErrorTrackingService';
+import type { ErrorMetadata } from '../ErrorTrackingService';
 
 describe('ErrorTrackingService', () => {
-	let consoleGroupSpy: any;
-	let consoleErrorSpy: any;
+	let consoleGroupSpy: ReturnType<typeof vi.spyOn>;
+	let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
 	beforeEach(() => {
 		consoleGroupSpy = vi.spyOn(console, 'group').mockImplementation(() => {});
@@ -28,6 +29,23 @@ describe('ErrorTrackingService', () => {
 		expect(consoleGroupSpy).toHaveBeenCalled();
 		expect(consoleErrorSpy).toHaveBeenCalledWith('Message:', 'Test Crash');
 		expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Stack Trace:'), expect.any(String));
+	});
+
+	it('should handle component scope with medium severity', () => {
+		const error = new Error('Component failure');
+		const metadata: ErrorMetadata = {
+			scope: 'component',
+			severity: 'medium',
+			recoverable: true,
+			componentPath: 'VideoConferenceBlock',
+		};
+
+		errorTrackingService.reportError(error, metadata);
+
+		expect(consoleGroupSpy).toHaveBeenCalledWith(
+			expect.stringContaining('[COMPONENT]'),
+			expect.any(String)
+		);
 	});
 
 	it('should handle global scope critical errors', () => {

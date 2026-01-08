@@ -1,9 +1,15 @@
 {
+	
 	"name": "@rocket.chat/ui-client",
 	"version": "26.0.0-rc.1",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
+	"exports": {
+		".": "./src/index.ts",
+		"./components/errors": "./src/components/errors/ErrorFallbacks.tsx",
+		"./services": "./src/services/ErrorTrackingService.ts"
+	},
 	"files": [
 		"/dist"
 	],
