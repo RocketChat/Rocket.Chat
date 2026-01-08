@@ -26,7 +26,7 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 describe('useRoomInvitation', () => {
 	const mockedRoom = createFakeRoom();
 	const roomId = mockedRoom._id;
-	const appRoot = mockAppRoot().withEndpoint('POST', '/v1/rooms.invite', mockInviteEndpoint).build();
+	const appRoot = mockAppRoot().withJohnDoe().withEndpoint('POST', '/v1/rooms.invite', mockInviteEndpoint).build();
 
 	beforeEach(() => {
 		jest.clearAllMocks();
