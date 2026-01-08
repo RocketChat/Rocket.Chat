@@ -18,6 +18,7 @@ export type APIActionContext = {
 	queryParams: Record<string, any>;
 	bodyParams: Record<string, any>;
 	request: Request;
+	rawRequest?: any;
 	path: string;
 	response: any;
 	route: string;
@@ -47,6 +48,7 @@ export class RocketChatAPIRouter<
 				queryParams,
 				bodyParams,
 				request,
+				rawRequest: c.env?.incoming,
 				path: req.path,
 				response: res,
 				route: req.routePath,

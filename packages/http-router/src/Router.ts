@@ -157,11 +157,13 @@ export class Router<
 
 			if (contentType?.includes('application/json')) {
 				parsedBody = await request.raw.clone().json();
-			} else if (contentType?.includes('multipart/form-data')) {
-				parsedBody = await request.raw.clone().formData();
 			} else if (contentType?.includes('application/x-www-form-urlencoded')) {
 				const req = await request.raw.clone().formData();
 				parsedBody = Object.fromEntries(req.entries());
+			} else if (contentType?.includes('multipart/form-data')) {
+				// Don't parse multipart here, routes handle it manually via UploadService.parse()
+				// since multipart/form-data is only used for file uploads
+				parsedBody = {};
 			} else {
 				parsedBody = await request.raw.clone().text();
 			}
