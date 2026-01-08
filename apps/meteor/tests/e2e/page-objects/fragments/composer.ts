@@ -34,23 +34,23 @@ export abstract class Composer {
 	}
 
 	get btnAudioMessage(): Locator {
-		return this.toolbarPrimaryActions.getByRole('button', { name: 'Audio message', exact: true });
+		return this.toolbarPrimaryActions.getByRole('button', { name: 'Audio message' });
 	}
 
 	get btnSend(): Locator {
-		return this.msgComposer.getByRole('button', { name: 'Send', exact: true });
+		return this.msgComposer.getByRole('button', { name: 'Send' });
 	}
 
 	get btnOptionFileUpload(): Locator {
-		return this.toolbarPrimaryActions.getByRole('button', { name: 'Upload file', exact: true });
+		return this.toolbarPrimaryActions.getByRole('button', { name: 'Upload file' });
 	}
 
 	get btnVideoMessage(): Locator {
-		return this.toolbarPrimaryActions.getByRole('button', { name: 'Video message', exact: true });
+		return this.toolbarPrimaryActions.getByRole('button', { name: 'Video message' });
 	}
 
 	get btnMenuMoreActions() {
-		return this.toolbarPrimaryActions.getByRole('button', { name: 'More actions', exact: true });
+		return this.toolbarPrimaryActions.getByRole('button', { name: 'More actions' });
 	}
 
 	get boxPopup(): Locator {

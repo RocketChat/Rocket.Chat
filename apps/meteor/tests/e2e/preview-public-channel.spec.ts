@@ -58,7 +58,7 @@ test.describe('Preview public channel', () => {
 			await poHomeChannel.navbar.btnDirectory.click();
 			await poDirectory.openChannel(targetChannel);
 
-			await expect(poHomeChannel.composer.btnJoinRoom).toBeVisible();
+			await expect(poHomeChannel.btnJoinChannel).toBeVisible();
 			await expect(poHomeChannel.content.lastUserMessageBody).not.toBeVisible();
 		});
 	});

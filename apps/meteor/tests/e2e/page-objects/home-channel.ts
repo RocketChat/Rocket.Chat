@@ -113,6 +113,10 @@ export class HomeChannel {
 		return this.dialogEmojiPicker.locator('[data-overlayscrollbars]');
 	}
 
+	get btnJoinChannel() {
+		return this.page.getByRole('button', { name: 'Join channel' });
+	}
+
 	getEmojiPickerTabByName(name: string) {
 		return this.dialogEmojiPicker.locator(`role=tablist >> role=tab[name="${name}"]`);
 	}
@@ -122,7 +126,7 @@ export class HomeChannel {
 	}
 
 	async pickEmoji(emoji: string, section = 'Smileys & People') {
-		await this.composer.inputMessage.click();
+		await this.composer.btnComposerEmoji.click();
 		await this.getEmojiPickerTabByName(section).click();
 		await this.getEmojiByName(emoji).click();
 	}

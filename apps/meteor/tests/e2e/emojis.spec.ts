@@ -33,6 +33,7 @@ test.describe.serial('emoji', () => {
 			await activityEmojiTab.click();
 
 			await expect(activityEmojiTab).toBeFocused();
+			await poHomeChannel.composer.inputMessage.click(); // To close the emoji picker
 		});
 
 		await test.step('should pick and send grinning emoji', async () => {
