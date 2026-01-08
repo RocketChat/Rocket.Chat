@@ -73,11 +73,13 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 				const store = FileUpload.getStore('Uploads');
 				const cursor = Messages.findFilesByUserId(userId);
 
-				for await (const { file } of cursor) {
-					if (!file) {
-						continue;
+				for await (const { file, files } of cursor) {
+					const fileIds = files?.map(({ _id }) => _id) || [];
+					if (file?._id && !fileIds.includes(file._id)) {
+						fileIds.push(file._id);
 					}
-					await store.deleteById(file._id);
+
+					await Promise.all(fileIds.map(async (fileId) => fileId && store.deleteById(fileId)));
 				}
 
 				await Messages.removeByUserId(userId);
