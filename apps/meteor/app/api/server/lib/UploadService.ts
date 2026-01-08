@@ -41,9 +41,7 @@ export class UploadService {
 		try {
 			await fs.promises.unlink(tempFilePath);
 		} catch (error: any) {
-			if (error.code !== 'ENOENT') {
-				console.warn(`[UploadService] Failed to cleanup temp file: ${tempFilePath}`, error);
-			}
+			console.warn(`[UploadService] Failed to cleanup temp file: ${tempFilePath}`, error);
 		}
 	}
 
