@@ -1,0 +1,62 @@
+# Stop old containers: docker rm -f medsense-chat medsense-mongo medsense-nats
+services:
+  mongo:
+    image: mongo:7
+    container_name: medsense-mongo
+    command: ["mongod", "--replSet", "rs0", "--oplogSize", "128", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand({ ping: 1 })"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mongo-init-replica:
+    image: mongo:7
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: "no"
+    entrypoint: >
+      bash -lc '
+        mongosh "mongodb://medsense-mongo:27017/admin" --quiet --eval "
+          try {
+            rs.status();
+          } catch (e) {
+            rs.initiate({ _id: \"rs0\", members: [{ _id: 0, host: \"medsense-mongo:27017\" }] });
+          }
+        ";
+      '
+
+  nats:
+    image: nats:2.11-alpine
+    container_name: medsense-nats
+    command: ["-js", "-m", "8222"]
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+
+  medsense-chat:
+    image: ${MEDSENSE_IMAGE:-medsense-chat:dev}
+    container_name: medsense-chat
+    depends_on:
+      mongo:
+        condition: service_healthy
+      nats:
+        condition: service_started
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      ROOT_URL: "http://localhost:3000"
+      MONGO_URL: "mongodb://medsense-mongo:27017/rocketchat?replicaSet=rs0"
+      MONGO_OPLOG_URL: "mongodb://medsense-mongo:27017/local?replicaSet=rs0"
+      TRANSPORTER: "monolith+nats://medsense-nats:4222"
+      LOCAL_BROKER_TIMEOUT_MS: "60000"
+      APPS_ENGINE_RUNTIME_TIMEOUT: "60000"
+
+volumes:
+  mongo_data:

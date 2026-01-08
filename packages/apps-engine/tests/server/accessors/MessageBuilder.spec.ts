@@ -53,9 +53,9 @@ export class MessageBuilderAccessorTestFixture {
 		Expect(msg.emoji).toEqual(':ghost:');
 		Expect(mb.getEmojiAvatar()).toEqual(':ghost:');
 
-		Expect(mb.setAvatarUrl('https://medsensehealth.ca/')).toBe(mb);
-		Expect(msg.avatarUrl).toEqual('https://medsensehealth.ca/');
-		Expect(mb.getAvatarUrl()).toEqual('https://medsensehealth.ca/');
+		Expect(mb.setAvatarUrl('https://rocket.chat/')).toBe(mb);
+		Expect(msg.avatarUrl).toEqual('https://rocket.chat/');
+		Expect(mb.getAvatarUrl()).toEqual('https://rocket.chat/');
 
 		Expect(mb.setUsernameAlias('Some Bot')).toBe(mb);
 		Expect(msg.alias).toEqual('Some Bot');

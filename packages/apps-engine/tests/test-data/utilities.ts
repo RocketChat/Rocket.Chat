@@ -172,7 +172,7 @@ const DEFAULT_ATTACHMENT = {
 		link: 'https://github.com/RocketChat',
 		displayDownloadLink: false,
 	},
-	imageUrl: 'https://medsensehealth.ca/images/default/logo.svg',
+	imageUrl: 'https://rocket.chat/images/default/logo.svg',
 	audioUrl: 'http://www.w3schools.com/tags/horse.mp3',
 	videoUrl: 'http://www.w3schools.com/tags/movie.mp4',
 	fields: [
@@ -502,7 +502,7 @@ export class TestData {
 			appId: `${name}-app-id`,
 			name,
 			supportsTemplates: true,
-			documentationUrl: 'https://medsensehealth.ca/',
+			documentationUrl: 'https://rocket.chat',
 			sendOutboundMessage: async (message): Promise<void> => {
 				console.log('Sending message', message);
 			},
@@ -518,7 +518,7 @@ export class TestData {
 			appId: `${name}-app-id`,
 			name,
 			supportsTemplates: true,
-			documentationUrl: 'https://medsensehealth.ca/',
+			documentationUrl: 'https://rocket.chat',
 			sendOutboundMessage: async (message): Promise<void> => {
 				console.log('Sending message', message);
 			},

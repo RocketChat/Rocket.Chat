@@ -44,7 +44,6 @@ export const AppPermissions = {
 	'room': {
 		read: { name: 'room.read' },
 		write: { name: 'room.write' },
-		'system-view-all': { name: 'room.system.view-all' },
 	},
 	'role': {
 		read: { name: 'role.read' },

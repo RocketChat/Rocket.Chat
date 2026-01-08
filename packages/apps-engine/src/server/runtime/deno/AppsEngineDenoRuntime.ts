@@ -153,7 +153,6 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 			const options = [
 				'run',
-				'--cached-only',
 				`--allow-read=${appsEngineDir},${parentNodeModulesDir}`,
 				`--allow-env=${ALLOWED_ENVIRONMENT_VARIABLES.join(',')}`,
 				denoWrapperPath,

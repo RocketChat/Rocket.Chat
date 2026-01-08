@@ -11,7 +11,6 @@ export interface IVisitor {
 	phone?: Array<IVisitorPhone>;
 	visitorEmails?: Array<IVisitorEmail>;
 	status?: string;
-	activity?: string[];
 	customFields?: { [key: string]: any };
 	livechatData?: { [key: string]: any };
 }
