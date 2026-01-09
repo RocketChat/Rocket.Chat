@@ -21,7 +21,7 @@ export abstract class Composer {
 		return this.toolbarPrimaryActions.getByRole('button');
 	}
 
-	get btnComposerEmoji(): Locator {
+	get btnEmoji(): Locator {
 		return this.toolbarPrimaryActions.getByRole('button', { name: 'Emoji', exact: true });
 	}
 
@@ -43,6 +43,18 @@ export abstract class Composer {
 
 	get btnMenuMoreActions() {
 		return this.toolbarPrimaryActions.getByRole('button', { name: 'More actions' });
+	}
+
+	get btnItalicFormatter(): Locator {
+		return this.toolbarPrimaryActions.getByRole('button', { name: 'Italic', exact: true });
+	}
+
+	get btnBoldFormatter(): Locator {
+		return this.toolbarPrimaryActions.getByRole('button', { name: 'Bold', exact: true });
+	}
+
+	get btnLinkFormatter(): Locator {
+		return this.toolbarPrimaryActions.getByRole('button', { name: 'Link', exact: true });
 	}
 
 	get boxPopup(): Locator {

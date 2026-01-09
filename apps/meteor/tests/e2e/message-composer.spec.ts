@@ -41,10 +41,10 @@ test.describe.serial('message-composer', () => {
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('ArrowRight');
 		await page.keyboard.press('ArrowRight');
-		await expect(poHomeChannel.composer.toolbarPrimaryActions.getByRole('button', { name: 'Italic' })).toBeFocused();
+		await expect(poHomeChannel.composer.btnItalicFormatter).toBeFocused();
 
 		await page.keyboard.press('ArrowLeft');
-		await expect(poHomeChannel.composer.toolbarPrimaryActions.getByRole('button', { name: 'Bold' })).toBeFocused();
+		await expect(poHomeChannel.composer.btnBoldFormatter).toBeFocused();
 	});
 
 	test('should move the focus away from toolbar using tab key', async ({ page }) => {
@@ -53,7 +53,7 @@ test.describe.serial('message-composer', () => {
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 
-		await expect(poHomeChannel.composer.toolbarPrimaryActions.getByRole('button', { name: 'Emoji' })).not.toBeFocused();
+		await expect(poHomeChannel.composer.btnEmoji).not.toBeFocused();
 	});
 
 	test('should add a link to the selected text', async ({ page }) => {
@@ -63,7 +63,7 @@ test.describe.serial('message-composer', () => {
 		await page.keyboard.type('hello composer');
 		await page.keyboard.press('Control+A'); // on Windows and Linux
 		await page.keyboard.press('Meta+A'); // on macOS
-		await poHomeChannel.composer.toolbarPrimaryActions.getByRole('button', { name: 'Link' }).click();
+		await poHomeChannel.composer.btnLinkFormatter.click();
 		await page.keyboard.type(url);
 		await page.keyboard.press('Enter');
 

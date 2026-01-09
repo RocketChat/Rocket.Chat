@@ -126,7 +126,7 @@ export class HomeChannel {
 	}
 
 	async pickEmoji(emoji: string, section = 'Smileys & People') {
-		await this.composer.btnComposerEmoji.click();
+		await this.composer.btnEmoji.click();
 		await this.getEmojiPickerTabByName(section).click();
 		await this.getEmojiByName(emoji).click();
 	}

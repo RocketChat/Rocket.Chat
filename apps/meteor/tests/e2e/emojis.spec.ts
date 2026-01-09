@@ -22,7 +22,7 @@ test.describe.serial('emoji', () => {
 
 	test('should display emoji picker properly', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
-		await poHomeChannel.composer.btnComposerEmoji.click();
+		await poHomeChannel.composer.btnEmoji.click();
 
 		await test.step('should display scroller', async () => {
 			await expect(poHomeChannel.scrollerEmojiPicker).toBeVisible();
