@@ -142,6 +142,11 @@ export class UploadService {
 			currentStream.pipe(writeStream);
 
 			writeStream.on('finish', () => {
+				if (file.truncated) {
+					cleanupTempFile(tempFilePath);
+					return reject(new MeteorError('error-file-too-large', 'File size exceeds the allowed limit'));
+				}
+
 				parsedFile = {
 					tempFilePath,
 					filename,
