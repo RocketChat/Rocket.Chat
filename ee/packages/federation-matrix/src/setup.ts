@@ -95,6 +95,12 @@ export function configureFederationMatrixSettings(settings: {
 			processTyping: processEDUTyping,
 			processPresence: processEDUPresence,
 		},
+		federation: {
+			validation: {
+				networkCheckTimeoutMs: Number.parseInt(process.env.FEDERATION_NETWORK_CHECK_TIMEOUT_MS || '3000', 10),
+				userCheckTimeoutMs: Number.parseInt(process.env.FEDERATION_USER_CHECK_TIMEOUT_MS || '3000', 10),
+			},
+		},
 	});
 }
 

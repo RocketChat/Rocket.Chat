@@ -29,4 +29,5 @@ export interface IFederationMatrixService {
 	notifyUserTyping(rid: string, user: string, isTyping: boolean): Promise<void>;
 	verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }>;
 	handleInvite(subscriptionId: ISubscription['_id'], userId: IUser['_id'], action: 'accept' | 'reject'): Promise<void>;
+	validateFederatedUsers(usernames: string[]): Promise<void>;
 }
