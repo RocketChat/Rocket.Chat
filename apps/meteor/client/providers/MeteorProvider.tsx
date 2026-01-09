@@ -29,9 +29,7 @@ type MeteorProviderProps = {
 };
 
 const ModalProvider =
-	typeof ModalProviderImport === 'function'
-		? ModalProviderImport
-		: ({ children }: { children?: ReactNode }) => <Fragment>{children}</Fragment>;
+	ModalProviderImport ?? (({ children }: { children?: ReactNode }) => <Fragment>{children}</Fragment>);
 
 const MeteorProvider = ({ children }: MeteorProviderProps) => (
 	<ServerProvider>

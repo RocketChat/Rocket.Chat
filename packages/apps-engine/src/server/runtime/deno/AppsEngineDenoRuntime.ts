@@ -55,6 +55,70 @@ export const ALLOWED_ENVIRONMENT_VARIABLES = [
 
 const COMMAND_PONG = '_zPONG';
 
+let cachedDenoMajorVersion: number | null | undefined;
+let cachedDenoDetectCjsSupport: boolean | undefined;
+
+function getDenoMajorVersion(): number | null {
+	if (cachedDenoMajorVersion !== undefined) {
+		return cachedDenoMajorVersion;
+	}
+
+	const envVersion = process.env.DENO_VERSION;
+	if (envVersion) {
+		const match = envVersion.match(/^(\d+)\./);
+		if (match) {
+			cachedDenoMajorVersion = Number(match[1]);
+			return cachedDenoMajorVersion;
+		}
+	}
+
+	try {
+		const result = child_process.spawnSync('deno', ['--version'], { encoding: 'utf8' });
+		const outputText = `${result.stdout || ''}${result.stderr || ''}`;
+		const match = outputText.match(/^\s*deno\s+(\d+)\./m);
+		cachedDenoMajorVersion = match ? Number(match[1]) : null;
+	} catch {
+		cachedDenoMajorVersion = null;
+	}
+
+	return cachedDenoMajorVersion;
+}
+
+function supportsDenoDetectCjs(): boolean {
+	if (cachedDenoDetectCjsSupport !== undefined) {
+		return cachedDenoDetectCjsSupport;
+	}
+
+	try {
+		const result = child_process.spawnSync('deno', ['run', '--help'], { encoding: 'utf8' });
+		const outputText = `${result.stdout || ''}${result.stderr || ''}`;
+		cachedDenoDetectCjsSupport = outputText.includes('--unstable-detect-cjs');
+	} catch {
+		cachedDenoDetectCjsSupport = false;
+	}
+
+	return cachedDenoDetectCjsSupport;
+}
+
+function shouldUseDenoDetectCjs(): boolean {
+	const override = process.env.APPS_ENGINE_DENO_DETECT_CJS;
+	if (override !== undefined) {
+		const normalized = override.toLowerCase();
+		if (normalized === '0' || normalized === 'false' || normalized === 'no') {
+			return false;
+		}
+
+		return supportsDenoDetectCjs();
+	}
+
+	const denoMajor = getDenoMajorVersion();
+	if (denoMajor && denoMajor >= 2) {
+		return false;
+	}
+
+	return supportsDenoDetectCjs();
+}
+
 export const JSONRPC_METHOD_NOT_FOUND = -32601;
 
 export function getRuntimeTimeout() {
@@ -161,6 +225,10 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				'--spawnId',
 				String(this.spawnId++),
 			];
+
+			if (shouldUseDenoDetectCjs()) {
+				options.splice(1, 0, '--unstable-detect-cjs');
+			}
 
 			// If the app doesn't request any permissions, it gets the default set of permissions, which includes "networking"
 			// If the app requests specific permissions, we need to check whether it requests "networking" or not

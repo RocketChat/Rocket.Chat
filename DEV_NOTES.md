@@ -36,6 +36,17 @@
   - Build image: `docker build --progress=plain -f Dockerfile.medsense-source -t dockerfriend1234/medsense-pharmacy-chat:sha-<git> .`
   - Push image: `docker push dockerfriend1234/medsense-pharmacy-chat:sha-<git>`
 
+## Troubleshooting Recap (2026-01-08)
+- **UI crashes from stale bundles**: `Dockerfile.medsense-source` prefers `prebuilt/bundle`, so rebuilding without updating it keeps old JS. Rebuild `prebuilt/bundle` before image builds.
+- **Updated client guards**: `useHasLicenseModule`, `useShouldPreventAction`, and modal context hooks are now guarded to avoid undefined hooks. Rebuild bundle + clear service worker cache.
+- **Apps Engine regression**: running image moved to `@rocket.chat/apps-engine` `1.59.0-rc.0`; rolled back to `1.58.0` to match last working image.
+- **i18n build failure**: fixed invalid JSON in `packages/i18n/src/locales/en.i18n.json` (line breaks escaped).
+- **Apps Engine typings**: added `activity?: string` to `IVisitor`; exported `IRoomRaw` from apps-engine rooms index.
+- **LocalBroker timeouts**: caused by Mongo/NATS connectivity + replica set host mismatch. Set `LOCAL_BROKER_TIMEOUT_MS=60000`, `APPS_ENGINE_RUNTIME_TIMEOUT=60000`, and fix replica set host to match container DNS.
+- **Docker image “disappearing”**: BuildKit didn’t load image into local store. Use `docker buildx build --load ...` or `DOCKER_BUILDKIT=0` to ensure tag appears in `docker images`.
+- **Local compose**: added `docker-compose.medsense-local.yml` with Mongo/NATS/Chat, explicit `BIND_IP=0.0.0.0`, and `MONGO_VOLUME` support to reuse existing workspace volume.
+- **Windows access**: open port 3000 for private network and browse via LAN IP (not `127.0.0.1`).
+
 ## CI/CD (essentials)
 - Build app image (from repo root):  
   `docker build -f Dockerfile.medsense-final -t dockerfriend1234/medsense-pharmacy-chat:sha-<gitsha> .`

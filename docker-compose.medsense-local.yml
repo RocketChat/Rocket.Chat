@@ -24,7 +24,13 @@ services:
       bash -lc '
         mongosh "mongodb://medsense-mongo:27017/admin" --quiet --eval "
           try {
-            rs.status();
+            const cfg = rs.conf();
+            const targetHost = \"medsense-mongo:27017\";
+            if (!cfg.members || !cfg.members.length || cfg.members[0].host !== targetHost) {
+              cfg.members = [{ _id: 0, host: targetHost }];
+              cfg.version = (cfg.version || 1) + 1;
+              rs.reconfig(cfg, { force: true });
+            }
           } catch (e) {
             rs.initiate({ _id: \"rs0\", members: [{ _id: 0, host: \"medsense-mongo:27017\" }] });
           }
@@ -48,9 +54,10 @@ services:
       nats:
         condition: service_started
     ports:
-      - "3000:3000"
+      - "0.0.0.0:3000:3000"
     environment:
       PORT: "3000"
+      BIND_IP: "0.0.0.0"
       ROOT_URL: "http://localhost:3000"
       MONGO_URL: "mongodb://medsense-mongo:27017/rocketchat?replicaSet=rs0"
       MONGO_OPLOG_URL: "mongodb://medsense-mongo:27017/local?replicaSet=rs0"
@@ -60,3 +67,5 @@ services:
 
 volumes:
   mongo_data:
+    name: ${MONGO_VOLUME:-deployment_mongo_data}
+    external: true
