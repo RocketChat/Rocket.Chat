@@ -91,14 +91,6 @@ export class UploadService {
 			fields: Record<string, string>;
 		}>();
 
-		const cleanupTempFile = (tempFilePath: string) => {
-			fs.unlink(tempFilePath, (err) => {
-				if (err) {
-					console.error(`[UploadService] Failed to cleanup temp file: ${tempFilePath}`, err);
-				}
-			});
-		};
-
 		const tryResolve = () => {
 			if (busboyFinished && writeStreamFinished) {
 				if (!parsedFile && !options.fileOptional) {
@@ -143,7 +135,7 @@ export class UploadService {
 
 			writeStream.on('finish', () => {
 				if (file.truncated) {
-					cleanupTempFile(tempFilePath);
+					void this.cleanup(tempFilePath);
 					return reject(new MeteorError('error-file-too-large', 'File size exceeds the allowed limit'));
 				}
 
@@ -159,13 +151,13 @@ export class UploadService {
 			});
 
 			writeStream.on('error', (err) => {
-				cleanupTempFile(tempFilePath);
+				void this.cleanup(tempFilePath);
 				reject(new MeteorError('error-file-upload', err.message));
 			});
 
 			file.on('error', (err) => {
 				writeStream.destroy();
-				cleanupTempFile(tempFilePath);
+				void this.cleanup(tempFilePath);
 				reject(err);
 			});
 		});
