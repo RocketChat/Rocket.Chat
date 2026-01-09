@@ -1,8 +1,8 @@
 import fs from 'fs';
 import type { IncomingMessage } from 'http';
 import type { Stream, Transform } from 'stream';
-import { Readable, pipeline } from 'stream';
-import { promisify } from 'util';
+import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
 
 import { MeteorError } from '@rocket.chat/core-services';
 import { Random } from '@rocket.chat/random';
@@ -11,8 +11,6 @@ import ExifTransformer from 'exif-be-gone';
 
 import { UploadFS } from '../../../../server/ufs';
 import { getMimeType } from '../../../utils/lib/mimeTypes';
-
-const pipelineAsync = promisify(pipeline);
 
 export type ParsedUpload = {
 	tempFilePath: string;
@@ -51,7 +49,7 @@ export class UploadService {
 		try {
 			const writeStream = fs.createWriteStream(strippedPath);
 
-			await pipelineAsync(fs.createReadStream(tempFilePath), new ExifTransformer(), writeStream);
+			await pipeline(fs.createReadStream(tempFilePath), new ExifTransformer(), writeStream);
 
 			await fs.promises.rename(strippedPath, tempFilePath);
 
