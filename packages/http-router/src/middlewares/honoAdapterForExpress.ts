@@ -12,17 +12,11 @@ export const honoAdapterForExpress = (hono: Hono) => async (expressReq: Request,
 
 	const { body, ...req } = expressReq;
 
-	// Don't pass body for multipart/form-data to avoid consuming the stream
-	// Routes will parse it manually via UploadService.parse() using rawRequest
-	const contentType = expressReq.headers['content-type'];
-	const isMultipart = contentType?.includes('multipart/form-data');
-	const shouldPassBody = ['POST', 'PUT', 'DELETE'].includes(expressReq.method) && !isMultipart;
-
 	const honoRes = await hono.request(
 		expressReq.originalUrl,
 		{
 			...req,
-			...(shouldPassBody && { body: expressReq as unknown as ReadableStream }),
+			...(['POST', 'PUT', 'DELETE'].includes(expressReq.method) && { body: expressReq as unknown as ReadableStream }),
 			headers: new Headers(Object.fromEntries(Object.entries(expressReq.headers)) as Record<string, string>),
 		},
 		{

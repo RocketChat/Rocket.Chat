@@ -110,7 +110,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const { file, fields } = await UploadService.parse(this.rawRequest, {
+			const { file, fields } = await UploadService.parse(this.request, {
 				field: 'emoji',
 				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
 			});
@@ -154,7 +154,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const { file, fields } = await UploadService.parse(this.rawRequest, {
+			const { file, fields } = await UploadService.parse(this.request, {
 				field: 'emoji',
 				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
 				fileOptional: true,

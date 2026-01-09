@@ -35,7 +35,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 
 		const maxFileSize = settings.get<number>('FileUpload_MaxFileSize') || 104857600;
 
-		const { file, fields } = await UploadService.parse(this.rawRequest, {
+		const { file, fields } = await UploadService.parse(this.request, {
 			field: 'file',
 			maxSize: maxFileSize > -1 ? maxFileSize : undefined,
 		});
