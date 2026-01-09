@@ -4,7 +4,7 @@ import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { afterLogoutCleanUpCallback } from '@rocket.chat/ui-client';
 import type { FindOptions, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { UserContext, useEndpoint, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { UserContext, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -78,8 +78,6 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	const [, setSamlInviteToken] = useSamlInviteToken();
 	const samlCredentialToken = useSearchParameter('saml_idp_credentialToken');
 	const inviteTokenHash = useRouteParameter('hash');
-
-	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	useEmailVerificationWarning(user ?? undefined);
 	useClearRemovedRoomsHistory(userId);
@@ -156,17 +154,22 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 		[userId, user, querySubscription, querySubscriptions],
 	);
 
+	// Mirror local preference changes into the live userLanguage state without hitting the server.
 	useEffect(() => {
-		if (!!userId && preferedLanguage !== userLanguage) {
-			setUserPreferences({ data: { language: preferedLanguage } });
-			setUserLanguage(preferedLanguage);
+		if (preferedLanguage === userLanguage) {
+			return;
 		}
 
+		setUserLanguage(preferedLanguage);
+	}, [preferedLanguage, setUserLanguage, userLanguage]);
+
+	// When the server reports a new language, overwrite both storage keys so every tab stays aligned.
+	useEffect(() => {
 		if (user?.language !== undefined && user.language !== userLanguage) {
 			setUserLanguage(user.language);
 			setPreferedLanguage(user.language);
 		}
-	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
+	}, [setPreferedLanguage, setUserLanguage, user?.language, userLanguage]);
 
 	useEffect(() => {
 		if (!samlCredentialToken && !inviteTokenHash) {
