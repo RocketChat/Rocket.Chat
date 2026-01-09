@@ -62,6 +62,7 @@ export class OmnichannelContactCenterChats extends OmnichannelContactCenter {
 		this.filters = new OmnichannelChatsFilters(page);
 		this.confirmRemoveChatModal = new OmnichannelConfirmRemoveChat(page);
 		this.conversation = new ConversationFlexTab(page);
+		this.table = new OmnichannelContactCenterChatsTable(page);
 	}
 
 	async removeChatByName(name: string) {

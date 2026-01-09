@@ -10,6 +10,8 @@ export abstract class Table {
 	}
 
 	findRowByName(name: string): Locator {
-		return this.root.getByRole('link', { name, exact: true });
+		return this.root.getByRole('row').filter({
+			has: this.root.getByText(name, { exact: true }),
+		});
 	}
 }
