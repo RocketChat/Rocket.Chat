@@ -10,6 +10,11 @@ import {
 	defaultAuthnContextTemplate,
 } from '../constants';
 
+function resolveCustomAuthnContext(serviceProviderOptions: IServiceProviderOptions): string | undefined {
+	const value = serviceProviderOptions.customAuthnContext.trim();
+	return value.length > 0 ? value : undefined;
+}
+
 /*
 	An Authorize Request is used to show the Identity Provider login form when the user clicks on the Rocket.Chat SAML login button
 */
@@ -46,7 +51,7 @@ export class AuthorizeRequest {
 	}
 
 	private static authnContextTagTemplate(serviceProviderOptions: IServiceProviderOptions): string {
-		if (!serviceProviderOptions.customAuthnContext) {
+		if (!resolveCustomAuthnContext(serviceProviderOptions)) {
 			return '';
 		}
 
@@ -68,7 +73,7 @@ export class AuthorizeRequest {
 			issuer: serviceProviderOptions.issuer,
 			identifierFormat: serviceProviderOptions.identifierFormat || defaultIdentifierFormat,
 			authnContextComparison: serviceProviderOptions.authnContextComparison || 'exact',
-			authnContext: serviceProviderOptions.customAuthnContext || defaultAuthnContext,
+			authnContext: resolveCustomAuthnContext(serviceProviderOptions) || defaultAuthnContext,
 		};
 	}
 }
