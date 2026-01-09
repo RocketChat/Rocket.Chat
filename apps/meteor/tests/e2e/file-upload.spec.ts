@@ -87,6 +87,67 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.content.getFileComposerByName(fileName)).toHaveAttribute('readonly');
 	});
 
+	test.describe.serial('multiple file upload', () => {
+		test('should send multiple files successfully', async () => {
+			const file1 = 'any_file.txt';
+			const file2 = 'lst-test.lst';
+
+			await poHomeChannel.content.sendFileMessage(file1);
+			await poHomeChannel.content.sendFileMessage(file2);
+
+			await poHomeChannel.content.btnSendMainComposer.click();
+
+			await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(file1);
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(file2);
+		});
+
+		test('should be able to remove file from composer before sending', async () => {
+			const file1 = 'any_file.txt';
+			const file2 = 'lst-test.lst';
+
+			await poHomeChannel.content.sendFileMessage(file1);
+			await poHomeChannel.content.sendFileMessage(file2);
+
+			await poHomeChannel.content.getFileComposerByName(file1).getByRole('button', { name: 'Close' }).click();
+
+			await expect(poHomeChannel.content.getFileComposerByName(file1)).not.toBeVisible();
+			await expect(poHomeChannel.content.getFileComposerByName(file2)).toBeVisible();
+
+			await poHomeChannel.content.btnSendMainComposer.click();
+
+			await expect(poHomeChannel.content.lastUserMessage).not.toContainText(file1);
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(file2);
+		});
+
+		test('should send multiple files with text message successfully', async () => {
+			const file1 = 'any_file.txt';
+			const file2 = 'lst-test.lst';
+			const message = 'Here are two files';
+
+			await poHomeChannel.content.sendFileMessage(file1);
+			await poHomeChannel.content.sendFileMessage(file2);
+			await poHomeChannel.content.inputMessage.fill(message);
+
+			await poHomeChannel.content.btnSendMainComposer.click();
+
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(file1);
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(file2);
+		});
+
+		test('should respect the maximum number of files allowed per message: 10', async () => {
+			const file11 = 'number6.png';
+			const files = new Array(10).fill('number1.png');
+
+			await Promise.all([...files, file11].map((file) => poHomeChannel.content.sendFileMessage(file)));
+
+			// TODO: Composer regorg is needed for it to be accessible and allow locating files by their extensions and counting them
+			// await expect(poHomeChannel.content.getFilesInComposer('.png')).toHaveCount(10);
+			await expect(poHomeChannel.content.getFileComposerByName(file11)).not.toBeVisible();
+		});
+	});
+
 	test.describe.serial('file upload fails', () => {
 		test.beforeAll(async ({ api }) => {
 			await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'application/octet-stream');
