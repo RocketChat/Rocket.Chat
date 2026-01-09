@@ -2,17 +2,17 @@ import { Apps, AppEvents } from '@rocket.chat/apps';
 import { api } from '@rocket.chat/core-services';
 import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
 import {
-    Integrations,
-    FederationServers,
-    LivechatVisitors,
-    LivechatDepartmentAgents,
-    Messages,
-    Rooms,
-    Subscriptions,
-    Users,
-    ReadReceipts,
-    LivechatUnitMonitors,
-    ModerationReports,
+	Integrations,
+	FederationServers,
+	LivechatVisitors,
+	LivechatDepartmentAgents,
+	Messages,
+	Rooms,
+	Subscriptions,
+	Users,
+	ReadReceipts,
+	LivechatUnitMonitors,
+	ModerationReports,
 } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -25,189 +25,198 @@ import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 import {
-    notifyOnRoomChangedById,
-    notifyOnIntegrationChangedByUserId,
-    notifyOnLivechatDepartmentAgentChanged,
-    notifyOnUserChange,
+	notifyOnRoomChangedById,
+	notifyOnIntegrationChangedByUserId,
+	notifyOnLivechatDepartmentAgentChanged,
+	notifyOnUserChange,
 } from '../lib/notifyListener';
 
 export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<{ deletedRooms: string[] }> {
-    if (userId === 'rocket.cat') {
-        throw new Meteor.Error('error-action-not-allowed', 'Deleting the rocket.cat user is not allowed', {
-            method: 'deleteUser',
-            action: 'Delete_user',
-        });
-    }
+	if (userId === 'rocket.cat') {
+		throw new Meteor.Error('error-action-not-allowed', 'Deleting the rocket.cat user is not allowed', {
+			method: 'deleteUser',
+			action: 'Delete_user',
+		});
+	}
 
-    const user = await Users.findOneById(userId, {
-        projection: { username: 1, name: 1, avatarOrigin: 1, roles: 1, federated: 1 },
-    });
+	const user = await Users.findOneById(userId, {
+		projection: { username: 1, name: 1, avatarOrigin: 1, roles: 1, federated: 1 },
+	});
 
-    if (!user) {
-        return { deletedRooms: [] };
-    }
+	if (!user) {
+		return { deletedRooms: [] };
+	}
 
-    if (isUserFederated(user)) {
-        throw new Meteor.Error('error-not-allowed', 'User participated in federation, this user can only be deactivated permanently', {
-            method: 'deleteUser',
-        });
-    }
+	if (isUserFederated(user)) {
+		throw new Meteor.Error('error-not-allowed', 'User participated in federation, this user can only be deactivated permanently', {
+			method: 'deleteUser',
+		});
+	}
 
-    const subscribedRooms = await getSubscribedRoomsForUserWithDetails(userId);
+	const subscribedRooms = await getSubscribedRoomsForUserWithDetails(userId);
 
-    if (shouldRemoveOrChangeOwner(subscribedRooms) && !confirmRelinquish) {
-        const rooms = await getUserSingleOwnedRooms(subscribedRooms);
-        throw new Meteor.Error('user-last-owner', '', rooms);
-    }
+	if (shouldRemoveOrChangeOwner(subscribedRooms) && !confirmRelinquish) {
+		const rooms = await getUserSingleOwnedRooms(subscribedRooms);
+		throw new Meteor.Error('user-last-owner', '', rooms);
+	}
 
-    let deletedRooms: string[] = [];
-    const affectedRoomIds: string[] = []; 
+	let deletedRooms: string[] = [];
+	const affectedRoomIds: string[] = [];
 
-    // Users without username can't do anything, so there is nothing to remove
-    if (user.username != null) {
-        let userToReplaceWhenUnlinking: IUser | null = null;
-        const nameAlias = i18n.t('Removed_User');
-        deletedRooms = await relinquishRoomOwnerships(userId, subscribedRooms);
+	// Users without username can't do anything, so there is nothing to remove
+	if (user.username != null) {
+		let userToReplaceWhenUnlinking: IUser | null = null;
+		const nameAlias = i18n.t('Removed_User');
+		deletedRooms = await relinquishRoomOwnerships(userId, subscribedRooms);
 
-        const messageErasureType = settings.get<'Delete' | 'Unlink' | 'Keep'>('Message_ErasureType');
-        switch (messageErasureType) {
-            case 'Delete': {
-                const store = FileUpload.getStore('Uploads');
-                const cursor = Messages.findFilesByUserId(userId);
+		const messageErasureType = settings.get<'Delete' | 'Unlink' | 'Keep'>('Message_ErasureType');
+		switch (messageErasureType) {
+			case 'Delete': {
+				const store = FileUpload.getStore('Uploads');
+				const cursor = Messages.findFilesByUserId(userId);
 
-                for await (const { file } of cursor) {
-                    if (!file) {
-                        continue;
-                    }
-                    await store.deleteById(file._id);
-                }
+				// New Rocket.Chat Logic for File Deletion
+				for await (const { file, files } of cursor) {
+					const fileIds = files?.map(({ _id }) => _id) || [];
+					for await (const fileId of fileIds) {
+						if (fileId) {
+							await store.deleteById(fileId);
+						}
+					}
 
-                await Messages.removeByUserId(userId);
+					if (file?._id && !fileIds.includes(file._id)) {
+						await store.deleteById(file._id);
+					}
+				}
 
-                const roomsToUpdate = await Rooms.find({ 'lastMessage.u._id': userId }, { projection: { _id: 1 } }).toArray();
-                for await (const room of roomsToUpdate) {
-                    affectedRoomIds.push(room._id);
-                    const [newLastMessage] = await Messages.find({ rid: room._id }, { sort: { ts: -1 }, limit: 1 }).toArray();
-                    const filter = { _id: room._id, 'lastMessage.u._id': userId };
-                    if (newLastMessage) {
-                        await Rooms.updateOne(filter, { $set: { lastMessage: newLastMessage } });
-                    } else {
-                        await Rooms.updateOne(filter, { $unset: { lastMessage: 1 } });
-                    }
-                }
+				await Messages.removeByUserId(userId);
 
-                await ReadReceipts.removeByUserId(userId);
+				// Our Fix: Update lastMessage for rooms
+				const roomsToUpdate = await Rooms.find({ 'lastMessage.u._id': userId }, { projection: { _id: 1 } }).toArray();
+				for await (const room of roomsToUpdate) {
+					affectedRoomIds.push(room._id);
+					const [newLastMessage] = await Messages.find({ rid: room._id }, { sort: { ts: -1 }, limit: 1 }).toArray();
+					const filter = { _id: room._id, 'lastMessage.u._id': userId };
+					if (newLastMessage) {
+						await Rooms.updateOne(filter, { $set: { lastMessage: newLastMessage } });
+					} else {
+						await Rooms.updateOne(filter, { $unset: { lastMessage: 1 } });
+					}
+				}
 
-                await ModerationReports.hideMessageReportsByUserId(
-                    userId,
-                    deletedBy || userId,
-                    deletedBy === userId ? 'user deleted own account' : 'user account deleted',
-                    'DELETE_USER',
-                );
+				await ReadReceipts.removeByUserId(userId);
 
-                break;
-            }
-            case 'Unlink': {
-                userToReplaceWhenUnlinking = await Users.findOneById('rocket.cat');
-                if (!userToReplaceWhenUnlinking?._id || !userToReplaceWhenUnlinking?.username) {
-                    break;
-                }
-                await Messages.unlinkUserId(userId, userToReplaceWhenUnlinking?._id, userToReplaceWhenUnlinking?.username, nameAlias);
+				await ModerationReports.hideMessageReportsByUserId(
+					userId,
+					deletedBy || userId,
+					deletedBy === userId ? 'user deleted own account' : 'user account deleted',
+					'DELETE_USER',
+				);
 
-                const roomsToUpdateUnlink = await Rooms.find({ 'lastMessage.u._id': userId }, { projection: { _id: 1 } }).toArray();
-                for await (const room of roomsToUpdateUnlink) {
-                    affectedRoomIds.push(room._id);
-                    const [newLastMessage] = await Messages.find({ rid: room._id }, { sort: { ts: -1 }, limit: 1 }).toArray();
-                    const filter = { _id: room._id, 'lastMessage.u._id': userId };
-                    if (newLastMessage) {
-                        await Rooms.updateOne(filter, { $set: { lastMessage: newLastMessage } });
-                    } else {
-                        await Rooms.updateOne(filter, { $unset: { lastMessage: 1 } });
-                    }
-                }
+				break;
+			}
+			case 'Unlink': {
+				userToReplaceWhenUnlinking = await Users.findOneById('rocket.cat');
+				if (!userToReplaceWhenUnlinking?._id || !userToReplaceWhenUnlinking?.username) {
+					break;
+				}
+				await Messages.unlinkUserId(userId, userToReplaceWhenUnlinking?._id, userToReplaceWhenUnlinking?.username, nameAlias);
 
-                break;
-            }
-        }
+				// Our Fix: Update lastMessage for rooms in Unlink case too
+				const roomsToUpdateUnlink = await Rooms.find({ 'lastMessage.u._id': userId }, { projection: { _id: 1 } }).toArray();
+				for await (const room of roomsToUpdateUnlink) {
+					affectedRoomIds.push(room._id);
+					const [newLastMessage] = await Messages.find({ rid: room._id }, { sort: { ts: -1 }, limit: 1 }).toArray();
+					const filter = { _id: room._id, 'lastMessage.u._id': userId };
+					if (newLastMessage) {
+						await Rooms.updateOne(filter, { $set: { lastMessage: newLastMessage } });
+					} else {
+						await Rooms.updateOne(filter, { $unset: { lastMessage: 1 } });
+					}
+				}
 
-        await Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
-        await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
+				break;
+			}
+		}
 
-        const rids = subscribedRooms.map((room) => room.rid);
-        const allAffectedRids = [...new Set([...rids, ...affectedRoomIds])];
-        void notifyOnRoomChangedById(allAffectedRids);
+		await Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
+		await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
-        await Subscriptions.removeByUserId(userId);
+		const rids = subscribedRooms.map((room) => room.rid);
+		const allAffectedRids = [...new Set([...rids, ...affectedRoomIds])];
+		void notifyOnRoomChangedById(allAffectedRids);
 
-        // Remove user as livechat agent
-        if (user.roles.includes('livechat-agent')) {
-            const departmentAgents = await LivechatDepartmentAgents.findByAgentId(userId).toArray();
+		await Subscriptions.removeByUserId(userId);
 
-            const { deletedCount } = await LivechatDepartmentAgents.removeByAgentId(userId);
+		// Remove user as livechat agent
+		if (user.roles.includes('livechat-agent')) {
+			const departmentAgents = await LivechatDepartmentAgents.findByAgentId(userId).toArray();
 
-            if (deletedCount > 0) {
-                departmentAgents.forEach((depAgent) => {
-                    void notifyOnLivechatDepartmentAgentChanged(
-                        {
-                            _id: depAgent._id,
-                            agentId: userId,
-                            departmentId: depAgent.departmentId,
-                        },
-                        'removed',
-                    );
-                });
-            }
-        }
+			const { deletedCount } = await LivechatDepartmentAgents.removeByAgentId(userId);
 
-        if (user.roles.includes('livechat-monitor')) {
-            // Remove user as Unit Monitor
-            await LivechatUnitMonitors.removeByMonitorId(userId);
-        }
+			if (deletedCount > 0) {
+				departmentAgents.forEach((depAgent) => {
+					void notifyOnLivechatDepartmentAgentChanged(
+						{
+							_id: depAgent._id,
+							agentId: userId,
+							departmentId: depAgent.departmentId,
+						},
+						'removed',
+					);
+				});
+			}
+		}
 
-        // This is for compatibility. Since we allowed any user to be contact manager b4, we need to have the same logic
-        // for deletion.
-        await LivechatVisitors.removeContactManagerByUsername(user.username);
+		if (user.roles.includes('livechat-monitor')) {
+			// Remove user as Unit Monitor
+			await LivechatUnitMonitors.removeByMonitorId(userId);
+		}
 
-        // removes user's avatar
-        if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url' || user.avatarOrigin === 'rest') {
-            await FileUpload.getStore('Avatars').deleteByName(user.username);
-        }
+		// This is for compatibility. Since we allowed any user to be contact manager b4, we need to have the same logic
+		// for deletion.
+		await LivechatVisitors.removeContactManagerByUsername(user.username);
 
-        // Disables all the integrations which rely on the user being deleted.
-        await Integrations.disableByUserId(userId);
-        void notifyOnIntegrationChangedByUserId(userId);
+		// removes user's avatar
+		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url' || user.avatarOrigin === 'rest') {
+			await FileUpload.getStore('Avatars').deleteByName(user.username);
+		}
 
-        // Don't broadcast user.deleted for Erasure Type of 'Keep' so that messages don't disappear from logged in sessions
-        if (messageErasureType === 'Delete') {
-            void api.broadcast('user.deleted', user, {
-                messageErasureType,
-            });
-        }
-        if (messageErasureType === 'Unlink' && userToReplaceWhenUnlinking) {
-            void api.broadcast('user.deleted', user, {
-                messageErasureType,
-                replaceByUser: { _id: userToReplaceWhenUnlinking._id, username: userToReplaceWhenUnlinking?.username, alias: nameAlias },
-            });
-        }
-    }
+		// Disables all the integrations which rely on the user being deleted.
+		await Integrations.disableByUserId(userId);
+		void notifyOnIntegrationChangedByUserId(userId);
 
-    // Remove user from users database
-    await Users.removeById(userId);
+		// Don't broadcast user.deleted for Erasure Type of 'Keep' so that messages don't disappear from logged in sessions
+		if (messageErasureType === 'Delete') {
+			void api.broadcast('user.deleted', user, {
+				messageErasureType,
+			});
+		}
+		if (messageErasureType === 'Unlink' && userToReplaceWhenUnlinking) {
+			void api.broadcast('user.deleted', user, {
+				messageErasureType,
+				replaceByUser: { _id: userToReplaceWhenUnlinking._id, username: userToReplaceWhenUnlinking?.username, alias: nameAlias },
+			});
+		}
+	}
 
-    // App IPostUserDeleted event hook
-    if (deletedBy) {
-        await Apps.self?.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Users.findOneById(deletedBy) });
-    }
+	// Remove user from users database
+	await Users.removeById(userId);
 
-    // update name and fname of group direct messages
-    await updateGroupDMsName(user);
+	// App IPostUserDeleted event hook
+	if (deletedBy) {
+		await Apps.self?.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Users.findOneById(deletedBy) });
+	}
 
-    // Refresh the servers list
-    await FederationServers.refreshServers();
+	// update name and fname of group direct messages
+	await updateGroupDMsName(user);
 
-    void notifyOnUserChange({ clientAction: 'removed', id: user._id });
+	// Refresh the servers list
+	await FederationServers.refreshServers();
 
-    await callbacks.run('afterDeleteUser', user);
+	void notifyOnUserChange({ clientAction: 'removed', id: user._id });
 
-    return { deletedRooms };
+	await callbacks.run('afterDeleteUser', user);
+
+	return { deletedRooms };
 }
