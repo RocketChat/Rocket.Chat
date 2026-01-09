@@ -9,6 +9,7 @@ import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import FileUploadModal from '../../../views/room/modals/FileUploadModal';
 import { e2e } from '../../e2ee';
 import { settings } from '../../settings';
+import { dispatchToastMessage } from '../../toast';
 import { prependReplies } from '../../utils/prependReplies';
 import type { ChatAPI } from '../ChatAPI';
 
@@ -81,11 +82,11 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					imperativeModal.close();
 					uploadNextFile();
 				},
-				onSubmit: async (fileName, description, dispatchToastMessage): Promise<void> => {
+				onSubmit: async (fileName, description): Promise<void> => {
 					const file = prepareFile(fileName, nextFile.name, nextFile);
 
 					if (!fileUploadIsValidContentType(file.type)) {
-						dispatchToastMessage?.({
+						dispatchToastMessage({
 							type: 'error',
 							message: getI18n().t('FileUpload_MediaType_NotAccepted__type__', { type: file.type }),
 						});
