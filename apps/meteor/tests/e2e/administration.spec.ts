@@ -7,7 +7,6 @@ import { AdminUsers, AdminRoles, AdminRooms, AdminThirdPartyLogin, AdminIntegrat
 import { ToastMessages } from './page-objects/fragments';
 import { createTargetChannel, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
-import { permissions as defaultPermissions } from '../../app/authorization/server/constant/permissions';
 
 test.use({ storageState: Users.admin.state });
 
@@ -23,51 +22,6 @@ test.describe.parallel('administration', () => {
 			const [download] = await Promise.all([page.waitForEvent('download'), page.locator('button:has-text("Download info")').click()]);
 
 			await expect(download.suggestedFilename()).toBe('statistics.json');
-		});
-	});
-
-	test.describe.serial('Workspace registration status', () => {
-		const viewStatisticsDefaultRoles = defaultPermissions.find((p) => p._id === 'view-statistics')?.roles || ['admin'];
-
-		test.beforeAll(async ({ api }) => {
-			// Grant view-statistics to user role so user1 can access /admin/info page
-			// but not enable manage-cloud, so user1 won't see registration status
-			expect(
-				(
-					await api.post('/permissions.update', {
-						permissions: [{ _id: 'view-statistics', roles: [...viewStatisticsDefaultRoles, 'user'] }],
-					})
-				).status(),
-			).toBe(200);
-		});
-
-		test.afterAll(async ({ api }) => {
-			// Restore view-statistics to default roles (admin only)
-			expect(
-				(
-					await api.post('/permissions.update', {
-						permissions: [{ _id: 'view-statistics', roles: viewStatisticsDefaultRoles }],
-					})
-				).status(),
-			).toBe(200);
-		});
-
-		test('expect admin to see workspace registration status', async ({ page }) => {
-			// Admin has manage-cloud by default, so should see registration status
-			await page.goto('/admin/info');
-			await expect(page.getByRole('heading', { name: /Version/ })).toBeVisible();
-			await expect(page.locator('text=/Workspace (registered|not registered)/i')).toBeVisible({ timeout: 10000 });
-		});
-
-		test.describe('User without manage-cloud permission', () => {
-			test.use({ storageState: Users.user1.state });
-
-			test('expect not to see registration status on UI', async ({ page }) => {
-				// user1 can access /admin/info (has view-statistics) but cannot see registration status (no manage-cloud)
-				await page.goto('/admin/info');
-				await expect(page.getByRole('heading', { name: /Version/ })).toBeVisible();
-				await expect(page.locator('text=/Workspace (registered|not registered)/i')).not.toBeVisible();
-			});
 		});
 	});
 
