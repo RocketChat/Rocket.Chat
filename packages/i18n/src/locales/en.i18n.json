@@ -2266,6 +2266,8 @@
   "FileUpload_Error": "File Upload Error",
   "FileUpload_FileSystemPath": "System Path",
   "FileUpload_File_Empty": "File empty",
+  "FileUpload_Cancelled": "Upload cancelled",
+  "FileUpload_Update_Failed": "Could not update file name",
   "FileUpload_GoogleStorage_AccessId": "Google Storage Access Id",
   "FileUpload_GoogleStorage_AccessId_Description": "The Access Id is generally in an email format, for example: \"`example-test@example.iam.gserviceaccount.com`\"",
   "FileUpload_GoogleStorage_Bucket": "Google Storage Bucket Name",

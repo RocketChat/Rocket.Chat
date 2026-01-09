@@ -70,7 +70,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 					return {
 						...upload,
 						percentage: 0,
-						error: new Error('Could not update file name'),
+						error: new Error(i18n.t('FileUpload_Update_Failed')),
 					};
 				}),
 			);
@@ -200,7 +200,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 				this.once(`cancelling-${id}`, () => {
 					xhr.abort();
 					this.set(this.uploads.filter((upload) => upload.id !== id));
-					reject(new Error('Upload cancelled'));
+					reject(new Error(i18n.t('FileUpload_Cancelled')));
 				});
 			});
 		} catch (error: unknown) {
