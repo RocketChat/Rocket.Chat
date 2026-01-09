@@ -131,11 +131,6 @@ export class UploadService {
 			const tempFilePath = UploadFS.getTempFilePath(fileId);
 
 			const writeStream = fs.createWriteStream(tempFilePath);
-			let fileSize = 0;
-
-			file.on('data', (chunk: Buffer) => {
-				fileSize += chunk.length;
-			});
 
 			let currentStream: Stream = file;
 			if (options.transforms?.length) {
@@ -151,7 +146,7 @@ export class UploadService {
 					tempFilePath,
 					filename,
 					mimetype: getMimeType(mimeType, filename),
-					size: fileSize,
+					size: writeStream.bytesWritten,
 					fieldname,
 				};
 				writeStreamFinished = true;
