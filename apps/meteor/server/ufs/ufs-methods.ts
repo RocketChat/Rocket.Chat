@@ -72,7 +72,6 @@ export async function ufsComplete(fileId: string, storeName: string, options?: {
 		} catch (err: any) {
 			// If write failed, remove the file
 			await store.removeById(fileId, { session: options?.session });
-			void removeTempFile();
 			reject(new Meteor.Error('ufs: cannot upload file', err));
 		}
 	});
