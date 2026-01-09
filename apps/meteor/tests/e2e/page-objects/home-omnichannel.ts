@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { HomeOmnichannelContent, OmnichannelQuickActionsRoomToolbar, OmnichannelRoomToolbar, OmnichannelSidebar } from './fragments';
-import type { OmnichannelEditRoomFlexTab } from './fragments/edit-room-flextab';
+import { OmnichannelEditRoomFlexTab } from './fragments/edit-room-flextab';
 import { OmnichannelRoomInfoFlexTab } from './fragments/room-info-flextab';
 import { HomeChannel } from './home-channel';
 import {
@@ -59,6 +59,7 @@ export class HomeOmnichannel extends HomeChannel {
 		this.quickActionsRoomToolbar = new OmnichannelQuickActionsRoomToolbar(page);
 		this.content = new HomeOmnichannelContent(page);
 		this.roomToolbar = new OmnichannelRoomToolbar(page);
+		this.editRoomInfo = new OmnichannelEditRoomFlexTab(page);
 	}
 
 	get btnContactInfo(): Locator {
