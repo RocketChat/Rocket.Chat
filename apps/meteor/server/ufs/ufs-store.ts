@@ -231,11 +231,8 @@ export class Store {
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
 		// Delete the temp file
-		fs.stat(tmpFile, (err) => {
-			!err &&
-				fs.unlink(tmpFile, (err2) => {
-					err2 && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err2.message})`);
-				});
+		await fs.promises.unlink(tmpFile).catch((err) => {
+			err?.code !== 'ENOENT' && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err.message})`);
 		});
 
 		await this.getCollection().removeById(fileId, { session: options?.session });
