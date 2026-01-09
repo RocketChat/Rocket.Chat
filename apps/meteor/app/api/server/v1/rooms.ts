@@ -197,11 +197,9 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const stripExif = settings.get('Message_Attachments_Strip_Exif');
 			const { file, fields } = await UploadService.parse(this.request, {
 				field: 'file',
 				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
-				...(stripExif && { transforms: [UploadService.transforms.stripExif()] }),
 			});
 
 			if (!file) {
