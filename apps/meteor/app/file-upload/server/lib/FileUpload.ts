@@ -7,6 +7,7 @@ import type * as https from 'https';
 import stream from 'stream';
 import { finished } from 'stream/promises';
 import URL from 'url';
+import { isArrayBufferView } from 'util/types';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
@@ -829,10 +830,8 @@ export class FileUploadClass {
 		try {
 			if (typeof content === 'string') {
 				await fs.promises.rename(content, tmpFile);
-			} else if (content instanceof Buffer) {
+			} else if (isArrayBufferView(content)) {
 				await fs.promises.writeFile(tmpFile, content);
-			} else if (content instanceof Uint8Array) {
-				await fs.promises.writeFile(tmpFile, Buffer.from(content));
 			} else if (content instanceof stream.Readable) {
 				await finished(content.pipe(fs.createWriteStream(tmpFile)), { cleanup: true });
 			} else {
