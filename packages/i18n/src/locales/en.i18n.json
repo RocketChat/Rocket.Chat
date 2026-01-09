@@ -2850,9 +2850,7 @@
   "LDAP_Background_Sync_ABAC_Attributes_Description": "Enable a separate background process to sync user ABAC attributes.",
   "LDAP_Background_Sync_ABAC_Attributes_Interval": "ABAC Attributes Background Sync Interval",
   "LDAP_ABAC_AttributeMap": "ABAC Attribute Mapping",
-  "LDAP_ABAC_AttributeMap_Description": "Map LDAP user attributes to Rocket.Chat ABAC attributes.  
- As an example, `{\"department\":\"dept\", \"region\":\"region\"}` will map the LDAP attribute `department` to the ABAC attribute `dept` and `region` to `region`.  
- The structure must be a JSON object where each key is an LDAP attribute name and each value is the ABAC attribute name to set on the user.",
+  "LDAP_ABAC_AttributeMap_Description": "Map LDAP user attributes to Rocket.Chat ABAC attributes.\nAs an example, `{\"department\":\"dept\", \"region\":\"region\"}` will map the LDAP attribute `department` to the ABAC attribute `dept` and `region` to `region`.\nThe structure must be a JSON object where each key is an LDAP attribute name and each value is the ABAC attribute name to set on the user.",
   "LDAP_BaseDN": "Base DN",
   "LDAP_BaseDN_Description": "The fully qualified Distinguished Name (DN) of an LDAP subtree you want to search for users and groups. You can add as many as you like; however, each group must be defined in the same domain base as the users that belong to it. Example: `ou=Users+ou=Projects,dc=Example,dc=com`. If you specify restricted user groups, only users that belong to those groups will be in scope. We recommend that you specify the top level of your LDAP directory tree as your domain base and use search filter to control access.",
   "LDAP_CA_Cert": "CA Cert",

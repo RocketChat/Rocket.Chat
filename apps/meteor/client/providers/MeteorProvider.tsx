@@ -1,5 +1,6 @@
-import { ModalProvider } from '@rocket.chat/ui-client';
+import { ModalProvider as ModalProviderImport } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
+import { Fragment } from 'react';
 
 import ActionManagerProvider from './ActionManagerProvider';
 import AuthenticationProvider from './AuthenticationProvider/AuthenticationProvider';
@@ -26,6 +27,11 @@ import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelR
 type MeteorProviderProps = {
 	children?: ReactNode;
 };
+
+const ModalProvider =
+	typeof ModalProviderImport === 'function'
+		? ModalProviderImport
+		: ({ children }: { children?: ReactNode }) => <Fragment>{children}</Fragment>;
 
 const MeteorProvider = ({ children }: MeteorProviderProps) => (
 	<ServerProvider>

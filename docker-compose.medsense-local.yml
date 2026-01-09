@@ -1,4 +1,4 @@
-# Stop old containers: docker rm -f medsense-chat medsense-mongo medsense-nats
+# Stop old containers (required if already running): docker rm -f medsense-chat medsense-mongo medsense-nats
 services:
   mongo:
     image: mongo:7
