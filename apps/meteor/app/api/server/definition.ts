@@ -184,7 +184,6 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 				: // TODO remove the extra (optionals) params when all the endpoints that use these are typed correctly
 					Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
-	readonly rawRequest?: any;
 
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
 	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
@@ -311,7 +310,6 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 	requestIp?: string;
 	route: string;
 	response: Response;
-	rawRequest?: any;
 };
 
 type PromiseOrValue<T> = T | Promise<T>;
