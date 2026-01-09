@@ -312,7 +312,7 @@ export class HomeContent {
 	}
 
 	get userCard(): Locator {
-		return this.page.locator('[data-qa="UserCard"]');
+		return this.page.getByRole('dialog', { name: 'User card', exact: true });
 	}
 
 	get linkUserCard(): Locator {
@@ -539,10 +539,6 @@ export class HomeContent {
 
 	getMessageByText(text: string): Locator {
 		return this.page.locator('[role="listitem"][aria-roledescription="message"]', { hasText: text });
-	}
-
-	getOTRMessageByText(text: string): Locator {
-		return this.page.locator('[role="listitem"][aria-roledescription="OTR message"]', { hasText: text });
 	}
 
 	getMessageById(id: string): Locator {

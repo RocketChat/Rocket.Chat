@@ -21,6 +21,7 @@ export default {
 				'^react($|/.+)': '<rootDir>/node_modules/react$1',
 				'^react-dom($|/.+)': '<rootDir>/node_modules/react-dom$1',
 				'^react-i18next($|/.+)': '<rootDir>/node_modules/react-i18next$1',
+				'^@rocket.chat/(.+)': '<rootDir>/node_modules/@rocket.chat/$1',
 				'^@tanstack/(.+)': '<rootDir>/node_modules/@tanstack/$1',
 				'^meteor/(.*)': '<rootDir>/tests/mocks/client/meteor.ts',
 			},

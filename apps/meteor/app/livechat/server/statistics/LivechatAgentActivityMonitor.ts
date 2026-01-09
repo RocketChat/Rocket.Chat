@@ -4,7 +4,7 @@ import { LivechatAgentActivity, Sessions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 
 const formatDate = (dateTime = new Date()): { date: number } => ({
 	date: parseInt(moment(dateTime).format('YYYYMMDD')),

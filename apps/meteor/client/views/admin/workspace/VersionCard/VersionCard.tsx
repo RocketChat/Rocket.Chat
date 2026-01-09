@@ -2,7 +2,7 @@ import type { IWorkspaceInfo } from '@rocket.chat/core-typings';
 import { Box, Card, CardBody, CardCol, CardControls, CardHeader, CardTitle, Icon } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { SupportedVersions } from '@rocket.chat/server-cloud-communication';
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { ExternalLink, useLicense, useLicenseName } from '@rocket.chat/ui-client';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { useSetModal, useMediaUrl } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
@@ -17,12 +17,12 @@ import { VersionTag } from './components/VersionTag';
 import { getVersionStatus } from './getVersionStatus';
 import RegisterWorkspaceModal from './modals/RegisterWorkspaceModal';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useLicense, useLicenseName } from '../../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
+import { links } from '../../../../lib/links';
 import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
 
-const SUPPORT_EXTERNAL_LINK = 'https://go.rocket.chat/i/version-support';
-const RELEASES_EXTERNAL_LINK = 'https://go.rocket.chat/i/update-product';
+const SUPPORT_EXTERNAL_LINK = links.go.versionSupport;
+const RELEASES_EXTERNAL_LINK = links.go.updateProduct;
 
 type VersionCardProps = {
 	serverInfo: IWorkspaceInfo;

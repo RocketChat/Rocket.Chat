@@ -12,15 +12,8 @@ import {
 	Throbber,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ReactElement } from 'react';
-import { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Virtuoso } from 'react-virtuoso';
-
-import ContactHistoryMessage from './ContactHistoryMessage';
-import { useHistoryMessageList } from './useHistoryMessageList';
 import {
+	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -29,8 +22,15 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarDialog,
 	ContextualbarFooter,
-} from '../../../../components/Contextualbar';
-import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
+} from '@rocket.chat/ui-client';
+import { useSetting, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
+import type { ChangeEvent, ReactElement } from 'react';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Virtuoso } from 'react-virtuoso';
+
+import ContactHistoryMessage from './ContactHistoryMessage';
+import { useHistoryMessageList } from './useHistoryMessageList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';

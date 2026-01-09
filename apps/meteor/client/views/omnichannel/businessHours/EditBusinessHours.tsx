@@ -1,7 +1,8 @@
 import type { ILivechatBusinessHour, LivechatBusinessHourTypes, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -9,8 +10,7 @@ import type { BusinessHoursFormData } from './BusinessHoursForm';
 import BusinessHoursForm from './BusinessHoursForm';
 import { defaultWorkHours } from './mapBusinessHoursForm';
 import { useIsSingleBusinessHours } from './useIsSingleBusinessHours';
-import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { useRemoveBusinessHour } from '../../../omnichannel/businessHours/useRemoveBusinessHour';
+import { useRemoveBusinessHour } from './useRemoveBusinessHour';
 
 const getInitialData = (businessHourData: Serialized<ILivechatBusinessHour> | undefined) => ({
 	name: businessHourData?.name || '',
@@ -39,7 +39,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isSingleBH = useIsSingleBusinessHours();
 
-	const saveBusinessHour = useMethod('livechat:saveBusinessHour');
+	const saveBusinessHour = useEndpoint('POST', '/v1/livechat/business-hours.save');
 	const handleRemove = useRemoveBusinessHour();
 
 	const router = useRouter();
@@ -69,7 +69,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 				})),
 			};
 
-			await saveBusinessHour(payload as any);
+			await saveBusinessHour(payload);
 			dispatchToastMessage({ type: 'success', message: t('Business_hours_updated') });
 			router.navigate('/omnichannel/businessHours');
 		} catch (error) {

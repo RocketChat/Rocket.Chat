@@ -7,7 +7,7 @@ import { changeSettingValue } from './settings';
 export class EnterpriseSettings extends ServiceClassInternal implements IEnterpriseSettings {
 	protected name = 'ee-settings';
 
-	protected internal = true;
+	protected override internal = true;
 
 	changeSettingValue(record: ISetting): undefined | ISetting['value'] {
 		return changeSettingValue(record);

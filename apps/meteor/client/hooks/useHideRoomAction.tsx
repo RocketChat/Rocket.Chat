@@ -24,7 +24,6 @@ const CLOSE_ENDPOINTS_BY_ROOM_TYPE = {
 	p: '/v1/groups.close', // private
 	c: '/v1/channels.close', // channel
 	d: '/v1/im.close', // direct message
-	v: '/v1/channels.close', // omnichannel voip
 	l: '/v1/channels.close', // livechat
 } as const;
 

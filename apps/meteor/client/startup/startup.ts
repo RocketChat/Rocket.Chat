@@ -10,8 +10,6 @@ import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 import { watchUserId } from '../meteor/user';
 
 Meteor.startup(() => {
-	fireGlobalEvent('startup', true);
-
 	let status: UserStatus | undefined = undefined;
 	Tracker.autorun(async () => {
 		const uid = watchUserId();

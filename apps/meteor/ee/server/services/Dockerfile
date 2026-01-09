@@ -1,4 +1,4 @@
-FROM node:22.14.0 as build
+FROM node:22.16.0-alpine3.21 as build
 
 WORKDIR /app
 
@@ -28,7 +28,7 @@ RUN yarn install
 RUN yarn workspace @rocket.chat/core-typings run build \
     && yarn workspace @rocket.chat/rest-typings run build
 
-FROM node:22.16.0-alpine3.20
+FROM node:22.16.0-alpine3.21
 
 ARG SERVICE
 
@@ -73,6 +73,9 @@ WORKDIR /app/apps/meteor/ee/server/services
 
 RUN apk update && \
     apk --no-cache --virtual build-dependencies add g++ python3 make py3-setuptools && \
+    # Update OpenSSL
+    # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.21
+    apk upgrade --no-cache openssl && \
     yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
     apk del build-dependencies

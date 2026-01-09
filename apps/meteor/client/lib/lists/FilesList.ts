@@ -26,7 +26,7 @@ export class FilesList extends RecordList<IUpload> {
 		this.clear();
 	}
 
-	protected filter(message: IUpload): boolean {
+	protected override filter(message: IUpload): boolean {
 		const { rid } = this._options;
 
 		if (!isFileMessageInRoom(message, rid)) {

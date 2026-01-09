@@ -42,7 +42,7 @@ test.describe('E2EE File Encryption', () => {
 		await test.step('create an encrypted channel', async () => {
 			const channelName = faker.string.uuid();
 
-			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+			await poHomeChannel.navbar.createEncryptedChannel(channelName);
 
 			await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -77,7 +77,7 @@ test.describe('E2EE File Encryption', () => {
 		await test.step('create an encrypted room', async () => {
 			const channelName = faker.string.uuid();
 
-			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+			await poHomeChannel.navbar.createEncryptedChannel(channelName);
 
 			await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -141,7 +141,7 @@ test.describe('E2EE File Encryption', () => {
 			await test.step('create an encrypted channel', async () => {
 				const channelName = faker.string.uuid();
 
-				await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+				await poHomeChannel.navbar.createEncryptedChannel(channelName);
 
 				await expect(page).toHaveURL(`/group/${channelName}`);
 

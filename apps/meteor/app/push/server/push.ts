@@ -1,7 +1,7 @@
 import type { IAppsTokens, RequiredField, Optional, IPushNotificationConfig } from '@rocket.chat/core-typings';
 import { AppsTokens } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { pick } from '@rocket.chat/tools';
+import { pick, truncateString } from '@rocket.chat/tools';
 import Ajv from 'ajv';
 import { JWT } from 'google-auth-library';
 import { Match, check } from 'meteor/check';
@@ -14,6 +14,9 @@ import { logger } from './logger';
 import { settings } from '../../settings/server';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
+
+const PUSH_TITLE_LIMIT = 65;
+const PUSH_MESSAGE_BODY_LIMIT = 240;
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -459,8 +462,10 @@ class PushClass {
 			createdBy: '<SERVER>',
 			sent: false,
 			sending: 0,
+			title: truncateString(options.title, PUSH_TITLE_LIMIT),
+			text: truncateString(options.text, PUSH_MESSAGE_BODY_LIMIT),
 
-			...pick(options, 'from', 'title', 'text', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority'),
+			...pick(options, 'from', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority'),
 
 			...(this.hasApnOptions(options)
 				? {

@@ -14,22 +14,15 @@
 			"outputs": ["dist/**"]
 		},
 		"test-storybook": {
-			"dependsOn": ["build"],
 			"outputs": ["coverage/**"]
 		},
 		"testunit": {
-			"dependsOn": ["build"],
 			"outputs": ["coverage/**"]
 		},
 		"lint": {
-			"dependsOn": ["build"],
-			"outputs": []
-		},
-		"translation-check": {
 			"outputs": []
 		},
 		"typecheck": {
-			"dependsOn": ["^build"],
 			"outputs": []
 		},
 		"dev": {
@@ -48,7 +41,6 @@
 			"cache": false
 		},
 		"@rocket.chat/meteor#build:ci": {
-			"dependsOn": ["^build"],
 			"env": ["BABEL_ENV"],
 			"cache": false
 		}

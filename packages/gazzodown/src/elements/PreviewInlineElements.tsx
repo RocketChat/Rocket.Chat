@@ -1,5 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { Fragment, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import { Fragment } from 'react';
 
 import BoldSpan from './BoldSpan';
 import ItalicSpan from './ItalicSpan';

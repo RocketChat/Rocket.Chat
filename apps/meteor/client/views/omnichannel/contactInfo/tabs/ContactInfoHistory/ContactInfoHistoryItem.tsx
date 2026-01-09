@@ -30,7 +30,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 	const getTimeFromNow = useTimeFromNow(true);
 	const setModal = useSetModal();
 	const preventPropagation = usePreventPropagation();
-	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
+	const { data: hasLicense = false } = useHasLicenseModule('contact-id-verification');
 	const { getSourceName } = useOmnichannelSource();
 
 	const customClass = css`
