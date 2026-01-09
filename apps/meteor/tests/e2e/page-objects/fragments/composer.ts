@@ -5,12 +5,8 @@ export abstract class Composer {
 		this.root = root;
 	}
 
-	private get msgComposer(): Locator {
-		return this.root.getByRole('group', { name: 'Message composer' });
-	}
-
 	get inputMessage(): Locator {
-		return this.msgComposer.locator('[name="msg"]');
+		return this.root.locator('[name="msg"]');
 	}
 
 	get btnJoinRoom(): Locator {
@@ -18,7 +14,7 @@ export abstract class Composer {
 	}
 
 	get toolbarPrimaryActions(): Locator {
-		return this.msgComposer.getByRole('toolbar', { name: 'Composer Primary Actions' });
+		return this.root.getByRole('toolbar', { name: 'Composer Primary Actions' });
 	}
 
 	get allPrimaryActions(): Locator {
@@ -34,7 +30,7 @@ export abstract class Composer {
 	}
 
 	get btnSend(): Locator {
-		return this.msgComposer.getByRole('button', { name: 'Send' });
+		return this.root.getByRole('button', { name: 'Send' });
 	}
 
 	get btnOptionFileUpload(): Locator {
