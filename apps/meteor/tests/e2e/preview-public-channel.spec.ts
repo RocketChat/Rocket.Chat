@@ -90,7 +90,7 @@ test.describe('Preview public channel', () => {
 			await poDirectory.openChannel(targetChannel);
 			await expect(poHomeChannel.content.lastUserMessageBody).not.toBeVisible();
 
-			await poHomeChannel.composer.btnJoinRoom.click();
+			await poHomeChannel.btnJoinChannel.click();
 
 			await expect(
 				page.locator('[role="alert"]', {
