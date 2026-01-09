@@ -114,6 +114,20 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
                     break;
                 }
                 await Messages.unlinkUserId(userId, userToReplaceWhenUnlinking?._id, userToReplaceWhenUnlinking?.username, nameAlias);
+
+\                const roomsToUpdateUnlink = await Rooms.find({ 'lastMessage.u._id': userId }, { projection: { _id: 1 } }).toArray();
+                for await (const room of roomsToUpdateUnlink) {
+                    affectedRoomIds.push(room._id);
+
+\                    const [newLastMessage] = await Messages.find({ rid: room._id }, { sort: { ts: -1 }, limit: 1 }).toArray();
+
+                    if (newLastMessage) {
+                        await Rooms.updateOne({ _id: room._id }, { $set: { lastMessage: newLastMessage } });
+                    } else {
+                        await Rooms.updateOne({ _id: room._id }, { $unset: { lastMessage: 1 } });
+                    }
+                }
+
                 break;
         }
 
