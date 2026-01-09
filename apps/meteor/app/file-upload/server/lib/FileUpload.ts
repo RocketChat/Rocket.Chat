@@ -31,6 +31,7 @@ import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { UploadFS } from '../../../../server/ufs';
 import { ufsComplete } from '../../../../server/ufs/ufs-methods';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
+import { UploadService } from '../../../api/server/lib/UploadService';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
@@ -371,10 +372,6 @@ export const FileUpload = {
 
 		const s = sharp(tmpFile);
 		const metadata = await s.metadata();
-		// if (err != null) {
-		// 	SystemLogger.error(err);
-		// 	return fut.return();
-		// }
 
 		const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
 		const width = rotated ? metadata.height : metadata.width;
@@ -391,22 +388,36 @@ export const FileUpload = {
 					: undefined,
 		};
 
+		const shouldRotate = settings.get('FileUpload_RotateImages') === true;
+		const shouldStripExif = settings.get('Message_Attachments_Strip_Exif') === true;
+
+		let size = file.size || 0;
+
 		const reorientation = async () => {
-			if (!rotated || settings.get('FileUpload_RotateImages') !== true) {
-				return;
+			// sharp rotates AND removes metadata
+			const transform = s.rotate();
+
+			if (!shouldStripExif) {
+				transform.withMetadata();
 			}
 
-			await s.rotate().toFile(`${tmpFile}.tmp`);
+			const result = await transform.toFile(`${tmpFile}.sharp`);
+
+			size = result.size;
 
 			await unlink(tmpFile);
 
-			await rename(`${tmpFile}.tmp`, tmpFile);
-			// SystemLogger.error(err);
+			await rename(`${tmpFile}.sharp`, tmpFile);
 		};
 
-		await reorientation();
+		if (rotated && shouldRotate) {
+			// If there is EXIF orientation and the setting is enabled, rotate the image (which removes metadata)
+			await reorientation();
+		} else if (settings.get('Message_Attachments_Strip_Exif')) {
+			// If there is no EXIF orientation but the setting is enabled, still strip any metadata
+			size = await UploadService.stripExifFromFile(tmpFile);
+		}
 
-		const { size } = await fs.lstatSync(tmpFile);
 		await this.getCollection().updateOne(
 			{ _id: file._id },
 			{
