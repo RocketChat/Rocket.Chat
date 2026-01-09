@@ -1,5 +1,20 @@
 # @rocket.chat/federation-matrix
 
+## 0.0.9-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.4
+  - @rocket.chat/rest-typings@8.0.0-rc.4
+  - @rocket.chat/license@1.1.7-rc.4
+  - @rocket.chat/core-services@0.12.0-rc.4
+  - @rocket.chat/http-router@7.9.14-rc.4
+  - @rocket.chat/models@2.0.0-rc.4
+  - @rocket.chat/network-broker@0.2.26-rc.4
+  </details>
+
 ## 0.0.9-rc.3
 
 ### Patch Changes

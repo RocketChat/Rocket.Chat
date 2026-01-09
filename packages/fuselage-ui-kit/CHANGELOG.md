@@ -1,5 +1,18 @@
 # Change Log
 
+## 26.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.4
+  - @rocket.chat/gazzodown@26.0.0-rc.4
+  - @rocket.chat/ui-avatar@22.0.0-rc.4
+  - @rocket.chat/ui-contexts@26.0.0-rc.4
+  - @rocket.chat/ui-video-conf@26.0.0-rc.4
+  </details>
+
 ## 26.0.0-rc.3
 
 ### Patch Changes
