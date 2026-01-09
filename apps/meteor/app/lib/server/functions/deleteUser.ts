@@ -61,7 +61,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
     }
 
     let deletedRooms: string[] = [];
-    const affectedRoomIds: string[] = []; // Yahan declare kar diya
+    const affectedRoomIds: string[] = []; 
 
     // Users without username can't do anything, so there is nothing to remove
     if (user.username != null) {
@@ -87,8 +87,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
                 // Find rooms where the user sent the last message
                 const roomsToUpdate = await Rooms.find({ 'lastMessage.u._id': userId }, { projection: { _id: 1 } }).toArray();
                 for await (const room of roomsToUpdate) {
-                    affectedRoomIds.push(room._id); // Rooms ko list mein add kar rahe hain
-
+                    affectedRoomIds.push(room._id); 
                     const [newLastMessage] = await Messages.find({ rid: room._id }, { sort: { ts: -1 }, limit: 1 }).toArray();
 
                     if (newLastMessage) {
@@ -122,7 +121,6 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
         await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
         const rids = subscribedRooms.map((room) => room.rid);
-        // Ab affectedRoomIds declared hai, toh ye line error nahi degi
         const allAffectedRids = [...new Set([...rids, ...affectedRoomIds])];
         void notifyOnRoomChangedById(allAffectedRids);
 
