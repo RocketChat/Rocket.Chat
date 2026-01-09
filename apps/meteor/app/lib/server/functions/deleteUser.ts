@@ -40,7 +40,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
     }
 
     const user = await Users.findOneById(userId, {
-        projection: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
+        projection: { username: 1, name: 1, avatarOrigin: 1, roles: 1, federated: 1 },
     });
 
     if (!user) {
@@ -67,7 +67,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
     if (user.username != null) {
         let userToReplaceWhenUnlinking: IUser | null = null;
         const nameAlias = i18n.t('Removed_User');
-        await relinquishRoomOwnerships(userId, subscribedRooms);
+        deletedRooms = await relinquishRoomOwnerships(userId, subscribedRooms);
 
         const messageErasureType = settings.get<'Delete' | 'Unlink' | 'Keep'>('Message_ErasureType');
         switch (messageErasureType) {
@@ -84,16 +84,15 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
                 await Messages.removeByUserId(userId);
 
-                // Find rooms where the user sent the last message
                 const roomsToUpdate = await Rooms.find({ 'lastMessage.u._id': userId }, { projection: { _id: 1 } }).toArray();
                 for await (const room of roomsToUpdate) {
-                    affectedRoomIds.push(room._id); 
+                    affectedRoomIds.push(room._id);
                     const [newLastMessage] = await Messages.find({ rid: room._id }, { sort: { ts: -1 }, limit: 1 }).toArray();
-
+                    const filter = { _id: room._id, 'lastMessage.u._id': userId };
                     if (newLastMessage) {
-                        await Rooms.updateOne({ _id: room._id }, { $set: { lastMessage: newLastMessage } });
+                        await Rooms.updateOne(filter, { $set: { lastMessage: newLastMessage } });
                     } else {
-                        await Rooms.updateOne({ _id: room._id }, { $unset: { lastMessage: 1 } });
+                        await Rooms.updateOne(filter, { $unset: { lastMessage: 1 } });
                     }
                 }
 
@@ -118,13 +117,12 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
                 const roomsToUpdateUnlink = await Rooms.find({ 'lastMessage.u._id': userId }, { projection: { _id: 1 } }).toArray();
                 for await (const room of roomsToUpdateUnlink) {
                     affectedRoomIds.push(room._id);
-
                     const [newLastMessage] = await Messages.find({ rid: room._id }, { sort: { ts: -1 }, limit: 1 }).toArray();
-
+                    const filter = { _id: room._id, 'lastMessage.u._id': userId };
                     if (newLastMessage) {
-                        await Rooms.updateOne({ _id: room._id }, { $set: { lastMessage: newLastMessage } });
+                        await Rooms.updateOne(filter, { $set: { lastMessage: newLastMessage } });
                     } else {
-                        await Rooms.updateOne({ _id: room._id }, { $unset: { lastMessage: 1 } });
+                        await Rooms.updateOne(filter, { $unset: { lastMessage: 1 } });
                     }
                 }
 
