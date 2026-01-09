@@ -1,12 +1,8 @@
 import type { Locator, Page } from 'playwright-core';
 
 export abstract class Composer {
-	constructor(
-		protected root: Locator,
-		protected page?: Page,
-	) {
+	constructor(protected root: Locator) {
 		this.root = root;
-		this.page = page;
 	}
 
 	private get msgComposer(): Locator {
