@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 
 import { useRegistrationStatus } from './useRegistrationStatus';
 
-describe('useRegistrationStatus hook', () => {
+describe('useRegistrationStatus', () => {
 	it('should not call API and return error state when user does not have manage-cloud permission', async () => {
 		const mockGetRegistrationStatus = jest.fn();
 
@@ -11,17 +11,16 @@ describe('useRegistrationStatus hook', () => {
 			wrapper: mockAppRoot().withEndpoint('GET', '/v1/cloud.registrationStatus', mockGetRegistrationStatus).withJohnDoe().build(),
 		});
 
-		expect(result.current.canViewRegistrationStatus).toBe(false);
-
 		await waitFor(() => {
 			expect(result.current.isError).toBe(true);
 		});
 
+		expect(result.current.canViewRegistrationStatus).toBe(false);
 		expect(result.current.isRegistered).toBeFalsy();
 		expect(mockGetRegistrationStatus).not.toHaveBeenCalled();
 	});
 
-	it('should call API and return registration status when user has manage-cloud permission', async () => {
+	it('should call API and return isRegistered as true and canViewRegistrationStatus as true when workspace is registered and user has manage-cloud permission', async () => {
 		const mockGetRegistrationStatus = jest.fn().mockResolvedValue({
 			registrationStatus: {
 				workspaceRegistered: true,
@@ -36,18 +35,15 @@ describe('useRegistrationStatus hook', () => {
 				.build(),
 		});
 
-		expect(result.current.canViewRegistrationStatus).toBe(true);
-
 		await waitFor(() => {
 			expect(mockGetRegistrationStatus).toHaveBeenCalled();
 		});
 
-		await waitFor(() => {
-			expect(result.current.isRegistered).toBe(true);
-		});
+		expect(result.current.isRegistered).toBe(true);
+		expect(result.current.canViewRegistrationStatus).toBe(true);
 	});
 
-	it('should return isRegistered as false when workspace is not registered', async () => {
+	it('should call API, return isRegistered as false and canViewRegistrationStatus as true when workspace is not registered and user has manage-cloud permission', async () => {
 		const mockGetRegistrationStatus = jest.fn().mockResolvedValue({
 			registrationStatus: {
 				workspaceRegistered: false,
@@ -63,7 +59,10 @@ describe('useRegistrationStatus hook', () => {
 		});
 
 		await waitFor(() => {
-			expect(result.current.isRegistered).toBe(false);
+			expect(mockGetRegistrationStatus).toHaveBeenCalled();
 		});
+
+		expect(result.current.isRegistered).toBe(false);
+		expect(result.current.canViewRegistrationStatus).toBe(true);
 	});
 });
