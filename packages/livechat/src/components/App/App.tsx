@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import { Component } from 'preact';
 import Router, { route } from 'preact-router';
 import { withTranslation } from 'react-i18next';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import type { Department } from '../../definitions/departments';
 import { setInitCookies } from '../../helpers/cookies';
@@ -24,6 +25,10 @@ import SwitchDepartment from '../../routes/SwitchDepartment';
 import TriggerMessage from '../../routes/TriggerMessage';
 import type { Dispatch, StoreState } from '../../store';
 import { ScreenProvider } from '../Screen/ScreenProvider';
+import { GlobalErrorFallback } from '../../../../ui-client/src/components/errors/ErrorFallbacks';
+import { errorTrackingService } from '../../../../ui-client/src/services/ErrorTrackingService';
+import { ScreenProvider } from '../Screen/ScreenProvider';
+import { GlobalErrorFallback, errorTrackingService } from '@rocket.chat/ui-client';
 
 type AppProps = {
 	config: {
@@ -164,7 +169,6 @@ export class App extends Component<AppProps, AppState> {
 	}
 
 	protected async initialize() {
-		// TODO: split these behaviors into composable components
 		await Connection.init();
 		CustomFields.init();
 		userPresence.init();
@@ -203,17 +207,27 @@ export class App extends Component<AppProps, AppState> {
 		}
 
 		return (
-			<ScreenProvider>
-				<Router history={history} onChange={this.handleRoute}>
-					<ChatConnector path='/' default />
-					<ChatFinished path='/chat-finished' />
-					<GDPRAgreement path='/gdpr' />
-					<LeaveMessage path='/leave-message' />
-					<Register path='/register' />
-					<SwitchDepartment path='/switch-department' />
-					<TriggerMessage path='/trigger-messages' />
-				</Router>
-			</ScreenProvider>
+			<ErrorBoundary 
+				FallbackComponent={GlobalErrorFallback}
+				onError={(error) => errorTrackingService.reportError(error, {
+					scope: 'global',
+					severity: 'critical',
+					recoverable: false,
+					componentPath: 'LivechatApp'
+				})}
+			>
+				<ScreenProvider>
+					<Router history={history} onChange={this.handleRoute}>
+						<ChatConnector path='/' default />
+						<ChatFinished path='/chat-finished' />
+						<GDPRAgreement path='/gdpr' />
+						<LeaveMessage path='/leave-message' />
+						<Register path='/register' />
+						<SwitchDepartment path='/switch-department' />
+						<TriggerMessage path='/trigger-messages' />
+					</Router>
+				</ScreenProvider>
+			</ErrorBoundary>
 		);
 	};
 }
