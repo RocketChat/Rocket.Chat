@@ -16,11 +16,11 @@ export class OmnichannelTransferChatModal extends Modal {
 	}
 
 	get inputForwardDepartment(): Locator {
-		return this.root.locator('[data-qa-id="forward-to-department"] input');
+		return this.root.getByLabel('Forward to department').getByRole('textbox');
 	}
 
 	get inputForwardUser(): Locator {
-		return this.root.locator('[data-qa="autocomplete-agent"] input');
+		return this.root.getByLabel('Forward to user').getByRole('textbox');
 	}
 
 	get btnForward(): Locator {

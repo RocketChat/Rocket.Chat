@@ -18,7 +18,17 @@ it('should render no policy if its disabled ', () => {
 
 it('should render no policy if its enabled but empty', async () => {
 	render(<PasswordVerifier password='asasdfafdgsdffdf' />, {
-		wrapper: mockAppRoot().build(),
+		wrapper: mockAppRoot()
+			.withSetting('Accounts_Password_Policy_Enabled', true)
+			.withSetting('Accounts_Password_Policy_MinLength', -1)
+			.withSetting('Accounts_Password_Policy_MaxLength', -1)
+			.withSetting('Accounts_Password_Policy_ForbidRepeatingCharacters', false)
+			.withSetting('Accounts_Password_Policy_ForbidRepeatingCharactersCount', 3)
+			.withSetting('Accounts_Password_Policy_AtLeastOneLowercase', false)
+			.withSetting('Accounts_Password_Policy_AtLeastOneUppercase', false)
+			.withSetting('Accounts_Password_Policy_AtLeastOneNumber', false)
+			.withSetting('Accounts_Password_Policy_AtLeastOneSpecialCharacter', false)
+			.build(),
 	});
 
 	await waitFor(() => {

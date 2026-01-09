@@ -188,7 +188,7 @@ type ChainedCallbackSignatures = {
 			};
 			options: { forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any }; clientAction?: boolean };
 		},
-	) => Promise<(IOmnichannelRoom & { chatQueued: boolean }) | undefined>;
+	) => Promise<(IOmnichannelRoom & { chatQueued: boolean }) | false>;
 	'beforeGetMentions': (mentionIds: string[], teamMentions: MessageMention[]) => Promise<string[]>;
 	'livechat.manageDepartmentUnit': (params: { userId: string; departmentId: string; unitId?: string }) => void;
 	'afterRoomTopicChange': (
