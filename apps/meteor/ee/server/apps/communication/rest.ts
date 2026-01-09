@@ -328,7 +328,7 @@ export class AppsRestApi {
 							return API.v1.failure({ error: message });
 						}
 					} else {
-						const { file, fields: formData } = await UploadService.parse(this.rawRequest, {
+						const { file, fields: formData } = await UploadService.parse(this.request, {
 							field: 'app',
 							maxSize: settings.get<number>('FileUpload_MaxFileSize'),
 						});
@@ -823,7 +823,7 @@ export class AppsRestApi {
 					} else {
 						isPrivateAppUpload = true;
 
-						const { file, fields: formData } = await UploadService.parse(this.rawRequest, {
+						const { file, fields: formData } = await UploadService.parse(this.request, {
 							field: 'app',
 							maxSize: settings.get<number>('FileUpload_MaxFileSize'),
 						});

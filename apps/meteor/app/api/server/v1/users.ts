@@ -272,7 +272,7 @@ API.v1.addRoute(
 				return API.v1.success();
 			}
 
-			const { file, fields } = await UploadService.parse(this.rawRequest, {
+			const { file, fields } = await UploadService.parse(this.request, {
 				field: 'image',
 				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
 			});

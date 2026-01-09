@@ -18,7 +18,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { file, fields } = await UploadService.parse(this.rawRequest, {
+			const { file, fields } = await UploadService.parse(this.request, {
 				field: 'asset',
 				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
 			});
