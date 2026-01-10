@@ -1,5 +1,5 @@
-import { Apps, AppEvents } from '@rocket.chat/apps';
-import type { UserStatus, IUser } from '@rocket.chat/core-typings';
+import { AppEvents, Apps } from '@rocket.chat/apps';
+import type { IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
@@ -117,17 +117,21 @@ async function saveUserProfile(
 	}
 
 	const canChangePasswordForOAuth = rcSettings.get<boolean>('Accounts_AllowPasswordChangeForOAuthUsers');
+	const hasExistingPassword = !!user?.services?.password?.bcrypt;
+	const isOAuthUserSettingFirstPassword = canChangePasswordForOAuth && !hasExistingPassword;
+
 	if (canChangePasswordForOAuth || user?.services?.password) {
-		// Should be the last check to prevent error when trying to check password for users without password
-		if (settings.newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true && user?.services?.password?.bcrypt) {
-			// don't let user change to same password
-			if (user && (await compareUserPassword(user, { plain: settings.newPassword }))) {
+		// Allow password change if user has existing password OR is OAuth user setting first password
+		if (settings.newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true && (hasExistingPassword || isOAuthUserSettingFirstPassword)) {
+			// don't let user change to same password (only applicable if user already has a password)
+			if (hasExistingPassword && user && (await compareUserPassword(user, { plain: settings.newPassword }))) {
 				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
 					method: 'saveUserProfile',
 				});
 			}
 
-			if (user?.services?.passwordHistory && !(await compareUserPasswordHistory(user, { plain: settings.newPassword }))) {
+			// Check password history only for users who already have a password
+			if (hasExistingPassword && user?.services?.passwordHistory && !(await compareUserPasswordHistory(user, { plain: settings.newPassword }))) {
 				throw new Meteor.Error('error-password-in-history', 'Entered password has been previously used', {
 					method: 'saveUserProfile',
 				});
