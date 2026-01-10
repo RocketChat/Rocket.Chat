@@ -3,16 +3,15 @@ import type { ReactElement, ReactNode } from 'react';
 
 const Wrapper = ({ children }: { children: ReactNode }): ReactElement => (
   <Box
-    pbs="80px"
-    pis={'50px'}
-    display="inline-flex"
+    pbs="20px"
+    pis={'20px'}
+    display="flex"
     flexDirection="column"
-    alignItems="center"
-    justifyContent="space-between"
-    verticalAlign="middle"
+    alignItems="flex-start"
+    justifyContent="flex-start"
     children={children}
-    height="max-content"
     width="100%"
+    overflow="auto"
   />
 );
 

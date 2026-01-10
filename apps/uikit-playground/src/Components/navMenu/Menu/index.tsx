@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useContext, type FC } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import SurfaceSelect from '../../SurfaceSelect';
 import MenuItem from './MenuItem';
@@ -9,8 +10,10 @@ import {
   context,
   templatesToggleAction,
   updatePayloadAction,
+  navMenuToggleAction,
 } from '../../../Context';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
+import routes from '../../../Routes/Routes';
 
 const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
   const {
@@ -19,6 +22,7 @@ const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
   } = useContext(context);
 
   const toast = useToastBarDispatch();
+  const navigate = useNavigate();
 
   const basicStyle = css`
     right: max(-85%, -280px);
@@ -44,11 +48,38 @@ const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
       onClick={(e) => {
         e.stopPropagation();
       }}
+      display="flex"
+      flexDirection="column"
     >
       <Wrapper>
         <Box alignSelf={'flex-start'}>
           <SurfaceSelect />
         </Box>
+        <MenuItem
+          name={'Home'}
+          onClick={() => {
+            navigate(routes.home);
+            dispatch(navMenuToggleAction(false));
+          }}
+        />
+        <MenuItem
+          name={'Directory'}
+          onClick={() => {
+            dispatch(navMenuToggleAction(false));
+          }}
+        />
+        <MenuItem
+          name={'Marketplace'}
+          onClick={() => {
+            dispatch(navMenuToggleAction(false));
+          }}
+        />
+        <MenuItem
+          name={'Display'}
+          onClick={() => {
+            dispatch(navMenuToggleAction(false));
+          }}
+        />
         <MenuItem
           name={'Templates'}
           onClick={() => dispatch(templatesToggleAction(true))}
@@ -60,7 +91,7 @@ const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
               updatePayloadAction({
                 blocks: [],
                 changedByEditor: false,
-              })
+              }),
             );
             toast({
               type: 'success',
@@ -72,7 +103,7 @@ const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
           name={'Copy Payload'}
           onClick={() => {
             navigator.clipboard.writeText(
-              JSON.stringify(screens[activeScreen]?.payload)
+              JSON.stringify(screens[activeScreen]?.payload),
             );
             toast({
               type: 'success',
