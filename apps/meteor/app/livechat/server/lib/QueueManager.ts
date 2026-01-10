@@ -100,7 +100,11 @@ export class QueueManager {
 		}
 
 		const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
-		logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
+		logger.debug({
+			msg: 'Delegating inquiry',
+			inquiryId: inquiry._id,
+			defaultAgentUsername: defaultAgent?.username,
+		});
 		const dbInquiry = await beforeRouteChat(inquiry, inquiryAgent);
 
 		if (!dbInquiry) {
@@ -108,7 +112,11 @@ export class QueueManager {
 		}
 
 		if (dbInquiry.status === 'ready') {
-			logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
+			logger.debug({
+				msg: 'Inquiry is ready. Delegating to agent',
+				inquiryId: inquiry._id,
+				agentUsername: inquiryAgent?.username,
+			});
 			return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent, undefined, room);
 		}
 	}
@@ -160,7 +168,12 @@ export class QueueManager {
 
 	static async processNewInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
 		if (inquiry.status === LivechatInquiryStatus.VERIFYING) {
-			logger.debug({ msg: 'Inquiry is waiting for contact verification. Ignoring it', inquiry, defaultAgent });
+			logger.debug({
+				msg: 'Inquiry is waiting for contact verification. Ignoring it',
+				inquiryId: inquiry._id,
+				defaultAgentUsername: defaultAgent?.username,
+				status: inquiry.status,
+			});
 
 			if (defaultAgent) {
 				await LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
@@ -169,7 +182,12 @@ export class QueueManager {
 		}
 
 		if (inquiry.status === LivechatInquiryStatus.READY) {
-			logger.debug({ msg: 'Inquiry is ready. Delegating', inquiry, defaultAgent });
+			logger.debug({
+				msg: 'Inquiry is ready. Delegating',
+				inquiryId: inquiry._id,
+				defaultAgentUsername: defaultAgent?.username,
+				status: inquiry.status,
+			});
 			return RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, room);
 		}
 
