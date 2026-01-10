@@ -138,6 +138,7 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 							</Box>
 						</FieldLabel>
 						<FieldRow>
+							{/* Fix for issue #26723 - wrap long text */}
 							<TextAreaInput 
 									data-qa-id='ForwardChatModalTextAreaInputComment' 
 									{...register('comment')} 
