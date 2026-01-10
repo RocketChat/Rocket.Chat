@@ -83,18 +83,29 @@ export class AppListenerBridge {
 
 	/**
 	 *
-	 * @param {{ file: import('@rocket.chat/core-typings').IUpload; content: Buffer }} payload
+	 * @param {{ file: import('@rocket.chat/core-typings').IUpload; content: Buffer | string }} payload
 	 * @return Promise<void>
 	 */
 	async uploadEvent(_, payload) {
 		const { file, content } = payload;
 
 		const tmpfile = path.join(this.orch.getManager().getTempFilePath(), crypto.randomUUID());
-		await fs.promises.writeFile(tmpfile, content).catch((err) => {
-			this.orch.getRocketChatLogger().error({ msg: `AppListenerBridge: Could not write temporary file at ${tmpfile}`, err });
 
-			throw new Error('Error sending file to apps', { cause: err });
-		});
+		if (typeof content === 'string') {
+			// If content is a string, we assume it's a path and create a symlink to avoid file duplication
+			await fs.promises.symlink(content, tmpfile, 'file').catch((err) => {
+				this.orch.getRocketChatLogger().error({ msg: `AppListenerBridge: Could not create symlink at ${tmpfile}`, err });
+
+				throw new Error('Error sending file to apps', { cause: err });
+			});
+		} else {
+			// Otherwise, we write the buffer content to a temporary file
+			await fs.promises.writeFile(tmpfile, content).catch((err) => {
+				this.orch.getRocketChatLogger().error({ msg: `AppListenerBridge: Could not write temporary file at ${tmpfile}`, err });
+
+				throw new Error('Error sending file to apps', { cause: err });
+			});
+		}
 
 		try {
 			const appFile = await this.orch.getConverters().get('uploads').convertToApp(file);
