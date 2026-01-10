@@ -68,6 +68,7 @@ const NavBarPagesStackMenu = (props: NavBarPagesStackMenuProps) => {
 			placement='bottom-start'
 			icon='stack'
 			pressed={pressed}
+			selectionMode='multiple'
 			{...props}
 		/>
 	);
