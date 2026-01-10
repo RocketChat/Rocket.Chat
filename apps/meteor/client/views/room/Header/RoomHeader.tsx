@@ -4,6 +4,9 @@ import { Header, HeaderContent, HeaderContentRow, HeaderToolbar } from '@rocket.
 import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IconButton } from '@rocket.chat/fuselage';
+import { useHistory } from 'react-router-dom';
+
 
 import FederatedRoomOriginServer from './FederatedRoomOriginServer';
 import ParentRoom from './ParentRoom';
@@ -33,10 +36,28 @@ export type RoomHeaderProps = {
 
 const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
 	const { t } = useTranslation();
+	const history = useHistory();
+
+	const isDirectMessage = room?.t === 'd';
+
+	const handleBack = () => {
+		history.push('/');
+	};
+
 
 	return (
-		<Header>
-			{slots?.start}
+	   <Header>
+	    {isDirectMessage && (
+		  <IconButton
+			icon='chevron-left'
+			small
+			aria-label={t('Back')}
+			title={t('Back')}
+			onClick={handleBack}
+		  />
+  )}
+	    {slots?.start}
+
 			<ParentRoom room={room} />
 			{slots?.preContent}
 			<HeaderContent>
