@@ -11,7 +11,7 @@ import NavBarPagesStackMenu from './NavBarPagesStackMenu';
 
 const NavBarPagesGroup = () => {
 	const { t } = useTranslation();
-	const { isTablet, isMobile } = useLayout();
+	const { isTablet } = useLayout();
 
 	const hasManageAppsPermission = usePermission('manage-apps');
 	const hasAccessMarketplacePermission = usePermission('access-marketplace');
@@ -19,15 +19,18 @@ const NavBarPagesGroup = () => {
 
 	return (
 		<NavBarGroup aria-label={t('Pages_and_actions')}>
-			{isTablet && <NavBarPagesStackMenu />}
-			{!isTablet && (
+			{/* Tablet / small desktop */}
+			{isTablet ? (
+				<NavBarPagesStackMenu showMarketplace={showMarketplace} />
+			) : (
 				<>
 					<NavBarItemHomePage title={t('Home')} />
 					<NavBarItemDirectoryPage title={t('Directory')} />
+					{showMarketplace && <NavBarItemMarketPlaceMenu />}
+					<NavBarItemSort />
 				</>
 			)}
-			{showMarketplace && !isMobile && <NavBarItemMarketPlaceMenu />}
-			{!isMobile && <NavBarItemSort />}
+
 			<NavBarItemCreateNew />
 		</NavBarGroup>
 	);
