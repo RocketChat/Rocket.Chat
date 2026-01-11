@@ -1,5 +1,5 @@
 import fs from 'fs';
-import type { IncomingMessage } from 'http';
+import { IncomingMessage } from 'http';
 import type { Stream, Transform } from 'stream';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
@@ -72,10 +72,10 @@ export class UploadService {
 			limits.fileSize = options.maxSize + 1;
 		}
 
-		const isIncomingMessage = 'socket' in requestOrStream;
-		const headers = isIncomingMessage
-			? ((requestOrStream as IncomingMessage).headers as Record<string, string>)
-			: Object.fromEntries((requestOrStream as Request).headers.entries());
+		const headers =
+			requestOrStream instanceof IncomingMessage
+				? (requestOrStream.headers as Record<string, string>)
+				: Object.fromEntries(requestOrStream.headers.entries());
 
 		const bb = busboy({
 			headers,
@@ -185,15 +185,14 @@ export class UploadService {
 			reject(new MeteorError('error-too-many-fields', 'Too many fields in upload'));
 		});
 
-		if (isIncomingMessage) {
-			(requestOrStream as IncomingMessage).pipe(bb);
+		if (requestOrStream instanceof IncomingMessage) {
+			requestOrStream.pipe(bb);
 		} else {
-			const fetchRequest = requestOrStream as Request;
-			if (!fetchRequest.body) {
+			if (!requestOrStream.body) {
 				return Promise.reject(new MeteorError('error-no-body', 'Request has no body'));
 			}
 
-			const nodeStream = Readable.fromWeb(fetchRequest.body as any);
+			const nodeStream = Readable.fromWeb(requestOrStream.body as any);
 			nodeStream.pipe(bb);
 		}
 
