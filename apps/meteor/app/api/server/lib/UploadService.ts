@@ -67,7 +67,9 @@ export class UploadService {
 	): Promise<{ file: ParsedUpload | null; fields: Record<string, string> }> {
 		const limits: any = { files: 1 };
 		if (options.maxSize && options.maxSize > 0) {
-			limits.fileSize = options.maxSize;
+			// We add an extra byte to the configured limit so we don't fail the upload
+			// of a file that is EXACTLY maxSize
+			limits.fileSize = options.maxSize + 1;
 		}
 
 		const isIncomingMessage = 'socket' in requestOrStream;
