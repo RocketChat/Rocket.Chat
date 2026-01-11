@@ -12,6 +12,7 @@ import { isArrayBufferView } from 'util/types';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { Upload } from '@rocket.chat/core-services';
 import { isE2EEUpload, type IUpload } from '@rocket.chat/core-typings';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
@@ -31,7 +32,6 @@ import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { UploadFS } from '../../../../server/ufs';
 import { ufsComplete } from '../../../../server/ufs/ufs-methods';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
-import { UploadService } from '../../../api/server/lib/UploadService';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
@@ -415,7 +415,7 @@ export const FileUpload = {
 			await reorientation();
 		} else if (settings.get('Message_Attachments_Strip_Exif')) {
 			// If there is no EXIF orientation but the setting is enabled, still strip any metadata
-			size = await UploadService.stripExifFromFile(tmpFile);
+			size = await Upload.stripExifFromFile(tmpFile);
 		}
 
 		await this.getCollection().updateOne(

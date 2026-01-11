@@ -1,5 +1,6 @@
 import { readFile } from 'fs/promises';
 
+import { Upload } from '@rocket.chat/core-services';
 import { Settings } from '@rocket.chat/models';
 import { isAssetsUnsetAssetProps } from '@rocket.chat/rest-typings';
 
@@ -8,7 +9,6 @@ import { RocketChatAssets, refreshClients } from '../../../assets/server';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
-import { UploadService } from '../lib/UploadService';
 
 API.v1.addRoute(
 	'assets.setAsset',
@@ -18,7 +18,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { file, fields } = await UploadService.parse(this.request, {
+			const { file, fields } = await Upload.parseUpload(this.request, {
 				field: 'asset',
 				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
 			});

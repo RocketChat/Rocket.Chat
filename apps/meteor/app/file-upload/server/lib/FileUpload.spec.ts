@@ -31,7 +31,7 @@ const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUplo
 	'../../../utils/lib/mimeTypes': sinon.stub(),
 	'../../../utils/server/lib/JWTHelper': sinon.stub(),
 	'../../../utils/server/restrictions': sinon.stub(),
-	'../../../api/server/lib/UploadService': sinon.stub(),
+	'@rocket.chat/core-services': { Upload: sinon.stub() },
 });
 
 describe('FileUpload', () => {

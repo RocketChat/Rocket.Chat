@@ -1,6 +1,6 @@
 import { readFile } from 'fs/promises';
 
-import { Media } from '@rocket.chat/core-services';
+import { Media, Upload } from '@rocket.chat/core-services';
 import type { IEmojiCustom } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
 import { isEmojiCustomList } from '@rocket.chat/rest-typings';
@@ -15,7 +15,6 @@ import { deleteEmojiCustom } from '../../../emoji-custom/server/methods/deleteEm
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { UploadService } from '../lib/UploadService';
 import { findEmojisCustom } from '../lib/emoji-custom';
 
 function validateDateParam(paramName: string, paramValue: string | undefined): Date | undefined {
@@ -110,7 +109,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const { file, fields } = await UploadService.parse(this.request, {
+			const { file, fields } = await Upload.parseUpload(this.request, {
 				field: 'emoji',
 				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
 			});
@@ -154,7 +153,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const { file, fields } = await UploadService.parse(this.request, {
+			const { file, fields } = await Upload.parseUpload(this.request, {
 				field: 'emoji',
 				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
 				fileOptional: true,

@@ -4,6 +4,7 @@ import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/A
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
+import { Upload } from '@rocket.chat/core-services';
 import type { AppStatusReport } from '@rocket.chat/core-services';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
@@ -21,7 +22,6 @@ import { registerAppLogsHandler } from './endpoints/appLogsHandler';
 import { registerAppsCountHandler } from './endpoints/appsCountHandler';
 import { API } from '../../../../app/api/server';
 import type { APIClass } from '../../../../app/api/server/ApiClass';
-import { UploadService } from '../../../../app/api/server/lib/UploadService';
 import { loggerMiddleware } from '../../../../app/api/server/middlewares/logger';
 import { metricsMiddleware } from '../../../../app/api/server/middlewares/metrics';
 import { tracerSpanMiddleware } from '../../../../app/api/server/middlewares/tracer';
@@ -328,7 +328,7 @@ export class AppsRestApi {
 							return API.v1.failure({ error: message });
 						}
 					} else {
-						const { file, fields: formData } = await UploadService.parse(this.request, {
+						const { file, fields: formData } = await Upload.parseUpload(this.request, {
 							field: 'app',
 							maxSize: settings.get<number>('FileUpload_MaxFileSize'),
 						});
@@ -823,7 +823,7 @@ export class AppsRestApi {
 					} else {
 						isPrivateAppUpload = true;
 
-						const { file, fields: formData } = await UploadService.parse(this.request, {
+						const { file, fields: formData } = await Upload.parseUpload(this.request, {
 							field: 'app',
 							maxSize: settings.get<number>('FileUpload_MaxFileSize'),
 						});

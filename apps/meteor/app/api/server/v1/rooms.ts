@@ -1,4 +1,4 @@
-import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
+import { FederationMatrix, MeteorError, Team, Upload } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
@@ -34,6 +34,7 @@ import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { toggleFavoriteMethod } from '../../../../server/methods/toggleFavorite';
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { roomsGetMethod } from '../../../../server/publications/room';
+import { createExifStripTransform } from '../../../../server/services/upload/service';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
@@ -55,7 +56,6 @@ import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
-import { UploadService } from '../lib/UploadService';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -193,57 +193,64 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.forbidden();
-			}
-
-			const { file, fields } = await UploadService.parse(this.incoming, {
-				field: 'file',
-				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
-			});
-
-			if (!file) {
-				throw new Meteor.Error('error-no-file-uploaded', 'No file was uploaded');
-			}
-
-			const expiresAt = new Date();
-			expiresAt.setHours(expiresAt.getHours() + 24);
-
-			let content;
-
-			if (fields.content) {
-				try {
-					content = JSON.parse(fields.content);
-				} catch (e) {
-					console.error(e);
-					throw new Meteor.Error('invalid-field-content');
+			try {
+				if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
+					return API.v1.forbidden();
 				}
+
+				const stripExif = settings.get('Message_Attachments_Strip_Exif');
+				const { file, fields } = await Upload.parseUpload(this.request, {
+					field: 'file',
+					maxSize: settings.get<number>('FileUpload_MaxFileSize'),
+					...(stripExif && { transforms: [createExifStripTransform()] }),
+				});
+
+				if (!file) {
+					throw new Meteor.Error('error-no-file-uploaded', 'No file was uploaded');
+				}
+
+				const expiresAt = new Date();
+				expiresAt.setHours(expiresAt.getHours() + 24);
+
+				let content;
+
+				if (fields.content) {
+					try {
+						content = JSON.parse(fields.content);
+					} catch (e) {
+						console.error(e);
+						throw new Meteor.Error('invalid-field-content');
+					}
+				}
+
+				const details = {
+					name: file.filename,
+					size: file.size,
+					type: file.mimetype,
+					rid: this.urlParams.rid,
+					userId: this.userId,
+					content,
+					expiresAt,
+				};
+
+				// TODO: In the future, we should isolate file receival from storage and post-processing.
+				const fileStore = FileUpload.getStore('Uploads');
+				const uploadedFile = await fileStore.insert(details, file.tempFilePath);
+
+				uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
+
+				await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
+
+				return API.v1.success({
+					file: {
+						_id: uploadedFile._id,
+						url: uploadedFile.path,
+					},
+				});
+			} catch (error) {
+				console.error('[rooms.media/:rid] Error:', error);
+				throw error;
 			}
-
-			const details = {
-				name: file.filename,
-				size: file.size,
-				type: file.mimetype,
-				rid: this.urlParams.rid,
-				userId: this.userId,
-				content,
-				expiresAt,
-			};
-
-			// TODO: In the future, we should isolate file receival from storage and post-processing.
-			const fileStore = FileUpload.getStore('Uploads');
-			const uploadedFile = await fileStore.insert(details, file.tempFilePath);
-
-			uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
-
-			await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
-
-			return API.v1.success({
-				file: {
-					_id: uploadedFile._id,
-					url: uploadedFile.path,
-				},
-			});
 		},
 	},
 );

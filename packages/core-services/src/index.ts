@@ -44,7 +44,14 @@ import type {
 } from './types/ITeamService';
 import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
 import type { UiKitCoreAppPayload, IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
-import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
+import type {
+	ISendFileLivechatMessageParams,
+	ISendFileMessageParams,
+	IUploadFileParams,
+	IUploadService,
+	ParsedUpload,
+	ParseUploadOptions,
+} from './types/IUploadService';
 import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
 
@@ -134,6 +141,8 @@ export {
 	ISendFileMessageParams,
 	IUploadFileParams,
 	IUploadService,
+	ParsedUpload,
+	ParseUploadOptions,
 	ICalendarService,
 	IOmnichannelTranscriptService,
 	IQueueWorkerService,
