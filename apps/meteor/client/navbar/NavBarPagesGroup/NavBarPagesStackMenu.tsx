@@ -1,5 +1,5 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
-import { useEffectEvent, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useCurrentRoutePath, useLayout, useRouter, useSetting } from '@rocket.chat/ui-contexts';
@@ -12,14 +12,12 @@ type NavBarPagesStackMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	showMarketplace: boolean;
 };
 
-
 const NavBarPagesStackMenu = ({ showMarketplace, ...props }: NavBarPagesStackMenuProps) => {
 	const { t } = useTranslation();
 
 	const showHome = useSetting('Layout_Show_Home_Button');
 	const { sidebar } = useLayout();
 	const router = useRouter();
-	const isSmall = useMediaQuery('(max-width: 768px)');
 	const sortSections = useSortMenu();
 
 	const handleGoToHome = useEffectEvent(() => {
@@ -31,7 +29,8 @@ const NavBarPagesStackMenu = ({ showMarketplace, ...props }: NavBarPagesStackMen
 	const pressed =
 		currentRoute?.includes('/home') ||
 		currentRoute?.includes('/directory') ||
-		currentRoute?.includes('/marketplace');
+		currentRoute?.includes('/marketplace') ||
+		currentRoute?.includes('/admin/display');
 
 	const items = [
 		showHome && {
@@ -46,13 +45,13 @@ const NavBarPagesStackMenu = ({ showMarketplace, ...props }: NavBarPagesStackMen
 			content: t('Directory'),
 			onClick: () => router.navigate('/directory'),
 		},
-		isSmall && {
+		showMarketplace && {
 			id: 'marketplace',
 			icon: 'store',
 			content: t('Marketplace'),
 			onClick: () => router.navigate('/marketplace'),
 		},
-		isSmall && {
+		{
 			id: 'display',
 			icon: 'sort',
 			content: t('Display'),
@@ -62,12 +61,6 @@ const NavBarPagesStackMenu = ({ showMarketplace, ...props }: NavBarPagesStackMen
 					sections: sortSections,
 					selectionMode: 'multiple',
 				}),
-		},
-		showMarketplace && {
-			id: 'marketplace',
-			icon: 'store',
-			content: t('Marketplace'),
-			onClick: () => router.navigate('/marketplace'),
 		},
 	].filter(Boolean) as GenericMenuItemProps[];
 

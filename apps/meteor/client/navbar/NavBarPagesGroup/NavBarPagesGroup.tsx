@@ -19,7 +19,7 @@ const NavBarPagesGroup = () => {
 
 	return (
 		<NavBarGroup aria-label={t('Pages_and_actions')}>
-			{/* Tablet / small desktop */}
+
 			{isTablet ? (
 				<NavBarPagesStackMenu showMarketplace={showMarketplace} />
 			) : (
