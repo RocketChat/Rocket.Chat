@@ -73,6 +73,7 @@ export class SAMLUtils {
 		globalSettings.mailOverwrite = Boolean(samlConfigs.mailOverwrite);
 		globalSettings.channelsAttributeUpdate = Boolean(samlConfigs.channelsAttributeUpdate);
 		globalSettings.includePrivateChannelsInUpdate = Boolean(samlConfigs.includePrivateChannelsInUpdate);
+		globalSettings.defaultUserRole = samlConfigs.defaultUserRole;
 
 		if (samlConfigs.immutableProperty && typeof samlConfigs.immutableProperty === 'string') {
 			globalSettings.immutableProperty = samlConfigs.immutableProperty;
@@ -80,10 +81,6 @@ export class SAMLUtils {
 
 		if (samlConfigs.usernameNormalize && typeof samlConfigs.usernameNormalize === 'string') {
 			globalSettings.usernameNormalize = samlConfigs.usernameNormalize;
-		}
-
-		if (samlConfigs.defaultUserRole && typeof samlConfigs.defaultUserRole === 'string') {
-			globalSettings.defaultUserRole = samlConfigs.defaultUserRole;
 		}
 
 		if (samlConfigs.userDataFieldMap && typeof samlConfigs.userDataFieldMap === 'string') {

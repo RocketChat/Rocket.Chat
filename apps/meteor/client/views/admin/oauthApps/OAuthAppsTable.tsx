@@ -1,9 +1,3 @@
-import { useEndpoint, useRoute, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
-import { useCallback } from 'react';
-
-import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTableHeaderCell,
 	GenericTable,
@@ -12,7 +6,13 @@ import {
 	GenericTableCell,
 	GenericTableBody,
 	GenericTableLoadingRow,
-} from '../../../components/GenericTable';
+} from '@rocket.chat/ui-client';
+import { useEndpoint, useRoute, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type { ReactElement } from 'react';
+import { useCallback } from 'react';
+
+import GenericNoResults from '../../../components/GenericNoResults';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 const OAuthAppsTable = (): ReactElement => {

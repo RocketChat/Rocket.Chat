@@ -12,7 +12,7 @@ const MediaCallProvider = ({ children }: { children: ReactNode }) => {
 	const canMakeInternalCall = usePermission('allow-internal-voice-calls');
 	const canMakeExternalCall = usePermission('allow-external-voice-calls');
 
-	const hasModule = useHasLicenseModule('teams-voip');
+	const { data: hasModule = false } = useHasLicenseModule('teams-voip');
 
 	const unauthorizedContextValue = useMemo(
 		() => ({

@@ -1,5 +1,76 @@
 # @rocket.chat/core-typings
 
+## 8.0.0-rc.1
+
+## 8.0.0-rc.0
+
+### Major Changes
+
+- ([#37672](https://github.com/RocketChat/Rocket.Chat/pull/37672)) Removes deprecated VoIP from Omnichannel
+
+- ([#37672](https://github.com/RocketChat/Rocket.Chat/pull/37672)) Removes Deprecated FreeSwitch integration
+
+### Minor Changes
+
+- ([#37224](https://github.com/RocketChat/Rocket.Chat/pull/37224)) Enhance user's deactivated state handling to correctly distinguish between pending and deactivated users.
+
+- ([#37091](https://github.com/RocketChat/Rocket.Chat/pull/37091)) Adds Attribute Based Access Control (ABAC) for private channels & private teams.
+
+### Patch Changes
+
+- ([#37612](https://github.com/RocketChat/Rocket.Chat/pull/37612)) Adds invitation request support to rooms
+
+- <details><summary>Updated dependencies [d3538e7045c41f91b8c561d44e5485ff93b93745]:</summary>
+
+  - @rocket.chat/ui-kit@0.39.0-rc.0
+  </details>
+
+## 7.13.2
+
+## 7.13.1
+
+## 7.13.0
+
+### Minor Changes
+
+- ([#37378](https://github.com/RocketChat/Rocket.Chat/pull/37378)) Introduces in-chat messages for when a voice call ends
+
+- ([#37318](https://github.com/RocketChat/Rocket.Chat/pull/37318)) Fixes the time display in calendar event notifications by converting the UTC time to the local time.
+
+### Patch Changes
+
+- ([#37270](https://github.com/RocketChat/Rocket.Chat/pull/37270)) Fixes editing of encrypted message attachment description.
+
+- <details><summary>Updated dependencies [44ca3b111f13ac1816a82ab0e4720e9886769c34]:</summary>
+
+  - @rocket.chat/ui-kit@0.38.0
+  </details>
+
+## 7.13.0-rc.2
+
+## 7.13.0-rc.1
+
+## 7.13.0-rc.0
+
+### Minor Changes
+
+- ([#37378](https://github.com/RocketChat/Rocket.Chat/pull/37378)) Introduces in-chat messages for when a voice call ends
+
+- ([#37318](https://github.com/RocketChat/Rocket.Chat/pull/37318)) Fixes the time display in calendar event notifications by converting the UTC time to the local time.
+
+### Patch Changes
+
+- ([#37270](https://github.com/RocketChat/Rocket.Chat/pull/37270)) Fixes editing of encrypted message attachment description.
+
+- <details><summary>Updated dependencies [44ca3b111f13ac1816a82ab0e4720e9886769c34]:</summary>
+
+  - @rocket.chat/ui-kit@0.38.0-rc.0
+  </details>
+
+## 7.12.2
+
+## 7.12.1
+
 ## 7.12.0
 
 ### Minor Changes

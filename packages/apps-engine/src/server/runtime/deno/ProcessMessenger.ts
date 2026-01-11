@@ -2,22 +2,25 @@ import type { ChildProcess } from 'child_process';
 
 import type { JsonRpc } from 'jsonrpc-lite';
 
+import type { COMMAND_PING } from './LivenessManager';
 import type { Encoder } from './codec';
 import { newEncoder } from './codec';
+
+type Message = JsonRpc | typeof COMMAND_PING;
 
 export class ProcessMessenger {
 	private deno: ChildProcess | undefined;
 
 	private encoder: Encoder | undefined;
 
-	private _sendStrategy: (message: JsonRpc) => void;
+	private _sendStrategy: (message: Message) => void;
 
 	constructor() {
 		this._sendStrategy = this.strategyError;
 	}
 
-	public get send() {
-		return this._sendStrategy.bind(this);
+	public send(message: Message) {
+		this._sendStrategy(message);
 	}
 
 	public setReceiver(deno: ChildProcess) {
@@ -44,11 +47,11 @@ export class ProcessMessenger {
 		}
 	}
 
-	private strategyError(_message: JsonRpc) {
+	private strategyError(_message: Message) {
 		throw new Error('No process configured to receive a message');
 	}
 
-	private strategySend(message: JsonRpc) {
+	private strategySend(message: Message) {
 		this.deno.stdin.write(this.encoder.encode(message));
 	}
 }

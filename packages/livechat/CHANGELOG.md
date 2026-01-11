@@ -1,5 +1,102 @@
 # @rocket.chat/livechat Change Log
 
+## 2.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@26.0.0-rc.1
+  </details>
+
+## 2.0.0-rc.0
+
+### Major Changes
+
+- ([#36871](https://github.com/RocketChat/Rocket.Chat/pull/36871)) Removes the `livechat:transfer` deprecated method
+  Removes the `livechat/room.transfer` deprecated endpoint
+  Creates the `livechat/visitor.department.transfer` for visitors department transfer use
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [0c0258604632342f42fc36cabac2d6cfe0e477c4, d3538e7045c41f91b8c561d44e5485ff93b93745]:</summary>
+
+  - @rocket.chat/gazzodown@26.0.0-rc.0
+  - @rocket.chat/ui-kit@0.39.0-rc.0
+  </details>
+
+## 1.23.17
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@25.0.2
+  </details>
+
+## 1.23.16
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@25.0.1
+  </details>
+
+## 1.23.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [44ca3b111f13ac1816a82ab0e4720e9886769c34]:</summary>
+
+  - @rocket.chat/ui-kit@0.38.0
+  - @rocket.chat/gazzodown@25.0.0
+  </details>
+
+## 1.23.15-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@25.0.0-rc.2
+  </details>
+
+## 1.23.15-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@25.0.0-rc.1
+  </details>
+
+## 1.23.14-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [44ca3b111f13ac1816a82ab0e4720e9886769c34]:</summary>
+
+  - @rocket.chat/ui-kit@0.38.0-rc.0
+  - @rocket.chat/gazzodown@25.0.0-rc.0
+  </details>
+
+## 1.23.14
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@24.0.2
+  </details>
+
+## 1.23.13
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@24.0.1
+  </details>
+
 ## 1.23.12
 
 ### Patch Changes

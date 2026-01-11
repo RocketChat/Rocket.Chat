@@ -579,13 +579,11 @@ describe('[Users]', () => {
 
 		(IS_EE ? describe : describe.skip)('Voice call extension', () => {
 			beforeEach(async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', true);
-				await updatePermission('manage-voip-extensions', ['admin']);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
 			});
 
 			after(async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', true);
-				await updatePermission('manage-voip-extensions', ['admin']);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
 			});
 
 			it('should create a user with a voice call extension', async () => {
@@ -646,7 +644,7 @@ describe('[Users]', () => {
 			});
 
 			it('should not create a user if voip is disabled', async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', false);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', false);
 				await request
 					.post(api('users.create'))
 					.set(credentials)
@@ -654,30 +652,6 @@ describe('[Users]', () => {
 						email: 'fail_voip_disabled@rocket.chat',
 						name: 'fail_voip_disabled',
 						username: 'fail_voip_disabled',
-						password,
-						active: true,
-						roles: ['user'],
-						joinDefaultChannels: true,
-						verified: true,
-						freeSwitchExtension: '999',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
-					});
-			});
-
-			it('should not create a user if user has no permission to manage voip extensions', async () => {
-				await updatePermission('manage-voip-extensions', []);
-				await request
-					.post(api('users.create'))
-					.set(credentials)
-					.send({
-						email: 'fail_no_permission@rocket.chat',
-						name: 'fail_no_permission',
-						username: 'fail_no_permission',
 						password,
 						active: true,
 						roles: ['user'],
@@ -843,7 +817,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -864,7 +838,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username: 'test$username<>',
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -882,7 +856,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -899,7 +873,7 @@ describe('[Users]', () => {
 					email,
 					name: '</\\name>',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -1131,7 +1105,7 @@ describe('[Users]', () => {
 				email: `me-${Date.now()}@email.com`,
 				name: 'testuser',
 				username: ufsUsername,
-				password: '1234',
+				password,
 			});
 
 			await request
@@ -2197,7 +2171,7 @@ describe('[Users]', () => {
 						.send({
 							userId: targetUser._id,
 							data: {
-								password: 'itsnotworking',
+								password: '1tsn0tw0rkingP@ssw0rd1234.!',
 							},
 						})
 						.expect('Content-Type', 'application/json')
@@ -2219,7 +2193,7 @@ describe('[Users]', () => {
 						.send({
 							userId: targetUser._id,
 							data: {
-								password: 'itsnotworking',
+								password: '1tsn0tw0rkingP@ssw0rd1234.!',
 							},
 						})
 						.expect('Content-Type', 'application/json')
@@ -2556,15 +2530,11 @@ describe('[Users]', () => {
 			});
 
 			after(async () => {
-				await Promise.all([
-					deleteUser(user),
-					updateSetting('VoIP_TeamCollab_Enabled', true),
-					updatePermission('manage-voip-extensions', ['admin']),
-				]);
+				await Promise.all([deleteUser(user), updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true)]);
 			});
 
 			beforeEach(async () => {
-				await Promise.all([updatePermission('manage-voip-extensions', ['admin']), updateSetting('VoIP_TeamCollab_Enabled', true)]);
+				await Promise.all([updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true)]);
 			});
 
 			it("should update the user's voice call extension", async () => {
@@ -2601,22 +2571,8 @@ describe('[Users]', () => {
 					});
 			});
 
-			it("should not update the user's voice call extension if the user has no permission to manage voip extensions", async () => {
-				await updatePermission('manage-voip-extensions', []);
-				await request
-					.post(api('users.update'))
-					.set(credentials)
-					.send({
-						userId: user._id,
-						data: {
-							freeSwitchExtension: '9998',
-						},
-					})
-					.expect(400);
-			});
-
 			it("should not update the user's voice call extension if voip setting is disabled", async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', false);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', false);
 				await request
 					.post(api('users.update'))
 					.set(credentials)
@@ -2744,7 +2700,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.send({
 					data: {
-						newPassword: 'the new pass',
+						newPassword: '1Tsn3wP@ssw0rd1234.!',
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -2895,7 +2851,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.send({
 					data: {
-						newPassword: 'MyNewPassw0rd',
+						newPassword: '1Tsn3wP@ssw0rd1234.!',
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -2905,16 +2861,41 @@ describe('[Users]', () => {
 				});
 		});
 
+		it('should be able to erase bio and nickname', async () => {
+			const user = await createUser({
+				bio: `edited-bio-test`,
+				nickname: `edited-nickname-test`,
+			});
+			const userCredentials = await login(user.username, password);
+
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						bio: '',
+						nickname: '',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const userData = await getUserByUsername(user.username);
+			expect(userData).to.not.have.property('bio');
+			expect(userData).to.not.have.property('nickname');
+		});
+
 		describe('[Password Policy]', () => {
 			before(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
-				await updateSetting('Accounts_Password_Policy_Enabled', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 			});
 
 			after(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
-				await updateSetting('Accounts_Password_Policy_Enabled', false);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 			});
 
@@ -3103,7 +3084,7 @@ describe('[Users]', () => {
 					.send({
 						data: {
 							currentPassword,
-							newPassword: '123Abc@!',
+							newPassword: '1Tsn3wP@ssw0rd1234.!',
 						},
 					})
 					.expect('Content-Type', 'application/json')
@@ -4406,6 +4387,69 @@ describe('[Users]', () => {
 				})
 				.then(tryAuthentication);
 		});
+
+		it('should remove only logged out session push tokens', async () => {
+			const credentials1 = await login(user.username, password);
+			const credentials2 = await login(user.username, password);
+
+			await request
+				.post(api('push.token'))
+				.set(credentials1)
+				.send({
+					type: 'gcm',
+					value: 'device-1-token',
+					appName: 'com.example.device1',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('push.token'))
+				.set(credentials2)
+				.send({
+					type: 'gcm',
+					value: 'device-2-token',
+					appName: 'com.example.device2',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('users.logoutOtherClients'))
+				.set(credentials2)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			await request
+				.delete(api('push.token'))
+				.set(credentials2)
+				.send({
+					token: 'device-1-token',
+				})
+				.expect(404)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+
+			await request
+				.delete(api('push.token'))
+				.set(credentials2)
+				.send({
+					token: 'device-2-token',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
 	});
 
 	describe('[/users.autocomplete]', () => {
@@ -4934,6 +4978,49 @@ describe('[Users]', () => {
 			void updatePermission('logout-other-user', []).then(() => {
 				void request.post(api('users.logout')).set(userCredentials).expect('Content-Type', 'application/json').expect(200).end(done);
 			});
+		});
+
+		it('should remove all push tokens when user logs out', async () => {
+			const testCredentials = await login(user.username, password);
+
+			await request
+				.post(api('push.token'))
+				.set(testCredentials)
+				.send({
+					type: 'gcm',
+					value: 'logout-test-token',
+					appName: 'com.example.logout.test',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('users.logout'))
+				.set(testCredentials)
+				.send({
+					userId: user._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			const newCredentials = await login(user.username, password);
+
+			await request
+				.delete(api('push.token'))
+				.set(newCredentials)
+				.send({
+					token: 'logout-test-token',
+				})
+				.expect(404)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
 	});
 

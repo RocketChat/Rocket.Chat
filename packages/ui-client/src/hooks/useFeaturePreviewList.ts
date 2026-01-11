@@ -1,12 +1,6 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable =
-	| 'quickReactions'
-	| 'enable-timestamp-message-parser'
-	| 'contextualbarResizable'
-	| 'newNavigation'
-	| 'secondarySidebar'
-	| 'expandableMessageComposer';
+export type FeaturesAvailable = 'secondarySidebar' | 'expandableMessageComposer';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -26,60 +20,11 @@ export type FeaturePreviewProps = {
 // TODO: Move the features preview array to another directory to be accessed from both BE and FE.
 export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	{
-		name: 'quickReactions',
-		i18n: 'Quick_reactions',
-		description: 'Quick_reactions_description',
-		group: 'Message',
-		imageUrl: 'images/featurePreview/quick-reactions.png',
-		value: false,
-		enabled: true,
-	},
-	{
-		name: 'enable-timestamp-message-parser',
-		i18n: 'Enable_timestamp',
-		description: 'Enable_timestamp_description',
-		group: 'Message',
-		imageUrl: 'images/featurePreview/timestamp.png',
-		value: false,
-		enabled: true,
-	},
-	{
-		name: 'contextualbarResizable',
-		i18n: 'Contextualbar_resizable',
-		description: 'Contextualbar_resizable_description',
-		group: 'Navigation',
-		imageUrl: 'images/featurePreview/resizable-contextual-bar.png',
-		value: false,
-		enabled: true,
-	},
-	{
-		name: 'newNavigation',
-		i18n: 'New_navigation',
-		description: 'New_navigation_description',
-		group: 'Navigation',
-		imageUrl: 'images/featurePreview/enhanced-navigation.png',
-		value: false,
-		enabled: true,
-	},
-	{
 		name: 'secondarySidebar',
 		i18n: 'Filters_and_secondary_sidebar',
 		description: 'Filters_and_secondary_sidebar_description',
 		group: 'Navigation',
 		imageUrl: 'images/featurePreview/secondary-sidebar.png',
-		value: false,
-		enabled: true,
-		enableQuery: {
-			name: 'newNavigation',
-			value: true,
-		},
-	},
-	{
-		name: 'expandableMessageComposer',
-		i18n: 'Expandable_message_composer',
-		description: 'Expandable_message_composer_description',
-		imageUrl: 'images/featurePreview/expandable-composer.png',
-		group: 'Message',
 		value: false,
 		enabled: true,
 	},

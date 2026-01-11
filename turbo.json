@@ -22,9 +22,6 @@
 		"lint": {
 			"outputs": []
 		},
-		"translation-check": {
-			"outputs": []
-		},
 		"typecheck": {
 			"outputs": []
 		},

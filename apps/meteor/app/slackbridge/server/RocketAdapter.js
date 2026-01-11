@@ -7,8 +7,8 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { rocketLogger } from './logger';
-import { callbacks } from '../../../lib/callbacks';
 import { sleep } from '../../../lib/utils/sleep';
+import { callbacks } from '../../../server/lib/callbacks';
 import { createRoom } from '../../lib/server/functions/createRoom';
 import { sendMessage } from '../../lib/server/functions/sendMessage';
 import { setUserAvatar } from '../../lib/server/functions/setUserAvatar';

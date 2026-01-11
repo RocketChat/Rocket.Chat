@@ -1,4 +1,5 @@
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useState, useCallback, useMemo } from 'react';
 
@@ -8,7 +9,6 @@ import { useFilesList } from './hooks/useFilesList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useRoom } from '../../contexts/RoomContext';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 const RoomFilesWithData = () => {
 	const room = useRoom();

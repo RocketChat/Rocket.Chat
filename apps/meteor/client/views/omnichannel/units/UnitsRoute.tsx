@@ -6,7 +6,7 @@ import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const UnitsRoute = () => {
 	const canViewUnits = usePermission('manage-livechat-units');
-	const isEnterprise = useHasLicenseModule('livechat-enterprise');
+	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 
 	if (!(isEnterprise && canViewUnits)) {
 		return <NotAuthorizedPage />;

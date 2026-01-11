@@ -38,6 +38,7 @@ export type AccountPreferencesData = {
 	masterVolume?: number;
 	notificationsSoundVolume?: number;
 	voipRingerVolume?: number;
+	desktopNotificationVoiceCalls?: boolean;
 };
 
 export const useAccountPreferencesValues = (): AccountPreferencesData => {
@@ -77,6 +78,8 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 	const notificationsSoundVolume = useUserPreference<number>('notificationsSoundVolume', 100);
 	const voipRingerVolume = useUserPreference<number>('voipRingerVolume', 100);
 
+	const desktopNotificationVoiceCalls = useUserPreference<boolean>('desktopNotificationVoiceCalls');
+
 	return {
 		language,
 		dontAskAgainList,
@@ -107,5 +110,6 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 		masterVolume,
 		notificationsSoundVolume,
 		voipRingerVolume,
+		desktopNotificationVoiceCalls,
 	};
 };

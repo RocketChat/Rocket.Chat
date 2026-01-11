@@ -27,7 +27,7 @@ const { getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgent
 	.noCallThru()
 	.load('../../../../../../app/livechat/server/hooks/processRoomAbandonment.ts', {
 		'@rocket.chat/models': models,
-		'../../../../lib/callbacks': {
+		'../../../../server/lib/callbacks': {
 			callbacks: { add: sinon.stub(), priority: { HIGH: 'high' } },
 		},
 		'../../../settings/server': {

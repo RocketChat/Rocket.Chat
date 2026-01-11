@@ -22,7 +22,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		super(db, 'livechat_department_agents', trash);
 	}
 
-	protected modelIndexes(): Array<IndexDescription> {
+	protected override modelIndexes(): Array<IndexDescription> {
 		return [
 			{
 				key: {

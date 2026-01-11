@@ -10,7 +10,7 @@ export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
 		super(db, 'banner', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { platform: 1, startAt: 1, expireAt: 1 } }, { key: { platform: 1, startAt: 1, expireAt: 1, active: 1 } }];
 	}
 

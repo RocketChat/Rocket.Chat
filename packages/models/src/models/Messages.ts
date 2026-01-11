@@ -1,4 +1,3 @@
-import { OtrSystemMessagesValues } from '@rocket.chat/core-typings';
 import type {
 	ILivechatDepartment,
 	IMessage,
@@ -44,7 +43,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		super(db, 'message', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { rid: 1, ts: 1, _updatedAt: 1 } },
 			{ key: { ts: 1 } },
@@ -709,17 +708,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateOne({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
 
-	deleteOldOTRMessages(roomId: string, ts: Date): Promise<DeleteResult> {
-		const query: Filter<IMessage> = {
-			rid: roomId,
-			t: {
-				$in: ['otr', ...OtrSystemMessagesValues],
-			},
-			ts: { $lte: ts },
-		};
-		return this.col.deleteMany(query);
-	}
-
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult> {
 		const updateObj: DeepWritable<UpdateFilter<IMessage>['$set']> = { translationProvider: providerName };
 		Object.keys(translations).forEach((key) => {
@@ -780,12 +768,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findFilesByUserId(userId: string, options: FindOptions<IMessage> = {}): FindCursor<Pick<IMessage, 'file'>> {
+	findFilesByUserId(userId: string, options: FindOptions<IMessage> = {}): FindCursor<Pick<IMessage, 'file' | 'files'>> {
 		const query = {
 			'u._id': userId,
-			'file._id': { $exists: true },
+			'$or': [{ 'file._id': { $exists: true } }, { 'files._id': { $exists: true } }],
 		};
-		return this.find(query, { projection: { 'file._id': 1 }, ...options });
+		return this.find(query, { projection: { 'file._id': 1, 'files._id': 1 }, ...options });
 	}
 
 	findFilesByRoomIdPinnedTimestampAndUsers(
@@ -800,14 +788,21 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
-			'file._id': { $exists: true },
+			$or: [
+				{
+					'file._id': { $exists: true },
+				},
+				{
+					'files._id': { $exists: true },
+				},
+			],
 			...(excludePinned ? { pinned: { $ne: true } } : {}),
 			...(ignoreThreads ? { tmid: { $exists: false }, tcount: { $exists: false } } : {}),
 			...(ignoreDiscussion ? { drid: { $exists: false } } : {}),
 			...(users.length ? { 'u.username': { $in: users } } : {}),
 		};
 
-		return this.find(query, { projection: { 'file._id': 1 }, ...options });
+		return this.find(query, options);
 	}
 
 	findDiscussionByRoomIdPinnedTimestampAndUsers(

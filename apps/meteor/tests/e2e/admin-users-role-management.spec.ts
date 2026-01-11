@@ -28,12 +28,9 @@ test.describe('Admin > Users Role Management', () => {
 		});
 
 		test('Make a newly created user as admin', async () => {
-			await admin.inputSearchUsers.fill(userWithoutAdminAccess.data.username);
-
 			await test.step('should be visible in the All tab', async () => {
 				await admin.getTabByName().click();
-				await expect(admin.getUserRowByUsername(userWithoutAdminAccess.data.username)).toBeVisible();
-				await expect(admin.getUserRowByUsername(userWithoutAdminAccess.data.username)).toHaveCount(1);
+				await admin.searchUser(userWithoutAdminAccess.data.username);
 			});
 
 			await test.step('make a user admin', async () => {
@@ -49,10 +46,9 @@ test.describe('Admin > Users Role Management', () => {
 		});
 
 		test('Remove role as admin', async () => {
-			await admin.inputSearchUsers.fill(userWithAdminAccess.data.username);
 			await test.step('User should be visible in the All tab', async () => {
 				await admin.getTabByName().click();
-				await expect(admin.getUserRowByUsername(userWithAdminAccess.data.username)).toBeVisible();
+				await admin.searchUser(userWithAdminAccess.data.username);
 			});
 
 			await test.step('remove admin role', async () => {

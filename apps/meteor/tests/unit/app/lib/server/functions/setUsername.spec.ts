@@ -64,7 +64,7 @@ describe('setUsername', () => {
 			'./saveUserIdentity': { saveUserIdentity: stubs.saveUserIdentity },
 			'./setUserAvatar': { setUserAvatar: stubs.setUserAvatar },
 			'./validateUsername': { validateUsername: stubs.validateUsername },
-			'../../../../lib/callbacks': { callbacks: stubs.callbacks },
+			'../../../../server/lib/callbacks': { callbacks: stubs.callbacks },
 			'../../../../server/lib/logger/system': { SystemLogger: stubs.SystemLogger },
 		});
 

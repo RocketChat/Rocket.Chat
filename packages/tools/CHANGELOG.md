@@ -1,5 +1,11 @@
 # @rocket.chat/tools
 
+## 0.2.4-rc.0
+
+### Patch Changes
+
+- ([#37852](https://github.com/RocketChat/Rocket.Chat/pull/37852)) Adds improvements to the push notifications logic; the logic now truncates messages and titles larger than 240, and 65 characters respectively.
+
 ## 0.2.3
 
 ### Patch Changes

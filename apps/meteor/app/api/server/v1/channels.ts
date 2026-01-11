@@ -807,7 +807,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isChannelsFilesListProps },
 	{
 		async get() {
-			const { typeGroup, name, roomId, roomName } = this.queryParams;
+			const { typeGroup, name, roomId, roomName, onlyConfirmed } = this.queryParams;
 
 			const findResult = await findChannelByIdOrName({
 				params: {
@@ -829,6 +829,7 @@ API.v1.addRoute(
 				...query,
 				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
+				...(onlyConfirmed && { expiresAt: { $exists: false } }),
 			};
 
 			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {

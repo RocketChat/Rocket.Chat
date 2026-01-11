@@ -106,7 +106,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			});
 
 			await test.step('should allow the agent to take the secondary user chat', async () => {
-				await poHomeOmnichannel.sidenav.getQueuedChat(secondVisitor.name).click();
+				await poHomeOmnichannel.sidebar.getSidebarItemByName(secondVisitor.name).click();
 				await expect(poHomeOmnichannel.content.btnTakeChat).toBeVisible();
 				await poHomeOmnichannel.content.btnTakeChat.click();
 				await expect(poHomeOmnichannel.content.lastSystemMessageBody).toHaveText('joined the channel');
@@ -185,17 +185,17 @@ test.describe('OC - Contact Manager Routing', () => {
 		});
 
 		await test.step('verify non-manager agent does not see the inquiry', async () => {
-			const nonManagerQueuedChat = poHomeOmnichannel.sidenav.getQueuedChat(visitorWithManager.name);
+			const nonManagerQueuedChat = poHomeOmnichannel.sidebar.getSidebarItemByName(visitorWithManager.name);
 			await expect(nonManagerQueuedChat).toHaveCount(0);
 		});
 
 		await test.step('verify the contact manager agent sees the inquiry', async () => {
-			const managerQueuedChat = poHomeOmnichannelUser2.sidenav.getQueuedChat(visitorWithManager.name);
+			const managerQueuedChat = poHomeOmnichannelUser2.sidebar.getSidebarItemByName(visitorWithManager.name);
 			await expect(managerQueuedChat).toBeVisible();
 		});
 
 		await test.step('contact manager can take the chat', async () => {
-			await poHomeOmnichannelUser2.sidenav.getQueuedChat(visitorWithManager.name).click();
+			await poHomeOmnichannelUser2.sidebar.getSidebarItemByName(visitorWithManager.name).click();
 			await expect(poHomeOmnichannelUser2.content.btnTakeChat).toBeVisible();
 			await poHomeOmnichannelUser2.content.btnTakeChat.click();
 			await expect(poHomeOmnichannelUser2.content.lastSystemMessageBody).toHaveText('joined the channel');
@@ -222,17 +222,17 @@ test.describe('OC - Contact Manager Routing', () => {
 		});
 
 		await test.step('verify non-manager agent still does not see the inquiry after refresh', async () => {
-			const nonManagerQueuedChat = poHomeOmnichannel.sidenav.getQueuedChat(anotherVisitorWithManager.name);
+			const nonManagerQueuedChat = poHomeOmnichannel.sidebar.getSidebarItemByName(anotherVisitorWithManager.name);
 			await expect(nonManagerQueuedChat).toHaveCount(0);
 		});
 
 		await test.step('verify the contact manager still sees the inquiry after refresh', async () => {
-			const managerQueuedChat = poHomeOmnichannelUser2.sidenav.getQueuedChat(anotherVisitorWithManager.name);
+			const managerQueuedChat = poHomeOmnichannelUser2.sidebar.getSidebarItemByName(anotherVisitorWithManager.name);
 			await expect(managerQueuedChat).toBeVisible();
 		});
 
 		await test.step('contact manager can take the chat after refresh', async () => {
-			await poHomeOmnichannelUser2.sidenav.getQueuedChat(anotherVisitorWithManager.name).click();
+			await poHomeOmnichannelUser2.sidebar.getSidebarItemByName(anotherVisitorWithManager.name).click();
 			await expect(poHomeOmnichannelUser2.content.btnTakeChat).toBeVisible();
 			await poHomeOmnichannelUser2.content.btnTakeChat.click();
 			await expect(poHomeOmnichannelUser2.content.lastSystemMessageBody).toHaveText('joined the channel');

@@ -9,7 +9,7 @@ export class BannersDismissRaw extends BaseRaw<IBannerDismiss> implements IBanne
 		super(db, 'banner_dismiss', trash);
 	}
 
-	modelIndexes(): IndexDescription[] {
+	override modelIndexes(): IndexDescription[] {
 		return [{ key: { userId: 1, bannerId: 1 } }];
 	}
 

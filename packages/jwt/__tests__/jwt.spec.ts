@@ -54,6 +54,7 @@ it('should sign and verify a jwt with RS256', async () => {
 			{ module: 'outlook-calendar' },
 			{ module: 'unlimited-presence' },
 			{ module: 'outbound-messaging' },
+			{ module: 'abac' },
 		],
 		limits: {
 			activeUsers: [

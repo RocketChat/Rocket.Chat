@@ -1,6 +1,7 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { getBaseURI, isExternal } from '@rocket.chat/ui-client';
-import { ReactElement, useMemo } from 'react';
+import { getBaseURI, isExternal } from '@rocket.chat/ui-client/dist/helpers/getBaseURI';
+import type { ReactElement } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import BoldSpan from './BoldSpan';

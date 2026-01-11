@@ -5,7 +5,6 @@ import ActionManagerProvider from './ActionManagerProvider';
 import AuthenticationProvider from './AuthenticationProvider/AuthenticationProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
-import { CallProvider as OmnichannelCallProvider } from './CallProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
 import EmojiPickerProvider from './EmojiPickerProvider';
@@ -50,9 +49,7 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 																			<ActionManagerProvider>
 																				<VideoConfProvider>
 																					<MediaCallProvider>
-																						<OmnichannelCallProvider>
-																							<OmnichannelProvider>{children}</OmnichannelProvider>
-																						</OmnichannelCallProvider>
+																						<OmnichannelProvider>{children}</OmnichannelProvider>
 																					</MediaCallProvider>
 																				</VideoConfProvider>
 																			</ActionManagerProvider>

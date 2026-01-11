@@ -74,8 +74,8 @@ export const useFingerprintChange = () => {
 		if (openModal) {
 			setModal(
 				<FingerprintChangeModal
-					onConfirm={() => dispatch({ type: 'openConfirmation', newWorkspace: true })}
-					onCancel={() => dispatch({ type: 'openConfirmation', newWorkspace: false })}
+					onConfirm={() => dispatch({ type: 'openConfirmation', newWorkspace: false })}
+					onCancel={() => dispatch({ type: 'openConfirmation', newWorkspace: true })}
 					onClose={() => dispatch({ type: 'closeModal' })}
 				/>,
 			);

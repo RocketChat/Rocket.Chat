@@ -79,7 +79,7 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 		return this.handleRecordEvent('changed', record);
 	}
 
-	protected deserializeFromCache(record: unknown) {
+	protected override deserializeFromCache(record: unknown) {
 		const deserialized = super.deserializeFromCache(record);
 
 		if (deserialized?.lastMessage?._updatedAt) {

@@ -11,7 +11,7 @@ type CurrentChatTagsProps = Pick<ComponentProps<typeof AutoCompleteTagsMultiple>
 };
 
 const CurrentChatTags = ({ value, handler, department, viewAll, ...props }: CurrentChatTagsProps) => {
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
 	if (!hasLicense) {
 		return null;

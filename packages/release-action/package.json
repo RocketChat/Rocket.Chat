@@ -2,16 +2,11 @@
 	"name": "@rocket.chat/release-action",
 	"version": "2.2.3",
 	"private": true,
+	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
 		"lint": "eslint src",
 		"lint:fix": "eslint --fix src"
-	},
-	"main": "dist/index.js",
-	"packageManager": "yarn@4.10.3",
-	"devDependencies": {
-		"@types/node": "~22.16.5",
-		"typescript": "~5.9.3"
 	},
 	"dependencies": {
 		"@actions/core": "^1.11.1",
@@ -27,6 +22,11 @@
 		"semver": "^7.6.3",
 		"unified": "9.2.2"
 	},
+	"devDependencies": {
+		"@types/node": "~22.16.5",
+		"typescript": "~5.9.3"
+	},
+	"packageManager": "yarn@4.11.0",
 	"volta": {
 		"extends": "../../package.json"
 	}
