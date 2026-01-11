@@ -4,6 +4,8 @@ import { Header, HeaderContent, HeaderContentRow, HeaderToolbar } from '@rocket.
 import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IconButton } from '@rocket.chat/fuselage';
+import { useRouter } from '@rocket.chat/ui-contexts';
 
 import FederatedRoomOriginServer from './FederatedRoomOriginServer';
 import ParentRoom from './ParentRoom';
@@ -33,14 +35,25 @@ export type RoomHeaderProps = {
 
 const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
 	const { t } = useTranslation();
+	const router = useRouter();
 
 	return (
 		<Header>
 			{slots?.start}
 			<ParentRoom room={room} />
 			{slots?.preContent}
+
 			<HeaderContent>
 				<HeaderContentRow>
+					{room.t === 'd' && (
+						<IconButton
+							icon='arrow-back'
+							small
+							title={t('Back_to_workspace')}
+							onClick={() => router.navigate('/home')}
+						/>
+					)}
+
 					<RoomTitle room={room} />
 					<Favorite room={room} />
 					{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
@@ -50,7 +63,9 @@ const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
 					{slots?.insideContent}
 				</HeaderContentRow>
 			</HeaderContent>
+
 			{slots?.posContent}
+
 			{slots.toolbox?.hidden !== true && (
 				<Suspense fallback={null}>
 					<HeaderToolbar aria-label={t('Toolbox_room_actions')}>
@@ -60,6 +75,7 @@ const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
 					</HeaderToolbar>
 				</Suspense>
 			)}
+
 			{slots?.end}
 		</Header>
 	);
