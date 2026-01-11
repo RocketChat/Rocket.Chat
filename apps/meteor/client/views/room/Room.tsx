@@ -18,6 +18,7 @@ import RoomLayout from './layout/RoomLayout';
 import ChatProvider from './providers/ChatProvider';
 import { DateListProvider } from './providers/DateListProvider';
 import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
+import { MessageHistoryModalProvider } from './modals/MessageHistoryModal/MessageHistoryModalContext';
 
 const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContextualBar'));
 
@@ -44,10 +45,11 @@ const Room = (): ReactElement => {
 	return (
 		<ChatProvider>
 			<MessageHighlightProvider>
-				<FocusScope>
-					<DateListProvider>
-						<RoomLayout
-							data-qa-rc-room={room._id}
+				<MessageHistoryModalProvider>
+					<FocusScope>
+						<DateListProvider>
+							<RoomLayout
+								data-qa-rc-room={room._id}
 							aria-label={roomLabel}
 							header={<Header room={room} />}
 							body={shouldDisplayE2EESetup ? <RoomE2EESetup /> : <RoomBody />}
@@ -73,8 +75,9 @@ const Room = (): ReactElement => {
 						/>
 					</DateListProvider>
 				</FocusScope>
-			</MessageHighlightProvider>
-		</ChatProvider>
+			</MessageHistoryModalProvider>
+		</MessageHighlightProvider>
+	</ChatProvider>
 	);
 };
 

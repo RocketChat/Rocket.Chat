@@ -3,6 +3,24 @@ import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageU
 import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
+export type ChatGetMessageHistory = {
+	messageId: IMessage['_id'];
+};
+
+const chatGetMessageHistorySchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+export const isChatGetMessageHistoryProps = ajv.compile<ChatGetMessageHistory>(chatGetMessageHistorySchema);
+
 type ChatSendMessage = {
 	message: Partial<IMessage>;
 	previewUrls?: string[];
@@ -1097,5 +1115,10 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.getURLPreview': {
 		GET: (params: ChatGetURLPreview) => { urlPreview: MessageUrl };
+	};
+	'/v1/chat.getMessageHistory': {
+		GET: (params: ChatGetMessageHistory) => {
+			messages: IMessage[];
+		};
 	};
 };

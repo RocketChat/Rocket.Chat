@@ -7084,5 +7084,12 @@
   "timestamps.fullDateTimeLongDescription": "Thursday, December 31, 2020 12:00:00 AM",
   "__username__profile_picture": "{{username}}'s profile picture",
   "User_card": "User card",
-  "timestamps.relativeTimeDescription": "1 year ago"
+  "timestamps.relativeTimeDescription": "1 year ago",
+  "Message_Edit_History": "Message Edit History",
+  "Error_loading_message_history": "Error loading message history",
+  "Original_Message": "Original Message",
+  "Edit": "Edit",
+  "Edited_by": "Edited by",
+  "No_edit_history_found": "No edit history available for this message"
+
 }

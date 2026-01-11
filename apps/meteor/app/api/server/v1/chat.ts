@@ -2,33 +2,34 @@ import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
-	ajv,
-	isChatReportMessageProps,
-	isChatGetURLPreviewProps,
-	isChatUpdateProps,
-	isChatGetThreadsListProps,
-	isChatDeleteProps,
-	isChatSyncMessagesProps,
-	isChatGetMessageProps,
-	isChatPostMessageProps,
-	isChatSearchProps,
-	isChatSendMessageProps,
-	isChatStarMessageProps,
-	isChatUnstarMessageProps,
-	isChatIgnoreUserProps,
-	isChatGetPinnedMessagesProps,
-	isChatFollowMessageProps,
-	isChatUnfollowMessageProps,
-	isChatGetMentionedMessagesProps,
-	isChatReactProps,
-	isChatGetDeletedMessagesProps,
-	isChatSyncThreadsListProps,
-	isChatGetThreadMessagesProps,
-	isChatSyncThreadMessagesProps,
-	isChatGetStarredMessagesProps,
-	isChatGetDiscussionsProps,
-	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
+    ajv,
+    isChatReportMessageProps,
+    isChatGetURLPreviewProps,
+    isChatUpdateProps,
+    isChatGetThreadsListProps,
+    isChatDeleteProps,
+    isChatSyncMessagesProps,
+    isChatGetMessageProps,
+    isChatPostMessageProps,
+    isChatSearchProps,
+    isChatSendMessageProps,
+    isChatStarMessageProps,
+    isChatUnstarMessageProps,
+    isChatIgnoreUserProps,
+    isChatGetPinnedMessagesProps,
+    isChatFollowMessageProps,
+    isChatUnfollowMessageProps,
+    isChatGetMentionedMessagesProps,
+    isChatReactProps,
+    isChatGetDeletedMessagesProps,
+    isChatSyncThreadsListProps,
+    isChatGetThreadMessagesProps,
+    isChatSyncThreadMessagesProps,
+    isChatGetStarredMessagesProps,
+    isChatGetDiscussionsProps,
+    isChatGetMessageHistoryProps,
+    validateBadRequestErrorResponse,
+    validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -38,7 +39,7 @@ import { ignoreUser } from '../../../../server/methods/ignoreUser';
 import { messageSearch } from '../../../../server/methods/messageSearch';
 import { getMessageHistory } from '../../../../server/publications/messages';
 import { roomAccessAttributes } from '../../../authorization/server';
-import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom'; // Consolidated imports
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { deleteMessageValidatingPermission } from '../../../lib/server/functions/deleteMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
@@ -921,6 +922,75 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'chat.getMessageHistory',
+	{ authRequired: true },
+	{
+		async get(this: any) {
+			const { messageId } = this.queryParams;
+
+			if (!messageId) {
+				return API.v1.failure('The required "messageId" query param is missing.');
+			}
+
+			let requestedMessage = await Messages.findOneById(messageId);
+
+			if (!requestedMessage) {
+				return API.v1.failure('Message not found');
+			}
+
+			// If this is a history message, find the root message
+			let rootMessageId = messageId;
+			if (requestedMessage._hidden && requestedMessage.parent) {
+				rootMessageId = requestedMessage.parent;
+				const rootMessage = await Messages.findOneById(rootMessageId);
+				if (!rootMessage) {
+					return API.v1.failure('Root message not found');
+				}
+				requestedMessage = rootMessage;
+			}
+
+			const currentMessage = requestedMessage;
+
+			// Check if user has permission to view this message's room
+			if (!(await canAccessRoomIdAsync(currentMessage.rid, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			// Get all history versions (these are the OLDER versions stored with _hidden: true)
+			const historyMessages = await Messages.find(
+				{
+					_hidden: true,
+					parent: rootMessageId,
+				},
+				{
+					sort: { editedAt: 1 }, // Oldest first
+				},
+			).toArray();
+
+			console.log(`[MessageHistory] For message ${rootMessageId}: Found ${historyMessages.length} history entries`);
+			console.log(`[MessageHistory] History IDs:`, historyMessages.map(m => ({ id: m._id, msg: m.msg })));
+
+			// Return history first (oldest to newest), then current message at the end
+			const allMessages = [...historyMessages, currentMessage];
+
+			console.log(`[MessageHistory] Total messages before normalize: ${allMessages.length}`);
+			console.log(`[MessageHistory] All message IDs:`, allMessages.map(m => ({ id: m._id, msg: m.msg, hidden: m._hidden })));
+
+			// Normalize messages for user
+			const messages = await normalizeMessagesForUser(allMessages, this.userId);
+
+			console.log(`[MessageHistory] Total messages after normalize: ${messages.length}`);
+			console.log(`[MessageHistory] Final message IDs:`, messages.map(m => ({ id: m._id, msg: m.msg, hidden: m._hidden })));
+
+			return API.v1.success({
+				messages,
+			});
+		},
+	},
+);
+
 
 export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
 

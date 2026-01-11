@@ -4,8 +4,11 @@ import { MessageStatusIndicator, MessageStatusIndicatorItem } from '@rocket.chat
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useCallback } from 'react';
 
 import { useMessageDateFormatter, useShowStarred, useShowTranslated, useShowFollowing } from './list/MessageListContext';
+import { MessageHistoryModal } from '../../views/room/modals/MessageHistoryModal';
+import { useMessageHistoryModal } from '../../views/room/modals/MessageHistoryModal/MessageHistoryModalContext';
 
 type StatusIndicatorsProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
@@ -23,33 +26,49 @@ const StatusIndicators = ({ message }: StatusIndicatorsProps): ReactElement => {
 
 	const formatter = useMessageDateFormatter();
 
+	const { openMessageId, openModal, closeModal } = useMessageHistoryModal();
+
+	const handleEditedClick = useCallback(() => {
+		openModal(message._id);
+	}, [openModal, message._id]);
+
+	const isThisModalOpen = openMessageId === message._id;
+
 	return (
-		<MessageStatusIndicator>
-			{translated && <MessageStatusIndicatorItem name='language' title={t('Translated')} />}
+		<>
+			<MessageStatusIndicator>
+				{translated && <MessageStatusIndicatorItem name='language' title={t('Translated')} />}
 
-			{following && <MessageStatusIndicatorItem name='bell' title={t('Following')} />}
+				{following && <MessageStatusIndicatorItem name='bell' title={t('Following')} />}
 
-			{message.sentByEmail && <MessageStatusIndicatorItem name='mail' title={t('Message_sent_by_email')} />}
-			{isEditedMessage(message) && (
-				<MessageStatusIndicatorItem
-					name='edit'
-					color={message.u._id !== message.editedBy._id ? 'danger' : undefined}
-					title={
-						message.editedBy._id === uid
-							? t('Message_has_been_edited_at', { date: formatter(message.editedAt) })
-							: t('Message_has_been_edited_by_at', {
-									username: message.editedBy.username || '?',
-									date: formatter(message.editedAt),
-								})
-					}
-				/>
-			)}
-			{message.pinned && <MessageStatusIndicatorItem name='pin' title={t('Message_has_been_pinned')} />}
+				{message.sentByEmail && <MessageStatusIndicatorItem name='mail' title={t('Message_sent_by_email')} />}
+				
+				{isEditedMessage(message) && (
+					<MessageStatusIndicatorItem
+						name='edit'
+						color={message.u._id !== message.editedBy._id ? 'danger' : undefined}
+						title={
+							message.editedBy._id === uid
+								? t('Message_has_been_edited_at', { date: formatter(message.editedAt) })
+								: t('Message_has_been_edited_by_at', {
+										username: message.editedBy.username || '?',
+										date: formatter(message.editedAt),
+									})
+						}
+						onClick={handleEditedClick}
+						style={{ cursor: 'pointer' }}
+					/>
+				)}
+				
+				{message.pinned && <MessageStatusIndicatorItem name='pin' title={t('Message_has_been_pinned')} />}
 
-			{isEncryptedMessage && <MessageStatusIndicatorItem name='key' />}
+				{isEncryptedMessage && <MessageStatusIndicatorItem name='key' />}
 
-			{starred && <MessageStatusIndicatorItem name='star-filled' title={t('Message_has_been_starred')} />}
-		</MessageStatusIndicator>
+				{starred && <MessageStatusIndicatorItem name='star-filled' title={t('Message_has_been_starred')} />}
+			</MessageStatusIndicator>
+
+			{isThisModalOpen && <MessageHistoryModal messageId={message._id} onClose={closeModal} />}
+		</>
 	);
 };
 
