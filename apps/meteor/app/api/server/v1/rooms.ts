@@ -197,7 +197,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const { file, fields } = await UploadService.parse(this.request, {
+			const { file, fields } = await UploadService.parse(this.incoming, {
 				field: 'file',
 				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
 			});
