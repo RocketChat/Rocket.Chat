@@ -9,8 +9,8 @@ import type { ClientSession } from 'mongodb';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
 import { livechatLogger as logger } from './logger';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
-import { callbacks } from '../../../../lib/callbacks';
 import { client, shouldRetryTransaction } from '../../../../server/database/utils';
+import { callbacks } from '../../../../server/lib/callbacks';
 import {
 	notifyOnLivechatInquiryChanged,
 	notifyOnRoomChanged,

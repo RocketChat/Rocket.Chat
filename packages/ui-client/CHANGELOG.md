@@ -1,5 +1,45 @@
 # @rocket.chat/ui-client
 
+## 26.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@22.0.0-rc.1
+  - @rocket.chat/ui-contexts@26.0.0-rc.1
+  </details>
+
+## 26.0.0-rc.0
+
+### Major Changes
+
+- ([#36976](https://github.com/RocketChat/Rocket.Chat/pull/36976)) Promotes Timestamp Parser from preview state to stable
+
+- ([#37022](https://github.com/RocketChat/Rocket.Chat/pull/37022)) Promotes Resizable Contextualbars from preview state to stable.
+
+- ([#36966](https://github.com/RocketChat/Rocket.Chat/pull/36966)) Promotes quick reactions from preview state to stable
+
+- ([#37285](https://github.com/RocketChat/Rocket.Chat/pull/37285)) Promotes Enhanced Navigation from preview state to stable.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ac11ea05ffadeca978c794ff38d5199d9acb2c29]:</summary>
+
+  - @rocket.chat/ui-contexts@26.0.0-rc.0
+  - @rocket.chat/ui-avatar@22.0.0-rc.0
+  </details>
+
+## 25.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@21.0.2
+  - @rocket.chat/ui-contexts@25.0.2
+  </details>
+
 ## 25.0.1
 
 ### Patch Changes

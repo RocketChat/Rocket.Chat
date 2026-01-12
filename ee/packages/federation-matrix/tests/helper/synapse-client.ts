@@ -152,11 +152,24 @@ export class SynapseClient {
 		return room.room_id;
 	}
 
+	async createDM(userIds: string[]) {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+
+		const dmRoom = await this.matrixClient.createRoom({
+			is_direct: true,
+			invite: userIds,
+		});
+
+		return this.matrixClient.getRoom(dmRoom.room_id);
+	}
+
 	async inviteUserToRoom(roomId: string, userId: string): Promise<void> {
 		if (!this.matrixClient) {
 			throw new Error('Matrix client is not initialized');
 		}
-		await this.matrixClient.invite(userId, roomId);
+		await this.matrixClient.invite(roomId, userId);
 	}
 
 	/**

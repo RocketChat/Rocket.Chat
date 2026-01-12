@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
 

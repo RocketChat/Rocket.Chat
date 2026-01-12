@@ -142,21 +142,16 @@ export type SharedOptions<TMethod extends string> = (
 	};
 };
 
-export type PartialThis = {
-	user(bodyParams: Record<string, unknown>, user: any): Promise<any>;
-	readonly request: Request & { query: Record<string, string> };
-	readonly response: Response;
-	readonly userId: string;
-	readonly bodyParams: Record<string, unknown>;
-	readonly path: string;
-	readonly queryParams: Record<string, string>;
-	readonly queryOperations?: string[];
-	readonly queryFields?: string[];
-	readonly logger: Logger;
-	readonly route: string;
-};
+export type GenericRouteExecutionContext = ActionThis<any, any, any>;
+
+export type RouteExecutionContext<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = ActionThis<
+	TMethod,
+	TPathPattern,
+	TOptions
+>;
 
 export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+	readonly logger: Logger;
 	route: string;
 	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
@@ -183,6 +178,8 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 	readonly request: Request;
 
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
+	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
+
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
 		/**

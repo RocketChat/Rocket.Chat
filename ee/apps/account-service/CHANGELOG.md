@@ -1,5 +1,49 @@
 # @rocket.chat/account-service
 
+## 0.4.47-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.1
+  - @rocket.chat/rest-typings@8.0.0-rc.1
+  - @rocket.chat/core-services@0.12.0-rc.1
+  - @rocket.chat/model-typings@2.0.0-rc.1
+  - @rocket.chat/models@2.0.0-rc.1
+  - @rocket.chat/network-broker@0.2.26-rc.1
+  </details>
+
+## 0.4.47-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [347b8f973440f3e2239f79c00c2d9b430859eef2, b802430fbfdc7fa69a976468dc6dee6f3c4de26f, 872da49986436d2efa65fc42e416b45d706fd59c, 176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 1baa03cced8f94584da1224ad59cad86f219707a, f3f0b273ab49e9d1048ba43d52eb36005274905e, ac11ea05ffadeca978c794ff38d5199d9acb2c29, a1d65f493fdb039d34ef4f65d243a97931763f4b, ddc935727e9a7275813006d9dcaa7fe866610844, a5a7343a835b04812c70699be1b13e54f0e10d48, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, 476a070b0099b95e4c463ee85960c4dcfbd87120, 239f4b1171bcf448cfba345cc90c4b5cd7c21afc, 9e03ed5c5ea829c62c2da2de9413a27a4696f8a3, dc67590d14d510b069dee074c55314c56f74bb11, be80b724a636877294b5e5baa501d070941131dd, 4aa3634186d97f4144c39f6b42a65107d3d30df0, dccdcc5b4a0da4814f72a020bc4eccb8ea2497d8, 5ac1863be4c6e82666989f4b569928c0805691ff, ec0f8b435dd12c218adffa8892737c7ced4debb8, cb3c5e3455606a045f95f168dae6ed32a387697c, 5b3f93c47a03b628d613a77005e92021cd6cee4b]:</summary>
+
+  - @rocket.chat/rest-typings@8.0.0-rc.0
+  - @rocket.chat/core-typings@8.0.0-rc.0
+  - @rocket.chat/model-typings@2.0.0-rc.0
+  - @rocket.chat/models@2.0.0-rc.0
+  - @rocket.chat/core-services@0.12.0-rc.0
+  - @rocket.chat/tools@0.2.4-rc.0
+  - @rocket.chat/logger@1.0.0-rc.0
+  - @rocket.chat/network-broker@0.2.26-rc.0
+  </details>
+
+## 0.4.46
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [eef2b390a8e4664ad4b974e7ea579982245efce5]:</summary>
+
+  - @rocket.chat/core-services@0.11.2
+  - @rocket.chat/network-broker@0.2.25
+  - @rocket.chat/core-typings@7.13.2
+  - @rocket.chat/rest-typings@7.13.2
+  - @rocket.chat/model-typings@1.9.2
+  - @rocket.chat/models@1.8.2
+  </details>
+
 ## 0.4.45
 
 ### Patch Changes

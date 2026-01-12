@@ -24,7 +24,6 @@ const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Reac
 				<GenericCardButton key={3} onClick={() => handleOpenLink(MAC_APP_URL)} children={t('Platform_Mac')} role='link' />,
 			]}
 			width='x340'
-			data-qa-id='homepage-desktop-apps-card'
 			{...props}
 		/>
 	);

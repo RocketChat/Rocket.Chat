@@ -1,0 +1,688 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
+    <div
+      style="position: relative; user-select: auto; width: 380px; height: 100%; max-width: 50%; min-width: 380px; min-height: 100%; box-sizing: border-box; flex-shrink: 0;"
+    >
+      <div
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-142wtci"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon rcx-css-1yal9it"
+            >
+              
+            </i>
+            <div
+              class="rcx-box rcx-box--full rcx-css-1spko5i"
+              id="contextualbarTitle"
+            >
+              Call info
+            </div>
+            <div
+              class="rcx-button-group rcx-button-group--align-start"
+              role="group"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Options"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+                id="react-aria-:r1:"
+                title="Options"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </button>
+              <button
+                aria-label="Close"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-ue04py"
+                data-qa="ContextualbarActionClose"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
+          >
+            <div
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
+            <div
+              class=""
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-zg7o7h"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-15qq8ie"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-ilfe77"
+                      role="button"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1rtu0k9"
+                      >
+                        <figure
+                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        >
+                          <img
+                            alt=""
+                            class="rcx-avatar__element rcx-avatar__element--x28"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                          />
+                        </figure>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1rtu0k9"
+                      >
+                        <svg
+                          class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
+                          fill="none"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          width="12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            class="rcx-status-bullet rcx-status-bullet--loading"
+                            cx="6"
+                            cy="6"
+                            r="5"
+                            stroke-dasharray="2 2"
+                            stroke-width="2"
+                          />
+                        </svg>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full"
+                      >
+                        john.doe
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-12j6r2z"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-down-left rcx-icon rcx-css-1kvwsz1"
+                      >
+                        
+                      </i>
+                      Incoming voice call
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-message-block--width-fixed rcx-message-block"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-9bjfe"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1ay6h7v"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-9rr3cg"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-1eogw2f"
+                            >
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-phone-off rcx-icon rcx-css-1bepdyv"
+                              >
+                                
+                              </i>
+                            </div>
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-1eogw2f"
+                            >
+                              <div>
+                                <strong>
+                                  Voice call ended
+                                </strong>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-mczqkb"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-9rr3cg"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-1eogw2f"
+                            >
+                              <div>
+                                <strong>
+                                  01:40
+                                </strong>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-m8ijko"
+                    >
+                      Friday, February 7, 2025 at 12:00:00 PM
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                    >
+                      Call ID
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                    >
+                      1234567890
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                    >
+                      Voice call extension
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                    >
+                      0000
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-f51umh"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-balloon rcx-icon rcx-css-i1uktf"
+                >
+                  
+                </i>
+                Direct message
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button--success rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-i1uktf"
+                >
+                  
+                </i>
+                Call
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-r98g7d"
+          />
+        </div>
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+        />
+      </div>
+    </div>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
+  </div>
+</body>
+`;
+
+exports[`renders ExternalContact without crashing 1`] = `
+<body>
+  <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
+    <div
+      style="position: relative; user-select: auto; width: 380px; height: 100%; max-width: 50%; min-width: 380px; min-height: 100%; box-sizing: border-box; flex-shrink: 0;"
+    >
+      <div
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-142wtci"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon rcx-css-1yal9it"
+            >
+              
+            </i>
+            <div
+              class="rcx-box rcx-box--full rcx-css-1spko5i"
+              id="contextualbarTitle"
+            >
+              Call info
+            </div>
+            <div
+              class="rcx-button-group rcx-button-group--align-start"
+              role="group"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Options"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+                id="react-aria-:r4:"
+                title="Options"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </button>
+              <button
+                aria-label="Close"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-ue04py"
+                data-qa="ContextualbarActionClose"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
+          >
+            <div
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
+            <div
+              class=""
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-zg7o7h"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-15qq8ie"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-ilfe77"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1rtu0k9"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
+                        >
+                          
+                        </i>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1rtu0k9"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1bepdyv"
+                        >
+                          
+                        </i>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full"
+                      >
+                        +1234567890
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-12j6r2z"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-arrow-down-left rcx-icon rcx-css-1kvwsz1"
+                      >
+                        
+                      </i>
+                      Incoming voice call
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-message-block--width-fixed rcx-message-block"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-9bjfe"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1ay6h7v"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-9rr3cg"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-1eogw2f"
+                            >
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-phone-off rcx-icon rcx-css-1bepdyv"
+                              >
+                                
+                              </i>
+                            </div>
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-1eogw2f"
+                            >
+                              <div>
+                                <strong>
+                                  Voice call ended
+                                </strong>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-mczqkb"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-9rr3cg"
+                          >
+                            <div
+                              class="rcx-box rcx-box--full rcx-css-1eogw2f"
+                            >
+                              <div>
+                                <strong>
+                                  01:40
+                                </strong>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-m8ijko"
+                    >
+                      Friday, February 7, 2025 at 12:00:00 PM
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                    >
+                      Call ID
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                    >
+                      1234567890
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-f51umh"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--success rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-i1uktf"
+                >
+                  
+                </i>
+                Call
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-r98g7d"
+          />
+        </div>
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+        />
+      </div>
+    </div>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
+  </div>
+</body>
+`;

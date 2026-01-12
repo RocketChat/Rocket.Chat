@@ -1,5 +1,34 @@
 # @rocket.chat/license
 
+## 1.1.7-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.1
+  </details>
+
+## 1.1.7-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ddc935727e9a7275813006d9dcaa7fe866610844, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, ec0f8b435dd12c218adffa8892737c7ced4debb8]:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.0
+  - @rocket.chat/jwt@0.2.0-rc.0
+  - @rocket.chat/logger@1.0.0-rc.0
+  </details>
+
+## 1.1.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.2
+  </details>
+
 ## 1.1.5
 
 ### Patch Changes

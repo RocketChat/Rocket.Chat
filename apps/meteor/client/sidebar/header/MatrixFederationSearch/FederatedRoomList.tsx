@@ -29,8 +29,9 @@ const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListPro
 	const { mutate: onClickJoin, isPending: isLoadingMutation } = useMutation({
 		mutationKey: ['federation/joinExternalPublicRoom'],
 
-		mutationFn: async ({ id, pageToken }: IFederationPublicRooms) =>
-			joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}`, roomName, pageToken }),
+		mutationFn: async ({ id, pageToken }: IFederationPublicRooms) => {
+			return joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}`, roomName, pageToken });
+		},
 
 		onSuccess: (_, data) => {
 			dispatchToastMessage({
@@ -70,7 +71,7 @@ const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListPro
 						Footer: () => (isFetchingNextPage ? <Throbber /> : null),
 						EmptyPlaceholder: FederatedRoomListEmptyPlaceholder,
 					}}
-					endReached={isLoadingMutation || isFetchingNextPage ? () => undefined : () => fetchNextPage()}
+					endReached={isPending || isFetchingNextPage ? () => undefined : () => fetchNextPage()}
 					itemContent={(_, room) => (
 						<FederatedRoomListItem onClickJoin={() => onClickJoin(room)} {...room} disabled={isLoadingMutation} key={room.id} />
 					)}

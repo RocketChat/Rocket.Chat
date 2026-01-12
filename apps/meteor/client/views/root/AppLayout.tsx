@@ -9,7 +9,6 @@ import { useDrupalOAuth } from './hooks/customOAuth/useDrupalOAuth';
 import { useGitHubEnterpriseOAuth } from './hooks/customOAuth/useGitHubEnterpriseOAuth';
 import { useGitLabOAuth } from './hooks/customOAuth/useGitLabOAuth';
 import { useNextcloudOAuth } from './hooks/customOAuth/useNextcloudOAuth';
-import { useTokenpassOAuth } from './hooks/customOAuth/useTokenpassOAuth';
 import { useWordPressOAuth } from './hooks/customOAuth/useWordPressOAuth';
 import { useAnalytics } from './hooks/useAnalytics';
 import { useAnalyticsEventTracking } from './hooks/useAnalyticsEventTracking';
@@ -21,6 +20,7 @@ import { useDesktopTitle } from './hooks/useDesktopTitle';
 import { useEmojiOne } from './hooks/useEmojiOne';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
+import { useIframeCommands } from './hooks/useIframeCommands';
 import { useIframeLoginListener } from './hooks/useIframeLoginListener';
 import { useLivechatEnterprise } from './hooks/useLivechatEnterprise';
 import { useLoadMissedMessages } from './hooks/useLoadMissedMessages';
@@ -59,7 +59,6 @@ const AppLayout = () => {
 	useGitHubEnterpriseOAuth();
 	useDrupalOAuth();
 	useDolphinOAuth();
-	useTokenpassOAuth();
 	useAppleOAuth();
 	useWordPressOAuth();
 	useCustomOAuth();
@@ -71,6 +70,7 @@ const AppLayout = () => {
 	useDesktopFavicon();
 	useDesktopTitle();
 	useStartupEvent();
+	useIframeCommands();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 

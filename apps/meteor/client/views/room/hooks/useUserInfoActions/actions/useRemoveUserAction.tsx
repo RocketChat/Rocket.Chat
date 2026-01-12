@@ -25,6 +25,7 @@ export const useRemoveUserAction = (
 	user: Pick<IUser, '_id' | 'username'>,
 	rid: IRoom['_id'],
 	reload?: () => void,
+	invited?: boolean,
 ): UserInfoAction | undefined => {
 	const room = useUserRoom(rid);
 
@@ -100,7 +101,7 @@ export const useRemoveUserAction = (
 		setModal(
 			<GenericModal
 				variant='danger'
-				confirmText={t('Yes_remove_user')}
+				confirmText={invited ? t('Revoke_invitation') : t('Yes_remove_user')}
 				onClose={closeModal}
 				onCancel={closeModal}
 				onConfirm={(): Promise<void> => handleRemoveFromRoom(rid, uid)}
@@ -110,19 +111,31 @@ export const useRemoveUserAction = (
 		);
 	});
 
-	const removeUserOption = useMemo(
-		() =>
-			roomCanRemove && userCanRemove
-				? {
-						content: room?.teamMain ? t('Remove_from_team') : t('Remove_from_room'),
-						icon: 'cross' as const,
-						onClick: removeUserOptionAction,
-						type: 'moderation' as const,
-						variant: 'danger' as const,
-					}
-				: undefined,
-		[room, roomCanRemove, userCanRemove, removeUserOptionAction, t],
-	);
+	const content = useMemo(() => {
+		if (invited) {
+			return t('Revoke_invitation');
+		}
+
+		if (room?.teamMain) {
+			return t('Remove_from_team');
+		}
+
+		return t('Remove_from_room');
+	}, [invited, room?.teamMain, t]);
+
+	const removeUserOption = useMemo(() => {
+		if (!roomCanRemove || !userCanRemove) {
+			return undefined;
+		}
+
+		return {
+			content,
+			icon: 'cross' as const,
+			onClick: removeUserOptionAction,
+			type: 'moderation' as const,
+			variant: 'danger' as const,
+		};
+	}, [roomCanRemove, userCanRemove, removeUserOptionAction, content]);
 
 	return removeUserOption;
 };

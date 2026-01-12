@@ -55,15 +55,17 @@ export const infoCardMultipleIcons: readonly UiKit.InfoCardBlock[] = [
 					{ type: 'plain_text', text: 'Framed icons' },
 					{ type: 'icon', icon: 'phone-off', variant: 'default', framed: true },
 					{ type: 'icon', icon: 'clock', variant: 'warning', framed: true },
+					{ type: 'icon', icon: 'phone-question-mark', variant: 'warning', framed: true },
 					{ type: 'icon', icon: 'phone-issue', variant: 'danger', framed: true },
 				],
 			},
 			{
-				background: 'default',
+				background: 'secondary',
 				elements: [
 					{ type: 'plain_text', text: 'Icons' },
 					{ type: 'icon', icon: 'phone-off', variant: 'default' },
 					{ type: 'icon', icon: 'clock', variant: 'warning' },
+					{ type: 'icon', icon: 'phone-question-mark', variant: 'warning' },
 					{ type: 'icon', icon: 'phone-issue', variant: 'danger' },
 					{ type: 'icon', icon: 'info', variant: 'secondary' },
 				],

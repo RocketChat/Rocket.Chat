@@ -1172,8 +1172,11 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.countDocuments(query);
 	}
 
-	countByUserId(userId: string): Promise<number> {
-		const query = { 'u._id': userId };
+	countByUserIdExceptType(userId: string, typeException: ISubscription['t']): Promise<number> {
+		const query: Filter<ISubscription> = {
+			'u._id': userId,
+			't': { $ne: typeException },
+		};
 
 		return this.countDocuments(query);
 	}
@@ -2109,5 +2112,20 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				},
 			},
 		);
+	}
+
+	setAbacLastTimeCheckedByUserIdAndRoomId(userId: string, roomId: string, time: Date): Promise<UpdateResult> {
+		const query = {
+			'rid': roomId,
+			'u._id': userId,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				abacLastTimeChecked: time,
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 }

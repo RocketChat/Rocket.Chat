@@ -15,14 +15,9 @@ jest.mock('../../../../app/utils/client', () => ({
 	getURL: (url: string) => url,
 }));
 
-jest.mock('./ParentRoomWithData', () => ({
+jest.mock('./ParentRoom', () => ({
 	__esModule: true,
-	default: jest.fn(() => <div>ParentRoomWithData</div>),
-}));
-
-jest.mock('./ParentTeam', () => ({
-	__esModule: true,
-	default: jest.fn(() => <div>ParentTeam</div>),
+	default: jest.fn(() => <div>ParentRoom</div>),
 }));
 
 jest.mock('./RoomToolbox', () => ({
@@ -58,17 +53,7 @@ describe('RoomHeader', () => {
 		});
 
 		it('should render custom toolbox content from roomToolbox prop', () => {
-			render(
-				<RoomHeader
-					room={mockedRoom}
-					slots={{
-						toolbox: {
-							content: <div>Custom Toolbox</div>,
-						},
-					}}
-				/>,
-				{ wrapper: appRoot },
-			);
+			render(<RoomHeader room={mockedRoom} slots={{ toolbox: { content: <div>Custom Toolbox</div> } }} />, { wrapper: appRoot });
 			expect(screen.getByText('Custom Toolbox')).toBeInTheDocument();
 		});
 

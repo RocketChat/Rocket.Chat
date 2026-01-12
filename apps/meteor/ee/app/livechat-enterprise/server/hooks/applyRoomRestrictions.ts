@@ -1,7 +1,7 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { restrictQuery } from '../lib/restrictQuery';
 
 callbacks.add(

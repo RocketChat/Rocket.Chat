@@ -83,11 +83,10 @@ ABAC.args = {
 	...Default.args,
 	room: {
 		...roomArgs,
-		// @ts-expect-error - abacAttributes is not yet implemented in Rooms properties
 		abacAttributes: [
-			{ name: 'Chat-sensitivity', values: ['Classified', 'Top-Secret'] },
-			{ name: 'Country', values: ['US-only'] },
-			{ name: 'Project', values: ['Ruminator-2000'] },
+			{ key: 'Chat-sensitivity', values: ['Classified', 'Top-Secret'] },
+			{ key: 'Country', values: ['US-only'] },
+			{ key: 'Project', values: ['Ruminator-2000'] },
 		],
 	},
 };

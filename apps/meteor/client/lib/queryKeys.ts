@@ -51,17 +51,6 @@ export const omnichannelQueryKeys = {
 	agentDepartments: (uid: ILivechatAgent['_id']) => [...omnichannelQueryKeys.agent(uid), 'departments'] as const,
 	managers: (query?: PaginatedRequest) =>
 		!query ? ([...omnichannelQueryKeys.all, 'managers'] as const) : ([...omnichannelQueryKeys.all, 'managers', query] as const),
-	extensions: (
-		params:
-			| {
-					userId: string;
-					type: 'free' | 'allocated' | 'available';
-			  }
-			| {
-					username: string;
-					type: 'free' | 'allocated' | 'available';
-			  },
-	) => [...omnichannelQueryKeys.all, 'extensions', params] as const,
 	livechat: {
 		appearance: () => [...omnichannelQueryKeys.all, 'livechat', 'appearance'] as const,
 		customFields: () => [...omnichannelQueryKeys.all, 'livechat', 'custom-fields'] as const,
@@ -114,15 +103,11 @@ export const miscQueryKeys = {
 	autotranslateSupportedLanguages: (targetLanguage: string) => ['autotranslate', 'supported-languages', targetLanguage] as const,
 };
 
-export const voipQueryKeys = {
-	all: ['voip'] as const,
-	room: (rid: IRoom['_id'], token: string) => [...voipQueryKeys.all, 'room', rid, token] as const,
-};
-
 export const usersQueryKeys = {
 	all: ['users'] as const,
 	userInfo: ({ uid, username }: { uid?: IUser['_id']; username?: IUser['username'] }) =>
 		[...usersQueryKeys.all, 'info', { uid, username }] as const,
+	userAutoComplete: (filter: string, federated: boolean) => [...usersQueryKeys.all, 'autocomplete', filter, federated] as const,
 };
 
 export const teamsQueryKeys = {
@@ -137,4 +122,28 @@ export const teamsQueryKeys = {
 export const appsQueryKeys = {
 	all: ['apps'] as const,
 	slashCommands: () => [...appsQueryKeys.all, 'slashCommands'] as const,
+};
+
+export const ABACQueryKeys = {
+	all: ['abac'] as const,
+	logs: {
+		all: () => [...ABACQueryKeys.all, 'logs'] as const,
+		list: (query?: PaginatedRequest) => [...ABACQueryKeys.logs.all(), 'list', query] as const,
+	},
+	roomAttributes: {
+		all: () => [...ABACQueryKeys.all, 'room-attributes'] as const,
+		list: (query?: PaginatedRequest) => [...ABACQueryKeys.roomAttributes.all(), query] as const,
+		attribute: (attributeId: string) => [...ABACQueryKeys.roomAttributes.all(), attributeId] as const,
+	},
+	rooms: {
+		all: () => [...ABACQueryKeys.all, 'rooms'] as const,
+		list: (query?: PaginatedRequest) => [...ABACQueryKeys.rooms.all(), query] as const,
+		autocomplete: (query?: PaginatedRequest) => [...ABACQueryKeys.rooms.all(), 'autocomplete', query] as const,
+		room: (roomId: string) => [...ABACQueryKeys.rooms.all(), roomId] as const,
+	},
+};
+
+export const callHistoryQueryKeys = {
+	all: ['call-history'] as const,
+	info: (callId?: string) => [...callHistoryQueryKeys.all, 'info', callId] as const,
 };

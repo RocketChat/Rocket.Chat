@@ -8,7 +8,7 @@ import {
 	UserStatus,
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
-import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK } from '@rocket.chat/federation-sdk';
+import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationRequestError } from '@rocket.chat/federation-sdk';
 import type { EventID, UserID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
@@ -291,13 +291,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 						continue;
 					}
 
-					if (!isUserNativeFederated(member)) {
-						continue;
-					}
-
 					try {
 						await federationSDK.inviteUserToRoom(
-							userIdSchema.parse(member.username),
+							isUserNativeFederated(member) ? userIdSchema.parse(member.username) : `@${member.username}:${this.serverName}`,
 							roomIdSchema.parse(matrixRoomResult.room_id),
 							userIdSchema.parse(actualMatrixUserId),
 						);
@@ -919,11 +915,18 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		if (action === 'accept') {
 			await federationSDK.acceptInvite(room.federation.mrid, matrixUserId);
-
-			await Room.performAcceptRoomInvite(room, subscription, user);
 		}
+
 		if (action === 'reject') {
-			await federationSDK.rejectInvite(room.federation.mrid, matrixUserId);
+			try {
+				await federationSDK.rejectInvite(room.federation.mrid, matrixUserId);
+			} catch (error) {
+				if (error instanceof FederationRequestError && error.response.status === 403) {
+					return Room.performUserRemoval(room, user);
+				}
+				this.logger.error(error, 'Failed to reject invite in Matrix');
+				throw error;
+			}
 		}
 	}
 }

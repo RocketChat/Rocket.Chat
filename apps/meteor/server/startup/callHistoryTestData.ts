@@ -3,15 +3,18 @@ import { CallHistory, MediaCalls } from '@rocket.chat/models';
 export async function addCallHistoryTestData(uid: string, extraUid: string): Promise<void> {
 	const callId1 = 'rocketchat.internal.call.test';
 	const callId2 = 'rocketchat.internal.call.test.2';
-	const callId3 = 'rocketchat.internal.call.test.3';
-	const callId4 = 'rocketchat.internal.call.test.4';
+	const callId3 = 'rocketchat.external.call.test.outbound';
+	const callId4 = 'rocketchat.external.call.test.inbound';
+
+	const extraCallId1 = 'rocketchat.extra.call.test.1';
+	const extraCallId2 = 'rocketchat.extra.call.test.2';
 
 	await CallHistory.deleteMany({ uid });
 	await MediaCalls.deleteMany({ _id: { $in: [callId1, callId2, callId3, callId4] } });
 
 	await CallHistory.insertMany([
 		{
-			_id: 'rocketchat.internal.history.test',
+			_id: 'rocketchat.internal.history.test.outbound',
 			ts: new Date(),
 			callId: callId1,
 			state: 'ended',
@@ -22,12 +25,14 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			uid,
 			contactId: extraUid,
 			direction: 'outbound',
+			contactName: 'Pineapple', // random words used for searching
+			contactUsername: 'fruit-001',
 		},
 		{
-			_id: 'rocketchat.internal.history.test.2',
+			_id: 'rocketchat.internal.history.test.inbound',
 			ts: new Date(),
 			callId: callId2,
-			state: 'ended',
+			state: 'not-answered',
 			type: 'media-call',
 			duration: 10,
 			endedAt: new Date(),
@@ -35,12 +40,44 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			uid,
 			contactId: extraUid,
 			direction: 'inbound',
+			contactName: 'Apple',
+			contactUsername: 'fruit-002',
 		},
 		{
-			_id: 'rocketchat.internal.history.test.3',
+			_id: 'rocketchat.internal.history.test.outbound.2',
+			ts: new Date(),
+			callId: extraCallId1,
+			state: 'transferred',
+			type: 'media-call',
+			duration: 10,
+			endedAt: new Date(),
+			external: false,
+			uid,
+			contactId: extraUid,
+			direction: 'outbound',
+			contactName: 'Grapefruit 002',
+			contactUsername: 'username-001',
+		},
+		{
+			_id: 'rocketchat.internal.history.test.inbound.2',
+			ts: new Date(),
+			callId: extraCallId2,
+			state: 'transferred',
+			type: 'media-call',
+			duration: 10,
+			endedAt: new Date(),
+			external: false,
+			uid,
+			contactId: extraUid,
+			direction: 'inbound',
+			contactName: 'Pasta 1',
+			contactUsername: 'meal',
+		},
+		{
+			_id: 'rocketchat.external.history.test.outbound',
 			ts: new Date(),
 			callId: callId3,
-			state: 'ended',
+			state: 'failed',
 			type: 'media-call',
 			duration: 10,
 			endedAt: new Date(),
@@ -50,7 +87,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			contactExtension: '1001',
 		},
 		{
-			_id: 'rocketchat.internal.history.test.4',
+			_id: 'rocketchat.external.history.test.inbound',
 			ts: new Date(),
 			callId: callId4,
 			state: 'ended',
@@ -60,7 +97,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			external: true,
 			uid,
 			direction: 'inbound',
-			contactExtension: '1001',
+			contactExtension: '1002',
 		},
 	]);
 

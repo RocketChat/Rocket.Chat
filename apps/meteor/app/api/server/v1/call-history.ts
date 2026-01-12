@@ -1,4 +1,4 @@
-import type { CallHistoryItem, IMediaCall } from '@rocket.chat/core-typings';
+import type { CallHistoryItem, CallHistoryItemState, IMediaCall } from '@rocket.chat/core-typings';
 import { CallHistory, MediaCalls } from '@rocket.chat/models';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import {
@@ -6,13 +6,20 @@ import {
 	validateNotFoundErrorResponse,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
-type CallHistoryList = PaginatedRequest<Record<never, never>>;
+type CallHistoryList = PaginatedRequest<{
+	filter?: string;
+	direction?: CallHistoryItem['direction'];
+	state?: CallHistoryItemState[] | CallHistoryItemState;
+}>;
 
 const CallHistoryListSchema = {
 	type: 'object',
@@ -25,6 +32,29 @@ const CallHistoryListSchema = {
 		},
 		sort: {
 			type: 'string',
+		},
+		filter: {
+			type: 'string',
+		},
+		direction: {
+			type: 'string',
+			enum: ['inbound', 'outbound'],
+		},
+		state: {
+			// our clients serialize arrays as `state=value1&state=value2`, but if there's a single value the parser doesn't know it is an array, so we need to support both arrays and direct values
+			// if a client tries to send a JSON array, our parser will treat it as a string and the type validation will reject it
+			// This means this param won't work from Swagger UI
+			oneOf: [
+				{
+					type: 'array',
+					items: {
+						$ref: '#/components/schemas/CallHistoryItemState',
+					},
+				},
+				{
+					$ref: '#/components/schemas/CallHistoryItemState',
+				},
+			],
 		},
 	},
 	required: [],
@@ -71,7 +101,8 @@ const callHistoryListEndpoints = API.v1.get(
 				required: ['count', 'offset', 'total', 'items', 'success'],
 			}),
 			400: validateBadRequestErrorResponse,
-			403: validateUnauthorizedErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 		query: isCallHistoryListProps,
 		authRequired: true,
@@ -80,11 +111,34 @@ const callHistoryListEndpoints = API.v1.get(
 		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
 		const { sort } = await this.parseJsonQuery();
 
-		const filter = {
+		const { direction, state, filter } = this.queryParams;
+
+		const filterText = typeof filter === 'string' && filter.trim();
+
+		const stateFilter = state && ensureArray(state);
+		const query = {
 			uid: this.userId,
+			...(direction && { direction }),
+			...(stateFilter?.length && { state: { $in: stateFilter } }),
+			...(filterText && {
+				$or: [
+					{
+						external: false,
+						contactName: { $regex: escapeRegExp(filterText), $options: 'i' },
+					},
+					{
+						external: false,
+						contactUsername: { $regex: escapeRegExp(filterText), $options: 'i' },
+					},
+					{
+						external: true,
+						contactExtension: { $regex: escapeRegExp(filterText), $options: 'i' },
+					},
+				],
+			}),
 		};
 
-		const { cursor, totalCount } = CallHistory.findPaginated(filter, {
+		const { cursor, totalCount } = CallHistory.findPaginated(query, {
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
@@ -102,7 +156,7 @@ const callHistoryListEndpoints = API.v1.get(
 
 type CallHistoryListEndpoints = ExtractRoutesFromAPI<typeof callHistoryListEndpoints>;
 
-type CallHistoryInfo = { historyId: string; callId: never } | { callId: string; historyId: never };
+type CallHistoryInfo = { historyId: string } | { callId: string };
 
 const CallHistoryInfoSchema = {
 	oneOf: [
@@ -162,20 +216,23 @@ const callHistoryInfoEndpoints = API.v1.get(
 				required: ['item', 'success'],
 			}),
 			400: validateBadRequestErrorResponse,
-			403: validateUnauthorizedErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			404: validateNotFoundErrorResponse,
 		},
 		query: isCallHistoryInfoProps,
 		authRequired: true,
 	},
 	async function action() {
-		if (!this.queryParams.historyId && !this.queryParams.callId) {
+		const { historyId, callId } = this.queryParams as Record<string, never> & typeof this.queryParams;
+
+		if (!historyId && !callId) {
 			return API.v1.failure();
 		}
 
-		const item = await (this.queryParams.historyId
-			? CallHistory.findOneByIdAndUid(this.queryParams.historyId, this.userId)
-			: CallHistory.findOneByCallIdAndUid(this.queryParams.callId, this.userId));
+		const item = await (historyId
+			? CallHistory.findOneByIdAndUid(historyId, this.userId)
+			: CallHistory.findOneByCallIdAndUid(callId, this.userId));
 
 		if (!item) {
 			return API.v1.notFound();

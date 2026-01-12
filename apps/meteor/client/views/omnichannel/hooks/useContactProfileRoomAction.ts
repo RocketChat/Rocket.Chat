@@ -7,7 +7,7 @@ export const useContactProfileRoomAction = () => {
 	return useMemo(
 		(): RoomToolboxActionConfig => ({
 			id: 'contact-profile',
-			groups: ['live' /* , 'voip'*/],
+			groups: ['live'],
 			title: 'Contact_Info',
 			icon: 'user',
 			tabComponent: ContactInfoRouter,

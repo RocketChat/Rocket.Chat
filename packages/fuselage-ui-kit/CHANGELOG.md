@@ -1,5 +1,52 @@
 # Change Log
 
+## 26.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.1
+  - @rocket.chat/gazzodown@26.0.0-rc.1
+  - @rocket.chat/ui-avatar@22.0.0-rc.1
+  - @rocket.chat/ui-contexts@26.0.0-rc.1
+  - @rocket.chat/ui-video-conf@26.0.0-rc.1
+  </details>
+
+## 26.0.0-rc.0
+
+### Minor Changes
+
+- ([#37726](https://github.com/RocketChat/Rocket.Chat/pull/37726)) Introduces a new variation of the `Icon` element to `ui-kit` through the new `framed` optional property.
+
+### Patch Changes
+
+- ([#37768](https://github.com/RocketChat/Rocket.Chat/pull/37768)) Fixes an issue with the `action` block inside `Info Card` ui-kit element not dispatching actions.
+
+- <details><summary>Updated dependencies [0ccb9692b434bc88b4bc5009d39e024c03f01b86, 176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 0c0258604632342f42fc36cabac2d6cfe0e477c4, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 70872896b912004dc016297b6e875d873d81dc3a, ddc935727e9a7275813006d9dcaa7fe866610844, d3538e7045c41f91b8c561d44e5485ff93b93745, 73d9eb2783176954f42aa2cbeda8abf1d49ac260]:</summary>
+
+  - @rocket.chat/apps-engine@1.59.0-rc.0
+  - @rocket.chat/core-typings@8.0.0-rc.0
+  - @rocket.chat/ui-contexts@26.0.0-rc.0
+  - @rocket.chat/gazzodown@26.0.0-rc.0
+  - @rocket.chat/ui-kit@0.39.0-rc.0
+  - @rocket.chat/ui-avatar@22.0.0-rc.0
+  - @rocket.chat/ui-video-conf@26.0.0-rc.0
+  </details>
+
+## 25.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.2
+  - @rocket.chat/gazzodown@25.0.2
+  - @rocket.chat/ui-avatar@21.0.2
+  - @rocket.chat/ui-contexts@25.0.2
+  - @rocket.chat/ui-video-conf@25.0.2
+  </details>
+
 ## 25.0.1
 
 ### Patch Changes

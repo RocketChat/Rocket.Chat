@@ -8,7 +8,6 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { addOAuthApp } from '../../../oauth2-server-config/server/admin/functions/addOAuthApp';
 import { deleteOAuthApp } from '../../../oauth2-server-config/server/admin/methods/deleteOAuthApp';
 import { updateOAuthApp } from '../../../oauth2-server-config/server/admin/methods/updateOAuthApp';
@@ -88,7 +87,7 @@ const UpdateOAuthAppParamsSchema = {
 
 const isUpdateOAuthAppParams = ajv.compile<UpdateOAuthAppParams>(UpdateOAuthAppParamsSchema);
 
-type OauthAppsGetParams = { clientId: string } | { appId: string } | { _id: string };
+type OauthAppsGetParams = { clientId: string } | { _id: string };
 
 const oauthAppsGetParamsSchema = {
 	oneOf: [
@@ -110,16 +109,6 @@ const oauthAppsGetParamsSchema = {
 				},
 			},
 			required: ['clientId'],
-			additionalProperties: false,
-		},
-		{
-			type: 'object',
-			properties: {
-				appId: {
-					type: 'string',
-				},
-			},
-			required: ['appId'],
 			additionalProperties: false,
 		},
 	],
@@ -290,10 +279,6 @@ const oauthAppsEndpoints = API.v1
 
 			if (!oauthApp) {
 				return API.v1.failure('OAuth app not found.');
-			}
-
-			if ('appId' in this.queryParams) {
-				apiDeprecationLogger.parameter(this.route, 'appId', '7.0.0', this.response);
 			}
 
 			return API.v1.success({
