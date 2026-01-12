@@ -231,7 +231,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rc1AdminRequestConfig,
 					});
 
-					expect(response.body).toHaveProperty('success', true);
+					expect(response.body).toHaveProperty('success', false);
 					expect(response.body).toHaveProperty('message');
 
 					// Parse the error message from the DDP response

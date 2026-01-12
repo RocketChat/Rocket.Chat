@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/abac",
-	"version": "0.1.0-rc.1",
+	"version": "0.1.0",
 	"private": true,
 	"description": "Rocket.Chat - Attribute Based Access Control (ABAC) support utilities",
 	"main": "./dist/index.js",
@@ -9,7 +9,7 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsc --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx src",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx src --fix",

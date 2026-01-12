@@ -14,7 +14,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 	joinChannel = true,
 	errorOnEmpty = true,
 }: {
-	user: Pick<IUser, '_id' | 'username'>;
+	user: Pick<IUser, '_id' | 'username' | 'federated' | 'federation'>;
 	nameOrId: string;
 	type?: RoomType;
 	tryDirectByUserIdOnly?: boolean;
