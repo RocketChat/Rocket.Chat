@@ -1,6 +1,8 @@
 import 'reflect-metadata';
 
-export { FederationMatrix, validateFederatedUsername } from './FederationMatrix';
+export { validateFederatedUsername } from './helpers/validateFederatedUsername';
+
+export { FederationMatrix } from './FederationMatrix';
 
 export { generateEd25519RandomSecretKey } from '@rocket.chat/federation-sdk';
 
