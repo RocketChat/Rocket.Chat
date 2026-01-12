@@ -1,6 +1,6 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
 import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
-import { Users, Subscriptions } from '@rocket.chat/models';
+import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -18,6 +18,7 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
+	ajv,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -69,6 +70,7 @@ import { deleteUserOwnAccount } from '../../../lib/server/methods/deleteUserOwnA
 import { settings } from '../../../settings/server';
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
@@ -326,7 +328,7 @@ API.v1.addRoute(
 				validateCustomFields(this.bodyParams.customFields);
 			}
 
-			if (this.bodyParams.freeSwitchExtension && !(await canEditExtension(this.userId, this.bodyParams.freeSwitchExtension))) {
+			if (this.bodyParams.freeSwitchExtension && !(await canEditExtension(this.bodyParams.freeSwitchExtension))) {
 				return API.v1.failure('Setting user voice call extension is not allowed', 'error-action-not-allowed');
 			}
 
@@ -616,7 +618,7 @@ API.v1.addRoute(
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
-			const { status, hasLoggedIn, type, roles, searchTerm } = this.queryParams;
+			const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
 
 			return API.v1.success(
 				await findPaginatedUsersByStatus({
@@ -629,6 +631,7 @@ API.v1.addRoute(
 					searchTerm,
 					hasLoggedIn,
 					type,
+					inactiveReason,
 				}),
 			);
 		},
@@ -760,17 +763,70 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const usersEndpoints = API.v1.post(
 	'users.createToken',
-	{ authRequired: true, deprecationVersion: '8.0.0' },
 	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			const data = await generateAccessToken(this.userId, user._id);
-
-			return data ? API.v1.success({ data }) : API.v1.forbidden();
+		authRequired: true,
+		body: ajv.compile<{ userId: string; secret: string }>({
+			type: 'object',
+			properties: {
+				userId: {
+					type: 'string',
+					minLength: 1,
+				},
+				secret: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['userId', 'secret'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<{ data: { userId: string; authToken: string } }>({
+				type: 'object',
+				properties: {
+					data: {
+						type: 'object',
+						properties: {
+							userId: {
+								type: 'string',
+								minLength: 1,
+							},
+							authToken: {
+								type: 'string',
+								minLength: 1,
+							},
+						},
+						required: ['userId'],
+						additionalProperties: false,
+					},
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['data', 'success'],
+				additionalProperties: false,
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [false] },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.bodyParams);
+
+		const data = await generateAccessToken(user._id, this.bodyParams.secret);
+
+		return API.v1.success({ data });
 	},
 );
 
@@ -1282,6 +1338,8 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 			}
 
+			await Sessions.logoutAllByUserId(userId, this.userId);
+
 			void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [] } });
 
 			return API.v1.success({
@@ -1355,18 +1413,17 @@ API.v1.addRoute(
 			}
 
 			const { _id, username, roles, name } = user;
-			let { statusText } = user;
-
-			// TODO refactor to not update the user twice (one inside of `setStatusText` and then later just the status + statusDefault)
+			let { statusText, status } = user;
 
 			if (this.bodyParams.message || this.bodyParams.message === '') {
-				await setStatusText(user._id, this.bodyParams.message);
+				await setStatusText(user._id, this.bodyParams.message, { emit: false });
 				statusText = this.bodyParams.message;
 			}
+
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
-					const { status } = this.bodyParams;
+					status = this.bodyParams.status;
 
 					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
 						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
@@ -1384,11 +1441,6 @@ API.v1.addRoute(
 						},
 					);
 
-					void api.broadcast('presence.status', {
-						user: { status, _id, username, statusText, roles, name },
-						previousStatus: user.status,
-					});
-
 					void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
@@ -1396,6 +1448,11 @@ API.v1.addRoute(
 					});
 				}
 			}
+
+			void api.broadcast('presence.status', {
+				user: { status, _id, username, statusText, roles, name },
+				previousStatus: user.status,
+			});
 
 			return API.v1.success();
 		},
@@ -1439,3 +1496,10 @@ settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 
 	API.v1.updateRateLimiterDictionaryForRoute(userRegisterRoute, value);
 });
+
+type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends UsersEndpoints {}
+}

@@ -1,5 +1,3 @@
-import { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { federationSDK, init } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 
@@ -101,15 +99,12 @@ export function configureFederationMatrixSettings(settings: {
 }
 
 export async function setupFederationMatrix() {
-	const eventHandler = new Emitter<HomeserverEventSignatures>();
-
 	await init({
-		emitter: eventHandler,
 		dbConfig: {
 			uri: process.env.MONGO_URL || 'mongodb://localhost:3001/meteor',
 			poolSize: Number.parseInt(process.env.DATABASE_POOL_SIZE || '10', 10),
 		},
 	});
 
-	registerEvents(eventHandler);
+	registerEvents();
 }

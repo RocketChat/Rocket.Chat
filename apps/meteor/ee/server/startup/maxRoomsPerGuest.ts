@@ -1,7 +1,7 @@
 import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../lib/callbacks';
+import { callbacks } from '../../../server/lib/callbacks';
 import { i18n } from '../../../server/lib/i18n';
 
 callbacks.add(

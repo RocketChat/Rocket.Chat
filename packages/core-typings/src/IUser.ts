@@ -1,3 +1,4 @@
+import type { IAbacAttributeDefinition } from './IAbacAttribute';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
 import type { Serialized } from './Serialized';
@@ -217,7 +218,6 @@ export interface IUser extends IRocketChatRecord {
 	settings?: IUserSettings;
 	defaultRoom?: string;
 	ldap?: boolean;
-	extension?: string;
 	freeSwitchExtension?: string;
 	inviteToken?: string;
 	canViewAllInfo?: boolean;
@@ -252,6 +252,9 @@ export interface IUser extends IRocketChatRecord {
 	roomRolePriorities?: Record<string, number>;
 	isOAuthUser?: boolean; // client only field
 	__rooms?: string[];
+	inactiveReason?: 'deactivated' | 'pending_approval' | 'idle_too_long';
+
+	abacAttributes?: IAbacAttributeDefinition[];
 }
 
 export interface IRegisterUser extends IUser {

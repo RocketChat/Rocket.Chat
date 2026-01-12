@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
-import { AdminRooms, AdminSectionsHref } from './page-objects';
+import { AdminInfo, AdminRooms, AdminSectionsHref } from './page-objects';
 import { createTargetChannel, createTargetPrivateChannel } from './utils';
 import { expect, test } from './utils/test';
 
@@ -11,6 +11,7 @@ test.describe.serial('admin-rooms', () => {
 	let channel: string;
 	let privateRoom: string;
 	let adminRooms: AdminRooms;
+	let adminInfo: AdminInfo;
 
 	test.beforeEach(async ({ page }) => {
 		adminRooms = new AdminRooms(page);
@@ -71,14 +72,17 @@ test.describe.serial('admin-rooms', () => {
 	});
 
 	test('should filter rooms by type and name and clean the filter after changing section', async ({ page }) => {
+		adminInfo = new AdminInfo(page);
+
 		await adminRooms.inputSearchRooms.fill(privateRoom);
-		const dropdown = await adminRooms.dropdownFilterRoomType();
+		const dropdown = adminRooms.dropdownFilterRoomType();
 		await dropdown.click();
 
 		await page.locator('text=Private channels').click();
 
 		const workspaceButton = await adminRooms.adminSectionButton(AdminSectionsHref.Workspace);
 		await workspaceButton.click();
+		await expect(adminInfo.adminPageContent).toBeVisible();
 
 		const roomsButton = await adminRooms.adminSectionButton(AdminSectionsHref.Rooms);
 		await roomsButton.click();

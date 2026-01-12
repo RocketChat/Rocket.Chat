@@ -22,7 +22,7 @@ import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
 import { logger } from '../../logger';
 import { mediaCallDirector } from '../../server/CallDirector';
 import { getMediaCallServer } from '../../server/injection';
-import { stripSensitiveDataFromSignal, stripSensitiveDataFromSdp } from '../../server/stripSensitiveData';
+import { stripSensitiveDataFromSignal } from '../../server/stripSensitiveData';
 
 export class UserActorSignalProcessor {
 	public get contractId(): string {
@@ -69,7 +69,7 @@ export class UserActorSignalProcessor {
 	}
 
 	public async requestWebRTCOffer(params: { negotiationId: string }): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.requestWebRTCOffer', actor: this.actor });
+		logger.debug({ msg: 'UserActorSignalProcessor.requestWebRTCOffer', params });
 
 		await this.sendSignal({
 			callId: this.callId,
@@ -80,7 +80,14 @@ export class UserActorSignalProcessor {
 	}
 
 	public async processSignal(signal: ClientMediaSignal): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.processSignal', signal: stripSensitiveDataFromSignal(signal) });
+		if (signal.type !== 'local-state') {
+			logger.debug({
+				msg: 'UserActorSignalProcessor.processSignal',
+				signal: stripSensitiveDataFromSignal(signal),
+				role: this.role,
+				signed: this.signed,
+			});
+		}
 
 		// The code will only reach this point if one of the following conditions are true:
 		// 1. the signal came from the exact user session where the caller initiated the call
@@ -112,8 +119,6 @@ export class UserActorSignalProcessor {
 	}
 
 	protected async saveLocalDescription(sdp: RTCSessionDescriptionInit, negotiationId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.saveLocalDescription', sdp: stripSensitiveDataFromSdp(sdp), signed: this.signed });
-
 		if (!this.signed) {
 			return;
 		}
@@ -122,8 +127,6 @@ export class UserActorSignalProcessor {
 	}
 
 	private async processAnswer(answer: CallAnswer): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.processAnswer', answer });
-
 		switch (answer) {
 			case 'ack':
 				return this.clientIsReachable();
@@ -267,8 +270,6 @@ export class UserActorSignalProcessor {
 	}
 
 	protected async clientIsReachable(): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.clientIsReachable', role: this.role, uid: this.actorId });
-
 		if (this.role === 'callee' && this.call.state === 'none') {
 			// Change the call state from 'none' to 'ringing' when any callee session is found
 			const ringUpdateResult = await MediaCalls.startRingingById(this.callId, mediaCallDirector.getNewExpirationTime());
@@ -288,7 +289,6 @@ export class UserActorSignalProcessor {
 	}
 
 	protected async clientHasRejected(): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.clientHasRejected', role: this.role, uid: this.actorId });
 		if (!this.isCallPending()) {
 			return;
 		}
@@ -299,7 +299,6 @@ export class UserActorSignalProcessor {
 	}
 
 	protected async clientIsUnavailable(): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.clientIsUnavailable', role: this.role, uid: this.actorId });
 		// Ignore 'unavailable' responses from unsigned clients as some other client session may have a different answer
 		if (!this.signed) {
 			return;
@@ -309,7 +308,6 @@ export class UserActorSignalProcessor {
 	}
 
 	protected async clientHasAccepted(): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.clientHasAccepted', role: this.role, uid: this.actorId });
 		if (!this.isCallPending()) {
 			return;
 		}
@@ -322,6 +320,7 @@ export class UserActorSignalProcessor {
 	protected async clientIsActive(): Promise<void> {
 		const result = await MediaCallChannels.setActiveById(this.channel._id);
 		if (result.modifiedCount) {
+			logger.info({ msg: 'Call Channel was flagged as active', callId: this.callId, role: this.role });
 			await mediaCallDirector.activate(this.call, this.agent);
 		}
 	}
@@ -345,7 +344,13 @@ export class UserActorSignalProcessor {
 
 		if (signal.clientState === 'active') {
 			if (signal.negotiationId) {
-				void MediaCallNegotiations.setStableById(signal.negotiationId).catch(() => null);
+				void MediaCallNegotiations.setStableById(signal.negotiationId)
+					.then((result) => {
+						if (result.modifiedCount) {
+							logger.info({ msg: 'Negotiation is stable', callId: signal.callId, role: this.role });
+						}
+					})
+					.catch(() => null);
 			}
 
 			if (this.channel.state === 'active' || this.channel.activeAt) {

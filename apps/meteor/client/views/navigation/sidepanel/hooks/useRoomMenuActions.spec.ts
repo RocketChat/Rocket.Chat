@@ -1,12 +1,10 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 
 import { useRoomMenuActions } from './useRoomMenuActions';
-import { createFakeRoom, createFakeSubscription } from '../../../../../tests/mocks/data';
+import { createFakeSubscription } from '../../../../../tests/mocks/data';
 
-const mockRoom = createFakeRoom({ _id: 'room1', t: 'c', name: 'room1', fname: 'Room 1' });
-const mockSubscription = createFakeSubscription({ name: 'room1', t: 'c', disableNotifications: false, rid: 'room1' });
+const mockSubscription = createFakeSubscription({ name: 'room1', fname: 'Room 1', t: 'c', disableNotifications: false, rid: 'room1' });
 
 jest.mock('../../../../../client/lib/rooms/roomCoordinator', () => ({
 	roomCoordinator: {
@@ -42,7 +40,7 @@ describe('useRoomMenuActions', () => {
 	it('should return all menu options for normal rooms', () => {
 		const { result } = renderHook(() => useRoomMenuActions(mockHookProps), {
 			wrapper: mockAppRoot()
-				.withSubscriptions([{ ...mockSubscription, rid: 'room1' }] as unknown as SubscriptionWithRoom[])
+				.withSubscription({ ...mockSubscription, rid: 'room1' })
 				.withPermission('leave-c')
 				.withPermission('leave-p')
 				.withSetting('Favorite_Rooms', true)
@@ -59,7 +57,7 @@ describe('useRoomMenuActions', () => {
 	it('should return priorities section for omnichannel room', () => {
 		const { result } = renderHook(() => useRoomMenuActions({ ...mockHookProps, type: 'l' }), {
 			wrapper: mockAppRoot()
-				.withSubscriptions([{ ...mockSubscription, ...mockRoom, t: 'l' }] as unknown as SubscriptionWithRoom[])
+				.withSubscription({ ...mockSubscription, t: 'l' })
 				.withPermission('leave-c')
 				.withPermission('leave-p')
 				.withSetting('Favorite_Rooms', true)
@@ -76,7 +74,7 @@ describe('useRoomMenuActions', () => {
 	it('should not return any menu option if hideDefaultOptions', () => {
 		const { result } = renderHook(() => useRoomMenuActions({ ...mockHookProps, hideDefaultOptions: true }), {
 			wrapper: mockAppRoot()
-				.withSubscriptions([{ ...mockSubscription, ...mockRoom }] as unknown as SubscriptionWithRoom[])
+				.withSubscription(mockSubscription)
 				.withPermission('leave-c')
 				.withPermission('leave-p')
 				.withSetting('Favorite_Rooms', true)
@@ -89,7 +87,7 @@ describe('useRoomMenuActions', () => {
 	it('should not return favorite room option if setting is disabled', () => {
 		const { result } = renderHook(() => useRoomMenuActions(mockHookProps), {
 			wrapper: mockAppRoot()
-				.withSubscriptions([{ ...mockSubscription, ...mockRoom }] as unknown as SubscriptionWithRoom[])
+				.withSubscription(mockSubscription)
 				.withPermission('leave-c')
 				.withPermission('leave-p')
 				.withSetting('Favorite_Rooms', false)

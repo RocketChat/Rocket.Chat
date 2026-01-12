@@ -9,7 +9,6 @@ import {
 	useEndpoint,
 	useTranslation,
 	useRouter,
-	useUserSubscription,
 } from '@rocket.chat/ui-contexts';
 import { useCallback, useState, useEffect } from 'react';
 
@@ -47,7 +46,6 @@ export const useQuickActions = (): {
 	const visitorRoomId = room.v._id;
 	const rid = room._id;
 	const uid = useUserId();
-	const subscription = useUserSubscription(rid);
 	const roomLastMessage = room.lastMessage;
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
@@ -310,7 +308,7 @@ export const useQuickActions = (): {
 	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 	const canForwardGuest = usePermission('transfer-livechat-guest');
 	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
 	const canCloseRoom = usePermission('close-livechat-room');
 	const canCloseOthersRoom = usePermission('close-others-livechat-room');
@@ -333,7 +331,7 @@ export const useQuickActions = (): {
 			case QuickActionsEnum.TranscriptPDF:
 				return hasLicense && !isRoomOverMacLimit && canSendTranscriptPDF;
 			case QuickActionsEnum.CloseChat:
-				return (subscription && (canCloseRoom || canCloseOthersRoom)) || (!!roomOpen && canCloseOthersRoom);
+				return !!roomOpen && (canCloseRoom || canCloseOthersRoom);
 			case QuickActionsEnum.OnHoldChat:
 				return !!roomOpen && canPlaceChatOnHold;
 			default:

@@ -66,7 +66,7 @@ const AutoCompleteDepartmentMultiple = ({
 			flexShrink={0}
 			flexGrow={0}
 			placeholder={t('Select_an_option')}
-			renderItem={({ label, value, ref: _ref, ...props }) => {
+			renderItem={({ label, value, ...props }) => {
 				if (withCheckbox) {
 					return (
 						<CheckOption

@@ -13,14 +13,9 @@ import {
 	StatesAction,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { UserAutoComplete, GenericModal } from '@rocket.chat/ui-client';
-import { useTranslation, useToastMessageDispatch, useMethod, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery, hashKey, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
-
-import FilterByText from '../../../components/FilterByText';
-import GenericNoResults from '../../../components/GenericNoResults';
 import {
+	UserAutoComplete,
+	GenericModal,
 	GenericTable,
 	GenericTableBody,
 	GenericTableCell,
@@ -28,9 +23,15 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-} from '../../../components/GenericTable';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../components/GenericTable/hooks/useSort';
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
+import { useTranslation, useToastMessageDispatch, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
+import { useMutation, useQuery, hashKey, useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
+
+import FilterByText from '../../../components/FilterByText';
+import GenericNoResults from '../../../components/GenericNoResults';
 import { links } from '../../../lib/links';
 
 const MonitorsTable = () => {
@@ -47,9 +48,8 @@ const MonitorsTable = () => {
 
 	const getMonitors = useEndpoint('GET', '/v1/livechat/monitors');
 
-	// TODO: implement endpoints for monitors add/remove
-	const removeMonitor = useMethod('livechat:removeMonitor');
-	const addMonitor = useMethod('livechat:addMonitor');
+	const deleteMonitor = useEndpoint('POST', '/v1/livechat/monitors.delete');
+	const addMonitor = useEndpoint('POST', '/v1/livechat/monitors.create');
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = pagination;
 	const { sortBy, sortDirection, setSort } = sort;
@@ -79,7 +79,7 @@ const MonitorsTable = () => {
 
 	const addMutation = useMutation({
 		mutationFn: async (username: string) => {
-			await addMonitor(username);
+			await addMonitor({ username });
 
 			await queryClient.invalidateQueries({ queryKey: ['omnichannel', 'monitors'] });
 		},
@@ -99,7 +99,7 @@ const MonitorsTable = () => {
 	const handleRemove = (username: string) => {
 		const onDeleteMonitor = async () => {
 			try {
-				await removeMonitor(username);
+				await deleteMonitor({ username });
 				dispatchToastMessage({ type: 'success', message: t('Monitor_removed') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

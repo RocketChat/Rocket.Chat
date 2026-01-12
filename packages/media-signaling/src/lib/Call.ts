@@ -34,6 +34,7 @@ export interface IClientMediaCallConfig {
 	sessionId: string;
 
 	iceGatheringTimeout: number;
+	iceServers: RTCIceServer[];
 }
 
 const TIMEOUT_TO_ACCEPT = 30000;
@@ -141,6 +142,14 @@ export class ClientMediaCall implements IClientMediaCall {
 	/** indicates the call is past the "dialing" stage and not yet over */
 	public get busy(): boolean {
 		return !this.isPendingAcceptance() && !this.isOver();
+	}
+
+	public get confirmed(): boolean {
+		return this.hasRemoteData;
+	}
+
+	public get tempCallId(): string {
+		return this.localCallId;
 	}
 
 	protected webrtcProcessor: IWebRTCProcessor | null = null;
@@ -296,16 +305,21 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._flags = signal.flags || [];
 
 		this._transferredBy = signal.transferredBy || null;
-		this.changeContact(signal.contact);
 
 		if (this._role === 'caller' && !this.acceptedLocally) {
 			if (oldCall) {
 				this.acceptedLocally = true;
+			} else if (signal.self?.contractId && signal.self.contractId !== this.config.sessionId) {
+				// Call from another session, must be flagged as ignored before any event is triggered
+				this.config.logger?.log('Ignoring Outbound Call from a different session');
+				this.contractState = 'ignored';
 			} else if (AUTO_IGNORE_UNKNOWN_OUTBOUND_CALLS) {
 				this.config.logger?.log('Ignoring Unknown Outbound Call');
 				this.ignore();
 			}
 		}
+
+		this.changeContact(signal.contact);
 
 		// If the call is already flagged as over before the initialization, do not process anything other than filling in the basic information
 		if (this.isOver()) {
@@ -335,9 +349,8 @@ export class ClientMediaCall implements IClientMediaCall {
 		// Send an ACK so the server knows that this session exists and is reachable
 		this.acknowledge();
 
-		if (this._role === 'callee' || !this.acceptedLocally) {
-			this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
-		}
+		// Adds a secondary timeout for all sessions of the call; Won't matter if the original caller session is still active, but is needed for transferred calls.
+		this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
 
 		// If the call was requested by this specific session, assume we're signed already.
 		if (
@@ -352,6 +365,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (!wasInitialized) {
 			this.emitter.emit('initialized');
 		}
+		this.emitter.emit('confirmed');
 
 		await this.processEarlySignals();
 	}
@@ -1158,7 +1172,13 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.throwError('webrtc-not-implemented');
 		}
 
-		this.webrtcProcessor = webrtcFactory({ logger, iceGatheringTimeout, call: this, inputTrack: this.inputTrack });
+		this.webrtcProcessor = webrtcFactory({
+			logger,
+			iceGatheringTimeout,
+			call: this,
+			inputTrack: this.inputTrack,
+			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
+		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
 
 		this.negotiationManager.emitter.on('local-sdp', ({ sdp, negotiationId }) => this.deliverSdp({ sdp, negotiationId }));
@@ -1178,5 +1198,5 @@ export class ClientMediaCall implements IClientMediaCall {
 }
 
 export abstract class ClientMediaCallWebRTC extends ClientMediaCall {
-	public abstract webrtcProcessor: IWebRTCProcessor;
+	public abstract override webrtcProcessor: IWebRTCProcessor;
 }

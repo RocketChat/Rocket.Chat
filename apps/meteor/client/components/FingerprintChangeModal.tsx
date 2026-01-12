@@ -21,8 +21,8 @@ const FingerprintChangeModal = ({ onConfirm, onCancel, onClose }: FingerprintCha
 			onConfirm={onConfirm}
 			onClose={onClose}
 			onCancel={onCancel}
-			confirmText={t('New_workspace')}
-			cancelText={t('Configuration_update')}
+			confirmText={t('Configuration_update')}
+			cancelText={t('New_workspace')}
 		>
 			<Box
 				is='p'

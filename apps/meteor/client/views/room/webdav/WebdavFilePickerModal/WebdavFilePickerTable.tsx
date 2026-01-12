@@ -1,12 +1,5 @@
 import type { IWebdavNode } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import type { WebdavSortOptions } from './WebdavFilePickerModal';
-import { getNodeFileSize } from './lib/getNodeFileSize';
-import { getNodeIconType } from './lib/getNodeIconType';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -15,7 +8,14 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingRow,
 	GenericTableRow,
-} from '../../../../components/GenericTable';
+} from '@rocket.chat/ui-client';
+import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import type { WebdavSortOptions } from './WebdavFilePickerModal';
+import { getNodeFileSize } from './lib/getNodeFileSize';
+import { getNodeIconType } from './lib/getNodeIconType';
+import GenericNoResults from '../../../../components/GenericNoResults';
 import { timeAgo } from '../../../../lib/utils/timeAgo';
 
 type WebdavFilePickerTableProps = {

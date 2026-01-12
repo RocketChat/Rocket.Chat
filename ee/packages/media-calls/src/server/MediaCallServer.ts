@@ -5,6 +5,7 @@ import type { CallRejectedReason, ClientMediaSignal, ClientMediaSignalBody, Serv
 
 import { mediaCallDirector } from './CallDirector';
 import { getDefaultSettings } from './getDefaultSettings';
+import { stripSensitiveDataFromSignal } from './stripSensitiveData';
 import type { IMediaCallServer, IMediaCallServerSettings, MediaCallServerEvents } from '../definition/IMediaCallServer';
 import { CallRejectedError, type GetActorContactOptions, type InternalCallParams } from '../definition/common';
 import { InternalCallProvider } from '../internal/InternalCallProvider';
@@ -41,20 +42,18 @@ export class MediaCallServer implements IMediaCallServer {
 	}
 
 	public receiveSignal(fromUid: IUser['_id'], signal: ClientMediaSignal): void {
-		logger.debug({ msg: 'MediaCallServer.receiveSignal', type: signal.type, fromUid });
-
 		if (!isClientMediaSignal(signal)) {
 			logger.error({ msg: 'The Media Signal Server received an invalid client signal object' });
 			throw new Error('invalid-signal');
 		}
 
-		this.signalProcessor.processSignal(fromUid, signal).catch((error) => {
-			logger.error({ msg: 'Failed to process client signal', error, type: signal.type });
+		this.signalProcessor.processSignal(fromUid, signal).catch((err) => {
+			logger.error({ msg: 'Failed to process client signal', err, type: signal.type });
 		});
 	}
 
 	public sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void {
-		logger.debug({ msg: 'MediaCallServer.sendSignal', toUid, type: signal.type });
+		logger.debug({ msg: 'MediaCallServer.sendSignal', toUid, signal: stripSensitiveDataFromSignal(signal) });
 
 		this.emitter.emit('signalRequest', { toUid, signal });
 	}
@@ -81,7 +80,7 @@ export class MediaCallServer implements IMediaCallServer {
 			if (error && typeof error === 'object' && error instanceof CallRejectedError) {
 				rejectionReason = error.callRejectedReason;
 			} else {
-				logger.error({ msg: 'Failed to create a requested call', params, error });
+				logger.error({ msg: 'Failed to create a requested call', params, err: error });
 			}
 
 			const originalId = params.requestedCallId || params.parentCallId;
@@ -143,8 +142,6 @@ export class MediaCallServer implements IMediaCallServer {
 	 * Blocked permissions do not affect the routing rules, meaning a call may be blocked even if it would have been allowed through a different route.
 	 * */
 	private async parseCallContacts(params: InternalCallParams): Promise<InternalCallParams> {
-		logger.debug({ msg: 'MediaCallServer.parseCallContacts', params });
-
 		// On call transfers, do not mutate the caller
 		// On new calls, force the caller type to be 'user' (since the call is being created in rocket.chat first)
 		const isTransfer = Boolean(params.parentCallId);
@@ -155,7 +152,7 @@ export class MediaCallServer implements IMediaCallServer {
 		// Internal and outgoing calls must have been requested by an internal user;
 		// Incoming calls should not be passing through this function.
 		if (requester.type !== 'user') {
-			logger.debug('Invalid call requester');
+			logger.warn('Invalid call requester');
 			throw new CallRejectedError('invalid-call-params');
 		}
 		// If this user can't make any call at all, fail early to avoid leaking if the callee is valid.
@@ -240,8 +237,9 @@ export class MediaCallServer implements IMediaCallServer {
 				return {
 					preferredType: 'sip',
 				};
-		}
 
-		return {};
+			default:
+				return {};
+		}
 	}
 }

@@ -5,16 +5,17 @@ import { useTranslation } from 'react-i18next';
 import SidebarTogglerBadge from './SidebarTogglerBadge';
 
 type SideBarTogglerButtonProps = {
+	pressed?: boolean;
 	badge?: ReactNode;
 	onClick: () => void;
 };
 
-const SideBarTogglerButton = ({ badge, onClick }: SideBarTogglerButtonProps) => {
+const SideBarTogglerButton = ({ pressed, badge, onClick }: SideBarTogglerButtonProps) => {
 	const { t } = useTranslation();
 
 	return (
 		<Box position='relative'>
-			<IconButton icon='burger-menu' small aria-label={t('Open_sidebar')} marginInlineEnd={8} onClick={onClick} />
+			<IconButton title={!pressed ? t('Open_sidebar') : t('Close_sidebar')} icon='burger-menu' pressed={pressed} small onClick={onClick} />
 			{badge && <SidebarTogglerBadge>{badge}</SidebarTogglerBadge>}
 		</Box>
 	);

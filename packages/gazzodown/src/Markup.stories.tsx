@@ -1,7 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, MessageBody, MessageContainer } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { Options, parse } from '@rocket.chat/message-parser';
+import type { Options } from '@rocket.chat/message-parser';
+import { parse } from '@rocket.chat/message-parser';
 import type { Meta, StoryFn } from '@storybook/react';
 import outdent from 'outdent';
 import { Suspense } from 'react';
@@ -15,7 +16,7 @@ export default {
 	decorators: [
 		(Story) => (
 			<Suspense fallback={null}>
-				<MarkupInteractionContext.Provider value={{ enableTimestamp: true }}>
+				<MarkupInteractionContext.Provider value={{}}>
 					<MessageContainer>
 						<MessageBody>
 							<Box

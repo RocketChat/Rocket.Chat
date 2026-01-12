@@ -9,8 +9,8 @@ import type { Filter } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { updateCounter } from '../../../../app/statistics/server';
-import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 
 const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };
@@ -37,7 +37,8 @@ const getRoomInfoByAuditParams = async ({
 	userId: string;
 }) => {
 	if (rid) {
-		return getValue(await Rooms.findOne({ _id: rid }));
+		// When ABAC is enabled, only rooms without ABAC attributes are considered for auditing by room ID.
+		return getValue(await Rooms.findOne({ _id: rid, abacAttributes: { $exists: false } }));
 	}
 
 	if (type === 'd') {
@@ -162,10 +163,16 @@ Meteor.methods<ServerMethods>({
 		if (type === 'u') {
 			const usersId = await getUsersIdFromUserName(usernames);
 			query['u._id'] = { $in: usersId };
+
+			const abacRooms = await Rooms.findAllPrivateRoomsWithAbacAttributes({ projection: { _id: 1 } })
+				.map((doc) => doc._id)
+				.toArray();
+
+			query.rid = { $nin: abacRooms };
 		} else {
 			const roomInfo = await getRoomInfoByAuditParams({ type, roomId: rid, users: usernames, visitor, agent, userId: user._id });
 			if (!roomInfo) {
-				throw new Meteor.Error('Room doesn`t exist');
+				throw new Meteor.Error(`Room doesn't exist`);
 			}
 
 			rids = roomInfo.rids;

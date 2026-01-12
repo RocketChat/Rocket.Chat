@@ -1,9 +1,15 @@
-import type { Locator } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 import { expect } from '../../utils/test';
 
 export abstract class Modal {
-	constructor(protected root: Locator) {}
+	constructor(
+		protected root: Locator,
+		protected page?: Page,
+	) {
+		this.root = root;
+		this.page = page;
+	}
 
 	waitForDisplay() {
 		return expect(this.root).toBeVisible();

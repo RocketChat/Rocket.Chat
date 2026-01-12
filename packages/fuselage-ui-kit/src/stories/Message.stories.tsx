@@ -117,3 +117,4 @@ export const PreviewWithExternalUrl = createStory(payloads.previewWithExternalUr
 
 export const InfoCard = createStory(payloads.infoCard);
 export const InfoCardMultiple = createStory(payloads.infoCardMultiple);
+export const InfoCardMultipleIcons = createStory(payloads.infoCardMultipleIcons);
