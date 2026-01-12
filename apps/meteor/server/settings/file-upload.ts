@@ -13,10 +13,11 @@ export const createFileUploadSettings = () =>
 			i18nDescription: 'FileUpload_MaxFileSizeDescription',
 		});
 
-		await this.add('FileUpload_MaxFilesPerMessage', 10, {
+		await this.add('FileUpload_MaxFilesPerMessage', 1, {
 			type: 'int',
 			public: true,
 			i18nDescription: 'FileUpload_MaxFilesPerMessage_Description',
+			alert: 'FileUpload_MaxFilesPerMessage_alert',
 		});
 
 		await this.add('FileUpload_MediaTypeWhiteList', '', {

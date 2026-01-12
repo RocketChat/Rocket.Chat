@@ -13,7 +13,10 @@ export const uploadFiles = async (
 	if (mergedFilesLength > maxFilesPerMessage) {
 		return dispatchToastMessage({
 			type: 'error',
-			message: t('You_cant_upload_more_than__count__files', { count: maxFilesPerMessage }),
+			message:
+				maxFilesPerMessage === 1
+					? t('You_cant_upload_more_than_one_file')
+					: t('You_cant_upload_more_than__count__files', { count: maxFilesPerMessage }),
 		});
 	}
 
