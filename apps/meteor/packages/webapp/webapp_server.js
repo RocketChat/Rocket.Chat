@@ -633,18 +633,28 @@ WebAppInternals.staticFilesMiddleware = async function(
   const program = WebApp.clientPrograms[arch];
   await program.paused;
 
-  if (path && path.includes('meteor_runtime_config')) {
-     console.log('DEBUG: meteor_runtime_config request', { path, allowed: WebAppInternals.inlineScriptsAllowed() });
-  }
-
   if (
     path === '/meteor_runtime_config.js' &&
     !WebAppInternals.inlineScriptsAllowed()
   ) {
-    console.log('DEBUG: serving meteor_runtime_config');
-    serveStaticJs(
-      `__meteor_runtime_config__ = ${program.meteorRuntimeConfig};`
-    );
+    console.log('DEBUG: serving meteor_runtime_config manually');
+    try {
+        const content = `__meteor_runtime_config__ = ${program.meteorRuntimeConfig};`;
+        const len = Buffer.byteLength(content);
+        console.log('DEBUG: content length', len);
+        console.log('DEBUG: config preview', content.substring(0, 100));
+        
+        res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+        res.setHeader('Content-Length', len);
+        res.writeHead(200);
+        res.write(content);
+        res.end();
+        console.log('DEBUG: finished response', { headersSent: res.headersSent, finished: res.finished });
+    } catch (e) {
+        console.error('DEBUG: error serving runtime config', e);
+        if (!res.headersSent) res.writeHead(500);
+        res.end(e.toString());
+    }
     return;
   }
 
