@@ -651,7 +651,7 @@ export const statistics = {
 
 			await Statistics.insertOne(newStatistics);
 		} catch (error) {
-			SystemLogger.error('Error saving statistics with new deployment data');
+			SystemLogger.error({ msg: 'Error saving statistics with new deployment data', err: error });
 		}
 	},
 };
