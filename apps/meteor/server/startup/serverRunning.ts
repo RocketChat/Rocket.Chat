@@ -79,7 +79,7 @@ Meteor.startup(async () => {
 			exitIfNotBypassed(process.env.BYPASS_MONGO_VALIDATION);
 		}
 
-		await statistics.save();
+		await statistics.updateDeploymentInfo();
 
 		showSuccessBox('SERVER RUNNING', msg);
 
