@@ -1,6 +1,7 @@
-import './ServerAudit/IAuditServerSettingEvent';
 import './ServerAudit/IAuditUserChangedEvent';
 import './ServerAudit/IAuditServerAbacAction';
+
+export * from './ServerAudit/IAuditServerSettingEvent';
 
 export * from './ServerAudit/IAuditUserChangedEvent';
 export * from './Apps';
