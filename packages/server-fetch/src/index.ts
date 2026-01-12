@@ -100,7 +100,7 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 		let originalHostname: string | undefined;
 		let resolvedIp: string | undefined;
 
-		if (!options?.ignoreSsrfValidation && process.env.TEST_MODE !== 'true') {
+		if (!options?.ignoreSsrfValidation) {
 			// eslint-disable-next-line no-await-in-loop
 			const ssrfResult = await checkForSsrfWithIp(currentUrl);
 			if (!ssrfResult.allowed) {

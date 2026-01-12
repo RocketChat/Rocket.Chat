@@ -1176,7 +1176,7 @@ describe('[Chat]', () => {
 				const imgUrlMsgPayload = {
 					_id: `id-${Date.now()}1`,
 					rid: testChannel._id,
-					msg: 'http://localhost:3000/images/logo/logo.png',
+					msg: 'https://avatars.githubusercontent.com/u/12508788?s=48&v=4',
 					emoji: ':smirk:',
 				};
 
