@@ -81,6 +81,7 @@ export const permissions = [
 	{ _id: 'view-logs', roles: ['admin'] },
 	{ _id: 'view-other-user-channels', roles: ['admin'] },
 	{ _id: 'view-p-room', roles: ['admin', 'user', 'anonymous', 'guest'] },
+	{ _id: 'view-directory', roles: ['admin', 'user'] },
 	{ _id: 'view-privileged-setting', roles: ['admin'] },
 	{ _id: 'view-room-administration', roles: ['admin'] },
 	{ _id: 'view-statistics', roles: ['admin'] },

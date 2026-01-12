@@ -1,0 +1,15 @@
+import { ErrorObject } from 'jsonrpc-lite';
+// deno-lint-ignore no-explicit-any -- that is the type we get from `catch`
+export const formatErrorResponse = (error)=>{
+  if (error instanceof ErrorObject || typeof error?.error?.message === 'string') {
+    return new Error(error.error.message);
+  }
+  if (error instanceof Error) {
+    return error;
+  }
+  return new Error('An unknown error occurred', {
+    cause: error
+  });
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZpbGU6Ly8vaG9tZS9idWlsZGVyL21lZHNlbnNlLndlYmNoYXQvcGFja2FnZXMvYXBwcy1lbmdpbmUvZGVuby1ydW50aW1lL2xpYi9hY2Nlc3NvcnMvZm9ybWF0UmVzcG9uc2VFcnJvckhhbmRsZXIudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgRXJyb3JPYmplY3QgfSBmcm9tICdqc29ucnBjLWxpdGUnO1xyXG5cclxuLy8gZGVuby1saW50LWlnbm9yZSBuby1leHBsaWNpdC1hbnkgLS0gdGhhdCBpcyB0aGUgdHlwZSB3ZSBnZXQgZnJvbSBgY2F0Y2hgXHJcbmV4cG9ydCBjb25zdCBmb3JtYXRFcnJvclJlc3BvbnNlID0gKGVycm9yOiBhbnkpOiBFcnJvciA9PiB7XHJcblx0aWYgKGVycm9yIGluc3RhbmNlb2YgRXJyb3JPYmplY3QgfHwgdHlwZW9mIGVycm9yPy5lcnJvcj8ubWVzc2FnZSA9PT0gJ3N0cmluZycpIHtcclxuXHRcdHJldHVybiBuZXcgRXJyb3IoZXJyb3IuZXJyb3IubWVzc2FnZSk7XHJcblx0fVxyXG5cclxuXHRpZiAoZXJyb3IgaW5zdGFuY2VvZiBFcnJvcikge1xyXG5cdFx0cmV0dXJuIGVycm9yO1xyXG5cdH1cclxuXHJcblx0cmV0dXJuIG5ldyBFcnJvcignQW4gdW5rbm93biBlcnJvciBvY2N1cnJlZCcsIHsgY2F1c2U6IGVycm9yIH0pO1xyXG59O1xyXG4iXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsU0FBUyxXQUFXLFFBQVEsZUFBZTtBQUUzQywyRUFBMkU7QUFDM0UsT0FBTyxNQUFNLHNCQUFzQixDQUFDO0VBQ25DLElBQUksaUJBQWlCLGVBQWUsT0FBTyxPQUFPLE9BQU8sWUFBWSxVQUFVO0lBQzlFLE9BQU8sSUFBSSxNQUFNLE1BQU0sS0FBSyxDQUFDLE9BQU87RUFDckM7RUFFQSxJQUFJLGlCQUFpQixPQUFPO0lBQzNCLE9BQU87RUFDUjtFQUVBLE9BQU8sSUFBSSxNQUFNLDZCQUE2QjtJQUFFLE9BQU87RUFBTTtBQUM5RCxFQUFFIn0=
+// denoCacheMetadata=17733790863903644427,996469847779608480

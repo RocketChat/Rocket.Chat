@@ -2,7 +2,7 @@ import { NavBarItem } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useCurrentRoutePath, useLayout, useRouter, useSetting } from '@rocket.chat/ui-contexts';
+import { useCurrentRoutePath, useLayout, useRouter, useSetting, usePermission } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,6 +14,7 @@ const NavBarPagesStackMenu = (props: NavBarPagesStackMenuProps) => {
 	const showHome = useSetting('Layout_Show_Home_Button');
 	const { sidebar } = useLayout();
 	const router = useRouter();
+	const canViewDirectory = usePermission('view-directory');
 
 	const handleGoToHome = useEffectEvent(() => {
 		sidebar.toggle();
@@ -30,7 +31,7 @@ const NavBarPagesStackMenu = (props: NavBarPagesStackMenuProps) => {
 			content: t('Home'),
 			onClick: handleGoToHome,
 		},
-		{
+		canViewDirectory && {
 			id: 'directory',
 			icon: 'notebook-hashtag',
 			content: t('Directory'),

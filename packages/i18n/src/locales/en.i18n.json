@@ -7218,6 +7218,19 @@
   "Outbound": "Outbound",
   "Search_calls": "Search calls",
   "Time_slash_Date": "Time / Date",
-  "ABAC_Cannot_delete_attribute_value_in_use": "Cannot delete attribute value assigned to rooms. <1>View rooms</1>"
-
+  "ABAC_Cannot_delete_attribute_value_in_use": "Cannot delete attribute value assigned to rooms. <1>View rooms</1>",
+  "Medsense": "Medsense",
+  "Medsense_Bot_User": "Medsense bot user",
+  "Medsense_Bot_User_Description": "Bot username used for the New bot chat button.",
+  "Medsense_Start_Bot_Chat": "New bot chat",
+  "Medsense_Start_Chat_Roles": "Medsense start chat roles",
+  "Medsense_Start_Chat_Roles_Description": "Roles that can see the New bot chat button.",
+  "Medsense_Start_Chat_Label": "Medsense start chat label",
+  "Medsense_Start_Chat_Label_Description": "Override the caption for the New bot chat button.",
+  "Medsense_Start_Chat_Greeting": "Medsense start chat greeting",
+  "Medsense_Start_Chat_Greeting_Description": "Default greeting message used when starting a new bot chat.",
+  "Medsense_Start_Bot_Greeting_Label": "Greeting message",
+  "Medsense_Start_Bot_Greeting_Hint": "Sent by the bot when the room opens.",
+  "view-directory": "View directory",
+  "view-directory_description": "View the workspace directory page."
 }

@@ -1,4 +1,5 @@
 import * as child_process from 'child_process';
+import * as fs from 'fs';
 import * as path from 'path';
 import { type Readable, EventEmitter } from 'stream';
 import { inspect as utilInspect } from 'util';
@@ -55,34 +56,8 @@ export const ALLOWED_ENVIRONMENT_VARIABLES = [
 
 const COMMAND_PONG = '_zPONG';
 
-let cachedDenoMajorVersion: number | null | undefined;
 let cachedDenoDetectCjsSupport: boolean | undefined;
 
-function getDenoMajorVersion(): number | null {
-	if (cachedDenoMajorVersion !== undefined) {
-		return cachedDenoMajorVersion;
-	}
-
-	const envVersion = process.env.DENO_VERSION;
-	if (envVersion) {
-		const match = envVersion.match(/^(\d+)\./);
-		if (match) {
-			cachedDenoMajorVersion = Number(match[1]);
-			return cachedDenoMajorVersion;
-		}
-	}
-
-	try {
-		const result = child_process.spawnSync('deno', ['--version'], { encoding: 'utf8' });
-		const outputText = `${result.stdout || ''}${result.stderr || ''}`;
-		const match = outputText.match(/^\s*deno\s+(\d+)\./m);
-		cachedDenoMajorVersion = match ? Number(match[1]) : null;
-	} catch {
-		cachedDenoMajorVersion = null;
-	}
-
-	return cachedDenoMajorVersion;
-}
 
 function supportsDenoDetectCjs(): boolean {
 	if (cachedDenoDetectCjsSupport !== undefined) {
@@ -109,11 +84,6 @@ function shouldUseDenoDetectCjs(): boolean {
 		}
 
 		return supportsDenoDetectCjs();
-	}
-
-	const denoMajor = getDenoMajorVersion();
-	if (denoMajor && denoMajor >= 2) {
-		return false;
 	}
 
 	return supportsDenoDetectCjs();
@@ -208,9 +178,17 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			const denoExePath = 'deno';
 
 			const denoWrapperPath = getDenoWrapperPath();
+			const definitionDir = path.resolve(denoWrapperPath, '..', '..', 'definition');
+			const commonjsPath = path.join(definitionDir, 'package.json');
+			try {
+				fs.mkdirSync(definitionDir, { recursive: true });
+				fs.writeFileSync(commonjsPath, '{ "type": "commonjs" }\n');
+			} catch (error) {
+				console.warn('Failed to ensure Apps-Engine CommonJS hint', error);
+			}
 			// During development, the appsEngineDir is enough to run the deno process
 			const appsEngineDir = path.dirname(path.join(denoWrapperPath, '..'));
-			const DENO_DIR = process.env.DENO_DIR ?? path.join(appsEngineDir, '.deno-cache');
+			const DENO_DIR = process.env.DENO_DIR ?? path.join(appsEngineDir, '.deno-cache-cjs');
 			// When running in production, we're likely inside a node_modules which the Deno
 			// process must be able to read in order to include files that use NPM packages
 			const parentNodeModulesDir = path.dirname(path.join(appsEngineDir, '..'));

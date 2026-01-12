@@ -1,0 +1,34 @@
+/**
+ * Represents  the slash command's context when a user
+ * executes a slash command.
+ */ export class SlashCommandContext {
+  sender;
+  room;
+  params;
+  threadId;
+  triggerId;
+  constructor(sender, room, params, threadId, triggerId){
+    this.sender = sender;
+    this.room = room;
+    this.params = params;
+    this.threadId = threadId;
+    this.triggerId = triggerId;
+  }
+  /** The user who sent the command. */ getSender() {
+    return this.sender;
+  }
+  /** The room where the command was sent in. */ getRoom() {
+    return this.room;
+  }
+  /** The arguments passed into the command. */ getArguments() {
+    return this.params;
+  }
+  getThreadId() {
+    return this.threadId;
+  }
+  getTriggerId() {
+    return this.triggerId;
+  }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZpbGU6Ly8vaG9tZS9idWlsZGVyL21lZHNlbnNlLndlYmNoYXQvcGFja2FnZXMvYXBwcy1lbmdpbmUvc3JjL2RlZmluaXRpb24vc2xhc2hjb21tYW5kcy9TbGFzaENvbW1hbmRDb250ZXh0LnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB0eXBlIHsgSVJvb20gfSBmcm9tICcuLi9yb29tcyc7XHJcbmltcG9ydCB0eXBlIHsgSVVzZXIgfSBmcm9tICcuLi91c2Vycyc7XHJcblxyXG4vKipcclxuICogUmVwcmVzZW50cyAgdGhlIHNsYXNoIGNvbW1hbmQncyBjb250ZXh0IHdoZW4gYSB1c2VyXHJcbiAqIGV4ZWN1dGVzIGEgc2xhc2ggY29tbWFuZC5cclxuICovXHJcbmV4cG9ydCBjbGFzcyBTbGFzaENvbW1hbmRDb250ZXh0IHtcclxuXHRjb25zdHJ1Y3RvcihcclxuXHRcdHByaXZhdGUgc2VuZGVyOiBJVXNlcixcclxuXHRcdHByaXZhdGUgcm9vbTogSVJvb20sXHJcblx0XHRwcml2YXRlIHBhcmFtczogQXJyYXk8c3RyaW5nPixcclxuXHRcdHByaXZhdGUgdGhyZWFkSWQ/OiBzdHJpbmcsXHJcblx0XHRwcml2YXRlIHRyaWdnZXJJZD86IHN0cmluZyxcclxuXHQpIHt9XHJcblxyXG5cdC8qKiBUaGUgdXNlciB3aG8gc2VudCB0aGUgY29tbWFuZC4gKi9cclxuXHRwdWJsaWMgZ2V0U2VuZGVyKCk6IElVc2VyIHtcclxuXHRcdHJldHVybiB0aGlzLnNlbmRlcjtcclxuXHR9XHJcblxyXG5cdC8qKiBUaGUgcm9vbSB3aGVyZSB0aGUgY29tbWFuZCB3YXMgc2VudCBpbi4gKi9cclxuXHRwdWJsaWMgZ2V0Um9vbSgpOiBJUm9vbSB7XHJcblx0XHRyZXR1cm4gdGhpcy5yb29tO1xyXG5cdH1cclxuXHJcblx0LyoqIFRoZSBhcmd1bWVudHMgcGFzc2VkIGludG8gdGhlIGNvbW1hbmQuICovXHJcblx0cHVibGljIGdldEFyZ3VtZW50cygpOiBBcnJheTxzdHJpbmc+IHtcclxuXHRcdHJldHVybiB0aGlzLnBhcmFtcztcclxuXHR9XHJcblxyXG5cdHB1YmxpYyBnZXRUaHJlYWRJZCgpOiBzdHJpbmcgfCB1bmRlZmluZWQge1xyXG5cdFx0cmV0dXJuIHRoaXMudGhyZWFkSWQ7XHJcblx0fVxyXG5cclxuXHRwdWJsaWMgZ2V0VHJpZ2dlcklkKCk6IHN0cmluZyB8IHVuZGVmaW5lZCB7XHJcblx0XHRyZXR1cm4gdGhpcy50cmlnZ2VySWQ7XHJcblx0fVxyXG59XHJcbiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFHQTs7O0NBR0MsR0FDRCxPQUFPLE1BQU07Ozs7OztFQUNaLFlBQ0MsQUFBUSxNQUFhLEVBQ3JCLEFBQVEsSUFBVyxFQUNuQixBQUFRLE1BQXFCLEVBQzdCLEFBQVEsUUFBaUIsRUFDekIsQUFBUSxTQUFrQixDQUN6QjtTQUxPLFNBQUE7U0FDQSxPQUFBO1NBQ0EsU0FBQTtTQUNBLFdBQUE7U0FDQSxZQUFBO0VBQ047RUFFSCxtQ0FBbUMsR0FDbkMsQUFBTyxZQUFtQjtJQUN6QixPQUFPLElBQUksQ0FBQyxNQUFNO0VBQ25CO0VBRUEsNENBQTRDLEdBQzVDLEFBQU8sVUFBaUI7SUFDdkIsT0FBTyxJQUFJLENBQUMsSUFBSTtFQUNqQjtFQUVBLDJDQUEyQyxHQUMzQyxBQUFPLGVBQThCO0lBQ3BDLE9BQU8sSUFBSSxDQUFDLE1BQU07RUFDbkI7RUFFTyxjQUFrQztJQUN4QyxPQUFPLElBQUksQ0FBQyxRQUFRO0VBQ3JCO0VBRU8sZUFBbUM7SUFDekMsT0FBTyxJQUFJLENBQUMsU0FBUztFQUN0QjtBQUNEIn0=
+// denoCacheMetadata=6454413805827797495,11276962266755202565

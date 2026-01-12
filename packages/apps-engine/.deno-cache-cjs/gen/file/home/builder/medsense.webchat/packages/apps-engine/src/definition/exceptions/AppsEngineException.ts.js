@@ -1,0 +1,29 @@
+/**
+ * The internal exception from the framework
+ *
+ * It's used to signal to the outside world that
+ * a _known_ exception has happened during the execution
+ * of the apps.
+ *
+ * It's the base exception for other known classes
+ * such as UserNotAllowedException, which is used
+ * to inform the host that an app identified
+ * that a user cannot perform some action, e.g.
+ * join a room
+ */ export class AppsEngineException extends Error {
+  name = 'AppsEngineException';
+  static JSONRPC_ERROR_CODE = -32070;
+  message;
+  constructor(message){
+    super();
+    this.message = message;
+  }
+  getErrorInfo() {
+    return {
+      name: this.name,
+      message: this.message
+    };
+  }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZpbGU6Ly8vaG9tZS9idWlsZGVyL21lZHNlbnNlLndlYmNoYXQvcGFja2FnZXMvYXBwcy1lbmdpbmUvc3JjL2RlZmluaXRpb24vZXhjZXB0aW9ucy9BcHBzRW5naW5lRXhjZXB0aW9uLnRzIl0sInNvdXJjZXNDb250ZW50IjpbIi8qKlxyXG4gKiBUaGUgaW50ZXJuYWwgZXhjZXB0aW9uIGZyb20gdGhlIGZyYW1ld29ya1xyXG4gKlxyXG4gKiBJdCdzIHVzZWQgdG8gc2lnbmFsIHRvIHRoZSBvdXRzaWRlIHdvcmxkIHRoYXRcclxuICogYSBfa25vd25fIGV4Y2VwdGlvbiBoYXMgaGFwcGVuZWQgZHVyaW5nIHRoZSBleGVjdXRpb25cclxuICogb2YgdGhlIGFwcHMuXHJcbiAqXHJcbiAqIEl0J3MgdGhlIGJhc2UgZXhjZXB0aW9uIGZvciBvdGhlciBrbm93biBjbGFzc2VzXHJcbiAqIHN1Y2ggYXMgVXNlck5vdEFsbG93ZWRFeGNlcHRpb24sIHdoaWNoIGlzIHVzZWRcclxuICogdG8gaW5mb3JtIHRoZSBob3N0IHRoYXQgYW4gYXBwIGlkZW50aWZpZWRcclxuICogdGhhdCBhIHVzZXIgY2Fubm90IHBlcmZvcm0gc29tZSBhY3Rpb24sIGUuZy5cclxuICogam9pbiBhIHJvb21cclxuICovXHJcbmV4cG9ydCBjbGFzcyBBcHBzRW5naW5lRXhjZXB0aW9uIGV4dGVuZHMgRXJyb3Ige1xyXG5cdHB1YmxpYyBuYW1lID0gJ0FwcHNFbmdpbmVFeGNlcHRpb24nO1xyXG5cclxuXHRwdWJsaWMgc3RhdGljIEpTT05SUENfRVJST1JfQ09ERSA9IC0zMjA3MDtcclxuXHJcblx0cHVibGljIG1lc3NhZ2U6IHN0cmluZztcclxuXHJcblx0Y29uc3RydWN0b3IobWVzc2FnZT86IHN0cmluZykge1xyXG5cdFx0c3VwZXIoKTtcclxuXHRcdHRoaXMubWVzc2FnZSA9IG1lc3NhZ2U7XHJcblx0fVxyXG5cclxuXHRwdWJsaWMgZ2V0RXJyb3JJbmZvKCkge1xyXG5cdFx0cmV0dXJuIHtcclxuXHRcdFx0bmFtZTogdGhpcy5uYW1lLFxyXG5cdFx0XHRtZXNzYWdlOiB0aGlzLm1lc3NhZ2UsXHJcblx0XHR9O1xyXG5cdH1cclxufVxyXG4iXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7Ozs7Ozs7OztDQVlDLEdBQ0QsT0FBTyxNQUFNLDRCQUE0QjtFQUNqQyxPQUFPLHNCQUFzQjtFQUVwQyxPQUFjLHFCQUFxQixDQUFDLE1BQU07RUFFbkMsUUFBZ0I7RUFFdkIsWUFBWSxPQUFnQixDQUFFO0lBQzdCLEtBQUs7SUFDTCxJQUFJLENBQUMsT0FBTyxHQUFHO0VBQ2hCO0VBRU8sZUFBZTtJQUNyQixPQUFPO01BQ04sTUFBTSxJQUFJLENBQUMsSUFBSTtNQUNmLFNBQVMsSUFBSSxDQUFDLE9BQU87SUFDdEI7RUFDRDtBQUNEIn0=
+// denoCacheMetadata=9037909843201810898,16781003378571753069

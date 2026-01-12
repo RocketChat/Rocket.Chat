@@ -1,4 +1,5 @@
 const childProcess = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
 try {
@@ -13,7 +14,12 @@ try {
 
 const rootPath = path.join(__dirname, '..');
 const denoRuntimePath = path.join(rootPath, 'deno-runtime');
-const DENO_DIR = process.env.DENO_DIR ?? path.join(rootPath, '.deno-cache');
+const DENO_DIR = process.env.DENO_DIR ?? path.join(rootPath, '.deno-cache-cjs');
+
+const definitionPath = path.join(rootPath, 'definition');
+const commonjsPath = path.join(definitionPath, 'package.json');
+fs.mkdirSync(definitionPath, { recursive: true });
+fs.writeFileSync(commonjsPath, '{ "type": "commonjs" }\n');
 
 childProcess.execSync('deno cache main.ts', {
 	cwd: denoRuntimePath,

@@ -1,11 +1,12 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetting, useAtLeastOnePermission, useUser } from '@rocket.chat/ui-contexts';
 
 import { useCreateRoomModal } from './useCreateRoomModal';
 import CreateDiscussion from '../../../components/CreateDiscussion';
 import { useOutboundMessageAccess } from '../../../views/omnichannel/components/outboundMessage/hooks';
 import { useOutboundMessageModal } from '../../../views/omnichannel/components/outboundMessage/modals';
 import CreateChannelModal from '../actions/CreateChannelModal';
+import CreateMedsenseBotRoomModal from '../actions/CreateMedsenseBotRoomModal';
 import CreateDirectMessage from '../actions/CreateDirectMessage';
 import CreateTeamModal from '../actions/CreateTeamModal';
 
@@ -14,9 +15,33 @@ const CREATE_TEAM_PERMISSIONS = ['create-team'];
 const CREATE_DIRECT_PERMISSIONS = ['create-d'];
 const CREATE_DISCUSSION_PERMISSIONS = ['start-discussion', 'start-discussion-other-user'];
 
+const normalizeRoleSetting = (rolesSetting: unknown): string[] => {
+	if (Array.isArray(rolesSetting)) {
+		return rolesSetting.filter((role): role is string => typeof role === 'string' && role.trim().length > 0);
+	}
+
+	if (typeof rolesSetting === 'string') {
+		return rolesSetting
+			.split(',')
+			.map((role) => role.trim())
+			.filter(Boolean);
+	}
+
+	return [];
+};
+
 export const useCreateNewItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 	const discussionEnabled = useSetting('Discussion_enabled');
+	const user = useUser();
+	const botUsernameSetting = useSetting<string>('Medsense_Bot_User', '');
+	const allowedRolesSetting = useSetting<string[] | string>('Medsense_Start_Chat_Roles', []);
+	const labelSetting = useSetting<string>('Medsense_Start_Chat_Label', '');
+	const buttonLabel = labelSetting.trim().length > 0 ? labelSetting : t('Medsense_Start_Bot_Chat');
+	const botUsername = typeof botUsernameSetting === 'string' ? botUsernameSetting.trim() : '';
+	const allowedRoles = normalizeRoleSetting(allowedRolesSetting);
+	const userRoles = Array.isArray(user?.roles) ? user.roles : [];
+	const canStartMedsenseChat = Boolean(user) && Boolean(botUsername) && allowedRoles.length > 0 && userRoles.some((role) => allowedRoles.includes(role));
 
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const canCreateTeam = useAtLeastOnePermission(CREATE_TEAM_PERMISSIONS);
@@ -28,8 +53,17 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 	const createTeam = useCreateRoomModal(CreateTeamModal);
 	const createDiscussion = useCreateRoomModal(CreateDiscussion);
 	const createDirectMessage = useCreateRoomModal(CreateDirectMessage);
+	const createMedsenseBotRoom = useCreateRoomModal(CreateMedsenseBotRoomModal);
 	const outboundMessageModal = useOutboundMessageModal();
 
+	const createMedsenseChatItem: GenericMenuItemProps = {
+		id: 'medsense-bot-room',
+		content: buttonLabel,
+		icon: 'lock',
+		onClick: () => {
+			createMedsenseBotRoom();
+		},
+	};
 	const createChannelItem: GenericMenuItemProps = {
 		id: 'channel',
 		content: t('Channel'),
@@ -70,6 +104,7 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 	};
 
 	return [
+		...(canStartMedsenseChat ? [createMedsenseChatItem] : []),
 		...(canCreateDirectMessages ? [createDirectMessageItem] : []),
 		...(canCreateDiscussion && discussionEnabled ? [createDiscussionItem] : []),
 		...(canCreateChannel ? [createChannelItem] : []),

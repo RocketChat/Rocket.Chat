@@ -1,0 +1,31 @@
+export var ApiVisibility = /*#__PURE__*/ function(ApiVisibility) {
+  /**
+	 * A public Api has a fixed format for a url. Using it enables an
+	 * easy to remember structure, however, it also means the url is
+	 * intelligently guessed. As a result, we recommend having some
+	 * sort of security setup if you must have a public api.Whether
+	 * you use the provided security, ApiSecurity, or implement your own.
+	 * Url format:
+	 * `https://{your-server-address}/api/apps/public/{your-app-id}/{path}`
+	 */ ApiVisibility[ApiVisibility["PUBLIC"] = 0] = "PUBLIC";
+  /**
+	 * Private Api's contain a random value in the url format,
+	 * making them harder go guess by default. The random value
+	 * will be generated whenever the App is installed on a server.
+	 * This means that the URL will not be the same on any server,
+	 * but will remain the same throughout the lifecycle of an App
+	 * including updates. As a result, if a user uninstalls the App
+	 * and reinstalls the App, then the random value will change.
+	 * Url format:
+	 * `https://{your-server-address}/api/apps/private/{your-app-id}/{random-hash}/{path}`
+	 */ ApiVisibility[ApiVisibility["PRIVATE"] = 1] = "PRIVATE";
+  return ApiVisibility;
+}({});
+export var ApiSecurity = /*#__PURE__*/ function(ApiSecurity) {
+  /**
+	 * No security check will be executed agains the calls made to this URL
+	 */ ApiSecurity[ApiSecurity["UNSECURE"] = 0] = "UNSECURE";
+  return ApiSecurity;
+}({});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZpbGU6Ly8vaG9tZS9idWlsZGVyL21lZHNlbnNlLndlYmNoYXQvcGFja2FnZXMvYXBwcy1lbmdpbmUvc3JjL2RlZmluaXRpb24vYXBpL0lBcGkudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHR5cGUgeyBJQXBpRW5kcG9pbnQgfSBmcm9tICcuL0lBcGlFbmRwb2ludCc7XHJcblxyXG4vKipcclxuICogUmVwcmVzZW50cyBhbiBhcGkgdGhhdCBpcyBiZWluZyBwcm92aWRlZC5cclxuICovXHJcbmV4cG9ydCBpbnRlcmZhY2UgSUFwaSB7XHJcblx0LyoqXHJcblx0ICogUHJvdmlkZXMgdGhlIHZpc2liaWxpdHkgbWV0aG9kIG9mIHRoZSBVUkwsIHNlZSB0aGUgQXBpVmlzaWJpbGl0eSBkZXNjcmlwdGlvbnMgZm9yIG1vcmUgaW5mb3JtYXRpb25cclxuXHQgKi9cclxuXHR2aXNpYmlsaXR5OiBBcGlWaXNpYmlsaXR5O1xyXG5cdC8qKlxyXG5cdCAqIFByb3ZpZGVzIHRoZSB2aXNpYmlsaXR5IG1ldGhvZCBvZiB0aGUgVVJMLCBzZWUgdGhlIEFwaVNlY3VyaXR5IGRlc2NyaXB0aW9ucyBmb3IgbW9yZSBpbmZvcm1hdGlvblxyXG5cdCAqL1xyXG5cdHNlY3VyaXR5OiBBcGlTZWN1cml0eTtcclxuXHQvKipcclxuXHQgKiBQcm92aWRlIGVucG9pbnRzIGZvciB0aGlzIGFwaSByZWdpc3RyeVxyXG5cdCAqL1xyXG5cdGVuZHBvaW50czogQXJyYXk8SUFwaUVuZHBvaW50PjtcclxufVxyXG5cclxuZXhwb3J0IGVudW0gQXBpVmlzaWJpbGl0eSB7XHJcblx0LyoqXHJcblx0ICogQSBwdWJsaWMgQXBpIGhhcyBhIGZpeGVkIGZvcm1hdCBmb3IgYSB1cmwuIFVzaW5nIGl0IGVuYWJsZXMgYW5cclxuXHQgKiBlYXN5IHRvIHJlbWVtYmVyIHN0cnVjdHVyZSwgaG93ZXZlciwgaXQgYWxzbyBtZWFucyB0aGUgdXJsIGlzXHJcblx0ICogaW50ZWxsaWdlbnRseSBndWVzc2VkLiBBcyBhIHJlc3VsdCwgd2UgcmVjb21tZW5kIGhhdmluZyBzb21lXHJcblx0ICogc29ydCBvZiBzZWN1cml0eSBzZXR1cCBpZiB5b3UgbXVzdCBoYXZlIGEgcHVibGljIGFwaS5XaGV0aGVyXHJcblx0ICogeW91IHVzZSB0aGUgcHJvdmlkZWQgc2VjdXJpdHksIEFwaVNlY3VyaXR5LCBvciBpbXBsZW1lbnQgeW91ciBvd24uXHJcblx0ICogVXJsIGZvcm1hdDpcclxuXHQgKiBgaHR0cHM6Ly97eW91ci1zZXJ2ZXItYWRkcmVzc30vYXBpL2FwcHMvcHVibGljL3t5b3VyLWFwcC1pZH0ve3BhdGh9YFxyXG5cdCAqL1xyXG5cdFBVQkxJQyxcclxuXHQvKipcclxuXHQgKiBQcml2YXRlIEFwaSdzIGNvbnRhaW4gYSByYW5kb20gdmFsdWUgaW4gdGhlIHVybCBmb3JtYXQsXHJcblx0ICogbWFraW5nIHRoZW0gaGFyZGVyIGdvIGd1ZXNzIGJ5IGRlZmF1bHQuIFRoZSByYW5kb20gdmFsdWVcclxuXHQgKiB3aWxsIGJlIGdlbmVyYXRlZCB3aGVuZXZlciB0aGUgQXBwIGlzIGluc3RhbGxlZCBvbiBhIHNlcnZlci5cclxuXHQgKiBUaGlzIG1lYW5zIHRoYXQgdGhlIFVSTCB3aWxsIG5vdCBiZSB0aGUgc2FtZSBvbiBhbnkgc2VydmVyLFxyXG5cdCAqIGJ1dCB3aWxsIHJlbWFpbiB0aGUgc2FtZSB0aHJvdWdob3V0IHRoZSBsaWZlY3ljbGUgb2YgYW4gQXBwXHJcblx0ICogaW5jbHVkaW5nIHVwZGF0ZXMuIEFzIGEgcmVzdWx0LCBpZiBhIHVzZXIgdW5pbnN0YWxscyB0aGUgQXBwXHJcblx0ICogYW5kIHJlaW5zdGFsbHMgdGhlIEFwcCwgdGhlbiB0aGUgcmFuZG9tIHZhbHVlIHdpbGwgY2hhbmdlLlxyXG5cdCAqIFVybCBmb3JtYXQ6XHJcblx0ICogYGh0dHBzOi8ve3lvdXItc2VydmVyLWFkZHJlc3N9L2FwaS9hcHBzL3ByaXZhdGUve3lvdXItYXBwLWlkfS97cmFuZG9tLWhhc2h9L3twYXRofWBcclxuXHQgKi9cclxuXHRQUklWQVRFLFxyXG59XHJcblxyXG5leHBvcnQgZW51bSBBcGlTZWN1cml0eSB7XHJcblx0LyoqXHJcblx0ICogTm8gc2VjdXJpdHkgY2hlY2sgd2lsbCBiZSBleGVjdXRlZCBhZ2FpbnMgdGhlIGNhbGxzIG1hZGUgdG8gdGhpcyBVUkxcclxuXHQgKi9cclxuXHRVTlNFQ1VSRSxcclxuXHQvKipcclxuXHQgKiBPbmx5IGNhbGxzIGNvbnRhaW5pbmcgYSB2YWxpZCB0b2tlbiB3aWxsIGJlIGFibGUgdG8gZXhlY3V0ZSB0aGUgYXBpXHJcblx0ICogTXV0aXBsZSB0b2tlbnMgY2FuIGJlIGdlbmVyYXRlZCB0byBhY2Nlc3MgdGhlIGFwaSwgYnkgZGVmYXVsdCBvbmVcclxuXHQgKiB3aWxsIGJlIGdlbmVyYXRlZCBhdXRvbWF0aWNhbGx5LlxyXG5cdCAqIEBwYXJhbSBgWC1BdXRoLVRva2VuYFxyXG5cdCAqL1xyXG5cdC8vIENIRUNLU1VNX1NFQ1JFVCxcclxufVxyXG4iXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBb0JBLE9BQU8sSUFBQSxBQUFLLHVDQUFBO0VBQ1g7Ozs7Ozs7O0VBUUM7RUFFRDs7Ozs7Ozs7OztFQVVDO1NBckJVO01BdUJYO0FBRUQsT0FBTyxJQUFBLEFBQUsscUNBQUE7RUFDWDs7RUFFQztTQUhVO01BWVgifQ==
+// denoCacheMetadata=17431126801133071125,3007303818447022041

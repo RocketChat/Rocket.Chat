@@ -593,10 +593,10 @@ yarn dsv  # Rebuilds and starts dev server
   - Form payload fetched from orchestrator: GET /forms/payload/<formId>.
   - Submissions POST to /forms/submit (absolute URL built from orchestrator_base_url).
 - Inline vs modal:
-  - Single-step forms render inline buttons.
+  - Single-step forms render inline buttons with a Submit action.
   - Multi-step forms render modal (Open form) when supported; widget cannot do modals.
 - Inline behavior:
-  - Posts Selected: <label> confirmation after final inline selection.
+  - Button clicks store selections; Submit sends payload to /forms/submit.
   - Clears form cache/progress after completion.
 - Livechat block actions:
   - executeLivechatBlockActionHandler is implemented (no ILivechatBlockActionHandler type in this apps-engine version).
@@ -609,16 +609,24 @@ yarn dsv  # Rebuilds and starts dev server
   - formId is attached as message customFields.formId (requires Message Custom Fields enabled + validation schema).
 - Required Rocket.Chat setting:
   - Enable Message Custom Fields with JSON schema allowing formId.
-- Debug endpoint:
-  - POST /forms/debug/create for smoke tests.
+- Debug endpoints:
+  - POST /forms/debug/inline and /forms/debug/modal for smoke tests.
 
 ## Recent fixes
 - Invalid URL errors fixed by making submit URL absolute in app.
 - Custom fields strict mode error fixed by using customFields.formId (not smart_forms).
 - Gemini empty_steps handled by skipping Gemini if steps provided.
 - Added ai.error payload logging in orchestrator.
-- Smart Forms modal flow: stable modal id, pagination with Previous, and completed steps show selected values.
-- Modal submit parsing updated for RC state payload shape; selections now persist correctly per step.
+- Smart Forms modal flow: stable modal id, Back/Next navigation, and selections stay editable.
+- Modal submit sends all stored step selections once on final Submit.
+- Modal selections use action buttons instead of radio/checkbox inputs.
+- Inline submit uses a Submit button (no immediate submit on selection).
+- Inline submit now hides Submit until a selection exists.
+- Added divider between selection buttons and navigation buttons in modals.
+- Modal navigation labels now use arrows (← Back / Next →).
+- Orchestrator debug endpoints are /forms/debug/inline and /forms/debug/modal.
+- Orchestrator posts Selected: <values> on /forms/submit for dev visibility.
+- Smart Forms can fetch Cloud Run ID tokens via webhook /token (settings: orchestrator_token_url, orchestrator_token_secret).
 - Summary posting now uses /forms/submit response (no /forms/summary endpoint) and posts to room using cached room object.
 - Added form expiry timer setting (form_expire_ms, default 15 min) with expiry message and cleanup.
 - "Other" input isolation fixed by step-scoped actionId; no carry-over between steps.

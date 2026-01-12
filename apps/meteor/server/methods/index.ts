@@ -25,6 +25,7 @@ import './loadMissedMessages';
 import './loadNextMessages';
 import './loadSurroundingMessages';
 import './logoutCleanUp';
+import './medsenseCreateBotRoom';
 import './messageSearch';
 import './muteUserInRoom';
 import './openRoom';

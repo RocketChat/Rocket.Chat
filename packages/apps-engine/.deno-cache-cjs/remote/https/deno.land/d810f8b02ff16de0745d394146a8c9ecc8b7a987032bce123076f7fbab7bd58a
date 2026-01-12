@@ -1,0 +1,55 @@
+// Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
+// This module is browser compatible.
+
+import type { Writer, WriterSync } from "./types.ts";
+
+/**
+ * Write all the content of the array buffer (`arr`) to the writer (`w`).
+ *
+ * @example
+ * ```ts
+ * import { writeAll } from "https://deno.land/std@$STD_VERSION/io/write_all.ts";
+
+ * // Example writing to stdout
+ * let contentBytes = new TextEncoder().encode("Hello World");
+ * await writeAll(Deno.stdout, contentBytes);
+ *
+ * // Example writing to file
+ * contentBytes = new TextEncoder().encode("Hello World");
+ * using file = await Deno.open('test.file', {write: true});
+ * await writeAll(file, contentBytes);
+ * ```
+ */
+export async function writeAll(writer: Writer, data: Uint8Array) {
+  let nwritten = 0;
+  while (nwritten < data.length) {
+    nwritten += await writer.write(data.subarray(nwritten));
+  }
+}
+
+/**
+ * Synchronously write all the content of the array buffer (`arr`) to the
+ * writer (`w`).
+ *
+ * @example
+ * ```ts
+ * import { writeAllSync } from "https://deno.land/std@$STD_VERSION/io/write_all.ts";
+ *
+ * // Example writing to stdout
+ * let contentBytes = new TextEncoder().encode("Hello World");
+ * writeAllSync(Deno.stdout, contentBytes);
+ *
+ * // Example writing to file
+ * contentBytes = new TextEncoder().encode("Hello World");
+ * using file = Deno.openSync('test.file', {write: true});
+ * writeAllSync(file, contentBytes);
+ * ```
+ */
+export function writeAllSync(writer: WriterSync, data: Uint8Array) {
+  let nwritten = 0;
+  while (nwritten < data.length) {
+    nwritten += writer.writeSync(data.subarray(nwritten));
+  }
+}
+
+// denoCacheMetadata={"headers":{"server-timing":"fetchSource;dur=4","x-cache":"Hit from cloudfront","cross-origin-resource-policy":"same-origin","x-amz-server-side-encryption":"AES256","server":"AmazonS3,deployd","last-modified":"Thu, 15 Feb 2024 05:02:28 GMT","x-frame-options":"DENY","cross-origin-embedder-policy":"same-origin","via":"1.1 5ca3eb318b3d637b6c83037daa75f174.cloudfront.net (CloudFront),HTTP/2 ams.vultr.prod.deno-cluster.net","etag":"\"1b711ca525e1fb0b8a47be70dfe7501b\"","cross-origin-opener-policy":"same-origin","x-amz-cf-id":"-CIxxn9aEnEbEIi_S5TIxLZ6rdR9Ns-OW2rpznQPxZa2CWUwJUvLLw==","content-length":"1623","x-content-type-options":"nosniff","x-deno-trace-id":"f34ea9027a492684fe9d350497a9c1fe","alt-svc":"h3=\":443\"; ma=86400","accept-ranges":"bytes","age":"575918","vary":"Accept-Encoding, Origin","date":"Tue, 06 Jan 2026 00:21:03 GMT","access-control-allow-origin":"*","referrer-policy":"strict-origin-when-cross-origin","x-amz-cf-pop":"AMS58-P1","content-security-policy":"default-src 'none'; style-src 'unsafe-inline'; sandbox","x-amz-version-id":"iLocO752YD3APSFQ5lQQ3uVb9dUJRU5b","strict-transport-security":"max-age=63072000; includeSubDomains; preload","x-amz-replication-status":"COMPLETED","content-type":"application/typescript; charset=utf-8","cache-control":"public, max-age=31536000, immutable","cache-status":"deno; hit"},"url":"https://deno.land/std@0.216.0/io/write_all.ts","time":1768234780}
