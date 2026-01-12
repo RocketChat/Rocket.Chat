@@ -12,10 +12,12 @@ import {
 	useUserRoom,
 	useUserSubscription,
 } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { useEndpointMutation } from '../../../../../hooks/useEndpointMutation';
 import * as Federation from '../../../../../lib/federation/Federation';
+import { roomsQueryKeys } from '../../../../../lib/queryKeys';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import RemoveUsersModal from '../../../../teams/contextualBar/members/RemoveUsersModal';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
@@ -34,6 +36,7 @@ export const useRemoveUserAction = (
 	}
 
 	const t = useTranslation();
+	const queryClient = useQueryClient();
 	const currentUser = useUser();
 	const subscription = useUserSubscription(rid);
 
@@ -69,6 +72,7 @@ export const useRemoveUserAction = (
 	const { mutateAsync: removeFromRoom } = useEndpointMutation('POST', removeFromRoomEndpoint, {
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('User_has_been_removed_from_s', roomName) });
+			queryClient.invalidateQueries({ queryKey: roomsQueryKeys.members(room._id, room.t) });
 		},
 		onSettled: () => {
 			closeModal();

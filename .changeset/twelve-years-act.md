@@ -1,5 +1,0 @@
----
-"@rocket.chat/meteor": patch
----
-
-Removes deprecated method `livechat:saveBusinessHour`
