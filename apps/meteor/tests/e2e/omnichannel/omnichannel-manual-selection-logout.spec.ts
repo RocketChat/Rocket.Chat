@@ -56,7 +56,7 @@ test.describe('OC - Manual Selection After Relogin', () => {
 
 		await test.step('expect login and see the chat in queue after login', async () => {
 			await poOmnichannel.sidebar.getSidebarItemByName(room.fname).click();
-			await expect(poOmnichannel.content.inputMessage).not.toBeVisible();
+			await expect(poOmnichannel.composer.inputMessage).not.toBeVisible();
 		});
 
 		await test.step('expect take chat to be visible and return to queue not visible', async () => {
@@ -67,7 +67,7 @@ test.describe('OC - Manual Selection After Relogin', () => {
 		await test.step('expect to be able take chat', async () => {
 			await poOmnichannel.content.btnTakeChat.click();
 			await expect(poOmnichannel.content.lastSystemMessageBody).toHaveText('joined the channel');
-			await expect(poOmnichannel.content.inputMessage).toBeVisible();
+			await expect(poOmnichannel.composer.inputMessage).toBeVisible();
 			await expect(poOmnichannel.content.btnTakeChat).not.toBeVisible();
 			await expect(poOmnichannel.content.btnReturnToQueue).toBeVisible();
 			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
