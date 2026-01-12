@@ -35,10 +35,10 @@ ENV DEPLOY_METHOD=docker \
 # Install runtime dependencies
 # We enable Alpine 3.21 repositories to ensure we get Node.js 22 LTS (dynamically linked against system libraries)
 # We avoid upgrading system packages (like openssl) to maintain FIPS compliance from the base image
-RUN echo "https://dl-cdn.alpinelinux.org/alpine/v3.21/main" >> /etc/apk/repositories \
+RUN echo "https://dl-cdn.alpinelinux.org/alpine/v3.21/main" > /etc/apk/repositories \
     && echo "https://dl-cdn.alpinelinux.org/alpine/v3.21/community" >> /etc/apk/repositories \
     && apk update \
-    && apk add --no-cache shadow libstdc++ ttf-dejavu deno libc6-compat nodejs~=22 npm \
+    && apk add --no-cache shadow libstdc++ ttf-dejavu deno libc6-compat nodejs npm \
     # Create rocketchat user consistent with standard image
     && groupmod -n rocketchat nogroup 2>/dev/null || groupadd -r rocketchat \
     && useradd -u 65533 -r -g rocketchat rocketchat
@@ -46,6 +46,11 @@ RUN echo "https://dl-cdn.alpinelinux.org/alpine/v3.21/main" >> /etc/apk/reposito
 USER rocketchat
 
 COPY --from=builder --chown=rocketchat:rocketchat /app /app
+
+ENV OPENSSL_MODULES="/usr/lib/ossl-modules"
+ENV OPENSSL_CONF="/app/nodejs.cnf"
+
+RUN printf "openssl_conf = openssl_init\nnodejs_conf = openssl_init\n\n.include /usr/ssl/fipsmodule.cnf\n\n[openssl_init]\nproviders = provider_sect\nalg_section = algorithm_sect\n\n[provider_sect]\nfips = fips_sect\nbase = base_sect\n\n[base_sect]\nactivate = 1\n\n[algorithm_sect]\ndefault_properties = fips=yes\n" > /app/nodejs.cnf
 
 RUN echo "const crypto = require('crypto'); try { crypto.setFips(1); console.log('FIPS mode enabled'); } catch (e) { console.error('Failed to enable FIPS mode:', e.message); process.exit(1); }" > /app/enable-fips.js
 
