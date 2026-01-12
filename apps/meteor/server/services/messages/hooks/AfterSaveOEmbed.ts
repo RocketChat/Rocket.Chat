@@ -98,6 +98,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 	const sizeLimit = 250000;
 
 	log.debug({ msg: 'Fetching URL for OEmbed', url, redirectCount });
+	const start = Date.now();
 	const response = await fetch(
 		url,
 		{
@@ -112,6 +113,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 		},
 		settings.get('Allow_Invalid_SelfSigned_Certs'),
 	);
+	const end = Date.now();
 
 	let totalSize = 0;
 	const chunks = [];
@@ -125,7 +127,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 		}
 	}
 
-	log.debug({ msg: 'Obtained response from server', length: totalSize });
+	log.debug({ msg: 'Obtained response from server', length: totalSize, timeSpent: `${end - start}ms` });
 	const buffer = Buffer.concat(chunks);
 
 	return {
@@ -322,7 +324,7 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 		changed = changed || foundMeta;
 	}
 
-	// Why we have this here if there's no code for adding anyhthing to the attachments array?
+	// Why we have this here if there's no code for adding anything to the attachments array?
 	if (attachments.length) {
 		await Messages.setMessageAttachments(message._id, attachments);
 	}

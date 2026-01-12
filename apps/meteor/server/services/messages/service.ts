@@ -253,11 +253,11 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	// That means, caller should not expect to receive updated message
 	// after calling
 	async afterSave({ message }: { message: IMessage }): Promise<void> {
-		const newMessage = await OEmbed.rocketUrlParser(message);
+		message = await OEmbed.rocketUrlParser(message);
 
 		// Since this will happen after the message is sent and ack on the UI
 		// we'll notify until after these hooks are finished
-		void notifyOnMessageChange({ id: message._id, data: newMessage });
+		void notifyOnMessageChange({ id: message._id, data: message });
 	}
 
 	private getMarkdownConfig() {
