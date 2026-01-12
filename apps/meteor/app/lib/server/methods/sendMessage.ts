@@ -164,6 +164,13 @@ Meteor.methods<ServerMethods>({
 			]),
 		);
 
+		const maxFilesPerMessage = settings.get<number>('FileUpload_MaxFilesPerMessage');
+		if (filesToConfirm && maxFilesPerMessage && filesToConfirm.length > maxFilesPerMessage) {
+			throw new Meteor.Error('error-too-many-files', `Cannot send more than ${maxFilesPerMessage} files in one message`, {
+				method: 'sendMessage',
+			});
+		}
+
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
