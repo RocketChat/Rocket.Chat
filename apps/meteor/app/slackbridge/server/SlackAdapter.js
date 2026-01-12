@@ -711,6 +711,7 @@ export default class SlackAdapter {
 		if (!channels || channels.length <= 0) {
 			return;
 		}
+		slackLogger.debug('Found', channels.length, 'channels');
 
 		for await (const slackChannel of channels) {
 			const rocketchat_room =
@@ -727,6 +728,7 @@ export default class SlackAdapter {
 		if (!groups || groups.length <= 0) {
 			return;
 		}
+		slackLogger.debug('Found', groups.length, 'groups');
 
 		for await (const slackGroup of groups) {
 			const rocketchat_room =
@@ -838,7 +840,7 @@ export default class SlackAdapter {
 	async postMessage(slackChannel, rocketMessage) {
 		if (slackChannel && slackChannel.id) {
 			let iconUrl = getUserAvatarURL(rocketMessage.u && rocketMessage.u.username);
-			if (iconUrl) {
+			if (iconUrl && !(iconUrl.startsWith("http"))) {
 				iconUrl = Meteor.absoluteUrl().replace(/\/$/, '') + iconUrl;
 			}
 			const data = {
@@ -908,7 +910,7 @@ export default class SlackAdapter {
 	}
 
 	async processChannelJoin(slackMessage) {
-		slackLogger.debug('Channel join', slackMessage.channel.id);
+		slackLogger.debug('Channel join', slackMessage.channel);
 		const rocketCh = await this.rocket.addChannel(slackMessage.channel);
 		if (rocketCh != null) {
 			this.addSlackChannel(rocketCh._id, slackMessage.channel);
@@ -1069,6 +1071,23 @@ export default class SlackAdapter {
 		}
 		return rocketMsgObj;
 	}
+	
+	async processThreadBroadcastMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
+		const rocketMsgObj = {
+			msg: await this.rocket.convertSlackMsgTxtToRocketTxtFormat(slackMessage.text),
+			rid: rocketChannel._id,
+			u: {
+				_id: rocketUser._id,
+				username: rocketUser.username
+			}
+		};
+		this.rocket.addAliasToMsg(rocketUser.username, rocketMsgObj);
+		if (slackMessage.icons) {
+			rocketMsgObj.emoji = slackMessage.icons.emoji;
+		}
+		// TODO: add broadcast to room
+		return rocketMsgObj;
+	}
 
 	async processMeMessage(rocketUser, slackMessage) {
 		return this.rocket.addAliasToMsg(rocketUser.username, {
@@ -1207,6 +1226,8 @@ export default class SlackAdapter {
 				return this.processBotMessage(rocketChannel, slackMessage);
 			case 'me_message':
 				return this.processMeMessage(rocketUser, slackMessage);
+			case 'thread_broadcast':
+				return this.processThreadBroadcastMessage(rocketChannel, rocketUser, slackMessage, isImporting);
 			case 'channel_join':
 				return this.processChannelJoinMessage(rocketChannel, rocketUser, slackMessage, isImporting);
 			case 'group_join':
