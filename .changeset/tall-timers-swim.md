@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes deployment data from statistics not being updated between deployments
+Fixes workspace statistics deployment data not updating on server version changes.

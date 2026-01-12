@@ -599,54 +599,59 @@ export const statistics = {
 
 		return rcStatistics;
 	},
-	async updateDeploymentInfo(): Promise<void> {
-		const lastStatistics = await Statistics.findLast();
+	async updateDeploymentData(): Promise<void> {
+		try {
+			const lastStatistics = await Statistics.findLast();
 
-		if (!lastStatistics) {
-			return;
+			if (!lastStatistics) {
+				return;
+			}
+
+			const { mongoVersion, mongoStorageEngine } = await getMongoInfo();
+
+			const deploymentInfo: Partial<IStats> = {
+				os: {
+					type: os.type(),
+					platform: os.platform(),
+					arch: os.arch(),
+					release: os.release(),
+					uptime: os.uptime(),
+					loadavg: os.loadavg(),
+					totalmem: os.totalmem(),
+					freemem: os.freemem(),
+					cpus: os.cpus(),
+				},
+				process: {
+					nodeVersion: process.version,
+					pid: process.pid,
+					uptime: process.uptime(),
+				},
+				deploy: {
+					method: process.env.DEPLOY_METHOD || 'tar',
+					platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
+				},
+				msEnabled: isRunningMs(),
+				mongoVersion,
+				mongoStorageEngine: mongoStorageEngine || '',
+				migration: await getControl(),
+			};
+
+			if (Info) {
+				deploymentInfo.version = Info.version;
+			}
+
+			const { _id, ...baseStatistics } = lastStatistics;
+
+			const newStatistics: Omit<IStats, '_id'> = {
+				...baseStatistics,
+				...deploymentInfo,
+				createdAt: new Date(),
+			};
+
+			await Statistics.insertOne(newStatistics);
+		} catch (error) {
+			console.log('Error saving statistics with new deployment data');
+			throw error;
 		}
-
-		const { mongoVersion, mongoStorageEngine } = await getMongoInfo();
-
-		const deploymentInfo: Partial<IStats> = {
-			os: {
-				type: os.type(),
-				platform: os.platform(),
-				arch: os.arch(),
-				release: os.release(),
-				uptime: os.uptime(),
-				loadavg: os.loadavg(),
-				totalmem: os.totalmem(),
-				freemem: os.freemem(),
-				cpus: os.cpus(),
-			},
-			process: {
-				nodeVersion: process.version,
-				pid: process.pid,
-				uptime: process.uptime(),
-			},
-			deploy: {
-				method: process.env.DEPLOY_METHOD || 'tar',
-				platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
-			},
-			msEnabled: isRunningMs(),
-			mongoVersion,
-			mongoStorageEngine: mongoStorageEngine || '',
-			migration: await getControl(),
-		};
-
-		if (Info) {
-			deploymentInfo.version = Info.version;
-		}
-
-		const { _id, ...baseStatistics } = lastStatistics;
-
-		const newStatistics: Omit<IStats, '_id'> = {
-			...baseStatistics,
-			...deploymentInfo,
-			createdAt: new Date(),
-		};
-
-		await Statistics.insertOne(newStatistics);
 	},
 };

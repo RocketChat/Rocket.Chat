@@ -5,6 +5,7 @@ import { Migrations } from '@rocket.chat/models';
 import { showErrorBox } from './logger/showBox';
 import { Info } from '../../app/utils/rocketchat.info';
 import { sleep } from '../../lib/utils/sleep';
+import { statistics } from '../../app/statistics/server/lib/statistics';
 
 type IMigration = {
 	name?: string;
@@ -310,6 +311,8 @@ export async function onServerVersionChange(cb: () => Promise<void>): Promise<vo
 	if (result?.hash === Info.commit.hash) {
 		return;
 	}
+
+	await statistics.updateDeploymentData();
 
 	await cb();
 }

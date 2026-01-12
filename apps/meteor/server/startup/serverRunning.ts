@@ -6,7 +6,6 @@ import { Meteor } from 'meteor/meteor';
 import semver from 'semver';
 
 import { settings } from '../../app/settings/server';
-import { statistics } from '../../app/statistics/server/lib/statistics';
 import { Info } from '../../app/utils/rocketchat.info';
 import { getMongoInfo } from '../../app/utils/server/functions/getMongoInfo';
 // import { i18n } from '../lib/i18n';
@@ -78,8 +77,6 @@ Meteor.startup(async () => {
 
 			exitIfNotBypassed(process.env.BYPASS_MONGO_VALIDATION);
 		}
-
-		await statistics.updateDeploymentInfo();
 
 		showSuccessBox('SERVER RUNNING', msg);
 
