@@ -10,9 +10,11 @@ import {
 	defaultAuthnContextTemplate,
 } from '../constants';
 
-function resolveCustomAuthnContext(serviceProviderOptions: IServiceProviderOptions): string | undefined {
+function resolveCustomAuthnContext(serviceProviderOptions: IServiceProviderOptions): string | undefined;
+function resolveCustomAuthnContext(serviceProviderOptions: IServiceProviderOptions, defaultValue: string): string;
+function resolveCustomAuthnContext(serviceProviderOptions: IServiceProviderOptions, defaultValue?: string): string | undefined {
 	const value = serviceProviderOptions.customAuthnContext.trim();
-	return value.length > 0 ? value : undefined;
+	return value.length > 0 ? value : defaultValue;
 }
 
 /*
@@ -73,7 +75,7 @@ export class AuthorizeRequest {
 			issuer: serviceProviderOptions.issuer,
 			identifierFormat: serviceProviderOptions.identifierFormat || defaultIdentifierFormat,
 			authnContextComparison: serviceProviderOptions.authnContextComparison || 'exact',
-			authnContext: resolveCustomAuthnContext(serviceProviderOptions) || defaultAuthnContext,
+			authnContext: resolveCustomAuthnContext(serviceProviderOptions, defaultAuthnContext),
 		};
 	}
 }
