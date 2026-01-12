@@ -31,10 +31,6 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('role=button[name="Take it!"]');
 	}
 
-	override get inputMessage(): Locator {
-		return this.page.locator('[name="msg"]');
-	}
-
 	get contactContextualBar() {
 		return this.page.getByRole('dialog', { name: 'Contact' });
 	}
@@ -60,9 +56,9 @@ export class HomeOmnichannelContent extends HomeContent {
 	}
 
 	async useCannedResponse(cannedResponseName: string): Promise<void> {
-		await this.inputMessage.pressSequentially('!');
+		await this.composer.inputMessage.pressSequentially('!');
 		await this.page.locator('[role="menu"][name="ComposerBoxPopup"]').waitFor({ state: 'visible' });
-		await this.inputMessage.pressSequentially(cannedResponseName);
+		await this.composer.inputMessage.pressSequentially(cannedResponseName);
 		await this.page.keyboard.press('Enter');
 	}
 }

@@ -8464,7 +8464,7 @@ __metadata:
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.5"
+    "@rocket.chat/federation-sdk": "npm:0.3.8"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/icons": "npm:~0.46.0"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -8670,7 +8670,7 @@ __metadata:
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.5"
+    "@rocket.chat/federation-sdk": "npm:0.3.8"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -8696,9 +8696,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation-sdk@npm:0.3.5":
-  version: 0.3.5
-  resolution: "@rocket.chat/federation-sdk@npm:0.3.5"
+"@rocket.chat/federation-sdk@npm:0.3.8":
+  version: 0.3.8
+  resolution: "@rocket.chat/federation-sdk@npm:0.3.8"
   dependencies:
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@noble/ed25519": "npm:^3.0.0"
@@ -8711,7 +8711,7 @@ __metadata:
     zod: "npm:^3.24.1"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/47de2265555649b375620c7a90cf84134b14f3e38d171d84276dee9196b7b303a2d8c6f693223d63ba1c464ce12c128c5f6a795c0bb42c0e5339587b2429d034
+  checksum: 10/c8a3e8d7bdf68798d20d1d42c7bafd354c934e9d80b94796ef09f073585b1de501ba181b059a3c4b40b92660fd8ee04db6535610932bc64c1c2d147f3a24286c
   languageName: node
   linkType: hard
 
@@ -8957,7 +8957,7 @@ __metadata:
     express: "npm:^4.21.2"
     hono: "npm:^4.10.7"
     jest: "npm:~30.2.0"
-    qs: "npm:^6.14.0"
+    qs: "npm:^6.14.1"
     supertest: "npm:~7.1.4"
     ts-jest: "npm:~29.4.5"
     typescript: "npm:~5.9.3"
@@ -9338,7 +9338,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.5"
+    "@rocket.chat/federation-sdk": "npm:0.3.8"
     "@rocket.chat/fuselage": "npm:^0.70.0"
     "@rocket.chat/fuselage-forms": "npm:~0.1.1"
     "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
@@ -9634,7 +9634,7 @@ __metadata:
     proxy-from-env: "npm:^1.1.0"
     proxyquire: "npm:^2.1.3"
     psl: "npm:^1.10.0"
-    qs: "npm:^6.14.0"
+    qs: "npm:^6.14.1"
     query-string: "npm:^7.1.3"
     queue-fifo: "npm:^0.2.6"
     raw-loader: "npm:~4.0.2"
@@ -10784,8 +10784,8 @@ __metadata:
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/layout": "*"
-    "@rocket.chat/tools": 0.2.4-rc.0
-    "@rocket.chat/ui-contexts": 26.0.0-rc.1
+    "@rocket.chat/tools": 0.2.4
+    "@rocket.chat/ui-contexts": 26.0.0
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
@@ -31809,12 +31809,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:^6.11.2, qs@npm:^6.12.3, qs@npm:^6.14.0, qs@npm:^6.9.4":
+"qs@npm:^6.11.2, qs@npm:^6.12.3, qs@npm:^6.9.4":
   version: 6.14.0
   resolution: "qs@npm:6.14.0"
   dependencies:
     side-channel: "npm:^1.1.0"
   checksum: 10/a60e49bbd51c935a8a4759e7505677b122e23bf392d6535b8fc31c1e447acba2c901235ecb192764013cd2781723dc1f61978b5fdd93cc31d7043d31cdc01974
+  languageName: node
+  linkType: hard
+
+"qs@npm:^6.14.1":
+  version: 6.14.1
+  resolution: "qs@npm:6.14.1"
+  dependencies:
+    side-channel: "npm:^1.1.0"
+  checksum: 10/34b5ab00a910df432d55180ef39c1d1375e550f098b5ec153b41787f1a6a6d7e5f9495593c3b112b77dbc6709d0ae18e55b82847a4c2bbbb0de1e8ccbb1794c5
   languageName: node
   linkType: hard
 

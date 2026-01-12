@@ -3,6 +3,9 @@ import { ContextualbarActions, ContextualbarClose, GenericMenu } from '@rocket.c
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
+import type { MediaCallState } from '../../context';
+import { isCallingBlocked, useMediaCallExternalContext } from '../../context/MediaCallContext';
+
 type HistoryActions = 'voiceCall' | 'videoCall' | 'jumpToMessage' | 'directMessage' | 'userInfo';
 
 export type HistoryActionCallbacks = {
@@ -30,21 +33,27 @@ const i18nDictionary: Record<HistoryActions, string> = {
 	userInfo: 'User_info',
 } as const;
 
-const getItems = (actions: HistoryActionCallbacks, t: TFunction) => {
+const getItems = (actions: HistoryActionCallbacks, t: TFunction, state: MediaCallState) => {
 	return (Object.entries(actions) as [HistoryActions, () => void][])
 		.filter(([_, callback]) => callback)
-		.map(([action, callback]) => ({
-			id: action,
-			icon: iconDictionary[action],
-			content: t(i18nDictionary[action]),
-			onClick: callback,
-		}));
+		.map(([action, callback]) => {
+			const disabled = action === 'voiceCall' && isCallingBlocked(state);
+			return {
+				id: action,
+				icon: iconDictionary[action],
+				content: t(i18nDictionary[action]),
+				disabled,
+				onClick: callback,
+				tooltip: disabled ? t('Call_in_progress') : undefined,
+			};
+		});
 };
 
 const CallHistoryActions = ({ onClose, actions }: CallHistoryActionsProps) => {
 	const { t } = useTranslation();
 
-	const items = getItems(actions, t);
+	const { state } = useMediaCallExternalContext();
+	const items = getItems(actions, t, state);
 	return (
 		<ContextualbarActions>
 			{items.length > 0 && <GenericMenu title={t('Options')} items={items} />}
