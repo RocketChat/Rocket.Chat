@@ -1,25 +1,26 @@
 import type {
 	OEmbedUrlContentResult,
+	MessageUrl,
 	OEmbedUrlWithMetadata,
+	OEmbedMeta,
 	IMessage,
 	MessageAttachment,
-	OEmbedMeta,
-	MessageUrl,
+	OEmbedUrlContent,
 } from '@rocket.chat/core-typings';
 import { isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { Messages, OEmbedCache } from '@rocket.chat/models';
+import { OEmbedCache, Messages } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { camelCase } from 'change-case';
 import he from 'he';
 import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
 import jschardet from 'jschardet';
+import { camelCase } from 'lodash';
 
-import { isURL } from '../../../lib/utils/isURL';
-import { callbacks } from '../../../server/lib/callbacks';
-import { settings } from '../../settings/server';
-import { Info } from '../../utils/rocketchat.info';
+import { settings } from '../../../../app/settings/server';
+import { Info } from '../../../../app/utils/rocketchat.info';
+import { isURL } from '../../../../lib/utils/isURL';
+import { afterParseUrlContent, beforeGetUrlContent } from '../lib/oembed/providers';
 
 const MAX_EXTERNAL_URL_PREVIEWS = 5;
 const log = new Logger('OEmbed');
@@ -65,7 +66,7 @@ const toUtf8 = function (contentType: string, body: Buffer): string {
 	return iconv.decode(body, getCharset(contentType, body));
 };
 
-const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlContentResult> => {
+const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlContent> => {
 	const portsProtocol = new Map<string, string>(
 		Object.entries({
 			80: 'http:',
@@ -91,9 +92,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 		throw new Error('invalid/unsafe port');
 	}
 
-	const data = await callbacks.run('oembed:beforeGetUrlContent', {
-		urlObj,
-	});
+	const data = beforeGetUrlContent({ urlObj });
 
 	const url = data.urlObj.toString();
 	const sizeLimit = 250000;
@@ -133,6 +132,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 		headers: Object.fromEntries(response.headers),
 		body: toUtf8(response.headers.get('content-type') || 'text/plain', buffer),
 		statusCode: response.status,
+		urlObj,
 	};
 };
 
@@ -183,7 +183,7 @@ const getUrlMeta = async function (
 	}
 
 	log.debug({ msg: 'Fetching URL content', url: urlObj.toString() });
-	let content: OEmbedUrlContentResult | undefined;
+	let content: OEmbedUrlContent | undefined;
 	try {
 		content = await getUrlContent(urlObj, 5);
 	} catch (err) {
@@ -195,7 +195,7 @@ const getUrlMeta = async function (
 	}
 
 	log.debug({ msg: 'Parsing metadata for URL', url });
-	const metas: { [k: string]: string } = {};
+	const metas: OEmbedMeta = {} as any;
 
 	if (content?.body) {
 		const escapeMeta = (name: string, value: string): string => {
@@ -233,7 +233,7 @@ const getUrlMeta = async function (
 	if (content && content.statusCode !== 200) {
 		return;
 	}
-	return callbacks.run('oembed:afterParseContent', {
+	return afterParseUrlContent({
 		url,
 		meta: metas,
 		headers,
@@ -289,6 +289,10 @@ const insertMaxWidthInOembedHtml = (oembedHtml?: string): string | undefined =>
 const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	log.debug({ msg: 'Parsing message URLs' });
 
+	if (!settings.get('API_Embed')) {
+		return message;
+	}
+
 	if (!Array.isArray(message.urls)) {
 		return message;
 	}
@@ -318,6 +322,7 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 		changed = changed || foundMeta;
 	}
 
+	// Why we have this here if there's no code for adding anyhthing to the attachments array?
 	if (attachments.length) {
 		await Messages.setMessageAttachments(message._id, attachments);
 	}
@@ -326,26 +331,16 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 		await Messages.setUrlsById(message._id, message.urls);
 	}
 
-	return message;
+	return {
+		...message,
+		...(attachments.length && { attachments }),
+	};
 };
 
-const OEmbed: {
-	getUrlMeta: (url: string, withFragment?: boolean) => Promise<OEmbedUrlWithMetadata | undefined | OEmbedUrlContentResult>;
-	getUrlMetaWithCache: (url: string, withFragment?: boolean) => Promise<OEmbedUrlWithMetadata | OEmbedUrlContentResult | undefined>;
+export const OEmbed: {
 	rocketUrlParser: (message: IMessage) => Promise<IMessage>;
 	parseUrl: (url: string) => Promise<{ urlPreview: MessageUrl; foundMeta: boolean }>;
 } = {
 	rocketUrlParser,
-	getUrlMetaWithCache,
-	getUrlMeta,
 	parseUrl,
 };
-
-settings.watch('API_Embed', (value) => {
-	if (value) {
-		return callbacks.add('afterSaveMessage', (message) => OEmbed.rocketUrlParser(message), callbacks.priority.LOW, 'API_Embed');
-	}
-	return callbacks.remove('afterSaveMessage', 'API_Embed');
-});
-
-export { OEmbed };
