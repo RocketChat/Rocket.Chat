@@ -1,5 +1,17 @@
 # @rocket.chat/core-services
 
+## 0.12.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.5
+  - @rocket.chat/rest-typings@8.0.0-rc.5
+  - @rocket.chat/http-router@7.9.14-rc.5
+  - @rocket.chat/models@2.0.0-rc.5
+  </details>
+
 ## 0.12.0-rc.4
 
 ### Patch Changes
