@@ -66,9 +66,9 @@ test.describe('E2EE File Encryption', () => {
 			await poHomeChannel.content.openLastMessageMenu();
 			await poHomeChannel.content.btnOptionEditMessage.click();
 
-			expect(await poHomeChannel.composer.inputValue()).toBe('any_description');
+			expect(await poHomeChannel.composer.inputMessage.inputValue()).toBe('any_description');
 
-			await poHomeChannel.content.inputMessage.fill('edited any_description');
+			await poHomeChannel.composer.inputMessage.fill('edited any_description');
 			await page.keyboard.press('Enter');
 
 			await expect(poHomeChannel.content.getFileDescription).toHaveText('edited any_description');

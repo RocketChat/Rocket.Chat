@@ -252,7 +252,7 @@ const RoomBody = (): ReactElement => {
 									</MessageListErrorBoundary>
 								</div>
 							</div>
-							<RoomComposer>
+							<RoomComposer aria-label={t('Room_composer')}>
 								<ComposerContainer
 									subscription={subscription}
 									onResize={handleComposerResize}

@@ -1,6 +1,6 @@
 import { api, Room } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
-import { Rooms, Subscriptions } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../server/lib/i18n';
@@ -43,7 +43,13 @@ slashCommands.add({
 			});
 		}
 
-		await Room.join({ room, user: { _id: userId } });
+		const user = await Users.findOneById(userId, { projection: { federated: 1, federation: 1 } });
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'slashCommands',
+			});
+		}
+		await Room.join({ room, user });
 	},
 	options: {
 		description: 'Join_the_given_channel',

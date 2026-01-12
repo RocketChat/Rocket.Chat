@@ -104,7 +104,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 						<ThreadMessageList mainMessage={mainMessage} />
 					</MessageListErrorBoundary>
 
-					<RoomComposer>
+					<RoomComposer aria-label={t('Thread_composer')}>
 						<ComposerContainer
 							tmid={mainMessage._id}
 							subscription={subscription}

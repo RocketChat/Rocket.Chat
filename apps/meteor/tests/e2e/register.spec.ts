@@ -31,15 +31,15 @@ test.describe.parallel('register', () => {
 				await poRegistration.inputName.fill(faker.person.firstName());
 				await poRegistration.inputEmail.fill(faker.internet.email());
 				await poRegistration.username.fill(faker.internet.userName());
-				await poRegistration.inputPassword.fill('any_password');
-				await poRegistration.inputPasswordConfirm.fill('any_password_2');
+				await poRegistration.inputPassword.fill('P@ssw0rd1234.!');
+				await poRegistration.inputPasswordConfirm.fill('Password1235.!');
 				await poRegistration.btnRegister.click();
 
 				await expect(poRegistration.inputPasswordConfirm).toBeInvalid();
 			});
 
 			await test.step('expect successfully register a new user', async () => {
-				await poRegistration.inputPasswordConfirm.fill('any_password');
+				await poRegistration.inputPasswordConfirm.fill('P@ssw0rd1234.!');
 				await poRegistration.btnRegister.click();
 				await poAuth.waitForDisplay();
 			});
@@ -74,7 +74,7 @@ test.describe.parallel('register', () => {
 					await poRegistration.inputName.fill(faker.person.firstName());
 					await poRegistration.inputEmail.fill(faker.internet.email());
 					await poRegistration.username.fill(faker.internet.userName());
-					await poRegistration.inputPassword.fill('any_password');
+					await poRegistration.inputPassword.fill('P@ssw0rd1234.!');
 
 					await poRegistration.btnRegister.click();
 					await poAuth.waitForDisplay();
@@ -149,7 +149,7 @@ test.describe.parallel('register', () => {
 				name: faker.person.firstName(),
 				email,
 				username: faker.internet.userName(),
-				pass: 'any_password',
+				pass: 'P@ssw0rd1234.!',
 			});
 
 			await test.step('Attempt registration with the same email', async () => {
@@ -158,8 +158,8 @@ test.describe.parallel('register', () => {
 				await poRegistration.inputName.fill(faker.person.firstName());
 				await poRegistration.inputEmail.fill(email);
 				await poRegistration.username.fill(faker.internet.userName());
-				await poRegistration.inputPassword.fill('any_password');
-				await poRegistration.inputPasswordConfirm.fill('any_password');
+				await poRegistration.inputPassword.fill('P@ssw0rd1234.!');
+				await poRegistration.inputPasswordConfirm.fill('P@ssw0rd1234.!');
 				await poRegistration.btnRegister.click();
 
 				await expect(page.getByRole('alert').filter({ hasText: 'Email already exists' })).toBeVisible();
@@ -203,8 +203,8 @@ test.describe.parallel('register', () => {
 			await poRegistration.inputName.fill(faker.person.firstName());
 			await poRegistration.inputEmail.fill(faker.internet.email());
 			await poRegistration.username.fill(faker.internet.userName());
-			await poRegistration.inputPassword.fill('any_password');
-			await poRegistration.inputPasswordConfirm.fill('any_password');
+			await poRegistration.inputPassword.fill('P@ssw0rd1234.!');
+			await poRegistration.inputPasswordConfirm.fill('P@ssw0rd1234.!');
 			await poRegistration.btnRegister.click();
 			await poAuth.waitForDisplay();
 		});
