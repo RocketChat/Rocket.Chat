@@ -1,5 +1,4 @@
 import { t } from '../../../../app/utils/lib/i18n';
-import { MAX_MULTIPLE_UPLOADED_FILES } from '../../constants';
 import { e2e } from '../../e2ee';
 import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';
@@ -9,11 +8,12 @@ export const uploadFiles = async (
 	chat: ChatAPI,
 	{ files, uploadsStore, resetFileInput }: { files: readonly File[]; uploadsStore: UploadsAPI; resetFileInput?: () => void },
 ): Promise<void> => {
+	const maxFilesPerMessage = settings.peek('FileUpload_MaxFilesPerMessage') as number;
 	const mergedFilesLength = files.length + uploadsStore.get().length;
-	if (mergedFilesLength > MAX_MULTIPLE_UPLOADED_FILES) {
+	if (mergedFilesLength > maxFilesPerMessage) {
 		return dispatchToastMessage({
 			type: 'error',
-			message: t('You_cant_upload_more_than__count__files', { count: MAX_MULTIPLE_UPLOADED_FILES }),
+			message: t('You_cant_upload_more_than__count__files', { count: maxFilesPerMessage }),
 		});
 	}
 

@@ -2088,6 +2088,38 @@ describe('Meteor.methods', () => {
 				})
 				.end(done);
 		});
+
+		it('should fail when sending more files than allowed by FileUpload_MaxFilesPerMessage', async () => {
+			await updateSetting('FileUpload_MaxFilesPerMessage', 2);
+
+			const filesToConfirm = [
+				{ _id: 'file1', name: 'test1.txt' },
+				{ _id: 'file2', name: 'test2.txt' },
+				{ _id: 'file3', name: 'test3.txt' },
+			];
+
+			await request
+				.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ _id: Random.id(), rid, msg: 'test message with files' }, [], filesToConfirm],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data.error).to.have.a.property('error', 'error-too-many-files');
+				});
+
+			await updateSetting('FileUpload_MaxFilesPerMessage', 10);
+		});
 	});
 
 	describe('[@updateMessage]', () => {

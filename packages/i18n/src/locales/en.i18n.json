@@ -2284,6 +2284,8 @@
   "FileUpload_GoogleStorage_Secret_Description": "Please follow [these instructions](https://github.com/CulturalMe/meteor-slingshot#google-cloud) and paste the result here.",
   "FileUpload_MaxFileSize": "Maximum File Upload Size (in bytes)",
   "FileUpload_MaxFileSizeDescription": "Set it to -1 to remove the file size limitation.",
+  "FileUpload_MaxFilesPerMessage": "Maximum Files Per Message",
+  "FileUpload_MaxFilesPerMessage_Description": "Maximum number of files that can be uploaded in a single message.",
   "FileUpload_MediaTypeBlackList": "Blocked Media Types",
   "FileUpload_MediaTypeBlackListDescription": "Comma-separated list of media types. This setting has priority over the Accepted Media Types.",
   "FileUpload_MediaTypeBlackList_Alert": "The default media type for unknown file extensions is \"application/octet-stream\", to work only with known file extensions you can add it to the \"Blocked Media Types\" list.",
