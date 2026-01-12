@@ -1,11 +1,12 @@
 import { ActionTypes } from "../reducer";
+import { SurfaceOptions } from '../../Components/Preview/Display/Surface/constant';
 
 export type SurfaceAction = {
   type: ActionTypes.Surface,
-  payload: number,
+  payload: SurfaceOptions,
 };
 
-export const surfaceAction = (payload: number): SurfaceAction => ({
+export const surfaceAction = (payload: SurfaceOptions): SurfaceAction => ({
   type: ActionTypes.Surface,
   payload,
 });

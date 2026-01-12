@@ -3,11 +3,12 @@ import { Draggable } from '@hello-pangea/dnd';
 import DeleteElementBtn from '../Preview/Display/UiKitElementWrapper/DeleteElementBtn';
 import UiKitElementWrapper from '../Preview/Display/UiKitElementWrapper/UiKitElementWrapper';
 import RenderPayload from '../RenderPayload/RenderPayload';
+import { SurfaceOptions } from '../Preview/Display/Surface/constant';
 import type { Block } from './DraggableList';
 
 export type DraggableListItemProps = {
   block: Block;
-  surface: number;
+  surface: SurfaceOptions;
   index: number;
 };
 

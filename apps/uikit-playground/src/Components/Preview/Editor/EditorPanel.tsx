@@ -11,10 +11,10 @@ import FlowDiagram from '../../../Pages/FlowDiagram';
 import PrototypeContainer from '../../PtototypeContainer/PrototypeContainer';
 
 enum TabsItem {
-  ActionBlock,
-  ActionPreview,
-  FlowDiagram,
-  Prototype,
+  ActionBlock = 0,
+  ActionPreview = 1,
+  FlowDiagram = 2,
+  Prototype = 3,
 }
 
 const tabsItem = {

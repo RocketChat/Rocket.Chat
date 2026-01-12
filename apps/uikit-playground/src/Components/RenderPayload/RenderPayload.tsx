@@ -14,7 +14,7 @@ const RenderPayload = ({
 }: {
   index?: number;
   blocks: ILayoutBlock[];
-  surface?: number;
+  surface?: SurfaceOptions;
 }) => (
   <>
     {SurfaceOptions.Message === surface && uiKitMessage(blocks)}

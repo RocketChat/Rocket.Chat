@@ -28,7 +28,7 @@ export enum ApiVisibility {
 	 * Url format:
 	 * `https://{your-server-address}/api/apps/public/{your-app-id}/{path}`
 	 */
-	PUBLIC,
+	PUBLIC = 0,
 	/**
 	 * Private Api's contain a random value in the url format,
 	 * making them harder go guess by default. The random value
@@ -40,19 +40,19 @@ export enum ApiVisibility {
 	 * Url format:
 	 * `https://{your-server-address}/api/apps/private/{your-app-id}/{random-hash}/{path}`
 	 */
-	PRIVATE,
+	PRIVATE = 1,
 }
 
 export enum ApiSecurity {
 	/**
 	 * No security check will be executed agains the calls made to this URL
 	 */
-	UNSECURE,
+	UNSECURE = 0,
 	/**
 	 * Only calls containing a valid token will be able to execute the api
 	 * Mutiple tokens can be generated to access the api, by default one
 	 * will be generated automatically.
 	 * @param `X-Auth-Token`
 	 */
-	// CHECKSUM_SECRET,
+	CHECKSUM_SECRET = 1,
 }

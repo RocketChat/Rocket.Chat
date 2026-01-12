@@ -3,13 +3,13 @@
  * @remarks
  */
 enum LogLevel {
-	'fatal',
-	'error',
-	'warn',
-	'info',
-	'debug',
-	'verbose',
-}
+	fatal = 0,
+	error = 1,
+	warn = 2,
+	info = 3,
+	debug = 4,
+	verbose = 5,
+} 
 
 export class ClientLogger {
 	module: string | undefined;

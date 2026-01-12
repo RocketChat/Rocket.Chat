@@ -1,10 +1,10 @@
 import { SurfaceOptions } from '../../Components/Preview/Display/Surface/constant';
 
 type containerType = {
-  [key: number]: {
+  [key in SurfaceOptions]: {
     type: string,
     text: string,
-  },
+  }
 };
 const container: containerType = {
   [SurfaceOptions.Message]: {
