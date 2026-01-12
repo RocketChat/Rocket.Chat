@@ -24,6 +24,11 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getMessageEditHistory' });
 		}
 
+		// Check if user is the message author
+		if (currentMessage.u._id !== userId) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getMessageEditHistory' });
+		}
+
 		// Get all history versions (stored with _hidden: true and parent: messageId)
 		const historyMessages = await Messages.find(
 			{

@@ -925,7 +925,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getMessageHistory',
-	{ authRequired: true },
+	{ authRequired: true , validateParams: isChatGetMessageHistoryProps },
 	{
 		async get(this: any) {
 			const { messageId } = this.queryParams;
@@ -969,20 +969,20 @@ API.v1.addRoute(
 				},
 			).toArray();
 
-			console.log(`[MessageHistory] For message ${rootMessageId}: Found ${historyMessages.length} history entries`);
-			console.log(`[MessageHistory] History IDs:`, historyMessages.map(m => ({ id: m._id, msg: m.msg })));
+			// console.log(`[MessageHistory] For message ${rootMessageId}: Found ${historyMessages.length} history entries`);
+			// console.log(`[MessageHistory] History IDs:`, historyMessages.map(m => ({ id: m._id, msg: m.msg })));
 
-			// Return history first (oldest to newest), then current message at the end
-			const allMessages = [...historyMessages, currentMessage];
+			// // Return history first (oldest to newest), then current message at the end
+			 const allMessages = [...historyMessages, currentMessage];
 
-			console.log(`[MessageHistory] Total messages before normalize: ${allMessages.length}`);
-			console.log(`[MessageHistory] All message IDs:`, allMessages.map(m => ({ id: m._id, msg: m.msg, hidden: m._hidden })));
+			// console.log(`[MessageHistory] Total messages before normalize: ${allMessages.length}`);
+			// console.log(`[MessageHistory] All message IDs:`, allMessages.map(m => ({ id: m._id, msg: m.msg, hidden: m._hidden })));
 
-			// Normalize messages for user
-			const messages = await normalizeMessagesForUser(allMessages, this.userId);
+			// // Normalize messages for user
+			 const messages = await normalizeMessagesForUser(allMessages, this.userId);
 
-			console.log(`[MessageHistory] Total messages after normalize: ${messages.length}`);
-			console.log(`[MessageHistory] Final message IDs:`, messages.map(m => ({ id: m._id, msg: m.msg, hidden: m._hidden })));
+			// console.log(`[MessageHistory] Total messages after normalize: ${messages.length}`);
+			// console.log(`[MessageHistory] Final message IDs:`, messages.map(m => ({ id: m._id, msg: m.msg, hidden: m._hidden })));
 
 			return API.v1.success({
 				messages,
