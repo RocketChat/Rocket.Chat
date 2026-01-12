@@ -1,36 +1,23 @@
 import { FederationMatrix } from '@rocket.chat/core-services';
 import { getFederationRoutes } from '@rocket.chat/federation-matrix';
 import { Logger } from '@rocket.chat/logger';
-import { ajv } from '@rocket.chat/rest-typings';
+import { GETFederationMatrixIdsVerifyQuerySchema, GETFederationMatrixIdsVerifyResponseSchema } from '@rocket.chat/rest-typings';
 import type express from 'express';
 import { WebApp } from 'meteor/webapp';
 
 import { API } from '../../../app/api/server';
+import type { ExtractRoutesFromAPI } from '../../../app/api/server/ApiClass';
 import { getTrimmedServerVersion } from '../../../app/api/server/lib/getTrimmedServerVersion';
 
 const logger = new Logger('FederationRoutes');
 
-API.v1.get(
-	'/federation/matrixIds.verify',
+const federationEndpoints = API.v1.get(
+	'federation/matrixIds.verify',
 	{
 		authRequired: true,
-		query: ajv.compile<{
-			matrixIds: string[];
-		}>({
-			type: 'object',
-			properties: {
-				matrixIds: { type: 'array', items: { type: 'string' } },
-			},
-		}),
+		query: GETFederationMatrixIdsVerifyQuerySchema,
 		response: {
-			200: ajv.compile<{
-				results: { [key: string]: string };
-			}>({
-				type: 'object',
-				properties: {
-					results: { type: 'object', additionalProperties: { type: 'string' } },
-				},
-			}),
+			200: GETFederationMatrixIdsVerifyResponseSchema,
 		},
 	},
 	async function () {
@@ -50,4 +37,9 @@ export async function registerFederationRoutes(): Promise<void> {
 		logger.error({ msg: '[Federation] Failed to register routes:', err: error });
 		throw error;
 	}
+}
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends ExtractRoutesFromAPI<typeof federationEndpoints> {}
 }
