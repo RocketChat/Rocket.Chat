@@ -264,6 +264,10 @@ export const sendMessage = async (
 		const { files, attachments } = await parseMultipleFilesIntoMessageAttachments(uploadsToConfirm, message.rid, user);
 		message.files = files;
 		message.attachments = attachments;
+		// For compatibility with older integrations, we save the first file to the `file` attribute of the message
+		if (files.length) {
+			message.file = files[0];
+		}
 	}
 
 	await validateMessage(message, room, user);
