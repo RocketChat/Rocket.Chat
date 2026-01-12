@@ -95,7 +95,32 @@ export async function executeUpdateMessage(
 
 	message.u = originalMessage.u;
 
+	// ✨ SAVE MESSAGE HISTORY BEFORE UPDATING ✨
+	const keepHistory = settings.get('Message_KeepHistory');
+
+	if (keepHistory) {
+		// Check if we recently saved history for this message (within last 2 seconds)
+		const recentHistory = await Messages.findOne(
+			{
+				_hidden: true,
+				parent: originalMessage._id,
+				msg: originalMessage.msg,
+				editedAt: { $gte: new Date(Date.now() - 2000) },
+			},
+			{ sort: { editedAt: -1 } }
+		);
+
+		if (!recentHistory) {
+			try {
+				await Messages.cloneAndSaveAsHistoryById(originalMessage._id, user);
+			} catch (error) {
+				console.error('Error saving message history:', error);
+			}
+		}
+	}
+
 	return updateMessage(message, user, originalMessage, previewUrls);
+
 }
 
 declare module '@rocket.chat/ddp-client' {

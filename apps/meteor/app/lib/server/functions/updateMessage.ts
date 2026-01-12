@@ -39,9 +39,9 @@ export const updateMessage = async function (
 	}
 
 	// If we keep history of edits, insert a new message to store history information
-	if (settings.get('Message_KeepHistory')) {
-		await Messages.cloneAndSaveAsHistoryById(messageData._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
-	}
+	// if (settings.get('Message_KeepHistory')) {
+	// 	await Messages.cloneAndSaveAsHistoryById(messageData._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
+	// }
 
 	Object.assign(messageData, {
 		editedAt: new Date(),
