@@ -28,6 +28,7 @@
 		".testunit:server": "mocha --config ./.mocharc.js",
 		".testunit:server:cov": "nyc -r text -r lcov mocha --config ./.mocharc.js",
 		"build:ci": "METEOR_DEBUG_BUILD=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --verbose --server-only --directory /tmp/dist",
+		"build:fips": "rm -rf /tmp/dist && meteor build --verbose --server-only --directory /tmp/dist && docker build -f .docker/Dockerfile.fips -t rocketchat:fips /tmp/dist",
 		"coverage": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' nyc -r html mocha --config ./.mocharc.js",
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
