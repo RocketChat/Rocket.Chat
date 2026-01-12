@@ -13,11 +13,10 @@ export async function deleteReportedMessages(messages: IMessage[], user: IUser):
 	const files: string[] = [];
 	const messageIds: string[] = [];
 	for (const message of messages) {
-		if (message.file) {
-			files.push(message.file._id);
-		}
 		if (message.files && message.files.length > 0) {
-			files.concat(message.files.map((file) => file._id));
+			files.push(...message.files.map((file) => file._id));
+		} else if (message.file) {
+			files.push(message.file._id);
 		}
 		messageIds.push(message._id);
 	}
