@@ -9,12 +9,15 @@ import {
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationRequestError } from '@rocket.chat/federation-sdk';
-import type { EventID, UserID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
+import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import emojione from 'emojione';
 
+import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser';
+import { extractDomainFromMatrixUserId } from './helpers/extractDomainFromMatrixUserId';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
+import { validateFederatedUsername } from './helpers/validateFederatedUsername';
 import { MatrixMediaService } from './services/MatrixMediaService';
 
 export const fileTypes: Record<string, FileMessageType> = {
@@ -23,115 +26,6 @@ export const fileTypes: Record<string, FileMessageType> = {
 	audio: 'm.audio',
 	file: 'm.file',
 };
-
-/** helper to validate the username format */
-export function validateFederatedUsername(mxid: string): mxid is UserID {
-	if (!mxid.startsWith('@')) return false;
-
-	const parts = mxid.substring(1).split(':');
-	if (parts.length < 2) return false;
-
-	const localpart = parts[0];
-	const domainAndPort = parts.slice(1).join(':');
-
-	const localpartRegex = /^(?:[a-z0-9._\-]|=[0-9a-fA-F]{2}){1,255}$/;
-	if (!localpartRegex.test(localpart)) return false;
-
-	const [domain, port] = domainAndPort.split(':');
-
-	const hostnameRegex = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)*$/i;
-	const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/;
-	const ipv6Regex = /^\[([0-9a-f:.]+)\]$/i;
-
-	if (!(hostnameRegex.test(domain) || ipv4Regex.test(domain) || ipv6Regex.test(domain))) {
-		return false;
-	}
-
-	if (port !== undefined) {
-		const portNum = Number(port);
-		if (!/^[0-9]+$/.test(port) || portNum < 1 || portNum > 65535) {
-			return false;
-		}
-	}
-
-	return true;
-}
-export const extractDomainFromMatrixUserId = (mxid: string): string => {
-	const separatorIndex = mxid.indexOf(':', 1);
-	if (separatorIndex === -1) {
-		throw new Error(`Invalid federated username: ${mxid}`);
-	}
-	return mxid.substring(separatorIndex + 1);
-};
-
-/**
- * Extract the username and the servername from a matrix user id
- * if the serverName is the same as the serverName in the mxid, return only the username (rocket.chat regular username)
- * otherwise, return the full mxid and the servername
- */
-export const getUsernameServername = (mxid: string, serverName: string): [mxid: string, serverName: string, isLocal: boolean] => {
-	const senderServerName = extractDomainFromMatrixUserId(mxid);
-	// if the serverName is the same as the serverName in the mxid, return only the username (rocket.chat regular username)
-	if (serverName === senderServerName) {
-		const separatorIndex = mxid.indexOf(':', 1);
-		if (separatorIndex === -1) {
-			throw new Error(`Invalid federated username: ${mxid}`);
-		}
-		return [mxid.substring(1, separatorIndex), senderServerName, true]; // removers also the @
-	}
-
-	return [mxid, senderServerName, false];
-};
-/**
- * Helper function to create a federated user
- *
- * Because of historical reasons, we can have users only with federated flag but no federation object
- * So we need to upsert the user with the federation object
- */
-export async function createOrUpdateFederatedUser(options: { username: string; name?: string; origin: string }): Promise<IUser> {
-	const { username, name = username, origin } = options;
-
-	// TODO: Have a specific method to handle this upsert
-	const user = await Users.findOneAndUpdate(
-		{
-			username,
-		},
-		{
-			$set: {
-				username,
-				name: name || username,
-				type: 'user' as const,
-				status: UserStatus.OFFLINE,
-				active: true,
-				roles: ['user'],
-				requirePasswordChange: false,
-				federated: true,
-				federation: {
-					version: 1,
-					mui: username,
-					origin,
-				},
-				_updatedAt: new Date(),
-			},
-			$setOnInsert: {
-				createdAt: new Date(),
-			},
-		},
-		{
-			upsert: true,
-			projection: { _id: 1, username: 1 },
-			returnDocument: 'after',
-		},
-	);
-
-	if (!user) {
-		throw new Error(`Failed to create or update federated user: ${username}`);
-	}
-
-	return user;
-}
-
-export { generateEd25519RandomSecretKey } from '@rocket.chat/federation-sdk';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
@@ -260,53 +154,23 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		try {
 			this.logger.debug('Creating direct message room in Matrix', { roomId: room._id, memberCount: members.length });
 
-			const creator = await Users.findOneById(creatorId);
+			const creator = await Users.findOneById<Pick<IUser, 'username'>>(creatorId, { projection: { username: 1 } });
 			if (!creator) {
 				throw new Error('Creator not found in members list');
 			}
 
-			const actualMatrixUserId = `@${creator.username}:${this.serverName}`;
-
-			let matrixRoomResult: { room_id: string; event_id?: string };
-			if (members.length === 2) {
-				const otherMember = members.find((member) => member._id !== creatorId);
-				if (!otherMember) {
-					throw new Error('Other member not found for 1-on-1 DM');
-				}
-				if (!isUserNativeFederated(otherMember)) {
-					throw new Error('Other member is not federated');
-				}
-				const roomId = await federationSDK.createDirectMessageRoom(
-					userIdSchema.parse(actualMatrixUserId),
-					userIdSchema.parse(otherMember.username),
-				);
-				matrixRoomResult = { room_id: roomId };
-			} else {
-				// For group DMs (more than 2 members), create a private room
-				const roomName = room.name || room.fname || `Group chat with ${members.length} members`;
-				matrixRoomResult = await federationSDK.createRoom(userIdSchema.parse(actualMatrixUserId), roomName, 'invite');
-
-				for await (const member of members) {
-					if (member._id === creatorId) {
-						continue;
-					}
-
-					try {
-						await federationSDK.inviteUserToRoom(
-							isUserNativeFederated(member) ? userIdSchema.parse(member.username) : `@${member.username}:${this.serverName}`,
-							roomIdSchema.parse(matrixRoomResult.room_id),
-							userIdSchema.parse(actualMatrixUserId),
-						);
-					} catch (error) {
-						this.logger.error(error, 'Error creating or updating bridged user for DM');
-					}
-				}
-			}
+			const roomId = await federationSDK.createDirectMessage({
+				creatorUserId: userIdSchema.parse(`@${creator.username}:${this.serverName}`),
+				members: members
+					.filter((member) => member._id !== creatorId)
+					.map((member) => userIdSchema.parse(isUserNativeFederated(member) ? member.username : `@${member.username}:${this.serverName}`)),
+			});
 
 			await Rooms.setAsFederated(room._id, {
-				mrid: matrixRoomResult.room_id,
+				mrid: roomId,
 				origin: this.serverName,
 			});
+
 			this.logger.debug({ roomId: room._id, msg: 'Direct message room creation completed successfully' });
 		} catch (error) {
 			this.logger.error(error, 'Failed to create direct message room');
