@@ -1,5 +1,13 @@
 # @rocket.chat/media-signaling
 
+## 0.1.1
+
+### Patch Changes
+
+- ([#37816](https://github.com/RocketChat/Rocket.Chat/pull/37816)) Fixes an issue where the client would play the Call Ended sound effect when the user started calling someone on a different session
+
+- ([#38025](https://github.com/RocketChat/Rocket.Chat/pull/38025)) Adds a timeout to ensure transferred calls stop ringing if there's no response from the final user
+
 ## 0.1.1-rc.1
 
 ### Patch Changes
