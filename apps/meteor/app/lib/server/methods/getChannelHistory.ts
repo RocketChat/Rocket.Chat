@@ -48,10 +48,6 @@ export const getChannelHistory = async ({
 }): Promise<false | IMessage[] | { messages: IMessage[]; firstUnread?: any; unreadNotLoaded?: number }> => {
 	check(rid, String);
 
-	if (!Meteor.userId()) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getChannelHistory' });
-	}
-
 	if (!fromUserId) {
 		return false;
 	}
