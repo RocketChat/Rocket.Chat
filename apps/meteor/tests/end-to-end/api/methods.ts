@@ -2111,9 +2111,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('error').that.is.an('object');
 					expect(data.error).to.have.a.property('error', 'error-too-many-files');
