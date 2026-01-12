@@ -494,7 +494,7 @@ API.v1.addRoute(
 			const connectionId =
 				this.token ||
 				crypto
-					.createHash('md5')
+					.createHash('sha256')
 					.update(this.requestIp + this.user._id)
 					.digest('hex');
 
@@ -552,7 +552,7 @@ API.v1.addRoute(
 
 			const { method, params, id } = data;
 
-			const connectionId = this.token || crypto.createHash('md5').update(this.requestIp).digest('hex');
+			const connectionId = this.token || crypto.createHash('sha256').update(this.requestIp).digest('hex');
 
 			const rateLimiterInput = {
 				userId: this.userId || undefined,
