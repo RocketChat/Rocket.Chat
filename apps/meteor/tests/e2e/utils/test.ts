@@ -7,6 +7,7 @@ import type { Locator, APIResponse, APIRequestContext } from '@playwright/test';
 import { test as baseTest, request as baseRequest } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 
+import { settings, type SettingsFixture } from './settings';
 import { BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 
@@ -23,6 +24,7 @@ export type BaseTest = {
 		put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
 		delete(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 	};
+	settings: SettingsFixture;
 	makeAxeBuilder: () => AxeBuilder;
 };
 declare global {
@@ -119,6 +121,7 @@ export const test = baseTest.extend<BaseTest>({
 			},
 		});
 	},
+	settings,
 	makeAxeBuilder: async ({ page }, use) => {
 		const SELECT_KNOW_ISSUES = ['aria-hidden-focus', 'nested-interactive'];
 

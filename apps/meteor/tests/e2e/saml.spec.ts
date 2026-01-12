@@ -1,5 +1,6 @@
 import child_process from 'child_process';
 import path from 'path';
+import { inflateRawSync } from 'zlib';
 
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
@@ -17,6 +18,7 @@ import { parseMeteorResponse } from './utils/parseMeteorResponse';
 import { setSettingValueById } from './utils/setSettingValueById';
 import type { BaseTest } from './utils/test';
 import { test, expect } from './utils/test';
+import { defaultAuthnContext } from '../../app/meteor-accounts-saml/server/lib/constants';
 
 const KEY = 'fuselage-sessionStorage-saml_invite_token';
 
@@ -70,6 +72,7 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupO
 		{ _id: 'SAML_Custom_Default_mail_overwrite', value: false },
 		{ _id: 'SAML_Custom_Default_name_overwrite', value: false },
 		{ _id: 'SAML_Custom_Default', value: false },
+		{ _id: 'SAML_Custom_Default_custom_authn_context', value: defaultAuthnContext },
 		{ _id: 'SAML_Custom_Default_role_attribute_sync', value: true },
 		{ _id: 'SAML_Custom_Default_role_attribute_name', value: 'role' },
 		{ _id: 'SAML_Custom_Default_user_data_fieldmap', value: '{"username":"username", "email":"email", "name": "cn"}' },
@@ -288,6 +291,23 @@ test.describe('SAML', () => {
 		});
 	};
 
+	const refreshLoginServices = async (api: BaseTest['api']) => {
+		const response = await api.post('/method.call/refreshOAuthService', {
+			message: JSON.stringify({ msg: 'method', id: 'refreshOAuthService', method: 'refreshOAuthService', params: [] }),
+		});
+		expect(response.status()).toBe(200);
+	};
+
+	const decodeSamlRequestPayload = (value: string): string => {
+		const buffer = Buffer.from(value, 'base64');
+
+		try {
+			return inflateRawSync(buffer).toString('utf-8');
+		} catch {
+			return buffer.toString('utf-8');
+		}
+	};
+
 	test('Logout - Rocket.Chat only', async ({ page, api }) => {
 		await test.step('Configure logout to only logout from Rocket.Chat', async () => {
 			await expect((await setSettingValueById(api, 'SAML_Custom_Default_logout_behaviour', 'Local')).status()).toBe(200);
@@ -319,6 +339,144 @@ test.describe('SAML', () => {
 			await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
 			await expect(page.getByLabel('Username')).toBeVisible();
 		});
+	});
+
+	test('AuthnRequest includes RequestedAuthnContext when custom authn context is set', async ({ page, api }) => {
+		test.skip(!constants.IS_EE);
+		await test.step('Configure custom authn context to PasswordProtectedTransport', async () => {
+			const res = await setSettingValueById(
+				api,
+				'SAML_Custom_Default_custom_authn_context',
+				'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport',
+			);
+			expect(res.status()).toBe(200);
+		});
+
+		let capturedSAMLRequest = '';
+
+		await test.step('Intercept GET to IdP and capture SAMLRequest', async () => {
+			page.removeAllListeners('request');
+			page.on('request', (req) => {
+				try {
+					const url = req.url();
+					if (url.includes('/simplesaml/saml2/idp/SSOService.php') && url.includes('SAMLRequest=')) {
+						const urlObj = new URL(url);
+						const samlRequestB64 = urlObj.searchParams.get('SAMLRequest');
+						if (samlRequestB64) {
+							const buffer = Buffer.from(samlRequestB64, 'base64');
+							const xml = inflateRawSync(buffer).toString('utf-8');
+							capturedSAMLRequest = xml;
+						}
+					}
+				} catch {
+					// ignore errors here
+				}
+			});
+		});
+
+		await test.step('Trigger SAML login flow', async () => {
+			await page.goto('/home');
+			await expect(poRegistration.btnLoginWithSaml).toBeVisible({ timeout: 10000 });
+			await poRegistration.btnLoginWithSaml.click();
+			await expect(page).toHaveURL(/.*\/simplesaml\/module\.php\/core\/loginuserpass\.php.*/);
+		});
+
+		await test.step('Retry once to ensure config reload applied', async () => {
+			// Some environments require an additional navigation for service reload
+			await page.goto('/home');
+			await expect(poRegistration.btnLoginWithSaml).toBeVisible({ timeout: 10000 });
+			await poRegistration.btnLoginWithSaml.click();
+			await expect(page).toHaveURL(/.*\/simplesaml\/module\.php\/core\/loginuserpass\.php.*/);
+		});
+
+		await test.step('Validate AuthnRequest contains RequestedAuthnContext', async () => {
+			expect(capturedSAMLRequest).toBeTruthy();
+			expect(capturedSAMLRequest).toContain('<samlp:RequestedAuthnContext');
+			// sanity: ensure the context value is present regardless of formatting
+			expect(capturedSAMLRequest).toContain('urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport');
+		});
+	});
+
+	test('AuthnRequest omits RequestedAuthnContext when custom authn context is empty', async ({ page, settings, api }) => {
+		test.skip(!constants.IS_EE);
+		await test.step('Configure custom authn context to empty string', async () => {
+			await settings.set('SAML_Custom_Default_custom_authn_context', '');
+			await refreshLoginServices(api);
+		});
+
+		let capturedSAMLRequest = '';
+
+		await test.step('Intercept GET request to IdP and capture SAMLRequest from URL', async () => {
+			page.on('request', (req) => {
+				try {
+					const url = req.url();
+					if (url.includes('/simplesaml/saml2/idp/SSOService.php') && url.includes('SAMLRequest=')) {
+						const urlObj = new URL(url);
+						const samlRequestB64 = urlObj.searchParams.get('SAMLRequest');
+						if (samlRequestB64) {
+							// Decode from base64 and decompress with inflate (it was deflated)
+							const buffer = Buffer.from(samlRequestB64, 'base64');
+
+							const xml = inflateRawSync(buffer).toString('utf-8');
+							capturedSAMLRequest = xml;
+						}
+					}
+				} catch {
+					// ignore errors
+				}
+			});
+		});
+
+		await test.step('Trigger SAML login flow', async () => {
+			await page.goto('/home');
+			await expect(poRegistration.btnLoginWithSaml).toBeVisible({ timeout: 10000 });
+			await poRegistration.btnLoginWithSaml.click();
+			await expect(page).toHaveURL(/.*\/simplesaml\/module\.php\/core\/loginuserpass\.php.*/);
+		});
+
+		await test.step('Validate AuthnRequest does not contain RequestedAuthnContext when empty', async () => {
+			expect(capturedSAMLRequest).toBeTruthy();
+			expect(capturedSAMLRequest).not.toContain('<samlp:RequestedAuthnContext');
+		});
+	});
+
+	test('Omits RequestedAuthnContext when custom authn context is blank', async ({ page, settings, api }) => {
+		test.skip(!constants.IS_EE, 'Custom Authn Context requires an EE license');
+
+		const settingId = 'SAML_Custom_Default_custom_authn_context';
+
+		await test.step('Configure SAML custom authn context to whitespace', async () => {
+			await settings.set(settingId, ' ');
+		});
+
+		await test.step('Reload login services to apply the new custom authn context', async () => {
+			await refreshLoginServices(api);
+		});
+
+		await page.goto('/home');
+		const samlRequestPromise = page.waitForRequest(/\/simplesaml\/saml2\/idp\/SSOService\.php/);
+
+		await expect(poRegistration.btnLoginWithSaml).toBeVisible();
+		await poRegistration.btnLoginWithSaml.click();
+
+		const samlRequest = await samlRequestPromise;
+		const samlRequestParam = new URL(samlRequest.url()).searchParams.get('SAMLRequest');
+
+		expect(samlRequestParam).toBeTruthy();
+
+		const decodedPayload = decodeSamlRequestPayload(samlRequestParam as string);
+
+		expect(decodedPayload).not.toContain('RequestedAuthnContext');
+		expect(decodedPayload).not.toContain('AuthnContextClassRef');
+
+		await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
+		await page.getByLabel('Username').fill('samluser1');
+		await page.getByLabel('Password').fill('password');
+		await page.getByRole('button', { name: 'Login' }).click();
+
+		await expect(page).toHaveURL('/home');
+		await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
+		await doLogoutStep(page);
 	});
 
 	test('User Merge - By Email', async ({ page, api }) => {
