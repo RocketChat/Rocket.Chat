@@ -43,13 +43,13 @@ test.describe.serial('Image Gallery', async () => {
 			await poHomeChannel.navbar.openChat(targetChannel);
 			for await (const imageName of imageNames) {
 				await poHomeChannel.content.sendFileMessage(imageName);
-				await poHomeChannel.content.btnSendMainComposer.click();
+				await poHomeChannel.composer.btnSend.click();
 				await expect(poHomeChannel.content.lastUserMessage).toContainText(imageName);
 			}
 
 			await poHomeChannel.navbar.openChat(targetChannelLargeImage);
 			await poHomeChannel.content.sendFileMessage(largeFileName);
-			await poHomeChannel.content.btnSendMainComposer.click();
+			await poHomeChannel.composer.btnSend.click();
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(largeFileName);
 
 			await poHomeChannel.content.lastUserMessage.locator('img.gallery-item').click();

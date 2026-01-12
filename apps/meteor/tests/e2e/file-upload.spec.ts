@@ -52,7 +52,7 @@ test.describe.serial('file-upload', () => {
 			await poHomeChannel.content.btnUpdateFileUpload.click();
 
 			expect(poHomeChannel.content.getFileComposerByName(updatedFileName));
-			await poHomeChannel.content.btnSendMainComposer.click();
+			await poHomeChannel.composer.btnSend.click();
 		});
 
 		await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
@@ -61,7 +61,7 @@ test.describe.serial('file-upload', () => {
 
 	test('should send lst file successfully', async () => {
 		await poHomeChannel.content.dragAndDropLstFile();
-		await poHomeChannel.content.btnSendMainComposer.click();
+		await poHomeChannel.composer.btnSend.click();
 
 		await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
 		await expect(poHomeChannel.content.lastMessageFileName).toContainText('lst-test.lst');
@@ -71,7 +71,7 @@ test.describe.serial('file-upload', () => {
 		const fileName = 'diagram.drawio';
 		await page.reload();
 		await poHomeChannel.content.sendFileMessage(fileName);
-		await poHomeChannel.content.btnSendMainComposer.click();
+		await poHomeChannel.composer.btnSend.click();
 
 		await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
 		await expect(poHomeChannel.content.lastMessageFileName).toContainText(fileName);
@@ -95,7 +95,7 @@ test.describe.serial('file-upload', () => {
 			await poHomeChannel.content.sendFileMessage(file1);
 			await poHomeChannel.content.sendFileMessage(file2);
 
-			await poHomeChannel.content.btnSendMainComposer.click();
+			await poHomeChannel.composer.btnSend.click();
 
 			await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(file1);
@@ -114,7 +114,7 @@ test.describe.serial('file-upload', () => {
 			await expect(poHomeChannel.content.getFileComposerByName(file1)).not.toBeVisible();
 			await expect(poHomeChannel.content.getFileComposerByName(file2)).toBeVisible();
 
-			await poHomeChannel.content.btnSendMainComposer.click();
+			await poHomeChannel.composer.btnSend.click();
 
 			await expect(poHomeChannel.content.lastUserMessage).not.toContainText(file1);
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(file2);
@@ -127,9 +127,9 @@ test.describe.serial('file-upload', () => {
 
 			await poHomeChannel.content.sendFileMessage(file1);
 			await poHomeChannel.content.sendFileMessage(file2);
-			await poHomeChannel.content.inputMessage.fill(message);
+			await poHomeChannel.composer.inputMessage.fill(message);
 
-			await poHomeChannel.content.btnSendMainComposer.click();
+			await poHomeChannel.composer.btnSend.click();
 
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(file1);
@@ -167,7 +167,7 @@ test.describe.serial('file-upload', () => {
 			await expect(poHomeChannel.content.getFileComposerByName(invalidFile1)).toHaveAttribute('readonly');
 			await expect(poHomeChannel.content.getFileComposerByName(invalidFile2)).toHaveAttribute('readonly');
 
-			await poHomeChannel.content.btnSendMainComposer.click();
+			await poHomeChannel.composer.btnSend.click();
 			const warningModal = poHomeChannel.page.getByRole('dialog', { name: 'Warning' });
 			await expect(warningModal).toBeVisible();
 			await expect(warningModal).toContainText('2 files failed to upload');
@@ -188,7 +188,7 @@ test.describe.serial('file-upload', () => {
 			});
 
 			await test.step('should open warning modal', async () => {
-				await poHomeChannel.content.btnSendMainComposer.click();
+				await poHomeChannel.composer.btnSend.click();
 
 				const warningModal = poHomeChannel.page.getByRole('dialog', { name: 'Are you sure' });
 				await expect(warningModal).toBeVisible();
@@ -205,7 +205,7 @@ test.describe.serial('file-upload', () => {
 			});
 
 			await test.step('should send message with the valid file when confirming "Send anyway"', async () => {
-				await poHomeChannel.content.btnSendMainComposer.click();
+				await poHomeChannel.composer.btnSend.click();
 
 				const warningModal = poHomeChannel.page.getByRole('dialog', { name: 'Are you sure' });
 

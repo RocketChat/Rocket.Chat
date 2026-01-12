@@ -92,7 +92,7 @@ test.describe('E2EE File Encryption', () => {
 			await poHomeChannel.content.getFileComposerByName('any_file.txt').click();
 			await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
 			await poHomeChannel.content.btnUpdateFileUpload.click();
-			await poHomeChannel.content.btnSendMainComposer.click();
+			await poHomeChannel.composer.btnSend.click();
 
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 			await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
@@ -158,7 +158,7 @@ test.describe('E2EE File Encryption', () => {
 				await poHomeChannel.content.dragAndDropTxtFile();
 
 				await expect(poHomeChannel.content.getFileComposerByName('any_file.txt')).not.toBeVisible();
-				await expect(poHomeChannel.content.btnSendMainComposer).toBeDisabled();
+				await expect(poHomeChannel.composer.btnSend).toBeDisabled();
 			});
 		});
 	});

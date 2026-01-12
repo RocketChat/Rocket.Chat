@@ -89,7 +89,7 @@ test.describe.serial('Threads', () => {
 		await poHomeChannel.content.getThreadFileComposerByName('any_file.txt').click();
 		await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
 		await poHomeChannel.content.btnUpdateFileUpload.click();
-		await poHomeChannel.content.btnSendThreadComposer.click();
+		await poHomeChannel.threadComposer.btnSend.click();
 
 		await expect(poHomeChannel.content.lastThreadMessageFileDescription).not.toBeVisible();
 		await expect(poHomeChannel.content.lastThreadMessageFileName).toContainText(updatedFileName);

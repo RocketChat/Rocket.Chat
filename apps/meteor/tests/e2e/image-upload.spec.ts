@@ -46,7 +46,7 @@ test.describe('image-upload', () => {
 		test('should succeed upload of bad-orientation.jpeg', async () => {
 			const imgName = 'bad-orientation.jpeg';
 			await poHomeChannel.content.sendFileMessage(imgName);
-			await poHomeChannel.content.btnSendMainComposer.click();
+			await poHomeChannel.composer.btnSend.click();
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(imgName);
 		});
 	});
