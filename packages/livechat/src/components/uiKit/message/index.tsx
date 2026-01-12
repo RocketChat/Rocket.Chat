@@ -1,4 +1,19 @@
 import { uiKitMessage, UiKitParserMessage, BlockContext } from '@rocket.chat/ui-kit';
+import type {
+	DividerBlock as DividerBlockType,
+	SectionBlock as SectionBlockType,
+	ImageBlock as ImageBlockType,
+	ImageElement as ImageElementType,
+	ActionsBlock as ActionsBlockType,
+	ContextBlock as ContextBlockType,
+	PlainText as PlainTextObject,
+	Markdown as MarkdownObject,
+	ButtonElement as ButtonElementType,
+	OverflowElement as OverflowElementType,
+	DatePickerElement as DatePickerElementType,
+	StaticSelectElement as StaticSelectElementType,
+	MultiStaticSelectElement as MultiStaticSelectElementType,
+} from '@rocket.chat/ui-kit';
 import type { ComponentChild } from 'preact';
 import { Suspense } from 'preact/compat';
 
@@ -16,7 +31,7 @@ import SectionBlock from './SectionBlock';
 import StaticSelectElement from './StaticSelectElement';
 
 class MessageParser extends UiKitParserMessage<ComponentChild> {
-	divider = (element: any, context: any, index: any) => {
+	divider = (element: DividerBlockType, context: BlockContext, index: number): ComponentChild | null => {
 		if (context !== BlockContext.BLOCK) {
 			return null;
 		}
@@ -24,7 +39,7 @@ class MessageParser extends UiKitParserMessage<ComponentChild> {
 		return <DividerBlock key={index} {...element} />;
 	};
 
-	section = (element: any, context: any, index: any) => {
+	section = (element: SectionBlockType, context: BlockContext, index: number): ComponentChild | null => {
 		if (context !== BlockContext.BLOCK) {
 			return null;
 		}
@@ -32,15 +47,15 @@ class MessageParser extends UiKitParserMessage<ComponentChild> {
 		return <SectionBlock key={index} {...element} parser={this} />;
 	};
 
-	image = (element: any, context: any, index: any) => {
+	image = (element: ImageBlockType | ImageElementType, context: BlockContext, index: number): ComponentChild | null => {
 		if (context === BlockContext.BLOCK) {
-			return <ImageBlock key={index} {...element} parser={this} />;
+			return <ImageBlock key={index} {...(element as ImageBlockType)} parser={this} />;
 		}
 
-		return <ImageElement key={index} {...element} parser={this} context={context} />;
+		return <ImageElement key={index} {...(element as ImageElementType)} context={context} />;
 	};
 
-	actions = (element: any, context: any, index: any) => {
+	actions = (element: ActionsBlockType, context: BlockContext, index: number): ComponentChild | null => {
 		if (context !== BlockContext.BLOCK) {
 			return null;
 		}
@@ -48,7 +63,7 @@ class MessageParser extends UiKitParserMessage<ComponentChild> {
 		return <ActionsBlock key={index} {...element} parser={this} />;
 	};
 
-	context = (element: any, context: any, index: any) => {
+	context = (element: ContextBlockType, context: BlockContext, index: number): ComponentChild | null => {
 		if (context !== BlockContext.BLOCK) {
 			return null;
 		}
@@ -56,7 +71,7 @@ class MessageParser extends UiKitParserMessage<ComponentChild> {
 		return <ContextBlock key={index} {...element} parser={this} />;
 	};
 
-	plain_text = (element: any, context: any, index: any) => {
+	plain_text = (element: PlainTextObject, context: BlockContext, index: number): ComponentChild | null => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
@@ -68,7 +83,7 @@ class MessageParser extends UiKitParserMessage<ComponentChild> {
 		);
 	};
 
-	mrkdwn = (element: any, context: any, index: any) => {
+	mrkdwn = (element: MarkdownObject, context: BlockContext, index: number): ComponentChild | null => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
@@ -80,7 +95,7 @@ class MessageParser extends UiKitParserMessage<ComponentChild> {
 		);
 	};
 
-	button = (element: any, context: any, index: any) => {
+	button = (element: ButtonElementType, context: BlockContext, index: number): ComponentChild | null => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
@@ -88,35 +103,35 @@ class MessageParser extends UiKitParserMessage<ComponentChild> {
 		return <ButtonElement key={index} {...element} parser={this} context={context} />;
 	};
 
-	overflow = (element: any, context: any, index: any) => {
+	overflow = (element: OverflowElementType, context: BlockContext, index: number): ComponentChild | null => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
 
-		return <OverflowElement key={index} {...element} parser={this} context={context} />;
+		return <OverflowElement key={index} {...element} parser={this} />;
 	};
 
-	datePicker = (element: any, context: any, index: any) => {
+	datePicker = (element: DatePickerElementType, context: BlockContext, index: number): ComponentChild | null => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
 
-		return <DatePickerElement key={index} {...element} parser={this} context={context} />;
+		return <DatePickerElement key={index} {...element} />;
 	};
 
-	staticSelect = (element: any, context: any, index: any) => {
+	staticSelect = (element: StaticSelectElementType, context: BlockContext, index: number): ComponentChild | null => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
 
-		return <StaticSelectElement key={index} {...element} parser={this} context={context} />;
+		return <StaticSelectElement key={index} {...element} parser={this} />;
 	};
 
-	multiStaticSelect = () => null;
+	multiStaticSelect = (_element: MultiStaticSelectElementType, _context: BlockContext, _index: number): ComponentChild | null => null;
 }
 
 export const parser = new MessageParser();
 
 export const renderMessageBlocks = uiKitMessage(parser, {
 	engine: 'livechat',
-}) as { (blocks: any): ComponentChild[] };
+}) as (blocks: readonly unknown[]) => ComponentChild[];
