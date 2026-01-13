@@ -24,7 +24,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 	const result = useQuery({
 		// we need to add uid and username here because `user` is not loaded all at once (see UserProvider -> Meteor.user())
-		queryKey: ['rooms', { reference, type }, { uid: user?._id, username: user?.username }] as const,
+		queryKey: roomsQueryKeys.roomReference(reference, type, user?._id, user?.username),
 
 		queryFn: async (): Promise<{ rid: IRoom['_id'] }> => {
 			if ((user && !user.username) || (!user && !allowAnonymousRead)) {
@@ -74,6 +74,8 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			const { LegacyRoomManager } = await import('../../../../app/ui-utils/client');
 
+			const sub = Subscriptions.state.find((record) => record.rid === reference || record.name === reference);
+
 			if (reference !== undefined && room._id !== reference && type === 'd') {
 				// Redirect old url using username to rid
 				LegacyRoomManager.close(type + reference);
@@ -82,8 +84,6 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			}
 
 			const { RoomManager } = await import('../../../lib/RoomManager');
-
-			const sub = Subscriptions.state.find((record) => record.rid === room._id);
 
 			// if user doesn't exist at this point, anonymous read is enabled, otherwise an error would have been thrown
 			if (user && !sub && !hasPreviewPermission && isPublicRoom(room)) {
@@ -112,7 +112,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 	useEffect(() => {
 		if (error) {
-			if (['l', 'v'].includes(type) && error instanceof RoomNotFoundError) {
+			if (type === 'l' && error instanceof RoomNotFoundError) {
 				Rooms.state.remove((record) => Object.values(record).includes(reference));
 				queryClient.removeQueries({ queryKey: ['rooms', reference] });
 				queryClient.removeQueries({ queryKey: roomsQueryKeys.info(reference) });

@@ -1,5 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import { memo } from 'react';
 
 import PreviewCodeBlock from './code/PreviewCodeBlock';
 import PreviewInlineElements from './elements/PreviewInlineElements';

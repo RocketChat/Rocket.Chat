@@ -23,7 +23,6 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { browseChannelsMethod } from '../../../../server/methods/browseChannels';
 import { spotlightMethod } from '../../../../server/publications/spotlight';
 import { resetAuditedSettingByUser, updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
-import { getLogs } from '../../../../server/stream/stdout';
 import { passwordPolicy } from '../../../lib/server';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -437,15 +436,6 @@ API.v1.addRoute(
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute(
-	'stdout.queue',
-	{ authRequired: true, permissionsRequired: ['view-logs'] },
-	{
-		async get() {
-			return API.v1.success({ queue: getLogs() });
-		},
-	},
-);
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -535,7 +525,8 @@ API.v1.addRoute(
 				if (settings.get('Log_Level') === '2') {
 					Meteor._debug(`Exception while invoking method ${method}`, err);
 				}
-				return API.v1.success(mountResult({ id, error: err }));
+
+				return API.v1.failure(mountResult({ id, error: err }));
 			}
 		},
 	},
@@ -590,7 +581,7 @@ API.v1.addRoute(
 				if (settings.get('Log_Level') === '2') {
 					Meteor._debug(`Exception while invoking method ${method}`, err);
 				}
-				return API.v1.success(mountResult({ id, error: err }));
+				return API.v1.failure(mountResult({ id, error: err }));
 			}
 		},
 	},

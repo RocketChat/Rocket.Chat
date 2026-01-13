@@ -64,7 +64,7 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 		});
 
 		await test.step('expect to send a message as agent', async () => {
-			await poAuxContext.poHomeOmnichannel.sidenav.openChat(visitor.name);
+			await poAuxContext.poHomeOmnichannel.navbar.openChat(visitor.name);
 			await poAuxContext.poHomeOmnichannel.content.sendMessage('message_from_agent');
 		});
 
@@ -95,7 +95,7 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 		});
 
 		await test.step('should close the conversation', async () => {
-			await poAuxContext.poHomeOmnichannel.sidenav.openChat(visitor.name);
+			await poAuxContext.poHomeOmnichannel.navbar.openChat(visitor.name);
 			await poAuxContext.poHomeOmnichannel.quickActionsRoomToolbar.closeChat({ comment: 'this_is_a_test_comment' });
 		});
 	});

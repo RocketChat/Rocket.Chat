@@ -6,7 +6,7 @@ import { isValidCron } from 'cron-validator';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../app/settings/server';
-import { callbacks } from '../../../lib/callbacks';
+import { callbacks } from '../../../server/lib/callbacks';
 import type { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import { logger } from '../../../server/lib/ldap/Logger';
 import { LDAPEEManager } from '../lib/ldap/Manager';
@@ -60,19 +60,36 @@ Meteor.startup(async () => {
 			() => LDAPEE.syncLogout(),
 		);
 
+		const addAbacCronJob = configureBackgroundSync(
+			'LDAP_AbacSync',
+			'LDAP_Background_Sync_ABAC_Attributes',
+			'LDAP_Background_Sync_ABAC_Attributes_Interval',
+			() => LDAPEE.syncAbacAttributes(),
+		);
+
 		settings.watchMultiple(['LDAP_Background_Sync', 'LDAP_Background_Sync_Interval'], addCronJob);
 		settings.watchMultiple(['LDAP_Background_Sync_Avatars', 'LDAP_Background_Sync_Avatars_Interval'], addAvatarCronJob);
 		settings.watchMultiple(['LDAP_Sync_AutoLogout_Enabled', 'LDAP_Sync_AutoLogout_Interval'], addLogoutCronJob);
+		settings.watchMultiple(['LDAP_Background_Sync_ABAC_Attributes', 'LDAP_Background_Sync_ABAC_Attributes_Interval'], addAbacCronJob);
 
 		settings.watch('LDAP_Enable', async () => {
 			await addCronJob();
 			await addAvatarCronJob();
 			await addLogoutCronJob();
+			await addAbacCronJob();
 		});
 
 		settings.watch<string>('LDAP_Groups_To_Rocket_Chat_Teams', (value) => {
 			try {
 				LDAPEEManager.validateLDAPTeamsMappingChanges(value);
+			} catch (error) {
+				logger.error(error);
+			}
+		});
+
+		settings.watch<string>('LDAP_ABAC_AttributeMap', (value) => {
+			try {
+				LDAPEEManager.validateLDAPABACAttributeMap(value);
 			} catch (error) {
 				logger.error(error);
 			}

@@ -17,7 +17,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		super(db, 'moderation_reports', trash);
 	}
 
-	modelIndexes(): IndexDescription[] | undefined {
+	override modelIndexes(): IndexDescription[] | undefined {
 		return [
 			// TODO deprecated. remove within a migration in v7.0
 			// { key: { 'ts': 1, 'reports.ts': 1 } },

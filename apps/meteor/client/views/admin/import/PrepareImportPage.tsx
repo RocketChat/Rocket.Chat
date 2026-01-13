@@ -1,6 +1,7 @@
 import type { IImport, IImporterSelection, IImporterSelectionContact, Serialized } from '@rocket.chat/core-typings';
 import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useState, useMemo } from 'react';
@@ -20,7 +21,6 @@ import {
 	ImportingErrorStates,
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 
 const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>
 	new Promise<U>((resolve, reject) => {

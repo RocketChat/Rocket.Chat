@@ -71,7 +71,7 @@ export class Importer {
 		this._lastProgressReportTotal = 0;
 		this.reloadCount();
 
-		this.logger.debug(`Constructed a new ${this.info.name} Importer.`);
+		this.logger.debug({ msg: 'Constructed a new Importer.', importerName: this.info.name });
 	}
 
 	/**
@@ -220,14 +220,14 @@ export class Importer {
 
 				await this.updateProgress(ProgressStep.DONE);
 			} catch (e) {
-				this.logger.error(e);
+				this.logger.error({ msg: 'Importer encountered an error during import', err: e });
 				await this.updateProgress(ProgressStep.ERROR);
 			} finally {
 				await this.applySettingValues(this.oldSettings);
 			}
 
 			const timeTook = Date.now() - started;
-			this.logger.log(`Import took ${timeTook} milliseconds.`);
+			this.logger.log({ msg: 'Import completed', durationMs: timeTook });
 		});
 
 		return this.getProgress();
@@ -279,7 +279,7 @@ export class Importer {
 	async updateProgress(step: IImportProgress['step']): Promise<ImporterProgress> {
 		this.progress.step = step;
 
-		this.logger.debug(`${this.info.name} is now at ${step}.`);
+		this.logger.debug({ msg: 'Importer progress step updated', importerName: this.info.name, step });
 		await this.updateRecord({ status: this.progress.step });
 
 		// Do not send the default progress report during the preparing stage - the classes are sending their own report in a different format.
@@ -343,7 +343,11 @@ export class Importer {
 			}, 250);
 		}
 
-		this.logger.log(`${this.progress.count.completed} records imported, ${this.progress.count.error} failed`);
+		this.logger.log({
+			msg: 'Import progress update',
+			completed: this.progress.count.completed,
+			failed: this.progress.count.error,
+		});
 
 		return this.progress;
 	}

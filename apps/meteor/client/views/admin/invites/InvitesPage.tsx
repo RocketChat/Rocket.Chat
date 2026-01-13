@@ -1,6 +1,16 @@
 import { States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { GenericModal } from '@rocket.chat/ui-client';
+import {
+	GenericModal,
+	GenericTable,
+	GenericTableBody,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+	GenericTableLoadingTable,
+	Page,
+	PageHeader,
+	PageContent,
+} from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -8,14 +18,6 @@ import { useMemo } from 'react';
 
 import InviteRow from './InviteRow';
 import GenericNoResults from '../../../components/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableBody,
-	GenericTableHeader,
-	GenericTableHeaderCell,
-	GenericTableLoadingTable,
-} from '../../../components/GenericTable';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const InvitesPage = (): ReactElement => {
 	const t = useTranslation();

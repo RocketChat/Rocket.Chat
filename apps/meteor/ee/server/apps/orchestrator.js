@@ -6,6 +6,8 @@ import { AppLogs, Apps as AppsModel, AppsPersistence, Statistics } from '@rocket
 import { Meteor } from 'meteor/meteor';
 
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
+import { MarketplaceAPIClient } from './marketplace/MarketplaceAPIClient';
+import { isTesting } from './marketplace/isTesting';
 import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
 import {
@@ -24,15 +26,13 @@ import { AppThreadsConverter } from '../../../app/apps/server/converters/threads
 import { settings } from '../../../app/settings/server';
 import { canEnableApp } from '../../app/license/server/canEnableApp';
 
-function isTesting() {
-	return process.env.TEST_MODE === 'true';
-}
-
 const DISABLED_PRIVATE_APP_INSTALLATION = ['yes', 'true'].includes(String(process.env.DISABLE_PRIVATE_APP_INSTALLATION).toLowerCase());
 
 export class AppServerOrchestrator {
 	constructor() {
 		this._isInitialized = false;
+
+		this.marketplaceClient = new MarketplaceAPIClient();
 	}
 
 	initialize() {
@@ -41,12 +41,6 @@ export class AppServerOrchestrator {
 		}
 
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
-
-		if (typeof process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL === 'string' && process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL !== '') {
-			this._marketplaceUrl = process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL;
-		} else {
-			this._marketplaceUrl = 'https://marketplace.rocket.chat';
-		}
 
 		this._model = AppsModel;
 		this._logModel = AppLogs;
@@ -87,6 +81,10 @@ export class AppServerOrchestrator {
 		this._communicators.set('uikit', new AppUIKitInteractionApi(this));
 
 		this._isInitialized = true;
+	}
+
+	getMarketplaceClient() {
+		return this.marketplaceClient;
 	}
 
 	getModel() {
@@ -169,10 +167,6 @@ export class AppServerOrchestrator {
 		}
 	}
 
-	getMarketplaceUrl() {
-		return this._marketplaceUrl;
-	}
-
 	async load() {
 		// Don't try to load it again if it has
 		// already been loaded
@@ -192,7 +186,11 @@ export class AppServerOrchestrator {
 
 				await this.getManager().loadOne(app.getID(), true);
 			} catch (error) {
-				this._rocketchatLogger.warn(`App "${app.getInfo().name}" could not be enabled: `, error.message);
+				this._rocketchatLogger.warn({
+					msg: 'App could not be enabled',
+					appName: app.getInfo().name,
+					err: error,
+				});
 			}
 		}
 
@@ -200,7 +198,10 @@ export class AppServerOrchestrator {
 
 		const appCount = (await this.getManager().get({ enabled: true })).length;
 
-		this._rocketchatLogger.info(`Loaded the Apps Framework and loaded a total of ${appCount} Apps!`);
+		this._rocketchatLogger.info({
+			msg: 'Loaded the Apps Framework and apps',
+			appCount,
+		});
 	}
 
 	async migratePrivateApps() {
@@ -240,12 +241,19 @@ export class AppServerOrchestrator {
 
 				if (hadPreTargetVersion && majorVersion >= targetVersion) {
 					upgradeToV7Date = new Date(stat.installedAt);
-					this._rocketchatLogger.info(`Found upgrade to v${targetVersion} date: ${upgradeToV7Date.toISOString()}`);
+					this._rocketchatLogger.info({
+						msg: 'Found upgrade to target version date',
+						targetVersion,
+						upgradeToDate: upgradeToV7Date.toISOString(),
+					});
 					break;
 				}
 			}
-		} catch (error) {
-			this._rocketchatLogger.error('Error checking statistics for version history:', error.message);
+		} catch (err) {
+			this._rocketchatLogger.error({
+				msg: 'Error checking statistics for version history',
+				err,
+			});
 		}
 
 		return upgradeToV7Date;
@@ -306,11 +314,17 @@ export class AppServerOrchestrator {
 
 		try {
 			await Promise.all(disablePromises);
-			this._rocketchatLogger.info(
-				`${installationSource} apps processing complete - kept ${grandfathered.length + toKeep.length}, disabled ${toDisable.length}`,
-			);
+			this._rocketchatLogger.info({
+				msg: 'Apps processing complete',
+				installationSource,
+				keptCount: grandfathered.length + toKeep.length,
+				disabledCount: toDisable.length,
+			});
 		} catch (error) {
-			this._rocketchatLogger.error('Error disabling apps:', error.message);
+			this._rocketchatLogger.error({
+				msg: 'Error disabling apps',
+				err: error,
+			});
 		}
 	}
 
@@ -324,7 +338,12 @@ export class AppServerOrchestrator {
 		return this._manager
 			.unload()
 			.then(() => this._rocketchatLogger.info('Unloaded the Apps Framework.'))
-			.catch((err) => this._rocketchatLogger.error({ msg: 'Failed to unload the Apps Framework!', err }));
+			.catch((err) =>
+				this._rocketchatLogger.error({
+					msg: 'Failed to unload the Apps Framework!',
+					err,
+				}),
+			);
 	}
 
 	async updateAppsMarketplaceInfo(apps = []) {

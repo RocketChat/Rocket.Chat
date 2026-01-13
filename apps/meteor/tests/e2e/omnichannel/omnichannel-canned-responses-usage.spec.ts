@@ -99,7 +99,7 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect agent to receive and open the chat', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('expect to use the canned response in the chat', async () => {
@@ -107,7 +107,7 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect canned response text to appear in message composer', async () => {
-			await expect(agent.poHomeChannel.content.inputMessage).toHaveValue(`${cannedResponseText} `);
+			await expect(agent.poHomeChannel.composer.inputMessage).toHaveValue(`${cannedResponseText} `);
 		});
 
 		await test.step('expect agent to be able to send the canned response message', async () => {
@@ -129,7 +129,7 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect agent to receive and open the chat', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('expect to use the canned response with placeholder', async () => {
@@ -154,7 +154,7 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect agent to open the chat', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('expect to use existing canned response and modify it', async () => {
@@ -162,11 +162,11 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect to modify the canned response text before sending', async () => {
-			await agent.poHomeChannel.content.inputMessage.click();
+			await agent.poHomeChannel.composer.inputMessage.click();
 			await agent.page.keyboard.press('End');
-			await agent.poHomeChannel.content.inputMessage.pressSequentially(modifiedText);
+			await agent.poHomeChannel.composer.inputMessage.pressSequentially(modifiedText);
 
-			await expect(agent.poHomeChannel.content.inputMessage).toHaveValue(`${cannedResponseText} ${modifiedText}`);
+			await expect(agent.poHomeChannel.composer.inputMessage).toHaveValue(`${cannedResponseText} ${modifiedText}`);
 		});
 
 		await test.step('expect to send the modified message', async () => {
@@ -188,18 +188,18 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect agent to open the chat', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('expect to use first canned response', async () => {
 			await agent.poHomeChannel.content.useCannedResponse(cannedResponseName);
-			await expect(agent.poHomeChannel.content.inputMessage).toHaveValue(`${cannedResponseText} `);
+			await expect(agent.poHomeChannel.composer.inputMessage).toHaveValue(`${cannedResponseText} `);
 			await agent.page.keyboard.press('Enter');
 		});
 
 		await test.step('expect to use second canned response', async () => {
 			await agent.poHomeChannel.content.useCannedResponse(secondResponseName);
-			await expect(agent.poHomeChannel.content.inputMessage).toHaveValue(`${secondResponseText} `);
+			await expect(agent.poHomeChannel.composer.inputMessage).toHaveValue(`${secondResponseText} `);
 			await agent.page.keyboard.press('Enter');
 		});
 

@@ -35,19 +35,11 @@ const Timestamp = ({ format, value }: { format: 't' | 'T' | 'd' | 'D' | 'f' | 'F
 };
 
 // eslint-disable-next-line react/no-multi-comp
-const TimestampWrapper = ({ children }: BoldSpanProps) => {
-	const { enableTimestamp } = useContext(MarkupInteractionContext);
-
-	if (!enableTimestamp) {
-		return <>{`<t:${children.value.timestamp}:${children.value.format}>`}</>;
-	}
-
-	return (
-		<ErrorBoundary fallback={<>{new Date(parseInt(children.value.timestamp) * 1000).toUTCString()}</>}>
-			<Timestamp format={children.value.format} value={new Date(parseInt(children.value.timestamp) * 1000)} />
-		</ErrorBoundary>
-	);
-};
+const TimestampWrapper = ({ children }: BoldSpanProps) => (
+	<ErrorBoundary fallback={<>{new Date(parseInt(children.value.timestamp) * 1000).toUTCString()}</>}>
+		<Timestamp format={children.value.format} value={new Date(parseInt(children.value.timestamp) * 1000)} />
+	</ErrorBoundary>
+);
 
 // eslint-disable-next-line react/no-multi-comp
 const ShortTime = ({ value }: { value: Date }) => <Time value={format(value, 'p')} dateTime={value.toISOString()} />;

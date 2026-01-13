@@ -14,20 +14,21 @@ import {
 	Box,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
-import { useId, useMemo } from 'react';
-import { FormProvider, useForm, Controller } from 'react-hook-form';
-
 import {
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarFooter,
 	ContextualbarScrollableContent,
-} from '../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import { useId, useMemo } from 'react';
+import { FormProvider, useForm, Controller } from 'react-hook-form';
+
 import { CustomFieldsAdditionalForm } from '../additionalForms';
 import { useRemoveCustomField } from './useRemoveCustomField';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
 export type EditCustomFieldsFormData = {
 	field: string;
@@ -86,7 +87,7 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			queryClient.invalidateQueries({
-				queryKey: ['livechat-customFields'],
+				queryKey: omnichannelQueryKeys.livechat.customFields(),
 			});
 			onClose();
 		} catch (error) {
@@ -220,7 +221,7 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} data-qa-id='BtnSaveEditCustomFieldsPage' primary type='submit' disabled={!isDirty}>
+					<Button form={formId} primary type='submit' disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

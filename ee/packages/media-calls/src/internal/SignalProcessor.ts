@@ -1,12 +1,12 @@
 import type { IMediaCall, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import {
-	isPendingState,
-	type ClientMediaSignal,
-	type ClientMediaSignalRegister,
-	type ClientMediaSignalRequestCall,
-	type ServerMediaSignal,
-	type ServerMediaSignalRejectedCallRequest,
+import { isPendingState } from '@rocket.chat/media-signaling';
+import type {
+	ClientMediaSignal,
+	ClientMediaSignalRegister,
+	ClientMediaSignalRequestCall,
+	ServerMediaSignal,
+	ServerMediaSignalRejectedCallRequest,
 } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
@@ -14,7 +14,7 @@ import type { InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { mediaCallDirector } from '../server/CallDirector';
 import { UserActorAgent } from './agents/UserActorAgent';
-import { getNewCallTransferredBy } from '../server/getNewCallTransferredBy';
+import { buildNewCallSignal } from '../server/buildNewCallSignal';
 import { stripSensitiveDataFromSignal } from '../server/stripSensitiveData';
 
 export type SignalProcessorEvents = {
@@ -30,8 +30,6 @@ export class GlobalSignalProcessor {
 	}
 
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
-		logger.debug({ msg: 'GlobalSignalProcessor.processSignal', signal: stripSensitiveDataFromSignal(signal), uid });
-
 		switch (signal.type) {
 			case 'register':
 				return this.processRegisterSignal(uid, signal);
@@ -112,6 +110,8 @@ export class GlobalSignalProcessor {
 	}
 
 	private async processRegisterSignal(uid: IUser['_id'], signal: ClientMediaSignalRegister): Promise<void> {
+		logger.debug({ msg: 'GlobalSignalProcessor.processRegisterSignal', signal: stripSensitiveDataFromSignal(signal), uid });
+
 		const calls = await MediaCalls.findAllNotOverByUid(uid).toArray();
 		if (!calls.length) {
 			return;
@@ -140,6 +140,7 @@ export class GlobalSignalProcessor {
 			// If it's signed to the same session that is now registering
 			// Or it was signed by a session that the current session is replacing (as in a browser refresh)
 			if (actor.contractId === signal.contractId || actor.contractId === signal.oldContractId) {
+				logger.info({ msg: 'Server detected a client refresh for a session with an active call.', callId: call._id });
 				await mediaCallDirector.hangupDetachedCall(call, { endedBy: { ...actor, contractId: signal.contractId }, reason: 'unknown' });
 				return;
 			}
@@ -147,44 +148,7 @@ export class GlobalSignalProcessor {
 			await mediaCallDirector.renewCallId(call._id);
 		}
 
-		const transferredBy = getNewCallTransferredBy(call);
-
-		if (isCaller) {
-			this.sendSignal(uid, {
-				callId: call._id,
-				type: 'new',
-				service: call.service,
-				kind: call.kind,
-				role: 'caller',
-				self: {
-					...call.caller,
-				},
-				contact: {
-					...call.callee,
-				},
-				...(call.callerRequestedId && { requestedCallId: call.callerRequestedId }),
-				...(call.parentCallId && { replacingCallId: call.parentCallId }),
-				...(transferredBy && { transferredBy }),
-			});
-		}
-
-		if (isCallee) {
-			this.sendSignal(uid, {
-				callId: call._id,
-				type: 'new',
-				service: call.service,
-				kind: call.kind,
-				role: 'callee',
-				self: {
-					...call.callee,
-				},
-				contact: {
-					...call.caller,
-				},
-				...(call.parentCallId && { replacingCallId: call.parentCallId }),
-				...(transferredBy && { transferredBy }),
-			});
-		}
+		this.sendSignal(uid, buildNewCallSignal(call, role));
 
 		if (call.state === 'active') {
 			this.sendSignal(uid, {
@@ -244,8 +208,6 @@ export class GlobalSignalProcessor {
 			return null;
 		}
 
-		logger.debug({ msg: 'GlobalSignalProcessor.getExistingRequestedCall', uid, signal });
-
 		const caller = { type: 'user', id: uid } as const;
 		const rejection = { callId: requestedCallId, toContractId: signal.contractId, reason: 'invalid-call-id' } as const;
 
@@ -278,24 +240,7 @@ export class GlobalSignalProcessor {
 			this.rejectCallRequest(uid, { ...rejection, reason: 'already-requested' });
 		}
 
-		const transferredBy = getNewCallTransferredBy(call);
-
-		this.sendSignal(uid, {
-			callId: call._id,
-			type: 'new',
-			service: call.service,
-			kind: call.kind,
-			role: 'caller',
-			self: {
-				...call.caller,
-			},
-			contact: {
-				...call.callee,
-			},
-			requestedCallId: signal.callId,
-			...(call.parentCallId && { replacingCallId: call.parentCallId }),
-			...(transferredBy && { transferredBy }),
-		});
+		this.sendSignal(uid, buildNewCallSignal(call, 'caller'));
 
 		return call;
 	}
