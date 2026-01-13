@@ -677,21 +677,24 @@ export class SlackImporter extends Importer {
 
 	convertSlackMessageToRocketChat(message: string): string {
 		if (message) {
-			message = message.replace(/<!everyone>/g, '@all');
-			message = message.replace(/<!channel>/g, '@all');
+			message = message.replace(/<!(channel|everyone)>/g, '@all');
 			message = message.replace(/<!here>/g, '@here');
 			message = message.replace(/&gt;/g, '>');
 			message = message.replace(/&lt;/g, '<');
 			message = message.replace(/&amp;/g, '&');
-			message = message.replace(/:simple_smile:/g, ':smile:');
-			message = message.replace(/:memo:/g, ':pencil:');
-			message = message.replace(/:piggy:/g, ':pig:');
-			message = message.replace(/:uk:/g, ':gb:');
-			message = message.replace(/<(http[s]?:[^>|]*)>/g, '$1');
-			message = message.replace(/<(http[s]?:[^|]*)\|([^>]*)>/g, '[$2]($1)');
-			message = message.replace(/<#([^|]*)\|([^>]*)>/g, '#$2');
-			message = message.replace(/<@([^|]*)\|([^>]*)>/g, '@$1');
-			message = message.replace(/<@([^|>]*)>/g, '@$1');
+			if (message.includes('<')) {
+				message = message.replace(/<(http[s]?:[^>|]*)>/g, '$1');
+				message = message.replace(/<(http[s]?:[^|]*)\|([^>]*)>/g, '[$2]($1)');
+				message = message.replace(/<#([^|]*)\|([^>]*)>/g, '#$2');
+				message = message.replace(/<@([^|]*)\|([^>]*)>/g, '@$1');
+				message = message.replace(/<@([^|>]*)>/g, '@$1');
+			}
+			if (message.includes(':')) {
+				message = message.replace(/:simple_smile:/g, ':smile:');
+				message = message.replace(/:memo:/g, ':pencil:');
+				message = message.replace(/:piggy:/g, ':pig:');
+				message = message.replace(/:uk:/g, ':gb:');
+			}
 		} else {
 			message = '';
 		}
