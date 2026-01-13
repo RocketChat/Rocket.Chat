@@ -14,8 +14,8 @@ export const useAsyncImage = (src: string | undefined) => {
 				image.addEventListener('load', () => {
 					resolve(image.src);
 				});
-				image.addEventListener('error', (e) => {
-					reject(e.error);
+				image.addEventListener('error', () => {
+					reject(new Error(`Failed to load image: ${src}`));
 				});
 				image.src = src;
 			}),
