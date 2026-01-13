@@ -55,11 +55,11 @@ USER rocketchat
 
 COPY --from=builder --chown=rocketchat:rocketchat /app /app
 
-# Verify that the OpenSSL provider in this image satisfies FIPS 140-3 (sha1 must be absent).
+# Verify that the OpenSSL provider in this image satisfies FIPS 140-3.
 # RHEL only enables container FIPS mode when the host kernel runs with fips=1
 # (see https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/security_hardening/switching-rhel-to-fips-mode_security-hardening#assembly_enabling-fips-mode-in-a-container_switching-rhel-to-fips-mode).
 RUN if [ "$(cat /proc/sys/crypto/fips_enabled 2>/dev/null || echo 0)" = "1" ]; then \
-        node -e "const crypto = require('crypto'); if (!crypto.getFips()) { console.error('FIPS mode disabled'); process.exit(1); } if (crypto.getHashes().some(h => h.toLowerCase().includes('sha1'))) { console.error('sha1 detected in hash list'); process.exit(1); } console.log('FIPS 140-3 validated OpenSSL active. Hashes:', crypto.getHashes());"; \
+        node -e "const crypto = require('crypto'); if (!crypto.getFips()) { console.error('FIPS mode disabled'); process.exit(1); } try { crypto.createHash('sha1'); console.error('sha1 hash unexpectedly succeeded'); process.exit(1); } catch (error) { console.log('FIPS 140-3 validated OpenSSL active; sha1 creation rejected as expected:', error.code || error.message); }"; \
     else \
         echo 'Host kernel is not running with FIPS enabled; skipping in-image verification.'; \
     fi
