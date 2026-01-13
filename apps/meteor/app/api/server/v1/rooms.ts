@@ -55,7 +55,7 @@ import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
-import { UploadService } from '../lib/UploadService';
+import { MultipartUploadHandler } from '../lib/MultipartUploadHandler';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -197,7 +197,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const { file, fields } = await UploadService.parse(this.incoming, {
+			const { file, fields } = await MultipartUploadHandler.parseRequest(this.incoming, {
 				field: 'file',
 				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
 			});

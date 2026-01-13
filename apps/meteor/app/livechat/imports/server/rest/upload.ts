@@ -1,7 +1,7 @@
 import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
-import { UploadService } from '../../../../api/server/lib/UploadService';
+import { MultipartUploadHandler } from '../../../../api/server/lib/MultipartUploadHandler';
 import { FileUpload } from '../../../../file-upload/server';
 import { settings } from '../../../../settings/server';
 import { fileUploadIsValidContentType } from '../../../../utils/server/restrictions';
@@ -35,7 +35,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 
 		const maxFileSize = settings.get<number>('FileUpload_MaxFileSize') || 104857600;
 
-		const { file, fields } = await UploadService.parse(this.request, {
+		const { file, fields } = await MultipartUploadHandler.parseRequest(this.request, {
 			field: 'file',
 			maxSize: maxFileSize > -1 ? maxFileSize : undefined,
 		});
