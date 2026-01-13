@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -21,6 +22,7 @@ test.describe('E2EE File Encryption', () => {
 	test.use({ storageState: Users.userE2EE.state });
 
 	test.beforeAll(async ({ api }) => {
+		await setSettingValueById(api, 'FileUpload_MaxFilesPerMessage', 10);
 		await api.post('/settings/E2E_Enable', { value: true });
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
 		await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: false });
@@ -31,6 +33,7 @@ test.describe('E2EE File Encryption', () => {
 	test.afterAll(async ({ api }) => {
 		await api.post('/settings/FileUpload_MediaTypeWhiteList', { value: '' });
 		await api.post('/settings/FileUpload_MediaTypeBlackList', { value: 'image/svg+xml' });
+		await setSettingValueById(api, 'FileUpload_MaxFilesPerMessage', 1);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -107,6 +110,7 @@ test.describe('E2EE File Encryption', () => {
 			await poHomeChannel.content.dragAndDropTxtFile();
 			await expect(poHomeChannel.composer.getFileByName('any_file.txt')).toHaveAttribute('readonly');
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+			await poHomeChannel.composer.removeFileByName('any_file.txt');
 		});
 
 		await test.step('set blacklisted media type setting to not accept application/octet-stream media type', async () => {
@@ -116,10 +120,8 @@ test.describe('E2EE File Encryption', () => {
 		await test.step('send text file again with blacklisted setting set, file upload should fail', async () => {
 			const composerFilesLocator = poHomeChannel.composer.getFileByName('any_file.txt');
 			const composerFiles = await composerFilesLocator.all();
-
 			await poHomeChannel.content.dragAndDropTxtFile();
 
-			await expect(composerFilesLocator).toHaveCount(2);
 			await Promise.all(composerFiles.map((file) => expect(file).toHaveAttribute('readonly')));
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 		});

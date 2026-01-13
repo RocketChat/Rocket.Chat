@@ -25,13 +25,14 @@ test.describe.serial('file-upload', () => {
 
 	test.afterAll(async ({ api }) => {
 		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
+		await setSettingValueById(api, 'FileUpload_MaxFilesPerMessage', 1);
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
 	test('should successfully cancel upload', async () => {
 		const fileName = 'any_file.txt';
 		await poHomeChannel.content.dragAndDropTxtFile();
-		await poHomeChannel.composer.getFileByName(fileName).getByRole('button', { name: 'Close' }).click();
+		await poHomeChannel.composer.removeFileByName(fileName);
 
 		await expect(poHomeChannel.composer.getFileByName(fileName)).not.toBeVisible();
 	});
@@ -110,7 +111,7 @@ test.describe.serial('file-upload', () => {
 			await poHomeChannel.content.sendFileMessage(file1);
 			await poHomeChannel.content.sendFileMessage(file2);
 
-			await poHomeChannel.composer.getFileByName(file1).getByRole('button', { name: 'Close' }).click();
+			await poHomeChannel.composer.removeFileByName(file1);
 
 			await expect(poHomeChannel.composer.getFileByName(file1)).not.toBeVisible();
 			await expect(poHomeChannel.composer.getFileByName(file2)).toBeVisible();

@@ -33,6 +33,10 @@ export abstract class Composer {
 		return this.root.getByRole('button', { name: fileName });
 	}
 
+	async removeFileByName(fileName: string): Promise<void> {
+		return this.getFileByName(fileName).getByRole('button', { name: 'Close' }).click();
+	}
+
 	get btnSend(): Locator {
 		return this.root.getByRole('button', { name: 'Send' });
 	}
