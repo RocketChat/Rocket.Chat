@@ -413,7 +413,7 @@ export const FileUpload = {
 		if (rotated && shouldRotate) {
 			// If there is EXIF orientation and the setting is enabled, rotate the image (which removes metadata)
 			await reorientation();
-		} else if (settings.get('Message_Attachments_Strip_Exif')) {
+		} else if (shouldStripExif) {
 			// If there is no EXIF orientation but the setting is enabled, still strip any metadata
 			size = await UploadService.stripExifFromFile(tmpFile);
 		}
