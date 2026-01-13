@@ -695,6 +695,13 @@ export class SlackImporter extends Importer {
 				message = message.replace(/:piggy:/g, ':pig:');
 				message = message.replace(/:uk:/g, ':gb:');
 			}
+			if (message.includes('```')) {
+				// Fix code blocks that miss a "\n" before and/or after "```"
+				message = message
+					.replace(/(\n)?```(\n)?/g, '\n```\n')
+					.replace(/^\n```/, '```')
+					.replace(/```\n$/, '```');
+			}
 		} else {
 			message = '';
 		}
