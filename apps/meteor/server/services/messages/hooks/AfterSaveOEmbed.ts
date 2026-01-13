@@ -90,11 +90,8 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 		return ignoredHosts
 			.filter((h) => h.includes('*'))
 			.some((pattern) => {
-				// basic sanity checks to avoid pathological patterns
-				if (pattern.length > 255) {
-					return false;
-				}
-				if (pattern.includes('**')) {
+				const validationRegex = /^(?:\*\.)?(?:\*|[a-z0-9-]+)(?:\.(?:\*|[a-z0-9-]+))*$/i;
+				if (!validationRegex.test(pattern) || pattern === '*') {
 					return false;
 				}
 
