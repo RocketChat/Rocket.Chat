@@ -9,3 +9,4 @@ export * from './usePreferenceFeaturePreviewList';
 export * from './useSafeRefCallback';
 export * from './useUserDisplayName';
 export * from './useValidatePassword';
+export * from './useGoToDirectMessage';
