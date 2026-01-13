@@ -129,6 +129,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 				'Accept-Language': settings.get('Language') || 'en',
 				...data.headerOverrides,
 			},
+			timeout: settings.get<number>('API_EmbedTimeout') * 1000,
 			size: sizeLimit, // max size of the response body, this was not working as expected so I'm also manually verifying that on the iterator
 		},
 		settings.get('Allow_Invalid_SelfSigned_Certs'),
