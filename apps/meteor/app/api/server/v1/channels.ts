@@ -22,9 +22,9 @@ import {
 	isChannelsFilesListProps,
 	isChannelsOnlineProps,
 } from '@rocket.chat/rest-typings';
+import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
