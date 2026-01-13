@@ -16,9 +16,9 @@ export function getFilePath(fileName: string): string {
 export class HomeContent {
 	protected readonly page: Page;
 
-	protected readonly composer: RoomComposer;
+	readonly composer: RoomComposer;
 
-	protected readonly threadComposer: ThreadComposer;
+	readonly threadComposer: ThreadComposer;
 
 	constructor(page: Page) {
 		this.page = page;
@@ -177,14 +177,6 @@ export class HomeContent {
 
 	get btnCancelUpdateFileUpload(): Locator {
 		return this.fileUploadModal.getByRole('button', { name: 'Cancel' });
-	}
-
-	getFileComposerByName(fileName: string) {
-		return this.page.getByRole('main').getByRole('button', { name: fileName });
-	}
-
-	getThreadFileComposerByName(fileName: string) {
-		return this.page.getByRole('dialog').getByRole('button', { name: fileName });
 	}
 
 	// -----------------------------------------

@@ -86,7 +86,7 @@ test.describe.serial('Threads', () => {
 		await expect(page).toHaveURL(/.*thread/);
 
 		await poHomeChannel.content.dragAndDropTxtFileToThread();
-		await poHomeChannel.content.getThreadFileComposerByName('any_file.txt').click();
+		await poHomeChannel.threadComposer.getFileByName('any_file.txt').click();
 		await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
 		await poHomeChannel.content.btnUpdateFileUpload.click();
 		await poHomeChannel.threadComposer.btnSend.click();

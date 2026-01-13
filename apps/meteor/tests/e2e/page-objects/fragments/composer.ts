@@ -29,6 +29,10 @@ export abstract class Composer {
 		return this.toolbarPrimaryActions.getByRole('button', { name: 'Audio message' });
 	}
 
+	getFileByName(fileName: string): Locator {
+		return this.root.getByRole('button', { name: fileName });
+	}
+
 	get btnSend(): Locator {
 		return this.root.getByRole('button', { name: 'Send' });
 	}

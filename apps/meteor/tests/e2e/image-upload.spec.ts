@@ -34,7 +34,7 @@ test.describe('image-upload', () => {
 		test('should show error indicator when upload fails', async () => {
 			await poHomeChannel.content.sendFileMessage('bad-orientation.jpeg');
 
-			await expect(poHomeChannel.content.getFileComposerByName('bad-orientation')).toHaveAttribute('readonly');
+			await expect(poHomeChannel.composer.getFileByName('bad-orientation')).toHaveAttribute('readonly');
 		});
 	});
 

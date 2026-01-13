@@ -140,7 +140,7 @@ test.describe.serial('message-composer', () => {
 
 			await page.waitForTimeout(1000);
 			await poHomeChannel.audioRecorder.getByRole('button', { name: 'Finish Recording', exact: true }).click();
-			await expect(poHomeChannel.content.getFileComposerByName('Audio record.mp3')).toBeVisible();
+			await expect(poHomeChannel.composer.getFileByName('Audio record.mp3')).toBeVisible();
 		});
 	});
 });

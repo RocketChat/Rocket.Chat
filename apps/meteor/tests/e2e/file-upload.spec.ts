@@ -12,6 +12,7 @@ test.describe.serial('file-upload', () => {
 
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
+		await setSettingValueById(api, 'FileUpload_MaxFilesPerMessage', 10);
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
 	});
 
@@ -30,14 +31,14 @@ test.describe.serial('file-upload', () => {
 	test('should successfully cancel upload', async () => {
 		const fileName = 'any_file.txt';
 		await poHomeChannel.content.dragAndDropTxtFile();
-		await poHomeChannel.content.getFileComposerByName(fileName).getByRole('button', { name: 'Close' }).click();
+		await poHomeChannel.composer.getFileByName(fileName).getByRole('button', { name: 'Close' }).click();
 
-		await expect(poHomeChannel.content.getFileComposerByName(fileName)).not.toBeVisible();
+		await expect(poHomeChannel.composer.getFileByName(fileName)).not.toBeVisible();
 	});
 
 	test('should not display modal when clicking in send file', async () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
-		await poHomeChannel.content.getFileComposerByName('any_file.txt').click();
+		await poHomeChannel.composer.getFileByName('any_file.txt').click();
 		await poHomeChannel.content.btnCancelUpdateFileUpload.click();
 		await expect(poHomeChannel.content.fileUploadModal).not.toBeVisible();
 	});
@@ -47,11 +48,11 @@ test.describe.serial('file-upload', () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
 
 		await test.step('update file name and send', async () => {
-			await poHomeChannel.content.getFileComposerByName('any_file.txt').click();
+			await poHomeChannel.composer.getFileByName('any_file.txt').click();
 			await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
 			await poHomeChannel.content.btnUpdateFileUpload.click();
 
-			expect(poHomeChannel.content.getFileComposerByName(updatedFileName));
+			expect(poHomeChannel.composer.getFileByName(updatedFileName));
 			await poHomeChannel.composer.btnSend.click();
 		});
 
@@ -84,7 +85,7 @@ test.describe.serial('file-upload', () => {
 		await page.reload();
 		await poHomeChannel.content.sendFileMessage(fileName, { waitForResponse: false });
 
-		await expect(poHomeChannel.content.getFileComposerByName(fileName)).toHaveAttribute('readonly');
+		await expect(poHomeChannel.composer.getFileByName(fileName)).toHaveAttribute('readonly');
 	});
 
 	test.describe.serial('multiple file upload', () => {
@@ -109,10 +110,10 @@ test.describe.serial('file-upload', () => {
 			await poHomeChannel.content.sendFileMessage(file1);
 			await poHomeChannel.content.sendFileMessage(file2);
 
-			await poHomeChannel.content.getFileComposerByName(file1).getByRole('button', { name: 'Close' }).click();
+			await poHomeChannel.composer.getFileByName(file1).getByRole('button', { name: 'Close' }).click();
 
-			await expect(poHomeChannel.content.getFileComposerByName(file1)).not.toBeVisible();
-			await expect(poHomeChannel.content.getFileComposerByName(file2)).toBeVisible();
+			await expect(poHomeChannel.composer.getFileByName(file1)).not.toBeVisible();
+			await expect(poHomeChannel.composer.getFileByName(file2)).toBeVisible();
 
 			await poHomeChannel.composer.btnSend.click();
 
@@ -144,7 +145,7 @@ test.describe.serial('file-upload', () => {
 
 			// TODO: Composer regorg is needed for it to be accessible and allow locating files by their extensions and counting them
 			// await expect(poHomeChannel.content.getFilesInComposer('.png')).toHaveCount(10);
-			await expect(poHomeChannel.content.getFileComposerByName(file11)).not.toBeVisible();
+			await expect(poHomeChannel.composer.getFileByName(file11)).not.toBeVisible();
 		});
 	});
 
@@ -164,8 +165,8 @@ test.describe.serial('file-upload', () => {
 			await poHomeChannel.content.sendFileMessage(invalidFile1, { waitForResponse: false });
 			await poHomeChannel.content.sendFileMessage(invalidFile2, { waitForResponse: false });
 
-			await expect(poHomeChannel.content.getFileComposerByName(invalidFile1)).toHaveAttribute('readonly');
-			await expect(poHomeChannel.content.getFileComposerByName(invalidFile2)).toHaveAttribute('readonly');
+			await expect(poHomeChannel.composer.getFileByName(invalidFile1)).toHaveAttribute('readonly');
+			await expect(poHomeChannel.composer.getFileByName(invalidFile2)).toHaveAttribute('readonly');
 
 			await poHomeChannel.composer.btnSend.click();
 			const warningModal = poHomeChannel.page.getByRole('dialog', { name: 'Warning' });
@@ -183,8 +184,8 @@ test.describe.serial('file-upload', () => {
 				await poHomeChannel.content.sendFileMessage(validFile, { waitForResponse: false });
 				await poHomeChannel.content.sendFileMessage(invalidFile, { waitForResponse: false });
 
-				await expect(poHomeChannel.content.getFileComposerByName(validFile)).not.toHaveAttribute('readonly');
-				await expect(poHomeChannel.content.getFileComposerByName(invalidFile)).toHaveAttribute('readonly');
+				await expect(poHomeChannel.composer.getFileByName(validFile)).not.toHaveAttribute('readonly');
+				await expect(poHomeChannel.composer.getFileByName(invalidFile)).toHaveAttribute('readonly');
 			});
 
 			await test.step('should open warning modal', async () => {
@@ -200,8 +201,8 @@ test.describe.serial('file-upload', () => {
 				await warningModal.getByRole('button', { name: 'Cancel' }).click();
 
 				await expect(warningModal).not.toBeVisible();
-				await expect(poHomeChannel.content.getFileComposerByName(invalidFile)).toBeVisible();
-				await expect(poHomeChannel.content.getFileComposerByName(validFile)).toBeVisible();
+				await expect(poHomeChannel.composer.getFileByName(invalidFile)).toBeVisible();
+				await expect(poHomeChannel.composer.getFileByName(validFile)).toBeVisible();
 			});
 
 			await test.step('should send message with the valid file when confirming "Send anyway"', async () => {
@@ -212,8 +213,9 @@ test.describe.serial('file-upload', () => {
 				await warningModal.getByRole('button', { name: 'Send anyway' }).click();
 
 				await expect(warningModal).not.toBeVisible();
+				await expect(poHomeChannel.composer.getFileByName(validFile)).not.toBeVisible();
 				await expect(poHomeChannel.content.lastMessageFileName).toContainText(validFile);
-				await expect(poHomeChannel.content.getFileComposerByName(invalidFile)).not.toBeVisible();
+				await expect(poHomeChannel.composer.getFileByName(invalidFile)).not.toBeVisible();
 			});
 		});
 	});
@@ -241,6 +243,6 @@ test.describe('file-upload-not-member', () => {
 	test('should not be able to upload if not a member', async () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
 
-		await expect(poHomeChannel.content.getFileComposerByName('any_file.txt')).not.toBeVisible();
+		await expect(poHomeChannel.composer.getFileByName('any_file.txt')).not.toBeVisible();
 	});
 });
