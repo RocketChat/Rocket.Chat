@@ -32,6 +32,18 @@ type EditStatusModalProps = {
 	userStatusText: IUser['statusText'];
 };
 
+if (typeof window !== 'undefined') {
+	try {
+		const key = 'fuselage-localStorage-Local_Custom_Status';
+		const value = window.localStorage.getItem(key);
+		if (value === 'undefined' || value === 'null') {
+			window.localStorage.removeItem(key);
+		}
+	} catch {
+		// Ignore localStorage access errors
+	}
+}
+
 const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModalProps): ReactElement => {
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -61,7 +73,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 	const handleSaveStatus = useCallback(async () => {
 		try {
 			await setUserStatus({ message: statusText, status: statusType });
-			setCustomStatus(statusText);
+			setCustomStatus(statusText ?? '');
 			dispatchToastMessage({ type: 'success', message: t('StatusMessage_Changed_Successfully') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
