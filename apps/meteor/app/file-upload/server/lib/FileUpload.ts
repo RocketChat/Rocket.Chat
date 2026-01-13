@@ -31,7 +31,7 @@ import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { UploadFS } from '../../../../server/ufs';
 import { ufsComplete } from '../../../../server/ufs/ufs-methods';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
-import { UploadService } from '../../../api/server/lib/UploadService';
+import { MultipartUploadHandler } from '../../../api/server/lib/MultipartUploadHandler';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
@@ -415,7 +415,7 @@ export const FileUpload = {
 			await reorientation();
 		} else if (shouldStripExif) {
 			// If there is no EXIF orientation but the setting is enabled, still strip any metadata
-			size = await UploadService.stripExifFromFile(tmpFile);
+			size = await MultipartUploadHandler.stripExifFromFile(tmpFile);
 		}
 
 		await this.getCollection().updateOne(

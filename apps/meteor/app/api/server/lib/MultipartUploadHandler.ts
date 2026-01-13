@@ -6,7 +6,7 @@ import { pipeline } from 'stream/promises';
 
 import { MeteorError } from '@rocket.chat/core-services';
 import { Random } from '@rocket.chat/random';
-import busboy from 'busboy';
+import busboy, { type BusboyConfig } from 'busboy';
 import ExifTransformer from 'exif-be-gone';
 
 import { UploadFS } from '../../../../server/ufs';
@@ -28,7 +28,7 @@ export type ParseOptions = {
 	fileOptional?: boolean;
 };
 
-export class UploadService {
+export class MultipartUploadHandler {
 	static transforms = {
 		stripExif(): Transform {
 			return new ExifTransformer();
@@ -61,11 +61,12 @@ export class UploadService {
 		}
 	}
 
-	static async parse(
-		requestOrStream: IncomingMessage | Request,
+	static async parseRequest(
+		request: IncomingMessage | Request,
 		options: ParseOptions,
 	): Promise<{ file: ParsedUpload | null; fields: Record<string, string> }> {
-		const limits: any = { files: 1 };
+		const limits: BusboyConfig['limits'] = { files: 1 };
+
 		if (options.maxSize && options.maxSize > 0) {
 			// We add an extra byte to the configured limit so we don't fail the upload
 			// of a file that is EXACTLY maxSize
@@ -73,9 +74,7 @@ export class UploadService {
 		}
 
 		const headers =
-			requestOrStream instanceof IncomingMessage
-				? (requestOrStream.headers as Record<string, string>)
-				: Object.fromEntries(requestOrStream.headers.entries());
+			request instanceof IncomingMessage ? (request.headers as Record<string, string>) : Object.fromEntries(request.headers.entries());
 
 		const bb = busboy({
 			headers,
@@ -153,6 +152,7 @@ export class UploadService {
 			});
 
 			writeStream.on('error', (err) => {
+				file.destroy();
 				void this.cleanup(tempFilePath);
 				reject(new MeteorError('error-file-upload', err.message));
 			});
@@ -160,7 +160,7 @@ export class UploadService {
 			file.on('error', (err) => {
 				writeStream.destroy();
 				void this.cleanup(tempFilePath);
-				reject(err);
+				reject(new MeteorError('error-file-upload', err.message));
 			});
 		});
 
@@ -174,7 +174,7 @@ export class UploadService {
 		});
 
 		bb.on('filesLimit', () => {
-			reject('Just 1 file is allowed');
+			reject(new MeteorError('error-too-many-files', 'Too many files in upload'));
 		});
 
 		bb.on('partsLimit', () => {
@@ -185,14 +185,14 @@ export class UploadService {
 			reject(new MeteorError('error-too-many-fields', 'Too many fields in upload'));
 		});
 
-		if (requestOrStream instanceof IncomingMessage) {
-			requestOrStream.pipe(bb);
+		if (request instanceof IncomingMessage) {
+			request.pipe(bb);
 		} else {
-			if (!requestOrStream.body) {
+			if (!request.body) {
 				return Promise.reject(new MeteorError('error-no-body', 'Request has no body'));
 			}
 
-			const nodeStream = Readable.fromWeb(requestOrStream.body as any);
+			const nodeStream = Readable.fromWeb(request.body as any);
 			nodeStream.pipe(bb);
 		}
 
