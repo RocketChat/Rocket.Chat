@@ -3,7 +3,6 @@ import { Logger } from '@rocket.chat/logger';
 import { Migrations } from '@rocket.chat/models';
 
 import { showErrorBox } from './logger/showBox';
-import { statistics } from '../../app/statistics/server/lib/statistics';
 import { Info } from '../../app/utils/rocketchat.info';
 import { sleep } from '../../lib/utils/sleep';
 
@@ -311,8 +310,6 @@ export async function onServerVersionChange(cb: () => Promise<void>): Promise<vo
 	if (result?.hash === Info.commit.hash) {
 		return;
 	}
-
-	await statistics.updateDeploymentData();
 
 	await cb();
 }
