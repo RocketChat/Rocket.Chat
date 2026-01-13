@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import NavBarControlsWithData from './NavBarControlsWithData';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import NavBarOmnichannelGroup from '../NavBarOmnichannelGroup';
-import { NavBarItemLoginPage, NavBarItemAdministrationMenu, UserMenu } from '../NavBarSettingsToolbar';
+import { NavBarItemLoginPage, NavBarItemAdministrationMenu, NavBarItemMedsenseSignInStatus, UserMenu } from '../NavBarSettingsToolbar';
 import NavBarVoipGroup from '../NavBarVoipGroup';
 
 const NavBarControlsSection = () => {
@@ -23,6 +23,7 @@ const NavBarControlsSection = () => {
 				{(showOmnichannel || callAction) && <NavBarControlsWithData />}
 				<NavBarGroup aria-label={t('Workspace_and_user_preferences')}>
 					<NavBarItemAdministrationMenu />
+					<NavBarItemMedsenseSignInStatus />
 					{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}
 				</NavBarGroup>
 			</NavBarSection>
@@ -35,6 +36,7 @@ const NavBarControlsSection = () => {
 			{showOmnichannel && <NavBarOmnichannelGroup />}
 			<NavBarGroup aria-label={t('Workspace_and_user_preferences')}>
 				<NavBarItemAdministrationMenu />
+				<NavBarItemMedsenseSignInStatus />
 				{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}
 			</NavBarGroup>
 		</NavBarSection>

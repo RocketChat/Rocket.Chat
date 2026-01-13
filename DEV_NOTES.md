@@ -630,6 +630,10 @@ yarn dsv  # Rebuilds and starts dev server
 - Summary posting now uses /forms/submit response (no /forms/summary endpoint) and posts to room using cached room object.
 - Added form expiry timer setting (form_expire_ms, default 15 min) with expiry message and cleanup.
 - "Other" input isolation fixed by step-scoped actionId; no carry-over between steps.
+- Added "New bot chat" modal with optional user greeting input (button label uses Medsense_Start_Chat_Label).
+- Added view-directory permission to hide/show the directory button in the UI.
+- Added agent "Sign in" modal under avatar menu with 8/12 hour presets, manual end time, and role selection stored in user customFields.
+- Added REST endpoint GET /api/v1/medsense.signedInUsers (requires view-full-other-user-info) returning signed-in users with role/start/end.
 
 ## Known constraints
 - Livechat widget does not support UIKit modals; use inline steps for widget.

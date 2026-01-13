@@ -435,6 +435,30 @@ export const createMessageSettings = () =>
 				i18nLabel: 'Medsense_Start_Chat_Greeting',
 				i18nDescription: 'Medsense_Start_Chat_Greeting_Description',
 			});
+
+			await this.add('Medsense_Sign_In_Role_Pharmacist_Roles', [], {
+				type: 'multiSelect',
+				public: true,
+				values: roleOptions,
+				i18nLabel: 'Medsense_Sign_In_Role_Pharmacist_Roles',
+				i18nDescription: 'Medsense_Sign_In_Role_Pharmacist_Roles_Description',
+			});
+
+			await this.add('Medsense_Sign_In_Role_Technician_Roles', [], {
+				type: 'multiSelect',
+				public: true,
+				values: roleOptions,
+				i18nLabel: 'Medsense_Sign_In_Role_Technician_Roles',
+				i18nDescription: 'Medsense_Sign_In_Role_Technician_Roles_Description',
+			});
+
+			await this.add('Medsense_Sign_In_Role_Assistant_Roles', [], {
+				type: 'multiSelect',
+				public: true,
+				values: roleOptions,
+				i18nLabel: 'Medsense_Sign_In_Role_Assistant_Roles',
+				i18nDescription: 'Medsense_Sign_In_Role_Assistant_Roles_Description',
+			});
 		});
 
 		await this.add('Message_CustomFields_Enabled', false, {
