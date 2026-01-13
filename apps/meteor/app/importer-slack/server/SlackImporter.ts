@@ -547,7 +547,7 @@ export class SlackImporter extends Importer {
 		if (message.reactions && message.reactions.length > 0) {
 			newMessage.reactions = message.reactions.reduce(
 				(newReactions, reaction) => {
-					const name = `:${reaction.name}:`;
+					const name = this._replaceSlackEmojiShortCode(reaction.name);
 					return {
 						...newReactions,
 						...(reaction.users?.length ? { [name]: { name, users: this._replaceSlackUserIds(reaction.users) } } : {}),
@@ -675,6 +675,107 @@ export class SlackImporter extends Importer {
 		return members.map((userId) => this._replaceSlackUserId(userId));
 	}
 
+	_replaceSlackEmojiShortCode(emojiShortCode: string): string {
+		// Simple string-to-string replacements
+		const simpleReplacements: Record<string, string> = {
+			'staff_of_aesculapius': 'medical_symbol',
+			'heavy_exclamation_mark': 'exclamation',
+			'moon': 'waxing_gibbous_moon',
+			'fried_egg': 'cooking',
+			'running': 'runner',
+			'lantern': 'izakaya_lantern',
+			'honeybee': 'bee',
+			'ladybug': 'beetle',
+			'lady_beetle': 'beetle',
+			'flipper': 'dolphin',
+			'piggy': 'pig',
+			'facepunch': 'punch',
+			'tshirt': 'shirt',
+			'shoe': 'mans_shoe',
+			'family': 'family_mwgb',
+			'man_and_woman_holding_hands': 'couple',
+			'woman_and_man_holding_hands': 'couple',
+			'collision': 'boom',
+			'open_book': 'book',
+			'hocho': 'knife',
+			'simple_smile': 'smile',
+			'car': 'red_car',
+			'the_horns': 'sign_of_the_horns',
+			'crossed_fingers': 'fingers_crossed',
+			'i_love_you_hand_sign': 'love_you_gesture',
+			'face_with_one_eyebrow_raised': 'face_with_raised_eyebrow',
+			'grinning_face_with_star_eyes': 'star_struck',
+			'grinning_face_with_one_large_and_one_small_eye': 'zany_face',
+			'face_with_finger_covering_closed_lips': 'shushing_face',
+			'face_with_symbols_on_mouth': 'face_with_symbols_over_mouth',
+			'serious_face_with_symbols_covering_mouth': 'face_with_symbols_over_mouth',
+			'smiling_face_with_smiling_eyes_and_hand_covering_mouth': 'face_with_hand_over_mouth',
+			'face_with_open_mouth_vomiting': 'face_vomiting',
+			'shocked_face_with_exploding_head': 'exploding_head',
+			'phone': 'telephone',
+			'boat': 'sailboat',
+			'hand': 'raised_hand',
+			'e_email': 'e-mail',
+			'fleur_de_lis': 'fleur-de-lis',
+			'non_potable_water': 'non-potable_water',
+			'uk': 'gb',
+		};
+
+		let emojiShortCodeRocketChat = emojiShortCode.replace(
+			/:?([a-z0-9_-]+|\+1)(::skin-tone-([1-5]))?:?/,
+			(match, emojiShortCodeBase, skinToneGroup, skinTone) => {
+				// Apply transformations in order
+				emojiShortCodeBase = emojiShortCodeBase
+					.replace(/-/g, '_')
+					.replace(/^female/, 'woman')
+					.replace(/^male/, 'man');
+
+				// Check simple replacements first (O(1) lookup)
+				if (simpleReplacements[emojiShortCodeBase]) {
+					if (skinTone) {
+						return `:${simpleReplacements[emojiShortCodeBase]}_tone${skinTone}:`;
+					} else {
+						return `:${simpleReplacements[emojiShortCodeBase]}:`;
+					}
+				}
+
+				// Apply pattern-based replacements
+				emojiShortCodeBase = emojiShortCodeBase
+					.replace(/^(mostly_sunny|sun_small_cloud)$/, 'white_sun_small_cloud')
+					.replace(/^(barely_sunny|sun_behind_cloud)$/, 'white_sun_behind_cloud')
+					.replace(/^(partly_sunny_rain|sun_behind_rain_cloud)$/, 'white_sun_behind_cloud_with_rain')
+					.replace(/^(rain|snow|lightning|tornado)_cloud$/, 'cloud_$1')
+					.replace(/^(lightning|tornado)$/, 'cloud_$1')
+					.replace(/^man_(woman|boy|girl)_(boy|girl)$/, 'family_man_$1_$2')
+					.replace(/^woman_(boy|girl)_(boy|girl)$/, 'family_woman_$1_$2')
+					.replace(/^(wo)?man_(boy|girl)$/, 'family_$1man_$2')
+					.replace(
+						/^(man|woman)_(man|woman)_(boy|girl)$/,
+						(match, parent1, parent2, child) => {
+							return `family_${parent1[0]}${parent2[0]}${child[0]}`;
+						}
+					)
+					.replace(
+						/^(man|woman)_(man|woman)_(boy|girl)_(boy|girl)$/,
+						(match, parent1, parent2, child1, child2) => {
+							return `family_${parent1[0]}${parent2[0]}${child1[0]}${child2[0]}`;
+						}
+					)
+					.replace(/^(wo)?men_holding_hands$/, 'two_$1men_holding_hands')
+					.replace(/^(wo)?man_getting_massage$/, '$1man_getting_face_massage')
+					.replace(/^blond_haired_/, 'blond-haired_');
+
+				if (skinTone) {
+					return `:${emojiShortCodeBase}_tone${skinTone}:`;
+				} else {
+					return `:${emojiShortCodeBase}:`;
+				}
+			}
+		);
+
+		return emojiShortCodeRocketChat;
+	}
+
 	convertSlackMessageToRocketChat(message: string): string {
 		if (message) {
 			message = message.replace(/<!(channel|everyone)>/g, '@all');
@@ -690,10 +791,12 @@ export class SlackImporter extends Importer {
 				message = message.replace(/<@([^|>]*)>/g, '@$1');
 			}
 			if (message.includes(':')) {
-				message = message.replace(/:simple_smile:/g, ':smile:');
-				message = message.replace(/:memo:/g, ':pencil:');
-				message = message.replace(/:piggy:/g, ':pig:');
-				message = message.replace(/:uk:/g, ':gb:');
+				message = message.replace(
+					/:([a-z0-9_-]+|\+1)(::skin-tone-[1-5])?:/g,
+					(slackEmojiShortCode) => {
+						return this._replaceSlackEmojiShortCode(slackEmojiShortCode);
+					}
+				);
 			}
 			if (message.includes('```')) {
 				// Fix code blocks that miss a "\n" before and/or after "```"
