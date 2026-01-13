@@ -166,10 +166,6 @@ export class Store {
 			};
 
 			const finishHandler = async () => {
-				if (file.complete) {
-					return;
-				}
-
 				try {
 					// Set file attribute
 					file.complete = true;
