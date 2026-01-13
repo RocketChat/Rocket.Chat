@@ -36,7 +36,9 @@ function getFetchAgent<U extends string>(
 		agentOptions.servername = originalHostname;
 		agentOptions.rejectUnauthorized = true;
 	} else if (allowSelfSignedCerts) {
-		agentOptions.rejectUnauthorized = false;
+		// For self-signed certificates, do not disable certificate validation.
+		// Instead, fall back to the default HTTPS agent behavior (full validation).
+		return null;
 	} else {
 		return null;
 	}
