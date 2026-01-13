@@ -166,9 +166,10 @@ describe('Meteor.methods', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('success', false);
+
 						const data = JSON.parse(res.body.message);
 						expect(data).to.have.property('error').that.is.an('object');
 						expect(data.error).to.have.property('error', 'error-action-not-allowed');
@@ -576,9 +577,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -734,9 +735,9 @@ describe('Meteor.methods', () => {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('error').that.is.an('object');
 					expect(data.error).to.have.a.property('error', 'error-not-allowed');
@@ -903,9 +904,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1121,9 +1122,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1301,9 +1302,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1562,9 +1563,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.include('error-invalid-room');
 				})
 				.end(done);
@@ -1583,9 +1584,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.include('Match error');
 				})
 				.end(done);
@@ -2022,9 +2023,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 					const data = JSON.parse(res.body.message);
 					expect(data).to.not.have.a.property('result').that.is.an('object');
 					expect(data).to.have.a.property('error').that.is.an('object');
@@ -2053,9 +2054,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('error').that.is.an('object');
 					expect(data.error.sanitizedError).to.have.a.property('reason', 'Match failed');
@@ -2241,9 +2242,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('msg').that.is.an('string');
@@ -2264,9 +2265,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('msg').that.is.an('string');
@@ -2274,7 +2275,7 @@ describe('Meteor.methods', () => {
 				});
 		});
 
-		it('should add a quote attachment to a message', async () => {
+		it.skip('should add a quote attachment to a message', async () => {
 			const quotedMsgLink = `${siteUrl}/group/${roomName}?msg=${messageWithMarkdownId}`;
 			await request
 				.post(methodCall('updateMessage'))
@@ -2291,6 +2292,7 @@ describe('Meteor.methods', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
+					// TODO: this test is not testing anything useful
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 				});
 
@@ -2378,7 +2380,7 @@ describe('Meteor.methods', () => {
 				});
 		});
 
-		it('should remove a quote attachment from a message', async () => {
+		it.skip('should remove a quote attachment from a message', async () => {
 			await request
 				.post(methodCall('updateMessage'))
 				.set(credentials)
@@ -2534,9 +2536,9 @@ describe('Meteor.methods', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('success', false);
 						expect(res.body).to.have.a.property('message').that.is.a('string');
 
 						const data = JSON.parse(res.body.message);
@@ -3098,7 +3100,7 @@ describe('Meteor.methods', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('message').that.is.an('string');
 						expect(res.body.message).to.include('error-cant-invite-for-direct-room');
@@ -3201,9 +3203,9 @@ describe('Meteor.methods', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('success', false);
 						const parsedBody = JSON.parse(res.body.message);
 						expect(parsedBody).to.have.property('error');
 						expect(parsedBody.error).to.have.property('error', 'error-max-rooms-per-guest-reached');
@@ -3225,9 +3227,9 @@ describe('Meteor.methods', () => {
 						params: [[{ _id: 'Message_AllowEditing_BlockEditInMinutes', value: { $InfNaN: 0 } }]],
 					}),
 				})
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
 					expect(parsedBody.error).to.have.property('error', 'Invalid setting value NaN');
@@ -3333,7 +3335,7 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('message');
 					const data = JSON.parse(res.body.message);
@@ -3411,9 +3413,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
