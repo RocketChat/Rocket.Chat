@@ -76,8 +76,28 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 	);
 
 	const ignoredHosts = settings.get<string>('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
-	if (urlObj.hostname && (ignoredHosts.includes(urlObj.hostname) || ipRangeCheck(urlObj.hostname, ignoredHosts))) {
-		throw new Error('invalid host');
+
+	const isIgnoredHost = (hostname: string | null): boolean => {
+		if (!hostname || !ignoredHosts.length) {
+			return false;
+		}
+
+		const exactHosts = ignoredHosts.filter((h) => !h.includes('*'));
+		if (exactHosts.includes(hostname) || ipRangeCheck(hostname, exactHosts)) {
+			return true;
+		}
+
+		return ignoredHosts
+			.filter((h) => h.includes('*'))
+			.some((pattern) => {
+				const escaped = pattern.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&');
+				const regex = new RegExp(`^${escaped.replace(/\*/g, '.*')}$`, 'i');
+				return regex.test(hostname);
+			});
+	};
+
+	if (isIgnoredHost(urlObj.hostname)) {
+		throw new Error('host is ignored');
 	}
 
 	const safePorts = settings.get<string>('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
