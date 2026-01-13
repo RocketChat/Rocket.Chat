@@ -1,8 +1,8 @@
-import type { IAppServerOrchestrator, IAppsMessage, IAppsRoom, IAppsUser, IAppsLivechatRoom, AppEvents } from '@rocket.chat/apps';
+import type { IAppServerOrchestrator, IAppsRoom, IAppsLivechatRoom, IAppsMessage } from '@rocket.chat/apps';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
+import { isLivechatRoom } from '@rocket.chat/apps-engine/definition/livechat/ILivechatRoom';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import type { IUserContext, IUserUpdateContext } from '@rocket.chat/apps-engine/definition/users';
-import type { IListenerExecutor } from '@rocket.chat/apps-engine/server/managers/AppListenerManager';
 import type { IMessage, IRoom, IUser, ILivechatDepartment } from '@rocket.chat/core-typings';
 
 type LivechatTransferData = {
@@ -29,139 +29,265 @@ type UserCrudData = {
 	previousUser?: IUser;
 };
 
+type HandleMessageEvent =
+	| {
+			event: AppInterface.IPostMessageDeleted;
+			payload: [IMessage, IUser];
+	  }
+	| {
+			event: AppInterface.IPostMessageReacted;
+			payload: [IMessage, IUser, string, boolean];
+	  }
+	| {
+			event: AppInterface.IPostMessageFollowed;
+			payload: [IMessage, IUser, boolean];
+	  }
+	| {
+			event: AppInterface.IPostMessagePinned;
+			payload: [IMessage, IUser, boolean];
+	  }
+	| {
+			event: AppInterface.IPostMessageStarred;
+			payload: [IMessage, IUser, boolean];
+	  }
+	| {
+			event: AppInterface.IPostMessageReported;
+			payload: [IMessage, IUser, string];
+	  }
+	| {
+			event:
+				| AppInterface.IPostSystemMessageSent
+				| AppInterface.IPreMessageSentPrevent
+				| AppInterface.IPreMessageSentExtend
+				| AppInterface.IPreMessageSentModify
+				| AppInterface.IPostMessageSent
+				| AppInterface.IPreMessageDeletePrevent
+				| AppInterface.IPreMessageUpdatedPrevent
+				| AppInterface.IPreMessageUpdatedExtend
+				| AppInterface.IPreMessageUpdatedModify
+				| AppInterface.IPostMessageUpdated;
+			payload: [IMessage];
+	  };
+
+type HandleRoomEvent =
+	| {
+			event: AppInterface.IPreRoomUserJoined | AppInterface.IPostRoomUserJoined;
+			payload: [IRoom, IUser, IUser];
+	  }
+	| {
+			event: AppInterface.IPreRoomUserLeave | AppInterface.IPostRoomUserLeave;
+			payload: [IRoom, IUser, IUser];
+	  }
+	| {
+			event:
+				| AppInterface.IPreRoomCreatePrevent
+				| AppInterface.IPreRoomCreateExtend
+				| AppInterface.IPreRoomCreateModify
+				| AppInterface.IPostRoomCreate
+				| AppInterface.IPreRoomDeletePrevent
+				| AppInterface.IPostRoomDeleted
+				| AppInterface.IPreRoomUserJoined
+				| AppInterface.IPostRoomUserJoined
+				| AppInterface.IPreRoomUserLeave
+				| AppInterface.IPostRoomUserLeave;
+			payload: [IRoom];
+	  };
+
+type HandleLivechatEvent =
+	| {
+			event: AppInterface.IPostLivechatAgentAssigned | AppInterface.IPostLivechatAgentUnassigned;
+			payload: [LivechatAgentData];
+	  }
+	| {
+			event: AppInterface.IPostLivechatRoomTransferred;
+			payload: [LivechatTransferData];
+	  }
+	| {
+			event: AppInterface.IPostLivechatGuestSaved;
+			payload: [string];
+	  }
+	| {
+			event: AppInterface.IPostLivechatRoomSaved;
+			payload: [string];
+	  }
+	| {
+			event: AppInterface.IPostLivechatDepartmentRemoved;
+			payload: [ILivechatDepartment];
+	  }
+	| {
+			event: AppInterface.IPostLivechatDepartmentDisabled;
+			payload: [ILivechatDepartment];
+	  }
+	| {
+			event:
+				| AppInterface.ILivechatRoomClosedHandler
+				| AppInterface.IPreLivechatRoomCreatePrevent
+				| AppInterface.IPostLivechatRoomStarted
+				| AppInterface.IPostLivechatRoomClosed;
+			payload: [IRoom];
+	  };
+
+type HandleUserEvent =
+	| {
+			event: AppInterface.IPostUserLoggedIn | AppInterface.IPostUserLoggedOut;
+			payload: [IUser];
+	  }
+	| {
+			event: AppInterface.IPostUserStatusChanged;
+			payload: [UserStatusChangedData];
+	  }
+	| {
+			event: AppInterface.IPostUserDeleted | AppInterface.IPostUserCreated | AppInterface.IPostUserUpdated;
+			payload: [UserCrudData];
+	  };
+
+type HandleEvent = HandleMessageEvent | HandleRoomEvent | HandleLivechatEvent | HandleUserEvent;
+
 export class AppListenerBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {}
 
-	async handleEvent(event: AppEvents, ...payload: unknown[]): Promise<any> {
-		// eslint-disable-next-line complexity
-		const method = ((): keyof Omit<AppListenerBridge, 'handleEvent' | 'orch'> => {
-			switch (event) {
-				case AppInterface.IPostSystemMessageSent:
-				case AppInterface.IPreMessageSentPrevent:
-				case AppInterface.IPreMessageSentExtend:
-				case AppInterface.IPreMessageSentModify:
-				case AppInterface.IPostMessageSent:
-				case AppInterface.IPreMessageDeletePrevent:
-				case AppInterface.IPostMessageDeleted:
-				case AppInterface.IPreMessageUpdatedPrevent:
-				case AppInterface.IPreMessageUpdatedExtend:
-				case AppInterface.IPreMessageUpdatedModify:
-				case AppInterface.IPostMessageUpdated:
-				case AppInterface.IPostMessageReacted:
-				case AppInterface.IPostMessageFollowed:
-				case AppInterface.IPostMessagePinned:
-				case AppInterface.IPostMessageStarred:
-				case AppInterface.IPostMessageReported:
-					return 'messageEvent';
-				case AppInterface.IPreRoomCreatePrevent:
-				case AppInterface.IPreRoomCreateExtend:
-				case AppInterface.IPreRoomCreateModify:
-				case AppInterface.IPostRoomCreate:
-				case AppInterface.IPreRoomDeletePrevent:
-				case AppInterface.IPostRoomDeleted:
-				case AppInterface.IPreRoomUserJoined:
-				case AppInterface.IPostRoomUserJoined:
-				case AppInterface.IPreRoomUserLeave:
-				case AppInterface.IPostRoomUserLeave:
-					return 'roomEvent';
-				/**
-				 * @deprecated please prefer the AppInterface.IPostLivechatRoomClosed event
-				 */
-				case AppInterface.ILivechatRoomClosedHandler:
-				case AppInterface.IPreLivechatRoomCreatePrevent:
-				case AppInterface.IPostLivechatRoomStarted:
-				case AppInterface.IPostLivechatRoomClosed:
-				case AppInterface.IPostLivechatAgentAssigned:
-				case AppInterface.IPostLivechatAgentUnassigned:
-				case AppInterface.IPostLivechatRoomTransferred:
-				case AppInterface.IPostLivechatGuestSaved:
-				case AppInterface.IPostLivechatRoomSaved:
-				case AppInterface.IPostLivechatDepartmentRemoved:
-				case AppInterface.IPostLivechatDepartmentDisabled:
-					return 'livechatEvent';
-				case AppInterface.IPostUserCreated:
-				case AppInterface.IPostUserUpdated:
-				case AppInterface.IPostUserDeleted:
-				case AppInterface.IPostUserLoggedIn:
-				case AppInterface.IPostUserLoggedOut:
-				case AppInterface.IPostUserStatusChanged:
-					return 'userEvent';
-				default:
-					return 'defaultEvent';
+	// eslint-disable-next-line complexity
+	async handleEvent(args: HandleEvent): Promise<any> {
+		console.log('args', args);
+		switch (args.event) {
+			case AppInterface.IPostMessageDeleted:
+			case AppInterface.IPostMessageReacted:
+			case AppInterface.IPostMessageFollowed:
+			case AppInterface.IPostMessagePinned:
+			case AppInterface.IPostMessageStarred:
+			case AppInterface.IPostMessageReported:
+			case AppInterface.IPostSystemMessageSent:
+			case AppInterface.IPreMessageSentPrevent:
+			case AppInterface.IPreMessageSentExtend:
+			case AppInterface.IPreMessageSentModify:
+			case AppInterface.IPostMessageSent:
+			case AppInterface.IPreMessageDeletePrevent:
+			case AppInterface.IPreMessageUpdatedPrevent:
+			case AppInterface.IPreMessageUpdatedExtend:
+			case AppInterface.IPreMessageUpdatedModify:
+			case AppInterface.IPostMessageUpdated: {
+				return this.messageEvent(args);
 			}
-		})();
-
-		// Using type assertion here because TypeScript doesn't understand that method is a valid method name
-		return this[method](event as keyof IListenerExecutor, payload);
+			case AppInterface.IPreRoomCreatePrevent:
+			case AppInterface.IPreRoomCreateExtend:
+			case AppInterface.IPreRoomCreateModify:
+			case AppInterface.IPostRoomCreate:
+			case AppInterface.IPreRoomDeletePrevent:
+			case AppInterface.IPostRoomDeleted:
+			case AppInterface.IPreRoomUserJoined:
+			case AppInterface.IPostRoomUserJoined:
+			case AppInterface.IPreRoomUserLeave:
+			case AppInterface.IPostRoomUserLeave:
+				return this.roomEvent(args);
+			/**
+			 * @deprecated please prefer the AppInterface.IPostLivechatRoomClosed event
+			 */
+			case AppInterface.ILivechatRoomClosedHandler:
+			case AppInterface.IPreLivechatRoomCreatePrevent:
+			case AppInterface.IPostLivechatRoomStarted:
+			case AppInterface.IPostLivechatRoomClosed:
+			case AppInterface.IPostLivechatAgentAssigned:
+			case AppInterface.IPostLivechatAgentUnassigned:
+			case AppInterface.IPostLivechatRoomTransferred:
+			case AppInterface.IPostLivechatGuestSaved:
+			case AppInterface.IPostLivechatRoomSaved:
+			case AppInterface.IPostLivechatDepartmentRemoved:
+			case AppInterface.IPostLivechatDepartmentDisabled:
+				return this.livechatEvent(args);
+			case AppInterface.IPostUserCreated:
+			case AppInterface.IPostUserUpdated:
+			case AppInterface.IPostUserDeleted:
+			case AppInterface.IPostUserLoggedIn:
+			case AppInterface.IPostUserLoggedOut:
+			case AppInterface.IPostUserStatusChanged:
+				return this.userEvent(args);
+			default:
+				return this.defaultEvent(args);
+		}
 	}
 
-	async defaultEvent(inte: keyof IListenerExecutor, payload: unknown[]): Promise<unknown> {
-		const [data] = payload;
-
+	async defaultEvent(args: HandleEvent): Promise<unknown> {
 		return this.orch
 			.getManager()
 			.getListenerManager()
-			.executeListener(inte, data as any); // We're delegating the payload validation to the method being called
+			.executeListener(args.event, args.payload[0] as any);
 	}
 
-	async messageEvent(inte: keyof IListenerExecutor, payload: unknown[]): Promise<boolean | IMessage | undefined> {
-		const [message, ...data] = payload as [IMessage, ...unknown[]];
+	async messageEvent(args: HandleMessageEvent): Promise<boolean | IMessage | undefined> {
+		const [message] = args.payload;
 
 		const msg = await this.orch.getConverters().get('messages').convertMessage(message);
 
-		const params = ((): IAppsMessage | { message: IAppsMessage; user: IAppsUser; [key: string]: any } => {
-			switch (inte) {
+		const result = await (() => {
+			switch (args.event) {
 				case AppInterface.IPostMessageDeleted:
-					const [userDeleted] = data as [IUser];
-					return {
-						message: msg,
-						user: this.orch.getConverters().get('users').convertToApp(userDeleted),
-					};
+					const [, userDeleted] = args.payload;
+					return this.orch
+						.getManager()
+						.getListenerManager()
+						.executeListener(args.event, {
+							message: msg,
+							user: this.orch.getConverters().get('users').convertToApp(userDeleted),
+						});
 				case AppInterface.IPostMessageReacted:
-					const [userReacted, reaction, isReacted] = data as [IUser, string, boolean];
-					return {
-						message: msg,
-						user: this.orch.getConverters().get('users').convertToApp(userReacted),
-						reaction,
-						isReacted,
-					};
+					const [, userReacted, reaction, isReacted] = args.payload;
+					return this.orch
+						.getManager()
+						.getListenerManager()
+						.executeListener(args.event, {
+							message: msg,
+							user: this.orch.getConverters().get('users').convertToApp(userReacted),
+							reaction,
+							isReacted,
+						});
 				case AppInterface.IPostMessageFollowed:
-					const [userFollowed, isUnfollow] = data as [IUser, boolean];
-					return {
-						message: msg,
-						user: this.orch.getConverters().get('users').convertToApp(userFollowed),
-						isUnfollow,
-					};
+					const [, userFollowed, isFollowed] = args.payload;
+					return this.orch
+						.getManager()
+						.getListenerManager()
+						.executeListener(args.event, {
+							message: msg,
+							user: this.orch.getConverters().get('users').convertToApp(userFollowed),
+							isFollowed,
+						});
 				case AppInterface.IPostMessagePinned:
-					const [userPinned, isUnpinned] = data as [IUser, boolean];
-					return {
-						message: msg,
-						user: this.orch.getConverters().get('users').convertToApp(userPinned),
-						isUnpinned,
-					};
+					const [, userPinned, isPinned] = args.payload;
+					return this.orch
+						.getManager()
+						.getListenerManager()
+						.executeListener(args.event, {
+							message: msg,
+							user: this.orch.getConverters().get('users').convertToApp(userPinned),
+							isPinned,
+						});
 				case AppInterface.IPostMessageStarred:
-					const [userStarred, isStarred] = data as [IUser, boolean];
-					return {
-						message: msg,
-						user: this.orch.getConverters().get('users').convertToApp(userStarred),
-						isStarred,
-					};
+					const [, userStarred, isStarred] = args.payload;
+					return this.orch
+						.getManager()
+						.getListenerManager()
+						.executeListener(args.event, {
+							message: msg,
+							user: this.orch.getConverters().get('users').convertToApp(userStarred),
+							isStarred,
+						});
 				case AppInterface.IPostMessageReported:
-					const [userReported, reason] = data as [IUser, string];
-					return {
-						message: msg,
-						user: this.orch.getConverters().get('users').convertToApp(userReported),
-						reason,
-					};
+					const [, userReported, reason] = args.payload;
+					return this.orch
+						.getManager()
+						.getListenerManager()
+						.executeListener(args.event, {
+							message: msg,
+							user: this.orch.getConverters().get('users').convertToApp(userReported),
+							reason,
+						});
 				default:
-					return msg;
+					return this.orch.getManager().getListenerManager().executeListener(args.event, msg);
 			}
 		})();
 
-		const result: unknown = await this.orch.getManager().getListenerManager().executeListener(inte, params);
-
-		if (typeof result === 'boolean') {
-			return result;
+		// TODO: weird that boolean is not returned by executeListener
+		if (typeof result === 'boolean' || result === undefined) {
+			return result ?? undefined;
 		}
 
 		return this.orch
@@ -170,66 +296,62 @@ export class AppListenerBridge {
 			.convertAppMessage(result as IAppsMessage);
 	}
 
-	async roomEvent(inte: keyof IListenerExecutor, payload: unknown[]): Promise<boolean | IRoom | IAppsRoom | IAppsLivechatRoom | undefined> {
-		const [room, ...data] = payload as [IRoom, ...unknown[]];
+	async roomEvent(args: HandleRoomEvent): Promise<boolean | IRoom | IAppsRoom | IAppsLivechatRoom | undefined> {
+		const [room] = args.payload;
 
 		const rm = await this.orch.getConverters().get('rooms').convertRoom(room);
 
-		const params = ((): IAppsRoom | IAppsLivechatRoom | { room: IAppsRoom | IAppsLivechatRoom; [key: string]: any } => {
-			switch (inte) {
+		const result = await (() => {
+			switch (args.event) {
 				case AppInterface.IPreRoomUserJoined:
 				case AppInterface.IPostRoomUserJoined:
-					const [joiningUser, invitingUser] = data as [IUser, IUser];
-					return {
-						room: rm,
-						joiningUser: this.orch.getConverters().get('users').convertToApp(joiningUser),
-						invitingUser: this.orch.getConverters().get('users').convertToApp(invitingUser),
-					};
+					const [, joiningUser, invitingUser] = args.payload;
+					return this.orch
+						.getManager()
+						.getListenerManager()
+						.executeListener(args.event, {
+							room: rm,
+							joiningUser: this.orch.getConverters().get('users').convertToApp(joiningUser)!,
+							inviter: this.orch.getConverters().get('users').convertToApp(invitingUser),
+						});
 				case AppInterface.IPreRoomUserLeave:
 				case AppInterface.IPostRoomUserLeave:
-					const [leavingUser, removedBy] = data as [IUser, IUser];
-					return {
-						room: rm,
-						leavingUser: this.orch.getConverters().get('users').convertToApp(leavingUser),
-						removedBy: this.orch.getConverters().get('users').convertToApp(removedBy),
-					};
+					const [, leavingUser, removedBy] = args.payload;
+					return this.orch
+						.getManager()
+						.getListenerManager()
+						.executeListener(args.event, {
+							room: rm,
+							leavingUser: this.orch.getConverters().get('users').convertToApp(leavingUser)!,
+							removedBy: this.orch.getConverters().get('users').convertToApp(removedBy),
+						});
 				default:
-					return rm;
+					return this.orch.getManager().getListenerManager().executeListener(args.event, rm);
 			}
 		})();
 
-		const result: unknown = await this.orch
-			.getManager()
-			.getListenerManager()
-			.executeListener(inte, params as any); // We're delegating the payload validation to the method being called
-
-		if (typeof result === 'boolean') {
-			return result;
+		if (typeof result === 'boolean' || result === undefined) {
+			return result ?? undefined;
 		}
 
-		return this.orch
-			.getConverters()
-			.get('rooms')
-			.convertAppRoom(result as IAppsRoom);
+		return this.orch.getConverters().get('rooms').convertAppRoom(result);
 	}
 
-	async livechatEvent(inte: keyof IListenerExecutor, payload: unknown[]): Promise<unknown> {
-		const [data] = payload;
-
-		switch (inte) {
+	async livechatEvent(args: HandleLivechatEvent): Promise<unknown> {
+		switch (args.event) {
 			case AppInterface.IPostLivechatAgentAssigned:
 			case AppInterface.IPostLivechatAgentUnassigned:
-				const agentData = data as LivechatAgentData;
+				const [agentData] = args.payload;
 				return this.orch
 					.getManager()
 					.getListenerManager()
-					.executeListener(inte, {
+					.executeListener(args.event, {
 						room: (await this.orch.getConverters().get('rooms').convertRoom(agentData.room)) as IAppsLivechatRoom,
 						agent: this.orch.getConverters().get('users').convertToApp(agentData.user),
 					});
 
 			case AppInterface.IPostLivechatRoomTransferred: {
-				const transferData = data as LivechatTransferData;
+				const [transferData] = args.payload;
 				const converter = transferData.type === LivechatTransferEventType.AGENT ? 'users' : 'departments';
 
 				const room = await this.orch.getConverters().get('rooms').convertById(transferData.room);
@@ -247,7 +369,7 @@ export class AppListenerBridge {
 				return this.orch
 					.getManager()
 					.getListenerManager()
-					.executeListener(inte, {
+					.executeListener(args.event, {
 						room,
 						from: from as NonNullable<typeof from>, // type definition in the apps-engine seems to be incorrect
 						to,
@@ -256,82 +378,78 @@ export class AppListenerBridge {
 			}
 
 			case AppInterface.IPostLivechatGuestSaved: {
-				const visitor = await this.orch
-					.getConverters()
-					.get('visitors')
-					.convertById(data as string);
+				const [visitorId] = args.payload;
+				const visitor = await this.orch.getConverters().get('visitors').convertById(visitorId);
 
 				if (!visitor) {
-					throw new Error(`Visitor with id ${data as string} not found`);
+					throw new Error(`Visitor with id ${visitorId} not found`);
 				}
 
-				return this.orch.getManager().getListenerManager().executeListener(inte, visitor);
+				return this.orch.getManager().getListenerManager().executeListener(args.event, visitor);
 			}
 
 			case AppInterface.IPostLivechatRoomSaved: {
-				const room = await this.orch
-					.getConverters()
-					.get('rooms')
-					.convertById(data as string);
+				const [roomId] = args.payload;
+				const room = await this.orch.getConverters().get('rooms').convertById(roomId);
 
 				if (!room) {
-					throw new Error(`Room with id ${data as string} not found`);
+					throw new Error(`Room with id ${roomId} not found`);
 				}
 
 				return this.orch
 					.getManager()
 					.getListenerManager()
-					.executeListener(inte, room as IAppsLivechatRoom);
+					.executeListener(args.event, room as IAppsLivechatRoom);
 			}
 
 			case AppInterface.IPostLivechatDepartmentDisabled: {
-				const department = await this.orch
-					.getConverters()
-					.get('departments')
-					.convertDepartment(data as ILivechatDepartment);
+				const [departmentData] = args.payload;
+				const department = await this.orch.getConverters().get('departments').convertDepartment(departmentData);
 
 				if (!department) {
-					throw new Error(`Department ${data} not found`);
+					throw new Error(`Department ${departmentData} not found`);
 				}
 
-				return this.orch.getManager().getListenerManager().executeListener(inte, { department });
+				return this.orch.getManager().getListenerManager().executeListener(args.event, { department });
 			}
 
 			case AppInterface.IPostLivechatDepartmentRemoved: {
-				const department = await this.orch
-					.getConverters()
-					.get('departments')
-					.convertDepartment(data as ILivechatDepartment);
+				const [departmentData] = args.payload;
+				const department = await this.orch.getConverters().get('departments').convertDepartment(departmentData);
 
 				if (!department) {
-					throw new Error(`Department ${data} not found`);
+					throw new Error(`Department ${departmentData} not found`);
 				}
 
-				return this.orch.getManager().getListenerManager().executeListener(inte, { department });
+				return this.orch.getManager().getListenerManager().executeListener(args.event, { department });
 			}
 
 			default:
-				const room = await this.orch
-					.getConverters()
-					.get('rooms')
-					.convertRoom(data as IRoom);
+				const [roomData] = args.payload;
+				const room = await this.orch.getConverters().get('rooms').convertRoom(roomData);
 
-				return this.orch.getManager().getListenerManager().executeListener(inte, room);
+				if (!room) {
+					throw new Error(`Room ${roomData} not found`);
+				}
+
+				if (!isLivechatRoom(room)) {
+					throw new Error(`Room ${roomData} is not a livechat room`);
+				}
+
+				return this.orch.getManager().getListenerManager().executeListener(args.event, room);
 		}
 	}
 
-	async userEvent(inte: keyof IListenerExecutor, payload: unknown[]): Promise<unknown> {
-		const [data] = payload;
-
-		switch (inte) {
+	async userEvent(args: HandleUserEvent): Promise<unknown> {
+		switch (args.event) {
 			case AppInterface.IPostUserLoggedIn:
 			case AppInterface.IPostUserLoggedOut: {
-				const loginData = data as { user: IUser };
-				const context = this.orch.getConverters().get('users').convertToApp(loginData.user);
-				return this.orch.getManager().getListenerManager().executeListener(inte, context);
+				const [loggedInUser] = args.payload;
+				const context = this.orch.getConverters().get('users').convertToApp(loggedInUser);
+				return this.orch.getManager().getListenerManager().executeListener(args.event, context);
 			}
 			case AppInterface.IPostUserStatusChanged: {
-				const statusData = data as UserStatusChangedData;
+				const [statusData] = args.payload;
 				const { currentStatus, previousStatus } = statusData;
 				const context = {
 					user: this.orch.getConverters().get('users').convertToApp(statusData.user),
@@ -339,27 +457,27 @@ export class AppListenerBridge {
 					previousStatus,
 				};
 
-				return this.orch.getManager().getListenerManager().executeListener(inte, context);
+				return this.orch.getManager().getListenerManager().executeListener(args.event, context);
 			}
 			case AppInterface.IPostUserCreated:
 			case AppInterface.IPostUserDeleted: {
-				const crudData = data as UserCrudData;
+				const [crudData] = args.payload;
 				const context: IUserContext = {
 					user: this.orch.getConverters().get('users').convertToApp(crudData.user),
 					performedBy: this.orch.getConverters().get('users').convertToApp(crudData.performedBy),
 				};
 
-				return this.orch.getManager().getListenerManager().executeListener(inte, context);
+				return this.orch.getManager().getListenerManager().executeListener(args.event, context);
 			}
 			case AppInterface.IPostUserUpdated: {
-				const crudData = data as UserCrudData;
+				const [crudData] = args.payload;
 				const context: IUserUpdateContext = {
 					user: this.orch.getConverters().get('users').convertToApp(crudData.user),
 					performedBy: this.orch.getConverters().get('users').convertToApp(crudData.performedBy),
 					previousData: this.orch.getConverters().get('users').convertToApp(crudData.previousUser),
 				};
 
-				return this.orch.getManager().getListenerManager().executeListener(inte, context);
+				return this.orch.getManager().getListenerManager().executeListener(args.event, context);
 			}
 		}
 	}
