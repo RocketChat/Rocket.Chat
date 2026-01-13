@@ -52,7 +52,7 @@ ENV OPENSSL_CONF="/app/nodejs.cnf"
 
 RUN printf "openssl_conf = openssl_init\nnodejs_conf = openssl_init\n\n.include /usr/ssl/fipsmodule.cnf\n\n[openssl_init]\nproviders = provider_sect\nalg_section = algorithm_sect\n\n[provider_sect]\nfips = fips_sect\nbase = base_sect\n\n[base_sect]\nactivate = 1\n\n[algorithm_sect]\ndefault_properties = fips=yes\n" > /app/nodejs.cnf
 
-RUN echo "const crypto = require('crypto'); try { crypto.setFips(1); console.log('FIPS mode enabled'); } catch (e) { console.error('Failed to enable FIPS mode:', e.message); process.exit(1); }" > /app/enable-fips.js
+RUN echo "const crypto = require('crypto'); try { crypto.setFips(1); console.log('FIPS mode enabled', crypto.getHashes()); } catch (e) { console.error('Failed to enable FIPS mode:', e.message); process.exit(1); }" > /app/enable-fips.js
 
 ENV NODE_OPTIONS="-r /app/enable-fips.js"
 
