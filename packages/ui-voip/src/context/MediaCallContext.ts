@@ -40,6 +40,8 @@ type MediaCallContextType = {
 	remoteMuted: boolean;
 	remoteHeld: boolean;
 
+	onClickDirectMessage?: () => void;
+
 	onMute: () => void;
 	onHold: () => void;
 
@@ -55,6 +57,8 @@ type MediaCallContextType = {
 	onToggleWidget: (peerInfo?: PeerInfo) => void;
 
 	onSelectPeer: (peerInfo: PeerInfo) => void;
+
+	setOpenRoomId: (roomId: string | undefined) => void;
 
 	getAutocompleteOptions: (filter: string) => Promise<PeerAutocompleteOptions[]>;
 	// This is used to get the peer info from the server in case it's not available in the autocomplete options.
@@ -90,6 +94,8 @@ export const defaultMediaCallContextValue: MediaCallContextType = {
 
 	onSelectPeer: () => undefined,
 
+	setOpenRoomId: () => undefined,
+
 	getAutocompleteOptions: () => Promise.resolve([]),
 	getPeerInfo: () => Promise.resolve(undefined),
 };
@@ -99,6 +105,7 @@ type MediaCallExternalContextType = {
 	onToggleWidget: (peerInfo?: PeerInfo) => void;
 	onEndCall: () => void;
 	peerInfo: PeerInfo | undefined;
+	setOpenRoomId: (roomId: string | undefined) => void;
 };
 
 type MediaCallUnauthorizedContextType = {
@@ -106,6 +113,7 @@ type MediaCallUnauthorizedContextType = {
 	onToggleWidget: undefined;
 	onEndCall: undefined;
 	peerInfo: undefined;
+	setOpenRoomId: undefined;
 };
 
 type MediaCallUnlicensedContextType = {
@@ -113,6 +121,7 @@ type MediaCallUnlicensedContextType = {
 	onToggleWidget: (peerInfo?: any) => void;
 	onEndCall: undefined;
 	peerInfo: undefined;
+	setOpenRoomId: undefined;
 };
 
 const MediaCallContext = createContext<MediaCallContextType | MediaCallUnauthorizedContextType | MediaCallUnlicensedContextType>(
@@ -148,7 +157,13 @@ export const useMediaCallExternalContext = ():
 		return context;
 	}
 
-	return { state: context.state, onToggleWidget: context.onToggleWidget, onEndCall: context.onEndCall, peerInfo: context.peerInfo };
+	return {
+		state: context.state,
+		onToggleWidget: context.onToggleWidget,
+		onEndCall: context.onEndCall,
+		peerInfo: context.peerInfo,
+		setOpenRoomId: context.setOpenRoomId,
+	};
 };
 
 const PREFIX_FIRST_OPTION = 'rcx-first-option-';
