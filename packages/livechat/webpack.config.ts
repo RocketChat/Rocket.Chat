@@ -126,6 +126,9 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 			],
 		},
 		plugins: [
+			new webpack.ids.HashedModuleIdsPlugin({
+				hashFunction: 'sha256',
+			}),
 			new MiniCssExtractPlugin({
 				filename: args.mode === 'production' ? '[name].[contenthash:5].css' : '[name].css',
 				chunkFilename: args.mode === 'production' ? '[name].chunk.[contenthash:5].css' : '[name].chunk.css',
@@ -171,6 +174,7 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 			path: _('./dist'),
 			publicPath: args.mode === 'production' ? 'livechat/' : '/',
 			filename: '[name].js',
+			hashFunction: 'sha256',
 		},
 		module: {
 			rules: [
