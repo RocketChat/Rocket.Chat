@@ -32,7 +32,7 @@ const AppsPageContent = () => {
 
 	const router = useRouter();
 
-	const context = useRouteParameter('context') as AppsContext | undefined;
+	const context = (useRouteParameter('context') as AppsContext | undefined) ?? 'explore';
 
 	const isMarketplace = context === 'explore';
 	const isPremium = context === 'premium';
@@ -179,7 +179,7 @@ const AppsPageContent = () => {
 					categoryTagList={categoryTagList}
 					statusFilterStructure={statusFilterStructure}
 					statusFilterOnSelected={statusFilterOnSelected}
-					context={context || 'explore'}
+					context={context}
 				/>
 				<AppsPageContentSkeleton />
 			</>
@@ -207,7 +207,7 @@ const AppsPageContent = () => {
 					categoryTagList={categoryTagList}
 					statusFilterStructure={statusFilterStructure}
 					statusFilterOnSelected={statusFilterOnSelected}
-					context={context || 'explore'}
+					context={context}
 				/>
 				{unsupportedVersion ? <UnsupportedEmptyState /> : <AppsPageConnectionError onButtonClick={reload} />}
 			</>
@@ -230,7 +230,7 @@ const AppsPageContent = () => {
 				categoryTagList={categoryTagList}
 				statusFilterStructure={statusFilterStructure}
 				statusFilterOnSelected={statusFilterOnSelected}
-				context={context || 'explore'}
+				context={context}
 			/>
 			{(context === 'requested' && data.count === 0 && <NoAppRequestsEmptyState />) ||
 				((isMarketplace || isPremium) && data.count === 0 && (
