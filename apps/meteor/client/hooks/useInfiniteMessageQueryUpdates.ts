@@ -73,7 +73,7 @@ export const useInfiniteMessageQueryUpdates = <T extends IMessage, TQueryKey ext
 		}
 
 		const unsubscribeFromRoomMessages = subscribeToRoomMessages(roomId, (message) => {
-			if (!doFilter(message as T)) return;
+			if (!doFilter(message)) return;
 
 			mutateQueryData((items) => {
 				const index = items.findIndex((i) => i._id === message._id);
