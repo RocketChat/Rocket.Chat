@@ -101,17 +101,28 @@ API.v1.addRoute(
 					},
 				};
 
-				const newRoom = await createRoom({
-					visitor: guest,
-					roomInfo,
-					agent,
-					extraData: extraParams as IOmnichannelInquiryExtraData,
-				});
+				try {
+						const newRoom = await createRoom({
+								visitor: guest,
+								roomInfo,
+								agent,
+								extraData: extraParams as IOmnichannelInquiryExtraData,
+						});
 
-				return API.v1.success({
-					room: newRoom,
-					newRoom: true,
-				});
+						return API.v1.success({
+								room: newRoom,
+								newRoom: true,
+						});
+						} catch (error: any) {
+								// Handle race condition: duplicate key error
+								if (error.code === 11000 || error.message?.includes('E11000')) {
+										const existingRoom = await LivechatRooms.findOneOpenByVisitorToken(token, {});
+										if (existingRoom) {
+												return API.v1.success({ room: existingRoom, newRoom: false });
+										}
+								}
+								throw error;
+						}
 			}
 
 			const froom = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rid, token, {});

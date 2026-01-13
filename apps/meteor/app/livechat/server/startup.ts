@@ -67,6 +67,22 @@ registerGuest.patch(async (originalFn, newData, options) => {
 });
 
 Meteor.startup(async () => {
+	try {
+        await LivechatRooms.col.createIndex(
+            { 'v.token': 1, open: 1, t: 1 },
+            { 
+                unique: true, 
+                partialFilterExpression: { open: true, t: 'l' },
+                name: 'livechat_visitor_open_room'
+            }
+        );
+        logger.info('Livechat unique room index created successfully');
+    } catch (error) {
+        if (error.code !== 85) { // Index already exists
+            logger.error({ msg: 'Failed to create livechat room index', error });
+        }
+    }
+	
 	roomCoordinator.setRoomFind('l', async (id) => maybeMigrateLivechatRoom(await LivechatRooms.findOneById(id)));
 
 	beforeLeaveRoomCallback.add(

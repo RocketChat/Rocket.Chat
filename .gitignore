@@ -62,3 +62,4 @@ storybook-static
 development/tempo-data/
 
 .env
+*.js # Ignore test files

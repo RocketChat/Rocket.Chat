@@ -1,25 +1,25 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Omnichannel } from '@rocket.chat/core-services';
 import type {
-	ILivechatVisitor,
-	IMessage,
-	IOmnichannelRoomInfo,
-	SelectedAgent,
-	IOmnichannelRoomExtraData,
-	IOmnichannelRoom,
-	TransferData,
+    ILivechatVisitor,
+    IMessage,
+    IOmnichannelRoomInfo,
+    SelectedAgent,
+    IOmnichannelRoomExtraData,
+    IOmnichannelRoom,
+    TransferData,
 } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
-	LivechatRooms,
-	LivechatContacts,
-	Messages,
-	LivechatCustomField,
-	LivechatInquiry,
-	Rooms,
-	Subscriptions,
-	Users,
-	ReadReceipts,
+    LivechatRooms,
+    LivechatContacts,
+    Messages,
+    LivechatCustomField,
+    LivechatInquiry,
+    Rooms,
+    Subscriptions,
+    Users,
+    ReadReceipts,
 } from '@rocket.chat/models';
 
 import { normalizeTransferredByData } from './Helper';
@@ -34,109 +34,122 @@ import { trim } from '../../../../lib/utils/stringUtils';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import {
-	notifyOnLivechatInquiryChangedByRoom,
-	notifyOnSubscriptionChangedByRoomId,
-	notifyOnRoomChangedById,
-	notifyOnLivechatInquiryChanged,
-	notifyOnSubscriptionChanged,
-	notifyOnRoomChanged,
+    notifyOnLivechatInquiryChangedByRoom,
+    notifyOnSubscriptionChangedByRoomId,
+    notifyOnRoomChangedById,
+    notifyOnLivechatInquiryChanged,
+    notifyOnSubscriptionChanged,
+    notifyOnRoomChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
 
 export async function getRoom(
-	guest: ILivechatVisitor,
-	message: Pick<IMessage, 'rid' | 'msg' | 'token'>,
-	roomInfo: IOmnichannelRoomInfo,
-	agent?: SelectedAgent,
-	extraData?: IOmnichannelRoomExtraData,
+    guest: ILivechatVisitor,
+    message: Pick<IMessage, 'rid' | 'msg' | 'token'>,
+    roomInfo: IOmnichannelRoomInfo,
+    agent?: SelectedAgent,
+    extraData?: IOmnichannelRoomExtraData,
 ) {
-	if (!settings.get('Livechat_enabled')) {
-		throw new Meteor.Error('error-omnichannel-is-disabled');
-	}
-	livechatLogger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
-	const room = await LivechatRooms.findOneById(message.rid);
+    if (!settings.get('Livechat_enabled')) {
+        throw new Meteor.Error('error-omnichannel-is-disabled');
+    }
 
-	if (room?.v._id && (await LivechatContacts.isChannelBlocked(Visitors.makeVisitorAssociation(room.v._id, room.source)))) {
-		throw new Error('error-contact-channel-blocked');
-	}
+    livechatLogger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
+    
+    // Check for existing open room first
+    const existingRoom = await LivechatRooms.findOneOpenByVisitorToken(guest.token);
+    
+    if (existingRoom) {
+        if (existingRoom.v.token !== guest.token) {
+            throw new Meteor.Error('cannot-access-room');
+        }
+        return { room: existingRoom, newRoom: false };
+    }
 
-	if (!room?.open) {
-		livechatLogger.debug(`Last room for visitor ${guest._id} closed. Creating new one`);
-	}
-
-	if (!room?.open) {
-		return {
-			room: await createRoom({ visitor: guest, message: message.msg, roomInfo, agent, extraData }),
-			newRoom: true,
-		};
-	}
-
-	if (room.v.token !== guest.token) {
-		livechatLogger.debug(`Visitor ${guest._id} trying to access another visitor's room`);
-		throw new Meteor.Error('cannot-access-room');
-	}
-
-	return { room, newRoom: false };
+    // Create new room (protected by unique index)
+    try {
+        const newRoom = await createRoom({ 
+            visitor: guest, 
+            message: message.msg, 
+            roomInfo, 
+            agent, 
+            extraData 
+        });
+        return { room: newRoom, newRoom: true };
+    } catch (error: any) {
+        // RACE CONDITION HANDLER: Another request created the room first
+        if (error.code === 11000 || error.message?.includes('E11000 duplicate key')) {
+            livechatLogger.debug(`Race condition detected for visitor ${guest._id} - fetching existing room`);
+            const room = await LivechatRooms.findOneOpenByVisitorToken(guest.token);
+            if (room) {
+                return { room, newRoom: false };
+            }
+        }
+        throw error;
+    }
 }
 
 export async function createRoom({
-	visitor,
-	message,
-	rid,
-	roomInfo,
-	agent,
-	extraData,
+    visitor,
+    message,
+    rid,
+    roomInfo,
+    agent,
+    extraData,
 }: {
-	visitor: ILivechatVisitor;
-	message?: string;
-	rid?: string;
-	roomInfo: IOmnichannelRoomInfo;
-	agent?: SelectedAgent;
-	extraData?: IOmnichannelRoomExtraData;
+    visitor: ILivechatVisitor;
+    message?: string;
+    rid?: string;
+    roomInfo: IOmnichannelRoomInfo;
+    agent?: SelectedAgent;
+    extraData?: IOmnichannelRoomExtraData;
 }) {
-	if (!settings.get('Livechat_enabled')) {
-		throw new Meteor.Error('error-omnichannel-is-disabled');
-	}
+    if (!settings.get('Livechat_enabled')) {
+        throw new Meteor.Error('error-omnichannel-is-disabled');
+    }
 
-	if (await LivechatContacts.isChannelBlocked(Visitors.makeVisitorAssociation(visitor._id, roomInfo.source))) {
-		throw new Error('error-contact-channel-blocked');
-	}
+    if (await LivechatContacts.isChannelBlocked(Visitors.makeVisitorAssociation(visitor._id, roomInfo.source))) {
+        throw new Error('error-contact-channel-blocked');
+    }
 
-	const defaultAgent = await checkDefaultAgentOnNewRoom(agent, {
-		visitorId: visitor._id,
-		source: roomInfo.source,
-	});
+    const defaultAgent = await checkDefaultAgentOnNewRoom(agent, {
+        visitorId: visitor._id,
+        source: roomInfo.source,
+    });
 
-	// if no department selected verify if there is at least one active and pick the first
-	if (!defaultAgent && !visitor.department) {
-		const department = await getRequiredDepartment();
-		livechatLogger.debug(`No department or default agent selected for ${visitor._id}`);
+    // if no department selected verify if there is at least one active and pick the first
+    if (!defaultAgent && !visitor.department) {
+        const department = await getRequiredDepartment();
+        livechatLogger.debug(`No department or default agent selected for ${visitor._id}`);
 
-		if (department) {
-			livechatLogger.debug(`Assigning ${visitor._id} to department ${department._id}`);
-			visitor.department = department._id;
-		}
-	}
+        if (department) {
+            livechatLogger.debug(`Assigning ${visitor._id} to department ${department._id}`);
+            visitor.department = department._id;
+        }
+    }
 
-	// delegate room creation to QueueManager
-	livechatLogger.debug(`Calling QueueManager to request a room for visitor ${visitor._id}`);
+    // delegate room creation to QueueManager
+    livechatLogger.debug(`Calling QueueManager to request a room for visitor ${visitor._id}`);
 
-	const room = await QueueManager.requestRoom({
-		guest: visitor,
-		message,
-		rid,
-		roomInfo,
-		agent: defaultAgent,
-		extraData,
-	});
+    const room = await QueueManager.requestRoom({
+        guest: visitor,
+        message,
+        rid,
+        roomInfo,
+        agent: defaultAgent,
+        extraData,
+    });
 
-	livechatLogger.debug(`Room obtained for visitor ${visitor._id} -> ${room._id}`);
+    livechatLogger.debug(`Room obtained for visitor ${visitor._id} -> ${room._id}`);
 
-	await Messages.setRoomIdByToken(visitor.token, room._id);
+    await Messages.setRoomIdByToken(visitor.token, room._id);
 
-	return room;
+    return room;
 }
+
+// ... rest of your functions remain exactly the same (saveRoomInfo, returnRoomAsInquiry, removeOmnichannelRoom)
+
 
 export async function saveRoomInfo(
 	roomData: {
