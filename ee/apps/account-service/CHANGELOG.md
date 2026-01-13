@@ -1,5 +1,21 @@
 # @rocket.chat/account-service
 
+## 0.4.44
+
+### Patch Changes
+
+- ([#38123](https://github.com/RocketChat/Rocket.Chat/pull/38123) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where some DDP streamer requests were returning before processing was completed
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.7
+  - @rocket.chat/rest-typings@7.10.7
+  - @rocket.chat/core-services@0.10.7
+  - @rocket.chat/model-typings@1.7.7
+  - @rocket.chat/models@1.6.7
+  - @rocket.chat/network-broker@0.2.23
+  </details>
+
 ## 0.4.43
 
 ### Patch Changes
