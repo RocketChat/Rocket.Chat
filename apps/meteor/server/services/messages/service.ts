@@ -95,6 +95,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		files,
 		attachments,
 		thread,
+		ts,
 	}: {
 		fromId: string;
 		rid: string;
@@ -108,23 +109,28 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		files?: IMessage['files'];
 		attachments?: IMessage['attachments'];
 		thread?: { tmid: string; tshow: boolean };
+		ts: Date;
 	}): Promise<IMessage> {
-		return executeSendMessage(fromId, {
-			rid,
-			msg,
-			...thread,
-			federation: {
-				eventId: federation_event_id,
-				version: 1,
+		return executeSendMessage(
+			fromId,
+			{
+				rid,
+				msg,
+				...thread,
+				federation: {
+					eventId: federation_event_id,
+					version: 1,
+				},
+				...(file && { file }),
+				...(files && { files }),
+				...(attachments && { attachments }),
+				...(e2e_content && {
+					t: 'e2e',
+					content: e2e_content,
+				}),
 			},
-			...(file && { file }),
-			...(files && { files }),
-			...(attachments && { attachments }),
-			...(e2e_content && {
-				t: 'e2e',
-				content: e2e_content,
-			}),
-		});
+			{ ts },
+		);
 	}
 
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {

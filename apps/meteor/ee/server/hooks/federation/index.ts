@@ -112,8 +112,7 @@ beforeAddUserToRoom.add(
 			return;
 		}
 
-		// TODO should we really check for "user" here? it is potentially an external user
-		if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
+		if (!isUserNativeFederated(user) && !(await Authorization.hasPermission(user._id, 'access-federation'))) {
 			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation');
 		}
 
