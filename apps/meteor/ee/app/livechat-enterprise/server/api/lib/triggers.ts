@@ -1,4 +1,4 @@
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { serverFetch as fetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 
 export async function callTriggerExternalService({
 	url,
@@ -14,7 +14,13 @@ export async function callTriggerExternalService({
 	headers: Record<string, string>;
 }) {
 	try {
-		const response = await fetch(url, { timeout: timeout || 1000, body, headers, method: 'POST' });
+		const response = await fetch(url, {
+			timeout: timeout || 1000,
+			body,
+			headers,
+			method: 'POST',
+			ignoreSsrfValidation: true,
+		} as ExtendedFetchOptions);
 
 		if (!response.ok || response.status !== 200) {
 			const text = await response.text();
