@@ -93,4 +93,8 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 			},
 		);
 	}
+
+	findAllByOriginalId(originalFileId: string, options: FindOptions<IUpload> = {}): FindCursor<IUpload> {
+		return this.find({ originalFileId }, options);
+	}
 }
