@@ -127,7 +127,9 @@ export class MultipartUploadHandler {
 
 			let currentStream: Stream = file;
 			if (options.transforms?.length) {
+				const fileDestroyer = file.destroy.bind(file);
 				for (const transform of options.transforms) {
+					transform.on('error', fileDestroyer);
 					currentStream = currentStream.pipe(transform);
 				}
 			}
