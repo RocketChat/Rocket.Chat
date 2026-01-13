@@ -550,7 +550,7 @@ export class SlackImporter extends Importer {
 					const name = `:${reaction.name}:`;
 					return {
 						...newReactions,
-						...(reaction.users?.length ? { name: { name, users: this._replaceSlackUserIds(reaction.users) } } : {}),
+						...(reaction.users?.length ? { [name]: { name, users: this._replaceSlackUserIds(reaction.users) } } : {}),
 					};
 				},
 				{} as Required<IImportMessage>['reactions'],
