@@ -14,7 +14,7 @@ services:
       - mongo
 
   mongo:
-    image: mongo:7.0
+    image: mongodb/mongodb-community-server:8.2-ubi8
     restart: on-failure
     ports:
       - "27017:27017"
@@ -28,7 +28,7 @@ services:
 
   # Service to initialize the replica set
   mongo-init-replica:
-    image: mongo:7.0
+    image: mongodb/mongodb-community-server:8.2-ubi8
     command: >
       bash -c "for i in `seq 1 30`; do
           mongosh mongo/test --quiet --eval 'rs.initiate({ _id: \"rs0\", members: [ { _id: 0, host: \"mongo:27017\" } ] })' && break

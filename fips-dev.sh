@@ -31,6 +31,7 @@ docker build -f apps/meteor/.docker/Dockerfile.fips -t rocketchat:fips "$DIST_DI
 
 # Run Docker Compose
 echo "▶️  Starting Rocket.Chat in Docker (FIPS mode)..."
+docker compose -f docker-compose-fips.yml down --remove-orphans
 docker compose -f docker-compose-fips.yml up -d --remove-orphans
 
 echo "✅ Done! Rocket.Chat FIPS should be running at http://localhost:3000"
