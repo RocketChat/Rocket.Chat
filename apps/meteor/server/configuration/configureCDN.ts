@@ -6,14 +6,14 @@ export async function configureCDN(settings: ICachedSettings): Promise<void> {
 	settings.change<string>('CDN_PREFIX', (value) => {
 		const useForAll = settings.get('CDN_PREFIX_ALL');
 		if (value && useForAll) {
-			WebAppInternals.setBundledJsCssPrefix(value);
+			void WebAppInternals.setBundledJsCssPrefix(value);
 		}
 	});
 
 	settings.change<string>('CDN_JSCSS_PREFIX', (value) => {
 		const useForAll = settings.get('CDN_PREFIX_ALL');
 		if (value && typeof value === 'string' && value.trim() && !useForAll) {
-			WebAppInternals.setBundledJsCssPrefix(value);
+			void WebAppInternals.setBundledJsCssPrefix(value);
 		}
 	});
 
@@ -22,11 +22,11 @@ export async function configureCDN(settings: ICachedSettings): Promise<void> {
 	const cdnJsCss = settings.get('CDN_JSCSS_PREFIX');
 	if (cdnValue && typeof cdnValue === 'string' && cdnValue.trim()) {
 		if (useForAll) {
-			WebAppInternals.setBundledJsCssPrefix(cdnValue);
+			await WebAppInternals.setBundledJsCssPrefix(cdnValue);
 			return;
 		}
 		if (cdnJsCss && typeof cdnJsCss === 'string' && cdnJsCss.trim()) {
-			WebAppInternals.setBundledJsCssPrefix(cdnJsCss);
+			await WebAppInternals.setBundledJsCssPrefix(cdnJsCss);
 		}
 	}
 }
