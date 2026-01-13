@@ -1,3 +1,4 @@
+import { isTruthy } from '@rocket.chat/tools';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 
@@ -34,7 +35,6 @@ import { LogoutResponse } from '../../../../app/meteor-accounts-saml/server/lib/
 import { LogoutRequestParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/LogoutRequest';
 import { LogoutResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/LogoutResponse';
 import { ResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/Response';
-import { isTruthy } from '../../../../lib/isTruthy';
 
 const { ServiceProviderMetadata } = proxyquire
 	.noCallThru()
