@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { transformMappedData } from '../../../../../app/apps/server/converters/transformMappedData';
 
-describe.only('transformMappedData', () => {
+describe('transformMappedData', () => {
 	it('should map simple string properties and collect unmapped ones', async () => {
 		const data = { _id: 'abcde123', size: 10 };
 		const map = { id: '_id' };
@@ -38,29 +38,29 @@ describe.only('transformMappedData', () => {
 		});
 	});
 
-  it('should delete the unmapped property from the result if we do it explicitly in a function', async () => {
-    type User = {
-      firstName?: string;
-      lastName: string;
-    }
+	it('should delete the unmapped property from the result if we do it explicitly in a function', async () => {
+		type User = {
+			firstName?: string;
+			lastName: string;
+		};
 
-    const firstName = 'John';
-    const lastName = 'Doe';
+		const firstName = 'John';
+		const lastName = 'Doe';
 
 		const data: User = { firstName, lastName };
 		const map = {
 			fullName: (d: User) => {
-        const result = `${d.firstName} ${d.lastName}`
-        delete d.firstName;
-        return result;
-      },
+				const result = `${d.firstName} ${d.lastName}`;
+				delete d.firstName;
+				return result;
+			},
 		};
 
 		const result = await transformMappedData(data, map);
 
 		expect(result).to.deep.equal({
 			fullName: `${firstName} ${lastName}`,
-			_unmappedProperties_: { lastName: lastName },
+			_unmappedProperties_: { lastName },
 		});
 	});
 
@@ -135,7 +135,7 @@ describe.only('transformMappedData', () => {
 			tags: {
 				from: 'tag',
 				list: true,
-        map: {}
+				map: {},
 			},
 		};
 
@@ -145,5 +145,14 @@ describe.only('transformMappedData', () => {
 			tags: ['admin'],
 			_unmappedProperties_: {},
 		});
+	});
+
+	it('should keep all properties as unmapped when map is empty', async () => {
+		const data = { os: 'android', version: '1.9', lan: 'en' };
+		const map = {};
+
+		const result = await transformMappedData(data, map);
+
+		expect(result).to.deep.equal({ _unmappedProperties_: data });
 	});
 });
