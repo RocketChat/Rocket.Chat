@@ -2970,20 +2970,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	setBio(_id: IUser['_id'], bio = '') {
-		const update: UpdateFilter<IUser> = {
-			...(bio.trim()
-				? {
-						$set: {
-							bio,
-						},
-					}
-				: {
-						$unset: {
-							bio: 1,
-						},
-					}),
-		};
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, { $set: { bio: bio.trim() } });
 	}
 
 	setNickname(_id: IUser['_id'], nickname = '') {
