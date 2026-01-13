@@ -19,9 +19,9 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
+import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { adminFields } from '../../../../lib/rooms/adminFields';
 import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';

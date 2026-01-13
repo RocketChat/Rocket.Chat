@@ -30,7 +30,7 @@ export default async function slashCommandHandler(call: string, params: unknown)
 	// If the command is registered, we're pretty safe to assume the app is not undefined
 	const app = AppObjectRegistry.get<App>('app')!;
 
-	app.getLogger().debug(`${commandName}'s ${method} is being executed...`, params);
+	app.getLogger().debug({ msg: `Command is being executed...`, commandName, method, params });
 
 	try {
 		if (method === 'executor' || method === 'previewer') {
@@ -41,9 +41,9 @@ export default async function slashCommandHandler(call: string, params: unknown)
 			return new JsonRpcError(`Method ${method} not found on slashcommand ${commandName}`, -32000);
 		}
 
-		app.getLogger().debug(`${commandName}'s ${method} was successfully executed.`);
+		app.getLogger().debug({ msg: `Command was successfully executed.`, commandName, method });
 	} catch (error) {
-		app.getLogger().debug(`${commandName}'s ${method} was unsuccessful.`);
+		app.getLogger().debug({ msg: `Command was unsuccessful.`, commandName, method, err: error });
 
 		return new JsonRpcError(error.message, -32000);
 	}

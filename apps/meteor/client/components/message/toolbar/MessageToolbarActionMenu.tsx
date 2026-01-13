@@ -1,4 +1,5 @@
 import { isE2EEMessage, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
+import { isTruthy } from '@rocket.chat/tools';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
@@ -25,7 +26,6 @@ import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useViewOriginalTranslationAction } from './useViewOriginalTranslationAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
-import { isTruthy } from '../../../../lib/isTruthy';
 
 type MessageActionSection = {
 	id: string;
