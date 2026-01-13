@@ -90,9 +90,24 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 		return ignoredHosts
 			.filter((h) => h.includes('*'))
 			.some((pattern) => {
+				// basic sanity checks to avoid pathological patterns
+				if (pattern.length > 255) {
+					return false;
+				}
+				if (pattern.includes('**')) {
+					return false;
+				}
+
 				const escaped = pattern.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&');
-				const regex = new RegExp(`^${escaped.replace(/\*/g, '.*')}$`, 'i');
-				return regex.test(hostname);
+				const source = `^${escaped.replace(/\*/g, '[^.]*')}$`;
+
+				try {
+					const regex = new RegExp(source, 'i');
+					return regex.test(hostname);
+				} catch {
+					// fail safe on invalid patterns
+					return false;
+				}
 			});
 	};
 
