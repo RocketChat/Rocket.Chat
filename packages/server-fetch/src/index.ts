@@ -190,7 +190,7 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 		const location = response.headers.get('location');
 
 		if (!location) {
-			throw new Error('Redirect response missing Location header');
+			throw new Error('redirect-response-location-header-missing');
 		}
 
 		if (redirectCount === MAX_REDIRECTS) {
