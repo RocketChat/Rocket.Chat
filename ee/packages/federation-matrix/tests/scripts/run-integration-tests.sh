@@ -164,11 +164,7 @@ cleanup() {
         if [ "$INCLUDE_ELEMENT" = true ]; then
             log_info "  - Element: https://element"
         fi
-        if [ "$INCLUDE_ELEMENT" = true ]; then
-            log_info "To stop containers manually, run: docker compose -f $DOCKER_COMPOSE_FILE --profile element down -v"
-        else
-            log_info "To stop containers manually, run: docker compose -f $DOCKER_COMPOSE_FILE --profile test down -v"
-        fi
+        log_info "To stop containers manually, run: docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$COMPOSE_PROFILE" down -v"
     else
         log_info "Cleaning up services..."
 
@@ -200,16 +196,10 @@ if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
     exit 1
 fi
 
-if [ "$USE_PREBUILT_IMAGE" = true ]; then
-    PROFILE_PREFIX="prebuilt"
-else
-    PROFILE_PREFIX="local"
-fi
-
 if [ "$INCLUDE_ELEMENT" = true ]; then
-    COMPOSE_PROFILE="element-$PROFILE_PREFIX"
+    COMPOSE_PROFILE="element"
 else
-    COMPOSE_PROFILE="test-$PROFILE_PREFIX"
+    COMPOSE_PROFILE="test"
 fi
 
 if [ "$START_CONTAINERS" = true ]; then
@@ -241,6 +231,8 @@ if [ "$START_CONTAINERS" = true ]; then
     log_info "🚀 Starting Federation Integration Tests"
     log_info "====================================="
 
+    BUILD_PARAM=""
+
     # Set environment variables for Docker Compose
     if [ "$USE_PREBUILT_IMAGE" = true ]; then
         export ROCKETCHAT_IMAGE="$PREBUILT_IMAGE"
@@ -248,6 +240,7 @@ if [ "$START_CONTAINERS" = true ]; then
     else
         export ROCKETCHAT_BUILD_CONTEXT="$BUILD_DIR"
         export ROCKETCHAT_DOCKERFILE="$ROCKETCHAT_ROOT/apps/meteor/.docker/Dockerfile.alpine"
+        BUILD_PARAM="--build"
         log_info "Building from local context: $BUILD_DIR"
     fi
 
@@ -258,7 +251,7 @@ if [ "$START_CONTAINERS" = true ]; then
         log_info "Starting federation services (test profile only)..."
     fi
 
-    docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$COMPOSE_PROFILE" up -d --build
+    docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$COMPOSE_PROFILE" up -d $BUILD_PARAM
 
     # Wait for rc1 container to be running
     log_info "Waiting for rc1 container to start..."
