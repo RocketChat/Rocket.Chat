@@ -4,8 +4,6 @@ import { useRouter, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useMediaCallContext } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 
-// import { useDirectMessageAction } from '../room/hooks/useUserInfoActions/actions/useDirectMessageAction';
-
 export type InternalCallHistoryContact = {
 	_id: string;
 	name?: string;
