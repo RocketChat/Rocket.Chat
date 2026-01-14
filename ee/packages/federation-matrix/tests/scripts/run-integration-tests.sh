@@ -33,7 +33,6 @@ INCLUDE_ELEMENT=false
 USE_PREBUILT_IMAGE=false
 PREBUILT_IMAGE=""
 INTERRUPTED=false
-PROFILE_PREFIX="local"  # Default to local build
 NO_TEST=false
 
 while [[ $# -gt 0 ]]; do
@@ -143,17 +142,17 @@ cleanup() {
             log_info "  - Element: https://element"
         fi
         if [ "$INCLUDE_ELEMENT" = true ]; then
-            log_info "To stop containers manually, run: docker compose -f $DOCKER_COMPOSE_FILE --profile element-$PROFILE_PREFIX down -v"
+            log_info "To stop containers manually, run: docker compose -f $DOCKER_COMPOSE_FILE --profile element down -v"
         else
-            log_info "To stop containers manually, run: docker compose -f $DOCKER_COMPOSE_FILE --profile test-$PROFILE_PREFIX down -v"
+            log_info "To stop containers manually, run: docker compose -f $DOCKER_COMPOSE_FILE --profile test down -v"
         fi
     else
         log_info "Cleaning up services..."
         if [ -f "$DOCKER_COMPOSE_FILE" ]; then
             if [ "$INCLUDE_ELEMENT" = true ]; then
-                docker compose -f "$DOCKER_COMPOSE_FILE" --profile "element-$PROFILE_PREFIX" down -v 2>/dev/null || true
+                docker compose -f "$DOCKER_COMPOSE_FILE" --profile "element" down -v 2>/dev/null || true
             else
-                docker compose -f "$DOCKER_COMPOSE_FILE" --profile "test-$PROFILE_PREFIX" down -v 2>/dev/null || true
+                docker compose -f "$DOCKER_COMPOSE_FILE" --profile "test" down -v 2>/dev/null || true
             fi
         fi
         log_success "Cleanup completed"
@@ -210,27 +209,26 @@ fi
 log_info "🚀 Starting Federation Integration Tests"
 log_info "====================================="
 
+BUILD_PARAM=""
+
 # Set environment variables for Docker Compose
 if [ "$USE_PREBUILT_IMAGE" = true ]; then
     export ROCKETCHAT_IMAGE="$PREBUILT_IMAGE"
-    PROFILE_PREFIX="prebuilt"
     log_info "Using pre-built image: $PREBUILT_IMAGE"
 else
     export ROCKETCHAT_BUILD_CONTEXT="$BUILD_DIR"
     export ROCKETCHAT_DOCKERFILE="$ROCKETCHAT_ROOT/apps/meteor/.docker/Dockerfile.alpine"
-    PROFILE_PREFIX="local"
+    BUILD_PARAM="--build"
     log_info "Building from local context: $BUILD_DIR"
 fi
 
 # Start services
 if [ "$INCLUDE_ELEMENT" = true ]; then
-    PROFILE="element-$PROFILE_PREFIX"
     log_info "Starting all federation services including Element web client..."
-    docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$PROFILE" up -d --build
+    docker compose -f "$DOCKER_COMPOSE_FILE" --profile "element" up -d $BUILD_PARAM
 else
-    PROFILE="test-$PROFILE_PREFIX"
     log_info "Starting federation services (test profile only)..."
-    docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$PROFILE" up -d --build
+    docker compose -f "$DOCKER_COMPOSE_FILE" --profile "test" up -d $BUILD_PARAM
 fi
 
 # Wait for rc1 container to be running
