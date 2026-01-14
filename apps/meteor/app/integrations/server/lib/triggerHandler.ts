@@ -691,8 +691,8 @@ class RocketChatIntegrationHandler {
 					if (content) {
 						outgoingLogger.error({
 							msg: 'Error for integration request',
-					integrationName: trigger.name,
-					url,
+							integrationName: trigger.name,
+							url,
 							result: content,
 						});
 
@@ -708,8 +708,8 @@ class RocketChatIntegrationHandler {
 							await updateHistory({ historyId, step: 'after-process-http-status-500', error: true });
 							outgoingLogger.error({
 								msg: 'Error 500 for integration request',
-					integrationName: trigger.name,
-					url,
+								integrationName: trigger.name,
+								url,
 								content,
 							});
 							return;

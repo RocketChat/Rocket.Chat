@@ -73,7 +73,7 @@ export async function getRoom(
 	}
 
 	if (room.v.token !== guest.token) {
-		livechatLogger.debug({ msg: 'Visitor trying to access another visitor's room', visitorId: guest._id });
+		livechatLogger.debug({ msg: 'Visitor trying to access another visitor room', visitorId: guest._id });
 		throw new Meteor.Error('cannot-access-room');
 	}
 
@@ -177,7 +177,11 @@ export async function saveRoomInfo(
 			customFields[field._id] = value;
 		}
 		roomData.livechatData = customFields;
-		livechatLogger.debug({ msg: 'About to update custom fields on room', roomId: roomData._id, customFieldCount: Object.keys(customFields).length });
+		livechatLogger.debug({
+			msg: 'About to update custom fields on room',
+			roomId: roomData._id,
+			customFieldCount: Object.keys(customFields).length,
+		});
 	}
 
 	await LivechatRooms.saveRoomById(roomData);

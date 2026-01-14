@@ -63,7 +63,11 @@ export async function saveGuest(
 			customFields[field._id] = value;
 		}
 		updateData.livechatData = customFields;
-		livechatLogger.debug({ msg: 'About to update custom fields for visitor', visitorId: _id, customFieldCount: Object.keys(customFields).length });
+		livechatLogger.debug({
+			msg: 'About to update custom fields for visitor',
+			visitorId: _id,
+			customFieldCount: Object.keys(customFields).length,
+		});
 	}
 	const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 

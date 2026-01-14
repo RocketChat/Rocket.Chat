@@ -50,7 +50,13 @@ export async function sendRequest(
 		throw new Error(await result.text());
 	} catch (err) {
 		const retryAfter = timeout * 4;
-		webhooksLogger.debug({ msg: 'Error response on retry', attempt: 6 - attempts, err, newAttemptAfterSeconds: retryAfter / 1000, webhookUrl });
+		webhooksLogger.debug({
+			msg: 'Error response on retry',
+			attempt: 6 - attempts,
+			err,
+			newAttemptAfterSeconds: retryAfter / 1000,
+			webhookUrl,
+		});
 		const remainingAttempts = attempts - 1;
 		// try 5 times after 20 seconds each
 		if (!remainingAttempts) {

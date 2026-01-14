@@ -95,7 +95,12 @@ export const RoutingManager: Routing = {
 	},
 
 	async getNextAgent(department, ignoreAgentId) {
-		logger.debug({ msg: 'Getting next available agent with method', routingMethod: settings.get('Livechat_Routing_Method'), department, ignoreAgentId });
+		logger.debug({
+			msg: 'Getting next available agent with method',
+			routingMethod: settings.get('Livechat_Routing_Method'),
+			department,
+			ignoreAgentId,
+		});
 		return this.getMethod().getNextAgent(department, ignoreAgentId);
 	},
 
