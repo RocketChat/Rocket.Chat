@@ -50,12 +50,12 @@ while [[ $# -gt 0 ]]; do
             CI=true
             KEEP_RUNNING=true
             START_CONTAINERS=false
-            USE_PREBUILT_IMAGE=true
             shift
             ;;
         --logs)
             LOGS=true
             NO_TEST=true
+            START_CONTAINERS=false
             shift
             ;;
         --keep-running)
@@ -84,11 +84,14 @@ while [[ $# -gt 0 ]]; do
         --help|-h)
             echo "Usage: $0 [OPTIONS]"
             echo "Options:"
-            echo "  --keep-running    Keep Docker containers running after tests complete"
-            echo "  --element         Include Element web client in the test environment"
-            echo "  --no-test         Start containers and skip running tests"
-            echo "  --image [IMAGE]   Use a pre-built Docker image instead of building locally"
-            echo "  --help, -h        Show this help message"
+            echo "  --start-containers-only   Start containers and skip running tests"
+            echo "  --ci                      Run tests in CI mode (keep containers running, no cleanup)"
+            echo "  --logs                    Show logs of rc1 and hs1 containers"
+            echo "  --keep-running            Keep Docker containers running after tests complete"
+            echo "  --element                 Include Element web client in the test environment"
+            echo "  --no-test                 Start containers and skip running tests"
+            echo "  --image [IMAGE]           Use a pre-built Docker image instead of building locally"
+            echo "  --help, -h                Show this help message"
             echo ""
             echo "By default, builds Rocket.Chat locally and runs the 'test' profile"
             echo "Use --image to test against a pre-built image (e.g., --image rocketchat/rocket.chat:latest)"
@@ -145,6 +148,7 @@ cleanup() {
             exit $TEST_EXIT_CODE
         fi
     fi
+
     # Show container logs if tests failed
     if [ -n "${TEST_EXIT_CODE:-}" ] && [ "$TEST_EXIT_CODE" -ne 0 ]; then
         echo ""
@@ -164,7 +168,7 @@ cleanup() {
         if [ "$INCLUDE_ELEMENT" = true ]; then
             log_info "  - Element: https://element"
         fi
-        log_info "To stop containers manually, run: docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$COMPOSE_PROFILE" down -v"
+        log_info "To stop containers manually, run: docker compose -f \"$DOCKER_COMPOSE_FILE\" --profile \"$COMPOSE_PROFILE\" down -v"
     else
         log_info "Cleaning up services..."
 
