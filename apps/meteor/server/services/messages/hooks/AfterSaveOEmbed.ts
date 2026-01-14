@@ -82,7 +82,8 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 			.filter(Boolean)
 			.map((host) => host.toLowerCase()) || [];
 
-	const isIgnoredHost = (hostname: string | null): boolean => {
+	const isIgnoredHost = (hostname: string | undefined): boolean => {
+		hostname = hostname?.toLowerCase();
 		if (!hostname || !ignoredHosts.length) {
 			return false;
 		}
