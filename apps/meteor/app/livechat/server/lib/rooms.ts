@@ -54,7 +54,7 @@ export async function getRoom(
 	if (!settings.get('Livechat_enabled')) {
 		throw new Meteor.Error('error-omnichannel-is-disabled');
 	}
-	livechatLogger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
+	livechatLogger.debug({ msg: 'Attempting to find or create a room for visitor', visitorId: guest._id });
 	const room = await LivechatRooms.findOneById(message.rid);
 
 	if (room?.v._id && (await LivechatContacts.isChannelBlocked(Visitors.makeVisitorAssociation(room.v._id, room.source)))) {
@@ -62,7 +62,7 @@ export async function getRoom(
 	}
 
 	if (!room?.open) {
-		livechatLogger.debug(`Last room for visitor ${guest._id} closed. Creating new one`);
+		livechatLogger.debug({ msg: 'Last room for visitor closed. Creating new one', visitorId: guest._id });
 	}
 
 	if (!room?.open) {
@@ -73,7 +73,7 @@ export async function getRoom(
 	}
 
 	if (room.v.token !== guest.token) {
-		livechatLogger.debug(`Visitor ${guest._id} trying to access another visitor's room`);
+		livechatLogger.debug({ msg: 'Visitor trying to access another visitor's room', visitorId: guest._id });
 		throw new Meteor.Error('cannot-access-room');
 	}
 
@@ -111,16 +111,16 @@ export async function createRoom({
 	// if no department selected verify if there is at least one active and pick the first
 	if (!defaultAgent && !visitor.department) {
 		const department = await getRequiredDepartment();
-		livechatLogger.debug(`No department or default agent selected for ${visitor._id}`);
+		livechatLogger.debug({ msg: 'No department or default agent selected for visitor', visitorId: visitor._id });
 
 		if (department) {
-			livechatLogger.debug(`Assigning ${visitor._id} to department ${department._id}`);
+			livechatLogger.debug({ msg: 'Assigning visitor to department', visitorId: visitor._id, departmentId: department._id });
 			visitor.department = department._id;
 		}
 	}
 
 	// delegate room creation to QueueManager
-	livechatLogger.debug(`Calling QueueManager to request a room for visitor ${visitor._id}`);
+	livechatLogger.debug({ msg: 'Calling QueueManager to request a room for visitor', visitorId: visitor._id });
 
 	const room = await QueueManager.requestRoom({
 		guest: visitor,
@@ -131,7 +131,7 @@ export async function createRoom({
 		extraData,
 	});
 
-	livechatLogger.debug(`Room obtained for visitor ${visitor._id} -> ${room._id}`);
+	livechatLogger.debug({ msg: 'Room obtained for visitor', visitorId: visitor._id, roomId: room._id });
 
 	await Messages.setRoomIdByToken(visitor.token, room._id);
 
@@ -157,7 +157,7 @@ export async function saveRoomInfo(
 	},
 	userId?: string,
 ) {
-	livechatLogger.debug(`Saving room information on room ${roomData._id}`);
+	livechatLogger.debug({ msg: 'Saving room information', roomId: roomData._id });
 	const { livechatData = {} } = roomData;
 	const customFields: Record<string, string> = {};
 
@@ -177,7 +177,7 @@ export async function saveRoomInfo(
 			customFields[field._id] = value;
 		}
 		roomData.livechatData = customFields;
-		livechatLogger.debug(`About to update ${Object.keys(customFields).length} custom fields on room ${roomData._id}`);
+		livechatLogger.debug({ msg: 'About to update custom fields on room', roomId: roomData._id, customFieldCount: Object.keys(customFields).length });
 	}
 
 	await LivechatRooms.saveRoomById(roomData);
@@ -211,7 +211,7 @@ export async function saveRoomInfo(
 }
 
 export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: Partial<TransferData> = {}) {
-	livechatLogger.debug({ msg: `Transfering room to ${departmentId ? 'department' : ''} queue`, room });
+	livechatLogger.debug({ msg: 'Transferring room to queue', scope: departmentId ? 'department' : undefined, room });
 	if (!room.open) {
 		throw new Meteor.Error('room-closed', 'Room closed');
 	}
@@ -245,7 +245,7 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 	}
 
 	const transferredBy = normalizeTransferredByData(user, room);
-	livechatLogger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
+	livechatLogger.debug({ msg: 'Transferring room by user', roomId: room._id, transferredBy: transferredBy._id });
 	const transferData = { scope: 'queue' as const, departmentId, transferredBy, ...overrideTransferData };
 	try {
 		await saveTransferHistory(room, transferData);
@@ -261,7 +261,7 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 }
 
 export async function removeOmnichannelRoom(rid: string) {
-	livechatLogger.debug(`Deleting room ${rid}`);
+	livechatLogger.debug({ msg: 'Deleting room', roomId: rid });
 	check(rid, String);
 	const room = await LivechatRooms.findOneById(rid);
 	if (!room) {
@@ -299,7 +299,7 @@ export async function removeOmnichannelRoom(rid: string) {
 
 	for (const r of result) {
 		if (r.status === 'rejected') {
-			livechatLogger.error(`Error removing room ${rid}: ${r.reason}`);
+			livechatLogger.error({ msg: 'Error removing room', roomId: rid, err: r.reason });
 			throw new Meteor.Error('error-removing-room', 'Error removing room');
 		}
 	}

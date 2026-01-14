@@ -95,7 +95,7 @@ export const RoutingManager: Routing = {
 	},
 
 	async getNextAgent(department, ignoreAgentId) {
-		logger.debug(`Getting next available agent with method ${settings.get('Livechat_Routing_Method')}`);
+		logger.debug({ msg: 'Getting next available agent with method', routingMethod: settings.get('Livechat_Routing_Method'), department, ignoreAgentId });
 		return this.getMethod().getNextAgent(department, ignoreAgentId);
 	},
 
@@ -114,7 +114,7 @@ export const RoutingManager: Routing = {
 		}
 
 		if (!agent) {
-			logger.debug(`No agents available. Unable to delegate inquiry ${inquiry._id}`);
+			logger.debug({ msg: 'No agents available. Unable to delegate inquiry', inquiryId: inquiry._id });
 			// When an inqury reaches here on CE, it will stay here as 'ready' since on CE there's no mechanism to re queue it.
 			// When reaching this point, managers have to manually transfer the inquiry to another room. This is expected.
 			return LivechatRooms.findOneById(rid);
@@ -141,7 +141,7 @@ export const RoutingManager: Routing = {
 
 		const { rid, name, v, department } = inquiry;
 		if (!(await createLivechatSubscription(rid, name, v, agent, department))) {
-			logger.debug(`Cannot assign agent to inquiry ${inquiry._id}: Cannot create subscription`);
+			logger.debug({ msg: 'Cannot assign agent to inquiry. Cannot create subscription', inquiryId: inquiry._id, agentId: agent.agentId });
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
@@ -157,7 +157,7 @@ export const RoutingManager: Routing = {
 
 		await dispatchAgentDelegated(rid, agent.agentId);
 
-		logger.debug(`Agent ${agent.agentId} assigned to inquiry ${inquiry._id}. Instances notified`);
+		logger.debug({ msg: 'Agent assigned to inquiry. Instances notified', agentId: agent.agentId, inquiryId: inquiry._id });
 
 		return { inquiry, user };
 	},
@@ -176,7 +176,7 @@ export const RoutingManager: Routing = {
 		});
 
 		if (!room?.open) {
-			logger.debug(`Cannot unassign agent from inquiry ${inquiry._id}: Room already closed`);
+			logger.debug({ msg: 'Cannot unassign agent from inquiry. Room already closed', inquiryId: inquiry._id });
 			return false;
 		}
 
@@ -243,12 +243,12 @@ export const RoutingManager: Routing = {
 
 		const { _id, rid } = inquiry;
 		if (!room?.open) {
-			logger.debug(`Cannot take Inquiry ${inquiry._id}: Room is closed`);
+			logger.debug({ msg: 'Cannot take inquiry. Room is closed', inquiryId: inquiry._id });
 			return room;
 		}
 
 		if (room.servedBy && room.servedBy._id === agent.agentId) {
-			logger.debug(`Cannot take Inquiry ${inquiry._id}: Already taken by agent ${room.servedBy._id}`);
+			logger.debug({ msg: 'Cannot take inquiry. Already taken by agent', inquiryId: inquiry._id, agentId: room.servedBy._id });
 			return room;
 		}
 
@@ -266,7 +266,7 @@ export const RoutingManager: Routing = {
 		}
 
 		if (!agent) {
-			logger.debug(`Cannot take Inquiry ${inquiry._id}: Precondition failed for agent`);
+			logger.debug({ msg: 'Cannot take inquiry. Precondition failed for agent', inquiryId: inquiry._id });
 			const cbRoom = await callbacks.run<'livechat.onAgentAssignmentFailed'>('livechat.onAgentAssignmentFailed', room, {
 				inquiry,
 				options,
@@ -313,11 +313,11 @@ export const RoutingManager: Routing = {
 		}
 
 		if (transferData.userId) {
-			logger.debug(`Transfering room ${room._id} to user ${transferData.userId}`);
+			logger.debug({ msg: 'Transferring room to user', roomId: room._id, userId: transferData.userId });
 			return forwardRoomToAgent(room, transferData);
 		}
 
-		logger.debug(`Unable to transfer room ${room._id}: No target provided`);
+		logger.debug({ msg: 'Unable to transfer room. No target provided', roomId: room._id });
 		return false;
 	},
 
