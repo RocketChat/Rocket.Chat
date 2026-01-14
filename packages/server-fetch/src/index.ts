@@ -194,7 +194,7 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 		}
 
 		if (redirectCount === MAX_REDIRECTS) {
-			throw new Error(`Too many redirects (max ${MAX_REDIRECTS})`);
+			throw new Error(`error-too-many-redirects`);
 		}
 
 		currentUrl = new URL(location, currentUrl).toString();
