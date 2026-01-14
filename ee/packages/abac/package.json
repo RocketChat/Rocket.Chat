@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/abac",
-	"version": "0.1.0-rc.1",
+	"version": "0.1.0",
 	"private": true,
 	"description": "Rocket.Chat - Attribute Based Access Control (ABAC) support utilities",
 	"main": "./dist/index.js",
@@ -9,7 +9,7 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsc --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx src",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx src --fix",
@@ -41,7 +41,7 @@
 		"@types/jest": "~30.0.0",
 		"@types/node": "~22.16.1",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.5",
+		"jest": "~30.2.0",
 		"mongodb-memory-server": "^10.1.4",
 		"typescript": "~5.9.2"
 	}
