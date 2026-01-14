@@ -342,8 +342,6 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 		return message;
 	}
 
-	const attachments: MessageAttachment[] = [];
-
 	let changed = false;
 	for await (const item of message.urls) {
 		if (item.ignoreParse === true) {
@@ -357,19 +355,11 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 		changed = changed || foundMeta;
 	}
 
-	// Why we have this here if there's no code for adding anything to the attachments array?
-	if (attachments.length) {
-		await Messages.setMessageAttachments(message._id, attachments);
-	}
-
 	if (changed === true) {
 		await Messages.setUrlsById(message._id, message.urls);
 	}
 
-	return {
-		...message,
-		...(attachments.length && { attachments }),
-	};
+	return message;
 };
 
 export const OEmbed: {
