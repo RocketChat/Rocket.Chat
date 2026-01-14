@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Box, MessageDivider, Throbber } from '@rocket.chat/fuselage';
+import ContextualBarListSkeleton from './ContextualBarListSkeleton';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { MessageTypes } from '@rocket.chat/message-types';
 import {
@@ -54,10 +55,9 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
 			</ContextualbarHeader>
 			<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0}>
-				{queryResult.isLoading && (
-					<Box paddingInline={24} paddingBlock={12}>
-						<Throbber size='x12' />
-					</Box>
+				{queryResult.isLoading && (                               
+                    <ContextualBarListSkeleton itemCount={8} />
+
 				)}
 				{queryResult.isSuccess && (
 					<>

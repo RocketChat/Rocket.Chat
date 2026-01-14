@@ -10,6 +10,9 @@ import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useRoom } from '../../contexts/RoomContext';
 
+import ContextualBarListSkeleton from '../ContextualBarListSkeleton';
+
+
 const RoomFilesWithData = () => {
 	const room = useRoom();
 	const { closeTab } = useRoomToolbox();
@@ -34,20 +37,25 @@ const RoomFilesWithData = () => {
 
 	const handleDeleteFile = useDeleteFile(reload);
 
-	return (
-		<RoomFiles
-			loading={phase === AsyncStatePhase.LOADING}
-			type={type}
-			text={text}
-			filesItems={filesItems}
-			loadMoreItems={loadMoreItems}
-			setType={setType}
-			setText={handleTextChange}
-			total={totalItemCount}
-			onClickClose={closeTab}
-			onClickDelete={handleDeleteFile}
-		/>
-	);
+	        if (phase === AsyncStatePhase.LOADING) {
+                return <ContextualBarListSkeleton itemCount={8} />;
+        }
+
+        return (
+                <RoomFiles
+                        loading={false}
+                        type={type}
+                        text={text}
+                        filesItems={filesItems}
+                        loadMoreItems={loadMoreItems}
+                        setType={setType}
+                        setText={handleTextChange}
+                        total={totalItemCount}
+                        onClickClose={closeTab}
+                        onClickDelete={handleDeleteFile}
+                />
+        );
+
 };
 
 export default RoomFilesWithData;

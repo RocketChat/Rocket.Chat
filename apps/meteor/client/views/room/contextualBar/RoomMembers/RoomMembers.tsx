@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import ContextualBarListSkeleton from '../ContextualBarListSkeleton';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -132,6 +133,10 @@ const RoomMembers = ({
 
 		return { counts, titles };
 	}, [members]);
+	if (loading && members.length === 0) {
+            return <ContextualBarListSkeleton itemCount={10} />;
+    }
+
 
 	return (
 		<ContextualbarDialog>
