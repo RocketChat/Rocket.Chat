@@ -31,7 +31,7 @@ export async function getEmailContent({ message, user, room }) {
 
 	const files = (message.files || [message.file]).filter(Boolean);
 	const hasFiles = files.length > 0;
-	const hasText = message.msg !== '';
+	const hasText = typeof message.msg === 'string' && message.msg.trim() !== '';
 	const isGroupChat = roomDirectives.isGroupChat(room);
 
 	let header;
