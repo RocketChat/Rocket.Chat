@@ -13,10 +13,7 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
 		"test": "jest",
-		"test:integration:logs": "./tests/scripts/run-integration-tests.sh --logs",
-		"test:integration:start-containers-only": "./tests/scripts/run-integration-tests.sh --start-containers-only",
 		"test:integration": "./tests/scripts/run-integration-tests.sh",
-		"test:integration:ci": "./tests/scripts/run-integration-tests.sh --ci",
 		"test:federation": "jest --config jest.config.federation.ts",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
