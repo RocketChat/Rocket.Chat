@@ -28,14 +28,23 @@ export default async function handleApp(method: string, params: unknown): Promis
 		// `app` will be undefined if the method here is "app:construct"
 		const app = AppObjectRegistry.get<App>('app');
 
-		app?.getLogger().debug(`'${appMethod}' is being called...`);
+		app?.getLogger().debug({ msg: `A method is being called...`, appMethod });
 
 		if (uikitInteractions.includes(appMethod)) {
 			return handleUIKitInteraction(appMethod, params).then((result) => {
 				if (result instanceof JsonRpcError) {
-					app?.getLogger().debug(`'${appMethod}' was unsuccessful.`, result.message);
+					app?.getLogger().debug({
+						msg: `Method call was unsuccessful.`,
+						appMethod,
+						err: result,
+						errorMessage: result.message,
+					});
 				} else {
-					app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
+					app?.getLogger().debug({
+						msg: `Method  was successfully called! The result is:`,
+						appMethod,
+						result,
+					});
 				}
 
 				return result;
@@ -45,9 +54,18 @@ export default async function handleApp(method: string, params: unknown): Promis
 		if (appMethod.startsWith('check') || appMethod.startsWith('execute')) {
 			return handleListener(appMethod, params).then((result) => {
 				if (result instanceof JsonRpcError) {
-					app?.getLogger().debug(`'${appMethod}' was unsuccessful.`, result.message);
+					app?.getLogger().debug({
+						msg: `'${appMethod}' was unsuccessful.`,
+						appMethod,
+						err: result,
+						errorMessage: result.message,
+					});
 				} else {
-					app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
+					app?.getLogger().debug({
+						msg: `'${appMethod}' was successfully called! The result is:`,
+						appMethod,
+						result,
+					});
 				}
 
 				return result;
@@ -91,7 +109,11 @@ export default async function handleApp(method: string, params: unknown): Promis
 				throw new JsonRpcError('Method not found', -32601);
 		}
 
-		app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
+		app?.getLogger().debug({
+			msg: `'${appMethod}' was successfully called! The result is:`,
+			appMethod,
+			result,
+		});
 
 		return result;
 	} catch (e: unknown) {

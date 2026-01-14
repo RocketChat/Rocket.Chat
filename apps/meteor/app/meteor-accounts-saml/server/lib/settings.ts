@@ -72,6 +72,9 @@ const getSamlConfigs = function (service: string): SAMLConfiguration {
 const configureSamlService = function (samlConfigs: Record<string, any>): IServiceProviderOptions {
 	let privateCert = null;
 	let privateKey = null;
+	const rawCustomAuthnContext = samlConfigs.customAuthnContext;
+	const normalizedCustomAuthnContext = typeof rawCustomAuthnContext === 'string' ? rawCustomAuthnContext.trim() : rawCustomAuthnContext;
+	const customAuthnContext = typeof normalizedCustomAuthnContext === 'string' ? normalizedCustomAuthnContext : defaultAuthnContext;
 
 	if (samlConfigs.secret.privateKey && samlConfigs.secret.publicCert) {
 		privateKey = samlConfigs.secret.privateKey;
@@ -91,7 +94,7 @@ const configureSamlService = function (samlConfigs: Record<string, any>): IServi
 		privateCert,
 		privateKey,
 		signatureAlgorithm: samlConfigs.secret.algorithm,
-		customAuthnContext: samlConfigs.customAuthnContext,
+		customAuthnContext,
 		authnContextComparison: samlConfigs.authnContextComparison,
 		defaultUserRole: samlConfigs.defaultUserRole,
 		allowedClockDrift: parseInt(samlConfigs.allowedClockDrift) || 0,
