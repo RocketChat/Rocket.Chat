@@ -74,7 +74,13 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 		}),
 	);
 
-	const ignoredHosts = settings.get<string>('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
+	const ignoredHosts =
+		settings
+			.get<string>('API_EmbedIgnoredHosts')
+			.replace(/\s/g, '')
+			.split(',')
+			.filter(Boolean)
+			.map((host) => host.toLowerCase()) || [];
 
 	const isIgnoredHost = (hostname: string | null): boolean => {
 		if (!hostname || !ignoredHosts.length) {
