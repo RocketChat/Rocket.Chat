@@ -3,7 +3,7 @@ import { Buffer } from 'node:buffer';
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException.ts';
 import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext.ts'
-import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads/IUpload.ts'
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails.ts'
 import { toArrayBuffer } from '@std/streams';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
@@ -13,10 +13,10 @@ import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
 
 export const uploadEvents = ['executePreFileUpload'] as const;
 
-function assertIsUpload(v: unknown): asserts v is IUpload {
-	if (isRecord(v) && isRecord(v.user) && isRecord(v.room)) return;
+function assertIsUpload(v: unknown): asserts v is IUploadDetails {
+	if (isRecord(v) && !!v.rid && (!!v.userId || !!v.visitorToken)) return;
 
-	throw JsonRpcError.invalidParams({ err: `Invalid 'file' parameter. Expected IUpload, got`, value: v });
+	throw JsonRpcError.invalidParams({ err: `Invalid 'file' parameter. Expected IUploadDetails, got`, value: v });
 }
 
 function assertString(v: unknown): asserts v is string {

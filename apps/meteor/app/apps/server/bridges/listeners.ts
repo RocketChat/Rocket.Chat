@@ -171,7 +171,7 @@ type HandleDefaultEvent =
 
 type HandleFileUploadEvent = {
 	event: AppInterface.IPreFileUpload;
-	payload: [file: IUpload, content: Buffer];
+	payload: [{ file: IUpload; content: Buffer }];
 };
 
 type HandleEvent =
@@ -250,7 +250,7 @@ export class AppListenerBridge {
 	}
 
 	async uploadEvent(args: HandleFileUploadEvent): Promise<void> {
-		const [file, content] = args.payload;
+		const [{ file, content }] = args.payload;
 
 		const tmpfile = path.join(this.orch.getManager().getTempFilePath(), crypto.randomUUID());
 		await fs.promises.writeFile(tmpfile, content).catch((err) => {
@@ -260,10 +260,20 @@ export class AppListenerBridge {
 		});
 
 		try {
-			const appFile = await this.orch.getConverters().get('uploads').convertToApp(file);
+			const uploadDetails = {
+				name: file.name || '',
+				size: file.size || 0,
+				type: file.type || '',
+				rid: file.rid || '',
+				userId: file.userId || '',
+				visitorToken: file.token,
+			};
 
 			// Execute both events for backward compatibility
-			await this.orch.getManager().getListenerManager().executeListener(AppInterface.IPreFileUpload, { file: appFile, path: tmpfile });
+			await this.orch.getManager().getListenerManager().executeListener(AppInterface.IPreFileUpload, {
+				file: uploadDetails,
+				path: tmpfile,
+			});
 		} finally {
 			await fs.promises
 				.unlink(tmpfile)
