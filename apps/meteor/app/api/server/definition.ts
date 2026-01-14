@@ -19,7 +19,7 @@ export type ErrorStatusCodes = Exclude<Exclude<Range<511>, Range<500>>, 509>;
 
 export type SuccessResult<T, TStatusCode extends SuccessStatusCodes = 200> = {
 	statusCode: TStatusCode;
-	body: T extends object ? { success: true } & T : T;
+	body: T extends Buffer ? T : T extends object ? { success: true } & T : T;
 };
 
 export type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails = undefined> = {
@@ -327,9 +327,11 @@ type PromiseOrValue<T> = T | Promise<T>;
 type IfEquals<T, U, Y = unknown, N = never> = (<G>() => G extends T ? 1 : 2) extends <G>() => G extends U ? 1 : 2 ? Y : N;
 
 type InferResult<TResult> = TResult extends z.ZodType
-	? z.infer<TResult> extends object
-		? IfEquals<z.infer<TResult>, { success: true }, void, Omit<z.infer<TResult>, 'success'>>
-		: z.infer<TResult>
+	? z.infer<TResult> extends Buffer
+		? z.infer<TResult>
+		: z.infer<TResult> extends object
+			? IfEquals<z.infer<TResult>, { success: true }, void, Omit<z.infer<TResult>, 'success'>>
+			: z.infer<TResult>
 	: TResult extends ValidateFunction<infer T>
 		? T
 		: TResult;

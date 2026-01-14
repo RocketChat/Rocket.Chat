@@ -15,13 +15,50 @@ import type {
 	PaginatedAppRequests,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
+import * as z from 'zod';
 
-import type { AppLogsExportProps } from './appLogsExportProps';
-import type { AppLogsProps } from './appLogsProps';
+import { PaginatedRequestSchema } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+import { SuccessResponseSchema } from '../v1/Ajv';
 
-export * from './appLogsExportProps';
-export * from './appLogsProps';
+export const GETAppsIdLogsDistinctValuesResponseSchema = SuccessResponseSchema.extend({
+	instanceIds: z.array(z.string()),
+	methods: z.array(z.string()),
+});
+
+export const GETAppsLogsQuerySchema = z
+	.strictObject({
+		appId: z.string().optional(),
+		logLevel: z.enum(['0', '1', '2']).optional(),
+		instanceId: z.string().optional(),
+		method: z.string().optional(),
+		startDate: z.iso.datetime().optional(),
+		endDate: z.iso.datetime().optional(),
+	})
+	.and(PaginatedRequestSchema.strict());
+
+export const GETAppsIdLogsQuerySchema = GETAppsLogsQuerySchema.clone();
+
+export const GETAppsIdExportLogsQuerySchema = z.object({
+	type: z.enum(['json', 'csv']),
+	logLevel: z.enum(['0', '1', '2']).optional(),
+	instanceId: z.string().optional(),
+	method: z.string().optional(),
+	startDate: z.iso.datetime().optional(),
+	endDate: z.iso.datetime().optional(),
+	count: z
+		.codec(z.string(), z.number().int().nonnegative(), {
+			decode: (val) => parseInt(val, 10),
+			encode: (val) => val.toString(),
+		})
+		.optional(),
+	sort: z.string().optional(),
+});
+
+// TODO in the future we might use this schema to encode the response as well
+export const GETAppsIdExportLogsResponseSchema = z
+	.custom<Buffer>()
+	.meta({ description: 'The content of the exported logs file, either in JSON or CSV format.' });
 
 export type AppsEndpoints = {
 	'/apps/count': {
@@ -67,7 +104,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/logs': {
-		GET: (params: AppLogsProps) => PaginatedResult<{
+		GET: (params: z.infer<typeof GETAppsLogsQuerySchema>) => PaginatedResult<{
 			logs: ILogItem[];
 		}>;
 	};
@@ -103,17 +140,17 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/:id/logs': {
-		GET: (params: Omit<AppLogsProps, 'appId'>) => PaginatedResult<{
+		GET: (params: z.infer<typeof GETAppsIdLogsQuerySchema>) => PaginatedResult<{
 			logs: ILogItem[];
 		}>;
 	};
 
 	'/apps/:id/logs/distinctValues': {
-		GET: () => { success: boolean; instanceIds: string[]; methods: string[] };
+		GET: () => z.infer<typeof GETAppsIdLogsDistinctValuesResponseSchema>;
 	};
 
 	'/apps/:id/export-logs': {
-		GET: (params: AppLogsExportProps) => Buffer;
+		GET: (params: z.infer<typeof GETAppsIdExportLogsQuerySchema>) => z.infer<typeof GETAppsIdExportLogsResponseSchema>;
 	};
 
 	'/apps/:id/apis': {

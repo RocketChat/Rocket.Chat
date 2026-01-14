@@ -1,4 +1,4 @@
-import { isAppLogsProps } from '@rocket.chat/rest-typings';
+import { GETAppsLogsQuerySchema } from '@rocket.chat/rest-typings';
 
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import type { AppsRestApi } from '../rest';
@@ -7,7 +7,7 @@ import { makeAppLogsQuery } from './lib/makeAppLogsQuery';
 export const registerAppGeneralLogsHandler = ({ api, _orch }: AppsRestApi) =>
 	void api.addRoute(
 		'logs',
-		{ authRequired: true, permissionRequired: ['manage-apps'], validateParams: isAppLogsProps },
+		{ authRequired: true, permissionRequired: ['manage-apps'], validateParams: GETAppsLogsQuerySchema },
 		{
 			async get() {
 				const { offset, count } = await getPaginationItems(this.queryParams);
