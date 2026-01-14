@@ -55,7 +55,7 @@ export async function getRoom(
 		throw new Meteor.Error('error-omnichannel-is-disabled');
 	}
 	livechatLogger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
-	const room = await LivechatRooms.findOneAndUpdate(     // ✅ Line ~56
+	const room = await LivechatRooms.findOneAndUpdate(     //  Line ~58
   { 'v.token': guest.token, open: true },
   {
     $setOnInsert: {
