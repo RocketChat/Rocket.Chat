@@ -676,16 +676,6 @@ jobs:
         working-directory: ./ee/packages/federation-matrix
         run: yarn test:integration --logs
 
-      - name: Show rc server logs if tests failed
-        if: failure()
-        working-directory: ./ee/packages/federation-matrix
-        run: docker compose -f docker-compose.test.yml logs rc1-prebuilt
-
-      - name: Show hs server logs if tests failed
-        if: failure()
-        working-directory: ./ee/packages/federation-matrix
-        run: docker compose -f docker-compose.test.yml logs hs1
-
       - name: Show mongo logs if tests failed
         if: failure()
         working-directory: ./ee/packages/federation-matrix
