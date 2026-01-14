@@ -4,7 +4,6 @@ import type {
 	OEmbedUrlWithMetadata,
 	OEmbedMeta,
 	IMessage,
-	MessageAttachment,
 	OEmbedUrlContent,
 } from '@rocket.chat/core-typings';
 import { isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
