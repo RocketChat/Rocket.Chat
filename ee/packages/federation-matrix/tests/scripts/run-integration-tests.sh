@@ -327,8 +327,10 @@ if [ "$NO_TEST" = false ]; then
     log_info "Running end-to-end tests..."
     cd "$PACKAGE_ROOT"
 
+    set +e
     IS_EE=true NODE_EXTRA_CA_CERTS=$(pwd)/docker-compose/traefik/certs/ca/rootCA.crt yarn test:federation
     TEST_EXIT_CODE=$?
+    set -e
 else
     log_info "No-test mode: skipping test execution"
     log_info "Services are ready and running. You can now:"
