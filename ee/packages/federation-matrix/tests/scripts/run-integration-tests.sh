@@ -20,7 +20,6 @@ PACKAGE_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
 DOCKER_COMPOSE_FILE="$PACKAGE_ROOT/docker-compose.test.yml"
 MAX_WAIT_TIME=240  # 4 minutes
 CHECK_INTERVAL=5   # Check every 5 seconds
-RC1_CONTAINER="rc1"
 
 # Build configuration
 # Use a temporary directory outside the repo to avoid symlink traversal issues during Meteor build
@@ -261,7 +260,7 @@ if [ "$START_CONTAINERS" = true ]; then
     log_info "Waiting for rc1 container to start..."
     timeout=60
     while [ $timeout -gt 0 ] && [ "$INTERRUPTED" = false ]; do
-        if docker ps --filter "name=$RC1_CONTAINER" --filter "status=running" | grep -q "$RC1_CONTAINER"; then
+        if docker compose -f "$DOCKER_COMPOSE_FILE" ps rc1 --filter "status=running" | grep -q "rc1"; then
             log_success "rc1 container is running"
             break
         fi
@@ -337,14 +336,14 @@ if [ "$START_CONTAINERS" = true ]; then
     # Wait for Rocket.Chat
     if ! wait_for_service "https://rc1/api/info" "Rocket.Chat" "rc1"; then
         log_error "Last 50 lines of rc1 logs:"
-        docker logs --tail 50 "$RC1_CONTAINER" 2>&1 | sed 's/^/  /'
+        docker compose -f "$DOCKER_COMPOSE_FILE" logs --tail 50 rc1
         exit 1
     fi
 
     # Wait for Synapse
     if ! wait_for_service "https://hs1/_matrix/client/versions" "Synapse" "hs1"; then
         log_error "Last 50 lines of hs1 logs:"
-        docker logs --tail 50 "hs1" 2>&1 | sed 's/^/  /'
+        docker compose -f "$DOCKER_COMPOSE_FILE" logs --tail 50 hs1
         exit 1
     fi
 fi
