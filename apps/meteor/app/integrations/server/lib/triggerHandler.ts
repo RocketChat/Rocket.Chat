@@ -698,7 +698,7 @@ class RocketChatIntegrationHandler {
 
 						if (res.status === 410) {
 							await updateHistory({ historyId, step: 'after-process-http-status-410', error: true });
-							outgoingLogger.error({ msg: 'Disabling integration due to 401 status', integrationName: trigger.name });
+							outgoingLogger.error({ msg: 'Disabling integration due to 410 (Gone) status', integrationName: trigger.name });
 							await Integrations.updateOne({ _id: trigger._id }, { $set: { enabled: false } });
 							void notifyOnIntegrationChangedById(trigger._id);
 							return;
