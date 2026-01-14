@@ -32,7 +32,7 @@ import type { ProxiedApp } from '../ProxiedApp';
 import { Utilities } from '../misc/Utilities';
 import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/deno/AppsEngineDenoRuntime';
 
-interface IListenerExecutor {
+export interface IListenerExecutor {
 	[AppInterface.IPreMessageSentPrevent]: {
 		args: [IMessage];
 		result: boolean;
