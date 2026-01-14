@@ -71,7 +71,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		try {
 			await insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
 		} catch (e) {
-			this._logger.warn({ msg: 'Failed to import message', timestamp: String(msgObj.ts), roomId: rid });
+			this._logger.warn({ msg: 'Failed to import message', timestamp: msgObj.ts, roomId: rid });
 			this._logger.error(e);
 		}
 	}
