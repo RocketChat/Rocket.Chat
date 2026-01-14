@@ -1,4 +1,4 @@
-import type { IRoomBuilder } from '.';
+import type { IRoomBuilder } from './index.ts';
 import type { IMessage } from '../messages';
 import type { RocketChatAssociationModel } from '../metadata';
 import type { IRoom } from '../rooms';

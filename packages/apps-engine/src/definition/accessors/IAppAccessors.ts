@@ -1,4 +1,4 @@
-import type { IEnvironmentRead, IHttp, IRead } from '.';
+import type { IEnvironmentRead, IHttp, IRead } from './index.ts';
 import type { IApiEndpointMetadata } from '../api';
 import type { IEnvironmentWrite } from './IEnvironmentWrite';
 

@@ -4,20 +4,35 @@
 		"@rocket.chat/apps-engine/": "./../src/",
 		"@rocket.chat/ui-kit": "npm:@rocket.chat/ui-kit@^0.31.22",
 		"@std/cli": "jsr:@std/cli@^1.0.9",
+		"@types/nedb": "npm:@types/nedb@1.8.16",
+		"@types/node": "npm:@types/node@22.14.0",
 		"acorn": "npm:acorn@8.10.0",
 		"acorn-walk": "npm:acorn-walk@8.2.0",
+		"adm-zip": "npm:adm-zip@0.5.16",
 		"astring": "npm:astring@1.8.6",
+		"debug": "npm:debug@4.3.7",
+		"esbuild": "npm:esbuild@0.25.0",
+		"jose": "npm:jose@4.15.9",
 		"jsonrpc-lite": "npm:jsonrpc-lite@2.2.0",
+		"lodash.clonedeep": "npm:lodash.clonedeep@4.5.0",
+		"mem": "npm:mem@9.0.2",
+		"semver": "npm:semver@7.6.3",
 		"stack-trace": "npm:stack-trace@0.0.10",
-		"uuid": "npm:uuid@8.3.2"
+		"uuid": "npm:uuid@11.0.3"
 	},
 	"tasks": {
-		"test": "deno test --no-check --allow-read=../../../"
+		"test": "deno test --no-check --allow-read=../../../",
+		"typecheck": "deno check --config deno.jsonc --unstable-sloppy-imports --unstable-bare-node-builtins main.ts"
 	},
 	"fmt": {
 		"lineWidth": 160,
 		"useTabs": true,
 		"indentWidth": 4,
 		"singleQuote": true
+	},
+	"compilerOptions": {
+		"lib": ["deno.window", "dom"],
+		"strict": false,
+		"noImplicitAny": false
 	}
 }
