@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import type { PeerInfo } from './MediaCallContext';
 import { useMediaCallContext } from './MediaCallContext';
 import type { PeerAutocompleteOptions } from '../components';
+import { mediaCallQueryKeys } from '../utils/queryKeys';
 
 const PREFIX_FIRST_OPTION = 'rcx-first-option-';
 
@@ -24,7 +25,7 @@ export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, 
 	const debouncedFilter = useDebouncedValue(filter, 400);
 
 	const { data: options } = useQuery({
-		queryKey: ['mediaCall/peerAutocomplete', debouncedFilter],
+		queryKey: mediaCallQueryKeys.peerAutocomplete(debouncedFilter),
 		queryFn: async () => {
 			const options = await getAutocompleteOptions(debouncedFilter);
 
