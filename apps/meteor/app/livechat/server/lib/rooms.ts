@@ -55,7 +55,20 @@ export async function getRoom(
 		throw new Meteor.Error('error-omnichannel-is-disabled');
 	}
 	livechatLogger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
-	const room = await LivechatRooms.findOneById(message.rid);
+	const room = await LivechatRooms.findOneAndUpdate(     // ✅ Line ~56
+  { 'v.token': guest.token, open: true },
+  {
+    $setOnInsert: {
+      open: true,
+      ts: new Date(),
+      v: guest,
+      source: roomInfo?.source,
+    },
+  },
+  { upsert: true, returnDocument: 'after' }
+);
+
+return { room, newRoom: false }; 
 
 	if (room?.v._id && (await LivechatContacts.isChannelBlocked(Visitors.makeVisitorAssociation(room.v._id, room.source)))) {
 		throw new Error('error-contact-channel-blocked');
@@ -65,12 +78,7 @@ export async function getRoom(
 		livechatLogger.debug(`Last room for visitor ${guest._id} closed. Creating new one`);
 	}
 
-	if (!room?.open) {
-		return {
-			room: await createRoom({ visitor: guest, message: message.msg, roomInfo, agent, extraData }),
-			newRoom: true,
-		};
-	}
+	
 
 	if (room.v.token !== guest.token) {
 		livechatLogger.debug(`Visitor ${guest._id} trying to access another visitor's room`);
