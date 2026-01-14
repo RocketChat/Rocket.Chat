@@ -18,6 +18,10 @@ export class Negotiation {
 		return !this.remoteOffer;
 	}
 
+	public get finished(): boolean {
+		return this._finished;
+	}
+
 	public readonly negotiationId: string;
 
 	public readonly sequence: number;
@@ -34,6 +38,8 @@ export class Negotiation {
 
 	protected _failed: boolean;
 
+	protected _finished: boolean;
+
 	constructor(
 		negotiation: NegotiationData,
 		protected readonly logger?: IMediaSignalLogger | null,
@@ -42,6 +48,7 @@ export class Negotiation {
 		this._startedProcessing = false;
 		this._ended = false;
 		this._failed = false;
+		this._finished = false;
 		this.negotiationId = negotiation.negotiationId;
 		this.sequence = negotiation.sequence;
 		this.isPolite = negotiation.isPolite;
@@ -50,13 +57,16 @@ export class Negotiation {
 		this.emitter = new Emitter();
 	}
 
-	public end(): void {
+	public end(finished = false): void {
 		if (this._ended) {
 			return;
 		}
 
 		this.logger?.debug('Negotiation.end', this.negotiationId);
 		this._ended = true;
+		if (finished && this._startedProcessing && !this._failed) {
+			this._finished = true;
+		}
 		this.emitter.emit('ended');
 	}
 
@@ -92,7 +102,7 @@ export class Negotiation {
 
 		await this.webrtcProcessor.setRemoteDescription(sdp);
 		// Local negotiations end when the remote description is available
-		this.end();
+		this.end(true);
 	}
 
 	protected async setLocalDescription(this: WebRTCNegotiation, sdp: RTCSessionDescriptionInit): Promise<void> {
@@ -115,7 +125,7 @@ export class Negotiation {
 
 		// Remote negotiations end when the local description is available
 		if (!this.isLocal) {
-			this.end();
+			this.end(true);
 		}
 	}
 

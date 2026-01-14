@@ -10,6 +10,10 @@ export class NegotiationManager {
 		return this.currentNegotiation?.negotiationId || this.highestNegotiationId;
 	}
 
+	public get hasFinishedAnyNegotiation(): boolean {
+		return Boolean(this.highestFinishedNegotiationId);
+	}
+
 	protected negotiations: Map<string, Negotiation>;
 
 	/** negotiation actively being processed, null once completed */
@@ -29,6 +33,9 @@ export class NegotiationManager {
 	/** id of the newest negotiation, regardless of state */
 	protected highestKnownNegotiationId: string | null;
 
+	/** id of the newest negotiation that has finished processing */
+	protected highestFinishedNegotiationId: string | null;
+
 	constructor(
 		protected readonly call: INegotiationCompatibleMediaCall,
 		protected readonly config: NegotiationManagerConfig,
@@ -41,6 +48,7 @@ export class NegotiationManager {
 		this.webrtcProcessor = null;
 		this.highestNegotiationId = null;
 		this.highestKnownNegotiationId = null;
+		this.highestFinishedNegotiationId = null;
 
 		this.emitter = new Emitter();
 	}
@@ -202,6 +210,9 @@ export class NegotiationManager {
 				return;
 			}
 
+			if (negotiation.finished) {
+				this.highestFinishedNegotiationId = negotiation.negotiationId;
+			}
 			this.config.logger?.debug('NegotiationManager.processNegotiation.ended');
 			this.currentNegotiation = null;
 			void this.processNegotiations();
@@ -217,13 +228,10 @@ export class NegotiationManager {
 			this.emitter.emit('local-sdp', { sdp, negotiationId: negotiation.negotiationId });
 		});
 
-		try {
-			return negotiation.process(this.webrtcProcessor);
-		} catch (e) {
-			this.config.logger?.error(e);
-			this.currentNegotiation = null;
-			this.emitter.emit('error', { errorCode: 'failed-to-process-negotiation', negotiationId: negotiation.negotiationId });
-		}
+		void negotiation
+			.process(this.webrtcProcessor)
+			// No need to handle errors here as they are already handled by the 'error' event
+			.catch(() => null);
 	}
 
 	protected isConfigured(): this is WebRTCNegotiationManager {
