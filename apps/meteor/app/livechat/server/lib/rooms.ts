@@ -65,7 +65,7 @@ export async function getRoom(
       source: roomInfo?.source,
     },
   },
-  { upsert: true, returnDocument: 'after' }     // Line ~68
+  { upsert: true, returnDocument: 'after' }     
 );
 
 return { room, newRoom: false }; 
