@@ -134,7 +134,7 @@ slashCommands.add({
 			});
 		}
 
-		const files = await Uploads.findByIds(fileRefs.map((f) => f._id)).toArray();
+		const files = await Uploads.find({ _id: { $in: fileRefs.map((f) => f._id) } }).toArray();
 		const emailAttachments = await Promise.all(files.map(buildMailAttachment));
 		const validAttachments = emailAttachments.filter((a): a is Mail.Attachment => Boolean(a));
 		if (validAttachments.length === 0) {
