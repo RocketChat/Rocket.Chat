@@ -1,5 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { sanitize } from 'dompurify';
+import DOMPurify from 'dompurify';
+
+const {sanitize} = DOMPurify;
 
 export function truncate(str: string, length: number): string {
 	return str.length > length ? `${str.slice(0, length - 3)}...` : str;
