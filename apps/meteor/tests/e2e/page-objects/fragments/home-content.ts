@@ -354,7 +354,7 @@ export class HomeContent {
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
-	async dragAndDropLstFile(): Promise<void> {
+	async dragAndDropLstFile({ waitForLoad = true }: { waitForLoad?: boolean } = {}): Promise<void> {
 		const contract = await fs.readFile(getFilePath('lst-test.lst'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
@@ -368,6 +368,9 @@ export class HomeContent {
 		await this.composer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+		if (waitForLoad) {
+			await waitForMediaResponse(this.page);
+		}
 	}
 
 	async dragAndDropTxtFileToThread({ waitForResponse = true } = {}): Promise<void> {

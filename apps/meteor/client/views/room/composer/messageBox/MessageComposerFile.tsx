@@ -67,6 +67,7 @@ const MessageComposerFile = ({ upload, onRemove, onEdit, onCancel, ...props }: M
 			fileTitle={upload.file.name}
 			fileSubtitle={`${fileSize} - ${fileExtension}`}
 			actionIcon={actionIcon}
+			aria-busy={isLoading}
 			{...props}
 		/>
 	);
