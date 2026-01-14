@@ -431,7 +431,7 @@ export class AppListenerBridge {
 				const department = await this.orch.getConverters().get('departments').convertDepartment(departmentData);
 
 				if (!department) {
-					throw new Error(`Department ${departmentData} not found`);
+					throw new Error(`Department ${departmentData._id} not found`);
 				}
 
 				return this.orch.getManager().getListenerManager().executeListener(args.event, { department });
@@ -442,7 +442,7 @@ export class AppListenerBridge {
 				const department = await this.orch.getConverters().get('departments').convertDepartment(departmentData);
 
 				if (!department) {
-					throw new Error(`Department ${departmentData} not found`);
+					throw new Error(`Department ${departmentData._id} not found`);
 				}
 
 				return this.orch.getManager().getListenerManager().executeListener(args.event, { department });
@@ -453,11 +453,11 @@ export class AppListenerBridge {
 				const room = await this.orch.getConverters().get('rooms').convertRoom(roomData);
 
 				if (!room) {
-					throw new Error(`Room ${roomData} not found`);
+					throw new Error(`Room ${roomData._id} not found`);
 				}
 
 				if (!isLivechatRoom(room)) {
-					throw new Error(`Room ${roomData} is not a livechat room`);
+					throw new Error(`Room ${roomData._id} is not a livechat room`);
 				}
 
 				return this.orch.getManager().getListenerManager().executeListener(args.event, room);
