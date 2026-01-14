@@ -1,7 +1,12 @@
 import type { IAppServerOrchestrator, IAppsRoom, IAppsLivechatRoom, IAppsMessage } from '@rocket.chat/apps';
+import type { IPreEmailSentContext } from '@rocket.chat/apps-engine/definition/email';
+import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { isLivechatRoom } from '@rocket.chat/apps-engine/definition/livechat/ILivechatRoom';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
+import type { UIKitIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit';
+import type { IUIKitLivechatIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit/livechat';
+import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads';
 import type { IUserContext, IUserUpdateContext } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage, IRoom, IUser, ILivechatDepartment } from '@rocket.chat/core-typings';
 
@@ -29,6 +34,8 @@ type UserCrudData = {
 	previousUser?: IUser;
 };
 
+// IPostMessageSentToBot is an internally triggered event, based on IPostMessageSent
+// so we don't add it here
 type HandleMessageEvent =
 	| {
 			event: AppInterface.IPostMessageDeleted;
@@ -141,14 +148,35 @@ type HandleUserEvent =
 			payload: [UserCrudData];
 	  };
 
-type HandleEvent = HandleMessageEvent | HandleRoomEvent | HandleLivechatEvent | HandleUserEvent;
+type HandleDefaultEvent =
+	| {
+			event: AppInterface.IPostExternalComponentOpened | AppInterface.IPostExternalComponentClosed;
+			payload: [IExternalComponent];
+	  }
+	| {
+			event: AppInterface.IUIKitInteractionHandler;
+			payload: [UIKitIncomingInteraction];
+	  }
+	| {
+			event: AppInterface.IUIKitLivechatInteractionHandler;
+			payload: [IUIKitLivechatIncomingInteraction];
+	  }
+	| {
+			event: AppInterface.IPreFileUpload;
+			payload: [IFileUploadContext];
+	  }
+	| {
+			event: AppInterface.IPreEmailSent;
+			payload: [IPreEmailSentContext];
+	  };
+
+type HandleEvent = HandleMessageEvent | HandleRoomEvent | HandleLivechatEvent | HandleUserEvent | HandleDefaultEvent;
 
 export class AppListenerBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {}
 
 	// eslint-disable-next-line complexity
 	async handleEvent(args: HandleEvent): Promise<any> {
-		console.log('args', args);
 		switch (args.event) {
 			case AppInterface.IPostMessageDeleted:
 			case AppInterface.IPostMessageReacted:
@@ -165,9 +193,8 @@ export class AppListenerBridge {
 			case AppInterface.IPreMessageUpdatedPrevent:
 			case AppInterface.IPreMessageUpdatedExtend:
 			case AppInterface.IPreMessageUpdatedModify:
-			case AppInterface.IPostMessageUpdated: {
+			case AppInterface.IPostMessageUpdated:
 				return this.messageEvent(args);
-			}
 			case AppInterface.IPreRoomCreatePrevent:
 			case AppInterface.IPreRoomCreateExtend:
 			case AppInterface.IPreRoomCreateModify:
@@ -206,11 +233,8 @@ export class AppListenerBridge {
 		}
 	}
 
-	async defaultEvent(args: HandleEvent): Promise<unknown> {
-		return this.orch
-			.getManager()
-			.getListenerManager()
-			.executeListener(args.event, args.payload[0] as any);
+	async defaultEvent(args: HandleDefaultEvent): Promise<unknown> {
+		return this.orch.getManager().getListenerManager().executeListener(args.event, args.payload[0]);
 	}
 
 	async messageEvent(args: HandleMessageEvent): Promise<boolean | IMessage | undefined> {
