@@ -112,17 +112,40 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 				</FieldGroup>
 			</ModalContent>
 			<ModalFooter>
-				<ModalFooterControllers>
-					<Button secondary onClick={onClose}>
-						{t('Cancel')}
-					</Button>
-					<Button primary type='submit' disabled={!!statusTextError}>
-						{t('Save')}
-					</Button>
-				</ModalFooterControllers>
+				<ModalFooter>
+    <ModalFooterControllers>
+        {/*  Clear Status Button */}
+        {userStatusText && (
+            <Button danger ghost onClick={handleClearStatus}>
+                {t('Clear_Status')}
+            </Button>
+        )}
+        <Button secondary onClick={onClose}>
+            {t('Cancel')}
+        </Button>
+        <Button primary type='submit' disabled={!!statusTextError}>
+            {t('Save')}
+        </Button>
+    </ModalFooterControllers>
+</ModalFooter>
 			</ModalFooter>
 		</Modal>
 	);
 };
+
+const handleClearStatus = useCallback(async () => {
+    try {
+        // We pass an empty string to clear the message, but keep the current status type
+        await setUserStatus({ message: '', status: statusType });
+        setCustomStatus('');
+        setStatusText('');
+        dispatchToastMessage({ type: 'success', message: t('StatusMessage_Changed_Successfully') });
+        onClose();
+    } catch (error) {
+        dispatchToastMessage({ type: 'error', message: error });
+    }
+},
+ [onClose, setUserStatus, statusType, setCustomStatus, dispatchToastMessage, t]);
+
 
 export default EditStatusModal;

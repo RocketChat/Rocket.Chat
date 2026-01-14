@@ -1105,6 +1105,7 @@
   "Clear_filters": "Clear filters",
   "Clear_livechat_session_when_chat_ended": "Clear guest session when chat ended",
   "Clear_selection": "Clear selection",
+  "Clear_Status": "Clear Status",
   "Click_here": "Click here",
   "Click_here_for_more_details_or_contact_sales_for_a_new_license": "<a target=\"_blank\" href=\"{{url}}\">Click here</a> for more details or contact <strong>{{email}}</strong> for a new license.",
   "Click_here_for_more_info": "Click here for more info",
