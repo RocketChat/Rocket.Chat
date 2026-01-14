@@ -36,6 +36,7 @@ INTERRUPTED=false
 NO_TEST=false
 CI=false
 LOGS=false
+START_CONTAINERS=true
 
 
 while [[ $# -gt 0 ]]; do
@@ -48,6 +49,7 @@ while [[ $# -gt 0 ]]; do
         --ci)
             CI=true
             KEEP_RUNNING=true
+            START_CONTAINERS=false
             USE_PREBUILT_IMAGE=true
             shift
             ;;
@@ -147,7 +149,10 @@ docker_logs() {
 # Cleanup function
 cleanup() {
     if [ "$CI" = true ]; then
-        return
+        # Exit with the test result code
+        if [ -n "${TEST_EXIT_CODE:-}" ]; then
+            exit $TEST_EXIT_CODE
+        fi
     fi
     # Show container logs if tests failed
     if [ -n "${TEST_EXIT_CODE:-}" ] && [ "$TEST_EXIT_CODE" -ne 0 ]; then
@@ -208,145 +213,145 @@ if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
     exit 1
 fi
 
-# Build Rocket.Chat locally if not using pre-built image
-if [ "$USE_PREBUILT_IMAGE" = false ]; then
-    log_info "🚀 Building Rocket.Chat locally..."
-    log_info "====================================="
 
-    # Clean up any existing build
-    log_info "Cleaning up previous build..."
-    rm -rf "$BUILD_DIR"
+if [ "$START_CONTAINERS" = true ]; then
+    # Build Rocket.Chat locally if not using pre-built image
+    if [ "$USE_PREBUILT_IMAGE" = false ]; then
+        log_info "🚀 Building Rocket.Chat locally..."
+        log_info "====================================="
 
-    # Build the project
-    log_info "Building packages from project root..."
-    cd "$ROCKETCHAT_ROOT"
-    yarn build
+        # Clean up any existing build
+        log_info "Cleaning up previous build..."
+        rm -rf "$BUILD_DIR"
 
-    # Build the Meteor bundle (must be run from the meteor directory)
-    log_info "Building Meteor bundle..."
-    cd "$ROCKETCHAT_ROOT/apps/meteor"
-    METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --server-only --directory "$BUILD_DIR"
+        # Build the project
+        log_info "Building packages from project root..."
+        cd "$ROCKETCHAT_ROOT"
+        yarn build
 
-    log_success "Build completed!"
-else
-    log_info "🚀 Using pre-built image: $PREBUILT_IMAGE"
-    log_info "====================================="
-fi
+        # Build the Meteor bundle (must be run from the meteor directory)
+        log_info "Building Meteor bundle..."
+        cd "$ROCKETCHAT_ROOT/apps/meteor"
+        METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --server-only --directory "$BUILD_DIR"
 
-log_info "🚀 Starting Federation Integration Tests"
-log_info "====================================="
-
-BUILD_PARAM=""
-
-# Set environment variables for Docker Compose
-if [ "$USE_PREBUILT_IMAGE" = true ]; then
-    export ROCKETCHAT_IMAGE="$PREBUILT_IMAGE"
-    log_info "Using pre-built image: $PREBUILT_IMAGE"
-else
-    export ROCKETCHAT_BUILD_CONTEXT="$BUILD_DIR"
-    export ROCKETCHAT_DOCKERFILE="$ROCKETCHAT_ROOT/apps/meteor/.docker/Dockerfile.alpine"
-    BUILD_PARAM="--build"
-    log_info "Building from local context: $BUILD_DIR"
-fi
-
-# Start services
-if [ "$INCLUDE_ELEMENT" = true ]; then
-    log_info "Starting all federation services including Element web client..."
-    docker compose -f "$DOCKER_COMPOSE_FILE" --profile "element" up -d $BUILD_PARAM
-else
-    log_info "Starting federation services (test profile only)..."
-    docker compose -f "$DOCKER_COMPOSE_FILE" --profile "test" up -d $BUILD_PARAM
-fi
-
-# Wait for rc1 container to be running
-log_info "Waiting for rc1 container to start..."
-timeout=60
-while [ $timeout -gt 0 ] && [ "$INTERRUPTED" = false ]; do
-    if docker ps --filter "name=$RC1_CONTAINER" --filter "status=running" | grep -q "$RC1_CONTAINER"; then
-        log_success "rc1 container is running"
-        break
-    fi
-    sleep 2
-    timeout=$((timeout - 2))
-done
-
-if [ "$INTERRUPTED" = true ]; then
-    log_info "Container startup interrupted by user"
-    exit 130
-fi
-
-if [ $timeout -le 0 ]; then
-    log_error "rc1 container failed to start within 60 seconds"
-    exit 1
-fi
-
-# Wait for both Rocket.Chat and Synapse to be ready
-log_info "Waiting for Rocket.Chat and Synapse servers to be ready..."
-
-# Function to wait for a service to be ready
-wait_for_service() {
-    local url=$1
-    local name=$2
-    local host=$3
-    local elapsed=0
-    local ca_cert="${CA_CERT:-$PACKAGE_ROOT/docker-compose/traefik/certs/ca/rootCA.crt}"
-
-    # Derive host/port from URL when not explicitly provided
-    local host_with_port="${url#*://}"
-    host_with_port="${host_with_port%%/*}"
-    if [ -z "$host" ]; then
-        host="${host_with_port%%:*}"
-    fi
-    local port
-    if [[ "$host_with_port" == *:* ]]; then
-        port="${host_with_port##*:}"
+        log_success "Build completed!"
     else
-        if [[ "$url" == https://* ]]; then
-            port=443
-        else
-            port=80
-        fi
+        log_info "🚀 Using pre-built image: $PREBUILT_IMAGE"
+        log_info "====================================="
     fi
 
-    log_info "Checking $name at $url (host $host -> 127.0.0.1:$port)..."
+    log_info "🚀 Starting Federation Integration Tests"
+    log_info "====================================="
 
-    while [ $elapsed -lt $MAX_WAIT_TIME ] && [ "$INTERRUPTED" = false ]; do
-        # Capture curl output and error for debugging
-        curl_output=$(curl -fsS --cacert "$ca_cert" --resolve "${host}:${port}:127.0.0.1" "$url" 2>&1)
-        curl_exit_code=$?
+    # Set environment variables for Docker Compose
+    if [ "$USE_PREBUILT_IMAGE" = true ]; then
+        export ROCKETCHAT_IMAGE="$PREBUILT_IMAGE"
+        log_info "Using pre-built image: $PREBUILT_IMAGE"
+    else
+        export ROCKETCHAT_BUILD_CONTEXT="$BUILD_DIR"
+        export ROCKETCHAT_DOCKERFILE="$ROCKETCHAT_ROOT/apps/meteor/.docker/Dockerfile.alpine"
+        log_info "Building from local context: $BUILD_DIR"
+    fi
 
-        if [ $curl_exit_code -eq 0 ]; then
-            log_success "$name is ready!"
-            return 0
+    # Start services
+    if [ "$INCLUDE_ELEMENT" = true ]; then
+        log_info "Starting all federation services including Element web client..."
+        docker compose -f "$DOCKER_COMPOSE_FILE" --profile element up -d --build
+    else
+        log_info "Starting federation services (test profile only)..."
+        docker compose -f "$DOCKER_COMPOSE_FILE" --profile test up -d --build
+    fi
+
+    # Wait for rc1 container to be running
+    log_info "Waiting for rc1 container to start..."
+    timeout=60
+    while [ $timeout -gt 0 ] && [ "$INTERRUPTED" = false ]; do
+        if docker ps --filter "name=$RC1_CONTAINER" --filter "status=running" | grep -q "$RC1_CONTAINER"; then
+            log_success "rc1 container is running"
+            break
         fi
-
-        log_info "$name not ready yet, waiting... (${elapsed}s/${MAX_WAIT_TIME}s)"
-        log_info "Curl error: $curl_output"
-        sleep $CHECK_INTERVAL
-        elapsed=$((elapsed + CHECK_INTERVAL))
+        sleep 2
+        timeout=$((timeout - 2))
     done
 
     if [ "$INTERRUPTED" = true ]; then
-        log_info "Service check interrupted by user"
-        return 1
+        log_info "Container startup interrupted by user"
+        exit 130
     fi
 
-    log_error "$name failed to become ready within ${MAX_WAIT_TIME} seconds"
-    return 1
-}
+    if [ $timeout -le 0 ]; then
+        log_error "rc1 container failed to start within 60 seconds"
+        exit 1
+    fi
 
-# Wait for Rocket.Chat
-if ! wait_for_service "https://rc1/api/info" "Rocket.Chat" "rc1"; then
-    log_error "Last 50 lines of rc1 logs:"
-    docker logs --tail 50 "$RC1_CONTAINER" 2>&1 | sed 's/^/  /'
-    exit 1
-fi
+    # Wait for both Rocket.Chat and Synapse to be ready
+    log_info "Waiting for Rocket.Chat and Synapse servers to be ready..."
 
-# Wait for Synapse
-if ! wait_for_service "https://hs1/_matrix/client/versions" "Synapse" "hs1"; then
-    log_error "Last 50 lines of hs1 logs:"
-    docker logs --tail 50 "hs1" 2>&1 | sed 's/^/  /'
-    exit 1
+    # Function to wait for a service to be ready
+    wait_for_service() {
+        local url=$1
+        local name=$2
+        local host=$3
+        local elapsed=0
+        local ca_cert="${CA_CERT:-$PACKAGE_ROOT/docker-compose/traefik/certs/ca/rootCA.crt}"
+
+        # Derive host/port from URL when not explicitly provided
+        local host_with_port="${url#*://}"
+        host_with_port="${host_with_port%%/*}"
+        if [ -z "$host" ]; then
+            host="${host_with_port%%:*}"
+        fi
+        local port
+        if [[ "$host_with_port" == *:* ]]; then
+            port="${host_with_port##*:}"
+        else
+            if [[ "$url" == https://* ]]; then
+                port=443
+            else
+                port=80
+            fi
+        fi
+
+        log_info "Checking $name at $url (host $host -> 127.0.0.1:$port)..."
+
+        while [ $elapsed -lt $MAX_WAIT_TIME ] && [ "$INTERRUPTED" = false ]; do
+            # Capture curl output and error for debugging
+            curl_output=$(curl -fsS --cacert "$ca_cert" --resolve "${host}:${port}:127.0.0.1" "$url" 2>&1)
+            curl_exit_code=$?
+
+            if [ $curl_exit_code -eq 0 ]; then
+                log_success "$name is ready!"
+                return 0
+            fi
+
+            log_info "$name not ready yet, waiting... (${elapsed}s/${MAX_WAIT_TIME}s)"
+            log_info "Curl error: $curl_output"
+            sleep $CHECK_INTERVAL
+            elapsed=$((elapsed + CHECK_INTERVAL))
+        done
+
+        if [ "$INTERRUPTED" = true ]; then
+            log_info "Service check interrupted by user"
+            return 1
+        fi
+
+        log_error "$name failed to become ready within ${MAX_WAIT_TIME} seconds"
+        return 1
+    }
+
+    # Wait for Rocket.Chat
+    if ! wait_for_service "https://rc1/api/info" "Rocket.Chat" "rc1"; then
+        log_error "Last 50 lines of rc1 logs:"
+        docker logs --tail 50 "$RC1_CONTAINER" 2>&1 | sed 's/^/  /'
+        exit 1
+    fi
+
+    # Wait for Synapse
+    if ! wait_for_service "https://hs1/_matrix/client/versions" "Synapse" "hs1"; then
+        log_error "Last 50 lines of hs1 logs:"
+        docker logs --tail 50 "hs1" 2>&1 | sed 's/^/  /'
+        exit 1
+    fi
 fi
 
 # Run the end-to-end tests
