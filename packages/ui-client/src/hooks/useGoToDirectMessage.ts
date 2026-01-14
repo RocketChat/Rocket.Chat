@@ -24,7 +24,7 @@ export const useGoToDirectMessage = (targetUser: { username?: string }, openRoom
 
 	const hasPermissionOrSubscription = usernameSubscription || canOpenDirectMessage;
 	const alreadyOpen = openRoomId && usernameSubscription?.rid === openRoomId;
-	const shouldOpen = hasPermissionOrSubscription && !alreadyOpen;
+	const shouldOpen = targetUser.username && hasPermissionOrSubscription && !alreadyOpen;
 
 	const openDirectMessage = useEffectEvent(
 		() =>

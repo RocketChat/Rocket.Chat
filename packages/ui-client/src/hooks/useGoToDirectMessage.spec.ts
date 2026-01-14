@@ -4,6 +4,14 @@ import { renderHook } from '@testing-library/react';
 
 import { useGoToDirectMessage } from './useGoToDirectMessage';
 
+it('should return undefined if username is not provided', () => {
+	const { result } = renderHook(() => useGoToDirectMessage({}), {
+		wrapper: mockAppRoot().build(),
+	});
+
+	expect(result.current).toBe(undefined);
+});
+
 it("should return undefined if the user doesn't have permission to create direct messages and doesn't have a subscription with target user", () => {
 	const { result } = renderHook(() => useGoToDirectMessage({ username: 'test' }), {
 		wrapper: mockAppRoot().build(),
