@@ -123,25 +123,16 @@ log_error() {
     echo -e "${RED}❌ [$(date '+%Y-%m-%d %H:%M:%S')] $1${NC}"
 }
 
-docker_log() {
-    local container=$1
-    if docker ps -q -f name=$container | grep -q .; then
-        docker logs $container 2>&1 | sed 's/^/  /'
-    else
-        echo "  $container container not found or no logs"
-    fi
-}
-
 docker_logs() {
     echo ""
     echo "ROCKET.CHAT (rc1) LOGS:"
     echo "----------------------------------------"
-    docker_log "rc1"
+    docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$COMPOSE_PROFILE" logs rc1
 
     echo ""
     echo "SYNAPSE (hs1) LOGS:"
     echo "----------------------------------------"
-    docker_log "hs1"
+    docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$COMPOSE_PROFILE" logs hs1
 
     echo ""
     echo "=========================================="
@@ -181,13 +172,9 @@ cleanup() {
         fi
     else
         log_info "Cleaning up services..."
-        if [ -f "$DOCKER_COMPOSE_FILE" ]; then
-            if [ "$INCLUDE_ELEMENT" = true ]; then
-                docker compose -f "$DOCKER_COMPOSE_FILE" --profile "element-$PROFILE_PREFIX" down -v 2>/dev/null || true
-            else
-                docker compose -f "$DOCKER_COMPOSE_FILE" --profile "test-$PROFILE_PREFIX" down -v 2>/dev/null || true
-            fi
-        fi
+
+        docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$COMPOSE_PROFILE" down -v 2>/dev/null || true
+
         log_success "Cleanup completed"
     fi
 
@@ -214,6 +201,17 @@ if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
     exit 1
 fi
 
+if [ "$USE_PREBUILT_IMAGE" = true ]; then
+    PROFILE_PREFIX="prebuilt"
+else
+    PROFILE_PREFIX="local"
+fi
+
+if [ "$INCLUDE_ELEMENT" = true ]; then
+    COMPOSE_PROFILE="element-$PROFILE_PREFIX"
+else
+    COMPOSE_PROFILE="test-$PROFILE_PREFIX"
+fi
 
 if [ "$START_CONTAINERS" = true ]; then
     # Build Rocket.Chat locally if not using pre-built image
@@ -247,25 +245,21 @@ if [ "$START_CONTAINERS" = true ]; then
     # Set environment variables for Docker Compose
     if [ "$USE_PREBUILT_IMAGE" = true ]; then
         export ROCKETCHAT_IMAGE="$PREBUILT_IMAGE"
-        PROFILE_PREFIX="prebuilt"
         log_info "Using pre-built image: $PREBUILT_IMAGE"
     else
         export ROCKETCHAT_BUILD_CONTEXT="$BUILD_DIR"
         export ROCKETCHAT_DOCKERFILE="$ROCKETCHAT_ROOT/apps/meteor/.docker/Dockerfile.alpine"
-        PROFILE_PREFIX="local"
         log_info "Building from local context: $BUILD_DIR"
     fi
 
     # Start services
     if [ "$INCLUDE_ELEMENT" = true ]; then
-        PROFILE="element-$PROFILE_PREFIX"
         log_info "Starting all federation services including Element web client..."
-        docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$PROFILE" up -d --build
     else
-        PROFILE="test-$PROFILE_PREFIX"
         log_info "Starting federation services (test profile only)..."
-        docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$PROFILE" up -d --build
     fi
+
+    docker compose -f "$DOCKER_COMPOSE_FILE" --profile "$COMPOSE_PROFILE" up -d --build
 
     # Wait for rc1 container to be running
     log_info "Waiting for rc1 container to start..."
