@@ -4,4 +4,4 @@
 "@rocket.chat/i18n": patch
 ---
 
-Changes OEmbed URL processing. Now, the process is asynchronously and has a configurable timeout for each request. Additionally, the `API_EmbedIgnoredHosts` setting now accepts wildcard domains.
+Changes OEmbed URL processing. Now, the processing is done asynchronously and has a configurable timeout for each request. Additionally, the `API_EmbedIgnoredHosts` setting now accepts wildcard domains.
