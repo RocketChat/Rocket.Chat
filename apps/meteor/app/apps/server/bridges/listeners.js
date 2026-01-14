@@ -1,8 +1,15 @@
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
+
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 export class AppListenerBridge {
 	constructor(orch) {
+		/**
+		 * @type {import('@rocket.chat/apps').IAppServerOrchestrator}
+		 */
 		this.orch = orch;
 	}
 
@@ -10,6 +17,8 @@ export class AppListenerBridge {
 		// eslint-disable-next-line complexity
 		const method = (() => {
 			switch (event) {
+				case AppInterface.IPreFileUpload:
+					return 'uploadEvent';
 				case AppInterface.IPostSystemMessageSent:
 				case AppInterface.IPreMessageSentPrevent:
 				case AppInterface.IPreMessageSentExtend:
@@ -70,6 +79,35 @@ export class AppListenerBridge {
 
 	async defaultEvent(inte, payload) {
 		return this.orch.getManager().getListenerManager().executeListener(inte, payload);
+	}
+
+	/**
+	 *
+	 * @param {{ file: import('@rocket.chat/core-typings').IUpload; content: Buffer }} payload
+	 * @return Promise<void>
+	 */
+	async uploadEvent(_, payload) {
+		const { file, content } = payload;
+
+		const tmpfile = path.join(this.orch.getManager().getTempFilePath(), crypto.randomUUID());
+		await fs.promises.writeFile(tmpfile, content).catch((err) => {
+			this.orch.getRocketChatLogger().error({ msg: `AppListenerBridge: Could not write temporary file at ${tmpfile}`, err });
+
+			throw new Error('Error sending file to apps', { cause: err });
+		});
+
+		try {
+			const appFile = await this.orch.getConverters().get('uploads').convertToApp(file);
+
+			// Execute both events for backward compatibility
+			await this.orch.getManager().getListenerManager().executeListener(AppInterface.IPreFileUpload, { file: appFile, path: tmpfile });
+		} finally {
+			await fs.promises
+				.unlink(tmpfile)
+				.catch((err) =>
+					this.orch.getRocketChatLogger().warn({ msg: `AppListenerBridge: Could not delete temporary file at ${tmpfile}`, err }),
+				);
+		}
 	}
 
 	async messageEvent(inte, message, ...payload) {

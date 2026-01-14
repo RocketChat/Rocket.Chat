@@ -25,7 +25,7 @@ import type {
 	IUIKitIncomingInteractionModalContainer,
 } from '../../definition/uikit/UIKitIncomingInteractionContainer';
 import type { IUIKitLivechatBlockIncomingInteraction, IUIKitLivechatIncomingInteraction } from '../../definition/uikit/livechat';
-import type { IFileUploadContext } from '../../definition/uploads/IFileUploadContext';
+import type { IFileUploadInternalContext } from '../../definition/uploads/IFileUploadContext';
 import type { IUser, IUserContext, IUserStatusContext, IUserUpdateContext } from '../../definition/users';
 import type { AppManager } from '../AppManager';
 import type { ProxiedApp } from '../ProxiedApp';
@@ -205,7 +205,7 @@ interface IListenerExecutor {
 	};
 	// FileUpload
 	[AppInterface.IPreFileUpload]: {
-		args: [IFileUploadContext];
+		args: [IFileUploadInternalContext];
 		result: void;
 	};
 	// Email
@@ -448,7 +448,7 @@ export class AppListenerManager {
 				return this.executePostLivechatGuestSaved(data as IVisitor);
 			// FileUpload
 			case AppInterface.IPreFileUpload:
-				return this.executePreFileUpload(data as IFileUploadContext);
+				return this.executePreFileUpload(data as IFileUploadInternalContext);
 			// Email
 			case AppInterface.IPreEmailSent:
 				return this.executePreEmailSent(data as IPreEmailSentContext);
@@ -1170,7 +1170,7 @@ export class AppListenerManager {
 	}
 
 	// FileUpload
-	private async executePreFileUpload(data: IFileUploadContext): Promise<void> {
+	private async executePreFileUpload(data: IFileUploadInternalContext): Promise<void> {
 		for (const appId of this.listeners.get(AppInterface.IPreFileUpload)) {
 			const app = this.manager.getOneById(appId);
 
