@@ -34,9 +34,28 @@ USE_PREBUILT_IMAGE=false
 PREBUILT_IMAGE=""
 INTERRUPTED=false
 NO_TEST=false
+CI=false
+LOGS=false
+
 
 while [[ $# -gt 0 ]]; do
     case $1 in
+        --start-containers-only)
+            NO_TEST=true
+            KEEP_RUNNING=true
+            shift
+            ;;
+        --ci)
+            CI=true
+            KEEP_RUNNING=true
+            USE_PREBUILT_IMAGE=true
+            shift
+            ;;
+        --logs)
+            LOGS=true
+            NO_TEST=true
+            shift
+            ;;
         --keep-running)
             KEEP_RUNNING=true
             shift
@@ -101,8 +120,35 @@ log_error() {
     echo -e "${RED}❌ [$(date '+%Y-%m-%d %H:%M:%S')] $1${NC}"
 }
 
+docker_log() {
+    local container=$1
+    if docker ps -q -f name=$container | grep -q .; then
+        docker logs $container 2>&1 | sed 's/^/  /'
+    else
+        echo "  $container container not found or no logs"
+    fi
+}
+
+docker_logs() {
+    echo ""
+    echo "ROCKET.CHAT (rc1) LOGS:"
+    echo "----------------------------------------"
+    docker_log "rc1"
+
+    echo ""
+    echo "SYNAPSE (hs1) LOGS:"
+    echo "----------------------------------------"
+    docker_log "hs1"
+
+    echo ""
+    echo "=========================================="
+}
+
 # Cleanup function
 cleanup() {
+    if [ "$CI" = true ]; then
+        return
+    fi
     # Show container logs if tests failed
     if [ -n "${TEST_EXIT_CODE:-}" ] && [ "$TEST_EXIT_CODE" -ne 0 ]; then
         echo ""
@@ -110,26 +156,7 @@ cleanup() {
         echo "CONTAINER LOGS (Test Failed)"
         echo "=========================================="
 
-        echo ""
-        echo "ROCKET.CHAT (rc1) LOGS:"
-        echo "----------------------------------------"
-        if docker ps -q -f name=rc1 | grep -q .; then
-            docker logs rc1 2>&1 | sed 's/^/  /'
-        else
-            echo "  Rocket.Chat container not found or no logs"
-        fi
-
-        echo ""
-        echo "SYNAPSE (hs1) LOGS:"
-        echo "----------------------------------------"
-        if docker ps -q -f name=hs1 | grep -q .; then
-            docker logs hs1 2>&1 | sed 's/^/  /'
-        else
-            echo "  Synapse container not found or no logs"
-        fi
-
-        echo ""
-        echo "=========================================="
+        docker_logs
     fi
 
     if [ "$KEEP_RUNNING" = true ]; then
@@ -331,6 +358,9 @@ if [ "$NO_TEST" = false ]; then
     IS_EE=true NODE_EXTRA_CA_CERTS=$(pwd)/docker-compose/traefik/certs/ca/rootCA.crt yarn test:federation
     TEST_EXIT_CODE=$?
     set -e
+elif [ "$LOGS" = true ]; then
+    docker_logs
+    exit 0
 else
     log_info "No-test mode: skipping test execution"
     log_info "Services are ready and running. You can now:"

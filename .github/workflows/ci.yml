@@ -655,14 +655,26 @@ jobs:
           # List loaded images
           docker images
 
-      - name: Run federation integration tests with pre-built image
+      - name: Start federation services
         working-directory: ./ee/packages/federation-matrix
         env:
           ROCKETCHAT_IMAGE: ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}-amd64
           ENTERPRISE_LICENSE_RC1: ZAikY+LLaal7mT6RNYxpyWEmMQyucrl50/7pYBXqHczc90j+RLwF+T0xuCT2pIpKMC5DxcZ1TtkV6MYJk5whrwmap+mQ0FV+VpILJlL0i4T21K4vMfzZXTWm/pzcAy2fMTUNH+mUA9HTBD6lYYh40KnbGXPAd80VbZk0MO/WbWBm2dOT0YCwfvlRyurRqkDAQrftLaffzCNUsMKk0fh+MKs73UDHZQDp1yvs7WoGpPu5ZVi5mTBOt3ZKVz5KjGfClLwJptFPmW1w6nKelAiJBDPpjcX1ylfjxpnBoixko7uN52zlyaeoAYwfRcdDLnZ8k0Ou6tui/vTQUXjGIjHw2AhMaKwonn4E9LYpuA1KEXt08qJL5J3ZtjSCV1T+A9Z3zFhhLgp5dxP/PPUbxDn/P8XKp7nXM9duIfcCMlnea7V8ixEyCHwwvKQaXVVidcsUGtB8CwS0GlsAEBLOzqMehuQUK2rdQ4WgEz3AYveikeVvSzgBHvyXsxssWAThc0Mht0eEJqdDhUB2QeZ2WmPsaSSD639Z4WgjSUoR0zh8bfqepH+2XRcUryXe2yN+iU+3POzi9wfg0k65MxXT8pBg3PD5RHnR8oflEP0tpZts33JiBhYRxX3MKplAFm4dMuphTsDJTh+e534pT7IPuZF79QSVaLEWZfVVVb7nGFtmMwA=
           QASE_TESTOPS_JEST_API_TOKEN: ${{ secrets.QASE_TESTOPS_JEST_API_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
-        run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
+        run: yarn test:integration:start-containers-only --image "${ROCKETCHAT_IMAGE}"
+
+      - name: Run federation integration tests
+        working-directory: ./ee/packages/federation-matrix
+        env:
+          QASE_TESTOPS_JEST_API_TOKEN: ${{ secrets.QASE_TESTOPS_JEST_API_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
+        run: yarn test:integration:ci
+
+      - name: Show federation integration tests logs
+        if: failure()
+        working-directory: ./ee/packages/federation-matrix
+        run: yarn test:integration:logs
 
       - name: Show rc server logs if tests failed
         if: failure()
