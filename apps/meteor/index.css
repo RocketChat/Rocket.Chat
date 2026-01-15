@@ -1,17 +1,6 @@
-/* stylelint-disable */
-/* stylelint-disable */
-/* stylelint-disable */
-/* stylelint-disable */
-/* stylelint-disable */
-/* stylelint-disable */
-/* stylelint-disable */
-/* stylelint-disable */
-/* stylelint-disable */
-/* stylelint-disable */
-/* stylelint-disable */
 /* General */
 @font-face {
-	font-family: 'fontello';
+	font-family: fontello;
 	src: url('font/fontello.eot');
 	src: url('font/fontello.eot#iefix') format('embedded-opentype'), url('font/fontello.woff2') format('woff2'),
 		url('font/fontello.woff') format('woff'), url('font/fontello.ttf') format('truetype'),
@@ -21,7 +10,9 @@
 }
 
 /* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
+
 /* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
+
 /*
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
@@ -32,19 +23,19 @@
 */
 [class^='icon-']:before,
 [class*=' icon-']:before {
-	font-family: 'fontello';
+	font-family: fontello;
 	font-style: normal;
 	font-weight: normal;
-	speak: never;
-
+	speak-as: never;
 	display: inline-block;
 	text-decoration: inherit;
 	width: 1em;
 	margin-right: 0.2em;
 	text-align: center;
+
 	/* opacity: .8; */
 
-	/* For safety - reset parent styles, that can break glyph codes*/
+	/* For safety - reset parent styles, that can break glyph codes */
 	font-variant: normal;
 	text-transform: none;
 
@@ -4046,7 +4037,7 @@
 	background-position: 100% 0%;
 }
 
-/* stylelint-disable */
+
 
 .emojione-activity {
 	background-image: url('packages/emojione/activity-sprites.png');
@@ -6223,8 +6214,6 @@
 	background-position: 5.555555555555555% 100%;
 }
 
-/* stylelint-disable */
-
 .emojione-objects {
 	background-image: url('packages/emojione/objects-sprites.png');
 
@@ -7482,8 +7471,6 @@
 	background-position: 78.57142857142857% 38.46153846153846%;
 }
 
-/* stylelint-disable */
-
 .emojione-nature {
 	background-image: url('packages/emojione/nature-sprites.png');
 
@@ -8551,8 +8538,6 @@
 	background-position: 100% 58.333333333333336%;
 }
 
-/* stylelint-disable */
-
 .emojione-food {
 	background-image: url('packages/emojione/food-sprites.png');
 
@@ -9187,8 +9172,6 @@
 	background-size: 1100% 1000%;
 	background-position: 100% 44.44444444444444%;
 }
-
-/* stylelint-disable */
 
 .emojione-people {
 	background-image: url('packages/emojione/people-sprites.png');
@@ -17917,8 +17900,6 @@
 	background-position: 97.22222222222223% 2.857142857142857%;
 }
 
-/* stylelint-disable */
-
 .emojione-regional {
 	background-image: url('packages/emojione/regional-sprites.png');
 
@@ -18079,8 +18060,6 @@
 	background-size: 600% 500%;
 	background-position: 100% 0%;
 }
-
-/* stylelint-disable */
 
 .emojione-travel {
 	background-image: url('packages/emojione/travel-sprites.png');
@@ -18818,8 +18797,6 @@
 	background-size: 1200% 1100%;
 	background-position: 100% 0%;
 }
-
-/* stylelint-disable */
 
 .emojione-flags {
 	background-image: url('packages/emojione/flags-sprites.png');
@@ -20433,8 +20410,6 @@
 	background-size: 1700% 1600%;
 	background-position: 100% 73.33333333333333%;
 }
-
-/* stylelint-disable */
 
 .emojione-modifier {
 	background-image: url('packages/emojione/modifier-sprites.png');
@@ -37143,14 +37118,14 @@ blockquote:last-child::before {
 }
 
 .code-mirror-box .CodeMirror {
-	/* stylelint-disable-line */
+
 	border-width: var(--input-border-width);
 	border-color: var(--input-border-color);
 	border-radius: var(--input-border-radius);
 }
 
 .code-mirror-box.code-mirror-box-fullscreen .CodeMirror {
-	/* stylelint-disable-line */
+
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
@@ -37164,7 +37139,7 @@ blockquote:last-child::before {
 }
 
 .code-mirror-box.code-mirror-box-fullscreen .CodeMirror .CodeMirror-scroll {
-	/* stylelint-disable-line */
+
 	-webkit-box-flex: 1;
 	-ms-flex-positive: 1;
 	flex-grow: 1;
@@ -37553,7 +37528,6 @@ textarea {
 	font-family: 'fontello';
 	font-style: normal;
 	font-weight: normal;
-	speak: never;
 
 	display: inline-block;
 	text-decoration: inherit;
@@ -44929,7 +44903,8 @@ a:where(:active):where(:not(.rcx-button)) {
 	display: -webkit-box;
 	overflow: hidden;
 	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
 }
 
 .rcx-message-generic-preview__footer {
@@ -45344,16 +45319,19 @@ a:where(:active):where(:not(.rcx-button)) {
 	overflow: hidden;
 	word-break: break-word;
 	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
 }
 
 .rcx-message-body--clamp-2 {
-	-webkit-line-clamp: 2
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
 }
 
 .rcx-message-body--clamp-3,
 .rcx-message-body--clamp-4 {
-	-webkit-line-clamp: 3
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
 }
 
 .rcx-message-body blockquote {
@@ -49075,7 +49053,8 @@ a:where(:active):where(:not(.rcx-button)) {
 	display: -webkit-box;
 	overflow: hidden;
 	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
 }
 
 .rcx-message-generic-preview__footer {
