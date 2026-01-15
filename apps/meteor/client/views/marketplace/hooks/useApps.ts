@@ -1,5 +1,5 @@
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useInvalidateLicense, useLicense } from '@rocket.chat/ui-client';
+import { useInvalidateLicense } from '@rocket.chat/ui-client';
 import { usePermission, useStream } from '@rocket.chat/ui-contexts';
 import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -7,6 +7,7 @@ import { useContext, useEffect } from 'react';
 
 import { useInvalidateAppsCountQueryCallback } from './useAppsCountQuery';
 import { AppsContext } from '../../../contexts/AppsContext';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { marketplaceQueryKeys } from '../../../lib/queryKeys';
 import type { App } from '../types';
 
@@ -102,8 +103,7 @@ export const useApps = <
 
 	const queryClient = useQueryClient();
 
-	const { isPending: isLicenseInformationLoading, data: { license } = {} } = useLicense({ loadValues: true });
-	const isEnterprise = isLicenseInformationLoading ? undefined : !!license;
+	const { data: isEnterprise } = useIsEnterprise();
 
 	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
 	const invalidateLicenseQuery = useInvalidateLicense();
@@ -116,7 +116,7 @@ export const useApps = <
 			invalidateAppsCountQuery();
 		},
 		100,
-		[],
+		[queryClient, invalidateAppsCountQuery],
 	);
 
 	useEffect(() => {
