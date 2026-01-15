@@ -6,7 +6,7 @@ import type { ParseResult } from '@babel/parser';
 import type { CallExpression, Node } from '@babel/types';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
-import { esmExternalRequirePlugin, } from 'vite';
+import { esmExternalRequirePlugin } from 'vite';
 
 const meteorProgramDir = path.resolve('.meteor/local/build/programs/web.browser');
 const meteorPackagesDir = path.join(meteorProgramDir, 'packages');
@@ -20,14 +20,21 @@ const packageVirtualPrefix = '\0meteor-package:';
 const debugExports = process.env.DEBUG_METEOR_VITE_EXPORTS === 'true';
 const rocketchatInfoAlias = 'rocketchat.info';
 
-function meteor(): Plugin {
+function meteor(
+	options: {
+		exclude: string[];
+	} = { exclude: [] },
+): Plugin {
 	if (!fs.existsSync(meteorManifestPath)) {
 		console.warn(`[meteor-packages] Missing manifest at ${meteorManifestPath}. Meteor packages will not be available.`);
 		return { name: 'meteor-packages' };
 	}
 
 	const manifest = JSON.parse(fs.readFileSync(meteorManifestPath, 'utf-8'));
-	const packageEntries = collectPackageEntries(manifest);
+	const packageEntries = collectPackageEntries(manifest).filter((entry) => {
+		const pkgName = entry.path.replace(/^packages\//, '').replace(/\.js$/, '');
+		return !options.exclude.includes(pkgName);
+	});
 	if (packageEntries.length === 0) {
 		throw new Error(
 			"[meteor-packages] Unable to locate any Meteor client package bundles. Run 'npm run start -- --once' to regenerate .meteor/local build artifacts.",
@@ -102,9 +109,7 @@ function meteor(): Plugin {
 				const pkgName = id.slice(packageVirtualPrefix.length);
 
 				const exportNames = getExportNames(pkgName);
-				const exportLines = exportNames
-					.map(generateExportStatement)
-					.join('\n');
+				const exportLines = exportNames.map(generateExportStatement).join('\n');
 
 				return `import '${runtimeImportId}';
 const __meteorRegistry = globalThis.Package;
@@ -189,7 +194,7 @@ ${exportLines}
 		return files;
 	}
 
-	function collectPackageEntries(manifestData: { manifest: {where: string, type: string, path: string}[] }) {
+	function collectPackageEntries(manifestData: { manifest: { where: string; type: string; path: string }[] }) {
 		const manifestEntries = manifestData && Array.isArray(manifestData.manifest) ? manifestData.manifest : [];
 		const fromManifest = manifestEntries.filter(
 			(entry) => entry.where === 'client' && entry.type === 'js' && entry.path.startsWith('packages/'),
@@ -671,10 +676,28 @@ export default defineConfig({
 		esmExternalRequirePlugin({
 			external: ['react', 'react-dom'],
 		}),
-		meteor(),
+		meteor({
+			exclude: [
+				'es5-shim',
+				'webapp',
+				'zodern_types',
+				'typescript',
+				'babel-compiler',
+				'react-fast-refresh',
+				'webapp-hashing',
+				'ddp-server',
+				'minifier-css',
+				'standard-minifier-css',
+				'zodern_standard-minifier-js',
+				'hot-code-push',
+				'mongo-dev-server',
+				'ecmascript',
+				'ecmascript-runtime',
+				'ecmascript-runtime-client',
+			],
+		}),
 		react({
 			exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
-			
 		}),
 	],
 	resolve: {
@@ -696,7 +719,7 @@ export default defineConfig({
 			'@rocket.chat/favicon': path.resolve('../../packages/favicon/src/index.ts'),
 			'@rocket.chat/message-types': path.resolve('../../packages/message-types/src/index.ts'),
 			'@rocket.chat/ui-contexts': path.resolve('../../packages/ui-contexts/src/index.ts'),
-			
+
 			// Fuselage packages used in the Meteor app
 			// '@rocket.chat/fuselage-hooks': path.resolve('../../../fuselage/packages/fuselage-hooks/src/index.ts'),
 			// '@rocket.chat/layout': path.resolve('../../../fuselage/packages/layout/src/index.ts'),
@@ -731,9 +754,8 @@ function generateExportStatement(name: string): string {
 		case '__esModule':
 			return '';
 		case 'hasOwn':
-			return `export const hasOwn = Object.prototype.hasOwnProperty;`;
+			return `export const hasOwn = Object.hasOwn;`;
 		default:
 			return `export const ${name} = __meteorPackage['${name}'];`;
 	}
 }
-
