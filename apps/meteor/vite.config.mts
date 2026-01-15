@@ -6,6 +6,7 @@ import type { ParseResult } from '@babel/parser';
 import type { CallExpression, Node } from '@babel/types';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
+import { esmExternalRequirePlugin, } from 'vite';
 
 const meteorProgramDir = path.resolve('.meteor/local/build/programs/web.browser');
 const meteorPackagesDir = path.join(meteorProgramDir, 'packages');
@@ -102,9 +103,7 @@ function meteor(): Plugin {
 
 				const exportNames = getExportNames(pkgName);
 				const exportLines = exportNames
-					.map((name) =>
-						name === 'default' ? `export default __meteorPackage['${name}'];` : `export const ${name} = __meteorPackage['${name}'];`,
-					)
+					.map(generateExportStatement)
 					.join('\n');
 
 				return `import '${runtimeImportId}';
@@ -669,6 +668,9 @@ ${loadStatements}
 export default defineConfig({
 	appType: 'spa',
 	plugins: [
+		esmExternalRequirePlugin({
+			external: ['react', 'react-dom'],
+		}),
 		meteor(),
 		react({
 			exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
@@ -693,6 +695,8 @@ export default defineConfig({
 			'@rocket.chat/gazzodown': path.resolve('../../packages/gazzodown/src/index.ts'),
 			'@rocket.chat/favicon': path.resolve('../../packages/favicon/src/index.ts'),
 			'@rocket.chat/message-types': path.resolve('../../packages/message-types/src/index.ts'),
+			'@rocket.chat/ui-contexts': path.resolve('../../packages/ui-contexts/src/index.ts'),
+			
 			// Fuselage packages used in the Meteor app
 			// '@rocket.chat/fuselage-hooks': path.resolve('../../../fuselage/packages/fuselage-hooks/src/index.ts'),
 			// '@rocket.chat/layout': path.resolve('../../../fuselage/packages/layout/src/index.ts'),
@@ -720,3 +724,16 @@ export default defineConfig({
 		},
 	},
 });
+function generateExportStatement(name: string): string {
+	switch (name) {
+		case 'default':
+			return `export default __meteorPackage['${name}'];`;
+		case '__esModule':
+			return '';
+		case 'hasOwn':
+			return `export const hasOwn = Object.prototype.hasOwnProperty;`;
+		default:
+			return `export const ${name} = __meteorPackage['${name}'];`;
+	}
+}
+
