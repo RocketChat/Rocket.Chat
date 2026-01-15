@@ -1,9 +1,9 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
+import { isTruthy } from '@rocket.chat/tools';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { SearchLogger } from '../logger/logger';
 import type { IRawSearchResult, ISearchResult } from '../model/ISearchResult';
