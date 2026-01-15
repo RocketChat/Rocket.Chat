@@ -85,7 +85,7 @@ export class MultipartUploadHandler {
 		const fields: Record<string, string> = {};
 		let parsedFile: ParsedUpload | null = null;
 		let busboyFinished = false;
-		let writeStreamFinished = options.fileOptional === true;
+		let filePendingCount = 0;
 
 		const { promise, resolve, reject } = Promise.withResolvers<{
 			file: ParsedUpload | null;
@@ -93,7 +93,7 @@ export class MultipartUploadHandler {
 		}>();
 
 		const tryResolve = () => {
-			if (busboyFinished && writeStreamFinished) {
+			if (busboyFinished && filePendingCount < 1) {
 				if (!parsedFile && !options.fileOptional) {
 					return reject(new MeteorError('error-no-file', 'No file uploaded'));
 				}
@@ -108,7 +108,7 @@ export class MultipartUploadHandler {
 		bb.on('file', (fieldname, file, info) => {
 			const { filename, mimeType } = info;
 
-			writeStreamFinished = false;
+			++filePendingCount;
 
 			if (options.field && fieldname !== options.field) {
 				file.resume();
@@ -149,7 +149,9 @@ export class MultipartUploadHandler {
 					size: writeStream.bytesWritten,
 					fieldname,
 				};
-				writeStreamFinished = true;
+
+				--filePendingCount;
+
 				tryResolve();
 			});
 
