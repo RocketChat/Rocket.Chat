@@ -56,7 +56,7 @@ export const copyCustomFieldsLDAP = (
 
 	Object.entries(map).forEach(([ldapField, userField]) => {
 		if (!getNestedProp(customFields, userField)) {
-			logger.debug(`User attribute does not exist: ${userField}`);
+			logger.debug({ msg: 'User attribute does not exist', userField });
 			return;
 		}
 
