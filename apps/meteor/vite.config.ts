@@ -190,7 +190,7 @@ ${exportLines}
 		return files;
 	}
 
-	function collectPackageEntries(manifestData: { manifest: any }) {
+	function collectPackageEntries(manifestData: { manifest: {where: string, type: string, path: string}[] }) {
 		const manifestEntries = manifestData && Array.isArray(manifestData.manifest) ? manifestData.manifest : [];
 		const fromManifest = manifestEntries.filter(
 			(entry) => entry.where === 'client' && entry.type === 'js' && entry.path.startsWith('packages/'),
@@ -324,7 +324,7 @@ ${exportLines}
 		if (!node || node.type !== 'CallExpression') {
 			return false;
 		}
-		const {callee} = node;
+		const { callee } = node;
 		return (
 			callee &&
 			callee.type === 'MemberExpression' &&
@@ -667,7 +667,7 @@ ${loadStatements}
 }
 
 export default defineConfig({
-    appType: 'spa',
+	appType: 'spa',
 	plugins: [
 		meteorPackagesPlugin(),
 		react({
@@ -690,7 +690,7 @@ export default defineConfig({
 			'@rocket.chat/ui-client': path.resolve('../../packages/ui-client/src/index.ts'),
 			'@rocket.chat/gazzodown': path.resolve('../../packages/gazzodown/src/index.ts'),
 			'@rocket.chat/favicon': path.resolve('../../packages/favicon/src/index.ts'),
-            '@rocket.chat/message-types': path.resolve('../../packages/message-types/src/index.ts'),
+			'@rocket.chat/message-types': path.resolve('../../packages/message-types/src/index.ts'),
 			// Fuselage packages used in the Meteor app
 			// '@rocket.chat/fuselage-hooks': path.resolve('../../../fuselage/packages/fuselage-hooks/src/index.ts'),
 			// '@rocket.chat/layout': path.resolve('../../../fuselage/packages/layout/src/index.ts'),
@@ -711,10 +711,7 @@ export default defineConfig({
 		allowedHosts: ['localhost', '127.0.0.1'],
 		proxy: {
 			'/api': { target: 'http://localhost:3000', changeOrigin: true },
-			// '/home/api': { target: 'http://localhost:3000', changeOrigin: true, rewrite: (path) => path.replace(/^\/home/, '') },
-			// '/setup-wizard/api': { target: 'http://localhost:3000', changeOrigin: true, rewrite: (path) => path.replace(/^\/setup-wizard/, '') },
-            // '/setup-wizard/4/api': { target: 'http://localhost:3000', changeOrigin: true, rewrite: (path) => path.replace(/^\/setup-wizard\/4/, '') },
-            // '/setup-wizard/3/api': { target: 'http://localhost:3000', changeOrigin: true, rewrite: (path) => path.replace(/^\/setup-wizard\/3/, '') },
+			'/avatar': { target: 'http://localhost:3000', changeOrigin: true },
 			'/sockjs': { target: 'ws://localhost:3000', ws: true, rewriteWsOrigin: true },
 			'/sockjs/info': { target: 'http://localhost:3000', changeOrigin: true },
 		},
