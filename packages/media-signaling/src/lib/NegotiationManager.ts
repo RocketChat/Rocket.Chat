@@ -111,13 +111,10 @@ export class NegotiationManager {
 			return;
 		}
 
-		try {
-			return this.currentNegotiation.setRemoteAnswer(remoteDescription);
-		} catch (e) {
-			this.config.logger?.error(e);
-			this.currentNegotiation = null;
-			this.emitter.emit('error', { errorCode: 'failed-to-set-remote-answer', negotiationId });
-		}
+		void this.currentNegotiation
+			.setRemoteAnswer(remoteDescription)
+			// No need to handle errors here as they are already handled by the 'error' event
+			.catch(() => null);
 	}
 
 	public setWebRTCProcessor(webrtcProcessor: IWebRTCProcessor) {
@@ -221,6 +218,10 @@ export class NegotiationManager {
 		negotiation.emitter.on('error', ({ errorCode }) => {
 			this.config.logger?.error('Negotiation error', errorCode);
 			this.emitter.emit('error', { errorCode, negotiationId: negotiation.negotiationId });
+
+			if (this.currentNegotiation === negotiation) {
+				this.currentNegotiation.end();
+			}
 		});
 
 		negotiation.emitter.on('local-sdp', ({ sdp }) => {
