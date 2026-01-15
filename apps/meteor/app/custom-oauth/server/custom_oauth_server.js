@@ -25,7 +25,7 @@ const BeforeUpdateOrCreateUserFromExternalService = [];
 
 export class CustomOAuth {
 	constructor(name, options) {
-		logger.debug('Init CustomOAuth', name, options);
+		logger.debug({ msg: 'Init CustomOAuth', name, options });
 
 		this.name = name;
 		if (!Match.test(this.name, String)) {
@@ -307,7 +307,7 @@ export class CustomOAuth {
 			const value = fromTemplate(this.avatarField, data);
 
 			if (!value) {
-				logger.debug(`Avatar field "${this.avatarField}" not found in data`, data);
+				logger.debug({ msg: 'Avatar field not found in data', avatarField: this.avatarField, data });
 			}
 			return value;
 		} catch (error) {
