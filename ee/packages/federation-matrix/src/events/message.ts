@@ -13,7 +13,7 @@ const logger = new Logger('federation-matrix:message');
 async function getThreadMessageId(threadRootEventId: EventID): Promise<{ tmid: string; tshow: boolean } | undefined> {
 	const threadRootMessage = await Messages.findOneByFederationId(threadRootEventId);
 	if (!threadRootMessage) {
-		logger.warn('Thread root message not found for event:', threadRootEventId);
+		logger.warn({ msg: 'Thread root message not found for event', eventId: threadRootEventId });
 		return;
 	}
 
@@ -261,8 +261,8 @@ export function message() {
 					ts: new Date(event.origin_server_ts),
 				});
 			}
-		} catch (error) {
-			logger.error(error, 'Error processing Matrix message:');
+		} catch (err) {
+			logger.error({ msg: 'Error processing Matrix message', err });
 		}
 	});
 
@@ -377,8 +377,8 @@ export function message() {
 				thread,
 				ts: new Date(event.origin_server_ts),
 			});
-		} catch (error) {
-			logger.error(error, 'Error processing Matrix message:');
+		} catch (err) {
+			logger.error({ msg: 'Error processing Matrix message', err });
 		}
 	});
 
@@ -392,25 +392,25 @@ export function message() {
 
 			const messageEvent = await FederationMatrix.getEventById(redactedEventId);
 			if (!messageEvent || messageEvent.event.type !== 'm.room.message') {
-				logger.debug(`Event ${redactedEventId} is not a message event`);
+				logger.debug({ msg: 'Event is not a message event', eventId: redactedEventId });
 				return;
 			}
 
 			const rcMessage = await Messages.findOneByFederationId(event.redacts);
 			if (!rcMessage) {
-				logger.debug(`No RC message found for event ${event.redacts}`);
+				logger.debug({ msg: 'No RC message found for event', eventId: event.redacts });
 				return;
 			}
 			const internalUsername = event.sender;
 			const user = await Users.findOneByUsername(internalUsername);
 			if (!user) {
-				logger.debug(`User not found: ${internalUsername}`);
+				logger.debug({ msg: 'User not found', username: internalUsername });
 				return;
 			}
 
 			await Message.deleteMessage(user, rcMessage);
 		} catch (error) {
-			logger.error(error, 'Failed to process Matrix removal redaction');
+			logger.error({ msg: 'Failed to process Matrix removal redaction', err: error });
 		}
 	});
 }
