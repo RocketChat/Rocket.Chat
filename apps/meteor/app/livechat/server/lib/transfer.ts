@@ -22,7 +22,7 @@ export async function saveTransferHistory(room: IOmnichannelRoom, transferData: 
 
 	const { _id, username } = transferredBy;
 	const scopeData = scope || (nextDepartment ? 'department' : 'agent');
-	livechatLogger.info(`Storing new chat transfer of ${room._id} [Transfered by: ${_id} to ${scopeData}]`);
+	livechatLogger.info({ msg: 'Storing new chat transfer', roomId: room._id, transferredBy: _id, scope: scopeData });
 
 	const transferMessage = {
 		...(transferData.transferredBy.userType === 'visitor' && { token: room.v.token }),
@@ -41,7 +41,7 @@ export async function saveTransferHistory(room: IOmnichannelRoom, transferData: 
 }
 
 export async function forwardOpenChats(userId: string) {
-	livechatLogger.debug(`Transferring open chats for user ${userId}`);
+	livechatLogger.debug({ msg: 'Transferring open chats for user', userId });
 	const user = await Users.findOneById(userId);
 	if (!user) {
 		throw new Error('error-invalid-user');
@@ -63,7 +63,7 @@ export async function forwardOpenChats(userId: string) {
 }
 
 export async function transfer(room: IOmnichannelRoom, guest: ILivechatVisitor, transferData: TransferData) {
-	livechatLogger.debug(`Transfering room ${room._id} [Transfered by: ${transferData?.transferredBy?._id}]`);
+	livechatLogger.debug({ msg: 'Transferring room', roomId: room._id, transferredBy: transferData?.transferredBy?._id });
 	if (room.onHold) {
 		throw new Error('error-room-onHold');
 	}
@@ -77,7 +77,7 @@ export async function transfer(room: IOmnichannelRoom, guest: ILivechatVisitor, 
 		}
 
 		transferData.department = department;
-		livechatLogger.debug(`Transfering room ${room._id} to department ${transferData.department?._id}`);
+		livechatLogger.debug({ msg: 'Transferring room to department', roomId: room._id, departmentId: transferData.department?._id });
 	}
 
 	return RoutingManager.transferRoom(room, guest, transferData);
