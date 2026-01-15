@@ -73,9 +73,8 @@ function checkEventLoopLag(histogram: ReturnType<typeof monitorEventLoopDelay>) 
  * @returns The status and memory usage percentage.
  */
 function checkMemoryUsage() {
-	const { heapUsed } = process.memoryUsage();
-	const { total_available_size } = getHeapStatistics();
-	const usageRatio = heapUsed / total_available_size;
+	const { heap_size_limit, used_heap_size } = getHeapStatistics();
+	const usageRatio = used_heap_size / heap_size_limit;
 	const usageValue = Number.parseFloat((usageRatio * 100).toFixed(2));
 
 	if (usageRatio > READINESS_THRESHOLDS.HEAP_USAGE_PERCENT) {
