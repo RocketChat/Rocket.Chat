@@ -818,7 +818,7 @@ export class FileUploadClass {
 			content = await streamToBuffer(content);
 		} else if (content instanceof Uint8Array && !(content instanceof Buffer)) {
 			// Services compat - create a view into the underlying ArrayBuffer without copying the data
-			content = Buffer.from(content.buffer);
+			content = Buffer.from(content.buffer, content.byteOffset, content.byteLength);
 		}
 
 		try {
