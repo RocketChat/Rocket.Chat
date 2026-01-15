@@ -1,7 +1,37 @@
-import type { IAuditServerAppActor, IAuditServerSystemActor, IAuditServerUserActor, ISetting } from '@rocket.chat/core-typings';
+import type { IAuditServerAppActor, IAuditServerSystemActor, IAuditServerUserActor, ISetting, SettingValue } from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server/cached';
+
+const shouldMaskSettingInAudit = (settingId: ISetting['_id']): boolean => {
+	const setting = settings.getSetting(settingId);
+	return Boolean(setting && (setting.type === 'password' || setting.secret === true));
+};
+
+const maskIfNeeded = (settingId: ISetting['_id'], value: SettingValue): SettingValue => {
+	if (!shouldMaskSettingInAudit(settingId)) {
+		return value;
+	}
+
+	if (value === undefined || value === null || value === '') {
+		return value;
+	}
+
+	const valueString = String(value);
+	const valueLength = valueString.length;
+
+	let maskedValue: string;
+
+	if (valueLength <= 3) {
+		maskedValue = '*'.repeat(valueLength);
+	} else {
+		const visiblePart = valueString.substring(0, 3);
+		const maskedPart = '*'.repeat(valueLength - 3);
+		maskedValue = visiblePart + maskedPart;
+	}
+
+	return maskedValue;
+};
 
 export const resetAuditedSettingByUser =
 	(actor: Omit<IAuditServerUserActor, 'type'>) =>
@@ -12,8 +42,8 @@ export const resetAuditedSettingByUser =
 			'settings.changed',
 			{
 				id: key,
-				previous: value,
-				current: packageValue,
+				previous: maskIfNeeded(key, value),
+				current: maskIfNeeded(key, packageValue),
 			},
 			{
 				type: 'user',
@@ -38,8 +68,8 @@ export const updateAuditedByUser =
 			'settings.changed',
 			{
 				id: key,
-				previous,
-				current: value,
+				previous: maskIfNeeded(key, previous),
+				current: maskIfNeeded(key, value),
 			},
 			{
 				type: 'user',
@@ -64,8 +94,8 @@ export const updateAuditedBySystem =
 			'settings.changed',
 			{
 				id: key,
-				previous,
-				current: value,
+				previous: maskIfNeeded(key, previous),
+				current: maskIfNeeded(key, value),
 			},
 			{
 				type: 'system',
@@ -88,8 +118,8 @@ export const updateAuditedByApp =
 			'settings.changed',
 			{
 				id: key,
-				previous,
-				current: value,
+				previous: maskIfNeeded(key, previous),
+				current: maskIfNeeded(key, value),
 			},
 			{
 				type: 'app',
