@@ -29,7 +29,7 @@ export async function getEmailContent({ message, user, room }) {
 
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
-	const files = (message.files || [message.file]).filter(Boolean);
+	const files = (message.files || [message.file]).filter((file) => file && file.typeGroup !== 'thumb');
 	const hasFiles = files.length > 0;
 	const hasText = typeof message.msg === 'string' && message.msg.trim() !== '';
 	const isGroupChat = roomDirectives.isGroupChat(room);

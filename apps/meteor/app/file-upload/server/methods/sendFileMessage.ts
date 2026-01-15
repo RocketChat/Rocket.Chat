@@ -49,6 +49,7 @@ export const parseFileIntoMessageAttachments = async (
 			type: file.type || 'file',
 			size: file.size || 0,
 			format: file.identify?.format || '',
+			typeGroup: file.typeGroup || '',
 		},
 	];
 
@@ -96,6 +97,7 @@ export const parseFileIntoMessageAttachments = async (
 					type: thumbnail.type || 'file',
 					size: thumbnail.size || 0,
 					format: thumbnail.identify?.format || '',
+					typeGroup: thumbnail.typeGroup || '',
 				});
 			}
 		} catch (e) {
