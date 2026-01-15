@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { monitorEventLoopDelay } from 'node:perf_hooks';
+import { getHeapStatistics } from 'node:v8';
 
 import { MongoInternals } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
@@ -72,8 +73,9 @@ function checkEventLoopLag(histogram: ReturnType<typeof monitorEventLoopDelay>) 
  * @returns The status and memory usage percentage.
  */
 function checkMemoryUsage() {
-	const { heapUsed, heapTotal } = process.memoryUsage();
-	const usageRatio = heapUsed / heapTotal;
+	const { heapUsed } = process.memoryUsage();
+	const { total_available_size } = getHeapStatistics();
+	const usageRatio = heapUsed / total_available_size;
 	const usageValue = Number.parseFloat((usageRatio * 100).toFixed(2));
 
 	if (usageRatio > READINESS_THRESHOLDS.HEAP_USAGE_PERCENT) {
