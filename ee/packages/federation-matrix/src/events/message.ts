@@ -225,6 +225,7 @@ export function message() {
 					msg: formatted,
 					federation_event_id: eventId,
 					thread,
+					ts: new Date(event.origin_server_ts),
 				});
 				return;
 			}
@@ -242,7 +243,7 @@ export function message() {
 					eventId,
 					thread,
 				);
-				await Message.saveMessageFromFederation(result);
+				await Message.saveMessageFromFederation({ ...result, ts: new Date(event.origin_server_ts) });
 			} else {
 				const formatted = toInternalMessageFormat({
 					rawMessage: messageBody,
@@ -257,6 +258,7 @@ export function message() {
 					msg: formatted,
 					federation_event_id: eventId,
 					thread,
+					ts: new Date(event.origin_server_ts),
 				});
 			}
 		} catch (error) {
@@ -359,6 +361,7 @@ export function message() {
 					},
 					federation_event_id: eventId,
 					thread,
+					ts: new Date(event.origin_server_ts),
 				});
 				return;
 			}
@@ -372,6 +375,7 @@ export function message() {
 				},
 				federation_event_id: eventId,
 				thread,
+				ts: new Date(event.origin_server_ts),
 			});
 		} catch (error) {
 			logger.error(error, 'Error processing Matrix message:');

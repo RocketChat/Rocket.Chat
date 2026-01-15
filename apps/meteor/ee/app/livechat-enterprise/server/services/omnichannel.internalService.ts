@@ -33,7 +33,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		comment: string,
 		onHoldBy: Pick<IUser, '_id' | 'username' | 'name'>,
 	) {
-		this.logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
+		this.logger.debug({ msg: 'Attempting to place room on hold', roomId: room._id, userId: onHoldBy?._id });
 
 		const { _id: roomId } = room;
 
@@ -80,7 +80,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		resumeBy: Pick<IUser, '_id' | 'username' | 'name'>,
 		clientAction = false,
 	) {
-		this.logger.debug(`Attempting to resume room ${room._id} on hold by user ${resumeBy?._id}`);
+		this.logger.debug({ msg: 'Attempting to resume room on hold', roomId: room._id, userId: resumeBy?._id });
 
 		if (!room || !isOmnichannelRoom(room)) {
 			throw new Error('error-invalid-room');
@@ -97,13 +97,13 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		const { _id: roomId, servedBy } = room;
 
 		if (!servedBy) {
-			this.logger.error(`No serving agent found for room ${roomId}`);
+			this.logger.error({ msg: 'No serving agent found for room', roomId });
 			throw new Error('error-room-not-served');
 		}
 
 		const inquiry = await LivechatInquiry.findOneByRoomId(roomId, {});
 		if (!inquiry) {
-			this.logger.error(`No inquiry found for room ${roomId}`);
+			this.logger.error({ msg: 'No inquiry found for room', roomId });
 			throw new Error('error-invalid-inquiry');
 		}
 
@@ -156,7 +156,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 
 			return;
 		} catch (e) {
-			this.logger.error(`Agent ${servingAgent._id} is not available to take the inquiry ${inquiry._id}`, e);
+			this.logger.error({ msg: 'Agent is not available to take inquiry', agentId: servingAgent._id, inquiryId: inquiry._id, err: e });
 			if (clientAction) {
 				// if the action was triggered by the client, we should throw the error
 				// so the client can handle it and show the error message to the user
@@ -182,7 +182,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		room: Pick<IOmnichannelRoom, '_id'>;
 		inquiry: ILivechatInquiryRecord;
 	}): Promise<void> {
-		this.logger.debug(`Attempting to remove current agent from room ${room._id}`);
+		this.logger.debug({ msg: 'Attempting to remove current agent from room', roomId: room._id });
 
 		const { _id: roomId } = room;
 

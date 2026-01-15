@@ -1,4 +1,4 @@
-import { Apps } from '@rocket.chat/apps';
+import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { IMessageService } from '@rocket.chat/core-services';
 import { Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
 import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEditedMessage, type AtLeast } from '@rocket.chat/core-typings';
@@ -95,6 +95,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		files,
 		attachments,
 		thread,
+		ts,
 	}: {
 		fromId: string;
 		rid: string;
@@ -108,23 +109,28 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		files?: IMessage['files'];
 		attachments?: IMessage['attachments'];
 		thread?: { tmid: string; tshow: boolean };
+		ts: Date;
 	}): Promise<IMessage> {
-		return executeSendMessage(fromId, {
-			rid,
-			msg,
-			...thread,
-			federation: {
-				eventId: federation_event_id,
-				version: 1,
+		return executeSendMessage(
+			fromId,
+			{
+				rid,
+				msg,
+				...thread,
+				federation: {
+					eventId: federation_event_id,
+					version: 1,
+				},
+				...(file && { file }),
+				...(files && { files }),
+				...(attachments && { attachments }),
+				...(e2e_content && {
+					t: 'e2e',
+					content: e2e_content,
+				}),
 			},
-			...(file && { file }),
-			...(files && { files }),
-			...(attachments && { attachments }),
-			...(e2e_content && {
-				t: 'e2e',
-				content: e2e_content,
-			}),
-		});
+			{ ts },
+		);
 	}
 
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {
@@ -196,7 +202,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		}
 
 		if (Apps.self?.isLoaded()) {
-			void Apps.getBridges()?.getListenerBridge().messageEvent('IPostSystemMessageSent', createdMessage);
+			void Apps.self?.triggerEvent(AppEvents.IPostSystemMessageSent, createdMessage);
 		}
 
 		void notifyOnMessageChange({ id: createdMessage._id, data: createdMessage });

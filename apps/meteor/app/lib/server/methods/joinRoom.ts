@@ -16,8 +16,8 @@ Meteor.methods<ServerMethods>({
 	async joinRoom(rid, code) {
 		check(rid, String);
 
-		const userId = await Meteor.userId();
-		if (!userId) {
+		const user = await Meteor.userAsync();
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinRoom' });
 		}
 
@@ -26,6 +26,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
 		}
 
-		return Room.join({ room, user: { _id: userId }, ...(code ? { joinCode: code } : {}) });
+		return Room.join({ room, user, ...(code ? { joinCode: code } : {}) });
 	},
 });

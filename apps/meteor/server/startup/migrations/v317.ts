@@ -1,7 +1,7 @@
 import type { ILoginServiceConfiguration, OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Settings, LoginServiceConfiguration } from '@rocket.chat/models';
+import { isTruthy } from '@rocket.chat/tools';
 
-import { isTruthy } from '../../../lib/isTruthy';
 import { SystemLogger } from '../../lib/logger/system';
 import { addMigration } from '../../lib/migrations';
 
