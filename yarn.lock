@@ -8266,7 +8266,7 @@ __metadata:
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.8"
+    "@rocket.chat/federation-sdk": "npm:0.3.9"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/icons": "npm:~0.46.0"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -8472,7 +8472,7 @@ __metadata:
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.8"
+    "@rocket.chat/federation-sdk": "npm:0.3.9"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -8498,9 +8498,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation-sdk@npm:0.3.8":
-  version: 0.3.8
-  resolution: "@rocket.chat/federation-sdk@npm:0.3.8"
+"@rocket.chat/federation-sdk@npm:0.3.9":
+  version: 0.3.9
+  resolution: "@rocket.chat/federation-sdk@npm:0.3.9"
   dependencies:
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@noble/ed25519": "npm:^3.0.0"
@@ -8513,7 +8513,7 @@ __metadata:
     zod: "npm:^3.24.1"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/c8a3e8d7bdf68798d20d1d42c7bafd354c934e9d80b94796ef09f073585b1de501ba181b059a3c4b40b92660fd8ee04db6535610932bc64c1c2d147f3a24286c
+  checksum: 10/8bf215c37fa3c181d12731a2b2f5068656b64736c05560a070ad8dde6177e48cd262a2a26d8cc56e8cee7850f25a3bc5dd069537c4a1ee3f638b0d94cb11519c
   languageName: node
   linkType: hard
 
@@ -9140,7 +9140,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.3.8"
+    "@rocket.chat/federation-sdk": "npm:0.3.9"
     "@rocket.chat/fuselage": "npm:^0.70.0"
     "@rocket.chat/fuselage-forms": "npm:~0.1.1"
     "@rocket.chat/fuselage-hooks": "npm:~0.38.1"
