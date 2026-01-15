@@ -136,7 +136,7 @@ export const FileUpload = {
 		);
 	},
 
-	async validateFileUpload(file: IUpload, content?: Buffer) {
+	async validateFileUpload(file: IUpload, content?: Buffer | string) {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
@@ -191,7 +191,7 @@ export const FileUpload = {
 
 		// App IPreFileUpload event hook
 		try {
-			await Apps.self?.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) });
+			await Apps.self?.triggerEvent(AppEvents.IPreFileUpload, { file, content });
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);
@@ -817,13 +817,12 @@ export class FileUploadClass {
 			// and for security reasons we must not write it to disk before validation
 			content = await streamToBuffer(content);
 		} else if (content instanceof Uint8Array && !(content instanceof Buffer)) {
-			// Services compat - convert Uint8Array to Buffer
-			content = Buffer.from(content);
+			// Services compat - create a view into the underlying ArrayBuffer without copying the data
+			content = Buffer.from(content.buffer);
 		}
 
 		try {
-			// TODO: Make filter.check accept file path as string - check Apps Engine IPreFileUpload hook
-			await filter.check(fileData, typeof content === 'string' ? undefined : content);
+			await filter.check(fileData, content);
 			return content;
 		} catch (e) {
 			throw e;
