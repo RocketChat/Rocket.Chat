@@ -69,14 +69,14 @@
 		"turbo": "~2.6.3",
 		"typescript": "~5.9.3"
 	},
-	"packageManager": "yarn@4.11.0",
+	"packageManager": "yarn@4.12.0",
 	"engines": {
 		"node": "22.16.0",
-		"yarn": "4.11.0"
+		"yarn": "4.12.0"
 	},
 	"volta": {
 		"node": "22.16.0",
-		"yarn": "4.11.0"
+		"yarn": "4.12.0"
 	},
 	"houston": {
 		"minTag": "0.55.0-rc.0",
