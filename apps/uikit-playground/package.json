@@ -50,13 +50,13 @@
     "@types/react-dom": "~18.3.7",
     "@typescript-eslint/eslint-plugin": "~5.60.1",
     "@typescript-eslint/parser": "~5.60.1",
-    "@vitejs/plugin-react": "~4.5.2",
+    "@vitejs/plugin-react": "~5.1.2",
     "eslint": "~8.45.0",
     "eslint-plugin-react": "~7.37.5",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.24",
     "typescript": "~5.9.3",
-    "vite": "^7.3.1"
+    "vite": "8.0.0-beta.8"
   },
   "volta": {
     "extends": "../../package.json"

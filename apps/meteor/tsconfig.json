@@ -2,7 +2,8 @@
 	"extends": "@rocket.chat/tsconfig/base.json",
 	"compilerOptions": {
 		"target": "es2018",
-		"module": "esNext",
+		"module": "node16",
+		"moduleResolution": "node16",
 		"lib": ["esnext", "dom"],
 
 		"allowJs": true,
