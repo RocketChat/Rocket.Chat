@@ -19,7 +19,7 @@ const packageVirtualPrefix = '\0meteor-package:';
 const debugExports = process.env.DEBUG_METEOR_VITE_EXPORTS === 'true';
 const rocketchatInfoAlias = 'rocketchat.info';
 
-function meteorPackagesPlugin(): Plugin {
+function meteor(): Plugin {
 	if (!fs.existsSync(meteorManifestPath)) {
 		console.warn(`[meteor-packages] Missing manifest at ${meteorManifestPath}. Meteor packages will not be available.`);
 		return { name: 'meteor-packages' };
@@ -669,17 +669,19 @@ ${loadStatements}
 export default defineConfig({
 	appType: 'spa',
 	plugins: [
-		meteorPackagesPlugin(),
+		meteor(),
 		react({
 			exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
+			
 		}),
 	],
 	resolve: {
+		dedupe: ['react', 'react-dom'],
 		// preserveSymlinks: true,
 		alias: {
 			// Rocket.Chat packages used in the Meteor app
-			'child_process': path.resolve('client/emptyModule.ts'),
-			'crypto': path.resolve('client/emptyModule.ts'),
+			// 'child_process': path.resolve('client/emptyModule.ts'),
+			// 'crypto': path.resolve('client/emptyModule.ts'),
 			'@rocket.chat/core-typings': path.resolve('../../packages/core-typings/src/index.ts'),
 			'@rocket.chat/random': path.resolve('../../packages/random/src/main.client.ts'),
 			'@rocket.chat/sha256': path.resolve('../../packages/sha256/src/sha256.ts'),
@@ -712,6 +714,7 @@ export default defineConfig({
 		proxy: {
 			'/api': { target: 'http://localhost:3000', changeOrigin: true },
 			'/avatar': { target: 'http://localhost:3000', changeOrigin: true },
+			'/assets': { target: 'http://localhost:3000', changeOrigin: true },
 			'/sockjs': { target: 'ws://localhost:3000', ws: true, rewriteWsOrigin: true },
 			'/sockjs/info': { target: 'http://localhost:3000', changeOrigin: true },
 		},
