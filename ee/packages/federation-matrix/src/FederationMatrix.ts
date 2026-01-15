@@ -226,13 +226,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			);
 
 			return lastEventId;
-		} catch (error) {
+		} catch (err) {
 			this.logger.error({
 				msg: 'Failed to handle file message',
 				messageId: message._id,
-				err: error,
+				err,
 			});
-			throw error;
+			throw err;
 		}
 	}
 
@@ -539,9 +539,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			await federationSDK.leaveRoom(roomIdSchema.parse(room.federation.mrid), userIdSchema.parse(actualMatrixUserId));
 
 			this.logger.info({ msg: 'User left Matrix room successfully', username: user.username, roomId: room.federation.mrid });
-		} catch (error) {
-			this.logger.error({ msg: 'Failed to leave room in Matrix', err: error });
-			throw error;
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to leave room in Matrix', err });
+			throw err;
 		}
 	}
 
@@ -568,9 +568,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				roomId: room.federation.mrid,
 				performedBy: userWhoRemoved.username,
 			});
-		} catch (error) {
-			this.logger.error({ msg: 'Failed to kick user from Matrix room', err: error });
-			throw error;
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to kick user from Matrix room', err });
+			throw err;
 		}
 	}
 
@@ -603,9 +603,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			);
 
 			this.logger.debug({ msg: 'Message updated in Matrix successfully', eventId });
-		} catch (error) {
-			this.logger.error({ msg: 'Failed to update message in Matrix', err: error });
-			throw error;
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to update message in Matrix', err });
+			throw err;
 		}
 	}
 
@@ -789,12 +789,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		if (action === 'reject') {
 			try {
 				await federationSDK.rejectInvite(room.federation.mrid, matrixUserId);
-			} catch (error) {
-				if (error instanceof FederationRequestError && error.response.status === 403) {
+			} catch (err) {
+				if (err instanceof FederationRequestError && err.response.status === 403) {
 					return Room.performUserRemoval(room, user);
 				}
-				this.logger.error({ msg: 'Failed to reject invite in Matrix', err: error });
-				throw error;
+				this.logger.error({ msg: 'Failed to reject invite in Matrix', err });
+				throw err;
 			}
 		}
 	}

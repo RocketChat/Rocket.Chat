@@ -409,8 +409,8 @@ export function message() {
 			}
 
 			await Message.deleteMessage(user, rcMessage);
-		} catch (error) {
-			logger.error({ msg: 'Failed to process Matrix removal redaction', err: error });
+		} catch (err) {
+			logger.error({ msg: 'Failed to process Matrix removal redaction', err });
 		}
 	});
 }
