@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Uploads } from '@rocket.chat/models';
+import { isTruthy } from '@rocket.chat/tools';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { FileUpload } from '../../../file-upload/server';
 import { getURL } from '../getURL';
 

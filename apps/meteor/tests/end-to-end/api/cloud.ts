@@ -178,4 +178,50 @@ describe('[Cloud]', function () {
 				});
 		});
 	});
+
+	describe('[/cloud.registrationStatus]', () => {
+		before(async () => {
+			return updatePermission('manage-cloud', ['admin']);
+		});
+
+		after(async () => {
+			return updatePermission('manage-cloud', ['admin']);
+		});
+
+		it('should fail if user is not authenticated', async () => {
+			return request
+				.get(api('cloud.registrationStatus'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message', 'You must be logged in to do this.');
+				});
+		});
+
+		it('should fail when user does not have the manage-cloud permission', async () => {
+			await updatePermission('manage-cloud', []);
+			return request
+				.get(api('cloud.registrationStatus'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should return registration status when user has the manage-cloud permission', async () => {
+			await updatePermission('manage-cloud', ['admin']);
+			return request
+				.get(api('cloud.registrationStatus'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('registrationStatus');
+				});
+		});
+	});
 });

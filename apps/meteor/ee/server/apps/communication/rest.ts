@@ -391,7 +391,11 @@ export class AppsRestApi {
 						const success = await manager.changeStatus(info.id, AppStatus.MANUALLY_ENABLED);
 						info.status = await success.getStatus();
 					} catch (error) {
-						orchestrator.getRocketChatLogger().warn(`App "${info.id}" was installed but could not be enabled: `, error);
+						orchestrator.getRocketChatLogger().warn({
+							msg: 'App was installed but could not be enabled',
+							appId: info.id,
+							err: error,
+						});
 					}
 
 					void orchestrator.getNotifier().appAdded(info.id);
@@ -512,7 +516,10 @@ export class AppsRestApi {
 
 						return API.v1.success({ result });
 					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error(`Error triggering external components' events ${e.response.data}`);
+						orchestrator.getRocketChatLogger().error({
+							msg: "Error triggering external components' events",
+							err: e,
+						});
 						return API.v1.internalError();
 					}
 				},
@@ -534,7 +541,10 @@ export class AppsRestApi {
 					try {
 						const request = await orchestrator.getMarketplaceClient().fetch(`v1/bundles/${this.urlParams.id}/apps`, { headers });
 						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error("Error getting the Bundle's Apps from the Marketplace:", await request.json());
+							orchestrator.getRocketChatLogger().error({
+								msg: "Error getting the Bundle's Apps from the Marketplace",
+								response: await request.json(),
+							});
 							return API.v1.failure();
 						}
 						result = await request.json();

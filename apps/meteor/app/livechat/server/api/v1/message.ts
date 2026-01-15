@@ -253,7 +253,7 @@ API.v1.addRoute(
 		async post() {
 			const visitorToken = this.bodyParams.visitor.token;
 
-			const visitor = await LivechatVisitors.getVisitorByToken(visitorToken, {});
+			let visitor = await LivechatVisitors.getVisitorByToken(visitorToken, {});
 			let rid: string;
 			if (visitor) {
 				const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
@@ -272,7 +272,7 @@ API.v1.addRoute(
 					guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 				}
 
-				const visitor = await registerGuest(guest, { shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle') });
+				visitor = await registerGuest(guest, { shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle') });
 				if (!visitor) {
 					throw new Error('error-livechat-visitor-registration');
 				}
