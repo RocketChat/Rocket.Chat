@@ -388,7 +388,7 @@ export const FileUpload = {
 					: undefined,
 		};
 
-		const shouldRotate = settings.get('FileUpload_RotateImages') === true;
+		const shouldRotate = settings.get<boolean>('FileUpload_RotateImages');
 		const shouldStripExif = settings.get('Message_Attachments_Strip_Exif') === true;
 
 		let size = file.size || 0;
