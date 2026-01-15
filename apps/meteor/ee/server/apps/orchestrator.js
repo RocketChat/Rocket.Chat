@@ -1,3 +1,7 @@
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
+
 import { registerOrchestrator } from '@rocket.chat/apps';
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
@@ -68,11 +72,24 @@ export class AppServerOrchestrator {
 
 		this._bridges = new RealAppBridges(this);
 
+		const tempFilePath = path.join(os.tmpdir(), 'apps-engine-temp');
+
+		try {
+			// We call this only once at server startup, so using the synchronous version is fine
+			fs.mkdirSync(tempFilePath);
+		} catch (err) {
+			// If the temp directory already exists, we can continue
+			if (err.code !== 'EEXIST') {
+				throw new Error('Failed to initialize the Apps-Engine', { cause: err });
+			}
+		}
+
 		this._manager = new AppManager({
 			metadataStorage: this._storage,
 			logStorage: this._logStorage,
 			bridges: this._bridges,
 			sourceStorage: this._appSourceStorage,
+			tempFilePath,
 		});
 
 		this._communicators = new Map();

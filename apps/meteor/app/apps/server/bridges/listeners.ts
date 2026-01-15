@@ -1,3 +1,7 @@
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
+
 import type { IAppServerOrchestrator, IAppsRoom, IAppsLivechatRoom, IAppsMessage } from '@rocket.chat/apps';
 import type { IPreEmailSentContext } from '@rocket.chat/apps-engine/definition/email';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
@@ -6,9 +10,8 @@ import { isLivechatRoom } from '@rocket.chat/apps-engine/definition/livechat/ILi
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import type { UIKitIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import type { IUIKitLivechatIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit/livechat';
-import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads';
 import type { IUserContext, IUserUpdateContext } from '@rocket.chat/apps-engine/definition/users';
-import type { IMessage, IRoom, IUser, ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, ILivechatDepartment, IUpload } from '@rocket.chat/core-typings';
 
 type LivechatTransferData = {
 	type: LivechatTransferEventType;
@@ -162,15 +165,22 @@ type HandleDefaultEvent =
 			payload: [IUIKitLivechatIncomingInteraction];
 	  }
 	| {
-			event: AppInterface.IPreFileUpload;
-			payload: [IFileUploadContext];
-	  }
-	| {
 			event: AppInterface.IPreEmailSent;
 			payload: [IPreEmailSentContext];
 	  };
 
-type HandleEvent = HandleMessageEvent | HandleRoomEvent | HandleLivechatEvent | HandleUserEvent | HandleDefaultEvent;
+type HandleFileUploadEvent = {
+	event: AppInterface.IPreFileUpload;
+	payload: [{ file: IUpload; content: Buffer }];
+};
+
+type HandleEvent =
+	| HandleMessageEvent
+	| HandleRoomEvent
+	| HandleLivechatEvent
+	| HandleUserEvent
+	| HandleFileUploadEvent
+	| HandleDefaultEvent;
 
 export class AppListenerBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {}
@@ -178,6 +188,8 @@ export class AppListenerBridge {
 	// eslint-disable-next-line complexity
 	async handleEvent(args: HandleEvent): Promise<any> {
 		switch (args.event) {
+			case AppInterface.IPreFileUpload:
+				return this.uploadEvent(args);
 			case AppInterface.IPostMessageDeleted:
 			case AppInterface.IPostMessageReacted:
 			case AppInterface.IPostMessageFollowed:
@@ -235,6 +247,40 @@ export class AppListenerBridge {
 
 	async defaultEvent(args: HandleDefaultEvent): Promise<unknown> {
 		return this.orch.getManager().getListenerManager().executeListener(args.event, args.payload[0]);
+	}
+
+	async uploadEvent(args: HandleFileUploadEvent): Promise<void> {
+		const [{ file, content }] = args.payload;
+
+		const tmpfile = path.join(this.orch.getManager().getTempFilePath(), crypto.randomUUID());
+		await fs.promises.writeFile(tmpfile, content).catch((err) => {
+			this.orch.getRocketChatLogger().error({ msg: `AppListenerBridge: Could not write temporary file at ${tmpfile}`, err });
+
+			throw new Error('Error sending file to apps', { cause: err });
+		});
+
+		try {
+			const uploadDetails = {
+				name: file.name || '',
+				size: file.size || 0,
+				type: file.type || '',
+				rid: file.rid || '',
+				userId: file.userId || '',
+				visitorToken: file.token,
+			};
+
+			// Execute both events for backward compatibility
+			await this.orch.getManager().getListenerManager().executeListener(AppInterface.IPreFileUpload, {
+				file: uploadDetails,
+				path: tmpfile,
+			});
+		} finally {
+			await fs.promises
+				.unlink(tmpfile)
+				.catch((err) =>
+					this.orch.getRocketChatLogger().warn({ msg: `AppListenerBridge: Could not delete temporary file at ${tmpfile}`, err }),
+				);
+		}
 	}
 
 	async messageEvent(args: HandleMessageEvent): Promise<boolean | IMessage | undefined> {
