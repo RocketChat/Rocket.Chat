@@ -150,11 +150,11 @@ function followRedirect(response: fetch.Response, redirectCount = 0) {
 	}
 
 	if (redirectCount === MAX_REDIRECTS) {
-		logger.error({ msg: 'Redirect count reached the maximum amount of redirects allowed', MAX_REDIRECTS });
+		logger.error({ msg: 'Redirect count reached the maximum amount of redirects allowed', MAX_REDIRECTS, status: response.status });
 		throw new Error('error-too-many-redirects');
 	}
 
-	logger.debug({ msg: 'Following redirect', redirectCount, location });
+	logger.debug({ msg: 'Following redirect', redirectCount, location, status: response.status });
 	return location;
 }
 
@@ -166,7 +166,7 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 
 		// eslint-disable-next-line no-await-in-loop
 		const { agent, pinnedUrl, originalHostname, resolvedIp } = await getFetchAgentWithValidation(
-			input,
+			currentUrl,
 			allowSelfSignedCerts,
 			options?.ignoreSsrfValidation,
 		);
@@ -230,6 +230,9 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 		}
 
 		currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
+
+		// https://github.com/node-fetch/node-fetch/issues/1673 - body not consumed == open socket
+		controller.abort();
 	}
 
 	throw new Error('error-processing-request');
