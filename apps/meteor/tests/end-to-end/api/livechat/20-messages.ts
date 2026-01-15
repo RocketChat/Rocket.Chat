@@ -1,10 +1,12 @@
 import { faker } from '@faker-js/faker';
 import type { ILivechatAgent, ILivechatVisitor, IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
-import { api, getCredentials, request } from '../../../data/api-data';
+import { api, credentials, getCredentials, methodCall, request } from '../../../data/api-data';
 import { sendSimpleMessage } from '../../../data/chat.helper';
+import { imgURL } from '../../../data/interactions';
 import {
 	sendMessage,
 	startANewLivechatRoomAndTakeIt,
@@ -118,6 +120,68 @@ describe('LIVECHAT - messages', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body.message._id).to.be.equal(message._id);
+				});
+		});
+
+		it('should return filesUpload array when message has files property', async () => {
+			const {
+				room: { _id: roomId },
+				visitor: { token },
+			} = await startANewLivechatRoomAndTakeIt();
+
+			const file1Response = await request
+				.post(api(`rooms.media/${roomId}`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect(200);
+			const file2Response = await request
+				.post(api(`rooms.media/${roomId}`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect(200);
+
+			const uploadedFileIds = [file1Response.body.file._id, file2Response.body.file._id];
+			const filesToConfirm = uploadedFileIds.map((id) => ({ _id: id, name: 'test.png' }));
+
+			// send message with multiple files as agent
+			const sendMessageResponse = await request
+				.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ _id: Random.id(), rid: roomId, msg: 'message with multiple files' }, [], filesToConfirm],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(200);
+
+			const data = JSON.parse(sendMessageResponse.body.message);
+			const fileMessage = data.result;
+
+			// setch message as visitor and verify filesUpload
+			// note: image uploads also create thumbnails, so files.length may be > 2
+			await request
+				.get(api(`livechat/message/${fileMessage._id}`))
+				.query({ token, rid: roomId })
+				.send()
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					expect(message).to.have.property('_id').that.is.equal(fileMessage._id);
+					expect(message).to.have.property('file');
+					expect(message).to.have.property('files').that.is.an('array').that.has.lengthOf(4);
+					expect(message).to.have.property('fileUpload').that.is.an('object');
+					expect(message.fileUpload).to.have.property('publicFilePath').that.is.a('string').and.not.empty;
+					expect(message.fileUpload).to.have.property('type').that.is.a('string');
+					expect(message.fileUpload).to.have.property('size').that.is.a('number');
+					expect(message).to.have.property('filesUpload').that.is.an('array').with.lengthOf(message.files.length);
+					message.filesUpload.forEach((fileUpload: { publicFilePath: string; type: string; size: number }) => {
+						expect(fileUpload).to.have.property('publicFilePath').that.is.a('string').and.not.empty;
+						expect(fileUpload).to.have.property('type').that.is.a('string');
+						expect(fileUpload).to.have.property('size').that.is.a('number');
+					});
 				});
 		});
 	});
