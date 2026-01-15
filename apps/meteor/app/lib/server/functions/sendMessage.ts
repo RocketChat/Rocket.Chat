@@ -1,4 +1,4 @@
-import { Apps } from '@rocket.chat/apps';
+import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
@@ -231,16 +231,15 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 
 	// For the Rocket.Chat Apps :)
 	if (Apps.self?.isLoaded()) {
-		const listenerBridge = Apps.getBridges()?.getListenerBridge();
+		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreMessageSentPrevent, message);
 
-		const prevent = await listenerBridge?.messageEvent('IPreMessageSentPrevent', message);
 		if (prevent) {
 			return;
 		}
 
-		const result = await listenerBridge?.messageEvent(
-			'IPreMessageSentModify',
-			await listenerBridge?.messageEvent('IPreMessageSentExtend', message),
+		const result = await Apps.self?.triggerEvent(
+			AppEvents.IPreMessageSentModify,
+			await Apps.self?.triggerEvent(AppEvents.IPreMessageSentExtend, message),
 		);
 
 		if (typeof result === 'object') {
@@ -282,8 +281,8 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 
 	if (Apps.self?.isLoaded()) {
 		// If the message has a type (system message), we should notify the listener about it
-		const messageEvent = message.t ? 'IPostSystemMessageSent' : 'IPostMessageSent';
-		void Apps.getBridges()?.getListenerBridge().messageEvent(messageEvent, message);
+		const messageEvent = message.t ? AppEvents.IPostSystemMessageSent : AppEvents.IPostMessageSent;
+		void Apps.self?.triggerEvent(messageEvent, message);
 	}
 
 	await afterSaveMessage(message, room, user);

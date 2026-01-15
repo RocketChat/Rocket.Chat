@@ -1,4 +1,4 @@
-import { Apps } from '@rocket.chat/apps';
+import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { IMessageService } from '@rocket.chat/core-services';
 import { Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
 import { isEditedMessage } from '@rocket.chat/core-typings';
@@ -204,7 +204,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		}
 
 		if (Apps.self?.isLoaded()) {
-			void Apps.getBridges()?.getListenerBridge().messageEvent('IPostSystemMessageSent', createdMessage);
+			void Apps.self?.triggerEvent(AppEvents.IPostSystemMessageSent, createdMessage);
 		}
 
 		void notifyOnMessageChange({ id: createdMessage._id, data: createdMessage });
