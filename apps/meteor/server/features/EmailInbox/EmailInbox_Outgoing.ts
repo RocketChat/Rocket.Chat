@@ -1,6 +1,7 @@
 import { isIMessageInbox } from '@rocket.chat/core-typings';
 import type { IEmailInbox, IUser, IOmnichannelRoom, SlashCommandCallbackParams, IUpload } from '@rocket.chat/core-typings';
 import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/models';
+import { isTruthy } from '@rocket.chat/tools';
 import { Match } from 'meteor/check';
 import type Mail from 'nodemailer/lib/mailer';
 
@@ -114,7 +115,7 @@ slashCommands.add({
 			return;
 		}
 
-		const fileRefs = (message.files || [message.file]).filter((f): f is NonNullable<typeof f> => Boolean(f));
+		const fileRefs = (message.files || [message.file]).filter(isTruthy);
 		if (!fileRefs.length) {
 			return;
 		}
