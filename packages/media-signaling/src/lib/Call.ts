@@ -1032,12 +1032,28 @@ export class ClientMediaCall implements IClientMediaCall {
 				if (callback) {
 					callback();
 				} else {
-					void this.hangup('timeout');
+					void this.hangup(this.getTimeoutHangupReason(state));
 				}
 			}, timeout),
 		};
 
 		this.stateTimeoutHandlers.add(handler);
+	}
+
+	private getTimeoutHangupReason(state: ClientState): CallHangupReason {
+		switch (state) {
+			case 'pending':
+				return 'not-answered';
+			case 'waiting-for-offer':
+			case 'waiting-for-answer':
+				return 'timeout-remote-sdp';
+			case 'generating-local-sdp':
+				return 'timeout-local-sdp';
+			case 'activating':
+				return 'timeout-activation';
+		}
+
+		return 'timeout';
 	}
 
 	private updateStateTimeouts(): void {
