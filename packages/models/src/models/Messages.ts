@@ -889,6 +889,27 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
+	findVisibleByRoomIdNotSystemMessages(
+		roomId: IRoom['_id'],
+		ts: Filter<IMessage>['ts'] | undefined,
+		options?: FindOptions<IMessage>,
+		showThreadMessages = true,
+	): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			t: { $exists: false },
+			...(!showThreadMessages && {
+				tmid: { $exists: false },
+			}),
+			...(ts && { ts }),
+		};
+
+		return this.find(query, options);
+	}
+
 	findVisibleByRoomIdAfterTimestamp(roomId: string, timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query = {
 			_hidden: {

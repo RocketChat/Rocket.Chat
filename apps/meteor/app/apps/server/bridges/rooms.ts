@@ -7,7 +7,7 @@ import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rock
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
-import type { FindOptions, Sort } from 'mongodb';
+import type { Filter, FindOptions, Sort } from 'mongodb';
 
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
@@ -150,44 +150,23 @@ export class AppRoomBridge extends RoomBridge {
 			throw new Error('Message converter not found');
 		}
 
-		const threadFilterQuery = showThreadMessages ? {} : { tmid: { $exists: false } };
-
-		const cursorQuery: Array<Record<string, unknown>> = [];
-
 		let sortDirection = _sort?.createdAt;
 		if (!sortDirection && (after || before)) {
 			sortDirection = 'asc';
 		}
 
-		const buildCursorQuery = (cursor: typeof after, kind: 'after' | 'before'): Record<string, unknown> | undefined => {
-			if (!cursor) {
-				return undefined;
+		const isAsc = sortDirection !== 'desc';
+		const afterOp: '$gt' | '$lt' = isAsc ? '$gt' : '$lt';
+		const beforeOp: '$gt' | '$lt' = isAsc ? '$lt' : '$gt';
+
+		let ts: Filter<ICoreMessage>['ts'] | undefined;
+		if (after || before) {
+			ts = {};
+			if (after) {
+				(ts as Record<string, Date>)[afterOp] = after.createdAt;
 			}
-
-			const afterInOrder = kind === 'after';
-			const isAsc = sortDirection !== 'desc';
-
-			let tsOp: '$gt' | '$lt';
-			if (afterInOrder) {
-				tsOp = isAsc ? '$gt' : '$lt';
-			} else {
-				tsOp = isAsc ? '$lt' : '$gt';
-			}
-
-			return { ts: { [tsOp]: cursor.createdAt } };
-		};
-
-		if (after) {
-			const clause = buildCursorQuery(after, 'after');
-			if (clause) {
-				cursorQuery.push(clause);
-			}
-		}
-
-		if (before) {
-			const clause = buildCursorQuery(before, 'before');
-			if (clause) {
-				cursorQuery.push(clause);
+			if (before) {
+				(ts as Record<string, Date>)[beforeOp] = before.createdAt;
 			}
 		}
 
@@ -202,15 +181,7 @@ export class AppRoomBridge extends RoomBridge {
 			sort,
 		};
 
-		const query = {
-			rid: roomId,
-			_hidden: { $ne: true },
-			t: { $exists: false },
-			...threadFilterQuery,
-			...(cursorQuery.length ? { $and: cursorQuery } : {}),
-		};
-
-		const cursor = Messages.find(query, messageQueryOptions);
+		const cursor = Messages.findVisibleByRoomIdNotSystemMessages(roomId, ts, messageQueryOptions, showThreadMessages);
 
 		const messagePromises: Promise<IMessageRaw>[] = await cursor.map((message) => messageConverter.convertMessageRaw(message)).toArray();
 
