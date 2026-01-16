@@ -34,7 +34,7 @@ const {
 const { Base } = Serializers;
 
 class CustomRegenerator extends Errors.Regenerator {
-	restoreCustomError(plainError: any): Error | undefined {
+	override restoreCustomError(plainError: any): Error | undefined {
 		const { message, reason, details, errorType, isClientSafe } = plainError;
 
 		if (errorType === 'Meteor.Error') {
@@ -48,7 +48,7 @@ class CustomRegenerator extends Errors.Regenerator {
 		return undefined;
 	}
 
-	extractPlainError(err: Error | MeteorError): Errors.PlainMoleculerError {
+	override extractPlainError(err: Error | MeteorError): Errors.PlainMoleculerError {
 		return {
 			...super.extractPlainError(err),
 			...(isMeteorError(err) && {
@@ -62,11 +62,11 @@ class CustomRegenerator extends Errors.Regenerator {
 }
 
 class EJSONSerializer extends Base {
-	serialize(obj: any): Buffer {
+	override serialize(obj: any): Buffer {
 		return Buffer.from(EJSON.stringify(obj));
 	}
 
-	deserialize(buf: Buffer): any {
+	override deserialize(buf: Buffer): any {
 		return EJSON.parse(buf.toString());
 	}
 }

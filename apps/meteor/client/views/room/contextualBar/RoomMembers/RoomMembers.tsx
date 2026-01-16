@@ -1,15 +1,9 @@
-import type { IRoom, IUser, IRole } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
-import { useMemo } from 'react';
-import { GroupedVirtuoso } from 'react-virtuoso';
-
-import { MembersListDivider } from './MembersListDivider';
-import RoomMembersRow from './RoomMembersRow';
 import {
+	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -19,11 +13,16 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarSection,
 	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
-import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
-import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
+} from '@rocket.chat/ui-client';
+import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
+import { useMemo } from 'react';
+import { GroupedVirtuoso } from 'react-virtuoso';
 
-export type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
+import { MembersListDivider } from './MembersListDivider';
+import RoomMembersRow from './RoomMembersRow';
+import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
+import type { RoomMember } from '../../../hooks/useMembersList';
 
 type RoomMembersProps = {
 	rid: IRoom['_id'];
@@ -34,7 +33,7 @@ type RoomMembersProps = {
 	type: string;
 	setText: FormEventHandler<HTMLInputElement>;
 	setType: (type: 'online' | 'all') => void;
-	members: RoomMemberUser[];
+	members: RoomMember[];
 	total: number;
 	error?: Error;
 	onClickClose: () => void;

@@ -1,4 +1,3 @@
-import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
@@ -21,7 +20,6 @@ import {
 	isChatFollowMessageProps,
 	isChatUnfollowMessageProps,
 	isChatGetMentionedMessagesProps,
-	isChatOTRProps,
 	isChatReactProps,
 	isChatGetDeletedMessagesProps,
 	isChatSyncThreadsListProps,
@@ -41,7 +39,6 @@ import { messageSearch } from '../../../../server/methods/messageSearch';
 import { getMessageHistory } from '../../../../server/publications/messages';
 import { roomAccessAttributes } from '../../../authorization/server';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { deleteMessageValidatingPermission } from '../../../lib/server/functions/deleteMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
@@ -294,7 +291,7 @@ const chatEndpoints = API.v1
 				200: ajv.compile<{ message: IMessage }>({
 					type: 'object',
 					properties: {
-						message: { $ref: '#/components/schemas/IMessage' },
+						message: { type: 'object' },
 						success: {
 							type: 'boolean',
 							enum: [true],
@@ -437,7 +434,7 @@ API.v1.addRoute(
 			}
 
 			const sent = await applyAirGappedRestrictionsValidation(() =>
-				executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, this.bodyParams.previewUrls),
+				executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
 			);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
@@ -459,7 +456,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			await starMessage(this.userId, {
+			await starMessage(this.user, {
 				_id: msg._id,
 				rid: msg.rid,
 				starred: true,
@@ -481,7 +478,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			await starMessage(this.userId, {
+			await starMessage(this.user, {
 				_id: msg._id,
 				rid: msg.rid,
 				starred: false,
@@ -902,28 +899,6 @@ API.v1.addRoute(
 				},
 			});
 			return API.v1.success(messages);
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.otr',
-	{ authRequired: true, validateParams: isChatOTRProps },
-	{
-		async post() {
-			const { roomId, type: otrType } = this.bodyParams;
-
-			const { username, type } = this.user;
-
-			if (!username) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user');
-			}
-
-			await canSendMessageAsync(roomId, { uid: this.userId, username, type });
-
-			await Message.saveSystemMessage(otrType, roomId, username, { _id: this.userId, username });
-
-			return API.v1.success();
 		},
 	},
 );

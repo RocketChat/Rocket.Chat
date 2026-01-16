@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 
 import { useRoomToolboxActions } from './useRoomToolboxActions';
-import type { RoomToolboxActionConfig } from '../../../contexts/RoomToolboxContext';
 
 describe('useRoomToolboxActions', () => {
 	it('should return an empty array if there are no actions', () => {

@@ -1,11 +1,10 @@
 import type { App } from '@rocket.chat/core-typings';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
+import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { Apps } from '../orchestrator';
-import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
 
 type FetchMarketplaceAppsParams = {
 	endUserID?: string;
@@ -130,8 +129,16 @@ const fetchMarketplaceAppsSchema = z.array(
 	}),
 );
 
+/**
+ * Fetches marketplace apps available to the workspace.
+ *
+ * @param endUserID - Optional end-user identifier used to filter apps returned by the marketplace.
+ * @returns An array of marketplace `App` objects describing available apps and their latest release metadata.
+ * @throws MarketplaceConnectionError when the marketplace cannot be reached.
+ * @throws MarketplaceUnsupportedVersionError when the marketplace reports an unsupported client version.
+ * @throws MarketplaceAppsError for marketplace-side errors, including invalid apps engine version, internal marketplace errors, or a generic failure to fetch apps.
+ */
 export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsParams = {}): Promise<App[]> {
-	const baseUrl = Apps.getMarketplaceUrl();
 	const headers = getMarketplaceHeaders();
 	const token = await getWorkspaceAccessToken();
 	if (token) {
@@ -140,7 +147,7 @@ export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsPa
 
 	let request;
 	try {
-		request = await fetch(`${baseUrl}/v1/apps`, {
+		request = await Apps.getMarketplaceClient().fetch(`v1/apps`, {
 			headers,
 			params: {
 				...(endUserID && { endUserID }),

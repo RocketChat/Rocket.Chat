@@ -1,7 +1,7 @@
 import type { OEmbedMeta, OEmbedUrlContent, OEmbedProvider } from '@rocket.chat/core-typings';
 import { camelCase } from 'change-case';
 
-import { callbacks } from '../../../lib/callbacks';
+import { callbacks } from '../../../server/lib/callbacks';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
 import { Info } from '../../utils/rocketchat.info';
