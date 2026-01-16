@@ -50,7 +50,8 @@ export default defineConfig({
 				'meteorhacks_inject-initial': null,
 				'rocketchat_livechat': null,
 				'rocketchat_mongo-config': null,
-				'session': null
+				'session': null,
+				'ostrio_cookies': null,
 			},
 		}),
 		react({
