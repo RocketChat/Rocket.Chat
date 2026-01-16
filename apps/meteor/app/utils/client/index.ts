@@ -1,4 +1,4 @@
-// export { Info } from '../rocketchat.info' with  { type };
+export { Info } from '../rocketchat.info';
 export { getUserPreference } from './lib/getUserPreference';
 export { fileUploadIsValidContentType } from './restrictions';
 export { getUserAvatarURL } from './getUserAvatarURL';
