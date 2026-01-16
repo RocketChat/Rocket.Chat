@@ -22,9 +22,9 @@ const debugExports = process.env.DEBUG_METEOR_VITE_EXPORTS === 'true';
 const rocketchatInfoAlias = 'rocketchat.info';
 
 function meteor(
-	options: {
-		exclude: string[];
-	} = { exclude: [] },
+	config: {
+		modules: Record<string, null | string>
+	} = { modules: {} },
 ): Plugin {
 	if (!fs.existsSync(meteorManifestPath)) {
 		console.warn(`[meteor-packages] Missing manifest at ${meteorManifestPath}. Meteor packages will not be available.`);
@@ -34,7 +34,7 @@ function meteor(
 	const manifest = JSON.parse(fs.readFileSync(meteorManifestPath, 'utf-8'));
 	const packageEntries = collectPackageEntries(manifest).filter((entry) => {
 		const pkgName = entry.path.replace(/^packages\//, '').replace(/\.js$/, '');
-		return !options.exclude.includes(pkgName);
+		return !Object.keys(config.modules).includes(pkgName);
 	});
 	if (packageEntries.length === 0) {
 		throw new Error(
@@ -76,18 +76,47 @@ function meteor(
 			if (options?.ssr) {
 				return null;
 			}
-			// Replace `var Promise = Package.promise.Promise;` with `var Promise = window.Promise;` to avoid
-			// Meteor's Promise polyfill interfering with Vite's HMR and other features.
+
 			if (id.startsWith(meteorPackagesDir)) {
-				if (code.includes('var Promise = Package.promise.Promise;')) {
-					code = code.replace('var Promise = Package.promise.Promise;', 'var Promise = window.Promise;');
-				}
-				if (code.includes('var fetch = Package.fetch.fetch;')) {
-					code = code.replace('var fetch = Package.fetch.fetch;', 'var fetch = window.fetch;');
+				const basename = path.basename(id);
+				console.log(`[meteor-packages] Transforming Meteor package module: ${basename}`);
+
+				if (basename === 'modules.js') {
+					// Remove `install("<name>")` and `install("<name>", "<mainModule>")` calls for packages being replaced
+					for (const moduleName of Object.keys(config.modules)) {
+						const installRegex = new RegExp(`install\\(\\s*['"]${moduleName}['"](?:\\s*,\\s*['"][^'"]+['"])?\\s*\\);?`, 'g');
+						code = code.replace(installRegex, (_match) => {
+							console.log(`[meteor-packages] Removing install() call for replaced package: ${moduleName}`);
+							return '';
+						});
+					}
+
 				}
 
-				if (code.includes(`fetch = require('meteor/fetch').fetch;`)) {
-					code = code.replace(`fetch = require('meteor/fetch').fetch;`, 'fetch = window.fetch;');
+				// Replace modules according to the provided mapping
+				for (const [moduleName, replacement] of Object.entries(config.modules)) {
+					// Replace `var X = Package.moduleName.X;` with `var X = replacement;`
+					// Replace `var Y = Package['moduleName'].Y;` with `var Y = replacement;`
+					// If replacement is null, replace with `undefined`
+					const packageAccessRegex = new RegExp(`var\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*Package(?:\\.|\\[')${moduleName}(?:'\\])?\\.\\s*([A-Za-z_$][\\w$]*);`, 'g');
+					code = code.replace(packageAccessRegex, (_match, varName, exportName) => {
+						const replacementValue = replacement === null ? 'undefined' : replacement;
+						if (exportName === varName) {
+							console.log(`[meteor-packages] Replacing package access for ${moduleName} with ${replacementValue}`);
+							return `var ${varName} = ${replacementValue};`;
+						}
+						console.warn(`[meteor-packages] Replacing package access for ${moduleName}.${exportName} with ${replacementValue}.${exportName}`);
+						return `var ${varName} = ${replacementValue}.${exportName};`;
+						
+					});
+
+					// Replace `require("meteor/moduleName")` with the replacement
+					const requireRegex = new RegExp(`require\\(\\s*['"]meteor/${moduleName}['"]\\s*\\)`, 'g');
+					code = code.replace(requireRegex, (_match) => {
+						const replacementValue = replacement === null ? 'undefined' : replacement;
+						console.log(`[meteor-packages] Replacing require() for meteor/${moduleName} with ${replacementValue}`);
+						return replacementValue;
+					});
 				}
 
 				return {code, map: null};
@@ -169,9 +198,8 @@ ${exportLines}
 
 		const sanitized = Array.from(names).filter((name) => /^[A-Za-z_$][\w$]*$/.test(name));
 		exportCache.set(pkgName, sanitized);
-		if (debugExports) {
-			console.log(`[meteor-packages] exports for ${pkgName}:`, sanitized);
-		}
+		
+		console.log(`[meteor-packages] exports for ${pkgName}:`, sanitized);
 		return sanitized;
 	}
 
@@ -699,28 +727,29 @@ export default defineConfig({
 			external: ['react', 'react-dom'],
 		}),
 		meteor({
-			exclude: [
-				'es5-shim',
-				'webapp',
-				'zodern_types',
-				'typescript',
-				'babel-compiler',
-				'react-fast-refresh',
-				'webapp-hashing',
-				'ddp-server',
-				'minifier-css',
-				'standard-minifier-css',
-				'zodern_standard-minifier-js',
-				'hot-code-push',
-				'mongo-dev-server',
-				'ecmascript',
-				'ecmascript-runtime',
-				'ecmascript-runtime-client',
-				'babel-runtime',
-				'modern-browsers',
-				'promise',
-				'fetch'
-			],
+			modules: {
+				'es5-shim': null,
+				'webapp': null,
+				'zodern_types': null,
+				'typescript': null,
+				'babel-compiler': null,
+				'react-fast-refresh': null,
+				'webapp-hashing': null,
+				'ddp-server': null,
+				'minifier-css': null,
+				'standard-minifier-css': null,
+				'zodern_standard-minifier-js': null,
+				'hot-code-push': null,
+				'mongo-dev-server': null,
+				'ecmascript': null,
+				'ecmascript-runtime': null,
+				'ecmascript-runtime-client': null,
+				'babel-runtime': null,
+				'modern-browsers': null,
+				'shell-server': null,
+				'promise': 'window.Promise',
+				'fetch': 'window.fetch',
+			},
 		}),
 		react({
 			exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
