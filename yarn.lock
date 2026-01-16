@@ -9491,7 +9491,7 @@ __metadata:
     xml-encryption: "npm:~3.1.0"
     xml2js: "npm:~0.6.2"
     yaqrcode: "npm:^0.2.1"
-    zod: "npm:^3.24.1"
+    zod: "npm:~4.3.5"
     zustand: "npm:~5.0.8"
   languageName: unknown
   linkType: soft
@@ -37793,6 +37793,13 @@ __metadata:
   version: 3.24.1
   resolution: "zod@npm:3.24.1"
   checksum: 10/54e25956495dec22acb9399c168c6ba657ff279801a7fcd0530c414d867f1dcca279335e160af9b138dd70c332e17d548be4bc4d2f7eaf627dead50d914fec27
+  languageName: node
+  linkType: hard
+
+"zod@npm:~4.3.5":
+  version: 4.3.5
+  resolution: "zod@npm:4.3.5"
+  checksum: 10/3148bd52e56ab7c1641ec397e6be6eddbb1d8f5db71e95baab9bb9622a0ea49d8a385885fc1c22b90fa6d8c5234e051f4ef5d469cfe3fb90198d5a91402fd89c
   languageName: node
   linkType: hard
 
