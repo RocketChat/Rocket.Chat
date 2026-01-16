@@ -19,7 +19,7 @@ const debugExports = process.env.DEBUG_METEOR_VITE_EXPORTS === 'true';
 
 export function meteor(
 	config: {
-		modules: Record<string, null | string>
+		modules: Record<string, null | string>;
 	} = { modules: {} },
 ): Plugin {
 	if (!fs.existsSync(meteorManifestPath)) {
@@ -58,12 +58,17 @@ export function meteor(
 
 			return null;
 		},
-		transform(code, id, options) {
-			if (options?.ssr) {
-				return null;
-			}
+		transform: {
+			filter: {
+				// Only transform files in the Meteor packages
+				// Starting from .meteor/local/build/programs/web.browser/packages/
+				id: new RegExp(`^${meteorPackagesDir.replace(/\\/g, '\\\\')}/`),
+			},
+			handler(code, id, options) {
+				if (options?.ssr) {
+					return null;
+				}
 
-			if (id.startsWith(meteorPackagesDir)) {
 				const basename = path.basename(id);
 				this.info(`[meteor-packages] Transforming Meteor package module: ${basename}`);
 
@@ -90,7 +95,10 @@ export function meteor(
 					// Replace `var X = Package.moduleName.X;` with `var X = replacement;`
 					// Replace `var Y = Package['moduleName'].Y;` with `var Y = replacement;`
 					// If replacement is null, replace with `undefined`
-					const packageAccessRegex = new RegExp(`var\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*Package(?:\\.|\\[')${moduleName}(?:'\\])?\\.\\s*([A-Za-z_$][\\w$]*);`, 'g');
+					const packageAccessRegex = new RegExp(
+						`var\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*Package(?:\\.|\\[')${moduleName}(?:'\\])?\\.\\s*([A-Za-z_$][\\w$]*);`,
+						'g',
+					);
 					code = code.replace(packageAccessRegex, (_match, varName, exportName) => {
 						const replacementValue = replacement === null ? 'undefined' : replacement;
 						if (exportName === varName) {
@@ -99,10 +107,8 @@ export function meteor(
 						}
 						this.info(`[meteor-packages] Replacing package access for ${moduleName}.${exportName} with ${replacementValue}.${exportName}`);
 						return `var ${varName} = ${replacementValue}.${exportName};`;
-						
 					});
 
-					// Replace `require("meteor/moduleName")` with the replacement
 					const requireRegex = new RegExp(`require\\(\\s*['"]meteor/${moduleName}['"]\\s*\\)`, 'g');
 					code = code.replace(requireRegex, (_match) => {
 						const replacementValue = replacement === null ? 'undefined' : replacement;
@@ -111,8 +117,8 @@ export function meteor(
 					});
 				}
 
-				return {code, map: null};
-			}
+				return { code, map: null };
+			},
 		},
 		load(id) {
 			if (id === runtimeVirtualId) {
@@ -161,7 +167,7 @@ ${exportLines.join('\n')}
 
 		const sanitized = Array.from(names).filter((name) => /^[A-Za-z_$][\w$]*$/.test(name));
 		exportCache.set(pkgName, sanitized);
-		
+
 		console.log(`[meteor-packages] exports for ${pkgName}:`, sanitized);
 		return sanitized;
 	}
