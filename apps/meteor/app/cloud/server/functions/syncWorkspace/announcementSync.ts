@@ -1,4 +1,4 @@
-import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
+import { Cloud } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import * as z from 'zod';
 
@@ -11,45 +11,13 @@ import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '..
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
 import { handleAnnouncementsOnWorkspaceSync, handleNpsOnWorkspaceSync } from './handleCommsSync';
 
-const workspaceCommPayloadSchema = z.object({
-	workspaceId: z.string().optional(),
-	publicKey: z.string().optional(),
-	nps: z
-		.object({
-			id: z.string(),
-			startAt: z.string().datetime(),
-			expireAt: z.string().datetime(),
-		})
-		.optional(),
-	announcements: z.object({
-		create: z.array(
-			z.object({
-				_id: z.string(),
-				_updatedAt: z.string().datetime().optional(),
-				selector: z.object({
-					roles: z.array(z.string()),
-				}),
-				platform: z.array(z.enum(['web', 'mobile'])),
-				expireAt: z.string().datetime(),
-				startAt: z.string().datetime(),
-				createdBy: z.enum(['cloud', 'system']),
-				createdAt: z.string().datetime(),
-				dictionary: z.record(z.string(), z.record(z.string(), z.string())).optional(),
-				view: z.unknown(),
-				surface: z.enum(['banner', 'modal']),
-			}),
-		),
-		delete: z.array(z.string()).optional(),
-	}),
-});
-
 const fetchCloudAnnouncementsSync = async ({
 	token,
 	data,
 }: {
 	token: string;
 	data: Cloud.WorkspaceSyncRequestPayload;
-}): Promise<Serialized<Cloud.WorkspaceCommsResponsePayload>> => {
+}): Promise<Cloud.WorkspaceCommsResponsePayload> => {
 	const cloudUrl = settings.get<string>('Cloud_Url');
 	const response = await fetch(`${cloudUrl}/api/v3/comms/workspace`, {
 		method: 'POST',
@@ -70,13 +38,15 @@ const fetchCloudAnnouncementsSync = async ({
 
 	const payload = await response.json();
 
-	const assertWorkspaceCommPayload = workspaceCommPayloadSchema.safeParse(payload);
+	const result = Cloud.WorkspaceCommsResponsePayloadSchema.safeParse(payload);
 
-	if (!assertWorkspaceCommPayload.success) {
-		SystemLogger.error({ msg: 'workspaceCommPayloadSchema failed type validation', errors: assertWorkspaceCommPayload.error.issues });
+	if (!result.success) {
+		throw new CloudWorkspaceConnectionError('WorkspaceCommPayloadSchema failed type validation', {
+			cause: z.prettifyError(result.error),
+		});
 	}
 
-	return payload;
+	return result.data;
 };
 
 export async function announcementSync() {

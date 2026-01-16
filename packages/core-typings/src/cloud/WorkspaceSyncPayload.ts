@@ -1,41 +1,40 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import type * as UiKit from '@rocket.chat/ui-kit';
 import * as z from 'zod';
 
-import type { IBanner } from '../IBanner';
+import { IBannerSchema } from '../IBanner';
+import { AnnouncementSchema } from './Announcement';
+import { NpsSurveyAnnouncementSchema } from './NpsSurveyAnnouncement';
+import { TimestampSchema } from '../utils';
 
-interface NpsSurveyAnnouncement {
-	id: string;
-	startAt: Date;
-	expireAt: Date;
-}
-
-export interface WorkspaceSyncPayload {
-	workspaceId: string;
-	publicKey?: string;
-	trial?: {
-		trialing: boolean;
-		trialID: string;
-		endDate: Date;
-		marketing: {
-			utmContent: string;
-			utmMedium: string;
-			utmSource: string;
-			utmCampaign: string;
-		};
-		DowngradesToPlan: {
-			id: string;
-		};
-		trialRequested: boolean;
-	};
+export const WorkspaceSyncPayloadSchema = z.object({
+	workspaceId: z.string(),
+	publicKey: z.string().optional(),
+	trial: z
+		.object({
+			trialing: z.boolean(),
+			trialID: z.string(),
+			endDate: TimestampSchema,
+			marketing: z.object({
+				utmContent: z.string(),
+				utmMedium: z.string(),
+				utmSource: z.string(),
+				utmCampaign: z.string(),
+			}),
+			DowngradesToPlan: z.object({
+				id: z.string(),
+			}),
+			trialRequested: z.boolean(),
+		})
+		.optional(),
 	/** @deprecated */
-	nps?: NpsSurveyAnnouncement;
+	nps: NpsSurveyAnnouncementSchema.optional().meta({ deprecated: true }),
 	/** @deprecated */
-	banners?: IBanner[];
-}
+	banners: z.array(IBannerSchema).optional().meta({ deprecated: true }),
+});
 
-export interface WorkspaceSyncRequestPayload {
+export type WorkspaceSyncPayload = z.infer<typeof WorkspaceSyncPayloadSchema>;
+
+export type WorkspaceSyncRequestPayload = {
 	uniqueId: string;
 	workspaceId: string;
 	seats: number;
@@ -47,7 +46,7 @@ export interface WorkspaceSyncRequestPayload {
 	version: string;
 	licenseVersion: number;
 	connectionDisable: boolean;
-}
+};
 
 export const WorkspaceSyncResponseSchema = z.object({
 	workspaceId: z.string(),
@@ -59,21 +58,19 @@ export const WorkspaceSyncResponseSchema = z.object({
 
 export type WorkspaceSyncResponse = z.infer<typeof WorkspaceSyncResponseSchema>;
 
-export interface IAnnouncement extends IBanner {
-	selector?: {
-		roles?: string[];
-	};
-}
+export const WorkspaceCommsResponsePayloadSchema = z.object({
+	workspaceId: z.string().optional(),
+	publicKey: z.string().optional(),
+	nps: NpsSurveyAnnouncementSchema.nullish(),
+	announcements: z.object({
+		create: z.array(AnnouncementSchema),
+		delete: z.array(AnnouncementSchema.shape._id).optional(),
+	}),
+});
 
-export interface WorkspaceCommsResponsePayload {
-	nps?: NpsSurveyAnnouncement | null; // Potentially consolidate into announcements
-	announcements?: {
-		create: IAnnouncement[];
-		delete: IAnnouncement['_id'][];
-	};
-}
+export type WorkspaceCommsResponsePayload = z.infer<typeof WorkspaceCommsResponsePayloadSchema>;
 
-export interface WorkspaceInteractionResponsePayload {
+export type WorkspaceInteractionResponsePayload = {
 	serverInteraction: UiKit.ServerInteraction;
 	serverAction?: 'syncWorkspace';
-}
+};
