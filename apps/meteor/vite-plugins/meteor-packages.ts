@@ -16,7 +16,6 @@ const runtimeVirtualId = '\0meteor-runtime';
 const runtimeImportId = 'virtual:meteor-runtime';
 const packageVirtualPrefix = '\0meteor-package:';
 const debugExports = process.env.DEBUG_METEOR_VITE_EXPORTS === 'true';
-const rocketchatInfoAlias = 'rocketchat.info';
 
 export function meteor(
 	config: {
@@ -57,11 +56,6 @@ export function meteor(
 				return packageVirtualPrefix + pkgName;
 			}
 
-			if (source.startsWith(rocketchatInfoAlias)) {
-				const pkgName = source.split('?')[0];
-				return packageVirtualPrefix + pkgName;
-			}
-
 			return null;
 		},
 		transform(code, id, options) {
@@ -71,14 +65,14 @@ export function meteor(
 
 			if (id.startsWith(meteorPackagesDir)) {
 				const basename = path.basename(id);
-				console.log(`[meteor-packages] Transforming Meteor package module: ${basename}`);
+				this.info(`[meteor-packages] Transforming Meteor package module: ${basename}`);
 
 				if (basename === 'modules.js') {
 					// Remove `install("<name>")` and `install("<name>", "<mainModule>")` calls for packages being replaced
 					for (const moduleName of Object.keys(config.modules)) {
 						const installRegex = new RegExp(`install\\(\\s*['"]${moduleName}['"](?:\\s*,\\s*['"][^'"]+['"])?\\s*\\);?`, 'g');
 						code = code.replace(installRegex, (_match) => {
-							console.log(`[meteor-packages] Removing install() call for replaced package: ${moduleName}`);
+							this.info(`[meteor-packages] Removing install() call for replaced package: ${moduleName}`);
 							return '';
 						});
 					}
@@ -100,10 +94,10 @@ export function meteor(
 					code = code.replace(packageAccessRegex, (_match, varName, exportName) => {
 						const replacementValue = replacement === null ? 'undefined' : replacement;
 						if (exportName === varName) {
-							console.log(`[meteor-packages] Replacing package access for ${moduleName} with ${replacementValue}`);
+							this.info(`[meteor-packages] Replacing package access for ${moduleName} with ${replacementValue}`);
 							return `var ${varName} = ${replacementValue};`;
 						}
-						console.warn(`[meteor-packages] Replacing package access for ${moduleName}.${exportName} with ${replacementValue}.${exportName}`);
+						this.info(`[meteor-packages] Replacing package access for ${moduleName}.${exportName} with ${replacementValue}.${exportName}`);
 						return `var ${varName} = ${replacementValue}.${exportName};`;
 						
 					});
@@ -112,7 +106,7 @@ export function meteor(
 					const requireRegex = new RegExp(`require\\(\\s*['"]meteor/${moduleName}['"]\\s*\\)`, 'g');
 					code = code.replace(requireRegex, (_match) => {
 						const replacementValue = replacement === null ? 'undefined' : replacement;
-						console.log(`[meteor-packages] Replacing require() for meteor/${moduleName} with ${replacementValue}`);
+						this.info(`[meteor-packages] Replacing require() for meteor/${moduleName} with ${replacementValue}`);
 						return replacementValue;
 					});
 				}
@@ -123,35 +117,6 @@ export function meteor(
 		load(id) {
 			if (id === runtimeVirtualId) {
 				return runtimeModuleSource;
-			}
-
-			if (id.includes(rocketchatInfoAlias)) {
-				return `export const Info = {
-    "version": "8.1.0-develop",
-    "build": {
-        "date": "2026-01-15T15:58:39.159Z",
-        "nodeVersion": "v22.18.0",
-        "arch": "arm64",
-        "platform": "darwin",
-        "osRelease": "24.6.0",
-        "totalMemory": 38654705664,
-        "freeMemory": 261406720,
-        "cpus": 14
-    },
-    "marketplaceApiVersion": "1.59.0",
-    "commit": {
-        "hash": "e62836584b5ab204fe4091fa3362869fd6351264",
-        "date": "Wed Jan 14 17:04:03 2026 -0300",
-        "author": "Matheus Cardoso",
-        "subject": "vite-meteor [skip ci]",
-        "tag": "8.0.0",
-        "branch": "vite-meteor"
-    }
-};
-				export const minimumClientVersions = {
-    "desktop": "3.9.6",
-    "mobile": "4.39.0"
-};`;
 			}
 
 			if (id.includes(packageVirtualPrefix)) {
@@ -630,7 +595,7 @@ ${loadStatements}
 	function buildRuntimeConfig(manifestData: { manifest: { path: string; hash: string }[] }) {
 		const releaseVersion = readReleaseVersion();
 		const appId = readAppId();
-		const defaultRootUrl = process.env.VITE_METEOR_ROOT_URL || process.env.METEOR_ROOT_URL || 'https://stable.qa.rocket.chat/';
+		const defaultRootUrl = process.env.VITE_METEOR_ROOT_URL || process.env.METEOR_ROOT_URL || 'http://localhost:3000/';
 		const rootUrlPrefix = process.env.VITE_METEOR_ROOT_URL_PATH_PREFIX || '';
 		const ddpUrl = process.env.VITE_METEOR_DDP_URL || defaultRootUrl;
 		const publicSettings = loadPublicSettings();
