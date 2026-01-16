@@ -1,11 +1,6 @@
 import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
 
-import {
-	updateAuditedByUser,
-	updateAuditedBySystem,
-	updateAuditedByApp,
-	resetAuditedSettingByUser,
-} from './auditedSettingUpdates';
+import { updateAuditedByUser, updateAuditedBySystem, updateAuditedByApp, resetAuditedSettingByUser } from './auditedSettingUpdates';
 
 const mockCreateAuditServerEvent = jest.fn();
 jest.mock('@rocket.chat/models', () => ({
