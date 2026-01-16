@@ -5,6 +5,7 @@ import { unlink, rename, writeFile } from 'fs/promises';
 import type * as http from 'http';
 import type * as https from 'https';
 import stream from 'stream';
+import { pipeline } from 'stream/promises';
 import URL from 'url';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
@@ -13,6 +14,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { isE2EEUpload, type IUpload } from '@rocket.chat/core-typings';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
+import ExifTransformer from 'exif-be-gone';
 import filesize from 'filesize';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -394,8 +396,9 @@ export const FileUpload = {
 				return;
 			}
 
-			await s.rotate().toFile(`${tmpFile}.tmp`);
-
+			// By default, the metadata is not preserved when rotating the image.
+			await s.rotate().withMetadata().toFile(`${tmpFile}.tmp`);
+			console.log('rotating image', file._id);
 			await unlink(tmpFile);
 
 			await rename(`${tmpFile}.tmp`, tmpFile);
@@ -403,6 +406,39 @@ export const FileUpload = {
 		};
 
 		await reorientation();
+
+		const stripExif = settings.get('Message_Attachments_Strip_Exif');
+
+		if (stripExif) {
+			const exifTmpPath = `${tmpFile}.exif-stripped`;
+
+			try {
+				await new Promise<void>((resolve, reject) => {
+					const readStream = fs.createReadStream(tmpFile);
+					const writeStream = fs.createWriteStream(exifTmpPath);
+					const exifTransformer = new ExifTransformer();
+
+					readStream.pipe(exifTransformer).pipe(writeStream);
+					writeStream.on('finish', () => resolve());
+					readStream.on('error', reject);
+					writeStream.on('error', reject);
+				});
+				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
+				// const exifTransformer = new ExifTransformer();
+				// const readStream = fs.createReadStream(tmpFile);
+				// const writeStream = fs.createWriteStream(exifTmpPath);
+
+				// readStream.pipe(exifTransformer).pipe(writeStream);
+
+				// await pipeline(fs.createReadStream(tmpFile), exifTransformer, fs.createWriteStream(exifTmpPath));
+
+				await rename(exifTmpPath, tmpFile);
+			} catch (err) {
+				console.log('ERROR', err);
+				await unlink(exifTmpPath);
+				SystemLogger.error(`Error stripping exif from image: ${err}`);
+			}
+		}
 
 		const { size } = await fs.lstatSync(tmpFile);
 		await this.getCollection().updateOne(
@@ -833,7 +869,7 @@ export class FileUploadClass {
 		if (filter?.check) {
 			await filter.check(fileData, streamOrBuffer);
 		}
-
+		console.trace('insert');
 		return this._doInsert(fileData, streamOrBuffer, { session: options?.session });
 	}
 }
