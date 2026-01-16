@@ -4,12 +4,14 @@ import react from '@vitejs/plugin-react';
 import { defineConfig, esmExternalRequirePlugin } from 'vite';
 
 import { meteor } from './vite-plugins/meteor-packages';
+import { rocketchatInfo } from './vite-plugins/rocketchat-info';
 
-const HOST_URL = new URL('https://stable.qa.rocket.chat/');
+const HOST_URL = new URL('http://localhost:3000/');
 
 export default defineConfig({
 	appType: 'spa',
 	plugins: [
+		rocketchatInfo(),
 		esmExternalRequirePlugin({
 			external: ['react', 'react-dom'],
 		}),
@@ -37,15 +39,15 @@ export default defineConfig({
 				'zodern_standard-minifier-js': null,
 				'zodern_types': null,
 				'ddp-rate-limiter': null,
-				'url': '{ URL, URLSearchParams }',
+				// 'url': '{ URL, URLSearchParams }',
 				'email': null,
 				'routepolicy': null,
 				'oauth1': null,
 				'oauth2': null,
 				'rocketchat_version': null,
-				'session': null,
-				'ddp': 'Package["ddp-client"].DDP',
-				'meteor-base': null,
+				// 'session': null,
+				// 'ddp': 'Package["ddp-client"].DDP',
+				// 'meteor-base': null,
 				'meteorhacks_inject-initial': null,
 				'rocketchat_livechat': null,
 				'rocketchat_mongo-config': null,
