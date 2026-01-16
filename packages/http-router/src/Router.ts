@@ -186,7 +186,7 @@ export class Router<
 	}
 
 	protected parseQueryParams(request: HonoRequest) {
-		return qs.parse(request.raw.url.split('?')?.[1] || '');
+		return qs.parse(request.raw.url.split('?')?.[1] || '', { arrayLimit: 1000, throwOnLimitExceeded: true });
 	}
 
 	protected method<TSubPathPattern extends string, TOptions extends TypedOptions>(
