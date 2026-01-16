@@ -5,8 +5,9 @@ import { parse } from '@babel/parser';
 import type { ParseResult } from '@babel/parser';
 import type { CallExpression, Node } from '@babel/types';
 import react from '@vitejs/plugin-react';
-import { defineConfig, type Plugin } from 'vite';
-import { esmExternalRequirePlugin } from 'vite';
+import { defineConfig, esmExternalRequirePlugin, type Plugin } from 'vite';
+
+const HOST_URL = new URL('https://stable.qa.rocket.chat/');
 
 const meteorProgramDir = path.resolve('.meteor/local/build/programs/web.browser');
 const meteorPackagesDir = path.join(meteorProgramDir, 'packages');
@@ -70,6 +71,27 @@ function meteor(
 			}
 
 			return null;
+		},
+		transform(code, id, options) {
+			if (options?.ssr) {
+				return null;
+			}
+			// Replace `var Promise = Package.promise.Promise;` with `var Promise = window.Promise;` to avoid
+			// Meteor's Promise polyfill interfering with Vite's HMR and other features.
+			if (id.startsWith(meteorPackagesDir)) {
+				if (code.includes('var Promise = Package.promise.Promise;')) {
+					code = code.replace('var Promise = Package.promise.Promise;', 'var Promise = window.Promise;');
+				}
+				if (code.includes('var fetch = Package.fetch.fetch;')) {
+					code = code.replace('var fetch = Package.fetch.fetch;', 'var fetch = window.fetch;');
+				}
+
+				if (code.includes(`fetch = require('meteor/fetch').fetch;`)) {
+					code = code.replace(`fetch = require('meteor/fetch').fetch;`, 'fetch = window.fetch;');
+				}
+
+				return {code, map: null};
+			}
 		},
 		load(id) {
 			if (id === runtimeVirtualId) {
@@ -578,7 +600,7 @@ ${loadStatements}
 	function buildRuntimeConfig(manifestData: { manifest: { path: string; hash: string }[] }) {
 		const releaseVersion = readReleaseVersion();
 		const appId = readAppId();
-		const defaultRootUrl = process.env.VITE_METEOR_ROOT_URL || process.env.METEOR_ROOT_URL || 'http://localhost:3000/';
+		const defaultRootUrl = process.env.VITE_METEOR_ROOT_URL || process.env.METEOR_ROOT_URL || 'https://stable.qa.rocket.chat/';
 		const rootUrlPrefix = process.env.VITE_METEOR_ROOT_URL_PATH_PREFIX || '';
 		const ddpUrl = process.env.VITE_METEOR_DDP_URL || defaultRootUrl;
 		const publicSettings = loadPublicSettings();
@@ -694,6 +716,10 @@ export default defineConfig({
 				'ecmascript',
 				'ecmascript-runtime',
 				'ecmascript-runtime-client',
+				'babel-runtime',
+				'modern-browsers',
+				'promise',
+				'fetch'
 			],
 		}),
 		react({
@@ -737,13 +763,13 @@ export default defineConfig({
 	},
 	server: {
 		cors: true,
-		allowedHosts: ['localhost', '127.0.0.1'],
+		allowedHosts: ['localhost', '127.0.0.1', HOST_URL.hostname],
 		proxy: {
-			'/api': { target: 'http://localhost:3000', changeOrigin: true },
-			'/avatar': { target: 'http://localhost:3000', changeOrigin: true },
-			'/assets': { target: 'http://localhost:3000', changeOrigin: true },
-			'/sockjs': { target: 'ws://localhost:3000', ws: true, rewriteWsOrigin: true },
-			'/sockjs/info': { target: 'http://localhost:3000', changeOrigin: true },
+			'/api': { target: HOST_URL.origin, changeOrigin: true },
+			'/avatar': { target: HOST_URL.origin, changeOrigin: true },
+			'/assets': { target: HOST_URL.origin, changeOrigin: true },
+			'/sockjs': { target: `ws://${HOST_URL.hostname}`, ws: true, rewriteWsOrigin: true },
+			'/sockjs/info': { target: HOST_URL.origin, changeOrigin: true },
 		},
 	},
 });
