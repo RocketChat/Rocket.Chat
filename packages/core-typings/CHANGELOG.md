@@ -1,5 +1,7 @@
 # @rocket.chat/core-typings
 
+## 7.8.6
+
 ## 7.8.5
 
 ## 7.8.4
