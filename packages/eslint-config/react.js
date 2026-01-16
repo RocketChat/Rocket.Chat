@@ -12,6 +12,7 @@ const config = {
 		'react/jsx-no-undef': 'error',
 		'react/jsx-uses-react': 'error',
 		'react/jsx-uses-vars': 'error',
+		'react/no-children-prop': 'error',
 		'react/no-multi-comp': 'error',
 		'jsx-a11y/no-autofocus': [2, { ignoreNonDOM: true }],
 	},
