@@ -473,6 +473,42 @@ describe('[Incoming Integrations]', () => {
 
 			await removeIntegration(withScript._id, 'incoming');
 		});
+
+		it('should return a response with scriptCompiled and without scriptError when the script is valid', async () => {
+			const res = await request
+				.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test',
+					enabled: true,
+					alias: 'test',
+					username: 'rocket.cat',
+					scriptEnabled: true,
+					scriptEngine: 'isolated-vm',
+					channel: '#general',
+					script: `
+						class Script {
+							process_incoming_request({ request }) {
+								return {
+									content:{
+										text: request.content.text
+									}
+								};
+							}
+						}
+					`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('integration').and.to.be.an('object');
+			expect(res.body.integration).to.not.have.property('scriptError');
+			expect(res.body.integration).to.have.property('scriptCompiled');
+			const integrationId = res.body.integration._id;
+			await removeIntegration(integrationId, 'incoming');
+		});
 	});
 
 	describe('[/integrations.history]', () => {
