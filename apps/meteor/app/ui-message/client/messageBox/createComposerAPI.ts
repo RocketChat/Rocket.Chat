@@ -8,7 +8,12 @@ import { formattingButtons } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
-export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string, quoteChainLimit: number): ComposerAPI => {
+export const createComposerAPI = (
+	input: HTMLTextAreaElement,
+	storageID: string,
+	quoteChainLimit: number,
+	composerRef: React.RefObject<HTMLElement>,
+): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
@@ -292,6 +297,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 	};
 
 	return {
+		composerRef,
 		replaceText,
 		insertNewLine,
 		blur: () => input.blur(),
