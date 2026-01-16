@@ -23,7 +23,7 @@ import { memo, useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 
 import FilePreview from './FilePreview';
-import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
+import { fileUploadIsValidContentType } from '../../../../../app/utils/client/restrictions';
 import { getMimeTypeFromFileName } from '../../../../../app/utils/lib/mimeTypes';
 import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 
