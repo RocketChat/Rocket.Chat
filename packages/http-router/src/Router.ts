@@ -201,7 +201,14 @@ export class Router<
 		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
 			const { req, res } = c;
 
-			const queryParams = this.parseQueryParams(req);
+			let queryParams: Record<string, any>;
+			try {
+				queryParams = this.parseQueryParams(req);
+			} catch (e) {
+				logger.warn({ msg: 'Error parsing query params for request', path: req.path, err: e });
+
+				return c.json({ success: false, error: 'Invalid query parameters' }, 400);
+			}
 
 			if (options.query) {
 				const validatorFn = options.query;

@@ -5,6 +5,7 @@ import { Router } from '@rocket.chat/http-router';
 import type { Context } from 'hono';
 
 import type { TypedOptions } from './definition';
+import { logger } from './logger';
 
 type HonoContext = Context<{
 	Bindings: { incoming: IncomingMessage };
@@ -37,7 +38,17 @@ export class RocketChatAPIRouter<
 	protected override convertActionToHandler(action: APIActionHandler): (c: HonoContext) => Promise<ResponseSchema<TypedOptions>> {
 		return async (c: HonoContext): Promise<ResponseSchema<TypedOptions>> => {
 			const { req, res } = c;
-			const queryParams = this.parseQueryParams(req);
+
+			let queryParams: Record<string, any>;
+			try {
+				queryParams = this.parseQueryParams(req);
+			} catch (e) {
+				logger.warn({ msg: 'Error parsing query params for request', path: req.path, err: e });
+
+				c.json({ status: 'error', message: 'Invalid query parameters' }, 400);
+				return;
+			}
+
 			const bodyParams = await this.parseBodyParams<{ bodyParamsOverride: Record<string, any> }>({
 				request: req,
 				extra: { bodyParamsOverride: c.var['bodyParams-override'] || {} },
