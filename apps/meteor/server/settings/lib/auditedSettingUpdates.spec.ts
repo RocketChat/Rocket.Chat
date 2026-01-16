@@ -27,7 +27,7 @@ describe('auditedSettingUpdates', () => {
 	});
 
 	describe('Masking sensitive settings', () => {
-		it('should mask password type settings with more than 3 characters', () => {
+		it('should mask password type settings with more than 8 characters', () => {
 			const settingId = 'SMTP_Password';
 			const originalValue = 'secretpassword123';
 			const newValue = 'newpassword456';
@@ -63,7 +63,7 @@ describe('auditedSettingUpdates', () => {
 			);
 		});
 
-		it('should mask password type settings with 3 or fewer characters completely', () => {
+		it('should mask password type settings with 8 or fewer characters completely', () => {
 			const settingId = 'Short_Password';
 			const originalValue = 'abc';
 			const newValue = 'xy';
@@ -76,7 +76,7 @@ describe('auditedSettingUpdates', () => {
 
 			const actor = {
 				_id: 'user123',
-				username: 'testuser',
+				username: 'testuser1234',
 				ip: '127.0.0.1',
 				useragent: 'test-agent',
 			};
@@ -89,8 +89,8 @@ describe('auditedSettingUpdates', () => {
 				'settings.changed',
 				{
 					id: settingId,
-					previous: '***',
-					current: '**',
+					previous: '********',
+					current: '*******',
 				},
 				{
 					type: 'user',
@@ -490,7 +490,7 @@ describe('auditedSettingUpdates', () => {
 			);
 		});
 
-		it('should handle exactly 3 character values', () => {
+		it('should handle exactly 8 character values', () => {
 			const settingId = 'Three_Char_Password';
 
 			mockSettings.set(settingId, {
@@ -514,8 +514,8 @@ describe('auditedSettingUpdates', () => {
 				'settings.changed',
 				{
 					id: settingId,
-					previous: '***',
-					current: '***',
+					previous: '********',
+					current: '********',
 				},
 				{
 					type: 'user',

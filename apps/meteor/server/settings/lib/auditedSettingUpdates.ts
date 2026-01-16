@@ -11,7 +11,7 @@ import { settings } from '../../../app/settings/server/cached';
 
 const shouldMaskSettingInAudit = (settingId: ISetting['_id']): boolean => {
 	const setting = settings.getSetting(settingId);
-	return Boolean(setting && (setting.type === 'password' || setting.secret === true));
+	return Boolean(setting && (setting.type === 'password' || (setting.type === 'string' && setting.secret === true)));
 };
 
 const maskIfNeeded = (settingId: ISetting['_id'], value: SettingValue): SettingValue => {
@@ -28,11 +28,11 @@ const maskIfNeeded = (settingId: ISetting['_id'], value: SettingValue): SettingV
 
 	let maskedValue: string;
 
-	if (valueLength <= 3) {
+	if (valueLength <= 8) {
 		maskedValue = '*'.repeat(valueLength);
 	} else {
-		const visiblePart = valueString.substring(0, 3);
-		const maskedPart = '*'.repeat(valueLength - 3);
+		const visiblePart = valueString.substring(0, 8);
+		const maskedPart = '*'.repeat(valueLength - 8);
 		maskedValue = visiblePart + maskedPart;
 	}
 
