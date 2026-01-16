@@ -228,6 +228,7 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
 
 			// https://github.com/node-fetch/node-fetch/issues/1673 - body not consumed == open socket
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			void response.arrayBuffer().catch(() => {});
 		}
 	} finally {
