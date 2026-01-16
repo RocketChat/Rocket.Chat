@@ -47,21 +47,15 @@ const PeerCard = ({ displayName, avatarUrl, muted, held, sharing }: PeerCardProp
 				bottomLeft: <GenericCardNameAndAudioStateSlot muted={muted} held={held} displayName={displayName} />,
 				bottomRight: sharing ? <GenericCardSharingSlot /> : null,
 			}}
-			// width='300px'
-			// height='300px'
-			flexGrow={0}
-			flexShrink={0}
+			maxWidth={300}
+			maxHeight={300}
+			width='200px'
+			height='200px'
+			// flexGrow={0}
+			// flexShrink={0}
 		>
-			<Box
-				display='flex'
-				flexDirection='column'
-				alignItems='center'
-				justifyItems='center'
-				justifyContent='center'
-				flexGrow={1}
-				flexShrink={0}
-			>
-				<Box mbe={8}>{avatarUrl ? <Avatar url={avatarUrl} size='x124' /> : <Icon name='user' size='x124' />}</Box>
+			<Box display='flex' alignItems='center' justifyItems='center' justifyContent='center' width='100%' height='100%'>
+				<Box mbe={8}>{avatarUrl ? <Avatar url={avatarUrl} size='x48' /> : <Icon name='user' size='x48' />}</Box>
 			</Box>
 		</GenericCard>
 	);

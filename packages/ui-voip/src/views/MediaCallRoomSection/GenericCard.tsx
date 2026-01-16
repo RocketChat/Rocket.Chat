@@ -3,15 +3,17 @@ import { Box, Palette } from '@rocket.chat/fuselage';
 import styled from '@rocket.chat/styled';
 import type { ReactNode } from 'react';
 
+export type GenericCardSlots = {
+	topLeft?: ReactNode;
+	topRight?: ReactNode;
+	bottomLeft?: ReactNode;
+	bottomRight?: ReactNode;
+};
+
 type GenericCardProps = {
 	children: ReactNode;
 	title: string;
-	slots?: {
-		topLeft?: ReactNode;
-		topRight?: ReactNode;
-		bottomLeft?: ReactNode;
-		bottomRight?: ReactNode;
-	};
+	slots?: GenericCardSlots;
 	maxWidth?: string | number;
 	maxHeight?: string | number;
 	width?: string | number;
@@ -79,16 +81,24 @@ const GenericCard = ({
 	flexGrow = 1,
 	flexShrink = 1,
 }: GenericCardProps) => {
+	console.log({
+		flexGrow,
+		flexShrink,
+		maxWidth,
+		maxHeight,
+		width,
+		height,
+	});
 	return (
 		<Box
 			position='relative'
-			display='flex'
-			flexGrow={flexGrow}
-			flexShrink={flexShrink}
+			// display='flex'
+			// flexGrow={flexGrow}
+			// flexShrink={flexShrink}
 			overflow='hidden'
-			alignItems='center'
-			justifyContent='center'
-			role='region' // TODO: role???
+			// alignItems='center'
+			// justifyContent='center'
+			// role='region' // TODO: role???
 			aria-labelledby={title}
 			title={title}
 			border='1px solid'
@@ -96,13 +106,15 @@ const GenericCard = ({
 			borderColor='stroke-light'
 			className={boxShadow}
 			backgroundColor='surface-light'
-			minHeight='240px'
-			minWidth='320px'
+			// minHeight='240px'
+			// minWidth='320px'
 			maxHeight={maxHeight}
 			maxWidth={maxWidth}
 			width={width}
 			height={height}
-			m={8}
+			// m={8}
+			w='full'
+			h='full'
 		>
 			{children}
 			{slots &&
