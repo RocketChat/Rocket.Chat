@@ -1,6 +1,6 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery, type UseQueryResult } from '@tanstack/react-query';
-import type { IMessage } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
