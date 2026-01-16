@@ -10523,6 +10523,7 @@ __metadata:
     "@vitejs/plugin-react": "npm:~4.5.2"
     codemirror: "npm:^6.0.2"
     eslint: "npm:~8.45.0"
+    eslint-plugin-react: "npm:~7.37.5"
     eslint-plugin-react-hooks: "npm:^5.0.0"
     eslint-plugin-react-refresh: "npm:^0.4.24"
     eslint4b-prebuilt: "npm:^6.7.2"
