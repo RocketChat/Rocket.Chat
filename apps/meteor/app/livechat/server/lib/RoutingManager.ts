@@ -257,7 +257,8 @@ export const RoutingManager: Routing = {
 			return room;
 		}
 
-		const lockAcquired = await Users.acquireAgentLock(agent.agentId);
+		const lockTime = new Date();
+		const lockAcquired = await Users.acquireAgentLock(agent.agentId, lockTime);
 		if (!lockAcquired) {
 			logger.debug({
 				msg: 'Cannot take inquiry because agent is currently locked by another process',
@@ -278,7 +279,7 @@ export const RoutingManager: Routing = {
 					options,
 				});
 			} catch (e) {
-				await Users.releaseAgentLock(agent.agentId);
+				await Users.releaseAgentLock(agent.agentId, lockTime);
 				if (options.clientAction && !options.forwardingToDepartment) {
 					throw e;
 				}
@@ -326,8 +327,8 @@ export const RoutingManager: Routing = {
 
 			return roomAfterUpdate;
 		} finally {
-			if (agent?.agentId) {
-				await Users.releaseAgentLock(agent.agentId);
+			if (agent?.agentId && lockAcquired) {
+				await Users.releaseAgentLock(agent.agentId, lockTime);
 			}
 		}
 	},

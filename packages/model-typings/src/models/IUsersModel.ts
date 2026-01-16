@@ -138,8 +138,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		queueInfo: { chats: number; chatsForDepartment?: number };
 	}>;
 
-	acquireAgentLock(agentId: IUser['_id'], lockTimeoutMs?: number): Promise<boolean>;
-	releaseAgentLock(agentId: IUser['_id']): Promise<boolean>;
+	acquireAgentLock(agentId: IUser['_id'], lockTime: Date, lockTimeoutMs?: number): Promise<boolean>;
+	releaseAgentLock(agentId: IUser['_id'], lockTime: Date): Promise<boolean>;
 
 	findAllResumeTokensByUserId(userId: IUser['_id']): Promise<{ tokens: IMeteorLoginToken[] }[]>;
 

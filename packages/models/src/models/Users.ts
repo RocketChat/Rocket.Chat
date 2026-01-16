@@ -839,7 +839,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return agent;
 	}
 
-	async acquireAgentLock(agentId: IUser['_id'], lockTimeoutMs = 5000): Promise<boolean> {
+	async acquireAgentLock(agentId: IUser['_id'], lockTime: Date, lockTimeoutMs = 5000): Promise<boolean> {
 		const result = await this.updateOne(
 			{
 				_id: agentId,
@@ -848,7 +848,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{
 				$set: {
 					agentLocked: true,
-					agentLockedAt: new Date(),
+					agentLockedAt: lockTime,
 				},
 			},
 		);
@@ -856,11 +856,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return result.modifiedCount > 0;
 	}
 
-	async releaseAgentLock(agentId: IUser['_id']): Promise<boolean> {
+	async releaseAgentLock(agentId: IUser['_id'], lockTime: Date): Promise<boolean> {
 		const result = await this.updateOne(
 			{
 				_id: agentId,
 				agentLocked: true,
+				agentLockedAt: lockTime,
 			},
 			{
 				$unset: {
