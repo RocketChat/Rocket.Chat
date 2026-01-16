@@ -62,10 +62,12 @@ export const WorkspaceCommsResponsePayloadSchema = z.object({
 	workspaceId: z.string().optional(),
 	publicKey: z.string().optional(),
 	nps: NpsSurveyAnnouncementSchema.nullish(),
-	announcements: z.object({
-		create: z.array(AnnouncementSchema),
-		delete: z.array(AnnouncementSchema.shape._id).optional(),
-	}),
+	announcements: z
+		.object({
+			create: z.array(AnnouncementSchema),
+			delete: z.array(AnnouncementSchema.shape._id).optional(),
+		})
+		.optional(),
 });
 
 export type WorkspaceCommsResponsePayload = z.infer<typeof WorkspaceCommsResponsePayloadSchema>;
