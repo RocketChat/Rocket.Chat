@@ -1,4 +1,4 @@
-export { WorkspaceLicensePayload } from './WorkspaceLicensePayload';
+export { WorkspaceLicensePayload, WorkspaceLicensePayloadSchema } from './WorkspaceLicensePayload';
 export {
 	IAnnouncement,
 	WorkspaceSyncPayload,

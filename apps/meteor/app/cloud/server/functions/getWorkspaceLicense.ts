@@ -1,4 +1,4 @@
-import type { Cloud, Serialized } from '@rocket.chat/core-typings';
+import { Cloud } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import * as z from 'zod';
@@ -11,15 +11,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { LICENSE_VERSION } from '../license';
 
-const workspaceLicensePayloadSchema = z.object({
-	version: z.number(),
-	address: z.string(),
-	license: z.string(),
-	updatedAt: z.string().datetime(),
-	expireAt: z.string().datetime(),
-});
-
-const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): Promise<Serialized<Cloud.WorkspaceLicensePayload>> => {
+const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): Promise<Cloud.WorkspaceLicensePayload> => {
 	const workspaceRegistrationClientUri = settings.get<string>('Cloud_Workspace_Registration_Client_Uri');
 	const response = await fetch(`${workspaceRegistrationClientUri}/license`, {
 		headers: {
@@ -41,13 +33,15 @@ const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): 
 
 	const payload = await response.json();
 
-	const assertWorkspaceLicensePayload = workspaceLicensePayloadSchema.safeParse(payload);
+	const result = Cloud.WorkspaceLicensePayloadSchema.safeParse(payload);
 
-	if (!assertWorkspaceLicensePayload.success) {
-		SystemLogger.error({ msg: 'workspaceLicensePayloadSchema failed type validation', errors: assertWorkspaceLicensePayload.error.issues });
+	if (!result.success) {
+		throw new CloudWorkspaceLicenseError('WorkspaceLicensePayloadSchema failed type validation', {
+			cause: z.prettifyError(result.error),
+		});
 	}
 
-	return payload;
+	return result.data;
 };
 
 export async function getWorkspaceLicense() {
@@ -66,7 +60,7 @@ export async function getWorkspaceLicense() {
 
 		const payload = await fetchCloudWorkspaceLicensePayload({ token });
 
-		if (currentLicense.value && Date.parse(payload.updatedAt) <= currentLicense._updatedAt.getTime()) {
+		if (currentLicense.value && payload.updatedAt.getTime() <= currentLicense._updatedAt.getTime()) {
 			return;
 		}
 		await callbacks.run('workspaceLicenseChanged', payload.license);
