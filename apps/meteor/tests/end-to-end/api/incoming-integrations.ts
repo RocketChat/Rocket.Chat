@@ -475,6 +475,7 @@ describe('[Incoming Integrations]', () => {
 		});
 
 		it('should return a response with scriptCompiled and without scriptError when the script is valid', async () => {
+			await updatePermission('manage-own-incoming-integrations', ['admin']);
 			const res = await request
 				.post(api('integrations.create'))
 				.set(credentials)
