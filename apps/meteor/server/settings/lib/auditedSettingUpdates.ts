@@ -31,9 +31,7 @@ const maskIfNeeded = (settingId: ISetting['_id'], value: SettingValue): SettingV
 	if (valueLength <= 8) {
 		maskedValue = '*'.repeat(valueLength);
 	} else {
-		const visiblePart = valueString.substring(0, 8);
-		const maskedPart = '*'.repeat(valueLength - 8);
-		maskedValue = visiblePart + maskedPart;
+		maskedValue = `${valueString.substring(0, 8)}${'*****'}`
 	}
 
 	return maskedValue;
