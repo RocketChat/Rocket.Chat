@@ -36,11 +36,6 @@ function meteor(
 		const pkgName = entry.path.replace(/^packages\//, '').replace(/\.js$/, '');
 		return !Object.keys(config.modules).includes(pkgName);
 	});
-	if (packageEntries.length === 0) {
-		throw new Error(
-			"[meteor-packages] Unable to locate any Meteor client package bundles. Run 'npm run start -- --once' to regenerate .meteor/local build artifacts.",
-		);
-	}
 	const runtimeModuleSource = createRuntimeModuleSource(packageEntries, buildRuntimeConfig(manifest));
 
 	const packagePathMap = new Map(packageEntries.map((entry) => [entry.path.replace(/^packages\//, '').replace(/\.js$/, ''), entry.path]));
@@ -90,8 +85,14 @@ function meteor(
 							return '';
 						});
 					}
-
 				}
+
+				// Replace Package['core-runtime'].queue(moduleName, function () { ... }); with await Package['core-runtime'].queue(moduleName, async function () { ... });
+				// const queueRegex = new RegExp(`Package\\[['"]core-runtime['"]\\]\\.queue\\(\\s*(['"][^'"]+['"])\\s*,\\s*function\\s*\\(\\)\\s*{`, 'g');
+				// code = code.replace(queueRegex, (_match, p1) => {
+				// 	console.log(`[meteor-packages] Making core-runtime queue function async for module: ${p1}`);
+				// 	return `await Package['core-runtime'].queue(${p1}, async function () {`;
+				// });
 
 				// Replace modules according to the provided mapping
 				for (const [moduleName, replacement] of Object.entries(config.modules)) {
@@ -160,7 +161,7 @@ function meteor(
 				const pkgName = id.slice(packageVirtualPrefix.length);
 
 				const exportNames = getExportNames(pkgName);
-				const exportLines = exportNames.map(generateExportStatement).join('\n');
+				const exportLines = exportNames.map(generateExportStatement);
 
 				return `import '${runtimeImportId}';
 const __meteorRegistry = globalThis.Package;
@@ -169,7 +170,7 @@ if (!__meteorRegistry || typeof __meteorRegistry._promise !== 'function') {
 }
 const __meteorPackage = await __meteorRegistry._promise('${pkgName}');
 // export default __meteorPackage;
-${exportLines}
+${exportLines.join('\n')}
 `;
 			}
 
@@ -560,6 +561,10 @@ ${exportLines}
 	}
 
 	function createRuntimeModuleSource(entries: { path: string }[], runtimeConfig: object): string {
+		console.log(`[meteor-packages] Creating Meteor runtime module with ${entries.length} package entries.`);
+		for (const entry of entries) {
+			console.log(`[meteor-packages] - ${entry.path}`);
+		}
 		const loadStatements = entries.map((entry) => `    await __loadMeteorScript('${entry.path}');`).join('\n');
 
 		const runtimeConfigLiteral = JSON.stringify(runtimeConfig, null, 2);
@@ -728,33 +733,53 @@ export default defineConfig({
 		}),
 		meteor({
 			modules: {
-				'es5-shim': null,
-				'webapp': null,
-				'zodern_types': null,
-				'typescript': null,
 				'babel-compiler': null,
-				'react-fast-refresh': null,
-				'webapp-hashing': null,
-				'ddp-server': null,
-				'minifier-css': null,
-				'standard-minifier-css': null,
-				'zodern_standard-minifier-js': null,
-				'hot-code-push': null,
-				'mongo-dev-server': null,
-				'ecmascript': null,
-				'ecmascript-runtime': null,
-				'ecmascript-runtime-client': null,
 				'babel-runtime': null,
-				'modern-browsers': null,
-				'shell-server': null,
-				'promise': 'window.Promise',
+				'ddp-server': null,
+				'ecmascript-runtime-client': null,
+				'ecmascript-runtime': null,
+				'ecmascript': null,
+				'es5-shim': null,
 				'fetch': 'window.fetch',
+				'hot-code-push': null,
+				'minifier-css': null,
+				'modern-browsers': null,
+				'mongo-dev-server': null,
+				'promise': 'window.Promise',
+				'react-fast-refresh': null,
+				'shell-server': null,
+				'standard-minifier-css': null,
+				'typescript': null,
+				'webapp-hashing': null,
+				'webapp': null,
+				'zodern_standard-minifier-js': null,
+				'zodern_types': null,
+				'ddp-rate-limiter': null,
+				'url': '{ URL, URLSearchParams }',
+				'email': null,
+				'routepolicy': null,
+				'oauth1': null,
+				'oauth2': null,
+				'rocketchat_version': null,
+				'session': null,
+				'ddp': 'Package["ddp-client"].DDP',
+				'meteor-base': null,
+				'meteorhacks_inject-initial': null,
+				'rocketchat_livechat': null,
+				'rocketchat_mongo-config': null,
+				// 'check': null,
+				// 'session': '() => { window.REACTIVE_SESSION ??= new ReactiveDict("session"); return window.REACTIVE_SESSION;}',
 			},
 		}),
 		react({
 			exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
 		}),
 	],
+	define: {
+		'Meteor.isServer': 'false',
+	},
+	oxc: {
+	},
 	resolve: {
 		dedupe: ['react', 'react-dom'],
 		// preserveSymlinks: true,
@@ -810,6 +835,8 @@ function generateExportStatement(name: string): string {
 			return '';
 		case 'hasOwn':
 			return `export const hasOwn = Object.hasOwn;`;
+		case 'global':
+			return `export const global = globalThis;`;
 		default:
 			return `export const ${name} = __meteorPackage['${name}'];`;
 	}
