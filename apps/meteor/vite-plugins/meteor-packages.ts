@@ -1,9 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { parse } from '@babel/parser';
-import type { ParseResult } from '@babel/parser';
-import type { CallExpression, Node } from '@babel/types';
+import type { CallExpression, Node, Program } from '@oxc-project/types';
+import { parseAst } from 'rolldown/parseAst';
 import type { Plugin } from 'vite';
 
 const meteorProgramDir = path.resolve('.meteor/local/build/programs/web.browser');
@@ -82,13 +81,6 @@ export function meteor(
 						});
 					}
 				}
-
-				// Replace Package['core-runtime'].queue(moduleName, function () { ... }); with await Package['core-runtime'].queue(moduleName, async function () { ... });
-				// const queueRegex = new RegExp(`Package\\[['"]core-runtime['"]\\]\\.queue\\(\\s*(['"][^'"]+['"])\\s*,\\s*function\\s*\\(\\)\\s*{`, 'g');
-				// code = code.replace(queueRegex, (_match, p1) => {
-				// 	console.log(`[meteor-packages] Making core-runtime queue function async for module: ${p1}`);
-				// 	return `await Package['core-runtime'].queue(${p1}, async function () {`;
-				// });
 
 				// Replace modules according to the provided mapping
 				for (const [moduleName, replacement] of Object.entries(config.modules)) {
@@ -286,17 +278,17 @@ ${exportLines.join('\n')}
 		collectKeysFromObjectLiteral(objectLiteral, names);
 	}
 
-	function collectModuleExports(code: string, names: Set<string>, pkgName: string): void {
-		let ast;
+	function parse(code: string): Program {
 		try {
-			ast = parse(code, {
-				sourceType: 'module',
-				plugins: ['topLevelAwait', 'classProperties', 'optionalChaining', 'objectRestSpread', 'dynamicImport'],
-			});
+			return parseAst(code);
 		} catch (error) {
-			console.warn(`[meteor-packages] Failed to parse exports for ${pkgName}`, error);
-			return;
+			console.warn(`[meteor-packages] Failed to parse code for exports`, error);
+			throw error;
 		}
+	}
+
+	function collectModuleExports(code: string, names: Set<string>, pkgName: string): void {
+		const ast = parse(code);
 
 		walkAst(ast, (node) => {
 			if (!isModuleExportCall(node)) {
@@ -310,7 +302,7 @@ ${exportLines.join('\n')}
 
 			const beforeSize = names.size;
 			for (const prop of arg.properties) {
-				if (!prop || prop.type !== 'ObjectProperty' || prop.computed) {
+				if (!prop || prop.type !== 'Property' || prop.computed) {
 					continue;
 				}
 				const keyName = getPropertyName(prop.key);
@@ -322,7 +314,7 @@ ${exportLines.join('\n')}
 		});
 	}
 
-	function walkAst(node: ParseResult, visitor: (node: Node) => void): void {
+	function walkAst(node: Program, visitor: (node: Node) => void): void {
 		if (!node || typeof node.type !== 'string') {
 			return;
 		}
@@ -368,7 +360,7 @@ ${exportLines.join('\n')}
 		if (key.type === 'Identifier') {
 			return key.name;
 		}
-		if (key.type === 'StringLiteral') {
+		if (key.type === 'Literal' && typeof key.value === 'string') {
 			return key.value;
 		}
 		return undefined;
