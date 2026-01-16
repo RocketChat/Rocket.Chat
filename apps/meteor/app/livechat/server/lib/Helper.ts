@@ -109,7 +109,7 @@ export const prepareLivechatRoom = async (
 
 	const activity = guest.activity || contact.activity;
 	logger.debug({
-		msg: `Creating livechat room for visitor ${_id}`,
+		msg: 'Creating livechat room for visitor',
 		visitor: { _id, username, departmentId, status, activity },
 	});
 
@@ -209,7 +209,7 @@ export const createLivechatInquiry = async ({
 	const ts = new Date();
 
 	logger.debug({
-		msg: `Creating livechat inquiry for visitor`,
+		msg: 'Creating livechat inquiry for visitor',
 		visitor: { _id, username, department, status, activity },
 	});
 
@@ -245,7 +245,11 @@ export const createLivechatInquiry = async ({
 			session,
 		},
 	);
-	logger.debug(`Inquiry ${result} created for visitor ${_id}`);
+	logger.debug({
+		msg: 'Inquiry created for visitor',
+		inquiryId: result,
+		visitorId: _id,
+	});
 
 	if (!result) {
 		throw new Error('Inquiry not created');
@@ -357,7 +361,7 @@ export const parseAgentCustomFields = (customFields?: Record<string, any>) => {
 			const parseCustomFields = JSON.parse(accountCustomFields);
 			return Object.keys(parseCustomFields).filter((customFieldKey) => parseCustomFields[customFieldKey].sendToIntegrations === true);
 		} catch (error) {
-			logger.error(error);
+			logger.error({ msg: 'Error parsing agent custom fields', err: error });
 			return [];
 		}
 	};
@@ -406,7 +410,11 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 	if (!inquiry?._id) {
 		return;
 	}
-	logger.debug(`Notifying agents of new inquiry ${inquiry._id} queued`);
+	logger.debug({
+		msg: 'Notifying agents of queued inquiry',
+		inquiryId: inquiry._id,
+		agentId: agent?.agentId,
+	});
 
 	const { department, rid, v } = inquiry;
 	const room = await LivechatRooms.findOneById(rid);
@@ -429,7 +437,7 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 	// Alert only the online agents of the queued request
 	const onlineAgents = await getOnlineAgents(department, agent);
 	if (!onlineAgents) {
-		logger.debug('Cannot notify agents of queued inquiry. No online agents found');
+		logger.debug({ msg: 'Cannot notify agents of queued inquiry. No online agents found' });
 		return;
 	}
 
@@ -475,7 +483,11 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 		return false;
 	}
 
-	logger.debug(`Forwarding room ${room._id} to agent ${transferData.userId}`);
+	logger.debug({
+		msg: 'Forwarding room to agent',
+		roomId: room._id,
+		userId: transferData.userId,
+	});
 
 	const { userId: agentId, clientAction } = transferData;
 	if (!agentId) {
@@ -483,14 +495,20 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 	}
 	const user = await Users.findOneOnlineAgentById(agentId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 	if (!user) {
-		logger.debug(`Agent ${agentId} is offline. Cannot forward`);
+		logger.debug({
+			msg: 'Agent is offline. Cannot forward',
+			agentId,
+		});
 		throw new Error('error-user-is-offline');
 	}
 
 	const { _id: rid, servedBy: oldServedBy } = room;
 	const inquiry = await LivechatInquiry.findOneByRoomId(rid, {});
 	if (!inquiry) {
-		logger.debug(`No inquiries found for room ${room._id}. Cannot forward`);
+		logger.debug({
+			msg: 'No inquiries found for room. Cannot forward',
+			roomId: room._id,
+		});
 		throw new Error('error-invalid-inquiry');
 	}
 
@@ -504,7 +522,11 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 	delete inquiry.department;
 	// There are some Enterprise features that may interrupt the forwarding process
 	// Due to that we need to check whether the agent has been changed or not
-	logger.debug(`Forwarding inquiry ${inquiry._id} to agent ${agent.agentId}`);
+	logger.debug({
+		msg: 'Forwarding inquiry to agent',
+		inquiryId: inquiry._id,
+		agentId: agent.agentId,
+	});
 	const roomTaken = await RoutingManager.takeInquiry(
 		inquiry,
 		agent,
@@ -514,7 +536,10 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 		room,
 	);
 	if (!roomTaken) {
-		logger.debug(`Cannot forward inquiry ${inquiry._id}`);
+		logger.debug({
+			msg: 'Cannot forward inquiry',
+			inquiryId: inquiry._id,
+		});
 		return false;
 	}
 
@@ -536,7 +561,11 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 		});
 	}
 
-	logger.debug(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
+	logger.debug({
+		msg: 'Inquiry taken by agent after forwarding',
+		inquiryId: inquiry._id,
+		agentId: agent.agentId,
+	});
 	await callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
 	return true;
 };
@@ -586,7 +615,11 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	if (!room?.open) {
 		return false;
 	}
-	logger.debug(`Attempting to forward room ${room._id} to department ${transferData.departmentId}`);
+	logger.debug({
+		msg: 'Attempting to forward room to department',
+		roomId: room._id,
+		departmentId: transferData.departmentId,
+	});
 
 	await callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
 	const { _id: rid, servedBy: oldServedBy, departmentId: oldDepartmentId } = room;
@@ -594,13 +627,19 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 
 	const inquiry = await LivechatInquiry.findOneByRoomId(rid, {});
 	if (!inquiry) {
-		logger.debug(`Cannot forward room ${room._id}. No inquiries found`);
+		logger.debug({
+			msg: 'Cannot forward room. No inquiries found',
+			roomId: room._id,
+		});
 		throw new Error('error-transferring-inquiry');
 	}
 
 	const { departmentId } = transferData;
 	if (!departmentId) {
-		logger.debug(`Cannot forward room ${room._id}. No departmentId provided`);
+		logger.debug({
+			msg: 'Cannot forward room. No departmentId provided',
+			roomId: room._id,
+		});
 		throw new Error('error-transferring-inquiry-no-department');
 	}
 	if (oldDepartmentId === departmentId) {
@@ -609,7 +648,12 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 
 	const { userId: agentId, clientAction } = transferData;
 	if (agentId) {
-		logger.debug(`Forwarding room ${room._id} to department ${departmentId} (to user ${agentId})`);
+		logger.debug({
+			msg: 'Forwarding room to department and user',
+			roomId: room._id,
+			departmentId,
+			agentId,
+		});
 		const user = await Users.findOneOnlineAgentById(agentId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 		if (!user) {
 			throw new Error('error-user-is-offline');
@@ -672,14 +716,22 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		room,
 	);
 	if (!roomTaken) {
-		logger.debug(`Cannot forward room ${room._id}. Unable to delegate inquiry`);
+		logger.debug({
+			msg: 'Cannot forward room. Unable to delegate inquiry',
+			roomId: room._id,
+		});
 		return false;
 	}
 
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		if (!department?.fallbackForwardDepartment?.length) {
-			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
+			logger.debug({
+				msg: 'Cannot forward room. Chat assigned to agent instead',
+				roomId: room._id,
+				agentId: servedBy._id,
+				previousAgentId: oldServedBy._id,
+			});
 			throw new Error('error-no-agents-available-for-service-on-department');
 		}
 
@@ -690,7 +742,10 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		const transferSuccess = !!(await callbacks.run('livechat:onTransferFailure', room, { guest, transferData, department }));
 		// On CE theres no callback so it will return the room
 		if (typeof transferSuccess !== 'boolean' || !transferSuccess) {
-			logger.debug(`Cannot forward room ${room._id}. Unable to delegate inquiry`);
+			logger.debug({
+				msg: 'Cannot forward room. Unable to delegate inquiry',
+				roomId: room._id,
+			});
 			return false;
 		}
 
@@ -725,18 +780,27 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	await updateChatDepartment({ rid, newDepartmentId: departmentId, oldDepartmentId });
 
 	if (chatQueued) {
-		logger.debug(`Forwarding succesful. Marking inquiry ${inquiry._id} as ready`);
+		logger.debug({
+			msg: 'Forwarding successful. Marking inquiry as ready',
+			inquiryId: inquiry._id,
+		});
 		await LivechatInquiry.readyInquiry(inquiry._id);
 		await LivechatRooms.removeAgentByRoomId(rid);
 		await dispatchAgentDelegated(rid);
 		const newInquiry = await LivechatInquiry.findOneById(inquiry._id);
 		if (!newInquiry) {
-			logger.debug(`Inquiry ${inquiry._id} not found`);
+			logger.debug({
+				msg: 'Inquiry not found after forwarding',
+				inquiryId: inquiry._id,
+			});
 			throw new Error('error-invalid-inquiry');
 		}
 
 		await queueInquiry(newInquiry);
-		logger.debug(`Inquiry ${inquiry._id} queued succesfully`);
+		logger.debug({
+			msg: 'Inquiry queued successfully after forwarding',
+			inquiryId: inquiry._id,
+		});
 	}
 
 	return true;
