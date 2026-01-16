@@ -431,19 +431,16 @@ describe('[Settings]', () => {
 			const testUsername = 'testuser@example.com';
 
 			before(async () => {
-				// Get original values to restore later
 				originalSmtpPassword = (await getSettingValueById('SMTP_Password')) as string | undefined;
 				originalSmtpUsername = (await getSettingValueById('SMTP_Username')) as string | undefined;
 
-				// Update SMTP settings with test values
 				await updateSetting('SMTP_Password', testPassword);
 				await updateSetting('SMTP_Username', testUsername);
 			});
 
 			after(async () => {
-				// Restore original values
-await updateSetting('SMTP_Password', originalSmtpPassword || '');
-await updateSetting('SMTP_Username', originalSmtpUsername || '');
+				await updateSetting('SMTP_Password', originalSmtpPassword || '');
+				await updateSetting('SMTP_Username', originalSmtpUsername || '');
 			});
 
 			it('should mask sensitive settings in audit logs', async () => {
