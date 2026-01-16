@@ -1,6 +1,7 @@
 import http from 'http';
 import https from 'https';
 
+import { Logger } from '@rocket.chat/logger';
 import { AbortController } from 'abort-controller';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
@@ -12,6 +13,54 @@ import { parseRequestOptions } from './parsers';
 import type { ExtendedFetchOptions } from './types';
 
 const MAX_REDIRECTS = 5;
+const redirectStatus = new Set([301, 302, 303, 307, 308]);
+
+const logger = new Logger('ExternalRequest');
+
+function checkDirectIp(ip: string): boolean {
+	return /^(\d+\.\d+\.\d+\.\d+|\[?[0-9a-fA-F:]+]?)$/.test(ip);
+}
+
+function extractHostname(urlString: string): string | null {
+	try {
+		const { hostname } = new URL(urlString);
+		if (hostname.startsWith('[') && hostname.endsWith(']')) {
+			return hostname.slice(1, -1);
+		}
+		return hostname;
+	} catch {
+		return null;
+	}
+}
+
+function buildPinnedUrl(originalUrl: string, resolvedIp: string): string {
+	try {
+		const url = new URL(originalUrl);
+
+		let ipAddress: string;
+
+		const ipv4WithPortMatch = resolvedIp.match(/^(\d+\.\d+\.\d+\.\d+)(?::(\d+))$/);
+		if (ipv4WithPortMatch) {
+			ipAddress = ipv4WithPortMatch[1];
+		} else if (resolvedIp.includes(':') && !resolvedIp.includes('.')) {
+			const ipv6WithPortMatch = resolvedIp.match(/^(\[[0-9a-fA-F:]+\])(?::(\d+))$/);
+			if (ipv6WithPortMatch) {
+				ipAddress = ipv6WithPortMatch[1];
+			} else {
+				ipAddress = resolvedIp.startsWith('[') && resolvedIp.endsWith(']') ? resolvedIp : `[${resolvedIp}]`;
+			}
+		} else {
+			// IPv4 without port
+			ipAddress = resolvedIp;
+		}
+
+		url.hostname = ipAddress;
+
+		return url.toString();
+	} catch {
+		return originalUrl;
+	}
+}
 
 function getFetchAgent<U extends string>(
 	url: U,
@@ -46,6 +95,45 @@ function getFetchAgent<U extends string>(
 	return new https.Agent(agentOptions);
 }
 
+async function getFetchAgentWithValidation<U extends string>(
+	url: U,
+	allowSelfSignedCerts?: boolean,
+	ignoreSsrfValidation?: boolean,
+): Promise<{
+	agent: http.Agent | https.Agent | null | HttpsProxyAgent<U> | HttpProxyAgent<U>;
+	pinnedUrl: string;
+	originalHostname?: string;
+	resolvedIp?: string;
+}> {
+	let pinnedUrl: string = url;
+	let originalHostname: string | undefined;
+	let resolvedIp: string | undefined;
+
+	if (!ignoreSsrfValidation) {
+		// eslint-disable-next-line no-await-in-loop
+		const ssrfResult = await checkForSsrfWithIp(url);
+		if (!ssrfResult.allowed) {
+			logger.error({ msg: 'SSRF validation failed for URL', url });
+			throw new Error('error-ssrf-validation-failed');
+		}
+
+		resolvedIp = ssrfResult.resolvedIp;
+		const extractedHostname = extractHostname(url);
+
+		if (extractedHostname) {
+			originalHostname = extractedHostname;
+
+			if (!checkDirectIp(extractedHostname)) {
+				pinnedUrl = buildPinnedUrl(url, resolvedIp);
+			}
+		}
+	} else {
+		logger.debug({ msg: 'Request not using SSRF validation', url: pinnedUrl });
+	}
+
+	return { agent: getFetchAgent(pinnedUrl, allowSelfSignedCerts, originalHostname), pinnedUrl, originalHostname, resolvedIp };
+}
+
 function getTimeout(timeout?: number) {
 	const controller = new AbortController();
 	const timeoutId = setTimeout(() => controller.abort(), timeout ?? 20000);
@@ -53,79 +141,35 @@ function getTimeout(timeout?: number) {
 	return { controller, timeoutId };
 }
 
-const extractHostname = (urlString: string): string | null => {
-	try {
-		const { hostname } = new URL(urlString);
-		if (hostname.startsWith('[') && hostname.endsWith(']')) {
-			return hostname.slice(1, -1);
-		}
-		return hostname;
-	} catch {
-		return null;
+function followRedirect(response: fetch.Response, redirectCount = 0) {
+	const location = response.headers.get('location');
+
+	if (!location) {
+		logger.error({ msg: 'Malformed redirect response', status: response.status });
+		throw new Error('redirect-response-location-header-missing');
 	}
-};
 
-const buildPinnedUrl = (originalUrl: string, resolvedIp: string): string => {
-	try {
-		const url = new URL(originalUrl);
-
-		let ipAddress: string;
-
-		const ipv4WithPortMatch = resolvedIp.match(/^(\d+\.\d+\.\d+\.\d+)(?::(\d+))$/);
-		if (ipv4WithPortMatch) {
-			ipAddress = ipv4WithPortMatch[1];
-		} else if (resolvedIp.includes(':') && !resolvedIp.includes('.')) {
-			const ipv6WithPortMatch = resolvedIp.match(/^(\[[0-9a-fA-F:]+\])(?::(\d+))$/);
-			if (ipv6WithPortMatch) {
-				ipAddress = ipv6WithPortMatch[1];
-			} else {
-				ipAddress = resolvedIp.startsWith('[') && resolvedIp.endsWith(']') ? resolvedIp : `[${resolvedIp}]`;
-			}
-		} else {
-			// IPv4 without port
-			ipAddress = resolvedIp;
-		}
-
-		url.hostname = ipAddress;
-
-		return url.toString();
-	} catch {
-		return originalUrl;
+	if (redirectCount === MAX_REDIRECTS) {
+		logger.error({ msg: 'Redirect count reached the maximum amount of redirects allowed', MAX_REDIRECTS, status: response.status });
+		throw new Error('error-too-many-redirects');
 	}
-};
+
+	logger.debug({ msg: 'Following redirect', redirectCount, location, status: response.status });
+	return location;
+}
 
 export async function serverFetch(input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean): Promise<Response> {
 	let currentUrl = input;
 
 	for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
-		let pinnedUrl = currentUrl;
-		let originalHostname: string | undefined;
-		let resolvedIp: string | undefined;
-
-		if (!options?.ignoreSsrfValidation) {
-			// eslint-disable-next-line no-await-in-loop
-			const ssrfResult = await checkForSsrfWithIp(currentUrl);
-			if (!ssrfResult.allowed) {
-				throw new Error(`SSRF validation failed for URL: ${currentUrl}`);
-			}
-			resolvedIp = ssrfResult.resolvedIp;
-
-			if (resolvedIp) {
-				const extractedHostname = extractHostname(currentUrl);
-
-				if (extractedHostname) {
-					originalHostname = extractedHostname;
-					const isDirectIp = /^(\d+\.\d+\.\d+\.\d+|\[?[0-9a-fA-F:]+]?)$/.test(extractedHostname);
-
-					if (!isDirectIp) {
-						pinnedUrl = buildPinnedUrl(currentUrl, resolvedIp);
-					}
-				}
-			}
-		}
-
-		const agent = getFetchAgent(pinnedUrl, allowSelfSignedCerts, originalHostname);
 		const { controller, timeoutId } = getTimeout(options?.timeout);
+
+		// eslint-disable-next-line no-await-in-loop
+		const { agent, pinnedUrl, originalHostname, resolvedIp } = await getFetchAgentWithValidation(
+			currentUrl,
+			allowSelfSignedCerts,
+			options?.ignoreSsrfValidation,
+		);
 
 		const params = new URLSearchParams(options?.params);
 		const url = new URL(pinnedUrl);
@@ -157,12 +201,10 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 		}
 
 		if (originalHostname && resolvedIp) {
-			const isDirectIp = /^(\d+\.\d+\.\d+\.\d+|\[?[0-9a-fA-F:]+]?)$/.test(originalHostname);
-			if (!isDirectIp) {
+			if (!checkDirectIp(originalHostname)) {
 				try {
 					const originalUrl = new URL(currentUrl);
-					const hostHeader = originalUrl.port ? `${originalHostname}:${originalUrl.port}` : originalHostname;
-					headers.Host = hostHeader;
+					headers.Host = originalUrl.port ? `${originalHostname}:${originalUrl.port}` : originalHostname;
 				} catch {
 					headers.Host = originalHostname;
 				}
@@ -183,24 +225,17 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			}
 		});
 
-		if (response.status < 300 || response.status >= 400) {
+		if (!redirectStatus.has(response.status)) {
 			return response;
 		}
 
-		const location = response.headers.get('location');
+		currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
 
-		if (!location) {
-			throw new Error('redirect-response-location-header-missing');
-		}
-
-		if (redirectCount === MAX_REDIRECTS) {
-			throw new Error(`error-too-many-redirects`);
-		}
-
-		currentUrl = new URL(location, currentUrl).toString();
+		// https://github.com/node-fetch/node-fetch/issues/1673 - body not consumed == open socket
+		controller.abort();
 	}
 
-	throw new Error('Unexpected redirect handling failure');
+	throw new Error('error-processing-request');
 }
 
 export { Response };

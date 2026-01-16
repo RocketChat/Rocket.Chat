@@ -88,7 +88,7 @@ export const checkForSsrf = async (input: string): Promise<boolean> => {
 	return result.allowed;
 };
 
-export const checkForSsrfWithIp = async (input: string): Promise<{ allowed: boolean; resolvedIp?: string }> => {
+export const checkForSsrfWithIp = async (input: string): Promise<{ allowed: false } | { allowed: true; resolvedIp: string }> => {
 	let ipOrDomain: string;
 	let port: string | undefined;
 	let wasUrlParsed = false;
