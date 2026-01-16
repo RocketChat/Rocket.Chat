@@ -19,13 +19,12 @@ import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
 import type { ReactElement, ComponentProps } from 'react';
-import { memo, useEffect, useId } from 'react';
+import { memo, useCallback, useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 
 import FilePreview from './FilePreview';
 import { fileUploadIsValidContentType } from '../../../../../app/utils/client/restrictions';
 import { getMimeTypeFromFileName } from '../../../../../app/utils/lib/mimeTypes';
-import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 
 type FileUploadModalProps = {
 	onClose: () => void;
@@ -35,16 +34,6 @@ type FileUploadModalProps = {
 	fileDescription?: string;
 	invalidContentType: boolean;
 	showDescription?: boolean;
-};
-
-const prepareRenamedFile = (currentFileName: string, originalFileName: string, file: File) => {
-	if (getFileExtension(currentFileName) === getFileExtension(originalFileName)) {
-		return;
-	}
-
-	return new File([file], currentFileName, {
-		type: getMimeTypeFromFileName(currentFileName),
-	});
 };
 
 const FileUploadModal = ({
@@ -59,7 +48,6 @@ const FileUploadModal = ({
 	const {
 		register,
 		handleSubmit,
-		setError,
 		formState: { errors, isSubmitting },
 	} = useForm({ mode: 'onBlur', defaultValues: { name: fileName, description: fileDescription } });
 
@@ -71,14 +59,19 @@ const FileUploadModal = ({
 	const isDescriptionValid = (description: string) =>
 		description.length >= maxMsgSize ? t('Cannot_upload_file_character_limit', { count: maxMsgSize }) : true;
 
+	const validateFileName = useCallback(
+		(fieldValue: string) => {
+			const type = getMimeTypeFromFileName(fieldValue);
+			if (fileUploadIsValidContentType(type)) {
+				return undefined;
+			}
+
+			return t('FileUpload_MediaType_NotAccepted__type__', { type });
+		},
+		[t],
+	);
+
 	const submit = ({ name, description }: { name: string; description?: string }): void => {
-		const renamedFile = prepareRenamedFile(name, fileName, file);
-
-		if (renamedFile && !fileUploadIsValidContentType(renamedFile.type)) {
-			setError('name', { message: t('FileUpload_MediaType_NotAccepted__type__', { type: renamedFile.type }) });
-			return;
-		}
-
 		// -1 maxFileSize means there is no limit
 		if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
 			onClose();
@@ -145,6 +138,7 @@ const FileUploadModal = ({
 									id={fileNameField}
 									{...register('name', {
 										required: t('error-the-field-is-required', { field: t('Upload_file_name') }),
+										validate: validateFileName,
 									})}
 									error={errors.name?.message}
 									aria-invalid={errors.name ? 'true' : 'false'}
