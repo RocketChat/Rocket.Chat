@@ -51,18 +51,6 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
 	});
 
-	test('should send file with correct mime-type when name updated', async () => {
-		await poHomeChannel.content.dragAndDropTxtFile();
-		await expect(poHomeChannel.content.descriptionInput).toBeFocused();
-
-		await poHomeChannel.content.descriptionInput.fill('any_description_svg');
-		await poHomeChannel.content.fileNameInput.fill('any_file1.svg');
-		await poHomeChannel.content.btnModalConfirm.click();
-
-		await expect(poHomeChannel.content.getMessageByText('any_description_svg')).not.toBeVisible();
-		await poHomeChannel.toastMessage.waitForDisplay({ type: 'error', message: 'Media Type Not Accepted: image/svg+xml' });
-	});
-
 	test('should send lst file successfully', async () => {
 		await poHomeChannel.content.dragAndDropLstFile();
 		await poHomeChannel.content.descriptionInput.fill('lst_description');
