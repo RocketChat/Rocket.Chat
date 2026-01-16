@@ -402,7 +402,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 		userSpotlight,
 	]);
 
-	return <ComposerPopupContext.Provider value={value} children={children} />;
+	return <ComposerPopupContext.Provider value={value}>{children}</ComposerPopupContext.Provider>;
 };
 
 export default ComposerPopupProvider;
