@@ -22,9 +22,9 @@ import {
 	isChannelsFilesListProps,
 	isChannelsOnlineProps,
 } from '@rocket.chat/rest-typings';
+import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
@@ -807,7 +807,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isChannelsFilesListProps },
 	{
 		async get() {
-			const { typeGroup, name, roomId, roomName } = this.queryParams;
+			const { typeGroup, name, roomId, roomName, onlyConfirmed } = this.queryParams;
 
 			const findResult = await findChannelByIdOrName({
 				params: {
@@ -829,6 +829,7 @@ API.v1.addRoute(
 				...query,
 				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
+				...(onlyConfirmed && { expiresAt: { $exists: false } }),
 			};
 
 			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {

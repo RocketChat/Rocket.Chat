@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 type StatesFilter = Array<'ended' | 'transferred' | 'not-answered' | 'failed'>;
 type TypeFilter = 'inbound' | 'outbound' | 'all';
 
-type CallHistoryPageFiltersProps = {
+export type CallHistoryPageFiltersProps = {
 	onChangeText: (nameOrUsernameOrExtension: string) => void;
 	onChangeType: (type: TypeFilter) => void;
 	onChangeStates: (states: StatesFilter) => void;
@@ -86,7 +86,7 @@ const CallHistoryPageFilters = ({ onChangeText, onChangeType, onChangeStates, se
 			alignItems='center'
 			justifyContent='center'
 		>
-			<Box minWidth='x224' display='flex' m='x4' flexGrow={2}>
+			<Box minWidth='x224' flexBasis='45%' display='flex' m='x4' flexGrow={2} flexShrink={0}>
 				<TextInput
 					name='search-rooms'
 					alignItems='center'
@@ -96,17 +96,19 @@ const CallHistoryPageFilters = ({ onChangeText, onChangeType, onChangeStates, se
 					value={searchText}
 				/>
 			</Box>
-			<Box minWidth='x224' m='x4' flexGrow={1} alignItems='stretch' display='flex'>
-				<Select options={selectTypeOptions} value={type} onChange={(key: Key) => onChangeType(key as TypeFilter)} />
-			</Box>
-			<Box minWidth='x224' m='x4' flexGrow={1}>
-				<MultiSelectCustom
-					dropdownOptions={dropdownStatesOptions}
-					defaultTitle='All_status'
-					selectedOptionsTitle='Status'
-					selectedOptions={selectedOptions}
-					setSelectedOptions={handleChangeType}
-				/>
+			<Box display='flex' flexGrow={1} flexShrink={2} flexWrap='wrap'>
+				<Box minWidth='x224' m='x4' flexGrow={1} flexShrink={1} alignItems='stretch' display='flex'>
+					<Select options={selectTypeOptions} value={type} onChange={(key: Key) => onChangeType(key as TypeFilter)} />
+				</Box>
+				<Box minWidth='x224' m='x4' flexGrow={1} flexShrink={1}>
+					<MultiSelectCustom
+						dropdownOptions={dropdownStatesOptions}
+						defaultTitle='All_status'
+						selectedOptionsTitle='Status'
+						selectedOptions={selectedOptions}
+						setSelectedOptions={handleChangeType}
+					/>
+				</Box>
 			</Box>
 		</Box>
 	);

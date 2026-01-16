@@ -43,6 +43,7 @@
 		],
 		"react/jsx-uses-react": "error",
 		"react/jsx-uses-vars": "error",
+		"react/no-children-prop": "error",
 		"react/no-danger": "warn",
 		"react/no-deprecated": "error",
 		"react/no-did-mount-set-state": "error",
