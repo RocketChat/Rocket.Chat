@@ -4,6 +4,7 @@ export {
 	WorkspaceSyncPayload,
 	WorkspaceSyncRequestPayload,
 	WorkspaceSyncResponse,
+	WorkspaceSyncResponseSchema,
 	WorkspaceCommsResponsePayload,
 	WorkspaceInteractionResponsePayload,
 } from './WorkspaceSyncPayload';

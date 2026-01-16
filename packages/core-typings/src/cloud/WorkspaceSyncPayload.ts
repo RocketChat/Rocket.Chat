@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type * as UiKit from '@rocket.chat/ui-kit';
+import * as z from 'zod';
 
 import type { IBanner } from '../IBanner';
 
@@ -48,13 +49,15 @@ export interface WorkspaceSyncRequestPayload {
 	connectionDisable: boolean;
 }
 
-export interface WorkspaceSyncResponse {
-	workspaceId: string;
-	publicKey: string;
-	license: unknown;
-	removeLicense?: boolean;
-	cloudSyncAnnouncement: unknown;
-}
+export const WorkspaceSyncResponseSchema = z.object({
+	workspaceId: z.string(),
+	publicKey: z.string().optional(),
+	license: z.string(),
+	removeLicense: z.boolean().optional(),
+	cloudSyncAnnouncement: z.unknown(),
+});
+
+export type WorkspaceSyncResponse = z.infer<typeof WorkspaceSyncResponseSchema>;
 
 export interface IAnnouncement extends IBanner {
 	selector?: {
