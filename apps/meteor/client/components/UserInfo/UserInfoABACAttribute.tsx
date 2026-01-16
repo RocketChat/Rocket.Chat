@@ -5,7 +5,7 @@ type UserInfoABACAttributeProps = {
 };
 
 const UserInfoABACAttribute = ({ attribute }: UserInfoABACAttributeProps) => {
-	return <Tag variant='secondary-warning' children={attribute} />;
+	return <Tag variant='secondary-warning'>{attribute}</Tag>;
 };
 
 export default UserInfoABACAttribute;

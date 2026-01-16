@@ -64,5 +64,16 @@ test.describe.serial('Presence', () => {
 			await poHomeChannel.navbar.btnUserMenu.click();
 			await expect(async () => expect(poHomeChannel.navbar.userMenu).not.toContainText(customStatus)).toPass();
 		});
+
+		test('should not save custom status as `undefined` if nothing changes', async ({ page }) => {
+			await test.step('change to empty status', async () => {
+				await poHomeChannel.navbar.changeUserCustomStatus();
+				expect(await page.evaluate(() => localStorage.getItem('fuselage-localStorage-Local_Custom_Status'))).not.toBe('undefined');
+			});
+			await test.step('save without changes', async () => {
+				await poHomeChannel.navbar.changeUserCustomStatus();
+				expect(await page.evaluate(() => localStorage.getItem('fuselage-localStorage-Local_Custom_Status'))).not.toBe('undefined');
+			});
+		});
 	});
 });
