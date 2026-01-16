@@ -52,4 +52,9 @@ describe('parseQueryParams', () => {
 		const result = parseQueryParams(array);
 		expect(result.ids).toHaveLength(500);
 	});
+
+	it('should parse as array even without brackets', () => {
+		const result = parseQueryParams('ids=1&ids=2');
+		expect(result.ids).toHaveLength(2);
+	});
 });
