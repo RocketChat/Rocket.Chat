@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import type { CallExpression, Node, Program } from '@oxc-project/types';
+import type { CallExpression, Node, ObjectExpression, Program, PropertyKey } from '@oxc-project/types';
 import { parseAst } from 'rolldown/parseAst';
 import type { Plugin } from 'vite';
 
@@ -147,14 +147,16 @@ ${exportLines.join('\n')}
 		const packageFile = path.join(meteorPackagesDir, `${pkgName}.js`);
 		if (fs.existsSync(packageFile)) {
 			const code = fs.readFileSync(packageFile, 'utf-8');
-			collectConfigExports(code, names);
-			collectModuleExports(code, names, pkgName);
+			const ast = parse(code);
+			collectConfigExports(ast, code, names);
+			collectModuleExports(ast, names, pkgName);
 		}
 
 		const dynamicModuleFiles = getDynamicPackageModuleFiles(pkgName);
 		for (const moduleFile of dynamicModuleFiles) {
 			const moduleCode = fs.readFileSync(moduleFile, 'utf-8');
-			collectModuleExports(moduleCode, names, pkgName);
+			const moduleAst = parse(moduleCode);
+			collectModuleExports(moduleAst, names, pkgName);
 		}
 
 		const sanitized = Array.from(names).filter((name) => /^[A-Za-z_$][\w$]*$/.test(name));
@@ -248,34 +250,65 @@ ${exportLines.join('\n')}
 		return files;
 	}
 
-	function collectConfigExports(code: string, names: Set<string>): void {
+	function collectConfigExports(ast: Program, code: string, names: Set<string>): void {
 		const marker = '/* Exports */';
 		const markerIndex = code.indexOf(marker);
 		if (markerIndex === -1) {
 			return;
 		}
 
-		const firstBrace = code.indexOf('{', markerIndex);
-		if (firstBrace === -1) {
-			return;
-		}
+		let foundExport = false;
 
-		const innerReturnIndex = code.indexOf('return', firstBrace);
-		if (innerReturnIndex === -1) {
-			return;
-		}
+		walkAst(ast, (node) => {
+			if (foundExport) {
+				return;
+			}
 
-		const innerBrace = code.indexOf('{', innerReturnIndex);
-		if (innerBrace === -1) {
-			return;
-		}
+			// @ts-expect-error - node.start is not on the type definition but it is on the object
+			const start = node.start ?? node.span?.start;
 
-		const objectLiteral = extractObjectLiteral(code, innerBrace);
-		if (!objectLiteral) {
-			return;
-		}
+			if (typeof start === 'number' && start < markerIndex) {
+				return;
+			}
 
-		collectKeysFromObjectLiteral(objectLiteral, names);
+			if (node.type === 'ReturnStatement') {
+				const arg = node.argument;
+				if (arg && arg.type === 'ObjectExpression') {
+					collectExportsFromObjectExpression(arg, names);
+					foundExport = true;
+				}
+			}
+		});
+	}
+
+	function collectExportsFromObjectExpression(node: ObjectExpression, names: Set<string>): void {
+		for (const prop of node.properties) {
+			if (!prop || prop.type !== 'Property' || prop.computed) {
+				continue;
+			}
+			const keyName = getPropertyName(prop.key);
+
+			if (keyName === 'export') {
+				const { value } = prop;
+				if (value.type === 'FunctionExpression' || value.type === 'ArrowFunctionExpression') {
+					if (value.body?.type === 'BlockStatement') {
+						for (const stmt of value.body.body) {
+							if (stmt.type === 'ReturnStatement' && stmt.argument?.type === 'ObjectExpression') {
+								collectExportsFromObjectExpression(stmt.argument, names);
+							}
+						}
+					}
+				}
+				continue;
+			}
+
+			// If we handled 'export' above, we might not want to include other internal keys like 'require'
+			// identifying if we are in the top-level config object vs the inner export object is tricky with this recursion
+			// but typically 'export' is only present at the top level
+			if (keyName && keyName !== 'require' && keyName !== 'eagerModulePaths') {
+				names.add(keyName);
+			}
+		}
 	}
 
 	function parse(code: string): Program {
@@ -287,9 +320,7 @@ ${exportLines.join('\n')}
 		}
 	}
 
-	function collectModuleExports(code: string, names: Set<string>, pkgName: string): void {
-		const ast = parse(code);
-
+	function collectModuleExports(ast: Program, names: Set<string>, pkgName: string): void {
 		walkAst(ast, (node) => {
 			if (!isModuleExportCall(node)) {
 				return;
@@ -301,15 +332,7 @@ ${exportLines.join('\n')}
 			}
 
 			const beforeSize = names.size;
-			for (const prop of arg.properties) {
-				if (!prop || prop.type !== 'Property' || prop.computed) {
-					continue;
-				}
-				const keyName = getPropertyName(prop.key);
-				if (keyName) {
-					names.add(keyName);
-				}
-			}
+			collectExportsFromObjectExpression(arg, names);
 			logNewExports(pkgName, names, beforeSize);
 		});
 	}
@@ -353,10 +376,7 @@ ${exportLines.join('\n')}
 		);
 	}
 
-	function getPropertyName(key: Node | null | undefined): string | undefined {
-		if (!key) {
-			return undefined;
-		}
+	function getPropertyName(key: PropertyKey): string | undefined {
 		if (key.type === 'Identifier') {
 			return key.name;
 		}
@@ -374,150 +394,6 @@ ${exportLines.join('\n')}
 		if (added.length > 0) {
 			console.log(`[meteor-packages] parsed exports for ${pkgName}:`, added);
 		}
-	}
-
-	function collectKeysFromObjectLiteral(objectLiteral: string, names: Set<string>): void {
-		let depth = 0;
-		for (let i = 0; i < objectLiteral.length; i++) {
-			const char = objectLiteral[i];
-			const next = objectLiteral[i + 1];
-
-			if (char === '/' && next === '*') {
-				const end = objectLiteral.indexOf('*/', i + 2);
-				i = end === -1 ? objectLiteral.length : end + 1;
-				continue;
-			}
-
-			if (char === '/' && next === '/') {
-				const end = objectLiteral.indexOf('\n', i + 2);
-				i = end === -1 ? objectLiteral.length : end;
-				continue;
-			}
-
-			if (char === '{') {
-				depth++;
-				continue;
-			}
-
-			if (char === '}') {
-				depth--;
-				continue;
-			}
-
-			if (depth !== 1) {
-				continue;
-			}
-
-			if (char === '"' || char === "'" || char === '`') {
-				const key = readString(objectLiteral, i);
-				if (key.value !== null) {
-					i = key.index;
-					const colonIndex = skipWhitespace(objectLiteral, i + 1);
-					if (objectLiteral[colonIndex] === ':') {
-						names.add(key.value);
-						i = colonIndex;
-					}
-				}
-				continue;
-			}
-
-			if (/[A-Za-z_$]/.test(char)) {
-				let key = char;
-				let j = i + 1;
-				while (j < objectLiteral.length && /[A-Za-z0-9_$]/.test(objectLiteral[j])) {
-					key += objectLiteral[j];
-					j++;
-				}
-				const colonIndex = skipWhitespace(objectLiteral, j);
-				if (objectLiteral[colonIndex] === ':') {
-					names.add(key);
-					i = colonIndex;
-				} else {
-					i = j - 1;
-				}
-				continue;
-			}
-		}
-
-		function skipWhitespace(text: string, start: number): number {
-			let idx = start;
-			while (idx < text.length && /\s/.test(text[idx])) {
-				idx++;
-			}
-			return idx;
-		}
-
-		function readString(text: string, start: number): { value: string | null; index: number } {
-			const quote = text[start];
-			let value = '';
-			let idx = start + 1;
-			while (idx < text.length) {
-				const current = text[idx];
-				if (current === '\\') {
-					idx += 2;
-					continue;
-				}
-				if (current === quote) {
-					return { value, index: idx };
-				}
-				value += current;
-				idx++;
-			}
-			return { value: null, index: text.length };
-		}
-	}
-
-	function extractObjectLiteral(code: string, startBraceIndex: number): string | null {
-		let depth = 0;
-		let inString = null;
-		let i = startBraceIndex;
-
-		while (i < code.length) {
-			const char = code[i];
-			const prev = code[i - 1];
-
-			if (inString) {
-				if (char === inString && prev !== '\\') {
-					inString = null;
-				}
-				i++;
-				continue;
-			}
-
-			if (char === '"' || char === "'" || char === '`') {
-				inString = char;
-				i++;
-				continue;
-			}
-
-			if (char === '/' && code[i + 1] === '*') {
-				const end = code.indexOf('*/', i + 2);
-				i = end === -1 ? code.length : end + 2;
-				continue;
-			}
-
-			if (char === '/' && code[i + 1] === '/') {
-				const end = code.indexOf('\n', i + 2);
-				i = end === -1 ? code.length : end + 1;
-				continue;
-			}
-
-			if (char === '{') {
-				if (depth === 0) {
-					startBraceIndex = i;
-				}
-				depth++;
-			} else if (char === '}') {
-				depth--;
-				if (depth === 0) {
-					return code.slice(startBraceIndex, i + 1);
-				}
-			}
-
-			i++;
-		}
-
-		return null;
 	}
 
 	function createRuntimeModuleSource(entries: { path: string }[], runtimeConfig: object): string {
@@ -695,6 +571,8 @@ function generateExportStatement(name: string): string {
 			return `export const hasOwn = Object.hasOwn;`;
 		case 'global':
 			return `export const global = globalThis;`;
+		case 'export':
+			return '';
 		default:
 			return `export const ${name} = __meteorPackage['${name}'];`;
 	}
