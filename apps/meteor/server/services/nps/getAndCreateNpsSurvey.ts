@@ -36,6 +36,7 @@ export const getAndCreateNpsSurvey = async function getNpsSurvey(npsId: string) 
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
+			// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
 			ignoreSsrfValidation: true,
 		});
 

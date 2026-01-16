@@ -26,6 +26,7 @@ export const sendNpsResults = async function sendNpsResults(npsId: string, data:
 					Authorization: `Bearer ${token}`,
 				},
 				body: data,
+				// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
 				ignoreSsrfValidation: true,
 			})
 		).json();

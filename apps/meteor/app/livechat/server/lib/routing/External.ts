@@ -51,6 +51,7 @@ class ExternalQueue implements IRoutingMethod {
 					...(department && { departmentId: department }),
 					...(ignoreAgentId && { ignoreAgentId }),
 				},
+				// // SECURITY: The URL is a value that is only configurable by admins/users with the right permissions. It's ok to disable it here.
 				ignoreSsrfValidation: true,
 			});
 			const result = (await request.json()) as { username?: string };

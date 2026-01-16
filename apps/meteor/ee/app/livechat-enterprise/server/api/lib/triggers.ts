@@ -19,6 +19,7 @@ export async function callTriggerExternalService({
 			body,
 			headers,
 			method: 'POST',
+			// SECURITY: Integrations can only be configured by users with enough privileges. It's ok to disable this check here.
 			ignoreSsrfValidation: true,
 		} as ExtendedFetchOptions);
 
