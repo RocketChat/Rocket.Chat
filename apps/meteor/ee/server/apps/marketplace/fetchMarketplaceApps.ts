@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
 import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
