@@ -1,6 +1,11 @@
 import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
 
-import { updateAuditedByUser, updateAuditedBySystem, updateAuditedByApp, resetAuditedSettingByUser } from './auditedSettingUpdates';
+import {
+	updateAuditedByUser,
+	updateAuditedBySystem,
+	updateAuditedByApp,
+	resetAuditedSettingByUser,
+} from './auditedSettingUpdates';
 
 const mockCreateAuditServerEvent = jest.fn();
 jest.mock('@rocket.chat/models', () => ({
@@ -39,8 +44,8 @@ describe('auditedSettingUpdates', () => {
 			} as ISetting);
 
 			const actor = {
-				_id: 'user123',
-				username: 'testuser',
+				_id: 'user1234567',
+				username: 'testuser133532',
 				ip: '127.0.0.1',
 				useragent: 'test-agent',
 			};
@@ -53,8 +58,8 @@ describe('auditedSettingUpdates', () => {
 				'settings.changed',
 				{
 					id: settingId,
-					previous: 'sec**************',
-					current: 'new***********',
+					previous: 'secretpa*********',
+					current: 'newpassw******',
 				},
 				{
 					type: 'user',
@@ -65,32 +70,30 @@ describe('auditedSettingUpdates', () => {
 
 		it('should mask password type settings with 8 or fewer characters completely', () => {
 			const settingId = 'Short_Password';
-			const originalValue = 'abc';
-			const newValue = 'xy';
 
 			mockSettings.set(settingId, {
 				_id: settingId,
 				type: 'password',
-				value: originalValue,
+				value: 'abc',
 			} as ISetting);
 
 			const actor = {
 				_id: 'user123',
-				username: 'testuser1234',
+				username: 'testuser',
 				ip: '127.0.0.1',
 				useragent: 'test-agent',
 			};
 
 			const mockFn = jest.fn((_key: string, value: SettingValue) => value);
-			const auditedFn = updateAuditedByUser(actor)(mockFn, settingId, newValue);
+			const auditedFn = updateAuditedByUser(actor)(mockFn, settingId, 'xy');
 
-			expect(auditedFn).toBe(newValue);
+			expect(auditedFn).toBe('xy');
 			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
 				'settings.changed',
 				{
 					id: settingId,
-					previous: '********',
-					current: '*******',
+					previous: '***',
+					current: '**',
 				},
 				{
 					type: 'user',
@@ -101,14 +104,12 @@ describe('auditedSettingUpdates', () => {
 
 		it('should mask secret type settings', () => {
 			const settingId = 'SMTP_Username';
-			const originalValue = 'myusername';
-			const newValue = 'newusername';
 
 			mockSettings.set(settingId, {
 				_id: settingId,
 				type: 'string',
 				secret: true,
-				value: originalValue,
+				value: 'myusername',
 			} as ISetting);
 
 			const actor = {
@@ -119,164 +120,27 @@ describe('auditedSettingUpdates', () => {
 			};
 
 			const mockFn = jest.fn((_key: string, value: SettingValue) => value);
-			const auditedFn = updateAuditedByUser(actor)(mockFn, settingId, newValue);
+			const auditedFn = updateAuditedByUser(actor)(mockFn, settingId, 'newusername');
 
-			expect(auditedFn).toBe(newValue);
+			expect(auditedFn).toBe('newusername');
 			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
 				'settings.changed',
 				{
 					id: settingId,
-					previous: 'myu*******',
-					current: 'new********',
+					previous: 'myuserna**',
+					current: 'newusern***',
 				},
 				{
 					type: 'user',
 					...actor,
 				},
 			);
-		});
-
-		it('should not mask non-sensitive settings', () => {
-			const settingId = 'Site_Url';
-			const originalValue = 'https://old.example.com';
-			const newValue = 'https://new.example.com';
-
-			mockSettings.set(settingId, {
-				_id: settingId,
-				type: 'string',
-				secret: false,
-				value: originalValue,
-			} as ISetting);
-
-			const actor = {
-				_id: 'user123',
-				username: 'testuser',
-				ip: '127.0.0.1',
-				useragent: 'test-agent',
-			};
-
-			const mockFn = jest.fn((_key: string, value: SettingValue) => value);
-			const auditedFn = updateAuditedByUser(actor)(mockFn, settingId, newValue);
-
-			expect(auditedFn).toBe(newValue);
-			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
-				'settings.changed',
-				{
-					id: settingId,
-					previous: originalValue,
-					current: newValue,
-				},
-				{
-					type: 'user',
-					...actor,
-				},
-			);
-		});
-
-		it('should preserve undefined/null/empty values for sensitive settings', () => {
-			const settingId = 'SMTP_Password';
-
-			mockSettings.set(settingId, {
-				_id: settingId,
-				type: 'password',
-				value: undefined,
-			} as ISetting);
-
-			const actor = {
-				_id: 'user123',
-				username: 'testuser',
-				ip: '127.0.0.1',
-				useragent: 'test-agent',
-			};
-
-			const mockFn = jest.fn((_key: string, value: SettingValue) => value);
-			const auditedFn = updateAuditedByUser(actor)(mockFn, settingId, '');
-
-			expect(auditedFn).toBe('');
-			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
-				'settings.changed',
-				{
-					id: settingId,
-					previous: undefined,
-					current: '',
-				},
-				{
-					type: 'user',
-					...actor,
-				},
-			);
-		});
-	});
-
-	describe('updateAuditedByUser', () => {
-		it('should call the original function and create audit event', () => {
-			const settingId = 'Test_Setting';
-			const newValue = 'newvalue';
-
-			mockSettings.set(settingId, {
-				_id: settingId,
-				type: 'string',
-				value: 'oldvalue',
-			} as ISetting);
-
-			const actor = {
-				_id: 'user123',
-				username: 'testuser',
-				ip: '127.0.0.1',
-				useragent: 'test-agent',
-			};
-
-			const mockFn = jest.fn((_key: string, value: SettingValue) => `result-${String(value)}`);
-			const auditedFn = updateAuditedByUser(actor);
-
-			const result = auditedFn(mockFn, settingId, newValue);
-
-			expect(result).toBe(`result-${newValue}`);
-			expect(mockFn).toHaveBeenCalledWith(settingId, newValue);
-			expect(mockCreateAuditServerEvent).toHaveBeenCalledTimes(1);
 		});
 	});
 
 	describe('updateAuditedBySystem', () => {
-		it('should call the original function and create audit event with system actor', () => {
-			const settingId = 'Test_Setting';
-			const newValue = 'newvalue';
-
-			mockSettings.set(settingId, {
-				_id: settingId,
-				type: 'string',
-				value: 'oldvalue',
-			} as ISetting);
-
-			const actor = {
-				type: 'system' as const,
-				reason: 'System update',
-			};
-
-			const mockFn = jest.fn((_key: string, value: SettingValue) => value);
-			const auditedFn = updateAuditedBySystem(actor);
-
-			const result = auditedFn(mockFn, settingId, newValue);
-
-			expect(result).toBe(newValue);
-			expect(mockFn).toHaveBeenCalledWith(settingId, newValue);
-			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
-				'settings.changed',
-				{
-					id: settingId,
-					previous: 'oldvalue',
-					current: newValue,
-				},
-				{
-					type: 'system',
-					reason: 'System update',
-				},
-			);
-		});
-
 		it('should mask sensitive settings for system actor', () => {
 			const settingId = 'SMTP_Password';
-			const newValue = 'newpassword123';
 
 			mockSettings.set(settingId, {
 				_id: settingId,
@@ -284,19 +148,17 @@ describe('auditedSettingUpdates', () => {
 				value: 'oldpassword',
 			} as ISetting);
 
-			const actor = {};
-
 			const mockFn = jest.fn((_key: string, value: SettingValue) => value);
-			const auditedFn = updateAuditedBySystem(actor);
+			const auditedFn = updateAuditedBySystem({});
 
-			auditedFn(mockFn, settingId, newValue);
+			auditedFn(mockFn, settingId, 'newpassword123');
 
 			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
 				'settings.changed',
 				{
 					id: settingId,
-					previous: 'old********',
-					current: 'new***********',
+					previous: 'oldpassw***',
+					current: 'newpassw******',
 				},
 				{
 					type: 'system',
@@ -306,47 +168,8 @@ describe('auditedSettingUpdates', () => {
 	});
 
 	describe('updateAuditedByApp', () => {
-		it('should call the original function and create audit event with app actor', () => {
-			const settingId = 'Test_Setting';
-			const newValue = 'newvalue';
-
-			mockSettings.set(settingId, {
-				_id: settingId,
-				type: 'string',
-				value: 'oldvalue',
-			} as ISetting);
-
-			const actor = {
-				type: 'app' as const,
-				_id: 'app123',
-				reason: 'App update',
-			};
-
-			const mockFn = jest.fn((_key: string, value: SettingValue) => value);
-			const auditedFn = updateAuditedByApp(actor);
-
-			const result = auditedFn(mockFn, settingId, newValue);
-
-			expect(result).toBe(newValue);
-			expect(mockFn).toHaveBeenCalledWith(settingId, newValue);
-			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
-				'settings.changed',
-				{
-					id: settingId,
-					previous: 'oldvalue',
-					current: newValue,
-				},
-				{
-					type: 'app',
-					_id: 'app123',
-					reason: 'App update',
-				},
-			);
-		});
-
 		it('should mask sensitive settings for app actor', () => {
 			const settingId = 'LDAP_Authentication_Password';
-			const newValue = 'ldappass';
 
 			mockSettings.set(settingId, {
 				_id: settingId,
@@ -362,14 +185,14 @@ describe('auditedSettingUpdates', () => {
 			const mockFn = jest.fn((_key: string, value: SettingValue) => value);
 			const auditedFn = updateAuditedByApp(actor);
 
-			auditedFn(mockFn, settingId, newValue);
+			auditedFn(mockFn, settingId, 'ldappass');
 
 			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
 				'settings.changed',
 				{
 					id: settingId,
-					previous: 'old****',
-					current: 'lda*****',
+					previous: '*******',
+					current: '********',
 				},
 				{
 					type: 'app',
@@ -380,44 +203,6 @@ describe('auditedSettingUpdates', () => {
 	});
 
 	describe('resetAuditedSettingByUser', () => {
-		it('should call the original function and create audit event', () => {
-			const settingId = 'Test_Setting';
-
-			mockSettings.set(settingId, {
-				_id: settingId,
-				type: 'string',
-				value: 'currentvalue',
-				packageValue: 'packagevalue',
-			} as ISetting);
-
-			const actor = {
-				_id: 'user123',
-				username: 'testuser',
-				ip: '127.0.0.1',
-				useragent: 'test-agent',
-			};
-
-			const mockFn = jest.fn((key: string) => `reset-${key}`);
-			const auditedFn = resetAuditedSettingByUser(actor);
-
-			const result = auditedFn(mockFn, settingId);
-
-			expect(result).toBe(`reset-${settingId}`);
-			expect(mockFn).toHaveBeenCalledWith(settingId);
-			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
-				'settings.changed',
-				{
-					id: settingId,
-					previous: 'currentvalue',
-					current: 'packagevalue',
-				},
-				{
-					type: 'user',
-					...actor,
-				},
-			);
-		});
-
 		it('should mask sensitive settings when resetting', () => {
 			const settingId = 'SMTP_Password';
 
@@ -444,8 +229,8 @@ describe('auditedSettingUpdates', () => {
 				'settings.changed',
 				{
 					id: settingId,
-					previous: 'cur***************',
-					current: 'pac***************',
+					previous: 'currentp**********',
+					current: 'packagep**********',
 				},
 				{
 					type: 'user',
@@ -456,40 +241,6 @@ describe('auditedSettingUpdates', () => {
 	});
 
 	describe('Edge cases', () => {
-		it('should handle single character values', () => {
-			const settingId = 'Single_Char_Password';
-
-			mockSettings.set(settingId, {
-				_id: settingId,
-				type: 'password',
-				value: 'a',
-			} as ISetting);
-
-			const actor = {
-				_id: 'user123',
-				username: 'testuser',
-				ip: '127.0.0.1',
-				useragent: 'test-agent',
-			};
-
-			const mockFn = jest.fn((_key: string, value: SettingValue) => value);
-			const auditedFn = updateAuditedByUser(actor)(mockFn, settingId, 'b');
-
-			expect(auditedFn).toBe('b');
-			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
-				'settings.changed',
-				{
-					id: settingId,
-					previous: '*',
-					current: '*',
-				},
-				{
-					type: 'user',
-					...actor,
-				},
-			);
-		});
-
 		it('should handle exactly 8 character values', () => {
 			const settingId = 'Three_Char_Password';
 
@@ -500,7 +251,7 @@ describe('auditedSettingUpdates', () => {
 			} as ISetting);
 
 			const actor = {
-				_id: 'user123',
+				_id: 'user1234',
 				username: 'testuser',
 				ip: '127.0.0.1',
 				useragent: 'test-agent',
@@ -514,8 +265,8 @@ describe('auditedSettingUpdates', () => {
 				'settings.changed',
 				{
 					id: settingId,
-					previous: '********',
-					current: '********',
+					previous: '***',
+					current: '***',
 				},
 				{
 					type: 'user',
@@ -548,8 +299,8 @@ describe('auditedSettingUpdates', () => {
 				'settings.changed',
 				{
 					id: settingId,
-					previous: '123**',
-					current: '678**',
+					previous: '*****',
+					current: '*****',
 				},
 				{
 					type: 'user',

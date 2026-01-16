@@ -482,17 +482,17 @@ describe('[Settings]', () => {
 							if (previous && typeof previous === 'string' && previous.length > 0) {
 								expect(previous).to.include('*');
 								expect(previous).to.not.equal(testPassword);
-								if (previous.length > 3) {
-									expect(previous.substring(0, 3)).to.not.equal('***');
+								if (previous.length > 8) {
+									expect(previous.substring(0, 8)).to.not.equal('***');
 								}
 							}
 
 							if (current && typeof current === 'string' && current.length > 0) {
 								expect(current).to.include('*');
 								expect(current).to.not.equal(testPassword);
-								if (testPassword.length > 3) {
-									expect(current.substring(0, 3)).to.equal(testPassword.substring(0, 3));
-									expect(current.substring(3)).to.match(/^\*+$/);
+								if (testPassword.length > 8) {
+									expect(current.substring(0, 8)).to.equal(testPassword.substring(0, 8));
+									expect(current.substring(8)).to.match(/^\*+$/);
 								} else {
 									expect(current).to.match(/^\*+$/);
 								}
@@ -531,9 +531,9 @@ describe('[Settings]', () => {
 							if (current && typeof current === 'string' && current.length > 0) {
 								expect(current).to.include('*');
 								expect(current).to.not.equal(testUsername);
-								if (testUsername.length > 3) {
-									expect(current.substring(0, 3)).to.equal(testUsername.substring(0, 3));
-									expect(current.substring(3)).to.match(/^\*+$/);
+								if (testUsername.length > 8) {
+									expect(current.substring(0, 8)).to.equal(testUsername.substring(0, 8));
+									expect(current.substring(8)).to.match(/^\*+$/);
 								} else {
 									expect(current).to.match(/^\*+$/);
 								}
