@@ -1,10 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { Router } from '@rocket.chat/http-router';
+import { Logger } from '@rocket.chat/logger';
 import type express from 'express';
 import { WebApp } from 'meteor/webapp';
 
 import { APIClass } from './ApiClass';
-import { logger } from './logger';
 import { cors } from './middlewares/cors';
 import { loggerMiddleware } from './middlewares/logger';
 import { metricsMiddleware } from './middlewares/metrics';
@@ -13,6 +13,8 @@ import { tracerSpanMiddleware } from './middlewares/tracer';
 import { type APIActionHandler, RocketChatAPIRouter } from './router';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
+
+const logger = new Logger('API');
 
 export type Prettify<T> = {
 	[K in keyof T]: T[K];
