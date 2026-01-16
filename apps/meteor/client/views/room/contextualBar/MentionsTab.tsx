@@ -1,6 +1,6 @@
-import type { IMessage } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, type UseQueryResult } from '@tanstack/react-query';
+import type { IMessage } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,24 +13,44 @@ const MentionsTab = (): ReactElement => {
 
 	const room = useRoom();
 
-	const mentionedMessagesQueryResult = useQuery({
+	const mentionedMessagesQueryResult = useInfiniteQuery({
 		queryKey: ['rooms', room._id, 'mentioned-messages'] as const,
+		queryFn: async ({ pageParam = 0 }) => {
+			const result = await getMentionedMessages({
+				roomId: room._id,
+				offset: pageParam,
+			});
 
-		queryFn: async () => {
-			const messages: IMessage[] = [];
-
-			for (
-				let offset = 0, result = await getMentionedMessages({ roomId: room._id, offset: 0 });
-				result.count > 0;
-				// eslint-disable-next-line no-await-in-loop
-				offset += result.count, result = await getMentionedMessages({ roomId: room._id, offset })
-			) {
-				messages.push(...result.messages.map(mapMessageFromApi));
-			}
-
-			return messages;
+			return {
+				messages: result.messages.map(mapMessageFromApi),
+				count: result.count,
+				total: result.total,
+			};
 		},
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, allPages) => {
+			// If we got fewer messages than requested, we've reached the end
+			if (lastPage.count === 0 || lastPage.messages.length === 0) {
+				return undefined;
+			}
+			// Calculate the next offset based on total loaded messages
+			const loadedCount = allPages.reduce((acc, page) => acc + page.messages.length, 0);
+			return loadedCount;
+		},
+		select: ({ pages }) => ({
+			pages,
+			messages: pages.flatMap((page) => page.messages),
+		}),
 	});
+
+	// Transform infinite query result to match MessageListTab's expected format
+	const transformedQueryResult = {
+		data: mentionedMessagesQueryResult.data?.messages ?? [],
+		isLoading: mentionedMessagesQueryResult.isLoading,
+		isSuccess: mentionedMessagesQueryResult.isSuccess,
+		isError: mentionedMessagesQueryResult.isError,
+		error: mentionedMessagesQueryResult.error ?? null,
+	} as unknown as UseQueryResult<IMessage[]>;
 
 	const { t } = useTranslation();
 
@@ -40,7 +60,13 @@ const MentionsTab = (): ReactElement => {
 			title={t('Mentions')}
 			emptyResultMessage={t('No_mentions_found')}
 			context='mentions'
-			queryResult={mentionedMessagesQueryResult}
+			queryResult={transformedQueryResult}
+			onLoadMore={() => {
+				if (mentionedMessagesQueryResult.hasNextPage && !mentionedMessagesQueryResult.isFetchingNextPage) {
+					mentionedMessagesQueryResult.fetchNextPage();
+				}
+			}}
+			hasMore={mentionedMessagesQueryResult.hasNextPage}
 		/>
 	);
 };
