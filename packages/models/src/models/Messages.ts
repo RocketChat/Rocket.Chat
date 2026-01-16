@@ -902,7 +902,14 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			rid: roomId,
 			t: { $exists: false },
 			...(!showThreadMessages && {
-				tmid: { $exists: false },
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
 			}),
 			...(ts && { ts }),
 		};
