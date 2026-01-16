@@ -6,7 +6,9 @@ const PageSkeleton = (): ReactElement => (
 	<Page>
 		<PageHeader title={<Skeleton width='x320' maxWidth='full' />}>
 			<ButtonGroup>
-				<Button children={<Skeleton width='x80' />} disabled />
+				<Button disabled>
+					<Skeleton width='x80' />
+				</Button>
 			</ButtonGroup>
 		</PageHeader>
 		<PageContent>

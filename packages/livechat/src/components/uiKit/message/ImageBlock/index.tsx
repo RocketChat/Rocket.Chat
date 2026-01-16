@@ -70,14 +70,15 @@ const ImageBlock = ({ appId, blockId, title, imageUrl, altText, parser }: ImageB
 				<div className={createClassName(styles, 'uikit-image-block__content', { loading })} style={contentStyle}>
 					<div className={createClassName(styles, 'uikit-image-block__wrapper')} style={wrapperStyle}>
 						<a
-							children={imageUrl}
 							className={createClassName(styles, 'uikit-image-block__link')}
 							href={imageUrl}
 							rel='noopener noreferrer'
 							style={linkStyle}
 							target='_blank'
 							title={altText}
-						/>
+						>
+							{imageUrl}
+						</a>
 					</div>
 				</div>
 			</div>
