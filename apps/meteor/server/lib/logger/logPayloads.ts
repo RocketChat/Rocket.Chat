@@ -1,3 +1,5 @@
+import type { HonoRequest } from 'hono';
+
 import { omit } from '../../../lib/utils/omit';
 
 const { LOG_METHOD_PAYLOAD = 'false', LOG_REST_PAYLOAD = 'false', LOG_REST_METHOD_PAYLOADS = 'false' } = process.env;
@@ -23,7 +25,16 @@ export const getMethodArgs =
 
 export const getRestPayload =
 	LOG_REST_PAYLOAD === 'false' && LOG_REST_METHOD_PAYLOADS === 'false'
-		? (): null => null
-		: (payload: unknown): { payload: unknown } => ({
-				payload,
-			});
+		? (): Promise<null> => Promise.resolve(null)
+		: async (request: HonoRequest): Promise<{ payload: unknown } | null> => {
+				if (request.header('content-type')?.includes('multipart/form-data')) {
+					return { payload: '[multipart/form-data]' };
+				}
+
+				return {
+					payload: await request.raw
+						.clone()
+						.json()
+						.catch(() => null),
+				};
+			};
