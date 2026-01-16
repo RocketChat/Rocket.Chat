@@ -162,76 +162,78 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 	let currentUrl = input;
 	const { controller, timeoutId } = getTimeout(options?.timeout);
 
-	for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
-		// eslint-disable-next-line no-await-in-loop
-		const { agent, pinnedUrl, originalHostname, resolvedIp } = await getFetchAgentWithValidation(
-			currentUrl,
-			allowSelfSignedCerts,
-			options?.ignoreSsrfValidation,
-		);
+	try {
+		for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
+			// eslint-disable-next-line no-await-in-loop
+			const { agent, pinnedUrl, originalHostname, resolvedIp } = await getFetchAgentWithValidation(
+				currentUrl,
+				allowSelfSignedCerts,
+				options?.ignoreSsrfValidation,
+			);
 
-		const params = new URLSearchParams(options?.params);
-		const url = new URL(pinnedUrl);
+			const params = new URLSearchParams(options?.params);
+			const url = new URL(pinnedUrl);
 
-		if (params.toString()) {
-			params.forEach((value, key) => {
-				if (value) {
-					url.searchParams.append(key, value);
+			if (params.toString()) {
+				params.forEach((value, key) => {
+					if (value) {
+						url.searchParams.append(key, value);
+					}
+				});
+			}
+
+			const parsedOptions = parseRequestOptions(options) || {};
+			const existingHeaders = parsedOptions.headers || {};
+			const headers: Record<string, string> = {};
+
+			if (existingHeaders && typeof existingHeaders === 'object') {
+				if (existingHeaders instanceof Headers) {
+					existingHeaders.forEach((value, key) => {
+						headers[key] = value;
+					});
+				} else if (Array.isArray(existingHeaders)) {
+					existingHeaders.forEach(([key, value]) => {
+						headers[key] = Array.isArray(value) ? value.join(', ') : value;
+					});
+				} else {
+					Object.assign(headers, existingHeaders);
 				}
+			}
+
+			if (originalHostname && resolvedIp) {
+				if (!checkDirectIp(originalHostname)) {
+					try {
+						const originalUrl = new URL(currentUrl);
+						headers.Host = originalUrl.port ? `${originalHostname}:${originalUrl.port}` : originalHostname;
+					} catch {
+						headers.Host = originalHostname;
+					}
+				}
+			}
+
+			// eslint-disable-next-line no-await-in-loop
+			const response = await fetch(url.toString(), {
+				// @ts-expect-error - This complained when types were moved to file :/
+				signal: controller.signal,
+				redirect: 'manual',
+				...parsedOptions,
+				headers,
+				...(agent ? { agent } : {}),
 			});
-		}
 
-		const parsedOptions = parseRequestOptions(options) || {};
-		const existingHeaders = parsedOptions.headers || {};
-		const headers: Record<string, string> = {};
-
-		if (existingHeaders && typeof existingHeaders === 'object') {
-			if (existingHeaders instanceof Headers) {
-				existingHeaders.forEach((value, key) => {
-					headers[key] = value;
-				});
-			} else if (Array.isArray(existingHeaders)) {
-				existingHeaders.forEach(([key, value]) => {
-					headers[key] = Array.isArray(value) ? value.join(', ') : value;
-				});
-			} else {
-				Object.assign(headers, existingHeaders);
+			if (!redirectStatus.has(response.status)) {
+				return response;
 			}
+
+			currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
+
+			// https://github.com/node-fetch/node-fetch/issues/1673 - body not consumed == open socket
+			await response.arrayBuffer();
 		}
-
-		if (originalHostname && resolvedIp) {
-			if (!checkDirectIp(originalHostname)) {
-				try {
-					const originalUrl = new URL(currentUrl);
-					headers.Host = originalUrl.port ? `${originalHostname}:${originalUrl.port}` : originalHostname;
-				} catch {
-					headers.Host = originalHostname;
-				}
-			}
+	} finally {
+		if (timeoutId) {
+			clearTimeout(timeoutId);
 		}
-
-		// eslint-disable-next-line no-await-in-loop
-		const response = await fetch(url.toString(), {
-			// @ts-expect-error - This complained when types were moved to file :/
-			signal: controller.signal,
-			redirect: 'manual',
-			...parsedOptions,
-			headers,
-			...(agent ? { agent } : {}),
-		}).finally(() => {
-			if (timeoutId) {
-				clearTimeout(timeoutId);
-			}
-		});
-
-		if (!redirectStatus.has(response.status)) {
-			return response;
-		}
-
-		currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
-
-		// https://github.com/node-fetch/node-fetch/issues/1673 - body not consumed == open socket
-		controller.abort();
 	}
 
 	throw new Error('error-processing-request');
