@@ -1,4 +1,10 @@
-import type { IAuditServerAppActor, IAuditServerSystemActor, IAuditServerUserActor, ISetting, SettingValue } from '@rocket.chat/core-typings';
+import type {
+	IAuditServerAppActor,
+	IAuditServerSystemActor,
+	IAuditServerUserActor,
+	ISetting,
+	SettingValue,
+} from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server/cached';

@@ -1,5 +1,7 @@
 import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
 
+import { updateAuditedByUser, updateAuditedBySystem, updateAuditedByApp, resetAuditedSettingByUser } from './auditedSettingUpdates';
+
 const mockCreateAuditServerEvent = jest.fn();
 jest.mock('@rocket.chat/models', () => ({
 	ServerEvents: {
@@ -17,13 +19,6 @@ jest.mock('../../../app/settings/server/cached', () => {
 		},
 	};
 });
-
-import {
-	updateAuditedByUser,
-	updateAuditedBySystem,
-	updateAuditedByApp,
-	resetAuditedSettingByUser,
-} from './auditedSettingUpdates';
 
 describe('auditedSettingUpdates', () => {
 	beforeEach(() => {
@@ -485,7 +480,7 @@ describe('auditedSettingUpdates', () => {
 				'settings.changed',
 				{
 					id: settingId,
-					previous: '*', 
+					previous: '*',
 					current: '*',
 				},
 				{
@@ -564,4 +559,3 @@ describe('auditedSettingUpdates', () => {
 		});
 	});
 });
-

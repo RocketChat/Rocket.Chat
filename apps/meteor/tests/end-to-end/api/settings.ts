@@ -531,7 +531,7 @@ describe('[Settings]', () => {
 							if (current && typeof current === 'string' && current.length > 0) {
 								expect(current).to.include('*');
 								expect(current).to.not.equal(testUsername);
- 								if (testUsername.length > 3) {
+								if (testUsername.length > 3) {
 									expect(current.substring(0, 3)).to.equal(testUsername.substring(0, 3));
 									expect(current.substring(3)).to.match(/^\*+$/);
 								} else {
