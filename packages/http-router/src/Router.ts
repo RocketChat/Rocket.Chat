@@ -5,10 +5,10 @@ import express from 'express';
 import type { Context, HonoRequest, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
 import type { StatusCode } from 'hono/utils/http-status';
-import qs from 'qs'; // Using qs specifically to keep express compatibility
 
 import type { ResponseSchema, TypedOptions } from './definition';
 import { honoAdapterForExpress } from './middlewares/honoAdapterForExpress';
+import { parseQueryParams } from './parseQueryParams';
 
 const logger = new Logger('HttpRouter');
 
@@ -186,7 +186,7 @@ export class Router<
 	}
 
 	protected parseQueryParams(request: HonoRequest) {
-		return qs.parse(request.raw.url.split('?')?.[1] || '', { arrayLimit: 1000, throwOnLimitExceeded: true });
+		return parseQueryParams(request.raw.url.split('?')?.[1] || '');
 	}
 
 	protected method<TSubPathPattern extends string, TOptions extends TypedOptions>(
