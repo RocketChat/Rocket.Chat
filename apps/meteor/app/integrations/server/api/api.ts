@@ -403,14 +403,12 @@ const middleware = async (c: Context, next: Next): Promise<void> => {
 
 		if (body.payload) {
 			// need to compose the full payload in this weird way because body-parser thought it was a form
-			c.set('bodyParams-override', JSON.parse(body.payload));
 			return next();
 		}
 		incomingLogger.debug({
 			msg: 'Body received as application/x-www-form-urlencoded without the "payload" key, parsed as string',
 			content,
 		});
-		c.set('bodyParams-override', JSON.parse(content));
 	} catch (e: any) {
 		c.body(JSON.stringify({ success: false, error: e.message }), 400);
 	}
