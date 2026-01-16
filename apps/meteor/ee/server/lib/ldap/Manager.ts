@@ -664,7 +664,7 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		userData.deleted = deleted;
-		logger.info({ msg: deleted ? 'Deactivating user' : 'Activating user', name: userData.name, username: userData.username });
+		logger.info({ msg: 'Switching user status', name: userData.name, username: userData.username, active: !deleted });
 	}
 
 	public static copyCustomFields(ldapUser: ILDAPEntry, userData: IImportUser): void {
