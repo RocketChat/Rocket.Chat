@@ -442,17 +442,8 @@ describe('[Settings]', () => {
 
 			after(async () => {
 				// Restore original values
-				if (originalSmtpPassword !== undefined) {
-					await updateSetting('SMTP_Password', originalSmtpPassword);
-				} else {
-					await updateSetting('SMTP_Password', '');
-				}
-
-				if (originalSmtpUsername !== undefined) {
-					await updateSetting('SMTP_Username', originalSmtpUsername);
-				} else {
-					await updateSetting('SMTP_Username', '');
-				}
+await updateSetting('SMTP_Password', originalSmtpPassword || '');
+await updateSetting('SMTP_Username', originalSmtpUsername || '');
 			});
 
 			it('should mask sensitive settings in audit logs', async () => {
