@@ -68,7 +68,7 @@ const isIpInAnyRange = (ip: string) => {
 	});
 };
 
-const domainPattern = /^(?!-)(?!.*--)[A-Za-z0-9-]{1,63}(?<!-)\.?([A-Za-z0-9-]{2,63}\.?)*[A-Za-z]{2,63}$/;
+const domainPattern = /^(?=.{1,253}$)(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[A-Za-z]{2,63}$/;
 const isValidDomain = (domain: string) => domainPattern.test(domain);
 
 const parseIpv4WithPort = (input: string): { ip: string; port?: string } | null => {
