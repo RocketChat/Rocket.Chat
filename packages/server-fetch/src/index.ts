@@ -160,10 +160,9 @@ function followRedirect(response: fetch.Response, redirectCount = 0) {
 
 export async function serverFetch(input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean): Promise<Response> {
 	let currentUrl = input;
+	const { controller, timeoutId } = getTimeout(options?.timeout);
 
 	for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
-		const { controller, timeoutId } = getTimeout(options?.timeout);
-
 		// eslint-disable-next-line no-await-in-loop
 		const { agent, pinnedUrl, originalHostname, resolvedIp } = await getFetchAgentWithValidation(
 			currentUrl,
