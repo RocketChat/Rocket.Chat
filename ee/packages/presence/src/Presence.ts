@@ -22,6 +22,16 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private lostConTimeout?: NodeJS.Timeout;
 
+	private presenceBatch = new Map<
+		string,
+		{
+			user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'roles'>;
+			previousStatus: UserStatus | undefined;
+		}
+	>();
+
+	private batchTimeout?: NodeJS.Timeout;
+
 	private connsPerInstance = new Map<string, number>();
 
 	private peakConnections = 0;
@@ -298,10 +308,24 @@ export class Presence extends ServiceClass implements IPresence {
 		if (!this.broadcastEnabled) {
 			return;
 		}
-		this.api?.broadcast('presence.status', {
-			user,
-			previousStatus,
-		});
+
+		this.presenceBatch.set(user._id, { user, previousStatus });
+
+		if (this.batchTimeout) {
+			return;
+		}
+
+		this.batchTimeout = setTimeout(() => {
+			this.batchTimeout = undefined;
+			if (this.presenceBatch.size === 0) {
+				return;
+			}
+
+			const batch = Array.from(this.presenceBatch.values());
+			this.presenceBatch.clear();
+
+			this.api?.broadcast('presence.status.batch', batch);
+		}, 500);
 	}
 
 	private async validateAvailability(): Promise<void> {

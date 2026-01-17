@@ -30,6 +30,19 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 				await notifyAgentStatusChanged(user._id, user.status);
 			}
 		});
+
+		this.onEvent('presence.status.batch', async (batch): Promise<void> => {
+			for (const { user } of batch) {
+				if (!user?._id) {
+					continue;
+				}
+				const hasRole = user.roles.some((role) => ['livechat-manager', 'livechat-monitor', 'livechat-agent'].includes(role));
+				if (hasRole) {
+					// TODO change `Livechat.notifyAgentStatusChanged` to a service call
+					await notifyAgentStatusChanged(user._id, user.status);
+				}
+			}
+		});
 	}
 
 	override async started() {
