@@ -4834,6 +4834,8 @@
   "Server_File_Path": "Server File Path",
   "Server_Folder_Path": "Server Folder Path",
   "Server_Info": "Server Info",
+  "Server_logs_access_has_changed_callout_title": "Server logs access has changed in Rocket.Chat 8.0",
+  "Server_logs_access_has_changed_callout_description": "The logs viewer was removed. We recommend configuring an observability stack and using the supported log access methods described in the [logging guide]({{docsUrl}}).",
   "Server_Type": "Server Type",
   "Server_already_added": "Server already added",
   "Server_doesnt_exist": "Server doesn't exist",

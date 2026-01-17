@@ -1,6 +1,8 @@
-import { Box, Icon, Skeleton, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Icon, Skeleton, Scrollable, Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import MarkdownText from '../../../components/MarkdownText';
+import { links } from '../../../lib/links';
 import { useStatistics } from '../../hooks/useStatistics';
 
 const AnalyticsReports = () => {
@@ -10,6 +12,14 @@ const AnalyticsReports = () => {
 
 	return (
 		<Box display='flex' flexDirection='column' overflow='hidden' height='100%'>
+			<Callout title={t('Server_logs_access_has_changed_callout_title')} mbe={16}>
+				<p>
+					<MarkdownText
+						variant='inline'
+						content={t('Server_logs_access_has_changed_callout_description', { docsUrl: links.go.logsDocs })}
+					/>
+				</p>
+			</Callout>
 			<Box backgroundColor='light' p={20} pbe={28} mbe={16} borderRadius={4}>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe={20}>
 					<Box display='flex' justifyContent='center' alignItems='center' borderRadius={2} p={4} mie={8} bg='status-background-info'>
