@@ -78,30 +78,40 @@ button {
 }
 
 @media print {
+
 	#rocket-chat.menu-nav,
 	.messages-container .wrapper {
-		position: relative !important; /* 1 */
+		position: relative !important;
+		/* 1 */
 	}
 
 	body {
-		height: auto !important; /* 1 */
+		height: auto !important;
+		/* 1 */
 	}
 
 	.messages-container-main,
 	.messages-container-wrapper,
 	.main-content-flex {
-		flex: 1 0 auto !important; /* 1 */
-		height: auto !important; /* 1 */
+		flex: 1 0 auto !important;
+		/* 1 */
+		height: auto !important;
+		/* 1 */
 	}
 
 	.rc-alerts {
-		display: none !important; /* 1 */
+		display: none !important;
+		/* 1 */
 	}
 
 	.rcx-box {
 		&--full.rcx-box {
-			overflow: visible !important /* 1 */;
-			height: auto !important /* 1 */;
+			overflow: visible !important
+				/* 1 */
+			;
+			height: auto !important
+				/* 1 */
+			;
 		}
 	}
 }
@@ -109,4 +119,25 @@ button {
 .gallery-item {
 	max-width: 100%;
 	cursor: pointer;
+}
+
+/**
+ * Fix #36160: Emoji reaction background too dark
+ * Override the reaction pill background to use a neutral surface color
+ * instead of inheriting from message bubble background which causes poor contrast
+ */
+.rcx-message-reactions__reaction {
+	background-color: var(--rcx-color-surface-neutral, rgba(47, 52, 61, 0.08)) !important;
+}
+
+.rcx-message-reactions__reaction:hover {
+	background-color: var(--rcx-color-surface-hover, rgba(47, 52, 61, 0.12)) !important;
+}
+
+.rcx-message-reactions__reaction--mine {
+	background-color: var(--rcx-color-surface-selected, rgba(9, 109, 217, 0.16)) !important;
+}
+
+.rcx-message-reactions__reaction--mine:hover {
+	background-color: var(--rcx-color-surface-selected, rgba(9, 109, 217, 0.24)) !important;
 }
