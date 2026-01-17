@@ -427,15 +427,19 @@ describe('[Settings]', () => {
 		describe('Masking sensitive settings', () => {
 			let originalSmtpPassword: string | undefined;
 			let originalSmtpUsername: string | undefined;
+			let maskingStart: Date;
+			let maskingEnd: Date;
 			const testPassword = 'testpassword123';
 			const testUsername = 'testuser@example.com';
 
 			before(async () => {
+				maskingStart = new Date();
 				originalSmtpPassword = (await getSettingValueById('SMTP_Password')) as string | undefined;
 				originalSmtpUsername = (await getSettingValueById('SMTP_Username')) as string | undefined;
 
 				await updateSetting('SMTP_Password', testPassword);
 				await updateSetting('SMTP_Username', testUsername);
+				maskingEnd = new Date();
 			});
 
 			after(async () => {
@@ -446,7 +450,7 @@ describe('[Settings]', () => {
 			it('should mask sensitive settings in audit logs', async () => {
 				await request
 					.get(api('audit.settings'))
-					.query({ settingId: 'SMTP_Password' })
+					.query({ settingId: 'SMTP_Password', start: formatDate(maskingStart), end: formatDate(maskingEnd) })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -490,7 +494,7 @@ describe('[Settings]', () => {
 
 				await request
 					.get(api('audit.settings'))
-					.query({ settingId: 'SMTP_Username' })
+					.query({ settingId: 'SMTP_Username', start: formatDate(maskingStart), end: formatDate(maskingEnd) })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
