@@ -98,4 +98,15 @@ describe('Presence Batching', () => {
         expect(batch).toHaveLength(1);
         expect(batch[0].user.status).toBe('offline');
     });
+
+    it('should not broadcast if broadcastEnabled is false', () => {
+        (presence as any).broadcastEnabled = false;
+        const user = { _id: 'u1', username: 'user1', status: 'online' } as any;
+
+        (presence as any).broadcast(user, 'offline');
+
+        expect((presence as any).presenceBatch.size).toBe(0);
+        jest.advanceTimersByTime(500);
+        expect((presence as any).api.broadcast).not.toHaveBeenCalled();
+    });
 });

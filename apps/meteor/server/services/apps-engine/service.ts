@@ -32,11 +32,15 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 
 		this.onEvent('presence.status.batch', async (batch): Promise<void> => {
 			for (const { user, previousStatus } of batch) {
-				await Apps.self?.triggerEvent(AppEvents.IPostUserStatusChanged, {
-					user,
-					currentStatus: user.status,
-					previousStatus,
-				});
+				try {
+					await Apps.self?.triggerEvent(AppEvents.IPostUserStatusChanged, {
+						user,
+						currentStatus: user.status,
+						previousStatus,
+					});
+				} catch (error) {
+					SystemLogger.error({ msg: 'Error triggering IPostUserStatusChanged event', error });
+				}
 			}
 		});
 
