@@ -5641,6 +5641,8 @@
   "User_updated_successfully": "User updated successfully",
   "User_uploaded_a_file_on_channel": "<strong>{{username}}</strong> uploaded a file on <strong>{{channel}}</strong>",
   "User_uploaded_a_file_to_you": "<strong>{{username}}</strong> sent you a file",
+  "User_uploaded_files_on_channel": "<strong>{{username}}</strong> uploaded {{count}} files on <strong>{{channel}}</strong>",
+  "User_uploaded_files_to_you": "<strong>{{username}}</strong> sent you {{count}} files",
   "User_uploaded_file": "Uploaded a file",
   "User_uploaded_image": "Uploaded an image",
   "Username": "Username",
