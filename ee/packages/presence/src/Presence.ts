@@ -324,6 +324,10 @@ export class Presence extends ServiceClass implements IPresence {
 			const batch = Array.from(this.presenceBatch.values());
 			this.presenceBatch.clear();
 
+			if (!this.broadcastEnabled) {
+				return;
+			}
+
 			this.api?.broadcast('presence.status.batch', batch);
 		}, 500);
 	}
