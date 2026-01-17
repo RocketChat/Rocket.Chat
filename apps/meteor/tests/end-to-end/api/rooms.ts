@@ -153,7 +153,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', res.body.error);
+					expect(res.body).to.have.property('error');
 				})
 				.end(done);
 		});
@@ -167,7 +167,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Just 1 file is allowed');
+					expect(res.body).to.have.property('errorType', 'error-too-many-files');
 				})
 				.end(done);
 		});

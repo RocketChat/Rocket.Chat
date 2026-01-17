@@ -1,24 +1,14 @@
 import { createContext, useMemo, useContext, useSyncExternalStore } from 'react';
 
-import type { AsyncState } from '../../../../lib/asyncState/AsyncState';
-import { AsyncStatePhase } from '../../../../lib/asyncState/AsyncStatePhase';
-
 type IOmnichannelRoomIconContext = {
-	queryIcon(app: string, icon: string): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => AsyncState<string>];
+	queryIcon(app: string, icon: string): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string | undefined];
 };
 
 export const OmnichannelRoomIconContext = createContext<IOmnichannelRoomIconContext>({
-	queryIcon: () => [
-		(): (() => void) => (): void => undefined,
-		(): AsyncState<string> => ({
-			phase: AsyncStatePhase.LOADING,
-			value: undefined,
-			error: undefined,
-		}),
-	],
+	queryIcon: () => [(): (() => void) => (): void => undefined, () => undefined],
 });
 
-export const useOmnichannelRoomIcon = (app: string, icon: string): AsyncState<string> => {
+export const useOmnichannelRoomIcon = (app: string, icon: string): string | undefined => {
 	const { queryIcon } = useContext(OmnichannelRoomIconContext);
 	const [subscribe, getSnapshot] = useMemo(() => queryIcon(app, icon), [app, queryIcon, icon]);
 	return useSyncExternalStore(subscribe, getSnapshot);

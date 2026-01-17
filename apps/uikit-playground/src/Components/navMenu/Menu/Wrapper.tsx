@@ -10,10 +10,11 @@ const Wrapper = ({ children }: { children: ReactNode }): ReactElement => (
     alignItems="center"
     justifyContent="space-between"
     verticalAlign="middle"
-    children={children}
     height="max-content"
     width="100%"
-  />
+  >
+    {children}
+  </Box>
 );
 
 export default Wrapper;
