@@ -130,7 +130,7 @@ const MessageToolbar = ({
 
 		// Robustly track shift state during movement to catch edge cases (missed enter, or holding before hover)
 		const handleMouseMove = (e: MouseEvent) => {
-			setShiftPressed(e.shiftKey);
+			setShiftPressed((prev) => (prev === e.shiftKey ? prev : e.shiftKey));
 		};
 
 		messageElement.addEventListener('mouseenter', handleMouseEnter);

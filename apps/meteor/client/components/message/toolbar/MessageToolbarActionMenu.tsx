@@ -164,7 +164,7 @@ const MessageToolbarActionMenu = ({
 							icon={item.icon as any}
 							title={typeof item.content === 'string' ? item.content : ''}
 							onClick={(e) => {
-								item.onClick?.(e as any);
+								item.onClick?.(e);
 								onChangeMenuVisibility(false);
 							}}
 							qa={item.id}
