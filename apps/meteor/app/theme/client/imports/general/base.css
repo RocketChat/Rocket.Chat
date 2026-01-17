@@ -78,30 +78,40 @@ button {
 }
 
 @media print {
+
 	#rocket-chat.menu-nav,
 	.messages-container .wrapper {
-		position: relative !important; /* 1 */
+		position: relative !important;
+		/* 1 */
 	}
 
 	body {
-		height: auto !important; /* 1 */
+		height: auto !important;
+		/* 1 */
 	}
 
 	.messages-container-main,
 	.messages-container-wrapper,
 	.main-content-flex {
-		flex: 1 0 auto !important; /* 1 */
-		height: auto !important; /* 1 */
+		flex: 1 0 auto !important;
+		/* 1 */
+		height: auto !important;
+		/* 1 */
 	}
 
 	.rc-alerts {
-		display: none !important; /* 1 */
+		display: none !important;
+		/* 1 */
 	}
 
 	.rcx-box {
 		&--full.rcx-box {
-			overflow: visible !important /* 1 */;
-			height: auto !important /* 1 */;
+			overflow: visible !important
+				/* 1 */
+			;
+			height: auto !important
+				/* 1 */
+			;
 		}
 	}
 }
@@ -109,4 +119,13 @@ button {
 .gallery-item {
 	max-width: 100%;
 	cursor: pointer;
+}
+
+/**
+ * Fix #31739: Hide Microsoft Edge/IE native password reveal and clear buttons
+ * These browser-default buttons create duplicate icons alongside Rocket.Chat's custom eye icon
+ */
+input::-ms-reveal,
+input::-ms-clear {
+	display: none;
 }
