@@ -13,8 +13,8 @@ import {
 	useLayout,
 } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useId, useState, useCallback } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useId, useState, useCallback, useMemo } from 'react';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 
 import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
@@ -44,8 +44,32 @@ const AccountProfilePage = (): ReactElement => {
 
 	const {
 		reset,
+		control,
 		formState: { isDirty, isSubmitting },
 	} = methods;
+
+	const watchedValues = useWatch({ control });
+	const defaultValues = useMemo(() => getProfileInitialValues(user), [user]);
+
+	const isTrulyDirty = useMemo(() => {
+		if (!isDirty || !watchedValues) return false;
+
+		const stringFields = ['name', 'username', 'statusText', 'nickname', 'bio', 'email'] as const;
+
+		for (const field of stringFields) {
+			const currentValue = (watchedValues[field] ?? '').toString().trim();
+			const defaultValue = (defaultValues[field] ?? '').toString().trim();
+			if (currentValue !== defaultValue) {
+				return true;
+			}
+		}
+
+		if (watchedValues.avatar !== defaultValues.avatar) return true;
+		if (watchedValues.statusType !== defaultValues.statusType) return true;
+		if (JSON.stringify(watchedValues.customFields) !== JSON.stringify(defaultValues.customFields)) return true;
+
+		return false;
+	}, [isDirty, watchedValues, defaultValues]);
 
 	const logoutOtherClients = useEndpoint('POST', '/v1/users.logoutOtherClients');
 	const deleteOwnAccount = useEndpoint('POST', '/v1/users.deleteOwnAccount');
@@ -134,12 +158,12 @@ const AccountProfilePage = (): ReactElement => {
 					</Box>
 				</Box>
 			</PageScrollableContentWithShadow>
-			<PageFooter isDirty={isDirty}>
+			<PageFooter isDirty={isTrulyDirty}>
 				<ButtonGroup>
-					<Button disabled={!isDirty} onClick={() => reset(getProfileInitialValues(user))}>
+					<Button disabled={!isTrulyDirty} onClick={() => reset(getProfileInitialValues(user))}>
 						{t('Cancel')}
 					</Button>
-					<Button form={profileFormId} primary disabled={!isDirty || loggingOut} loading={isSubmitting} type='submit'>
+					<Button form={profileFormId} primary disabled={!isTrulyDirty || loggingOut} loading={isSubmitting} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
