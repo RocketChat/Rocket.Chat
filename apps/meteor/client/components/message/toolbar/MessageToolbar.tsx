@@ -113,7 +113,10 @@ const MessageToolbar = ({
 			return;
 		}
 
-		// Check if we are already hovering the message when component mounts
+		// Check if we are already hovering the message when component mounts.
+		// This is necessary to ensure the component's internal state matches the actual hover state
+		// in cases where the component mounts under the cursor (e.g. during scroll), preventing
+		// missed interactions or reliance on mouse movement to "waking up" the listeners.
 		if (messageElement.matches(':hover')) {
 			setIsHovered(true);
 		}
