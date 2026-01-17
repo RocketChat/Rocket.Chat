@@ -60,18 +60,27 @@ const itemsByContext: Record<
 
 let isGlobalShiftDown = false;
 if (typeof window !== 'undefined') {
-	document.addEventListener('keydown', (e) => {
+	const handleDocumentKeyDown = (e: KeyboardEvent): void => {
 		if (e.key === 'Shift') {
 			isGlobalShiftDown = true;
 		}
-	});
-	document.addEventListener('keyup', (e) => {
+	};
+	const handleDocumentKeyUp = (e: KeyboardEvent): void => {
 		if (e.key === 'Shift') {
 			isGlobalShiftDown = false;
 		}
-	});
-	window.addEventListener('blur', () => {
+	};
+	const handleWindowBlur = (): void => {
 		isGlobalShiftDown = false;
+	};
+
+	document.addEventListener('keydown', handleDocumentKeyDown);
+	document.addEventListener('keyup', handleDocumentKeyUp);
+	window.addEventListener('blur', handleWindowBlur);
+	window.addEventListener('unload', () => {
+		document.removeEventListener('keydown', handleDocumentKeyDown);
+		document.removeEventListener('keyup', handleDocumentKeyUp);
+		window.removeEventListener('blur', handleWindowBlur);
 	});
 }
 
