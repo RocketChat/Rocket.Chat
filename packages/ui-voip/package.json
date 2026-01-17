@@ -26,7 +26,7 @@
 		"react-i18next": "~13.2.2"
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.52.0",
+		"@playwright/test": "^1.57.0",
 		"@react-spectrum/test-utils": "~1.0.0-alpha.8",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "~0.31.25",
@@ -53,7 +53,7 @@
 		"@storybook/react": "^8.6.14",
 		"@storybook/react-webpack5": "^8.6.14",
 		"@storybook/test": "^8.6.14",
-		"@storybook/test-runner": "^0.22.1",
+		"@storybook/test-runner": "^0.24.2",
 		"@testing-library/dom": "~10.4.1",
 		"@testing-library/react": "~16.3.0",
 		"@testing-library/user-event": "~14.6.1",
