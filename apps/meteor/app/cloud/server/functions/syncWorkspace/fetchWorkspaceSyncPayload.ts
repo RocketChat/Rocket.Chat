@@ -28,13 +28,13 @@ export async function fetchWorkspaceSyncPayload({
 
 	const payload = await response.json();
 
-	const assertWorkspaceSyncPayload = Cloud.WorkspaceSyncResponseSchema.safeParse(payload);
+	const result = Cloud.WorkspaceSyncResponseSchema.safeParse(payload);
 
-	if (!assertWorkspaceSyncPayload.success) {
-		throw new CloudWorkspaceConnectionError('WorkspaceSyncPayloadSchema failed type validation', {
-			cause: z.prettifyError(assertWorkspaceSyncPayload.error),
+	if (!result.success) {
+		throw new CloudWorkspaceConnectionError('failed type validation', {
+			cause: z.prettifyError(result.error),
 		});
 	}
 
-	return assertWorkspaceSyncPayload.data;
+	return result.data;
 }

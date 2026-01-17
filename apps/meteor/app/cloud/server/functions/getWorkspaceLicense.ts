@@ -36,7 +36,7 @@ const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): 
 	const result = Cloud.WorkspaceLicensePayloadSchema.safeParse(payload);
 
 	if (!result.success) {
-		throw new CloudWorkspaceLicenseError('WorkspaceLicensePayloadSchema failed type validation', {
+		throw new CloudWorkspaceLicenseError('failed type validation', {
 			cause: z.prettifyError(result.error),
 		});
 	}

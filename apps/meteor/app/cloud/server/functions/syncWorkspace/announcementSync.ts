@@ -41,7 +41,7 @@ const fetchCloudAnnouncementsSync = async ({
 	const result = Cloud.WorkspaceCommsResponsePayloadSchema.safeParse(payload);
 
 	if (!result.success) {
-		throw new CloudWorkspaceConnectionError('WorkspaceCommPayloadSchema failed type validation', {
+		throw new CloudWorkspaceConnectionError('failed type validation', {
 			cause: z.prettifyError(result.error),
 		});
 	}
