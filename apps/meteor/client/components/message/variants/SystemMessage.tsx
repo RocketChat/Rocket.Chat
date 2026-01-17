@@ -79,7 +79,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageNameContainer style={{ cursor: 'pointer' }} {...buttonProps} {...triggerProps}>
+					<MessageNameContainer style={{ cursor: 'pointer', flexShrink: 0 }} {...buttonProps} {...triggerProps}>
 						<MessageSystemName>{displayName}</MessageSystemName>
 						{showUsername && (
 							<>
