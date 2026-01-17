@@ -6,7 +6,7 @@ import UsersTab from './UsersTab';
 
 export default {
 	component: UsersTab,
-	decorators: [(fn): ReactElement => <Margins children={fn()} all='x24' />],
+	decorators: [(fn): ReactElement => <Margins all='x24'>{fn()}</Margins>],
 } satisfies Meta<typeof UsersTab>;
 
 export const Default: StoryFn<typeof UsersTab> = () => <UsersTab timezone='utc' />;

@@ -2,7 +2,10 @@ export type ClientState =
 	| 'none' // The client doesn't recognize a specific call id at all
 	| 'pending' // The call is ringing
 	| 'accepting' // The client tried to accept the call and is wating for confirmation from the server
-	| 'accepted' // The call was accepted, but the client doesn't have a webrtc offer yet
+	| 'waiting-for-offer' // The call was accepted, but the client doesn't have a webrtc offer yet
+	| 'waiting-for-answer' // The call was accepted and an offer was already sent, but the client doesn't have an answer yet
+	| 'generating-local-sdp' // The client is generating its first local sdp (offer/answer)
+	| 'activating' // The WebRTC signaling has reached the stable state, but the connection is not yet active
 	| 'busy-elsewhere' // The call is happening in a different session/client
 	| 'active' // The webrtc call was established
 	| 'renegotiating' // the webrtc call was established but the client is starting a new negotiation
