@@ -1,5 +1,5 @@
 import type { OffCallbackHandler } from '@rocket.chat/emitter';
-import { Emitter } from '@rocket.chat/emitter';
+import * as Emitter from '@rocket.chat/emitter';
 import { MongoInternals } from 'meteor/mongo';
 import type { ClientSession, MongoError } from 'mongodb';
 
@@ -65,7 +65,7 @@ class UnsuccessfulTransactionError extends Error {
 export const wrapInSessionTransaction =
 	<T extends Array<unknown>, U>(curriedCallback: (session: ClientSession) => (...args: T) => U) =>
 	async (...args: T): Promise<Awaited<U>> => {
-		const ee = new Emitter<{ success: ClientSession }>();
+		const ee = new Emitter.Emitter<{ success: ClientSession }>();
 
 		const extendedSession = getExtendedSession(client.startSession(), (cb) => ee.once('success', cb));
 
