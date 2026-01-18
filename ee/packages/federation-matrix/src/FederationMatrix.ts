@@ -28,117 +28,7 @@ export const fileTypes: Record<string, FileMessageType> = {
 	file: 'm.file',
 };
 
-/** helper to validate the username format */
-export function validateFederatedUsername(mxid: string): mxid is UserID {
-	if (!mxid.startsWith('@')) return false;
-
-	const parts = mxid.substring(1).split(':');
-	if (parts.length < 2) return false;
-
-	const localpart = parts[0];
-	const domainAndPort = parts.slice(1).join(':');
-
-	const localpartRegex = /^(?:[a-z0-9._\-]|=[0-9a-fA-F]{2}){1,255}$/;
-	if (!localpartRegex.test(localpart)) return false;
-
-	const [domain, port] = domainAndPort.split(':');
-
-	const hostnameRegex = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)*$/i;
-	const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/;
-	const ipv6Regex = /^\[([0-9a-f:.]+)\]$/i;
-
-	if (!(hostnameRegex.test(domain) || ipv4Regex.test(domain) || ipv6Regex.test(domain))) {
-		return false;
-	}
-
-	if (port !== undefined) {
-		const portNum = Number(port);
-		if (!/^[0-9]+$/.test(port) || portNum < 1 || portNum > 65535) {
-			return false;
-		}
-	}
-
-	return true;
-}
-export const extractDomainFromMatrixUserId = (mxid: string): string => {
-	const separatorIndex = mxid.indexOf(':', 1);
-	if (separatorIndex === -1) {
-		throw new Error(`Invalid federated username: ${mxid}`);
-	}
-	return mxid.substring(separatorIndex + 1);
-};
-
-/**
- * Extract the username and the servername from a matrix user id
- * if the serverName is the same as the serverName in the mxid, return only the username (rocket.chat regular username)
- * otherwise, return the full mxid and the servername
- */
-export const getUsernameServername = (mxid: string, serverName: string): [mxid: string, serverName: string, isLocal: boolean] => {
-	const senderServerName = extractDomainFromMatrixUserId(mxid);
-	// if the serverName is the same as the serverName in the mxid, return only the username (rocket.chat regular username)
-	if (serverName === senderServerName) {
-		const separatorIndex = mxid.indexOf(':', 1);
-		if (separatorIndex === -1) {
-			throw new Error(`Invalid federated username: ${mxid}`);
-		}
-		return [mxid.substring(1, separatorIndex), senderServerName, true]; // removers also the @
-	}
-
-	return [mxid, senderServerName, false];
-};
-/**
- * Helper function to create a federated user
- *
- * Because of historical reasons, we can have users only with federated flag but no federation object
- * So we need to upsert the user with the federation object
- */
-export async function createOrUpdateFederatedUser(options: { username: string; name?: string; origin: string }): Promise<IUser> {
-	const { username, name = username, origin } = options;
-
-	// TODO: Have a specific method to handle this upsert
-	const user = await Users.findOneAndUpdate(
-		{
-			username,
-		},
-		{
-			$set: {
-				username,
-				name: name || username,
-				type: 'user' as const,
-				status: UserStatus.OFFLINE,
-				active: true,
-				roles: ['user'],
-				requirePasswordChange: false,
-				federated: true,
-				federation: {
-					version: 1,
-					mui: username,
-					origin,
-				},
-				_updatedAt: new Date(),
-			},
-			$setOnInsert: {
-				createdAt: new Date(),
-			},
-		},
-		{
-			upsert: true,
-			projection: { _id: 1, username: 1 },
-			returnDocument: 'after',
-		},
-	);
-
-	if (!user) {
-		throw new Error(`Failed to create or update federated user: ${username}`);
-	}
-
-	return user;
-}
-
-export { generateEd25519RandomSecretKey } from '@rocket.chat/federation-sdk';
-
 @tracedClass({ type: 'service' })
->>>>>>> be0b46d27d (feat(tracing): integrate OpenTelemetry tracing with new observability services)
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
 
@@ -235,9 +125,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			// canonical alias computed from name
 			const matrixRoomResult = await federationSDK.createRoom(matrixUserId, roomName, room.t === 'c' ? 'public' : 'invite');
 
-<<<<<<< HEAD
-			this.logger.debug({ msg: 'Matrix room created', response: matrixRoomResult });
-=======
 			// Add runtime attributes after Matrix room is created
 			addSpanAttributes({
 				matrixRoomId: matrixRoomResult.room_id,
@@ -246,8 +133,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				visibility: room.t === 'c' ? 'public' : 'invite',
 			});
 
-			this.logger.debug('Matrix room created:', matrixRoomResult);
->>>>>>> be0b46d27d (feat(tracing): integrate OpenTelemetry tracing with new observability services)
+			this.logger.debug({ msg: 'Matrix room created', response: matrixRoomResult });
 
 			await Rooms.setAsFederated(room._id, { mrid: matrixRoomResult.room_id, origin: this.serverName });
 
@@ -302,68 +188,17 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error('Creator not found in members list');
 			}
 
-			const roomId = await federationSDK.createDirectMessage({
+			const roomId = await federationSDK.createDirectMessageRoom({
 				creatorUserId: userIdSchema.parse(`@${creator.username}:${this.serverName}`),
 				members: members
 					.filter((member) => member._id !== creatorId)
 					.map((member) => userIdSchema.parse(isUserNativeFederated(member) ? member.username : `@${member.username}:${this.serverName}`)),
 			});
-=======
-			const actualMatrixUserId = `@${creator.username}:${this.serverName}`;
-			const isGroupDM = members.length > 2;
-
-			// Add runtime attributes
-			addSpanAttributes({
-				creatorUsername: creator.username,
-				matrixUserId: actualMatrixUserId,
-				isGroupDM,
-			});
-
-			let matrixRoomResult: { room_id: string; event_id?: string };
-			if (members.length === 2) {
-				const otherMember = members.find((member) => member._id !== creatorId);
-				if (!otherMember) {
-					throw new Error('Other member not found for 1-on-1 DM');
-				}
-				if (!isUserNativeFederated(otherMember)) {
-					throw new Error('Other member is not federated');
-				}
-
-				addSpanAttributes({
-					otherMemberUsername: otherMember.username,
-				});
-
-				const roomId = await federationSDK.createDirectMessageRoom(
-					userIdSchema.parse(actualMatrixUserId),
-					userIdSchema.parse(otherMember.username),
-				);
-				matrixRoomResult = { room_id: roomId };
-			} else {
-				// For group DMs (more than 2 members), create a private room
-				const roomName = room.name || room.fname || `Group chat with ${members.length} members`;
-				matrixRoomResult = await federationSDK.createRoom(userIdSchema.parse(actualMatrixUserId), roomName, 'invite');
-
-				for await (const member of members) {
-					if (member._id === creatorId) {
-						continue;
-					}
-
-					try {
-						await federationSDK.inviteUserToRoom(
-							isUserNativeFederated(member) ? userIdSchema.parse(member.username) : `@${member.username}:${this.serverName}`,
-							roomIdSchema.parse(matrixRoomResult.room_id),
-							userIdSchema.parse(actualMatrixUserId),
-						);
-					} catch (error) {
-						this.logger.error(error, 'Error creating or updating bridged user for DM');
-					}
-				}
-			}
->>>>>>> be0b46d27d (feat(tracing): integrate OpenTelemetry tracing with new observability services)
 
 			// Add resulting Matrix room ID
 			addSpanAttributes({
-				matrixRoomId: matrixRoomResult.room_id,
+				matrixRoomId: roomId,
+				creatorUsername: creator.username,
 			});
 
 			await Rooms.setAsFederated(room._id, {
@@ -798,12 +633,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		try {
 			const room = await Rooms.findOneById(roomId);
 			if (!room || !isRoomNativeFederated(room)) {
-<<<<<<< HEAD
 				this.logger.debug({ msg: 'Room is not federated, skipping leave operation', roomId });
-=======
-				this.logger.debug(`Room ${roomId} is not federated, skipping leave operation`);
 				addSpanAttributes({ skipped: true, reason: 'room_not_federated' });
->>>>>>> be0b46d27d (feat(tracing): integrate OpenTelemetry tracing with new observability services)
 				return;
 			}
 
