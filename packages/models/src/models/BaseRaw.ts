@@ -1,6 +1,6 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
-import { traceInstanceMethods } from '@rocket.chat/tracing';
+import { tracedClass } from '@rocket.chat/tracing';
 import { ObjectId } from 'mongodb';
 import type {
 	BulkWriteOptions,
@@ -46,6 +46,7 @@ type ModelOptions = {
 	collection?: CollectionOptions;
 };
 
+@tracedClass({ type: 'model' })
 export abstract class BaseRaw<
 	T extends { _id: string },
 	C extends DefaultFields<T> = undefined,
@@ -82,8 +83,6 @@ export abstract class BaseRaw<
 		void this.createIndexes();
 
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
-
-		return traceInstanceMethods(this);
 	}
 
 	private pendingIndexes: Promise<void> | undefined;

@@ -2,6 +2,7 @@ import type { EventID } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
+import { addSpanAttributes } from '@rocket.chat/tracing';
 
 import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
@@ -334,6 +335,28 @@ export const getMatrixTransactionsRoutes = () => {
 				},
 				async (c) => {
 					const body = await c.req.json();
+
+					// Tag the span with federation operation types for trace filtering
+					const pdus: Array<{ type: string }> = body.pdus || [];
+					const edus: Array<{ edu_type: string }> = body.edus || [];
+					const pduTypes = new Set(pdus.map((p) => p.type));
+					const eduTypes = new Set(edus.map((e) => e.edu_type).filter((type): type is string => type !== undefined));
+
+					addSpanAttributes({
+						'federation.direction': 'incoming',
+						'federation.origin': body.origin,
+						'federation.pdu_count': pdus.length,
+						'federation.edu_count': edus.length,
+						'federation.has_message': pduTypes.has('m.room.message'),
+						'federation.has_membership': pduTypes.has('m.room.member'),
+						'federation.has_reaction': pduTypes.has('m.reaction'),
+						'federation.has_redaction': pduTypes.has('m.room.redaction'),
+						'federation.has_encrypted': pduTypes.has('m.room.encrypted'),
+						'federation.has_typing': eduTypes.has('m.typing'),
+						'federation.has_presence': eduTypes.has('m.presence'),
+						'federation.pdu_types': Array.from(pduTypes).join(','),
+						'federation.edu_types': Array.from(eduTypes).join(','),
+					});
 
 					try {
 						await federationSDK.processIncomingTransaction(body);

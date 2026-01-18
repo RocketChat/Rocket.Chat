@@ -8,6 +8,7 @@ import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { tracerSpanMiddleware } from '@rocket.chat/tracing';
 import { Meteor } from 'meteor/meteor';
 import * as z from 'zod';
 
@@ -22,7 +23,6 @@ import type { APIClass } from '../../../../app/api/server/ApiClass';
 import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
 import { loggerMiddleware } from '../../../../app/api/server/middlewares/logger';
 import { metricsMiddleware } from '../../../../app/api/server/middlewares/metrics';
-import { tracerSpanMiddleware } from '../../../../app/api/server/middlewares/tracer';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
 import { metrics } from '../../../../app/metrics/server';
 import { settings } from '../../../../app/settings/server';
@@ -74,7 +74,7 @@ export class AppsRestApi {
 		this.api.router
 			.use(loggerMiddleware(logger))
 			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/apps\//), api: this.api, settings, summary: metrics.rocketchatRestApi }))
-			.use(tracerSpanMiddleware);
+			.use(tracerSpanMiddleware());
 
 		this.addManagementRoutes();
 		// Using the same instance of the existing API for now, to be able to use the same api prefix(/api)
