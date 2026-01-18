@@ -166,6 +166,10 @@ export const createMessageSettings = () =>
 		await this.add('API_EmbedSafePorts', '80, 443', {
 			type: 'string',
 		});
+		await this.add('API_EmbedTimeout', 10, {
+			type: 'int',
+			enableQuery: { _id: 'API_Embed', value: true },
+		});
 		await this.add('Message_TimeFormat', 'LT', {
 			type: 'string',
 			public: true,
