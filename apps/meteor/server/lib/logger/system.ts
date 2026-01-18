@@ -1,3 +1,3 @@
-import { Logger } from '@rocket.chat/logger';
+import * as Logger from '@rocket.chat/logger';
 
-export const SystemLogger = new Logger('System');
+export const SystemLogger = new Logger.Logger('System');

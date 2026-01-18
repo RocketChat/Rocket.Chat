@@ -20,6 +20,6 @@ export const startup = async () => {
 	setImmediate(() => startCronJobs());
 	// only starts network broker if running in micro services mode
 	if (!isRunningMs()) {
-		require('./localServices');
+		await import('./localServices');
 	}
 };

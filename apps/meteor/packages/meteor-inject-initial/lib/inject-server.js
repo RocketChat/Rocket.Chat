@@ -58,7 +58,7 @@ Inject = {
 
 	// The callback receives the entire HTML page and must return a modified version
 	rawModHtml(id, func) {
-		if (!_.isFunction(func)) {
+		if (typeof func !== 'function') {
 			const message = `Inject func id "${id}" should be a function, not ${typeof func}`;
 			throw new Error(message);
 		}
