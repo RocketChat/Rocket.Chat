@@ -50,7 +50,6 @@ export const handleAnnouncementsOnWorkspaceSync = async (announcements: {
 					...view,
 					appId: 'cloud-announcements-core',
 				},
-				createdBy: announcement.createdBy as any, // FIXME Announcement and IBanner createdBy types are incompatible
 			});
 		}),
 	);

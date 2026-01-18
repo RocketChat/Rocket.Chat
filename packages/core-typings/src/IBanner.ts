@@ -18,10 +18,13 @@ export const IBannerSchema = z.object({
 	startAt: TimestampSchema, // start date a banner should be presented
 	/** @deprecated a new `selector` field should be created for filtering instead */
 	roles: z.array(z.string()).optional().meta({ deprecated: true }),
-	createdBy: z.object({
-		_id: z.string(),
-		username: z.string().optional(),
-	}),
+	createdBy: z.union([
+		z.object({
+			_id: z.string(),
+			username: z.string().optional(),
+		}),
+		z.enum(['cloud', 'system']),
+	]),
 	createdAt: TimestampSchema,
 	view: z.custom<UiKit.BannerView>(),
 	active: z.boolean().optional(),
