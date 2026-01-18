@@ -87,7 +87,7 @@ services:
       - "traefik.http.routers.hs1.tls=true"
       - "traefik.http.services.hs1.loadbalancer.server.port=8008"
 
-# Rocket.Chat rc1
+  # Rocket.Chat rc1
   rc1:
     build:
       context: ${ROCKETCHAT_BUILD_CONTEXT:-./test/dist}
