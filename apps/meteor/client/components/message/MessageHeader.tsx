@@ -52,7 +52,11 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 			<MessageNameContainer
 				id={`${message._id}-displayName`}
 				aria-label={displayName}
-				style={{ cursor: 'pointer' }}
+				style={{
+					cursor: 'pointer',
+					flexShrink: 0,          // 🔑 prevents username truncation
+					whiteSpace: 'nowrap',   // 🔑 keeps full username visible
+				}}
 				{...buttonProps}
 				{...triggerProps}
 			>
@@ -63,6 +67,7 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 				>
 					{message.alias || displayName}
 				</MessageName>
+
 				{showUsername && (
 					<>
 						{' '}
@@ -72,11 +77,19 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 					</>
 				)}
 			</MessageNameContainer>
+
 			{shouldShowRolesList && <MessageRoles roles={roles} isBot={!!message.bot} />}
+
 			<MessageTimestamp id={`${message._id}-time`} title={formatDateAndTime(message.ts)}>
 				{formatTime(message.ts)}
 			</MessageTimestamp>
-			{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
+
+			{message.private && (
+				<MessageStatusPrivateIndicator>
+					{t('Only_you_can_see_this_message')}
+				</MessageStatusPrivateIndicator>
+			)}
+
 			<StatusIndicators message={message} />
 		</FuselageMessageHeader>
 	);
