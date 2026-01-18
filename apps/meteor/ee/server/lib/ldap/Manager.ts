@@ -24,6 +24,9 @@ import { syncUserRoles } from '../syncUserRoles';
 import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
 
 export class LDAPEEManager extends LDAPManager {
+	// Track if we've already logged the missing config error to prevent log spam
+	private static hasLoggedMissingGroupConfig = false;
+
 	public static async sync(): Promise<void> {
 		if (settings.get('LDAP_Enable') !== true || settings.get('LDAP_Background_Sync') !== true) {
 			return;
@@ -250,7 +253,11 @@ export class LDAPEEManager extends LDAPManager {
 		groupName: string,
 	): Promise<boolean> {
 		if (!filter || !baseDN) {
-			logger.error('Please setup LDAP Group Filter and LDAP Group BaseDN in LDAP Settings.');
+			// Log only once to prevent excessive log spam (can be thousands of calls per sync)
+			if (!this.hasLoggedMissingGroupConfig) {
+				logger.error('Please setup LDAP Group Filter and LDAP Group BaseDN in LDAP Settings.');
+				this.hasLoggedMissingGroupConfig = true;
+			}
 			return false;
 		}
 		const searchOptions: ldapjs.SearchOptions = {
@@ -297,6 +304,13 @@ export class LDAPEEManager extends LDAPManager {
 
 		if (!shouldSyncUserRoles || !syncUserRolesFieldMap) {
 			logger.debug('not syncing user roles');
+			return;
+		}
+
+		if (searchStrategy === 'each_group' && (!syncUserRolesBaseDN || !syncUserRolesFilter)) {
+			logger.warn(
+				'LDAP Sync User Roles: "Group BaseDN" and "Group Filter" are required when using "Validate membership for each group" strategy. Skipping role sync.',
+			);
 			return;
 		}
 
@@ -392,6 +406,13 @@ export class LDAPEEManager extends LDAPManager {
 
 		if (!syncUserChannels || !syncUserChannelsFieldMap) {
 			logger.debug('not syncing groups to channels');
+			return;
+		}
+
+		if (searchStrategy === 'each_group' && (!syncUserChannelsBaseDN || !syncUserChannelsFilter)) {
+			logger.warn(
+				'LDAP Sync User Channels: "Group BaseDN" and "Group Filter" are required when using "Validate membership for each group" strategy. Skipping channel sync.',
+			);
 			return;
 		}
 
