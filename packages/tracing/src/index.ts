@@ -9,7 +9,8 @@ import { initDatabaseTracing } from './traceDatabaseCalls';
 
 let tracer: Tracer | undefined;
 
-export * from './traceInstanceMethods';
+export * from './tracingDecorators';
+export * from './middlewares/tracerSpanMiddleware';
 
 export function isTracingEnabled() {
 	return ['yes', 'true'].includes(String(process.env.TRACING_ENABLED).toLowerCase());
@@ -107,4 +108,29 @@ export function injectCurrentContext() {
 	const output: Record<string, string> = {};
 	propagation.inject(context.active(), output);
 	return output;
+}
+
+/**
+ * Add attributes to the currently active span.
+ * Use this inside methods to add runtime information discovered during execution,
+ * such as computed values, data fetched from DB, or other contextual info.
+ *
+ * @param attributes - Key-value pairs to add to the current span
+ *
+ * @example
+ * async sendMessage(message, room, user) {
+ *   const result = await this.handleTextMessage(...);
+ *
+ *   // Add runtime info after we have it
+ *   addSpanAttributes({
+ *     matrixEventId: result?.eventId,
+ *     messageType: message.files?.length ? 'file' : 'text',
+ *   });
+ * }
+ */
+export function addSpanAttributes(attributes: Record<string, any>): void {
+	const span = trace.getActiveSpan();
+	if (span) {
+		span.setAttributes(attributes);
+	}
 }
