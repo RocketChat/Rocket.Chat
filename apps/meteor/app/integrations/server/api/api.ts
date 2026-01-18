@@ -2,6 +2,7 @@ import type { IIncomingIntegration, IIntegration, IOutgoingIntegration, IUser, R
 import { Integrations, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { isIntegrationsHooksAddSchema, isIntegrationsHooksRemoveSchema } from '@rocket.chat/rest-typings';
+import { tracerSpanMiddleware } from '@rocket.chat/tracing';
 import type express from 'express';
 import type { Context, Next } from 'hono';
 import { Meteor } from 'meteor/meteor';
@@ -16,7 +17,6 @@ import { API, defaultRateLimiterOptions } from '../../../api/server/api';
 import type { FailureResult, GenericRouteExecutionContext, SuccessResult, UnavailableResult } from '../../../api/server/definition';
 import { loggerMiddleware } from '../../../api/server/middlewares/logger';
 import { metricsMiddleware } from '../../../api/server/middlewares/metrics';
-import { tracerSpanMiddleware } from '@rocket.chat/tracing';
 import type { WebhookResponseItem } from '../../../lib/server/functions/processWebhookMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { metrics } from '../../../metrics/server';
