@@ -27,6 +27,8 @@
 			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"],
 		},
 		"preserveSymlinks": true,
+		"allowImportingTsExtensions": true,
+		"types": []
 
 		// "sourceMap": true,
 		// "declaration": true,

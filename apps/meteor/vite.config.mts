@@ -3,12 +3,50 @@ import path from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig, esmExternalRequirePlugin } from 'vite';
 
-import { meteor } from './vite-plugins/meteor-packages';
+import { meteorPackages } from './vite-plugins/meteor-packages';
 import { meteorRuntime } from './vite-plugins/meteor-runtime';
 import { meteorStubs } from './vite-plugins/meteor-stubs';
 import { rocketchatInfo } from './vite-plugins/rocketchat-info';
 
-const HOST_URL = new URL('http://localhost:3000/');
+const ROOT_URL = new URL(process.env.ROOT_URL ?? 'https://stable.qa.rocket.chat');
+
+const meteorModules = {
+	'babel-compiler': null,
+	'babel-runtime': null,
+	'ddp-server': null,
+	'ecmascript-runtime-client': null,
+	'ecmascript-runtime': null,
+	'ecmascript': null,
+	'es5-shim': null,
+	'fetch': 'window.fetch',
+	'hot-code-push': null,
+	'minifier-css': null,
+	'modern-browsers': null,
+	'mongo-dev-server': null,
+	'promise': 'window.Promise',
+	'react-fast-refresh': null,
+	'shell-server': null,
+	'standard-minifier-css': null,
+	'typescript': null,
+	'webapp-hashing': null,
+	'webapp': null,
+	'zodern_standard-minifier-js': null,
+	'zodern_types': null,
+	'ddp-rate-limiter': null,
+	'url': 'globalThis',
+	'email': null,
+	'routepolicy': null,
+	'oauth1': null,
+	'oauth2': null,
+	'rocketchat_version': null,
+	'ddp': 'Package["ddp-client"].DDP',
+	'meteor-base': null,
+	'meteorhacks_inject-initial': null,
+	'rocketchat_livechat': null,
+	'rocketchat_mongo-config': null,
+	'session': null,
+	'ostrio_cookies': null,
+};
 
 export default defineConfig({
 	appType: 'spa',
@@ -17,47 +55,9 @@ export default defineConfig({
 		esmExternalRequirePlugin({
 			external: ['react', 'react-dom'],
 		}),
-		meteorRuntime(),
-		meteorStubs({
-			modules: {
-				'babel-compiler': null,
-				'babel-runtime': null,
-				'ddp-server': null,
-				'ecmascript-runtime-client': null,
-				'ecmascript-runtime': null,
-				'ecmascript': null,
-				'es5-shim': null,
-				'fetch': 'window.fetch',
-				'hot-code-push': null,
-				'minifier-css': null,
-				'modern-browsers': null,
-				'mongo-dev-server': null,
-				'promise': 'window.Promise',
-				'react-fast-refresh': null,
-				'shell-server': null,
-				'standard-minifier-css': null,
-				'typescript': null,
-				'webapp-hashing': null,
-				'webapp': null,
-				'zodern_standard-minifier-js': null,
-				'zodern_types': null,
-				'ddp-rate-limiter': null,
-				'url': '{ URL, URLSearchParams }',
-				'email': null,
-				'routepolicy': null,
-				'oauth1': null,
-				'oauth2': null,
-				'rocketchat_version': null,
-				'ddp': 'Package["ddp-client"].DDP',
-				'meteor-base': null,
-				'meteorhacks_inject-initial': null,
-				'rocketchat_livechat': null,
-				'rocketchat_mongo-config': null,
-				'session': null,
-				'ostrio_cookies': null,
-			}
-		}),
-		meteor(),
+		meteorRuntime({ modules: meteorModules, rootUrl: ROOT_URL.toString() }),
+		meteorStubs({ modules: meteorModules }),
+		meteorPackages(),
 		react({
 			exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
 		}),
@@ -99,13 +99,13 @@ export default defineConfig({
 	},
 	server: {
 		cors: true,
-		allowedHosts: ['localhost', '127.0.0.1', HOST_URL.hostname],
+		allowedHosts: ['localhost', '127.0.0.1', ROOT_URL.hostname],
 		proxy: {
-			'/api': { target: HOST_URL.origin, changeOrigin: true },
-			'/avatar': { target: HOST_URL.origin, changeOrigin: true },
-			'/assets': { target: HOST_URL.origin, changeOrigin: true },
-			'/sockjs': { target: `ws://${HOST_URL.hostname}`, ws: true, rewriteWsOrigin: true },
-			'/sockjs/info': { target: HOST_URL.origin, changeOrigin: true },
+			'/api': { target: ROOT_URL.origin, changeOrigin: true },
+			'/avatar': { target: ROOT_URL.origin, changeOrigin: true },
+			'/assets': { target: ROOT_URL.origin, changeOrigin: true },
+			'/sockjs': { target: ROOT_URL.origin, ws: true, rewriteWsOrigin: true, changeOrigin: true },
+			// '/sockjs/info': { target: ROOT_URL.origin, changeOrigin: true },
 		},
 	},
 });
