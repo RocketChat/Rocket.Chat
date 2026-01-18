@@ -188,7 +188,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error('Creator not found in members list');
 			}
 
-			const roomId = await federationSDK.createDirectMessageRoom({
+			const roomId = await federationSDK.createDirectMessage({
 				creatorUserId: userIdSchema.parse(`@${creator.username}:${this.serverName}`),
 				members: members
 					.filter((member) => member._id !== creatorId)
