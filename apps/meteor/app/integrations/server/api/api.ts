@@ -16,7 +16,7 @@ import { API, defaultRateLimiterOptions } from '../../../api/server/api';
 import type { FailureResult, GenericRouteExecutionContext, SuccessResult, UnavailableResult } from '../../../api/server/definition';
 import { loggerMiddleware } from '../../../api/server/middlewares/logger';
 import { metricsMiddleware } from '../../../api/server/middlewares/metrics';
-import { tracerSpanMiddleware } from '../../../api/server/middlewares/tracer';
+import { tracerSpanMiddleware } from '@rocket.chat/tracing';
 import type { WebhookResponseItem } from '../../../lib/server/functions/processWebhookMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { metrics } from '../../../metrics/server';
@@ -386,7 +386,7 @@ const Api = new WebHookAPI({
 Api.router
 	.use(loggerMiddleware(integrationLogger))
 	.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/hooks\//), api: Api, settings, summary: metrics.rocketchatRestApi }))
-	.use(tracerSpanMiddleware);
+	.use(tracerSpanMiddleware());
 
 const middleware = async (c: Context, next: Next): Promise<void> => {
 	const { req } = c;
