@@ -4,6 +4,8 @@ import react from '@vitejs/plugin-react';
 import { defineConfig, esmExternalRequirePlugin } from 'vite';
 
 import { meteor } from './vite-plugins/meteor-packages';
+import { meteorRuntime } from './vite-plugins/meteor-runtime';
+import { meteorStubs } from './vite-plugins/meteor-stubs';
 import { rocketchatInfo } from './vite-plugins/rocketchat-info';
 
 const HOST_URL = new URL('http://localhost:3000/');
@@ -15,7 +17,8 @@ export default defineConfig({
 		esmExternalRequirePlugin({
 			external: ['react', 'react-dom'],
 		}),
-		meteor({
+		meteorRuntime(),
+		meteorStubs({
 			modules: {
 				'babel-compiler': null,
 				'babel-runtime': null,
@@ -52,8 +55,9 @@ export default defineConfig({
 				'rocketchat_mongo-config': null,
 				'session': null,
 				'ostrio_cookies': null,
-			},
+			}
 		}),
+		meteor(),
 		react({
 			exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
 		}),
