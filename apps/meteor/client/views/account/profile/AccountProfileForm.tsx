@@ -82,23 +82,16 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		if (email !== previousEmail) {
 			return;
 		}
-
 		mutateConfirmationEmail.mutateAsync({ email });
 	}, [email, previousEmail, mutateConfirmationEmail]);
 
 	const validateUsername = async (username: string): Promise<string | undefined> => {
-		if (!username) {
+		if (!username || username === previousUsername) {
 			return;
 		}
-
-		if (username === previousUsername) {
-			return;
-		}
-
 		if (!namesRegex.test(username)) {
 			return t('error-invalid-username');
 		}
-
 		const { result: isAvailable } = await checkUsernameAvailability({ username });
 		if (!isAvailable) {
 			return t('Username_already_exist');
@@ -106,7 +99,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	};
 
 	const updateOwnBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
-
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
 	const handleSave = async ({ email, name, username, statusType, statusText, nickname, bio, customFields }: AccountProfileFormValues) => {
@@ -123,7 +115,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 				},
 				customFields,
 			});
-
 			await updateAvatar();
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
 		} catch (error) {
@@ -146,6 +137,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 				<VisuallyHidden>
 					<legend>{t('Profile_details')}</legend>
 				</VisuallyHidden>
+
 				<Field>
 					<Controller
 						control={control}
@@ -162,110 +154,68 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						)}
 					/>
 				</Field>
-				<Box
-					display='flex'
-					flexDirection={isMobile ? 'column' : 'row'}
-					alignItems='stretch'
-					justifyContent='space-between'
-					className={[
-						css`
-							gap: 16px;
-						`,
-					]}
-				>
-					<Field flexShrink={1}>
-						<FieldLabel required htmlFor={nameId}>
-							{t('Name')}
-						</FieldLabel>
+
+				<Box display='flex' flexDirection={isMobile ? 'column' : 'row'} className={css`gap: 16px;`}>
+					<Field>
+						<FieldLabel required htmlFor={nameId}>{t('Name')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								control={control}
 								name='name'
-								rules={{
-									required: requireName && t('Required_field', { field: t('Name') }),
-								}}
+								rules={{ required: requireName && t('Required_field', { field: t('Name') }) }}
 								render={({ field }) => (
 									<TextInput
 										{...field}
 										id={nameId}
+										onChange={(e) => field.onChange(e.target.value.trim())}
 										error={errors.name?.message}
 										disabled={!allowRealNameChange}
-										aria-required='true'
-										aria-invalid={errors.username ? 'true' : 'false'}
-										aria-describedby={`${nameId}-error ${nameId}-hint`}
 									/>
 								)}
 							/>
 						</FieldRow>
-						{errors.name && (
-							<FieldError aria-live='assertive' id={`${nameId}-error`}>
-								{errors.name.message}
-							</FieldError>
-						)}
-						{!allowRealNameChange && <FieldHint id={`${nameId}-hint`}>{t('RealName_Change_Disabled')}</FieldHint>}
 					</Field>
-					<Field flexShrink={1}>
-						<FieldLabel required htmlFor={usernameId}>
-							{t('Username')}
-						</FieldLabel>
+
+					<Field>
+						<FieldLabel required htmlFor={usernameId}>{t('Username')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								control={control}
 								name='username'
-								rules={{
-									required: t('Required_field', { field: t('Username') }),
-									validate: (username) => validateUsername(username),
-								}}
+								rules={{ required: t('Required_field', { field: t('Username') }), validate: validateUsername }}
 								render={({ field }) => (
 									<TextInput
 										{...field}
 										id={usernameId}
+										onChange={(e) => field.onChange(e.target.value.trim())}
 										disabled={!canChangeUsername}
-										error={errors.username?.message}
 										addon={<Icon name='at' size='x20' />}
-										aria-required='true'
-										aria-invalid={errors.username ? 'true' : 'false'}
-										aria-describedby={`${usernameId}-error ${usernameId}-hint`}
 									/>
 								)}
 							/>
 						</FieldRow>
-						{errors?.username && (
-							<FieldError aria-live='assertive' id={`${usernameId}-error`}>
-								{errors.username.message}
-							</FieldError>
-						)}
-						{!canChangeUsername && <FieldHint id={`${usernameId}-hint`}>{t('Username_Change_Disabled')}</FieldHint>}
 					</Field>
 				</Box>
+
 				<Field>
 					<FieldLabel htmlFor={statusTextId}>{t('StatusMessage')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							control={control}
 							name='statusText'
-							rules={{
-								maxLength: {
-									value: USER_STATUS_TEXT_MAX_LENGTH,
-									message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH),
-								},
-							}}
+							rules={{ maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) } }}
 							render={({ field }) => (
 								<TextInput
 									{...field}
 									id={statusTextId}
-									error={errors?.statusText?.message}
+									onChange={(e) => field.onChange(e.target.value.trim())}
 									disabled={!allowUserStatusMessageChange}
-									flexGrow={1}
-									placeholder={t('StatusMessage_Placeholder')}
-									aria-invalid={errors.statusText ? 'true' : 'false'}
-									aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
 									addon={
 										<Controller
 											control={control}
 											name='statusType'
 											render={({ field: { value, onChange } }) => (
-												<UserStatusMenu margin='neg-x2' onChange={onChange} initialStatus={value as IUser['status']} />
+												<UserStatusMenu onChange={onChange} initialStatus={value as IUser['status']} />
 											)}
 										/>
 									}
@@ -273,13 +223,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							)}
 						/>
 					</FieldRow>
-					{errors?.statusText && (
-						<FieldError aria-live='assertive' id={`${statusTextId}-error`}>
-							{errors?.statusText.message}
-						</FieldError>
-					)}
-					{!allowUserStatusMessageChange && <FieldHint id={`${statusTextId}-hint`}>{t('StatusMessage_Change_Disabled')}</FieldHint>}
 				</Field>
+
 				<Field>
 					<FieldLabel htmlFor={nicknameId}>{t('Nickname')}</FieldLabel>
 					<FieldRow>
@@ -287,11 +232,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							control={control}
 							name='nickname'
 							render={({ field }) => (
-								<TextInput {...field} id={nicknameId} flexGrow={1} addon={<Icon name='edit' size='x20' alignSelf='center' />} />
+								<TextInput {...field} id={nicknameId} onChange={(e) => field.onChange(e.target.value.trim())} />
 							)}
 						/>
 					</FieldRow>
 				</Field>
+
 				<Field>
 					<FieldLabel htmlFor={bioId}>{t('Bio')}</FieldLabel>
 					<FieldRow>
@@ -303,69 +249,34 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 								<TextAreaInput
 									{...field}
 									id={bioId}
-									error={errors.bio?.message}
+									onChange={(e) => field.onChange(e.target.value.trim())}
 									rows={3}
-									flexGrow={1}
-									addon={<Icon name='edit' size='x20' alignSelf='center' />}
-									aria-invalid={errors.statusText ? 'true' : 'false'}
-									aria-describedby={`${bioId}-error`}
 								/>
 							)}
 						/>
 					</FieldRow>
-					{errors?.bio && (
-						<FieldError aria-live='assertive' id={`${bioId}-error`}>
-							{errors.bio.message}
-						</FieldError>
-					)}
 				</Field>
+
 				<Field>
-					<FieldLabel required htmlFor={emailId}>
-						{t('Email')}
-					</FieldLabel>
-					<FieldRow
-						display='flex'
-						flexDirection={isMobile ? 'column' : 'row'}
-						alignItems='stretch'
-						justifyContent='space-between'
-						className={css`
-							gap: 8px;
-						`}
-					>
+					<FieldLabel required htmlFor={emailId}>{t('Email')}</FieldLabel>
+					<FieldRow>
 						<Controller
 							control={control}
 							name='email'
-							rules={{
-								required: t('Required_field', { field: t('Email') }),
-								validate: { validateEmail: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')) },
-							}}
+							rules={{ required: t('Required_field', { field: t('Email') }), validate: validateEmail }}
 							render={({ field }) => (
 								<TextInput
 									{...field}
 									id={emailId}
-									flexGrow={1}
-									error={errors.email?.message}
-									addon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
+									onChange={(e) => field.onChange(e.target.value.trim())}
 									disabled={!allowEmailChange}
-									aria-required='true'
-									aria-invalid={errors.email ? 'true' : 'false'}
-									aria-describedby={`${emailId}-error ${emailId}-hint`}
+									addon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
 								/>
 							)}
 						/>
-						{!isUserVerified && (
-							<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail}>
-								{t('Resend_verification_email')}
-							</Button>
-						)}
 					</FieldRow>
-					{errors.email && (
-						<FieldError aria-live='assertive' id={`${emailId}-error`}>
-							{errors?.email?.message}
-						</FieldError>
-					)}
-					{!allowEmailChange && <FieldHint id={`${emailId}-hint`}>{t('Email_Change_Disabled')}</FieldHint>}
 				</Field>
+
 				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</FieldGroup>
 		</Box>
