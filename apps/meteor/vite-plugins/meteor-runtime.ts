@@ -12,20 +12,21 @@ const runtimeImportId = 'virtual:meteor-runtime';
 export function meteorRuntime(
 	config: {
 		modules: Record<string, null | string>;
-	} = { modules: {} },
+		rootUrl: string;
+	} = { modules: {}, rootUrl: 'http://localhost:3000/' },
 ): Plugin {
 	if (!fs.existsSync(meteorManifestPath)) {
 		return { name: 'meteor-runtime' };
 	}
 
 	const manifest = JSON.parse(fs.readFileSync(meteorManifestPath, 'utf-8'));
-	
+
 	// Collect packages that are not replaced by config.modules
 	const packageEntries = collectPackageEntries(manifest).filter((entry) => {
 		const pkgName = entry.path.replace(/^packages\//, '').replace(/\.js$/, '');
 		return !Object.keys(config.modules).includes(pkgName);
 	});
-	
+
 	const runtimeModuleSource = createRuntimeModuleSource(packageEntries, buildRuntimeConfig(manifest));
 
 	return {
@@ -44,6 +45,43 @@ export function meteorRuntime(
 			return null;
 		},
 	};
+
+	function buildRuntimeConfig(manifestData: { manifest: { path: string; hash: string }[] }) {
+		const releaseVersion = readReleaseVersion();
+		const appId = readAppId();
+		const defaultRootUrl = config.rootUrl;
+		const rootUrlPrefix = process.env.VITE_METEOR_ROOT_URL_PATH_PREFIX || '';
+		const ddpUrl = process.env.VITE_METEOR_DDP_URL || defaultRootUrl;
+		const publicSettings = loadPublicSettings();
+		const clientArch = 'web.browser';
+		const appEntry = manifestData.manifest.find((entry) => entry.path === 'app/app.js');
+		const clientVersion = appEntry ? appEntry.hash : `dev-${Date.now().toString(16)}`;
+
+		return {
+			meteorRelease: releaseVersion,
+			appId,
+			clientArch,
+			isModern: true,
+			ROOT_URL: ensureTrailingSlash(defaultRootUrl),
+			ROOT_URL_PATH_PREFIX: rootUrlPrefix,
+			DDP_DEFAULT_CONNECTION_URL: ensureTrailingSlash(ddpUrl),
+			PUBLIC_SETTINGS: publicSettings,
+			meteorEnv: {
+				NODE_ENV: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+			},
+			autoupdate: {
+				versions: {
+					[clientArch]: {
+						version: clientVersion,
+						versionRefreshable: clientVersion,
+						versionNonRefreshable: clientVersion,
+						assets: [],
+					},
+				},
+			},
+			reactFastRefreshEnabled: process.env.VITE_METEOR_FAST_REFRESH !== 'false',
+		};
+	}
 }
 
 function collectPackageEntries(manifestData: { manifest: { where: string; type: string; path: string }[] }) {
@@ -149,43 +187,6 @@ await (async () => {
 ${loadStatements}
 })();
 `;
-}
-
-function buildRuntimeConfig(manifestData: { manifest: { path: string; hash: string }[] }) {
-	const releaseVersion = readReleaseVersion();
-	const appId = readAppId();
-	const defaultRootUrl = process.env.VITE_METEOR_ROOT_URL || process.env.METEOR_ROOT_URL || 'http://localhost:3000/';
-	const rootUrlPrefix = process.env.VITE_METEOR_ROOT_URL_PATH_PREFIX || '';
-	const ddpUrl = process.env.VITE_METEOR_DDP_URL || defaultRootUrl;
-	const publicSettings = loadPublicSettings();
-	const clientArch = 'web.browser';
-	const appEntry = manifestData.manifest.find((entry) => entry.path === 'app/app.js');
-	const clientVersion = appEntry ? appEntry.hash : `dev-${Date.now().toString(16)}`;
-
-	return {
-		meteorRelease: releaseVersion,
-		appId,
-		clientArch,
-		isModern: true,
-		ROOT_URL: ensureTrailingSlash(defaultRootUrl),
-		ROOT_URL_PATH_PREFIX: rootUrlPrefix,
-		DDP_DEFAULT_CONNECTION_URL: ensureTrailingSlash(ddpUrl),
-		PUBLIC_SETTINGS: publicSettings,
-		meteorEnv: {
-			NODE_ENV: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-		},
-		autoupdate: {
-			versions: {
-				[clientArch]: {
-					version: clientVersion,
-					versionRefreshable: clientVersion,
-					versionNonRefreshable: clientVersion,
-					assets: [],
-				},
-			},
-		},
-		reactFastRefreshEnabled: process.env.VITE_METEOR_FAST_REFRESH !== 'false',
-	};
 }
 
 function ensureTrailingSlash(url: string) {
