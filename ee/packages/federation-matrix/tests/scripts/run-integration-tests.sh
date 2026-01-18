@@ -236,15 +236,28 @@ if [ "$START_CONTAINERS" = true ]; then
         log_info "Cleaning up previous build..."
         rm -rf "$BUILD_DIR"
 
+        # Configure yarn for cross-platform builds (needed for sharp and other native modules)
+        # This adds support for linux and darwin (macOS) on arm64/x64 with glibc and musl
+        log_info "Configuring yarn for cross-platform builds..."
+        cd "$ROCKETCHAT_ROOT"
+        cp .yarnrc.yml .yarnrc.yml.bak
+        yarn config set supportedArchitectures --json '{"os": ["linux", "darwin"], "cpu": ["arm64", "x64"], "libc": ["glibc", "musl"]}'
+        yarn install
+
         # Build the project
         log_info "Building packages from project root..."
-        cd "$ROCKETCHAT_ROOT"
         yarn build
 
         # Build the Meteor bundle (must be run from the meteor directory)
         log_info "Building Meteor bundle..."
         cd "$ROCKETCHAT_ROOT/apps/meteor"
         METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --server-only --directory "$BUILD_DIR"
+
+        # Restore .yarnrc.yml after build completes
+        if [ -f "$ROCKETCHAT_ROOT/.yarnrc.yml.bak" ]; then
+            log_info "Restoring original yarn configuration..."
+            mv "$ROCKETCHAT_ROOT/.yarnrc.yml.bak" "$ROCKETCHAT_ROOT/.yarnrc.yml"
+        fi
 
         log_success "Build completed!"
     else
