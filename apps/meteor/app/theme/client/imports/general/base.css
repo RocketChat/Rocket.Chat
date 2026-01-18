@@ -139,5 +139,5 @@ button {
 }
 
 .rcx-message-reactions__reaction--mine:hover {
-	background-color: var(--rcx-color-surface-selected, rgba(9, 109, 217, 0.24)) !important;
+	background-color: var(--rcx-color-surface-selected-hovered, rgba(9, 109, 217, 0.24)) !important;
 }
