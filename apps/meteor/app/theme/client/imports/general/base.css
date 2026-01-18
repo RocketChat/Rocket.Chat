@@ -124,8 +124,9 @@ button {
 /**
  * Fix #31739: Hide Microsoft Edge/IE native password reveal and clear buttons
  * These browser-default buttons create duplicate icons alongside Rocket.Chat's custom eye icon
+ * Scoped to password inputs to avoid affecting clear buttons on other input types
  */
-input::-ms-reveal,
-input::-ms-clear {
+input[type='password']::-ms-reveal,
+input[type='password']::-ms-clear {
 	display: none;
 }
