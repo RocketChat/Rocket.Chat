@@ -1,0 +1,67 @@
+import path from 'node:path';
+
+import type { Plugin } from 'vite';
+
+const meteorProgramDir = path.resolve('.meteor/local/build/programs/web.browser');
+const meteorPackagesDir = path.join(meteorProgramDir, 'packages');
+
+export function meteorStubs(
+	config: {
+		modules: Record<string, null | string>;
+	} = { modules: {} },
+): Plugin {
+	return {
+		name: 'meteor-stubs',
+		enforce: 'pre',
+		transform: {
+			filter: {
+				// Only transform files in the Meteor packages
+				// Starting from .meteor/local/build/programs/web.browser/packages/
+				id: new RegExp(`^${meteorPackagesDir.replace(/\\/g, '\\\\')}/`),
+			},
+			handler(code, id, options) {
+				if (options?.ssr) {
+					return null;
+				}
+
+				const basename = path.basename(id);
+
+				if (basename === 'modules.js') {
+					// Remove `install("<name>")` and `install("<name>", "<mainModule>")` calls for packages being replaced
+					for (const moduleName of Object.keys(config.modules)) {
+						const installRegex = new RegExp(`install\\(\\s*['"]${moduleName}['"](?:\\s*,\\s*['"][^'"]+['"])?\\s*\\);?`, 'g');
+						code = code.replace(installRegex, (_match) => {
+							return '';
+						});
+					}
+				}
+
+				// Replace modules according to the provided mapping
+				for (const [moduleName, replacement] of Object.entries(config.modules)) {
+					// Replace `var X = Package.moduleName.X;` with `var X = replacement;`
+					// Replace `var Y = Package['moduleName'].Y;` with `var Y = replacement;`
+					// If replacement is null, replace with `undefined`
+					const packageAccessRegex = new RegExp(
+						`var\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*Package(?:\\.|\\[')${moduleName}(?:'\\])?\\.\\s*([A-Za-z_$][\\w$]*);`,
+						'g',
+					);
+					code = code.replace(packageAccessRegex, (_match, varName, exportName) => {
+						const replacementValue = replacement === null ? 'undefined' : replacement;
+						if (exportName === varName) {
+							return `var ${varName} = ${replacementValue};`;
+						}
+						return `var ${varName} = ${replacementValue}.${exportName};`;
+					});
+
+					const requireRegex = new RegExp(`require\\(\\s*['"]meteor/${moduleName}['"]\\s*\\)`, 'g');
+					code = code.replace(requireRegex, (_match) => {
+						const replacementValue = replacement === null ? 'undefined' : replacement;
+						return replacementValue;
+					});
+				}
+
+				return { code, map: null };
+			},
+		},
+	};
+}
