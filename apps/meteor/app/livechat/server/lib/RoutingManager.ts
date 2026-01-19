@@ -327,9 +327,7 @@ export const RoutingManager: Routing = {
 
 			return roomAfterUpdate;
 		} finally {
-			if (agent?.agentId && lockAcquired) {
-				await Users.releaseAgentLock(agent.agentId, lockTime);
-			}
+			await Users.releaseAgentLock(agent.agentId, lockTime);
 		}
 	},
 
