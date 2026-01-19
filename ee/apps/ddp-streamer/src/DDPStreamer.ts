@@ -35,40 +35,40 @@ export class DDPStreamer extends ServiceClass {
 			// Track when we receive an event from another service
 			const { broker, nodeID } = this.context || {};
 			const { metrics } = broker || {};
-			
+
 			if (metrics) {
 				// Count events received from other services
-				metrics.increment('ddp_streamer_events_received', { 
-					streamer, 
+				metrics.increment('ddp_streamer_events_received', {
+					streamer,
 					event: eventName,
-					nodeID 
+					nodeID,
 				});
-				
+
 				// Start timing the relay to websocket clients
-				const endTimer = metrics.timer('ddp_streamer_relay_duration', { 
-					streamer, 
+				const endTimer = metrics.timer('ddp_streamer_relay_duration', {
+					streamer,
 					event: eventName,
-					nodeID 
+					nodeID,
 				});
-				
+
 				try {
 					// TODO rename StreamerCentral to StreamerStore or something to use it only as a store
 					const stream = StreamerCentral.instances[streamer];
 					stream?.emitWithoutBroadcast(eventName, ...args);
-					
+
 					// Count successful emissions to websocket clients
-					metrics.increment('ddp_streamer_events_sent', { 
-						streamer, 
+					metrics.increment('ddp_streamer_events_sent', {
+						streamer,
 						event: eventName,
-						nodeID 
+						nodeID,
 					});
 				} catch (error: any) {
 					// Track relay errors
-					metrics.increment('ddp_streamer_relay_errors', { 
-						streamer, 
+					metrics.increment('ddp_streamer_relay_errors', {
+						streamer,
 						event: eventName,
 						error_type: error.name || 'UnknownError',
-						nodeID 
+						nodeID,
 					});
 					throw error;
 				} finally {
