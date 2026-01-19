@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { OffCallbackHandler } from '@rocket.chat/emitter';
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
+import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useRef, useState } from 'react';
 
 const GRAB_DOM_EVENTS = ['pointerdown'] as const;
@@ -531,11 +531,7 @@ export const useDraggable = () => {
 
 	const handleElementCallbackRef = useSafeRefCallback(
 		useCallback(
-			(node: HTMLElement | null) => {
-				if (!node) {
-					return;
-				}
-
+			(node: HTMLElement) => {
 				return handleElement.element.setElement(node);
 			},
 			[handleElement],
@@ -544,11 +540,7 @@ export const useDraggable = () => {
 
 	const draggableCallbackRef = useSafeRefCallback(
 		useCallback(
-			(node: HTMLElement | null) => {
-				if (!node) {
-					return;
-				}
-
+			(node: HTMLElement) => {
 				const offMove = draggableElement.onMove(() => {
 					restorePositionRef.current = node.getBoundingClientRect();
 				});
@@ -570,11 +562,7 @@ export const useDraggable = () => {
 
 	const boundingCallbackRef = useSafeRefCallback(
 		useCallback(
-			(node: HTMLElement | null) => {
-				if (!node) {
-					return;
-				}
-
+			(node: HTMLElement) => {
 				return boundingElement.element.setElement(node);
 			},
 			[boundingElement],

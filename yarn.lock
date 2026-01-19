@@ -8034,10 +8034,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remix-run/router@npm:1.21.0":
-  version: 1.21.0
-  resolution: "@remix-run/router@npm:1.21.0"
-  checksum: 10/cf0fb69d19c1b79095ff67c59cea89086f3982a9a54c8a993818a60fc76e0ebab5a8db647c1a96a662729fad8e806ddd0a96622adf473f5a9f0b99998b2dbad4
+"@remix-run/router@npm:1.23.2":
+  version: 1.23.2
+  resolution: "@remix-run/router@npm:1.23.2"
+  checksum: 10/50eb497854881bbd2e1016d4eb83c935ecd618e1c3888b74718851317e3b04edbaae9fe1baa49ec08c5c52cfe7118f4664e37144813d9500f45f922d6602a782
   languageName: node
   linkType: hard
 
@@ -9218,7 +9218,6 @@ __metadata:
     "@types/bcrypt": "npm:^5.0.2"
     "@types/body-parser": "npm:^1.19.6"
     "@types/busboy": "npm:^1.5.4"
-    "@types/bytebuffer": "npm:~5.0.49"
     "@types/chai": "npm:~4.3.20"
     "@types/chai-as-promised": "npm:^7.1.8"
     "@types/chai-datetime": "npm:0.0.39"
@@ -9303,7 +9302,6 @@ __metadata:
     body-parser: "npm:1.20.3"
     bson: "npm:^6.7.0"
     busboy: "npm:^1.6.0"
-    bytebuffer: "npm:5.0.1"
     chai: "npm:^4.5.0"
     chai-as-promised: "npm:^7.1.2"
     chai-datetime: "npm:^1.8.1"
@@ -9493,7 +9491,7 @@ __metadata:
     xml-encryption: "npm:~3.1.0"
     xml2js: "npm:~0.6.2"
     yaqrcode: "npm:^0.2.1"
-    zod: "npm:^3.24.1"
+    zod: "npm:~4.3.5"
     zustand: "npm:~5.0.8"
   languageName: unknown
   linkType: soft
@@ -10523,6 +10521,7 @@ __metadata:
     "@vitejs/plugin-react": "npm:~4.5.2"
     codemirror: "npm:^6.0.2"
     eslint: "npm:~8.45.0"
+    eslint-plugin-react: "npm:~7.37.5"
     eslint-plugin-react-hooks: "npm:^5.0.0"
     eslint-plugin-react-refresh: "npm:^0.4.24"
     eslint4b-prebuilt: "npm:^6.7.2"
@@ -10532,7 +10531,7 @@ __metadata:
     react: "npm:~18.3.1"
     react-beautiful-dnd: "npm:^13.1.1"
     react-dom: "npm:~18.3.1"
-    react-router-dom: "npm:^6.28.0"
+    react-router-dom: "npm:^6.30.3"
     react-split-pane: "npm:^0.1.92"
     react-virtuoso: "npm:^4.12.0"
     reactflow: "npm:^11.11.4"
@@ -12742,16 +12741,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/bytebuffer@npm:~5.0.49":
-  version: 5.0.49
-  resolution: "@types/bytebuffer@npm:5.0.49"
-  dependencies:
-    "@types/long": "npm:^3.0.0"
-    "@types/node": "npm:*"
-  checksum: 10/31eb2521d2710f256c3d17a3e8d87f04394f335b29f7276c31c054ddbf4795146f2663effa3b6e910442da69238e994d2db9f7d5918eead4313e3f9e29165932
-  languageName: node
-  linkType: hard
-
 "@types/caseless@npm:*":
   version: 0.12.5
   resolution: "@types/caseless@npm:0.12.5"
@@ -13642,13 +13631,6 @@ __metadata:
   version: 4.17.20
   resolution: "@types/lodash@npm:4.17.20"
   checksum: 10/8cd8ad3bd78d2e06a93ae8d6c9907981d5673655fec7cb274a4d9a59549aab5bb5b3017361280773b8990ddfccf363e14d1b37c97af8a9fe363de677f9a61524
-  languageName: node
-  linkType: hard
-
-"@types/long@npm:^3.0.0":
-  version: 3.0.32
-  resolution: "@types/long@npm:3.0.32"
-  checksum: 10/cc5422875a085b49b74ffeb5c60a8681d30f700859a8931012b4a58c5c6005cdacb4d3ce3e5af7a7f579ee20d5c2e442a773a83b3a4f7a2d39795a7a8e9a962d
   languageName: node
   linkType: hard
 
@@ -17179,15 +17161,6 @@ __metadata:
   version: 1.0.2
   resolution: "byte-length@npm:1.0.2"
   checksum: 10/69e2b00a14a81f675ea9946135c42ee1a1d9f689d5ba1327eb6700fcde2ccacbd09b42f7e514de1d2b763960251d8c790b3d7304a5a1a27b1457e34c129be8c7
-  languageName: node
-  linkType: hard
-
-"bytebuffer@npm:5.0.1":
-  version: 5.0.1
-  resolution: "bytebuffer@npm:5.0.1"
-  dependencies:
-    long: "npm:~3"
-  checksum: 10/f3e9739ed9ab30e19d985fc3dadfdbd631d030874bbb313feefddac756f21ac10957257737e630fd9959744318e6e8b7d8c35b797519693bf1897be16c560970
   languageName: node
   linkType: hard
 
@@ -26841,13 +26814,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"long@npm:~3":
-  version: 3.2.0
-  resolution: "long@npm:3.2.0"
-  checksum: 10/ffc685ec458ddf71a830d6deb62ff7dc551a736d47473350d9e077c22db96ec88c8a3554c11ffce7d7f2291b0c30da36629e4d0a97c29b5360dc977533c96d28
-  languageName: node
-  linkType: hard
-
 "longest-streak@npm:^2.0.0":
   version: 2.0.4
   resolution: "longest-streak@npm:2.0.4"
@@ -31721,27 +31687,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:^6.28.0":
-  version: 6.28.0
-  resolution: "react-router-dom@npm:6.28.0"
+"react-router-dom@npm:^6.30.3":
+  version: 6.30.3
+  resolution: "react-router-dom@npm:6.30.3"
   dependencies:
-    "@remix-run/router": "npm:1.21.0"
-    react-router: "npm:6.28.0"
+    "@remix-run/router": "npm:1.23.2"
+    react-router: "npm:6.30.3"
   peerDependencies:
     react: ">=16.8"
     react-dom: ">=16.8"
-  checksum: 10/e637825132ea96c3514ef7b8322f9bf0b752a942d6b4ffc4c20e389b5911726adf3dba8208ed4b97bf5b9c3bd465d9d1a1db1a58a610a8d528f18d890e0b143f
+  checksum: 10/db974d801070e9967a076b31edca902e127793e02dc79f364461b94e81846a588c241d72e069f5b586b4a90ffd99798f5cb97753ac9d22fe90afa6dc008ab520
   languageName: node
   linkType: hard
 
-"react-router@npm:6.28.0":
-  version: 6.28.0
-  resolution: "react-router@npm:6.28.0"
+"react-router@npm:6.30.3":
+  version: 6.30.3
+  resolution: "react-router@npm:6.30.3"
   dependencies:
-    "@remix-run/router": "npm:1.21.0"
+    "@remix-run/router": "npm:1.23.2"
   peerDependencies:
     react: ">=16.8"
-  checksum: 10/f021a644513144884a567d9c2dcc432e8e3233f931378c219c5a3b5b842340f0faca86225a708bafca1e9010965afe1a7dada28aef5b7b6138c885c0552d9a7d
+  checksum: 10/1a51bdcc42b8d7979228dea8b5c44a28a4add9b681781f75b74f5f920d20058a92ffe5f1d0ba0621f03abe1384b36025b53b402515ecb35f27a6a2f2f25d6fbe
   languageName: node
   linkType: hard
 
@@ -32683,7 +32649,7 @@ __metadata:
     "@types/stream-buffers": "npm:^3.0.8"
     node-gyp: "npm:^10.2.0"
     ts-node: "npm:^10.9.2"
-    turbo: "npm:~2.6.3"
+    turbo: "npm:~2.7.4"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -35737,58 +35703,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:2.6.3":
-  version: 2.6.3
-  resolution: "turbo-darwin-64@npm:2.6.3"
+"turbo-darwin-64@npm:2.7.4":
+  version: 2.7.4
+  resolution: "turbo-darwin-64@npm:2.7.4"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:2.6.3":
-  version: 2.6.3
-  resolution: "turbo-darwin-arm64@npm:2.6.3"
+"turbo-darwin-arm64@npm:2.7.4":
+  version: 2.7.4
+  resolution: "turbo-darwin-arm64@npm:2.7.4"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:2.6.3":
-  version: 2.6.3
-  resolution: "turbo-linux-64@npm:2.6.3"
+"turbo-linux-64@npm:2.7.4":
+  version: 2.7.4
+  resolution: "turbo-linux-64@npm:2.7.4"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:2.6.3":
-  version: 2.6.3
-  resolution: "turbo-linux-arm64@npm:2.6.3"
+"turbo-linux-arm64@npm:2.7.4":
+  version: 2.7.4
+  resolution: "turbo-linux-arm64@npm:2.7.4"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:2.6.3":
-  version: 2.6.3
-  resolution: "turbo-windows-64@npm:2.6.3"
+"turbo-windows-64@npm:2.7.4":
+  version: 2.7.4
+  resolution: "turbo-windows-64@npm:2.7.4"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:2.6.3":
-  version: 2.6.3
-  resolution: "turbo-windows-arm64@npm:2.6.3"
+"turbo-windows-arm64@npm:2.7.4":
+  version: 2.7.4
+  resolution: "turbo-windows-arm64@npm:2.7.4"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:~2.6.3":
-  version: 2.6.3
-  resolution: "turbo@npm:2.6.3"
+"turbo@npm:~2.7.4":
+  version: 2.7.4
+  resolution: "turbo@npm:2.7.4"
   dependencies:
-    turbo-darwin-64: "npm:2.6.3"
-    turbo-darwin-arm64: "npm:2.6.3"
-    turbo-linux-64: "npm:2.6.3"
-    turbo-linux-arm64: "npm:2.6.3"
-    turbo-windows-64: "npm:2.6.3"
-    turbo-windows-arm64: "npm:2.6.3"
+    turbo-darwin-64: "npm:2.7.4"
+    turbo-darwin-arm64: "npm:2.7.4"
+    turbo-linux-64: "npm:2.7.4"
+    turbo-linux-arm64: "npm:2.7.4"
+    turbo-windows-64: "npm:2.7.4"
+    turbo-windows-arm64: "npm:2.7.4"
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -35804,7 +35770,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 10/81301581f00d586397aa49cdeecf0e4d90a277c0ba74b42544065065e0e0dd6a25675e8cb04cf7c9d49a21c2d45a38da5809235379a6a7916e616c45c634b0cf
+  checksum: 10/fbb901da0f576aadac57168f365913b8cd07fd22874c4bfedc736bcd18a5888c2897882e03d87ba451b2dcd21b376a44b0245622260b08bc1bbc36f70345a19b
   languageName: node
   linkType: hard
 
@@ -37827,6 +37793,13 @@ __metadata:
   version: 3.24.1
   resolution: "zod@npm:3.24.1"
   checksum: 10/54e25956495dec22acb9399c168c6ba657ff279801a7fcd0530c414d867f1dcca279335e160af9b138dd70c332e17d548be4bc4d2f7eaf627dead50d914fec27
+  languageName: node
+  linkType: hard
+
+"zod@npm:~4.3.5":
+  version: 4.3.5
+  resolution: "zod@npm:4.3.5"
+  checksum: 10/3148bd52e56ab7c1641ec397e6be6eddbb1d8f5db71e95baab9bb9622a0ea49d8a385885fc1c22b90fa6d8c5234e051f4ef5d469cfe3fb90198d5a91402fd89c
   languageName: node
   linkType: hard
 
