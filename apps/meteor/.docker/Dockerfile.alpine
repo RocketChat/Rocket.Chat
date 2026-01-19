@@ -58,4 +58,4 @@ WORKDIR /app/bundle/programs/server
 EXPOSE 3000
 
 # CMD ["node", "main.js"]
-CMD ["wattpm", "start"]
+CMD ["npx", "wattpm", "start"]
