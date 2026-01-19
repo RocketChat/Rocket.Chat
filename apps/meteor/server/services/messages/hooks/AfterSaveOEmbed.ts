@@ -1,25 +1,25 @@
 import type {
 	OEmbedUrlContentResult,
-	OEmbedUrlWithMetadata,
-	IMessage,
-	MessageAttachment,
-	OEmbedMeta,
 	MessageUrl,
+	OEmbedUrlWithMetadata,
+	OEmbedMeta,
+	IMessage,
+	OEmbedUrlContent,
 } from '@rocket.chat/core-typings';
 import { isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { Messages, OEmbedCache } from '@rocket.chat/models';
+import { OEmbedCache, Messages } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { camelCase } from 'change-case';
 import he from 'he';
 import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
 import jschardet from 'jschardet';
+import { camelCase } from 'lodash';
 
-import { isURL } from '../../../lib/utils/isURL';
-import { callbacks } from '../../../server/lib/callbacks';
-import { settings } from '../../settings/server';
-import { Info } from '../../utils/rocketchat.info';
+import { settings } from '../../../../app/settings/server';
+import { Info } from '../../../../app/utils/rocketchat.info';
+import { isURL } from '../../../../lib/utils/isURL';
+import { afterParseUrlContent, beforeGetUrlContent } from '../lib/oembed/providers';
 
 const MAX_EXTERNAL_URL_PREVIEWS = 5;
 const log = new Logger('OEmbed');
@@ -65,7 +65,7 @@ const toUtf8 = function (contentType: string, body: Buffer): string {
 	return iconv.decode(body, getCharset(contentType, body));
 };
 
-const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlContentResult> => {
+const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlContent> => {
 	const portsProtocol = new Map<string, string>(
 		Object.entries({
 			80: 'http:',
@@ -74,9 +74,48 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 		}),
 	);
 
-	const ignoredHosts = settings.get<string>('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
-	if (urlObj.hostname && (ignoredHosts.includes(urlObj.hostname) || ipRangeCheck(urlObj.hostname, ignoredHosts))) {
-		throw new Error('invalid host');
+	const ignoredHosts =
+		settings
+			.get<string>('API_EmbedIgnoredHosts')
+			.replace(/\s/g, '')
+			.split(',')
+			.filter(Boolean)
+			.map((host) => host.toLowerCase()) || [];
+
+	const isIgnoredHost = (hostname: string | undefined): boolean => {
+		hostname = hostname?.toLowerCase();
+		if (!hostname || !ignoredHosts.length) {
+			return false;
+		}
+
+		const exactHosts = ignoredHosts.filter((h) => !h.includes('*'));
+		if (exactHosts.includes(hostname) || ipRangeCheck(hostname, exactHosts)) {
+			return true;
+		}
+
+		return ignoredHosts
+			.filter((h) => h.includes('*'))
+			.some((pattern) => {
+				const validationRegex = /^(?:\*\.)?(?:\*|[a-z0-9-]+)(?:\.(?:\*|[a-z0-9-]+))*$/i;
+				if (!validationRegex.test(pattern) || pattern === '*') {
+					return false;
+				}
+
+				const escaped = pattern.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&');
+				const source = `^${escaped.replace(/\*/g, '[^.]*')}$`;
+
+				try {
+					const regex = new RegExp(source, 'i');
+					return regex.test(hostname);
+				} catch {
+					// fail safe on invalid patterns
+					return false;
+				}
+			});
+	};
+
+	if (isIgnoredHost(urlObj.hostname)) {
+		throw new Error('host is ignored');
 	}
 
 	const safePorts = settings.get<string>('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
@@ -91,14 +130,13 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 		throw new Error('invalid/unsafe port');
 	}
 
-	const data = await callbacks.run('oembed:beforeGetUrlContent', {
-		urlObj,
-	});
+	const data = beforeGetUrlContent({ urlObj });
 
 	const url = data.urlObj.toString();
 	const sizeLimit = 250000;
 
 	log.debug({ msg: 'Fetching URL for OEmbed', url, redirectCount });
+	const start = Date.now();
 	const response = await fetch(
 		url,
 		{
@@ -109,10 +147,12 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 				'Accept-Language': settings.get('Language') || 'en',
 				...data.headerOverrides,
 			},
+			timeout: settings.get<number>('API_EmbedTimeout') * 1000,
 			size: sizeLimit, // max size of the response body, this was not working as expected so I'm also manually verifying that on the iterator
 		},
 		settings.get('Allow_Invalid_SelfSigned_Certs'),
 	);
+	const end = Date.now();
 
 	let totalSize = 0;
 	const chunks = [];
@@ -126,13 +166,14 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 		}
 	}
 
-	log.debug({ msg: 'Obtained response from server', length: totalSize });
+	log.debug({ msg: 'Obtained response from server', length: totalSize, timeSpent: `${end - start}ms` });
 	const buffer = Buffer.concat(chunks);
 
 	return {
 		headers: Object.fromEntries(response.headers),
 		body: toUtf8(response.headers.get('content-type') || 'text/plain', buffer),
 		statusCode: response.status,
+		urlObj,
 	};
 };
 
@@ -183,7 +224,7 @@ const getUrlMeta = async function (
 	}
 
 	log.debug({ msg: 'Fetching URL content', url: urlObj.toString() });
-	let content: OEmbedUrlContentResult | undefined;
+	let content: OEmbedUrlContent | undefined;
 	try {
 		content = await getUrlContent(urlObj, 5);
 	} catch (err) {
@@ -195,7 +236,7 @@ const getUrlMeta = async function (
 	}
 
 	log.debug({ msg: 'Parsing metadata for URL', url });
-	const metas: { [k: string]: string } = {};
+	const metas: OEmbedMeta = {} as any;
 
 	if (content?.body) {
 		const escapeMeta = (name: string, value: string): string => {
@@ -233,7 +274,7 @@ const getUrlMeta = async function (
 	if (content && content.statusCode !== 200) {
 		return;
 	}
-	return callbacks.run('oembed:afterParseContent', {
+	return afterParseUrlContent({
 		url,
 		meta: metas,
 		headers,
@@ -289,6 +330,10 @@ const insertMaxWidthInOembedHtml = (oembedHtml?: string): string | undefined =>
 const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	log.debug({ msg: 'Parsing message URLs' });
 
+	if (!settings.get('API_Embed')) {
+		return message;
+	}
+
 	if (!Array.isArray(message.urls)) {
 		return message;
 	}
@@ -303,8 +348,6 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 		return message;
 	}
 
-	const attachments: MessageAttachment[] = [];
-
 	let changed = false;
 	for await (const item of message.urls) {
 		if (item.ignoreParse === true) {
@@ -318,10 +361,6 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 		changed = changed || foundMeta;
 	}
 
-	if (attachments.length) {
-		await Messages.setMessageAttachments(message._id, attachments);
-	}
-
 	if (changed === true) {
 		await Messages.setUrlsById(message._id, message.urls);
 	}
@@ -329,23 +368,10 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	return message;
 };
 
-const OEmbed: {
-	getUrlMeta: (url: string, withFragment?: boolean) => Promise<OEmbedUrlWithMetadata | undefined | OEmbedUrlContentResult>;
-	getUrlMetaWithCache: (url: string, withFragment?: boolean) => Promise<OEmbedUrlWithMetadata | OEmbedUrlContentResult | undefined>;
+export const OEmbed: {
 	rocketUrlParser: (message: IMessage) => Promise<IMessage>;
 	parseUrl: (url: string) => Promise<{ urlPreview: MessageUrl; foundMeta: boolean }>;
 } = {
 	rocketUrlParser,
-	getUrlMetaWithCache,
-	getUrlMeta,
 	parseUrl,
 };
-
-settings.watch('API_Embed', (value) => {
-	if (value) {
-		return callbacks.add('afterSaveMessage', (message) => OEmbed.rocketUrlParser(message), callbacks.priority.LOW, 'API_Embed');
-	}
-	return callbacks.remove('afterSaveMessage', 'API_Embed');
-});
-
-export { OEmbed };

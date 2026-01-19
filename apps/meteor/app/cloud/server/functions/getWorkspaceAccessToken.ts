@@ -34,13 +34,17 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 
 	const workspaceCredentials = await WorkspaceCredentials.getCredentialByScope(scope);
 	if (workspaceCredentials && !hasWorkspaceAccessTokenExpired(workspaceCredentials) && !forceNew) {
-		SystemLogger.debug(
-			`Workspace credentials cache hit using scope: ${scope}. Avoiding generating a new access token from cloud services.`,
-		);
+		SystemLogger.debug({
+			msg: 'Workspace credentials cache hit. Avoiding generating a new access token from cloud services.',
+			scope,
+		});
 		return workspaceCredentials.accessToken;
 	}
 
-	SystemLogger.debug(`Workspace credentials cache miss using scope: ${scope}, fetching new access token from cloud services.`);
+	SystemLogger.debug({
+		msg: 'Workspace credentials cache miss, fetching new access token from cloud services.',
+		scope,
+	});
 
 	const accessToken = await getWorkspaceAccessTokenWithScope({ scope, throwOnError });
 
