@@ -259,6 +259,7 @@ export class AppsRestApi {
 
 					if (this.bodyParams.url) {
 						try {
+							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 							const response = await fetch(this.bodyParams.url, { ignoreSsrfValidation: true });
 
 							if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
@@ -282,6 +283,7 @@ export class AppsRestApi {
 								Apps.getMarketplaceClient()
 									.fetch(`v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${downloadToken}`, {
 										headers,
+										// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 										ignoreSsrfValidation: true,
 									})
 									.catch((cause) => {
@@ -293,6 +295,7 @@ export class AppsRestApi {
 											Authorization: `Bearer ${marketplaceToken}`,
 											...headers,
 										},
+										// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 										ignoreSsrfValidation: true,
 									})
 									.catch((cause) => {
@@ -543,6 +546,7 @@ export class AppsRestApi {
 					try {
 						const request = await orchestrator
 							.getMarketplaceClient()
+							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 							.fetch(`v1/bundles/${this.urlParams.id}/apps`, { headers, ignoreSsrfValidation: true });
 						if (request.status !== 200) {
 							orchestrator.getRocketChatLogger().error({
@@ -575,6 +579,7 @@ export class AppsRestApi {
 
 					let result;
 					try {
+						// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 						const request = await orchestrator.getMarketplaceClient().fetch(`v1/featured-apps`, { headers, ignoreSsrfValidation: true });
 						if (request.status !== 200) {
 							orchestrator.getRocketChatLogger().error('Error getting the Featured Apps from the Marketplace:', await request.json());
@@ -608,6 +613,7 @@ export class AppsRestApi {
 							.getMarketplaceClient()
 							.fetch(`v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
 								headers,
+								// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 								ignoreSsrfValidation: true,
 							});
 						const result = await request.json();
@@ -640,6 +646,7 @@ export class AppsRestApi {
 					try {
 						const request = await orchestrator
 							.getMarketplaceClient()
+							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 							.fetch(`v1/app-request/stats`, { headers, ignoreSsrfValidation: true });
 						const result = await request.json();
 						if (!request.ok) {
@@ -674,6 +681,7 @@ export class AppsRestApi {
 							method: 'POST',
 							headers,
 							body: { ids: unseenRequests },
+							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 							ignoreSsrfValidation: true,
 						});
 						const result = await request.json();
@@ -745,6 +753,7 @@ export class AppsRestApi {
 						try {
 							const request = await orchestrator
 								.getMarketplaceClient()
+								// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 								.fetch(`v1/apps/${this.urlParams.id}?appVersion=${this.queryParams.version}`, { headers, ignoreSsrfValidation: true });
 							if (request.status !== 200) {
 								orchestrator.getRocketChatLogger().error('Error getting the App information from the Marketplace:', await request.json());
@@ -771,6 +780,7 @@ export class AppsRestApi {
 								.getMarketplaceClient()
 								.fetch(`v1/apps/${this.urlParams.id}/latest?appVersion=${this.queryParams.appVersion}`, {
 									headers,
+									// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 									ignoreSsrfValidation: true,
 								});
 							if (request.status !== 200) {
@@ -799,6 +809,7 @@ export class AppsRestApi {
 					let isPrivateAppUpload = false;
 
 					if (this.bodyParams.url) {
+						// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 						const response = await fetch(this.bodyParams.url, { ignoreSsrfValidation: true });
 
 						if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
@@ -817,6 +828,7 @@ export class AppsRestApi {
 								.getMarketplaceClient()
 								.fetch(`v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${token}`, {
 									headers,
+									// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 									ignoreSsrfValidation: true,
 								});
 
@@ -956,6 +968,7 @@ export class AppsRestApi {
 					try {
 						const request = await orchestrator
 							.getMarketplaceClient()
+							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 							.fetch(`v1/apps/${this.urlParams.id}`, { headers, ignoreSsrfValidation: true });
 						statusCode = request.status;
 						result = await request.json();
@@ -998,6 +1011,7 @@ export class AppsRestApi {
 					try {
 						const request = await orchestrator
 							.getMarketplaceClient()
+							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 							.fetch(`v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, { headers, ignoreSsrfValidation: true });
 
 						statusCode = request.status;
@@ -1065,6 +1079,7 @@ export class AppsRestApi {
 					try {
 						const request = await orchestrator
 							.getMarketplaceClient()
+							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 							.fetch(`v1/apps/${appId}/screenshots`, { headers, ignoreSsrfValidation: true });
 						const data = await request.json();
 

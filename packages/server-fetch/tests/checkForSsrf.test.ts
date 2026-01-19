@@ -47,16 +47,6 @@ describe('checkForSsrf', () => {
 		expect(await ssrfModule.checkForSsrf(url)).toBe(true);
 	});
 
-	it('returns false for restricted IPv6 addresses', async () => {
-		const restrictedIps = ['::1', 'fe80::1', 'fc00::1234', 'ff02::1'];
-		for (const ip of restrictedIps) {
-			// eslint-disable-next-line no-await-in-loop
-			expect(await ssrfModule.checkForSsrf(`[${ip}]`)).toBe(false);
-			// eslint-disable-next-line no-await-in-loop
-			expect(await ssrfModule.checkForSsrf(ip)).toBe(false);
-		}
-	});
-
 	it('returns true for valid public IPv6 addresses', async () => {
 		const publicIp = '2a00:1450:4007:806::200e';
 		nslookupSpy = jest.spyOn(ssrfModule, 'nslookup').mockResolvedValue(publicIp);
@@ -89,5 +79,12 @@ describe('checkForSsrf', () => {
 		const ip = '2606:4700:4700::1111';
 		expect(await ssrfModule.checkForSsrf(`[${ip}]`)).toBe(true);
 		expect(await ssrfModule.checkForSsrf(ip)).toBe(true);
+	});
+
+	describe('restricted IPv6 addresses', () => {
+		test.each(['::1', 'fe80::1', 'fc00::1234', 'ff02::1'])('returns false for restricted IPv6 address %s', async (ip) => {
+			expect(await ssrfModule.checkForSsrf(`[${ip}]`)).toBe(false);
+			expect(await ssrfModule.checkForSsrf(ip)).toBe(false);
+		});
 	});
 });
