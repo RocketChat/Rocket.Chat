@@ -394,7 +394,15 @@ export class HomeContent {
 	}
 
 	async sendFileMessage(fileName: string, { waitForResponse = true } = {}): Promise<void> {
-		await this.page.locator('input[type=file]').setInputFiles(getFilePath(fileName));
+		await this.page.locator('input[type=file]#room-upload').setInputFiles(getFilePath(fileName));
+		if (waitForResponse) {
+			await waitForMediaResponse(this.page);
+		}
+	}
+
+	async sendFileMessageToThread(fileName: string, { waitForResponse = true } = {}): Promise<void> {
+		await this.threadComposer.inputMessage.click();
+		await this.page.locator('input[type=file]#thread-upload').setInputFiles(getFilePath(fileName));
 		if (waitForResponse) {
 			await waitForMediaResponse(this.page);
 		}

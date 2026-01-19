@@ -46,7 +46,7 @@ test.describe.serial('file-upload', () => {
 
 	test('should send file with name updated', async () => {
 		const updatedFileName = 'any_file1.txt';
-		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.sendFileMessage('any_file.txt');
 
 		await test.step('update file name and send', async () => {
 			await poHomeChannel.composer.getFileByName('any_file.txt').click();
@@ -144,9 +144,36 @@ test.describe.serial('file-upload', () => {
 
 			await Promise.all([...files, file11].map((file) => poHomeChannel.content.sendFileMessage(file)));
 
-			// TODO: Composer regorg is needed for it to be accessible and allow locating files by their extensions and counting them
-			// await expect(poHomeChannel.content.getFilesInComposer('.png')).toHaveCount(10);
+			await expect(poHomeChannel.composer.getFilesInComposer()).toHaveCount(10);
 			await expect(poHomeChannel.composer.getFileByName(file11)).not.toBeVisible();
+		});
+	});
+
+	test.describe.serial('thread multifile upload', () => {
+		test('should be able to remove file from thread composer before sending', async () => {
+			await poHomeChannel.content.sendMessage('this is a message for thread reply');
+			await poHomeChannel.content.openReplyInThread();
+			await poHomeChannel.content.sendFileMessageToThread('any_file.txt');
+			await poHomeChannel.content.sendFileMessageToThread('another_file.txt');
+
+			await poHomeChannel.threadComposer.removeFileByName('another_file.txt');
+
+			await expect(poHomeChannel.threadComposer.getFileByName('any_file.txt')).toBeVisible();
+			await expect(poHomeChannel.threadComposer.getFileByName('another_file.txt')).not.toBeVisible();
+		});
+
+		test('should send multiple files in a thread successfully', async () => {
+			const message = 'Here are two files in thread';
+			await poHomeChannel.content.openReplyInThread();
+			await poHomeChannel.content.sendFileMessageToThread('any_file.txt');
+			await poHomeChannel.content.sendFileMessageToThread('another_file.txt');
+
+			await poHomeChannel.threadComposer.inputMessage.fill(message);
+			await poHomeChannel.threadComposer.btnSend.click();
+
+			await expect(poHomeChannel.content.lastThreadMessageText).toContainText(message);
+			await expect(poHomeChannel.content.lastThreadMessageText.getByRole('link').getByText('another_file.txt')).toBeVisible();
+			await expect(poHomeChannel.content.lastThreadMessageText.getByRole('link').getByText('any_file.txt')).toBeVisible();
 		});
 	});
 

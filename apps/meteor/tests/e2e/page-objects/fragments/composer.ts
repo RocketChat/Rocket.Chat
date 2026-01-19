@@ -33,6 +33,10 @@ export abstract class Composer {
 		return this.root.getByRole('button', { name: fileName });
 	}
 
+	getFilesInComposer(): Locator {
+		return this.root.getByRole('group', { name: 'Uploads' }).getByRole('button', { name: /^(?!Close$)/ });
+	}
+
 	async removeFileByName(fileName: string): Promise<void> {
 		return this.getFileByName(fileName).getByRole('button', { name: 'Close' }).click();
 	}
