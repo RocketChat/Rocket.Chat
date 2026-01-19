@@ -424,7 +424,7 @@ describe('[Settings]', () => {
 				});
 		});
 
-		describe.only('Masking sensitive settings', () => {
+		describe('Masking sensitive settings', () => {
 			let originalSmtpPassword: string | undefined;
 			let originalSmtpUsername: string | undefined;
 			let maskingStart: Date;
