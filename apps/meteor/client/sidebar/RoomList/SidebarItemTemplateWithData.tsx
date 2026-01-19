@@ -1,5 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
-import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
@@ -7,34 +6,15 @@ import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
 import { memo, useMemo } from 'react';
 
-import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
+import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
-
-export const getMessage = (room: SubscriptionWithRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
-	if (!lastMessage) {
-		return t('No_messages_yet');
-	}
-	if (isVideoConfMessage(lastMessage)) {
-		return t('Call_started');
-	}
-	if (!lastMessage.u) {
-		return normalizeSidebarMessage(lastMessage, t);
-	}
-	if (lastMessage.u?.username === room.u?.username) {
-		return `${t('You')}: ${normalizeSidebarMessage(lastMessage, t)}`;
-	}
-	if (isDirectMessageRoom(room) && !isMultipleDirectMessageRoom(room)) {
-		return normalizeSidebarMessage(lastMessage, t);
-	}
-	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(lastMessage, t)}`;
-};
 
 type RoomListRowProps = {
 	extended: boolean;
@@ -118,7 +98,7 @@ const SidebarItemTemplateWithData = ({
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
-	const message = extended && getMessage(room, lastMessage, t);
+	const message = extended && getMessagePreview(room, lastMessage, t);
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 
 	return (
