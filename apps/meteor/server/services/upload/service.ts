@@ -2,11 +2,10 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
 import type { IUpload, IUser, FilesAndAttachments, IMessage } from '@rocket.chat/core-typings';
 import { isFileAttachment } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
-import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
+import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
 import { i18n } from '../../lib/i18n';
 
@@ -43,50 +42,32 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		return parseFileIntoMessageAttachments(file, roomId, user);
 	}
 
-	async updateMessageForDeletedFiles(msg: IMessage, deletedFiles: IUpload['_id'][]): Promise<void> {
-		const updateResult = await Messages.removeFilesFromMessage(msg, deletedFiles);
+	async updateMessageRemovingFiles(msg: IMessage, filesToRemove: IUpload['_id'][], user: IUser): Promise<void> {
+		const text = `_${i18n.t('File_removed')}_`;
+		const newAttachment = { color: '#FD745E', text };
 
-		if (!updateResult.modifiedCount) {
-			return;
-		}
-
-		try {
-			// If the old message has an attachment linking to a deleted file, add a File Removed attachment to it
-			if (this.messageHasAttachmentInFileList(msg, deletedFiles)) {
-				const text = `_${i18n.t('File_removed')}_`;
-				const newAttachment = { color: '#FD745E', text };
-
-				await Messages.addAttachmentsById(msg._id, [newAttachment]);
-			}
-		} finally {
-			setImmediate(async () => {
-				void notifyOnMessageChange({
-					id: msg._id,
-				});
-			});
-		}
-	}
-
-	private messageHasAttachmentInFileList(msg: IMessage, fileList: IUpload['_id'][]): boolean {
-		if (!msg.attachments?.length) {
-			return false;
-		}
-
-		for (const attachment of msg.attachments) {
+		const newFiles = msg.files?.filter((file) => !filesToRemove.includes(file._id));
+		const newAttachments = msg.attachments?.map((attachment) => {
 			if (!isFileAttachment(attachment)) {
-				continue;
+				return attachment;
 			}
 
-			// File attachment with no fileId - assume it's an old single-file message
-			if (!attachment.fileId) {
-				return true;
+			// If the attachment doesn't have a `fileId`, we assume it's an old message with only one file, in which case checking the id is not needed
+			if (attachment.fileId && !filesToRemove.includes(attachment.fileId)) {
+				return attachment;
 			}
 
-			if (fileList.includes(attachment.fileId)) {
-				return true;
-			}
-		}
+			return newAttachment;
+		});
+		const newFile = msg.file?._id && !filesToRemove.includes(msg.file._id) ? msg.file : newFiles?.[0];
 
-		return false;
+		const editedMessage = {
+			...msg,
+			files: newFiles,
+			attachments: newAttachments,
+			file: newFile,
+		};
+
+		await updateMessage(editedMessage, user, msg);
 	}
 }

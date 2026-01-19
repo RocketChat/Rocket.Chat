@@ -1842,32 +1842,4 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		);
 	}
-
-	async removeFilesFromMessage(message: IMessage, fileIds: string[]): Promise<UpdateResult> {
-		const newFileList = (message.files || []).filter(({ _id }) => !fileIds.includes(_id));
-		const newSingleFile = message.file?._id && !fileIds.includes(message.file._id) ? message.file : newFileList[0];
-
-		const update: UpdateFilter<IMessage> = {
-			$pull: {
-				files: { _id: { $in: fileIds } },
-				attachments: {
-					$or: [
-						// Attachments that are linked to the file we're removing
-						{ fileId: { $in: fileIds } },
-						// If there are file attachments that are not linked to any file, we assume it's an old single-file message so we can remove it too as they can't be any other file
-						{ type: 'file', fileId: { $exists: false } },
-					],
-				},
-			},
-			...(newSingleFile !== message.file && {
-				...(newSingleFile ? { $set: { file: newSingleFile } } : { $unset: { file: true } }),
-			}),
-		};
-
-		return this.updateOne({ _id: message._id }, update);
-	}
-
-	addAttachmentsById(messageId: string, attachments: MessageAttachment[]): Promise<UpdateResult> {
-		return this.updateOne({ _id: messageId }, { $addToSet: { attachments: { $each: attachments } } });
-	}
 }

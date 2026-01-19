@@ -1,6 +1,6 @@
 import { Upload } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
-import { Messages, Uploads } from '@rocket.chat/models';
+import { Messages, Uploads, Users } from '@rocket.chat/models';
 import {
 	ajv,
 	validateBadRequestErrorResponse,
@@ -90,34 +90,37 @@ const uploadsDeleteEndpoint = API.v1.post(
 				return API.v1.forbidden('forbidden');
 			}
 		}
+
 		const store = FileUpload.getStore('Uploads');
+
+		// Find every file that is derived from the file that is being deleted (its thumbnails)
+		const additionalFiles = (await Uploads.findAllByOriginalId(fileId, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
+		const allFiles = [fileId, ...additionalFiles];
+
+		if (msg) {
+			const user = await Users.findOneById(this.userId);
+			if (!user) {
+				return API.v1.notFound();
+			}
+			await Upload.updateMessageRemovingFiles(msg, allFiles, user).catch((err) =>
+				SystemLogger.error({ msg: 'Failed to remove file references from its message.', err, fileId, msgId: msg?._id }),
+			);
+		}
+
 		// Delete the main file first;
 		await store.deleteById(fileId);
 
 		// The main file is already deleted; From here forward we'll return a success response even if some sub-process fails
 
 		const deletedFiles: IUpload['_id'][] = [fileId];
-		try {
-			// Find every file that is derived from the file that is being deleted (its thumbnails)
-			const additionalFiles = (await Uploads.findAllByOriginalId(fileId, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
-
-			// Delete them one by one as the store may include requests to external services
-			for await (const id of additionalFiles) {
-				try {
-					await store.deleteById(id);
-					deletedFiles.push(id);
-				} catch (err) {
-					SystemLogger.error({ msg: 'Failed to delete derived file', fileId: id, originalFileId: fileId, err });
-				}
+		// Delete them one by one as the store may include requests to external services
+		for await (const id of additionalFiles) {
+			try {
+				await store.deleteById(id);
+				deletedFiles.push(id);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Failed to delete derived file', fileId: id, originalFileId: fileId, err });
 			}
-		} catch (err) {
-			SystemLogger.error({ msg: 'Failed to identify and remove derived files', fileId, err });
-		}
-
-		if (msg) {
-			await Upload.updateMessageForDeletedFiles(msg, deletedFiles).catch((err) =>
-				SystemLogger.error({ msg: 'Failed to remove file references from its message.', err, fileId, msgId: msg?._id }),
-			);
 		}
 
 		return API.v1.success({
