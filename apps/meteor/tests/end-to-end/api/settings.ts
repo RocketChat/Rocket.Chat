@@ -475,11 +475,8 @@ describe('[Settings]', () => {
 								expect(previous).to.include('*');
 								expect(previous).to.not.equal(testPassword);
 								if (previous.length > 8) {
-									expect(previous.substring(0, 3)).to.equal(
-										originalSmtpPassword?.substring(0, 3)
-									);
+									expect(previous.substring(0, 3)).to.equal(originalSmtpPassword?.substring(0, 3));
 									expect(previous.substring(3)).to.match(/^\*+$/);
-
 								}
 							}
 
