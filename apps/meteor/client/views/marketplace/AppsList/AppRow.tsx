@@ -27,7 +27,7 @@ const AppRow = ({ className, ...props }: App & { className?: string }): ReactEle
 			params: {
 				context,
 				page: 'info',
-				version: marketplaceVersion || version,
+				version: marketplaceVersion || version || '0.0.0',
 				id,
 				tab: 'details',
 			},
