@@ -17,15 +17,7 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 
 	const { toAll, toHere, mentionIds } = await getMentions(message);
 
-	const filterUsersInRoom = async ({
-		roomId,
-		userIds,
-		room,
-	}: {
-		roomId: string;
-		userIds: string[];
-		room: IRoom | null;
-	}) => {
+	const filterUsersInRoom = async ({ roomId, userIds, room }: { roomId: string; userIds: string[]; room: IRoom | null }) => {
 		try {
 			if (!userIds.length || !room) {
 				return [];
