@@ -5,10 +5,10 @@ import express from 'express';
 import type { Context, HonoRequest, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
 import type { StatusCode } from 'hono/utils/http-status';
-import qs from 'qs'; // Using qs specifically to keep express compatibility
 
 import type { ResponseSchema, TypedOptions } from './definition';
 import { honoAdapterForExpress } from './middlewares/honoAdapterForExpress';
+import { parseQueryParams } from './parseQueryParams';
 
 const logger = new Logger('HttpRouter');
 
@@ -186,7 +186,7 @@ export class Router<
 	}
 
 	protected parseQueryParams(request: HonoRequest) {
-		return qs.parse(request.raw.url.split('?')?.[1] || '');
+		return parseQueryParams(request.raw.url.split('?')?.[1] || '');
 	}
 
 	protected method<TSubPathPattern extends string, TOptions extends TypedOptions>(
@@ -201,7 +201,14 @@ export class Router<
 		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
 			const { req, res } = c;
 
-			const queryParams = this.parseQueryParams(req);
+			let queryParams: Record<string, any>;
+			try {
+				queryParams = this.parseQueryParams(req);
+			} catch (e) {
+				logger.warn({ msg: 'Error parsing query params for request', path: req.path, err: e });
+
+				return c.json({ success: false, error: 'Invalid query parameters' }, 400);
+			}
 
 			if (options.query) {
 				const validatorFn = options.query;
