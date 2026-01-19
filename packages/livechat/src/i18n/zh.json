@@ -89,7 +89,7 @@
     "unread_messages_count_one": "{{count}} 条未读消息",
     "unread_messages_count_other": "{{count}} 条未读消息",
     "unread_messages": "未读信息",
-    "user_added_by": "用户添加者",
+    "user_added_by": "用户由其他人添加",
     "user_joined": "用户已加入",
     "user_left": "用户已离开",
     "user_removed_by": "用户已被移除",
