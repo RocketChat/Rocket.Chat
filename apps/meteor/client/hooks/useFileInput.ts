@@ -36,7 +36,6 @@ export const useFileInput = (props: AllHTMLAttributes<HTMLInputElement>) => {
 		}
 
 		return () => {
-			// Cleanup by passing null to trigger the cleanup function
 			setupFileInput(null);
 		};
 	}, [setupFileInput]);
