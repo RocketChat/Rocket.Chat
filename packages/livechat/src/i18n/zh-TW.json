@@ -55,7 +55,7 @@
     "leave_a_message": "留言",
     "livechat_connected": "聊天已連線",
     "livechat_is_not_connected": "聊天未連線",
-    "media_types_not_accepted": "不允許的擋案類型",
+    "media_types_not_accepted": "不允許的檔案類型",
     "message": "信息",
     "messages": "消息",
     "message_separator_date": "{{val, datetime}}",
