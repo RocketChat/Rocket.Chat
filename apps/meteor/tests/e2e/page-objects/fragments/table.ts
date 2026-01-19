@@ -11,7 +11,7 @@ export abstract class Table {
 
 	findRowByName(name: string): Locator {
 		return this.root.getByRole('row').filter({
-			has: this.root.getByText(name, { exact: true }),
+			has: this.root.page().getByText(name, { exact: true }),
 		});
 	}
 }
