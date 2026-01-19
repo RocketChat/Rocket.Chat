@@ -12,7 +12,7 @@ import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationReq
 import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
-import emojione from 'emojione';
+import emojione from 'emoji-toolkit';
 
 import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser';
 import { extractDomainFromMatrixUserId } from './helpers/extractDomainFromMatrixUserId';
@@ -278,7 +278,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		const latestThreadMessage = !quoteMessageEventId
 			? (await Messages.findLatestFederationThreadMessageByTmid(message.tmid, message._id))?.federation?.eventId ||
-				eventIdSchema.parse(threadRootEventId)
+			eventIdSchema.parse(threadRootEventId)
 			: undefined;
 
 		if (!quoteMessageEventId && !latestThreadMessage) {
@@ -735,13 +735,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					try {
 						const result = await federationSDK.queryProfileRemote<
 							| {
-									avatar_url: string;
-									displayname: string;
-							  }
+								avatar_url: string;
+								displayname: string;
+							}
 							| {
-									errcode: string;
-									error: string;
-							  }
+								errcode: string;
+								error: string;
+							}
 						>({ homeserverUrl, userId: matrixId });
 
 						if ('errcode' in result && result.errcode === 'M_NOT_FOUND') {

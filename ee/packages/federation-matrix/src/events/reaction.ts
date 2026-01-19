@@ -2,7 +2,7 @@ import { Message, FederationMatrix } from '@rocket.chat/core-services';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Messages } from '@rocket.chat/models'; // Rooms
-import emojione from 'emojione';
+import emojione from 'emoji-toolkit';
 
 const logger = new Logger('federation-matrix:reaction');
 
