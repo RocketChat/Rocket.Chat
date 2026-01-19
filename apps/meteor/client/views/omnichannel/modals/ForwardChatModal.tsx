@@ -110,7 +110,7 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 							/>
 						</FieldRow>
 					</Field>
-					<Divider p={0} children={t('or')} />
+					<Divider p={0}>{t('or')}</Divider>
 					<Field>
 						<FieldLabel htmlFor={userFieldId}>{t('Forward_to_user')}</FieldLabel>
 						<FieldRow>

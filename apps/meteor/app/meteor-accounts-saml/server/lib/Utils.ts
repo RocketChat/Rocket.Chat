@@ -154,7 +154,7 @@ export class SAMLUtils {
 			const buffer = Buffer.from(base64Data, 'base64');
 			zlib.inflateRaw(buffer, (err, decoded) => {
 				if (err) {
-					this.log(`Error while inflating. ${err}`);
+					this.log({ msg: 'Error while inflating.', err });
 					return reject(errorCallback(err));
 				}
 
@@ -426,7 +426,7 @@ export class SAMLUtils {
 		const attributeList = new Map();
 		for (const attributeName of userDataMap.attributeList) {
 			if (profile[attributeName] === undefined) {
-				this.log(`SAML user profile is missing the attribute ${attributeName}.`);
+				this.log({ msg: 'SAML user profile is missing the attribute.', attribute: attributeName });
 				continue;
 			}
 			attributeList.set(attributeName, profile[attributeName]);

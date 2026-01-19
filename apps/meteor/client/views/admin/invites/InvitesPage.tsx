@@ -55,14 +55,15 @@ const InvitesPage = (): ReactElement => {
 		setModal(
 			<GenericModal
 				title={t('Are_you_sure')}
-				children={t('Are_you_sure_you_want_to_delete_this_record')}
 				variant='danger'
 				confirmText={t('Yes')}
 				cancelText={t('No')}
 				onClose={(): void => setModal()}
 				onCancel={(): void => setModal()}
 				onConfirm={confirmRemove}
-			/>,
+			>
+				{t('Are_you_sure_you_want_to_delete_this_record')}
+			</GenericModal>,
 		);
 	};
 

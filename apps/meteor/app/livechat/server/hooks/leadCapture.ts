@@ -1,8 +1,8 @@
 import type { IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
+import { isTruthy } from '@rocket.chat/tools';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { settings } from '../../../settings/server';
 

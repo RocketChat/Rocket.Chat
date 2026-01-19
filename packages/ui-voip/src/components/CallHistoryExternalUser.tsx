@@ -16,7 +16,7 @@ const CallHistoryExternalUser = ({ number, showIcon = true }: CallHistoryExterna
 					<Icon name='phone' size={20} />
 				</Box>
 			)}
-			<Box>{number.startsWith('+') ? number : `+${number}`}</Box>
+			<Box>{number}</Box>
 		</Box>
 	);
 };
