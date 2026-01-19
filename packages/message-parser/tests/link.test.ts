@@ -43,10 +43,7 @@ test.each([
 		'Check out [this link](https://grafana.io/dashboard?var=(node_mem)) for metrics',
 		[paragraph([plain('Check out '), link('https://grafana.io/dashboard?var=(node_mem)', [plain('this link')]), plain(' for metrics')])],
 	],
-	[
-		'[Empty parens](https://example.com/path()/file)',
-		[paragraph([link('https://example.com/path()/file', [plain('Empty parens')])])],
-	],
+	['[Empty parens](https://example.com/path()/file)', [paragraph([link('https://example.com/path()/file', [plain('Empty parens')])])]],
 	[
 		'[Link 1](https://example.com/a(1)) and [Link 2](https://example.com/b(2))',
 		[paragraph([link('https://example.com/a(1)', [plain('Link 1')]), plain(' and '), link('https://example.com/b(2)', [plain('Link 2')])])],
