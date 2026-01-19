@@ -1,6 +1,5 @@
 import './tracing';
 import './models';
-import './test-standup';  // Add this line at the end
 
 /**
  * ./settings uses top level await, in theory the settings creation

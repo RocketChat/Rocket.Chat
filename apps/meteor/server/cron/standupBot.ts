@@ -12,13 +12,13 @@ async function runStandupBot(): Promise<void> {
     // Send prompts
     await sendStandupPrompts();
     
-    // Wait 2 minutes, then post summary (for testing)
+    // Wait 8 hours, then post summary (for testing)
     setTimeout(async () => {
         await postStandupSummary();
-    }, 8 * 60 * 60 * 1000); // 2 minutes
+    }, 8 * 60 * 60 * 1000); // 8 hours
 }
 
 export async function standupBotCron(): Promise<void> {
-    const cronSchedule = settings.get<string>('Standup_Bot_Cron') || '*/2 * * * *';
+    const cronSchedule = settings.get<string>('Standup_Bot_Cron') || '0 9 * * 1-5';
     return cronJobs.add('StandupBot', cronSchedule, async () => runStandupBot());
 }

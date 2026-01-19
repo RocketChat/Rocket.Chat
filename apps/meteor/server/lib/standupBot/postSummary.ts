@@ -50,7 +50,7 @@ export async function postStandupSummary(): Promise<void> {
             // Get user's latest message in DM (their standup response)
             const response = await Messages.findOne({
                 rid: dmRoom._id,
-                'u._id': user._id,  // ← CORRECT
+                'u._id': user._id,  
                 ts: { $gte: yesterday }
             }, {
                 sort: { ts: -1 }
