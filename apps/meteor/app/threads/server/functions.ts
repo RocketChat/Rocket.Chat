@@ -1,6 +1,6 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { Messages, Subscriptions, ReadReceipts, NotificationQueue } from '@rocket.chat/models';
+import { Messages, Subscriptions, ReadReceipts, NotificationQueue, Rooms } from '@rocket.chat/models';
 
 import {
 	notifyOnSubscriptionChangedByRoomIdAndUserIds,
@@ -16,29 +16,75 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 	const { rid, ts, u } = message;
 
 	const { toAll, toHere, mentionIds } = await getMentions(message);
+	
+	const filterUsersInRoom = async ({ 
+		roomId, 
+		userIds, 
+		room 
+	}: { 
+		roomId: string; 
+		userIds: string[]; 
+		room: IRoom | null 
+	}) => {
+		try {
+			
+			if (!userIds.length || !room) {
+				return [];
+			}
+
+			if (room.t === 'd') {
+				return userIds.filter((userId) => room.uids?.includes(userId));
+			}
+
+			if (room.t === 'p' || room.t === 'c') {
+				
+				const subscriptions = await Subscriptions.findByRoomIdAndUserIds(roomId, userIds, {
+					projection: { u: 1 },
+				}).toArray();
+				
+				return subscriptions.map((sub) => sub.u._id);
+			}
+
+			return [];
+
+		} catch (error) { 
+			console.error('Error filtering users in room:', { roomId, error });
+			return [];
+		}
+	}
+	
+	const room = await Rooms.findOneById(rid);
+	const [highlightsUids, threadFollowers] = await Promise.all([
+		getUserIdsFromHighlights(rid, message),
+		Messages.getThreadFollowsByThreadId(tmid),
+	]);
+	
+	
+	const [followersInRoom, mentionIdsInRoom, highlightsUidsInRoom] = await Promise.all([
+		filterUsersInRoom({ roomId: rid, userIds: followers, room }),
+		filterUsersInRoom({ roomId: rid, userIds: mentionIds, room }),
+		filterUsersInRoom({ roomId: rid, userIds: highlightsUids, room }),  // ← Add here
+	]);	
 
 	const addToReplies = [
 		...new Set([
-			...followers,
-			...mentionIds,
+			...followersInRoom,
+			...mentionIdsInRoom,
 			...(Array.isArray(parentMessage.replies) && parentMessage.replies.length ? [u._id] : [parentMessage.u._id, u._id]),
 		]),
 	];
 
 	await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
 
-	const [highlightsUids, threadFollowers] = await Promise.all([
-		getUserIdsFromHighlights(rid, message),
-		Messages.getThreadFollowsByThreadId(tmid),
-	]);
+	
 
-	const threadFollowersUids = threadFollowers?.filter((userId) => userId !== u._id && !mentionIds.includes(userId)) || [];
+	const threadFollowersUids = threadFollowers?.filter((userId) => userId !== u._id && !mentionIdsInRoom.includes(userId)) || [];
 
 	// Notify everyone involved in the thread
 	const notifyOptions = toAll || toHere ? { groupMention: true } : {};
 
 	// Notify message mentioned users and highlights
-	const mentionedUsers = [...new Set([...mentionIds, ...highlightsUids])];
+	const mentionedUsers = [...new Set([...mentionIdsInRoom, ...highlightsUidsInRoom])];
 
 	const promises = [
 		ReadReceipts.setAsThreadById(tmid),
@@ -49,16 +95,16 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 		promises.push(Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, mentionedUsers, tmid, { userMention: true }));
 	}
 
-	if (highlightsUids.length) {
+	if (highlightsUidsInRoom.length) {
 		promises.push(
-			Subscriptions.setAlertForRoomIdAndUserIds(rid, highlightsUids),
-			Subscriptions.setOpenForRoomIdAndUserIds(rid, highlightsUids),
+			Subscriptions.setAlertForRoomIdAndUserIds(rid, highlightsUidsInRoom),
+			Subscriptions.setOpenForRoomIdAndUserIds(rid, highlightsUidsInRoom),
 		);
 	}
 
 	await Promise.allSettled(promises);
 
-	void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, [...threadFollowersUids, ...mentionedUsers, ...highlightsUids]);
+	void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, [...threadFollowersUids, ...mentionedUsers, ...highlightsUidsInRoom]);
 }
 
 export async function follow({ tmid, uid }: { tmid: string; uid: string }) {
