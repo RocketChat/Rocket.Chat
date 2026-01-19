@@ -1,7 +1,6 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
-import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
+import { useContentBoxSize, useEffectEvent, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -358,9 +357,6 @@ const MessageBox = ({
 	const keyDownHandlerCallbackRef = useSafeRefCallback(
 		useCallback(
 			(node: HTMLTextAreaElement) => {
-				if (node === null) {
-					return;
-				}
 				const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
 				node.addEventListener('keydown', eventHandler);
 
