@@ -174,14 +174,14 @@ test.describe('OC - Contact Center - Contacts', () => {
 			await poContacts.editContact.btnSave.click();
 
 			await poContacts.inputSearch.fill(NEW_CONTACT.name);
-			await expect(poContacts.findRowByName(NEW_CONTACT.name)).toBeVisible();
+			await expect(poContacts.table.findRowByName(NEW_CONTACT.name)).toBeVisible();
 		});
 	});
 
 	test('Edit new contact', async ({ page }) => {
 		await test.step('search contact and open contextual bar', async () => {
 			await poContacts.inputSearch.fill(NEW_CONTACT.name);
-			const row = poContacts.findRowByName(NEW_CONTACT.name);
+			const row = poContacts.table.findRowByName(NEW_CONTACT.name);
 			await expect(row).toBeVisible();
 			await row.click();
 			await page.waitForURL(URL.contactInfo);
@@ -257,7 +257,7 @@ test.describe('OC - Contact Center - Contacts', () => {
 			await poContacts.editContact.btnSave.click();
 
 			await poContacts.inputSearch.fill(EDIT_CONTACT.name);
-			await expect(poContacts.findRowByName(EDIT_CONTACT.name)).toBeVisible();
+			await expect(poContacts.table.findRowByName(EDIT_CONTACT.name)).toBeVisible();
 		});
 	});
 
@@ -286,7 +286,7 @@ test.describe('OC - Contact Center - Contacts', () => {
 
 		await test.step('Confirm contact removal', async () => {
 			await poContacts.inputSearch.fill(DELETE_CONTACT.name);
-			await expect(poContacts.findRowByName(DELETE_CONTACT.name)).not.toBeVisible();
+			await expect(poContacts.table.findRowByName(DELETE_CONTACT.name)).not.toBeVisible();
 		});
 	});
 });

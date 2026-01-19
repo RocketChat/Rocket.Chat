@@ -3,16 +3,26 @@ import type { Locator, Page } from '@playwright/test';
 import { OmnichannelContactInfo } from '../omnichannel-info';
 import { OmnichannelContactCenter } from './omnichannel-contact-center';
 import { OmnichannelEditContactFlaxTab } from '../../fragments/edit-contact-flaxtab';
+import { Table } from '../../fragments/table';
+
+class OmnichannelContactCenterContactsTable extends Table {
+	constructor(page: Page) {
+		super(page.getByRole('table', { name: 'Omnichannel Contact Center Contacts' }));
+	}
+}
 
 export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
 	readonly contactInfo: OmnichannelContactInfo;
 
 	readonly editContact: OmnichannelEditContactFlaxTab;
 
+	readonly table: OmnichannelContactCenterContactsTable;
+
 	constructor(page: Page) {
 		super(page);
 		this.contactInfo = new OmnichannelContactInfo(page);
 		this.editContact = new OmnichannelEditContactFlaxTab(page);
+		this.table = new OmnichannelContactCenterContactsTable(page);
 	}
 
 	get btnNewContact(): Locator {
@@ -20,7 +30,7 @@ export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
 	}
 
 	findRowMenu(contactName: string): Locator {
-		return this.findRowByName(contactName).getByRole('button', { name: 'More Actions' });
+		return this.table.findRowByName(contactName).getByRole('button', { name: 'More Actions' });
 	}
 
 	findMenuItem(name: string): Locator {
@@ -142,14 +152,6 @@ export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
 		await this.inputUnits.fill(unitName);
 		await this.findOption(unitName).click();
 		await this.btnApply.click();
-	}
-
-	private get contactCenterChatsTable(): Locator {
-		return this.page.getByRole('table', { name: 'Omnichannel Contact Center Chats' });
-	}
-
-	findRowByName(contactName: string) {
-		return this.contactCenterChatsTable.getByRole('link', { name: contactName, exact: true });
 	}
 
 	get inputStatus(): Locator {

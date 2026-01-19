@@ -35,7 +35,6 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 			action
 			key={_id}
 			tabIndex={0}
-			role='link'
 			height='40px'
 			qa-user-id={_id}
 			rcx-show-call-button-on-hover
