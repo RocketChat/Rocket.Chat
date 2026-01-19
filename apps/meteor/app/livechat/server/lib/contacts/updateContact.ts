@@ -75,7 +75,7 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		name,
 		...(emails && { emails: emails?.map((address) => ({ address })) }),
 		...(phones && { phones: phones?.map((phoneNumber) => ({ phoneNumber })) }),
-		...(contactManager && { contactManager }),
+		...('contactManager' in params && { contactManager }), // A contactManager of empty string or undefined will be unset in the model method
 		...(channels && { channels }),
 		...(customFieldsToUpdate && { customFields: customFieldsToUpdate }),
 		...(wipeConflicts && { conflictingFields: [] }),

@@ -508,6 +508,18 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.contact.contactManager).to.be.equal(livechatAgent._id);
 		});
 
+		it('should be able to clear the contact manager', async () => {
+			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
+				contactId,
+				contactManager: '',
+			});
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contact._id).to.be.equal(contactId);
+			expect(res.body.contact).to.not.have.property('contactManager');
+		});
+
 		it('should return an error if contact does not exist', async () => {
 			const res = await request
 				.post(api('omnichannel/contacts.update'))
