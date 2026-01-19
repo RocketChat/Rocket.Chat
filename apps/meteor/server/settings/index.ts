@@ -74,8 +74,11 @@ await Promise.all([
 	createWebDavSettings(),
 ]);
 
+import { createStandupSettings } from './standup';
 // Run after all the other settings are created since it depends on some of them
 await Promise.all([
 	createFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
+	createStandupSettings(),
 	addMatrixBridgeFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
 ]);
+
