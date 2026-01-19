@@ -59,7 +59,7 @@ export type ComposerAPI = {
 
 	readonly formatters: Subscribable<FormattingButton[]>;
 
-	composerRef: RefObject<HTMLElement>;
+	readonly composerRef: RefObject<HTMLElement>;
 };
 
 export type DataAPI = {
