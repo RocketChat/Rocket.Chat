@@ -103,7 +103,7 @@ async function fetchWithRetry(url: string, _removeToken: () => void, options: Ex
 	}
 
 	const error: FCMError = await response.json();
-	logger.error('sendFCM error', error);
+	logger.error({ msg: 'sendFCM error', err: error });
 
 	return response;
 }
@@ -164,7 +164,7 @@ export const sendFCM = function ({ userTokens, notification, _removeToken, optio
 		return;
 	}
 
-	logger.debug('sendFCM', tokens, notification);
+	logger.debug({ msg: 'sendFCM', tokens, notification });
 
 	const messages = getFCMMessagesFromPushData(tokens, notification);
 	const headers = {
@@ -181,7 +181,7 @@ export const sendFCM = function ({ userTokens, notification, _removeToken, optio
 	const url = `https://fcm.googleapis.com/v1/projects/${options.gcm.projectNumber}/messages:send`;
 
 	for (const fcmRequest of messages) {
-		logger.debug('sendFCM message', fcmRequest);
+		logger.debug({ msg: 'sendFCM message', request: fcmRequest });
 
 		const removeToken = () => {
 			const { token } = fcmRequest.message;
@@ -191,7 +191,7 @@ export const sendFCM = function ({ userTokens, notification, _removeToken, optio
 		const response = fetchWithRetry(url, removeToken, { method: 'POST', headers, body: JSON.stringify(fcmRequest) });
 
 		response.catch((err) => {
-			logger.error('sendFCM error', err);
+			logger.error({ msg: 'sendFCM error', err });
 		});
 	}
 };

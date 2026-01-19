@@ -53,7 +53,7 @@ test.describe.serial('Quote Messages', () => {
 			await poHomeChannel.content.lastUserMessage.hover();
 			await poHomeChannel.content.openLastMessageMenu();
 			await poHomeChannel.content.btnOptionEditMessage.click();
-			await poHomeChannel.content.inputMessage.fill(editedQuoteText);
+			await poHomeChannel.composer.inputMessage.fill(editedQuoteText);
 			await page.keyboard.press('Enter');
 		});
 

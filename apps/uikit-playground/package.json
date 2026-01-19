@@ -1,6 +1,6 @@
 {
   "name": "@rocket.chat/uikit-playground",
-  "version": "0.7.3-rc.1",
+  "version": "0.7.3",
   "private": true,
   "type": "module",
   "scripts": {
@@ -52,6 +52,7 @@
     "@typescript-eslint/parser": "~5.60.1",
     "@vitejs/plugin-react": "~4.5.2",
     "eslint": "~8.45.0",
+    "eslint-plugin-react": "~7.37.5",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.24",
     "typescript": "~5.9.3",

@@ -64,7 +64,7 @@ test.describe('omnichannel-takeChat', () => {
 		await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).not.toBeVisible();
-		await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
+		await expect(agent.poHomeChannel.composer.inputMessage).toBeVisible();
 	});
 
 	test('When agent is offline should not take the chat', async () => {

@@ -173,13 +173,13 @@ test.describe('OC - Monitor Role', () => {
 
 		await test.step('expect to be able to join chats from same unit', async () => {
 			await poOmnichannel.chats.openChat(ROOM_A);
-			await expect(poOmnichannel.content.btnJoinRoom).toBeVisible();
-			await expect(poOmnichannel.content.inputMessage).not.toBeVisible();
+			await expect(poOmnichannel.composer.btnJoinRoom).toBeVisible();
+			await expect(poOmnichannel.composer.inputMessage).not.toBeVisible();
 
-			await poOmnichannel.content.btnJoinRoom.click();
+			await poOmnichannel.composer.btnJoinRoom.click();
 			await expect(poOmnichannel.content.lastSystemMessageBody).toHaveText('joined the channel');
-			await expect(poOmnichannel.content.btnJoinRoom).not.toBeVisible();
-			await expect(poOmnichannel.content.inputMessage).toBeVisible();
+			await expect(poOmnichannel.composer.btnJoinRoom).not.toBeVisible();
+			await expect(poOmnichannel.composer.inputMessage).toBeVisible();
 		});
 
 		await test.step('expect to be able to put a conversation from another agent on hold', async () => {
@@ -187,14 +187,14 @@ test.describe('OC - Monitor Role', () => {
 			await expect(poOmnichannel.content.lastSystemMessageBody).toHaveText(
 				`Chat On Hold: The chat was manually placed On Hold by ${MONITOR}`,
 			);
-			await expect(poOmnichannel.content.inputMessage).not.toBeVisible();
+			await expect(poOmnichannel.composer.inputMessage).not.toBeVisible();
 			await expect(poOmnichannel.content.btnResume).toBeVisible();
 		});
 
 		await test.step('expect to be able resume a conversation from another agent on hold', async () => {
 			await poOmnichannel.content.btnResume.click();
 			await expect(poOmnichannel.content.btnResume).not.toBeVisible();
-			await expect(poOmnichannel.content.inputMessage).toBeVisible();
+			await expect(poOmnichannel.composer.inputMessage).toBeVisible();
 			await expect(poOmnichannel.quickActionsRoomToolbar.btnOnHold).toBeVisible();
 		});
 

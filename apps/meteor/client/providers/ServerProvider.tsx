@@ -104,7 +104,7 @@ const ServerProvider = ({ children }: ServerProviderProps) => {
 		[connected, retryCount, retryTime, status],
 	);
 
-	return <ServerContext.Provider children={children} value={value} />;
+	return <ServerContext.Provider value={value}>{children}</ServerContext.Provider>;
 };
 
 export default ServerProvider;

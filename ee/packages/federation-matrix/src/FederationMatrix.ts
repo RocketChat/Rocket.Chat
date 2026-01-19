@@ -9,12 +9,15 @@ import {
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationRequestError } from '@rocket.chat/federation-sdk';
-import type { EventID, UserID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
+import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import emojione from 'emojione';
 
+import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser';
+import { extractDomainFromMatrixUserId } from './helpers/extractDomainFromMatrixUserId';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
+import { validateFederatedUsername } from './helpers/validateFederatedUsername';
 import { MatrixMediaService } from './services/MatrixMediaService';
 
 export const fileTypes: Record<string, FileMessageType> = {
@@ -23,115 +26,6 @@ export const fileTypes: Record<string, FileMessageType> = {
 	audio: 'm.audio',
 	file: 'm.file',
 };
-
-/** helper to validate the username format */
-export function validateFederatedUsername(mxid: string): mxid is UserID {
-	if (!mxid.startsWith('@')) return false;
-
-	const parts = mxid.substring(1).split(':');
-	if (parts.length < 2) return false;
-
-	const localpart = parts[0];
-	const domainAndPort = parts.slice(1).join(':');
-
-	const localpartRegex = /^(?:[a-z0-9._\-]|=[0-9a-fA-F]{2}){1,255}$/;
-	if (!localpartRegex.test(localpart)) return false;
-
-	const [domain, port] = domainAndPort.split(':');
-
-	const hostnameRegex = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)*$/i;
-	const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/;
-	const ipv6Regex = /^\[([0-9a-f:.]+)\]$/i;
-
-	if (!(hostnameRegex.test(domain) || ipv4Regex.test(domain) || ipv6Regex.test(domain))) {
-		return false;
-	}
-
-	if (port !== undefined) {
-		const portNum = Number(port);
-		if (!/^[0-9]+$/.test(port) || portNum < 1 || portNum > 65535) {
-			return false;
-		}
-	}
-
-	return true;
-}
-export const extractDomainFromMatrixUserId = (mxid: string): string => {
-	const separatorIndex = mxid.indexOf(':', 1);
-	if (separatorIndex === -1) {
-		throw new Error(`Invalid federated username: ${mxid}`);
-	}
-	return mxid.substring(separatorIndex + 1);
-};
-
-/**
- * Extract the username and the servername from a matrix user id
- * if the serverName is the same as the serverName in the mxid, return only the username (rocket.chat regular username)
- * otherwise, return the full mxid and the servername
- */
-export const getUsernameServername = (mxid: string, serverName: string): [mxid: string, serverName: string, isLocal: boolean] => {
-	const senderServerName = extractDomainFromMatrixUserId(mxid);
-	// if the serverName is the same as the serverName in the mxid, return only the username (rocket.chat regular username)
-	if (serverName === senderServerName) {
-		const separatorIndex = mxid.indexOf(':', 1);
-		if (separatorIndex === -1) {
-			throw new Error(`Invalid federated username: ${mxid}`);
-		}
-		return [mxid.substring(1, separatorIndex), senderServerName, true]; // removers also the @
-	}
-
-	return [mxid, senderServerName, false];
-};
-/**
- * Helper function to create a federated user
- *
- * Because of historical reasons, we can have users only with federated flag but no federation object
- * So we need to upsert the user with the federation object
- */
-export async function createOrUpdateFederatedUser(options: { username: string; name?: string; origin: string }): Promise<IUser> {
-	const { username, name = username, origin } = options;
-
-	// TODO: Have a specific method to handle this upsert
-	const user = await Users.findOneAndUpdate(
-		{
-			username,
-		},
-		{
-			$set: {
-				username,
-				name: name || username,
-				type: 'user' as const,
-				status: UserStatus.OFFLINE,
-				active: true,
-				roles: ['user'],
-				requirePasswordChange: false,
-				federated: true,
-				federation: {
-					version: 1,
-					mui: username,
-					origin,
-				},
-				_updatedAt: new Date(),
-			},
-			$setOnInsert: {
-				createdAt: new Date(),
-			},
-		},
-		{
-			upsert: true,
-			projection: { _id: 1, username: 1 },
-			returnDocument: 'after',
-		},
-	);
-
-	if (!user) {
-		throw new Error(`Failed to create or update federated user: ${username}`);
-	}
-
-	return user;
-}
-
-export { generateEd25519RandomSecretKey } from '@rocket.chat/federation-sdk';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
@@ -218,24 +112,24 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			// canonical alias computed from name
 			const matrixRoomResult = await federationSDK.createRoom(matrixUserId, roomName, room.t === 'c' ? 'public' : 'invite');
 
-			this.logger.debug('Matrix room created:', matrixRoomResult);
+			this.logger.debug({ msg: 'Matrix room created', response: matrixRoomResult });
 
 			await Rooms.setAsFederated(room._id, { mrid: matrixRoomResult.room_id, origin: this.serverName });
 
 			// Members are NOT invited here - invites are sent via beforeAddUserToRoom callback.
 
-			this.logger.debug('Room creation completed successfully', room._id);
+			this.logger.debug({ msg: 'Room creation completed successfully', roomId: room._id });
 
 			return matrixRoomResult;
-		} catch (error) {
-			this.logger.error(error, 'Failed to create room');
-			throw error;
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to create room', err });
+			throw err;
 		}
 	}
 
 	async ensureFederatedUsersExistLocally(usernames: string[]): Promise<void> {
 		try {
-			this.logger.debug('Ensuring federated users exist locally before DM creation', { memberCount: usernames.length });
+			this.logger.debug({ msg: 'Ensuring federated users exist locally before DM creation', memberCount: usernames.length });
 
 			const federatedUsers = usernames.filter(validateFederatedUsername);
 			for await (const username of federatedUsers) {
@@ -250,67 +144,37 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					origin: extractDomainFromMatrixUserId(username),
 				});
 			}
-		} catch (error) {
-			this.logger.error(error, 'Failed to ensure federated users exist locally');
-			throw error;
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to ensure federated users exist locally', err });
+			throw err;
 		}
 	}
 
 	async createDirectMessageRoom(room: IRoom, members: IUser[], creatorId: IUser['_id']): Promise<void> {
 		try {
-			this.logger.debug('Creating direct message room in Matrix', { roomId: room._id, memberCount: members.length });
+			this.logger.debug({ msg: 'Creating direct message room in Matrix', roomId: room._id, memberCount: members.length });
 
-			const creator = await Users.findOneById(creatorId);
+			const creator = await Users.findOneById<Pick<IUser, 'username'>>(creatorId, { projection: { username: 1 } });
 			if (!creator) {
 				throw new Error('Creator not found in members list');
 			}
 
-			const actualMatrixUserId = `@${creator.username}:${this.serverName}`;
-
-			let matrixRoomResult: { room_id: string; event_id?: string };
-			if (members.length === 2) {
-				const otherMember = members.find((member) => member._id !== creatorId);
-				if (!otherMember) {
-					throw new Error('Other member not found for 1-on-1 DM');
-				}
-				if (!isUserNativeFederated(otherMember)) {
-					throw new Error('Other member is not federated');
-				}
-				const roomId = await federationSDK.createDirectMessageRoom(
-					userIdSchema.parse(actualMatrixUserId),
-					userIdSchema.parse(otherMember.username),
-				);
-				matrixRoomResult = { room_id: roomId };
-			} else {
-				// For group DMs (more than 2 members), create a private room
-				const roomName = room.name || room.fname || `Group chat with ${members.length} members`;
-				matrixRoomResult = await federationSDK.createRoom(userIdSchema.parse(actualMatrixUserId), roomName, 'invite');
-
-				for await (const member of members) {
-					if (member._id === creatorId) {
-						continue;
-					}
-
-					try {
-						await federationSDK.inviteUserToRoom(
-							isUserNativeFederated(member) ? userIdSchema.parse(member.username) : `@${member.username}:${this.serverName}`,
-							roomIdSchema.parse(matrixRoomResult.room_id),
-							userIdSchema.parse(actualMatrixUserId),
-						);
-					} catch (error) {
-						this.logger.error(error, 'Error creating or updating bridged user for DM');
-					}
-				}
-			}
+			const roomId = await federationSDK.createDirectMessage({
+				creatorUserId: userIdSchema.parse(`@${creator.username}:${this.serverName}`),
+				members: members
+					.filter((member) => member._id !== creatorId)
+					.map((member) => userIdSchema.parse(isUserNativeFederated(member) ? member.username : `@${member.username}:${this.serverName}`)),
+			});
 
 			await Rooms.setAsFederated(room._id, {
-				mrid: matrixRoomResult.room_id,
+				mrid: roomId,
 				origin: this.serverName,
 			});
+
 			this.logger.debug({ roomId: room._id, msg: 'Direct message room creation completed successfully' });
-		} catch (error) {
-			this.logger.error(error, 'Failed to create direct message room');
-			throw error;
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to create direct message room', err });
+			throw err;
 		}
 	}
 
@@ -362,13 +226,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			);
 
 			return lastEventId;
-		} catch (error) {
+		} catch (err) {
 			this.logger.error({
 				msg: 'Failed to handle file message',
 				messageId: message._id,
-				err: error,
+				err,
 			});
-			throw error;
+			throw err;
 		}
 	}
 
@@ -459,10 +323,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			await Messages.setFederationEventIdById(message._id, result.eventId);
 
-			this.logger.debug('Message sent to Matrix successfully:', result.eventId);
-		} catch (error) {
-			this.logger.error(error, 'Failed to send message to Matrix');
-			throw error;
+			this.logger.debug({ msg: 'Message sent to Matrix successfully', eventId: result.eventId });
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to send message to Matrix', err });
+			throw err;
 		}
 	}
 
@@ -521,10 +385,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			// TODO message.u?.username is not the user who removed the message
 			const eventId = await federationSDK.redactMessage(roomIdSchema.parse(matrixRoomId), eventIdSchema.parse(matrixEventId));
 
-			this.logger.debug('Message Redaction sent to Matrix successfully:', eventId);
-		} catch (error) {
-			this.logger.error(error, 'Failed to send redaction to Matrix');
-			throw error;
+			this.logger.debug({ msg: 'Message redaction sent to Matrix successfully', eventId });
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to send redaction to Matrix', err });
+			throw err;
 		}
 	}
 
@@ -556,9 +420,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					);
 				}),
 			);
-		} catch (error) {
-			this.logger.error(error, 'Failed to invite a user to Matrix');
-			throw error;
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to invite a user to Matrix', err });
+			throw err;
 		}
 	}
 
@@ -593,9 +457,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			await Messages.setFederationReactionEventId(user.username || '', messageId, reaction, eventId);
 
 			this.logger.debug({ eventId, msg: 'Reaction sent to Matrix successfully' });
-		} catch (error) {
-			this.logger.error(error, 'Failed to send reaction to Matrix');
-			throw error;
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to send reaction to Matrix', err });
+			throw err;
 		}
 	}
 
@@ -609,7 +473,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			const targetEventId = message.federation?.eventId;
 			if (!targetEventId) {
-				this.logger.warn(`No federation event ID found for message ${messageId}`);
+				this.logger.warn({ msg: 'No federation event ID found for message', messageId });
 				return;
 			}
 
@@ -647,9 +511,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				await Messages.unsetFederationReactionEventId(eventId, messageId, reaction);
 				break;
 			}
-		} catch (error) {
-			this.logger.error(error, 'Failed to remove reaction from Matrix');
-			throw error;
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to remove reaction from Matrix', err });
+			throw err;
 		}
 	}
 
@@ -666,7 +530,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		try {
 			const room = await Rooms.findOneById(roomId);
 			if (!room || !isRoomNativeFederated(room)) {
-				this.logger.debug(`Room ${roomId} is not federated, skipping leave operation`);
+				this.logger.debug({ msg: 'Room is not federated, skipping leave operation', roomId });
 				return;
 			}
 
@@ -674,10 +538,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			await federationSDK.leaveRoom(roomIdSchema.parse(room.federation.mrid), userIdSchema.parse(actualMatrixUserId));
 
-			this.logger.info(`User ${user.username} left Matrix room ${room.federation.mrid} successfully`);
-		} catch (error) {
-			this.logger.error(error, 'Failed to leave room in Matrix');
-			throw error;
+			this.logger.info({ msg: 'User left Matrix room successfully', username: user.username, roomId: room.federation.mrid });
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to leave room in Matrix', err });
+			throw err;
 		}
 	}
 
@@ -698,10 +562,15 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				`Kicked by ${userWhoRemoved.username}`,
 			);
 
-			this.logger.info(`User ${removedUser.username} was kicked from Matrix room ${room.federation.mrid} by ${userWhoRemoved.username}`);
-		} catch (error) {
-			this.logger.error(error, 'Failed to kick user from Matrix room');
-			throw error;
+			this.logger.info({
+				msg: 'User was kicked from Matrix room',
+				kickedUsername: removedUser.username,
+				roomId: room.federation.mrid,
+				performedBy: userWhoRemoved.username,
+			});
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to kick user from Matrix room', err });
+			throw err;
 		}
 	}
 
@@ -733,10 +602,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				eventIdSchema.parse(matrixEventId),
 			);
 
-			this.logger.debug('Message updated in Matrix successfully:', eventId);
-		} catch (error) {
-			this.logger.error(error, 'Failed to update message in Matrix');
-			throw error;
+			this.logger.debug({ msg: 'Message updated in Matrix successfully', eventId });
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to update message in Matrix', err });
+			throw err;
 		}
 	}
 
@@ -920,12 +789,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		if (action === 'reject') {
 			try {
 				await federationSDK.rejectInvite(room.federation.mrid, matrixUserId);
-			} catch (error) {
-				if (error instanceof FederationRequestError && error.response.status === 403) {
+			} catch (err) {
+				if (err instanceof FederationRequestError && err.response.status === 403) {
 					return Room.performUserRemoval(room, user);
 				}
-				this.logger.error(error, 'Failed to reject invite in Matrix');
-				throw error;
+				this.logger.error({ msg: 'Failed to reject invite in Matrix', err });
+				throw err;
 			}
 		}
 	}
