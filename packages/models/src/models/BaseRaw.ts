@@ -29,16 +29,15 @@ import type {
 	ClientSession,
 } from 'mongodb';
 
-import { UpdaterImpl } from '../updater';
-const getCollectionName = (name: string): string => `rocketchat_${name}`;
+import { getCollectionName, UpdaterImpl } from '..';
 import type { Updater } from '../updater';
 import { setUpdatedAt } from './setUpdatedAt';
 
 const warnFields =
 	process.env.NODE_ENV !== 'production' || process.env.SHOW_WARNINGS === 'true'
 		? (...rest: any): void => {
-			console.warn(...rest, new Error().stack);
-		}
+				console.warn(...rest, new Error().stack);
+			}
 		: new Function();
 
 type ModelOptions = {
@@ -51,7 +50,8 @@ export abstract class BaseRaw<
 	T extends { _id: string },
 	C extends DefaultFields<T> = undefined,
 	TDeleted extends RocketChatRecordDeleted<T> = RocketChatRecordDeleted<T>,
-> implements IBaseModel<T, C, TDeleted> {
+> implements IBaseModel<T, C, TDeleted>
+{
 	protected defaultFields: C | undefined;
 
 	public readonly col: Collection<T>;
@@ -324,14 +324,9 @@ export abstract class BaseRaw<
 			} as unknown as TDeleted;
 
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
-			await this.trash?.updateOne(
-				{ _id } as Filter<TDeleted>,
-				{ $set: trash } as UpdateFilter<TDeleted>,
-				{
-					upsert: true,
-					session: options?.session,
-				},
-			);
+			await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
+				upsert: true,
+			});
 		}
 
 		if (options) {
@@ -345,7 +340,7 @@ export abstract class BaseRaw<
 			return this.col.findOneAndDelete(filter, options || {});
 		}
 
-		const doc = await this.col.findOne(filter, { session: options?.session });
+		const doc = await this.col.findOne(filter);
 		if (!doc) {
 			return null;
 		}
@@ -357,19 +352,14 @@ export abstract class BaseRaw<
 			__collection__: this.name,
 		} as unknown as TDeleted;
 
-		await this.trash?.updateOne(
-			{ _id } as Filter<TDeleted>,
-			{ $set: trash } as UpdateFilter<TDeleted>,
-			{
-				upsert: true,
-				session: options?.session,
-			},
-		);
+		await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
+			upsert: true,
+		});
 
 		try {
-			await this.col.deleteOne({ _id } as Filter<T>, { session: options?.session });
+			await this.col.deleteOne({ _id } as Filter<T>);
 		} catch (e) {
-			await this.trash?.deleteOne({ _id } as Filter<TDeleted>, { session: options?.session });
+			await this.trash?.deleteOne({ _id } as Filter<TDeleted>);
 			throw e;
 		}
 
@@ -399,14 +389,10 @@ export abstract class BaseRaw<
 			ids.push(_id as T['_id']);
 
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
-			await this.trash?.updateOne(
-				{ _id } as Filter<TDeleted>,
-				{ $set: trash } as UpdateFilter<TDeleted>,
-				{
-					upsert: true,
-					session: options?.session,
-				},
-			);
+			await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
+				upsert: true,
+				session: options?.session,
+			});
 
 			void options?.onTrash?.(doc);
 		}
