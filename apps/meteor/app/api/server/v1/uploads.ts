@@ -102,9 +102,7 @@ const uploadsDeleteEndpoint = API.v1.post(
 			if (!user) {
 				return API.v1.notFound();
 			}
-			await Upload.updateMessageRemovingFiles(msg, allFiles, user).catch((err) =>
-				SystemLogger.error({ msg: 'Failed to remove file references from its message.', err, fileId, msgId: msg?._id }),
-			);
+			await Upload.updateMessageRemovingFiles(msg, allFiles, user);
 		}
 
 		// Delete the main file first;
