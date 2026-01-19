@@ -16,18 +16,17 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 	const { rid, ts, u } = message;
 
 	const { toAll, toHere, mentionIds } = await getMentions(message);
-	
-	const filterUsersInRoom = async ({ 
-		roomId, 
-		userIds, 
-		room 
-	}: { 
-		roomId: string; 
-		userIds: string[]; 
-		room: IRoom | null 
+
+	const filterUsersInRoom = async ({
+		roomId,
+		userIds,
+		room,
+	}: {
+		roomId: string;
+		userIds: string[];
+		room: IRoom | null;
 	}) => {
 		try {
-			
 			if (!userIds.length || !room) {
 				return [];
 			}
@@ -37,34 +36,31 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 			}
 
 			if (room.t === 'p' || room.t === 'c') {
-				
 				const subscriptions = await Subscriptions.findByRoomIdAndUserIds(roomId, userIds, {
 					projection: { u: 1 },
 				}).toArray();
-				
+
 				return subscriptions.map((sub) => sub.u._id);
 			}
 
 			return [];
-
-		} catch (error) { 
+		} catch (error) {
 			console.error('Error filtering users in room:', { roomId, error });
 			return [];
 		}
-	}
-	
+	};
+
 	const room = await Rooms.findOneById(rid);
 	const [highlightsUids, threadFollowers] = await Promise.all([
 		getUserIdsFromHighlights(rid, message),
 		Messages.getThreadFollowsByThreadId(tmid),
 	]);
-	
-	
+
 	const [followersInRoom, mentionIdsInRoom, highlightsUidsInRoom] = await Promise.all([
 		filterUsersInRoom({ roomId: rid, userIds: followers, room }),
 		filterUsersInRoom({ roomId: rid, userIds: mentionIds, room }),
-		filterUsersInRoom({ roomId: rid, userIds: highlightsUids, room }),  // ← Add here
-	]);	
+		filterUsersInRoom({ roomId: rid, userIds: highlightsUids, room }),
+	]);
 
 	const addToReplies = [
 		...new Set([
@@ -75,8 +71,6 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 	];
 
 	await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
-
-	
 
 	const threadFollowersUids = threadFollowers?.filter((userId) => userId !== u._id && !mentionIdsInRoom.includes(userId)) || [];
 
