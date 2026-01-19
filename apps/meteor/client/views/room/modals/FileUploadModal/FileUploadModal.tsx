@@ -19,7 +19,7 @@ import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
 import type { ReactElement, ComponentProps } from 'react';
-import { memo, useEffect, useId } from 'react';
+import { memo, useEffect, useId, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
 import FilePreview from './FilePreview';
@@ -53,6 +53,7 @@ const FileUploadModal = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 	const maxMsgSize = useSetting('Message_MaxAllowedSize', 5000);
 	const maxFileSize = useSetting('FileUpload_MaxFileSize', 104857600);
+	const hasShownErrorRef = useRef(false);
 
 	const isDescriptionValid = (description: string) =>
 		description.length >= maxMsgSize ? t('Cannot_upload_file_character_limit', { count: maxMsgSize }) : true;
@@ -71,7 +72,12 @@ const FileUploadModal = ({
 	};
 
 	useEffect(() => {
+		if (hasShownErrorRef.current) {
+			return;
+		}
+
 		if (invalidContentType) {
+			hasShownErrorRef.current = true;
 			dispatchToastMessage({
 				type: 'error',
 				message: t('FileUpload_MediaType_NotAccepted__type__', { type: file.type }),
@@ -81,6 +87,7 @@ const FileUploadModal = ({
 		}
 
 		if (file.size === 0) {
+			hasShownErrorRef.current = true;
 			dispatchToastMessage({
 				type: 'error',
 				message: t('FileUpload_File_Empty'),
