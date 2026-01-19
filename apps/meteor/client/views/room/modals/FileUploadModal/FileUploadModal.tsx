@@ -19,7 +19,7 @@ import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
 import type { ReactElement, ComponentProps } from 'react';
-import { memo, useEffect, useId } from 'react';
+import { useRef, memo, useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 
 import FilePreview from './FilePreview';
@@ -69,8 +69,12 @@ const FileUploadModal = ({
 
 		onSubmit(name, description);
 	};
-
+	const hasRendered = useRef(false);
 	useEffect(() => {
+		if (hasRendered.current) {
+            return;
+        }
+        hasRendered.current = true;
 		if (invalidContentType) {
 			dispatchToastMessage({
 				type: 'error',
