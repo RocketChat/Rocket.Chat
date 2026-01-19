@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import type { ILoginAttempt } from '../../app/authentication/server/ILoginAttempt';
 import { deviceManagementEvents } from '../services/device-management/events';
 import { sauEvents } from '../services/sauMonitor/events';
+import { getClientAddress } from '../lib/getClientAddress';
 
 Accounts.onLogin((info: ILoginAttempt) => {
 	const {
@@ -19,18 +20,43 @@ Accounts.onLogin((info: ILoginAttempt) => {
 	}
 
 	const { resume } = methodArguments.find((arg) => 'resume' in arg) ?? {};
+  const loginToken = resume ? Accounts._hashLoginToken(resume) : '';
+  // const instanceId = InstanceStatus.id();
+  const userId = info.user._id;
+  // const connectionId = info.connection.id;
+  const clientAddress = getClientAddress(info.connection);
+  const userAgent = getHeader(httpHeaders, 'user-agent');
+  // const host = getHeader(httpHeaders, 'host');
 
-	const eventObject = {
+  const eventObject = {
 		userId: info.user._id,
 		connection: {
 			...info.connection,
 			...(resume && { loginToken: Accounts._hashLoginToken(resume) }),
 			instanceId: InstanceStatus.id(),
-			httpHeaders: httpHeaders as IncomingHttpHeaders,
+			httpHeaders,
 		},
 	};
+
+	// const loginEventObject = {
+	//    userId,
+	// 	instanceId,
+	//    userAgent,
+	// 	loginToken,
+	//    connectionId,
+	//    clientAddress,
+	//    host,
+	// };
+  //
 	sauEvents.emit('accounts.login', eventObject);
-	deviceManagementEvents.emit('device-login', eventObject);
+
+  const deviceLoginEventObject = {
+    userId,
+    userAgent,
+		loginToken,
+    clientAddress,
+  }
+	deviceManagementEvents.emit('device-login', deviceLoginEventObject);
 });
 
 Accounts.onLogout((info) => {
@@ -58,6 +84,18 @@ Meteor.onConnection((connection) => {
 
 Meteor.onConnection((connection) => {
 	const { httpHeaders } = connection;
-
 	sauEvents.emit('socket.connected', { instanceId: InstanceStatus.id(), ...connection, httpHeaders: httpHeaders as IncomingHttpHeaders });
 });
+
+// TODO: extract this function to another file
+const getHeader = (headers: unknown, key: string) : string => {
+  if (!headers) {
+    return '';
+  }
+
+  if (typeof (headers as any).get === 'function') {
+    return (headers as Headers).get(key) ?? '';
+  }
+
+  return (headers as Record<string, string | undefined>)[key] || '';
+}
