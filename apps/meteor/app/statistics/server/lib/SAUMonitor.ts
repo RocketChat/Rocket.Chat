@@ -58,7 +58,7 @@ export class SAUMonitorClass {
 		await this._startMonitoring();
 
 		this._started = true;
-		logger.debug('[start]');
+		logger.debug({ msg: '[start]' });
 	}
 
 	async stop(): Promise<void> {
@@ -75,7 +75,7 @@ export class SAUMonitorClass {
 			await this.scheduler.remove(this._dailyFinishSessionsJobName);
 		}
 
-		logger.debug('[stop]');
+		logger.debug({ msg: '[stop]' });
 	}
 
 	isRunning(): boolean {
@@ -131,13 +131,13 @@ export class SAUMonitorClass {
 			}
 
 			if (!userId) {
-				logger.warn(`Received 'accounts.logout' event without 'userId'`);
+				logger.warn({ msg: "Received 'accounts.logout' event without 'userId'" });
 				return;
 			}
 
 			const { id: sessionId } = connection;
 			if (!sessionId) {
-				logger.warn(`Received 'accounts.logout' event without 'sessionId'`);
+				logger.warn({ msg: "Received 'accounts.logout' event without 'sessionId'" });
 				return;
 			}
 
@@ -148,7 +148,7 @@ export class SAUMonitorClass {
 				if (!isProdEnv) {
 					throw new Error('Session not found during logout');
 				}
-				logger.error('Session not found during logout', { userId, sessionId });
+				logger.error({ msg: 'Session not found during logout', userId, sessionId });
 				return;
 			}
 
@@ -323,7 +323,7 @@ export class SAUMonitorClass {
 	}
 
 	private async _startCronjobs(): Promise<void> {
-		logger.info('[aggregate] - Start Cron.');
+		logger.info({ msg: '[aggregate] - Start Cron.' });
 		const dailyComputeProcessTime = '0 2 * * *';
 		const dailyFinishSessionProcessTime = '5 1 * * *';
 		await this.scheduler.add(this._dailyComputeJobName, dailyComputeProcessTime, async () => this._aggregate());

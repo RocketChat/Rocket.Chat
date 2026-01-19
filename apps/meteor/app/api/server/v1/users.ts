@@ -81,7 +81,7 @@ import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields
 
 API.v1.addRoute(
 	'users.getAvatar',
-	{ authRequired: false },
+	{ authRequired: true },
 	{
 		async get() {
 			const user = await getUserFromParams(this.queryParams);
