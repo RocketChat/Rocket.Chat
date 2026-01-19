@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import { Readable } from 'stream';
 
 import {
 	ServiceClass,
@@ -212,8 +212,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 
 				try {
-					const fileBuffer = await uploadService.getFileBuffer({ file: uploadedFile });
-					files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
+					const stream = await uploadService.streamUploadedFile({ file: uploadedFile, imageResizeOpts: { width: 400, height: 240 } });
+
+					files.push({ name: file.name, buffer: await streamToBuffer(stream), extension: uploadedFile.extension });
 				} catch (e: unknown) {
 					this.log.error(`Failed to get file ${file._id}`, e);
 					// Push empty buffer so parser processes this as "unsupported file"
@@ -322,13 +323,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		const transcriptText = i18n.t('Transcript');
 
 		const stream = await this.worker.renderToStream({ data, i18n });
-		const outBuff = await streamToBuffer(stream as Readable);
 
 		try {
 			const { rid } = await roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
 			const [rocketCatFile, transcriptFile] = await this.uploadFiles({
-				details,
-				buffer: outBuff,
+				streamParam: Readable.from(stream),
 				roomIds: [rid, details.rid],
 				data,
 				transcriptText,
@@ -356,23 +355,20 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async uploadFiles({
-		details,
-		buffer,
+		streamParam,
 		roomIds,
 		data,
 		transcriptText,
 	}: {
-		details: WorkDetailsWithSource;
-		buffer: Buffer;
+		streamParam: Readable;
 		roomIds: string[];
 		data: Pick<WorkerData, 'siteName' | 'visitor'>;
 		transcriptText: string;
 	}): Promise<IUpload[]> {
 		return Promise.all(
 			roomIds.map((roomId) => {
-				return uploadService.uploadFile({
-					userId: details.userId,
-					buffer,
+				return uploadService.uploadFileFromStream({
+					streamParam,
 					details: {
 						// transcript_{company-name}_{date}_{hour}.pdf
 						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date()).replace(/\//g, '-')}_${
@@ -382,7 +378,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 						rid: roomId,
 						// Rocket.cat is the goat
 						userId: 'rocket.cat',
-						size: buffer.length,
 					},
 				});
 			}),
