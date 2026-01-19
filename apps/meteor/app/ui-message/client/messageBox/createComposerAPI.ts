@@ -1,6 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
+import type { RefObject } from 'react';
 
 import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
@@ -12,7 +13,7 @@ export const createComposerAPI = (
 	input: HTMLTextAreaElement,
 	storageID: string,
 	quoteChainLimit: number,
-	composerRef: React.RefObject<HTMLElement>,
+	composerRef: RefObject<HTMLElement>,
 ): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
