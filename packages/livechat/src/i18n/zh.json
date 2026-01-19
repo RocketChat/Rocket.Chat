@@ -99,8 +99,8 @@
     "would_you_like_a_copy_of_this_chat_emailed": "是否要将此聊天记录发送到邮箱？",
     "write_your_message": "请输入您的信息...",
     "yes": "是",
-    "you_browser_doesn_t_support_audio_element": "您的浏览器不支援音频",
-    "you_browser_doesn_t_support_video_element": "您的浏览器不支援视频",
+    "you_browser_doesn_t_support_audio_element": "您的浏览器不支持音频",
+    "you_browser_doesn_t_support_video_element": "您的浏览器不支持视频",
     "your_spot_is_spot": "您的等待位置是 #{{spot}}",
     "your_spot_is_spot_estimated_wait_time_estimatedwai": "您的等待位置是 #{{spot}} (预估等待时间: {{estimatedWaitTime}})"
   }
