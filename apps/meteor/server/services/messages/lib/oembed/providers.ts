@@ -1,10 +1,9 @@
 import type { OEmbedMeta, OEmbedUrlContent, OEmbedProvider } from '@rocket.chat/core-typings';
 import { camelCase } from 'change-case';
 
-import { callbacks } from '../../../server/lib/callbacks';
-import { SystemLogger } from '../../../server/lib/logger/system';
-import { settings } from '../../settings/server';
-import { Info } from '../../utils/rocketchat.info';
+import { settings } from '../../../../../app/settings/server';
+import { Info } from '../../../../../app/utils/rocketchat.info';
+import { SystemLogger } from '../../../../lib/logger/system';
 
 class Providers {
 	private providers: OEmbedProvider[];
@@ -101,32 +100,32 @@ providers.registerProvider({
 	endPoint: 'https://www.loom.com/v1/oembed?format=json',
 });
 
-callbacks.add(
-	'oembed:beforeGetUrlContent',
-	(data) => {
-		if (!data.urlObj) {
-			return data;
-		}
+export const beforeGetUrlContent = (data: {
+	urlObj: URL;
+}): {
+	urlObj: URL;
+	headerOverrides?: { [k: string]: string };
+} => {
+	if (!data.urlObj) {
+		return data;
+	}
 
-		const url = data.urlObj.toString();
-		const provider = providers.getProviderForUrl(url);
+	const url = data.urlObj.toString();
+	const provider = providers.getProviderForUrl(url);
 
-		if (!provider) {
-			return data;
-		}
+	if (!provider) {
+		return data;
+	}
 
-		const consumerUrl = Providers.getConsumerUrl(provider, url);
+	const consumerUrl = Providers.getConsumerUrl(provider, url);
 
-		const headerOverrides = Providers.getCustomHeaders(provider);
-		if (!consumerUrl) {
-			return { ...data, headerOverrides };
-		}
+	const headerOverrides = Providers.getCustomHeaders(provider);
+	if (!consumerUrl) {
+		return { ...data, headerOverrides };
+	}
 
-		return { ...data, headerOverrides, urlObj: new URL(consumerUrl) };
-	},
-	callbacks.priority.MEDIUM,
-	'oembed-providers-before',
-);
+	return { ...data, headerOverrides, urlObj: new URL(consumerUrl) };
+};
 
 const cleanupOembed = (data: {
 	url: string;
@@ -135,7 +134,7 @@ const cleanupOembed = (data: {
 	content: OEmbedUrlContent;
 }): {
 	url: string;
-	meta: Omit<OEmbedMeta, 'oembedHtml'>;
+	meta: OEmbedMeta;
 	headers: { [k: string]: string };
 	content: OEmbedUrlContent;
 } => {
@@ -148,37 +147,42 @@ const cleanupOembed = (data: {
 
 	return {
 		...data,
-		meta,
+		meta: meta as OEmbedMeta,
 	};
 };
 
-callbacks.add(
-	'oembed:afterParseContent',
-	(data) => {
-		if (!data?.url || !data.content?.body) {
-			return cleanupOembed(data);
-		}
+export const afterParseUrlContent = (data: {
+	url: string;
+	meta: OEmbedMeta;
+	headers: { [k: string]: string };
+	content: OEmbedUrlContent;
+}): {
+	url: string;
+	meta: OEmbedMeta;
+	headers: { [k: string]: string };
+	content: OEmbedUrlContent;
+} => {
+	if (!data?.url || !data.content?.body) {
+		return cleanupOembed(data);
+	}
 
-		const provider = providers.getProviderForUrl(data.url);
+	const provider = providers.getProviderForUrl(data.url);
 
-		if (!provider) {
-			return cleanupOembed(data);
-		}
+	if (!provider) {
+		return cleanupOembed(data);
+	}
 
-		data.meta.oembedUrl = data.url;
+	data.meta.oembedUrl = data.url;
 
-		try {
-			const metas = JSON.parse(data.content.body);
-			Object.entries(metas).forEach(([key, value]) => {
-				if (value && typeof value === 'string') {
-					data.meta[camelCase(`oembed_${key}`)] = value;
-				}
-			});
-		} catch (error) {
-			SystemLogger.error(error);
-		}
-		return data;
-	},
-	callbacks.priority.MEDIUM,
-	'oembed-providers-after',
-);
+	try {
+		const metas = JSON.parse(data.content.body);
+		Object.entries(metas).forEach(([key, value]) => {
+			if (value && typeof value === 'string') {
+				data.meta[camelCase(`oembed_${key}`)] = value;
+			}
+		});
+	} catch (error) {
+		SystemLogger.error(error);
+	}
+	return data;
+};
