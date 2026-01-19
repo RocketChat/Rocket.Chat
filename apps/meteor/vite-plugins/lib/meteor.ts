@@ -162,9 +162,8 @@ export function collectConfigExports(program: Program, names: Set<string>): void
 		ReturnStatement(node) {
 			if (foundExport) return;
 
-			const arg = node.argument;
-			if (arg && is(arg, 'ObjectExpression')) {
-				collectExportsFromObjectExpression(arg, names);
+			if (is(node.argument, 'ObjectExpression')) {
+				collectExportsFromObjectExpression(node.argument, names);
 				foundExport = true;
 			}
 		},
@@ -174,7 +173,7 @@ export function collectConfigExports(program: Program, names: Set<string>): void
 			if (is(node.left, 'Identifier') && node.left.name === '__meteor_runtime_config__') {
 				if (is(node.right, 'ObjectExpression')) {
 					for (const prop of node.right.properties) {
-						if (prop.type === 'Property' && is(prop.key, 'Identifier')) {
+						if (is(prop, 'Property') && is(prop.key, 'Identifier')) {
 							names.add(prop.key.name);
 						}
 					}
@@ -191,7 +190,7 @@ export function collectModuleExports(ast: Program, names: Set<string>, pkgName: 
 		CallExpression(node) {
 			if (isModuleExportCall(node)) {
 				const [arg] = node.arguments;
-				if (arg && arg.type === 'ObjectExpression') {
+				if (is(arg, 'ObjectExpression')) {
 					collectExportsFromObjectExpression(arg, names);
 				}
 			}
