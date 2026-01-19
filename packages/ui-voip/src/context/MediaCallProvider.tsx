@@ -10,7 +10,6 @@ import {
 	useSelectedDevices,
 	useToastMessageDispatch,
 	useSetting,
-	// useRouteParameter,
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useState } from 'react';
