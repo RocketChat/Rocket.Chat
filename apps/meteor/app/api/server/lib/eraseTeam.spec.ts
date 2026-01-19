@@ -40,12 +40,10 @@ describe('eraseTeam (TypeScript) module', () => {
 					IPostRoomDeleted: 'IPostRoomDeleted',
 				},
 				Apps: {
-					self: { isLoaded: () => false },
-					getBridges: () => ({
-						getListenerBridge: () => ({
-							roomEvent: sandbox.stub().resolves(false),
-						}),
-					}),
+					self: {
+						isLoaded: () => false,
+						triggerEvent: sandbox.stub().resolves(false),
+					},
 				},
 			},
 			'@rocket.chat/models': {
@@ -194,8 +192,10 @@ describe('eraseTeam (TypeScript) module', () => {
 			const AppsStub = {
 				AppEvents: stubs['@rocket.chat/apps'].AppEvents,
 				Apps: {
-					self: { isLoaded: () => true },
-					getBridges: () => ({ getListenerBridge: () => ({ roomEvent: listenerStub }) }),
+					self: {
+						isLoaded: () => true,
+						triggerEvent: listenerStub,
+					},
 				},
 			};
 
@@ -244,8 +244,10 @@ describe('eraseTeam (TypeScript) module', () => {
 			const AppsStub = {
 				AppEvents: stubs['@rocket.chat/apps'].AppEvents,
 				Apps: {
-					self: { isLoaded: () => true },
-					getBridges: () => ({ getListenerBridge: () => ({ roomEvent: roomEventStub }) }),
+					self: {
+						isLoaded: () => true,
+						triggerEvent: roomEventStub,
+					},
 				},
 			};
 

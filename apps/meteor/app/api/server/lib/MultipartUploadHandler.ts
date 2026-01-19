@@ -1,0 +1,205 @@
+import fs from 'fs';
+import { IncomingMessage } from 'http';
+import type { Stream, Transform } from 'stream';
+import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
+
+import { MeteorError } from '@rocket.chat/core-services';
+import { Random } from '@rocket.chat/random';
+import busboy, { type BusboyConfig } from 'busboy';
+import ExifTransformer from 'exif-be-gone';
+
+import { UploadFS } from '../../../../server/ufs';
+import { getMimeType } from '../../../utils/lib/mimeTypes';
+
+export type ParsedUpload = {
+	tempFilePath: string;
+	filename: string;
+	mimetype: string;
+	size: number;
+	fieldname: string;
+};
+
+export type ParseOptions = {
+	field: string;
+	maxSize?: number;
+	allowedMimeTypes?: string[];
+	transforms?: Transform[]; // Optional transform pipeline (e.g., EXIF stripping)
+	fileOptional?: boolean;
+};
+
+export class MultipartUploadHandler {
+	static transforms = {
+		stripExif(): Transform {
+			return new ExifTransformer();
+		},
+	};
+
+	static async cleanup(tempFilePath: string): Promise<void> {
+		try {
+			await fs.promises.unlink(tempFilePath);
+		} catch (error: any) {
+			console.warn(`[UploadService] Failed to cleanup temp file: ${tempFilePath}`, error);
+		}
+	}
+
+	static async stripExifFromFile(tempFilePath: string): Promise<number> {
+		const strippedPath = `${tempFilePath}.stripped`;
+
+		try {
+			const writeStream = fs.createWriteStream(strippedPath);
+
+			await pipeline(fs.createReadStream(tempFilePath), new ExifTransformer(), writeStream);
+
+			await fs.promises.rename(strippedPath, tempFilePath);
+
+			return writeStream.bytesWritten;
+		} catch (error) {
+			void this.cleanup(strippedPath);
+
+			throw error;
+		}
+	}
+
+	static async parseRequest(
+		request: IncomingMessage | Request,
+		options: ParseOptions,
+	): Promise<{ file: ParsedUpload | null; fields: Record<string, string> }> {
+		const limits: BusboyConfig['limits'] = { files: 1 };
+
+		if (options.maxSize && options.maxSize > 0) {
+			// We add an extra byte to the configured limit so we don't fail the upload
+			// of a file that is EXACTLY maxSize
+			limits.fileSize = options.maxSize + 1;
+		}
+
+		const headers =
+			request instanceof IncomingMessage ? (request.headers as Record<string, string>) : Object.fromEntries(request.headers.entries());
+
+		const bb = busboy({
+			headers,
+			defParamCharset: 'utf8',
+			limits,
+		});
+
+		const fields: Record<string, string> = {};
+		let parsedFile: ParsedUpload | null = null;
+		let busboyFinished = false;
+		let filePendingCount = 0;
+
+		const { promise, resolve, reject } = Promise.withResolvers<{
+			file: ParsedUpload | null;
+			fields: Record<string, string>;
+		}>();
+
+		const tryResolve = () => {
+			if (busboyFinished && filePendingCount < 1) {
+				if (!parsedFile && !options.fileOptional) {
+					return reject(new MeteorError('error-no-file', 'No file uploaded'));
+				}
+				resolve({ file: parsedFile, fields });
+			}
+		};
+
+		bb.on('field', (fieldname: string, value: string) => {
+			fields[fieldname] = value;
+		});
+
+		bb.on('file', (fieldname, file, info) => {
+			const { filename, mimeType } = info;
+
+			++filePendingCount;
+
+			if (options.field && fieldname !== options.field) {
+				file.resume();
+				return reject(new MeteorError('invalid-field'));
+			}
+
+			if (options.allowedMimeTypes && !options.allowedMimeTypes.includes(mimeType)) {
+				file.resume();
+				return reject(new MeteorError('error-invalid-file-type', `File type ${mimeType} not allowed`));
+			}
+
+			const fileId = Random.id();
+			const tempFilePath = UploadFS.getTempFilePath(fileId);
+
+			const writeStream = fs.createWriteStream(tempFilePath);
+
+			let currentStream: Stream = file;
+			if (options.transforms?.length) {
+				const fileDestroyer = file.destroy.bind(file);
+				for (const transform of options.transforms) {
+					transform.on('error', fileDestroyer);
+					currentStream = currentStream.pipe(transform);
+				}
+			}
+
+			currentStream.pipe(writeStream);
+
+			writeStream.on('finish', () => {
+				if (file.truncated) {
+					void this.cleanup(tempFilePath);
+					return reject(new MeteorError('error-file-too-large', 'File size exceeds the allowed limit'));
+				}
+
+				parsedFile = {
+					tempFilePath,
+					filename,
+					mimetype: getMimeType(mimeType, filename),
+					size: writeStream.bytesWritten,
+					fieldname,
+				};
+
+				--filePendingCount;
+
+				tryResolve();
+			});
+
+			writeStream.on('error', (err) => {
+				file.destroy();
+				void this.cleanup(tempFilePath);
+				reject(new MeteorError('error-file-upload', err.message));
+			});
+
+			file.on('error', (err) => {
+				writeStream.destroy();
+				void this.cleanup(tempFilePath);
+				reject(new MeteorError('error-file-upload', err.message));
+			});
+		});
+
+		bb.on('finish', () => {
+			busboyFinished = true;
+			tryResolve();
+		});
+
+		bb.on('error', (err: any) => {
+			reject(new MeteorError('error-upload-failed', err.message));
+		});
+
+		bb.on('filesLimit', () => {
+			reject(new MeteorError('error-too-many-files', 'Too many files in upload'));
+		});
+
+		bb.on('partsLimit', () => {
+			reject(new MeteorError('error-too-many-parts', 'Too many parts in upload'));
+		});
+
+		bb.on('fieldsLimit', () => {
+			reject(new MeteorError('error-too-many-fields', 'Too many fields in upload'));
+		});
+
+		if (request instanceof IncomingMessage) {
+			request.pipe(bb);
+		} else {
+			if (!request.body) {
+				return Promise.reject(new MeteorError('error-no-body', 'Request has no body'));
+			}
+
+			const nodeStream = Readable.fromWeb(request.body as any);
+			nodeStream.pipe(bb);
+		}
+
+		return promise;
+	}
+}

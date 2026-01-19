@@ -5,6 +5,7 @@ import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
+import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
 import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -1283,6 +1284,9 @@ describe('[Chat]', () => {
 						expect(res.body.message.urls[1]).to.not.have.property('ignoreParse');
 						msgId = res.body.message._id;
 					});
+
+				// process is async now so wait for a sec
+				await sleep(1000);
 
 				await request
 					.get(api('chat.getMessage'))
