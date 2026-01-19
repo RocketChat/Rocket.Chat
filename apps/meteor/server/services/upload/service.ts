@@ -1,9 +1,12 @@
+import type Stream from 'stream';
+
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
 import type { IUpload, IUser, FilesAndAttachments, IMessage } from '@rocket.chat/core-typings';
 import { isFileAttachment } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Uploads } from '@rocket.chat/models';
+import sharp from 'sharp';
 
 import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 import { canDeleteMessageAsync } from '../../../app/authorization/server/functions/canDeleteMessage';
@@ -132,5 +135,35 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		};
 
 		await updateMessage(editedMessage, user, msg);
+	}
+
+	async streamUploadedFile({
+		file,
+		imageResizeOpts,
+	}: {
+		file: IUpload;
+		imageResizeOpts?: { width: number; height: number };
+	}): Promise<Stream.Readable> {
+		const stream = await FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
+		if (!stream) {
+			throw new Error('File not found');
+		}
+
+		if (file?.type?.includes('image') && imageResizeOpts) {
+			const { width, height } = imageResizeOpts;
+			return stream.pipe(
+				sharp()
+					.resize({ width, height, fit: 'contain' })
+					.on('error', (error) => {
+						throw new Error(`Error resizing image: ${error.message}`);
+					}),
+			);
+		}
+
+		return stream;
+	}
+
+	async uploadFileFromStream({ streamParam, details }: { streamParam: Stream.Readable; details: any }): Promise<IUpload> {
+		return FileUpload.getStore('Uploads').insert(details, streamParam);
 	}
 }
