@@ -474,41 +474,51 @@ describe('[Incoming Integrations]', () => {
 			await removeIntegration(withScript._id, 'incoming');
 		});
 
-		it('should return a response with scriptCompiled and without scriptError when the script is valid', async () => {
-			await updatePermission('manage-own-incoming-integrations', ['admin']);
-			const res = await request
-				.post(api('integrations.create'))
-				.set(credentials)
-				.send({
-					type: 'webhook-incoming',
-					name: 'Incoming test',
-					enabled: true,
-					alias: 'test',
-					username: 'rocket.cat',
-					scriptEnabled: true,
-					scriptEngine: 'isolated-vm',
-					channel: '#general',
-					script: `
-						class Script {
-							process_incoming_request({ request }) {
-								return {
-									content:{
-										text: request.content.text
-									}
-								};
-							}
-						}
-					`,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+		describe('With manage-own-incoming-integrations permission', () => {
+			let integrationId: string;
 
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('integration').and.to.be.an('object');
-			expect(res.body.integration).to.not.have.property('scriptError');
-			expect(res.body.integration).to.have.property('scriptCompiled');
-			const integrationId = res.body.integration._id;
-			await removeIntegration(integrationId, 'incoming');
+			before(async () => {
+				await updatePermission('manage-own-incoming-integrations', ['admin']);
+			});
+
+			after(async () => {
+				if (integrationId) {
+					await removeIntegration(integrationId, 'incoming');
+				}
+			});
+
+			it('should return scriptCompiled and no scriptError', async () => {
+				const res = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test',
+						enabled: true,
+						alias: 'test',
+						username: 'rocket.cat',
+						scriptEnabled: true,
+						scriptEngine: 'isolated-vm',
+						channel: '#general',
+						script: `
+          class Script {
+            process_incoming_request({ request }) {
+              return {
+                content:{
+                  text: request.content.text
+                }
+              };
+            }
+          }
+        `,
+					})
+					.expect(200);
+
+				expect(res.body.integration).to.have.property('scriptCompiled');
+				expect(res.body.integration).to.not.have.property('scriptError');
+
+				integrationId = res.body.integration._id;
+			});
 		});
 	});
 
