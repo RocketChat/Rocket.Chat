@@ -166,10 +166,10 @@ runs:
         yarn build:ci
 
         declare -a meter_modules_to_remove=(
-           "meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc/core-darwin-arm64" # Removes 35M
-           "meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc/core-linux-x64-musl" # Removes 58M
-           "meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc/core-linux-arm64-musl" # Removes 44M
-           "meteor/babel-compiler/node_modules/typescript" # Removes 31M
+            "meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc/core-darwin-arm64" # Removes 35M
+            "meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc/core-linux-x64-musl" # Removes 58M
+            "meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc/core-linux-arm64-musl" # Removes 44M
+            "meteor/babel-compiler/node_modules/typescript" # Removes 31M
         #     "meteor/babel-compiler/node_modules/@babel" # Removes 14M
 
             "@rocket.chat/i18n/src" # Removes 16M
