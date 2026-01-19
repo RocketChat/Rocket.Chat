@@ -4,7 +4,7 @@ import { FlexTab } from './flextab';
 
 export class OmnichannelEditContactFlaxTab extends FlexTab {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Edit contact' }));
+		super(page.getByRole('dialog', { name: 'contact' }));
 	}
 
 	get inputEmail(): Locator {
