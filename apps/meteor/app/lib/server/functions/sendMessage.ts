@@ -12,7 +12,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { parseMultipleFilesIntoMessageAttachments } from '../../../file-upload/server/methods/sendFileMessage';
 import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
-import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
@@ -333,14 +333,11 @@ export const sendMessage = async (
 		void Apps.self?.triggerEvent(messageEvent, message);
 	}
 
-	// TODO: is there an opportunity to send returned data to notifyOnMessageChange?
 	await afterSaveMessage(message, room, user);
 
 	if (uploadIdsToConfirm?.length) {
 		await Uploads.confirmTemporaryFiles(uploadIdsToConfirm, user._id);
 	}
-
-	void notifyOnMessageChange({ id: message._id });
 
 	void notifyOnRoomChangedById(message.rid);
 

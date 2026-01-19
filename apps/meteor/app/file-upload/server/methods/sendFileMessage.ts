@@ -68,13 +68,14 @@ export const parseFileIntoMessageAttachments = async (
 
 	const attachments: MessageAttachment[] = [];
 
-	const files = [
+	const files: FileProp[] = [
 		{
 			_id: file._id,
 			name: file.name || '',
 			type: file.type || 'file',
 			size: file.size || 0,
 			format: file.identify?.format || '',
+			typeGroup: file.typeGroup,
 		},
 	];
 
@@ -122,6 +123,7 @@ export const parseFileIntoMessageAttachments = async (
 					type: thumbnail.type || 'file',
 					size: thumbnail.size || 0,
 					format: thumbnail.identify?.format || '',
+					typeGroup: thumbnail.typeGroup || '',
 				});
 			}
 		} catch (e) {

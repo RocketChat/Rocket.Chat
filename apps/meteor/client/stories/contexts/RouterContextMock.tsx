@@ -28,7 +28,7 @@ const RouterContextMock = ({ children }: RouterContextMockProps): ReactElement =
 		[parent],
 	);
 
-	return <RouterContext.Provider children={children} value={value} />;
+	return <RouterContext.Provider value={value}>{children}</RouterContext.Provider>;
 };
 
 export default RouterContextMock;

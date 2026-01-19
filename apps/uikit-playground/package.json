@@ -36,7 +36,7 @@
     "react": "~18.3.1",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "~18.3.1",
-    "react-router-dom": "^6.28.0",
+    "react-router-dom": "^6.30.3",
     "react-split-pane": "^0.1.92",
     "react-virtuoso": "^4.12.0",
     "reactflow": "^11.11.4"
@@ -52,6 +52,7 @@
     "@typescript-eslint/parser": "~5.60.1",
     "@vitejs/plugin-react": "~4.5.2",
     "eslint": "~8.45.0",
+    "eslint-plugin-react": "~7.37.5",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.24",
     "typescript": "~5.9.3",
