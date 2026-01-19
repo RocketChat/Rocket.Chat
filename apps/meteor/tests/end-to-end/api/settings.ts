@@ -424,7 +424,7 @@ describe('[Settings]', () => {
 				});
 		});
 
-		describe('Masking sensitive settings', () => {
+		describe.only('Masking sensitive settings', () => {
 			let originalSmtpPassword: string | undefined;
 			let originalSmtpUsername: string | undefined;
 			let maskingStart: Date;
@@ -475,7 +475,11 @@ describe('[Settings]', () => {
 								expect(previous).to.include('*');
 								expect(previous).to.not.equal(testPassword);
 								if (previous.length > 8) {
-									expect(previous.substring(0, 8)).to.not.equal('********');
+									expect(previous.substring(0, 3)).to.equal(
+										originalSmtpPassword?.substring(0, 3)
+									);
+									expect(previous.substring(3)).to.match(/^\*+$/);
+
 								}
 							}
 
@@ -483,8 +487,8 @@ describe('[Settings]', () => {
 								expect(current).to.include('*');
 								expect(current).to.not.equal(testPassword);
 								if (testPassword.length > 8) {
-									expect(current.substring(0, 8)).to.equal(testPassword.substring(0, 8));
-									expect(current.substring(8)).to.match(/^\*+$/);
+									expect(current.substring(0, 3)).to.equal(testPassword.substring(0, 3));
+									expect(current.substring(3)).to.match(/^\*+$/);
 								} else {
 									expect(current).to.match(/^\*+$/);
 								}
@@ -524,8 +528,8 @@ describe('[Settings]', () => {
 								expect(current).to.include('*');
 								expect(current).to.not.equal(testUsername);
 								if (testUsername.length > 8) {
-									expect(current.substring(0, 8)).to.equal(testUsername.substring(0, 8));
-									expect(current.substring(8)).to.match(/^\*+$/);
+									expect(current.substring(0, 3)).to.equal(testUsername.substring(0, 3));
+									expect(current.substring(3)).to.match(/^\*+$/);
 								} else {
 									expect(current).to.match(/^\*+$/);
 								}

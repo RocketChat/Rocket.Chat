@@ -53,8 +53,8 @@ describe('auditedSettingUpdates', () => {
 				'settings.changed',
 				{
 					id: settingId,
-					previous: 'secretpa*********',
-					current: 'newpassw******',
+					previous: 'sec**************',
+					current: 'new***********',
 				},
 				{
 					type: 'user',
@@ -122,8 +122,8 @@ describe('auditedSettingUpdates', () => {
 				'settings.changed',
 				{
 					id: settingId,
-					previous: 'myuserna**',
-					current: 'newusern***',
+					previous: 'myu*******',
+					current: 'new********',
 				},
 				{
 					type: 'user',
@@ -152,8 +152,8 @@ describe('auditedSettingUpdates', () => {
 				'settings.changed',
 				{
 					id: settingId,
-					previous: 'oldpassw***',
-					current: 'newpassw******',
+					previous: 'old********',
+					current: 'new***********',
 				},
 				{
 					type: 'system',
@@ -224,8 +224,8 @@ describe('auditedSettingUpdates', () => {
 				'settings.changed',
 				{
 					id: settingId,
-					previous: 'currentp**********',
-					current: 'packagep**********',
+					previous: 'cur***************',
+					current: 'pac***************',
 				},
 				{
 					type: 'user',
