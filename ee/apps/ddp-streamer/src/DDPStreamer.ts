@@ -15,6 +15,7 @@ import { proxy } from './proxy';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
 import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
+import { getClientAddress } from '../../../../apps/meteor/server/lib/getClientAddress';
 
 const { PORT = 4000 } = process.env;
 
@@ -168,7 +169,7 @@ export class DDPStreamer extends ServiceClass {
 		}
 		server.on(DDP_EVENTS.LOGGED, async (info: Client) => {
 			const { userId, connection } = info;
-
+      console.log(info)
 			if (!userId) {
 				throw new Error('User not logged in');
 			}
@@ -182,7 +183,14 @@ export class DDPStreamer extends ServiceClass {
 
 			server.emit('presence', { userId, connection });
 
-			this.api?.broadcast('accounts.login', { userId, connection });
+			this.api?.broadcast('accounts.login', {
+        userId,
+        connectionId: connection.id,
+        userAgent: connection.httpHeaders?.['user-agent'] || '',
+        clientAddress: getClientAddress(connection),
+        instanceId: nodeID,
+        host: connection.httpHeaders?.['host'] || ''
+      });
 		});
 
 		server.on(DDP_EVENTS.LOGGEDOUT, (info) => {

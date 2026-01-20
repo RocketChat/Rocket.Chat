@@ -1,4 +1,4 @@
-import type { ISession, ISessionDevice, ISocketConnectionLogged, IUser } from '@rocket.chat/core-typings';
+import type { ISession, ISessionDevice, IUser, LoginSessionPayload } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import { Sessions, Users, aggregates } from '@rocket.chat/models';
@@ -8,7 +8,6 @@ import UAParser from 'ua-parser-js';
 
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
-import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { sauEvents } from '../../../../server/services/sauMonitor/events';
 
 type DateObj = { day: number; month: number; year: number };
@@ -111,7 +110,7 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		sauEvents.on('accounts.login', async ({ userId, connection }) => {
+		sauEvents.on('accounts.login', async ({ userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host }: LoginSessionPayload) => {
 			if (!this.isRunning()) {
 				return;
 			}
@@ -121,8 +120,8 @@ export class SAUMonitorClass {
 			const mostImportantRole = getMostImportantRole(roles);
 
 			const loginAt = new Date();
-			const params = { userId, roles, mostImportantRole, loginAt, ...getDateObj() };
-			await this._handleSession(connection, params);
+			const params = { roles, mostImportantRole, loginAt, ...getDateObj() };
+			await this._handleSession({ userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host }, params);
 		});
 
 		sauEvents.on('accounts.logout', async ({ userId, connection }) => {
@@ -157,10 +156,20 @@ export class SAUMonitorClass {
 	}
 
 	private async _handleSession(
-		connection: ISocketConnectionLogged,
-		params: Pick<ISession, 'userId' | 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
+    { userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host } : LoginSessionPayload,
+		params: Pick<ISession, 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
 	): Promise<void> {
-		const data = this._getConnectionInfo(connection, params);
+    const data: Omit<ISession, '_id' | '_updatedAt' | 'createdAt' | 'searchTerm'> = {
+      userId,
+      loginToken,
+      ip: clientAddress,
+      host,
+      sessionId: connectionId,
+      instanceId,
+      type: 'session',
+			...this._getUserAgentInfo(userAgent),
+			...params,
+    }
 
 		if (!data) {
 			return;
@@ -221,37 +230,7 @@ export class SAUMonitorClass {
 			.join('');
 	}
 
-	private _getConnectionInfo(
-		connection: ISocketConnectionLogged,
-		params: Pick<ISession, 'userId' | 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
-	): Omit<ISession, '_id' | '_updatedAt' | 'createdAt' | 'searchTerm'> | undefined {
-		if (!connection) {
-			return;
-		}
-
-		const ip = getClientAddress(connection);
-
-		const host = connection.httpHeaders?.host ?? '';
-
-		return {
-			type: 'session',
-			sessionId: connection.id,
-			instanceId: connection.instanceId,
-			...(connection.loginToken && { loginToken: connection.loginToken }),
-			ip,
-			host,
-			...this._getUserAgentInfo(connection),
-			...params,
-		};
-	}
-
-	private _getUserAgentInfo(connection: ISocketConnectionLogged): { device: ISessionDevice } | undefined {
-		if (!connection?.httpHeaders?.['user-agent']) {
-			return;
-		}
-
-		const uaString = connection.httpHeaders['user-agent'];
-
+	private _getUserAgentInfo(uaString: string): { device: ISessionDevice } | undefined {
 		// TODO define a type for "result" below
 		// | UAParser.IResult
 		// | { device: { type: string; model?: string }; browser: undefined; os: undefined; app: { name: string; version: string } }
