@@ -44,7 +44,7 @@ const uploadsDeleteEndpoint = API.v1.post(
 	'uploads.delete',
 	{
 		authRequired: true,
-		query: isUploadsDeleteParams,
+		body: isUploadsDeleteParams,
 		response: {
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
@@ -53,6 +53,9 @@ const uploadsDeleteEndpoint = API.v1.post(
 			200: ajv.compile<UploadsDeleteResult>({
 				type: 'object',
 				properties: {
+					success: {
+						type: 'boolean',
+					},
 					deletedFiles: {
 						description: 'The list of files that were successfully removed. May include additional files such as image thumbnails',
 						type: 'array',
@@ -67,7 +70,7 @@ const uploadsDeleteEndpoint = API.v1.post(
 		},
 	},
 	async function action() {
-		const { fileId } = this.queryParams;
+		const { fileId } = this.bodyParams;
 
 		const file = await Uploads.findOneById(fileId);
 		if (!file?.userId || !file.rid) {
