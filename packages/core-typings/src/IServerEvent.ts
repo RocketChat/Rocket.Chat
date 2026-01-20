@@ -1,4 +1,13 @@
 import type { IUser } from './IUser';
+import type {
+	IServerEventAbacActionPerformed,
+	IServerEventAbacAttributeChanged,
+	IServerEventAbacObjectAttributeChanged,
+	IServerEventAbacObjectAttributesRemoved,
+	IServerEventAbacSubjectAttributeChanged,
+} from './ServerAudit/IAuditServerAbacAction';
+import type { IServerEventSettingsChanged } from './ServerAudit/IAuditServerSettingEvent';
+import type { IServerEventUserChanged } from './ServerAudit/IAuditUserChangedEvent';
 
 export enum ServerEventType {
 	FAILED_LOGIN_ATTEMPT = 'failed-login-attempt',
@@ -57,7 +66,15 @@ export interface IAuditServerEventType<E extends AuditServerEventPayloadItem> ex
 	data: E[];
 }
 
-export interface IServerEvents {}
+export interface IServerEvents {
+	'abac.subject.attribute.changed': IServerEventAbacSubjectAttributeChanged;
+	'abac.object.attribute.changed': IServerEventAbacObjectAttributeChanged;
+	'abac.attribute.changed': IServerEventAbacAttributeChanged;
+	'abac.action.performed': IServerEventAbacActionPerformed;
+	'abac.object.attributes.removed': IServerEventAbacObjectAttributesRemoved;
+	'settings.changed': IServerEventSettingsChanged;
+	'user.changed': IServerEventUserChanged;
+}
 
 type KeyValuePair = { key: string; value: any };
 
