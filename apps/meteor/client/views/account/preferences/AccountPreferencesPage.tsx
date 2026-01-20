@@ -93,8 +93,10 @@ const AccountPreferencesPage = (): ReactElement => {
 			</PageScrollableContentWithShadow>
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
-					<Button onClick={() => reset(preferencesValues)}>{t('Cancel')}</Button>
-					<Button form={preferencesFormId} primary type='submit'>
+					<Button onClick={() => reset(preferencesValues)} mie='x4'>
+						{t('Cancel')}
+					</Button>
+					<Button form={preferencesFormId} primary type='submit' mis='x4'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
