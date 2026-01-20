@@ -201,7 +201,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const importers = Importers.getAllVisible().map(({ key, name }) => ({ key, name }));
+			const importers = Importers.getAllVisible().map(({ key, name, acceptedFileTypes }) => ({ key, name, acceptedFileTypes }));
 
 			return API.v1.success(importers);
 		},

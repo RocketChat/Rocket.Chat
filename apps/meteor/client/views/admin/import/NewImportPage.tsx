@@ -19,6 +19,7 @@ import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import type { IImporterInfo } from '@rocket.chat/core-typings';
 import type { ChangeEvent, DragEvent, FormEvent, Key, SyntheticEvent } from 'react';
 import { useState, useMemo, useEffect, useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +37,7 @@ function NewImportPage() {
 	const [fileType, setFileType] = useSafely(useState('upload'));
 
 	const listImportersEndpoint = useEndpoint('GET', '/v1/importers.list');
-	const { data: importers, isPending: isLoadingImporters } = useQuery({
+	const { data: importers, isPending: isLoadingImporters } = useQuery<IImporterInfo[]>({
 		queryKey: ['importers'],
 		queryFn: async () => listImportersEndpoint(),
 		refetchOnWindowFocus: false,
@@ -85,6 +86,8 @@ function NewImportPage() {
 	};
 
 	const [files, setFiles] = useState<File[]>([]);
+
+	const acceptedFileTypes = importer?.acceptedFileTypes || '';
 
 	const isDataTransferEvent = <T extends SyntheticEvent>(event: T): event is T & DragEvent<HTMLInputElement> =>
 		Boolean('dataTransfer' in event && (event as any).dataTransfer.files);
@@ -278,7 +281,12 @@ function NewImportPage() {
 												{t('Importer_Source_File')}
 											</FieldLabel>
 											<FieldRow>
-												<InputBox type='file' id={fileSourceInputId} onChange={handleImportFileChange} />
+												<InputBox
+													type='file'
+													id={fileSourceInputId}
+													accept={acceptedFileTypes}
+													onChange={handleImportFileChange}
+												/>
 											</FieldRow>
 											{files?.length > 0 && (
 												<FieldRow>

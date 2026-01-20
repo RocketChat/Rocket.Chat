@@ -7,4 +7,5 @@ export type ImporterInfo = {
 	name: RocketchatI18nKeys;
 	visible: boolean; // Determines if this importer can be selected by the user in the New Import screen.
 	importer: typeof Importer;
+	acceptedFileTypes?: string; // File types accepted by the file input (e.g., '.zip,.csv')
 };
