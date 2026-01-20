@@ -222,7 +222,7 @@ export class LDAPEEManager extends LDAPManager {
 			await this.syncUserChannels(ldap, user, dn);
 			await this.syncUserTeams(ldap, user, dn, isNewRecord);
 		} catch (e) {
-			logger.debug(`Advanced Sync failed for user: ${dn}`);
+			logger.debug({ msg: 'Advanced Sync failed for user', dn });
 			logger.error(e);
 		}
 	}
@@ -264,9 +264,9 @@ export class LDAPEEManager extends LDAPManager {
 		const result = await ldap.searchRaw(baseDN, searchOptions);
 
 		if (!Array.isArray(result) || result.length === 0) {
-			logger.debug(`${username} is not in ${groupName} group!!!`);
+			logger.debug({ msg: 'User is not in group', username, groupName });
 		} else {
-			logger.debug(`${username} is in ${groupName} group.`);
+			logger.debug({ msg: 'User is in group', username, groupName });
 			return true;
 		}
 
@@ -465,7 +465,7 @@ export class LDAPEEManager extends LDAPManager {
 				const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
 				if (subscription) {
 					await removeUserFromRoom(room._id, user);
-					logger.debug(`Removed user ${username} from channel ${room._id}`);
+					logger.debug({ msg: 'Removed user from channel', username, roomId: room._id });
 				}
 			}
 		}

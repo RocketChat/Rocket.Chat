@@ -30,7 +30,7 @@ const casTicket = function (req: IncomingMessageWithUrl, token: string, callback
 	const baseUrl = settings.get<string>('CAS_base_url');
 	const version = parseFloat(settings.get('CAS_version') ?? '1.0') as 1.0 | 2.0;
 	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
-	logger.debug(`Using CAS_base_url: ${baseUrl}`);
+	logger.debug({ msg: 'Using CAS_base_url', baseUrl });
 
 	validate(
 		{
@@ -41,9 +41,9 @@ const casTicket = function (req: IncomingMessageWithUrl, token: string, callback
 		ticketId,
 		async (err, status, username, details) => {
 			if (err) {
-				logger.error(`error when trying to validate: ${err.message}`);
+				logger.error({ msg: 'error when trying to validate', err });
 			} else if (status) {
-				logger.info(`Validated user: ${username}`);
+				logger.info({ msg: 'Validated user', username });
 				const userInfo: Partial<ICredentialToken['userInfo']> = { username: username as string };
 
 				// CAS 2.0 attributes handling
@@ -52,7 +52,7 @@ const casTicket = function (req: IncomingMessageWithUrl, token: string, callback
 				}
 				await CredentialTokens.create(token, userInfo);
 			} else {
-				logger.error(`Unable to validate ticket: ${ticketId}`);
+				logger.error({ msg: 'Unable to validate ticket', ticketId });
 			}
 			// logger.debug("Received response: " + JSON.stringify(details, null , 4));
 
