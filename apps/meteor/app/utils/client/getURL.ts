@@ -15,7 +15,7 @@ export const getURL = function (
 	cacheKey?: boolean,
 ): string {
 	const cdnPrefix = settings.watch('CDN_PREFIX') || '';
-	const siteUrl = settings.watch('Site_Url') || '';
+	const siteUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? window.location.origin : (settings.watch('Site_Url') || '');
 
 	if (cacheKey) {
 		path += `${path.includes('?') ? '&' : '?'}cacheKey=${Info.version}`;
