@@ -1,128 +1,268 @@
-import type { IAbacAttributeDefinition } from './IAbacAttribute';
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IRole } from './IRole';
+import * as z from 'zod';
+
+import { IAbacAttributeDefinitionSchema } from './IAbacAttribute';
+import { IRocketChatRecordSchema } from './IRocketChatRecord';
+import { IRoleSchema } from './IRole';
 import type { Serialized } from './Serialized';
-import type { UserStatus } from './UserStatus';
+import { UserStatus } from './UserStatus';
+import { serializableDate } from './utils';
 
-export interface ILoginToken {
-	hashedToken: string;
-	twoFactorAuthorizedUntil?: Date;
-	twoFactorAuthorizedHash?: string;
-}
+export const ILoginTokenSchema = z.object({
+	hashedToken: z.string(),
+	twoFactorAuthorizedUntil: serializableDate.optional(),
+	twoFactorAuthorizedHash: z.string().optional(),
+});
 
-export interface IMeteorLoginToken extends ILoginToken {
-	when: Date;
-}
+export const IMeteorLoginTokenSchema = ILoginTokenSchema.extend({
+	when: serializableDate,
+});
 
-export interface IPersonalAccessToken extends ILoginToken {
-	type: 'personalAccessToken';
-	createdAt: Date;
-	lastTokenPart: string;
-	name: string;
-	bypassTwoFactor?: boolean;
-}
+export const IPersonalAccessTokenSchema = ILoginTokenSchema.extend({
+	type: z.literal('personalAccessToken'),
+	createdAt: serializableDate,
+	lastTokenPart: z.string(),
+	name: z.string(),
+	bypassTwoFactor: z.boolean().optional(),
+});
 
-export const isPersonalAccessToken = (token: LoginToken): token is IPersonalAccessToken =>
-	'type' in token && token.type === 'personalAccessToken';
+export const IUserEmailVerificationTokenSchema = z.object({
+	token: z.string(),
+	address: z.string(),
+	when: serializableDate,
+});
 
-export interface IUserEmailVerificationToken {
-	token: string;
-	address: string;
-	when: Date;
-}
+export const IOAuthUserServicesSchema = z.object({
+	google: z.any().optional(),
+	facebook: z.any().optional(),
+	github: z.any().optional(),
+	linkedin: z.any().optional(),
+	twitter: z.any().optional(),
+	gitlab: z.any().optional(),
+	saml: z
+		.object({
+			inResponseTo: z.string().optional(),
+			provider: z.string().optional(),
+			idp: z.string().optional(),
+			idpSession: z.string().optional(),
+			nameID: z.string().optional(),
+		})
+		.optional(),
+	ldap: z
+		.object({
+			id: z.string(),
+			idAttribute: z.string().optional(),
+		})
+		.optional(),
+	nextcloud: z
+		.object({
+			accessToken: z.string(),
+			refreshToken: z.string(),
+			serverURL: z.string(),
+		})
+		.optional(),
+	dolphin: z
+		.object({
+			NickName: z.string().optional(),
+		})
+		.optional(),
+});
 
-export interface IUserEmailCode {
-	code: string;
-	expire: Date;
-	attempts: number;
-}
+const LoginTokenSchema = z.union([IMeteorLoginTokenSchema, IPersonalAccessTokenSchema]);
 
-type LoginToken = IMeteorLoginToken | IPersonalAccessToken;
-export type Username = string;
+export const IUserEmailCodeSchema = z.object({
+	code: z.string(),
+	expire: serializableDate,
+	attempts: z.number(),
+});
 
-export type ILoginUsername =
-	| {
-			username: string;
-	  }
-	| {
-			email: string;
-	  };
-export type LoginUsername = string | ILoginUsername;
-
-export interface IOAuthUserServices {
-	google?: any;
-	facebook?: any;
-	github?: any;
-	linkedin?: any;
-	twitter?: any;
-	gitlab?: any;
-	saml?: {
-		inResponseTo?: string;
-		provider?: string;
-		idp?: string;
-		idpSession?: string;
-		nameID?: string;
-	};
-	ldap?: {
-		id: string;
-		idAttribute?: string;
-	};
-	nextcloud?: {
-		accessToken: string;
-		refreshToken: string;
-		serverURL: string;
-	};
-	dolphin?: {
-		NickName?: string;
-	};
-}
-
-export interface IUserServices extends IOAuthUserServices {
-	password?: {
-		exists?: boolean;
-		bcrypt?: string;
-	};
-	passwordHistory?: string[];
-	email?: {
-		verificationTokens?: IUserEmailVerificationToken[];
-	};
-	resume?: {
-		loginTokens?: LoginToken[];
-	};
-	cloud?: {
-		accessToken: string;
-		refreshToken: string;
-		expiresAt: Date;
-	};
-	totp?: {
-		enabled: boolean;
-		hashedBackup: string[];
-		secret: string;
-		tempSecret?: string;
-	};
-	email2fa?: {
-		enabled: boolean;
-		changedAt: Date;
-	};
-	emailCode?: IUserEmailCode;
-
+export const IUserServicesSchema = IOAuthUserServicesSchema.extend({
+	password: z
+		.object({
+			exists: z.boolean().optional(),
+			bcrypt: z.string().optional(),
+		})
+		.optional(),
+	passwordHistory: z.array(z.string()).optional(),
+	email: z
+		.object({
+			verificationTokens: z.array(IUserEmailVerificationTokenSchema).optional(),
+		})
+		.optional(),
+	resume: z
+		.object({
+			loginTokens: z.array(LoginTokenSchema).optional(),
+		})
+		.optional(),
+	cloud: z
+		.object({
+			accessToken: z.string(),
+			refreshToken: z.string(),
+			expiresAt: serializableDate,
+		})
+		.optional(),
+	totp: z
+		.object({
+			enabled: z.boolean(),
+			hashedBackup: z.array(z.string()),
+			secret: z.string(),
+			tempSecret: z.string().optional(),
+		})
+		.optional(),
+	email2fa: z
+		.object({
+			enabled: z.boolean(),
+			changedAt: serializableDate,
+		})
+		.optional(),
+	emailCode: IUserEmailCodeSchema.optional(),
 	/**
 	 * iframe is used for iframe login
 	 * the token is generated by an external service
 	 * https://developer.rocket.chat/v1/docs/configuring-iframe-auth
 	 */
-	iframe?: {
-		token: string;
-	};
-
+	iframe: z
+		.object({
+			token: z.string(),
+		})
+		.optional(),
 	/**
 	 * loginToken is used for route login 'https://your-rocket.chat/login-token/:token' "one time login" feature
 	 * the token is generated by an external service
 	 */
-	loginToken?: {
-		token: string;
-	};
-}
+	loginToken: z
+		.object({
+			token: z.string(),
+		})
+		.optional(),
+});
+
+export const ILoginUsernameSchema = z.union([
+	z.object({
+		username: z.string(),
+	}),
+	z.object({
+		email: z.string(),
+	}),
+]);
+
+export const IUserEmailSchema = z.object({
+	address: z.string(),
+	verified: z.boolean().optional(),
+});
+
+export const IUserCalendarSchema = z.object({
+	outlook: z
+		.object({
+			Enabled: z.boolean(),
+			Exchange_Url: z.string(),
+			Outlook_Url: z.string(),
+		})
+		.optional(),
+});
+
+export const IUserSettingsSchema = z.object({
+	profile: z.record(z.string(), z.unknown()).optional(),
+	preferences: z.record(z.string(), z.any()).optional(),
+	calendar: IUserCalendarSchema.optional(),
+});
+
+export const IUserSchema = IRocketChatRecordSchema.extend({
+	createdAt: serializableDate,
+	roles: z.array(IRoleSchema.shape._id),
+	type: z.string(),
+	active: z.boolean(),
+	username: z.string().optional(),
+	nickname: z.string().optional(),
+	name: z.string().optional(),
+	services: IUserServicesSchema.optional(),
+	emails: z.array(IUserEmailSchema).optional(),
+	status: z.enum(UserStatus).optional(),
+	statusConnection: z.string().optional(),
+	lastLogin: serializableDate.optional(),
+	bio: z.string().optional(),
+	avatarOrigin: z.string().optional(),
+	avatarETag: z.string().optional(),
+	avatarUrl: z.string().optional(),
+	utcOffset: z.number().optional(),
+	language: z.string().optional(),
+	statusDefault: z.enum(UserStatus).optional(),
+	statusText: z.string().optional(),
+	oauth: z
+		.object({
+			authorizedClients: z.array(z.string()),
+		})
+		.optional(),
+	e2e: z
+		.object({
+			private_key: z.string(),
+			public_key: z.string(),
+		})
+		.optional(),
+	customFields: z.record(z.string(), z.any()).optional(),
+	settings: IUserSettingsSchema.optional(),
+	defaultRoom: z.string().optional(),
+	ldap: z.boolean().optional(),
+	freeSwitchExtension: z.string().optional(),
+	inviteToken: z.string().optional(),
+	canViewAllInfo: z.boolean().optional(),
+	phone: z.string().optional(),
+	reason: z.string().optional(),
+	// TODO: move this to a specific federation user type
+	federated: z.boolean().optional(),
+	federation: z
+		.object({
+			version: z.number().optional(),
+			mui: z.string().optional(),
+			origin: z.string().optional(),
+			avatarUrl: z.string().optional(),
+			searchedServerNames: z.array(z.string()).optional(),
+		})
+		.optional()
+		.meta({ deprecated: true }),
+	banners: z
+		.record(
+			z.string(),
+			z.object({
+				id: z.string(),
+				priority: z.number(),
+				title: z.string(),
+				text: z.string(),
+				textArguments: z.array(z.string()).optional(),
+				modifiers: z.array(z.enum(['large', 'danger'])),
+				link: z.string(),
+				read: z.boolean().optional(),
+			}),
+		)
+		.optional(),
+	importIds: z.array(z.string()).optional(),
+	_pendingAvatarUrl: z.string().optional(),
+	requirePasswordChange: z.boolean().optional(),
+	requirePasswordChangeReason: z.string().optional(),
+	roomRolePriorities: z.record(z.string(), z.number()).optional(),
+	isOAuthUser: z.boolean().optional(), // client only field
+	__rooms: z.array(z.string()).optional(),
+	inactiveReason: z.enum(['deactivated', 'pending_approval', 'idle_too_long']).optional(),
+	abacAttributes: z.array(IAbacAttributeDefinitionSchema).optional(),
+});
+
+export interface ILoginToken extends z.infer<typeof ILoginTokenSchema> {}
+export interface IMeteorLoginToken extends z.infer<typeof IMeteorLoginTokenSchema> {}
+export interface IPersonalAccessToken extends z.infer<typeof IPersonalAccessTokenSchema> {}
+type LoginToken = z.infer<typeof LoginTokenSchema>;
+export interface IUserEmailVerificationToken extends z.infer<typeof IUserEmailVerificationTokenSchema> {}
+export interface IUserEmailCode extends z.infer<typeof IUserEmailCodeSchema> {}
+export type Username = NonNullable<IUser['username']>;
+export type ILoginUsername = z.infer<typeof ILoginUsernameSchema>;
+export type LoginUsername = string | ILoginUsername;
+export interface IOAuthUserServices extends z.infer<typeof IOAuthUserServicesSchema> {}
+export interface IUserServices extends z.infer<typeof IUserServicesSchema> {}
+export interface IUserEmail extends z.infer<typeof IUserEmailSchema> {}
+export interface IUserCalendar extends z.infer<typeof IUserCalendarSchema> {}
+export interface IUserSettings extends z.infer<typeof IUserSettingsSchema> {}
+export interface IUser extends z.infer<typeof IUserSchema> {}
+
+export const isPersonalAccessToken = (token: LoginToken): token is IPersonalAccessToken =>
+	'type' in token && token.type === 'personalAccessToken';
 
 type IUserService = keyof IUserServices;
 type IOAuthService = keyof IOAuthUserServices;
@@ -153,27 +293,6 @@ export const isCustomOAuthUser = (user: IUser): boolean =>
 
 export const isOAuthUser = (user: IUser): boolean => isDefaultOAuthUser(user) || isCustomOAuthUser(user);
 
-export interface IUserEmail {
-	address: string;
-	verified?: boolean;
-}
-
-export interface IOutlook {
-	Enabled: boolean;
-	Exchange_Url: string;
-	Outlook_Url: string;
-}
-
-export interface IUserCalendar {
-	outlook?: IOutlook;
-}
-
-export interface IUserSettings {
-	profile?: Record<string, unknown>;
-	preferences?: Record<string, any>;
-	calendar?: IUserCalendar;
-}
-
 export interface IGetRoomRoles {
 	_id: string;
 	rid: string;
@@ -182,79 +301,6 @@ export interface IGetRoomRoles {
 		username: string;
 	};
 	roles: string[];
-}
-
-export interface IUser extends IRocketChatRecord {
-	_id: string;
-	createdAt: Date;
-	roles: IRole['_id'][];
-	type: string;
-	active: boolean;
-	username?: string;
-	nickname?: string;
-	name?: string;
-	services?: IUserServices;
-	emails?: IUserEmail[];
-	status?: UserStatus;
-	statusConnection?: string;
-	lastLogin?: Date;
-	bio?: string;
-	avatarOrigin?: string;
-	avatarETag?: string;
-	avatarUrl?: string;
-	utcOffset?: number;
-	language?: string;
-	statusDefault?: UserStatus;
-	statusText?: string;
-	oauth?: {
-		authorizedClients: string[];
-	};
-	_updatedAt: Date;
-	e2e?: {
-		private_key: string;
-		public_key: string;
-	};
-	customFields?: Record<string, any>;
-	settings?: IUserSettings;
-	defaultRoom?: string;
-	ldap?: boolean;
-	freeSwitchExtension?: string;
-	inviteToken?: string;
-	canViewAllInfo?: boolean;
-	phone?: string;
-	reason?: string;
-	// TODO: move this to a specific federation user type
-	federated?: boolean;
-	// @deprecated
-	federation?: {
-		version?: number;
-		mui?: string;
-		origin?: string;
-		avatarUrl?: string;
-		searchedServerNames?: string[];
-	};
-	banners?: {
-		[key: string]: {
-			id: string;
-			priority: number;
-			title: string;
-			text: string;
-			textArguments?: string[];
-			modifiers: ('large' | 'danger')[];
-			link: string;
-			read?: boolean;
-		};
-	};
-	importIds?: string[];
-	_pendingAvatarUrl?: string;
-	requirePasswordChange?: boolean;
-	requirePasswordChangeReason?: string;
-	roomRolePriorities?: Record<string, number>;
-	isOAuthUser?: boolean; // client only field
-	__rooms?: string[];
-	inactiveReason?: 'deactivated' | 'pending_approval' | 'idle_too_long';
-
-	abacAttributes?: IAbacAttributeDefinition[];
 }
 
 export interface IRegisterUser extends IUser {

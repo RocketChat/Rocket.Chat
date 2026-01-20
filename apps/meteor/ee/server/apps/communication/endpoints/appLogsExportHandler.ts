@@ -1,6 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { isAppLogsExportProps } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import {
+	BadRequestErrorResponseSchema,
+	GETAppsIdExportLogsQuerySchema,
+	GETAppsIdExportLogsResponseSchema,
+	UnauthorizedErrorResponseSchema,
+	NotFoundErrorResponseSchema,
+} from '@rocket.chat/rest-typings';
 import { parse } from 'cookie';
 import { json2csv } from 'json-2-csv';
 
@@ -8,22 +13,6 @@ import type { AppsRestApi } from '../rest';
 import { makeAppLogsQuery } from './lib/makeAppLogsQuery';
 import { APIClass } from '../../../../../app/api/server/ApiClass';
 import type { GenericRouteExecutionContext } from '../../../../../app/api/server/definition';
-
-const isErrorResponse = ajv.compile<{
-	success: false;
-	error: string;
-}>({
-	type: 'object',
-	properties: {
-		success: {
-			type: 'boolean',
-			enum: [false],
-		},
-		error: {
-			type: 'string',
-		},
-	},
-});
 
 class ExportHandlerAPI extends APIClass {
 	protected override async authenticatedRoute(routeContext: GenericRouteExecutionContext): Promise<IUser | null> {
@@ -52,21 +41,12 @@ export const registerAppLogsExportHandler = ({ api, _manager, _orch }: AppsRestA
 		{
 			authRequired: true,
 			permissionsRequired: ['manage-apps'],
-			query: isAppLogsExportProps,
+			query: GETAppsIdExportLogsQuerySchema,
 			response: {
-				200: ajv.compile({
-					type: 'object',
-					properties: {
-						body: {
-							type: 'string',
-							format: 'binary',
-							description: 'The content of the exported logs file, either in JSON or CSV format.',
-						},
-					},
-				}),
-				400: isErrorResponse,
-				401: isErrorResponse,
-				404: isErrorResponse,
+				200: GETAppsIdExportLogsResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+				404: NotFoundErrorResponseSchema,
 			},
 		},
 

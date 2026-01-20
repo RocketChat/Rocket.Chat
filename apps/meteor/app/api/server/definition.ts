@@ -4,6 +4,7 @@ import type { IUser, LicenseModule } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
+import type * as z from 'zod';
 
 import type { ITwoFactorOptions } from '../../2fa/server/code';
 import type { DeprecationLoggerNextPlannedVersion } from '../../lib/server/lib/deprecationWarningLogger';
@@ -18,7 +19,7 @@ export type ErrorStatusCodes = Exclude<Exclude<Range<511>, Range<500>>, 509>;
 
 export type SuccessResult<T, TStatusCode extends SuccessStatusCodes = 200> = {
 	statusCode: TStatusCode;
-	body: T extends object ? { success: true } & T : T;
+	body: T extends Buffer ? T : T extends object ? { success: true } & T : T;
 };
 
 export type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails = undefined> = {
@@ -144,7 +145,7 @@ export type SharedOptions<TMethod extends string> = (
 	/**
 	 * @deprecated The `validateParams` option is deprecated. Use `query` and/OR `body` instead.
 	 */
-	validateParams?: ValidateFunction | { [key in TMethod]?: ValidateFunction };
+	validateParams?: z.ZodType | ValidateFunction | { [key in TMethod]?: z.ZodType | ValidateFunction };
 	authOrAnonRequired?: true;
 	deprecation?: {
 		version: DeprecationLoggerNextPlannedVersion;
@@ -281,11 +282,9 @@ type Range<N extends number, Result extends number[] = []> = Result['length'] ex
 type HTTPStatusCodes = SuccessStatusCodes | RedirectStatusCodes | AuthorizationStatusCodes | ErrorStatusCodes;
 
 export type TypedOptions = {
-	response: {
-		[K in HTTPStatusCodes]?: ValidateFunction;
-	};
-	query?: ValidateFunction;
-	body?: ValidateFunction;
+	response: Partial<Record<HTTPStatusCodes, z.ZodType | ValidateFunction>>;
+	query?: z.ZodType | ValidateFunction;
+	body?: z.ZodType | ValidateFunction;
 	tags?: string[];
 	typed?: boolean;
 	license?: LicenseModule[];
@@ -295,7 +294,11 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 	userId: TOptions['authRequired'] extends true ? string : string | undefined;
 	user: TOptions['authRequired'] extends true ? IUser : IUser | null;
 	token: TOptions['authRequired'] extends true ? string : string | undefined;
-	queryParams: TOptions['query'] extends ValidateFunction<infer Query> ? Query : never;
+	queryParams: TOptions['query'] extends z.ZodType
+		? z.infer<TOptions['query']>
+		: TOptions['query'] extends ValidateFunction<infer Query>
+			? Query
+			: never;
 	urlParams: UrlParams<TPath> extends Record<any, any> ? UrlParams<TPath> : never;
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
@@ -308,7 +311,11 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 		 */
 		query: Record<string, unknown>;
 	}>;
-	bodyParams: TOptions['body'] extends ValidateFunction<infer Body> ? Body : never;
+	bodyParams: TOptions['body'] extends z.ZodType
+		? z.infer<TOptions['body']>
+		: TOptions['body'] extends ValidateFunction<infer Body>
+			? Body
+			: never;
 
 	requestIp?: string;
 	route: string;
@@ -317,15 +324,26 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 
 type PromiseOrValue<T> = T | Promise<T>;
 
-type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TResult;
+type IfEquals<T, U, Y = unknown, N = never> = (<G>() => G extends T ? 1 : 2) extends <G>() => G extends U ? 1 : 2 ? Y : N;
 
-type InferNon200Result<T> =
-	InferResult<T> extends {
-		success: false;
-		error?: infer TError;
-	}
-		? TError
-		: never;
+type InferResult<TResult> = TResult extends z.ZodType
+	? z.infer<TResult> extends Buffer
+		? z.infer<TResult>
+		: z.infer<TResult> extends object
+			? IfEquals<z.infer<TResult>, { success: true }, void, Omit<z.infer<TResult>, 'success'>>
+			: z.infer<TResult>
+	: TResult extends ValidateFunction<infer T>
+		? T
+		: TResult;
+
+type InferNon200Result<T> = (
+	T extends z.ZodType ? IfEquals<z.infer<T>, { success: false }, void, z.infer<T>> : T extends ValidateFunction<infer T> ? T : T
+) extends {
+	success: false;
+	error?: infer TError;
+}
+	? TError
+	: never;
 
 type Results<TResponse extends TypedOptions['response']> = {
 	[K in keyof TResponse]: K extends SuccessStatusCodes

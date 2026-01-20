@@ -1,10 +1,13 @@
 import type { IInvite } from '@rocket.chat/core-typings';
 import {
-	ajv,
-	isFindOrCreateInviteParams,
 	isUseInviteTokenProps,
 	isValidateInviteTokenProps,
 	isSendInvitationEmailParams,
+	UnauthorizedErrorResponseSchema,
+	BadRequestErrorResponseSchema,
+	GETListInvitesResponseSchema,
+	POSTFindOrCreateInviteBodySchema,
+	POSTFindOrCreateInviteResponseSchema,
 } from '@rocket.chat/rest-typings';
 
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
@@ -22,35 +25,8 @@ const invites = API.v1
 		{
 			authRequired: true,
 			response: {
-				200: ajv.compile<IInvite[]>({
-					additionalProperties: false,
-					type: 'array',
-					items: {
-						$ref: '#/components/schemas/IInvite',
-					},
-				}),
-				401: ajv.compile({
-					additionalProperties: false,
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						status: {
-							type: 'string',
-							nullable: true,
-						},
-						message: {
-							type: 'string',
-							nullable: true,
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'error'],
-				}),
+				200: GETListInvitesResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
 			},
 		},
 
@@ -63,105 +39,11 @@ const invites = API.v1
 		'findOrCreateInvite',
 		{
 			authRequired: true,
-			body: isFindOrCreateInviteParams,
+			body: POSTFindOrCreateInviteBodySchema,
 			response: {
-				200: ajv.compile({
-					additionalProperties: false,
-					type: 'object',
-					properties: {
-						_id: {
-							type: 'string',
-						},
-						rid: {
-							type: 'string',
-						},
-						userId: {
-							type: 'string',
-						},
-						createdAt: {
-							type: 'string',
-						},
-						_updatedAt: {
-							type: 'string',
-						},
-						expires: {
-							type: 'string',
-							nullable: true,
-						},
-						url: {
-							type: 'string',
-						},
-						maxUses: {
-							type: 'number',
-						},
-						days: {
-							type: 'number',
-						},
-						uses: {
-							type: 'number',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['_id', 'rid', 'createdAt', 'maxUses', 'uses', 'userId', '_updatedAt', 'days', 'success'],
-				}),
-				400: ajv.compile({
-					additionalProperties: false,
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						stack: {
-							type: 'string',
-							nullable: true,
-						},
-						errorType: {
-							type: 'string',
-						},
-						details: {
-							type: 'object',
-							nullable: true,
-							properties: {
-								rid: {
-									type: 'string',
-								},
-								method: {
-									type: 'string',
-								},
-							},
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'errorType', 'error'],
-				}),
-				401: ajv.compile({
-					additionalProperties: false,
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						status: {
-							type: 'string',
-							nullable: true,
-						},
-						message: {
-							type: 'string',
-							nullable: true,
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'error'],
-				}),
+				200: POSTFindOrCreateInviteResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
 			},
 		},
 

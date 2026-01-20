@@ -1,6 +1,7 @@
 import type { LicenseModule } from '@rocket.chat/core-typings';
 import type { ValidateFunction } from 'ajv';
 import type { Request } from 'express';
+import type * as z from 'zod';
 
 type Range<N extends number, Result extends number[] = []> = Result['length'] extends N
 	? Result[number]
@@ -17,13 +18,11 @@ export type ErrorStatusCodes = Exclude<Exclude<Range<511>, Range<500>>, 509>;
 type HTTPStatusCodes = SuccessStatusCodes | RedirectStatusCodes | AuthorizationStatusCodes | ErrorStatusCodes;
 
 export type ResponseSchema<T extends TypedOptions> = {
-	[K in keyof T['response']]: K extends HTTPStatusCodes
-		? {
-				statusCode: K;
-				body: Parameters<NonNullable<T['response'][K]>>[0];
-				headers?: Record<string, string>;
-			}
-		: never;
+	[K in keyof T['response']]: {
+		statusCode: K extends number ? number : never;
+		body: T['response'][K] extends z.ZodType ? z.infer<T['response'][K]> : T['response'][K] extends ValidateFunction<infer U> ? U : unknown;
+		headers?: Record<string, string>;
+	};
 }[keyof T['response']];
 
 export type TypedRequest = Request & {
@@ -45,11 +44,9 @@ export type TypedResponse = {
 };
 
 export type TypedOptions = {
-	response: {
-		[K in HTTPStatusCodes]?: ValidateFunction;
-	};
-	query?: ValidateFunction;
-	body?: ValidateFunction;
+	response: Partial<Record<HTTPStatusCodes, z.ZodType | ValidateFunction>>;
+	query?: z.ZodType | ValidateFunction;
+	body?: z.ZodType | ValidateFunction;
 	tags?: string[];
 	typed?: boolean;
 	license?: LicenseModule[];

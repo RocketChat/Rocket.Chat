@@ -1,13 +1,19 @@
-import type { MessageAttachmentBase } from '../MessageAttachmentBase';
-import type { FileAttachmentProps } from './FileAttachmentProps';
-import type { FileProp } from './FileProp';
+import * as z from 'zod';
 
-export type AudioAttachmentProps = {
-	audio_url: string;
-	audio_type: string;
-	audio_size?: number;
-	file?: FileProp;
-} & MessageAttachmentBase;
+import { MessageAttachmentBaseSchema } from '../MessageAttachmentBase';
+import type { FileAttachmentProps } from './FileAttachmentProps';
+import { FilePropSchema } from './FileProp';
+
+export const AudioAttachmentPropsSchema = z
+	.object({
+		audio_url: z.string(),
+		audio_type: z.string(),
+		audio_size: z.number().optional(),
+		file: FilePropSchema.optional(),
+	})
+	.and(MessageAttachmentBaseSchema);
+
+export type AudioAttachmentProps = z.infer<typeof AudioAttachmentPropsSchema>;
 
 export const isFileAudioAttachment = (attachment: FileAttachmentProps): attachment is AudioAttachmentProps & { type: 'file' } =>
 	'audio_url' in attachment;

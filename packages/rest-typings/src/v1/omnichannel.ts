@@ -33,12 +33,19 @@ import type {
 	IUser,
 	OmichannelRoutingConfig,
 } from '@rocket.chat/core-typings';
-import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, IRoomSchema } from '@rocket.chat/core-typings';
 import type { WithId } from 'mongodb';
+import * as z from 'zod';
 
 import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+
+export const POSTLivechatVisitorDepartmentTransferBodySchema = z.object({
+	rid: IRoomSchema.shape._id,
+	token: z.string(),
+	department: z.string(),
+});
 
 type booleanString = 'true' | 'false';
 
@@ -2912,33 +2919,6 @@ const POSTLivechatRoomCloseByUserParamsSchema = {
 
 export const isPOSTLivechatRoomCloseByUserParams = ajv.compile<POSTLivechatRoomCloseByUserParams>(POSTLivechatRoomCloseByUserParamsSchema);
 
-type POSTLivechatVisitorDepartmentTransferParams = {
-	token: string;
-	rid: string;
-	department: string;
-};
-
-const POSTLivechatVisitorDepartmentTransferParamsSchema = {
-	type: 'object',
-	properties: {
-		token: {
-			type: 'string',
-		},
-		rid: {
-			type: 'string',
-		},
-		department: {
-			type: 'string',
-		},
-	},
-	required: ['token', 'rid', 'department'],
-	additionalProperties: false,
-};
-
-export const isPOSTLivechatVisitorDepartmentTransferParams = ajv.compile<POSTLivechatVisitorDepartmentTransferParams>(
-	POSTLivechatVisitorDepartmentTransferParamsSchema,
-);
-
 type POSTLivechatRoomSurveyParams = {
 	token: string;
 	rid: string;
@@ -4445,6 +4425,7 @@ const POSTLivechatSaveCustomFieldsSchema = {
 	properties: {
 		customFieldId: {
 			type: 'string',
+			nullable: true,
 		},
 		customFieldData: {
 			type: 'object',
@@ -4946,7 +4927,7 @@ export type OmnichannelEndpoints = {
 		POST: (params: POSTLivechatRoomCloseByUserParams) => void;
 	};
 	'/v1/livechat/visitor/department.transfer': {
-		POST: (params: POSTLivechatVisitorDepartmentTransferParams) => { success: boolean };
+		POST: (params: z.infer<typeof POSTLivechatVisitorDepartmentTransferBodySchema>) => { success: boolean };
 	};
 	'/v1/livechat/room.survey': {
 		POST: (params: POSTLivechatRoomSurveyParams) => { rid: string; data: unknown };

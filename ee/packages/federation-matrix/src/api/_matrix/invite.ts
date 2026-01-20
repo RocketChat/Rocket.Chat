@@ -129,6 +129,21 @@ const ProcessInviteResponseSchema = {
 
 const isProcessInviteResponseProps = ajv.compile(ProcessInviteResponseSchema);
 
+const ErrorResponseSchema = {
+	type: 'object',
+	properties: {
+		error: {
+			type: 'string',
+		},
+		details: {
+			type: 'object',
+		},
+	},
+	required: ['error', 'details'],
+};
+
+const isErrorResponseProps = ajv.compile<unknown>(ErrorResponseSchema);
+
 export const getMatrixInviteRoutes = () => {
 	const logger = new Logger('matrix-invite');
 
@@ -139,6 +154,7 @@ export const getMatrixInviteRoutes = () => {
 			params: isProcessInviteParamsProps,
 			response: {
 				200: isProcessInviteResponseProps,
+				400: isErrorResponseProps,
 			},
 			tags: ['Federation'],
 			license: ['federation'],

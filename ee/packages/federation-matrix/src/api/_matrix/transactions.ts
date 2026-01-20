@@ -56,7 +56,7 @@ const GetEventResponseSchema = {
 	required: ['origin_server_ts', 'origin', 'pdus'],
 };
 
-const isGetEventResponseProps = ajv.compile(GetEventResponseSchema);
+const isGetEventResponseProps = ajv.compile<unknown>(GetEventResponseSchema);
 
 const EventHashSchema = {
 	type: 'object',
@@ -189,7 +189,7 @@ const SendTransactionResponseSchema = {
 	required: ['pdus', 'edus'],
 };
 
-const isSendTransactionResponseProps = ajv.compile(SendTransactionResponseSchema);
+const isSendTransactionResponseProps = ajv.compile<unknown>(SendTransactionResponseSchema);
 
 const ErrorResponseSchema = {
 	type: 'object',
@@ -328,6 +328,7 @@ export const getMatrixTransactionsRoutes = () => {
 					response: {
 						200: isSendTransactionResponseProps,
 						400: isErrorResponseProps,
+						429: isErrorResponseProps,
 					},
 					tags: ['Federation'],
 					license: ['federation'],
@@ -372,6 +373,7 @@ export const getMatrixTransactionsRoutes = () => {
 					params: isGetStateIdsParamsProps,
 					response: {
 						200: isGetStateIdsResponseProps,
+						404: isErrorResponseProps,
 					},
 				},
 				canAccessResourceMiddleware('room'),
@@ -403,6 +405,7 @@ export const getMatrixTransactionsRoutes = () => {
 					params: isGetStateParamsProps,
 					response: {
 						200: isGetStateResponseProps,
+						404: isErrorResponseProps,
 					},
 				},
 				canAccessResourceMiddleware('room'),
@@ -433,6 +436,7 @@ export const getMatrixTransactionsRoutes = () => {
 					params: isGetEventParamsProps,
 					response: {
 						200: isGetEventResponseProps,
+						404: isErrorResponseProps,
 					},
 					tags: ['Federation'],
 					license: ['federation'],
@@ -468,6 +472,8 @@ export const getMatrixTransactionsRoutes = () => {
 					query: isBackfillQueryProps,
 					response: {
 						200: isBackfillResponseProps,
+						400: isErrorResponseProps,
+						500: isErrorResponseProps,
 					},
 					tags: ['Federation'],
 					license: ['federation'],

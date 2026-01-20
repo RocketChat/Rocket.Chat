@@ -18,7 +18,8 @@
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"ajv": "^8.17.1",
-		"ajv-formats": "^3.0.1"
+		"ajv-formats": "^3.0.1",
+		"zod": "~4.3.5"
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",

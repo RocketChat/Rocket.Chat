@@ -14,9 +14,9 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export const permissionsGetMethod = async (
+export async function permissionsGetMethod(
 	updatedAt?: Date,
-): Promise<IPermission[] | { update: IPermission[]; remove: WithId<RocketChatRecordDeleted<IPermission>>[] }> => {
+): Promise<IPermission[] | { update: IPermission[]; remove: WithId<RocketChatRecordDeleted<IPermission>>[] }> {
 	const records = await Permissions.find(updatedAt && { _updatedAt: { $gt: updatedAt } }).toArray();
 
 	if (updatedAt instanceof Date) {
@@ -27,7 +27,7 @@ export const permissionsGetMethod = async (
 	}
 
 	return records;
-};
+}
 
 Meteor.methods<ServerMethods>({
 	async 'permissions/get'(updatedAt?: Date) {

@@ -1,16 +1,27 @@
-import type { MessageAttachmentBase } from '../MessageAttachmentBase';
-import type { Dimensions } from './Dimensions';
-import type { FileAttachmentProps } from './FileAttachmentProps';
-import type { FileProp } from './FileProp';
+import * as z from 'zod';
 
-export type ImageAttachmentProps = {
-	image_dimensions?: Dimensions;
-	image_preview?: string;
-	image_url: string;
-	image_type?: string;
-	image_size?: number;
-	file?: FileProp;
-} & MessageAttachmentBase;
+import { MessageAttachmentBaseSchema } from '../MessageAttachmentBase';
+import type { FileAttachmentProps } from './FileAttachmentProps';
+import { FilePropSchema } from './FileProp';
+
+export const ImageAttachmentPropsSchema = z
+	.object({
+		image_dimensions: z
+			.object({
+				width: z.number(),
+				height: z.number(),
+			})
+			.optional(),
+		image_preview: z.string().optional(),
+		image_url: z.string(),
+		image_type: z.string().optional(),
+		image_size: z.number().optional(),
+		file: FilePropSchema.optional(),
+	})
+	.and(MessageAttachmentBaseSchema);
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export interface ImageAttachmentProps extends z.infer<typeof ImageAttachmentPropsSchema> {}
 
 export const isFileImageAttachment = (attachment: FileAttachmentProps): attachment is ImageAttachmentProps & { type: 'file' } =>
-	'image_url' in attachment;
+	ImageAttachmentPropsSchema.safeParse(attachment).success;

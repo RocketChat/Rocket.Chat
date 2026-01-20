@@ -4,6 +4,7 @@ import { isOpenAPIJSONEndpoint } from '@rocket.chat/rest-typings';
 import express from 'express';
 import { WebApp } from 'meteor/webapp';
 import swaggerUi from 'swagger-ui-express';
+import * as z from 'zod';
 
 import { settings } from '../../../settings/server';
 import { API } from '../api';
@@ -41,45 +42,55 @@ const getTypedRoutes = (
 	);
 };
 
-const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
-	openapi: '3.0.3',
-	info: {
-		title: 'Rocket.Chat API',
-		description: 'Rocket.Chat API',
-		version: getTrimmedServerVersion(),
-	},
-	servers: [
-		{
-			url: settings.get('Site_Url'),
+const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => {
+	const zodSchemas = z.toJSONSchema(z.globalRegistry, { target: 'openapi-3.0', io: 'input', unrepresentable: 'any' }).schemas;
+
+	return {
+		openapi: '3.0.3',
+
+		info: {
+			title: 'Rocket.Chat API',
+			description: 'Rocket.Chat API',
+			version: getTrimmedServerVersion(),
 		},
-	],
-	components: {
-		securitySchemes: {
-			userId: {
-				type: 'apiKey',
-				in: 'header',
-				name: 'X-User-Id',
+
+		servers: [
+			{
+				url: settings.get('Site_Url'),
 			},
-			authToken: {
-				type: 'apiKey',
-				in: 'header',
-				name: 'X-Auth-Token',
+		],
+
+		components: {
+			securitySchemes: {
+				userId: {
+					type: 'apiKey',
+					in: 'header',
+					name: 'X-User-Id',
+				},
+				authToken: {
+					type: 'apiKey',
+					in: 'header',
+					name: 'X-Auth-Token',
+				},
 			},
+			schemas: { ...schemas.components.schemas, ...zodSchemas },
 		},
-		schemas: schemas.components.schemas,
-	},
-	schemas: schemas.components.schemas,
-	paths,
-});
+
+		schemas: { ...schemas.components.schemas, ...zodSchemas },
+		paths,
+	};
+};
 
 API.default.addRoute(
 	'docs/json',
 	{ authRequired: false, validateParams: isOpenAPIJSONEndpoint },
 	{
 		get() {
-			const { withUndocumented = false } = this.queryParams;
+			const { withUndocumented = 'false' } = this.queryParams;
 
-			return API.default.success(makeOpenAPIResponse(getTypedRoutes(API.api.typedRoutes, { withUndocumented })));
+			return API.default.success(
+				makeOpenAPIResponse(getTypedRoutes(API.api.typedRoutes, { withUndocumented: withUndocumented === 'true' })),
+			);
 		},
 	},
 );

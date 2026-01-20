@@ -1,3 +1,7 @@
+import * as z from 'zod';
+
+import { SuccessResponseSchema } from '../Ajv';
+
 export type FederationPaginatedRequest<T = Record<string, boolean | number | string | object>> = {
 	count?: number;
 	pageToken?: string;
@@ -15,4 +19,11 @@ export * from './FederationJoinExternalPublicRoomProps';
 export * from './FederationPublicRoomsProps';
 export * from './FederationAddServerProps';
 export * from './FederationRemoveServerProps';
-export * from './FederationVerifyMatrixIdProps';
+
+export const GETFederationMatrixIdsVerifyQuerySchema = z.object({
+	matrixIds: z.array(z.string()),
+});
+
+export const GETFederationMatrixIdsVerifyResponseSchema = SuccessResponseSchema.extend({
+	results: z.record(z.string(), z.string()),
+});

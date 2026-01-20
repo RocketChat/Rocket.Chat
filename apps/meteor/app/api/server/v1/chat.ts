@@ -1,38 +1,59 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IThreadMainMessage, IUser, RequiredField } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
-	ajv,
-	isChatReportMessageProps,
-	isChatGetURLPreviewProps,
-	isChatUpdateProps,
-	isChatGetThreadsListProps,
-	isChatDeleteProps,
-	isChatSyncMessagesProps,
-	isChatGetMessageProps,
-	isChatPostMessageProps,
-	isChatSearchProps,
-	isChatSendMessageProps,
-	isChatStarMessageProps,
-	isChatUnstarMessageProps,
-	isChatIgnoreUserProps,
-	isChatGetPinnedMessagesProps,
-	isChatFollowMessageProps,
-	isChatUnfollowMessageProps,
-	isChatGetMentionedMessagesProps,
-	isChatReactProps,
-	isChatGetDeletedMessagesProps,
-	isChatSyncThreadsListProps,
-	isChatGetThreadMessagesProps,
-	isChatSyncThreadMessagesProps,
-	isChatGetStarredMessagesProps,
-	isChatGetDiscussionsProps,
-	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
+	BadRequestErrorResponseSchema,
+	UnauthorizedErrorResponseSchema,
+	SuccessResponseSchema,
+	POSTChatDeleteBodySchema,
+	POSTChatDeleteResponseSchema,
+	GETChatSyncMessagesQuerySchema,
+	GETChatSyncMessagesResponseSchema,
+	GETChatGetMessageQuerySchema,
+	GETChatGetMessageResponseSchema,
+	POSTChatPinMessageBodySchema,
+	POSTChatPinMessageResponseSchema,
+	POSTChatUnPinMessageBodySchema,
+	POSTChatUpdateBodySchema,
+	POSTChatUpdateResponseSchema,
+	POSTChatPostMessageBodySchema,
+	POSTChatPostMessageResponseSchema,
+	GETChatSearchQuerySchema,
+	GETChatSearchResponseSchema,
+	POSTChatSendMessageBodySchema,
+	POSTChatSendMessageResponseSchema,
+	POSTChatStarMessageBodySchema,
+	POSTChatUnStarMessageBodySchema,
+	POSTChatReactBodySchema,
+	POSTChatReportMessageBodySchema,
+	GETChatIgnoreUserQuerySchema,
+	GETChatGetDeletedMessagesQuerySchema,
+	GETChatGetDeletedMessagesResponseSchema,
+	GETChatGetPinnedMessagesQuerySchema,
+	GETChatGetPinnedMessagesResponseSchema,
+	GETChatGetThreadsListQuerySchema,
+	GETChatGetThreadsListResponseSchema,
+	GETChatSyncThreadsListQuerySchema,
+	GETChatSyncThreadsListResponseSchema,
+	GETChatGetThreadMessagesQuerySchema,
+	GETChatGetThreadMessagesResponseSchema,
+	GETChatSyncThreadMessagesQuerySchema,
+	GETChatSyncThreadMessagesResponseSchema,
+	POSTChatFollowMessageBodySchema,
+	POSTChatUnfollowMessageBodySchema,
+	GETChatGetMentionedMessagesQuerySchema,
+	GETChatGetMentionedMessagesResponseSchema,
+	GETChatGetStarredMessagesQuerySchema,
+	GETChatGetStarredMessagesResponseSchema,
+	GETChatGetDiscussionsQuerySchema,
+	GETChatGetDiscussionsResponseSchema,
+	GETChatGetURLPreviewQuerySchema,
+	GETChatGetURLPreviewResponseSchema,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
+import type * as z from 'zod';
 
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
 import { ignoreUser } from '../../../../server/methods/ignoreUser';
@@ -59,11 +80,19 @@ import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
 
-API.v1.addRoute(
-	'chat.delete',
-	{ authRequired: true, validateParams: isChatDeleteProps },
-	{
-		async post() {
+const chatEndpoints = API.v1
+	.post(
+		'chat.delete',
+		{
+			authRequired: true,
+			body: POSTChatDeleteBodySchema,
+			response: {
+				200: POSTChatDeleteResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
 
 			if (!msg) {
@@ -97,15 +126,21 @@ API.v1.addRoute(
 				message: msg,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.syncMessages',
-	{ authRequired: true, validateParams: isChatSyncMessagesProps },
-	{
-		async get() {
-			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
+	)
+	.get(
+		'chat.syncMessages',
+		{
+			authRequired: true,
+			// FIXME new validation error message breaks the contract (breaking change)
+			validateParams: GETChatSyncMessagesQuerySchema,
+			response: {
+				200: GETChatSyncMessagesResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
+			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams as z.infer<typeof GETChatSyncMessagesQuerySchema>;
 
 			if (!roomId) {
 				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
@@ -136,22 +171,24 @@ API.v1.addRoute(
 			return API.v1.success({
 				result: {
 					updated: 'updated' in result ? await normalizeMessagesForUser(result.updated, this.userId) : [],
-					deleted: 'deleted' in result ? result.deleted : [],
+					deleted: 'deleted' in result ? (result.deleted as any) : [],
 					cursor: 'cursor' in result ? result.cursor : undefined,
 				},
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getMessage',
-	{
-		authRequired: true,
-		validateParams: isChatGetMessageProps,
-	},
-	{
-		async get() {
+	)
+	.get(
+		'chat.getMessage',
+		{
+			authRequired: true,
+			query: GETChatGetMessageQuerySchema,
+			response: {
+				200: GETChatGetMessageResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
 			if (!this.queryParams.msgId) {
 				return API.v1.failure('The "msgId" query parameter must be provided.');
 			}
@@ -168,66 +205,16 @@ API.v1.addRoute(
 				message,
 			});
 		},
-	},
-);
-
-type ChatPinMessage = {
-	messageId: IMessage['_id'];
-};
-
-type ChatUnpinMessage = {
-	messageId: IMessage['_id'];
-};
-
-const ChatPinMessageSchema = {
-	type: 'object',
-	properties: {
-		messageId: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['messageId'],
-	additionalProperties: false,
-};
-
-const ChatUnpinMessageSchema = {
-	type: 'object',
-	properties: {
-		messageId: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['messageId'],
-	additionalProperties: false,
-};
-
-const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
-
-const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
-
-const chatEndpoints = API.v1
+	)
 	.post(
 		'chat.pinMessage',
 		{
 			authRequired: true,
-			body: isChatPinMessageProps,
+			body: POSTChatPinMessageBodySchema,
 			response: {
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				200: ajv.compile<{ message: IMessage }>({
-					type: 'object',
-					properties: {
-						message: { $ref: '#/components/schemas/IMessage' },
-						success: {
-							type: 'boolean',
-							enum: [true],
-						},
-					},
-					required: ['message', 'success'],
-					additionalProperties: false,
-				}),
+				200: POSTChatPinMessageResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
 			},
 		},
 		async function action() {
@@ -250,24 +237,13 @@ const chatEndpoints = API.v1
 		'chat.unPinMessage',
 		{
 			authRequired: true,
-			body: isChatUnpinMessageProps,
+			body: POSTChatUnPinMessageBodySchema,
 			response: {
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				200: ajv.compile<void>({
-					type: 'object',
-					properties: {
-						success: {
-							type: 'boolean',
-							enum: [true],
-						},
-					},
-					required: ['success'],
-					additionalProperties: false,
-				}),
+				200: SuccessResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
 			},
 		},
-
 		async function action() {
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
@@ -284,22 +260,11 @@ const chatEndpoints = API.v1
 		'chat.update',
 		{
 			authRequired: true,
-			body: isChatUpdateProps,
+			body: POSTChatUpdateBodySchema,
 			response: {
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				200: ajv.compile<{ message: IMessage }>({
-					type: 'object',
-					properties: {
-						message: { type: 'object' },
-						success: {
-							type: 'boolean',
-							enum: [true],
-						},
-					},
-					required: ['message', 'success'],
-					additionalProperties: false,
-				}),
+				200: POSTChatUpdateResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
 			},
 		},
 		async function action() {
@@ -350,13 +315,19 @@ const chatEndpoints = API.v1
 				message,
 			});
 		},
-	);
-
-API.v1.addRoute(
-	'chat.postMessage',
-	{ authRequired: true, validateParams: isChatPostMessageProps },
-	{
-		async post() {
+	)
+	.post(
+		'chat.postMessage',
+		{
+			authRequired: true,
+			body: POSTChatPostMessageBodySchema,
+			response: {
+				200: POSTChatPostMessageResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const { text, attachments } = this.bodyParams;
 			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
 
@@ -372,7 +343,11 @@ API.v1.addRoute(
 				}
 			}
 
-			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
+			const messageReturn = (
+				await applyAirGappedRestrictionsValidation(() =>
+					processWebhookMessage(this.bodyParams, this.user as IUser & { username: RequiredField<IUser, 'username'> }),
+				)
+			)[0];
 
 			if (!messageReturn?.message) {
 				return API.v1.failure('unknown-error');
@@ -386,14 +361,19 @@ API.v1.addRoute(
 				message,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.search',
-	{ authRequired: true, validateParams: isChatSearchProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.search',
+		{
+			authRequired: true,
+			query: GETChatSearchQuerySchema,
+			response: {
+				200: GETChatSearchResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const { roomId, searchText } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -418,23 +398,30 @@ API.v1.addRoute(
 				messages: await normalizeMessagesForUser(result, this.userId),
 			});
 		},
-	},
-);
+	)
+	.post(
+		'chat.sendMessage',
+		{
+			description: `Sends a message to a channel.
 
-// The difference between `chat.postMessage` and `chat.sendMessage` is that `chat.sendMessage` allows
-// for passing a value for `_id` and the other one doesn't. Also, `chat.sendMessage` only sends it to
-// one channel whereas the other one allows for sending to more than one channel at a time.
-API.v1.addRoute(
-	'chat.sendMessage',
-	{ authRequired: true, validateParams: isChatSendMessageProps },
-	{
-		async post() {
+The difference between \`chat.postMessage\` and \`chat.sendMessage\` is that \`chat.sendMessage\` allows
+for passing a value for \`_id\` and the other one doesn't. Also, \`chat.sendMessage\` only sends it to
+one channel whereas the other one allows for sending to more than one channel at a time.`,
+			authRequired: true,
+			body: POSTChatSendMessageBodySchema,
+			response: {
+				200: POSTChatSendMessageResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
 			if (MessageTypes.isSystemMessage(this.bodyParams.message)) {
 				throw new Error("Cannot send system messages using 'chat.sendMessage'");
 			}
 
 			const sent = await applyAirGappedRestrictionsValidation(() =>
-				executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
+				executeSendMessage(this.userId, this.bodyParams.message, { previewUrls: this.bodyParams.previewUrls }),
 			);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
@@ -442,14 +429,18 @@ API.v1.addRoute(
 				message,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.starMessage',
-	{ authRequired: true, validateParams: isChatStarMessageProps },
-	{
-		async post() {
+	)
+	.post(
+		'chat.starMessage',
+		{
+			authRequired: true,
+			body: POSTChatStarMessageBodySchema,
+			response: {
+				200: SuccessResponseSchema,
+				400: BadRequestErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
@@ -464,14 +455,18 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.unStarMessage',
-	{ authRequired: true, validateParams: isChatUnstarMessageProps },
-	{
-		async post() {
+	)
+	.post(
+		'chat.unStarMessage',
+		{
+			authRequired: true,
+			body: POSTChatUnStarMessageBodySchema,
+			response: {
+				200: SuccessResponseSchema,
+				400: BadRequestErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
@@ -486,14 +481,18 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.react',
-	{ authRequired: true, validateParams: isChatReactProps },
-	{
-		async post() {
+	)
+	.post(
+		'chat.react',
+		{
+			authRequired: true,
+			body: POSTChatReactBodySchema,
+			response: {
+				200: SuccessResponseSchema,
+				400: BadRequestErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
@@ -510,14 +509,18 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.reportMessage',
-	{ authRequired: true, validateParams: isChatReportMessageProps },
-	{
-		async post() {
+	)
+	.post(
+		'chat.reportMessage',
+		{
+			authRequired: true,
+			body: POSTChatReportMessageBodySchema,
+			response: {
+				200: SuccessResponseSchema,
+				400: BadRequestErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const { messageId, description } = this.bodyParams;
 			if (!messageId) {
 				return API.v1.failure('The required "messageId" param is missing.');
@@ -531,14 +534,19 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.ignoreUser',
-	{ authRequired: true, validateParams: isChatIgnoreUserProps },
-	{
-		async get() {
+	)
+	// FIXME mutating GET route???
+	.get(
+		'chat.ignoreUser',
+		{
+			authRequired: true,
+			query: GETChatIgnoreUserQuerySchema,
+			response: {
+				200: SuccessResponseSchema,
+				400: BadRequestErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const { rid, userId } = this.queryParams;
 			let { ignore = true } = this.queryParams;
 
@@ -556,14 +564,18 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getDeletedMessages',
-	{ authRequired: true, validateParams: isChatGetDeletedMessagesProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getDeletedMessages',
+		{
+			authRequired: true,
+			query: GETChatGetDeletedMessagesQuerySchema,
+			response: {
+				200: GETChatGetDeletedMessagesResponseSchema,
+				400: BadRequestErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const { roomId, since } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -586,14 +598,19 @@ API.v1.addRoute(
 				total,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getPinnedMessages',
-	{ authRequired: true, validateParams: isChatGetPinnedMessagesProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getPinnedMessages',
+		{
+			authRequired: true,
+			query: GETChatGetPinnedMessagesQuerySchema,
+			response: {
+				200: GETChatGetPinnedMessagesResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const { roomId } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -615,15 +632,21 @@ API.v1.addRoute(
 				total,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getThreadsList',
-	{ authRequired: true, validateParams: isChatGetThreadsListProps },
-	{
-		async get() {
-			const { rid, type, text } = this.queryParams;
+	)
+	.get(
+		'chat.getThreadsList',
+		{
+			authRequired: true,
+			// FIXME new validation error message breaks the contract (breaking change)
+			validateParams: GETChatGetThreadsListQuerySchema,
+			response: {
+				200: GETChatGetThreadsListResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
+			const { rid, type, text } = this.queryParams as z.infer<typeof GETChatGetThreadsListQuerySchema>;
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
@@ -662,17 +685,23 @@ API.v1.addRoute(
 				total,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.syncThreadsList',
-	{ authRequired: true, validateParams: isChatSyncThreadsListProps },
-	{
-		async get() {
-			const { rid } = this.queryParams;
+	)
+	.get(
+		'chat.syncThreadsList',
+		{
+			authRequired: true,
+			// FIXME new validation error message breaks the contract (breaking change)
+			validateParams: GETChatSyncThreadsListQuerySchema,
+			response: {
+				200: GETChatSyncThreadsListResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
+			const { rid } = this.queryParams as z.infer<typeof GETChatSyncThreadsListQuerySchema>;
 			const { query, fields, sort } = await this.parseJsonQuery();
-			const { updatedSince } = this.queryParams;
+			const { updatedSince } = this.queryParams as z.infer<typeof GETChatSyncThreadsListQuerySchema>;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
@@ -706,14 +735,19 @@ API.v1.addRoute(
 				},
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getThreadMessages',
-	{ authRequired: true, validateParams: isChatGetThreadMessagesProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getThreadMessages',
+		{
+			authRequired: true,
+			validateParams: GETChatGetThreadMessagesQuerySchema,
+			response: {
+				200: GETChatGetThreadMessagesResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const { tmid } = this.queryParams;
 			const { query, fields, sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -751,14 +785,20 @@ API.v1.addRoute(
 				total,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.syncThreadMessages',
-	{ authRequired: true, validateParams: isChatSyncThreadMessagesProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.syncThreadMessages',
+		{
+			authRequired: true,
+			// FIXME new validation error message breaks the contract (breaking change)
+			validateParams: GETChatSyncThreadMessagesQuerySchema,
+			response: {
+				200: GETChatSyncThreadMessagesResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const { tmid } = this.queryParams;
 			const { query, fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
@@ -790,14 +830,19 @@ API.v1.addRoute(
 				},
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.followMessage',
-	{ authRequired: true, validateParams: isChatFollowMessageProps },
-	{
-		async post() {
+	)
+	.post(
+		'chat.followMessage',
+		{
+			authRequired: true,
+			body: POSTChatFollowMessageBodySchema,
+			response: {
+				200: SuccessResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const { mid } = this.bodyParams;
 
 			if (!mid) {
@@ -808,14 +853,19 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.unfollowMessage',
-	{ authRequired: true, validateParams: isChatUnfollowMessageProps },
-	{
-		async post() {
+	)
+	.post(
+		'chat.unfollowMessage',
+		{
+			authRequired: true,
+			body: POSTChatUnfollowMessageBodySchema,
+			response: {
+				200: SuccessResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const { mid } = this.bodyParams;
 
 			if (!mid) {
@@ -826,15 +876,22 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getMentionedMessages',
-	{ authRequired: true, validateParams: isChatGetMentionedMessagesProps },
-	{
-		async get() {
-			const { roomId } = this.queryParams;
+	)
+	.get(
+		'chat.getMentionedMessages',
+		{
+			authRequired: true,
+			// FIXME new validation error message breaks the contract (breaking change)
+			validateParams: GETChatGetMentionedMessagesQuerySchema,
+			response: {
+				200: GETChatGetMentionedMessagesResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
+			// FIXME new validation error message breaks the contract (breaking change)
+			const { roomId } = this.queryParams as z.infer<typeof GETChatGetMentionedMessagesQuerySchema>;
 			const { sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -850,15 +907,21 @@ API.v1.addRoute(
 
 			return API.v1.success(messages);
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getStarredMessages',
-	{ authRequired: true, validateParams: isChatGetStarredMessagesProps },
-	{
-		async get() {
-			const { roomId } = this.queryParams;
+	)
+	.get(
+		'chat.getStarredMessages',
+		{
+			authRequired: true,
+			// FIXME new validation error message breaks the contract (breaking change)
+			validateParams: GETChatGetStarredMessagesQuerySchema,
+			response: {
+				200: GETChatGetStarredMessagesResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
+			const { roomId } = this.queryParams as z.infer<typeof GETChatGetStarredMessagesQuerySchema>;
 			const { sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -876,14 +939,19 @@ API.v1.addRoute(
 
 			return API.v1.success(messages);
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getDiscussions',
-	{ authRequired: true, validateParams: isChatGetDiscussionsProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getDiscussions',
+		{
+			authRequired: true,
+			query: GETChatGetDiscussionsQuerySchema,
+			response: {
+				200: GETChatGetDiscussionsResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const { roomId, text } = this.queryParams;
 			const { sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -900,14 +968,19 @@ API.v1.addRoute(
 			});
 			return API.v1.success(messages);
 		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getURLPreview',
-	{ authRequired: true, validateParams: isChatGetURLPreviewProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getURLPreview',
+		{
+			authRequired: true,
+			query: GETChatGetURLPreviewQuerySchema,
+			response: {
+				200: GETChatGetURLPreviewResponseSchema,
+				400: BadRequestErrorResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+			},
+		},
+		async function action() {
 			const { roomId, url } = this.queryParams;
 
 			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
@@ -919,12 +992,35 @@ API.v1.addRoute(
 
 			return API.v1.success({ urlPreview });
 		},
-	},
-);
-
-export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
+	);
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends ChatEndpoints {}
+	interface Endpoints extends ExtractRoutesFromAPI<typeof chatEndpoints> {
+		// FIXME new validation error message breaks the contract (breaking change)
+		'/v1/chat.getMentionedMessages': {
+			GET: (query: z.infer<typeof GETChatGetMentionedMessagesQuerySchema>) => z.infer<typeof GETChatGetMentionedMessagesResponseSchema>;
+		};
+		// FIXME new validation error message breaks the contract (breaking change)
+		'/v1/chat.getStarredMessages': {
+			GET: (query: z.infer<typeof GETChatGetStarredMessagesQuerySchema>) => z.infer<typeof GETChatGetStarredMessagesResponseSchema>;
+		};
+		// FIXME new validation error message breaks the contract (breaking change)
+		'/v1/chat.getDiscussions': {
+			GET: (query: z.infer<typeof GETChatGetDiscussionsQuerySchema>) => z.infer<typeof GETChatGetDiscussionsResponseSchema>;
+		};
+		'/v1/chat.syncMessages': {
+			GET: (query: z.infer<typeof GETChatSyncMessagesQuerySchema>) => z.infer<typeof GETChatSyncMessagesResponseSchema>;
+		};
+		// FIXME new validation error message breaks the contract (breaking change)
+		'/v1/chat.getThreadsList': {
+			GET: (query: z.infer<typeof GETChatGetThreadsListQuerySchema>) => z.infer<typeof GETChatGetThreadsListResponseSchema>;
+		};
+		'/v1/chat.syncThreadsList': {
+			GET: (query: z.infer<typeof GETChatSyncThreadsListQuerySchema>) => z.infer<typeof GETChatSyncThreadsListResponseSchema>;
+		};
+		'/v1/chat.syncThreadMessages': {
+			GET: (query: z.infer<typeof GETChatSyncThreadMessagesQuerySchema>) => z.infer<typeof GETChatSyncThreadMessagesResponseSchema>;
+		};
+	}
 }

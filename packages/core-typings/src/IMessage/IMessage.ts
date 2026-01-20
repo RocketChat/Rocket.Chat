@@ -1,26 +1,44 @@
-import type { UrlWithStringQuery } from 'url';
-
 import type Icons from '@rocket.chat/icons';
 import type { Root } from '@rocket.chat/message-parser';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
+import * as z from 'zod';
 
-import type { ILivechatPriority } from '../ILivechatPriority';
+import { ILivechatPrioritySchema } from '../ILivechatPriority';
 import type { ILivechatVisitor } from '../ILivechatVisitor';
-import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements';
-import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { IRoom, RoomID } from '../IRoom';
-import type { IUser } from '../IUser';
-import type { FileProp } from './MessageAttachment/Files/FileProp';
-import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
+import { IOmnichannelServiceLevelAgreementsSchema } from '../IOmnichannelServiceLevelAgreements';
+import { IRocketChatRecordSchema } from '../IRocketChatRecord';
+import { IRoomSchema, type IRoom } from '../IRoom';
+import { IUserSchema, type IUser } from '../IUser';
+import { serializableDate } from '../utils';
+import { FilePropSchema } from './MessageAttachment/Files/FileProp';
+import { MessageAttachmentSchema, type MessageAttachment } from './MessageAttachment/MessageAttachment';
 
-export type MessageUrl = {
-	url: string;
-	source?: string;
-	meta: Record<string, string>;
-	headers?: { contentLength?: string; contentType?: string };
-	ignoreParse?: boolean;
-	parsedUrl?: Pick<UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
-};
+export const MessageUrlSchema = z.object({
+	url: z.string(),
+	source: z.string().optional(),
+	meta: z.record(z.string(), z.string()),
+	headers: z
+		.object({
+			contentLength: z.string().optional(),
+			contentType: z.string().optional(),
+		})
+		.optional(),
+	ignoreParse: z.boolean().optional(),
+	parsedUrl: z
+		.object({
+			host: z.string().nullable(),
+			hash: z.string().nullable(),
+			pathname: z.string().nullable(),
+			protocol: z.string().nullable(),
+			port: z.string().nullable(),
+			query: z.union([z.string().nullable(), z.record(z.string(), z.any()).nullable()]),
+			search: z.string().nullable(),
+			hostname: z.string().nullable(),
+		})
+		.optional(),
+});
+
+export type MessageUrl = z.infer<typeof MessageUrlSchema>;
 
 const TeamMessageTypesValues = [
 	'removed-user-from-team',
@@ -93,153 +111,191 @@ const MessageTypes = [
 	...TeamMessageTypesValues,
 	...LivechatMessageTypesValues,
 ] as const;
-export type MessageTypesValues = (typeof MessageTypes)[number];
 
-export type TokenType = 'code' | 'inlinecode' | 'bold' | 'italic' | 'strike' | 'link';
-export type Token = {
-	token: string;
-	text: string;
-	type?: TokenType;
-	noHtml?: string;
-} & TokenExtra;
+export const MessageTypesSchema = z.enum(MessageTypes);
 
-export type TokenExtra = {
-	highlight?: boolean;
-	noHtml?: string;
-};
+export type MessageTypesValues = z.infer<typeof MessageTypesSchema>;
 
-export type MessageMention = {
-	type?: 'user' | 'team'; // mentions for 'all' and 'here' doesn't have type
-	_id: string;
-	name?: string;
-	username?: string;
-	fname?: string; // incase of channel mentions
-};
+const TokenTypeSchema = z.enum(['code', 'inlinecode', 'bold', 'italic', 'strike', 'link']);
+const TokenExtraSchema = z.object({
+	highlight: z.boolean().optional(),
+	noHtml: z.string().optional(),
+});
+const TokenSchema = z
+	.object({
+		token: z.string(),
+		text: z.string(),
+		type: TokenTypeSchema.optional(),
+	})
+	.and(TokenExtraSchema);
+
+export type TokenType = z.infer<typeof TokenTypeSchema>;
+export type Token = z.infer<typeof TokenSchema>;
+export type TokenExtra = z.infer<typeof TokenExtraSchema>;
+
+const MessageMentionSchema = z.object({
+	type: z.enum(['user', 'team']).optional(), // mentions for 'all' and 'here' doesn't have type
+	_id: z.string(),
+	name: z.string().optional(),
+	username: z.string().optional(),
+	fname: z.string().optional(), // incase of channel mentions
+});
+
+export type MessageMention = z.infer<typeof MessageMentionSchema>;
 
 export interface IMessageCustomFields {}
 
-interface IEncryptedContent {
-	algorithm: string;
-	ciphertext: string;
-}
+const IEncryptedContentSchema = z.object({
+	algorithm: z.string(),
+	ciphertext: z.string(),
+});
 
-interface IEncryptedContentV1 extends IEncryptedContent {
-	algorithm: 'rc.v1.aes-sha2';
-	ciphertext: string;
-}
+const IEncryptedContentV1Schema = IEncryptedContentSchema.extend({
+	algorithm: z.literal('rc.v1.aes-sha2'),
+});
 
-interface IEncryptedContentV2 extends IEncryptedContent {
-	algorithm: 'rc.v2.aes-sha2';
-	ciphertext: string;
-	iv: string; // Initialization Vector
-	kid: string; // ID of the key used to encrypt the message
-}
+const IEncryptedContentV2Schema = IEncryptedContentSchema.extend({
+	algorithm: z.literal('rc.v2.aes-sha2'),
+	iv: z.string(), // Initialization Vector
+	kid: z.string(), // ID of the key used to encrypt the message
+});
 
-interface IEncryptedContentFederation extends IEncryptedContent {
-	algorithm: 'm.megolm.v1.aes-sha2';
-	ciphertext: string;
-}
+const IEncryptedContentFederationSchema = IEncryptedContentSchema.extend({
+	algorithm: z.literal('m.megolm.v1.aes-sha2'),
+});
 
-export type EncryptedContent = IEncryptedContentV1 | IEncryptedContentV2 | IEncryptedContentFederation;
+const EncryptedContentSchema = z.union([IEncryptedContentV1Schema, IEncryptedContentV2Schema, IEncryptedContentFederationSchema]);
 
-export interface IMessage extends IRocketChatRecord {
-	rid: RoomID;
-	msg: string;
-	tmid?: string;
-	tshow?: boolean;
-	ts: Date;
-	mentions?: MessageMention[];
+export type EncryptedContent = z.infer<typeof EncryptedContentSchema>;
 
-	groupable?: boolean;
-	channels?: Pick<IRoom, '_id' | 'name'>[];
-	u: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
-	blocks?: MessageSurfaceLayout;
-	alias?: string;
-	md?: Root;
+export const IMessageSchema = IRocketChatRecordSchema.extend({
+	rid: z.lazy(() => IRoomSchema.shape._id),
+	msg: z.string(),
+	tmid: z.string().optional(),
+	tshow: z.boolean().optional(),
+	ts: serializableDate,
+	mentions: z.array(MessageMentionSchema).optional(),
 
-	_hidden?: boolean;
-	imported?: boolean;
-	replies?: IUser['_id'][];
-	location?: {
-		type: 'Point';
-		coordinates: [number, number];
-	};
-	starred?: { _id: IUser['_id'] }[];
-	pinned?: boolean;
-	pinnedAt?: Date;
-	pinnedBy?: Pick<IUser, '_id' | 'username'>;
-	unread?: boolean;
-	temp?: boolean;
-	drid?: RoomID;
-	tlm?: Date;
+	groupable: z.boolean().optional(),
+	channels: z.array(z.lazy(() => IRoomSchema.pick({ _id: true, name: true }))).optional(),
+	u: z.object({
+		_id: IUserSchema.shape._id,
+		username: z.string(),
+		name: z.string().optional(),
+	}),
+	blocks: z.custom<MessageSurfaceLayout>().optional(),
+	alias: z.string().optional(),
+	md: z.custom<Root>().optional(),
 
-	dcount?: number;
-	tcount?: number;
-	t?: MessageTypesValues;
-	e2e?: 'pending' | 'done';
-	e2eMentions?: { e2eUserMentions?: string[]; e2eChannelMentions?: string[] };
+	_hidden: z.boolean().optional(),
+	imported: z.boolean().optional(),
+	replies: z.array(IUserSchema.shape._id).optional(),
+	location: z
+		.object({
+			type: z.literal('Point'),
+			coordinates: z.tuple([z.number(), z.number()]),
+		})
+		.optional(),
+	starred: z.array(IUserSchema.pick({ _id: true })).optional(),
+	pinned: z.boolean().optional(),
+	pinnedAt: serializableDate.optional(),
+	pinnedBy: IUserSchema.pick({ _id: true, username: true }).optional(),
+	unread: z.boolean().optional(),
+	temp: z.boolean().optional(),
+	drid: z.lazy(() => IRoomSchema.shape._id).optional(),
+	tlm: serializableDate.optional(),
 
-	urls?: MessageUrl[];
+	dcount: z.number().optional(),
+	tcount: z.number().optional(),
+	t: z.enum(MessageTypes).optional(),
+	e2e: z.enum(['pending', 'done']).optional(),
+	e2eMentions: z
+		.object({
+			e2eUserMentions: z.array(z.string()).optional(),
+			e2eChannelMentions: z.array(z.string()).optional(),
+		})
+		.optional(),
 
-	/** @deprecated Deprecated */
-	actionLinks?: {
-		icon: keyof typeof Icons;
-		i18nLabel: unknown;
-		label: string;
-		method_id: string;
-		params: string;
-	}[];
+	urls: z.array(MessageUrlSchema).optional(),
 
-	/** @deprecated Deprecated in favor of files */
-	file?: FileProp;
-	fileUpload?: {
-		publicFilePath: string;
-		type?: string;
-		size?: number;
-	};
-	files?: FileProp[];
-	attachments?: MessageAttachment[];
+	actionLinks: z
+		.array(
+			z.object({
+				icon: z.string() as z.ZodType<keyof typeof Icons>,
+				i18nLabel: z.unknown(),
+				label: z.string(),
+				method_id: z.string(),
+				params: z.string(),
+			}),
+		)
+		.optional()
+		.meta({ deprecated: true }),
 
-	reactions?: {
-		[key: string]: { names?: string[]; usernames: string[]; federationReactionEventIds?: Record<string, string> };
-	};
+	file: FilePropSchema.optional().meta({ deprecated: true }),
+	fileUpload: z
+		.object({
+			publicFilePath: z.string(),
+			type: z.string().optional(),
+			size: z.number().optional(),
+		})
+		.optional(),
+	files: z.array(FilePropSchema).optional(),
+	attachments: z.array(MessageAttachmentSchema).optional(),
 
-	private?: boolean;
-	/* @deprecated */
-	bot?: Record<string, any>;
-	sentByEmail?: boolean;
-	webRtcCallEndTs?: Date;
-	role?: string;
+	reactions: z
+		.record(
+			z.string(),
+			z.object({
+				names: z.array(z.string()).optional(),
+				usernames: z.array(z.string()),
+				federationReactionEventIds: z.record(z.string(), z.string()).optional(),
+			}),
+		)
+		.optional(),
 
-	avatar?: string;
-	emoji?: string;
+	private: z.boolean().optional(),
+	bot: z.record(z.string(), z.any()).optional().meta({ deprecated: true }),
+	sentByEmail: z.boolean().optional(),
+	webRtcCallEndTs: serializableDate.optional(),
+	role: z.string().optional(),
+
+	avatar: z.string().optional(),
+	emoji: z.string().optional(),
 
 	// Tokenization fields
-	tokens?: Token[];
-	html?: string;
+	tokens: z.array(TokenSchema).optional(),
+	html: z.string().optional(),
 	// Messages sent from visitors have this field
-	token?: string;
-	federation?: {
-		eventId: string;
-		version?: number;
-	};
+	token: z.string().optional(),
+	federation: z
+		.object({
+			eventId: z.string(),
+			version: z.number().optional(),
+		})
+		.optional(),
 
 	/* used when message type is "omnichannel_sla_change_history" */
-	slaData?: {
-		definedBy: Pick<IUser, '_id' | 'username'>;
-		sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>;
-	};
+	slaData: z
+		.object({
+			definedBy: IUserSchema.pick({ _id: true, username: true }),
+			sla: IOmnichannelServiceLevelAgreementsSchema.pick({ name: true }).optional(),
+		})
+		.optional(),
 
 	/* used when message type is "omnichannel_priority_change_history" */
-	priorityData?: {
-		definedBy: Pick<IUser, '_id' | 'username'>;
-		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>;
-	};
+	priorityData: z
+		.object({
+			definedBy: IUserSchema.pick({ _id: true, username: true }),
+			priority: ILivechatPrioritySchema.pick({ name: true, i18n: true }).optional(),
+		})
+		.optional(),
 
-	customFields?: IMessageCustomFields;
+	customFields: z.custom<IMessageCustomFields>().optional(),
 
-	content?: EncryptedContent;
-}
+	content: EncryptedContentSchema.optional(),
+});
+
+export interface IMessage extends z.infer<typeof IMessageSchema> {}
 
 export type EncryptedMessageContent = Required<Pick<IMessage, 'content'>>;
 
@@ -313,14 +369,19 @@ export interface ITranslatedMessage extends IMessage {
 
 export const isTranslatedMessage = (message: IMessage): message is ITranslatedMessage => 'translations' in message;
 
-export interface IThreadMainMessage extends IMessage {
-	tcount: number;
-	tlm: Date;
-	replies: IUser['_id'][];
-}
-export interface IThreadMessage extends IMessage {
-	tmid: string;
-}
+export const IThreadMainMessageSchema = IMessageSchema.extend({
+	tcount: z.number(),
+	tlm: serializableDate,
+	replies: z.array(IUserSchema.shape._id),
+});
+
+export interface IThreadMainMessage extends z.infer<typeof IThreadMainMessageSchema> {}
+
+export const IThreadMessageSchema = IMessageSchema.extend({
+	tmid: z.string(),
+});
+
+export interface IThreadMessage extends z.infer<typeof IThreadMessageSchema> {}
 
 export const isThreadMainMessage = (message: IMessage): message is IThreadMainMessage => 'tcount' in message && 'tlm' in message;
 
@@ -385,7 +446,7 @@ export interface IOmnichannelSystemMessage extends IMessage {
 }
 
 export interface IMessageDiscussion extends IMessage {
-	drid: RoomID;
+	drid: IRoom['_id'];
 }
 
 export const isMessageDiscussion = (message: IMessage): message is IMessageDiscussion => {

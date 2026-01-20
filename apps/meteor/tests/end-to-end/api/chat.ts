@@ -898,7 +898,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', "The 'rid' property on the message object is missing.");
+					expect(res.body).to.have.property('error', '✖ Invalid input: expected string, received undefined\n  → at message.rid');
 				})
 				.end(done);
 		});
@@ -3395,7 +3395,7 @@ describe('[Chat]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.errorType).to.be.equal('invalid-params');
-					expect(res.body.error).to.include(`must have required property 'roomId'`);
+					expect(res.body.error).to.include('✖ Invalid input: expected string, received undefined\n  → at roomId');
 				})
 				.end(done);
 		});
@@ -3455,7 +3455,7 @@ describe('[Chat]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.errorType).to.be.equal('invalid-params');
-					expect(res.body.error).to.include('must be equal to one of the allowed values');
+					expect(res.body.error).to.include('✖ Invalid option: expected one of "UPDATED"|"DELETED"\n  → at type [invalid-params]');
 				})
 				.end(done);
 		});
@@ -3586,7 +3586,7 @@ describe('[Chat]', () => {
 					roomId: testChannel._id,
 					next: new Date(lastUpdate).getTime().toString(),
 					type: 'UPDATED',
-					count: 2,
+					count: '2',
 				});
 
 			expect(response.body.result.updated).to.have.lengthOf(2);

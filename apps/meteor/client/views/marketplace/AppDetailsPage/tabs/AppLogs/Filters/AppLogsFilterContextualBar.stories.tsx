@@ -12,7 +12,7 @@ export default {
 	decorators: [
 		mockAppRoot()
 			.withEndpoint('GET', '/apps/:id/logs/distinctValues', () => ({
-				success: true,
+				success: true as const,
 				instanceIds: ['instance-1', 'instance-2', 'instance-3'],
 				methods: ['method-1', 'method-2', 'method-3'],
 			}))

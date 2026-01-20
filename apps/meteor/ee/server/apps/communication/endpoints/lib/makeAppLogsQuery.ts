@@ -1,4 +1,5 @@
-import type { AppLogsProps } from '@rocket.chat/rest-typings';
+import type { GETAppsLogsQuerySchema } from '@rocket.chat/rest-typings';
+import type * as z from 'zod';
 
 /**
  * Creates a query object for fetching app logs based on provided parameters.
@@ -10,7 +11,7 @@ import type { AppLogsProps } from '@rocket.chat/rest-typings';
  * @returns A query object for fetching app logs.
  * @throws {Error} If the date range is invalid.
  */
-export function makeAppLogsQuery(queryParams: AppLogsProps) {
+export function makeAppLogsQuery(queryParams: z.infer<typeof GETAppsLogsQuerySchema>) {
 	const query: Record<string, any> = {};
 
 	if (queryParams.appId) {

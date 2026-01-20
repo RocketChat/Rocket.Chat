@@ -1,30 +1,41 @@
 import type { Root } from '@rocket.chat/message-parser';
+import * as z from 'zod';
 
-import type { FieldProps } from './FieldProps';
-import type { Dimensions } from './Files/Dimensions';
-import type { MessageAttachmentBase } from './MessageAttachmentBase';
+import { MessageAttachmentBaseSchema } from './MessageAttachmentBase';
 
-export type MarkdownFields = 'text' | 'pretext' | 'fields';
+export const MarkdownFieldsSchema = z.enum(['text', 'pretext', 'fields']);
 
-export type MessageAttachmentDefault = {
-	author_icon?: string;
-	author_link?: string;
-	author_name?: string;
+export const MessageAttachmentDefaultSchema = z
+	.object({
+		author_icon: z.string().optional(),
+		author_link: z.string().optional(),
+		author_name: z.string().optional(),
+		fields: z
+			.array(
+				z.object({
+					short: z.boolean().optional(),
+					title: z.string(),
+					value: z.string(),
+				}),
+			)
+			.optional(),
+		image_url: z.string().optional(),
+		image_dimensions: z
+			.object({
+				width: z.number(),
+				height: z.number(),
+			})
+			.optional(),
+		mrkdwn_in: z.array(MarkdownFieldsSchema).optional(),
+		pretext: z.string().optional(),
+		text: z.string().optional(),
+		md: z.custom<Root>().optional(),
+		thumb_url: z.string().optional(),
+		color: z.string().optional(),
+	})
+	.and(MessageAttachmentBaseSchema);
 
-	fields?: FieldProps[];
+export type MarkdownFields = z.infer<typeof MarkdownFieldsSchema>;
 
-	// footer
-	// footer_icon
-
-	image_url?: string;
-	image_dimensions?: Dimensions;
-
-	mrkdwn_in?: Array<MarkdownFields>;
-	pretext?: string;
-	text?: string;
-	md?: Root;
-
-	thumb_url?: string;
-
-	color?: string;
-} & MessageAttachmentBase;
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export interface MessageAttachmentDefault extends z.infer<typeof MessageAttachmentDefaultSchema> {}

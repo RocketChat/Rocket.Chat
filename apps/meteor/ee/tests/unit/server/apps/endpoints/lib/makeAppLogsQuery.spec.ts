@@ -1,7 +1,10 @@
-import type { AppLogsProps } from '@rocket.chat/rest-typings';
+import type { GETAppsLogsQuerySchema } from '@rocket.chat/rest-typings';
 import { expect } from 'chai';
+import type * as z from 'zod';
 
 import { makeAppLogsQuery } from '../../../../../../server/apps/communication/endpoints/lib/makeAppLogsQuery';
+
+type AppLogsProps = z.infer<typeof GETAppsLogsQuerySchema>;
 
 describe('makeAppLogsQuery', () => {
 	const appId = 'test-app-id';

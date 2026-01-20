@@ -1,7 +1,13 @@
-import type { RocketChatRecordDeleted, IRole, IUserInRole } from '@rocket.chat/core-typings';
+import { type RocketChatRecordDeleted, type IRole, type IUserInRole, IUserSchema } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
+import * as z from 'zod';
 
+import { SuccessResponseSchema } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+
+export const GETRolesGetUsersInPublicRolesResponseSchema = SuccessResponseSchema.extend({
+	users: z.array(IUserSchema.pick({ _id: true, username: true, roles: true })),
+});
 
 const ajv = new Ajv({
 	coerceTypes: true,

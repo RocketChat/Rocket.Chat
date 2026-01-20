@@ -1,32 +1,16 @@
-import { ajv } from '@rocket.chat/rest-typings';
+import {
+	ForbiddenErrorResponseSchema,
+	NotFoundErrorResponseSchema,
+	SuccessResponseSchema,
+	UnauthorizedErrorResponseSchema,
+} from '@rocket.chat/rest-typings';
+import * as z from 'zod';
 
 import type { AppsRestApi } from '../rest';
 
-// This might be a good candidate for a default validator function exported by @rocket.chat/rest-typings
-const errorResponse = ajv.compile<{
-	success: false;
-	error: string;
-}>({
-	additionalProperties: false,
-	type: 'object',
-	properties: {
-		error: {
-			type: 'string',
-		},
-		status: {
-			type: 'string',
-			nullable: true,
-		},
-		message: {
-			type: 'string',
-			nullable: true,
-		},
-		success: {
-			type: 'boolean',
-			description: 'Indicates if the request was successful.',
-		},
-	},
-	required: ['success', 'error'],
+const GETAppsIdLogsDistinctValuesResponseSchema = SuccessResponseSchema.extend({
+	instanceIds: z.array(z.string()),
+	methods: z.array(z.string()),
 });
 
 export const registerAppLogsDistinctInstanceHandler = ({ api, _orch }: AppsRestApi) =>
@@ -36,19 +20,10 @@ export const registerAppLogsDistinctInstanceHandler = ({ api, _orch }: AppsRestA
 			authRequired: true,
 			permissionsRequired: ['manage-apps'],
 			response: {
-				200: ajv.compile({
-					type: 'object',
-					properties: {
-						instanceIds: { type: 'array', items: { type: 'string' } },
-						methods: { type: 'array', items: { type: 'string' } },
-						success: { type: 'boolean' },
-					},
-					required: ['instanceIds', 'methods', 'success'],
-					additionalProperties: false,
-				}),
-				401: errorResponse,
-				403: errorResponse,
-				404: errorResponse,
+				200: GETAppsIdLogsDistinctValuesResponseSchema,
+				401: UnauthorizedErrorResponseSchema,
+				403: ForbiddenErrorResponseSchema,
+				404: NotFoundErrorResponseSchema,
 			},
 		},
 		async function action() {

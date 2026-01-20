@@ -4,6 +4,7 @@ import type { AppsEndpoints } from './apps';
 import type { DefaultEndpoints } from './default';
 import type { ReplacePlaceholders } from './helpers/ReplacePlaceholders';
 import type { AssetsEndpoints } from './v1/assets';
+import type { ServerEventsEndpoints } from './v1/audit';
 import type { AuthEndpoints } from './v1/auth';
 import type { AutoTranslateEndpoints } from './v1/autoTranslate';
 import type { BannersEndpoints } from './v1/banners';
@@ -15,7 +16,6 @@ import type { CommandsEndpoints } from './v1/commands';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DirectoryEndpoint } from './v1/directory';
 import type { ImEndpoints, DmEndpoints } from './v1/dm';
-import type { E2eEndpoints } from './v1/e2e';
 import type { EmailInboxEndpoints } from './v1/email-inbox';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
 import type { FederationEndpoints } from './v1/federation';
@@ -36,7 +36,6 @@ import type { PresenceEndpoints } from './v1/presence';
 import type { PushEndpoints } from './v1/push';
 import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
-import type { ServerEventsEndpoints } from './v1/server-events';
 import type { SettingsEndpoints } from './v1/settings';
 import type { StatisticsEndpoints } from './v1/statistics';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
@@ -78,7 +77,6 @@ export interface Endpoints
 		IntegrationHooksEndpoints,
 		VideoConferenceEndpoints,
 		InvitesEndpoints,
-		E2eEndpoints,
 		AssetsEndpoints,
 		EmailInboxEndpoints,
 		MailerEndpoints,
@@ -203,6 +201,9 @@ export type UrlParams<T extends string> = string extends T
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
 export * from './apps';
+export * from './v1/e2e';
+export * from './v1/call-history';
+export * from './v1/custom-sounds';
 export * from './v1/presence';
 export * from './v1/roles';
 export * from './v1/settings';
@@ -213,6 +214,9 @@ export * from './v1/channels';
 export * from './v1/customUserStatus';
 export * from './v1/subscriptionsEndpoints';
 export * from './v1/mailer';
+export * from './v1/oauth-apps';
+export * from './v1/permissions';
+export * from './v1/webdav';
 export * from './v1/mailer/MailerParamsPOST';
 export * from './v1/mailer/MailerUnsubscribeParamsPOST';
 export * from './v1/misc';
@@ -236,15 +240,11 @@ export * from './v1/users/UsersUpdateParamsPOST';
 export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
 export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
 export * from './v1/moderation';
-export * from './v1/server-events';
+export * from './v1/audit';
 
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
 export * from './v1/autotranslate/AutotranslateTranslateMessageParamsPOST';
-export * from './v1/e2e/e2eGetUsersOfRoomWithoutKeyParamsGET';
-export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
-export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
-export * from './v1/e2e';
 export * from './v1/import';
 export * from './v1/email-inbox';
 export * from './v1/calendar';
