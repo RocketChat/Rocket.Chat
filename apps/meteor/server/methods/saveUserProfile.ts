@@ -90,12 +90,16 @@ async function saveUserProfile(
 				method: 'saveUserProfile',
 			});
 		}
-		if (settings.bio.length > MAX_BIO_LENGTH) {
+		const trimmedBio = settings.bio.trim();
+		if (trimmedBio && trimmedBio.length > MAX_BIO_LENGTH) {
 			throw new Meteor.Error('error-bio-size-exceeded', `Bio size exceeds ${MAX_BIO_LENGTH} characters`, {
 				method: 'saveUserProfile',
 			});
 		}
-		await Users.setBio(user._id, settings.bio.trim());
+		if (!trimmedBio) {
+			unset.bio = true;
+		}
+		await Users.setBio(user._id, trimmedBio);
 	}
 
 	if (user && (settings.nickname || settings.nickname === '')) {
