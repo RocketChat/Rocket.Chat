@@ -2,7 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 
 import { FlexTab } from './flextab';
 
-export class OmnichannelEditContactFlaxTab extends FlexTab {
+export class OmnichannelEditContactFlexTab extends FlexTab {
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'contact' }));
 	}

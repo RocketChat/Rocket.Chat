@@ -2,7 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelContactInfo } from '../omnichannel-info';
 import { OmnichannelContactCenter } from './omnichannel-contact-center';
-import { OmnichannelEditContactFlaxTab } from '../../fragments/edit-contact-flaxtab';
+import { OmnichannelEditContactFlexTab } from '../../fragments/edit-contact-flaxtab';
 import { Table } from '../../fragments/table';
 
 class OmnichannelContactCenterContactsTable extends Table {
@@ -14,14 +14,14 @@ class OmnichannelContactCenterContactsTable extends Table {
 export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
 	readonly contactInfo: OmnichannelContactInfo;
 
-	readonly editContact: OmnichannelEditContactFlaxTab;
+	readonly editContact: OmnichannelEditContactFlexTab;
 
 	readonly table: OmnichannelContactCenterContactsTable;
 
 	constructor(page: Page) {
 		super(page);
 		this.contactInfo = new OmnichannelContactInfo(page);
-		this.editContact = new OmnichannelEditContactFlaxTab(page);
+		this.editContact = new OmnichannelEditContactFlexTab(page);
 		this.table = new OmnichannelContactCenterContactsTable(page);
 	}
 
