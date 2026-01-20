@@ -221,9 +221,8 @@ export class LDAPEEManager extends LDAPManager {
 			await this.syncUserRoles(ldap, user, dn);
 			await this.syncUserChannels(ldap, user, dn);
 			await this.syncUserTeams(ldap, user, dn, isNewRecord);
-		} catch (e) {
-			logger.debug({ msg: 'Advanced Sync failed for user', dn });
-			logger.error(e);
+		} catch (err) {
+			logger.error({ msg: 'Advanced Sync failed for user', dn, err });
 		}
 	}
 
