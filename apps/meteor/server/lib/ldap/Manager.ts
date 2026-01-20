@@ -241,7 +241,7 @@ export class LDAPManager {
 				// Do a search as the user and check if they have any result
 				authLogger.debug('User authenticated successfully, performing additional search.');
 				if ((await ldap.searchAndCount(ldapUser.dn, {})) === 0) {
-					authLogger.debug(`Bind successful but user ${ldapUser.dn} was not found via search`);
+					authLogger.debug({ msg: 'Bind successful but user was not found via search', dn: ldapUser.dn });
 				}
 			}
 			return ldapUser;
@@ -267,7 +267,7 @@ export class LDAPManager {
 				// Do a search as the user and check if they have any result
 				authLogger.debug('User authenticated successfully, performing additional search.');
 				if ((await ldap.searchAndCount(ldapUser.dn, {})) === 0) {
-					authLogger.debug(`Bind successful but user ${ldapUser.dn} was not found via search`);
+					authLogger.debug({ msg: 'Bind successful but user was not found via search', dn: ldapUser.dn });
 				}
 			}
 

@@ -287,7 +287,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		this.debug('Restarting app subprocess');
 		const logger = new AppConsole('runtime:restart');
 
-		logger.info('Starting restart procedure for app subprocess...', this.livenessManager.getRuntimeData());
+		logger.info({ msg: 'Starting restart procedure for app subprocess...', runtimeData: this.livenessManager.getRuntimeData() });
 
 		this.state = 'restarting';
 
@@ -297,13 +297,13 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			const hasKilled = await this.killProcess();
 
 			if (hasKilled) {
-				logger.debug('Process successfully terminated', { pid });
+				logger.debug({ msg: 'Process successfully terminated', pid });
 			} else {
-				logger.warn('Could not terminate process. Maybe it was already dead?', { pid });
+				logger.warn({ msg: 'Could not terminate process. Maybe it was already dead?', pid });
 			}
 
 			await this.setupApp();
-			logger.info('New subprocess successfully spawned', { pid: this.deno.pid });
+			logger.info({ msg: 'New subprocess successfully spawned', pid: this.deno.pid });
 
 			// setupApp() changes the state to 'ready' - we'll need to workaround that for now
 			this.state = 'restarting';
@@ -319,7 +319,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 			logger.info('Successfully restarted app subprocess');
 		} catch (e) {
-			logger.error("Failed to restart app's subprocess", { error: e.message || e });
+			logger.error({ msg: "Failed to restart app's subprocess", err: new Error(e.message || e) });
 			throw e;
 		} finally {
 			await this.logStorage.storeEntries(AppConsole.toStorageEntry(this.getAppId(), logger));
