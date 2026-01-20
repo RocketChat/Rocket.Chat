@@ -38,7 +38,7 @@ Meteor.startup(async () => {
 		businessHourManager.registerBusinessHourBehavior(businessHours[value as keyof typeof businessHours]);
 		if (settings.get('Livechat_enable_business_hours')) {
 			await businessHourManager.restartManager();
-			logger.debug({ msg: 'Business hour manager started' });
+			logger.debug('Business hour manager started');
 		}
 	});
 });
