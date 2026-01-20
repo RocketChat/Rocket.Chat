@@ -27,7 +27,7 @@ export interface ILivechatCustomFieldModel extends IBaseModel<ILivechatCustomFie
 		options?: FindOptions<ILivechatCustomField>,
 	): FindCursor<ILivechatCustomField>;
 	createOrUpdateCustomField(
-		_id: string,
+		_id: string | null,
 		field: string,
 		label: ILivechatCustomField['label'],
 		scope: ILivechatCustomField['scope'],
