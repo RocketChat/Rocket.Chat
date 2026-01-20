@@ -36,9 +36,9 @@ export class BeforeSaveBadWords {
 
 		try {
 			this.badWordsRegex = new RegExp(`(?<=^|[\\p{P}\\p{Z}])(${badWords.join('|')})(?=$|[\\p{P}\\p{Z}])`, 'gmiu');
-		} catch (error) {
+		} catch (err) {
 			this.badWordsRegex = null;
-			this.logger.error('Erorr when initializing bad words filter', error);
+			this.logger.error({ msg: 'Error when initializing bad words filter', err });
 		}
 
 		if (goodWordsList?.length) {

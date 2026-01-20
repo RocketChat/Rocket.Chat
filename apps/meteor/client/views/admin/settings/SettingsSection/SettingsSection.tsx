@@ -89,14 +89,9 @@ function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, so
 				{children}
 			</FieldGroup>
 			{hasReset && canReset && (
-				<Button
-					children={t('Reset_section_settings')}
-					secondary
-					danger
-					marginBlockStart={16}
-					data-section={sectionName}
-					onClick={handleResetSectionClick}
-				/>
+				<Button secondary danger marginBlockStart={16} data-section={sectionName} onClick={handleResetSectionClick}>
+					{t('Reset_section_settings')}
+				</Button>
 			)}
 		</AccordionItem>
 	);

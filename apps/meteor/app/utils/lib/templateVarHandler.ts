@@ -9,7 +9,7 @@ export const templateVarHandler = function (variable: string, object: Record<str
 
 	if (match == null) {
 		if (!object.hasOwnProperty(variable)) {
-			logger?.debug(`user does not have attribute: ${variable}`);
+			logger?.debug({ msg: 'User does not have attribute', attribute: variable });
 			return;
 		}
 		return object[variable];
@@ -20,12 +20,12 @@ export const templateVarHandler = function (variable: string, object: Record<str
 		const tmplAttrName = match[1];
 
 		if (!object.hasOwnProperty(tmplAttrName)) {
-			logger?.debug(`user does not have attribute: ${tmplAttrName}`);
+			logger?.debug({ msg: 'User does not have attribute', attribute: tmplAttrName });
 			return;
 		}
 
 		const attrVal = object[tmplAttrName];
-		logger?.debug(`replacing template var: ${tmplVar} with value: ${attrVal}`);
+		logger?.debug({ msg: 'Replacing template var', templateVar: tmplVar, value: attrVal });
 		tmpVariable = tmpVariable.replace(tmplVar, attrVal);
 		match = templateRegex.exec(variable);
 	}
