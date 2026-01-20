@@ -142,7 +142,8 @@ test.describe.serial('file-upload', () => {
 			const file11 = 'number6.png';
 			const files = new Array(10).fill('number1.png');
 
-			await Promise.all([...files, file11].map((file) => poHomeChannel.content.sendFileMessage(file)));
+			await Promise.all(files.map((file) => poHomeChannel.content.sendFileMessage(file)));
+			await poHomeChannel.content.sendFileMessage(file11);
 
 			await expect(poHomeChannel.composer.getFilesInComposer()).toHaveCount(10);
 			await expect(poHomeChannel.composer.getFileByName(file11)).not.toBeVisible();
