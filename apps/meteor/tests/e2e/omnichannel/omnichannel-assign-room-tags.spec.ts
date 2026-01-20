@@ -82,7 +82,7 @@ test.describe('OC - Tags Visibility', () => {
 
 		await test.step('check available tags', async () => {
 			await poOmnichannel.roomInfo.btnEdit.click();
-			await expect(poOmnichannel.roomInfo.root).toBeVisible();
+			await expect(poOmnichannel.editRoomInfo.root).toBeVisible();
 			await poOmnichannel.editRoomInfo.inputTags.click();
 		});
 
@@ -119,7 +119,7 @@ test.describe('OC - Tags Visibility', () => {
 		await test.step('Open room info', async () => {
 			await poOmnichannel.sidebar.getSidebarItemByName(visitorB.name).click();
 			await poOmnichannel.roomInfo.btnEdit.click();
-			await expect(poOmnichannel.roomInfo.root).toBeVisible();
+			await expect(poOmnichannel.editRoomInfo.root).toBeVisible();
 			await poOmnichannel.editRoomInfo.inputTags.click();
 		});
 
