@@ -94,7 +94,9 @@ const uploadsDeleteEndpoint = API.v1.post(
 		const store = FileUpload.getStore('Uploads');
 
 		// Find every file that is derived from the file that is being deleted (its thumbnails)
-		const additionalFiles = (await Uploads.findAllByOriginalId(fileId, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
+		const additionalFiles = await Uploads.findAllByOriginalFileId(fileId, { projection: { _id: 1 } })
+			.map(({ _id }) => _id)
+			.toArray();
 		const allFiles = [fileId, ...additionalFiles];
 
 		if (msg) {

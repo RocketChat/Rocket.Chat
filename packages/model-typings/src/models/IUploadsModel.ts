@@ -19,5 +19,5 @@ export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 
 	setFederationInfo(fileId: IUpload['_id'], info: Required<IUpload>['federation']): Promise<UpdateResult>;
 
-	findAllByOriginalId(originalId: string, options?: FindOptions<IUpload>): FindCursor<IUpload>;
+	findAllByOriginalFileId(originalFileId: string, options?: FindOptions<IUpload>): FindCursor<IUpload>;
 }
