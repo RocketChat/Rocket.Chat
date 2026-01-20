@@ -9,7 +9,6 @@ import {
 	validateNotFoundErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../file-upload/server';
@@ -122,7 +121,7 @@ const uploadsDeleteEndpoint = API.v1.post(
 				await store.deleteById(id);
 				deletedFiles.push(id);
 			} catch (err) {
-				SystemLogger.error({ msg: 'Failed to delete derived file', fileId: id, originalFileId: fileId, err });
+				this.logger.error({ msg: 'Failed to delete derived file', fileId: id, originalFileId: fileId, err });
 			}
 		}
 
