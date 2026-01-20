@@ -2,7 +2,6 @@ import { Box } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 
-import IconButtonElement from '../elements/IconButtonElement';
 import IconElement from '../elements/IconElement';
 import type { BlockProps } from '../utils/BlockProps';
 
@@ -18,7 +17,7 @@ const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps): ReactElem
 			borderRadius='x4'
 			borderColor='extra-light'
 			maxWidth='345px'
-			backgroundColor='surface-neutral'
+			backgroundColor='surface-tint'
 			overflow='hidden'
 			color='default'
 		>
@@ -53,9 +52,7 @@ const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps): ReactElem
 								return null;
 							})}
 						</Box>
-						<div>
-							{action ? <IconButtonElement block={action} context={context} surfaceRenderer={surfaceRenderer} index={index} /> : null}
-						</div>
+						{action && <div>{surfaceRenderer.renderActionsBlockElement(action, index)}</div>}
 					</Box>
 				);
 			})}

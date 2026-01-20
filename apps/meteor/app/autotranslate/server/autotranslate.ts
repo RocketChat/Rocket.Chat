@@ -10,11 +10,11 @@ import type {
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Subscriptions } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { callbacks } from '../../../lib/callbacks';
-import { isTruthy } from '../../../lib/isTruthy';
+import { callbacks } from '../../../server/lib/callbacks';
 import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { Markdown } from '../../markdown/server';
 import { settings } from '../../settings/server';

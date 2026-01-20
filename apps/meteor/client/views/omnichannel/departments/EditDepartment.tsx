@@ -18,10 +18,13 @@ import {
 	Option,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter, usePermission } from '@rocket.chat/ui-contexts';
+import { validateEmail } from '@rocket.chat/tools';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useEndpoint, useRouter, usePermission } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { useId, useMemo, useState } from 'react';
+import { useId, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import DepartmentsAgentsTable from './DepartmentAgentsTable/DepartmentAgentsTable';
 import DepartmentTags from './DepartmentTags';
@@ -29,12 +32,8 @@ import type { EditDepartmentFormData } from './definitions';
 import { formatAgentListPayload } from './utils/formatAgentListPayload';
 import { formatEditDepartmentPayload } from './utils/formatEditDepartmentPayload';
 import { getFormInitialValues } from './utils/getFormInititalValues';
-import { validateEmail } from '../../../../lib/emailValidator';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useRoomsList } from '../../../hooks/useRoomsList';
-import { AsyncStatePhase } from '../../../lib/asyncState';
 import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentBusinessHours } from '../additionalForms';
 import AutoCompleteUnit from '../additionalForms/AutoCompleteUnit';
 import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
@@ -54,13 +53,13 @@ export type EditDepartmentProps = {
 
 function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmentProps) {
 	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
 	const { department, agents = [] } = data || {};
 
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 	const canManageUnits = usePermission('manage-livechat-units');
 
 	const initialValues = getFormInitialValues({ department, agents, allowedToForwardData });
@@ -69,22 +68,15 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 		register,
 		control,
 		handleSubmit,
-		watch,
 		formState: { errors, isValid, isDirty, isSubmitting },
 	} = useForm<EditDepartmentFormData>({ mode: 'onChange', defaultValues: initialValues });
-
-	const requestTagBeforeClosingChat = watch('requestTagBeforeClosingChat');
 
 	const [fallbackFilter, setFallbackFilter] = useState<string>('');
 	const [isUnitRequired, setUnitRequired] = useState(false);
 
 	const debouncedFallbackFilter = useDebouncedValue(fallbackFilter, 500);
 
-	const { itemsList: RoomsList, loadMoreItems: loadMoreRooms } = useRoomsList(
-		useMemo(() => ({ text: debouncedFallbackFilter }), [debouncedFallbackFilter]),
-	);
-
-	const { phase: roomsPhase, items: roomsItems, itemCount: roomsTotal } = useRecordList(RoomsList);
+	const { data: roomItems = [], fetchNextPage } = useRoomsList({ text: debouncedFallbackFilter });
 
 	const createDepartment = useEndpoint('POST', '/v1/livechat/department');
 	const updateDepartmentInfo = useEndpoint('PUT', '/v1/livechat/department/:_id', { _id: id || '' });
@@ -257,11 +249,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 											flexShrink={0}
 											filter={fallbackFilter}
 											setFilter={setFallbackFilter as (value?: string | number) => void}
-											options={roomsItems}
+											options={roomItems}
 											placeholder={t('Channel_name')}
-											endReached={
-												roomsPhase === AsyncStatePhase.LOADING ? () => undefined : (start) => loadMoreRooms(start, Math.min(50, roomsTotal))
-											}
+											endReached={() => fetchNextPage()}
 											aria-busy={fallbackFilter !== debouncedFallbackFilter}
 										/>
 									)}
@@ -414,33 +404,28 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							</FieldRow>
 						</Field>
 
-						{requestTagBeforeClosingChat && (
-							<Field>
-								<FieldLabel htmlFor={chatClosingTagsField} required>
-									{t('Conversation_closing_tags')}
-								</FieldLabel>
-								<Controller
-									control={control}
-									name='chatClosingTags'
-									rules={{ required: t('Required_field', 'tags') }}
-									render={({ field: { value, onChange } }) => (
-										<DepartmentTags
-											id={chatClosingTagsField}
-											value={value}
-											onChange={onChange}
-											error={errors.chatClosingTags?.message as string}
-											aria-describedby={`${chatClosingTagsField}-hint ${chatClosingTagsField}-error`}
-										/>
-									)}
-								/>
-								<FieldHint id={`${chatClosingTagsField}-hint`}>{t('Conversation_closing_tags_description')}</FieldHint>
-								{errors.chatClosingTags && (
-									<FieldError aria-live='assertive' id={`${chatClosingTagsField}-error`}>
-										{errors.chatClosingTags?.message}
-									</FieldError>
+						<Field>
+							<FieldLabel htmlFor={chatClosingTagsField}>{t('Conversation_closing_tags')}</FieldLabel>
+							<Controller
+								control={control}
+								name='chatClosingTags'
+								render={({ field: { value, onChange } }) => (
+									<DepartmentTags
+										id={chatClosingTagsField}
+										value={value}
+										onChange={onChange}
+										error={errors.chatClosingTags?.message as string}
+										aria-describedby={`${chatClosingTagsField}-hint ${chatClosingTagsField}-error`}
+									/>
 								)}
-							</Field>
-						)}
+							/>
+							<FieldHint id={`${chatClosingTagsField}-hint`}>{t('Conversation_closing_tags_description')}</FieldHint>
+							{errors.chatClosingTags && (
+								<FieldError aria-live='assertive' id={`${chatClosingTagsField}-error`}>
+									{errors.chatClosingTags?.message}
+								</FieldError>
+							)}
+						</Field>
 
 						<Field>
 							<FieldRow>

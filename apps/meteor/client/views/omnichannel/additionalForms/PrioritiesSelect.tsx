@@ -19,7 +19,7 @@ type PrioritiesSelectProps = {
 
 export const PrioritiesSelect = ({ value = '', label, options, onChange }: PrioritiesSelectProps) => {
 	const { t } = useTranslation();
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 	const [sorting] = useState<Record<string, LivechatPriorityWeight>>({});
 
 	const formattedOptions = useMemo<SelectOption[]>(() => {

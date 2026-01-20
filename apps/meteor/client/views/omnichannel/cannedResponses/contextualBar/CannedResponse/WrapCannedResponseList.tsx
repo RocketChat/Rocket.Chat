@@ -1,15 +1,12 @@
 import type { IOmnichannelCannedResponse, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useLocalStorage, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useRouter } from '@rocket.chat/ui-contexts';
+import { useSetModal, useRouter, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, MouseEvent } from 'react';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 import CannedResponseList from './CannedResponseList';
-import { useRecordList } from '../../../../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import { useChat } from '../../../../room/contexts/ChatContext';
 import { useRoom } from '../../../../room/contexts/RoomContext';
-import { useRoomToolbox } from '../../../../room/contexts/RoomToolboxContext';
 import { useCannedResponseFilterOptions } from '../../../hooks/useCannedResponseFilterOptions';
 import { useCannedResponseList } from '../../../hooks/useCannedResponseList';
 import { useIsRoomOverMacLimit } from '../../../hooks/useIsRoomOverMacLimit';
@@ -34,10 +31,8 @@ export const WrapCannedResponseList = () => {
 
 	const debouncedText = useDebouncedValue(text, 400);
 
-	const { cannedList, loadMoreItems, reload } = useCannedResponseList(
-		useMemo(() => ({ filter: debouncedText, type }), [debouncedText, type]),
-	);
-	const { phase, items, itemCount } = useRecordList(cannedList);
+	// TODO: handle pending and error states
+	const { data, fetchNextPage, refetch } = useCannedResponseList({ filter: debouncedText, type });
 
 	const onClickItem = useEffectEvent(
 		(
@@ -69,16 +64,15 @@ export const WrapCannedResponseList = () => {
 	};
 
 	const onClickCreate = (): void => {
-		setModal(<CreateCannedResponse onClose={() => setModal(null)} reloadCannedList={reload} />);
+		setModal(<CreateCannedResponse onClose={() => setModal(null)} reloadCannedList={refetch} />);
 	};
 
 	return (
 		<CannedResponseList
-			loadMoreItems={loadMoreItems}
-			cannedItems={items}
-			itemCount={itemCount}
+			loadMoreItems={fetchNextPage}
+			cannedItems={data?.cannedItems ?? []}
+			itemCount={data?.total ?? 0}
 			onClose={closeTab}
-			loading={phase === AsyncStatePhase.LOADING}
 			options={options}
 			text={text}
 			setText={handleTextChange}
@@ -88,7 +82,7 @@ export const WrapCannedResponseList = () => {
 			onClickUse={onClickUse}
 			onClickItem={onClickItem}
 			onClickCreate={onClickCreate}
-			reload={reload}
+			reload={refetch}
 		/>
 	);
 };

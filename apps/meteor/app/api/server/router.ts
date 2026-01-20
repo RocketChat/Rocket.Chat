@@ -1,16 +1,18 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+import type { IncomingMessage } from 'node:http';
+
 import type { ResponseSchema } from '@rocket.chat/http-router';
 import { Router } from '@rocket.chat/http-router';
-import type { Context as HonoContext } from 'hono';
+import type { Context } from 'hono';
 
 import type { TypedOptions } from './definition';
 
-declare module 'hono' {
-	interface ContextVariableMap {
-		'route': string;
+type HonoContext = Context<{
+	Bindings: { incoming: IncomingMessage };
+	Variables: {
+		'remoteAddress': string;
 		'bodyParams-override'?: Record<string, any>;
-	}
-}
+	};
+}>;
 
 export type APIActionContext = {
 	requestIp: string;
@@ -21,6 +23,7 @@ export type APIActionContext = {
 	path: string;
 	response: any;
 	route: string;
+	incoming: IncomingMessage;
 };
 
 export type APIActionHandler = (this: APIActionContext, request: Request) => Promise<ResponseSchema<TypedOptions>>;
@@ -31,7 +34,7 @@ export class RocketChatAPIRouter<
 		[x: string]: unknown;
 	} = NonNullable<unknown>,
 > extends Router<TBasePath, TOperations, APIActionHandler> {
-	protected convertActionToHandler(action: APIActionHandler): (c: HonoContext) => Promise<ResponseSchema<TypedOptions>> {
+	protected override convertActionToHandler(action: APIActionHandler): (c: HonoContext) => Promise<ResponseSchema<TypedOptions>> {
 		return async (c: HonoContext): Promise<ResponseSchema<TypedOptions>> => {
 			const { req, res } = c;
 			const queryParams = this.parseQueryParams(req);
@@ -39,9 +42,10 @@ export class RocketChatAPIRouter<
 				request: req,
 				extra: { bodyParamsOverride: c.var['bodyParams-override'] || {} },
 			});
+
 			const request = req.raw.clone();
 
-			const context = {
+			const context: APIActionContext = {
 				requestIp: c.get('remoteAddress'),
 				urlParams: req.param(),
 				queryParams,
@@ -50,7 +54,8 @@ export class RocketChatAPIRouter<
 				path: req.path,
 				response: res,
 				route: req.routePath,
-			} as APIActionContext;
+				incoming: c.env.incoming,
+			};
 
 			return action.apply(context, [request]);
 		};

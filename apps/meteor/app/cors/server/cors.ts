@@ -169,11 +169,7 @@ WebApp.httpServer.addListener('request', (req, res, ...args) => {
 	// @ts-expect-error - `pair` is valid, but doesnt exists on types
 	const isSsl = req.connection.pair || (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'].indexOf('https') !== -1);
 
-	logger.debug('req.url', req.url);
-	logger.debug('remoteAddress', remoteAddress);
-	logger.debug('isLocal', isLocal);
-	logger.debug('isSsl', isSsl);
-	logger.debug('req.headers', req.headers);
+	logger.debug({ msg: 'CORS request info', url: req.url, remoteAddress, isLocal, isSsl, headers: req.headers });
 
 	if (!isLocal && !isSsl) {
 		let host = req.headers.host || url.parse(Meteor.absoluteUrl()).hostname || '';

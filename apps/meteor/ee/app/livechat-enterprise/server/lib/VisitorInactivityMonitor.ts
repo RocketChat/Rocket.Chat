@@ -8,7 +8,7 @@ import { schedulerLogger } from './logger';
 import { notifyOnRoomChangedById } from '../../../../../app/lib/server/lib/notifyListener';
 import { closeRoom } from '../../../../../app/livechat/server/lib/closeRoom';
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
@@ -98,7 +98,7 @@ export class VisitorInactivityMonitor {
 			user: this.user,
 		});
 		void notifyOnRoomChangedById(room._id);
-		this.logger.info(`Room ${room._id} closed`);
+		this.logger.info({ msg: 'Closed room due to visitor inactivity', roomId: room._id });
 	}
 
 	async placeRoomOnHold(room: IOmnichannelRoom) {
@@ -128,12 +128,12 @@ export class VisitorInactivityMonitor {
 		await LivechatRooms.findAbandonedOpenRooms(new Date(), extraQuery).forEach((room) => {
 			switch (action) {
 				case 'close': {
-					this.logger.info(`Closing room ${room._id}`);
+					this.logger.info({ msg: 'Closing room due to abandoned visitor', roomId: room._id });
 					promises.push(this.closeRooms(room));
 					break;
 				}
 				case 'on-hold': {
-					this.logger.info(`Placing room ${room._id} on hold`);
+					this.logger.info({ msg: 'Placing room on hold due to abandoned visitor', roomId: room._id });
 					promises.push(this.placeRoomOnHold(room));
 					break;
 				}

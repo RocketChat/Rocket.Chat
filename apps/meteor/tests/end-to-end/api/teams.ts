@@ -1,6 +1,7 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
@@ -1479,6 +1480,163 @@ describe('/teams.delete', () => {
 						});
 				})
 				.catch(done);
+		});
+	});
+
+	describe("delete team when team's main room id is provided in roomsToRemove", () => {
+		const tempTeamName = `temporaryTeam-${Random.id()}`;
+		const channel1Name = `${tempTeamName}-channel1`;
+		const channel2Name = `${tempTeamName}-channel2`;
+		let teamId: ITeam['_id'];
+		let channel1Id: IRoom['_id'];
+		let channel2Id: IRoom['_id'];
+		let teamMainRoomId: IRoom['_id'];
+
+		before('create team', async () => {
+			await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: tempTeamName,
+					type: 0,
+				})
+				.then((response) => {
+					teamId = response.body.team._id;
+					teamMainRoomId = response.body.team.roomId;
+				});
+		});
+
+		before('create channel 1', async () => {
+			await request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: channel1Name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					channel1Id = res.body.channel._id;
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', channel1Name);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', 0);
+				});
+		});
+
+		before('add channel 1 to team', async () => {
+			await request
+				.post(api('teams.addRooms'))
+				.set(credentials)
+				.send({
+					rooms: [channel1Id],
+					teamId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms');
+					expect(res.body.rooms[0]).to.have.property('teamId', teamId);
+					expect(res.body.rooms[0]).to.not.have.property('teamDefault');
+				});
+		});
+
+		before('create channel 2', async () => {
+			await request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: channel2Name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					channel2Id = res.body.channel._id;
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', channel2Name);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', 0);
+				});
+		});
+
+		before('add channel 2 to team', async () => {
+			await request
+				.post(api('teams.addRooms'))
+				.set(credentials)
+				.send({
+					rooms: [channel2Id],
+					teamId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms');
+					expect(res.body.rooms[0]).to.have.property('teamId', teamId);
+					expect(res.body.rooms[0]).to.not.have.property('teamDefault');
+				});
+		});
+
+		after(() => deleteRoom({ type: 'c', roomId: channel1Id }));
+
+		it('should delete the specified room and move the other back to the workspace', async () => {
+			await request
+				.post(api('teams.delete'))
+				.set(credentials)
+				.send({
+					teamName: tempTeamName,
+					roomsToRemove: [channel2Id, teamMainRoomId],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: teamMainRoomId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', false);
+					expect(response.body).to.have.property('error');
+					expect(response.body.error).to.include('[error-room-not-found]');
+				});
+			await request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: channel2Id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', false);
+					expect(response.body).to.have.property('error');
+					expect(response.body.error).to.include('[error-room-not-found]');
+				});
+
+			await request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: channel1Id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', true);
+					expect(response.body).to.have.property('channel');
+					expect(response.body.channel).to.have.property('_id', channel1Id);
+					expect(response.body.channel).to.not.have.property('teamId');
+				});
 		});
 	});
 });

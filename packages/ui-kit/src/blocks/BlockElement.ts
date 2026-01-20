@@ -5,7 +5,7 @@ import type { ConversationsSelectElement } from './elements/ConversationsSelectE
 import type { DatePickerElement } from './elements/DatePickerElement';
 import type { ExperimentalTabElement } from './elements/ExperimentalTabElement';
 import type { IconButtonElement } from './elements/IconButtonElement';
-import type { IconElement } from './elements/IconElement';
+import type { FrameableIconElement } from './elements/IconElement';
 import type { ImageElement } from './elements/ImageElement';
 import type { LinearScaleElement } from './elements/LinearScaleElement';
 import type { MultiChannelsSelectElement } from './elements/MultiChannelsSelectElement';
@@ -40,5 +40,5 @@ export type BlockElement =
 	| CheckboxElement
 	| TimePickerElement
 	| ExperimentalTabElement
-	| IconElement
+	| FrameableIconElement
 	| IconButtonElement;

@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { ComponentProps, ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
+import type { ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
 import { useId, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -46,7 +46,7 @@ const iconMap: Record<string, IconName> = {
 	success: 'check',
 };
 
-const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => {
+const getButtonProps = (variant: VariantType): ComponentPropsWithoutRef<typeof Button> => {
 	switch (variant) {
 		case 'danger':
 			return { danger: true };
