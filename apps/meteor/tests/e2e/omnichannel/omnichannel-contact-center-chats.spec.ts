@@ -112,6 +112,7 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichats = new OmnichannelContactCenterChats(page);
+		poHomeOmnichannel = new HomeOmnichannel(page);
 
 		await page.goto('/omnichannel');
 		await poOmnichats.sidebar.linkCurrentChats.click();
@@ -148,14 +149,12 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 	test('OC - Contact Center Chats - Basic navigation', async ({ page }) => {
 		await test.step('expect to be return using return button', async () => {
 			await poOmnichats.openChat(visitorA);
-			await poOmnichats.content.btnReturn.click();
+			await poHomeOmnichannel.content.btnReturn.click();
 			expect(page.url()).toContain(`/omnichannel/current`);
 		});
 	});
 
-	test('OC - Contact Center Chats - Access in progress conversation from another agent', async ({ page }) => {
-		poHomeOmnichannel = new HomeOmnichannel(page);
-
+	test('OC - Contact Center Chats - Access in progress conversation from another agent', async () => {
 		await test.step('expect to be able to join', async () => {
 			const { visitor: visitorB } = conversations[1].data;
 			await poOmnichats.openChat(visitorB.name);
@@ -177,6 +176,7 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 
 test.describe('OC - Contact Center [Manual Selection]', () => {
 	let queuedConversation: Awaited<ReturnType<typeof createConversation>>;
+	let poHomeOmnichannel: HomeOmnichannel;
 	let poCurrentChats: OmnichannelContactCenterChats;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
@@ -195,6 +195,7 @@ test.describe('OC - Contact Center [Manual Selection]', () => {
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poCurrentChats = new OmnichannelContactCenterChats(page);
+		poHomeOmnichannel = new HomeOmnichannel(page);
 
 		await page.goto('/omnichannel');
 		await poCurrentChats.sidebar.linkCurrentChats.click();
@@ -207,9 +208,9 @@ test.describe('OC - Contact Center [Manual Selection]', () => {
 			const { visitor } = queuedConversation.data;
 			await poCurrentChats.inputSearch.fill(visitor.name);
 			await poCurrentChats.openChat(visitor.name);
-			await expect(poCurrentChats.content.btnTakeChat).toBeVisible();
-			await poCurrentChats.content.btnTakeChat.click();
-			await expect(poCurrentChats.content.btnTakeChat).not.toBeVisible();
+			await expect(poHomeOmnichannel.content.btnTakeChat).toBeVisible();
+			await poHomeOmnichannel.content.btnTakeChat.click();
+			await expect(poHomeOmnichannel.content.btnTakeChat).not.toBeVisible();
 		});
 	});
 
