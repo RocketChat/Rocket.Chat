@@ -6,29 +6,17 @@ import { OmnichannelRoomInfoFlexTab } from './fragments/room-info-flextab';
 import { HomeChannel } from './home-channel';
 import {
 	OmnichannelCannedResponses,
-	OmnichannelManager,
-	OmnichannelMonitors,
 	OmnichannelTranscript,
-	OmnichannelTriggers,
 	OmnichannelContactCenterContacts,
-	OmnichannelAgents,
 	OmnichannelContactCenterChats,
 } from './omnichannel';
 
 export class HomeOmnichannel extends HomeChannel {
-	readonly triggers: OmnichannelTriggers;
-
 	readonly omnisidenav: OmnichannelSidebar;
 
 	readonly transcript: OmnichannelTranscript;
 
 	readonly cannedResponses: OmnichannelCannedResponses;
-
-	readonly agents: OmnichannelAgents;
-
-	readonly managers: OmnichannelManager;
-
-	readonly monitors: OmnichannelMonitors;
 
 	readonly contacts: OmnichannelContactCenterContacts;
 
@@ -46,13 +34,9 @@ export class HomeOmnichannel extends HomeChannel {
 
 	constructor(page: Page) {
 		super(page);
-		this.triggers = new OmnichannelTriggers(page);
 		this.omnisidenav = new OmnichannelSidebar(page);
 		this.transcript = new OmnichannelTranscript(page);
 		this.cannedResponses = new OmnichannelCannedResponses(page);
-		this.agents = new OmnichannelAgents(page);
-		this.managers = new OmnichannelManager(page);
-		this.monitors = new OmnichannelMonitors(page);
 		this.contacts = new OmnichannelContactCenterContacts(page);
 		this.chats = new OmnichannelContactCenterChats(page);
 		this.roomInfo = new OmnichannelRoomInfoFlexTab(page);
