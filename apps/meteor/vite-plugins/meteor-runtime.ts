@@ -79,7 +79,7 @@ export function meteorRuntime(
 					},
 				},
 			},
-			reactFastRefreshEnabled: process.env.VITE_METEOR_FAST_REFRESH !== 'false',
+			reactFastRefreshEnabled: false,
 		};
 	}
 }
@@ -140,15 +140,10 @@ function __mergeRuntimeConfig(existing) {
 	return merged;
 }
 
-if (typeof window !== 'undefined') {
-	window.__meteor_runtime_config__ = __mergeRuntimeConfig(window.__meteor_runtime_config__);
-}
+
+globalThis.__meteor_runtime_config__ = __mergeRuntimeConfig(globalThis.__meteor_runtime_config__);
 
 function __loadMeteorScript(relPath) {
-	if (typeof document === 'undefined') {
-		throw new Error('Meteor client runtime is only available in a browser environment.');
-	}
-
 	if (__meteorLoadedScripts.has(relPath)) {
 		return __meteorLoadedScripts.get(relPath);
 	}
@@ -183,9 +178,7 @@ function __loadMeteorScript(relPath) {
 	return promise;
 }
 
-await (async () => {
 ${loadStatements}
-})();
 `;
 }
 

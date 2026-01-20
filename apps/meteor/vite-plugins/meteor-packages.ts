@@ -55,7 +55,6 @@ if (!__meteorRegistry || typeof __meteorRegistry._promise !== 'function') {
   throw new Error('Meteor runtime failed to initialize before loading package "${pkgName}".');
 }
 const __meteorPackage = await __meteorRegistry._promise('${pkgName}');
-// export default __meteorPackage;
 ${exportLines.join('\n')}
 `;
 			}

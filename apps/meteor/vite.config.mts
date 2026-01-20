@@ -1,14 +1,14 @@
 import path from 'node:path';
 
 import react from '@vitejs/plugin-react';
-import { defineConfig, esmExternalRequirePlugin } from 'vite';
+import { defineConfig } from 'vite';
 
 import { meteorPackages } from './vite-plugins/meteor-packages';
 import { meteorRuntime } from './vite-plugins/meteor-runtime';
 import { meteorStubs } from './vite-plugins/meteor-stubs';
 import { rocketchatInfo } from './vite-plugins/rocketchat-info';
 
-const ROOT_URL = new URL(process.env.ROOT_URL ?? 'https://stable.qa.rocket.chat');
+const ROOT_URL = await getDefaultHostUrl();
 
 const meteorModules = {
 	'babel-compiler': null,
@@ -52,9 +52,6 @@ export default defineConfig({
 	appType: 'spa',
 	plugins: [
 		rocketchatInfo(),
-		esmExternalRequirePlugin({
-			external: ['react', 'react-dom'],
-		}),
 		meteorRuntime({ modules: meteorModules, rootUrl: ROOT_URL.toString() }),
 		meteorStubs({ modules: meteorModules }),
 		meteorPackages(),
@@ -66,22 +63,30 @@ export default defineConfig({
 		dedupe: ['react', 'react-dom'],
 		// preserveSymlinks: true,
 		alias: {
-			// Rocket.Chat packages used in the Meteor app
-			// 'child_process': path.resolve('client/emptyModule.ts'),
-			// 'crypto': path.resolve('client/emptyModule.ts'),
+			// Rocket.Chat Packages
+			'@rocket.chat/api-client': path.resolve('../../packages/api-client/src/index.ts'),
+			'@rocket.chat/apps-engine': path.resolve('../../packages/apps-engine/src'),
+			'@rocket.chat/base64': path.resolve('../../packages/base64/src/base64.ts'),
 			'@rocket.chat/core-typings': path.resolve('../../packages/core-typings/src/index.ts'),
+			'@rocket.chat/favicon': path.resolve('../../packages/favicon/src/index.ts'),
+			'@rocket.chat/fuselage-ui-kit': path.resolve('../../packages/fuselage-ui-kit/src/index.ts'),
+			'@rocket.chat/gazzodown': path.resolve('../../packages/gazzodown/src/index.ts'),
+			'@rocket.chat/message-types': path.resolve('../../packages/message-types/src/index.ts'),
+			'@rocket.chat/password-policies': path.resolve('../../packages/password-policies/src/index.ts'),
 			'@rocket.chat/random': path.resolve('../../packages/random/src/main.client.ts'),
 			'@rocket.chat/sha256': path.resolve('../../packages/sha256/src/sha256.ts'),
-			'@rocket.chat/api-client': path.resolve('../../packages/api-client/src/index.ts'),
 			'@rocket.chat/tools': path.resolve('../../packages/tools/src/index.ts'),
-			'@rocket.chat/apps-engine': path.resolve('../../packages/apps-engine/src'),
-			'@rocket.chat/ui-theming': path.resolve('../../ee/packages/ui-theming/src/index.ts'),
+			'@rocket.chat/ui-avatar': path.resolve('../../packages/ui-avatar/src/index.ts'),
 			'@rocket.chat/ui-client': path.resolve('../../packages/ui-client/src/index.ts'),
-			'@rocket.chat/gazzodown': path.resolve('../../packages/gazzodown/src/index.ts'),
-			'@rocket.chat/favicon': path.resolve('../../packages/favicon/src/index.ts'),
-			'@rocket.chat/message-types': path.resolve('../../packages/message-types/src/index.ts'),
+			'@rocket.chat/ui-composer': path.resolve('../../packages/ui-composer/src/index.ts'),
 			'@rocket.chat/ui-contexts': path.resolve('../../packages/ui-contexts/src/index.ts'),
-
+			'@rocket.chat/ui-video-conf': path.resolve('../../packages/ui-video-conf/src/index.ts'),
+			'@rocket.chat/ui-voip': path.resolve('../../packages/ui-voip/src/index.ts'),
+			'@rocket.chat/web-ui-registration': path.resolve('../../packages/web-ui-registration/src/index.ts'),
+			'@rocket.chat/mongo-adapter': path.resolve('../../packages/mongo-adapter/src/index.ts'),
+			'@rocket.chat/media-signaling': path.resolve('../../packages/media-signaling/src/index.ts'),
+			// Rocket.Chat Enterprise Packages
+			'@rocket.chat/ui-theming': path.resolve('../../ee/packages/ui-theming/src/index.ts'),
 			// Fuselage packages used in the Meteor app
 			// '@rocket.chat/fuselage-hooks': path.resolve('../../../fuselage/packages/fuselage-hooks/src/index.ts'),
 			// '@rocket.chat/layout': path.resolve('../../../fuselage/packages/layout/src/index.ts'),
@@ -92,20 +97,34 @@ export default defineConfig({
 			// '@rocket.chat/fuselage-tokens': path.resolve('../../../fuselage/packages/fuselage-tokens/src/index.ts'),
 			// '@rocket.chat/fuselage-tokens/breakpoints.mjs': path.resolve('../../../fuselage/packages/fuselage-tokens/breakpoints.mjs'),
 			// '@rocket.chat/fuselage-tokens/breakpoints.scss': path.resolve('../../../fuselage/packages/fuselage-tokens/breakpoints.scss'),
-			// React and React DOM
-			// 'react': path.resolve('../../node_modules/react'),
-			// 'react-dom': path.resolve('../../node_modules/react-dom'),
 		},
 	},
 	server: {
 		cors: true,
-		allowedHosts: ['localhost', '127.0.0.1', ROOT_URL.hostname],
+		allowedHosts: [ROOT_URL.hostname],
 		proxy: {
 			'/api': { target: ROOT_URL.origin, changeOrigin: true },
 			'/avatar': { target: ROOT_URL.origin, changeOrigin: true },
 			'/assets': { target: ROOT_URL.origin, changeOrigin: true },
 			'/sockjs': { target: ROOT_URL.origin, ws: true, rewriteWsOrigin: true, changeOrigin: true },
-			// '/sockjs/info': { target: ROOT_URL.origin, changeOrigin: true },
 		},
 	},
 });
+
+async function getDefaultHostUrl() {
+	if (process.env.ROOT_URL) {
+		return new URL(process.env.ROOT_URL);
+	}
+
+	// Check if http://localhost:3000 is reachable
+	try {
+		const response = await fetch('http://localhost:3000', { method: 'HEAD' });
+		if (response.ok) {
+			return new URL('http://localhost:3000');
+		}
+	} catch {
+		// Ignore errors
+	}
+
+	return new URL('https://stable.qa.rocket.chat');
+}
