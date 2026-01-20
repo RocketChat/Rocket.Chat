@@ -1,109 +1,58 @@
-import type { Locator } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
+import type { ILivechatTriggerType } from '@rocket.chat/core-typings';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
+import { FlexTab } from '../fragments/flextab';
+import { Listbox } from '../fragments/listbox';
+import { Table } from '../fragments/table';
 
-export class OmnichannelTriggers extends OmnichannelAdmin {
-	headingButtonNew(name: string) {
-		return this.page.locator(`role=main >> role=button[name="${name}"]`).first();
+class OmnichannelEditTriggerFlexTab extends FlexTab {
+	readonly listbox: Listbox;
+
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'trigger' }));
+		this.listbox = new Listbox(page.getByRole('listbox'));
 	}
 
-	get inputName(): Locator {
-		return this.page.locator('input[name="name"]');
+	private get inputDescription(): Locator {
+		return this.root.getByRole('textbox', { name: 'Description' });
 	}
 
-	get inputDescription(): Locator {
-		return this.page.locator('input[name="description"]');
+	private get conditionLabel(): Locator {
+		return this.root.getByLabel('Condition');
 	}
 
-	get btnSave(): Locator {
-		return this.page.locator('button >> text="Save"');
+	private get senderLabel(): Locator {
+		return this.root.getByLabel('Sender');
 	}
 
-	async save() {
-		await this.btnSave.click();
-		await this.toastMessage.dismissToast();
-	}
-
-	firstRowInTriggerTable(triggersName1: string) {
-		return this.page.locator(`text="${triggersName1}"`);
-	}
-
-	get btnDeletefirstRowInTable() {
-		return this.page.locator('table tr:first-child td:last-child button');
-	}
-
-	get btnModalRemove(): Locator {
-		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--danger');
-	}
-
-	get removeToastMessage(): Locator {
-		return this.page.locator('text=Trigger removed');
-	}
-
-	get conditionLabel(): Locator {
-		return this.page.locator('label >> text="Condition"');
-	}
-
-	get inputConditionValue(): Locator {
-		return this.page.locator('input[name="conditions.0.value"]');
-	}
-
-	get senderLabel(): Locator {
-		return this.page.locator('label >> text="Sender"');
-	}
-
-	get inputAgentName(): Locator {
-		return this.page.locator('input[name="actions.0.params.name"]');
-	}
-
-	get inputTriggerMessage(): Locator {
-		return this.page.locator('textarea[name="actions.0.params.msg"]');
-	}
-
-	async selectCondition(condition: string) {
+	private async selectCondition(condition: string) {
 		await this.conditionLabel.click();
-		await this.page.locator(`li.rcx-option[data-key="${condition}"]`).click();
+		await this.listbox.selectOption(condition);
 	}
 
-	async selectSender(sender: 'queue' | 'custom') {
+	private get inputAgentName(): Locator {
+		return this.root.locator('input[name="actions.0.params.name"]');
+	}
+
+	private get inputConditionValue(): Locator {
+		return this.root.locator('input[name="conditions.0.value"]');
+	}
+
+	private get inputTriggerMessage(): Locator {
+		return this.root.locator('textarea[name="actions.0.params.msg"]');
+	}
+
+	private async selectSender(sender: 'queue' | 'custom') {
 		await this.senderLabel.click();
-		await this.page.locator(`li.rcx-option[data-key="${sender}"]`).click();
+		await this.listbox.selectOption(sender);
 	}
 
-	public async createTrigger(
-		triggersName: string,
-		triggerMessage: string,
-		condition: 'time-on-site' | 'chat-opened-by-visitor' | 'after-guest-registration',
-		conditionValue?: number | string,
-	) {
-		await this.headingButtonNew('Create trigger').click();
-		await this.fillTriggerForm({
-			name: triggersName,
-			description: 'Creating a fresh trigger',
-			condition,
-			conditionValue,
-			triggerMessage,
-		});
-		await this.save();
-	}
-
-	public async updateTrigger(newName: string, triggerMessage: string) {
-		await this.fillTriggerForm({
-			name: `edited-${newName}`,
-			description: 'Updating the existing trigger',
-			condition: 'chat-opened-by-visitor',
-			sender: 'custom',
-			agentName: 'Rocket.cat',
-			triggerMessage,
-		});
-		await this.save();
-	}
-
-	public async fillTriggerForm(
+	async fillTriggerForm(
 		data: Partial<{
 			name: string;
 			description: string;
-			condition: 'time-on-site' | 'chat-opened-by-visitor' | 'after-guest-registration';
+			condition: ILivechatTriggerType;
 			conditionValue?: string | number;
 			sender: 'queue' | 'custom';
 			agentName?: string;
@@ -126,5 +75,65 @@ export class OmnichannelTriggers extends OmnichannelAdmin {
 		}
 
 		data.triggerMessage && (await this.inputTriggerMessage.fill(data.triggerMessage));
+	}
+}
+
+class OmnichannelTriggersTable extends Table {
+	constructor(page: Page) {
+		super(page.getByRole('table', { name: 'Livechat Triggers' }));
+	}
+}
+
+export class OmnichannelTriggers extends OmnichannelAdmin {
+	readonly editTrigger: OmnichannelEditTriggerFlexTab;
+
+	readonly table: OmnichannelTriggersTable;
+
+	constructor(page: Page) {
+		super(page);
+		this.editTrigger = new OmnichannelEditTriggerFlexTab(page);
+		this.table = new OmnichannelTriggersTable(page);
+	}
+
+	firstRowInTriggerTable(triggersName1: string) {
+		return this.page.locator(`text="${triggersName1}"`);
+	}
+
+	async removeTrigger(name: string) {
+		await this.table.findRowByName(name).getByRole('button', { name: 'Remove' }).click();
+		await this.deleteModal.confirmDelete();
+	}
+
+	get btnModalRemove(): Locator {
+		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--danger');
+	}
+
+	public async createTrigger(
+		triggersName: string,
+		triggerMessage: string,
+		condition: ILivechatTriggerType,
+		conditionValue?: number | string,
+	) {
+		await this.getButtonByType('trigger').click();
+		await this.editTrigger.fillTriggerForm({
+			name: triggersName,
+			description: 'Creating a fresh trigger',
+			condition,
+			conditionValue,
+			triggerMessage,
+		});
+		await this.editTrigger.save();
+	}
+
+	public async updateTrigger(name: string, triggerMessage: string, condition: ILivechatTriggerType = 'chat-opened-by-visitor') {
+		await this.editTrigger.fillTriggerForm({
+			name,
+			description: 'Updating the existing trigger',
+			condition,
+			sender: 'custom',
+			agentName: 'Rocket.cat',
+			triggerMessage,
+		});
+		await this.editTrigger.save();
 	}
 }

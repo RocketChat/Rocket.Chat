@@ -41,4 +41,9 @@ export abstract class FlexTab {
 		await this.btnClose.click();
 		await this.waitForDismissal();
 	}
+
+	async save() {
+		await this.btnSave.click();
+		await this.waitForDismissal();
+	}
 }
