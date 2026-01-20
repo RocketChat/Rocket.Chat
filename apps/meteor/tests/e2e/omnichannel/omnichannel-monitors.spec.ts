@@ -38,8 +38,7 @@ test.describe.serial('OC - Manage Monitors', () => {
 	test('OC - Manager Monitors - Add monitor', async () => {
 		await test.step('expect to add agent as monitor', async () => {
 			await expect(poMonitors.table.findRowByName('user1')).not.toBeVisible();
-			await poMonitors.selectMonitor('user1');
-			await poMonitors.btnAddMonitor.click();
+			await poMonitors.addMonitor('user1');
 			await expect(poMonitors.table.findRowByName('user1')).toBeVisible();
 		});
 
@@ -51,14 +50,10 @@ test.describe.serial('OC - Manage Monitors', () => {
 
 	test('OC - Manager Monitors - Search', async () => {
 		await test.step('expect to add 2 monitors', async () => {
-			await poMonitors.selectMonitor('user1');
-			await poMonitors.btnAddMonitor.click();
-
+			await poMonitors.addMonitor('user1');
 			await expect(poMonitors.table.findRowByName('user1')).toBeVisible();
 
-			await poMonitors.selectMonitor('user2');
-			await poMonitors.btnAddMonitor.click();
-
+			await poMonitors.addMonitor('user2');
 			await expect(poMonitors.table.findRowByName('user2')).toBeVisible();
 		});
 

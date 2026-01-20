@@ -211,8 +211,7 @@ test.describe('OC - Manager Role', () => {
 
 		await test.step('expect to add agent as monitor', async () => {
 			await expect(poOmnichannel.monitors.table.findRowByName('user1')).not.toBeVisible();
-			await poOmnichannel.monitors.selectMonitor('user1');
-			await poOmnichannel.monitors.btnAddMonitor.click();
+			await poOmnichannel.monitors.addMonitor('user1');
 			await expect(poOmnichannel.monitors.table.findRowByName('user1')).toBeVisible();
 		});
 

@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
+import { Listbox } from '../fragments/listbox';
 import { Table } from '../fragments/table';
 
 class OmnichannelMonitorsTable extends Table {
@@ -12,13 +13,16 @@ class OmnichannelMonitorsTable extends Table {
 export class OmnichannelMonitors extends OmnichannelAdmin {
 	readonly table: OmnichannelMonitorsTable;
 
+	readonly listbox: Listbox;
+
 	constructor(page: Page) {
 		super(page);
 		this.table = new OmnichannelMonitorsTable(page);
+		this.listbox = new Listbox(page.getByRole('listbox'));
 	}
 
-	get btnAddMonitor(): Locator {
-		return this.createByName('Add monitor');
+	private get btnAddMonitor(): Locator {
+		return this.page.getByRole('button', { name: 'Add monitor' });
 	}
 
 	get inputMonitor(): Locator {
@@ -29,13 +33,18 @@ export class OmnichannelMonitors extends OmnichannelAdmin {
 		return this.table.findRowByName(name).locator('role=button[name="Remove"]');
 	}
 
-	async selectMonitor(name: string) {
+	private async selectMonitor(name: string) {
 		await this.inputMonitor.fill(name);
-		await this.page.locator(`li[role="option"]`, { has: this.page.locator(`[data-username='${name}']`) }).click();
+		await this.listbox.selectOption(name);
 	}
 
 	async removeMonitor(name: string) {
 		await this.btnRemoveByName(name).click();
 		await this.deleteModal.confirmDelete();
+	}
+
+	async addMonitor(name: string) {
+		await this.selectMonitor(name);
+		await this.btnAddMonitor.click();
 	}
 }
