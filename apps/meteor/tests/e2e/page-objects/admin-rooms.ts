@@ -8,7 +8,7 @@ export class AdminRooms extends Admin {
 
 	constructor(page: Page) {
 		super(page);
-		this.editRoom = new EditRoomFlexTab(page);
+		this.editRoom = new EditRoomFlexTab(page.getByRole('dialog', { name: 'Room Information' }));
 	}
 
 	get adminPageContent(): Locator {

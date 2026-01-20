@@ -4,8 +4,8 @@ import { FlexTab } from './flextab';
 import { Listbox } from './listbox';
 
 export class EditRoomFlexTab extends FlexTab {
-	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Room Information' }));
+	constructor(locator: Locator) {
+		super(locator);
 	}
 
 	get roomNameInput(): Locator {
@@ -53,8 +53,8 @@ export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
 	private readonly listbox: Listbox;
 
 	constructor(page: Page) {
-		super(page);
-		this.listbox = new Listbox(page.getByRole('dialog', { name: 'Edit Room' }));
+		super(page.getByRole('dialog', { name: 'Edit Room' }));
+		this.listbox = new Listbox(page.getByRole('listbox'));
 	}
 
 	get inputTopic(): Locator {
