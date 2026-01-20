@@ -9,7 +9,7 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 	readonly listbox: Listbox;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'User Info' }));
+		super(page.getByRole('dialog', { name: 'Edit User' }));
 		this.listbox = new Listbox(page.getByRole('listbox'));
 	}
 
@@ -38,17 +38,21 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 		return this.root.getByLabel('Departments', { exact: true }).getByRole('option', { name });
 	}
 
-	get inputStatus(): Locator {
-		return this.root.locator('[data-qa-id="agent-edit-status"]');
+	private get inputStatus(): Locator {
+		return this.root.getByLabel('Status');
 	}
 
 	async selectStatus(status: string) {
 		await this.inputStatus.click();
-		await this.root.locator(`.rcx-option__content:has-text("${status}")`).click();
+		await this.listbox.selectOption(status);
 	}
 }
 
 class OmnichannelAgentInfoFlexTab extends FlexTab {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'User Info' }));
+	}
+
 	get btnEdit(): Locator {
 		return this.root.getByRole('button', { name: 'Edit', exact: true });
 	}
@@ -74,7 +78,7 @@ export class OmnichannelAgents extends OmnichannelAdmin {
 	constructor(page: Page) {
 		super(page);
 		this.editAgent = new OmnichannelEditAgentFlexTab(page);
-		this.agentInfo = new OmnichannelAgentInfoFlexTab(page.getByRole('dialog', { name: 'User Info' }));
+		this.agentInfo = new OmnichannelAgentInfoFlexTab(page);
 		this.table = new OmnichannelAgentsTable(page);
 	}
 

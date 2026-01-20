@@ -164,13 +164,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 										name='status'
 										control={control}
 										render={({ field }) => (
-											<Select
-												id={statusField}
-												data-qa-id='agent-edit-status'
-												{...field}
-												options={statusOptions}
-												placeholder={t('Select_an_option')}
-											/>
+											<Select id={statusField} {...field} options={statusOptions} placeholder={t('Select_an_option')} />
 										)}
 									/>
 								</FieldRow>
