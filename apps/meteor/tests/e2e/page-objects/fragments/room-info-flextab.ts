@@ -10,46 +10,6 @@ export class RoomInfoFlexTab extends FlexTab {
 	get btnEdit(): Locator {
 		return this.root.getByRole('button', { name: 'Edit' });
 	}
-
-	get privateLabel(): Locator {
-		return this.root.locator(`label >> text=Private`);
-	}
-
-	get archivedLabel(): Locator {
-		return this.root.locator('label >> text=Archived');
-	}
-
-	get archivedInput(): Locator {
-		return this.root.locator('input[name="archived"]');
-	}
-
-	get roomNameInput(): Locator {
-		return this.root.locator('input[name="roomName"]');
-	}
-
-	get privateInput(): Locator {
-		return this.root.locator('input[name="roomType"]');
-	}
-
-	get roomOwnerInput(): Locator {
-		return this.root.locator('input[name="roomOwner"]');
-	}
-
-	get favoriteLabel(): Locator {
-		return this.root.locator('label >> text=Favorite');
-	}
-
-	get favoriteInput(): Locator {
-		return this.root.locator('input[name="favorite"]');
-	}
-
-	get defaultLabel(): Locator {
-		return this.root.locator('label >> text=Default');
-	}
-
-	get defaultInput(): Locator {
-		return this.root.locator('input[name="isDefault"]');
-	}
 }
 
 export class OmnichannelRoomInfoFlexTab extends RoomInfoFlexTab {

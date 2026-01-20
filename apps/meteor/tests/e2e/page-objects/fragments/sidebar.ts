@@ -153,10 +153,6 @@ export class OmnichannelSidebar extends Sidebar {
 		super(page.getByRole('navigation', { name: 'Omnichannel' }));
 	}
 
-	get linkContactCenterChats(): Locator {
-		return this.root.getByRole('link', { name: 'Contact Center Chats' });
-	}
-
 	get linkDepartments(): Locator {
 		return this.root.locator('a[href="/omnichannel/departments"]');
 	}
@@ -175,10 +171,6 @@ export class OmnichannelSidebar extends Sidebar {
 
 	get linkCurrentChats(): Locator {
 		return this.root.locator('a[href="/omnichannel/current"]');
-	}
-
-	get linkTriggers(): Locator {
-		return this.root.locator('a[href="/omnichannel/triggers"]');
 	}
 
 	get linkSlaPolicies(): Locator {
