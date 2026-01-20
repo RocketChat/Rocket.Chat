@@ -49,7 +49,11 @@ export class SearchResultValidationService {
 							const subscription = await this.getSubscription(msg.rid, uid);
 
 							if (subscription) {
-								SearchLogger.debug(`user ${uid} can access ${msg.rid}`);
+								SearchLogger.debug({
+									msg: 'User can access message',
+									userId: uid,
+									roomId: msg.rid,
+								});
 								return {
 									...msg,
 									user: msg.u._id,
@@ -59,7 +63,11 @@ export class SearchResultValidationService {
 								};
 							}
 
-							SearchLogger.debug(`user ${uid} can NOT access ${msg.rid}`);
+							SearchLogger.debug({
+								msg: 'User cannot access message',
+								userId: uid,
+								roomId: msg.rid,
+							});
 							return undefined;
 						}),
 					)
@@ -74,11 +82,19 @@ export class SearchResultValidationService {
 						const subscription = await this.getSubscription(room._id, uid);
 
 						if (!subscription) {
-							SearchLogger.debug(`user ${uid} can NOT access ${room._id}`);
+							SearchLogger.debug({
+								msg: 'User cannot access room',
+								userId: uid,
+								roomId: room._id,
+							});
 							return undefined;
 						}
 
-						SearchLogger.debug(`user ${uid} can access ${room._id}`);
+						SearchLogger.debug({
+							msg: 'User can access room',
+							userId: uid,
+							roomId: room._id,
+						});
 
 						return {
 							...room,
