@@ -10,6 +10,8 @@ import { rocketchatInfo } from './vite-plugins/rocketchat-info';
 
 const ROOT_URL = await getDefaultHostUrl();
 
+console.log(`Using ROOT_URL: ${ROOT_URL.toString()}`);
+
 const meteorModules = {
 	'babel-compiler': null,
 	'babel-runtime': null,
@@ -52,7 +54,7 @@ export default defineConfig({
 	appType: 'spa',
 	plugins: [
 		rocketchatInfo(),
-		meteorRuntime({ modules: meteorModules, rootUrl: ROOT_URL.toString() }),
+		meteorRuntime({ modules: meteorModules, rootUrl: 'http://localhost:5173' }),
 		meteorStubs({ modules: meteorModules }),
 		meteorPackages(),
 		react({
@@ -101,12 +103,40 @@ export default defineConfig({
 	},
 	server: {
 		cors: true,
-		allowedHosts: [ROOT_URL.hostname],
+		origin: ROOT_URL.origin,
+		allowedHosts: true,
 		proxy: {
 			'/api': { target: ROOT_URL.origin, changeOrigin: true },
 			'/avatar': { target: ROOT_URL.origin, changeOrigin: true },
 			'/assets': { target: ROOT_URL.origin, changeOrigin: true },
-			'/sockjs': { target: ROOT_URL.origin, ws: true, rewriteWsOrigin: true, changeOrigin: true },
+			'/images': { target: ROOT_URL.origin, changeOrigin: true },
+			'/sockjs': { target: ROOT_URL.origin, ws: true, rewriteWsOrigin: true, changeOrigin: true, autoRewrite: true },
+			'/file-upload': {
+				target: ROOT_URL.origin,
+				changeOrigin: true,
+				secure: false,
+				cookieDomainRewrite: '',
+				configure: (proxy) => {
+					proxy.on('proxyReq', (proxyReq) => {
+						proxyReq.setHeader('Host', ROOT_URL.hostname);
+						proxyReq.setHeader('Origin', ROOT_URL.origin);
+						proxyReq.setHeader('Referer', `${ROOT_URL.origin}/`);
+					});
+
+					proxy.on('proxyRes', (proxyRes) => {
+						if (proxyRes.headers.location) {
+							try {
+								const locationUrl = new URL(proxyRes.headers.location);
+								if (locationUrl.hostname === ROOT_URL.hostname) {
+									proxyRes.headers.location = locationUrl.pathname + locationUrl.search;
+								}
+							} catch (e) {
+								// location is relative or invalid, ignore
+							}
+						}
+					});
+				},
+			},
 		},
 	},
 });
@@ -118,7 +148,7 @@ async function getDefaultHostUrl() {
 
 	// Check if http://localhost:3000 is reachable
 	try {
-		const response = await fetch('http://localhost:3000', { method: 'HEAD' });
+		const response = await fetch('http://localhost:3000/api/info');
 		if (response.ok) {
 			return new URL('http://localhost:3000');
 		}
