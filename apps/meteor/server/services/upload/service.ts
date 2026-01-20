@@ -51,7 +51,7 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 	}): Promise<Stream.Readable> {
 		const stream = await FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 		if (!stream) {
-			throw new Error('File not found');
+			throw new Error('error-file-not-found');
 		}
 
 		if (file?.type?.includes('image') && imageResizeOpts) {
