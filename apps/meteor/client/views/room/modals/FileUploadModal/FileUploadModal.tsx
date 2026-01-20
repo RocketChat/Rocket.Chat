@@ -17,10 +17,12 @@ import {
 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
-import { memo, useId } from 'react';
+import { memo, useCallback, useId } from 'react';
 import { useForm } from 'react-hook-form';
 
 import FilePreview from './FilePreview';
+import { fileUploadIsValidContentType } from '../../../../../app/utils/client/restrictions';
+import { getMimeTypeFromFileName } from '../../../../../app/utils/lib/mimeTypes';
 
 type FileUploadModalProps = {
 	onClose: () => void;
@@ -39,6 +41,18 @@ const FileUploadModal = ({ onClose, file, fileName, onSubmit }: FileUploadModalP
 		handleSubmit,
 		formState: { errors, isDirty, isSubmitting },
 	} = useForm({ mode: 'onBlur', defaultValues: { name: fileName } });
+
+	const validateFileName = useCallback(
+		(fieldValue: string) => {
+			const type = getMimeTypeFromFileName(fieldValue);
+			if (fileUploadIsValidContentType(type)) {
+				return undefined;
+			}
+
+			return t('FileUpload_MediaType_NotAccepted__type__', { type });
+		},
+		[t],
+	);
 
 	return (
 		<Modal
@@ -64,6 +78,7 @@ const FileUploadModal = ({ onClose, file, fileName, onSubmit }: FileUploadModalP
 									id={fileNameField}
 									{...register('name', {
 										required: t('error-the-field-is-required', { field: t('Upload_file_name') }),
+										validate: validateFileName,
 									})}
 									error={errors.name?.message}
 									aria-invalid={errors.name ? 'true' : 'false'}
@@ -71,7 +86,11 @@ const FileUploadModal = ({ onClose, file, fileName, onSubmit }: FileUploadModalP
 									aria-required='true'
 								/>
 							</FieldRow>
-							{errors.name && <FieldError id={`${fileNameField}-error`}>{errors.name.message}</FieldError>}
+							{errors.name && (
+								<FieldError role='alert' id={`${fileNameField}-error`}>
+									{errors.name.message}
+								</FieldError>
+							)}
 						</Field>
 					</FieldGroup>
 				</ModalContent>
