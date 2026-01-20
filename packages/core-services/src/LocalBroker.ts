@@ -214,7 +214,7 @@ export class LocalBroker implements IBroker {
 					const pendingServices = Array.from(this.pendingServices).join(', ');
 					const err = new Error(`Timeout while waiting for LocalBroker services: ${pendingServices}`);
 					logger.error({ msg: 'Timeout while waiting for LocalBroker services', err, pendingServices });
-					return reject(error);
+					return reject(err);
 				}
 
 				for await (const service of Array.from(this.pendingServices)) {
