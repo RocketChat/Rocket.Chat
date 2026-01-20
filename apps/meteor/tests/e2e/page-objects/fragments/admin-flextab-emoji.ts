@@ -1,25 +1,14 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import { FlexTab } from './flextab';
 
-abstract class EmojiFlexTab extends FlexTab {
-	constructor(root: Locator) {
-		super(root);
-	}
-
-	async save() {
-		await this.btnSave.click();
-		await this.waitForDismissal();
-	}
-}
-
-export class AddEmojiFlexTab extends EmojiFlexTab {
+export class AddEmojiFlexTab extends FlexTab {
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Add New Emoji' }));
 	}
 }
 
-export class EditEmojiFlexTab extends EmojiFlexTab {
+export class EditEmojiFlexTab extends FlexTab {
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Custom Emoji Info' }));
 	}

@@ -16,11 +16,6 @@ class OmnichannelEditPriorityFlexTab extends FlexTab {
 	errorMessage(message: string): Locator {
 		return this.root.locator(`.rcx-field__error >> text="${message}"`);
 	}
-
-	async save() {
-		await this.btnSave.click();
-		await this.toastMessage.dismissToast();
-	}
 }
 
 export class OmnichannelPriorities extends OmnichannelAdmin {
