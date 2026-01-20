@@ -2,10 +2,9 @@ import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
-import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
-import { createConversation, waitForInquiryToBeTaken } from '../utils/omnichannel/rooms';
+import { createConversation } from '../utils/omnichannel/rooms';
 import { createTag } from '../utils/omnichannel/tags';
 import { test, expect } from '../utils/test';
 
@@ -54,21 +53,9 @@ test.describe('OC - Tags Visibility', () => {
 
 	test.beforeAll('Create conversations', async ({ api }) => {
 		conversations = await Promise.all([
-			createConversation(api, {
-				visitorName: visitorA.name,
-				agentId: 'user1',
-				departmentId: departmentA.data._id,
-			}),
-			createConversation(api, {
-				visitorName: visitorB.name,
-				agentId: 'user1',
-				departmentId: departmentB.data._id,
-			}),
+			createConversation(api, { visitorName: visitorA.name, agentId: 'user1', departmentId: departmentA.data._id }),
+			createConversation(api, { visitorName: visitorB.name, agentId: 'user1', departmentId: departmentB.data._id }),
 		]);
-		await waitForInquiryToBeTaken(
-			api,
-			conversations.map((c) => c.data.room._id),
-		);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -77,13 +64,11 @@ test.describe('OC - Tags Visibility', () => {
 	});
 
 	test.afterAll(async () => {
-		await Promise.all([
-			...conversations.map((conversation) => conversation.delete()),
-			[tagA, tagB, globalTag, sharedTag].map((tag) => tag.delete()),
-			agent.delete(),
-			departmentA.delete(),
-			departmentB.delete(),
-		]);
+		await Promise.all(conversations.map((conversation) => conversation.delete()));
+		await Promise.all([tagA, tagB, globalTag, sharedTag].map((tag) => tag.delete()));
+		await agent.delete();
+		await departmentA.delete();
+		await departmentB.delete();
 	});
 
 	test('Verify agent should see correct tags based on department association', async () => {

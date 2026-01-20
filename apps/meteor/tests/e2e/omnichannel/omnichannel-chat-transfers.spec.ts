@@ -4,12 +4,11 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
-import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { createManager } from '../utils/omnichannel/managers';
 import { createMonitor } from '../utils/omnichannel/monitors';
-import { createConversation, waitForInquiryToBeTaken } from '../utils/omnichannel/rooms';
+import { createConversation } from '../utils/omnichannel/rooms';
 import { createOrUpdateUnit } from '../utils/omnichannel/units';
 import { expect, test } from '../utils/test';
 
@@ -74,11 +73,6 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 				departmentId: departmentA._id,
 			}),
 		]);
-
-		await waitForInquiryToBeTaken(
-			api,
-			conversations.map((c) => c.data.room._id),
-		);
 	});
 
 	// Create monitors
@@ -323,11 +317,6 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 				departmentId: departmentA._id,
 			}),
 		]);
-
-		await waitForInquiryToBeTaken(
-			api,
-			conversations.map((c) => c.data.room._id),
-		);
 	});
 
 	// Create sessions

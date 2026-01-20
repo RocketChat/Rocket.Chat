@@ -101,16 +101,16 @@ describe('LIVECHAT - dashboards', function () {
 		agents.push(agent2);
 
 		const roomCreationStart = moment();
-		// start a few chats - sequentially to avoid agent lock contention
-		const chatInfo = [];
-		for await (const i of Array(TOTAL_ROOMS).keys()) {
+		// start a few chats
+		const promises = Array.from(Array(TOTAL_ROOMS).keys()).map((i) => {
 			// 2 rooms by agent 1
 			if (i < 2) {
-				chatInfo.push(await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent1.credentials }));
-			} else {
-				chatInfo.push(await startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials }));
+				return startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent1.credentials });
 			}
-		}
+			return startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
+		});
+
+		const chatInfo = await Promise.all(promises);
 
 		roomList = chatInfo.map((info) => info.room);
 

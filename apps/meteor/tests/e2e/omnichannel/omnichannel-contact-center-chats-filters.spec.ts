@@ -4,7 +4,7 @@ import { Users } from '../fixtures/userStates';
 import { OmnichannelChats } from '../page-objects/omnichannel-contact-center-chats';
 import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
-import { createConversation, waitForInquiryToBeTaken } from '../utils/omnichannel/rooms';
+import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -30,17 +30,10 @@ test.describe('OC - Contact Center - Chats', () => {
 	});
 
 	test.beforeAll(async ({ api }) => {
-		// run synchronously because this test runs in the CE environment,
-		// which lacks the waiting queue setting. with parallel execution,
-		// the agent lock would prevent the second assignment and keep the
-		// conversation in READY state (see RoutingManager.ts:118)
-		const conversationA = await createConversation(api, { agentId: `user1`, visitorName: visitorA });
-		const conversationB = await createConversation(api, { agentId: `user1`, visitorName: visitorB });
-		conversations = [conversationA, conversationB];
-		await waitForInquiryToBeTaken(
-			api,
-			conversations.map((c) => c.data.room._id),
-		);
+		conversations = await Promise.all([
+			createConversation(api, { agentId: `user1`, visitorName: visitorA }),
+			createConversation(api, { agentId: `user1`, visitorName: visitorB }),
+		]);
 	});
 
 	test.beforeEach(async ({ page }) => {
