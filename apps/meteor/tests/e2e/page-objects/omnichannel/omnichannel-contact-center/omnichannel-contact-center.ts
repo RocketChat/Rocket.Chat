@@ -12,10 +12,10 @@ export abstract class OmnichannelContactCenter extends OmnichannelAdmin {
 	}
 
 	get tabContacts(): Locator {
-		return this.page.locator('role=tab[name="Contacts"]');
+		return this.page.getByRole('tab', { name: 'Contacts' });
 	}
 
-	get btnFilters(): Locator {
-		return this.page.getByRole('button', { name: 'Filters' });
+	get tabChats(): Locator {
+		return this.page.getByRole('tab', { name: 'Chats' });
 	}
 }
