@@ -68,6 +68,14 @@ type Routing = {
 	removeAllRoomSubscriptions(room: Pick<IOmnichannelRoom, '_id'>, ignoreUser?: { _id: string }): Promise<void>;
 
 	assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent): Promise<{ inquiry: InquiryWithAgentInfo; user: IUser }>;
+	conditionalLockAgent(
+		agentId: string,
+		lockTime: Date,
+	): Promise<{
+		acquired: boolean;
+		required: boolean;
+		unlock: () => Promise<void>;
+	}>;
 };
 
 export const RoutingManager: Routing = {
@@ -226,6 +234,38 @@ export const RoutingManager: Routing = {
 		return true;
 	},
 
+	async conditionalLockAgent(
+		agentId: string,
+		lockTime: Date,
+	): Promise<{
+		acquired: boolean;
+		required: boolean;
+		unlock: () => Promise<void>;
+	}> {
+		// chat limits is only required when waiting queue is enabled
+		const shouldLock = settings.get<boolean>('Livechat_waiting_queue');
+
+		if (!shouldLock) {
+			return {
+				acquired: false,
+				required: false,
+				unlock: async () => {
+					// no-op
+				},
+			};
+		}
+
+		const lockAcquired = await Users.acquireAgentLock(agentId, lockTime);
+
+		return {
+			acquired: !!lockAcquired,
+			required: true,
+			unlock: async () => {
+				await Users.releaseAgentLock(agentId, lockTime);
+			},
+		};
+	},
+
 	async takeInquiry(inquiry, agent, options = { clientAction: false }, room) {
 		check(
 			agent,
@@ -257,9 +297,8 @@ export const RoutingManager: Routing = {
 			return room;
 		}
 
-		const lockTime = new Date();
-		const lockAcquired = await Users.acquireAgentLock(agent.agentId, lockTime);
-		if (!lockAcquired) {
+		const lock = await this.conditionalLockAgent(agent.agentId, new Date());
+		if (!lock.acquired && lock.required) {
 			logger.debug({
 				msg: 'Cannot take inquiry because agent is currently locked by another process',
 				agentId: agent.agentId,
@@ -279,7 +318,7 @@ export const RoutingManager: Routing = {
 					options,
 				});
 			} catch (e) {
-				await Users.releaseAgentLock(agent.agentId, lockTime);
+				await lock.unlock();
 				if (options.clientAction && !options.forwardingToDepartment) {
 					throw e;
 				}
@@ -327,7 +366,7 @@ export const RoutingManager: Routing = {
 
 			return roomAfterUpdate;
 		} finally {
-			await Users.releaseAgentLock(agent.agentId, lockTime);
+			await lock.unlock();
 		}
 	},
 
