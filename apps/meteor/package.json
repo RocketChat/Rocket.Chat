@@ -21,7 +21,7 @@
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
 	},
-	"type": "module",
+	"type": "commonjs",
 	"scripts": {
 		".testunit:definition": "mocha --config ./.mocharc.definition.js",
 		".testunit:jest": "TZ=UTC TS_NODE_COMPILER_OPTIONS='{\"allowJs\": false}' jest",
