@@ -1,5 +1,13 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import {
+	GenericTable,
+	GenericTableHeader,
+	GenericTableBody,
+	GenericTableHeaderCell,
+	GenericTableLoadingRow,
+	usePagination,
+} from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -7,14 +15,6 @@ import { useMemo, useState } from 'react';
 import TriggersRow from './TriggersRow';
 import GenericError from '../../../components/GenericError';
 import GenericNoResults from '../../../components/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableHeader,
-	GenericTableBody,
-	GenericTableHeaderCell,
-	GenericTableLoadingRow,
-} from '../../../components/GenericTable';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { links } from '../../../lib/links';
 
 const TriggersTable = () => {

@@ -1,6 +1,7 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { getBaseURI, isExternal } from '@rocket.chat/ui-client';
-import { ReactElement, useMemo } from 'react';
+import { getBaseURI, isExternal } from '@rocket.chat/ui-client/dist/helpers/getBaseURI';
+import type { ReactElement } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import BoldSpan from './BoldSpan';
@@ -28,13 +29,13 @@ const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
 					return <PlainSpan key={index} text={child.value} />;
 
 				case 'STRIKE':
-					return <StrikeSpan key={index} children={child.value} />;
+					return <StrikeSpan key={index}>{child.value}</StrikeSpan>;
 
 				case 'ITALIC':
-					return <ItalicSpan key={index} children={child.value} />;
+					return <ItalicSpan key={index}>{child.value}</ItalicSpan>;
 
 				case 'BOLD':
-					return <BoldSpan key={index} children={child.value} />;
+					return <BoldSpan key={index}>{child.value}</BoldSpan>;
 
 				default:
 					return null;

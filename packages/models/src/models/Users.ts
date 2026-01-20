@@ -72,7 +72,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	// Move index from constructor to here
-	modelIndexes(): IndexDescription[] {
+	override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { __rooms: 1 }, sparse: true },
 			{ key: { roles: 1 }, sparse: true },
@@ -92,7 +92,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ key: { 'services.saml.inResponseTo': 1 } },
 			{ key: { openBusinessHours: 1 }, sparse: true },
 			{ key: { statusLivechat: 1 }, sparse: true },
-			{ key: { extension: 1 }, sparse: true, unique: true },
 			{ key: { freeSwitchExtension: 1 }, sparse: true, unique: true },
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
@@ -127,6 +126,46 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				partialFilterExpression: { active: true, lastLogin: { $exists: true } },
 			},
 		];
+	}
+
+	findUsersByIdentifiers(
+		{ usernames, ids, emails, ldapIds }: { usernames?: string[]; ids?: string[]; emails?: string[]; ldapIds?: string[] },
+		options: FindOptions<IUser> = {},
+	): FindCursor<IUser> {
+		const normalizedIds = (ids ?? []).filter(Boolean);
+		const normalizedUsernames = (usernames ?? []).filter(Boolean);
+		const normalizedEmails = (emails ?? []).map((e) => String(e).trim()).filter(Boolean);
+		const normalizedLdapIds = (ldapIds ?? []).filter(Boolean);
+
+		const or: Filter<IUser>[] = [];
+
+		if (normalizedIds.length) {
+			or.push({ _id: { $in: normalizedIds } });
+		}
+		if (normalizedUsernames.length) {
+			or.push({ username: { $in: normalizedUsernames } });
+		}
+		if (normalizedEmails.length) {
+			or.push({ 'emails.address': { $in: normalizedEmails } });
+		}
+		if (normalizedLdapIds.length) {
+			or.push({ 'services.ldap.id': { $in: normalizedLdapIds } });
+		}
+
+		const query: Filter<IUser> = {
+			active: true,
+			$or: or,
+		};
+
+		return this.find(query, options);
+	}
+
+	setAbacAttributesById(_id: IUser['_id'], attributes: NonNullable<IUser['abacAttributes']>) {
+		return this.findOneAndUpdate({ _id }, { $set: { abacAttributes: attributes } }, { returnDocument: 'after' });
+	}
+
+	unsetAbacAttributesById(_id: IUser['_id']) {
+		return this.findOneAndUpdate({ _id }, { $unset: { abacAttributes: 1 } }, { returnDocument: 'after' });
 	}
 
 	/**
@@ -1436,78 +1475,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne(query, update);
 	}
 
-	// Voip functions
-	findOneByAgentUsername(username: string, options?: FindOptions<IUser>) {
-		const query = { username, roles: 'livechat-agent' };
-
-		return this.findOne(query, options);
-	}
-
-	findOneByExtension(extension: string, options?: FindOptions<IUser>) {
-		const query = {
-			extension,
-		};
-
-		return this.findOne(query, options);
-	}
-
-	findByExtensions(extensions: string[], options?: FindOptions<IUser>) {
-		const query = {
-			extension: {
-				$in: extensions,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	getVoipExtensionByUserId(userId: IUser['_id'], options?: FindOptions<IUser>) {
-		const query = {
-			_id: userId,
-			extension: { $exists: true },
-		};
-		return this.findOne(query, options);
-	}
-
-	setExtension(userId: IUser['_id'], extension: string) {
-		const query = {
-			_id: userId,
-		};
-
-		const update = {
-			$set: {
-				extension,
-			},
-		};
-		return this.updateOne(query, update);
-	}
-
-	unsetExtension(userId: IUser['_id']) {
-		const query = {
-			_id: userId,
-		};
-		const update = {
-			$unset: {
-				extension: 1 as const,
-			},
-		};
-		return this.updateOne(query, update);
-	}
-
-	getAvailableAgentsIncludingExt<T extends Document = ILivechatAgent>(includeExt?: string, text?: string, options?: FindOptions<IUser>) {
-		const query = {
-			roles: { $in: ['livechat-agent'] },
-			$and: [
-				...(text?.trim()
-					? [{ $or: [{ username: new RegExp(escapeRegExp(text), 'i') }, { name: new RegExp(escapeRegExp(text), 'i') }] }]
-					: []),
-				{ $or: [{ extension: { $exists: false } }, ...(includeExt ? [{ extension: includeExt }] : [])] },
-			],
-		};
-
-		return this.findPaginated<T>(query, options);
-	}
-
 	findActiveUsersTOTPEnable(options?: FindOptions<IUser>) {
 		const query = {
 			'active': true,
@@ -2028,7 +1995,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne(query, update);
 	}
 
-	makeAgentUnavailableAndUnsetExtension(userId: IUser['_id']) {
+	makeAgentUnavailable(userId: IUser['_id']) {
 		const query = {
 			_id: userId,
 			roles: 'livechat-agent',
@@ -2037,9 +2004,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const update = {
 			$set: {
 				statusLivechat: ILivechatAgentStatus.NOT_AVAILABLE,
-			},
-			$unset: {
-				extension: 1 as const,
 			},
 		};
 
@@ -2404,7 +2368,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query, options);
 	}
 
-	findOneById(userId: IUser['_id'], options: FindOptions<IUser> = {}) {
+	override findOneById(userId: IUser['_id'], options: FindOptions<IUser> = {}) {
 		const query = { _id: userId };
 
 		return this.findOne(query, options);
@@ -2759,34 +2723,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T>(
 			{
 				freeSwitchExtension,
-			},
-			options,
-		);
-	}
-
-	findOneByFreeSwitchExtensions<T extends Document = IUser>(freeSwitchExtensions: string[], options: FindOptions<IUser> = {}) {
-		return this.findOne<T>(
-			{
-				freeSwitchExtension: { $in: freeSwitchExtensions },
-			},
-			options,
-		);
-	}
-
-	findAssignedFreeSwitchExtensions() {
-		return this.findUsersWithAssignedFreeSwitchExtensions({
-			projection: {
-				freeSwitchExtension: 1,
-			},
-		}).map(({ freeSwitchExtension }) => freeSwitchExtension);
-	}
-
-	findUsersWithAssignedFreeSwitchExtensions<T extends Document = IUser>(options: FindOptions<IUser> = {}) {
-		return this.find<T>(
-			{
-				freeSwitchExtension: {
-					$exists: true,
-				},
 			},
 			options,
 		);
@@ -3216,17 +3152,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	async setFreeSwitchExtension(_id: IUser['_id'], extension?: string) {
-		return this.updateOne(
-			{
-				_id,
-			},
-			{
-				...(extension ? { $set: { freeSwitchExtension: extension } } : { $unset: { freeSwitchExtension: 1 } }),
-			},
-		);
-	}
-
 	// INSERT
 	create(data: InsertionModel<IUser>) {
 		const user = {
@@ -3240,7 +3165,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	// REMOVE
-	removeById(_id: IUser['_id']) {
+	override removeById(_id: IUser['_id']) {
 		return this.deleteOne({ _id });
 	}
 
@@ -3384,7 +3309,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			$unset: {
 				livechat: 1,
 				statusLivechat: 1,
-				extension: 1,
 				openBusinessHours: 1,
 			},
 		};

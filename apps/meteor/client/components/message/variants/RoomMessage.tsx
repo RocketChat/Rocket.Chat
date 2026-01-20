@@ -1,8 +1,8 @@
-import { type IMessage, isOTRAckMessage, isOTRMessage } from '@rocket.chat/core-typings';
+import { type IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 
@@ -15,7 +15,6 @@ import {
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
-import { useUserCard } from '../../../views/room/contexts/UserCardContext';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
@@ -55,10 +54,9 @@ const RoomMessage = ({
 	const { openUserCard, triggerProps } = useUserCard();
 
 	const selecting = useIsSelecting();
-	const isOTRMsg = isOTRMessage(message) || isOTRAckMessage(message);
 
 	const toggleSelected = useToggleSelect(message._id);
-	const selected = useIsSelectedMessage(message._id, isOTRMsg);
+	const selected = useIsSelectedMessage(message._id);
 
 	useCountSelected();
 	const messageRef = useJumpToMessage(message._id);
@@ -68,10 +66,10 @@ const RoomMessage = ({
 			ref={messageRef}
 			id={message._id}
 			role='listitem'
-			aria-roledescription={isOTRMsg ? t('OTR_message') : t('message')}
+			aria-roledescription={t('message')}
 			tabIndex={0}
 			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
-			onClick={selecting && !isOTRMsg ? toggleSelected : undefined}
+			onClick={selecting ? toggleSelected : undefined}
 			isSelected={selected}
 			isEditing={editing}
 			isPending={message.temp}
@@ -100,7 +98,7 @@ const RoomMessage = ({
 						{...triggerProps}
 					/>
 				)}
-				{selecting && <CheckBox disabled={isOTRMsg} checked={selected} onChange={toggleSelected} />}
+				{selecting && <CheckBox checked={selected} onChange={toggleSelected} />}
 				{sequential && <StatusIndicators message={message} />}
 			</MessageLeftContainer>
 			<MessageContainer>

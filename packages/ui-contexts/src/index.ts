@@ -14,6 +14,7 @@ export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessages
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { TranslationContext, TranslationContextValue } from './TranslationContext';
 export { UserContext, UserContextValue } from './UserContext';
+export { UserCardContext, type UserCardContextValue } from './UserCardContext';
 export { UserPresenceContext, UserPresenceContextValue } from './UserPresenceContext';
 export { DeviceContext, Device, DeviceContextValue } from './DeviceContext';
 export { ActionManagerContext, IActionManager } from './ActionManagerContext';
@@ -87,6 +88,7 @@ export { useUserRoom } from './hooks/useUserRoom';
 export { useUserSubscription } from './hooks/useUserSubscription';
 export { useUserSubscriptionByName } from './hooks/useUserSubscriptionByName';
 export { useUserSubscriptions } from './hooks/useUserSubscriptions';
+export { usePasswordPolicyOptions } from './hooks/usePasswordPolicyOptions';
 export { usePasswordPolicy, type PasswordPolicyValidation } from './hooks/usePasswordPolicy';
 export { useVerifyPassword } from './hooks/useVerifyPassword';
 export { useSelectedDevices } from './hooks/useSelectedDevices';
@@ -101,6 +103,7 @@ export { useUnstoreLoginToken } from './hooks/useUnstoreLoginToken';
 export { useOnLogout } from './hooks/useOnLogout';
 export { useMediaDeviceMicrophonePermission, type requestDevice } from './hooks/useMediaDevicePermission';
 export { useWriteStream } from './hooks/useWriteStream';
+export { useUserCard } from './hooks/useUserCard';
 
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';

@@ -1,6 +1,15 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import {
+	GenericTable,
+	GenericTableLoadingTable,
+	GenericTableHeaderCell,
+	GenericTableBody,
+	GenericTableHeader,
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -9,15 +18,6 @@ import { useTranslation } from 'react-i18next';
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
 import ModerationFilter from './helpers/ModerationFilter';
 import GenericNoResults from '../../../components/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableLoadingTable,
-	GenericTableHeaderCell,
-	GenericTableBody,
-	GenericTableHeader,
-} from '../../../components/GenericTable';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../components/GenericTable/hooks/useSort';
 
 // TODO: Missing error state
 const ModerationConsoleTable = () => {

@@ -1,12 +1,13 @@
 import { useCallback } from 'react';
 import { useFocusManager } from 'react-aria';
 
-const isListItem = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-item');
-const isListItemMenu = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-item__menu');
+const isListItem = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-v2-item');
+const isCollapseGroup = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-v2-collapse-group__bar');
+const isListItemMenu = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-v2-item__menu');
 
 /**
  * Custom hook to provide the sidebar navigation by keyboard.
- * @param ref - A ref to the message list DOM element.
+ * @returns ref - A ref to the message list DOM element.
  */
 export const useSidebarListNavigation = () => {
 	const sidebarListFocusManager = useFocusManager();
@@ -24,7 +25,7 @@ export const useSidebarListNavigation = () => {
 					return;
 				}
 
-				if (!isListItem(e.target)) {
+				if (!isListItem(e.target) && !isCollapseGroup(e.target)) {
 					return;
 				}
 
@@ -34,26 +35,29 @@ export const useSidebarListNavigation = () => {
 
 					if (e.shiftKey) {
 						sidebarListFocusManager?.focusPrevious({
-							accept: (node) => !isListItem(node) && !isListItemMenu(node),
+							accept: (node) => !isListItem(node) && !isListItemMenu(node) && !isCollapseGroup(node),
 						});
 					} else if (isListItemMenu(e.target)) {
 						sidebarListFocusManager?.focusNext({
-							accept: (node) => !isListItem(node) && !isListItemMenu(node),
+							accept: (node) => !isListItem(node) && !isListItemMenu(node) && !isCollapseGroup(node),
 						});
 					} else {
 						sidebarListFocusManager?.focusNext({
-							accept: (node) => !isListItem(node),
+							accept: (node) => !isListItem(node) && !isCollapseGroup(node),
 						});
 					}
 				}
 
 				if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+					e.preventDefault();
+					e.stopPropagation();
+
 					if (e.key === 'ArrowUp') {
-						sidebarListFocusManager?.focusPrevious({ accept: (node) => isListItem(node) });
+						sidebarListFocusManager?.focusPrevious({ accept: (node) => isListItem(node) || isCollapseGroup(node) });
 					}
 
 					if (e.key === 'ArrowDown') {
-						sidebarListFocusManager?.focusNext({ accept: (node) => isListItem(node) });
+						sidebarListFocusManager?.focusNext({ accept: (node) => isListItem(node) || isCollapseGroup(node) });
 					}
 
 					lastItemFocused = document.activeElement as HTMLElement;

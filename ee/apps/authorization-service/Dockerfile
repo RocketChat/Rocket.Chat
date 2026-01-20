@@ -28,7 +28,6 @@ COPY ./packages/media-signaling/dist packages/media-signaling/dist
 
 COPY ./packages/message-parser/package.json packages/message-parser/package.json
 COPY ./packages/message-parser/dist packages/message-parser/dist
-COPY ./packages/message-parser/messageParser.js packages/message-parser/messageParser.js
 
 COPY ./packages/peggy-loader/package.json packages/peggy-loader/package.json
 COPY ./packages/peggy-loader/dist packages/peggy-loader/dist
@@ -69,6 +68,9 @@ COPY ./packages/ui-kit/dist packages/ui-kit/dist
 
 COPY ./packages/http-router/package.json packages/http-router/package.json
 COPY ./packages/http-router/dist packages/http-router/dist
+
+COPY ./ee/packages/abac/package.json ee/packages/abac/package.json
+COPY ./ee/packages/abac/dist ee/packages/abac/dist
 
 COPY ./ee/apps/${SERVICE}/dist .
 

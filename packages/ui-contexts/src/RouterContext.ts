@@ -60,12 +60,13 @@ export type RouterContextValue = {
 	getRouteParameters(): RouteParameters;
 	getSearchParameters(): SearchParameters;
 	getRouteName(): RouteName | undefined;
+	getPreviousRouteName(): RouteName | undefined;
 	buildRoutePath(to: To): LocationPathname | `${LocationPathname}?${LocationSearch}`;
 	navigate(to: To, options?: { replace?: boolean; state?: any; relative?: RelativeRoutingType }): void;
 	navigate(delta: number): void;
 	defineRoutes(routes: RouteObject[]): () => void;
 	getRoomRoute(roomType: 'd', routeData: DirectRoomRouteData): { path: LocationPathname };
-	getRoomRoute(roomType: 'l' | 'v', routeData: OmnichannelRoomRouteData): { path: LocationPathname };
+	getRoomRoute(roomType: 'l', routeData: OmnichannelRoomRouteData): { path: LocationPathname };
 	getRoomRoute(roomType: 'p' | 'c', routeData: ChannelRouteData): { path: LocationPathname };
 	getRoomRoute(
 		roomType: RoomType,
@@ -90,6 +91,9 @@ export const RouterContext = createContext<RouterContextValue>({
 		throw new Error('not implemented');
 	},
 	getRouteName: () => {
+		throw new Error('not implemented');
+	},
+	getPreviousRouteName: () => {
 		throw new Error('not implemented');
 	},
 	buildRoutePath: () => {

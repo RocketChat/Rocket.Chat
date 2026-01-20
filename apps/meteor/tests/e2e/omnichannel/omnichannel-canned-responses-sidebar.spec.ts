@@ -56,7 +56,7 @@ test.describe.serial('OC - Canned Responses Sidebar', () => {
 		});
 
 		await test.step('expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('expect to be able to open canned responses sidebar and creation', async () => {
@@ -75,7 +75,7 @@ test.describe.serial('OC - Canned Responses Sidebar', () => {
 
 	test('OC - Canned Responses Sidebar - Edit', async () => {
 		await test.step('expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('expect to be able to open canned responses sidebar and creation', async () => {

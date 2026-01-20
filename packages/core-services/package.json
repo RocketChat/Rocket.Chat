@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/core-services",
-	"version": "0.11.0",
+	"version": "0.12.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -10,15 +10,17 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc",
 		"dev": "tsc --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"testunit": "jest"
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/federation-sdk": "0.3.2",
+		"@rocket.chat/federation-sdk": "0.3.9",
 		"@rocket.chat/http-router": "workspace:^",
-		"@rocket.chat/icons": "~0.45.0",
+		"@rocket.chat/icons": "~0.46.0",
 		"@rocket.chat/media-signaling": "workspace:^",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
@@ -27,15 +29,11 @@
 		"@rocket.chat/ui-kit": "workspace:~"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.28.5",
-		"@babel/preset-env": "~7.28.5",
-		"@babel/preset-typescript": "~7.27.1",
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
-		"babel-jest": "~30.2.0",
 		"eslint": "~8.45.0",
 		"jest": "~30.2.0",
 		"mongodb": "6.16.0",

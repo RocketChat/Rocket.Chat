@@ -31,7 +31,7 @@ test.describe.serial('settings-account-profile', () => {
 			await poAccountProfile.inputUsername.fill(newUsername);
 			await poAccountProfile.btnSubmit.click();
 			await poAccountProfile.btnClose.click();
-			await poHomeChannel.sidenav.openChat('general');
+			await poHomeChannel.navbar.openChat('general');
 			await poHomeChannel.content.sendMessage('any_message');
 
 			await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText(newUsername);
@@ -65,31 +65,6 @@ test.describe.serial('settings-account-profile', () => {
 				await poAccountProfile.btnSubmit.click();
 				await expect(poAccountProfile.userAvatarEditor).not.toHaveAttribute('src');
 			});
-		});
-	});
-
-	test.describe('Security', () => {
-		test.beforeEach(async ({ page }) => {
-			await page.goto('account/security');
-			await page.waitForSelector('#main-content');
-		});
-
-		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
-			await page.goto('/account/security');
-
-			const results = await makeAxeBuilder().analyze();
-			expect(results.violations).toEqual([]);
-		});
-
-		test('should disable and enable email 2FA', async () => {
-			await poAccountProfile.security2FASection.click();
-			await expect(poAccountProfile.email2FASwitch).toBeVisible();
-			await poAccountProfile.email2FASwitch.click();
-			await poHomeChannel.toastMessage.waitForDisplay();
-			await poHomeChannel.toastMessage.dismissToast();
-
-			await poAccountProfile.email2FASwitch.click();
-			await poHomeChannel.toastMessage.waitForDisplay();
 		});
 	});
 

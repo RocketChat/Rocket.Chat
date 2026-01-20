@@ -8,10 +8,10 @@ import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { beforeCreateUserCallback } from '../../../../lib/callbacks/beforeCreateUserCallback';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { beforeCreateUserCallback } from '../../../../server/lib/callbacks/beforeCreateUserCallback';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getMaxLoginTokens } from '../../../../server/lib/getMaxLoginTokens';
 import { i18n } from '../../../../server/lib/i18n';
@@ -294,7 +294,7 @@ Accounts.insertUserDoc = async function (options, user) {
 
 	delete user.globalRoles;
 
-	if (user.services && !user.services.password) {
+	if (user.services && !user.services.password && !options.skipAuthServiceDefaultRoles) {
 		const defaultAuthServiceRoles = parseCSV(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles') || '');
 
 		if (defaultAuthServiceRoles.length > 0) {
@@ -381,7 +381,7 @@ Accounts.insertUserDoc = async function (options, user) {
 	if (!options.skipAppsEngineEvent) {
 		// `post` triggered events don't need to wait for the promise to resolve
 		Apps.self?.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() }).catch((e) => {
-			Apps.self?.getRocketChatLogger().error('Error while executing post user created event:', e);
+			Apps.self?.getRocketChatLogger().error({ msg: 'Error while executing post user created event', err: e });
 		});
 	}
 

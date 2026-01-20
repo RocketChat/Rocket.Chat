@@ -37,6 +37,8 @@ interface IMediaCallHistoryItem extends ICallHistoryItem {
 export interface IInternalMediaCallHistoryItem extends IMediaCallHistoryItem {
 	external: false;
 	contactId: IUser['_id'];
+	contactName?: IUser['name'];
+	contactUsername?: IUser['username'];
 
 	rid?: IRoom['_id'];
 	messageId?: IMessage['_id']; // Id of the message that was sent after the call ended

@@ -7,7 +7,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { createClient, type MatrixClient, KnownMembership, type Room, type RoomMember } from 'matrix-js-sdk';
+import { createClient, type MatrixClient, KnownMembership, type Room, type RoomMember, Visibility } from 'matrix-js-sdk';
+import { logger } from 'matrix-js-sdk/lib/logger';
+
+logger.debug = () => void 0;
+logger.info = () => void 0;
+logger.warn = () => void 0;
+logger.error = () => void 0;
 
 /**
  * Creates a promise that resolves after the specified delay.
@@ -30,7 +36,7 @@ export function wait(ms: number): Promise<void> {
  * invitation handling with built-in retry logic for eventual consistency.
  */
 export class SynapseClient {
-	private matrixClient: MatrixClient | null = null;
+	private _matrixClient: MatrixClient | null = null;
 
 	private url: string;
 
@@ -51,6 +57,13 @@ export class SynapseClient {
 		this.password = password;
 	}
 
+	get matrixClient(): MatrixClient {
+		if (!this._matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		return this._matrixClient;
+	}
+
 	/**
 	 * Initializes the Matrix client connection.
 	 *
@@ -63,7 +76,7 @@ export class SynapseClient {
 	async initialize(): Promise<void> {
 		const client = await this.createClient(this.username, this.password, this.url);
 		await client.startClient();
-		this.matrixClient = client;
+		this._matrixClient = client;
 	}
 
 	/**
@@ -130,6 +143,39 @@ export class SynapseClient {
 		}
 
 		throw new Error(`No room found with name ${roomName}`);
+	}
+
+	async createRoom(roomName: string, visibility: Visibility = Visibility.Private): Promise<string> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+
+		const room = await this.matrixClient.createRoom({
+			name: roomName,
+			visibility,
+		});
+
+		return room.room_id;
+	}
+
+	async createDM(userIds: string[]) {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+
+		const dmRoom = await this.matrixClient.createRoom({
+			is_direct: true,
+			invite: userIds,
+		});
+
+		return this.matrixClient.getRoom(dmRoom.room_id);
+	}
+
+	async inviteUserToRoom(roomId: string, userId: string): Promise<void> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		await this.matrixClient.invite(roomId, userId);
 	}
 
 	/**
@@ -664,7 +710,7 @@ export class SynapseClient {
 			await this.matrixClient.clearStores?.();
 			this.matrixClient.removeAllListeners();
 			await this.matrixClient.logout(true);
-			this.matrixClient = null;
+			this._matrixClient = null;
 		}
 	}
 }
