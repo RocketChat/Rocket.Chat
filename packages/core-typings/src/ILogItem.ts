@@ -1,15 +1,13 @@
-export interface ILogEntry {
-	args: string[];
-	caller: string;
-	severity: string;
-	timestamp: string;
-	method?: string;
-}
-
 export interface ILogItem {
 	appId: string;
 	endTime: string;
-	entries: ILogEntry[];
+	entries: {
+		args: string[];
+		caller: string;
+		severity: string;
+		timestamp: string;
+		method?: string;
+	}[];
 	instanceId: string;
 	method: string;
 	startTime: string;
