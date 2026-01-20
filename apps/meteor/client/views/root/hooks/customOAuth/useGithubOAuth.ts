@@ -22,12 +22,14 @@ const Github = CustomOAuth.configureOAuthService('github', config);
 
 export const useGithubOAuth = () => {
 	const enabled = useSetting('Accounts_OAuth_Github');
+	const githubApiUrl = useSetting('API_GitHub_URL', '');
 
 	useEffect(() => {
-		if (enabled) {
+		if (enabled && githubApiUrl) {
 			Github.configure({
 				...config,
+				serverURL: githubApiUrl,
 			});
 		}
-	}, [enabled]);
+	}, [enabled, githubApiUrl]);
 };
