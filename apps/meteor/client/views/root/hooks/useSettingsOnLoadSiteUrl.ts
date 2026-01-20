@@ -9,6 +9,9 @@ export const useSettingsOnLoadSiteUrl = () => {
 		if (value == null || value.trim() === '') {
 			return;
 		}
+		if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+			return;
+		}
 		(window as any).__meteor_runtime_config__.ROOT_URL = value;
 	}, [siteUrl]);
 };
