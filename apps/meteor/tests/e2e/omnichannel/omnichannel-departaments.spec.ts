@@ -45,7 +45,7 @@ test.describe('OC - Manage Departments', () => {
 		test('Create department', async ({ page }) => {
 			const departmentName = faker.string.uuid();
 
-			await poOmnichannelDepartments.headingButtonNew('Create department').click();
+			await poOmnichannelDepartments.createNew();
 
 			await test.step('expect name and email to be required', async () => {
 				await expect(poOmnichannelDepartments.invalidInputEmail).not.toBeVisible();

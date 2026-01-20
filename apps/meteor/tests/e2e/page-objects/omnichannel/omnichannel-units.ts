@@ -83,8 +83,8 @@ export class OmnichannelUnits extends OmnichannelAdmin {
 		this.table = new OmnichannelUnitsTable(page.getByRole('table', { name: 'Units' }));
 	}
 
-	get btnCreateUnit() {
-		return this.createByName('unit');
+	async createNew() {
+		await this.getButtonByType('unit').click();
 	}
 
 	async deleteUnit(name: string) {

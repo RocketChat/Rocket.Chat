@@ -42,8 +42,8 @@ export class OmnichannelSlaPolicies extends OmnichannelAdmin {
 		await this.deleteModal.confirmDelete();
 	}
 
-	btnCreateSlaPolicy(name: string) {
-		return this.createByName(name);
+	async createNew() {
+		await this.getButtonByType('SLA policy').click();
 	}
 
 	get txtEmptyState() {

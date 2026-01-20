@@ -90,7 +90,7 @@ test.describe.serial('OC - Monitor Role', () => {
 		});
 
 		await test.step('expect to fill departments mandatory field', async () => {
-			await poOmnichannelDepartments.headingButtonNew('Create department').click();
+			await poOmnichannelDepartments.createNew();
 			await poOmnichannelDepartments.inputName.fill(newDepartmentName);
 			await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
 		});

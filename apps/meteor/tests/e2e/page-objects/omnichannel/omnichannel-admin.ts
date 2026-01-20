@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { expect } from '../../utils/test';
 import { OmnichannelSidebar, ToastMessages } from '../fragments';
 import { ConfirmDeleteModal } from '../fragments/modals';
 
@@ -27,8 +28,8 @@ export abstract class OmnichannelAdmin {
 		return this.page.getByRole('button', { name: 'Save changes' });
 	}
 
-	createByName(name: string) {
-		return this.page.locator(`role=button[name="Create ${name}"]`);
+	getButtonByType(type: 'unit' | 'SLA policy' | 'tag' | 'trigger' | 'department'): Locator {
+		return this.page.getByRole('button', { name: `Create ${type}` });
 	}
 
 	async search(text: string) {
@@ -42,5 +43,9 @@ export abstract class OmnichannelAdmin {
 
 	get btnBack(): Locator {
 		return this.page.locator('role=button[name="Back"]');
+	}
+
+	waitForEmptyState() {
+		return expect(this.page.locator('h3 >> text="No results found"')).toBeVisible();
 	}
 }

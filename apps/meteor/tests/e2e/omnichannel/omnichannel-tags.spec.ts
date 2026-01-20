@@ -46,7 +46,7 @@ test.describe('OC - Manage Tags', () => {
 		await poOmnichannelTags.sidebar.linkTags.click();
 
 		await test.step('expect correct form default state', async () => {
-			await poOmnichannelTags.btnCreateTag.click();
+			await poOmnichannelTags.createNew();
 			await expect(poOmnichannelTags.editTag.root).toBeVisible();
 			await expect(poOmnichannelTags.editTag.btnSave).toBeDisabled();
 			await expect(poOmnichannelTags.editTag.btnCancel).toBeEnabled();
@@ -55,7 +55,7 @@ test.describe('OC - Manage Tags', () => {
 		});
 
 		await test.step('expect to create new tag', async () => {
-			await poOmnichannelTags.btnCreateTag.click();
+			await poOmnichannelTags.createNew();
 			await poOmnichannelTags.editTag.inputName.fill(tagName);
 			await poOmnichannelTags.editTag.selectDepartment(department.data.name);
 			await poOmnichannelTags.editTag.btnSave.click();
@@ -69,7 +69,7 @@ test.describe('OC - Manage Tags', () => {
 
 		await test.step('should be able to delete tag', async () => {
 			await poOmnichannelTags.deleteTag(tagName);
-			await expect(page.locator('h3 >> text="No results found"')).toBeVisible();
+			await poOmnichannelTags.waitForEmptyState();
 		});
 	});
 
@@ -119,7 +119,7 @@ test.describe('OC - Manage Tags', () => {
 
 		await test.step('expect to delete tag', async () => {
 			await poOmnichannelTags.deleteTag(tag.name);
-			await expect(page.locator('h3 >> text="No results found"')).toBeVisible();
+			await poOmnichannelTags.waitForEmptyState();
 		});
 	});
 });

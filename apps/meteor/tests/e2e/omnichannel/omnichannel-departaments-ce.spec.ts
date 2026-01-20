@@ -25,7 +25,7 @@ test.describe.serial('OC - Manage Departments (CE)', () => {
 
 	test('OC - Manage Departments (CE) - Create department', async () => {
 		await test.step('expect create new department', async () => {
-			await poOmnichannelDepartments.headingButtonNew('Create department').click();
+			await poOmnichannelDepartments.createNew();
 			await poOmnichannelDepartments.createDepartment(departmentName, faker.internet.email());
 
 			await poOmnichannelDepartments.inputSearch.fill(departmentName);
@@ -33,7 +33,7 @@ test.describe.serial('OC - Manage Departments (CE)', () => {
 		});
 
 		await test.step('expect to not be possible adding a second department ', async () => {
-			await poOmnichannelDepartments.headingButtonNew('Create department').click();
+			await poOmnichannelDepartments.createNew();
 
 			await expect(poOmnichannelDepartments.upgradeDepartmentsModal).toBeVisible();
 

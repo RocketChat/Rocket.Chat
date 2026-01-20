@@ -58,7 +58,7 @@ test.describe('OC - Manage Units', () => {
 		const unitName = faker.string.uuid();
 
 		await test.step('expect correct form default state', async () => {
-			await poOmnichannelUnits.btnCreateUnit.click();
+			await poOmnichannelUnits.createNew();
 			await expect(poOmnichannelUnits.editUnit.root).toBeVisible();
 			await expect(poOmnichannelUnits.editUnit.btnSave).toBeDisabled();
 			await expect(poOmnichannelUnits.editUnit.btnCancel).toBeEnabled();
@@ -67,7 +67,7 @@ test.describe('OC - Manage Units', () => {
 		});
 
 		await test.step('expect to create new unit', async () => {
-			await poOmnichannelUnits.btnCreateUnit.click();
+			await poOmnichannelUnits.createNew();
 			await poOmnichannelUnits.editUnit.inputName.fill(unitName);
 			await poOmnichannelUnits.editUnit.selectVisibility('public');
 			await poOmnichannelUnits.editUnit.selectDepartment(department.data.name);

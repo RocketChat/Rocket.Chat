@@ -17,8 +17,8 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 		this.table = new OmnichannelDepartmentsTable(page);
 	}
 
-	headingButtonNew(name: string) {
-		return this.page.locator(`role=main >> role=button[name="${name}"]`).first();
+	async createNew() {
+		await this.getButtonByType('department').click();
 	}
 
 	get btnEnabled() {

@@ -41,8 +41,8 @@ export class OmnichannelTags extends OmnichannelAdmin {
 		this.table = new OmnichannelTagsTable(page);
 	}
 
-	get btnCreateTag(): Locator {
-		return this.createByName('tag');
+	async createNew() {
+		await this.getButtonByType('tag').click();
 	}
 
 	async deleteTag(name: string) {
