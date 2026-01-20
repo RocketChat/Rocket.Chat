@@ -313,6 +313,8 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 	requestIp?: string;
 	route: string;
 	response: Response;
+
+	logger: Logger;
 };
 
 type PromiseOrValue<T> = T | Promise<T>;
