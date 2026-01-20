@@ -202,7 +202,7 @@ export class Router<
 
 			if (options.query) {
 				const validatorFn = options.query;
-				if (typeof options.query === 'function' && !validatorFn(structuredClone(queryParams))) {
+				if (typeof options.query === 'function' && !validatorFn(queryParams)) {
 					logger.warn({
 						msg: 'Query parameters validation failed - route spec does not match request payload',
 						method: req.method,
@@ -227,7 +227,7 @@ export class Router<
 
 			if (options.body) {
 				const validatorFn = options.body;
-				if (typeof options.body === 'function' && !validatorFn(structuredClone((req as any).bodyParams || bodyParams))) {
+				if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || bodyParams)) {
 					logger.warn({
 						msg: 'Request body validation failed - route spec does not match request payload',
 						method: req.method,
