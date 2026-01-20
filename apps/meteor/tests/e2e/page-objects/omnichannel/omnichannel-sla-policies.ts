@@ -1,41 +1,32 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
+import { FlexTab } from '../fragments/flextab';
 
-class OmnichannelManageSlaPolicy {
-	private readonly page: Page;
-
+class OmnichannelManageSlaPolicyFlexTab extends FlexTab {
 	constructor(page: Page) {
-		this.page = page;
-	}
-
-	get inputName(): Locator {
-		return this.page.locator('[name="name"]');
+		super(page.getByRole('dialog', { name: 'SLA Policy' }));
 	}
 
 	get inputDescription(): Locator {
-		return this.page.locator('[name="description"]');
+		return this.root.locator('[name="description"]');
 	}
 
 	get inputEstimatedWaitTime(): Locator {
-		return this.page.locator('[name="dueTimeInMinutes"]');
-	}
-
-	get btnSave() {
-		return this.page.locator('button.rcx-button >> text="Save"');
+		return this.root.locator('[name="dueTimeInMinutes"]');
 	}
 
 	errorMessage(message: string): Locator {
-		return this.page.locator(`.rcx-field__error >> text="${message}"`);
+		return this.root.locator(`.rcx-field__error >> text="${message}"`);
 	}
 }
 
 export class OmnichannelSlaPolicies extends OmnichannelAdmin {
-	readonly manageSlaPolicy: OmnichannelManageSlaPolicy;
+	readonly manageSlaPolicy: OmnichannelManageSlaPolicyFlexTab;
 
 	constructor(page: Page) {
 		super(page);
-		this.manageSlaPolicy = new OmnichannelManageSlaPolicy(page);
+		this.manageSlaPolicy = new OmnichannelManageSlaPolicyFlexTab(page);
 	}
 
 	findRowByName(name: string) {
