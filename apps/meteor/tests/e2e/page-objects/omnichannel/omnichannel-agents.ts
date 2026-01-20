@@ -39,7 +39,7 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 	}
 
 	private get inputStatus(): Locator {
-		return this.root.getByLabel('Status');
+		return this.root.getByText('Status', { exact: true });
 	}
 
 	async selectStatus(status: string) {
