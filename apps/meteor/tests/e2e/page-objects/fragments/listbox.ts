@@ -4,7 +4,7 @@ export class Listbox {
 	constructor(private root: Locator) {}
 
 	async selectOption(name: string) {
-		return this.root.getByRole('option', { name }).click();
+		return this.root.getByRole('option', { name, exact: true }).click();
 	}
 
 	public getOption(name: string): Locator {

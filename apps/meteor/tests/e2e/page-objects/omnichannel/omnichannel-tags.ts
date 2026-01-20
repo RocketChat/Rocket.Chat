@@ -2,25 +2,25 @@ import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextab';
+import { Listbox } from '../fragments/listbox';
 import { Table } from '../fragments/table';
 
 class OmnichannelEditTagFlexTab extends FlexTab {
+	readonly listbox: Listbox;
+
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Edit tag' }));
+		super(page.getByRole('dialog', { name: 'tag' }));
+		this.listbox = new Listbox(page.getByRole('listbox'));
 	}
 
 	get inputDepartments(): Locator {
 		return this.root.locator('input[placeholder="Select an option"]');
 	}
 
-	private selectOption(name: string): Locator {
-		return this.root.locator('#position-container').getByRole('option', { name });
-	}
-
 	async selectDepartment(name: string) {
 		await this.inputDepartments.click();
 		await this.inputDepartments.fill(name);
-		await this.selectOption(name).click();
+		await this.listbox.selectOption(name);
 	}
 }
 
