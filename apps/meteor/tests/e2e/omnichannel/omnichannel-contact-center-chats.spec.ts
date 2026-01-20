@@ -33,8 +33,6 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 		const responses = await Promise.all([
 			setSettingValueById(api, 'Livechat_allow_manual_on_hold', true),
 			setSettingValueById(api, 'Livechat_allow_manual_on_hold_upon_agent_engagement_only', false),
-			setSettingValueById(api, 'Livechat_waiting_queue', true),
-			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 1),
 		]);
 		responses.forEach((res) => expect(res.status()).toBe(200));
 	});
@@ -137,8 +135,6 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 			// Reset setting
 			setSettingValueById(api, 'Livechat_allow_manual_on_hold', false),
 			setSettingValueById(api, 'Livechat_allow_manual_on_hold_upon_agent_engagement_only', true),
-			setSettingValueById(api, 'Livechat_waiting_queue', false),
-			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 5),
 		]);
 	});
 

@@ -29,14 +29,6 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 
 	let poOmnichannel: HomeOmnichannel;
 
-	test.beforeAll(async ({ api }) => {
-		const responses = await Promise.all([
-			setSettingValueById(api, 'Livechat_waiting_queue', true),
-			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 1),
-		]);
-		responses.forEach((res) => expect(res.status()).toBe(200));
-	});
-
 	// Create agents
 	test.beforeAll(async ({ api }) => {
 		agents = await Promise.all([createAgent(api, 'user1'), createAgent(api, 'user2'), createAgent(api, 'rocketchat.internal.admin.test')]);
@@ -130,15 +122,13 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		await Promise.all(sessions.map(({ page }) => page.close()));
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async () => {
 		await Promise.all([
 			...conversations.map((conversation) => conversation.delete()),
 			...monitors.map((monitor) => monitor.delete()),
 			...agents.map((agent) => agent.delete()),
 			...units.map((unit) => unit.delete()),
 			...departments.map((department) => department.delete()),
-			setSettingValueById(api, 'Livechat_waiting_queue', false),
-			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 5),
 		]);
 	});
 
@@ -283,14 +273,6 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 
 	let poOmnichannel: HomeOmnichannel;
 
-	test.beforeAll(async ({ api }) => {
-		const responses = await Promise.all([
-			setSettingValueById(api, 'Livechat_waiting_queue', true),
-			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 1),
-		]);
-		responses.forEach((res) => expect(res.status()).toBe(200));
-	});
-
 	// Create agents
 	test.beforeAll(async ({ api }) => {
 		agents = await Promise.all([createAgent(api, 'user1'), createAgent(api, 'user2'), createAgent(api, 'rocketchat.internal.admin.test')]);
@@ -368,14 +350,12 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 		await Promise.all(sessions.map(({ page }) => page.close()));
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async () => {
 		await Promise.all([
 			...conversations.map((conversation) => conversation.delete()),
 			...managers.map((manager) => manager.delete()),
 			...agents.map((agent) => agent.delete()),
 			...departments.map((department) => department.delete()),
-			setSettingValueById(api, 'Livechat_waiting_queue', false),
-			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 5),
 		]);
 	});
 

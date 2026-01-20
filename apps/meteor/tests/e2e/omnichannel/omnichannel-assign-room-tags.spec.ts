@@ -27,14 +27,6 @@ test.describe('OC - Tags Visibility', () => {
 	let globalTag: Awaited<ReturnType<typeof createTag>>;
 	let sharedTag: Awaited<ReturnType<typeof createTag>>;
 
-	test.beforeAll('Configure queue settings', async ({ api }) => {
-		const responses = await Promise.all([
-			setSettingValueById(api, 'Livechat_waiting_queue', true),
-			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 1),
-		]);
-		responses.forEach((res) => expect(res.status()).toBe(200));
-	});
-
 	test.beforeAll('Create departments', async ({ api }) => {
 		departmentA = await createDepartment(api, { name: 'Department A' });
 		departmentB = await createDepartment(api, { name: 'Department B' });
@@ -84,15 +76,13 @@ test.describe('OC - Tags Visibility', () => {
 		await page.goto('/');
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async () => {
 		await Promise.all([
 			...conversations.map((conversation) => conversation.delete()),
 			[tagA, tagB, globalTag, sharedTag].map((tag) => tag.delete()),
 			agent.delete(),
 			departmentA.delete(),
 			departmentB.delete(),
-			setSettingValueById(api, 'Livechat_waiting_queue', false),
-			setSettingValueById(api, 'Omnichannel_queue_delay_timeout', 5),
 		]);
 	});
 
