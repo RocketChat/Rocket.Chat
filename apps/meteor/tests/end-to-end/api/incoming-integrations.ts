@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import type { AtLeast, IIntegration, IMessage, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { assert, expect } from 'chai';
@@ -950,7 +950,7 @@ describe('[Incoming Integrations]', () => {
 
 		before(async () => {
 			nonMemberUser = await createUser({ username: `g_${Random.id()}` });
-			privateTeam = await createTeam(credentials, `private.team.${Random.id()}`, TEAM_TYPE.PRIVATE);
+			privateTeam = await createTeam(credentials, `private.team.${Random.id()}`, TeamType.PRIVATE);
 
 			const [publicInPrivateResponse, privateRoomResponse, publicRoomResponse] = await Promise.all([
 				createRoom({

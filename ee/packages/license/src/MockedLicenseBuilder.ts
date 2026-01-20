@@ -7,7 +7,6 @@ import type {
 	LicenseLimit,
 	LicenseModule,
 	LicensePeriod,
-	Timestamp,
 } from '@rocket.chat/core-typings';
 
 import { encrypt, encryptStatsToken } from './token';
@@ -16,12 +15,12 @@ export class MockedLicenseBuilder {
 	information: {
 		id?: string;
 		autoRenew: boolean;
-		visualExpiration?: Timestamp;
-		notifyAdminsAt?: Timestamp;
-		notifyUsersAt?: Timestamp;
+		visualExpiration?: string;
+		notifyAdminsAt?: string;
+		notifyUsersAt?: string;
 		trial: boolean;
 		offline: boolean;
-		createdAt: Timestamp;
+		createdAt: string;
 		grantedBy: {
 			method: 'manual' | 'self-service' | 'sales' | 'support' | 'reseller';
 			seller?: string;
