@@ -821,7 +821,7 @@ export class FileUploadClass {
 			// We can't use _streamToTmpFile at this stage since the file hasn't been validated yet,
 			// and for security reasons we must not write it to disk before validation
 			content = await streamToBuffer(content);
-			fileData.size = (content as Buffer).length;
+			fileData.size = fileData.size ?? (content as Buffer).length;
 		} else if (content instanceof Uint8Array && !(content instanceof Buffer)) {
 			// Services compat - create a view into the underlying ArrayBuffer without copying the data
 			content = Buffer.from(content.buffer, content.byteOffset, content.byteLength);
