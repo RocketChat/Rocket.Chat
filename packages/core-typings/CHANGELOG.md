@@ -1,5 +1,11 @@
 # @rocket.chat/core-typings
 
+## 8.1.0-rc.0
+
+### Patch Changes
+
+- ([#37950](https://github.com/RocketChat/Rocket.Chat/pull/37950)) Fixes premium capability popup showing despite active enterprise license.
+
 ## 8.0.0
 
 ### Major Changes

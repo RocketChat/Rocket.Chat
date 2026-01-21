@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/presence",
-	"version": "0.2.47",
+	"version": "0.2.48-rc.0",
 	"private": true,
 	"main": "./dist/Presence.js",
 	"typings": "./dist/Presence.d.ts",

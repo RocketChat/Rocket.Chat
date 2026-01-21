@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/apps",
-	"version": "0.6.0",
+	"version": "0.6.1-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

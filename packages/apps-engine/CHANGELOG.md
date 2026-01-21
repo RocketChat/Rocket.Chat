@@ -1,5 +1,11 @@
 # @rocket.chat/apps-engine
 
+## 1.59.1-rc.0
+
+### Patch Changes
+
+- ([#38068](https://github.com/RocketChat/Rocket.Chat/pull/38068)) Fixes an issue that caused a spike in memory usage when apps handled the IPreFileUpload event
+
 ## 1.59.0
 
 ### Minor Changes

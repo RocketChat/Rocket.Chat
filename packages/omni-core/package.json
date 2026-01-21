@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omni-core",
-	"version": "0.0.12",
+	"version": "0.0.13-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

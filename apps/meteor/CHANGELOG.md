@@ -1,5 +1,96 @@
 # @rocket.chat/meteor
 
+## 8.1.0-rc.0
+
+### Minor Changes
+
+- ([#37954](https://github.com/RocketChat/Rocket.Chat/pull/37954)) Changes OAuth login process to update users' names throughout the whole workspace when an existing user logs in with a changed name
+
+- ([#38032](https://github.com/RocketChat/Rocket.Chat/pull/38032)) Enables the password policy by default to ensure security by default and alters SetupWizard to handle errors
+
+- ([#38077](https://github.com/RocketChat/Rocket.Chat/pull/38077)) Changes list of Room Files to only show files that have been successfully attached to a message
+
+### Patch Changes
+
+- ([#38210](https://github.com/RocketChat/Rocket.Chat/pull/38210)) Fixes integration saving error because of missing babel dependencies inside the docker container
+
+- ([#38183](https://github.com/RocketChat/Rocket.Chat/pull/38183)) Fixes `/sendEmailAttachment` to support sending multiple file attachments in a single email
+
+- ([#38081](https://github.com/RocketChat/Rocket.Chat/pull/38081)) Fixes an issue where cancelling a file upload results in an uncaught exception
+
+- ([#38169](https://github.com/RocketChat/Rocket.Chat/pull/38169)) Introduces in the call widget a quick link that redirects to the participant's direct message
+
+- ([#37660](https://github.com/RocketChat/Rocket.Chat/pull/37660)) Fixes browser slowdowns by preventing a rare cascading of language preference updates when multiple tabs reload
+
+- ([#38101](https://github.com/RocketChat/Rocket.Chat/pull/38101) by [@smirk-dev](https://github.com/smirk-dev)) Adds error handling for MONGO_OPTIONS environment variable JSON parsing
+
+- ([#38036](https://github.com/RocketChat/Rocket.Chat/pull/38036) by [@dodaa08](https://github.com/dodaa08)) Fixes an issue where words are breaking mid-character in user card's bio
+
+- ([#38151](https://github.com/RocketChat/Rocket.Chat/pull/38151)) Changes OEmbed URL processing. Now, the processing is done asynchronously and has a configurable timeout for each request. Additionally, the `API_EmbedIgnoredHosts` setting now accepts wildcard domains.
+
+- ([#37951](https://github.com/RocketChat/Rocket.Chat/pull/37951)) Fixes incorrect permission checks on workspace registration status, aligning the API and UI hooks with manage-cloud access.
+
+- ([#38040](https://github.com/RocketChat/Rocket.Chat/pull/38040) by [@harshjdhv](https://github.com/harshjdhv)) Fixes a variable shadowing issue preventing new visitor registration in `livechat/messages` API.
+
+- ([#38184](https://github.com/RocketChat/Rocket.Chat/pull/38184)) Fixes email notifications to display all files when a message contains multiple attachments
+
+- ([#38186](https://github.com/RocketChat/Rocket.Chat/pull/38186)) Prevents custom status being saved in local storage as `undefined` and breaking the UI when accessing it
+
+- ([#38106](https://github.com/RocketChat/Rocket.Chat/pull/38106)) Fixes an issue with the file type blacklist being easily bypassed by changing the file's extension
+
+- ([#37950](https://github.com/RocketChat/Rocket.Chat/pull/37950)) Fixes premium capability popup showing despite active enterprise license.
+
+- ([#38088](https://github.com/RocketChat/Rocket.Chat/pull/38088)) Changes users.getAvatar endpoint to prevent unauthorized access.
+
+- ([#38068](https://github.com/RocketChat/Rocket.Chat/pull/38068)) Fixes an issue that caused a spike in memory usage when apps handled the IPreFileUpload event
+
+- ([#37919](https://github.com/RocketChat/Rocket.Chat/pull/37919)) Makes roomsPerGuest exclude DMs when counting subscriptions, ensuring guest limits apply only to non-DM rooms as per expected behavior.
+
+- ([#38105](https://github.com/RocketChat/Rocket.Chat/pull/38105)) Fixes user deletion not removing thumbnails of images sent by the deleted user
+
+- ([#38127](https://github.com/RocketChat/Rocket.Chat/pull/38127)) Fixes workspace statistics deployment data not updating on server version changes.
+
+- ([#38119](https://github.com/RocketChat/Rocket.Chat/pull/38119)) Ensures SAML respects blank custom Authn Context
+
+- ([#38071](https://github.com/RocketChat/Rocket.Chat/pull/38071)) Improves file upload flow to prevent buffering of contents in memory
+
+- <details><summary>Updated dependencies [f4fa393fccb6abefbe6fb6550563e8ca21fc792d, 00b36c5a59fb45573f72c5409735238a817ff5ca, e639382ee1faee44cfce44bdf6113d1b56da8692, 7b51ba84340480fa28e85c8f35d9d2f947d3250e, 719b85aa769fed231d0455bdd60f28867ceecfbe, 5c3c52b1fc8b0bd52d4744614ad4d2b8e2e03937, 1e0b37f68e1622a34879c1ccf7c77c07b373e00c, 9a205633c25065fda9024184c406ac9675c3f23f, 6654c5b481f91bdcb03d68ee0f3a12d58201137e, 020dfbcab6a940ca2e03d802d0f6b54714a34aa2, c547985fbb8e434f2cba0035840c1be21a2a2ddd, 5fa150953b86ff36face25083ed49e8c97a8044d, 05c415b94cb91907de39a39c6d277579258f334e, ccd76942bf74322f21deb855af5348856463b82a]:</summary>
+
+  - @rocket.chat/model-typings@2.0.1-rc.0
+  - @rocket.chat/models@2.0.1-rc.0
+  - @rocket.chat/ui-client@27.0.0-rc.0
+  - @rocket.chat/ui-voip@17.0.0-rc.0
+  - @rocket.chat/pdf-worker@0.3.27-rc.0
+  - @rocket.chat/core-services@0.12.1-rc.0
+  - @rocket.chat/i18n@2.0.1-rc.0
+  - @rocket.chat/rest-typings@8.1.0-rc.0
+  - @rocket.chat/core-typings@8.1.0-rc.0
+  - @rocket.chat/license@1.1.8-rc.0
+  - @rocket.chat/apps-engine@1.59.1-rc.0
+  - @rocket.chat/http-router@7.9.15-rc.0
+  - @rocket.chat/omnichannel-services@0.3.45-rc.0
+  - @rocket.chat/apps@0.6.1-rc.0
+  - @rocket.chat/abac@0.1.1-rc.0
+  - @rocket.chat/federation-matrix@0.0.10-rc.0
+  - @rocket.chat/media-calls@0.2.1-rc.0
+  - @rocket.chat/omni-core-ee@0.0.13-rc.0
+  - @rocket.chat/presence@0.2.48-rc.0
+  - @rocket.chat/cron@0.1.48-rc.0
+  - @rocket.chat/instance-status@0.1.48-rc.0
+  - @rocket.chat/omni-core@0.0.13-rc.0
+  - @rocket.chat/gazzodown@27.0.0-rc.0
+  - @rocket.chat/web-ui-registration@27.0.0-rc.0
+  - @rocket.chat/network-broker@0.2.27-rc.0
+  - @rocket.chat/ui-contexts@27.0.0-rc.0
+  - @rocket.chat/api-client@0.2.48-rc.0
+  - @rocket.chat/fuselage-ui-kit@27.0.0-rc.0
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/ui-avatar@23.0.0-rc.0
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@27.0.0-rc.0
+  </details>
+
 ## 8.0.0
 
 ### Major Changes

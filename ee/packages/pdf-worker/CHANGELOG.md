@@ -1,5 +1,16 @@
 # @rocket.chat/pdf-worker
 
+## 0.3.27-rc.0
+
+### Patch Changes
+
+- ([#38064](https://github.com/RocketChat/Rocket.Chat/pull/38064)) Fixes broken chat transcript when there are more than one file per message
+
+- <details><summary>Updated dependencies [6654c5b481f91bdcb03d68ee0f3a12d58201137e]:</summary>
+
+  - @rocket.chat/core-typings@8.1.0-rc.0
+  </details>
+
 ## 0.3.26
 
 ### Patch Changes

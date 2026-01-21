@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/federation-matrix",
-	"version": "0.0.9",
+	"version": "0.0.10-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

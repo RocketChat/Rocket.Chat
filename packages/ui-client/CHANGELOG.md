@@ -1,5 +1,21 @@
 # @rocket.chat/ui-client
 
+## 27.0.0-rc.0
+
+### Minor Changes
+
+- ([#38032](https://github.com/RocketChat/Rocket.Chat/pull/38032)) Enables the password policy by default to ensure security by default and alters SetupWizard to handle errors
+
+### Patch Changes
+
+- ([#38169](https://github.com/RocketChat/Rocket.Chat/pull/38169)) Introduces in the call widget a quick link that redirects to the participant's direct message
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@27.0.0-rc.0
+  - @rocket.chat/ui-avatar@23.0.0-rc.0
+  </details>
+
 ## 26.0.0
 
 ### Major Changes

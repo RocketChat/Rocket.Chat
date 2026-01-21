@@ -1,5 +1,18 @@
 # @rocket.chat/rest-typings
 
+## 8.1.0-rc.0
+
+### Minor Changes
+
+- ([#38077](https://github.com/RocketChat/Rocket.Chat/pull/38077)) Changes list of Room Files to only show files that have been successfully attached to a message
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [6654c5b481f91bdcb03d68ee0f3a12d58201137e]:</summary>
+
+  - @rocket.chat/core-typings@8.1.0-rc.0
+  </details>
+
 ## 8.0.0
 
 ### Major Changes

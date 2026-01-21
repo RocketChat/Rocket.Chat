@@ -1,5 +1,20 @@
 # @rocket.chat/model-typings
 
+## 2.0.1-rc.0
+
+### Patch Changes
+
+- ([#38183](https://github.com/RocketChat/Rocket.Chat/pull/38183)) Fixes `/sendEmailAttachment` to support sending multiple file attachments in a single email
+
+- ([#37919](https://github.com/RocketChat/Rocket.Chat/pull/37919)) Makes roomsPerGuest exclude DMs when counting subscriptions, ensuring guest limits apply only to non-DM rooms as per expected behavior.
+
+- ([#38105](https://github.com/RocketChat/Rocket.Chat/pull/38105)) Fixes user deletion not removing thumbnails of images sent by the deleted user
+
+- <details><summary>Updated dependencies [6654c5b481f91bdcb03d68ee0f3a12d58201137e]:</summary>
+
+  - @rocket.chat/core-typings@8.1.0-rc.0
+  </details>
+
 ## 2.0.0
 
 ### Major Changes
