@@ -54,7 +54,7 @@ export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
 
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Edit Room' }));
-		this.listbox = new Listbox(page);
+		this.listbox = new Listbox(page, 'SLA Policy');
 	}
 
 	get inputTopic(): Locator {
@@ -66,16 +66,16 @@ export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
 	}
 
 	optionTag(name: string): Locator {
-		return this.root.getByRole('option', { name, exact: true });
+		return this.listbox.getOption(name);
 	}
 
-	async selectTag(name: string): Promise<void> {
-		await this.optionTag(name).click();
-	}
-
-	async selectSLA(name: string): Promise<void> {
-		await this.inputSLAPolicy.click();
+	async selectTag(name: string) {
 		await this.listbox.selectOption(name);
+	}
+
+	async selectSLA(name: string) {
+		await this.inputSLAPolicy.click();
+		await this.listbox.selectOption(name, true);
 	}
 
 	get inputTags(): Locator {
