@@ -246,8 +246,8 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 
 		try {
 			this.registerMethod(method);
-		} catch (e) {
-			SystemLogger.error(e);
+		} catch (err) {
+			SystemLogger.error({ err });
 		}
 	}
 

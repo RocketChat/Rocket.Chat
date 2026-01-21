@@ -163,7 +163,7 @@ class PushClass {
 
 		this.isConfigured = true;
 
-		logger.debug('Configure', this.options);
+		logger.debug({ msg: 'Configure', options: this.options });
 
 		if (this.options.apn) {
 			initAPN({ options: this.options as RequiredField<PushOptions, 'apn'>, absoluteUrl: Meteor.absoluteUrl() });
@@ -188,7 +188,7 @@ class PushClass {
 		countApn: string[],
 		countGcm: string[],
 	): Promise<void> {
-		logger.debug('send to token', app.token);
+		logger.debug({ msg: 'send to token', token: app.token });
 
 		if ('apn' in app.token && app.token.apn) {
 			countApn.push(app._id);
@@ -248,7 +248,7 @@ class PushClass {
 				projectId: credentials.project_id,
 			};
 		} catch (error) {
-			logger.error('Error getting FCM token', error);
+			logger.error({ msg: 'Error getting FCM token', err: error });
 			throw new Error('Error getting FCM token');
 		}
 	}
@@ -275,7 +275,7 @@ class PushClass {
 		const response = await result.text();
 
 		if (result.status === 406) {
-			logger.info('removing push token', token);
+			logger.info({ msg: 'removing push token', token });
 			await AppsTokens.deleteMany({
 				$or: [
 					{
@@ -290,7 +290,7 @@ class PushClass {
 		}
 
 		if (result.status === 422) {
-			logger.info('gateway rejected push notification. not retrying.', response);
+			logger.info({ msg: 'gateway rejected push notification. not retrying.', response });
 			return;
 		}
 
@@ -338,7 +338,7 @@ class PushClass {
 		const gatewayNotification = this.getGatewayNotificationData(notification);
 
 		for (const gateway of this.options.gateways) {
-			logger.debug('send to token', app.token);
+			logger.debug({ msg: 'send to token', token: app.token });
 
 			if ('apn' in app.token && app.token.apn) {
 				countApn.push(app._id);
@@ -353,7 +353,7 @@ class PushClass {
 	}
 
 	private async sendNotification(notification: PendingPushNotification): Promise<{ apn: string[]; gcm: string[] }> {
-		logger.debug('Sending notification', notification);
+		logger.debug({ msg: 'Sending notification', notification });
 
 		const countApn: string[] = [];
 		const countGcm: string[] = [];
@@ -382,7 +382,7 @@ class PushClass {
 		const appTokens = AppsTokens.find(query);
 
 		for await (const app of appTokens) {
-			logger.debug('send to token', app.token);
+			logger.debug({ msg: 'send to token', token: app.token });
 
 			if (this.shouldUseGateway()) {
 				await this.sendNotificationGateway(app, notification, countApn, countGcm);
