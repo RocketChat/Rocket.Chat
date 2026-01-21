@@ -29,8 +29,8 @@ export class OmnichannelMonitors extends OmnichannelAdmin {
 		return this.page.locator('input[name="monitor"]');
 	}
 
-	btnRemoveByName(name: string): Locator {
-		return this.table.findRowByName(name).locator('role=button[name="Remove"]');
+	private btnRemoveByName(name: string): Locator {
+		return this.table.findRowByName(name).getByRole('button', { name: 'Remove' });
 	}
 
 	private async selectMonitor(name: string) {

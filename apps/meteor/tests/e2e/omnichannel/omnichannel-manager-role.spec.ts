@@ -219,7 +219,6 @@ test.describe('OC - Manager Role', () => {
 		});
 
 		await test.step('expect to remove agent from monitor', async () => {
-			await poOmnichannelMonitors.btnRemoveByName('user1').click();
 			await poOmnichannelMonitors.removeMonitor('user1');
 
 			await expect(poOmnichannelMonitors.table.findRowByName('user1')).not.toBeVisible();
