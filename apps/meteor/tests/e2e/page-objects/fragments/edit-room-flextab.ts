@@ -65,8 +65,12 @@ export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
 		return this.root.getByRole('button', { name: 'SLA Policy' });
 	}
 
+	optionTag(name: string): Locator {
+		return this.root.getByRole('option', { name, exact: true });
+	}
+
 	async selectTag(name: string): Promise<void> {
-		await this.root.getByRole('option', { name, exact: true }).click();
+		await this.optionTag(name).click();
 	}
 
 	async selectSLA(name: string): Promise<void> {

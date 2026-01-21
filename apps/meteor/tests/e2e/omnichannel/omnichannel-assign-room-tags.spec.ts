@@ -87,19 +87,19 @@ test.describe('OC - Tags Visibility', () => {
 		});
 
 		await test.step('Should see TagA (department A specific)', async () => {
-			await expect(poOmnichannel.roomInfo.getTagInfoByLabel(tagA.data.name)).toBeVisible();
+			await expect(poOmnichannel.editRoomInfo.optionTag(tagA.data.name)).toBeVisible();
 		});
 
 		await test.step('Should see SharedTag (both departments)', async () => {
-			await expect(poOmnichannel.roomInfo.getTagInfoByLabel(sharedTag.data.name)).toBeVisible();
+			await expect(poOmnichannel.editRoomInfo.optionTag(sharedTag.data.name)).toBeVisible();
 		});
 
 		await test.step('Should see Public Tags for all chats (no department restriction)', async () => {
-			await expect(poOmnichannel.roomInfo.getTagInfoByLabel(globalTag.data.name)).toBeVisible();
+			await expect(poOmnichannel.editRoomInfo.optionTag(globalTag.data.name)).toBeVisible();
 		});
 
 		await test.step('Should not see TagB (department B specific)', async () => {
-			await expect(poOmnichannel.roomInfo.getTagInfoByLabel(tagB.data.name)).not.toBeVisible();
+			await expect(poOmnichannel.editRoomInfo.optionTag(tagB.data.name)).not.toBeVisible();
 		});
 
 		await test.step('add tags and save', async () => {
@@ -124,11 +124,11 @@ test.describe('OC - Tags Visibility', () => {
 		});
 
 		await test.step('Agent associated with DepartmentB should be able to see tags for Department B', async () => {
-			await expect(poOmnichannel.roomInfo.getTagInfoByLabel(tagB.data.name)).toBeVisible();
+			await expect(poOmnichannel.editRoomInfo.optionTag(tagB.data.name)).toBeVisible();
 		});
 
 		await test.step('Agent associated with DepartmentB should not be able to see tags for DepartmentA', async () => {
-			await expect(poOmnichannel.roomInfo.getTagInfoByLabel(tagA.data.name)).not.toBeVisible();
+			await expect(poOmnichannel.editRoomInfo.optionTag(tagA.data.name)).not.toBeVisible();
 		});
 	});
 });
