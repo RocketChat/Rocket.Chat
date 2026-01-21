@@ -6316,6 +6316,7 @@
   "error-token-already-exists": "A token with this name already exists",
   "error-token-does-not-exists": "Token does not exists",
   "error-too-many-requests": "Error, too many requests. Please slow down. You must wait {{seconds}} seconds before trying again.",
+  "error-too-many-files": "Error: number of files attached to the message is over the limit.",
   "error-transcript-already-requested": "Transcript already requested",
   "error-unable-to-update-priority": "Unable to update priority",
   "error-unknown-contact": "Contact is unknown.",

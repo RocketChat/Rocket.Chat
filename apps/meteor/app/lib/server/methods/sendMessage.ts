@@ -1,5 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import { type AtLeast, type IMessage, type IUser, type IUploadToConfirm } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import { MessageTypes } from '@rocket.chat/message-types';
@@ -103,6 +104,12 @@ export async function executeSendMessage(
 					method: 'sendMessage',
 				});
 			}
+		}
+
+		if ((extraInfo?.filesToConfirm?.length || 0) > 1 && isOmnichannelRoom(room)) {
+			throw new Meteor.Error('error-too-many-files', `Cannot send more than one file per message in Omnichannel rooms`, {
+				method: 'sendMessage',
+			});
 		}
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736

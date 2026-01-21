@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Uploads } from '@rocket.chat/models';
-import { isTruthy } from '@rocket.chat/tools';
 
 import { FileUpload } from '../../../file-upload/server';
 import { getURL } from '../getURL';
@@ -31,18 +30,11 @@ const generateFileUploadData = async (
 };
 
 export const normalizeMessageFileUpload = async (message: Omit<IMessage, '_updatedAt'>): Promise<Omit<IMessage, '_updatedAt'>> => {
-	// handle deprecated single file property for backward compatibility
 	if (message.file && !message.fileUpload) {
 		const fileUploadData = await generateFileUploadData(message, message.file._id);
 		if (fileUploadData) {
 			message.fileUpload = fileUploadData;
 		}
-	}
-
-	// handle multiple files
-	if (message.files?.length && !message.filesUpload) {
-		const filesUploadData = await Promise.all(message.files.map((file) => generateFileUploadData(message, file._id)));
-		message.filesUpload = filesUploadData.filter(isTruthy);
 	}
 
 	return message;
