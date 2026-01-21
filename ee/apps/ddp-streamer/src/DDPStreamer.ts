@@ -12,7 +12,6 @@ import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
 import { proxy } from './proxy';
-import { getClientAddress } from '../../../../apps/meteor/server/lib/getClientAddress';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
 import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
@@ -183,20 +182,13 @@ export class DDPStreamer extends ServiceClass {
 
 			server.emit('presence', { userId, connection });
 
-			this.api?.broadcast('accounts.login', {
-				userId,
-				connectionId: connection.id,
-				userAgent: connection.httpHeaders?.['user-agent'] || '',
-				clientAddress: getClientAddress(connection),
-				instanceId: nodeID,
-				host: connection.httpHeaders?.host || '',
-			});
+			this.api?.broadcast('accounts.login', { userId, connection });
 		});
 
 		server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
 			const { userId, connection } = info;
 
-			this.api?.broadcast('accounts.logout', { userId, sessionId: connection.id });
+			this.api?.broadcast('accounts.logout', { userId, connection });
 
 			this.updateConnections();
 

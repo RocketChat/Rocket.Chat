@@ -2,8 +2,8 @@ import type { ISocketConnection, LoginSessionPayload, LogoutSessionPayload } fro
 import { Emitter } from '@rocket.chat/emitter';
 
 export const sauEvents = new Emitter<{
-	'accounts.login': LoginSessionPayload;
-	'accounts.logout': LogoutSessionPayload;
-	'socket.connected': ISocketConnection;
-	'socket.disconnected': ISocketConnection;
+	'sau.accounts.login': LoginSessionPayload;
+	'sau.accounts.logout': LogoutSessionPayload;
+	'sau.socket.connected': ISocketConnection;
+	'sau.socket.disconnected': ISocketConnection;
 }>();

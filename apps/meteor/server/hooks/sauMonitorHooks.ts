@@ -1,12 +1,13 @@
 import type { IncomingHttpHeaders } from 'http';
 
-import type { LoginSessionPayload, DeviceLoginPayload } from '@rocket.chat/core-typings';
+import type { LoginSessionPayload, LogoutSessionPayload, DeviceLoginPayload } from '@rocket.chat/core-typings';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import type { ILoginAttempt } from '../../app/authentication/server/ILoginAttempt';
 import { getClientAddress } from '../lib/getClientAddress';
+import { getHeader } from '../lib/getHeader';
 import { deviceManagementEvents } from '../services/device-management/events';
 import { sauEvents } from '../services/sauMonitor/events';
 
@@ -38,7 +39,7 @@ Accounts.onLogin((info: ILoginAttempt) => {
 		clientAddress,
 		host,
 	};
-	sauEvents.emit('accounts.login', loginEventObject);
+	sauEvents.emit('sau.accounts.login', loginEventObject);
 
 	const deviceLoginEventObject: DeviceLoginPayload = {
 		userId,
@@ -54,16 +55,18 @@ Accounts.onLogout((info) => {
 		return;
 	}
 
-	sauEvents.emit('accounts.logout', {
+	const logoutEventObject: LogoutSessionPayload = {
 		userId: info.user._id,
-    sessionId: info.connection.id,
-	});
+		sessionId: info.connection.id,
+	};
+
+	sauEvents.emit('sau.accounts.logout', logoutEventObject);
 });
 
 Meteor.onConnection((connection) => {
 	connection.onClose(async () => {
 		const { httpHeaders } = connection;
-		sauEvents.emit('socket.disconnected', {
+		sauEvents.emit('sau.socket.disconnected', {
 			instanceId: InstanceStatus.id(),
 			...connection,
 			httpHeaders: httpHeaders as IncomingHttpHeaders,
@@ -73,18 +76,9 @@ Meteor.onConnection((connection) => {
 
 Meteor.onConnection((connection) => {
 	const { httpHeaders } = connection;
-	sauEvents.emit('socket.connected', { instanceId: InstanceStatus.id(), ...connection, httpHeaders: httpHeaders as IncomingHttpHeaders });
+	sauEvents.emit('sau.socket.connected', {
+		instanceId: InstanceStatus.id(),
+		...connection,
+		httpHeaders: httpHeaders as IncomingHttpHeaders,
+	});
 });
-
-// TODO: extract this function to another file
-const getHeader = (headers: unknown, key: string): string => {
-	if (!headers) {
-		return '';
-	}
-
-	if (typeof (headers as any).get === 'function') {
-		return (headers as Headers).get(key) ?? '';
-	}
-
-	return (headers as Record<string, string | undefined>)[key] || '';
-};

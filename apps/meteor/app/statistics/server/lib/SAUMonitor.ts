@@ -111,7 +111,7 @@ export class SAUMonitorClass {
 		}
 
 		sauEvents.on(
-			'accounts.login',
+			'sau.accounts.login',
 			async ({ userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host }: LoginSessionPayload) => {
 				if (!this.isRunning()) {
 					return;
@@ -127,7 +127,7 @@ export class SAUMonitorClass {
 			},
 		);
 
-		sauEvents.on('accounts.logout', async ({ userId, sessionId }: LogoutSessionPayload) => {
+		sauEvents.on('sau.accounts.logout', async ({ userId, sessionId }: LogoutSessionPayload) => {
 			if (!this.isRunning()) {
 				return;
 			}

@@ -1,8 +1,9 @@
 import type { IDeviceManagementService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { LoginSessionPayload } from '@rocket.chat/core-typings';
 
 import { deviceManagementEvents } from './events';
+import { getClientAddress } from '../../lib/getClientAddress';
+import { getHeader } from '../../lib/getHeader';
 
 export class DeviceManagementService extends ServiceClassInternal implements IDeviceManagementService {
 	protected name = 'device-management';
@@ -10,9 +11,11 @@ export class DeviceManagementService extends ServiceClassInternal implements IDe
 	constructor() {
 		super();
 
-		this.onEvent('accounts.login', async ({ userId, userAgent, loginToken, clientAddress }: LoginSessionPayload) => {
+		this.onEvent('accounts.login', async ({ userId, connection }) => {
+			const clientAddress = getClientAddress(connection);
+			const userAgent = getHeader(connection.httpHeaders, 'user-agent');
 			// TODO need to add loginToken to data
-			deviceManagementEvents.emit('device-login', { userId, userAgent, loginToken, clientAddress });
+			deviceManagementEvents.emit('device-login', { userId, userAgent, clientAddress });
 		});
 	}
 }
