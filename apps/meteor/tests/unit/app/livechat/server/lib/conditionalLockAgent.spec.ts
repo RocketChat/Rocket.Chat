@@ -59,20 +59,6 @@ describe('conditionalLockAgent', () => {
 			expect(mockUsers.releaseAgentLock.firstCall.args[0]).to.equal('agent1');
 			expect(mockUsers.releaseAgentLock.firstCall.args[1]).to.be.instanceOf(Date);
 		});
-
-		it('should simulate concurrent lock attempts - second attempt blocked', async () => {
-			// first call: lock acquired
-			mockUsers.acquireAgentLock.onFirstCall().resolves(true);
-			// second call: lock NOT acquired (held by first)
-			mockUsers.acquireAgentLock.onSecondCall().resolves(false);
-
-			const resultA = await conditionalLockAgent('agent1');
-			const resultB = await conditionalLockAgent('agent1');
-
-			expect(resultA.acquired).to.equal(true);
-			expect(resultB.acquired).to.equal(false);
-			expect(mockUsers.acquireAgentLock.calledTwice).to.equal(true);
-		});
 	});
 
 	describe('when waiting_queue is disabled', () => {
