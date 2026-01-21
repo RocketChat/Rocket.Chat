@@ -114,6 +114,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.debug({ msg: 'Matrix room created', response: matrixRoomResult });
 
+			if (room.topic) {
+				await federationSDK.setRoomTopic(matrixRoomResult.room_id, matrixUserId, room.topic);
+			}
+
 			await Rooms.setAsFederated(room._id, { mrid: matrixRoomResult.room_id, origin: this.serverName });
 
 			// Members are NOT invited here - invites are sent via beforeAddUserToRoom callback.
