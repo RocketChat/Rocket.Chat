@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import { TEAM_TYPE, type IIntegration, type IMessage, type IRoom, type ITeam, type IUser } from '@rocket.chat/core-typings';
+import { TeamType, type IIntegration, type IMessage, type IRoom, type ITeam, type IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect, assert } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -1037,8 +1037,8 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.info.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [outsiderUser.username as string]),
-					createTeam(insideCredentials, `channels.info.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [outsiderUser.username as string]),
+					createTeam(insideCredentials, `channels.info.team.public.${Random.id()}`, TeamType.PUBLIC, [outsiderUser.username as string]),
+					createTeam(insideCredentials, `channels.info.team.private.${Random.id()}`, TeamType.PRIVATE, [outsiderUser.username as string]),
 				]);
 
 				const [
@@ -1887,8 +1887,8 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.members.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [outsiderUser.username as string]),
-					createTeam(insideCredentials, `channels.members.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+					createTeam(insideCredentials, `channels.members.team.public.${Random.id()}`, TeamType.PUBLIC, [outsiderUser.username as string]),
+					createTeam(insideCredentials, `channels.members.team.private.${Random.id()}`, TeamType.PRIVATE, [
 						outsiderUser.username as string,
 					]),
 				]);
@@ -2312,10 +2312,10 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.getIntegrations.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [
+					createTeam(insideCredentials, `channels.getIntegrations.team.public.${Random.id()}`, TeamType.PUBLIC, [
 						outsiderUser.username as string,
 					]),
-					createTeam(insideCredentials, `channels.getIntegrations.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+					createTeam(insideCredentials, `channels.getIntegrations.team.private.${Random.id()}`, TeamType.PRIVATE, [
 						outsiderUser.username as string,
 					]),
 				]);
@@ -3284,10 +3284,10 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.moderators.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [
+					createTeam(insideCredentials, `channels.moderators.team.public.${Random.id()}`, TeamType.PUBLIC, [
 						outsiderUser.username as string,
 					]),
-					createTeam(insideCredentials, `channels.moderators.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+					createTeam(insideCredentials, `channels.moderators.team.private.${Random.id()}`, TeamType.PRIVATE, [
 						outsiderUser.username as string,
 					]),
 				]);
@@ -3650,7 +3650,7 @@ describe('[Channels]', () => {
 				]);
 
 				// Create a private team
-				privateTeam = await createTeam(insideCredentials, `channels.anonymousread.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+				privateTeam = await createTeam(insideCredentials, `channels.anonymousread.team.private.${Random.id()}`, TeamType.PRIVATE, [
 					outsiderUser.username as string,
 				]);
 
@@ -4231,10 +4231,8 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.messages.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [
-						outsiderUser.username as string,
-					]),
-					createTeam(insideCredentials, `channels.messages.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+					createTeam(insideCredentials, `channels.messages.team.public.${Random.id()}`, TeamType.PUBLIC, [outsiderUser.username as string]),
+					createTeam(insideCredentials, `channels.messages.team.private.${Random.id()}`, TeamType.PRIVATE, [
 						outsiderUser.username as string,
 					]),
 				]);
