@@ -1,13 +1,16 @@
+import fs from 'fs';
 import type Stream from 'stream';
 
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
 import type { IUpload, IUser, FilesAndAttachments } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import sharp from 'sharp';
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
 import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
+import { UploadFS } from '../../ufs';
 
 export class UploadService extends ServiceClassInternal implements IUploadService {
 	protected name = 'upload';
@@ -69,6 +72,25 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 	}
 
 	async uploadFileFromStream({ streamParam, details }: { streamParam: Stream.Readable; details: any }): Promise<IUpload> {
-		return FileUpload.getStore('Uploads').insert(details, streamParam);
+		const resolver = Promise.withResolvers<IUpload>();
+
+		const fileId = Random.id();
+		const tempFilePath = UploadFS.getTempFilePath(fileId);
+
+		const writeStream = fs.createWriteStream(tempFilePath);
+		streamParam.pipe(writeStream);
+
+		writeStream.on('finish', async () => {
+			details.size = writeStream.bytesWritten;
+
+			resolver.resolve(await FileUpload.getStore('Uploads').insert(details, tempFilePath));
+		});
+
+		writeStream.on('error', async (err) => {
+			await fs.promises.unlink(tempFilePath).catch(() => undefined);
+			resolver.reject(err);
+		});
+
+		return resolver.promise;
 	}
 }
