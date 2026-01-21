@@ -295,7 +295,7 @@ class PushClass {
 		}
 
 		if (result.status === 401) {
-			logger.warn('Error sending push to gateway (not authorized)', response);
+			logger.warn({ msg: 'authorization failed when sending push to gateway. not retrying.', response });
 			return;
 		}
 
@@ -503,7 +503,6 @@ class PushClass {
 				userId: notification.userId,
 				err: error,
 			});
-			logger.debug(error.stack);
 		}
 	}
 }

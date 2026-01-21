@@ -181,7 +181,6 @@ export default class SlackAdapter {
 		this.slackApp.event('reaction_added', async ({ event }) => {
 			slackLogger.debug('OnSlackEvent-REACTION_ADDED: ', event);
 			try {
-				slackLogger.error({ event });
 				await this.onReactionAdded(event);
 			} catch (err) {
 				slackLogger.error({ msg: 'Unhandled error onReactionAdded', err });
@@ -871,7 +870,12 @@ export default class SlackAdapter {
 			if (postResult && postResult.message && postResult.message.bot_id && postResult.message.ts) {
 				this.slackBotId = postResult.message.bot_id;
 				await Messages.setSlackBotIdAndSlackTs(rocketMessage._id, postResult.message.bot_id, postResult.message.ts);
-				slackLogger.debug(`RocketMsgID=${rocketMessage._id} SlackMsgID=${postResult.message.ts} SlackBotID=${postResult.message.bot_id}`);
+				slackLogger.debug({
+					msg: 'Message posted to Slack',
+					rocketMessageId: rocketMessage._id,
+					slackMessageId: postResult.message.ts,
+					slackBotId: postResult.message.bot_id,
+				});
 			}
 		}
 	}

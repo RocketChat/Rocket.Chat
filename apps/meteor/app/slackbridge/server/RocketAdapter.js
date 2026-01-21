@@ -410,8 +410,8 @@ export default class RocketAdapter {
 					if (url) {
 						try {
 							await setUserAvatar(user, url, null, 'url');
-						} catch (error) {
-							rocketLogger.debug('Error setting user avatar', error.message);
+						} catch (err) {
+							rocketLogger.debug({ msg: 'Error setting user avatar from Slack', err });
 						}
 					}
 				}
@@ -482,6 +482,7 @@ export default class RocketAdapter {
 					rocketMsgObj.tmid = tmessage._id;
 				}
 			}
+
 			if (slackMessage.subtype === 'bot_message') {
 				rocketUser = await Users.findOneById('rocket.cat', { projection: { username: 1 } });
 			}
