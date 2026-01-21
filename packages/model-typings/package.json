@@ -16,6 +16,7 @@
 		"@rocket.chat/core-typings": "workspace:^"
 	},
 	"devDependencies": {
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/node-rsa": "^1.1.4",
 		"eslint": "~8.45.0",
 		"mongodb": "6.16.0",

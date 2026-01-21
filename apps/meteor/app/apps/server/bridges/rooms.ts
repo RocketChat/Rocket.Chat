@@ -16,6 +16,8 @@ import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { saveRoomCustomFields } from '../../../channel-settings/server/functions/saveRoomCustomFields';
+import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 
 const rawRoomProjection: FindOptions<ICoreRoom>['projection'] = {
 	_id: 1,
@@ -230,6 +232,11 @@ export class AppRoomBridge extends RoomBridge {
 		this.orch.debugLog(`The App ${appId} is updating a room.`);
 
 		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room, true);
+		const customFields = (rm as ICoreRoom | undefined)?.customFields as Record<string, unknown> | undefined;
+		if (customFields) {
+			await saveRoomCustomFields(room.id, customFields);
+			delete (rm as Record<string, unknown>).customFields;
+		}
 
 		const updateResult = await Rooms.updateOne({ _id: room.id }, { $set: rm });
 
@@ -246,6 +253,8 @@ export class AppRoomBridge extends RoomBridge {
 
 			await addUserToRoom(room.id, member);
 		}
+
+		void notifyOnRoomChangedById(room.id);
 	}
 
 	protected async delete(roomId: string, appId: string): Promise<void> {

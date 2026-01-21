@@ -2,17 +2,24 @@ import { Badge } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { defaultFeaturesPreview, usePreferenceFeaturePreviewList } from '@rocket.chat/ui-client';
-import { useRouter } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+
+import PatientPharmacyModal from '../../../../views/medsense/pharmacy/PatientPharmacyModal';
 
 export const useAccountItems = (): GenericMenuItemProps[] => {
 	const { t } = useTranslation();
 	const router = useRouter();
+	const setModal = useSetModal();
 
 	const { unseenFeatures, featurePreviewEnabled } = usePreferenceFeaturePreviewList();
 
 	const handleMyAccount = useEffectEvent(() => {
 		router.navigate('/account');
+	});
+	const handleMyPharmacy = useEffectEvent(() => {
+		setModal(<PatientPharmacyModal onClose={() => setModal(null)} />);
 	});
 	const handlePreferences = useEffectEvent(() => {
 		router.navigate('/account/preferences');
@@ -46,6 +53,12 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 			onClick: handleMyAccount,
 		},
 		{
+			id: 'my-pharmacy',
+			icon: 'medical',
+			content: t('My_Pharmacy'),
+			onClick: handleMyPharmacy,
+		},
+		{
 			id: 'preferences',
 			icon: 'customize',
 			content: t('Preferences'),
@@ -60,3 +73,4 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 		...(featurePreviewEnabled && defaultFeaturesPreview.length > 0 ? [featurePreviewItem] : []),
 	];
 };
+

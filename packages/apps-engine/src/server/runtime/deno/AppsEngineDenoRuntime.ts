@@ -83,10 +83,12 @@ function shouldUseDenoDetectCjs(): boolean {
 			return false;
 		}
 
-		return supportsDenoDetectCjs();
+		// return supportsDenoDetectCjs();
+		return true;
 	}
 
-	return supportsDenoDetectCjs();
+	supportsDenoDetectCjs();
+	return true;
 }
 
 export const JSONRPC_METHOD_NOT_FOUND = -32601;
@@ -204,6 +206,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				String(this.spawnId++),
 			];
 
+			// Force enable CJS detection to fix 'exports is not defined' error
 			if (shouldUseDenoDetectCjs()) {
 				options.splice(1, 0, '--unstable-detect-cjs');
 			}

@@ -12,7 +12,7 @@
 		"uuid": "npm:uuid@8.3.2"
 	},
 	"tasks": {
-		"test": "deno test --no-check --allow-read=../../../"
+		"test": "deno test --unstable-detect-cjs --no-check --allow-read=../../../"
 	},
 	"fmt": {
 		"lineWidth": 160,

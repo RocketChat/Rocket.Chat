@@ -19,6 +19,7 @@ import { Match, check } from 'meteor/check';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { createRoom } from '../../../lib/server/functions/createRoom';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
@@ -77,10 +78,12 @@ API.v1.addRoute(
 					members: Match.Maybe([String]),
 					room: Match.Maybe(Match.Any),
 					owner: Match.Maybe(String),
+					createIntakeChannel: Match.Maybe(Boolean),
+					createHandoverChannel: Match.Maybe(Boolean),
 				}),
 			);
 
-			const { name, type, members, room, owner } = this.bodyParams;
+			const { name, type, members, room, owner, createIntakeChannel = true, createHandoverChannel = false } = this.bodyParams;
 
 			const team = await Team.create(this.userId, {
 				team: {
@@ -91,6 +94,45 @@ API.v1.addRoute(
 				members,
 				owner,
 			});
+
+			const teamOwnerId = owner || this.userId;
+			const teamOwner = await Users.findOneById(teamOwnerId, { projection: { _id: 1, username: 1, name: 1 } });
+			const memberUsers =
+				!members || !Array.isArray(members) || members.length === 0
+					? []
+					: await Users.findActiveByIdsOrUsernames(members, { projection: { username: 1 } }).toArray();
+			const memberUsernames = memberUsers
+				.map((member) => member.username)
+				.filter((username): username is string => typeof username === 'string' && username.trim().length > 0);
+
+			if (teamOwner?.username && (createIntakeChannel || createHandoverChannel)) {
+				const roomType = type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
+
+				const createTeamChannel = async (suffix: string, label: string, isDefault: boolean, extraMembers: string[] = []): Promise<void> => {
+					const allMembers = [...new Set([...memberUsernames, ...extraMembers])];
+					await createRoom(roomType, `${name}-${suffix}`, teamOwner, allMembers, false, false, {
+						teamId: team._id,
+						teamDefault: isDefault,
+						fname: label,
+					});
+				};
+
+				if (createIntakeChannel) {
+					const botUsername = settings.get<string>('Medsense_Bot_User') || 'bot';
+					let extraIntakeMembers: string[] = [];
+					if (botUsername) {
+						const botUser = await Users.findOneByUsername(botUsername, { projection: { username: 1 } });
+						if (botUser?.username) {
+							extraIntakeMembers = [botUser.username];
+						}
+					}
+					await createTeamChannel('intake', 'intake', true, extraIntakeMembers);
+				}
+
+				if (createHandoverChannel) {
+					await createTeamChannel('handover', 'handover', false);
+				}
+			}
 
 			return API.v1.success({ team });
 		},

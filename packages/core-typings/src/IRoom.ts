@@ -60,6 +60,20 @@ export interface IRoom extends IRocketChatRecord {
 	teamDefault?: boolean;
 	open?: boolean;
 
+	// MedSense Pending Queue
+	pendingTeamId?: string;
+	pendingStatus?: 'pending' | 'taken' | 'closed';
+	pendingSetAt?: Date;
+	takenBy?: {
+		_id: string;
+		username: string;
+	};
+	takenAt?: Date;
+
+	// MedSense Active Request (New)
+	medsenseActiveRequestId?: string;
+	medsenseActiveRequestStatus?: 'pending' | 'taken';
+
 	autoTranslateLanguage?: string;
 	autoTranslate?: boolean;
 	unread?: number;

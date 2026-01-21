@@ -93,7 +93,8 @@ const SidebarItemTemplateWithData = ({
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
-	const { unreadTitle, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
+	const { unreadTitle, showUnread, unreadCount, highlightUnread } = useUnreadDisplay(room);
+	const highlighted = highlightUnread;
 
 	const { lastMessage, unread = 0, alert, rid, t: type, cl } = room;
 
@@ -217,6 +218,7 @@ export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 	) {
 		return false;
 	}
+
 
 	return true;
 });

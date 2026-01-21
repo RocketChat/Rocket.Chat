@@ -44,6 +44,7 @@ type IntegrationData = {
 	timestamp?: Date;
 	user_id?: string;
 	user_name?: string;
+	user_roles?: string[];
 	text?: string;
 	siteUrl?: string;
 	alias?: string;
@@ -248,7 +249,7 @@ class RocketChatIntegrationHandler {
 		return argObject;
 	}
 
-	mapEventArgsToData(data: IntegrationData, { event, message, room, owner, user }: ArgumentsObject) {
+	async mapEventArgsToData(data: IntegrationData, { event, message, room, owner, user }: ArgumentsObject) {
 		/* The "services" field contains sensitive information such as
 		the user's password hash. To prevent this information from being
 		sent to the webhook, we're checking and removing it by destructuring
@@ -276,8 +277,30 @@ class RocketChatIntegrationHandler {
 				data.timestamp = message.ts;
 				data.user_id = message.u._id;
 				data.user_name = message.u.username;
+				if (message.u?._id) {
+					const userRecord = await Users.findOneById(message.u._id, { projection: { roles: 1 } });
+					if (Array.isArray(userRecord?.roles)) {
+						data.user_roles = userRecord.roles;
+					}
+				}
 				data.text = message.msg;
 				data.siteUrl = settings.get('Site_Url');
+				const roomWithRequest =
+					room.medsenseActiveRequestId !== undefined || room.medsenseActiveRequestStatus !== undefined
+						? room
+						: await Rooms.findOneById(room._id, {
+							projection: {
+								name: 1,
+								medsenseActiveRequestId: 1,
+								medsenseActiveRequestStatus: 1,
+							},
+						});
+				data.room = {
+					_id: room._id,
+					name: room.name,
+					medsenseActiveRequestId: (room as any).medsenseActiveRequestId ?? roomWithRequest?.medsenseActiveRequestId,
+					medsenseActiveRequestStatus: (room as any).medsenseActiveRequestStatus ?? roomWithRequest?.medsenseActiveRequestStatus,
+				};
 
 				if (message.alias) {
 					data.alias = message.alias;
@@ -302,6 +325,12 @@ class RocketChatIntegrationHandler {
 				data.timestamp = message.ts;
 				data.user_id = message.u._id;
 				data.user_name = message.u.username;
+				if (message.u?._id) {
+					const userRecord = await Users.findOneById(message.u._id, { projection: { roles: 1 } });
+					if (Array.isArray(userRecord?.roles)) {
+						data.user_roles = userRecord.roles;
+					}
+				}
 				data.text = message.msg;
 				data.user = userWithoutServicesField;
 				data.room = room;
@@ -544,7 +573,7 @@ class RocketChatIntegrationHandler {
 			data.trigger_word = word;
 		}
 
-		this.mapEventArgsToData(data, { event, message, room, owner, user });
+		await this.mapEventArgsToData(data, { event, message, room, owner, user });
 		await updateHistory({ historyId, step: 'mapped-args-to-data', data, triggerWord: word });
 
 		outgoingLogger.info(`Will be executing the Integration "${trigger.name}" to the url: ${url}`);

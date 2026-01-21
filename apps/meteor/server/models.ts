@@ -77,6 +77,12 @@ import {
 	WebdavAccountsRaw,
 	WorkspaceCredentialsRaw,
 	AbacAttributesRaw,
+	MedsensePharmaciesRaw,
+	MedsensePharmacyMembershipsRaw,
+	MedsensePatientPharmacyRaw,
+	MedsensePharmacyTeamsRaw,
+	MedsenseAuditRaw,
+	MedsenseRequestsRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
 
@@ -165,3 +171,9 @@ registerModel('IVideoConferenceModel', new VideoConferenceRaw(db));
 registerModel('IWebdavAccountsModel', new WebdavAccountsRaw(db));
 registerModel('IWorkspaceCredentialsModel', new WorkspaceCredentialsRaw(db));
 registerModel('IAbacAttributesModel', new AbacAttributesRaw(db));
+registerModel('IMedsensePharmaciesModel', new MedsensePharmaciesRaw(db));
+registerModel('IMedsensePharmacyMembershipsModel', new MedsensePharmacyMembershipsRaw(db));
+registerModel('IMedsensePatientPharmacyModel', new MedsensePatientPharmacyRaw(db));
+registerModel('IMedsensePharmacyTeamsModel', new MedsensePharmacyTeamsRaw(db));
+registerModel('IMedsenseAuditModel', new MedsenseAuditRaw(db));
+registerModel('IMedsenseRequestsModel', new MedsenseRequestsRaw(db));

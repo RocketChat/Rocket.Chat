@@ -88,6 +88,12 @@ import type {
 	IMediaCallNegotiationsModel,
 	ICallHistoryModel,
 	IAbacAttributesModel,
+	IMedsensePharmaciesModel,
+	IMedsensePharmacyMembershipsModel,
+	IMedsensePatientPharmacyModel,
+	IMedsensePharmacyTeamsModel,
+	IMedsenseAuditModel,
+	IMedsenseRequestsModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -115,6 +121,12 @@ import {
 	UsersSessionsRaw,
 	AbacAttributesRaw,
 	ServerEventsRaw,
+	MedsensePharmaciesRaw,
+	MedsensePharmacyMembershipsRaw,
+	MedsensePatientPharmacyRaw,
+	MedsensePharmacyTeamsRaw,
+	MedsenseAuditRaw,
+	MedsenseRequestsRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -214,6 +226,12 @@ export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
 export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');
+export const MedsensePharmacies = proxify<IMedsensePharmaciesModel>('IMedsensePharmaciesModel');
+export const MedsensePharmacyMemberships = proxify<IMedsensePharmacyMembershipsModel>('IMedsensePharmacyMembershipsModel');
+export const MedsensePatientPharmacy = proxify<IMedsensePatientPharmacyModel>('IMedsensePatientPharmacyModel');
+export const MedsensePharmacyTeams = proxify<IMedsensePharmacyTeamsModel>('IMedsensePharmacyTeamsModel');
+export const MedsenseAudit = proxify<IMedsenseAuditModel>('IMedsenseAuditModel');
+export const MedsenseRequests = proxify<IMedsenseRequestsModel>('IMedsenseRequestsModel');
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
@@ -249,4 +267,10 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
 	registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
 	registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
+	registerModel('IMedsensePharmaciesModel', () => new MedsensePharmaciesRaw(db));
+	registerModel('IMedsensePharmacyMembershipsModel', () => new MedsensePharmacyMembershipsRaw(db));
+	registerModel('IMedsensePatientPharmacyModel', () => new MedsensePatientPharmacyRaw(db));
+	registerModel('IMedsensePharmacyTeamsModel', () => new MedsensePharmacyTeamsRaw(db));
+	registerModel('IMedsenseAuditModel', () => new MedsenseAuditRaw(db));
+registerModel('IMedsenseRequestsModel', () => new MedsenseRequestsRaw(db));
 }

@@ -43,17 +43,14 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const sidebarOrder = useUserPreference<typeof order>('sidebarSectionsOrder') ?? order;
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
-
 	const options = useSortQueryOptions();
 
 	const rooms = useUserSubscriptions(query, options);
 
 	const inquiries = useQueuedInquiries();
-
 	const incomingCalls = useVideoConfIncomingCalls();
 
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
-
 	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useDebouncedValue(
 		useMemo(() => {
 			const isCollapsed = (groupTitle: string) => collapsedGroups?.includes(groupTitle);
@@ -117,9 +114,9 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			incomingCall.size && groups.set('Incoming_Calls', incomingCall);
 
 			showOmnichannel && inquiries.enabled && queue.length && groups.set('Incoming_Livechats', new Set(queue));
+
 			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
-
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
@@ -199,8 +196,6 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			sidebarGroupByType,
 			isDiscussionEnabled,
 			sidebarOrder,
-			collapsedGroups,
-			incomingCalls,
 		]),
 		50,
 	);

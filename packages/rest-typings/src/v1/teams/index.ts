@@ -64,6 +64,8 @@ export type TeamsEndpoints = {
 			name: ITeam['name'];
 			type: ITeam['type'];
 			members?: IUser['_id'][];
+			createIntakeChannel?: boolean;
+			createHandoverChannel?: boolean;
 			room: {
 				id?: string;
 				name?: IRoom['name'];

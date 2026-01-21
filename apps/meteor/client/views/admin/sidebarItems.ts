@@ -144,4 +144,10 @@ export const {
 		permissionGranted: (): boolean =>
 			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
 	},
+	{
+		href: '/admin/pharmacies',
+		i18nLabel: 'Pharmacies',
+		icon: 'medical',
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['medsense-manage-pharmacies', 'medsense-manage-own-pharmacy']),
+	},
 ]);

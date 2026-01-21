@@ -49,6 +49,7 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 			slaId: (room as IOmnichannelRoom | undefined)?.slaId,
 			livechatData: (room as IOmnichannelRoom | undefined)?.livechatData,
 			departmentId: (room as IOmnichannelRoom | undefined)?.departmentId,
+			customFields: room.customFields,
 			ts: room.ts ?? sub.ts,
 			source: (room as IOmnichannelRoom | undefined)?.source,
 			queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,

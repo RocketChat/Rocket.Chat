@@ -32,7 +32,8 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 
-	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
+	const { unreadTitle, showUnread, highlightUnread } = useUnreadDisplay(room);
+	const highlighted = highlightUnread;
 
 	const icon = (
 		<SidebarV2ItemIcon
@@ -125,6 +126,7 @@ export default memo(SidebarItemWithData, (prevProps, nextProps) => {
 	) {
 		return false;
 	}
+
 
 	return true;
 });

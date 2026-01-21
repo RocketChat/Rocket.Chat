@@ -1,5 +1,8 @@
 # Medsense Webchat – Quick Dev & Deploy Notes
 
+## Components
+- MedSense Orchestrator: `D:\medora_build\medsense_orchestrator`
+
 ## Local Dev (WSL)
 - Start local Mongo/NATS (WSL-backed, ports on localhost):  
   `cd ~/medsense.webchat`  
@@ -609,8 +612,34 @@ yarn dsv  # Rebuilds and starts dev server
   - formId is attached as message customFields.formId (requires Message Custom Fields enabled + validation schema).
 - Required Rocket.Chat setting:
   - Enable Message Custom Fields with JSON schema allowing formId.
-- Debug endpoints:
-  - POST /forms/debug/inline and /forms/debug/modal for smoke tests.
+## Debug endpoints (Orchestrator):
+  - POST /forms/debug/inline and /forms/debug/modal for smart form smoke tests.
+  - POST /escalation/debug/takeover for takeover flow smoke test.
+  - POST /debug/intake for connectivity smoke test to the intake channel (requires DEBUG_INTAKE_ROOM_ID env).
+
+### Intake Connectivity Smoke Test
+```bash
+# Set the room ID of your intake channel in your .env or shell
+# Then trigger the message from the orchestrator
+curl -sS -X POST http://localhost:8080/debug/intake
+```
+
+**Required Orchestrator Implementation (main.py):**
+```python
+@app.route("/debug/intake", methods=["POST"])
+def debug_intake_smoke():
+    """Smoke test: Send a fixed message to the configured intake room."""
+    room_id = DEBUG_INTAKE_ROOM_ID
+    if not room_id:
+        return jsonify({"error": "DEBUG_INTAKE_ROOM_ID not configured"}), 400
+
+    message_text = "🚑 MedSense Intake Smoke Test: Orchestrator -> Rocket.Chat connectivity verified."
+    msg_record = post_bot_message_to_rc(room_id, message_text)
+
+    if msg_record:
+        return jsonify({"status": "success", "message_id": msg_record.get("_id")})
+    return jsonify({"error": "Failed to post message"}), 500
+```
 
 ## Recent fixes
 - Invalid URL errors fixed by making submit URL absolute in app.
@@ -632,9 +661,473 @@ yarn dsv  # Rebuilds and starts dev server
 - "Other" input isolation fixed by step-scoped actionId; no carry-over between steps.
 - Added "New bot chat" modal with optional user greeting input (button label uses Medsense_Start_Chat_Label).
 - Added view-directory permission to hide/show the directory button in the UI.
-- Added agent "Sign in" modal under avatar menu with 8/12 hour presets, manual end time, and role selection stored in user customFields.
-- Added REST endpoint GET /api/v1/medsense.signedInUsers (requires view-full-other-user-info) returning signed-in users with role/start/end.
+- Create Team modal now has toggles to create intake/handover channels; /v1/teams.create accepts flags and creates team channels.
+- Sidebar shows a persistent badge + bold highlight when room.customFields.unassignedCount > 0.
+- Added REST endpoint GET /api/v1/medsense/available_teams to return hasLivechatAvailable for requested teamIds.
+
+### Takeover Smoke Test
+```bash
+curl -sS -X POST http://localhost:8080/escalation/debug/takeover \
+  -H "Content-Type: application/json" \
+  -d '{
+    "patientRoomId": "<patient-room-id>",
+    "teamId": "pharmacy-team"
+  }'
+```
 
 ## Known constraints
 - Livechat widget does not support UIKit modals; use inline steps for widget.
 - No message update API for livechat, so inline multi-step is sequential messages.
+
+## Medsense intake badge + take fixes (2026-01-15)
+- Smart Forms intake take action now guards against null persistence arrays, prevents repeat "Taken" posts, and only proceeds when the record is unassigned.
+- Intake room id resolution hardened (id/_id/name) so unassignedCount increments reliably.
+- Apps-engine room updates now use saveRoomCustomFields + notifyOnRoomChangedById so unassignedCount pushes live to clients.
+- Subscription cache now preserves customFields from subscription updates to avoid badge disappearing until refresh.
+- Intake badge styling updated (custom colors + centered count).
+
+---
+
+## Pharmacy (Department-like) Plan (First-class Models)
+
+### Goal
+Implement a department-like **Pharmacy** feature in the Rocket.Chat fork, to scope manager/staff operations and to support patient triage + escalation into Team intake channels, without relying on user/team custom fields as the source of truth.
+
+### Data Model (Mongo)
+- `medsense_pharmacies`
+  - `_id`, `name`, `slug`, `active`, `createdAt`, `createdBy`, optional metadata (address/phone/timezone)
+- `medsense_pharmacy_memberships` (staff can be in multiple pharmacies)
+  - `_id`, `pharmacyId`, `userId`, `roles` (`manager|staff`), `active`, `createdAt`, `createdBy`
+  - Unique index: `{ pharmacyId, userId }`
+- `medsense_patient_pharmacy` (patient has one preferred pharmacy)
+  - `_id`, `patientUserId`, `pharmacyId`, `setAt`, `setBy` (patient/admin)
+  - Unique index: `{ patientUserId }`
+- `medsense_pharmacy_teams` (maps pharmacy -> teams + intake/handover channels)
+  - `_id`, `pharmacyId`, `teamId`, `purpose` (`pharmacist|technician|assistant|general`), `intakeRoomId`, optional `handoverRoomId`
+  - Unique index: `{ pharmacyId, teamId }`
+
+### Permissions / Roles
+- `medsense-manage-pharmacies` (global admin)
+- `medsense-manage-own-pharmacy` (pharmacy manager)
+- `medsense-view-pharmacy-members`
+- `medsense-invite-pharmacy-staff`
+- `medsense-create-pharmacy-teams`
+
+### Medsense REST APIs (RC fork)
+All under ` /api/v1/medsense/... ` and **server-side enforced** (no UI-only guards).
+
+**Pharmacies**
+- `GET medsense/pharmacies.mine` → pharmacies current user can manage (for manager dropdown)
+- `GET medsense/pharmacies.list` → admin list (optionally includes members count)
+- `POST medsense/pharmacies.create` → admin create
+- `POST medsense/pharmacies.update` → admin or manager (scoped)
+
+**Membership**
+- `GET medsense/pharmacies.members.list?pharmacyId=...` → scoped list
+- `POST medsense/pharmacies.members.invite` `{ pharmacyId, email, name, roles }`
+  - Creates/updates RC user, writes membership row, sends RC invite/welcome email
+  - Staff can be invited into multiple pharmacies (multiple membership rows)
+- `POST medsense/pharmacies.members.addExisting/remove` → manager scoped to selected pharmacy
+
+**Patient preference**
+- `GET medsense/patient.pharmacy.mine`
+- `POST medsense/patient.pharmacy.set` `{ pharmacyId }` (patient can change via UI toggle)
+
+**Routing helper for orchestrator**
+- `GET medsense/pharmacies.available_teams?pharmacyId=...`
+  - Returns teams (teamId + teamName + purpose) and `hasLivechatAvailable`/`countAvailable`
+  - Uses: team membership ∩ livechat agents (`statusLivechat`)
+
+### Manager UI Flow (no global directory)
+- Add Medsense “Pharmacy” admin UI:
+  - Admin: create pharmacies, assign managers
+  - Manager: select pharmacy (dropdown from `pharmacies.mine`), create teams + intake/handover channels
+  - Manager: invite staff via `pharmacies.members.invite` and manage only pharmacy members
+
+### Patient Registration + Engagement (Managed mode)
+- Use Rocket.Chat managed invites/registration (email-based).
+- On first login (or first start-chat), if `medsense_patient_pharmacy` missing:
+  - Require patient to pick preferred pharmacy.
+- Allow patient to change preferred pharmacy later via settings UI toggle.
+
+### Integration With Teams → Intake → Take Chat
+- Team creation (for a selected pharmacy) creates/records:
+  - `purpose`, `teamId`, `intakeRoomId` (default), optional `handoverRoomId`
+- Orchestrator escalation flow:
+  1) Determine patient preferred pharmacyId
+  2) Call `medsense/pharmacies.available_teams` to get team options + availability
+  3) Use SmartForms to present choices (label: teamName, value: teamId)
+  4) On selection, orchestrator calls SmartForms intake endpoint with `{ teamId, patientRoomId, issueTitle, issueSummary }`
+  5) SmartForms resolves `teamId → intakeRoomId` and posts intake card + increments `room.customFields.unassignedCount` on the intake room
+  6) Staff clicks “Take chat” → decrements `unassignedCount`, updates intake card to Taken, posts “Taken by…”, and adds staff to patient private r
+### 2026-01-16: Pharmacy Data Models Implementation
+
+#### Components Added
+To support the department-like 'Pharmacy' structure, the following data models and types have been implemented:
+
+**1. Data Models (\packages/models/src/models/\)**
+-   \MedsensePharmacies.ts\: Stores pharmacy entity (name, slug).
+-   \MedsensePharmacyMemberships.ts\: Links users to pharmacies with roles (manager/staff).
+-   \MedsensePatientPharmacy.ts\: Stores patient's preferred pharmacy.
+-   \MedsensePharmacyTeams.ts\: Maps pharmacies to Rocket.Chat Teams (intake/handover rooms).
+
+**2. Type Definitions**
+-   **Core Typings (\packages/core-typings/src/\)**:
+    -   \IMedsensePharmacy.ts    -   \IMedsensePharmacyMembership.ts    -   \IMedsensePatientPharmacy.ts    -   \IMedsensePharmacyTeam.ts-   **Model Interfaces (\packages/model-typings/src/models/\)**:
+    -   \IMedsensePharmaciesModel.ts\ (Data access contract)
+    -   etc.
+
+**3. Service Registration**
+-   Updated \packages/models/src/index.ts\ and \modelClasses.ts\ to register these models in the service container.
+-   Proxies exported as \MedsensePharmacies\, \MedsensePharmacyMemberships\, etc.
+
+**4. Permissions**
+-   Added to \pps/meteor/app/lib/server/startup/medsense.ts\:
+    -   \medsense-manage-pharmacies\ (Admin)
+    -   \medsense-manage-own-pharmacy\ (Admin, Manager)
+    -   \medsense-view-pharmacy-members\ (Admin, Manager, Staff)
+    -   \medsense-invite-pharmacy-staff\ (Admin, Manager)
+
+#### Next Steps
+-   Implement REST APIs in \pps/meteor/app/api/server/v1/medsense.ts\ to expose these models.
+
+- **Permissions Update**: Added \medsense-create-pharmacy-teams\ to allow creating Rocket.Chat teams for pharmacies.
+- **Roles**: Ensured `pharmacy-manager` and `pharmacy-staff` roles are created on startup.
+
+### 2026-01-16: Pharmacy REST API Implementation & Verification
+
+#### Implementation Methods
+- **API Endpoints**: Implemented in `apps/meteor/app/api/server/v1/medsense.ts`.
+
+### 2026-01-19: Build Alignment & Queue Refinements (Pharmacy-Only)
+
+**Goal**: Align local build with Queue Build Orchestrator specs. Replace intake-channel flow with API-driven queue flow, removing all Team logic in favor of direct Pharmacy routing.
+
+#### Orchestrator (`medora-build/medsense_orchestrator`)
+- **Remove Team Logic**:
+  - Delete all environment-based teamId handling.
+  - Remove queries for team availability.
+- **Escalation Confirmation**:
+  - Call `pending.set` on confirmation.
+  - **Payload**: `roomId`, `pharmacyId`, `reason`, `patientUserId`, `issueTitle` (if present), `context`.
+  - **Pre-check**: Abort if room is already pending or taken.
+- **Reason Propagation**:
+  - Ensure Triage Agent includes `reason` in output.
+  - Pass `reason` through SmartForms context -> submit -> `pending.set`.
+- **Auth**: Use bot service account credentials.
+
+#### Webhook (`medora-build/medsense_webhook`)
+- **Webhooks**: Keep integrated webhook only for private channels if used.
+- **Summary**: (Optional) Endpoint to accept roomId + messages -> return summary.
+
+#### Server (`medsense.webchat`)
+- **API `pending.set`**:
+  - Set `status='pending'`, store `pharmacyId`, `reason`.
+  - Write `MedsenseAudit` record.
+  - Broadcast `room.save`.
+- **API `pending.list` / `pending.mine`**:
+  - Filter by `pharmacyId`.
+  - Return only pending items.
+  - **NO Team Logic**.
+- **Logic**:
+  - **Last Staff Leave**: Set `status='resolved'` (never re-queue).
+  - **Staff Role Setting**: Add `Medsense_Staff_Roles` to detect staff.
+- **Data APIs**:
+  - Fetch patient preferred pharmacy.
+  - **Remove** available_teams endpoints.
+
+#### UI (`medsense.webchat`)
+- **Queue Page**:
+  - Default tab: "Chat Queue".
+  - Columns: Pharmacy Name, Reason, Patient, Waiting Since. (Remove Team column).
+  - Badge: Count of current pharmacy queue only.
+  - Label: "Waiting for staff" (instead of "pending").
+  - `POST medsense/pharmacies.create`: Admin only. Creates a pharmacy and assigns creator as manager.
+  - `GET medsense/pharmacies.list`: Returns all (for admins) or owned (for managers) pharmacies.
+  - `POST medsense/pharmacies.update`: Updates pharmacy details (name, active status).
+  - `POST medsense/pharmacies.members.(invite/list/remove)`: Managing pharmacy staff.
+  - `GET/POST medsense/patient.pharmacy.*`: Managing patient preferences.
+
+#### Runtime Fixes
+- **Model Registration**: The Medsense models required manual registration in `apps/meteor/server/models.ts` to be available at runtime. The automatic discovery via `packages/models` export was insufficient for the main server bundle.
+- **Roles Creation**: Fixed `Roles.createOrUpdate` error (deprecated/missing method) by using `Roles.findOneById` + `Roles.insertOne` pattern.
+- **Typing Fix**: `IMedsensePharmacy.ts` was fixed to remove invalid invisible characters/literals.
+
+#### Verification
+- **Automated Script**: `scripts/test-pharmacy-api.sh` verified the full flow:
+  1. Login as admin/manager.
+  2. Create Pharmacy (success, returned ID).
+  3. List Pharmacies (success, validated ID presence).
+  4. Set Patient Preference (success).
+  5. Get Patient Preference (success, validated correct ID).
+- **Status**: PASSED. Endpoints are functional and ready for UI integration.
+
+#### 2026-01-17: Pharmacy Teams Availability
+- **New Endpoint**: `GET /api/v1/medsense/pharmacies.available_teams?pharmacyId=...`
+  - Returns teams mapped to the specified pharmacy (requires `MedsensePharmacyTeams` model).
+  - Response includes: `teamId`, `name`, `purpose`, `intakeRoomId`, `handoverRoomId`, and `hasLivechatAvailable`.
+  - Availability logic: Intersection of team membership and `livechat-agent` status (online/available).
+- **Permissions**: Gate matches `medsense/available_teams`:
+  - `view-all-teams` AND (`transfer-livechat-guest` OR `edit-omnichannel-contact`).
+- **Implementation**: Updated `medsense.ts` to import `MedsensePharmacyTeams` and joined data with `Users` (agents) and `Team` (names).
+
+Planned: Simplified Pending Queue (Teams)
+
+Flow: When a patient selects a team, set room custom fields pendingTeamId=<teamId> and pendingStatus=pending (no intake room/message).
+Queue UI: Team-scoped view lists rooms where pendingTeamId is in the viewer’s teams and pendingStatus=pending; publish per-team counts for badges.
+Take action: In one operation, clear pendingStatus, add the agent to the room, post a system message (“Taken by @user at <time>”), and write an audit record.
+Audit: Server collection logs state changes (pending → taken/closed) with roomId, teamId, userId, timestamp; room system messages keep visible history.
+Optional: Mirror state changes to a team log channel if a shared feed is desired, but not required for queue/badges.
+Permissions: Queue/take actions gated to team members (and admins); orchestrator sets the pending fields when posting the team choice.
+#### Planned: Alerts for New Pending Rooms
+- When a room is marked pending for a team, emit a push event so team members know immediately.
+  - Server: emit a  (or per-user ) event with .
+  - Client: listen, show a toast/desktop notification, and refresh the pending queue list.
+- Keep the per-team pending count driving the sidebar badge; bump it when a room becomes pending.
+- Optional: post a short log message into a team log channel to give a shared feed/unread badge (not required for the queue to work).
+
+### 2026-01-18: End-to-End Queue Escalation (Orchestrator + Webhook + SmartForms + Core)
+
+example payload from intergrated webhook:
+{
+  "token": "medsense",
+  "bot": false,
+  "channel_id": "69652e0c8352dcb643ebc028",
+  "channel_name": "medsense-testuser2-bot-WAk78c",
+  "message_id": "Z9yo9ChE6n4NbbTF7",
+  "timestamp": "2026-01-18T17:30:24.352Z",
+  "user_id": "T7GLMtcpGKDs2b5BA",
+  "user_name": "smart-forms.bot",
+  "text": "Selected: Talk to newpharmacy1",
+  "siteUrl": "http://localhost:3000"
+}
+note the channel_id is the room_id
+
+#### Orchestrator (medsense-orchestrator)
+- Remove legacy intake-channel flow:
+  - Delete `_resolve_team_intake_room` usage and envs (`RC_INTAKE_ROOM_KEY`, `MEDSENSE_TEAM_IDS`, `RC_PHARMACIST_DEPARTMENT_ID`).
+  - Replace `/debug/intake` with a queue smoke that calls `medsense/pending.set`.
+- Escalation form build (pre-confirm):
+  - Resolve patient pharmacy with a server endpoint (see Core change below).
+  - Call `GET /api/v1/medsense/pharmacies.available_teams?pharmacyId=...` to get team options.
+  - Build SmartForms options with `label=teamName`, `value=teamId`.
+- Escalation confirm:
+  - Require selected `teamId` and `patientUserId`.
+  - Call `POST /api/v1/medsense/pending.set` with `{ roomId, teamId, patientUserId }`.
+  - Post patient confirmation message.
+- Update tests to remove intake-room assertions and to validate pending-queue calls.
+
+#### Webhook (medsense_webhook)
+- Ensure webhook payload passed to orchestrator includes:
+  - `roomId`, `userId` (patient), `username`, `messageId`.
+- Keep bot/secret filtering unchanged.
+
+#### Smart Forms App
+- Escalation form payload:
+  - Options: `{ label: teamName, value: teamId }`.
+  - Context: include `roomId` and `patientUserId` (or explicit fields).
+- Submit handler should forward `teamId` + `patientUserId` to orchestrator (no intake-room creation).
+
+#### Core (medsense.webchat)
+**New endpoint**
+- `GET /api/v1/medsense/patient.pharmacy.resolve?userId=...`
+  - Returns patient’s preferred pharmacy using service-account permissions.
+  - Intended for orchestrator (bot user).
+
+**Existing endpoints used**
+- `GET /api/v1/medsense/pharmacies.available_teams?pharmacyId=...` (already implemented)
+- `POST /api/v1/medsense/pending.set` (extend to accept `patientUserId`)
+
+**Pending queue fields**
+- On `pending.set`, store:
+  - `pendingTeamId`, `pendingStatus=pending`, `pendingSetAt`, `pendingPatientUserId`.
+- On `pending.take`, store:
+  - `takenBy`, `takenAt` and write audit entry.
+
+**Audit (source of truth)**
+- Extend `MedsenseAudit` to capture:
+  - `patientUserId`, `teamId`, `roomId`, `action`, `pendingSetAt`, `takenAt`, `takenBy`.
+- Add endpoint: `GET /api/v1/medsense/audit.list?from=&to=&patientUserId=&takenBy=&teamId=`.
+- Permission: `medsense-view-audit` (staff/admin only).
+
+**Queue UI**
+- Queue page uses `medsense/pending.list` for live queue.
+- Add filters for auditing (date range, patient, takenBy) using `medsense/audit.list`.
+- Home default tab for staff: `Chat Queue` (permission-gated).
+- Remove queue link from sidebar footer (now lives in Home tabs).
+
+#### Settings / Env
+- Remove: `MEDSENSE_TEAM_IDS`, `RC_INTAKE_ROOM_KEY`, `RC_PHARMACIST_DEPARTMENT_ID`.
+- Optional debug envs:
+  - `DEBUG_PENDING_ROOM_ID`, `DEBUG_PENDING_TEAM_ID`.
+
+### 2026-01-19: Pharmacy Queue Refactor (Final Implementation)
+
+#### Goal
+Refactor the escalation logic to route patients to their preferred Pharmacy queue instead of a generic Team queue, enabling true multi-pharmacy support.
+
+#### Orchestrator Changes (`medsense-orchestrator`)
+- **`main.py`**:
+    - Refactored `_execute_escalation_agent` to resolve `pharmacyId` from patient data using `rocketchat_client.get_patient_pharmacy`.
+    - Updated `handle_form_submit` to pass `pharmacyId`, `issueTitle`, and `reason` from Smart Forms to `pending.set`.
+    - Removed legacy team selection logic (`_select_pharmacy_team`) and usage of `MEDSENSE_TEAM_IDS`.
+- **`rocketchat_client.py`**:
+    - Updated `set_pending_status` to accept `pharmacyId` and optional `patientUserId`/`issueTitle`.
+    - Removed legacy `get_available_teams` helper.
+
+#### Server Changes (`medsense.webchat`)
+- **API Endpoints (`apps/meteor/app/api/server/v1/medsense.ts`)**:
+    - `medsense/pending.set`: Now requires `pharmacyId` and stores it in `MedsenseAudit` and Room custom fields.
+    - `medsense/pending.list`: Filters by `pharmacyId`.
+    - `medsense/audit.list`: Supports `pharmacyId` filtering and verified permissions.
+    - `medsense/pending.take`: Records `pharmacyId` in the "taken" audit log.
+- **Models**:
+    - `packages/core-typings/src/IMedsenseAudit.ts`: Added `pharmacyId`, `issueTitle`, `reason`.
+    - `packages/models/src/models/MedsenseAudit.ts`: Added database index for `pharmacyId`.
+
+#### Client UI Changes (`medsense.webchat`)
+- **Queue Page (`apps/meteor/client/views/medsense/queue/QueuePage.tsx`)**:
+    - Refactored to select **Pharmacy** instead of Team.
+    - Displays "Live Queue" and "History" specific to the selected pharmacy.
+    - Added "Urgency", "Issue", and "Patient" columns to the queue table.
+
+### 2026-01-19: Fixes needed to match Pharmacy-only Queue plan
+
+#### Orchestrator (medsense-orchestrator)
+- main.py: remove team fallback in _execute_smart_forms_agent (drop _get_configured_team_ids/_fetch_available_teams and any teamId option building).
+- main.py: delete legacy debug endpoints that call team/intake flow:
+  - /debug/intake should call pending.set with pharmacyId (no teamId).
+  - /escalation/debug/takeover should NOT call medsense.intake (endpoint removed).
+- main.py: stop using livechat room info to resolve patient userId for private rooms. Use userId from webhook payload/context instead.
+- rocketchat_client.py: remove get_available_teams and /medsense/available_teams usage.
+
+#### Server (medsense.webchat)
+- apps/meteor/app/lib/server/startup/medsense.ts:
+  - Replace pendingTeamId usage with pendingPharmacyId for auto-take/auto-resolve.
+  - Audit entries should store pharmacyId (not teamId).
+- apps/meteor/app/api/server/v1/medsense.ts:
+  - Remove medsense/available_teams and medsense/pharmacies.available_teams routes (no teams).
+  - Remove medsense/pharmacies.teams.create route (team creation no longer used).
+  - pending.mine should not map teamId or expose legacy team fields.
+  - audit.list should drop teamId filter if not used.
+
+#### UI (medsense.webchat)
+- apps/meteor/client/views/medsense/queue/QueuePage.tsx:
+  - Show pendingReason (from API) instead of urgency (API does not return urgency).
+  - Display status label as 
+
+### 2026-01-20: Request-Record Queue Plan (Replace Room Pending + Audit)
+
+**Decision summary**
+- Use a dedicated MedsenseRequest record (single source of truth).
+- Keep only `room.medsenseActiveRequestId` and `room.medsenseActiveRequestStatus`.
+- Statuses: `pending` → `taken` → `closed` (manual close only from Followed tab).
+- Enforce one active request per room; reject simultaneous requests.
+- History is request-based and expands to show full action log.
+- Webhook payload only includes the two room fields above.
+- Remove `medsense-create-pharmacy-teams` permission.
+- Replace role setting with permissions: `medsense-view-request`, `medsense-take-request`, `medsense-close-request`.
+
+**Model changes**
+- Add `IMedsenseRequest` in `packages/core-typings/src/IMedsenseRequest.ts`.
+- Add `IMedsenseRequestModel` in `packages/model-typings/src/models/`.
+- Add `MedsenseRequests` model in `packages/models/src/models/`.
+- Register in `packages/models/src/index.ts` + `apps/meteor/server/models.ts` if needed.
+
+**Room fields**
+- `room.medsenseActiveRequestId`
+- `room.medsenseActiveRequestStatus`
+
+**API changes (`apps/meteor/app/api/server/v1/medsense.ts`)**
+- Add:
+  - `POST medsense/request.set` (create request, reject if active exists)
+  - `GET medsense/request.list` (status=pending, by pharmacy)
+  - `GET medsense/request.followed` (status=taken, by pharmacy)
+  - `POST medsense/request.close` (status=closed, clears room fields)
+  - `GET medsense/request.history` (status=closed, list requests)
+- Remove:
+  - `medsense/pending.*`
+  - `medsense/audit.*`
+
+**Auto-take on join (`apps/meteor/app/lib/server/startup/medsense.ts`)**
+- If user has `medsense-take-request` and room has active request in `pending`, mark request as `taken` and update room status.
+- No auto-close on leave (manual close only).
+
+**UI changes (`apps/meteor/client/views/medsense/queue/QueuePage.tsx`)**
+- Rename Live Queue tab → `Waiting` (status=pending).
+- Add `Followed` tab (status=taken) with `Close` button.
+- History tab lists closed requests; expand row to show full action log.
+- Show queue only if user has `medsense-view-request`.
+
+**Webhook payload (`apps/meteor/app/integrations/server/lib/triggerHandler.ts`)**
+- Include only:
+  - `room.medsenseActiveRequestId`
+  - `room.medsenseActiveRequestStatus`
+
+**Orchestrator changes**
+- Replace `pending.set` with `request.set` calls.
+- Send: `roomId`, `pharmacyId`, `requestedByUserId`, `requestedByUsername`, `reason`.
+
+#### Orchestrator (pharmacy‑only, no teams, no livechat visitor token)
+
+main.py
+
+_build_form_payload_with_gemini system prompt: remove “available_teams / teamName / teamId” rules; replace with “available_pharmacies / pharmacyName / pharmacyId”.
+_execute_escalation_agent: stop using get_livechat_room_info to resolve patient; use the room customFields (from webhook payload) or call a rooms.info/rooms.get endpoint for non‑livechat rooms.
+_execute_confirmed_escalation: pass pharmacy_id from the prompt flow; keep reason as pendingReason; remove any “team” wording in bot response.
+rocketchat_client.py
+
+Remove/avoid livechat‑specific helpers (get_livechat_room_info, get_or_create_livechat_room, visitor_token usage) in pending flow; add a room‑info helper for standard rooms if needed.
+Ensure set_pending_status uses pharmacyId only.
+start-local-dev.sh
+
+Drop MEDSENSE_TEAM_IDS and RC_INTAKE_ROOM_KEY env vars (legacy). Keep only pharmacy‑based settings.
+Webchat API (queue endpoint cleanup)
+
+medsense.ts
+Remove MedsensePharmacyTeams import (unused).
+In pending.set, remove $unset: { pendingTeamId: '' } (no teams).
+In pending.mine, remove any team mapping remnants (already mostly pharmacy‑only; verify no teamId fields returned).
+Optional: add/confirm pendingStatus='resolved' is excluded from list endpoints (already only “pending”).
+Webchat UI (remove sidebar queue, add home tab badge, hide history)
+
+useRoomList.ts
+
+Remove “Pending_Queue” group and useMedsensePendingQueue hook usage so it no longer shows in sidebar or adds fake rooms.
+useMedsensePendingQueue.ts
+
+Remove or repurpose to provide counts for the Home tab badge only (no sidebar injection).
+DefaultHomePage.tsx
+
+Add a badge to the “Chat Queue” tab based on count from pending.mine for the selected pharmacy.
+Default tab to queue for pharmacy staff (already done), but remove or hide History tab in queue page.
+QueuePage.tsx
+
+Hide History tab (always show Live Queue).
+Display status label as “Waiting for staff”.
+Add “Pharmacy” column if needed for multi‑pharmacy (optional if you always filter by selected pharmacy).
+Webhook (ignore taken/resolved rooms)
+
+server.js
+In /rocketchat and /medsense_chat/integrated, check payload.room?.customFields?.pendingStatus (from outgoing webhook) and ignore when taken or resolved.
+Ensure you’re using the integrated webhook payload that includes room.customFields (now added).
+
+
+## Request-Record Queue System Refactor (2026-01-20)
+- **Goal**: Replaced legacy room-based pending system with a persistent `MedsenseRequests` model.
+- **Backend**:
+  - Created `MedsenseRequests` model (`medsense_requests` collection).
+  - Implemented new APIs: `request.set`, `request.list` (Waiting), `request.followed` (Taken), `request.close`, `request.history`.
+  - Removed legacy APIs: `pending.*`, `audit.*`, `available_teams`.
+- **Room Logic**:
+  - Added lightweight pointers `medsenseActiveRequestId` and `medsenseActiveRequestStatus` to Room.
+  - Implemented `afterAddedToRoom` callback for "Auto-take" when staff joins.
+- **UI (`apps/meteor/client/views/medsense`)**:
+  - **QueuePage.tsx**: Complete refactor. Added "Waiting", "Followed", and "History" tabs. Updated "Take" and "Close" actions.
+  - **DefaultHomePage.tsx**: Updated "Chat Queue" badge to use `request.list`.
+- **Orchestrator**:
+  - Updated `rocketchat_client.py` to use `medsense/request.set` with `requestedByUsername`.
+  - Updated `main.py` escalation logic.
+- **Permissions**:
+  - Added `medsense-view-request`, `medsense-take-request`, `medsense-close-request`.
+  - Removed `Medsense_Staff_Roles` setting and `medsense-create-pharmacy-teams` permission.

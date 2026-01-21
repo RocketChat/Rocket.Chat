@@ -142,7 +142,13 @@ export * from './themes';
 export * from './mediaCalls';
 export * from './ICallHistoryItem';
 export * from './IAbacAttribute';
+export * from './IMedsensePharmacy';
+export * from './IMedsensePharmacyMembership';
+export * from './IMedsensePatientPharmacy';
+export * from './IMedsensePharmacyTeam';
+export * from './IMedsenseAudit';
 export * from './Abac';
+export * from './IMedsenseRequest';
 export * from './ServerAudit/IAuditServerAbacAction';
 
 export { schemas } from './Ajv';

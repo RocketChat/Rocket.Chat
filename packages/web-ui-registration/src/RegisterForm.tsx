@@ -11,14 +11,16 @@ import {
 	Button,
 	TextAreaInput,
 	Callout,
+	Select,
 } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
-import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useAccountsCustomFields, useSetting, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 
 import EmailConfirmationForm from './EmailConfirmationForm';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
@@ -31,6 +33,7 @@ type LoginRegisterPayload = {
 	password: string;
 	email: string;
 	reason: string;
+	pharmacyId?: string;
 };
 
 export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
@@ -38,7 +41,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const requireNameForRegister = useSetting('Accounts_RequireNameForSignUp', true);
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation', true);
-	const manuallyApproveNewUsersRequired = useSetting('Accounts_ManuallyApproveNewUsers', false);
+
+
 
 	const usernameOrEmailPlaceholder = useSetting('Accounts_EmailOrUsernamePlaceholder', '');
 	const passwordPlaceholder = useSetting('Accounts_PasswordPlaceholder', '');
@@ -60,6 +64,19 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
+	const getPharmacies = useEndpoint('GET', '/v1/medsense/pharmacies.list.public');
+	const { data: pharmacyData } = useQuery({
+		queryKey: ['public-pharmacies'],
+		queryFn: async () => getPharmacies(),
+	});
+
+	const pharmacyOptions = useMemo(
+		// @ts-ignore
+		// @ts-ignore
+		() => (pharmacyData?.pharmacies?.map((p: any) => [p._id, p.name]) || []) as [string, string][],
+		[pharmacyData],
+	);
+
 	const {
 		register,
 		handleSubmit,
@@ -68,6 +85,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		getValues,
 		clearErrors,
 		control,
+		setValue,
 		formState: { errors },
 	} = useForm<LoginRegisterPayload>({ mode: 'onBlur' });
 
@@ -266,30 +284,43 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							)}
 						</Field>
 					)}
-					{manuallyApproveNewUsersRequired && (
-						<Field>
-							<FieldLabel required htmlFor={reasonId}>
-								{t('registration.component.form.reasonToJoin')}
-							</FieldLabel>
-							<FieldRow>
-								<TextAreaInput
-									{...register('reason', {
-										required: t('Required_field', { field: t('registration.component.form.reasonToJoin') }),
-									})}
-									error={errors?.reason?.message}
-									aria-required='true'
-									aria-invalid={errors.reason ? 'true' : 'false'}
-									aria-describedby={`${reasonId}-error`}
-									id={reasonId}
-								/>
-							</FieldRow>
-							{errors.reason && (
-								<FieldError role='alert' id={`${reasonId}-error`}>
-									{errors.reason.message}
-								</FieldError>
-							)}
-						</Field>
-					)}
+					<Field>
+						<FieldLabel required htmlFor={reasonId}>
+							{t('registration.component.form.reasonToJoin')}
+						</FieldLabel>
+						<FieldRow>
+							<TextAreaInput
+								{...register('reason', {
+									required: t('Required_field', { field: t('registration.component.form.reasonToJoin') }),
+								})}
+								error={errors?.reason?.message}
+								aria-required='true'
+								aria-invalid={errors.reason ? 'true' : 'false'}
+								aria-describedby={`${reasonId}-error`}
+								id={reasonId}
+							/>
+						</FieldRow>
+						{errors.reason && (
+							<FieldError role='alert' id={`${reasonId}-error`}>
+								{errors.reason.message}
+							</FieldError>
+						)}
+					</Field>
+
+
+					<Field>
+						<FieldLabel htmlFor='pharmacyId'>{t('Preferred_Pharmacy')}</FieldLabel>
+						<FieldRow>
+							<Select
+								id='pharmacyId'
+								placeholder={t('Select_an_option')}
+								options={pharmacyOptions}
+								{...register('pharmacyId')}
+								onChange={(val) => setValue('pharmacyId', String(val))}
+							/>
+						</FieldRow>
+					</Field>
+
 					<CustomFieldsForm formName='customFields' formControl={control} metadata={customFields} />
 					{serverError && <Callout type='danger'>{serverError}</Callout>}
 				</FieldGroup>
