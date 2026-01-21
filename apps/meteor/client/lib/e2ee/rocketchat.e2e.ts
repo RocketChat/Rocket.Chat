@@ -671,7 +671,16 @@ class E2E extends Emitter {
 		const span = log.span('decryptSubscription');
 		const e2eRoom = await this.getInstanceByRoomId(subscription.rid);
 		span.info(subscription._id);
-		await e2eRoom?.decryptSubscription();
+
+		if (!e2eRoom) {
+			span.warn('no e2eRoom found');
+			return;
+		}
+
+		e2eRoom.once('READY', async () => {
+			span.info('e2e room ready');
+			await e2eRoom.decryptSubscription();
+		});
 	}
 
 	async decryptSubscriptions(): Promise<void> {
