@@ -11,7 +11,7 @@ import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('Invites', () => {
 	let testInviteID: IInvite['_id'];
-	let testInviteToken: string;
+	let testInviteToken: IInvite['inviteToken'];
 
 	before((done) => getCredentials(done));
 	describe('POST [/findOrCreateInvite]', () => {
