@@ -81,7 +81,6 @@ const CreateDiscussion = ({
 	});
 
 	const onParentRoomChange = useEffectEvent((room: IRoom | undefined) => {
-		console.log('room', room);
 		if (!room) {
 			return;
 		}
@@ -164,10 +163,7 @@ const CreateDiscussion = ({
 											aria-required='true'
 											aria-describedby={`${parentRoomId}-error`}
 											setSelectedRoom={onParentRoomChange}
-											renderRoomIcon={({ encrypted }) => {
-												console.log('encrypted', encrypted);
-												return encrypted ? <Icon name='key' /> : null;
-											}}
+											renderRoomIcon={({ encrypted }) => (encrypted ? <Icon name='key' /> : null)}
 										/>
 									)}
 								/>
