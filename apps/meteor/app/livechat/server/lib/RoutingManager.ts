@@ -258,7 +258,7 @@ export const RoutingManager: Routing = {
 			return room;
 		}
 
-		const lock = await conditionalLockAgent(agent.agentId, new Date());
+		const lock = await conditionalLockAgent(agent.agentId);
 		if (!lock.acquired && lock.required) {
 			logger.debug({
 				msg: 'Cannot take inquiry because agent is currently locked by another process',

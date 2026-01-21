@@ -31,7 +31,7 @@ describe('conditionalLockAgent', () => {
 		it('should return acquired: true when lock is successfully acquired', async () => {
 			mockUsers.acquireAgentLock.resolves(true);
 
-			const result = await conditionalLockAgent('agent1', new Date());
+			const result = await conditionalLockAgent('agent1');
 
 			expect(result.acquired).to.equal(true);
 			expect(result.required).to.equal(true);
@@ -41,7 +41,7 @@ describe('conditionalLockAgent', () => {
 		it('should return acquired: false when lock is already held by another process', async () => {
 			mockUsers.acquireAgentLock.resolves(false);
 
-			const result = await conditionalLockAgent('agent1', new Date());
+			const result = await conditionalLockAgent('agent1');
 
 			expect(result.acquired).to.equal(false);
 			expect(result.required).to.equal(true);
@@ -52,11 +52,12 @@ describe('conditionalLockAgent', () => {
 			mockUsers.acquireAgentLock.resolves(true);
 			mockUsers.releaseAgentLock.resolves(true);
 
-			const lockTime = new Date();
-			const result = await conditionalLockAgent('agent1', lockTime);
+			const result = await conditionalLockAgent('agent1');
 			await result.unlock();
 
-			expect(mockUsers.releaseAgentLock.calledOnceWith('agent1', lockTime)).to.equal(true);
+			expect(mockUsers.releaseAgentLock.calledOnce).to.equal(true);
+			expect(mockUsers.releaseAgentLock.firstCall.args[0]).to.equal('agent1');
+			expect(mockUsers.releaseAgentLock.firstCall.args[1]).to.be.instanceOf(Date);
 		});
 
 		it('should simulate concurrent lock attempts - second attempt blocked', async () => {
@@ -65,8 +66,8 @@ describe('conditionalLockAgent', () => {
 			// second call: lock NOT acquired (held by first)
 			mockUsers.acquireAgentLock.onSecondCall().resolves(false);
 
-			const resultA = await conditionalLockAgent('agent1', new Date());
-			const resultB = await conditionalLockAgent('agent1', new Date());
+			const resultA = await conditionalLockAgent('agent1');
+			const resultB = await conditionalLockAgent('agent1');
 
 			expect(resultA.acquired).to.equal(true);
 			expect(resultB.acquired).to.equal(false);
@@ -80,7 +81,7 @@ describe('conditionalLockAgent', () => {
 		});
 
 		it('should return acquired: false and required: false without calling acquireAgentLock', async () => {
-			const result = await conditionalLockAgent('agent1', new Date());
+			const result = await conditionalLockAgent('agent1');
 
 			expect(result.acquired).to.equal(false);
 			expect(result.required).to.equal(false);
@@ -88,7 +89,7 @@ describe('conditionalLockAgent', () => {
 		});
 
 		it('should have a no-op unlock function', async () => {
-			const result = await conditionalLockAgent('agent1', new Date());
+			const result = await conditionalLockAgent('agent1');
 			await result.unlock(); // should not throw an error
 
 			expect(mockUsers.releaseAgentLock.called).to.equal(false);

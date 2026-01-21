@@ -8,7 +8,7 @@ type LockResult = {
 	unlock: () => Promise<void>;
 };
 
-export async function conditionalLockAgent(agentId: string, lockTime: Date): Promise<LockResult> {
+export async function conditionalLockAgent(agentId: string): Promise<LockResult> {
 	// Lock and chats limits enforcement are only required when waiting_queue is enabled
 	const shouldLock = settings.get<boolean>('Livechat_waiting_queue');
 
@@ -22,6 +22,7 @@ export async function conditionalLockAgent(agentId: string, lockTime: Date): Pro
 		};
 	}
 
+	const lockTime = new Date();
 	const lockAcquired = await Users.acquireAgentLock(agentId, lockTime);
 
 	return {
