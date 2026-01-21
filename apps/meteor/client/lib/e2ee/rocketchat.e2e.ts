@@ -677,6 +677,12 @@ class E2E extends Emitter {
 			return;
 		}
 
+		if (e2eRoom.isReady()) {
+			span.info('e2e room ready');
+			await e2eRoom.decryptSubscription();
+			return;
+		}
+
 		e2eRoom.once('READY', async () => {
 			span.info('e2e room ready');
 			await e2eRoom.decryptSubscription();
