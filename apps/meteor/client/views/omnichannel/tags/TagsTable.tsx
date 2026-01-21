@@ -101,7 +101,7 @@ const TagsTable = () => {
 			)}
 			{isSuccess && data?.tags.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable aria-label={t('Tags')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.tags.map(({ _id, name, description }) => (
