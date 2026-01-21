@@ -28,7 +28,7 @@ export abstract class OmnichannelAdmin {
 		return this.page.getByRole('button', { name: 'Save changes' });
 	}
 
-	getButtonByType(type: 'unit' | 'SLA policy' | 'tag' | 'trigger' | 'department'): Locator {
+	getButtonByType(type: 'unit' | 'SLA policy' | 'tag' | 'trigger' | 'department' | 'custom field'): Locator {
 		return this.page.locator('header').getByRole('button', { name: `Create ${type}` });
 	}
 
