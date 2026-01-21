@@ -1,9 +1,9 @@
 import crypto from 'crypto';
 
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IGetRoomRoles, IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
+import type { IGetRoomRoles, PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';

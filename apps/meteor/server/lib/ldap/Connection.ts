@@ -376,7 +376,11 @@ export class LDAPConnection {
 				});
 
 				res.on('end', () => {
-					searchLogger.info(`LDAP Search found ${realEntries} entries and loaded the data of ${entries.length}.`);
+					searchLogger.info({
+						msg: 'LDAP search completed',
+						foundEntries: realEntries,
+						loadedEntries: entries.length,
+					});
 					resolve(entries);
 				});
 			});
