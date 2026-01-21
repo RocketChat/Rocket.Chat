@@ -148,7 +148,7 @@ export class GlobalSignalProcessor {
 			await mediaCallDirector.renewCallId(call._id);
 		}
 
-		this.sendSignal(uid, buildNewCallSignal(call, role));
+		this.sendSignal(uid, await buildNewCallSignal(call, role));
 
 		if (call.state === 'active') {
 			this.sendSignal(uid, {
@@ -240,7 +240,7 @@ export class GlobalSignalProcessor {
 			this.rejectCallRequest(uid, { ...rejection, reason: 'already-requested' });
 		}
 
-		this.sendSignal(uid, buildNewCallSignal(call, 'caller'));
+		this.sendSignal(uid, await buildNewCallSignal(call, 'caller'));
 
 		return call;
 	}

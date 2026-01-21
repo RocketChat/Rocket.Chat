@@ -69,7 +69,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			await this.getOrCreateChannel(call, call.caller.contractId);
 		}
 
-		await this.sendSignal(buildNewCallSignal(call, this.role));
+		await this.sendSignal(await buildNewCallSignal(call, this.role));
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void> {

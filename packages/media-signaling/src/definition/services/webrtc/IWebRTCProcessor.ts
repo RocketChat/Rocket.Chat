@@ -1,5 +1,7 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
+import type { LocalStream } from '../../../lib/services/webrtc/LocalStream';
+import type { RemoteStream } from '../../../lib/services/webrtc/RemoteStream';
 import type { IClientMediaCall } from '../../call';
 import type { IMediaSignalLogger } from '../../logger';
 import type { IServiceProcessor, ServiceProcessorEvents } from '../IServiceProcessor';
@@ -20,6 +22,9 @@ export type WebRTCUniqueEvents = {
 export type WebRTCProcessorEvents = ServiceProcessorEvents<WebRTCInternalStateMap> & WebRTCUniqueEvents;
 
 export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateMap, WebRTCUniqueEvents> {
+	localStream: LocalStream;
+	remoteStream: RemoteStream;
+
 	emitter: Emitter<WebRTCProcessorEvents>;
 
 	muted: boolean;

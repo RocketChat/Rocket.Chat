@@ -16,11 +16,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private iceGatheringTimedOut = false;
 
-	private localStream: LocalStream;
+	public localStream: LocalStream;
 
 	private localMediaStream: MediaStream;
 
-	private remoteStream: RemoteStream;
+	public remoteStream: RemoteStream;
 
 	private remoteMediaStream: MediaStream;
 
@@ -665,7 +665,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onTrack', event.track.kind);
 		// Received a remote stream
-		this.remoteStream.setTrack(event.track);
+		// this.remoteStream.setTrack(event.track);
 	}
 
 	private onConnectionStateChange() {

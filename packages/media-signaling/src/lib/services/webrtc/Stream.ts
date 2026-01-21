@@ -1,4 +1,4 @@
-import type { IMediaSignalLogger } from '../../../definition';
+import type { IMediaSignalLogger } from '../../../definition/logger';
 
 export class Stream {
 	protected mediaStream: MediaStream;

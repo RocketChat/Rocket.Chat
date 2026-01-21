@@ -20,4 +20,6 @@ export type ServerMediaSignalNewCall = {
 
 	// A list of flags that may be sent to the client to toggle custom behaviors
 	flags?: CallFlag[];
+
+	token: string;
 };

@@ -1,4 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
+import { Room, RoomEvent } from 'livekit-client';
 
 import type { MediaSignalTransportWrapper } from './TransportWrapper';
 import type { ClientMediaSignalError, IServiceProcessorFactoryList } from '../definition';
@@ -59,6 +60,10 @@ export class ClientMediaCall implements IClientMediaCall {
 	public readonly emitter: Emitter<CallEvents>;
 
 	private _role: CallRole;
+
+	private _room: Room | null = null;
+
+	private _token: string | null = null;
 
 	public get role(): CallRole {
 		return this._role;
@@ -309,6 +314,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._service = signal.service;
 		this._role = signal.role;
 		this._flags = signal.flags || [];
+		this._token = signal.token;
 
 		this._transferredBy = signal.transferredBy || null;
 
@@ -372,6 +378,10 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.emitter.emit('initialized');
 		}
 		this.emitter.emit('confirmed');
+
+		if (this._role === 'caller' && this.acceptedLocally) {
+			await this.joinRoom(signal.token);
+		}
 
 		await this.processEarlySignals();
 	}
@@ -462,6 +472,10 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		if (newInputTrack && !hadInputTrack) {
 			await this.negotiationManager.processNegotiations();
+
+			if (this._token && !this._room && this.acceptedLocally) {
+				await this.joinRoom(this._token);
+			}
 		}
 	}
 
@@ -537,6 +551,10 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.addStateTimeout('accepting', TIMEOUT_TO_CONFIRM_ACCEPTANCE);
 
 			this.emitter.emit('accepting');
+		}
+
+		if (!this._room && this._token) {
+			void this.joinRoom(this._token);
 		}
 	}
 
@@ -794,6 +812,9 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		if (this.isOver() || this.hidden) {
 			this.webrtcProcessor.stop();
+			if (this._room) {
+				this._room.disconnect(true);
+			}
 		}
 	}
 
@@ -808,6 +829,31 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (this._contact) {
 			this.emitter.emit('contactUpdate');
 		}
+	}
+
+	protected async joinRoom(token: string) {
+		if (!this.webrtcProcessor) {
+			return;
+		}
+
+		console.log('Trying to join room');
+		this._room = new Room();
+		this._room
+			.on(RoomEvent.TrackSubscribed, (track, _publication, _participant) => {
+				console.log('TrackSubscribed');
+				this.webrtcProcessor?.remoteStream.setTrack(track.mediaStreamTrack);
+			})
+			.on(RoomEvent.TrackUnsubscribed, (track) => {
+				console.log('TrackUnsubscribed');
+				track.stop();
+			})
+			.on(RoomEvent.Disconnected, () => {
+				console.log('Disconnected from room');
+			});
+
+		await this._room.connect('ws://localhost:7880', token);
+
+		this._room.localParticipant.setMicrophoneEnabled(true);
 	}
 
 	protected async processOfferRequest(signal: ServerMediaSignalRequestOffer) {
