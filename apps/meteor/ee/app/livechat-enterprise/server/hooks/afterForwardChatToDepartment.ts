@@ -30,7 +30,11 @@ callbacks.add(
 			return options;
 		}
 
-		cbLogger.debug(`Updating department ${newDepartmentId} ancestors for room ${rid}`);
+		cbLogger.debug({
+			msg: 'Updating department ancestors for room',
+			departmentId: newDepartmentId,
+			roomId: rid,
+		});
 		await LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors);
 
 		return options;
