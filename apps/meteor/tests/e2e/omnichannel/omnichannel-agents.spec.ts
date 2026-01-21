@@ -72,7 +72,7 @@ test.describe.serial('OC - Manage Agents', () => {
 		});
 
 		await test.step('expect update "user1" information', async () => {
-			await poOmnichannelAgents.editAgent.selectStatus('Not available');
+			await poOmnichannelAgents.editAgent.selectStatus('Not Available');
 			await poOmnichannelAgents.editAgent.selectDepartment(department.data.name);
 			await poOmnichannelAgents.editAgent.btnSave.click();
 		});
