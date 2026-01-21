@@ -46,7 +46,7 @@ export async function resolveContactConflicts(params: ResolveContactConflictsPar
 		const fieldsToRemove = new Set<string>(
 			[
 				name && 'name',
-				contactManager && 'manager',
+				'contactManager' in params && 'manager',
 				...(customFields ? Object.keys(customFields).map((key) => `customFields.${key}`) : []),
 			].filter((field): field is string => !!field),
 		);
