@@ -319,7 +319,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 			logger.info('Successfully restarted app subprocess');
 		} catch (e) {
-			logger.error({ msg: "Failed to restart app's subprocess", err: new Error(e.message || e) });
+			logger.error({ msg: "Failed to restart app's subprocess", err: e });
 			throw e;
 		} finally {
 			await this.logStorage.storeEntries(AppConsole.toStorageEntry(this.getAppId(), logger));

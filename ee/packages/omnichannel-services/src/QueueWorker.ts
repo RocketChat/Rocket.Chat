@@ -88,7 +88,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 			// Let's only retry for X times when the error is "service not found"
 			// For any other error, we'll just reject the item
 			if ((queueItem.retryCount || 0) < this.retryCount && this.isRetryableError(e.message)) {
-				this.logger.info({ msg: 'Queue item will be retried in 10 seconds', queueItemId: queueItem._id });
+				this.logger.info({ msg: 'Queue item will be retried', queueItemId: queueItem._id, retry: this.retryDelay });
 				queueItem.nextReceivableTime = new Date(Date.now() + this.retryDelay);
 				return 'Retry' as const;
 			}
