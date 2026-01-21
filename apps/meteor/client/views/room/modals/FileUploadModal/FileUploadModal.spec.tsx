@@ -47,7 +47,7 @@ it('should not send a renamed file with not allowed mime-type', async () => {
 	const input = await screen.findByRole('textbox', { name: 'File name' });
 	await userEvent.type(input, 'testing.svg');
 
-	const button = await screen.findByRole('button', { name: 'Send' });
+	const button = await screen.findByRole('button', { name: 'Update' });
 	await userEvent.click(button);
 
 	expect(screen.getByText('Media type not accepted: image/svg+xml')).toBeInTheDocument();
