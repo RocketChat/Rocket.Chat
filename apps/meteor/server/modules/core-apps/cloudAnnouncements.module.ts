@@ -3,6 +3,7 @@ import type { IUiKitCoreApp, UiKitCoreAppPayload } from '@rocket.chat/core-servi
 import type { Cloud, IBanner, IUser } from '@rocket.chat/core-typings';
 import { Banners } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { isTruthy } from '@rocket.chat/tools';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
@@ -44,7 +45,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 
 	async viewClosed(payload: UiKitCoreAppPayload): Promise<UiKit.ServerInteraction> {
 		const {
-			payload: { view: { viewId } = {} },
+			payload: { view: { viewId, id } = {} },
 			user: { _id: userId } = {},
 		} = payload;
 
@@ -52,7 +53,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			throw new Error('invalid user');
 		}
 
-		if (!viewId) {
+		if (!id && !viewId) {
 			throw new Error('invalid view');
 		}
 
@@ -60,9 +61,18 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			throw new Error('invalid triggerId');
 		}
 
-		await Banner.dismiss(userId, viewId);
+		// Find banner by _id matching either view.id or view.viewId for backwards compatibility
+		const bannerIds = [id, viewId].filter(isTruthy);
+		const announcement = await Banners.findOne<Pick<IBanner, '_id' | 'surface'>>(
+			{ _id: { $in: bannerIds } },
+			{ projection: { _id: 1, surface: 1 } },
+		);
 
-		const announcement = await Banners.findOneById<Pick<IBanner, 'surface'>>(viewId, { projection: { surface: 1 } });
+		if (!announcement) {
+			throw new Error('Banner not found');
+		}
+
+		await Banner.dismiss(userId, announcement._id);
 
 		const type = announcement?.surface === 'banner' ? 'banner.close' : 'modal.close';
 
@@ -74,7 +84,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			type,
 			triggerId: payload.triggerId,
 			appId: payload.appId,
-			viewId,
+			viewId: announcement._id,
 		};
 	}
 
