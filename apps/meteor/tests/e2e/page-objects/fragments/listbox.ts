@@ -12,7 +12,7 @@ export class Listbox {
 	}
 
 	async selectOption(name: string) {
-		return this.root.getByRole('option', { name, exact: true }).click();
+		return this.root.getByRole('option', { name }).click();
 	}
 
 	public getOption(name: string): Locator {
