@@ -73,12 +73,12 @@ test.describe.serial('OC - Livechat Triggers', () => {
 	test('OC - Livechat Triggers - Create and edit trigger', async () => {
 		triggerMessage = 'This is a trigger message time on site';
 		await test.step('expect create new trigger', async () => {
-			await agent.poHomeOmnichannelTriggers.createTrigger(triggersName, triggerMessage, 'time-on-site', 5);
+			await agent.poHomeOmnichannelTriggers.createTrigger(triggersName, triggerMessage, 'Visitor time on site', 5);
 		});
 
 		triggerMessage = 'This is a trigger message chat opened by visitor';
 		await test.step('expect update trigger', async () => {
-			await agent.poHomeOmnichannelTriggers.firstRowInTriggerTable(triggersName).click();
+			await agent.poHomeOmnichannelTriggers.table.findRowByName(triggersName).click();
 			await agent.poHomeOmnichannelTriggers.updateTrigger(`edited-${triggersName}`, triggerMessage);
 		});
 	});
@@ -117,8 +117,8 @@ test.describe.serial('OC - Livechat Triggers', () => {
 	test('OC - Livechat Triggers - Condition: after guest registration', async ({ page }) => {
 		triggerMessage = 'This is a trigger message after guest registration';
 		await test.step('expect update trigger to after guest registration', async () => {
-			await agent.poHomeOmnichannelTriggers.firstRowInTriggerTable(`edited-${triggersName}`).click();
-			await agent.poHomeOmnichannelTriggers.updateTrigger(`re-edited-${triggersName}`, triggerMessage, 'after-guest-registration');
+			await agent.poHomeOmnichannelTriggers.table.findRowByName(`edited-${triggersName}`).click();
+			await agent.poHomeOmnichannelTriggers.updateTrigger(`re-edited-${triggersName}`, triggerMessage, 'After guest registration');
 		});
 
 		await test.step('expect to start conversation', async () => {
