@@ -67,9 +67,6 @@ export type EmojiCustomEndpoints = {
 	'/v1/emoji-custom.delete': {
 		POST: (params: emojiCustomDeleteProps) => void;
 	};
-	'/v1/emoji-custom.create': {
-		POST: (params: { emoji: ICustomEmojiDescriptor }) => void;
-	};
 	'/v1/emoji-custom.update': {
 		POST: (params: { emoji: ICustomEmojiDescriptor }) => void;
 	};
