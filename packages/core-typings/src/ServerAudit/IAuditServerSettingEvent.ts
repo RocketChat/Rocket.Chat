@@ -1,7 +1,7 @@
 import type { IAuditServerEventType } from '../IServerEvent';
 import type { ISetting } from '../ISetting';
 
-interface IServerEventSettingsChanged
+export interface IServerEventSettingsChanged
 	extends IAuditServerEventType<
 		| {
 				key: 'id';
@@ -17,10 +17,4 @@ interface IServerEventSettingsChanged
 		  }
 	> {
 	t: 'settings.changed';
-}
-
-declare module '../IServerEvent' {
-	interface IServerEvents {
-		'settings.changed': IServerEventSettingsChanged;
-	}
 }

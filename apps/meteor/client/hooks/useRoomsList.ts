@@ -1,47 +1,24 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { useScrollableRecordList } from './lists/useScrollableRecordList';
-import { useComponentDidUpdate } from './useComponentDidUpdate';
-import { RecordList } from '../lib/lists/RecordList';
+import { roomsQueryKeys } from '../lib/queryKeys';
 
-type RoomListOptions = {
-	text: string;
-};
-
-type IRoomClient = Pick<IRoom, '_updatedAt' | '_id'> & {
-	label: string;
-	value: string;
-};
-
-export const useRoomsList = (
-	options: RoomListOptions,
-): {
-	itemsList: RecordList<IRoomClient>;
-	initialItemCount: number;
-	reload: () => void;
-	loadMoreItems: (start: number, end: number) => void;
-} => {
-	const [itemsList, setItemsList] = useState(() => new RecordList<IRoomClient>());
-	const reload = useCallback(() => setItemsList(new RecordList<IRoomClient>()), []);
-
+export const useRoomsList = ({ text }: { text: string }) => {
 	const getRooms = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate.withPagination');
 
-	useComponentDidUpdate(() => {
-		options && reload();
-	}, [options, reload]);
+	const count = 25;
 
-	const fetchData = useCallback(
-		async (start: number, end: number) => {
+	return useInfiniteQuery({
+		queryKey: roomsQueryKeys.autocomplete(text),
+		queryFn: async ({ pageParam: offset }) => {
 			const { items: rooms, total } = await getRooms({
-				selector: JSON.stringify({ name: options.text || '' }),
-				offset: start,
-				count: start + end,
+				selector: JSON.stringify({ name: text }),
+				offset,
+				count,
 				sort: JSON.stringify({ name: 1 }),
 			});
 
-			const items = rooms.map((room: any) => ({
+			const items = rooms.map((room) => ({
 				_id: room._id,
 				_updatedAt: new Date(room._updatedAt),
 				label: room.name ?? '',
@@ -53,15 +30,12 @@ export const useRoomsList = (
 				itemCount: total,
 			};
 		},
-		[getRooms, options.text],
-	);
-
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
-
-	return {
-		reload,
-		itemsList,
-		loadMoreItems,
-		initialItemCount,
-	};
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, _, lastOffset) => {
+			const nextOffset = lastOffset + count;
+			if (nextOffset >= lastPage.itemCount) return undefined;
+			return nextOffset;
+		},
+		select: ({ pages }) => pages.flatMap((page) => page.items),
+	});
 };

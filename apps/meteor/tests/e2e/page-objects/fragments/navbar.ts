@@ -242,7 +242,7 @@ export class Navbar {
 		await this.getUserProfileMenuOption(status).click();
 	}
 
-	async changeUserCustomStatus(text: string): Promise<void> {
+	async changeUserCustomStatus(text?: string): Promise<void> {
 		await this.btnUserMenu.click();
 		await this.getUserProfileMenuOption('Custom Status').click();
 		await this.modals.editStatus.changeStatusMessage(text);
