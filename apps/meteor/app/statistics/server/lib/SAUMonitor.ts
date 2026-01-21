@@ -1,4 +1,4 @@
-import type { ISession, ISessionDevice, IUser, LoginSessionPayload } from '@rocket.chat/core-typings';
+import type { ISession, ISessionDevice, IUser, LoginSessionPayload, LogoutSessionPayload } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import { Sessions, Users, aggregates } from '@rocket.chat/models';
@@ -127,7 +127,7 @@ export class SAUMonitorClass {
 			},
 		);
 
-		sauEvents.on('accounts.logout', async ({ userId, connection }) => {
+		sauEvents.on('accounts.logout', async ({ userId, sessionId }: LogoutSessionPayload) => {
 			if (!this.isRunning()) {
 				return;
 			}
@@ -137,7 +137,6 @@ export class SAUMonitorClass {
 				return;
 			}
 
-			const { id: sessionId } = connection;
 			if (!sessionId) {
 				logger.warn({ msg: "Received 'accounts.logout' event without 'sessionId'" });
 				return;

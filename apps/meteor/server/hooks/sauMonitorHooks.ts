@@ -50,14 +50,13 @@ Accounts.onLogin((info: ILoginAttempt) => {
 });
 
 Accounts.onLogout((info) => {
-	const { httpHeaders } = info.connection;
-
 	if (!info.user) {
 		return;
 	}
+
 	sauEvents.emit('accounts.logout', {
 		userId: info.user._id,
-		connection: { instanceId: InstanceStatus.id(), ...info.connection, httpHeaders: httpHeaders as IncomingHttpHeaders },
+    sessionId: info.connection.id,
 	});
 });
 

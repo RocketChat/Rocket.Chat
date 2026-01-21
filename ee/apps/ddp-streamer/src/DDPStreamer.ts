@@ -196,7 +196,7 @@ export class DDPStreamer extends ServiceClass {
 		server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
 			const { userId, connection } = info;
 
-			this.api?.broadcast('accounts.logout', { userId, connection });
+			this.api?.broadcast('accounts.logout', { userId, sessionId: connection.id });
 
 			this.updateConnections();
 

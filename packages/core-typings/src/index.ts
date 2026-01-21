@@ -147,5 +147,6 @@ export * from './ServerAudit/IAuditServerAbacAction';
 
 export * from './LoginSessionPayload';
 export * from './DeviceLoginPayload';
+export * from './LogoutSessionPayload';
 
 export { schemas } from './Ajv';
