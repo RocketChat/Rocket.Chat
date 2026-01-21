@@ -6,7 +6,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 
 describe('Invites', () => {
 	let testInviteID: IInvite['_id'];
-	let testInviteToken: string;
+	let testInviteToken: IInvite['inviteToken'];
 
 	before((done) => getCredentials(done));
 	describe('POST [/findOrCreateInvite]', () => {
