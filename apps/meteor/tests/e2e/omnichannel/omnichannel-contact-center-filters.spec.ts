@@ -217,13 +217,13 @@ test.describe('OC - Contact Center', async () => {
 		});
 
 		await test.step('expect to filter by status', async () => {
-			await poOmniChats.filters.selectStatus('closed');
+			await poOmniChats.filters.selectStatus('Closed');
 			await expect(poOmniChats.table.findRowByName(visitorA)).not.toBeVisible();
 			await expect(poOmniChats.table.findRowByName(visitorB)).not.toBeVisible();
 			await expect(poOmniChats.table.findRowByName(visitorC)).toBeVisible();
 			await expect(poOmniChats.btnStatusChip('Closed')).toBeVisible();
 
-			await poOmniChats.filters.selectStatus('opened');
+			await poOmniChats.filters.selectStatus('Open');
 			await expect(poOmniChats.table.findRowByName(visitorA)).not.toBeVisible();
 			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
 			await expect(poOmniChats.table.findRowByName(visitorC)).not.toBeVisible();
@@ -234,7 +234,7 @@ test.describe('OC - Contact Center', async () => {
 			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
 			await expect(poOmniChats.table.findRowByName(visitorC)).toBeVisible();
 
-			await poOmniChats.filters.selectStatus('onhold');
+			await poOmniChats.filters.selectStatus('On hold');
 			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
 			await expect(poOmniChats.table.findRowByName(visitorB)).not.toBeVisible();
 			await expect(poOmniChats.table.findRowByName(visitorC)).not.toBeVisible();
@@ -313,7 +313,7 @@ test.describe('OC - Contact Center', async () => {
 		await test.step('expect to display result as per applied filters ', async () => {
 			await poOmniChats.btnFilters.click();
 			await poOmniChats.filters.selectServedBy('user1');
-			await poOmniChats.filters.selectStatus('onhold');
+			await poOmniChats.filters.selectStatus('On hold');
 			await poOmniChats.filters.selectDepartment(departmentA.name);
 			await poOmniChats.filters.selectTag(tagA.data.name);
 			await poOmniChats.filters.selectUnit(unitA.name);
