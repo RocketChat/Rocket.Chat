@@ -119,7 +119,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.sla.map(({ _id, name, description, dueTimeInMinutes }) => (
-								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
+								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action>
 									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{description}</GenericTableCell>
 									<GenericTableCell withTruncatedText>

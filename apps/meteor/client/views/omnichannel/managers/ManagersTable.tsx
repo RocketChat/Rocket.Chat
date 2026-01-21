@@ -107,7 +107,7 @@ const ManagersTable = () => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.users.map((user) => (
-								<GenericTableRow key={user._id} tabIndex={0} qa-user-id={user._id}>
+								<GenericTableRow key={user._id} tabIndex={0}>
 									<GenericTableCell withTruncatedText>
 										<Box display='flex' alignItems='center'>
 											<UserAvatar size='x28' username={user.username || ''} etag={user.avatarETag} />

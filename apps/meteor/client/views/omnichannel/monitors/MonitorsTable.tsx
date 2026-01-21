@@ -172,11 +172,11 @@ const MonitorsTable = () => {
 			)}
 			{isSuccess && data.monitors.length > 0 && (
 				<>
-					<GenericTable aria-busy={isLoading} aria-live='assertive'>
+					<GenericTable aria-busy={isLoading} aria-live='polite' aria-label={t('Monitors')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.monitors?.map((monitor) => (
-								<GenericTableRow key={monitor._id} tabIndex={0} width='full' data-qa-id={monitor.name}>
+								<GenericTableRow key={monitor._id} tabIndex={0} width='full'>
 									<GenericTableCell withTruncatedText>{monitor.name}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{monitor.username}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{monitor.email}</GenericTableCell>

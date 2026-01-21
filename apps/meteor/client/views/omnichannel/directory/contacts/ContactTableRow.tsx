@@ -31,15 +31,7 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 	);
 
 	return (
-		<GenericTableRow
-			action
-			key={_id}
-			tabIndex={0}
-			height='40px'
-			qa-user-id={_id}
-			rcx-show-call-button-on-hover
-			onClick={() => onRowClick(_id)}
-		>
+		<GenericTableRow action key={_id} tabIndex={0} height='40px' rcx-show-call-button-on-hover onClick={() => onRowClick(_id)}>
 			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 			<GenericTableCell withTruncatedText>
 				{latestChannel?.details && (

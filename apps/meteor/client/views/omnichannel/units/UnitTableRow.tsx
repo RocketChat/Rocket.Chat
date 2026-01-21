@@ -14,7 +14,7 @@ const UnitsTableRow = ({ _id, name, visibility }: { _id: string; name: string; v
 	const handleDelete = useRemoveUnit(_id);
 
 	return (
-		<GenericTableRow key={_id} tabIndex={0} role='link' data-qa-id={name} onClick={onRowClick(_id)} action qa-user-id={_id}>
+		<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action>
 			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{visibility}</GenericTableCell>
 			<GenericTableCell>
@@ -22,7 +22,6 @@ const UnitsTableRow = ({ _id, name, visibility }: { _id: string; name: string; v
 					icon='trash'
 					small
 					title={t('Remove')}
-					data-qa-id={`remove-unit-${name}`}
 					onClick={(e) => {
 						e.stopPropagation();
 						handleDelete();
