@@ -22,7 +22,7 @@ export const registerGuest = makeFunction(
 			throw Error('error-invalid-token');
 		}
 
-		logger.debug(`New incoming conversation: id: ${id} | token: ${token}`);
+		logger.debug({ msg: 'New incoming conversation', id, token });
 
 		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } = {
 			token,
@@ -48,7 +48,7 @@ export const registerGuest = makeFunction(
 						name: agent.name,
 						emails: agent.emails,
 					};
-					logger.debug(`Assigning visitor ${token} to agent ${agent.username}`);
+					logger.debug({ msg: 'Assigning visitor to agent', token, agent: agent.username });
 				}
 			}
 		}
@@ -56,14 +56,14 @@ export const registerGuest = makeFunction(
 		const livechatVisitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 
 		if (department && livechatVisitor?.department !== department) {
-			logger.debug(`Attempt to find a department with id/name ${department}`);
+			logger.debug({ msg: 'Attempt to find a department with id/name', department });
 			const dep = await LivechatDepartment.findOneByIdOrName(department, { projection: { _id: 1 } });
 			if (!dep) {
-				logger.debug(`Invalid department provided: ${department}`);
+				logger.debug({ msg: 'Invalid department provided', department });
 				// throw new Meteor.Error('error-invalid-department', 'The provided department is invalid');
 				throw new Error('error-invalid-department');
 			}
-			logger.debug(`Assigning visitor ${token} to department ${dep._id}`);
+			logger.debug({ msg: 'Assigning visitor to department', token, department: dep._id });
 			visitorDataToUpdate.department = dep._id;
 		}
 
@@ -83,7 +83,7 @@ export const registerGuest = makeFunction(
 			logger.debug('Found matching user by email');
 			visitorDataToUpdate._id = existingUser._id;
 		} else if (!livechatVisitor) {
-			logger.debug(`No matches found. Attempting to create new user with token ${token}`);
+			logger.debug({ msg: 'No matches found. Attempting to create new user with token', token });
 
 			visitorDataToUpdate._id = id || undefined;
 			visitorDataToUpdate.username = username || (await LivechatVisitors.getNextVisitorUsername());
@@ -91,7 +91,7 @@ export const registerGuest = makeFunction(
 			visitorDataToUpdate.ts = new Date();
 
 			if (connectionData && typeof connectionData === 'object') {
-				logger.debug(`Saving connection data for visitor ${token}`);
+				logger.debug({ msg: 'Saving connection data for visitor', token });
 				const { httpHeaders, clientAddress } = connectionData;
 				if (httpHeaders && typeof httpHeaders === 'object') {
 					visitorDataToUpdate.userAgent = httpHeaders['user-agent'];

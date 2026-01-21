@@ -80,7 +80,7 @@ export class VisitorInactivityMonitor {
 			{ projection: { _id: 1, abandonedRoomsCloseCustomMessage: 1 } },
 		);
 		if (!department) {
-			this.logger.error(`Department ${departmentId} not found`);
+			this.logger.error({ msg: 'Department not found', departmentId });
 			return;
 		}
 		this.messageCache.set(department._id, department.abandonedRoomsCloseCustomMessage);
@@ -145,7 +145,7 @@ export class VisitorInactivityMonitor {
 		const errors = result.filter(isPromiseRejectedResult).map((r) => r.reason);
 
 		if (errors.length) {
-			this.logger.error({ msg: `Error while removing priority from ${errors.length} rooms`, reason: errors[0] });
+			this.logger.error({ msg: 'Error while removing priority from rooms', count: errors.length, reason: errors[0] });
 		}
 
 		this._initializeMessageCache();
