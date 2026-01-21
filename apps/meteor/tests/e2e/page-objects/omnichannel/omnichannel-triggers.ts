@@ -11,24 +11,29 @@ class OmnichannelEditTriggerFlexTab extends FlexTab {
 
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'trigger' }));
-		this.listbox = new Listbox(page.getByRole('listbox'));
+		this.listbox = new Listbox(page);
 	}
 
 	private get inputDescription(): Locator {
-		return this.root.getByRole('textbox', { name: 'Description' });
+		return this.root.getByRole('textbox', { name: 'Description', exact: true });
 	}
 
 	private get conditionLabel(): Locator {
-		return this.root.getByLabel('Condition');
+		return this.root.getByText('Condition', { exact: true });
 	}
 
 	private get senderLabel(): Locator {
-		return this.root.getByLabel('Sender');
+		return this.root.getByText('Sender', { exact: true });
 	}
 
 	private async selectCondition(condition: string) {
 		await this.conditionLabel.click();
 		await this.listbox.selectOption(condition);
+	}
+
+	private async selectSender(sender: 'queue' | 'custom') {
+		await this.senderLabel.click();
+		await this.listbox.selectOption(sender);
 	}
 
 	private get inputAgentName(): Locator {
@@ -41,11 +46,6 @@ class OmnichannelEditTriggerFlexTab extends FlexTab {
 
 	private get inputTriggerMessage(): Locator {
 		return this.root.locator('textarea[name="actions.0.params.msg"]');
-	}
-
-	private async selectSender(sender: 'queue' | 'custom') {
-		await this.senderLabel.click();
-		await this.listbox.selectOption(sender);
 	}
 
 	async fillTriggerForm(
@@ -102,10 +102,6 @@ export class OmnichannelTriggers extends OmnichannelAdmin {
 	async removeTrigger(name: string) {
 		await this.table.findRowByName(name).getByRole('button', { name: 'Remove' }).click();
 		await this.deleteModal.confirmDelete();
-	}
-
-	get btnModalRemove(): Locator {
-		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--danger');
 	}
 
 	public async createTrigger(
