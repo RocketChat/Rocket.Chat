@@ -342,8 +342,8 @@ export class SAML {
 
 					redirect(url);
 				});
-			} catch (e: any) {
-				SystemLogger.error(e);
+			} catch (err: any) {
+				SystemLogger.error({ err });
 				redirect();
 			}
 		});
@@ -521,7 +521,7 @@ export class SAML {
 				}
 			}
 		} catch (err: any) {
-			SystemLogger.error(err);
+			SystemLogger.error({ err });
 		}
 	}
 }

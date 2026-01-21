@@ -45,7 +45,7 @@ class SlackBridgeClass {
 					this.rocket.addSlack(slack);
 					this.slackAdapters.push(slack);
 
-					slack.connect({ apiToken }).catch((err) => connLogger.error('error connecting to slack', err));
+					slack.connect({ apiToken }).catch((err) => connLogger.error({ msg: 'error connecting to slack', err }));
 				});
 			} else {
 				const botTokenList = this.botTokens.split('\n'); // Bot token list
@@ -70,7 +70,7 @@ class SlackBridgeClass {
 					this.rocket.addSlack(slack);
 					this.slackAdapters.push(slack);
 
-					slack.connect({ appCredential }).catch((err) => connLogger.error('error connecting to slack', err));
+					slack.connect({ appCredential }).catch((err) => connLogger.error({ msg: 'error connecting to slack', err }));
 				});
 			}
 
@@ -109,7 +109,7 @@ class SlackBridgeClass {
 				connLogger.info('Slack Bridge Disconnected');
 			}
 		} catch (error) {
-			connLogger.error('An error occurred during disconnection', error);
+			connLogger.error({ msg: 'An error occurred during disconnection', err: error });
 		}
 	}
 
