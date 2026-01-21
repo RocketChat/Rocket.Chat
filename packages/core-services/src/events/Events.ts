@@ -32,7 +32,7 @@ import type {
 	ICustomUserStatus,
 	IWebdavAccount,
 	MessageAttachment,
-  LoginSessionPayload,
+	LoginSessionPayload,
 } from '@rocket.chat/core-typings';
 import type { ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
 import type * as UiKit from '@rocket.chat/ui-kit';

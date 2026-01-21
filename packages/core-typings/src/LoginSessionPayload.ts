@@ -1,5 +1,5 @@
 export type LoginSessionPayload = {
-  userId: string;
+	userId: string;
 	instanceId: string;
 	userAgent: string;
 	loginToken?: string;

@@ -110,19 +110,22 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		sauEvents.on('accounts.login', async ({ userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host }: LoginSessionPayload) => {
-			if (!this.isRunning()) {
-				return;
-			}
+		sauEvents.on(
+			'accounts.login',
+			async ({ userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host }: LoginSessionPayload) => {
+				if (!this.isRunning()) {
+					return;
+				}
 
-			const roles = await getUserRoles(userId);
+				const roles = await getUserRoles(userId);
 
-			const mostImportantRole = getMostImportantRole(roles);
+				const mostImportantRole = getMostImportantRole(roles);
 
-			const loginAt = new Date();
-			const params = { roles, mostImportantRole, loginAt, ...getDateObj() };
-			await this._handleSession({ userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host }, params);
-		});
+				const loginAt = new Date();
+				const params = { roles, mostImportantRole, loginAt, ...getDateObj() };
+				await this._handleSession({ userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host }, params);
+			},
+		);
 
 		sauEvents.on('accounts.logout', async ({ userId, connection }) => {
 			if (!this.isRunning()) {
@@ -156,20 +159,20 @@ export class SAUMonitorClass {
 	}
 
 	private async _handleSession(
-    { userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host } : LoginSessionPayload,
+		{ userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host }: LoginSessionPayload,
 		params: Pick<ISession, 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
 	): Promise<void> {
-    const data: Omit<ISession, '_id' | '_updatedAt' | 'createdAt' | 'searchTerm'> = {
-      userId,
-      loginToken,
-      ip: clientAddress,
-      host,
-      sessionId: connectionId,
-      instanceId,
-      type: 'session',
+		const data: Omit<ISession, '_id' | '_updatedAt' | 'createdAt' | 'searchTerm'> = {
+			userId,
+			loginToken,
+			ip: clientAddress,
+			host,
+			sessionId: connectionId,
+			instanceId,
+			type: 'session',
 			...this._getUserAgentInfo(userAgent),
 			...params,
-    }
+		};
 
 		if (!data) {
 			return;

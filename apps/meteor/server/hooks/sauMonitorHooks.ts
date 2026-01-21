@@ -1,5 +1,6 @@
 import type { IncomingHttpHeaders } from 'http';
 
+import type { LoginSessionPayload, DeviceLoginPayload } from '@rocket.chat/core-typings';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -8,7 +9,6 @@ import type { ILoginAttempt } from '../../app/authentication/server/ILoginAttemp
 import { getClientAddress } from '../lib/getClientAddress';
 import { deviceManagementEvents } from '../services/device-management/events';
 import { sauEvents } from '../services/sauMonitor/events';
-import { LoginSessionPayload, DeviceLoginPayload } from '@rocket.chat/core-typings';
 
 Accounts.onLogin((info: ILoginAttempt) => {
 	const {
@@ -30,13 +30,13 @@ Accounts.onLogin((info: ILoginAttempt) => {
 	const host = getHeader(httpHeaders, 'host');
 
 	const loginEventObject: LoginSessionPayload = {
-	   userId,
-     instanceId,
-	   userAgent,
-     loginToken,
-	   connectionId,
-	   clientAddress,
-	   host,
+		userId,
+		instanceId,
+		userAgent,
+		loginToken,
+		connectionId,
+		clientAddress,
+		host,
 	};
 	sauEvents.emit('accounts.login', loginEventObject);
 
