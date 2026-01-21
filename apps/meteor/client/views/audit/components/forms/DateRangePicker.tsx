@@ -1,5 +1,6 @@
-import { Box, InputBox, Menu, Margins, Option } from '@rocket.chat/fuselage';
+import { Box, InputBox, Margins } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import moment from 'moment';
 import type { ReactElement, ComponentProps, SetStateAction, FormEvent } from 'react';
 import { useMemo } from 'react';
@@ -141,33 +142,44 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): R
 	const { t } = useTranslation();
 
 	const presets = useMemo(
-		() =>
-			({
-				today: {
-					label: t('Today'),
-					action: () => dispatch('today'),
-				},
-				yesterday: {
-					label: t('Yesterday'),
-					action: () => dispatch('yesterday'),
-				},
-				thisWeek: {
-					label: t('This_week'),
-					action: () => dispatch('this-week'),
-				},
-				previousWeek: {
-					label: t('Previous_week'),
-					action: () => dispatch('last-week'),
-				},
-				thisMonth: {
-					label: t('This_month'),
-					action: () => dispatch('this-month'),
-				},
-				lastMonth: {
-					label: t('Previous_month'),
-					action: () => dispatch('last-month'),
-				},
-			}) as const,
+		() => [
+			{
+				id: 'today',
+				icon: 'history' as const,
+				content: t('Today'),
+				onClick: () => dispatch('today'),
+			},
+			{
+				id: 'yesterday',
+				icon: 'history' as const,
+				content: t('Yesterday'),
+				onClick: () => dispatch('yesterday'),
+			},
+			{
+				id: 'thisWeek',
+				icon: 'history' as const,
+				content: t('This_week'),
+				onClick: () => dispatch('this-week'),
+			},
+			{
+				id: 'previousWeek',
+				icon: 'history' as const,
+				content: t('Previous_week'),
+				onClick: () => dispatch('last-week'),
+			},
+			{
+				id: 'thisMonth',
+				icon: 'history' as const,
+				content: t('This_month'),
+				onClick: () => dispatch('this-month'),
+			},
+			{
+				id: 'lastMonth',
+				icon: 'history' as const,
+				content: t('Previous_month'),
+				onClick: () => dispatch('last-month'),
+			},
+		],
 		[dispatch, t],
 	);
 
@@ -176,11 +188,7 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): R
 			<Margins inline={4}>
 				<InputBox type='date' value={startDate} max={maxStartDate} flexGrow={1} height={20} onChange={handleChangeStart} />
 				<InputBox type='date' min={minEndDate} value={endDate} max={maxEndDate} flexGrow={1} height={20} onChange={handleChangeEnd} />
-				<Menu
-					options={presets}
-					renderItem={(props: ComponentProps<typeof Option>) => <Option icon='history' {...props} />}
-					alignSelf='center'
-				/>
+				<GenericMenu title={t('Date_range_presets')} items={presets} small />
 			</Margins>
 		</Box>
 	);
