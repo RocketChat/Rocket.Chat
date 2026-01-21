@@ -123,7 +123,7 @@ export class LDAPManager {
 
 			const users = await ldap.searchByUsername(escapedUsername);
 			if (users.length !== 1) {
-				logger.debug(`Search returned ${users.length} records for ${escapedUsername}`);
+				logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
 				throw new Error('User not found');
 			}
 		} catch (error) {
@@ -223,7 +223,7 @@ export class LDAPManager {
 			const users = await ldap.searchByUsername(escapedUsername);
 
 			if (users.length !== 1) {
-				logger.debug(`Search returned ${users.length} records for ${escapedUsername}`);
+				logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
 				throw new Error('User not found');
 			}
 
@@ -233,7 +233,7 @@ export class LDAPManager {
 			}
 
 			if (!(await ldap.authenticate(ldapUser.dn, password))) {
-				logger.debug(`Wrong password for ${escapedUsername}`);
+				logger.debug({ msg: 'Wrong password', username: escapedUsername });
 				throw new Error('Invalid user or wrong password');
 			}
 
@@ -257,7 +257,7 @@ export class LDAPManager {
 			const users = await ldap.searchByUsername(escapedUsername);
 
 			if (users.length !== 1) {
-				logger.debug(`Search returned ${users.length} records for ${escapedUsername}`);
+				logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
 				return;
 			}
 
