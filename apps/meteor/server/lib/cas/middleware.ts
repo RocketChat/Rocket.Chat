@@ -2,7 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import url from 'url';
 
 import { validate } from '@rocket.chat/cas-validate';
-import type { ICredentialToken } from '@rocket.chat/core-typings';
+import type { ICredentialToken, RequiredField } from '@rocket.chat/core-typings';
 import { CredentialTokens } from '@rocket.chat/models';
 import _ from 'underscore';
 
@@ -15,7 +15,7 @@ const closePopup = function (res: ServerResponse): void {
 	res.end(content, 'utf-8');
 };
 
-type IncomingMessageWithUrl = IncomingMessage & Required<Pick<IncomingMessage, 'url'>>;
+type IncomingMessageWithUrl = RequiredField<IncomingMessage, 'url'>;
 
 const casTicket = function (req: IncomingMessageWithUrl, token: string, callback: () => void): void {
 	// get configuration
