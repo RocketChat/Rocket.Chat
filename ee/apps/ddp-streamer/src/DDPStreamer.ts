@@ -36,47 +36,48 @@ export class DDPStreamer extends ServiceClass {
 			const { broker, nodeID } = this.context || {};
 			const { metrics } = broker || {};
 
+			// TODO rename StreamerCentral to StreamerStore or something to use it only as a store
+			const stream = StreamerCentral.instances[streamer];
+
 			if (metrics) {
 				// Count events received from other services
-				metrics.increment('ddp_streamer_events_received', {
+				metrics.increment('ddp_streamer_events_received_total', {
 					streamer,
 					event: eventName,
 					nodeID,
 				});
 
 				// Start timing the relay to websocket clients
-				const endTimer = metrics.timer('ddp_streamer_relay_duration', {
+				const endTimer = metrics.timer('ddp_streamer_relay_duration_milliseconds', {
 					streamer,
 					event: eventName,
 					nodeID,
 				});
 
 				try {
-					// TODO rename StreamerCentral to StreamerStore or something to use it only as a store
-					const stream = StreamerCentral.instances[streamer];
-					stream?.emitWithoutBroadcast(eventName, ...args);
+					stream.emitWithoutBroadcast(eventName, ...args);
 
 					// Count successful emissions to websocket clients
-					metrics.increment('ddp_streamer_events_sent', {
+					metrics.increment('ddp_streamer_events_sent_total', {
 						streamer,
 						event: eventName,
 						nodeID,
 					});
 				} catch (error: any) {
 					// Track relay errors
-					metrics.increment('ddp_streamer_relay_errors', {
+					metrics.increment('ddp_streamer_relay_errors_total', {
 						streamer,
 						event: eventName,
 						error_type: error.name || 'UnknownError',
 						nodeID,
 					});
+
 					throw error;
 				} finally {
 					endTimer?.();
 				}
 			} else {
 				// Fallback if metrics not available
-				const stream = StreamerCentral.instances[streamer];
 				return stream?.emitWithoutBroadcast(eventName, ...args);
 			}
 		});
@@ -153,21 +154,21 @@ export class DDPStreamer extends ServiceClass {
 
 		// Event relay metrics (Moleculer → Websocket)
 		metrics.register({
-			name: 'ddp_streamer_events_received',
+			name: 'ddp_streamer_events_received_total',
 			type: 'counter',
 			labelNames: ['streamer', 'event', 'nodeID'],
 			description: 'Events received from other services via Moleculer',
 		});
 
 		metrics.register({
-			name: 'ddp_streamer_events_sent',
+			name: 'ddp_streamer_events_sent_total',
 			type: 'counter',
 			labelNames: ['streamer', 'event', 'nodeID'],
 			description: 'Events successfully emitted to websocket clients',
 		});
 
 		metrics.register({
-			name: 'ddp_streamer_relay_duration',
+			name: 'ddp_streamer_relay_duration_milliseconds',
 			type: 'histogram',
 			labelNames: ['streamer', 'event', 'nodeID'],
 			description: 'Time from receiving event to emitting to websocket clients (milliseconds)',
@@ -176,7 +177,7 @@ export class DDPStreamer extends ServiceClass {
 		});
 
 		metrics.register({
-			name: 'ddp_streamer_relay_errors',
+			name: 'ddp_streamer_relay_errors_total',
 			type: 'counter',
 			labelNames: ['streamer', 'event', 'error_type', 'nodeID'],
 			description: 'Errors during event relay to websocket clients',
