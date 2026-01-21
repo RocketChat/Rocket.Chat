@@ -121,7 +121,7 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 		[canManageSettings, querySetting, querySettings, dispatch],
 	);
 
-	return <SettingsContext.Provider children={children} value={contextValue} />;
+	return <SettingsContext.Provider value={contextValue}>{children}</SettingsContext.Provider>;
 };
 
 export default SettingsProvider;
