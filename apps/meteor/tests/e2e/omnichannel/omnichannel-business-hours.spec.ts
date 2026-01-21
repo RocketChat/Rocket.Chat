@@ -10,6 +10,7 @@ import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 
+// TODO: These tests needs to be refactored to be independent from each other
 test.describe('OC - Business Hours', () => {
 	test.skip(!IS_EE, 'OC - Manage Business Hours > Enterprise Edition Only');
 
