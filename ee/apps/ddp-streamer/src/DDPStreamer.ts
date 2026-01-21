@@ -39,46 +39,46 @@ export class DDPStreamer extends ServiceClass {
 			// TODO rename StreamerCentral to StreamerStore or something to use it only as a store
 			const stream = StreamerCentral.instances[streamer];
 
-			if (metrics) {
-				// Count events received from other services
-				metrics.increment('ddp_streamer_events_received_total', {
+			if (!metrics) {
+				stream?.emitWithoutBroadcast(eventName, ...args);
+				return;
+			}
+
+			// Count events received from other services
+			metrics.increment('ddp_streamer_events_received_total', {
+				streamer,
+				event: eventName,
+				nodeID,
+			});
+
+			// Start timing the relay to websocket clients
+			const endTimer = metrics.timer('ddp_streamer_relay_duration_milliseconds', {
+				streamer,
+				event: eventName,
+				nodeID,
+			});
+
+			try {
+				stream.emitWithoutBroadcast(eventName, ...args);
+
+				// Count successful emissions to websocket clients
+				metrics.increment('ddp_streamer_events_sent_total', {
 					streamer,
 					event: eventName,
 					nodeID,
 				});
-
-				// Start timing the relay to websocket clients
-				const endTimer = metrics.timer('ddp_streamer_relay_duration_milliseconds', {
+			} catch (error: any) {
+				// Track relay errors
+				metrics.increment('ddp_streamer_relay_errors_total', {
 					streamer,
 					event: eventName,
+					error_type: error.name || 'UnknownError',
 					nodeID,
 				});
 
-				try {
-					stream.emitWithoutBroadcast(eventName, ...args);
-
-					// Count successful emissions to websocket clients
-					metrics.increment('ddp_streamer_events_sent_total', {
-						streamer,
-						event: eventName,
-						nodeID,
-					});
-				} catch (error: any) {
-					// Track relay errors
-					metrics.increment('ddp_streamer_relay_errors_total', {
-						streamer,
-						event: eventName,
-						error_type: error.name || 'UnknownError',
-						nodeID,
-					});
-
-					throw error;
-				} finally {
-					endTimer?.();
-				}
-			} else {
-				// Fallback if metrics not available
-				return stream?.emitWithoutBroadcast(eventName, ...args);
+				throw error;
+			} finally {
+				endTimer();
 			}
 		});
 
