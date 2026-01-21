@@ -392,8 +392,8 @@ Accounts.registerLoginHandler('crowd', async function (this: typeof Accounts, lo
 
 		return result;
 	} catch (err: any) {
-		logger.debug({ err });
-		logger.error('Crowd user not authenticated due to an error');
+		logger.error({ msg: 'Crowd user not authenticated due to an error', err });
+
 		throw new Meteor.Error('user-not-found', err.message);
 	}
 });

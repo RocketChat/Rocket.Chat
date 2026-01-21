@@ -519,7 +519,7 @@ API.v1.addRoute(
 				return API.v1.success(mountResult({ id, result }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
-					SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
+					SystemLogger.error({ msg: 'Exception while invoking method', err, method });
 				}
 
 				if (settings.get('Log_Level') === '2') {
@@ -576,7 +576,7 @@ API.v1.addRoute(
 				return API.v1.success(mountResult({ id, result }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
-					SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
+					SystemLogger.error({ msg: 'Exception while invoking method', err, method });
 				}
 				if (settings.get('Log_Level') === '2') {
 					Meteor._debug(`Exception while invoking method ${method}`, err);

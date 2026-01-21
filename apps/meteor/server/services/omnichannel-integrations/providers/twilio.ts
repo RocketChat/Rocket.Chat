@@ -78,7 +78,7 @@ export class Twilio implements ISMSProvider {
 		}
 
 		if (isNaN(numMedia)) {
-			SystemLogger.error(`Error parsing NumMedia ${data.NumMedia}`);
+			SystemLogger.error({ msg: 'Error parsing NumMedia', numMedia: data.NumMedia });
 			return returnData;
 		}
 
@@ -114,7 +114,7 @@ export class Twilio implements ISMSProvider {
 			return twilio(sid, token);
 		} catch (error) {
 			await notifyAgent(userId, rid, i18n.t('SMS_Twilio_InvalidCredentials'));
-			SystemLogger.error(`(Twilio) -> ${error}`);
+			SystemLogger.error({ msg: '(Twilio) ->', err: error });
 		}
 	}
 
@@ -157,7 +157,7 @@ export class Twilio implements ISMSProvider {
 
 		if (reason) {
 			await notifyAgent(userId, rid, reason);
-			SystemLogger.error(`(Twilio) -> ${reason}`);
+			SystemLogger.error({ msg: '(Twilio) ->', reason });
 			return '';
 		}
 
@@ -219,7 +219,7 @@ export class Twilio implements ISMSProvider {
 
 			if (result.errorCode) {
 				await notifyAgent(userId, rid, result.errorMessage);
-				SystemLogger.error(`(Twilio) -> ${result.errorCode}`);
+				SystemLogger.error({ msg: '(Twilio) ->', errorCode: result.errorCode });
 			}
 
 			return {
