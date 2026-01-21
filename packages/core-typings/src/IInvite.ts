@@ -2,6 +2,7 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface IInvite extends IRocketChatRecord {
 	days: number;
+	inviteToken: string;
 	maxUses: number;
 	rid: string;
 	userId: string;

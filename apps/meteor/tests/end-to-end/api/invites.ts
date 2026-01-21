@@ -11,6 +11,7 @@ import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('Invites', () => {
 	let testInviteID: IInvite['_id'];
+	let testInviteToken: string;
 
 	before((done) => getCredentials(done));
 	describe('POST [/findOrCreateInvite]', () => {
@@ -51,7 +52,6 @@ describe('Invites', () => {
 					rid: 'GENERAL',
 					days: 1,
 					maxUses: 10,
-				})
 				.expect(200);
 
 			expect(res.body).to.have.property('success', true);
@@ -59,7 +59,10 @@ describe('Invites', () => {
 			expect(res.body).to.have.property('maxUses', 10);
 			expect(res.body).to.have.property('uses');
 			expect(res.body).to.have.property('_id');
+			expect(res.body).to.have.property('inviteToken');
+			expect(res.body.inviteToken).to.be.a('string');
 			testInviteID = res.body._id;
+			testInviteToken = res.body.inviteToken;
 		});
 
 		it('should return an existing invite for GENERAL', async () => {
@@ -70,7 +73,6 @@ describe('Invites', () => {
 					rid: 'GENERAL',
 					days: 1,
 					maxUses: 10,
-				})
 				.expect(200);
 
 			expect(res.body).to.have.property('success', true);
@@ -78,6 +80,7 @@ describe('Invites', () => {
 			expect(res.body).to.have.property('maxUses', 10);
 			expect(res.body).to.have.property('uses');
 			expect(res.body).to.have.property('_id', testInviteID);
+			expect(res.body).to.have.property('inviteToken', testInviteToken);
 		});
 	});
 
@@ -89,10 +92,11 @@ describe('Invites', () => {
 			expect(res.body).to.have.property('message');
 		});
 
-		it('should return the existing invite for GENERAL', async () => {
+		it('should return the existing invite for GENERAL without inviteToken', async () => {
 			const res = await request.get(api('listInvites')).set(credentials).expect(200);
 
 			expect(res.body[0]).to.have.property('_id', testInviteID);
+			expect(res.body[0]).to.not.have.property('inviteToken');
 		});
 	});
 
@@ -124,16 +128,27 @@ describe('Invites', () => {
 			expect(res.body).to.have.property('errorType', 'invalid-params');
 		});
 
-		it('should use the existing invite for GENERAL', async () => {
+		it('should use the existing invite for GENERAL with inviteToken', async () => {
+			const res = await request
+				.post(api('useInviteToken'))
+				.set(credentials)
+				.send({ token: testInviteToken })
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+		});
+
+		it('should fail when using _id as token', async () => {
 			const res = await request
 				.post(api('useInviteToken'))
 				.set(credentials)
 				.send({
 					token: testInviteID,
 				})
-				.expect(200);
+				.expect(400);
 
-			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-token');
 		});
 	});
 
@@ -151,7 +166,18 @@ describe('Invites', () => {
 			expect(res.body).to.have.property('valid', false);
 		});
 
-		it('should succeed when valid token', async () => {
+		it('should succeed when valid inviteToken', async () => {
+			const res = await request
+				.post(api('validateInviteToken'))
+				.set(credentials)
+				.send({ token: testInviteToken })
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('valid', true);
+		});
+
+		it('should fail when using _id as token', async () => {
 			const res = await request
 				.post(api('validateInviteToken'))
 				.set(credentials)
@@ -161,7 +187,7 @@ describe('Invites', () => {
 				.expect(200);
 
 			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('valid', true);
+			expect(res.body).to.have.property('valid', false);
 		});
 	});
 
