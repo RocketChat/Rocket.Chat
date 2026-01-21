@@ -139,8 +139,8 @@ test.describe('SAML', () => {
 
 		const inviteResponse = await api.post('/findOrCreateInvite', { rid: targetInviteGroupId, days: 1, maxUses: 0 });
 		expect(inviteResponse.status()).toBe(200);
-		const { _id } = await inviteResponse.json();
-		inviteId = _id;
+		const { inviteToken } = await inviteResponse.json();
+		inviteId = inviteToken;
 	});
 
 	test.afterAll(async ({ api }) => {
