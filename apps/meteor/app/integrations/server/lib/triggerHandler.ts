@@ -158,9 +158,10 @@ class RocketChatIntegrationHandler {
 
 		// If no room could be found, we won't be sending any messages but we'll warn in the logs
 		if (!tmpRoom) {
-			outgoingLogger.warn(
-				`The Integration "${trigger.name}" doesn't have a room configured nor did it provide a room to send the message to.`,
-			);
+			outgoingLogger.warn({
+				msg: 'The Integration doesnt have a room configured nor did it provide a room to send the message to.',
+				integrationName: trigger.name,
+			});
 			return;
 		}
 
