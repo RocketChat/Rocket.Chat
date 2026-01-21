@@ -10,7 +10,7 @@ class OmnichannelEditTagFlexTab extends FlexTab {
 
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'tag' }));
-		this.listbox = new Listbox(page.getByRole('listbox'));
+		this.listbox = new Listbox(page);
 	}
 
 	get inputDepartments(): Locator {

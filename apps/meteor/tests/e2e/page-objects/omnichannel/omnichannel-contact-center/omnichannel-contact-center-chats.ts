@@ -26,7 +26,7 @@ export class OmnichannelChatsFilters extends FlexTab {
 
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Filters' }));
-		this.listbox = new Listbox(page.getByRole('listbox'));
+		this.listbox = new Listbox(page);
 	}
 
 	get inputFrom(): Locator {

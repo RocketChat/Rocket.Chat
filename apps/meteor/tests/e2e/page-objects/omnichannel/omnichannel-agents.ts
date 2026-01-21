@@ -10,7 +10,7 @@ class OmnichannelEditAgentFlexTab extends FlexTab {
 
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Edit User' }));
-		this.listbox = new Listbox(page.getByRole('listbox'));
+		this.listbox = new Listbox(page);
 	}
 
 	get inputMaxChats(): Locator {

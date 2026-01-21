@@ -54,15 +54,15 @@ export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
 
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Edit Room' }));
-		this.listbox = new Listbox(page.getByRole('listbox'));
+		this.listbox = new Listbox(page);
 	}
 
 	get inputTopic(): Locator {
-		return this.root.getByRole('textbox', { name: 'Topic' });
+		return this.root.getByRole('textbox', { name: 'Topic', exact: true });
 	}
 
 	get inputSLAPolicy(): Locator {
-		return this.root.getByRole('button', { name: 'SLA Policy' });
+		return this.root.getByRole('button', { name: 'SLA Policy', exact: true });
 	}
 
 	optionTag(name: string): Locator {

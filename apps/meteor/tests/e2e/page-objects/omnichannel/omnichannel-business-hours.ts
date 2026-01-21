@@ -18,7 +18,7 @@ export class OmnichannelBusinessHours extends OmnichannelAdmin {
 	constructor(page: Page) {
 		super(page);
 		this.table = new OmnichannelBusinessHoursTable(page);
-		this.listbox = new Listbox(page.getByRole('listbox'));
+		this.listbox = new Listbox(page);
 	}
 
 	get btnCreateBusinessHour(): Locator {

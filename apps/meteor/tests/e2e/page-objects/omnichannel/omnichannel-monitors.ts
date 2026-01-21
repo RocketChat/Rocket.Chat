@@ -18,7 +18,7 @@ export class OmnichannelMonitors extends OmnichannelAdmin {
 	constructor(page: Page) {
 		super(page);
 		this.table = new OmnichannelMonitorsTable(page);
-		this.listbox = new Listbox(page.getByRole('listbox'));
+		this.listbox = new Listbox(page);
 	}
 
 	private get btnAddMonitor(): Locator {
