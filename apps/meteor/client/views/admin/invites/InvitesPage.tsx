@@ -72,7 +72,7 @@ const InvitesPage = (): ReactElement => {
 	const headers = useMemo(
 		() => (
 			<>
-				<GenericTableHeaderCell w={notSmall ? '20%' : '80%'}>{t('Token')}</GenericTableHeaderCell>
+				<GenericTableHeaderCell w={notSmall ? '20%' : '80%'}>{t('Invite')}</GenericTableHeaderCell>
 				{notSmall && (
 					<>
 						<GenericTableHeaderCell w='35%'>{t('Created_at')}</GenericTableHeaderCell>
@@ -100,6 +100,7 @@ const InvitesPage = (): ReactElement => {
 							</GenericTableBody>
 						</GenericTable>
 					)}
+
 					{isSuccess && data && data.length > 0 && (
 						<GenericTable>
 							<GenericTableHeader>{headers}</GenericTableHeader>
@@ -111,7 +112,9 @@ const InvitesPage = (): ReactElement => {
 							</GenericTableBody>
 						</GenericTable>
 					)}
+
 					{isSuccess && data && data.length === 0 && <GenericNoResults />}
+
 					{isError && (
 						<States>
 							<StatesIcon name='warning' variation='danger' />

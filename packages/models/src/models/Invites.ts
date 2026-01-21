@@ -20,6 +20,10 @@ export class InvitesRaw extends BaseRaw<IInvite> implements IInvitesModel {
 		});
 	}
 
+	findOneByInviteToken(inviteToken: string): Promise<IInvite | null> {
+		return this.findOne({ inviteToken });
+	}
+
 	increaseUsageById(_id: string, uses = 1): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id },
