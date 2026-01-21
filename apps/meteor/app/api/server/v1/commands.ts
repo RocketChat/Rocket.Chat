@@ -1,3 +1,4 @@
+import { Apps } from '@rocket.chat/apps';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import objectPath from 'object-path';
@@ -143,6 +144,19 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+			if (!Apps.self?.isLoaded()) {
+				return {
+					statusCode: 202, // Accepted - apps are not ready, so the list is incomplete. Retry later
+					body: {
+						commands: [],
+						appsLoaded: false,
+						offset: 0,
+						count: 0,
+						total: 0,
+					},
+				};
+			}
+
 			const params = this.queryParams as Record<string, any>;
 			const { offset, count } = await getPaginationItems(params);
 			const { sort, query } = await this.parseJsonQuery();
@@ -161,6 +175,7 @@ API.v1.addRoute(
 					skip: offset,
 					limit: count,
 				}),
+				appsLoaded: true,
 				offset,
 				count: commands.length,
 				total: totalCount,
