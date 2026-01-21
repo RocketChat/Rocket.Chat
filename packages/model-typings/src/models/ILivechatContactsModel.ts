@@ -23,7 +23,14 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	insertContact(
 		data: InsertionModel<Omit<ILivechatContact, 'createdAt'>> & { createdAt?: ILivechatContact['createdAt'] },
 	): Promise<ILivechatContact['_id']>;
-	updateContact(contactId: string, data: Partial<ILivechatContact>, options?: FindOneAndUpdateOptions): Promise<ILivechatContact>;
+	patchContact(
+		contactId: string,
+		data: {
+			set?: Partial<ILivechatContact>;
+			unset?: Array<keyof ILivechatContact>;
+		},
+		options?: FindOneAndUpdateOptions,
+	): Promise<ILivechatContact | null>;
 	updateById(contactId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<Document | UpdateResult>;
 	updateContactCustomFields(contactId: string, data: Partial<ILivechatContact>, options?: UpdateOptions): Promise<ILivechatContact | null>;
 	addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void>;

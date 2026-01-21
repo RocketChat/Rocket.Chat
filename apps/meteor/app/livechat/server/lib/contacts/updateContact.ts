@@ -71,15 +71,22 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		});
 	}
 
-	const updatedContact = await LivechatContacts.updateContact(contactId, {
-		name,
-		...(emails && { emails: emails?.map((address) => ({ address })) }),
-		...(phones && { phones: phones?.map((phoneNumber) => ({ phoneNumber })) }),
-		...('contactManager' in params && { contactManager }), // A contactManager of empty string or undefined will be unset in the model method
-		...(channels && { channels }),
-		...(customFieldsToUpdate && { customFields: customFieldsToUpdate }),
-		...(wipeConflicts && { conflictingFields: [] }),
+	const updatedContact = await LivechatContacts.patchContact(contactId, {
+		set: {
+			name,
+			...(emails && { emails: emails?.map((address) => ({ address })) }),
+			...(phones && { phones: phones?.map((phoneNumber) => ({ phoneNumber })) }),
+			...(contactManager && { contactManager }),
+			...(channels && { channels }),
+			...(customFieldsToUpdate && { customFields: customFieldsToUpdate }),
+			...(wipeConflicts && { conflictingFields: [] }),
+		},
+		unset: 'contactManager' in params && !contactManager ? ['contactManager'] : undefined,
 	});
+
+	if (!updatedContact) {
+		throw new Error('error-contact-not-found');
+	}
 
 	// If the contact name changed, update the name of its existing rooms and subscriptions
 	if (name !== undefined && name !== contact.name) {

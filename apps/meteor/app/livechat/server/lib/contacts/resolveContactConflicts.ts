@@ -63,5 +63,14 @@ export async function resolveContactConflicts(params: ResolveContactConflictsPar
 		conflictingFields: updatedConflictingFieldsArr,
 	};
 
-	return LivechatContacts.updateContact(contactId, dataToUpdate);
+	const updatedContact = await LivechatContacts.patchContact(contactId, {
+		set: dataToUpdate,
+		unset: 'contactManager' in params && !contactManager ? ['contactManager'] : undefined,
+	});
+
+	if (!updatedContact) {
+		throw new Error('error-contact-not-found');
+	}
+
+	return updatedContact;
 }

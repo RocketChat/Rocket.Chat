@@ -791,6 +791,49 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.result).to.have.property('customFields');
 			expect(res.body.result.customFields).to.have.property('cf1', '123');
 		});
+
+		it('should be able to clear the contact manager when resolving conflicts', async () => {
+			await request
+				.post(api('omnichannel/contacts.update'))
+				.set(credentials)
+				.send({
+					contactId,
+					contactManager: livechatAgent._id,
+				})
+				.expect(200);
+
+			// Create a conflict
+			await request.post(api('livechat/custom.field')).send({ token, key: 'cf1', value: '111', overwrite: true }).expect(200);
+
+			await request.post(api('livechat/custom.field')).send({ token, key: 'cf1', value: '222', overwrite: false }).expect(200);
+
+			// Verify the contact has a contact manager and conflicts
+			const contactBefore = await request.get(api('omnichannel/contacts.get')).set(credentials).query({ contactId }).expect(200);
+			expect(contactBefore.body.contact).to.have.property('contactManager', livechatAgent._id);
+			expect(contactBefore.body.contact).to.have.property('conflictingFields');
+			expect(contactBefore.body.contact.conflictingFields).to.have.lengthOf.greaterThan(0);
+
+			const res = await request
+				.post(api('omnichannel/contacts.conflicts'))
+				.set(credentials)
+				.send({
+					contactId,
+					contactManager: '',
+					customFields: {
+						cf1: '111',
+					},
+				});
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('result');
+			expect(res.body.result).to.not.have.property('contactManager');
+			expect(res.body.result).to.have.property('customFields');
+			expect(res.body.result.customFields).to.have.property('cf1', '111');
+
+			const contactAfter = await request.get(api('omnichannel/contacts.get')).set(credentials).query({ contactId }).expect(200);
+			expect(contactAfter.body.contact).to.not.have.property('contactManager');
+		});
 	});
 
 	describe('Contact Rooms', () => {

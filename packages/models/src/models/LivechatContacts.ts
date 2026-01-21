@@ -114,22 +114,32 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return result.insertedId;
 	}
 
-	async updateContact(contactId: string, data: Partial<ILivechatContact>, options?: FindOneAndUpdateOptions): Promise<ILivechatContact> {
-		const $set = { ...data, unknown: false, ...(data.channels && { preRegistration: !data.channels.length }) };
-		const $unset: Partial<Record<keyof ILivechatContact, ''>> = {};
+	async patchContact(
+		contactId: string,
+		changes: {
+			set?: Partial<ILivechatContact>;
+			unset?: Array<keyof ILivechatContact>;
+		},
+		options?: FindOneAndUpdateOptions,
+	) {
+		const { set = {}, unset = [] } = changes;
 
-		if ('contactManager' in data && !data.contactManager) {
-			// Here we want to unset the contactManager field if it's provided as an empty string or falsy value
-			delete $set.contactManager;
-			$unset.contactManager = '';
-		}
+		const $set = {
+			...set,
+			unknown: false,
+			...(set.channels && { preRegistration: !set.channels.length }),
+		};
 
-		const updatedValue = await this.findOneAndUpdate(
+		const $unset = unset.reduce((acc, key) => ({ ...acc, [key]: '' }), {});
+
+		return this.findOneAndUpdate(
 			{ _id: contactId, enabled: { $ne: false } },
-			{ $set, $unset },
+			{
+				$set,
+				...(unset.length > 0 && { $unset }),
+			},
 			{ returnDocument: 'after', ...options },
 		);
-		return updatedValue as ILivechatContact;
 	}
 
 	updateById(contactId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<Document | UpdateResult> {
