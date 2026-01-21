@@ -1,3 +1,4 @@
+import fs from 'fs';
 import type Stream from 'stream';
 
 import { ServiceClassInternal } from '@rocket.chat/core-services';
@@ -6,6 +7,7 @@ import type { IUpload, IUser, FilesAndAttachments, IMessage } from '@rocket.chat
 import { isFileAttachment } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Uploads } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 import sharp from 'sharp';
 
 import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
@@ -16,6 +18,7 @@ import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
 import { i18n } from '../../lib/i18n';
+import { UploadFS } from '../../ufs';
 
 const logger = new Logger('UploadService');
 
@@ -164,6 +167,25 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 	}
 
 	async uploadFileFromStream({ streamParam, details }: { streamParam: Stream.Readable; details: any }): Promise<IUpload> {
-		return FileUpload.getStore('Uploads').insert(details, streamParam);
+		const resolver = Promise.withResolvers<IUpload>();
+
+		const fileId = Random.id();
+		const tempFilePath = UploadFS.getTempFilePath(fileId);
+
+		const writeStream = fs.createWriteStream(tempFilePath);
+		streamParam.pipe(writeStream);
+
+		writeStream.on('finish', async () => {
+			details.size = writeStream.bytesWritten;
+
+			resolver.resolve(await FileUpload.getStore('Uploads').insert(details, tempFilePath));
+		});
+
+		writeStream.on('error', async (err) => {
+			await fs.promises.unlink(tempFilePath).catch(() => undefined);
+			resolver.reject(err);
+		});
+
+		return resolver.promise;
 	}
 }
