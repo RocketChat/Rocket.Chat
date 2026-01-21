@@ -1,8 +1,6 @@
-export type IImportedId = string;
-
 export interface IImportMessageReaction {
 	name: string;
-	users: Array<IImportedId>;
+	users: Array<string>;
 }
 
 export interface IImportPendingFile {
@@ -15,18 +13,18 @@ export interface IImportPendingFile {
 	original: Record<string, any>;
 }
 
-export interface IImportAttachment extends Record<string, any> {
+interface IImportAttachment extends Record<string, any> {
 	text?: string;
 	title?: string;
 	fallback?: string;
 }
 
 export interface IImportMessage {
-	_id?: IImportedId;
+	_id?: string;
 
-	rid: IImportedId;
+	rid: string;
 	u: {
-		_id: IImportedId;
+		_id: string;
 	};
 
 	msg: string;
@@ -36,13 +34,13 @@ export interface IImportMessage {
 	reactions?: Record<string, IImportMessageReaction>;
 	groupable?: boolean;
 
-	tmid?: IImportedId;
+	tmid?: string;
 	tlm?: Date;
 	tcount?: number;
-	replies?: Array<IImportedId>;
+	replies?: Array<string>;
 	editedAt?: Date;
-	editedBy?: IImportedId;
-	mentions?: Array<IImportedId>;
+	editedBy?: string;
+	mentions?: Array<string>;
 	channels?: Array<string>;
 	attachments?: IImportAttachment[];
 	bot?: boolean;

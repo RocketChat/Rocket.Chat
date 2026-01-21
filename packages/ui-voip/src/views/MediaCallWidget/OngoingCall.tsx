@@ -21,8 +21,20 @@ import { useMediaCallContext } from '../../context';
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { muted, held, remoteMuted, remoteHeld, onMute, onHold, onForward, onEndCall, onTone, peerInfo, connectionState } =
-		useMediaCallContext();
+	const {
+		muted,
+		held,
+		remoteMuted,
+		remoteHeld,
+		onMute,
+		onHold,
+		onForward,
+		onEndCall,
+		onTone,
+		peerInfo,
+		connectionState,
+		onClickDirectMessage,
+	} = useMediaCallContext();
 
 	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
 
@@ -41,6 +53,9 @@ const OngoingCall = () => {
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer />}>
+				{onClickDirectMessage && (
+					<ActionButton tiny secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
+				)}
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
