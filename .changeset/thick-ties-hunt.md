@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes endpoint `omnichannel/contacts.update` where the contact manager field could not be cleared.
+Fixes endpoint `omnichannel/contacts.update` and `omnichannel/contacts.conflicts` where the contact manager field could not be cleared.
