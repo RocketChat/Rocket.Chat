@@ -29,7 +29,7 @@ export abstract class OmnichannelAdmin {
 	}
 
 	getButtonByType(type: 'unit' | 'SLA policy' | 'tag' | 'trigger' | 'department'): Locator {
-		return this.page.getByRole('button', { name: `Create ${type}` });
+		return this.page.locator('header').getByRole('button', { name: `Create ${type}` });
 	}
 
 	async search(text: string) {
