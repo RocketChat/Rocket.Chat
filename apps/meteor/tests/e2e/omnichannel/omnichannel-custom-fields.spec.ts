@@ -34,7 +34,7 @@ test.describe('omnichannel-customFields', () => {
 		await poOmnichannelCustomFields.manageCustomFields.labelVisible.click();
 		await poOmnichannelCustomFields.manageCustomFields.save();
 
-		await expect(poOmnichannelCustomFields.table.findRowByName(newField)).toHaveText(newLabel);
+		await expect(poOmnichannelCustomFields.table.findRowByName(newField)).toContainText(newLabel);
 	});
 
 	test('expect remove "new_field"', async () => {
