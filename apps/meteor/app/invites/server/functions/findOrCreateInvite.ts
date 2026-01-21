@@ -1,7 +1,8 @@
+import crypto from 'node:crypto';
+
 import { api } from '@rocket.chat/core-services';
 import type { IInvite } from '@rocket.chat/core-typings';
 import { Invites, Subscriptions, Rooms } from '@rocket.chat/models';
-import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
@@ -11,12 +12,12 @@ import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/server/getURL';
 
 function getInviteUrl(invite: Omit<IInvite, '_updatedAt'>) {
-	const { _id } = invite;
+	const { inviteToken } = invite;
 
 	const useDirectLink = settings.get<string>('Accounts_Registration_InviteUrlType') === 'direct';
 
 	return getURL(
-		`invite/${_id}`,
+		`invite/${inviteToken}`,
 		{
 			full: useDirectLink,
 			cloud: !useDirectLink,
@@ -89,13 +90,20 @@ export const findOrCreateInvite = async (userId: string, invite: Pick<IInvite, '
 	// Before anything, let's check if there's an existing invite with the same settings for the same channel and user and that has not yet expired.
 	const existing = await Invites.findOneByUserRoomMaxUsesAndExpiration(userId, invite.rid, maxUses, days);
 
-	// If an existing invite was found, return it's _id instead of creating a new one.
+	// If an existing invite was found, ensure it has an inviteToken and return it
 	if (existing) {
+		// If the existing invite doesn't have an inviteToken (legacy invites), generate one
+		if (!existing.inviteToken) {
+			const inviteToken = crypto.randomUUID();
+			await Invites.updateOne({ _id: existing._id }, { $set: { inviteToken } });
+			existing.inviteToken = inviteToken;
+		}
 		existing.url = getInviteUrl(existing);
 		return existing;
 	}
 
-	const _id = Random.id(6);
+	const _id = crypto.randomBytes(8).toString('hex');
+	const inviteToken = crypto.randomUUID();
 
 	// insert invite
 	const createdAt = new Date();
@@ -107,6 +115,7 @@ export const findOrCreateInvite = async (userId: string, invite: Pick<IInvite, '
 
 	const createInvite: Omit<IInvite, '_updatedAt'> = {
 		_id,
+		inviteToken,
 		days,
 		maxUses,
 		rid: invite.rid,

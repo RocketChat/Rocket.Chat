@@ -11,6 +11,7 @@ import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('Invites', () => {
 	let testInviteID: IInvite['_id'];
+	let testInviteToken: string;
 
 	before((done) => getCredentials(done));
 	describe('POST [/findOrCreateInvite]', () => {
@@ -63,7 +64,10 @@ describe('Invites', () => {
 					expect(res.body).to.have.property('maxUses', 10);
 					expect(res.body).to.have.property('uses');
 					expect(res.body).to.have.property('_id');
+					expect(res.body).to.have.property('inviteToken');
+					expect(res.body.inviteToken).to.be.a('string');
 					testInviteID = res.body._id;
+					testInviteToken = res.body.inviteToken;
 				})
 				.end(done);
 		});
@@ -84,6 +88,7 @@ describe('Invites', () => {
 					expect(res.body).to.have.property('maxUses', 10);
 					expect(res.body).to.have.property('uses');
 					expect(res.body).to.have.property('_id', testInviteID);
+					expect(res.body).to.have.property('inviteToken', testInviteToken);
 				})
 				.end(done);
 		});
@@ -101,13 +106,14 @@ describe('Invites', () => {
 				.end(done);
 		});
 
-		it('should return the existing invite for GENERAL', (done) => {
+		it('should return the existing invite for GENERAL without inviteToken', (done) => {
 			void request
 				.get(api('listInvites'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body[0]).to.have.property('_id', testInviteID);
+					expect(res.body[0]).to.not.have.property('inviteToken');
 				})
 				.end(done);
 		});
@@ -153,16 +159,31 @@ describe('Invites', () => {
 				.end(done);
 		});
 
-		it('should use the existing invite for GENERAL', (done) => {
+		it('should use the existing invite for GENERAL with inviteToken', (done) => {
+			void request
+				.post(api('useInviteToken'))
+				.set(credentials)
+				.send({
+					token: testInviteToken,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should fail when using _id as token', (done) => {
 			void request
 				.post(api('useInviteToken'))
 				.set(credentials)
 				.send({
 					token: testInviteID,
 				})
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-token');
 				})
 				.end(done);
 		});
@@ -184,7 +205,22 @@ describe('Invites', () => {
 				.end(done);
 		});
 
-		it('should succeed when valid token', (done) => {
+		it('should succeed when valid inviteToken', (done) => {
+			void request
+				.post(api('validateInviteToken'))
+				.set(credentials)
+				.send({
+					token: testInviteToken,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('valid', true);
+				})
+				.end(done);
+		});
+
+		it('should fail when using _id as token', (done) => {
 			void request
 				.post(api('validateInviteToken'))
 				.set(credentials)
@@ -194,7 +230,7 @@ describe('Invites', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('valid', true);
+					expect(res.body).to.have.property('valid', false);
 				})
 				.end(done);
 		});
