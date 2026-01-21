@@ -111,7 +111,7 @@ export const WaitingQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: s
             <States>
                 <StatesIcon name='queue' />
                 <StatesTitle>{t('Queue_is_empty')}</StatesTitle>
-                <StatesSubtitle>{t('No_pending_requests')}</StatesSubtitle>
+                <StatesSubtitle>{t('No pending requests')}</StatesSubtitle>
             </States>
         );
     }
@@ -209,8 +209,8 @@ export const FollowedQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: 
         return (
             <States>
                 <StatesIcon name='queue' />
-                <StatesTitle>{t('No_active_chats')}</StatesTitle>
-                <StatesSubtitle>{t('No_followed_requests')}</StatesSubtitle>
+                <StatesTitle>{t('No active chats')}</StatesTitle>
+                <StatesSubtitle>{t('No followed requests')}</StatesSubtitle>
             </States>
         );
     }
@@ -221,8 +221,8 @@ export const FollowedQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: 
                 <TableRow>
                     <TableCell>{t('Patient')}</TableCell>
                     <TableCell>{t('Issue')}</TableCell>
-                    <TableCell>{t('Taken_By')}</TableCell>
-                    <TableCell>{t('Taken_At')}</TableCell>
+                    <TableCell>{t('Taken by')}</TableCell>
+                    <TableCell>{t('Taken at')}</TableCell>
                     <TableCell>{t('Action')}</TableCell>
                 </TableRow>
             </TableHead>
@@ -234,7 +234,7 @@ export const FollowedQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: 
                         <TableCell>{request.takenBy?.username || '-'}</TableCell>
                         <TableCell>{formatDate(request.takenAt)}</TableCell>
                         <TableCell>
-                            <Box display='flex' gap='x8'>
+                            <Box display='flex' gap='x16' flexWrap='wrap'>
                                 <Button small onClick={() => openRoom(request.roomId)}>{t('View')}</Button>
                                 <Button small danger onClick={() => closeMutation.mutate({ requestId: request._id })} disabled={closeMutation.isLoading}>
                                     {t('Close')}
@@ -289,10 +289,10 @@ export const HistoryQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: s
                 <TableRow>
                     <TableCell>{t('Patient')}</TableCell>
                     <TableCell>{t('Issue')}</TableCell>
-                    <TableCell>{t('In_Room')}</TableCell>
-                    <TableCell>{t('Taken_By')}</TableCell>
-                    <TableCell>{t('Closed_By')}</TableCell>
-                    <TableCell>{t('Closed_At')}</TableCell>
+                    <TableCell>{t('Room')}</TableCell>
+                    <TableCell>{t('Taken by')}</TableCell>
+                    <TableCell>{t('Closed by')}</TableCell>
+                    <TableCell>{t('Closed at')}</TableCell>
                 </TableRow>
             </TableHead>
             <TableBody>
@@ -329,6 +329,7 @@ export const QueueContent = (): JSX.Element => {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
+        marginLeft: '8px',
     };
 
     const getPharmacies = useEndpoint('GET', '/v1/medsense/pharmacies.list');
@@ -398,7 +399,7 @@ export const QueueContent = (): JSX.Element => {
             <Box display='flex' justifyContent='space-between' alignItems='center' mb='x16'>
                 <Tabs>
                     <TabsItem selected={tab === 'waiting'} onClick={() => setTab('waiting')}>
-                        <Box display='flex' alignItems='center' gap='x12'>
+                        <Box display='flex' alignItems='center' gap='x32'>
                             <Box is='span'>{t('Waiting')}</Box>
                             {waitingCount > 0 && (
                                 <Badge {...({ style: badgeStyle } as any)} variant='primary'>
@@ -408,7 +409,7 @@ export const QueueContent = (): JSX.Element => {
                         </Box>
                     </TabsItem>
                     <TabsItem selected={tab === 'followed'} onClick={() => setTab('followed')}>
-                        <Box display='flex' alignItems='center' gap='x12'>
+                        <Box display='flex' alignItems='center' gap='x32'>
                             <Box is='span'>{t('Followed')}</Box>
                             {followedCount > 0 && (
                                 <Badge {...({ style: badgeStyle } as any)} variant='primary'>

@@ -14,6 +14,7 @@ import React, { useState } from 'react';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 
 import PharmacyItemMenu from './PharmacyItemMenu';
+import { MedicalIcon } from '../icons/MedicalIcon';
 import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
 
 const PharmacyTable = () => {
@@ -53,7 +54,7 @@ const PharmacyTable = () => {
     if (isSuccess && data?.pharmacies.length === 0) {
         return (
             <GenericNoResults
-                icon='medical'
+                icon={<MedicalIcon width='48px' height='48px' />}
                 title={t('No_pharmacies_yet')}
                 buttonAction={handleAddNew}
                 buttonTitle={t('Create_Pharmacy')}

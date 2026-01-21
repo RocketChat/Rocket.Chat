@@ -8,6 +8,7 @@ export type Item = {
 	i18nLabel: string;
 	href?: LocationPathname | `${typeof GO_ROCKET_CHAT_PREFIX}${string}`;
 	icon?: IconName;
+	iconElement?: ReactElement;
 	tag?: 'Alpha' | 'Beta';
 	permissionGranted?: () => boolean;
 	pathSection?: string;

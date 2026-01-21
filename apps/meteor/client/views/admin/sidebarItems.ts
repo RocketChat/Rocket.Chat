@@ -1,7 +1,9 @@
 import { defaultFeaturesPreview } from '@rocket.chat/ui-client';
+import { createElement } from 'react';
 
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
+import { MedicalIcon } from '../medsense/icons/MedicalIcon';
 
 export const {
 	registerSidebarItem: registerAdminSidebarItem,
@@ -33,6 +35,12 @@ export const {
 		icon: 'shield-alt',
 		tag: 'Beta',
 		permissionGranted: (): boolean => hasPermission('view-moderation-console'),
+	},
+	{
+		href: '/admin/pharmacies',
+		i18nLabel: 'Pharmacies',
+		iconElement: createElement(MedicalIcon, { width: '20px', height: '20px' }),
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['medsense-manage-pharmacies', 'medsense-manage-own-pharmacy']),
 	},
 	{
 		href: '/admin/rooms',
@@ -143,11 +151,5 @@ export const {
 		icon: 'customize',
 		permissionGranted: (): boolean =>
 			hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
-	},
-	{
-		href: '/admin/pharmacies',
-		i18nLabel: 'Pharmacies',
-		icon: 'medical',
-		permissionGranted: (): boolean => hasAtLeastOnePermission(['medsense-manage-pharmacies', 'medsense-manage-own-pharmacy']),
 	},
 ]);

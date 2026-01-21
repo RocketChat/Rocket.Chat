@@ -55,6 +55,24 @@ const DefaultHomePage = (): ReactElement => {
         refetchInterval: 5000,
     });
     const pendingCount = pendingCountData?.count ?? 0;
+
+    const getFollowedQueue = useEndpoint('GET', '/v1/medsense/request.followed');
+    const { data: followedCountData } = useQuery({
+        queryKey: ['medsense-followed-count', pharmacyIds],
+        queryFn: async () => {
+            if (!canViewQueue || pharmacyIds.length === 0) {
+                return { count: 0 };
+            }
+            const results = await Promise.all(
+                pharmacyIds.map((pharmacyId: string) => getFollowedQueue({ pharmacyId })),
+            );
+            const count = results.reduce((total, result) => total + (result.requests?.length ?? 0), 0);
+            return { count };
+        },
+        enabled: canViewQueue && pharmacyIds.length > 0,
+        refetchInterval: 5000,
+    });
+    const followedCount = followedCountData?.count ?? 0;
     const badgeStyle = {
         fontSize: '0.75rem',
         minWidth: '20px',
@@ -66,6 +84,7 @@ const DefaultHomePage = (): ReactElement => {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
+        marginLeft: '8px',
     };
 
     const [tab, setTab] = useState<HomeTab>('home');
@@ -92,11 +111,11 @@ const DefaultHomePage = (): ReactElement => {
                             {t('Home')}
                         </Tabs.Item>
                         <Tabs.Item selected={tab === 'queue'} onClick={() => setTab('queue')}>
-                            <Box display='flex' alignItems='center' gap='x12'>
+                            <Box display='flex' alignItems='center' gap='x32'>
                                 <Box is='span'>Chat Queue</Box>
-                                {pendingCount > 0 && (
+                                {pendingCount + followedCount > 0 && (
                                     <Badge {...({ style: badgeStyle } as any)} variant='primary'>
-                                        {pendingCount}
+                                        {pendingCount + followedCount}
                                     </Badge>
                                 )}
                             </Box>

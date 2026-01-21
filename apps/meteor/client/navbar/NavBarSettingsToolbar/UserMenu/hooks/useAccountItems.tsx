@@ -7,6 +7,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import PatientPharmacyModal from '../../../../views/medsense/pharmacy/PatientPharmacyModal';
+import { MedicalIcon } from '../../../../views/medsense/icons/MedicalIcon';
 
 export const useAccountItems = (): GenericMenuItemProps[] => {
 	const { t } = useTranslation();
@@ -54,7 +55,7 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 		},
 		{
 			id: 'my-pharmacy',
-			icon: 'medical',
+			iconElement: <MedicalIcon width='20px' height='20px' />,
 			content: t('My_Pharmacy'),
 			onClick: handleMyPharmacy,
 		},
@@ -73,4 +74,3 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 		...(featurePreviewEnabled && defaultFeaturesPreview.length > 0 ? [featurePreviewItem] : []),
 	];
 };
-

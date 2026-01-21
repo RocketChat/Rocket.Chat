@@ -41,9 +41,14 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 	const disabledKeys = itemsList.filter(({ disabled }) => disabled).map(({ id }) => id);
 	const handleAction = useHandleMenuAction(itemsList || [], callbackAction);
 
-	const hasIcon = itemsList.some(({ icon }) => icon);
+	const hasIcon = itemsList.some(({ icon, iconElement }) => icon || iconElement);
 	const handleItems = (items: GenericMenuItemProps[]) =>
-		hasIcon ? items.map((item) => ({ ...item, gap: item.gap ?? (!item.icon && !item.status) })) : items;
+		hasIcon
+			? items.map((item) => ({
+					...item,
+					gap: item.gap ?? (!item.icon && !item.iconElement && !item.status),
+			  }))
+			: items;
 
 	const isMenuEmpty = !(sections && sections.length > 0) && !(items && items.length > 0);
 

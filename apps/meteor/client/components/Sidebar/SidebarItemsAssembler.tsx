@@ -23,6 +23,7 @@ const SidebarItemsAssembler = ({ items, currentPath }: SidebarItemsAssemblerProp
 							permissionGranted={props.permissionGranted}
 							pathSection={props.href ?? props.pathSection ?? ''}
 							icon={props.icon}
+							iconElement={props.iconElement}
 							label={t((props.i18nLabel || props.name) as Parameters<typeof t>[0])}
 							currentPath={currentPath}
 							tag={props.tag && i18n.exists(props.tag) ? t(props.tag) : props.tag}

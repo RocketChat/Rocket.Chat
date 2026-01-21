@@ -9,6 +9,7 @@ type SidebarNavigationItemProps = {
 	permissionGranted?: (() => boolean) | boolean;
 	pathSection: string;
 	icon?: IconName;
+	iconElement?: ReactElement;
 	label?: string;
 	tag?: string;
 	currentPath?: string;
@@ -20,6 +21,7 @@ const SidebarNavigationItem = ({
 	permissionGranted,
 	pathSection,
 	icon,
+	iconElement,
 	label,
 	currentPath,
 	tag,
@@ -36,7 +38,13 @@ const SidebarNavigationItem = ({
 
 	return (
 		<SidebarGenericItem active={isActive} href={path} externalUrl={externalUrl}>
-			{icon && <Icon name={icon} size='x20' mi={4} />}
+			{iconElement ? (
+				<Box mi={4} display='flex' alignItems='center'>
+					{iconElement}
+				</Box>
+			) : (
+				icon && <Icon name={icon} size='x20' mi={4} />
+			)}
 			<Box
 				withTruncatedText
 				fontScale='p2'
