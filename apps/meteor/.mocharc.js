@@ -29,5 +29,6 @@ module.exports = {
 		'app/api/server/lib/**/*.spec.ts',
 		'app/file-upload/server/**/*.spec.ts',
 		'app/statistics/server/**/*.spec.ts',
+		'app/livechat/server/lib/**/*.spec.ts',
 	],
 };
