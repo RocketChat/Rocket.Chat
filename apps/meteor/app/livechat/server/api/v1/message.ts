@@ -104,7 +104,7 @@ API.v1.addRoute(
 				throw new Error('invalid-message');
 			}
 
-			if (message.file || message.files?.length) {
+			if (message.file) {
 				message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 			}
 
@@ -148,7 +148,7 @@ API.v1.addRoute(
 				return API.v1.failure();
 			}
 
-			if (message.file || message.files?.length) {
+			if (message.file) {
 				message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 			}
 
