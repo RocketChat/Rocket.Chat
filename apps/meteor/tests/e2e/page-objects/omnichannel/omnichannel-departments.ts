@@ -42,7 +42,7 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 	}
 
 	get labelEnabled() {
-		return this.page.getByLabel('Enabled');
+		return this.page.locator('label', { hasText: 'Enabled' });
 	}
 
 	get inputName() {
@@ -70,7 +70,7 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 	}
 
 	getDepartmentMenuByName(name: string) {
-		return this.departmentsTable.findRowByName(name).getByRole('menu', { name: 'Options' });
+		return this.departmentsTable.findRowByName(name).getByRole('button', { name: 'Options' });
 	}
 
 	get menuEditOption() {
