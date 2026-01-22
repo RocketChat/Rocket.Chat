@@ -1,4 +1,4 @@
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
+import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useRef } from 'react';
 
 type HTMLMediaElement = HTMLAudioElement | HTMLVideoElement;
@@ -11,12 +11,7 @@ const useMediaStream = (
 	return [
 		useSafeRefCallback(
 			useCallback(
-				(node) => {
-					// TODO remove node check when useSafeRefCallback is updated from fuselage.
-					if (!node) {
-						return;
-					}
-
+				(node: HTMLAudioElement) => {
 					actualRef.current = node;
 
 					if (!remoteStream) {

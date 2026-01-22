@@ -212,7 +212,7 @@ export async function setDepartmentForGuest({ visitorId, department }: { visitor
 }
 
 export async function removeDepartment(departmentId: string) {
-	livechatLogger.debug(`Removing department: ${departmentId}`);
+	livechatLogger.debug({ msg: 'Removing department', departmentId });
 
 	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'businessHourId' | 'parentId'>>(departmentId, {
 		projection: { _id: 1, businessHourId: 1, parentId: 1 },

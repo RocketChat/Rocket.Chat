@@ -26,10 +26,14 @@ const Markup = ({ tokens }: MarkupProps): ReactElement => (
 					return <BigEmojiBlock key={index} emoji={block.value} />;
 
 				case 'PARAGRAPH':
-					return <ParagraphBlock key={index} children={block.value} />;
+					return <ParagraphBlock key={index}>{block.value}</ParagraphBlock>;
 
 				case 'HEADING':
-					return <HeadingBlock key={index} level={block.level} children={block.value} />;
+					return (
+						<HeadingBlock key={index} level={block.level}>
+							{block.value}
+						</HeadingBlock>
+					);
 
 				case 'UNORDERED_LIST':
 					return <UnorderedListBlock key={index} items={block.value} />;
@@ -41,7 +45,7 @@ const Markup = ({ tokens }: MarkupProps): ReactElement => (
 					return <TaskList key={index} tasks={block.value} />;
 
 				case 'QUOTE':
-					return <QuoteBlock key={index} children={block.value} />;
+					return <QuoteBlock key={index}>{block.value}</QuoteBlock>;
 
 				case 'CODE':
 					return <CodeBlock key={index} language={block.language} lines={block.value} />;

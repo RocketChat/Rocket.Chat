@@ -39,6 +39,7 @@ const OngoingCall = () => {
 		expanded,
 		getRemoteVideoStream,
 		toggleScreenSharing,
+		onClickDirectMessage,
 	} = useMediaCallContext();
 
 	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
@@ -67,6 +68,9 @@ const OngoingCall = () => {
 		<Widget expanded={expanded && Boolean(videoStream)}>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer />}>
+				{onClickDirectMessage && (
+					<ActionButton tiny secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
+				)}
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>

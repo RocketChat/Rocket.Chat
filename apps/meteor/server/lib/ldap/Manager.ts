@@ -123,7 +123,7 @@ export class LDAPManager {
 
 			const users = await ldap.searchByUsername(escapedUsername);
 			if (users.length !== 1) {
-				logger.debug(`Search returned ${users.length} records for ${escapedUsername}`);
+				logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
 				throw new Error('User not found');
 			}
 		} catch (error) {
@@ -223,7 +223,7 @@ export class LDAPManager {
 			const users = await ldap.searchByUsername(escapedUsername);
 
 			if (users.length !== 1) {
-				logger.debug(`Search returned ${users.length} records for ${escapedUsername}`);
+				logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
 				throw new Error('User not found');
 			}
 
@@ -233,7 +233,7 @@ export class LDAPManager {
 			}
 
 			if (!(await ldap.authenticate(ldapUser.dn, password))) {
-				logger.debug(`Wrong password for ${escapedUsername}`);
+				logger.debug({ msg: 'Wrong password', username: escapedUsername });
 				throw new Error('Invalid user or wrong password');
 			}
 
@@ -241,7 +241,7 @@ export class LDAPManager {
 				// Do a search as the user and check if they have any result
 				authLogger.debug('User authenticated successfully, performing additional search.');
 				if ((await ldap.searchAndCount(ldapUser.dn, {})) === 0) {
-					authLogger.debug(`Bind successful but user ${ldapUser.dn} was not found via search`);
+					authLogger.debug({ msg: 'Bind successful but user was not found via search', dn: ldapUser.dn });
 				}
 			}
 			return ldapUser;
@@ -257,7 +257,7 @@ export class LDAPManager {
 			const users = await ldap.searchByUsername(escapedUsername);
 
 			if (users.length !== 1) {
-				logger.debug(`Search returned ${users.length} records for ${escapedUsername}`);
+				logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
 				return;
 			}
 
@@ -267,7 +267,7 @@ export class LDAPManager {
 				// Do a search as the user and check if they have any result
 				authLogger.debug('User authenticated successfully, performing additional search.');
 				if ((await ldap.searchAndCount(ldapUser.dn, {})) === 0) {
-					authLogger.debug(`Bind successful but user ${ldapUser.dn} was not found via search`);
+					authLogger.debug({ msg: 'Bind successful but user was not found via search', dn: ldapUser.dn });
 				}
 			}
 

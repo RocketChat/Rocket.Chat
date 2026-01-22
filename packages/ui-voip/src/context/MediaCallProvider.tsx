@@ -1,4 +1,4 @@
-import { AnchorPortal } from '@rocket.chat/ui-client';
+import { AnchorPortal, useGoToDirectMessage } from '@rocket.chat/ui-client';
 import type { Device } from '@rocket.chat/ui-contexts';
 import {
 	useEndpoint,
@@ -36,6 +36,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const user = useUser();
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const [openRoomId, setOpenRoomId] = useState<string | undefined>(undefined);
 
 	const [inRoomView, setInRoomView] = useState(false);
 
@@ -58,6 +59,11 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const requestDevice = useDevicePermissionPrompt2();
 
 	const forceSIPRouting = useSetting('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls');
+
+	const onClickDirectMessage = useGoToDirectMessage(
+		{ username: session.peerInfo && 'username' in session.peerInfo ? session.peerInfo.username : undefined },
+		openRoomId,
+	);
 
 	// For some reason `exhaustive-deps` is complaining that "session" is not in the dependencies
 	// But we're only using the changeDevice method from the session
@@ -267,6 +273,8 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 		expanded: session.state === 'ongoing',
 		inRoomView,
 		setInRoomView,
+		onClickDirectMessage,
+		setOpenRoomId,
 		onMute,
 		onHold,
 		onDeviceChange,

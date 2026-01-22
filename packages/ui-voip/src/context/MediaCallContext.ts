@@ -1,9 +1,7 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { IMediaStreamWrapper } from '@rocket.chat/media-signaling';
 import type { Device } from '@rocket.chat/ui-contexts';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext } from 'react';
 
 import type { PeerAutocompleteOptions } from '../components';
 
@@ -49,6 +47,9 @@ type MediaCallContextType = {
 	getRemoteVideoStream: () => MediaStream | null;
 	getLocalVideoStream: () => IMediaStreamWrapper | null;
 	toggleScreenSharing: () => void;
+
+	onClickDirectMessage?: () => void;
+
 	onMute: () => void;
 	onHold: () => void;
 
@@ -64,6 +65,8 @@ type MediaCallContextType = {
 	onToggleWidget: (peerInfo?: PeerInfo) => void;
 
 	onSelectPeer: (peerInfo: PeerInfo) => void;
+
+	setOpenRoomId: (roomId: string | undefined) => void;
 
 	getAutocompleteOptions: (filter: string) => Promise<PeerAutocompleteOptions[]>;
 	// This is used to get the peer info from the server in case it's not available in the autocomplete options.
@@ -108,6 +111,8 @@ export const defaultMediaCallContextValue: MediaCallContextType = {
 
 	onSelectPeer: () => undefined,
 
+	setOpenRoomId: () => undefined,
+
 	getAutocompleteOptions: () => Promise.resolve([]),
 	getPeerInfo: () => Promise.resolve(undefined),
 };
@@ -117,6 +122,7 @@ type MediaCallExternalContextType = {
 	onToggleWidget: (peerInfo?: PeerInfo) => void;
 	onEndCall: () => void;
 	peerInfo: PeerInfo | undefined;
+	setOpenRoomId: (roomId: string | undefined) => void;
 };
 
 type MediaCallUnauthorizedContextType = {
@@ -124,6 +130,7 @@ type MediaCallUnauthorizedContextType = {
 	onToggleWidget: undefined;
 	onEndCall: undefined;
 	peerInfo: undefined;
+	setOpenRoomId: undefined;
 };
 
 type MediaCallUnlicensedContextType = {
@@ -131,6 +138,7 @@ type MediaCallUnlicensedContextType = {
 	onToggleWidget: (peerInfo?: any) => void;
 	onEndCall: undefined;
 	peerInfo: undefined;
+	setOpenRoomId: undefined;
 };
 
 const MediaCallContext = createContext<MediaCallContextType | MediaCallUnauthorizedContextType | MediaCallUnlicensedContextType>(
@@ -166,69 +174,12 @@ export const useMediaCallExternalContext = ():
 		return context;
 	}
 
-	return { state: context.state, onToggleWidget: context.onToggleWidget, onEndCall: context.onEndCall, peerInfo: context.peerInfo };
-};
-
-const PREFIX_FIRST_OPTION = 'rcx-first-option-';
-
-export const isFirstPeerAutocompleteOption = (value: string) => {
-	return value.startsWith(PREFIX_FIRST_OPTION);
-};
-
-const getFirstOption = (filter: string): PeerAutocompleteOptions => {
-	return { value: `${PREFIX_FIRST_OPTION}${filter}`, label: filter, avatarUrl: '' };
-};
-
-export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, peerInfo: PeerInfo | undefined) => {
-	const { getAutocompleteOptions } = useMediaCallContext();
-	const [filter, setFilter] = useState('');
-
-	const debouncedFilter = useDebouncedValue(filter, 400);
-
-	const { data: options } = useQuery({
-		queryKey: ['mediaCall/peerAutocomplete', debouncedFilter],
-		queryFn: async () => {
-			const options = await getAutocompleteOptions(debouncedFilter);
-
-			if (debouncedFilter.length > 0) {
-				return [getFirstOption(debouncedFilter), ...options];
-			}
-
-			return options;
-		},
-		placeholderData: keepPreviousData,
-		initialData: [],
-	});
-
 	return {
-		options,
-		onChangeFilter: setFilter,
-		onChangeValue: (value: string | string[]) => {
-			if (Array.isArray(value)) {
-				return;
-			}
-
-			if (isFirstPeerAutocompleteOption(value)) {
-				onSelectPeer({ number: value.replace(PREFIX_FIRST_OPTION, '') });
-				return;
-			}
-
-			const localInfo = options.find((option) => option.value === value);
-
-			if (!localInfo) {
-				throw new Error(`Peer info not found for value: ${value}`);
-			}
-
-			onSelectPeer({
-				userId: localInfo.value,
-				displayName: localInfo.label,
-				avatarUrl: localInfo.avatarUrl,
-				status: localInfo.status as UserStatus,
-			});
-		},
-		value: peerInfo && 'userId' in peerInfo ? peerInfo.userId : undefined,
-		filter,
-		onKeypadPress: (key: string) => setFilter((filter) => filter + key),
+		state: context.state,
+		onToggleWidget: context.onToggleWidget,
+		onEndCall: context.onEndCall,
+		peerInfo: context.peerInfo,
+		setOpenRoomId: context.setOpenRoomId,
 	};
 };
 

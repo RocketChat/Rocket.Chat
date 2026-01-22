@@ -221,9 +221,8 @@ export class LDAPEEManager extends LDAPManager {
 			await this.syncUserRoles(ldap, user, dn);
 			await this.syncUserChannels(ldap, user, dn);
 			await this.syncUserTeams(ldap, user, dn, isNewRecord);
-		} catch (e) {
-			logger.debug(`Advanced Sync failed for user: ${dn}`);
-			logger.error(e);
+		} catch (err) {
+			logger.error({ msg: 'Advanced Sync failed for user', dn, err });
 		}
 	}
 
@@ -264,9 +263,9 @@ export class LDAPEEManager extends LDAPManager {
 		const result = await ldap.searchRaw(baseDN, searchOptions);
 
 		if (!Array.isArray(result) || result.length === 0) {
-			logger.debug(`${username} is not in ${groupName} group!!!`);
+			logger.debug({ msg: 'User is not in group', username, groupName });
 		} else {
-			logger.debug(`${username} is in ${groupName} group.`);
+			logger.debug({ msg: 'User is in group', username, groupName });
 			return true;
 		}
 
@@ -360,13 +359,13 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async createRoomForSync(channel: string): Promise<IRoom | undefined> {
-		logger.debug(`Channel '${channel}' doesn't exist, creating it.`);
+		logger.debug({ msg: "Channel doesn't exist, creating it", channel });
 
 		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
 
 		const user = await Users.findOneByUsernameIgnoringCase(roomOwner);
 		if (!user) {
-			logger.error(`Unable to find user '${roomOwner}' to be the owner of the channel '${channel}'.`);
+			logger.error({ msg: 'Unable to find user to own channel', roomOwner, channel });
 			return;
 		}
 
@@ -374,7 +373,7 @@ export class LDAPEEManager extends LDAPManager {
 			customFields: { ldap: true },
 		});
 		if (!room?.rid) {
-			logger.error(`Unable to auto-create channel '${channel}' during ldap sync.`);
+			logger.error({ msg: 'Unable to auto-create channel during LDAP sync', channel });
 			return;
 		}
 
@@ -438,14 +437,14 @@ export class LDAPEEManager extends LDAPManager {
 				}
 
 				if (room.teamMain) {
-					logger.error(`Can't add user to channel ${userChannelName} because it is a team.`);
+					logger.error({ msg: "Can't add user to channel because it is a team", userChannelName });
 				} else {
 					channelsToAdd.add(room._id);
 					await addUserToRoom(room._id, user);
-					logger.debug(`Synced user channel ${room._id} from LDAP for ${username}`);
+					logger.debug({ msg: 'Synced user channel from LDAP', roomId: room._id, username });
 				}
 			} catch (e) {
-				logger.debug(`Failed to sync user room, user = ${username}, channel = ${userChannelName}`);
+				logger.debug({ msg: 'Failed to sync user room', username, userChannelName });
 				logger.error(e);
 			}
 		}
@@ -465,7 +464,7 @@ export class LDAPEEManager extends LDAPManager {
 				const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
 				if (subscription) {
 					await removeUserFromRoom(room._id, user);
-					logger.debug(`Removed user ${username} from channel ${room._id}`);
+					logger.debug({ msg: 'Removed user from channel', username, roomId: room._id });
 				}
 			}
 		}
@@ -539,7 +538,7 @@ export class LDAPEEManager extends LDAPManager {
 
 		if (filteredMappedLdapGroups.length < ldapGroups.length) {
 			const unmappedLdapGroups = ldapGroups.filter((ldapGroup) => !mappedLdapGroups.includes(ldapGroup));
-			logger.error(`The following LDAP groups are not mapped in Rocket.Chat: "${unmappedLdapGroups.join(', ')}".`);
+			logger.error({ msg: 'The following LDAP groups are not mapped in Rocket.Chat', unmappedLdapGroups });
 		}
 
 		if (!filteredMappedLdapGroups.length) {
@@ -664,7 +663,7 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		userData.deleted = deleted;
-		logger.info(`${deleted ? 'Deactivating' : 'Activating'} user ${userData.name} (${userData.username})`);
+		logger.info({ msg: 'Switching user status', name: userData.name, username: userData.username, active: !deleted });
 	}
 
 	public static copyCustomFields(ldapUser: ILDAPEntry, userData: IImportUser): void {
@@ -700,7 +699,7 @@ export class LDAPEEManager extends LDAPManager {
 						return;
 					}
 
-					logger.info('LDAP finished loading users. Users added to importer: ', count);
+					logger.info({ msg: 'LDAP finished loading users. Users added to importer', count });
 					resolve();
 				},
 			});

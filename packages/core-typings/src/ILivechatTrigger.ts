@@ -33,12 +33,6 @@ export const isExternalServiceTrigger = (
 	return trigger.actions.every((action) => action.name === 'use-external-service');
 };
 
-export const isSendMessageTrigger = (
-	trigger: ILivechatTrigger,
-): trigger is ILivechatTrigger & { actions: ILivechatSendMessageAction[] } => {
-	return trigger.actions.every((action) => action.name === 'send-message');
-};
-
 export type ILivechatTriggerAction = ILivechatSendMessageAction | ILivechatUseExternalServiceAction;
 
 export interface ILivechatTrigger extends IRocketChatRecord {

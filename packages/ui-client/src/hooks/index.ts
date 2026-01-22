@@ -6,6 +6,6 @@ export * from './useFeaturePreview';
 export * from './useFeaturePreviewList';
 export * from './useLicense';
 export * from './usePreferenceFeaturePreviewList';
-export * from './useSafeRefCallback';
 export * from './useUserDisplayName';
 export * from './useValidatePassword';
+export * from './useGoToDirectMessage';

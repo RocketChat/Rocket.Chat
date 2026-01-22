@@ -16,11 +16,13 @@ type MockedMediaCallProviderProps = {
 	remoteHeld?: boolean;
 	muted?: boolean;
 	held?: boolean;
+	onClickDirectMessage?: () => void;
 };
 
 const MockedMediaCallProvider = ({
 	children,
 	state = 'closed',
+	onClickDirectMessage = undefined,
 	transferredBy = undefined,
 	remoteMuted = false,
 	remoteHeld = false,
@@ -138,6 +140,8 @@ const MockedMediaCallProvider = ({
 		toggleScreenSharing: () => undefined,
 		muted: mutedState,
 		held: heldState,
+		setOpenRoomId: () => undefined,
+		onClickDirectMessage,
 		remoteMuted,
 		remoteHeld,
 		onMute,
