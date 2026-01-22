@@ -1537,7 +1537,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 						expect(res.body).to.have.property('days', 1);
 						expect(res.body).to.have.property('maxUses', 0);
 						plainRoomInviteToken = res.body.inviteToken;
-						createdInviteIds.push(plainRoomInviteToken);
+						createdInviteIds.push(res.body._id);
 					});
 			});
 
