@@ -309,7 +309,7 @@ class PushClass {
 			// [1, 2, 4, 8, 16] minutes (total 31)
 			const ms = 60000 * Math.pow(2, tries);
 
-			logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
+			logger.log({ msg: 'Retrying push to gateway', tries: tries + 1, in: ms });
 
 			setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
 		}
