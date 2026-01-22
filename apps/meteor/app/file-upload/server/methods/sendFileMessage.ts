@@ -11,23 +11,27 @@ import type {
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
-import { wrapExceptions } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import { omit } from '../../../../lib/utils/omit';
 import { callbacks } from '../../../../server/lib/callbacks';
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { FileUpload } from '../lib/FileUpload';
 
-function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtLeast<IUpload, '_id' | 'name' | 'type' | 'size'> {
+type MinimalUploadData = AtLeast<IUpload, '_id' | 'name' | 'type' | 'size'>;
+
+function validateFilesRequiredFields(files: Partial<IUpload>[]): asserts files is MinimalUploadData[] {
 	const requiredFields = ['_id', 'name', 'type', 'size'];
-	for (const field of requiredFields) {
-		if (!Object.keys(file).includes(field)) {
-			throw new Meteor.Error('error-invalid-file', 'Invalid file');
+	for (const file of files) {
+		const fields = Object.keys(file);
+
+		for (const field of requiredFields) {
+			if (!fields.includes(field)) {
+				throw new Meteor.Error('error-invalid-file', 'Invalid file');
+			}
 		}
 	}
 }
@@ -38,124 +42,134 @@ export const parseMultipleFilesIntoMessageAttachments = async (
 	filesToConfirm: Partial<IUpload>[],
 	roomId: string,
 	user: IUser,
-): Promise<{ files: FileProp[]; attachments: MessageAttachment[] }> => {
-	const results = await Promise.all(
-		filesToConfirm.map((file) =>
-			wrapExceptions(() => parseFileIntoMessageAttachments(file, roomId, user)).catch(async (error) => {
-				// Not an important error, it should not happen and if it happens wil affect the attachment preview in the message object only
-				logger.warn({ msg: 'Error processing file: ', file, error });
-				return { files: [], attachments: [] };
-			}),
-		),
-	);
-
-	return {
-		files: results.flatMap(({ files }) => files),
-		attachments: results.flatMap(({ attachments }) => attachments),
-	};
-};
-
-export const parseFileIntoMessageAttachments = async (
-	file: Partial<IUpload>,
-	roomId: string,
-	user: IUser,
 ): Promise<FilesAndAttachments> => {
-	validateFileRequiredFields(file);
-
-	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
-
-	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
+	// Validate every file before we process any of them
+	validateFilesRequiredFields(filesToConfirm);
 
 	const attachments: MessageAttachment[] = [];
+	const files: FileProp[] = [];
 
-	const files: FileProp[] = [
-		{
+	// Process one file at a time, to avoid loading too many images into memory at the same time, or sending too many simultaneous requests to external services
+	for await (const file of filesToConfirm) {
+		await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
+		const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
+
+		files.push({
 			_id: file._id,
 			name: file.name || '',
 			type: file.type || 'file',
 			size: file.size || 0,
 			format: file.identify?.format || '',
 			typeGroup: file.typeGroup,
-		},
-	];
+		});
 
-	if (/^image\/.+/.test(file.type as string)) {
-		const attachment: FileAttachmentProps = {
-			title: file.name,
-			type: 'file',
-			description: file?.description,
-			title_link: fileUrl,
-			title_link_download: true,
-			image_url: fileUrl,
-			image_type: file.type as string,
-			image_size: file.size,
-		};
-
-		if (file.identify?.size) {
-			attachment.image_dimensions = file.identify.size;
+		const { attachment, thumbnail } = await createFileAttachment(file, { fileUrl, roomId, uid: user._id });
+		if (thumbnail) {
+			files.push(thumbnail);
 		}
+		attachments.push(attachment);
+	}
 
-		try {
-			attachment.image_preview = await FileUpload.resizeImagePreview(file);
-			const thumbResult = await FileUpload.createImageThumbnail(file);
-			if (thumbResult) {
-				const { data: thumbBuffer, width, height, thumbFileType, thumbFileName, originalFileId } = thumbResult;
-				const thumbnail = await FileUpload.uploadImageThumbnail(
-					{
-						thumbFileName,
-						thumbFileType,
-						originalFileId,
-					},
-					thumbBuffer,
-					roomId,
-					user._id,
-				);
-				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
-				attachment.image_url = thumbUrl;
-				attachment.image_type = thumbnail.type;
-				attachment.image_dimensions = {
-					width,
-					height,
-				};
-				files.push({
-					_id: thumbnail._id,
-					name: thumbnail.name || '',
-					type: thumbnail.type || 'file',
-					size: thumbnail.size || 0,
-					format: thumbnail.identify?.format || '',
-					typeGroup: thumbnail.typeGroup || '',
-				});
+	return { files, attachments };
+};
+
+async function createFileAttachment(
+	file: MinimalUploadData,
+	extraData: { fileUrl: string; roomId: string; uid: string },
+): Promise<{ attachment: FileAttachmentProps; thumbnail?: FileProp }> {
+	const { fileUrl, roomId, uid } = extraData;
+
+	if (file.type) {
+		if (/^image\/.+/.test(file.type)) {
+			const attachment: FileAttachmentProps = {
+				title: file.name,
+				type: 'file',
+				description: file?.description,
+				title_link: fileUrl,
+				title_link_download: true,
+				image_url: fileUrl,
+				image_type: file.type,
+				image_size: file.size,
+			};
+
+			if (file.identify?.size) {
+				attachment.image_dimensions = file.identify.size;
 			}
-		} catch (e) {
-			SystemLogger.error(e);
+
+			try {
+				attachment.image_preview = await FileUpload.resizeImagePreview(file);
+				const thumbResult = await FileUpload.createImageThumbnail(file);
+				if (thumbResult) {
+					const { data: thumbBuffer, width, height, thumbFileType, thumbFileName, originalFileId } = thumbResult;
+					const thumbnail = await FileUpload.uploadImageThumbnail(
+						{
+							thumbFileName,
+							thumbFileType,
+							originalFileId,
+						},
+						thumbBuffer,
+						roomId,
+						uid,
+					);
+					const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
+					attachment.image_url = thumbUrl;
+					attachment.image_type = thumbnail.type;
+					attachment.image_dimensions = {
+						width,
+						height,
+					};
+					return {
+						attachment,
+						thumbnail: {
+							_id: thumbnail._id,
+							name: thumbnail.name || '',
+							type: thumbnail.type || 'file',
+							size: thumbnail.size || 0,
+							format: thumbnail.identify?.format || '',
+							typeGroup: thumbnail.typeGroup || '',
+						},
+					};
+				}
+			} catch (err) {
+				logger.error({ err });
+			}
+
+			return { attachment };
 		}
-		attachments.push(attachment);
-	} else if (/^audio\/.+/.test(file.type as string)) {
-		const attachment: FileAttachmentProps = {
-			title: file.name,
-			type: 'file',
-			description: file.description,
-			title_link: fileUrl,
-			title_link_download: true,
-			audio_url: fileUrl,
-			audio_type: file.type as string,
-			audio_size: file.size,
-		};
-		attachments.push(attachment);
-	} else if (/^video\/.+/.test(file.type as string)) {
-		const attachment: FileAttachmentProps = {
-			title: file.name,
-			type: 'file',
-			description: file.description,
-			title_link: fileUrl,
-			title_link_download: true,
-			video_url: fileUrl,
-			video_type: file.type as string,
-			video_size: file.size as number,
-		};
-		attachments.push(attachment);
-	} else {
-		const attachment = {
+
+		if (/^audio\/.+/.test(file.type)) {
+			return {
+				attachment: {
+					title: file.name,
+					type: 'file',
+					description: file.description,
+					title_link: fileUrl,
+					title_link_download: true,
+					audio_url: fileUrl,
+					audio_type: file.type,
+					audio_size: file.size,
+				},
+			};
+		}
+
+		if (/^video\/.+/.test(file.type)) {
+			return {
+				attachment: {
+					title: file.name,
+					type: 'file',
+					description: file.description,
+					title_link: fileUrl,
+					title_link_download: true,
+					video_url: fileUrl,
+					video_type: file.type,
+					video_size: file.size as number,
+				},
+			};
+		}
+	}
+
+	return {
+		attachment: {
 			title: file.name,
 			type: 'file',
 			format: getFileExtension(file.name),
@@ -163,10 +177,16 @@ export const parseFileIntoMessageAttachments = async (
 			title_link: fileUrl,
 			title_link_download: true,
 			size: file.size as number,
-		};
-		attachments.push(attachment);
-	}
-	return { files, attachments };
+		},
+	};
+}
+
+export const parseFileIntoMessageAttachments = async (
+	file: Partial<IUpload>,
+	roomId: string,
+	user: IUser,
+): Promise<FilesAndAttachments> => {
+	return parseMultipleFilesIntoMessageAttachments([file], roomId, user);
 };
 
 declare module '@rocket.chat/ddp-client' {
@@ -200,7 +220,7 @@ export const sendFileMessage = async (
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'sendFileMessage',
-		} as any);
+		});
 	}
 
 	const room = await Rooms.findOneById(roomId);
@@ -261,7 +281,7 @@ Meteor.methods<ServerMethods>({
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendFileMessage',
-			} as any);
+			});
 		}
 
 		return sendFileMessage(userId, { roomId, file, msgData });
