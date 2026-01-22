@@ -1,6 +1,8 @@
 import path from 'node:path';
 
+import { prefixRegex } from '@rolldown/pluginutils';
 import type { Plugin } from 'vite';
+
 
 const meteorProgramDir = path.resolve('.meteor/local/build/programs/web.browser');
 const meteorPackagesDir = path.join(meteorProgramDir, 'packages');
@@ -12,12 +14,12 @@ export function meteorStubs(
 ): Plugin {
 	return {
 		name: 'meteor-stubs',
-		enforce: 'pre',
+		// enforce: 'pre',
 		transform: {
 			filter: {
 				// Only transform files in the Meteor packages
 				// Starting from .meteor/local/build/programs/web.browser/packages/
-				id: new RegExp(`^${meteorPackagesDir.replace(/\\/g, '\\\\')}/`),
+				id: prefixRegex(meteorPackagesDir),
 			},
 			handler(code, id, options) {
 				if (options?.ssr) {
@@ -57,6 +59,14 @@ export function meteorStubs(
 					code = code.replace(requireRegex, (_match) => {
 						const replacementValue = replacement === null ? 'undefined' : replacement;
 						return replacementValue;
+					});
+				}
+
+				if (this.environment.mode === 'build') {
+					this.emitFile({
+						type: 'prebuilt-chunk',
+						fileName: basename,
+						code,
 					});
 				}
 

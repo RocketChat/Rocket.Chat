@@ -101,6 +101,13 @@ export default defineConfig({
 			// '@rocket.chat/fuselage-tokens/breakpoints.scss': path.resolve('../../../fuselage/packages/fuselage-tokens/breakpoints.scss'),
 		},
 	},
+	build: {
+		assetsDir: 'build_assets',
+		sourcemap: true,
+		minify: false
+	},preview: {
+		
+	},
 	server: {
 		cors: true,
 		origin: ROOT_URL.origin,
@@ -114,8 +121,7 @@ export default defineConfig({
 			'/file-upload': {
 				target: ROOT_URL.origin,
 				changeOrigin: true,
-				secure: false,
-				cookieDomainRewrite: '',
+				// cookieDomainRewrite: '',
 				configure: (proxy) => {
 					proxy.on('proxyReq', (proxyReq) => {
 						proxyReq.setHeader('Host', ROOT_URL.hostname);
@@ -156,5 +162,5 @@ async function getDefaultHostUrl() {
 		// Ignore errors
 	}
 
-	return new URL('https://stable.qa.rocket.chat');
+	return new URL('https://unstable.qa.rocket.chat');
 }

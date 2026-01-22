@@ -9,10 +9,12 @@ export function rocketchatInfo(): Plugin {
 	return {
 		name: 'rocketchat-info',
 		enforce: 'pre',
-		resolveId(source) {
-			if (source === rocketchatInfoId || source.endsWith('rocketchat.info')) {
-				return resolvedVirtualId;
-			}
+		resolveId: {
+			handler(source) {
+				if (source === rocketchatInfoId || source.endsWith('rocketchat.info')) {
+					return resolvedVirtualId;
+				}
+			},
 		},
 		async load(id) {
 			if (id === resolvedVirtualId) {
@@ -22,5 +24,3 @@ export function rocketchatInfo(): Plugin {
 		},
 	};
 }
-
-
