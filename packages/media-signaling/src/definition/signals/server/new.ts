@@ -1,7 +1,6 @@
 import type { CallContact, CallRole, CallService, CallFlag } from '../../call';
 
-/** Sent by the server to notify an agent that there's a new call for their actor */
-export type ServerMediaSignalNewCall = {
+export type ServerMediaSignalNewCallBase = {
 	callId: string;
 	type: 'new';
 
@@ -20,6 +19,16 @@ export type ServerMediaSignalNewCall = {
 
 	// A list of flags that may be sent to the client to toggle custom behaviors
 	flags?: CallFlag[];
+};
 
+export type ServerMediaSignalNewCallWebRTC = ServerMediaSignalNewCallBase & {
+	service: 'webrtc';
+};
+
+export type ServerMediaSignalNewCallLivekit = ServerMediaSignalNewCallBase & {
+	service: 'livekit';
 	token: string;
 };
+
+/** Sent by the server to notify an agent that there's a new call for their actor */
+export type ServerMediaSignalNewCall = ServerMediaSignalNewCallWebRTC | ServerMediaSignalNewCallLivekit;

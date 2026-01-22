@@ -314,7 +314,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._service = signal.service;
 		this._role = signal.role;
 		this._flags = signal.flags || [];
-		this._token = signal.token;
 
 		this._transferredBy = signal.transferredBy || null;
 
@@ -343,19 +342,24 @@ export class ClientMediaCall implements IClientMediaCall {
 			return this.rejectAsUnavailable();
 		}
 
-		if (this._service === 'webrtc') {
-			try {
-				this.prepareWebRtcProcessor();
-			} catch (e) {
-				this.sendError({
-					errorType: 'service',
-					errorCode: 'service-initialization-failed',
-					critical: true,
-					errorDetails: serializeError(e),
-				});
-				await this.rejectAsUnavailable();
-				throw e;
-			}
+		switch (signal.service) {
+			case 'webrtc':
+				try {
+					this.prepareWebRtcProcessor();
+				} catch (e) {
+					this.sendError({
+						errorType: 'service',
+						errorCode: 'service-initialization-failed',
+						critical: true,
+						errorDetails: serializeError(e),
+					});
+					await this.rejectAsUnavailable();
+					throw e;
+				}
+				break;
+			case 'livekit':
+				this._token = signal.token;
+				break;
 		}
 
 		// Send an ACK so the server knows that this session exists and is reachable
@@ -379,8 +383,8 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 		this.emitter.emit('confirmed');
 
-		if (this._role === 'caller' && this.acceptedLocally) {
-			await this.joinRoom(signal.token);
+		if (this._role === 'caller' && this.acceptedLocally && this._token) {
+			await this.joinRoom(this._token);
 		}
 
 		await this.processEarlySignals();
@@ -431,6 +435,10 @@ export class ClientMediaCall implements IClientMediaCall {
 				}
 				return 'pending';
 			case 'accepted':
+				if (this._service !== 'webrtc') {
+					return 'activating';
+				}
+
 				if (!this.negotiationManager.currentNegotiationId) {
 					return 'waiting-for-offer';
 				}

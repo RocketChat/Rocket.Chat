@@ -16,7 +16,7 @@ export type CallContact = {
 
 export type CallRole = 'caller' | 'callee';
 
-export type CallService = 'webrtc';
+export type CallService = 'webrtc' | 'livekit';
 
 export type CallState =
 	| 'none' // trying to call with no idea if it'll reach anyone
