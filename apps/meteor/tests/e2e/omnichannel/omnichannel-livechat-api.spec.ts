@@ -490,7 +490,9 @@ test.describe('OC - Livechat API', () => {
 
 				await poAuxContext.poHomeOmnichannel.roomToolbar.openContactInfo();
 				// For some reason the guest info email information is being set to lowercase
-				await expect(poAuxContext.poHomeOmnichannel.content.infoContactEmail).toHaveText(registerGuestVisitor.email.toLowerCase());
+				await expect(poAuxContext.poHomeOmnichannel.contacts.contactInfo.infoContactEmail).toHaveText(
+					registerGuestVisitor.email.toLowerCase(),
+				);
 			});
 
 			await test.step('Expect registerGuest to log in an existing guest and load chat history', async () => {
@@ -624,7 +626,7 @@ test.describe('OC - Livechat API', () => {
 
 				await poAuxContext.poHomeOmnichannel.roomToolbar.openContactInfo();
 				// For some reason the guest info email information is being set to lowercase
-				await expect(poAuxContext.poHomeOmnichannel.content.infoContactEmail).toHaveText(
+				await expect(poAuxContext.poHomeOmnichannel.contacts.contactInfo.infoContactEmail).toHaveText(
 					`changed${registerGuestVisitor.email}`.toLowerCase(),
 				);
 			});
