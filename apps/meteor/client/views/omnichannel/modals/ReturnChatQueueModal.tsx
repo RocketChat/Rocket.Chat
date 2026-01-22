@@ -21,7 +21,7 @@ const ReturnChatQueueModal = ({ onCancel, onMoveChat, ...props }: ReturnChatQueu
 	const { t } = useTranslation();
 
 	return (
-		<Modal {...props}>
+		<Modal aria-label={t('Return_to_the_queue')} {...props}>
 			<ModalHeader>
 				<ModalIcon name='burger-arrow-left' />
 				<ModalTitle>{t('Return_to_the_queue')}</ModalTitle>
