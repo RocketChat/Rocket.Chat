@@ -831,10 +831,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				lastAssignTime?: Date;
 				lastRoutingTime?: Date;
 				queueInfo: { chats: number };
-			}>(aggregate, {
-				readConcern: { level: 'majority' },
-				readPreference: 'primary',
-			})
+			}>(aggregate)
 			.toArray();
 		return agent;
 	}
