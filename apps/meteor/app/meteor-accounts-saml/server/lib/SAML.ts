@@ -351,7 +351,7 @@ export class SAML {
 
 	private static async processLogoutResponse(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): Promise<void> {
 		if (!req.query.SAMLResponse) {
-			SAMLUtils.error('Invalid LogoutResponse, missing SAMLResponse', req.query);
+			SAMLUtils.error({ msg: 'Invalid LogoutResponse received: missing SAMLResponse parameter.', query: req.query });
 			throw new Error('Invalid LogoutResponse received.');
 		}
 
@@ -455,8 +455,8 @@ export class SAML {
 					Location: url,
 				});
 				res.end();
-			} catch (error) {
-				SAMLUtils.error(error);
+			} catch (err) {
+				SAMLUtils.error({ err });
 				res.writeHead(302, {
 					Location: Meteor.absoluteUrl(),
 				});

@@ -343,7 +343,7 @@ export default class RocketAdapter {
 	}
 
 	async addUser(slackUserID) {
-		rocketLogger.debug('Adding Rocket.Chat user from Slack', slackUserID);
+		rocketLogger.debug({ msg: 'Adding Rocket.Chat user from Slack', slackUserID });
 		let addedUser;
 		for await (const slack of this.slackAdapters) {
 			if (addedUser) {
