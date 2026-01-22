@@ -343,7 +343,7 @@ export default class RocketAdapter {
 	}
 
 	async addUser(slackUserID) {
-		rocketLogger.debug('Adding Rocket.Chat user from Slack', slackUserID);
+		rocketLogger.debug({ msg: 'Adding Rocket.Chat user from Slack', slackUserID });
 		let addedUser;
 		for await (const slack of this.slackAdapters) {
 			if (addedUser) {
@@ -410,8 +410,8 @@ export default class RocketAdapter {
 					if (url) {
 						try {
 							await setUserAvatar(user, url, null, 'url');
-						} catch (error) {
-							rocketLogger.debug('Error setting user avatar', error.message);
+						} catch (err) {
+							rocketLogger.debug({ msg: 'Error setting user avatar from Slack', err });
 						}
 					}
 				}
@@ -482,6 +482,7 @@ export default class RocketAdapter {
 					rocketMsgObj.tmid = tmessage._id;
 				}
 			}
+
 			if (slackMessage.subtype === 'bot_message') {
 				rocketUser = await Users.findOneById('rocket.cat', { projection: { username: 1 } });
 			}

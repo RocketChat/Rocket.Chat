@@ -45,7 +45,7 @@ class SlackBridgeClass {
 					this.rocket.addSlack(slack);
 					this.slackAdapters.push(slack);
 
-					slack.connect({ apiToken }).catch((err) => connLogger.error('error connecting to slack', err));
+					slack.connect({ apiToken }).catch((err) => connLogger.error({ msg: 'error connecting to slack', err }));
 				});
 			} else {
 				const botTokenList = this.botTokens.split('\n'); // Bot token list
@@ -70,7 +70,7 @@ class SlackBridgeClass {
 					this.rocket.addSlack(slack);
 					this.slackAdapters.push(slack);
 
-					slack.connect({ appCredential }).catch((err) => connLogger.error('error connecting to slack', err));
+					slack.connect({ appCredential }).catch((err) => connLogger.error({ msg: 'error connecting to slack', err }));
 				});
 			}
 
@@ -109,7 +109,7 @@ class SlackBridgeClass {
 				connLogger.info('Slack Bridge Disconnected');
 			}
 		} catch (error) {
-			connLogger.error('An error occurred during disconnection', error);
+			connLogger.error({ msg: 'An error occurred during disconnection', err: error });
 		}
 	}
 
@@ -120,7 +120,7 @@ class SlackBridgeClass {
 				this.isLegacyRTM = value;
 				this.debouncedReconnectIfEnabled();
 			}
-			classLogger.debug('Setting: SlackBridge_UseLegacy', value);
+			classLogger.debug({ msg: 'Setting: SlackBridge_UseLegacy', value });
 		});
 
 		// Slack installtion Bot token
@@ -129,7 +129,7 @@ class SlackBridgeClass {
 				this.botTokens = value;
 				this.debouncedReconnectIfEnabled();
 			}
-			classLogger.debug('Setting: SlackBridge_BotToken', value);
+			classLogger.debug({ msg: 'Setting: SlackBridge_BotToken', value });
 		});
 		// Slack installtion App token
 		settings.watch('SlackBridge_AppToken', (value) => {
@@ -137,7 +137,7 @@ class SlackBridgeClass {
 				this.appTokens = value;
 				this.debouncedReconnectIfEnabled();
 			}
-			classLogger.debug('Setting: SlackBridge_AppToken', value);
+			classLogger.debug({ msg: 'Setting: SlackBridge_AppToken', value });
 		});
 		// Slack installtion Signing token
 		settings.watch('SlackBridge_SigningSecret', (value) => {
@@ -145,7 +145,7 @@ class SlackBridgeClass {
 				this.signingSecrets = value;
 				this.debouncedReconnectIfEnabled();
 			}
-			classLogger.debug('Setting: SlackBridge_SigningSecret', value);
+			classLogger.debug({ msg: 'Setting: SlackBridge_SigningSecret', value });
 		});
 
 		// Slack installation API token
@@ -155,25 +155,25 @@ class SlackBridgeClass {
 				this.debouncedReconnectIfEnabled();
 			}
 
-			classLogger.debug('Setting: SlackBridge_APIToken', value);
+			classLogger.debug({ msg: 'Setting: SlackBridge_APIToken', value });
 		});
 
 		// Import messages from Slack with an alias; %s is replaced by the username of the user. If empty, no alias will be used.
 		settings.watch('SlackBridge_AliasFormat', (value) => {
 			this.aliasFormat = value;
-			classLogger.debug('Setting: SlackBridge_AliasFormat', value);
+			classLogger.debug({ msg: 'Setting: SlackBridge_AliasFormat', value });
 		});
 
 		// Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.
 		settings.watch('SlackBridge_ExcludeBotnames', (value) => {
 			this.excludeBotnames = value;
-			classLogger.debug('Setting: SlackBridge_ExcludeBotnames', value);
+			classLogger.debug({ msg: 'Setting: SlackBridge_ExcludeBotnames', value });
 		});
 
 		// Reactions
 		settings.watch('SlackBridge_Reactions_Enabled', (value) => {
 			this.isReactionsEnabled = value;
-			classLogger.debug('Setting: SlackBridge_Reactions_Enabled', value);
+			classLogger.debug({ msg: 'Setting: SlackBridge_Reactions_Enabled', value });
 		});
 
 		// Is this entire SlackBridge enabled
@@ -186,7 +186,7 @@ class SlackBridgeClass {
 					this.disconnect();
 				}
 			}
-			classLogger.debug('Setting: SlackBridge_Enabled', value);
+			classLogger.debug({ msg: 'Setting: SlackBridge_Enabled', value });
 		});
 	}
 }

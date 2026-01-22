@@ -83,8 +83,8 @@ export async function eraseRoomLooseValidation(rid: string): Promise<boolean> {
 
 	try {
 		await deleteRoom(rid);
-	} catch (e) {
-		SystemLogger.error(e);
+	} catch (err) {
+		SystemLogger.error({ err });
 		return false;
 	}
 

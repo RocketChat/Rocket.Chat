@@ -94,8 +94,8 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			}
 
 			return serverInteraction;
-		} catch (error) {
-			SystemLogger.error(error);
+		} catch (err) {
+			SystemLogger.error({ err });
 		}
 	}
 
