@@ -13,7 +13,7 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 	const uid = useUserId();
 	useEffect(() => {
 		clientCallbacks.add(
-			'streamNewMessage',
+			'afterSaveMessage',
 			(msg: IMessage) => {
 				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid !== mainMessage._id) {
 					return;
@@ -29,7 +29,7 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 		);
 
 		return () => {
-			clientCallbacks.remove('streamNewMessage', `thread-scroll-${room._id}`);
+			clientCallbacks.remove('afterSaveMessage', `thread-scroll-${room._id}`);
 		};
 	}, [room._id, atBottomRef, sendToBottomIfNecessary, uid, mainMessage._id]);
 
