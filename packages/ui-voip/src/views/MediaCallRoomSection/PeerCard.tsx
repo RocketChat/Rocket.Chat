@@ -19,7 +19,7 @@ type GenericCardNameAndAudioStateSlotProps = {
 // TODO move to a separate component
 const GenericCardNameAndAudioStateSlot = ({ muted, held, displayName }: GenericCardNameAndAudioStateSlotProps) => {
 	return (
-		<Box is='span' opacity='1' display='flex' flexDirection='row' mi={-4} alignItems='center' justifyContent='center'>
+		<Box is='span' display='flex' flexDirection='row' mi={-4} alignItems='center' justifyContent='center'>
 			{(muted || held) && (
 				<Box mi={2}>
 					{(held || muted) && <Icon name='mic-off' size='x16' color='danger' mi={2} />}
@@ -42,7 +42,6 @@ const GenericCardSharingSlot = () => {
 const PeerCard = ({ displayName, avatarUrl, muted, held, sharing }: PeerCardProps) => {
 	return (
 		<GenericCard
-			title='Peer Card'
 			slots={{
 				bottomLeft: <GenericCardNameAndAudioStateSlot muted={muted} held={held} displayName={displayName} />,
 				bottomRight: sharing ? <GenericCardSharingSlot /> : null,

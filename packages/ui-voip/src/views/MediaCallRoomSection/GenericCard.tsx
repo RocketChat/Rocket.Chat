@@ -22,7 +22,7 @@ export type GenericCardSlots = {
 
 type GenericCardProps = {
 	children: ReactNode;
-	title: string;
+	title?: string;
 	slots?: GenericCardSlots;
 	maxWidth?: string | number;
 	maxHeight?: string | number;
@@ -91,14 +91,6 @@ const GenericCard = ({
 	flexGrow = 0,
 	flexShrink = 1,
 }: GenericCardProps) => {
-	console.log({
-		flexGrow,
-		flexShrink,
-		maxWidth,
-		maxHeight,
-		width,
-		height,
-	});
 	return (
 		<Box
 			position='relative'

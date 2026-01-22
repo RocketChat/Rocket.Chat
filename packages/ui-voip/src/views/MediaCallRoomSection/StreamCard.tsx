@@ -1,16 +1,27 @@
+import { Box } from '@rocket.chat/fuselage';
+import { useTranslation } from 'react-i18next';
+
 import GenericCard from './GenericCard';
-import type { GenericCardSlots } from './GenericCard';
 
 type StreamCardProps = {
 	children: React.ReactNode;
-	vertical?: boolean;
-	title: string;
-	slots?: GenericCardSlots;
+	displayName: string;
+	own?: boolean;
 };
 
-const StreamCard = ({ children, title, slots }: StreamCardProps) => {
+const StreamCard = ({ children, own, displayName }: StreamCardProps) => {
+	const { t } = useTranslation();
 	return (
-		<GenericCard title={title} slots={slots}>
+		<GenericCard
+			title={own ? t('Your_screen') : t('Peer__displayName__screen', { displayName })}
+			slots={{
+				bottomLeft: (
+					<Box fontScale='p2b' color='default'>
+						{displayName}
+					</Box>
+				),
+			}}
+		>
 			{children}
 		</GenericCard>
 	);

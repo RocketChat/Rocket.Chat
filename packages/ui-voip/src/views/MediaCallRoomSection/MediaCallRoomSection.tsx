@@ -130,14 +130,14 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 						sharing={remoteVideoStream?.active ?? false}
 					/>
 					{remoteVideoStream && (
-						<StreamCard title='Remote Video' slots={{ topLeft: <Timer /> }}>
+						<StreamCard displayName={peerInfo.displayName}>
 							<video preload='metadata' style={{ objectFit: 'cover', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
 								<track kind='captions' />
 							</video>
 						</StreamCard>
 					)}
 					{localVideoStream?.active && (
-						<StreamCard title='Local Video'>
+						<StreamCard displayName={user.displayName} own>
 							<video preload='metadata' style={{ objectFit: 'cover', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
 								<track kind='captions' />
 							</video>
