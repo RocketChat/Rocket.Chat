@@ -1,4 +1,3 @@
-// import { Box } from '@rocket.chat/fuselage';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import type { PeerInfo } from '@rocket.chat/ui-voip';
@@ -25,7 +24,7 @@ const isMediaCallRoom = (room: IRoom, peerInfo?: PeerInfo) => {
 const MediaCallRoom = ({ body }: { body: ReactNode }) => {
 	const { peerInfo, state } = useMediaCallContext();
 	const room = useRoom();
-	console.log({ room, peerInfo });
+
 	if (state !== 'ongoing' || !isMediaCallRoom(room, peerInfo)) {
 		return body;
 	}

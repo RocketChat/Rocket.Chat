@@ -38,7 +38,7 @@ type MediaSession = SessionInfo & {
 	sendTone: (tone: string) => void;
 
 	getRemoteStream: () => MediaStream | null;
-	getRemoteVideoStream: () => MediaStream | null;
+	getRemoteVideoStream: () => IMediaStreamWrapper | null;
 	getLocalVideoStream: () => IMediaStreamWrapper | null;
 };
 
@@ -357,12 +357,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 					return null;
 				}
 
-				const wrapper = mainCall.getRemoteMediaStream('screen-share');
-				if (!wrapper?.active) {
-					return null;
-				}
-
-				return wrapper.stream;
+				return mainCall.getRemoteMediaStream('screen-share');
 			} catch (error) {
 				console.error('MediaCall: useMediaStream - Error getting remote media stream', error);
 				return null;

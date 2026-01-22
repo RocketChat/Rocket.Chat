@@ -38,13 +38,12 @@ type MediaCallContextType = {
 
 	remoteMuted: boolean;
 	remoteHeld: boolean;
-	expanded?: boolean;
 
 	inRoomView: boolean;
 	setInRoomView: (inRoomView: boolean) => void;
 
 	getRemoteStream: () => MediaStream | null;
-	getRemoteVideoStream: () => MediaStream | null;
+	getRemoteVideoStream: () => IMediaStreamWrapper | null;
 	getLocalVideoStream: () => IMediaStreamWrapper | null;
 	toggleScreenSharing: () => void;
 
@@ -86,7 +85,6 @@ export const defaultMediaCallContextValue: MediaCallContextType = {
 	held: false,
 	remoteMuted: false,
 	remoteHeld: false,
-	expanded: false,
 
 	inRoomView: false,
 	setInRoomView: () => undefined,

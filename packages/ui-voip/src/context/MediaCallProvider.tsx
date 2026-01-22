@@ -270,7 +270,6 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 		hidden: session.hidden,
 		remoteMuted: session.remoteMuted,
 		remoteHeld: session.remoteHeld,
-		expanded: session.state === 'ongoing',
 		inRoomView,
 		setInRoomView,
 		onClickDirectMessage,

@@ -70,12 +70,11 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	const remoteVideoStream = getRemoteVideoStream();
+	const remoteVideoStreamWrapper = getRemoteVideoStream();
 	const localVideoStreamWrapper = getLocalVideoStream();
-	const localVideoStream = localVideoStreamWrapper?.stream ?? null;
 
-	const [remoteStreamRefCallback] = useMediaStream(remoteVideoStream);
-	const [localStreamRefCallback] = useMediaStream(localVideoStream);
+	const [remoteStreamRefCallback] = useMediaStream(remoteVideoStreamWrapper?.stream ?? null);
+	const [localStreamRefCallback] = useMediaStream(localVideoStreamWrapper?.stream ?? null);
 
 	useRoomView();
 
@@ -120,23 +119,23 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 						avatarUrl={user.avatarUrl}
 						muted={muted}
 						held={held}
-						sharing={localVideoStream?.active ?? false}
+						sharing={localVideoStreamWrapper?.active ?? false}
 					/>
 					<PeerCard
 						displayName={peerInfo.displayName}
 						avatarUrl={peerInfo.avatarUrl}
 						muted={remoteMuted}
 						held={remoteHeld}
-						sharing={remoteVideoStream?.active ?? false}
+						sharing={remoteVideoStreamWrapper?.active ?? false}
 					/>
-					{remoteVideoStream && (
+					{remoteVideoStreamWrapper?.active && (
 						<StreamCard displayName={peerInfo.displayName}>
 							<video preload='metadata' style={{ objectFit: 'cover', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
 								<track kind='captions' />
 							</video>
 						</StreamCard>
 					)}
-					{localVideoStream?.active && (
+					{localVideoStreamWrapper?.active && (
 						<StreamCard displayName={user.displayName} own>
 							<video preload='metadata' style={{ objectFit: 'cover', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
 								<track kind='captions' />
@@ -156,7 +155,7 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 						label={t('Screen_sharing')}
 						icons={['computer', 'computer']}
 						titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
-						pressed={localVideoStream?.active ?? false}
+						pressed={localVideoStreamWrapper?.active ?? false}
 						onToggle={onClickShareScreen}
 					/>
 					<ToggleButton

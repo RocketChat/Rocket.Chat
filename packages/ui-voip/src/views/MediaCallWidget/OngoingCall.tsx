@@ -1,5 +1,4 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -23,7 +22,6 @@ import useMediaStream from '../../context/useMediaStream';
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const [sharingScreen, setSharingScreen] = useState<boolean>(false);
 	const {
 		muted,
 		held,
@@ -36,7 +34,6 @@ const OngoingCall = () => {
 		onTone,
 		peerInfo,
 		connectionState,
-		expanded,
 		getRemoteVideoStream,
 		toggleScreenSharing,
 		onClickDirectMessage,
@@ -50,13 +47,12 @@ const OngoingCall = () => {
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	const videoStream = getRemoteVideoStream();
+	const videoStreamWrapper = getRemoteVideoStream();
 
-	const [remoteVideoStreamRefCallback] = useMediaStream(videoStream);
+	const [remoteVideoStreamRefCallback] = useMediaStream(videoStreamWrapper?.stream ?? null);
 
 	const onClickShareScreen = () => {
 		toggleScreenSharing();
-		setSharingScreen((prev) => !prev);
 	};
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
@@ -65,7 +61,7 @@ const OngoingCall = () => {
 	}
 
 	return (
-		<Widget expanded={expanded && Boolean(videoStream)}>
+		<Widget expanded={videoStreamWrapper?.active}>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer />}>
 				{onClickDirectMessage && (
@@ -75,7 +71,7 @@ const OngoingCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
-				{videoStream && (
+				{videoStreamWrapper?.active && (
 					<Box display='flex' flexDirection='column' w={432} h={243}>
 						<video controls preload='metadata' style={{ width: '100%', height: '100%' }} ref={remoteVideoStreamRefCallback}>
 							<track kind='captions' />
@@ -93,7 +89,7 @@ const OngoingCall = () => {
 						label={t('Screen_sharing')}
 						icons={['computer', 'computer']}
 						titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
-						pressed={sharingScreen}
+						pressed={videoStreamWrapper?.active ?? false}
 						onToggle={onClickShareScreen}
 					/>
 					<ToggleButton
