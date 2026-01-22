@@ -56,7 +56,6 @@ test.describe('OC - Manage Departments', () => {
 				await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredName)).not.toBeVisible();
 
 				await poOmnichannelDepartments.inputEmail.fill('any_text');
-				await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredEmail)).toBeVisible();
 				await expect(poOmnichannelDepartments.errorMessage(ERROR.invalidEmail)).toBeVisible();
 
 				await poOmnichannelDepartments.inputEmail.fill('');
