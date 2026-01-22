@@ -1,46 +1,52 @@
-import type { IIntegration, ValueOf } from '@rocket.chat/core-typings';
-import { pick } from '@rocket.chat/tools';
+import type { IIntegration } from '@rocket.chat/core-typings';
 import ivm, { type Reference } from 'isolated-vm';
 
 import { IntegrationScriptEngine } from '../ScriptEngine';
-import type { IScriptClass, CompatibilityScriptResult, FullScriptClass } from '../definition';
+import type { IScriptClass, CompatibilityScriptResult } from '../definition';
 import { buildSandbox } from './buildSandbox';
 import { getCompatibilityScript } from './getCompatibilityScript';
 
-const DISABLE_INTEGRATION_SCRIPTS = ['yes', 'true', 'ivm'].includes(String(process.env.DISABLE_INTEGRATION_SCRIPTS).toLowerCase());
+const DISABLE_INTEGRATION_SCRIPTS = ['yes', 'true', 'ivm'].includes(String(process.env.DISABLE_INTEGRATION_SCRIPTS || '').toLowerCase());
 
 export class IsolatedVMScriptEngine<IsIncoming extends boolean> extends IntegrationScriptEngine<IsIncoming> {
-	protected isDisabled(): boolean {
-		return DISABLE_INTEGRATION_SCRIPTS;
-	}
-
-	protected async callScriptFunction(
-		scriptReference: Reference<ValueOf<IScriptClass>>,
-		...params: Parameters<ValueOf<FullScriptClass>>
-	): Promise<any> {
-		return scriptReference.applySync(undefined, params, {
-			arguments: { copy: true },
-			result: { copy: true, promise: true },
-		});
-	}
-
-	protected async runScriptMethod({
+	protected override async runScriptMethod({
+		integrationId,
 		script,
 		method,
 		params,
 	}: {
 		integrationId: IIntegration['_id'];
-		script: Partial<IScriptClass>;
+		script: IScriptClass;
 		method: keyof IScriptClass;
 		params: Record<string, any>;
 	}): Promise<any> {
-		const fn = script[method];
-
-		if (typeof fn !== 'function') {
-			throw new Error('integration-method-not-found');
+		if (this.disabled) {
+			throw new Error('integration-scripts-disabled');
 		}
 
-		return fn(params);
+		const fn = script[method] as (...args: any[]) => any | Promise<any> | undefined;
+		if (!fn || typeof fn !== 'function') {
+			return;
+		}
+
+		const compiled = this.compiledScripts?.[integrationId];
+		const store = compiled?.store ?? {};
+		try {
+			return await Promise.resolve(fn(params, store));
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	protected isDisabled(): boolean {
+		return DISABLE_INTEGRATION_SCRIPTS;
+	}
+
+	protected async callScriptFunction(ref: Reference<any>, ...params: any[]): Promise<any> {
+		return ref.applySync(undefined, params, {
+			arguments: { copy: true },
+			result: { copy: true, promise: true },
+		});
 	}
 
 	protected async getIntegrationScript(integration: IIntegration): Promise<Partial<IScriptClass>> {
@@ -48,52 +54,39 @@ export class IsolatedVMScriptEngine<IsIncoming extends boolean> extends Integrat
 			throw new Error('integration-scripts-disabled');
 		}
 
-		const compiledScript = this.compiledScripts[integration._id];
-		if (compiledScript && +compiledScript._updatedAt === +integration._updatedAt) {
-			return compiledScript.script;
+		const cached = this.compiledScripts[integration._id];
+		if (cached && +cached._updatedAt === +integration._updatedAt) {
+			return cached.script;
 		}
 
-		const script = integration.scriptCompiled;
-		try {
-			this.logger.info({ msg: 'Will evaluate the integration script', integration: pick(integration, 'name', '_id') });
-			this.logger.debug(script);
+		const isolate = new ivm.Isolate({ memoryLimit: 8 });
+		const script = await isolate.compileScript(getCompatibilityScript(integration.scriptCompiled));
+		const context = isolate.createContextSync();
+		const { logs } = buildSandbox(context);
+		this.compiledScripts[integration._id] = {
+			script: {},
+			store: {},
+			logs,
+			_updatedAt: integration._updatedAt,
+		};
+		const result: Reference<CompatibilityScriptResult> = await script.run(context, { reference: true, timeout: 3000 });
 
-			const isolate = new ivm.Isolate({ memoryLimit: 8 });
+		const availableFunctions = await result.get('availableFunctions', { copy: true });
 
-			const ivmScript = await isolate.compileScript(getCompatibilityScript(script));
+		const scriptFunctions = Object.fromEntries(
+			availableFunctions.map((name: string) => {
+				const fnRef = result.getSync(name as keyof IScriptClass, { reference: true });
+				return [name, (...params: any[]) => this.callScriptFunction(fnRef, ...params)];
+			}),
+		);
 
-			const ivmContext = isolate.createContextSync();
-			buildSandbox(ivmContext);
+		this.compiledScripts[integration._id] = {
+			script: scriptFunctions,
+			store: {},
+			logs,
+			_updatedAt: integration._updatedAt,
+		};
 
-			const ivmResult: Reference<CompatibilityScriptResult> = await ivmScript.run(ivmContext, {
-				reference: true,
-				timeout: 3000,
-			});
-
-			const availableFunctions = await ivmResult.get('availableFunctions', { copy: true });
-			const scriptFunctions = Object.fromEntries(
-				availableFunctions.map((functionName) => {
-					const fnReference = ivmResult.getSync(functionName, { reference: true });
-					return [functionName, (...params: Parameters<ValueOf<FullScriptClass>>) => this.callScriptFunction(fnReference, ...params)];
-				}),
-			) as Partial<IScriptClass>;
-
-			this.compiledScripts[integration._id] = {
-				script: scriptFunctions,
-				store: {},
-				_updatedAt: integration._updatedAt,
-			};
-
-			return scriptFunctions;
-		} catch (err: any) {
-			this.logger.error({
-				msg: 'Error evaluating integration script',
-				integration: integration.name,
-				script,
-				err,
-			});
-
-			throw new Error('error-evaluating-script');
-		}
+		return scriptFunctions;
 	}
 }
