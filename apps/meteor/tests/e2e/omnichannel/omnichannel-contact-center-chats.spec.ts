@@ -11,9 +11,9 @@ import { createConversation, updateRoom } from '../utils/omnichannel/rooms';
 import { createTag } from '../utils/omnichannel/tags';
 import { test, expect } from '../utils/test';
 
-const visitorA = faker.person.firstName();
-const visitorB = faker.person.firstName();
-const visitorC = faker.person.firstName();
+const visitorA = `${faker.person.firstName()}-${faker.database.mongodbObjectId()}`;
+const visitorB = `${faker.person.firstName()}-${faker.database.mongodbObjectId()}`;
+const visitorC = `${faker.person.firstName()}-${faker.database.mongodbObjectId()}`;
 
 test.skip(!IS_EE, 'OC - Contact Center Chats > Enterprise Only');
 
