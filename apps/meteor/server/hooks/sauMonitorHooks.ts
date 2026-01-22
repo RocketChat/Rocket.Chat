@@ -1,6 +1,10 @@
-import type { IncomingHttpHeaders } from 'http';
-
-import type { LoginSessionPayload, LogoutSessionPayload, DeviceLoginPayload } from '@rocket.chat/core-typings';
+import type {
+	LoginSessionPayload,
+	LogoutSessionPayload,
+	SocketConnectedPayload,
+	SocketDisconnectedPayload,
+	DeviceLoginPayload,
+} from '@rocket.chat/core-typings';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -65,20 +69,18 @@ Accounts.onLogout((info) => {
 
 Meteor.onConnection((connection) => {
 	connection.onClose(async () => {
-		const { httpHeaders } = connection;
-		sauEvents.emit('sau.socket.disconnected', {
+		const socketDisconnectedEventObject: SocketDisconnectedPayload = {
+			connectionId: connection.id,
 			instanceId: InstanceStatus.id(),
-			...connection,
-			httpHeaders: httpHeaders as IncomingHttpHeaders,
-		});
+		};
+		sauEvents.emit('sau.socket.disconnected', socketDisconnectedEventObject);
 	});
 });
 
 Meteor.onConnection((connection) => {
-	const { httpHeaders } = connection;
-	sauEvents.emit('sau.socket.connected', {
-		instanceId: InstanceStatus.id(),
+	const socketConnectedEventObject: SocketConnectedPayload = {
+		// Implement SocketConnectedPayload type in case of using the sau.socket.connected hook
 		...connection,
-		httpHeaders: httpHeaders as IncomingHttpHeaders,
-	});
+	};
+	sauEvents.emit('sau.socket.connected', socketConnectedEventObject);
 });

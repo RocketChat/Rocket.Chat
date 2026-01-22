@@ -96,12 +96,12 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		sauEvents.on('socket.disconnected', async ({ id, instanceId }) => {
+		sauEvents.on('sau.socket.disconnected', async ({ connectionId, instanceId }) => {
 			if (!this.isRunning()) {
 				return;
 			}
 
-			await Sessions.closeByInstanceIdAndSessionId(instanceId, id);
+			await Sessions.closeByInstanceIdAndSessionId(instanceId, connectionId);
 		});
 	}
 
