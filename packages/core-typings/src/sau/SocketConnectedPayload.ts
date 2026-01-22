@@ -1,3 +1,2 @@
-export type SocketConnectedPayload = {
-  // To implement in case we use the sau.socket.connected hook
-};
+// Payload for sau.socket.connected event (to be extended when needed)
+export type SocketConnectedPayload = {};
