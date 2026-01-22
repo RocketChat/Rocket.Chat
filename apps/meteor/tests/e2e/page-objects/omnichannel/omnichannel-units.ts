@@ -26,11 +26,7 @@ export class OmnichannelUnitFlexTab extends FlexTab {
 	}
 
 	get inputVisibility(): Locator {
-		return this.root.locator('button', { has: this.root.locator('select[name="visibility"]') });
-	}
-
-	private findOption(name: string) {
-		return this.root.locator('#position-container').getByRole('option', { name, exact: true });
+		return this.root.getByText('Visibility', { exact: true });
 	}
 
 	public findDepartmentsChipOption(name: string) {
@@ -40,13 +36,13 @@ export class OmnichannelUnitFlexTab extends FlexTab {
 	async selectDepartment(name: string) {
 		await this.inputDepartments.click();
 		await this.inputDepartments.fill(name);
-		await this.findOption(name).click();
+		await this.listbox.selectOption(name);
 		await this.inputDepartments.click();
 	}
 
 	async selectMonitor(option: string) {
 		await this.inputMonitors.click();
-		await this.findOption(option).click();
+		await this.listbox.selectOption(option);
 		await this.inputMonitors.click();
 	}
 
