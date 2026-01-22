@@ -3,6 +3,16 @@ import { Box, Palette } from '@rocket.chat/fuselage';
 import styled from '@rocket.chat/styled';
 import type { ReactNode } from 'react';
 
+const CARD_HEIGHT = 180;
+
+const CARD_MIN_WIDTH = CARD_HEIGHT;
+const CARD_MAX_WIDTH = 320;
+
+const CARD_MARGIN = 2;
+
+export const CARD_TOTAL_HEIGHT = CARD_HEIGHT + CARD_MARGIN * 2;
+export const CARD_TOTAL_WIDTH = CARD_MAX_WIDTH + CARD_MARGIN * 2;
+
 export type GenericCardSlots = {
 	topLeft?: ReactNode;
 	topRight?: ReactNode;
@@ -74,11 +84,11 @@ const GenericCard = ({
 	children,
 	slots,
 	title,
-	maxWidth = '1920px',
-	maxHeight = '1080px',
+	maxWidth = CARD_MAX_WIDTH, // 4:3
+	maxHeight = CARD_HEIGHT, // 4:3
 	width,
-	height,
-	flexGrow = 1,
+	height = CARD_HEIGHT,
+	flexGrow = 0,
 	flexShrink = 1,
 }: GenericCardProps) => {
 	console.log({
@@ -92,40 +102,41 @@ const GenericCard = ({
 	return (
 		<Box
 			position='relative'
-			// display='flex'
-			// flexGrow={flexGrow}
-			// flexShrink={flexShrink}
+			display='flex'
+			flexGrow={flexGrow}
+			flexShrink={flexShrink}
 			overflow='hidden'
-			// alignItems='center'
-			// justifyContent='center'
-			// role='region' // TODO: role???
-			aria-labelledby={title}
+			alignItems='center'
 			title={title}
 			border='1px solid'
 			borderRadius='8px'
 			borderColor='stroke-light'
 			className={boxShadow}
 			backgroundColor='surface-light'
-			// minHeight='240px'
-			// minWidth='320px'
 			maxHeight={maxHeight}
 			maxWidth={maxWidth}
 			width={width}
 			height={height}
-			// m={8}
-			w='full'
-			h='full'
+			minWidth={CARD_MIN_WIDTH}
+			minHeight={CARD_HEIGHT}
+			m={CARD_MARGIN}
 		>
 			{children}
+			{/* TODO: Maybe the slots should be used as components instead of props */}
 			{slots &&
-				Object.entries(slots).map(([position, child]) => (
-					<SlotContainer key={position} position={position as SlotPosition}>
-						<SlotContainerInner />
-						<Box is='span' zIndex='3'>
-							{child}
-						</Box>
-					</SlotContainer>
-				))}
+				Object.entries(slots).map(([position, child]) => {
+					if (!child) {
+						return null;
+					}
+					return (
+						<SlotContainer key={position} position={position as SlotPosition}>
+							<SlotContainerInner />
+							<Box is='span' zIndex='3'>
+								{child}
+							</Box>
+						</SlotContainer>
+					);
+				})}
 		</Box>
 	);
 };

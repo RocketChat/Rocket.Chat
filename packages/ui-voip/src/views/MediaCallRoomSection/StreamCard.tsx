@@ -8,23 +8,9 @@ type StreamCardProps = {
 	slots?: GenericCardSlots;
 };
 
-const getProps = (vertical: boolean) => {
-	if (vertical) {
-		return {
-			width: '100%',
-			height: 'fit-content',
-		};
-	}
-
-	return {
-		width: 'fit-content',
-		height: '100%',
-	};
-};
-
-const StreamCard = ({ children, vertical = false, title, slots }: StreamCardProps) => {
+const StreamCard = ({ children, title, slots }: StreamCardProps) => {
 	return (
-		<GenericCard title={title} {...getProps(vertical)} slots={slots}>
+		<GenericCard title={title} slots={slots}>
 			{children}
 		</GenericCard>
 	);
