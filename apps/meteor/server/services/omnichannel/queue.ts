@@ -46,7 +46,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		}
 
 		const activeQueues = await this.getActiveQueues();
-		queueLogger.debug(`Active queues: ${activeQueues.length}`);
+		queueLogger.debug({ msg: 'Active queues', count: activeQueues.length });
 		this.running = true;
 
 		queueLogger.info('Service started');
@@ -118,22 +118,22 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	}
 
 	private async checkQueue(queue: string | null) {
-		queueLogger.debug(`Processing items for queue ${queue || 'Public'}`);
+		queueLogger.debug({ msg: 'Processing items for queue', queue: queue || 'Public' });
 		try {
 			const nextInquiry = await LivechatInquiry.findNextAndLock(getOmniChatSortQuery(getInquirySortMechanismSetting()), queue);
 			if (!nextInquiry) {
-				queueLogger.debug(`No more items for queue ${queue || 'Public'}`);
+				queueLogger.debug({ msg: 'No more items for queue', queue: queue || 'Public' });
 				return;
 			}
 
 			const result = await this.processWaitingQueue(queue, nextInquiry as InquiryWithAgentInfo);
 
 			if (!result) {
-				queueLogger.debug(`Inquiry ${nextInquiry._id} not taken. Unlocking and re-queueing`);
+				queueLogger.debug({ msg: 'Inquiry not taken. Unlocking and re-queueing', inquiry: nextInquiry._id });
 				return await LivechatInquiry.unlock(nextInquiry._id);
 			}
 
-			queueLogger.debug(`Inquiry ${nextInquiry._id} taken successfully. Unlocking`);
+			queueLogger.debug({ msg: 'Inquiry taken successfully. Unlocking', inquiry: nextInquiry._id });
 			await LivechatInquiry.unlock(nextInquiry._id);
 			queueLogger.debug({
 				msg: 'Inquiry processed',
@@ -254,12 +254,17 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 
 		const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, roomFromDb);
 
-		if (room?.servedBy) {
+		if (!room) {
+			queueLogger.debug({ msg: 'RoutingManager failed to delegate inquiry', inquiry: inquiry._id, queue });
+			return false;
+		}
+
+		if (room.servedBy) {
 			const {
 				_id: rid,
 				servedBy: { _id: agentId },
 			} = room;
-			queueLogger.debug(`Inquiry ${inquiry._id} taken successfully by agent ${agentId}. Notifying`);
+			queueLogger.debug({ msg: 'Inquiry taken successfully by agent. Notifying', inquiry: inquiry._id, agentId });
 			setTimeout(() => {
 				void dispatchAgentDelegated(rid, agentId);
 			}, 1000);

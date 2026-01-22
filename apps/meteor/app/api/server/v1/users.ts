@@ -1,5 +1,5 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
-import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
@@ -81,7 +81,7 @@ import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields
 
 API.v1.addRoute(
 	'users.getAvatar',
-	{ authRequired: false },
+	{ authRequired: true },
 	{
 		async get() {
 			const user = await getUserFromParams(this.queryParams);

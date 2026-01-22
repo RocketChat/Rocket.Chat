@@ -12,11 +12,11 @@ export class AccountProfile extends Account {
 	}
 
 	get inputAvatarLink(): Locator {
-		return this.page.locator('[data-qa-id="UserAvatarEditorLink"]');
+		return this.page.getByRole('textbox', { name: 'Use URL for avatar' });
 	}
 
 	get btnSetAvatarLink(): Locator {
-		return this.page.locator('[data-qa-id="UserAvatarEditorSetAvatarLink"]');
+		return this.page.getByRole('button', { name: 'Add URL', exact: true });
 	}
 
 	get inputUsername(): Locator {
@@ -25,7 +25,7 @@ export class AccountProfile extends Account {
 
 	// TODO: remove this locator
 	get btnSubmit(): Locator {
-		return this.page.locator('[data-qa="AccountProfilePageSaveButton"]');
+		return this.page.getByRole('button', { name: 'Save changes', exact: true });
 	}
 
 	get avatarFileInput(): Locator {
@@ -33,7 +33,7 @@ export class AccountProfile extends Account {
 	}
 
 	get userAvatarEditor(): Locator {
-		return this.page.locator('[data-qa-id="UserAvatarEditor"]');
+		return this.page.getByAltText('profile picture');
 	}
 
 	get emailTextInput(): Locator {

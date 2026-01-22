@@ -71,7 +71,7 @@ const ToastMessageInnerProvider = ({ children }: ToastMessageInnerProviderProps)
 		[dispatchToastBar],
 	);
 
-	return <ToastMessagesContext.Provider children={children} value={contextValue} />;
+	return <ToastMessagesContext.Provider value={contextValue}>{children}</ToastMessagesContext.Provider>;
 };
 
 type ToastMessagesProviderProps = {
@@ -81,7 +81,7 @@ type ToastMessagesProviderProps = {
 // eslint-disable-next-line react/no-multi-comp
 const ToastMessagesProvider = ({ children }: ToastMessagesProviderProps) => (
 	<ToastBarProvider>
-		<ToastMessageInnerProvider children={children} />
+		<ToastMessageInnerProvider>{children}</ToastMessageInnerProvider>
 	</ToastBarProvider>
 );
 

@@ -1,9 +1,9 @@
 import crypto from 'crypto';
 
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IGetRoomRoles, IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
+import type { IGetRoomRoles, PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
@@ -817,7 +817,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -838,7 +838,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username: 'test$username<>',
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -856,7 +856,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -873,7 +873,7 @@ describe('[Users]', () => {
 					email,
 					name: '</\\name>',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -1105,7 +1105,7 @@ describe('[Users]', () => {
 				email: `me-${Date.now()}@email.com`,
 				name: 'testuser',
 				username: ufsUsername,
-				password: '1234',
+				password,
 			});
 
 			await request
@@ -2171,7 +2171,7 @@ describe('[Users]', () => {
 						.send({
 							userId: targetUser._id,
 							data: {
-								password: 'itsnotworking',
+								password: '1tsn0tw0rkingP@ssw0rd1234.!',
 							},
 						})
 						.expect('Content-Type', 'application/json')
@@ -2193,7 +2193,7 @@ describe('[Users]', () => {
 						.send({
 							userId: targetUser._id,
 							data: {
-								password: 'itsnotworking',
+								password: '1tsn0tw0rkingP@ssw0rd1234.!',
 							},
 						})
 						.expect('Content-Type', 'application/json')
@@ -2700,7 +2700,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.send({
 					data: {
-						newPassword: 'the new pass',
+						newPassword: '1Tsn3wP@ssw0rd1234.!',
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -2851,7 +2851,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.send({
 					data: {
-						newPassword: 'MyNewPassw0rd',
+						newPassword: '1Tsn3wP@ssw0rd1234.!',
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -2891,13 +2891,11 @@ describe('[Users]', () => {
 		describe('[Password Policy]', () => {
 			before(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
-				await updateSetting('Accounts_Password_Policy_Enabled', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 			});
 
 			after(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
-				await updateSetting('Accounts_Password_Policy_Enabled', false);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 			});
 
@@ -3086,7 +3084,7 @@ describe('[Users]', () => {
 					.send({
 						data: {
 							currentPassword,
-							newPassword: '123Abc@!',
+							newPassword: '1Tsn3wP@ssw0rd1234.!',
 						},
 					})
 					.expect('Content-Type', 'application/json')

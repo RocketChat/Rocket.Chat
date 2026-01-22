@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelChats } from '../page-objects';
+import { HomeOmnichannel, OmnichannelChats } from '../page-objects';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { createConversation, updateRoom } from '../utils/omnichannel/rooms';
@@ -20,6 +20,7 @@ test.use({ storageState: Users.admin.state });
 
 test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 	let poOmnichats: OmnichannelChats;
+	let poHomeOmnichannel: HomeOmnichannel;
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
 	let agents: Awaited<ReturnType<typeof createAgent>>[];
@@ -151,13 +152,15 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 		});
 	});
 
-	test('OC - Contact Center Chats - Access in progress conversation from another agent', async () => {
+	test('OC - Contact Center Chats - Access in progress conversation from another agent', async ({ page }) => {
+		poHomeOmnichannel = new HomeOmnichannel(page);
+
 		await test.step('expect to be able to join', async () => {
 			const { visitor: visitorB } = conversations[1].data;
 			await poOmnichats.openChat(visitorB.name);
-			await expect(poOmnichats.content.btnJoinRoom).toBeVisible();
-			await poOmnichats.content.btnJoinRoom.click();
-			await expect(poOmnichats.content.btnJoinRoom).not.toBeVisible();
+			await expect(poHomeOmnichannel.composer.btnJoinRoom).toBeVisible();
+			await poHomeOmnichannel.composer.btnJoinRoom.click();
+			await expect(poHomeOmnichannel.composer.btnJoinRoom).not.toBeVisible();
 		});
 	});
 

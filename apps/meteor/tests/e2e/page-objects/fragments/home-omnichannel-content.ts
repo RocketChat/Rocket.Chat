@@ -1,18 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelTransferChatModal } from '../omnichannel-transfer-chat-modal';
 import { HomeContent } from './home-content';
-import { OmnichannelContactReviewModal } from '../omnichannel-contact-review-modal';
+import { OmnichannelTransferChatModal } from './modals';
 
 export class HomeOmnichannelContent extends HomeContent {
 	readonly forwardChatModal: OmnichannelTransferChatModal;
 
-	readonly contactReviewModal: OmnichannelContactReviewModal;
-
 	constructor(page: Page) {
 		super(page);
 		this.forwardChatModal = new OmnichannelTransferChatModal(page);
-		this.contactReviewModal = new OmnichannelContactReviewModal(page);
 	}
 
 	get btnReturnToQueue(): Locator {
@@ -33,10 +29,6 @@ export class HomeOmnichannelContent extends HomeContent {
 
 	get btnTakeChat(): Locator {
 		return this.page.locator('role=button[name="Take it!"]');
-	}
-
-	override get inputMessage(): Locator {
-		return this.page.locator('[name="msg"]');
 	}
 
 	get contactContextualBar() {
@@ -64,9 +56,9 @@ export class HomeOmnichannelContent extends HomeContent {
 	}
 
 	async useCannedResponse(cannedResponseName: string): Promise<void> {
-		await this.inputMessage.pressSequentially('!');
+		await this.composer.inputMessage.pressSequentially('!');
 		await this.page.locator('[role="menu"][name="ComposerBoxPopup"]').waitFor({ state: 'visible' });
-		await this.inputMessage.pressSequentially(cannedResponseName);
+		await this.composer.inputMessage.pressSequentially(cannedResponseName);
 		await this.page.keyboard.press('Enter');
 	}
 }

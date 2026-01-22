@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/fuselage';
+import { MessageHighlight } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
 import { memo, useContext, useMemo } from 'react';
@@ -24,17 +24,17 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 
 	if (mention === 'all') {
 		return (
-			<Message.Highlight title={t('Mentions_all_room_members')} variant='relevant'>
+			<MessageHighlight title={t('Mentions_all_room_members')} variant='relevant'>
 				{handleUserMention('all', showMentionSymbol)}
-			</Message.Highlight>
+			</MessageHighlight>
 		);
 	}
 
 	if (mention === 'here') {
 		return (
-			<Message.Highlight title={t('Mentions_online_room_members')} variant='relevant'>
+			<MessageHighlight title={t('Mentions_online_room_members')} variant='relevant'>
 				{handleUserMention('here', showMentionSymbol)}
-			</Message.Highlight>
+			</MessageHighlight>
 		);
 	}
 
@@ -43,7 +43,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 	}
 
 	return (
-		<Message.Highlight
+		<MessageHighlight
 			variant={resolved._id === ownUserId ? 'critical' : 'other'}
 			title={resolved._id === ownUserId ? t('Mentions_you') : t('Mentions_user')}
 			clickable
@@ -52,7 +52,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 			data-uid={resolved._id}
 		>
 			{handleUserMention((useRealName ? resolved.name : resolved.username) ?? mention, showMentionSymbol)}
-		</Message.Highlight>
+		</MessageHighlight>
 	);
 };
 

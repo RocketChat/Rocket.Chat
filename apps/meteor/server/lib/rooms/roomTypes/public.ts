@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated, isRoomNativeFederated, TEAM_TYPE } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated, TeamType } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
@@ -70,7 +70,7 @@ roomCoordinator.add(PublicRoomType, {
 	async getDiscussionType(room) {
 		if (room?.teamId) {
 			const team = await Team.getOneById(room.teamId, { projection: { type: 1 } });
-			if (team?.type === TEAM_TYPE.PRIVATE) {
+			if (team?.type === TeamType.PRIVATE) {
 				return 'p';
 			}
 		}

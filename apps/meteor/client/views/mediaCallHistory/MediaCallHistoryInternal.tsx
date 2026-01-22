@@ -24,11 +24,13 @@ export const isInternalCallHistoryItem = (data: { item: Serialized<CallHistoryIt
 const getContact = (item: InternalCallEndpointData['item'], call: InternalCallEndpointData['call']) => {
 	const { caller, callee } = call ?? {};
 	const contact = caller?.id === item.contactId ? caller : callee;
-	const { id, sipExtension, username, ...rest } = contact;
+	const { id, sipExtension, username, displayName, ...rest } = contact;
 	return {
 		...rest,
 		_id: id,
 		username: username ?? '',
+		name: displayName,
+		displayName,
 		voiceCallExtension: sipExtension,
 	};
 };
