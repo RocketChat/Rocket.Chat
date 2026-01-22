@@ -98,7 +98,7 @@ const AgentsTable = () => {
 				<>
 					<GenericTable aria-label={t('Agents')} aria-busy={isLoading}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
+						<GenericTableBody>
 							{data?.users.map((user) => <AgentsTableRow key={user._id} user={user} mediaQuery={mediaQuery} />)}
 						</GenericTableBody>
 					</GenericTable>

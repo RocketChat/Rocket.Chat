@@ -109,15 +109,7 @@ const MonitorsTable = () => {
 			setModal();
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				data-qa-id='manage-monitors-confirm-remove'
-				onConfirm={onDeleteMonitor}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteMonitor} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	};
 
 	const headers = useMemo(

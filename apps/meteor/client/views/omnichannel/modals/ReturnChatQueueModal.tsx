@@ -16,11 +16,12 @@ type ReturnChatQueueModalProps = {
 	onCancel: () => void;
 };
 
+// TODO: use `GenericModal` instead of creating a new modal from scratch
 const ReturnChatQueueModal = ({ onCancel, onMoveChat, ...props }: ReturnChatQueueModalProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Modal {...props} data-qa-id='return-to-queue-modal'>
+		<Modal {...props}>
 			<ModalHeader>
 				<ModalIcon name='burger-arrow-left' />
 				<ModalTitle>{t('Return_to_the_queue')}</ModalTitle>
