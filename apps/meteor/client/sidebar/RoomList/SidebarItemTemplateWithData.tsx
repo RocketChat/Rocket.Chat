@@ -180,6 +180,9 @@ export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 	if (safeDateNotEqualCheck(prevProps.room.lastMessage?._updatedAt, nextProps.room.lastMessage?._updatedAt)) {
 		return false;
 	}
+	if (prevProps.room.lastMessage?.msg !== nextProps.room.lastMessage?.msg) {
+		return false;
+	}
 	if (prevProps.room.alert !== nextProps.room.alert) {
 		return false;
 	}
