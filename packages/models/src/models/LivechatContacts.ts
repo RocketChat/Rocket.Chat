@@ -125,7 +125,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		const { set = {}, unset = [] } = changes;
 
 		if (Object.keys(set).length === 0 && unset.length === 0) {
-			return this.findOneById(contactId);
+			return this.findOne({ _id: contactId, enabled: { $ne: false } });
 		}
 
 		const $set = {
