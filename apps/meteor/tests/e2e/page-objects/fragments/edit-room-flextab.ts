@@ -50,11 +50,14 @@ export class EditRoomFlexTab extends FlexTab {
 }
 
 export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
-	private readonly listbox: Listbox;
+	private readonly tagsListbox: Listbox;
+
+	private readonly slaListbox: Listbox;
 
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Edit Room' }));
-		this.listbox = new Listbox(page, 'SLA Policy');
+		this.tagsListbox = new Listbox(page);
+		this.slaListbox = new Listbox(page, 'SLA Policy');
 	}
 
 	get inputTopic(): Locator {
@@ -66,16 +69,16 @@ export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
 	}
 
 	optionTag(name: string): Locator {
-		return this.listbox.getOption(name);
+		return this.tagsListbox.getOption(name);
 	}
 
 	async selectTag(name: string) {
-		await this.listbox.selectOption(name);
+		await this.tagsListbox.selectOption(name);
 	}
 
 	async selectSLA(name: string) {
 		await this.inputSLAPolicy.click();
-		await this.listbox.selectOption(name, true);
+		await this.slaListbox.selectOption(name, true);
 	}
 
 	get inputTags(): Locator {
