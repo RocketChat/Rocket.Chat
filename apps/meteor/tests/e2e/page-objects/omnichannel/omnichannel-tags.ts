@@ -46,7 +46,7 @@ export class OmnichannelTags extends OmnichannelAdmin {
 	}
 
 	async deleteTag(name: string) {
-		await this.table.findRowByName(name).getByRole('button', { name: 'Delete' }).click();
+		await this.table.findRowByName(name).getByRole('button', { name: 'Remove' }).click();
 		await this.deleteModal.confirmDelete();
 	}
 }
