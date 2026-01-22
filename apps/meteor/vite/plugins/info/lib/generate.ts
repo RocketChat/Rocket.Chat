@@ -2,37 +2,12 @@ import { exec } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { promisify} from 'node:util';
+import { promisify } from 'node:util';
 
 const execAsync = promisify(exec);
 
-export async function loadInfo() {
-	const info = await getInfo();
-	return `export const Info = ${JSON.stringify(info.api, null, 4)};
-export const minimumClientVersions = ${JSON.stringify(info.minimumClientVersions, null, 4)};`;
-}
-
-export async function loadSupportedVersionsInfo() {
-	const __dirname = path.dirname(fileURLToPath(import.meta.url));
-	const appDir = path.resolve(__dirname, '../..');
-	const packageJsonPath = path.resolve(appDir, 'package.json');
-	const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-	
-	const supportedVersions = packageJson.rocketchat?.supportedVersions || {};
-
-	return `export const supportedVersions = ${JSON.stringify(supportedVersions, null, 4)};`;
-}
-
-async function getInfo() {
-	const __dirname = path.dirname(fileURLToPath(import.meta.url));
-	const appDir = path.resolve(__dirname, '../..');
-	const packageJsonPath = path.resolve(appDir, 'package.json');
-	const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-	
-	const appsEngineVersion = await getAppsEngineVersion(appDir);
-
-	const output: {
+type RocketChatInfo = {
+	api: {
 		version: string;
 		build: {
 			date: string;
@@ -53,7 +28,23 @@ async function getInfo() {
 			author?: string;
 			subject?: string;
 		};
-	} = {
+	};
+	minimumClientVersions: Record<string, string>;
+};
+
+export async function loadInfo() {
+	const info = await getInfo();
+	return `export const Info = ${JSON.stringify(info.api, null, 4)};
+export const minimumClientVersions = ${JSON.stringify(info.minimumClientVersions, null, 4)};`;
+}
+
+async function getInfo(): Promise<RocketChatInfo> {
+	const packageJsonPath = path.resolve(process.cwd(), 'package.json');
+	const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+
+	const appsEngineVersion = await getAppsEngineVersion(process.cwd());
+
+	const output: RocketChatInfo['api'] = {
 		version: packageJson.version,
 		build: {
 			date: new Date().toISOString(),
@@ -113,7 +104,7 @@ async function getAppsEngineVersion(appDir: string) {
 			const pkg = JSON.parse(fs.readFileSync(appsEnginePkgPath, 'utf-8'));
 			return pkg.version;
 		}
-		
+
 		// Fallback to searching in the workspace if possible (not guaranteed in all envs but likely in this monorepo)
 		// Assuming standard monorepo structure ../../packages/apps-engine
 		const localPath = path.resolve(appDir, '../../packages/apps-engine/package.json');
@@ -121,7 +112,6 @@ async function getAppsEngineVersion(appDir: string) {
 			const pkg = JSON.parse(fs.readFileSync(localPath, 'utf-8'));
 			return pkg.version;
 		}
-
 	} catch (e) {
 		console.warn('Failed to resolve @rocket.chat/apps-engine version', e);
 	}

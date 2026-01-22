@@ -3,18 +3,15 @@ import path from 'node:path';
 import { prefixRegex } from '@rolldown/pluginutils';
 import type { Plugin } from 'vite';
 
+import type { ResolvedPluginOptions } from './shared/config.ts';
 
 const meteorProgramDir = path.resolve('.meteor/local/build/programs/web.browser');
 const meteorPackagesDir = path.join(meteorProgramDir, 'packages');
 
-export function meteorStubs(
-	config: {
-		modules: Record<string, null | string>;
-	} = { modules: {} },
-): Plugin {
+export function stubs(config: ResolvedPluginOptions): Plugin {
 	return {
 		name: 'meteor-stubs',
-		// enforce: 'pre',
+		enforce: 'pre',
 		transform: {
 			filter: {
 				// Only transform files in the Meteor packages

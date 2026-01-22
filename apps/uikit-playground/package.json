@@ -56,7 +56,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.24",
     "typescript": "~5.9.3",
-    "vite": "8.0.0-beta.8"
+    "vite": "^8.0.0-beta.9"
   },
   "volta": {
     "extends": "../../package.json"

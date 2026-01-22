@@ -3,10 +3,8 @@ import path from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
-import { meteorPackages } from './vite-plugins/meteor-packages';
-import { meteorRuntime } from './vite-plugins/meteor-runtime';
-import { meteorStubs } from './vite-plugins/meteor-stubs';
-import { rocketchatInfo } from './vite-plugins/rocketchat-info';
+import info from './vite/plugins/info';
+import meteor from './vite/plugins/meteor';
 
 const ROOT_URL = await getDefaultHostUrl();
 
@@ -53,17 +51,18 @@ const meteorModules = {
 export default defineConfig({
 	appType: 'spa',
 	plugins: [
-		rocketchatInfo(),
-		meteorRuntime({ modules: meteorModules, rootUrl: 'http://localhost:5173' }),
-		meteorStubs({ modules: meteorModules }),
-		meteorPackages(),
+		info(),
+		meteor({
+			modules: meteorModules,
+			rootUrl: ROOT_URL.toString(),
+		}),
 		react({
 			exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
 		}),
 	],
 	resolve: {
 		dedupe: ['react', 'react-dom'],
-		// preserveSymlinks: true,
+		preserveSymlinks: true,
 		alias: {
 			// Rocket.Chat Packages
 			'@rocket.chat/api-client': path.resolve('../../packages/api-client/src/index.ts'),
@@ -104,10 +103,9 @@ export default defineConfig({
 	build: {
 		assetsDir: 'build_assets',
 		sourcemap: true,
-		minify: false
-	},preview: {
-		
+		minify: false,
 	},
+	preview: {},
 	server: {
 		cors: true,
 		origin: ROOT_URL.origin,
