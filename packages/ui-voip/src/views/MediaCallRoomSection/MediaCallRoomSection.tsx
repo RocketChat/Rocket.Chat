@@ -1,6 +1,6 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CARD_TOTAL_HEIGHT } from './GenericCard';
@@ -48,7 +48,6 @@ type RoomCallSectionProps = {
 
 const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: RoomCallSectionProps) => {
 	const { t } = useTranslation();
-	const [sharingScreen, setSharingScreen] = useState<boolean>(false);
 	const {
 		muted,
 		held,
@@ -82,7 +81,6 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 
 	const onClickShareScreen = () => {
 		toggleScreenSharing();
-		setSharingScreen((prev) => !prev);
 	};
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
@@ -133,14 +131,14 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 					/>
 					{remoteVideoStream && (
 						<StreamCard title='Remote Video' slots={{ topLeft: <Timer /> }}>
-							<video preload='metadata' style={{ objectFit: 'cover', height: '100%', maxWidth: '100%' }} ref={remoteStreamRefCallback}>
+							<video preload='metadata' style={{ objectFit: 'cover', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
 								<track kind='captions' />
 							</video>
 						</StreamCard>
 					)}
 					{localVideoStream?.active && (
 						<StreamCard title='Local Video'>
-							<video preload='metadata' style={{ objectFit: 'cover', height: '100%', maxWidth: '100%' }} ref={localStreamRefCallback}>
+							<video preload='metadata' style={{ objectFit: 'cover', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
 								<track kind='captions' />
 							</video>
 						</StreamCard>
@@ -158,7 +156,7 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 						label={t('Screen_sharing')}
 						icons={['computer', 'computer']}
 						titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
-						pressed={sharingScreen}
+						pressed={localVideoStream?.active ?? false}
 						onToggle={onClickShareScreen}
 					/>
 					<ToggleButton
@@ -168,15 +166,13 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 						pressed={held}
 						onToggle={onHold}
 					/>
-					{remoteVideoStream && (
-						<ToggleButton
-							label={t('Chat')}
-							icons={['balloon', 'balloon-off']}
-							titles={[t('Open_chat'), t('Close_chat')]}
-							pressed={showChat}
-							onToggle={onToggleChat}
-						/>
-					)}
+					<ToggleButton
+						label={t('Chat')}
+						icons={['balloon', 'balloon-off']}
+						titles={[t('Open_chat'), t('Close_chat')]}
+						pressed={showChat}
+						onToggle={onToggleChat}
+					/>
 					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
 					<ActionButton label={t('Voice_call__user__hangup', { user: peerInfo.displayName })} icon='phone-off' danger onClick={onEndCall} />
 					<DevicePicker />
