@@ -1,8 +1,8 @@
 import type { Plugin } from 'vite';
 
-import { loadInfo } from './lib/info';
+import { loadInfo } from './lib/generate';
 
-export function rocketchatInfo(): Plugin {
+export default function infoPlugin(): Plugin {
 	const rocketchatInfoId = 'rocketchat.info';
 	const resolvedVirtualId = `\0${rocketchatInfoId}`;
 
