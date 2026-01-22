@@ -322,9 +322,10 @@
 		"@rocket.chat/livechat": "workspace:^",
 		"@rocket.chat/mock-providers": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@storybook/addon-a11y": "^8.6.17",
-		"@storybook/addon-essentials": "^8.6.17",
-		"@storybook/addon-interactions": "^8.6.17",
+		"@rolldown/pluginutils": "^1.0.0-rc.1",
+		"@storybook/addon-a11y": "^8.6.15",
+		"@storybook/addon-essentials": "^8.6.15",
+		"@storybook/addon-interactions": "^8.6.15",
 		"@storybook/addon-styling-webpack": "^1.0.1",
 		"@storybook/addon-webpack5-compiler-swc": "~3.0.0",
 		"@storybook/react": "^8.6.17",
@@ -452,7 +453,7 @@
 		"ts-node": "^10.9.2",
 		"tsx": "~4.20.6",
 		"typescript": "~5.9.3",
-		"vite": "8.0.0-beta.8",
+		"vite": "8.0.0-beta.9",
 		"webpack": "~5.99.9"
 	},
 	"volta": {
