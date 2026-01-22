@@ -19,8 +19,8 @@ const Section = ({
     <Box mbe="15px">
       <Label>{template.description}</Label>
     </Box>
-    {template.payloads.map((payload) => (
-      <Payload blocks={payload.blocks} surface={payload.surface} />
+    {template.payloads.map((payload, i) => (
+      <Payload key={i} blocks={payload.blocks} surface={payload.surface} />
     ))}
   </Box>
 );

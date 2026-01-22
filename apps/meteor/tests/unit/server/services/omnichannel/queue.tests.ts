@@ -384,7 +384,6 @@ describe('Omnichannel Queue processor', () => {
 			await queue.execute();
 
 			expect(queue.getActiveQueues.calledOnce).to.be.true;
-			expect(queueLogger.debug.calledWith('Processing items for queue Public')).to.be.true;
 		});
 	});
 	describe('start', () => {

@@ -303,7 +303,7 @@ class PushClass {
 			return;
 		}
 
-		logger.error({ msg: `Error sending push to gateway (${tries} try) ->`, err: response });
+		logger.error({ msg: 'Error sending push to gateway', tries, err: response });
 
 		if (tries <= 4) {
 			// [1, 2, 4, 8, 16] minutes (total 31)
@@ -368,7 +368,11 @@ class PushClass {
 			throw new Error('Push.send: option "text" not a string');
 		}
 
-		logger.debug(`send message "${notification.title}" to userId`, notification.userId);
+		logger.debug({
+			msg: 'send message to userId',
+			title: notification.title,
+			userId: notification.userId,
+		});
 
 		const query = {
 			userId: notification.userId,
@@ -389,7 +393,12 @@ class PushClass {
 		}
 
 		if (settings.get('Log_Level') === '2') {
-			logger.debug(`Sent message "${notification.title}" to ${countApn.length} ios apps ${countGcm.length} android apps`);
+			logger.debug({
+				msg: 'Sent message to apps',
+				title: notification.title,
+				iosApps: countApn.length,
+				androidApps: countGcm.length,
+			});
 
 			// Add some verbosity about the send result, making sure the developer
 			// understands what just happened.
@@ -489,7 +498,11 @@ class PushClass {
 		try {
 			await this.sendNotification(notification);
 		} catch (error: any) {
-			logger.debug(`Could not send notification to user "${notification.userId}", Error: ${error.message}`);
+			logger.debug({
+				msg: 'Could not send notification to user',
+				userId: notification.userId,
+				err: error,
+			});
 			logger.debug(error.stack);
 		}
 	}

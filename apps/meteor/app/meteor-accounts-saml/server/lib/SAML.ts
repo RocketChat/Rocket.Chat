@@ -38,7 +38,10 @@ const convertRoleNamesToIds = async (roleNamesOrIds: string[]): Promise<IRole['_
 	const roles = (await Roles.findInIdsOrNames(normalizedRoleNamesOrIds).toArray()).map((role) => role._id);
 
 	if (roles.length !== normalizedRoleNamesOrIds.length) {
-		SystemLogger.warn(`Failed to convert some role names to ids: ${normalizedRoleNamesOrIds.join(', ')}`);
+		SystemLogger.warn({
+			msg: 'Failed to convert some role names to ids',
+			roles: normalizedRoleNamesOrIds,
+		});
 	}
 
 	if (!roles.length) {

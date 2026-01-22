@@ -17,6 +17,7 @@ const MediaCallProvider = ({ children }: { children: ReactNode }) => {
 			onToggleWidget: undefined,
 			onEndCall: undefined,
 			peerInfo: undefined,
+			setOpenRoomId: undefined,
 		}),
 		[],
 	);
