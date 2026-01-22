@@ -1,7 +1,7 @@
 import type { MessageAttachment } from './MessageAttachment';
 import type { MessageAttachmentDefault } from './MessageAttachmentDefault';
 
-export interface ITranslatedMessageAttachment extends MessageAttachmentDefault {
+interface ITranslatedMessageAttachment extends MessageAttachmentDefault {
 	translations: { [language: string]: string };
 }
 

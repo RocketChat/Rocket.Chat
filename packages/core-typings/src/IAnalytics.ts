@@ -5,7 +5,7 @@ interface IAnalyticsBase extends IRocketChatRecord {
 	date: number;
 }
 
-export interface IAnalyticsMessages extends IAnalyticsBase {
+interface IAnalyticsMessages extends IAnalyticsBase {
 	type: 'messages';
 	room: {
 		_id: string;
@@ -15,14 +15,8 @@ export interface IAnalyticsMessages extends IAnalyticsBase {
 	};
 }
 
-export interface IAnalyticsUsers extends IAnalyticsBase {
+interface IAnalyticsUsers extends IAnalyticsBase {
 	type: 'users';
-	room: {
-		_id: string;
-		name?: string;
-		t: string;
-		usernames: string[];
-	};
 }
 
 export interface IAnalyticsSeatRequest extends IAnalyticsBase {
@@ -30,4 +24,4 @@ export interface IAnalyticsSeatRequest extends IAnalyticsBase {
 	count: number;
 }
 
-export type IAnalytic = IAnalyticsBase | IAnalyticsMessages | IAnalyticsUsers | IAnalyticsSeatRequest;
+export type IAnalytics = IAnalyticsMessages | IAnalyticsUsers | IAnalyticsSeatRequest;
