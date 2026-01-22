@@ -1,13 +1,18 @@
-import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { Message, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
 import type { IUpload, IUser, FilesAndAttachments, IMessage } from '@rocket.chat/core-typings';
 import { isFileAttachment } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
+import { Uploads } from '@rocket.chat/models';
 
+import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
+import { canDeleteMessageAsync } from '../../../app/authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
-import { i18n } from '../../lib/i18n';
+
+const logger = new Logger('UploadService');
 
 export class UploadService extends ServiceClassInternal implements IUploadService {
 	protected name = 'upload';
@@ -42,9 +47,64 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		return parseFileIntoMessageAttachments(file, roomId, user);
 	}
 
-	async updateMessageRemovingFiles(msg: IMessage, filesToRemove: IUpload['_id'][], user: IUser): Promise<void> {
-		const text = `_${i18n.t('File_removed')}_`;
-		const newAttachment = { color: '#FD745E', text };
+	async canDeleteFile(userId: IUser['_id'], file: IUpload, msg: IMessage | null): Promise<boolean> {
+		if (msg) {
+			return canDeleteMessageAsync(userId, msg);
+		}
+
+		if (!file.userId || !file.rid) {
+			return false;
+		}
+
+		// If file is not confirmed and was sent by the same user
+		if (file.expiresAt && file.userId === userId) {
+			return canAccessRoomIdAsync(file.rid, userId);
+		}
+
+		// It's a confirmed file but it has no message, so use data from the file to run message delete permission checks
+		const msgForValidation = { u: { _id: file.userId }, ts: file.uploadedAt, rid: file.rid };
+		return canDeleteMessageAsync(userId, msgForValidation);
+	}
+
+	async deleteFile(user: IUser, fileId: IUpload['_id'], msg: IMessage | null): Promise<{ deletedFiles: IUpload['_id'][] }> {
+		// Find every file that is derived from the file that is being deleted (its thumbnails)
+		const additionalFiles = await Uploads.findAllByOriginalFileId(fileId, { projection: { _id: 1 } })
+			.map(({ _id }) => _id)
+			.toArray();
+		const allFiles = [fileId, ...additionalFiles];
+
+		if (msg) {
+			await this.updateMessageRemovingFiles(msg, allFiles, user);
+		}
+
+		return this.removeFileAndDerivates(fileId, additionalFiles);
+	}
+
+	private async removeFileAndDerivates(
+		fileId: IUpload['_id'],
+		additionalFiles: IUpload['_id'][],
+	): Promise<{ deletedFiles: IUpload['_id'][] }> {
+		const store = FileUpload.getStore('Uploads');
+		// Delete the main file first;
+		await store.deleteById(fileId);
+
+		// The main file is already deleted; From here forward we'll return a success response even if some sub-process fails
+		const deletedFiles: IUpload['_id'][] = [fileId];
+		// Delete them one by one as the store may include requests to external services
+		for await (const id of additionalFiles) {
+			try {
+				await store.deleteById(id);
+				deletedFiles.push(id);
+			} catch (err) {
+				logger.error({ msg: 'Failed to delete derived file', fileId: id, originalFileId: fileId, err });
+			}
+		}
+
+		return { deletedFiles };
+	}
+
+	private async updateMessageRemovingFiles(msg: IMessage, filesToRemove: IUpload['_id'][], user: IUser): Promise<void> {
+		const newAttachment = await Message.getNotificationAttachment('File_removed');
 
 		const newFiles = msg.files?.filter((file) => !filesToRemove.includes(file._id));
 		const newAttachments = msg.attachments?.map((attachment) => {

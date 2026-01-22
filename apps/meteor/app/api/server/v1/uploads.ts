@@ -9,9 +9,6 @@ import {
 	validateNotFoundErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
-import { FileUpload } from '../../../file-upload/server';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
@@ -76,55 +73,18 @@ const uploadsDeleteEndpoint = API.v1.post(
 			return API.v1.notFound();
 		}
 
-		if (!(await canAccessRoomIdAsync(file.rid, this.userId))) {
+		const msg = await Messages.getMessageByFileId(fileId);
+		if (!(await Upload.canDeleteFile(this.userId, file, msg))) {
 			return API.v1.forbidden('forbidden');
 		}
 
-		const msg = await Messages.getMessageByFileId(fileId);
-
-		const isOwnTemporaryFile = !msg && file.expiresAt && file.userId === this.userId;
-
-		if (!isOwnTemporaryFile) {
-			// Use the message deletion permissions to determine if the user can delete confirmed files;
-			// If there's no message yet, use the data from the file to run the message permission checks
-			const msgForValidation = msg || { u: { _id: file.userId }, ts: file.uploadedAt, rid: file.rid };
-			if (!(await canDeleteMessageAsync(this.userId, msgForValidation))) {
-				return API.v1.forbidden('forbidden');
-			}
+		const user = await Users.findOneById(this.userId);
+		// Safeguard, can't really happen
+		if (!user) {
+			return API.v1.forbidden('forbidden');
 		}
 
-		const store = FileUpload.getStore('Uploads');
-
-		// Find every file that is derived from the file that is being deleted (its thumbnails)
-		const additionalFiles = await Uploads.findAllByOriginalFileId(fileId, { projection: { _id: 1 } })
-			.map(({ _id }) => _id)
-			.toArray();
-		const allFiles = [fileId, ...additionalFiles];
-
-		if (msg) {
-			const user = await Users.findOneById(this.userId);
-			if (!user) {
-				return API.v1.notFound();
-			}
-			await Upload.updateMessageRemovingFiles(msg, allFiles, user);
-		}
-
-		// Delete the main file first;
-		await store.deleteById(fileId);
-
-		// The main file is already deleted; From here forward we'll return a success response even if some sub-process fails
-
-		const deletedFiles: IUpload['_id'][] = [fileId];
-		// Delete them one by one as the store may include requests to external services
-		for await (const id of additionalFiles) {
-			try {
-				await store.deleteById(id);
-				deletedFiles.push(id);
-			} catch (err) {
-				this.logger.error({ msg: 'Failed to delete derived file', fileId: id, originalFileId: fileId, err });
-			}
-		}
-
+		const { deletedFiles } = await Upload.deleteFile(user, fileId, msg);
 		return API.v1.success({
 			deletedFiles,
 		});

@@ -27,5 +27,6 @@ export interface IUploadService {
 	getFileBuffer({ file }: { file: IUpload }): Promise<Buffer>;
 	extractMetadata(file: IUpload): Promise<{ height?: number; width?: number; format?: string }>;
 	parseFileIntoMessageAttachments(file: Partial<IUpload>, roomId: string, user: IUser): Promise<FilesAndAttachments>;
-	updateMessageRemovingFiles(msg: IMessage, filesToRemove: IUpload['_id'][], user: IUser): Promise<void>;
+	canDeleteFile(userId: IUser['_id'], file: IUpload, msg: IMessage | null): Promise<boolean>;
+	deleteFile(user: IUser, fileId: IUpload['_id'], msg: IMessage | null): Promise<{ deletedFiles: IUpload['_id'][] }>;
 }
