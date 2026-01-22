@@ -14,7 +14,7 @@ const UnitsTableRow = ({ _id, name, visibility }: { _id: string; name: string; v
 	const handleDelete = useRemoveUnit(_id);
 
 	return (
-		<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action>
+		<GenericTableRow key={_id} tabIndex={0} onClick={onRowClick(_id)} action>
 			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{visibility}</GenericTableCell>
 			<GenericTableCell>

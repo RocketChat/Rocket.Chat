@@ -1,16 +1,16 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
-import { ConfirmDeleteModal } from '../fragments';
 import { FlexTab } from '../fragments/flextab';
+import { Listbox } from '../fragments/listbox';
 import { Table } from '../fragments/table';
 
 export class OmnichannelUnitFlexTab extends FlexTab {
-	readonly deleteModal: ConfirmDeleteModal;
+	readonly listbox: Listbox;
 
-	constructor(page: Locator) {
-		super(page);
-		this.deleteModal = new ConfirmDeleteModal(page);
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'unit' }));
+		this.listbox = new Listbox(page);
 	}
 
 	get fieldDepartments() {
@@ -52,13 +52,11 @@ export class OmnichannelUnitFlexTab extends FlexTab {
 
 	async selectVisibility(option: string) {
 		await this.inputVisibility.click();
-		await this.root.locator(`li.rcx-option[data-key="${option}"]`).click();
+		await this.listbox.selectOption(option);
 	}
 
 	async deleteUnit() {
 		await this.btnDelete.click();
-		await this.deleteModal?.confirmDelete();
-		await this.waitForDismissal();
 	}
 }
 
@@ -73,13 +71,13 @@ class OmnichannelUnitsTable extends Table {
 }
 
 export class OmnichannelUnits extends OmnichannelAdmin {
-	readonly editUnit: OmnichannelUnitFlexTab;
+	readonly manageUnit: OmnichannelUnitFlexTab;
 
 	readonly table: OmnichannelUnitsTable;
 
 	constructor(page: Page) {
 		super(page);
-		this.editUnit = new OmnichannelUnitFlexTab(page.getByRole('dialog', { name: 'Edit Unit' }));
+		this.manageUnit = new OmnichannelUnitFlexTab(page);
 		this.table = new OmnichannelUnitsTable(page.getByRole('table', { name: 'Units' }));
 	}
 

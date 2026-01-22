@@ -59,21 +59,21 @@ test.describe('OC - Manage Units', () => {
 
 		await test.step('expect correct form default state', async () => {
 			await poOmnichannelUnits.createNew();
-			await expect(poOmnichannelUnits.editUnit.root).toBeVisible();
-			await expect(poOmnichannelUnits.editUnit.btnSave).toBeDisabled();
-			await expect(poOmnichannelUnits.editUnit.btnCancel).toBeEnabled();
-			await poOmnichannelUnits.editUnit.btnCancel.click();
-			await expect(poOmnichannelUnits.editUnit.root).not.toBeVisible();
+			await expect(poOmnichannelUnits.manageUnit.root).toBeVisible();
+			await expect(poOmnichannelUnits.manageUnit.btnSave).toBeDisabled();
+			await expect(poOmnichannelUnits.manageUnit.btnCancel).toBeEnabled();
+			await poOmnichannelUnits.manageUnit.btnCancel.click();
+			await expect(poOmnichannelUnits.manageUnit.root).not.toBeVisible();
 		});
 
 		await test.step('expect to create new unit', async () => {
 			await poOmnichannelUnits.createNew();
-			await poOmnichannelUnits.editUnit.inputName.fill(unitName);
-			await poOmnichannelUnits.editUnit.selectVisibility('public');
-			await poOmnichannelUnits.editUnit.selectDepartment(department.data.name);
-			await poOmnichannelUnits.editUnit.selectMonitor('user2');
-			await poOmnichannelUnits.editUnit.btnSave.click();
-			await expect(poOmnichannelUnits.editUnit.root).not.toBeVisible();
+			await poOmnichannelUnits.manageUnit.inputName.fill(unitName);
+			await poOmnichannelUnits.manageUnit.selectVisibility('public');
+			await poOmnichannelUnits.manageUnit.selectDepartment(department.data.name);
+			await poOmnichannelUnits.manageUnit.selectMonitor('user2');
+			await poOmnichannelUnits.manageUnit.btnSave.click();
+			await expect(poOmnichannelUnits.manageUnit.root).not.toBeVisible();
 
 			await poOmnichannelUnits.search(unitName);
 			await expect(poOmnichannelUnits.table.findRowByName(unitName)).toBeVisible();
@@ -106,10 +106,10 @@ test.describe('OC - Manage Units', () => {
 		await test.step('expect to edit unit', async () => {
 			await poOmnichannelUnits.search(unit.name);
 			await poOmnichannelUnits.table.findRowByName(unit.name).click();
-			await expect(poOmnichannelUnits.editUnit.root).toBeVisible();
-			await poOmnichannelUnits.editUnit.inputName.fill(editedUnitName);
-			await poOmnichannelUnits.editUnit.btnSave.click();
-			await expect(poOmnichannelUnits.editUnit.root).not.toBeVisible();
+			await expect(poOmnichannelUnits.manageUnit.root).toBeVisible();
+			await poOmnichannelUnits.manageUnit.inputName.fill(editedUnitName);
+			await poOmnichannelUnits.manageUnit.btnSave.click();
+			await expect(poOmnichannelUnits.manageUnit.root).not.toBeVisible();
 			await expect(poOmnichannelUnits.inputSearch).toBeVisible();
 			await poOmnichannelUnits.search(editedUnitName);
 			await expect(poOmnichannelUnits.table.findRowByName(editedUnitName)).toBeVisible();
@@ -117,35 +117,35 @@ test.describe('OC - Manage Units', () => {
 
 		await test.step('expect to add another monitor to list', async () => {
 			await poOmnichannelUnits.table.findRowByName(editedUnitName).click();
-			await poOmnichannelUnits.editUnit.selectMonitor('user3');
-			await poOmnichannelUnits.editUnit.btnSave.click();
-			await expect(poOmnichannelUnits.editUnit.root).not.toBeVisible();
+			await poOmnichannelUnits.manageUnit.selectMonitor('user3');
+			await poOmnichannelUnits.manageUnit.btnSave.click();
+			await expect(poOmnichannelUnits.manageUnit.root).not.toBeVisible();
 
 			await poOmnichannelUnits.search(editedUnitName);
 			await poOmnichannelUnits.table.findRowByName(editedUnitName).click();
 
-			await expect(poOmnichannelUnits.editUnit.inputMonitors).toHaveText(/user2/);
-			await expect(poOmnichannelUnits.editUnit.inputMonitors).toHaveText(/user3/);
+			await expect(poOmnichannelUnits.manageUnit.inputMonitors).toHaveText(/user2/);
+			await expect(poOmnichannelUnits.manageUnit.inputMonitors).toHaveText(/user3/);
 		});
 
 		await test.step('expect unit to remove one of the two monitors', async () => {
 			await poOmnichannelUnits.search(editedUnitName);
 			await poOmnichannelUnits.table.findRowByName(editedUnitName).click();
-			await poOmnichannelUnits.editUnit.selectMonitor('user2');
-			await poOmnichannelUnits.editUnit.btnSave.click();
-			await expect(poOmnichannelUnits.editUnit.root).not.toBeVisible();
+			await poOmnichannelUnits.manageUnit.selectMonitor('user2');
+			await poOmnichannelUnits.manageUnit.btnSave.click();
+			await expect(poOmnichannelUnits.manageUnit.root).not.toBeVisible();
 
 			await poOmnichannelUnits.search(editedUnitName);
 			await poOmnichannelUnits.table.findRowByName(editedUnitName).click();
-			await expect(poOmnichannelUnits.editUnit.inputMonitors).toHaveText(/user3/);
-			await expect(poOmnichannelUnits.editUnit.inputMonitors).not.toHaveText(/user2/);
+			await expect(poOmnichannelUnits.manageUnit.inputMonitors).toHaveText(/user3/);
+			await expect(poOmnichannelUnits.manageUnit.inputMonitors).not.toHaveText(/user2/);
 		});
 
 		await test.step('expect to delete unit', async () => {
 			await poOmnichannelUnits.table.findRowByName(editedUnitName).click();
-			await expect(poOmnichannelUnits.editUnit.root).toBeVisible();
+			await expect(poOmnichannelUnits.manageUnit.root).toBeVisible();
 
-			await poOmnichannelUnits.editUnit.deleteUnit();
+			await poOmnichannelUnits.manageUnit.deleteUnit();
 			await expect(poOmnichannelUnits.table.findRowByName(editedUnitName)).not.toBeVisible();
 		});
 	});
@@ -167,42 +167,42 @@ test.describe('OC - Manage Units', () => {
 		await test.step('expect to add unit departments', async () => {
 			await poOmnichannelUnits.search(unit.name);
 			await poOmnichannelUnits.table.findRowByName(unit.name).click();
-			await expect(poOmnichannelUnits.editUnit.root).toBeVisible();
-			await poOmnichannelUnits.editUnit.selectDepartment(department2.data.name);
-			await poOmnichannelUnits.editUnit.btnSave.click();
-			await expect(poOmnichannelUnits.editUnit.root).not.toBeVisible();
+			await expect(poOmnichannelUnits.manageUnit.root).toBeVisible();
+			await poOmnichannelUnits.manageUnit.selectDepartment(department2.data.name);
+			await poOmnichannelUnits.manageUnit.btnSave.click();
+			await expect(poOmnichannelUnits.manageUnit.root).not.toBeVisible();
 
 			await poOmnichannelUnits.search(unit.name);
 			await poOmnichannelUnits.table.findRowByName(unit.name).click();
-			await expect(poOmnichannelUnits.editUnit.root).toBeVisible();
-			await expect(poOmnichannelUnits.editUnit.findDepartmentsChipOption(department2.data.name)).toBeVisible();
-			await poOmnichannelUnits.editUnit.findDepartmentsChipOption(department2.data.name).hover();
+			await expect(poOmnichannelUnits.manageUnit.root).toBeVisible();
+			await expect(poOmnichannelUnits.manageUnit.findDepartmentsChipOption(department2.data.name)).toBeVisible();
+			await poOmnichannelUnits.manageUnit.findDepartmentsChipOption(department2.data.name).hover();
 
 			await expect(page.getByRole('tooltip', { name: department2.data.name })).toBeVisible();
-			await poOmnichannelUnits.editUnit.close();
+			await poOmnichannelUnits.manageUnit.close();
 		});
 
 		await test.step('expect to remove unit departments', async () => {
 			await poOmnichannelUnits.search(unit.name);
 			await poOmnichannelUnits.table.findRowByName(unit.name).click();
-			await expect(poOmnichannelUnits.editUnit.root).toBeVisible();
-			await poOmnichannelUnits.editUnit.selectDepartment(department2.data.name);
-			await poOmnichannelUnits.editUnit.btnSave.click();
-			await expect(poOmnichannelUnits.editUnit.root).not.toBeVisible();
+			await expect(poOmnichannelUnits.manageUnit.root).toBeVisible();
+			await poOmnichannelUnits.manageUnit.selectDepartment(department2.data.name);
+			await poOmnichannelUnits.manageUnit.btnSave.click();
+			await expect(poOmnichannelUnits.manageUnit.root).not.toBeVisible();
 
 			await poOmnichannelUnits.search(unit.name);
 			await poOmnichannelUnits.table.findRowByName(unit.name).click();
-			await expect(poOmnichannelUnits.editUnit.root).toBeVisible();
-			await expect(poOmnichannelUnits.editUnit.findDepartmentsChipOption(department2.data.name)).toBeHidden();
-			await poOmnichannelUnits.editUnit.close();
+			await expect(poOmnichannelUnits.manageUnit.root).toBeVisible();
+			await expect(poOmnichannelUnits.manageUnit.findDepartmentsChipOption(department2.data.name)).toBeHidden();
+			await poOmnichannelUnits.manageUnit.close();
 		});
 
 		await test.step('expect to delete unit', async () => {
 			await poOmnichannelUnits.search(unit.name);
 			await poOmnichannelUnits.table.findRowByName(unit.name).click();
-			await expect(poOmnichannelUnits.editUnit.root).toBeVisible();
+			await expect(poOmnichannelUnits.manageUnit.root).toBeVisible();
 
-			await poOmnichannelUnits.editUnit.deleteUnit();
+			await poOmnichannelUnits.manageUnit.deleteUnit();
 			await expect(poOmnichannelUnits.table.findRowByName(unit.name)).not.toBeVisible();
 		});
 	});
