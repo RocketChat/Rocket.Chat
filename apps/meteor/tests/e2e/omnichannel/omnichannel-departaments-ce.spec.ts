@@ -29,15 +29,13 @@ test.describe.serial('OC - Manage Departments (CE)', () => {
 			await poOmnichannelDepartments.createDepartment(departmentName, faker.internet.email());
 
 			await poOmnichannelDepartments.inputSearch.fill(departmentName);
-			await expect(poOmnichannelDepartments.table.findRowByName(departmentName)).toBeVisible();
+			await expect(poOmnichannelDepartments.departmentsTable.findRowByName(departmentName)).toBeVisible();
 		});
 
 		await test.step('expect to not be possible adding a second department ', async () => {
 			await poOmnichannelDepartments.createNew();
-
-			await expect(poOmnichannelDepartments.upgradeDepartmentsModal).toBeVisible();
-
-			await poOmnichannelDepartments.btnUpgradeDepartmentsModalClose.click();
+			await poOmnichannelDepartments.upsellDepartmentsModal.waitForDisplay();
+			await poOmnichannelDepartments.upsellDepartmentsModal.close();
 		});
 	});
 });

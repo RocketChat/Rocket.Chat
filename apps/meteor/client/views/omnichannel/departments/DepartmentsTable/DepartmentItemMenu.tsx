@@ -92,7 +92,7 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 			disabled: !departmentRemovalEnabled,
 		},
 	};
-	return <Menu options={menuOptions} />;
+	return <Menu title={t('Options')} options={menuOptions} />;
 };
 
 export default DepartmentItemMenu;

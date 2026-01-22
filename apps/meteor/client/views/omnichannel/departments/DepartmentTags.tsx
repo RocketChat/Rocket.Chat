@@ -28,9 +28,8 @@ const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTa
 
 	return (
 		<>
-			<FieldRow>
+			<FieldRow role='group' aria-labelledby={props.id}>
 				<TextInput
-					data-qa='DepartmentEditTextInput-ConversationClosingTags'
 					error={error}
 					placeholder={t('Enter_a_tag')}
 					value={tagText}
@@ -38,8 +37,8 @@ const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTa
 					{...props}
 				/>
 				<Button
+					aria-label={t('Add_tag')}
 					disabled={Boolean(!tagText.trim()) || tags.includes(tagText)}
-					data-qa='DepartmentEditAddButton-ConversationClosingTags'
 					mis={8}
 					title={t('Add')}
 					onClick={handleAddTag}

@@ -1,6 +1,8 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
+import { Listbox } from '../fragments/listbox';
+import { OmnichannelUpsellDepartmentsModal, ConfirmDeleteDepartmentModal } from '../fragments/modals';
 import { Table } from '../fragments/table';
 
 class OmnichannelDepartmentsTable extends Table {
@@ -9,103 +11,88 @@ class OmnichannelDepartmentsTable extends Table {
 	}
 }
 
+class OmnichannelDepartmentAgentsTable extends Table {
+	constructor(page: Page) {
+		super(page.getByRole('table', { name: 'Agents' }));
+	}
+}
+
 export class OmnichannelDepartments extends OmnichannelAdmin {
-	readonly table: OmnichannelDepartmentsTable;
+	readonly departmentsTable: OmnichannelDepartmentsTable;
+
+	readonly agentsTable: OmnichannelDepartmentAgentsTable;
+
+	readonly upsellDepartmentsModal: OmnichannelUpsellDepartmentsModal;
+
+	readonly listbox: Listbox;
+
+	override readonly deleteModal: ConfirmDeleteDepartmentModal;
 
 	constructor(page: Page) {
 		super(page);
-		this.table = new OmnichannelDepartmentsTable(page);
+		this.departmentsTable = new OmnichannelDepartmentsTable(page);
+		this.agentsTable = new OmnichannelDepartmentAgentsTable(page);
+		this.upsellDepartmentsModal = new OmnichannelUpsellDepartmentsModal(page);
+		this.listbox = new Listbox(page);
+		this.deleteModal = new ConfirmDeleteDepartmentModal(page);
 	}
 
 	async createNew() {
 		await this.getButtonByType('department').click();
 	}
 
-	get btnEnabled() {
-		return this.page.locator('label >> text="Enabled"');
+	get labelEnabled() {
+		return this.page.getByLabel('Enabled');
 	}
 
 	get inputName() {
-		return this.page.locator('[data-qa="DepartmentEditTextInput-Name"]');
+		return this.page.getByRole('textbox', { name: 'Name', exact: true });
 	}
 
 	get inputEmail() {
-		return this.page.locator('[data-qa="DepartmentEditTextInput-Email"]');
+		return this.page.getByRole('textbox', { name: 'Email', exact: true });
 	}
 
-	get toggleRequestTags() {
-		return this.page.locator('label >> text="Request tag(s) before closing conversation"');
+	get inputConversationClosingTags() {
+		return this.page.getByRole('textbox', { name: 'Conversation closing tags', exact: true });
 	}
 
-	get inputTags() {
-		return this.page.locator('[data-qa="DepartmentEditTextInput-ConversationClosingTags"]');
-	}
-
-	get invalidInputName() {
-		return this.page.locator('[data-qa="DepartmentEditTextInput-Name"]:invalid');
-	}
-
-	get invalidInputEmail() {
-		return this.page.locator('[data-qa="DepartmentEditTextInput-Email"]:invalid');
-	}
-
-	get btnTagsAdd() {
-		return this.page.locator('[data-qa="DepartmentEditAddButton-ConversationClosingTags"]');
+	get btnAddTags() {
+		return this.page.getByRole('group', { name: 'Conversation closing tags' }).getByRole('button', { name: 'Add' });
 	}
 
 	get btnSave() {
-		return this.page.locator('role=button[name="Save"]');
+		return this.page.getByRole('button', { name: 'Save' });
 	}
 
-	get archivedDepartmentsTab() {
-		return this.page.locator('[role="tab"]:nth-child(2)');
+	get tabArchivedDepartments() {
+		return this.page.getByRole('tab', { name: 'Archived' });
 	}
 
-	// TODO: remove data-qa
 	getDepartmentMenuByName(name: string) {
-		return this.table.findRowByName(name).locator('[data-testid="menu"]');
+		return this.departmentsTable.findRowByName(name).getByRole('menu', { name: 'Options' });
 	}
 
 	get menuEditOption() {
-		return this.page.locator('[role=option][value="edit"]');
+		return this.listbox.getOption('Edit');
 	}
 
 	get menuDeleteOption() {
-		return this.page.locator('[role=option][value="delete"]');
+		return this.listbox.getOption('Delete');
 	}
 
 	get menuArchiveOption() {
-		return this.page.locator('[role=option][value="archive"]');
+		return this.listbox.getOption('Archive');
+	}
+
+	get menuUnarchiveOption() {
+		return this.listbox.getOption('Unarchive');
 	}
 
 	async archiveDepartmentByName(name: string) {
 		await this.getDepartmentMenuByName(name).click();
 		await this.menuArchiveOption.click();
 		await this.toastMessage.waitForDisplay();
-	}
-
-	get menuUnarchiveOption() {
-		return this.page.locator('[role=option][value="unarchive"]');
-	}
-
-	get inputModalConfirmDelete() {
-		return this.modalConfirmDelete.locator('input[name="confirmDepartmentName"]');
-	}
-
-	get modalConfirmDelete() {
-		return this.page.locator('[data-qa-id="delete-department-modal"]');
-	}
-
-	get btnModalConfirmDelete() {
-		return this.modalConfirmDelete.locator('role=button[name="Delete"]');
-	}
-
-	get upgradeDepartmentsModal() {
-		return this.page.locator('[data-qa-id="enterprise-departments-modal"]');
-	}
-
-	get btnUpgradeDepartmentsModalClose() {
-		return this.page.locator('[data-qa="modal-close"]');
 	}
 
 	get inputUnit(): Locator {
@@ -117,36 +104,28 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 	}
 
 	errorMessage(message: string): Locator {
-		return this.page.locator(`.rcx-field__error >> text="${message}"`);
+		return this.page.locator(`[role="alert"] >> text="${message}"`);
 	}
 
 	findOption(optionText: string) {
-		return this.page.locator(`role=option[name="${optionText}"]`);
+		return this.listbox.getOption(optionText);
 	}
 
 	async selectUnit(unitName: string) {
 		await this.inputUnit.click();
-		await this.findOption(unitName).click();
-	}
-
-	get fieldGroupAgents() {
-		return this.page.getByLabel('Agents', { exact: true });
+		await this.listbox.selectOption(unitName);
 	}
 
 	get inputAgents() {
-		return this.fieldGroupAgents.getByRole('textbox');
+		return this.page.getByRole('group', { name: 'Agents' }).getByRole('textbox');
 	}
 
 	get btnAddAgent() {
-		return this.fieldGroupAgents.getByRole('button', { name: 'Add', exact: true });
-	}
-
-	findAgentRow(name: string) {
-		return this.page.locator('tr', { has: this.page.getByText(name, { exact: true }) });
+		return this.page.getByRole('group', { name: 'Agents' }).getByRole('button', { name: 'Add', exact: true });
 	}
 
 	async createDepartment(departmentName: string, email: string) {
-		await this.btnEnabled.click();
+		await this.labelEnabled.click();
 		await this.inputName.fill(departmentName);
 		await this.inputEmail.fill(email);
 		await this.btnSave.click();
