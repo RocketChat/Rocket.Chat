@@ -133,12 +133,12 @@ export class SAUMonitorClass {
 			}
 
 			if (!userId) {
-				logger.warn({ msg: "Received 'accounts.logout' event without 'userId'" });
+				logger.warn({ msg: "Received 'sau.accounts.logout' event without 'userId'" });
 				return;
 			}
 
 			if (!sessionId) {
-				logger.warn({ msg: "Received 'accounts.logout' event without 'sessionId'" });
+				logger.warn({ msg: "Received 'sau.accounts.logout' event without 'sessionId'" });
 				return;
 			}
 
