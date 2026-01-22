@@ -5,7 +5,7 @@ import { FlexTab } from '../fragments/flextab';
 import { Listbox } from '../fragments/listbox';
 import { Table } from '../fragments/table';
 
-type TriggerConditions = 'Visitor page URL' | 'Visitor time on site' | 'Chat opened by visitor' | 'After guest registration';
+type TriggerConditions = 'Visitor page URL' | 'Visitor time on site' | 'Chat opened by the visitor' | 'After guest registration';
 
 class OmnichannelEditTriggerFlexTab extends FlexTab {
 	readonly listbox: Listbox;
@@ -113,7 +113,7 @@ export class OmnichannelTriggers extends OmnichannelAdmin {
 		await this.editTrigger.save();
 	}
 
-	public async updateTrigger(name: string, triggerMessage: string, condition: TriggerConditions = 'Chat opened by visitor') {
+	public async updateTrigger(name: string, triggerMessage: string, condition: TriggerConditions = 'Chat opened by the visitor') {
 		await this.editTrigger.fillTriggerForm({
 			name,
 			description: 'Updating the existing trigger',
