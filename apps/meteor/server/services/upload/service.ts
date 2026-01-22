@@ -1,10 +1,16 @@
+import fs from 'fs';
+import type Stream from 'stream';
+
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
 import type { IUpload, IUser, FilesAndAttachments } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
+import sharp from 'sharp';
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
 import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
+import { UploadFS } from '../../ufs';
 
 export class UploadService extends ServiceClassInternal implements IUploadService {
 	protected name = 'upload';
@@ -37,5 +43,54 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 
 	async parseFileIntoMessageAttachments(file: Partial<IUpload>, roomId: string, user: IUser): Promise<FilesAndAttachments> {
 		return parseFileIntoMessageAttachments(file, roomId, user);
+	}
+
+	async streamUploadedFile({
+		file,
+		imageResizeOpts,
+	}: {
+		file: IUpload;
+		imageResizeOpts?: { width: number; height: number };
+	}): Promise<Stream.Readable> {
+		const stream = await FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
+		if (!stream) {
+			throw new Error('error-file-not-found');
+		}
+
+		if (file?.type?.includes('image') && imageResizeOpts) {
+			const { width, height } = imageResizeOpts;
+			return stream.pipe(
+				sharp()
+					.resize({ width, height, fit: 'contain' })
+					.on('error', (error) => {
+						throw new Error(`Error resizing image: ${error.message}`);
+					}),
+			);
+		}
+
+		return stream;
+	}
+
+	async uploadFileFromStream({ streamParam, details }: { streamParam: Stream.Readable; details: any }): Promise<IUpload> {
+		const resolver = Promise.withResolvers<IUpload>();
+
+		const fileId = Random.id();
+		const tempFilePath = UploadFS.getTempFilePath(fileId);
+
+		const writeStream = fs.createWriteStream(tempFilePath);
+		streamParam.pipe(writeStream);
+
+		writeStream.on('finish', async () => {
+			details.size = writeStream.bytesWritten;
+
+			resolver.resolve(await FileUpload.getStore('Uploads').insert(details, tempFilePath));
+		});
+
+		writeStream.on('error', async (err) => {
+			await fs.promises.unlink(tempFilePath).catch(() => undefined);
+			resolver.reject(err);
+		});
+
+		return resolver.promise;
 	}
 }
