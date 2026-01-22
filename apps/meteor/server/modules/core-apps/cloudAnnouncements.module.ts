@@ -1,6 +1,6 @@
 import { Banner } from '@rocket.chat/core-services';
 import type { IUiKitCoreApp, UiKitCoreAppPayload } from '@rocket.chat/core-services';
-import type { Cloud, IBanner, IUser } from '@rocket.chat/core-typings';
+import type { Cloud, IUser } from '@rocket.chat/core-typings';
 import { Banners } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { isTruthy } from '@rocket.chat/tools';
@@ -61,20 +61,18 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			throw new Error('invalid triggerId');
 		}
 
-		// Find banner by _id matching either view.id or view.viewId for backwards compatibility
-		const bannerIds = [id, viewId].filter(isTruthy);
-		const announcement = await Banners.findOne<Pick<IBanner, '_id' | 'surface'>>(
-			{ _id: { $in: bannerIds } },
-			{ projection: { _id: 1, surface: 1 } },
-		);
-
+		// For backwards compatibility: we prefer to use viewId, but some legacy banners
+		// may only have id. We fetch all matching banners and prioritize viewId match.
+		const bannerIds = [viewId, id].filter((bannerId) => isTruthy(bannerId));
+		const banners = await Banners.findByIds(bannerIds).toArray();
+		const announcement = banners.find((b) => b._id === viewId) || banners.find((b) => b._id === id);
 		if (!announcement) {
 			throw new Error('Banner not found');
 		}
 
 		await Banner.dismiss(userId, announcement._id);
 
-		const type = announcement?.surface === 'banner' ? 'banner.close' : 'modal.close';
+		const type = announcement.surface === 'banner' ? 'banner.close' : 'modal.close';
 
 		// for viewClosed we just need to let Cloud know that the banner was closed, no need to wait for the response
 
