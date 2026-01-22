@@ -12,8 +12,7 @@ export class LogoutRequest {
 		const data = this.getDataForNewRequest(serviceProviderOptions, nameID, sessionIndex);
 		const request = SAMLUtils.fillTemplateData(serviceProviderOptions.logoutRequestTemplate || defaultLogoutRequestTemplate, data);
 
-		SAMLUtils.log('------- SAML Logout request -----------');
-		SAMLUtils.log({ request });
+		SAMLUtils.log({ request, msg: '------- SAML Logout request -----------' });
 
 		return {
 			request,
