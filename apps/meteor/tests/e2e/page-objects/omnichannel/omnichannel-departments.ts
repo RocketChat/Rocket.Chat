@@ -58,7 +58,7 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 	}
 
 	get btnAddTags() {
-		return this.page.getByRole('group', { name: 'Conversation closing tags' }).getByRole('button', { name: 'Add' });
+		return this.page.getByText('Conversation closing tags', { exact: true }).locator('..').getByRole('button', { name: 'Add' });
 	}
 
 	get btnSave() {

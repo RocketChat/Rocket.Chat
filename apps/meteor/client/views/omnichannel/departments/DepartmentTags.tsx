@@ -28,7 +28,7 @@ const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTa
 
 	return (
 		<>
-			<FieldRow role='group' aria-labelledby={props.id}>
+			<FieldRow>
 				<TextInput
 					error={error}
 					placeholder={t('Enter_a_tag')}
@@ -36,13 +36,7 @@ const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTa
 					onChange={(e: FormEvent<HTMLInputElement>) => setTagText(e.currentTarget.value)}
 					{...props}
 				/>
-				<Button
-					aria-label={t('Add_tag')}
-					disabled={Boolean(!tagText.trim()) || tags.includes(tagText)}
-					mis={8}
-					title={t('Add')}
-					onClick={handleAddTag}
-				>
+				<Button disabled={Boolean(!tagText.trim()) || tags.includes(tagText)} mis={8} title={t('Add')} onClick={handleAddTag}>
 					{t('Add')}
 				</Button>
 			</FieldRow>
