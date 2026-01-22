@@ -26,7 +26,7 @@ export class OmnichannelUnitFlexTab extends FlexTab {
 	}
 
 	get inputVisibility(): Locator {
-		return this.root.getByText('Visibility', { exact: true });
+		return this.root.getByText('Visibility');
 	}
 
 	public findDepartmentsChipOption(name: string) {
