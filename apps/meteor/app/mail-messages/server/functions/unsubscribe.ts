@@ -10,7 +10,6 @@ export const unsubscribe = async function (_id: string, createdAt: string): Prom
 			msg: '[Mailer:Unsubscribe]',
 			_id,
 			createdAt,
-			parsedCreatedAt: new Date(parseInt(createdAt)),
 			affectedRows,
 		});
 
