@@ -1,6 +1,7 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
-import { isE2EEMessage, type IMessage, type IRoom, type IUpload, type IUploadToConfirm } from '@rocket.chat/core-typings';
+import { isE2EEMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUpload, IUploadToConfirm } from '@rocket.chat/core-typings';
 import { Messages, Uploads } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 

@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import { type AtLeast, type IMessage, type IUser, type IUploadToConfirm } from '@rocket.chat/core-typings';
+import type { AtLeast, IMessage, IUser, IUploadToConfirm } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';

@@ -148,7 +148,7 @@ API.v1.addRoute(
 				return API.v1.failure();
 			}
 
-			if (message.file) {
+			if (message?.file) {
 				message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 			}
 
