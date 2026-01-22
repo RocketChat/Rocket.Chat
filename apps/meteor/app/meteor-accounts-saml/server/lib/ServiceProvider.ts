@@ -176,7 +176,7 @@ export class SAMLServiceProvider {
 	public async getAuthorizeUrl(credentialToken: string): Promise<string | undefined> {
 		const request = this.generateAuthorizeRequest(credentialToken);
 		SAMLUtils.log('-----REQUEST------');
-		SAMLUtils.log(request);
+		SAMLUtils.log({ request });
 
 		return this.requestToUrl(request, 'authorize');
 	}

@@ -13,7 +13,7 @@ export class LogoutRequest {
 		const request = SAMLUtils.fillTemplateData(serviceProviderOptions.logoutRequestTemplate || defaultLogoutRequestTemplate, data);
 
 		SAMLUtils.log('------- SAML Logout request -----------');
-		SAMLUtils.log(request);
+		SAMLUtils.log({ request });
 
 		return {
 			request,

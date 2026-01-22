@@ -276,7 +276,7 @@ export class SAML {
 	}
 
 	private static async _logoutRemoveTokens(userId: string): Promise<void> {
-		SAMLUtils.log(`Found user ${userId}`);
+		SAMLUtils.log({ msg: 'Found user', userId });
 
 		await Users.unsetLoginTokens(userId);
 		await Users.removeSamlServiceSession(userId);
@@ -366,7 +366,7 @@ export class SAML {
 			}
 
 			const logOutUser = async (inResponseTo: string): Promise<void> => {
-				SAMLUtils.log(`Logging Out user via inResponseTo ${inResponseTo}`);
+				SAMLUtils.log({ msg: 'Processing logout for inResponseTo', inResponseTo });
 
 				const loggedOutUsers = await Users.findBySAMLInResponseTo(inResponseTo).toArray();
 				if (loggedOutUsers.length > 1) {
@@ -410,8 +410,7 @@ export class SAML {
 		try {
 			url = await serviceProvider.getAuthorizeUrl(samlObject.credentialToken);
 		} catch (err: any) {
-			SAMLUtils.error('Unable to generate authorize url');
-			SAMLUtils.error(err);
+			SAMLUtils.error({ err, msg: 'Unable to generate authorize url' });
 			url = Meteor.absoluteUrl();
 		}
 

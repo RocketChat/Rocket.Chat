@@ -64,7 +64,7 @@ Meteor.methods<ServerMethods>({
 		});
 
 		SAMLUtils.log('----Logout Request----');
-		SAMLUtils.log(request);
+		SAMLUtils.log({ request });
 
 		// request.request: actual XML SAML Request
 		// request.id: comminucation id which will be mentioned in the ResponseTo field of SAMLResponse
@@ -72,7 +72,7 @@ Meteor.methods<ServerMethods>({
 		await Users.setSamlInResponseTo(userId, request.id);
 
 		const result = await _saml.requestToUrl(request.request, 'logout');
-		SAMLUtils.log(`SAML Logout Request ${result}`);
+		SAMLUtils.log({ msg: 'SAML Logout Request URL generated', result });
 
 		return result;
 	},
