@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { prefixRegex } from '@rolldown/pluginutils';
+import type { EmittedFile } from 'rolldown';
 import type { Plugin } from 'vite';
 
 const meteorProgramDir = path.resolve('.meteor/local/build/programs/web.browser');
@@ -19,30 +21,71 @@ export function meteorRuntime(
 		return { name: 'meteor-runtime' };
 	}
 
-	const manifest = JSON.parse(fs.readFileSync(meteorManifestPath, 'utf-8'));
-
-	// Collect packages that are not replaced by config.modules
-	const packageEntries = collectPackageEntries(manifest).filter((entry) => {
-		const pkgName = entry.path.replace(/^packages\//, '').replace(/\.js$/, '');
-		return !Object.keys(config.modules).includes(pkgName);
-	});
-
-	const runtimeModuleSource = createRuntimeModuleSource(packageEntries, buildRuntimeConfig(manifest));
-
 	return {
 		name: 'meteor-runtime',
-		enforce: 'pre',
-		resolveId(source) {
-			if (source === runtimeImportId) {
-				return runtimeVirtualId;
-			}
-			return null;
+		// enforce: 'pre',
+		resolveId: {
+			filter: {
+				id: prefixRegex(runtimeImportId),
+			},
+			handler(source) {
+				if (source === runtimeImportId) {
+					return runtimeVirtualId;
+				}
+				return null;
+			},
 		},
-		load(id) {
-			if (id === runtimeVirtualId) {
+		load: {
+			filter: {
+				id: prefixRegex(runtimeVirtualId),
+			},
+			handler(id) {
+				if (id !== runtimeVirtualId) {
+					return null;
+				}
+
+				const isBuild = this.environment.mode === 'build';
+
+				const manifest = JSON.parse(fs.readFileSync(meteorManifestPath, 'utf-8'));
+
+				// Collect packages that are not replaced by config.modules
+				const packageEntries = collectPackageEntries(manifest).filter((entry) => {
+					const pkgName = entry.path.replace(/^packages\//, '').replace(/\.js$/, '');
+					return !Object.keys(config.modules).includes(pkgName);
+				}).map((entry) => {
+					return {
+						path: isBuild ? entry.path.replace('packages/', '') : entry.path,
+					}
+				});
+
+				if (isBuild) {
+					for (const entry of packageEntries) {
+						this.emitFile({
+							type: 'asset',
+							fileName: entry.path,
+							source: fs.readFileSync(path.join(meteorProgramDir, 'packages', entry.path), 'utf-8'),
+						});
+					}
+				}
+
+				const runtimeModuleSource = createRuntimeModuleSource(
+					packageEntries,
+					buildRuntimeConfig(manifest),
+					this.environment.mode !== 'build' ? meteorBundleBasePath : '/build_assets/',
+				);
+
+				if (this.environment.mode === 'build') {
+					const file: EmittedFile = {
+						type: 'prebuilt-chunk',
+						fileName: 'meteor-runtime.js',
+						code: runtimeModuleSource,
+					};
+
+					this.emitFile(file);
+				}
+
 				return runtimeModuleSource;
-			}
-			return null;
+			},
 		},
 	};
 
@@ -122,7 +165,7 @@ function collectPackageEntries(manifestData: { manifest: { where: string; type: 
 	return files;
 }
 
-function createRuntimeModuleSource(entries: { path: string }[], runtimeConfig: object): string {
+function createRuntimeModuleSource(entries: { path: string }[], runtimeConfig: object, meteorBundleBasePath: string): string {
 	console.log(`[meteor-runtime] Creating Meteor runtime module with ${entries.length} package entries.`);
 	const loadStatements = entries.map((entry) => `    await __loadMeteorScript('${entry.path}');`).join('\n');
 
