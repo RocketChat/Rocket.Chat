@@ -3,10 +3,10 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CARD_TOTAL_HEIGHT } from './GenericCard';
-import PeerCard from './PeerCard';
-import StreamCard from './StreamCard';
 import { ToggleButton, Timer, DevicePicker, ActionButton } from '../../components';
+import { CARD_TOTAL_HEIGHT } from '../../components/Cards/GenericCard';
+import PeerCard from '../../components/Cards/PeerCard';
+import StreamCard from '../../components/Cards/StreamCard';
 import { useMediaCallContext } from '../../context';
 import useMediaStream from '../../context/useMediaStream';
 import useRoomView from '../../context/useRoomView';
