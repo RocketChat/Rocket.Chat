@@ -1,3 +1,5 @@
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { t } from '../../../../app/utils/lib/i18n';
 import { e2e } from '../../e2ee';
 import { settings } from '../../settings';
@@ -21,6 +23,13 @@ export const uploadFiles = async (
 	}
 
 	const room = await chat.data.getRoom();
+
+	if (mergedFilesLength > 1 && isOmnichannelRoom(room)) {
+		return dispatchToastMessage({
+			type: 'error',
+			message: t('You_cant_upload_more_than_one_file'),
+		});
+	}
 
 	const queue = [...files];
 
