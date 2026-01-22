@@ -24,11 +24,24 @@ export class MeteorResolver {
 
 	private meteorManifestPath: string;
 
+	private fileCache = new Map<string, string>();
+
 	constructor(meteorProgramDir: string) {
 		this.meteorProgramDir = path.resolve(meteorProgramDir);
 		this.meteorPackagesDir = path.join(this.meteorProgramDir, 'packages');
 		this.meteorDynamicPackagesDir = path.join(this.meteorProgramDir, 'dynamic/node_modules/meteor');
 		this.meteorManifestPath = path.join(this.meteorProgramDir, 'program.json');
+	}
+
+	async getPackageSource(pkgName: string): Promise<string> {
+		const packageFile = path.join(this.meteorPackagesDir, `${pkgName}.js`);
+		if (this.fileCache.has(packageFile)) {
+			return this.fileCache.get(packageFile) as string;
+		}
+
+		const code = await fs.promises.readFile(packageFile, 'utf-8');
+		this.fileCache.set(packageFile, code);
+		return code;
 	}
 
 	getExportNames(pkgName: string): Promise<string[]> {
@@ -41,7 +54,7 @@ export class MeteorResolver {
 			const names = new Set<string>();
 			const packageFile = path.join(this.meteorPackagesDir, `${pkgName}.js`);
 			if (fs.existsSync(packageFile)) {
-				const code = await fs.promises.readFile(packageFile, 'utf-8');
+				const code = await this.getPackageSource(pkgName);
 				const ast = await parse(packageFile, code);
 				collectConfigExports(ast.program, names);
 				collectModuleExports(ast.program, names, pkgName);
