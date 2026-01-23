@@ -69,6 +69,47 @@
 - Updated package with role gating (admin/manager/agent only): `D:\medsense-chat-local\clinical-actions-app\dist\clinical-actions_0.0.15.zip`
 - Install via Admin → Apps → Upload; only allowed roles will see/use the UI.
 
+## Medsense Hub (toolbar app entry point)
+- Goal: add a top-toolbar “Medical” icon that opens a dropdown of available private apps (hub actions), not the apps directly.
+- Permission: create `medsense-view-hub` (grant to admin for now) to gate icon/dropdown visibility.
+- Core UI:
+  - Add MedicalIcon button near “Create new”.
+  - On click, fetch available hub actions and render dropdown (label, optional icon, permission-filtered).
+  - On select, call server to execute the action (opens app modal via UIKit).
+- Server bridge:
+  - Add API `/api/v1/medsense/hub.actions` to list actions from Apps-Engine registry.
+  - Add API `/api/v1/medsense/hub.execute` to trigger an action and return a UIKit view.
+- Apps-Engine contract:
+  - “Medsense Hub” app exposes actions (id, label, optional icon, order, requiredPermissions) and an execute handler returning a UIKit modal.
+  - Future private apps register actions with the hub—no core rebuild needed.
+- Mock app for feasibility (new folder `medsense-chat-local/medsense-hub-app/`):
+  - Settings: topics JSON (or remote URL) to render modal options.
+  - Endpoint returns a mock modal (title “Medsense Hub”, a couple of dummy buttons).
+- Files to touch (core):
+  - Permission defaults: `apps/meteor/app/lib/server/startup/*permissions*.ts` (add `medsense-view-hub`).
+  - Toolbar/dropdown: component rendering create-new icons (NavBar V2/toolbar) → add MedicalIcon + dropdown.
+  - API bridge: `apps/meteor/app/api/server/v1/medsense.ts` → add `hub.actions` + `hub.execute`.
+- Files to touch (hub app):
+  - `medsense-chat-local/medsense-hub-app/app.json`
+  - `src/MedsenseHubApp.ts` (register HTTP endpoint + UIKit logic)
+  - `src/endpoints/HubActionsEndpoint.ts`, `HubExecuteEndpoint.ts`
+  - `src/ui/views/*` for modal payload builders.
+
+### Fix list (current gaps to correct)
+- Replace mock UIKit modal payload in core with either:
+  - a real Apps‑Engine modal (requires `appId` + `id` in view), or
+  - a standard core modal (if staying core‑only during mock).
+- Replace toolbar `plus` icon with `MedicalIcon` (custom trigger element) and keep dropdown behavior.
+- Move hub actions data source out of hardcoded mock list and into hub app endpoint (`/api/apps/public/<appId>/hub.actions`).
+- Ensure `medsense-view-hub` permission is created once at startup and assigned to `admin` only.
+
+### Confirm later (quick validation checklist)
+- Icon only shows for users with `medsense-view-hub`.
+- Clicking icon opens dropdown of actions (no direct modal).
+- Selecting an action opens modal successfully (no console errors).
+- Modal submit/close triggers app callbacks (if Apps‑Engine path).
+- Hub actions reflect app settings or remote JSON without core rebuild.
+
 ---
 
 ## Native Meteor App Flow (RC Source of Truth)
@@ -1131,3 +1172,50 @@ Ensure you’re using the integrated webhook payload that includes room.customFi
 - **Permissions**:
   - Added `medsense-view-request`, `medsense-take-request`, `medsense-close-request`.
   - Removed `Medsense_Staff_Roles` setting and `medsense-create-pharmacy-teams` permission.
+
+### Fix list (current gaps to correct)
+- Replace mock UIKit modal payload in core with either:
+  - a real Apps‑Engine modal (requires `appId` + `id` in view), or
+  - a standard core modal (if staying core‑only during mock).
+- Replace toolbar `plus` icon with `MedicalIcon` (custom trigger element) and keep dropdown behavior.
+- Move hub actions data source out of hardcoded mock list and into hub app endpoint (`/api/apps/public/<appId>/hub.actions`).
+- Ensure `medsense-view-hub` permission is created once at startup and assigned to `admin` only.
+
+### Confirm later (quick validation checklist)
+- Icon only shows for users with `medsense-view-hub`.
+- Clicking icon opens dropdown of actions (no direct modal).
+- Selecting an action opens modal successfully (no console errors).
+- Modal submit/close triggers app callbacks (if Apps‑Engine path).
+- Hub actions reflect app settings or remote JSON without core rebuild.
+
+---
+
+### Build Details (v1 Implementation - Dynamic)
+- **Status**: Implemented dynamic discovery. Core relays to ANY installed app exposing `hub.actions`.
+- **Permissions**:
+  - `medsense-view-hub` (Admin).
+- **Server API**:
+  - `/v1/medsense/hub.actions`: Queries **all enabled apps** for a public endpoint `api/apps/public/<appId>/hub.actions`. Aggregates results. Prefixes IDs with `appId:`.
+  - `/v1/medsense/hub.execute`: Parses `appId:actionId`, routes execution to `api/apps/public/<appId>/hub.execute`.
+- **Medsense Hub App**:
+  - Created at `d:\medsense-chat-local\medsense-hub-app`.
+  - Exposes `hub.actions` (list) and `hub.execute` (modal).
+  - Must be installed via `rc-apps deploy`.
+- **Client UI**:
+  - `NavBarItemMedsenseHub` uses `MedicalIcon` inside a Fuselage `Menu`.
+  - Fetches actions via hook, displays them with icons.
+  - Clicking action triggers `hub.execute` -> returns mapped UIKit Modal.
+
+### Hub Build Review (2026-01-22)
+- **Confirmed in code**:
+  - Dynamic discovery in `apps/meteor/app/api/server/v1/medsense.ts` uses `/api/apps/public/<appId>/hub.actions` + `/hub.execute`.
+  - UI entry uses `MedicalIcon` in `NavBarItemMedsenseHub` + `Menu`.
+  - Permission `medsense-view-hub` created in `apps/meteor/app/lib/server/startup/medsense.ts`.
+- **Fix list (if issues appear)**:
+  - Ensure the Hub app is deployed via `rc-apps deploy` and endpoints are reachable from core.
+  - If actions show but modals fail, verify `hub.execute` returns a UIKit view with valid `appId` + `id`.
+  - If icon missing, confirm `NavBarItemMedsenseHub` is rendered in `NavBarPagesGroup` and permission assigned.
+- **Confirm later**:
+  - Hub icon visible only for users with `medsense-view-hub`.
+  - Clicking icon opens dropdown (no modal).
+  - Selecting action opens modal without console errors.

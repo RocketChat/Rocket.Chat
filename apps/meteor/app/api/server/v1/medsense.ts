@@ -8,6 +8,10 @@ import {
     Rooms
 } from "@rocket.chat/models";
 import { check, Match } from "meteor/check";
+import { HTTP } from "meteor/http";
+import { Meteor } from "meteor/meteor";
+import { Apps } from '@rocket.chat/apps';
+import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from "../../../authorization/server/functions/hasPermission";
 import { addUserToRoom } from "../../../lib/server/functions/addUserToRoom";
@@ -624,6 +628,100 @@ API.v1.addRoute(
             }));
 
             return API.v1.success({ requests: enriched });
+        },
+    },
+);
+
+// =========================================================================================
+// NEW: Medsense Hub (Entrypoint) APIs
+// =========================================================================================
+
+API.v1.addRoute(
+    "medsense/hub.actions",
+    { authRequired: true },
+    {
+        async get() {
+            if (!(await hasPermissionAsync(this.userId, 'medsense-view-hub'))) {
+                return API.v1.forbidden();
+            }
+
+            // Dynamic Discovery: Find all apps that support hub.actions
+            if (!Apps.self?.isInitialized()) {
+                return API.v1.success({ actions: [] });
+            }
+
+            try {
+                const apps = await Apps.getManager().get();
+                const enabledApps = [];
+
+                for (const app of apps) {
+                    const status = await app.getStatus();
+                    if (AppStatusUtils.isEnabled(status)) {
+                        enabledApps.push(app);
+                    }
+                }
+
+                const promises = enabledApps.map(async (app) => {
+                    const url = Meteor.absoluteUrl(`api/apps/public/${app.getID()}/hub.actions`);
+                    const response = await new Promise<{ error?: Error; result?: HTTP.HTTPResponse }>((resolve) => {
+                        HTTP.call('GET', url, { timeout: 1000 }, (error, result) => resolve({ error, result }));
+                    });
+
+                    if (response.result?.statusCode === 200 && response.result.data?.actions) {
+                        // Prefix IDs with App ID to route execution later
+                        return response.result.data.actions.map((action: any) => ({
+                            ...action,
+                            id: `${app.getID()}:${action.id}`
+                        }));
+                    }
+
+                    return [];
+                });
+
+                const results = await Promise.all(promises);
+                const actions = results.flat();
+
+                return API.v1.success({ actions });
+            } catch (error) {
+                console.error('Medsense Hub Discovery Error:', error);
+                return API.v1.success({ actions: [] });
+            }
+        },
+    },
+);
+
+API.v1.addRoute(
+    "medsense/hub.execute",
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({ actionId: String }));
+            const { actionId } = this.bodyParams; // Expected format: appId:actionId
+
+            if (!(await hasPermissionAsync(this.userId, 'medsense-view-hub'))) {
+                return API.v1.forbidden();
+            }
+
+            const separatorIndex = actionId.indexOf(':');
+            if (separatorIndex === -1) {
+                return API.v1.failure('Invalid actionId format');
+            }
+
+            const appId = actionId.substring(0, separatorIndex);
+            const realActionId = actionId.substring(separatorIndex + 1);
+
+            const url = Meteor.absoluteUrl(`api/apps/public/${appId}/hub.execute`);
+            const response = await new Promise<{ error?: Error; result?: HTTP.HTTPResponse }>((resolve) => {
+                HTTP.call('POST', url, { data: { actionId: realActionId }, timeout: 1000 }, (error, result) =>
+                    resolve({ error, result })
+                );
+            });
+
+            if (!response.result || response.result.statusCode !== 200 || !response.result.data) {
+                return API.v1.failure('Failed to execute action via Hub App');
+            }
+
+            return API.v1.success({ view: response.result.data.view });
         },
     },
 );

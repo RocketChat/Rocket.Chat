@@ -101,6 +101,7 @@ export const addMedsenseSettings = async function (): Promise<void> {
     await Permissions.create('medsense-view-request', ['admin', 'pharmacy-manager', 'pharmacy-staff']);
     await Permissions.create('medsense-take-request', ['admin', 'pharmacy-manager', 'pharmacy-staff']);
     await Permissions.create('medsense-close-request', ['admin', 'pharmacy-manager', 'pharmacy-staff']);
+    await Permissions.create('medsense-view-hub', ['admin']);
 };
 
 // Legacy stubs (Settings removed)
