@@ -27,6 +27,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 			contactManager: {
 				username: 'user1',
 			},
+			lastChat: { _id: 'afdsfdasf', ts: testDate },
 		},
 		{
 			type: OmnichannelSourceType.WIDGET,
@@ -50,8 +51,10 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 					details: {
 						type: OmnichannelSourceType.WIDGET,
 					},
+					lastChat: { _id: 'afdsfdasf', ts: testDate },
 				},
 			],
+			lastChat: { _id: 'afdsfdasf', ts: testDate },
 			customFields: undefined,
 			shouldValidateCustomFields: false,
 			contactManager: 'manager1',
@@ -62,6 +65,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 		{
 			_id: 'visitor1',
 			username: 'Username',
+			lastChat: { _id: 'afdsfdasf', ts: testDate },
 		},
 		{
 			type: OmnichannelSourceType.SMS,
@@ -85,11 +89,13 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 					details: {
 						type: OmnichannelSourceType.SMS,
 					},
+					lastChat: { _id: 'afdsfdasf', ts: testDate },
 				},
 			],
 			customFields: undefined,
 			shouldValidateCustomFields: false,
 			contactManager: undefined,
+			lastChat: { _id: 'afdsfdasf', ts: testDate },
 		},
 	],
 
@@ -113,7 +119,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 			unknown: false,
 			channels: [
 				{
-					name: 'sms',
+					name: 'widget',
 					visitor: {
 						visitorId: 'visitor1',
 						source: {
@@ -150,6 +156,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 				invalidCustomFieldId: 'invalidCustomFieldValue',
 			},
 			activity: [],
+			lastChat: { _id: 'afdsfdasf', ts: testDate },
 		},
 		{
 			type: OmnichannelSourceType.WIDGET,
@@ -161,7 +168,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 			unknown: true,
 			channels: [
 				{
-					name: 'sms',
+					name: 'widget',
 					visitor: {
 						visitorId: 'visitor1',
 						source: {
@@ -173,6 +180,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 					details: {
 						type: OmnichannelSourceType.WIDGET,
 					},
+					lastChat: { _id: 'afdsfdasf', ts: testDate },
 				},
 			],
 			customFields: {
@@ -180,6 +188,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 			},
 			shouldValidateCustomFields: false,
 			contactManager: undefined,
+			lastChat: { _id: 'afdsfdasf', ts: testDate },
 		},
 	],
 ];
@@ -197,10 +206,9 @@ describe('mapVisitorToContact', () => {
 		getAllowedCustomFields.resolves([{ _id: 'customFieldId', label: 'custom-field-label' }]);
 	});
 
-	const index = 0;
-	for (const [visitor, source, contact] of dataMap) {
+	dataMap.forEach(([visitor, source, contact], index) => {
 		it(`should map an ILivechatVisitor + IOmnichannelSource to an ILivechatContact [${index}]`, async () => {
 			expect(await mapVisitorToContact(visitor, source)).to.be.deep.equal(contact);
 		});
-	}
+	});
 });
