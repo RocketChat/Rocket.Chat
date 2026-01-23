@@ -130,6 +130,7 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 						</FieldRow>
 					</Field>
 					<Field marginBlock={15}>
+						
 						<FieldLabel>
 							{t('Leave_a_comment')}{' '}
 							<Box is='span' color='annotation'>
@@ -137,7 +138,14 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 							</Box>
 						</FieldLabel>
 						<FieldRow>
-							<TextAreaInput data-qa-id='ForwardChatModalTextAreaInputComment' {...register('comment')} rows={8} flexGrow={1} />
+							{/* Fix for issue #26723 - wrap long text */}
+							<TextAreaInput 
+									data-qa-id='ForwardChatModalTextAreaInputComment' 
+									{...register('comment')} 
+									rows={8} 
+									flexGrow={1}
+									style={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}
+								/>
 						</FieldRow>
 					</Field>
 				</FieldGroup>
