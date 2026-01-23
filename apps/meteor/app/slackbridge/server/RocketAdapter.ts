@@ -402,7 +402,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 	}
 
 	async addUser(slackUserID: string): Promise<IRegisterUser | null> {
-		rocketLogger.debug('Adding Rocket.Chat user from Slack', slackUserID);
+		rocketLogger.debug({ msg: 'Adding Rocket.Chat user from Slack', slackUserID });
 		let addedUser;
 		for await (const slack of this._slackAdapters) {
 			if (addedUser) {
@@ -470,8 +470,8 @@ export default class RocketAdapter implements IRocketChatAdapter {
 						try {
 							// added typecast on conversion to TS as this doesn't match any valid signature #TODO
 							await setUserAvatar(user as IUser, url, null as any, 'url');
-						} catch (error: any) {
-							rocketLogger.debug('Error setting user avatar', error.message);
+						} catch (err) {
+							rocketLogger.debug({ msg: 'Error setting user avatar from Slack', err });
 						}
 					}
 				}

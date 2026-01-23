@@ -181,8 +181,8 @@ export const afterParseUrlContent = (data: {
 				data.meta[camelCase(`oembed_${key}`)] = value;
 			}
 		});
-	} catch (error) {
-		SystemLogger.error(error);
+	} catch (err) {
+		SystemLogger.error({ err });
 	}
 	return data;
 };

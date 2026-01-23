@@ -13,7 +13,7 @@ import type {
 	MessageAttachment,
 	SettingValue,
 } from '@rocket.chat/core-typings';
-import { isFileAttachment, isQuoteAttachment, TEAM_TYPE } from '@rocket.chat/core-typings';
+import { isFileAttachment, isQuoteAttachment, TeamType } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
@@ -2213,8 +2213,8 @@ describe('[Rooms]', () => {
 			publicChannel = (await createRoom({ type: 'c', name: `public-channel-${Date.now()}` })).body.channel;
 			privateGroup = (await createRoom({ type: 'p', name: `private-group-${Date.now()}` })).body.group;
 
-			publicTeam = await createTeam(credentials, `public-team-${Date.now()}`, TEAM_TYPE.PUBLIC);
-			privateTeam = await createTeam(credentials, `private-team-${Date.now()}`, TEAM_TYPE.PRIVATE);
+			publicTeam = await createTeam(credentials, `public-team-${Date.now()}`, TeamType.PUBLIC);
+			privateTeam = await createTeam(credentials, `private-team-${Date.now()}`, TeamType.PRIVATE);
 		});
 
 		after(async () => {
@@ -2401,7 +2401,7 @@ describe('[Rooms]', () => {
 				body: { channel },
 			} = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
 			testChannel = channel;
-			testTeam = await createTeam(userCredentials, `team.test.${Date.now()}-${Math.random()}`, TEAM_TYPE.PUBLIC, [
+			testTeam = await createTeam(userCredentials, `team.test.${Date.now()}-${Math.random()}`, TeamType.PUBLIC, [
 				testUser.username as string,
 				testUser2.username as string,
 			]);
@@ -3859,10 +3859,10 @@ describe('[Rooms]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `rooms.membersOrderedByRole.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [
+					createTeam(insideCredentials, `rooms.membersOrderedByRole.team.public.${Random.id()}`, TeamType.PUBLIC, [
 						outsiderUser.username as string,
 					]),
-					createTeam(insideCredentials, `rooms.membersOrderedByRole.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+					createTeam(insideCredentials, `rooms.membersOrderedByRole.team.private.${Random.id()}`, TeamType.PRIVATE, [
 						outsiderUser.username as string,
 					]),
 				]);

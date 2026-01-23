@@ -70,7 +70,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 		protected slackBridge: ISlackbridge,
 		protected rocket: IRocketChatAdapter,
 	) {
-		slackLogger.debug('constructor');
+		slackLogger.debug({ msg: 'constructor' });
 
 		// On Slack, a rocket integration bot will be added to slack channels, this is the list of those channels, key is Rocket Ch ID
 		this.slackChannelRocketBotMembershipMap = new Map(); // Key=RocketChannelID, Value=SlackChannel
@@ -83,8 +83,8 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 			const connectResult = await (appCredential ? this.connectApp(appCredential) : this.connectLegacy(apiToken as string));
 
 			if (connectResult) {
-				slackLogger.info('Connected to Slack');
-				slackLogger.debug('Slack connection result: ', connectResult);
+				slackLogger.info({ msg: 'Connected to Slack' });
+				slackLogger.debug({ msg: 'Slack connection result', connectResult });
 				Meteor.startup(async () => {
 					try {
 						await this.populateMembershipChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
@@ -237,7 +237,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 	}
 
 	async postFindChannel(rocketChannelName: string) {
-		slackLogger.debug('Searching for Slack channel or group', rocketChannelName);
+		slackLogger.debug({ msg: 'Searching for Slack channel or group', rocketChannelName });
 		const channels = await this.slackAPI.getChannels();
 		if (channels && channels.length > 0) {
 			for (const channel of channels) {
@@ -284,7 +284,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 	addSlackChannel(rocketChID: string, slackChID: SlackChannel['id']) {
 		const ch = this.getSlackChannel(rocketChID);
 		if (ch == null) {
-			slackLogger.debug('Added channel', { rocketChID, slackChID });
+			slackLogger.debug({ msg: 'Added channel', rocketChID, slackChID });
 			this.slackChannelRocketBotMembershipMap.set(rocketChID, {
 				id: slackChID,
 				family: slackChID.charAt(0) === 'C' ? 'channels' : 'groups',
@@ -396,7 +396,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 			as_user: true,
 		};
 
-		slackLogger.debug('Post Delete Message to Slack', data);
+		slackLogger.debug({ msg: 'Post Delete Message to Slack', data });
 		const postResult = await this.slackAPI.removeMessage(data);
 		if (postResult) {
 			slackLogger.debug('Message deleted on Slack');
@@ -459,7 +459,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 				data.thread_ts = tmessage.slackTs;
 			}
 		}
-		slackLogger.debug('Post Message To Slack', data);
+		slackLogger.debug({ msg: 'Post Message To Slack', data });
 
 		// If we don't have the bot id yet and we have multiple slack bridges, we need to keep track of the messages that are being sent
 		if (!this.slackBotId && this.rocket.slackAdapters?.length >= 2) {
@@ -480,7 +480,12 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 		if ('bot_id' in postResult.message && postResult.message.bot_id && postResult.message.ts) {
 			this.slackBotId = postResult.message.bot_id;
 			await Messages.setSlackBotIdAndSlackTs(rocketMessage._id, postResult.message.bot_id, postResult.message.ts);
-			slackLogger.debug(`RocketMsgID=${rocketMessage._id} SlackMsgID=${postResult.message.ts} SlackBotID=${postResult.message.bot_id}`);
+			slackLogger.debug({
+				msg: 'Message posted to Slack',
+				rocketMessageId: rocketMessage._id,
+				slackMessageId: postResult.message.ts,
+				slackBotId: postResult.message.bot_id,
+			});
 		}
 	}
 
@@ -498,7 +503,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 			text: rocketMessage.msg,
 			as_user: true,
 		};
-		slackLogger.debug('Post UpdateMessage To Slack', data);
+		slackLogger.debug({ msg: 'Post UpdateMessage To Slack', data });
 		const postResult = await this.slackAPI.updateMessage(data);
 		if (postResult) {
 			slackLogger.debug('Message updated on Slack');
@@ -506,7 +511,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 	}
 
 	async processMemberJoinChannel(event: MemberJoinedChannelEvent, context: Record<string, any>) {
-		slackLogger.debug('Member join channel', event.channel);
+		slackLogger.debug({ msg: 'Member join channel', channel: event.channel });
 		const rocketCh = await this.rocket.getChannel({ channel: event.channel });
 		if (rocketCh != null) {
 			this.addSlackChannel(rocketCh._id, event.channel);
@@ -518,7 +523,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 	}
 
 	async processChannelJoin(slackMessage: ChannelJoinMessageEvent) {
-		slackLogger.debug('Channel join', slackMessage.channel);
+		slackLogger.debug({ msg: 'Channel join', channelId: slackMessage.channel.id });
 		const rocketCh = await this.rocket.addChannel(slackMessage.channel);
 		if (rocketCh != null) {
 			this.addSlackChannel(rocketCh._id, slackMessage.channel);
@@ -1064,7 +1069,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 		if (Array.isArray(data.messages) && data.messages.length) {
 			let latest = '';
 			for await (const message of data.messages.reverse()) {
-				slackLogger.debug('MESSAGE: ', message);
+				slackLogger.debug({ msg: 'MESSAGE', message });
 				if (!latest || (message.ts && message.ts > latest)) {
 					latest = message.ts || '';
 				}
@@ -1078,7 +1083,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 	}
 
 	async copyChannelInfo(rid: string, channelMap: SlackChannel): Promise<void> {
-		slackLogger.debug('Copying users from Slack channel to Rocket.Chat', channelMap.id, rid);
+		slackLogger.debug({ msg: 'Copying users from Slack channel to Rocket.Chat', channelId: channelMap.id, rid });
 		const channel = await this.slackAPI.getRoomInfo(channelMap.id);
 		if (channel) {
 			const members = await this.slackAPI.getMembers(channelMap.id);
@@ -1086,7 +1091,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 				for await (const member of members) {
 					const user = (await this.rocket.findUser(member)) || (await this.rocket.addUser(member));
 					if (user) {
-						slackLogger.debug('Adding user to room', user.username, rid);
+						slackLogger.debug({ msg: 'Adding user to room', username: user.username, rid });
 						await addUserToRoom(rid, user, undefined, { skipSystemMessage: true });
 					}
 				}
@@ -1116,7 +1121,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 			if (topic) {
 				const creator = topicCreator && (await this.rocket.getUser(topicCreator));
 				if (creator) {
-					slackLogger.debug('Setting room topic', rid, topic, creator.username);
+					slackLogger.debug({ msg: 'Setting room topic', rid, topic, username: creator.username });
 					await saveRoomTopic(rid, topic, creator, false);
 				} else {
 					slackLogger.debug('Unable to set room topic: topic creator not found.');
@@ -1170,7 +1175,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 	}
 
 	async importMessages(rid: string, callback: (error?: Meteor.Error) => void): Promise<void> {
-		slackLogger.info('importMessages: ', rid);
+		slackLogger.info({ msg: 'importMessages', rid });
 		const rcRoom = await Rooms.findOneById(rid);
 		if (rcRoom) {
 			const slackChannel = this.getSlackChannel(rid);
@@ -1178,7 +1183,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 			if (slackChannel) {
 				await this.copyChannelInfo(rid, slackChannel);
 
-				slackLogger.debug('Importing messages from Slack to Rocket.Chat', slackChannel, rid);
+				slackLogger.debug({ msg: 'Importing messages from Slack to Rocket.Chat', slackChannel: this.getSlackChannel(rid), rid });
 
 				let results = await this.importFromHistory({
 					channel: slackChannel.id,
@@ -1192,7 +1197,7 @@ export default abstract class SlackAdapter implements ISlackAdapter {
 					});
 				}
 
-				slackLogger.debug('Pinning Slack channel messages to Rocket.Chat', slackChannel, rid);
+				slackLogger.debug({ msg: 'Pinning Slack channel messages to Rocket.Chat', slackChannel: this.getSlackChannel(rid), rid });
 				await this.copyPins(rid, slackChannel);
 
 				return callback();
