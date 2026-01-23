@@ -19,6 +19,7 @@ export default {
 
 			moduleNameMapper: {
 				'^react($|/.+)': '<rootDir>/node_modules/react$1',
+				'^react-virtuoso($|/.+)': '<rootDir>/node_modules/react-virtuoso$1',
 				'^react-dom($|/.+)': '<rootDir>/node_modules/react-dom$1',
 				'^react-i18next($|/.+)': '<rootDir>/node_modules/react-i18next$1',
 				'^@rocket.chat/(.+)': '<rootDir>/node_modules/@rocket.chat/$1',
