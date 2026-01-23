@@ -6,6 +6,7 @@ import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } fr
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
+import { processOnChange, serviceConfigCallbacks } from './userReactivity';
 import { isOutgoingIntegration } from '../../../app/integrations/server/lib/definition';
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
 import { notifyGuestStatusChanged } from '../../../app/livechat/server/lib/guests';
@@ -19,16 +20,6 @@ import { getURL } from '../../../app/utils/server/getURL';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { ListenersModule } from '../../modules/listeners/listeners.module';
-
-type Callbacks = {
-	added(id: string, record: object): void;
-	changed(id: string, record: object): void;
-	removed(id: string): void;
-};
-
-let processOnChange: (diff: Record<string, any>, id: string) => void;
-// eslint-disable-next-line no-undef
-const serviceConfigCallbacks = new Set<Callbacks>();
 
 const disableMsgRoundtripTracking = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING).toLowerCase());
 
