@@ -264,24 +264,18 @@ test.describe('OC - Contact Center - Contacts', () => {
 	test('Delete a contact', async () => {
 		await test.step('Find contact and open modal', async () => {
 			await poContacts.inputSearch.fill(DELETE_CONTACT.name);
-			await poContacts.findRowMenu(DELETE_CONTACT.name).click();
-			await poContacts.findMenuItem('Delete').click();
+			await poContacts.deleteContact(DELETE_CONTACT.name);
 		});
 
 		await test.step('Fill confirmation and delete contact', async () => {
-			await expect(poContacts.deleteContactModal).toBeVisible();
-			await expect(poContacts.btnDeleteContact).toBeDisabled();
-
 			// Fills the input with the wrong confirmation
-			await poContacts.inputDeleteContactConfirmation.fill('wrong');
-			await expect(poContacts.btnDeleteContact).toBeDisabled();
+			await poContacts.deleteContactModal.inputConfirmation.fill('wrong');
+			await expect(poContacts.deleteContactModal.btnDelete).toBeDisabled();
 
 			// Fills the input correctly
-			await poContacts.inputDeleteContactConfirmation.fill('delete');
-			await expect(poContacts.btnDeleteContact).toBeEnabled();
-			await poContacts.btnDeleteContact.click();
-
-			await expect(poContacts.deleteContactModal).not.toBeVisible();
+			await poContacts.deleteContactModal.inputConfirmation.fill('delete');
+			await expect(poContacts.deleteContactModal.btnDelete).toBeEnabled();
+			await poContacts.deleteContactModal.delete();
 		});
 
 		await test.step('Confirm contact removal', async () => {

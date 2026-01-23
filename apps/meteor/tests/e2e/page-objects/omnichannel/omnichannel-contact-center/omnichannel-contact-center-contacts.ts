@@ -3,6 +3,8 @@ import type { Locator, Page } from '@playwright/test';
 import { OmnichannelContactInfo } from '../omnichannel-info';
 import { OmnichannelContactCenter } from './omnichannel-contact-center';
 import { OmnichannelEditContactFlexTab } from '../../fragments/edit-contact-flaxtab';
+import { Listbox } from '../../fragments/listbox';
+import { OmnichannelDeleteContactModal } from '../../fragments/modals';
 import { Table } from '../../fragments/table';
 
 class OmnichannelContactCenterContactsTable extends Table {
@@ -18,38 +20,26 @@ export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
 
 	readonly table: OmnichannelContactCenterContactsTable;
 
+	readonly deleteContactModal: OmnichannelDeleteContactModal;
+
+	readonly listbox: Listbox;
+
 	constructor(page: Page) {
 		super(page);
 		this.contactInfo = new OmnichannelContactInfo(page);
 		this.editContact = new OmnichannelEditContactFlexTab(page);
 		this.table = new OmnichannelContactCenterContactsTable(page);
+		this.deleteContactModal = new OmnichannelDeleteContactModal(page);
+		this.listbox = new Listbox(page);
 	}
 
 	get btnNewContact(): Locator {
-		return this.page.locator('button >> text="New contact"');
+		return this.page.getByRole('button', { name: 'New contact' });
 	}
 
-	findRowMenu(contactName: string): Locator {
-		return this.table.findRowByName(contactName).getByRole('button', { name: 'More Actions' });
-	}
-
-	findMenuItem(name: string): Locator {
-		return this.page.getByRole('menuitem', { name });
-	}
-
-	get deleteContactModal(): Locator {
-		return this.page.getByRole('dialog', { name: 'Delete Contact' });
-	}
-
-	get inputDeleteContactConfirmation(): Locator {
-		return this.deleteContactModal.getByRole('textbox', { name: 'Confirm contact removal' });
-	}
-
-	get btnDeleteContact(): Locator {
-		return this.deleteContactModal.getByRole('button', { name: 'Delete' });
-	}
-
-	get inputStatus(): Locator {
-		return this.page.locator('[data-qa="current-chats-status"]');
+	async deleteContact(contactName: string) {
+		await this.table.findRowByName(contactName).getByRole('button', { name: 'More Actions' }).click();
+		await this.listbox.selectOption('Delete');
+		await this.deleteContactModal.waitForDisplay();
 	}
 }
