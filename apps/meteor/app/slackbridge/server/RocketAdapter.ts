@@ -1,3 +1,8 @@
+// This is a JS File that was renamed to TS so it won't lose its git history when converted to TS
+// TODO: Remove the following lint/ts instructions when the file gets properly converted
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 import util from 'util';
 
 import { Messages, Rooms, Users } from '@rocket.chat/models';
@@ -343,7 +348,7 @@ export default class RocketAdapter {
 	}
 
 	async addUser(slackUserID) {
-		rocketLogger.debug('Adding Rocket.Chat user from Slack', slackUserID);
+		rocketLogger.debug({ msg: 'Adding Rocket.Chat user from Slack', slackUserID });
 		let addedUser;
 		for await (const slack of this.slackAdapters) {
 			if (addedUser) {
@@ -410,8 +415,8 @@ export default class RocketAdapter {
 					if (url) {
 						try {
 							await setUserAvatar(user, url, null, 'url');
-						} catch (error) {
-							rocketLogger.debug('Error setting user avatar', error.message);
+						} catch (err) {
+							rocketLogger.debug({ msg: 'Error setting user avatar from Slack', err });
 						}
 					}
 				}
@@ -482,6 +487,7 @@ export default class RocketAdapter {
 					rocketMsgObj.tmid = tmessage._id;
 				}
 			}
+
 			if (slackMessage.subtype === 'bot_message') {
 				rocketUser = await Users.findOneById('rocket.cat', { projection: { username: 1 } });
 			}
