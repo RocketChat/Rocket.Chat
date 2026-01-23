@@ -19,9 +19,15 @@ const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Reac
 			title={t('Desktop_apps')}
 			body={t('Install_rocket_chat_on_your_preferred_desktop_platform')}
 			buttons={[
-				<GenericCardButton key={1} onClick={() => handleOpenLink(WINDOWS_APP_URL)} children={t('Platform_Windows')} role='link' />,
-				<GenericCardButton key={2} onClick={() => handleOpenLink(LINUX_APP_URL)} children={t('Platform_Linux')} role='link' />,
-				<GenericCardButton key={3} onClick={() => handleOpenLink(MAC_APP_URL)} children={t('Platform_Mac')} role='link' />,
+				<GenericCardButton key={1} onClick={() => handleOpenLink(WINDOWS_APP_URL)} role='link'>
+					{t('Platform_Windows')}
+				</GenericCardButton>,
+				<GenericCardButton key={2} onClick={() => handleOpenLink(LINUX_APP_URL)} role='link'>
+					{t('Platform_Linux')}
+				</GenericCardButton>,
+				<GenericCardButton key={3} onClick={() => handleOpenLink(MAC_APP_URL)} role='link'>
+					{t('Platform_Mac')}
+				</GenericCardButton>,
 			]}
 			width='x340'
 			{...props}

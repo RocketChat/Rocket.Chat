@@ -88,7 +88,7 @@ export async function saveUserIdentity({
 					try {
 						await updateUsernameReferences(handleUpdateParams);
 					} catch (err) {
-						SystemLogger.error(err);
+						SystemLogger.error({ err });
 					}
 				});
 			} else {
