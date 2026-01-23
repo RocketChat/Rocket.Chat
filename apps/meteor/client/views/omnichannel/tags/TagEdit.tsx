@@ -113,12 +113,14 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 							</FieldRow>
 						</Field>
 						<Field>
-							<FieldLabel htmlFor={departmentsField}>{t('Departments')}</FieldLabel>
+							<FieldLabel id={departmentsField}>{t('Departments')}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name='departments'
 									control={control}
-									render={({ field }) => <AutoCompleteDepartmentMultiple withCheckbox id={departmentsField} showArchived {...field} />}
+									render={({ field }) => (
+										<AutoCompleteDepartmentMultiple withCheckbox aria-labelledby={departmentsField} showArchived {...field} />
+									)}
 								/>
 							</FieldRow>
 						</Field>

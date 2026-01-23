@@ -14,7 +14,7 @@ class OmnichannelEditTagFlexTab extends FlexTab {
 	}
 
 	get inputDepartments(): Locator {
-		return this.root.locator('input[placeholder="Select an option"]');
+		return this.root.getByLabel('Departments').getByRole('textbox');
 	}
 
 	async selectDepartment(name: string) {
