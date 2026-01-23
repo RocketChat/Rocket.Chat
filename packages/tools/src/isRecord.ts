@@ -3,6 +3,10 @@ export function isRecord(record: unknown): record is Record<string | number | sy
 		return false;
 	}
 
+	if (Array.isArray(record)) {
+		return false;
+	}
+
 	const prototype = Object.getPrototypeOf(record);
 
 	if (prototype === null) {

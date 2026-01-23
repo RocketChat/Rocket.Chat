@@ -33,6 +33,7 @@ describe('isRecord', () => {
 		['case-7', new String('string'), false],
 		// eslint-disable-next-line no-new-wrappers
 		['case-8', new Number(1), false],
+		['case-9', [], false],
 	])('should return true for records %# (%s)', (_caseId, input, expected) => {
 		expect(isRecord(input)).toEqual(expected);
 	});
