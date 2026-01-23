@@ -1,3 +1,7 @@
+// This is a JS File that was renamed to TS so it won't lose its git history when converted to TS
+// TODO: Remove the following lint/ts instructions when the file gets properly converted
+/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 export class SlackAPI {
