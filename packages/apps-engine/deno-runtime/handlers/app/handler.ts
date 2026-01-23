@@ -15,6 +15,8 @@ import handleListener from '../listener/handler.ts';
 import handleUIKitInteraction, { uikitInteractions } from '../uikit/handler.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import handleOnUpdate from './handleOnUpdate.ts';
+import handleUploadEvents, { uploadEvents } from './handleUploadEvents.ts';
+import { isOneOf } from '../lib/assertions.ts';
 
 export default async function handleApp(method: string, params: unknown): Promise<Defined | JsonRpcError> {
 	const [, appMethod] = method.split(':');
@@ -28,30 +30,37 @@ export default async function handleApp(method: string, params: unknown): Promis
 		// `app` will be undefined if the method here is "app:construct"
 		const app = AppObjectRegistry.get<App>('app');
 
-		app?.getLogger().debug(`'${appMethod}' is being called...`);
+		app?.getLogger().debug({ msg: `A method is being called...`, appMethod });
 
-		if (uikitInteractions.includes(appMethod)) {
-			return handleUIKitInteraction(appMethod, params).then((result) => {
-				if (result instanceof JsonRpcError) {
-					app?.getLogger().debug(`'${appMethod}' was unsuccessful.`, result.message);
-				} else {
-					app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
-				}
+		const formatResult = (result: Defined | JsonRpcError): Defined | JsonRpcError => {
+			if (result instanceof JsonRpcError) {
+				app?.getLogger().debug({
+					msg: `'${appMethod}' was unsuccessful.`,
+					appMethod,
+					err: result,
+					errorMessage: result.message,
+				});
+			} else {
+				app?.getLogger().debug({
+					msg: `'${appMethod}' was successfully called! The result is:`,
+					appMethod,
+					result,
+				});
+			}
 
-				return result;
-			});
+			return result;
+		};
+
+		if (app && isOneOf(appMethod, uploadEvents)) {
+			return handleUploadEvents(appMethod, params).then(formatResult);
 		}
 
-		if (appMethod.startsWith('check') || appMethod.startsWith('execute')) {
-			return handleListener(appMethod, params).then((result) => {
-				if (result instanceof JsonRpcError) {
-					app?.getLogger().debug(`'${appMethod}' was unsuccessful.`, result.message);
-				} else {
-					app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
-				}
+		if (app && isOneOf(appMethod, uikitInteractions)) {
+			return handleUIKitInteraction(appMethod, params).then(formatResult);
+		}
 
-				return result;
-			});
+		if (app && (appMethod.startsWith('check') || appMethod.startsWith('execute'))) {
+			return handleListener(appMethod, params).then(formatResult);
 		}
 
 		let result: Defined | JsonRpcError;
@@ -91,7 +100,11 @@ export default async function handleApp(method: string, params: unknown): Promis
 				throw new JsonRpcError('Method not found', -32601);
 		}
 
-		app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
+		app?.getLogger().debug({
+			msg: `'${appMethod}' was successfully called! The result is:`,
+			appMethod,
+			result,
+		});
 
 		return result;
 	} catch (e: unknown) {

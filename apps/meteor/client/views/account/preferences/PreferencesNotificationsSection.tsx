@@ -94,6 +94,7 @@ const PreferencesNotificationsSection = () => {
 	const notifyCalendarEventsId = useId();
 	const enableMobileRingingId = useId();
 	const desktopNotificationsLabelId = useId();
+	const desktopNotificationVoiceCallsId = useId();
 
 	const showCalendarPreference = user?.settings?.calendar?.outlook?.Enabled;
 
@@ -147,6 +148,18 @@ const PreferencesNotificationsSection = () => {
 							control={control}
 							render={({ field: { value, onChange } }) => (
 								<Select aria-labelledby={desktopNotificationsId} value={value} onChange={onChange} options={desktopNotificationOptions} />
+							)}
+						/>
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldRow>
+						<FieldLabel htmlFor={desktopNotificationVoiceCallsId}>{t('Notification_Desktop_show_voice_calls')}</FieldLabel>
+						<Controller
+							name='desktopNotificationVoiceCalls'
+							control={control}
+							render={({ field: { ref, value, onChange } }) => (
+								<ToggleSwitch id={desktopNotificationVoiceCallsId} ref={ref} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>

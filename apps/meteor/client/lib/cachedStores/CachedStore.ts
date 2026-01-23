@@ -1,5 +1,6 @@
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { StreamNames } from '@rocket.chat/ddp-client';
+import { isTruthy } from '@rocket.chat/tools';
 import localforage from 'localforage';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -11,9 +12,7 @@ import { onLoggedIn } from '../loggedIn';
 import { CachedStoresManager } from './CachedStoresManager';
 import type { IDocumentMapStore } from './DocumentMapStore';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { isTruthy } from '../../../lib/isTruthy';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
-import { watch } from '../../meteor/watch';
 import { getUserId } from '../user';
 import { getConfig } from '../utils/getConfig';
 
@@ -359,10 +358,6 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	}
 
 	private reconnectionComputation: Tracker.Computation | undefined;
-
-	watchReady() {
-		return watch(this.useReady, (ready) => ready);
-	}
 
 	setReady(ready: boolean) {
 		this.useReady.setState(ready);

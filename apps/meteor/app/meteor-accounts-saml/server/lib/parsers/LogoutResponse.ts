@@ -12,7 +12,7 @@ export class LogoutResponseParser {
 	}
 
 	public async validate(xmlString: string, callback: ILogoutResponseValidateCallback): Promise<void> {
-		SAMLUtils.log(`LogoutResponse: ${xmlString}`);
+		SAMLUtils.log({ msg: 'Validating SAML Logout Response', xmlString });
 
 		const doc = new xmldom.DOMParser().parseFromString(xmlString, 'text/xml');
 		if (!doc) {
@@ -28,9 +28,9 @@ export class LogoutResponseParser {
 		let inResponseTo;
 		try {
 			inResponseTo = response.getAttribute('InResponseTo');
-			SAMLUtils.log(`In Response to: ${inResponseTo}`);
-		} catch (e) {
-			SAMLUtils.log(`Caught error: ${e}`);
+			SAMLUtils.log({ msg: `Found InResponseTo`, inResponseTo });
+		} catch (err) {
+			SAMLUtils.log({ err });
 			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
 			SAMLUtils.log(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${msg}`);
 		}

@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { AdminSidebar } from './fragments';
-import { ConfirmDeleteModal } from './fragments/modal';
+import { AdminSidebar, ToastMessages } from './fragments';
+import { ConfirmDeleteModal } from './fragments/modals';
 
 export enum AdminSectionsHref {
 	Workspace = '/admin/info',
@@ -19,7 +19,7 @@ export enum AdminSectionsHref {
 	Third_party_login = '/admin/third-party-login',
 	Integrations = '/admin/integrations',
 	Import = '/admin/import',
-	Reports = '/admin/reports',
+	Reports = '/admin/analytic-reports',
 	Sounds = '/admin/sounds',
 	Emoji = '/admin/emoji',
 	Settings = '/admin/settings',
@@ -29,9 +29,12 @@ export abstract class Admin {
 
 	readonly deleteModal: ConfirmDeleteModal;
 
+	readonly toastMessage: ToastMessages;
+
 	constructor(protected page: Page) {
 		this.sidebar = new AdminSidebar(page);
-		this.deleteModal = new ConfirmDeleteModal(page.getByRole('dialog'));
+		this.deleteModal = new ConfirmDeleteModal(page.getByRole('dialog', { name: 'Are you sure?' }));
+		this.toastMessage = new ToastMessages(page);
 	}
 
 	get btnAdd(): Locator {

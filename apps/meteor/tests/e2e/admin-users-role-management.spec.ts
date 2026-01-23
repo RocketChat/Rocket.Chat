@@ -1,6 +1,5 @@
 import { Users } from './fixtures/userStates';
 import { AdminUsers } from './page-objects';
-import { ToastBar } from './page-objects/toastBar';
 import { test, expect } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
 import { createTestUser } from './utils/user-helpers';
@@ -8,7 +7,6 @@ import { createTestUser } from './utils/user-helpers';
 let userWithoutAdminAccess: ITestUser;
 let userWithAdminAccess: ITestUser;
 let admin: AdminUsers;
-let poToastBar: ToastBar;
 
 test.describe('Admin > Users Role Management', () => {
 	test.beforeAll('Create test users', async ({ api }) => {
@@ -26,23 +24,18 @@ test.describe('Admin > Users Role Management', () => {
 
 		test.beforeEach('Go to /admin/users', async ({ page }) => {
 			admin = new AdminUsers(page);
-			poToastBar = new ToastBar(page);
 			await page.goto('/admin/users');
 		});
 
 		test('Make a newly created user as admin', async () => {
-			await admin.inputSearchUsers.fill(userWithoutAdminAccess.data.username);
-
 			await test.step('should be visible in the All tab', async () => {
 				await admin.getTabByName().click();
-				await expect(admin.getUserRowByUsername(userWithoutAdminAccess.data.username)).toBeVisible();
+				await admin.searchUser(userWithoutAdminAccess.data.username);
 			});
 
 			await test.step('make a user admin', async () => {
-				await admin.openUserActionMenu(userWithoutAdminAccess.data.username);
-				await admin.menuItemMakeAdmin.click();
-				await expect(poToastBar.alert).toBeVisible();
-				await expect(poToastBar.alert).toHaveText('User is now an admin');
+				await admin.dispatchUserAction(userWithoutAdminAccess.data.username, 'Make Admin');
+				await admin.toastMessage.waitForDisplay({ type: 'success', message: 'User is now an admin' });
 			});
 
 			await test.step('verify user is admin', async () => {
@@ -53,17 +46,14 @@ test.describe('Admin > Users Role Management', () => {
 		});
 
 		test('Remove role as admin', async () => {
-			await admin.inputSearchUsers.fill(userWithAdminAccess.data.username);
 			await test.step('User should be visible in the All tab', async () => {
 				await admin.getTabByName().click();
-				await expect(admin.getUserRowByUsername(userWithAdminAccess.data.username)).toBeVisible();
+				await admin.searchUser(userWithAdminAccess.data.username);
 			});
 
 			await test.step('remove admin role', async () => {
-				await admin.openUserActionMenu(userWithAdminAccess.data.username);
-				await admin.menuItemRemoveAdmin.click();
-				await expect(poToastBar.alert).toBeVisible();
-				await expect(poToastBar.alert).toHaveText('User is no longer an admin');
+				await admin.dispatchUserAction(userWithAdminAccess.data.username, 'Remove Admin');
+				await admin.toastMessage.waitForDisplay({ type: 'success', message: 'User is no longer an admin' });
 			});
 
 			await test.step('verify user role as admin is removed', async () => {

@@ -1,0 +1,20 @@
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    exposedByDefault: false
+  file:
+    filename: "/etc/traefik/dynamic_conf.yml"
+
+api:
+  dashboard: false
+  insecure: false
+
+# accessLog:
+#   filePath: "/logs/access.log"
+#   bufferingSize: 100
+#   format: json

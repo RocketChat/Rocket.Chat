@@ -6,6 +6,7 @@ import type express from 'express';
 import { WebApp } from 'meteor/webapp';
 
 import { API } from '../../../app/api/server';
+import { getTrimmedServerVersion } from '../../../app/api/server/lib/getTrimmedServerVersion';
 
 const logger = new Logger('FederationRoutes');
 
@@ -42,7 +43,7 @@ API.v1.get(
 
 export async function registerFederationRoutes(): Promise<void> {
 	try {
-		const routes = getFederationRoutes();
+		const routes = getFederationRoutes(getTrimmedServerVersion());
 
 		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(routes.matrix.router).use(routes.wellKnown.router);
 	} catch (error) {

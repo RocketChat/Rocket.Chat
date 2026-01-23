@@ -1,9 +1,10 @@
+import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useCustomFieldsQuery } from './useCustomFieldsQuery';
+import { useCustomFieldsQuery } from '../../hooks/useCustomFieldsQuery';
 
-const checkIsVisibleAndScopeVisitor = (key: string, customFields: Record<string, string | unknown>[]) => {
+const checkIsVisibleAndScopeVisitor = (key: string, customFields: ILivechatCustomField[]) => {
 	const field = customFields?.find(({ _id }) => _id === key);
 	return field?.visibility === 'visible' && field?.scope === 'visitor';
 };

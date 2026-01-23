@@ -11,8 +11,7 @@ import type {
 	FeaturedAppsSection,
 	ILogItem,
 	AppRequestFilter,
-	AppRequestsStats,
-	PaginatedAppRequests,
+	AppRequest,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
@@ -198,11 +197,25 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/app-request': {
-		GET: (params: { appId: string; q?: AppRequestFilter; sort?: string; limit?: number; offset?: number }) => PaginatedAppRequests;
+		GET: (params: { appId: string; q?: AppRequestFilter; sort?: string; limit?: number; offset?: number }) => {
+			data: AppRequest[] | null;
+			meta: {
+				limit: 25 | 50 | 100;
+				offset: number;
+				sort: string;
+				filter: string;
+				total: number;
+			};
+		};
 	};
 
 	'/apps/app-request/stats': {
-		GET: () => AppRequestsStats;
+		GET: () => {
+			data: {
+				totalSeen: number;
+				totalUnseen: number;
+			};
+		};
 	};
 
 	'/apps/app-request/markAsSeen': {
@@ -220,35 +233,6 @@ export type AppsEndpoints = {
 	};
 
 	'/apps': {
-		GET:
-			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
-					url: string;
-			  })
-			| ((params: {
-					purchaseType?: 'buy' | 'subscription';
-					marketplace?: 'false';
-					version?: string;
-					appId?: string;
-					details?: 'true' | 'false';
-			  }) => {
-					apps: App[];
-			  })
-			| ((params: {
-					purchaseType?: 'buy' | 'subscription';
-					marketplace: 'true';
-					version?: string;
-					appId?: string;
-					details?: 'true' | 'false';
-			  }) => App[])
-			| ((params: { categories: 'true' }) => {
-					createdDate: Date;
-					description: string;
-					id: string;
-					modifiedDate: Date;
-					title: string;
-			  }[])
-			| (() => { apps: App[] });
-
 		POST: {
 			(
 				params:

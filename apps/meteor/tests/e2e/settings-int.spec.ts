@@ -9,11 +9,11 @@ test.describe.serial('settings-int', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poAdminSettings = new AdminSettings(page);
-		const pageTitle = page.locator('[data-qa-type="PageHeader-title"]');
+		const pageTitle = page.getByRole('main').getByRole('heading', { level: 1, name: 'Message', exact: true });
 		await page.goto('/admin/settings/Message');
 
 		await pageTitle.waitFor();
-		await expect(pageTitle).toHaveText('Message');
+		await expect(pageTitle).toBeVisible();
 	});
 
 	test('expect not being able to set int value as empty string', async ({ page }) => {
@@ -21,7 +21,6 @@ test.describe.serial('settings-int', () => {
 		await page.locator('#Message_AllowEditing_BlockEditInMinutes').blur();
 
 		await poAdminSettings.btnSaveChanges.click();
-
-		await expect(page.locator('.rcx-toastbar.rcx-toastbar--error')).toBeVisible();
+		await poAdminSettings.toastMessage.waitForDisplay({ type: 'error' });
 	});
 });

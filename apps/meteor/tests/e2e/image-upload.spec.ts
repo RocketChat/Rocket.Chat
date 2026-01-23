@@ -6,23 +6,26 @@ import { test, expect } from './utils/test';
 test.use({ storageState: Users.user1.state });
 
 test.describe('image-upload', () => {
-	let settingDefaultValue: unknown;
+	let defaultStripSetting: unknown;
+	let defaultRotateSetting: unknown;
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
-		settingDefaultValue = await getSettingValueById(api, 'Message_Attachments_Strip_Exif');
+		defaultStripSetting = await getSettingValueById(api, 'Message_Attachments_Strip_Exif');
+		defaultRotateSetting = await getSettingValueById(api, 'FileUpload_RotateImages');
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
 	});
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 	});
 
 	test.afterAll(async ({ api }) => {
-		await setSettingValueById(api, 'Message_Attachments_Strip_Exif', settingDefaultValue);
+		await setSettingValueById(api, 'Message_Attachments_Strip_Exif', defaultStripSetting);
+		await setSettingValueById(api, 'FileUpload_RotateImages', defaultRotateSetting);
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
@@ -44,6 +47,8 @@ test.describe('image-upload', () => {
 	test.describe('strip exif enabled', () => {
 		test.beforeAll(async ({ api }) => {
 			await setSettingValueById(api, 'Message_Attachments_Strip_Exif', true);
+			// Image rotation now happens before EXIF stripping, so we need to disable it to properly test it
+			await setSettingValueById(api, 'FileUpload_RotateImages', false);
 		});
 
 		test('should succeed upload of bad-orientation.jpeg', async () => {

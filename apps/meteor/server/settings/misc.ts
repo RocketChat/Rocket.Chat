@@ -39,7 +39,7 @@ export const verifyFingerPrint = async function (emit = true) {
 	const fingerprint = generateFingerprint();
 
 	if (!DeploymentFingerPrintRecordHash) {
-		logger.info('Generating fingerprint for the first time', fingerprint);
+		logger.info({ msg: 'Generating fingerprint for the first time', fingerprint });
 		await updateFingerprint(fingerprint, true, emit);
 		return;
 	}
@@ -49,12 +49,12 @@ export const verifyFingerPrint = async function (emit = true) {
 	}
 
 	if (process.env.AUTO_ACCEPT_FINGERPRINT === 'true') {
-		logger.info('Updating fingerprint as AUTO_ACCEPT_FINGERPRINT is true', fingerprint);
+		logger.info({ msg: 'Updating fingerprint as AUTO_ACCEPT_FINGERPRINT is true', fingerprint });
 		await updateFingerprint(fingerprint, true, emit);
 		return;
 	}
 
-	logger.warn('Updating fingerprint as pending for admin verification', fingerprint);
+	logger.warn({ msg: 'Updating fingerprint as pending for admin verification', fingerprint });
 	await updateFingerprint(fingerprint, false, emit);
 };
 

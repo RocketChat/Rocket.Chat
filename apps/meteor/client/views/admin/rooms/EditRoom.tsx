@@ -14,13 +14,13 @@ import {
 	FieldError,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';

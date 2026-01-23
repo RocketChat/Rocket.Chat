@@ -23,6 +23,15 @@ import {
 	AccordionItem,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import {
+	ContextualbarHeader,
+	ContextualbarBack,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -34,15 +43,6 @@ import type { EditRoomInfoFormData } from './useEditRoomInitialValues';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
-import {
-	ContextualbarHeader,
-	ContextualbarBack,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarScrollableContent,
-	ContextualbarFooter,
-	ContextualbarDialog,
-} from '../../../../../components/Contextualbar';
 import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';

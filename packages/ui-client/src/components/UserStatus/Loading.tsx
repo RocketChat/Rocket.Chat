@@ -1,10 +1,9 @@
-import type { ComponentProps, ReactElement } from 'react';
-
+import type { UserStatusProps } from './UserStatus';
 import UserStatus from './UserStatus';
 
-type LoadingProps = Omit<ComponentProps<typeof UserStatus>, 'status'>;
+type LoadingProps = Omit<UserStatusProps, 'status'>;
 
-function Loading(props: LoadingProps): ReactElement {
+function Loading(props: LoadingProps) {
 	return <UserStatus {...props} />;
 }
 

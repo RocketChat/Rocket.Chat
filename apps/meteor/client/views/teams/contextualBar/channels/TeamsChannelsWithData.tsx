@@ -1,18 +1,15 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage, useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, usePermission, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
+import { useSetModal, usePermission, useAtLeastOnePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import AddExistingModal from './AddExistingModal';
 import TeamsChannels from './TeamsChannels';
 import { useTeamsChannelList } from './hooks/useTeamsChannelList';
-import { useRecordList } from '../../../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import CreateChannelWithData from '../../../../sidebar/header/CreateChannel';
+import CreateChannelModal from '../../../../navbar/NavBarPagesGroup/actions/CreateChannelModal';
 import { useRoom } from '../../../room/contexts/RoomContext';
-import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
 
 const TeamsChannelsWithData = () => {
 	const room = useRoom();
@@ -31,22 +28,18 @@ const TeamsChannelsWithData = () => {
 	const [text, setText] = useState('');
 	const debouncedText = useDebouncedValue(text, 800);
 
-	const { teamsChannelList, loadMoreItems, reload } = useTeamsChannelList(
-		useMemo(() => ({ teamId, text: debouncedText, type }), [teamId, debouncedText, type]),
-	);
-
-	const { phase, items, itemCount: total } = useRecordList(teamsChannelList);
+	const { isPending, data, fetchNextPage, refetch } = useTeamsChannelList({ teamId, text: debouncedText, type });
 
 	const handleTextChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
 		setText(event.currentTarget.value);
 	}, []);
 
 	const handleAddExisting = useEffectEvent(() => {
-		setModal(<AddExistingModal teamId={teamId} onClose={() => setModal(null)} reload={reload} />);
+		setModal(<AddExistingModal teamId={teamId} onClose={() => setModal(null)} reload={refetch} />);
 	});
 
 	const handleCreateNew = useEffectEvent(() => {
-		setModal(<CreateChannelWithData teamId={teamId} mainRoom={room} onClose={() => setModal(null)} reload={reload} />);
+		setModal(<CreateChannelModal teamId={teamId} mainRoom={room} onClose={() => setModal(null)} reload={refetch} />);
 	});
 
 	const goToRoom = useEffectEvent((room: IRoom) => {
@@ -55,20 +48,20 @@ const TeamsChannelsWithData = () => {
 
 	return (
 		<TeamsChannels
-			loading={phase === AsyncStatePhase.LOADING}
+			loading={isPending}
 			mainRoom={room}
 			type={type}
 			text={text}
 			setType={setType}
 			setText={handleTextChange}
-			channels={items}
-			total={total}
+			channels={data?.channels ?? []}
+			total={data?.total ?? 0}
 			onClickClose={closeTab}
 			onClickAddExisting={canAddExistingRoomToTeam && handleAddExisting}
 			onClickCreateNew={canCreateRoomInTeam && handleCreateNew}
 			onClickView={goToRoom}
-			loadMoreItems={loadMoreItems}
-			reload={reload}
+			loadMoreItems={fetchNextPage}
+			reload={refetch}
 		/>
 	);
 };

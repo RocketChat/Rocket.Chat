@@ -61,7 +61,7 @@ const TranslationContextMock = ({ children }: TranslationContextMockProps): Reac
 		};
 	}, [parent]);
 
-	return <TranslationContext.Provider children={children} value={value} />;
+	return <TranslationContext.Provider value={value}>{children}</TranslationContext.Provider>;
 };
 
 export default TranslationContextMock;

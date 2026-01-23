@@ -1,13 +1,13 @@
 import { StatusBullet } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export type UserStatusProps = {
 	small?: boolean;
-} & ComponentProps<typeof StatusBullet>;
+} & ComponentPropsWithoutRef<typeof StatusBullet>;
 
-function UserStatus({ small, status, ...props }: UserStatusProps): ReactElement {
+function UserStatus({ small, status, ...props }: UserStatusProps) {
 	const { t } = useTranslation();
 	const size = small ? 'small' : 'large';
 

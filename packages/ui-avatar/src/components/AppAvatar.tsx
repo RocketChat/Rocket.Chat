@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 
-import BaseAvatar, { BaseAvatarProps } from './BaseAvatar';
+import type { BaseAvatarProps } from './BaseAvatar';
+import BaseAvatar from './BaseAvatar';
 
 type AppAvatarProps = Pick<BaseAvatarProps, 'size'> & {
 	iconFileContent: string;
