@@ -1,29 +1,29 @@
-import type { IAnalytic, IRoom } from '@rocket.chat/core-typings';
+import type { IAnalytics, IRoom } from '@rocket.chat/core-typings';
 import type { AggregationCursor, FindCursor, FindOptions, UpdateResult, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 import type { IChannelsWithNumberOfMessagesBetweenDate } from './IRoomsModel';
 
-export interface IAnalyticsModel extends IBaseModel<IAnalytic> {
-	saveMessageSent({ room, date }: { room: IRoom; date: IAnalytic['date'] }): Promise<Document | UpdateResult>;
-	saveUserData({ date }: { date: IAnalytic['date'] }): Promise<Document | UpdateResult>;
-	saveMessageDeleted({ room, date }: { room: { _id: string }; date: IAnalytic['date'] }): Promise<Document | UpdateResult>;
+export interface IAnalyticsModel extends IBaseModel<IAnalytics> {
+	saveMessageSent({ room, date }: { room: IRoom; date: IAnalytics['date'] }): Promise<Document | UpdateResult>;
+	saveUserData({ date }: { date: IAnalytics['date'] }): Promise<Document | UpdateResult>;
+	saveMessageDeleted({ room, date }: { room: { _id: string }; date: IAnalytics['date'] }): Promise<Document | UpdateResult>;
 	getMessagesSentTotalByDate(params: {
-		start: IAnalytic['date'];
-		end: IAnalytic['date'];
-		options?: { sort?: FindOptions<IAnalytic>['sort']; count?: number };
+		start: IAnalytics['date'];
+		end: IAnalytics['date'];
+		options?: { sort?: FindOptions<IAnalytics>['sort']; count?: number };
 	}): AggregationCursor<{
-		_id: IAnalytic['date'];
+		_id: IAnalytics['date'];
 		messages: number;
 	}>;
-	getMessagesOrigin({ start, end }: { start: IAnalytic['date']; end: IAnalytic['date'] }): AggregationCursor<{
+	getMessagesOrigin({ start, end }: { start: IAnalytics['date']; end: IAnalytics['date'] }): AggregationCursor<{
 		t: IRoom['t'];
 		messages: number;
 	}>;
 	getMostPopularChannelsByMessagesSentQuantity(params: {
-		start: IAnalytic['date'];
-		end: IAnalytic['date'];
-		options?: { sort?: FindOptions<IAnalytic>['sort']; count?: number };
+		start: IAnalytics['date'];
+		end: IAnalytics['date'];
+		options?: { sort?: FindOptions<IAnalytics>['sort']; count?: number };
 	}): AggregationCursor<{
 		t: IRoom['t'];
 		name: string;
@@ -31,14 +31,14 @@ export interface IAnalyticsModel extends IBaseModel<IAnalytic> {
 		usernames: string[];
 	}>;
 	getTotalOfRegisteredUsersByDate(params: {
-		start: IAnalytic['date'];
-		end: IAnalytic['date'];
-		options?: { sort?: FindOptions<IAnalytic>['sort']; count?: number };
+		start: IAnalytics['date'];
+		end: IAnalytics['date'];
+		options?: { sort?: FindOptions<IAnalytics>['sort']; count?: number };
 	}): AggregationCursor<{
-		_id: IAnalytic['date'];
+		_id: IAnalytics['date'];
 		users: number;
 	}>;
-	findByTypeBeforeDate({ type, date }: { type: IAnalytic['type']; date: IAnalytic['date'] }): FindCursor<IAnalytic>;
+	findByTypeBeforeDate({ type, date }: { type: IAnalytics['type']; date: IAnalytics['date'] }): FindCursor<IAnalytics>;
 	findRoomsByTypesWithNumberOfMessagesBetweenDate(params: {
 		types: Array<IRoom['t']>;
 		start: number;

@@ -35,7 +35,7 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 		[userId],
 	);
 
-	return <AuthorizationContext.Provider children={children} value={contextValue} />;
+	return <AuthorizationContext.Provider value={contextValue}>{children}</AuthorizationContext.Provider>;
 };
 
 export default AuthorizationProvider;
