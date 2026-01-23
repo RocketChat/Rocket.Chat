@@ -19,7 +19,7 @@ const AgentRow = ({ index, agent, register, onRemove }: AgentRowProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<GenericTableRow key={agent.agentId} tabIndex={0} role='link' action>
+		<GenericTableRow key={agent.agentId} tabIndex={0} action>
 			<GenericTableCell withTruncatedText>
 				<AgentAvatar name={agent.name || ''} username={agent.username || ''} />
 			</GenericTableCell>
