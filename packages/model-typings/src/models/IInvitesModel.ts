@@ -8,4 +8,5 @@ export interface IInvitesModel extends IBaseModel<IInvite> {
 	findOneByInviteToken(inviteToken: string): Promise<IInvite | null>;
 	increaseUsageById(_id: string, uses: number): Promise<UpdateResult>;
 	countUses(): Promise<number>;
+	ensureInviteToken(_id: string): Promise<string>;
 }
