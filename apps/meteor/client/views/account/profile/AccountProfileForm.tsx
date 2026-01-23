@@ -35,7 +35,7 @@ import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
-import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
+import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactElement => {
 	const t = useTranslation();
@@ -299,13 +299,24 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 				<Field>
 					<FieldLabel htmlFor={nicknameId}>{t('Nickname')}</FieldLabel>
 					<FieldRow>
-					<Controller control={control} name='nickname' render={({ field }) => <TextInput {...field} id={nicknameId} flexGrow={1} />} />
+						<Controller control={control} name='nickname' render={({ field }) => <TextInput {...field} id={nicknameId} flexGrow={1} />} />
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel htmlFor={bioId}>{t('Bio')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='bio'
+							render={({ field }) => (
+								<TextAreaInput
+									{...field}
 									id={bioId}
 									error={errors.bio?.message}
 									rows={3}
 									flexGrow={1}
 									addon={<Icon name='edit' size='x20' alignSelf='center' />}
-									aria-invalid={errors.statusText ? 'true' : 'false'}
+									aria-invalid={errors.bio ? 'true' : 'false'}
 									aria-describedby={`${bioId}-error`}
 								/>
 							)}
