@@ -16,12 +16,11 @@ export class SAUMonitorService extends ServiceClassInternal implements ISAUMonit
 
 		this.onEvent('accounts.login', async ({ userId, connection }) => {
 			const instanceId = InstanceStatus.id();
-			const connectionId = connection.id;
 			const clientAddress = getClientAddress(connection);
 			const userAgent = getHeader(connection.httpHeaders, 'user-agent');
 			const host = getHeader(connection.httpHeaders, 'host');
 
-			sauEvents.emit('sau.accounts.login', { userId, instanceId, connectionId, clientAddress, userAgent, host });
+			sauEvents.emit('sau.accounts.login', { userId, instanceId, connectionId: connection.id, loginToken: connection.loginToken, clientAddress, userAgent, host });
 		});
 
 		this.onEvent('accounts.logout', async ({ userId, connection }) => {
