@@ -1,12 +1,10 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, CodeSnippet } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useAbsoluteUrl, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Wrapper from './Wrapper';
-import RawText from '../../../components/RawText';
-import TextCopy from '../../../components/TextCopy';
+import useClipboardWithToast from '../../../hooks/useClipboardWithToast';
 
 // TODO: use `CodeSnippet` Component
 const Installation = (): ReactElement => {
@@ -23,17 +21,19 @@ const Installation = (): ReactElement => {
 	})(window, document, 'script', '${siteUrl}/livechat');
 	</script>`;
 
+	const { copy } = useClipboardWithToast(installString);
+
 	return (
 		<Page>
 			<PageHeader title={t('Installation')} />
 			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' alignSelf='center'>
 					<p>
-						<RawText>
+						<CodeSnippet>
 							{t('To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site')}
-						</RawText>
+						</CodeSnippet>
 					</p>
-					<TextCopy pi='none' text={installString} wrapper={Wrapper} />
+					<CodeSnippet onClick={() => copy()}>{installString}</CodeSnippet>
 				</Box>
 			</PageScrollableContentWithShadow>
 		</Page>
