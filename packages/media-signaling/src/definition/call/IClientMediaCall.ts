@@ -19,6 +19,10 @@ export type CallRole = 'caller' | 'callee';
 
 export type CallService = 'webrtc';
 
+export type CallFeature = 'audio' | 'screen-share';
+
+export const callFeatureList: readonly CallFeature[] = ['audio', 'screen-share'];
+
 export type CallState =
 	| 'none' // trying to call with no idea if it'll reach anyone
 	| 'ringing' // call has been acknoledged by the callee's agent, but no response about them accepting it or not
@@ -118,4 +122,5 @@ export interface IClientMediaCall {
 	sendDTMF(dtmf: string, duration?: number): void;
 
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
+	isFeatureAvailable(feature: CallFeature): boolean;
 }

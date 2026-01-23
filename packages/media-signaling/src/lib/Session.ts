@@ -10,7 +10,7 @@ import type {
 	RandomStringFactory,
 	ServerMediaSignal,
 } from '../definition';
-import type { IClientMediaCall, CallActorType, CallContact } from '../definition/call';
+import type { IClientMediaCall, CallActorType, CallContact, CallFeature } from '../definition/call';
 import type { IMediaSignalLogger } from '../definition/logger';
 
 export type MediaSignalingEvents = {
@@ -32,6 +32,7 @@ export type MediaSignalingSessionConfig = {
 	transport: MediaSignalTransport<ClientMediaSignal>;
 	iceGatheringTimeout?: number;
 	iceServers?: RTCIceServer[];
+	features: CallFeature[];
 };
 
 const STATE_REPORT_INTERVAL = 60000;
@@ -217,7 +218,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		const callId = this.createTemporaryCallId();
 		const call = this.createCall(callId);
 
-		await call.requestCall({ type: calleeType, id: calleeId }, contactInfo);
+		await call.requestCall({ type: calleeType, id: calleeId }, this.config.features, contactInfo);
 	}
 
 	public register(): void {
@@ -613,6 +614,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			iceGatheringTimeout: this.config.iceGatheringTimeout || 5000,
 			iceServers: this.config.iceServers || [],
 			sessionId: this._sessionId,
+			supportedFeatures: this.config.features,
 		};
 
 		const call = new ClientMediaCall(config, callId, { inputTrack: this.inputTrack, videoTrack: this.videoTrack });
