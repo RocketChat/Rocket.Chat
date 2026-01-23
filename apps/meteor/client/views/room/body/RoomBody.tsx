@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
+import { isTruthy } from '@rocket.chat/tools';
 import { CustomScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import { memo, useCallback, useMemo } from 'react';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
@@ -274,7 +274,7 @@ const RoomBody = (): ReactElement => {
 									</MessageListErrorBoundary>
 								</div>
 							</div>
-							<RoomComposer>
+							<RoomComposer aria-label={t('Room_composer')}>
 								<ComposerContainer
 									subscription={subscription}
 									onResize={handleComposerResize}

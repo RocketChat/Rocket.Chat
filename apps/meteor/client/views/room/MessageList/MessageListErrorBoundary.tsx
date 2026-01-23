@@ -11,7 +11,6 @@ const MessageListErrorBoundary = ({ children }: { children: ReactNode }): ReactE
 
 	return (
 		<ErrorBoundary
-			children={children}
 			resetKeys={[room._id]}
 			fallback={
 				<States>
@@ -29,7 +28,9 @@ const MessageListErrorBoundary = ({ children }: { children: ReactNode }): ReactE
 					</StatesActions>
 				</States>
 			}
-		/>
+		>
+			{children}
+		</ErrorBoundary>
 	);
 };
 

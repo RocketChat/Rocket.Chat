@@ -9,8 +9,6 @@ import type {
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
 	VideoConference,
-	OEmbedMeta,
-	OEmbedUrlContent,
 	IOmnichannelRoom,
 	ILivechatTag,
 	ILivechatTagRecord,
@@ -164,16 +162,6 @@ type ChainedCallbackSignatures = {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
-	'oembed:beforeGetUrlContent': (data: { urlObj: URL }) => {
-		urlObj: URL;
-		headerOverrides?: { [k: string]: string };
-	};
-	'oembed:afterParseContent': (data: { url: string; meta: OEmbedMeta; headers: { [k: string]: string }; content: OEmbedUrlContent }) => {
-		url: string;
-		meta: OEmbedMeta;
-		headers: { [k: string]: string };
-		content: OEmbedUrlContent;
-	};
 	'livechat.beforeListTags': () => ILivechatTag[];
 	'livechat.offlineMessage': (data: { name: string; email: string; message: string; department?: string; host?: string }) => void;
 	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
@@ -188,7 +176,7 @@ type ChainedCallbackSignatures = {
 			};
 			options: { forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any }; clientAction?: boolean };
 		},
-	) => Promise<(IOmnichannelRoom & { chatQueued: boolean }) | undefined>;
+	) => Promise<(IOmnichannelRoom & { chatQueued: boolean }) | false>;
 	'beforeGetMentions': (mentionIds: string[], teamMentions: MessageMention[]) => Promise<string[]>;
 	'livechat.manageDepartmentUnit': (params: { userId: string; departmentId: string; unitId?: string }) => void;
 	'afterRoomTopicChange': (

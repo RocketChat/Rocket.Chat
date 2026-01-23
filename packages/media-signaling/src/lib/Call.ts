@@ -189,6 +189,10 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private negotiationManager: NegotiationManager;
 
+	private sentLocalSdp: boolean;
+
+	private receivedRemoteSdp: boolean;
+
 	public get audioLevel(): number {
 		return this.webrtcProcessor?.audioLevel || 0;
 	}
@@ -226,6 +230,8 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.mayReportStates = true;
 		this.inputTrack = inputTrack || null;
 		this.creationTimestamp = new Date();
+		this.sentLocalSdp = false;
+		this.receivedRemoteSdp = false;
 
 		this.earlySignals = new Set();
 		this.stateTimeoutHandlers = new Set();
@@ -349,9 +355,8 @@ export class ClientMediaCall implements IClientMediaCall {
 		// Send an ACK so the server knows that this session exists and is reachable
 		this.acknowledge();
 
-		if (this._role === 'callee' || !this.acceptedLocally) {
-			this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
-		}
+		// Adds a secondary timeout for all sessions of the call; Won't matter if the original caller session is still active, but is needed for transferred calls.
+		this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
 
 		// If the call was requested by this specific session, assume we're signed already.
 		if (
@@ -415,6 +420,28 @@ export class ClientMediaCall implements IClientMediaCall {
 					return 'accepting';
 				}
 				return 'pending';
+			case 'accepted':
+				if (!this.negotiationManager.currentNegotiationId) {
+					return 'waiting-for-offer';
+				}
+
+				if (this._role === 'caller') {
+					if (!this.sentLocalSdp) {
+						return 'generating-local-sdp';
+					}
+					if (!this.receivedRemoteSdp) {
+						return 'waiting-for-answer';
+					}
+				} else {
+					if (!this.receivedRemoteSdp) {
+						return 'waiting-for-offer';
+					}
+					if (!this.sentLocalSdp) {
+						return 'generating-local-sdp';
+					}
+				}
+
+				return 'activating';
 			default:
 				return this._state;
 		}
@@ -749,6 +776,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.config.logger?.debug('ClientMediaCall.updateClientState', `${oldClientState} => ${clientState}`);
 
 		this.updateStateTimeouts();
+		// Any time the client state changes within the 'accepted' call state, set a new timeout for the new client state
+		// This ensures there will be three separate timeouts for the different negotiation stages: "generating local sdp", "waiting for remote sdp" and "connecting"
+		if (this._state === 'accepted') {
+			this.addStateTimeout(clientState, TIMEOUT_TO_PROGRESS_SIGNALING);
+		}
+
 		this.requestStateReport();
 		this.oldClientState = clientState;
 		this.emitter.emit('clientStateChange', oldClientState);
@@ -853,16 +886,20 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.requireWebRTC();
 
-		if (signal.sdp.type === 'offer') {
-			return this.processAnswerRequest(signal);
+		switch (signal.sdp.type) {
+			case 'offer':
+				await this.processAnswerRequest(signal);
+				break;
+			case 'answer':
+				await this.negotiationManager.setRemoteDescription(signal.negotiationId, signal.sdp);
+				break;
+			default:
+				this.config.logger?.error('Unsupported sdp type.');
+				return;
 		}
 
-		if (signal.sdp.type !== 'answer') {
-			this.config.logger?.error('Unsupported sdp type.');
-			return;
-		}
-
-		await this.negotiationManager.setRemoteDescription(signal.negotiationId, signal.sdp);
+		this.receivedRemoteSdp = true;
+		this.updateClientState();
 	}
 
 	protected deliverSdp(data: { sdp: RTCSessionDescriptionInit; negotiationId: string }) {
@@ -870,6 +907,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		if (!this.hidden) {
 			this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
+			this.sentLocalSdp = true;
 		}
 
 		this.updateClientState();
@@ -955,8 +993,6 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		// Both sides of the call have accepted it, we can change the state now
 		this.changeState('accepted');
-
-		this.addStateTimeout('accepted', TIMEOUT_TO_PROGRESS_SIGNALING);
 	}
 
 	private flagAsEnded(reason: CallHangupReason): void {
@@ -996,12 +1032,28 @@ export class ClientMediaCall implements IClientMediaCall {
 				if (callback) {
 					callback();
 				} else {
-					void this.hangup('timeout');
+					void this.hangup(this.getTimeoutHangupReason(state));
 				}
 			}, timeout),
 		};
 
 		this.stateTimeoutHandlers.add(handler);
+	}
+
+	private getTimeoutHangupReason(state: ClientState): CallHangupReason {
+		switch (state) {
+			case 'pending':
+				return 'not-answered';
+			case 'waiting-for-offer':
+			case 'waiting-for-answer':
+				return 'timeout-remote-sdp';
+			case 'generating-local-sdp':
+				return 'timeout-local-sdp';
+			case 'activating':
+				return 'timeout-activation';
+		}
+
+		return 'timeout';
 	}
 
 	private updateStateTimeouts(): void {

@@ -39,7 +39,7 @@ export const handleBannerOnWorkspaceSync = async (banners: Exclude<Serialized<Cl
 	}
 };
 
-const deserializeAnnouncement = (announcement: Serialized<Cloud.Announcement>): Cloud.Announcement => {
+const deserializeAnnouncement = (announcement: Serialized<Cloud.IAnnouncement>): Cloud.IAnnouncement => {
 	const { inactivedAt, _updatedAt, expireAt, startAt, createdAt } = announcement;
 
 	return {

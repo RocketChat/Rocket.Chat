@@ -13,16 +13,13 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { FormEvent, ReactElement } from 'react';
+import type { FormEvent } from 'react';
 import { useMemo, useState, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
-import { useRecordList } from '../../../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { getErrorMessage } from '../../../../lib/errorHandling';
-import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
 
@@ -78,15 +75,9 @@ const ThreadList = () => {
 	const uid = useUserId();
 	const tunread = subscription?.tunread?.sort().join(',');
 	const text = useDebouncedValue(searchText, 400);
-	const options: ThreadsListOptions = useMemo(() => {
-		if (type === 'all' || !subscribed || !uid) {
-			return {
-				rid,
-				text,
-			};
-		}
-		switch (type) {
-			case 'following':
+	const options = useDebouncedValue(
+		useMemo(() => {
+			if (type === 'all' || !subscribed || !uid) {
 				return {
 					rid,
 					text,
@@ -103,8 +94,10 @@ const ThreadList = () => {
 		}
 	}, [rid, subscribed, text, tunread, type, uid]);
 
-	const { threadsList, loadMoreItems } = useThreadsList(options, uid);
-	const { phase, error, items, itemCount } = useRecordList(threadsList);
+	const { isPending, error, isSuccess, data, fetchNextPage } = useThreadsList(options);
+
+	const items = data?.items || [];
+	const itemCount = data?.itemCount ?? 0;
 
 	const goToThread = useGoToThread({ replace: true });
 	const handleThreadClick = useCallback(
@@ -134,12 +127,11 @@ const ThreadList = () => {
 				</Box>
 			</ContextualbarSection>
 			<ContextualbarContent paddingInline={0}>
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' flexDirection='column' ref={ref}>
-					{phase === AsyncStatePhase.LOADING && (
-						<Box pi={24} pb={12}>
-							<Throbber size='x12' />
-						</Box>
-					)}
+				{isPending && (
+					<Box pi={24} pb={12}>
+						<Throbber size='x12' />
+					</Box>
+				)}
 
 					{error && (
 						<Callout mi={24} type='danger'>
@@ -147,7 +139,7 @@ const ThreadList = () => {
 						</Callout>
 					)}
 
-					{phase !== AsyncStatePhase.LOADING && itemCount === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
+				{isSuccess && itemCount === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 
 					{!error && itemCount > 0 && items.length > 0 && (
 						<VirtualizedScrollbars>
@@ -157,16 +149,10 @@ const ThreadList = () => {
 									width: inlineSize,
 								}}
 								totalCount={itemCount}
-								endReached={
-									phase === AsyncStatePhase.LOADING
-										? (): void => undefined
-										: (start): void => {
-												loadMoreItems(start, Math.min(50, itemCount - start));
-											}
-								}
+								endReached={() => fetchNextPage()}
 								overscan={25}
 								data={items}
-								itemContent={(_index, data: IThreadMainMessage): ReactElement => (
+								itemContent={(_index, data: IThreadMainMessage) => (
 									<ThreadListItem
 										thread={data}
 										unread={subscription?.tunread ?? []}

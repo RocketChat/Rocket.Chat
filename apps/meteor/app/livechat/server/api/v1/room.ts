@@ -516,7 +516,7 @@ const livechatRoomsEndpoints = API.v1
 			body: isPOSTLivechatRoomsCloseAll,
 		},
 		async function action() {
-			livechatLogger.info(`User ${this.userId} is removing all closed rooms`);
+			livechatLogger.info({ msg: 'User is removing all closed rooms', userId: this.userId });
 
 			const params = this.bodyParams;
 
@@ -527,7 +527,7 @@ const livechatRoomsEndpoints = API.v1
 			});
 			await Promise.all(promises);
 
-			livechatLogger.info(`User ${this.userId} removed ${promises.length} closed rooms`);
+			livechatLogger.info({ msg: 'User removed closed rooms', userId: this.userId, removedRooms: promises.length });
 			return API.v1.success({ removedRooms: promises.length });
 		},
 	);

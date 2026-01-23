@@ -162,33 +162,54 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 
 				if (!isFileAttachment(attachment)) {
-					this.log.error(
-						`Invalid attachment type ${(attachment as { type?: string }).type} for file ${attachment.title} in room ${message.rid}!`,
-					);
+					this.log.error({
+						msg: 'Invalid attachment type for file in room',
+						attachmentType: (attachment as { type?: string }).type,
+						title: attachment.title,
+						rid: message.rid,
+					});
 					// ignore other types of attachments
 					continue;
 				}
 				if (!isFileImageAttachment(attachment)) {
-					this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
+					this.log.error({
+						msg: 'Invalid attachment type for file in room',
+						attachmentType: attachment.type,
+						title: attachment.title,
+						rid: message.rid,
+					});
 					// ignore other types of attachments
 					files.push({ name: attachment.title });
 					continue;
 				}
 
 				if (!this.worker.isMimeTypeValid(attachment.image_type)) {
-					this.log.error(`Invalid mime type ${attachment.image_type} for file ${attachment.title} in room ${message.rid}!`);
+					this.log.error({
+						msg: 'Invalid mime type for file in room',
+						mimeType: attachment.image_type,
+						title: attachment.title,
+						rid: message.rid,
+					});
 					// ignore invalid mime types
 					files.push({ name: attachment.title });
 					continue;
 				}
 				let file = message.files?.map((v) => ({ _id: v._id, name: v.name })).find((file) => file.name === attachment.title);
 				if (!file) {
-					this.log.warn(`File ${attachment.title} not found in room ${message.rid}!`);
+					this.log.warn({
+						msg: 'File not found in room',
+						title: attachment.title,
+						rid: message.rid,
+					});
 					// For some reason, when an image is uploaded from clipboard, it doesn't have a file :(
 					// So, we'll try to get the FILE_ID from the `title_link` prop which has the format `/file-upload/FILE_ID/FILE_NAME` using a regex
 					const fileId = attachment.title_link?.match(/\/file-upload\/(.*)\/.*/)?.[1];
 					if (!fileId) {
-						this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
+						this.log.error({
+							msg: 'File not found in room',
+							title: attachment.title,
+							rid: message.rid,
+						});
 						// ignore attachments without file
 						files.push({ name: attachment.title });
 						continue;
@@ -197,7 +218,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 
 				if (!file) {
-					this.log.warn(`File ${attachment.title} not found in room ${message.rid}!`);
+					this.log.warn({
+						msg: 'File not found in room',
+						title: attachment.title,
+						rid: message.rid,
+					});
 					// ignore attachments without file
 					files.push({ name: attachment.title });
 					continue;
@@ -205,7 +230,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 				const uploadedFile = await Uploads.findOneById(file._id);
 				if (!uploadedFile) {
-					this.log.error(`Uploaded file ${file._id} not found in room ${message.rid}!`);
+					this.log.error({
+						msg: 'Uploaded file not found in room',
+						fileId: file._id,
+						rid: message.rid,
+					});
 					// ignore attachments without file
 					files.push({ name: file.name });
 					continue;
@@ -214,13 +243,13 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				try {
 					const fileBuffer = await uploadService.getFileBuffer({ file: uploadedFile });
 					files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
-				} catch (e: unknown) {
-					this.log.error(`Failed to get file ${file._id}`, e);
+				} catch (err: unknown) {
+					this.log.error({ msg: 'Failed to fetch file buffer', err });
 					// Push empty buffer so parser processes this as "unsupported file"
 					files.push({ name: file.name });
 
 					// TODO: this is a NATS error message, even when we shouldn't tie it, since it's the only way we have right now we'll live with it for a while
-					if ((e as Error).message === 'MAX_PAYLOAD_EXCEEDED') {
+					if ((err as Error).message === 'MAX_PAYLOAD_EXCEEDED') {
 						this.log.error(
 							`File is too big to be processed by NATS. See NATS config for allowing bigger messages to be sent between services`,
 						);
@@ -246,9 +275,17 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	async workOnPdf({ details }: { details: WorkDetailsWithSource }): Promise<void> {
-		this.log.info(`Processing transcript for room ${details.rid} by user ${details.userId} - Received from queue`);
+		this.log.info({
+			msg: 'Processing transcript received from queue',
+			rid: details.rid,
+			userId: details.userId,
+		});
 		if (this.maxNumberOfConcurrentJobs <= this.currentJobNumber) {
-			this.log.error(`Processing transcript for room ${details.rid} by user ${details.userId} - Too many concurrent jobs, queuing again`);
+			this.log.error({
+				msg: 'Processing transcript exceeded concurrent jobs limit',
+				rid: details.rid,
+				userId: details.userId,
+			});
 			throw new Error('retry');
 		}
 		this.currentJobNumber++;
@@ -277,7 +314,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				throw new Error('room-not-found');
 			}
 			if (room.pdfTranscriptFileId) {
-				this.log.info(`Processing transcript for room ${details.rid} by user ${details.userId} - PDF already exists`);
+				this.log.info({
+					msg: 'Processing transcript skipped because PDF already exists',
+					rid: details.rid,
+					userId: details.userId,
+				});
 				return;
 			}
 			const messages = await this.getMessagesFromRoom({ rid: room._id });
@@ -340,14 +381,23 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async pdfFailed({ details, e, i18n }: { details: WorkDetailsWithSource; e: Error; i18n: i18n }): Promise<void> {
-		this.log.error(`Transcript for room ${details.rid} by user ${details.userId} - Failed: ${e.message}`);
+		this.log.error({
+			msg: 'Transcript generation failed',
+			rid: details.rid,
+			userId: details.userId,
+			err: e,
+		});
 		const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id'>>(details.rid, { projection: { _id: 1 } });
 		if (!room) {
 			return;
 		}
 
 		const { rid } = await roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
-		this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Sending error message to user`);
+		this.log.info({
+			msg: 'Transcript error message being sent to user',
+			rid: details.rid,
+			userId: details.userId,
+		});
 		await messageService.sendMessage({
 			fromId: 'rocket.cat',
 			rid,
@@ -400,13 +450,21 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		rocketCatFile: IUpload;
 		i18n: i18n;
 	}): Promise<void> {
-		this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Complete`);
+		this.log.info({
+			msg: 'Transcript completed successfully',
+			rid: details.rid,
+			userId: details.userId,
+		});
 
 		// Send the file to the livechat room where this was requested, to keep it in context
 		try {
 			await LivechatRooms.setPdfTranscriptFileIdById(details.rid, transcriptFile._id);
 
-			this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Sending success message to user`);
+			this.log.info({
+				msg: 'Transcript success message being sent to user',
+				rid: details.rid,
+				userId: details.userId,
+			});
 			const result = await Promise.allSettled([
 				uploadService.sendFileMessage({
 					roomId: details.rid,
@@ -433,7 +491,12 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				throw e.reason;
 			}
 		} catch (err) {
-			this.log.error({ msg: `Transcript for room ${details.rid} by user ${details.userId} - Failed to send message`, err });
+			this.log.error({
+				msg: 'Transcript failed to send message',
+				rid: details.rid,
+				userId: details.userId,
+				err,
+			});
 		}
 	}
 }

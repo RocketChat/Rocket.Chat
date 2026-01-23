@@ -1,6 +1,7 @@
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { AtLeast, ILivechatDepartment, ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
+import { isTruthy } from '@rocket.chat/tools';
 import moment from 'moment';
 
 import { openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
@@ -15,7 +16,6 @@ import {
 } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour } from '../../../../../app/livechat/server/business-hour/closeBusinessHour';
 import { settings } from '../../../../../app/settings/server';
-import { isTruthy } from '../../../../../lib/isTruthy';
 import { bhLogger } from '../lib/logger';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
@@ -225,7 +225,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id' | 'businessHourId'>): Promise<void> {
-		bhLogger.debug('Processing department archived event on multiple business hours', department);
+		bhLogger.debug({ msg: 'Processing department archived event on multiple business hours', department });
 		return this.onDepartmentDisabled(department);
 	}
 
