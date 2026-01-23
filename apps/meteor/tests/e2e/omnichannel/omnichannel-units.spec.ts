@@ -137,8 +137,8 @@ test.describe('OC - Manage Units', () => {
 
 			await poOmnichannelUnits.search(editedUnitName);
 			await poOmnichannelUnits.table.findRowByName(editedUnitName).click();
-			await expect(poOmnichannelUnits.manageUnit.inputMonitors).toHaveText(/user3/);
-			await expect(poOmnichannelUnits.manageUnit.inputMonitors).not.toHaveText(/user2/);
+			await expect(poOmnichannelUnits.manageUnit.findMonitorChipOption('user3')).toBeVisible();
+			await expect(poOmnichannelUnits.manageUnit.findMonitorChipOption('user2')).toBeHidden();
 		});
 
 		await test.step('expect to delete unit', async () => {
