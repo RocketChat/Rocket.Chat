@@ -18,6 +18,7 @@ test.use({ storageState: Users.user1.state });
 test.describe.serial('OC - Priorities [Sidebar]', () => {
 	let poHomeChannel: HomeOmnichannel;
 	let poRoomInfo: OmnichannelRoomInfo;
+	let conversation: Awaited<ReturnType<typeof createConversation>>;
 
 	test.beforeAll(async ({ api }) => {
 		(
@@ -40,10 +41,11 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 	});
 
 	test.beforeEach(async ({ api }) => {
-		await createConversation(api, { visitorName: visitor.name });
+		conversation = await createConversation(api, { visitorName: visitor.name });
 	});
 
 	test.afterAll(async ({ api }) => {
+		await conversation.delete();
 		(
 			await Promise.all([
 				api.delete('/livechat/users/agent/user1'),
