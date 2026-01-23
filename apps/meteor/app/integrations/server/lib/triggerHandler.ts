@@ -250,7 +250,7 @@ class RocketChatIntegrationHandler {
 		return argObject;
 	}
 
-	mapEventArgsToData(data: IntegrationData, { event, message, room, owner, user }: ArgumentsObject) {
+	mapEventArgsToData(data: IntegrationData, { event, message, room, owner, user }: ArgumentsObject): boolean {
 		/* The "services" field contains sensitive information such as
 		the user's password hash. To prevent this information from being
 		sent to the webhook, we're checking and removing it by destructuring
@@ -269,7 +269,7 @@ class RocketChatIntegrationHandler {
 			case 'sendMessage':
 				if (!room || !message) {
 					outgoingLogger.warn({ msg: 'Integration called without room or message', event });
-					return;
+					return false;
 				}
 				data.channel_id = room._id;
 				data.channel_name = room.name;
@@ -299,7 +299,7 @@ class RocketChatIntegrationHandler {
 			case 'fileUploaded':
 				if (!room || !message) {
 					outgoingLogger.warn({ msg: 'Integration called without room or message', event });
-					return;
+					return false;
 				}
 				data.channel_id = room._id;
 				data.channel_name = room.name;
@@ -323,7 +323,7 @@ class RocketChatIntegrationHandler {
 			case 'roomCreated':
 				if (!room || !owner) {
 					outgoingLogger.warn({ msg: 'Integration called without owner data or room', event });
-					return;
+					return false;
 				}
 				data.channel_id = room._id;
 				data.channel_name = room.name;
@@ -338,7 +338,7 @@ class RocketChatIntegrationHandler {
 			case 'roomLeft':
 				if (!room || !user) {
 					outgoingLogger.warn({ msg: 'Integration called without user data or room', event });
-					return;
+					return false;
 				}
 				data.timestamp = new Date();
 				data.channel_id = room._id;
@@ -355,7 +355,7 @@ class RocketChatIntegrationHandler {
 			case 'userCreated':
 				if (!user) {
 					outgoingLogger.warn({ msg: 'Integration called without user data', event });
-					return;
+					return false;
 				}
 				data.timestamp = user.createdAt;
 				data.user_id = user._id;
@@ -369,6 +369,7 @@ class RocketChatIntegrationHandler {
 			default:
 				break;
 		}
+		return true;
 	}
 
 	getTriggersToExecute(room?: IRoom, message?: MessageWithEditedAt) {
@@ -552,7 +553,11 @@ class RocketChatIntegrationHandler {
 			data.trigger_word = word;
 		}
 
-		this.mapEventArgsToData(data, { event, message, room, owner, user });
+		if (!this.mapEventArgsToData(data, { event, message, room, owner, user })) {
+			outgoingLogger.error({ msg: 'Mapping event arguments to data failed', triggerName: trigger.name, event });
+			await updateHistory({ historyId, step: 'mapping-args-to-data-failed', error: true, finished: true });
+			return;
+		}
 		await updateHistory({ historyId, step: 'mapped-args-to-data', data, triggerWord: word });
 
 		outgoingLogger.info({ msg: 'Will be executing integration', integrationName: trigger.name, url });
