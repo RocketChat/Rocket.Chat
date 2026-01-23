@@ -1,6 +1,6 @@
 import 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import type { DDPCommon, IStreamerConstructor, IStreamer } from 'meteor/ddp-common';
+import type { DDPCommon } from 'meteor/ddp-common';
 
 type StringifyBuffers<T extends unknown[]> = {
 	[P in keyof T]: T[P] extends Buffer ? string : T[P];
@@ -16,16 +16,6 @@ declare global {
 
 declare module 'meteor/meteor' {
 	namespace Meteor {
-		const Streamer: IStreamerConstructor & IStreamer;
-
-		namespace StreamerCentral {
-			const instances: {
-				[name: string]: IStreamer;
-			};
-
-			function on(name: string, callback: (...args: any[]) => void): void;
-		}
-
 		interface ErrorStatic {
 			new (error: string | number, reason?: string, details?: any): Error;
 		}
@@ -68,6 +58,7 @@ declare module 'meteor/meteor' {
 			httpHeaders: Record<string, any>;
 			referer: string;
 			clientAddress: string;
+			hasMeteorStreamerEventListeners: boolean;
 			_send(message: IDDPMessage): void;
 
 			_methodInvokers: Record<string, any>;
@@ -84,7 +75,8 @@ declare module 'meteor/meteor' {
 					send: (data: string) => void;
 				};
 				_launchConnectionAsync: () => void;
-				on: (key: 'message', callback: (data: string) => void) => void;
+				on(key: 'message', callback: (data: string) => void): void;
+				on(key: 'reset', callback: () => void): void;
 			};
 
 			_outstandingMethodBlocks: unknown[];
