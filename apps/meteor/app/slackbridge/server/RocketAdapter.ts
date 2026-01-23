@@ -85,7 +85,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 		callbacks.remove('afterUnsetReaction', 'SlackBridge_UnSetReaction');
 	}
 
-	async onMessageDelete(rocketMessageDeleted: IMessage, _room: IRoom) {
+	async onMessageDelete(rocketMessageDeleted: IMessage) {
 		for await (const slack of this._slackAdapters) {
 			try {
 				if (!slack.getSlackChannel(rocketMessageDeleted.rid)) {
