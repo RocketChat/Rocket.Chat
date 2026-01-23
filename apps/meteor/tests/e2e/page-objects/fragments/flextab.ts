@@ -37,6 +37,10 @@ export abstract class FlexTab {
 		return this.root.getByRole('button', { name: 'Reset', exact: true });
 	}
 
+	errorMessage(message: string): Locator {
+		return this.root.locator('[role="alert"]', { hasText: message });
+	}
+
 	async close() {
 		await this.btnClose.click();
 		await this.waitForDismissal();
