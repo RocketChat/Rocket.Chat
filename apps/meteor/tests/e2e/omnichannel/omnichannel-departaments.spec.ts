@@ -182,7 +182,7 @@ test.describe('OC - Manage Departments', () => {
 				await expect(poOmnichannelDepartments.departmentsTable.findRowByName(department.name)).toBeVisible();
 			});
 
-			await test.step('expect archived department to not be edidepartmentsTable', async () => {
+			await test.step('expect archived department to not be editable', async () => {
 				await poOmnichannelDepartments.getDepartmentMenuByName(department.name).click();
 				await expect(poOmnichannelDepartments.menuEditOption).not.toBeVisible();
 			});
