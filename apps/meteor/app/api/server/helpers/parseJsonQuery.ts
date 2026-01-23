@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import telemetryEvent from '../../../statistics/server/lib/telemetryEvents';
 import { API } from '../api';
 import type { GenericRouteExecutionContext } from '../definition';
 import { clean } from '../lib/cleanQuery';
@@ -14,12 +13,6 @@ const pathAllowConf = {
 	'/api/v1/users.list': ['$or', '$regex', '$and'],
 	'def': ['$or', '$and', '$regex'],
 };
-
-function logUnsafeApiParamUsage(params: Record<string, unknown>) {
-	if (params.fields || params.query) {
-		void telemetryEvent.call('updateCounter', { settingsId: 'API_Allow_Unsafe_Params_Usage_Counter' });
-	}
-}
 
 export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise<{
 	sort: Record<string, 1 | -1>;
@@ -64,7 +57,6 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 	const isUnsafeQueryParamsAllowed = process.env.ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS?.toUpperCase() === 'TRUE';
 	const messageGenerator = ({ endpoint, version, parameter }: { endpoint: string; version: string; parameter: string }): string =>
 		`The usage of the "${parameter}" parameter in endpoint "${endpoint}" breaks the security of the API and can lead to data exposure. It has been deprecated and will be removed in the version ${version}.`;
-	logUnsafeApiParamUsage(params);
 
 	let fields: Record<string, 0 | 1> | undefined;
 	if (typeof params?.fields === 'string' && isUnsafeQueryParamsAllowed) {
