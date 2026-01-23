@@ -97,6 +97,7 @@ export class OmnichannelChatsFilters extends FlexTab {
 	async removeTag(option: string) {
 		await this.inputTags.click();
 		await this.listbox.selectOption(option);
+		await this.inputTags.click();
 		await this.btnApply.click();
 	}
 
