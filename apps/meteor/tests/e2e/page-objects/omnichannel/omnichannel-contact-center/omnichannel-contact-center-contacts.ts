@@ -2,8 +2,8 @@ import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelContactInfo } from '../omnichannel-info';
 import { OmnichannelContactCenter } from './omnichannel-contact-center';
+import { MenuMoreActions } from '../../fragments';
 import { OmnichannelEditContactFlexTab } from '../../fragments/edit-contact-flaxtab';
-import { Listbox } from '../../fragments/listbox';
 import { OmnichannelDeleteContactModal } from '../../fragments/modals';
 import { Table } from '../../fragments/table';
 
@@ -22,7 +22,7 @@ export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
 
 	readonly deleteContactModal: OmnichannelDeleteContactModal;
 
-	readonly listbox: Listbox;
+	readonly menu: MenuMoreActions;
 
 	constructor(page: Page) {
 		super(page);
@@ -30,7 +30,7 @@ export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
 		this.editContact = new OmnichannelEditContactFlexTab(page);
 		this.table = new OmnichannelContactCenterContactsTable(page);
 		this.deleteContactModal = new OmnichannelDeleteContactModal(page);
-		this.listbox = new Listbox(page);
+		this.menu = new MenuMoreActions(page);
 	}
 
 	get btnNewContact(): Locator {
@@ -39,7 +39,7 @@ export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
 
 	async deleteContact(contactName: string) {
 		await this.table.findRowByName(contactName).getByRole('button', { name: 'More Actions' }).click();
-		await this.listbox.selectOption('Delete');
+		await this.menu.selectMenuItem('Delete');
 		await this.deleteContactModal.waitForDisplay();
 	}
 }
