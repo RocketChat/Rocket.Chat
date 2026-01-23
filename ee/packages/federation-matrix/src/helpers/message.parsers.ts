@@ -1,59 +1,109 @@
-import type { MentionPill as MentionPillType } from '@vector-im/matrix-bot-sdk';
+import type { EventID, HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
-import type { IFrame } from 'sanitize-html';
 
-interface IInternalMention {
-	mention: string;
-	realName: string;
-}
+type MatrixMessageContent = HomeserverEventSignatures['homeserver.matrix.message']['event']['content'] & { format?: string };
 
-const DEFAULT_LINK_FOR_MATRIX_MENTIONS = 'https://matrix.to/#/';
-const DEFAULT_TAGS_FOR_MATRIX_QUOTES = ['mx-reply', 'blockquote'];
-const INTERNAL_MENTIONS_FOR_EXTERNAL_USERS_REGEX = /@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?):+([0-9a-zA-Z-_.]+)(?=[^<>]*(?:<\w|$))/gm; // @username:server.com excluding any <a> tags
-const INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX = /(?:^|(?<=\s))@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?)(?=[^<>]*(?:<\w|$))/gm; // @username, @username.name excluding any <a> tags and emails
-const INTERNAL_GENERAL_REGEX = /(@all)|(@here)/gm;
+type MatrixEvent = {
+	content?: { body?: string; formatted_body?: string };
+	event_id: string;
+	sender: string;
+};
 
-const getAllMentionsWithTheirRealNames = (message: string, homeServerDomain: string, senderExternalId: string): IInternalMention[] => {
-	const mentions: IInternalMention[] = [];
-	sanitizeHtml(message, {
-		allowedTags: ['a'],
-		exclusiveFilter: (frame: IFrame): boolean => {
-			const {
-				attribs: { href = '' },
-				tag,
-				text,
-			} = frame;
-			const validATag = tag === 'a' && href && text;
-			if (!validATag) {
-				return false;
+const MATRIX_TO_URL = 'https://matrix.to/#/';
+const MATRIX_QUOTE_TAGS = ['mx-reply', 'blockquote'];
+const REGEX = {
+	anchor: /<a\s+(?:[^>]*?\s+)?href=["']([^"']*)["'][^>]*>(.*?)<\/a>/gi, // <a href="https://matrix.to/#/@user:server.com">@user:server.com</a>
+	externalUsers: /@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?):+([0-9a-zA-Z-_.]+)(?=[^<>]*(?:<\w|$))/gm, // @username:server.com
+	internalUsers: /(?:^|(?<=\s))@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?)(?=[^<>]*(?:<\w|$))/gm, // @username
+	general: /(@all)|(@here)/gm,
+};
+
+const escapeHtml = (text: string): string =>
+	text.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c] || c);
+
+const stripHtml = (html: string, keep: string[] = []): string => sanitizeHtml(html, { allowedTags: keep.includes('a') ? ['a'] : [] });
+
+const createMentionHtml = (id: string): string => `<a href="${MATRIX_TO_URL}${id}">${id}</a>`;
+
+const extractAnchors = (html: string) => Array.from(html.matchAll(REGEX.anchor), ([, href, text]) => ({ href, text }));
+
+const extractMentions = (html: string, homeServerDomain: string, senderExternalId: string) =>
+	extractAnchors(html)
+		.filter(({ href, text }) => href?.includes(MATRIX_TO_URL) && text)
+		.map(({ href, text }) => {
+			const userMatch = href.match(/@([^:]+):(.+)/);
+			if (!userMatch) {
+				return { mention: '@all', realName: text };
 			}
-			const isUsernameMention = href.includes(DEFAULT_LINK_FOR_MATRIX_MENTIONS) && href.includes('@');
-			if (isUsernameMention) {
-				const [, username] = href.split('@');
-				const [, serverDomain] = username.split(':');
 
-				const withoutServerIdentification = `@${username.split(':').shift()}`;
-				const fullUsername = `@${username}`;
-				const isMentioningHimself = senderExternalId === text;
+			const [, usernameWithoutDomain, serverDomain] = userMatch;
+			const localUsername = `@${usernameWithoutDomain}`;
+			const fullUsername = `@${usernameWithoutDomain}:${serverDomain}`;
+			const mention = serverDomain === homeServerDomain ? localUsername : fullUsername;
+			const realName = senderExternalId === text ? localUsername : text;
+			return { mention, realName };
+		});
 
-				mentions.push({
-					mention: serverDomain === homeServerDomain ? withoutServerIdentification : fullUsername,
-					realName: isMentioningHimself ? withoutServerIdentification : text,
-				});
+const replaceMentions = (message: string, mentions: Array<{ mention: string; realName: string }>): string => {
+	if (!mentions.length) return message;
+
+	let parsedMessage = '';
+	let remaining = message;
+
+	for (const { mention, realName } of mentions) {
+		const regex = new RegExp(`(?<!\\w)${realName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?!\\w)`);
+		const position = remaining.search(regex);
+
+		if (position !== -1) {
+			parsedMessage += remaining.slice(0, position) + mention;
+			remaining = remaining.slice(position + realName.length);
+		} else if (realName.startsWith('!')) {
+			const allRegex = /(?<!\w)@all(?!\w)/;
+			const allPosition = remaining.search(allRegex);
+			if (allPosition !== -1) {
+				parsedMessage += remaining.slice(0, allPosition) + mention;
+				remaining = remaining.slice(allPosition + 4); // length of '@all'
 			}
-			const isMentioningAll = href.includes(DEFAULT_LINK_FOR_MATRIX_MENTIONS) && !href.includes('@');
-			if (isMentioningAll) {
-				mentions.push({
-					mention: '@all',
-					realName: text,
-				});
-			}
-			return false;
-		},
-	});
+		}
+	}
 
-	return mentions;
+	parsedMessage += remaining;
+	return parsedMessage.trim();
+};
+
+const replaceWithMentionPills = async (message: string, regex: RegExp, createPill: (match: string) => string): Promise<string> => {
+	const matches = Array.from(message.matchAll(regex), ([match]) => createPill(match.trimStart()));
+	let i = 0;
+	return message.replace(regex, () => ` ${matches[i++]}`);
+};
+
+const stripQuotePrefix = (message: string): string => {
+	const lines = message.split(/\r?\n/);
+	const index = lines.findIndex((l) => !l.startsWith('>'));
+	return lines
+		.slice(index === -1 ? lines.length : index)
+		.join('\n')
+		.trim();
+};
+
+const createReplyContent = (roomId: string, event: MatrixEvent, textBody: string, htmlBody: string): MatrixMessageContent => {
+	const body = event.content?.body || '';
+	const html = event.content?.formatted_body || escapeHtml(body);
+	const quote = `> <${event.sender}> ${body.split('\n').join('\n> ')}`;
+	const htmlQuote =
+		`<mx-reply><blockquote>` +
+		`<a href="${MATRIX_TO_URL}${roomId}/${event.event_id}">In reply to</a> ` +
+		`<a href="${MATRIX_TO_URL}${event.sender}">${event.sender}</a><br />${html}` +
+		`</blockquote></mx-reply>`;
+
+	return {
+		'm.relates_to': { 'm.in_reply_to': { event_id: event.event_id as EventID } },
+		'msgtype': 'm.text',
+		'body': `${quote}\n\n${textBody}`,
+		'format': 'org.matrix.custom.html',
+		'formatted_body': `${htmlQuote}${htmlBody}`,
+	};
 };
 
 export const toInternalMessageFormat = ({
@@ -66,61 +116,7 @@ export const toInternalMessageFormat = ({
 	formattedMessage: string;
 	homeServerDomain: string;
 	senderExternalId: string;
-}): string =>
-	replaceAllMentionsOneByOneSequentially(
-		rawMessage,
-		getAllMentionsWithTheirRealNames(formattedMessage, homeServerDomain, senderExternalId),
-	);
-
-const MATCH_ANYTHING = 'w';
-const replaceAllMentionsOneByOneSequentially = (message: string, allMentionsWithRealNames: IInternalMention[]): string => {
-	let parsedMessage = '';
-	let toCompareAgain = message;
-
-	if (allMentionsWithRealNames.length === 0) {
-		return message;
-	}
-
-	allMentionsWithRealNames.forEach(({ mention, realName }, mentionsIndex) => {
-		const negativeLookAhead = `(?!${MATCH_ANYTHING})`;
-		const realNameRegex = new RegExp(`(?<!w)${realName}${negativeLookAhead}`);
-		let realNamePosition = toCompareAgain.search(realNameRegex);
-		const realNamePresentInMessage = realNamePosition !== -1;
-		let messageReplacedWithMention = realNamePresentInMessage ? toCompareAgain.replace(realNameRegex, mention) : '';
-		let positionRemovingLastMention = realNamePresentInMessage ? realNamePosition + realName.length + 1 : -1;
-		const mentionForRoom = realName.charAt(0) === '!';
-		if (!realNamePresentInMessage && mentionForRoom) {
-			const allMention = '@all';
-			const defaultRegexForRooms = new RegExp(`(?<!w)${allMention}${negativeLookAhead}`);
-			realNamePosition = toCompareAgain.search(defaultRegexForRooms);
-			messageReplacedWithMention = toCompareAgain.replace(defaultRegexForRooms, mention);
-			positionRemovingLastMention = realNamePosition + allMention.length + 1;
-		}
-		const lastItem = allMentionsWithRealNames.length - 1;
-		const lastMentionToProcess = mentionsIndex === lastItem;
-		const lastMentionPosition = realNamePosition + mention.length + 1;
-
-		toCompareAgain = toCompareAgain.slice(positionRemovingLastMention);
-		parsedMessage += messageReplacedWithMention.slice(0, lastMentionToProcess ? undefined : lastMentionPosition);
-	});
-
-	return parsedMessage.trim();
-};
-
-function stripReplyQuote(message: string): string {
-	const splitLines = message.split(/\r?\n/);
-
-	// Find which line the quote ends on
-	let splitLineIndex = 0;
-	for (const line of splitLines) {
-		if (line[0] !== '>') {
-			break;
-		}
-		splitLineIndex += 1;
-	}
-
-	return splitLines.splice(splitLineIndex).join('\n').trim();
-}
+}): string => replaceMentions(rawMessage, extractMentions(formattedMessage, homeServerDomain, senderExternalId));
 
 export const toInternalQuoteMessageFormat = async ({
 	homeServerDomain,
@@ -135,68 +131,14 @@ export const toInternalQuoteMessageFormat = async ({
 	homeServerDomain: string;
 	senderExternalId: string;
 }): Promise<string> => {
-	const withMentionsOnly = sanitizeHtml(formattedMessage, {
-		allowedTags: ['a'],
-		allowedAttributes: {
-			a: ['href'],
-		},
-		nonTextTags: DEFAULT_TAGS_FOR_MATRIX_QUOTES,
+	let cleaned = formattedMessage;
+	MATRIX_QUOTE_TAGS.forEach((tag) => {
+		cleaned = cleaned.replace(new RegExp(`<${tag}[^>]*>.*?</${tag}>`, 'gis'), '');
 	});
-	const rawMessageWithoutMatrixQuotingFormatting = stripReplyQuote(rawMessage);
+	cleaned = stripHtml(cleaned, ['a']);
 
-	return `[ ](${messageToReplyToUrl}) ${replaceAllMentionsOneByOneSequentially(
-		rawMessageWithoutMatrixQuotingFormatting,
-		getAllMentionsWithTheirRealNames(withMentionsOnly, homeServerDomain, senderExternalId),
-	)}`;
+	return `[ ](${messageToReplyToUrl}) ${replaceMentions(stripQuotePrefix(rawMessage), extractMentions(cleaned, homeServerDomain, senderExternalId))}`;
 };
-
-const replaceMessageMentions = async (
-	message: string,
-	mentionRegex: RegExp,
-	parseMatchFn: (match: string) => Promise<MentionPillType>,
-): Promise<string> => {
-	const promises: Promise<MentionPillType>[] = [];
-
-	message.replace(mentionRegex, (match: string): any => promises.push(parseMatchFn(match)));
-
-	const mentions = await Promise.all(promises);
-
-	return message.replace(mentionRegex, () => ` ${mentions.shift()?.html}`);
-};
-
-const replaceMentionsFromLocalExternalUsersForExternalFormat = async (message: string): Promise<string> => {
-	const { MentionPill } = await import('@vector-im/matrix-bot-sdk');
-
-	return replaceMessageMentions(message, INTERNAL_MENTIONS_FOR_EXTERNAL_USERS_REGEX, (match: string) =>
-		MentionPill.forUser(match.trimStart()),
-	);
-};
-
-const replaceInternalUsersMentionsForExternalFormat = async (message: string, homeServerDomain: string): Promise<string> => {
-	const { MentionPill } = await import('@vector-im/matrix-bot-sdk');
-
-	return replaceMessageMentions(message, INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX, (match: string) =>
-		MentionPill.forUser(`${match.trimStart()}:${homeServerDomain}`),
-	);
-};
-
-const replaceInternalGeneralMentionsForExternalFormat = async (message: string, externalRoomId: string): Promise<string> => {
-	const { MentionPill } = await import('@vector-im/matrix-bot-sdk');
-
-	return replaceMessageMentions(message, INTERNAL_GENERAL_REGEX, () => MentionPill.forRoom(externalRoomId));
-};
-
-const removeAllExtraBlankSpacesForASingleOne = (message: string): string => message.replace(/\s+/g, ' ').trim();
-
-const replaceInternalWithExternalMentions = async (message: string, externalRoomId: string, homeServerDomain: string): Promise<string> =>
-	replaceInternalUsersMentionsForExternalFormat(
-		await replaceMentionsFromLocalExternalUsersForExternalFormat(
-			await replaceInternalGeneralMentionsForExternalFormat(message, externalRoomId),
-		),
-		homeServerDomain,
-	);
-
-const convertMarkdownToHTML = async (message: string): Promise<string> => marked.parse(message);
 
 export const toExternalMessageFormat = async ({
 	externalRoomId,
@@ -206,10 +148,14 @@ export const toExternalMessageFormat = async ({
 	message: string;
 	externalRoomId: string;
 	homeServerDomain: string;
-}): Promise<string> =>
-	removeAllExtraBlankSpacesForASingleOne(
-		await convertMarkdownToHTML((await replaceInternalWithExternalMentions(message, externalRoomId, homeServerDomain)).trim()),
-	);
+}): Promise<string> => {
+	let result = message;
+	result = await replaceWithMentionPills(result, REGEX.general, () => createMentionHtml(externalRoomId));
+	result = await replaceWithMentionPills(result, REGEX.externalUsers, (match) => createMentionHtml(match));
+	result = await replaceWithMentionPills(result, REGEX.internalUsers, (match) => createMentionHtml(`${match}:${homeServerDomain}`));
+
+	return (await marked.parse(result.trim())).replace(/\s+/g, ' ').trim();
+};
 
 export const toExternalQuoteMessageFormat = async ({
 	message,
@@ -224,32 +170,16 @@ export const toExternalQuoteMessageFormat = async ({
 	message: string;
 	homeServerDomain: string;
 }): Promise<{ message: string; formattedMessage: string }> => {
-	const { RichReply } = await import('@vector-im/matrix-bot-sdk');
+	const event = { event_id: eventToReplyTo, sender: originalEventSender, content: {} };
+	const markdownHtml = await marked.parse(message);
+	const withMentions = await toExternalMessageFormat({ message, externalRoomId, homeServerDomain });
+	const withMentionsHtml = await marked.parse(withMentions);
 
-	const formattedMessage = await convertMarkdownToHTML(message);
-	const finalFormattedMessage = await convertMarkdownToHTML(
-		await toExternalMessageFormat({
-			message,
-			externalRoomId,
-			homeServerDomain,
-		}),
-	);
-
-	const { formatted_body: formattedBody } = RichReply.createFor(
-		externalRoomId,
-		{ event_id: eventToReplyTo, sender: originalEventSender },
-		formattedMessage,
-		finalFormattedMessage,
-	);
-	const { body } = RichReply.createFor(
-		externalRoomId,
-		{ event_id: eventToReplyTo, sender: originalEventSender },
-		message,
-		finalFormattedMessage,
-	);
+	const reply1 = createReplyContent(externalRoomId, event, markdownHtml, withMentionsHtml);
+	const reply2 = createReplyContent(externalRoomId, event, message, withMentionsHtml);
 
 	return {
-		message: body,
-		formattedMessage: formattedBody,
+		message: reply2.body,
+		formattedMessage: reply1.formatted_body ?? '',
 	};
 };

@@ -4,7 +4,7 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
-import { test, expect } from '../utils/test';
+import { test } from '../utils/test';
 
 test.describe('Omnichannel close chat', () => {
 	let poLiveChat: OmnichannelLiveChat;
@@ -42,14 +42,11 @@ test.describe('Omnichannel close chat', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeOmnichannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('Expect to be able to close an omnichannel to conversation', async () => {
-			await agent.poHomeOmnichannel.content.btnCloseChat.click();
-			await agent.poHomeOmnichannel.content.inputModalClosingComment.type('any_comment');
-			await agent.poHomeOmnichannel.content.btnModalConfirm.click();
-			await expect(agent.poHomeOmnichannel.toastSuccess).toBeVisible();
+			await agent.poHomeOmnichannel.quickActionsRoomToolbar.closeChat();
 		});
 	});
 });

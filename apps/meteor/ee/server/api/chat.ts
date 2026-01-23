@@ -1,4 +1,4 @@
-import type { IMessage, ReadReceipt } from '@rocket.chat/core-typings';
+import type { IMessage, IReadReceiptWithUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
@@ -14,7 +14,7 @@ declare module '@rocket.chat/rest-typings' {
 	interface Endpoints {
 		'/v1/chat.getMessageReadReceipts': {
 			GET: (params: GetMessageReadReceiptsProps) => {
-				receipts: ReadReceipt[];
+				receipts: IReadReceiptWithUser[];
 			};
 		};
 	}

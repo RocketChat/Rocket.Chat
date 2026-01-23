@@ -48,7 +48,7 @@ export async function saveGuest(
 	const customFields: Record<string, any> = {};
 
 	if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
-		livechatLogger.debug({ msg: `Saving custom fields for visitor ${_id}`, livechatData });
+		livechatLogger.debug({ msg: 'Saving custom fields for visitor', visitorId: _id, livechatData });
 		for await (const field of LivechatCustomField.findByScope('visitor')) {
 			if (!livechatData.hasOwnProperty(field._id)) {
 				continue;
@@ -63,7 +63,11 @@ export async function saveGuest(
 			customFields[field._id] = value;
 		}
 		updateData.livechatData = customFields;
-		livechatLogger.debug(`About to update ${Object.keys(customFields).length} custom fields for visitor ${_id}`);
+		livechatLogger.debug({
+			msg: 'About to update custom fields for visitor',
+			visitorId: _id,
+			customFieldCount: Object.keys(customFields).length,
+		});
 	}
 	const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 

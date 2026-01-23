@@ -1,12 +1,11 @@
-type ServiceMedia = {
-	url: string;
-	contentType: string;
-};
 export type ServiceData = {
 	from: string;
 	to: string;
 	body: string;
-	media?: ServiceMedia[];
+	media?: {
+		url: string;
+		contentType: string;
+	}[];
 	extra?: Record<string, string | undefined>;
 };
 
@@ -44,24 +43,3 @@ export interface ISMSProvider {
 	): Promise<SMSProviderResult | void>;
 	error(error: Error & { reason?: string }): SMSProviderResponse;
 }
-
-export const isServiceData = (data: unknown): data is ServiceData => {
-	if (typeof data !== 'object' || data === null) {
-		return false;
-	}
-
-	const { from, to, body } = data as Record<string, unknown>;
-
-	return typeof from === 'string' && typeof to === 'string' && typeof body === 'string';
-};
-
-export type SMSWorker = {
-	services: Record<string, ISMSProviderConstructor>;
-	accountSid: string | null;
-	authToken: string | null;
-	fromNumber: string | null;
-
-	registerService(name: string, service: ISMSProviderConstructor): void;
-	getService(name: string): ISMSProvider;
-	isConfiguredService(name: string): boolean;
-};

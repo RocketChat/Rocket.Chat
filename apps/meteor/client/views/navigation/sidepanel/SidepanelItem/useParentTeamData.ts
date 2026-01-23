@@ -1,5 +1,5 @@
 import type { ITeam } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
 
 import { useTeamInfoQuery } from '../../../../hooks/useTeamInfoQuery';
@@ -27,7 +27,7 @@ export const useParentTeamData = (teamId?: ITeam['_id']) => {
 	const { data: userTeams, isLoading: userTeamsLoading } = useUserTeamsQuery(userId);
 
 	const userBelongsToTeam = Boolean(userTeams?.find((team) => team._id === teamId)) || false;
-	const isTeamPublic = teamInfo?.type === TEAM_TYPE.PUBLIC;
+	const isTeamPublic = teamInfo?.type === TeamType.PUBLIC;
 	const shouldDisplayTeam = isTeamPublic || userBelongsToTeam;
 
 	return {

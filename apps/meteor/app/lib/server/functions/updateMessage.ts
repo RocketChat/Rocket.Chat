@@ -7,11 +7,11 @@ import { Meteor } from 'meteor/meteor';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
-import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 
 export const updateMessage = async function (
-	message: AtLeast<IMessage, '_id' | 'rid' | 'msg' | 'customFields'>,
+	message: AtLeast<IMessage, '_id' | 'rid' | 'msg' | 'customFields'> | AtLeast<IMessage, '_id' | 'rid' | 'content'>,
 	user: IUser,
 	originalMsg?: IMessage,
 	previewUrls?: string[],
@@ -25,13 +25,13 @@ export const updateMessage = async function (
 
 	// For the Rocket.Chat Apps :)
 	if (message && Apps.self && Apps.isLoaded()) {
-		const prevent = await Apps.getBridges().getListenerBridge().messageEvent(AppEvents.IPreMessageUpdatedPrevent, messageData);
+		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreMessageUpdatedPrevent, messageData);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-updating', 'A Rocket.Chat App prevented the message updating.');
 		}
 
-		let result = await Apps.getBridges().getListenerBridge().messageEvent(AppEvents.IPreMessageUpdatedExtend, messageData);
-		result = await Apps.getBridges().getListenerBridge().messageEvent(AppEvents.IPreMessageUpdatedModify, result);
+		let result = await Apps.self?.triggerEvent(AppEvents.IPreMessageUpdatedExtend, messageData);
+		result = await Apps.self?.triggerEvent(AppEvents.IPreMessageUpdatedModify, result);
 
 		if (typeof result === 'object') {
 			Object.assign(messageData, result);
@@ -88,7 +88,7 @@ export const updateMessage = async function (
 	if (Apps.self?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
 		// so, we don't really care if it is successful or fails
-		void Apps.getBridges()?.getListenerBridge().messageEvent(AppEvents.IPostMessageUpdated, messageData);
+		void Apps.self?.triggerEvent(AppEvents.IPostMessageUpdated, messageData);
 	}
 
 	setImmediate(async () => {
@@ -97,14 +97,7 @@ export const updateMessage = async function (
 			return;
 		}
 
-		// although this is an "afterSave" kind callback, we know they can extend message's properties
-		// so we wait for it to run before broadcasting
-		const data = await afterSaveMessage(msg, room, user);
-
-		void notifyOnMessageChange({
-			id: msg._id,
-			data,
-		});
+		await afterSaveMessage(msg, room, user);
 
 		if (room?.lastMessage?._id === msg._id) {
 			void notifyOnRoomChangedById(message.rid);

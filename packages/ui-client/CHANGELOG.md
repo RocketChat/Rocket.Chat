@@ -1,5 +1,375 @@
 # @rocket.chat/ui-client
 
+## 26.0.0
+
+### Major Changes
+
+- ([#36976](https://github.com/RocketChat/Rocket.Chat/pull/36976)) Promotes Timestamp Parser from preview state to stable
+
+- ([#37022](https://github.com/RocketChat/Rocket.Chat/pull/37022)) Promotes Resizable Contextualbars from preview state to stable.
+
+- ([#36966](https://github.com/RocketChat/Rocket.Chat/pull/36966)) Promotes quick reactions from preview state to stable
+
+- ([#37285](https://github.com/RocketChat/Rocket.Chat/pull/37285)) Promotes Enhanced Navigation from preview state to stable.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ac11ea05ffadeca978c794ff38d5199d9acb2c29]:</summary>
+
+  - @rocket.chat/ui-contexts@26.0.0
+  - @rocket.chat/ui-avatar@22.0.0
+  </details>
+
+## 26.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@22.0.0-rc.5
+  - @rocket.chat/ui-contexts@26.0.0-rc.5
+  </details>
+
+## 26.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@22.0.0-rc.4
+  - @rocket.chat/ui-contexts@26.0.0-rc.4
+  </details>
+
+## 26.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@26.0.0-rc.3
+  - @rocket.chat/ui-avatar@22.0.0-rc.3
+  </details>
+
+## 26.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@22.0.0-rc.2
+  - @rocket.chat/ui-contexts@26.0.0-rc.2
+  </details>
+
+## 26.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@22.0.0-rc.1
+  - @rocket.chat/ui-contexts@26.0.0-rc.1
+  </details>
+
+## 26.0.0-rc.0
+
+### Major Changes
+
+- ([#36976](https://github.com/RocketChat/Rocket.Chat/pull/36976)) Promotes Timestamp Parser from preview state to stable
+
+- ([#37022](https://github.com/RocketChat/Rocket.Chat/pull/37022)) Promotes Resizable Contextualbars from preview state to stable.
+
+- ([#36966](https://github.com/RocketChat/Rocket.Chat/pull/36966)) Promotes quick reactions from preview state to stable
+
+- ([#37285](https://github.com/RocketChat/Rocket.Chat/pull/37285)) Promotes Enhanced Navigation from preview state to stable.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ac11ea05ffadeca978c794ff38d5199d9acb2c29]:</summary>
+
+  - @rocket.chat/ui-contexts@26.0.0-rc.0
+  - @rocket.chat/ui-avatar@22.0.0-rc.0
+  </details>
+
+## 25.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@21.0.2
+  - @rocket.chat/ui-contexts@25.0.2
+  </details>
+
+## 25.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@21.0.1
+  - @rocket.chat/ui-contexts@25.0.1
+  </details>
+
+## 25.0.0
+
+### Minor Changes
+
+- ([#37327](https://github.com/RocketChat/Rocket.Chat/pull/37327)) Adds complexity requirements to end-to-end encryption passphrase
+
+- ([#37524](https://github.com/RocketChat/Rocket.Chat/pull/37524)) Moves the expandable message composer out of feature preview
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 99255057f27b9d854a89da815681a03d0776f846]:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0
+  - @rocket.chat/ui-avatar@21.0.0
+  </details>
+
+## 25.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@21.0.0-rc.2
+  - @rocket.chat/ui-contexts@25.0.0-rc.2
+  </details>
+
+## 25.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@21.0.0-rc.1
+  - @rocket.chat/ui-contexts@25.0.0-rc.1
+  </details>
+
+## 25.0.0-rc.0
+
+### Minor Changes
+
+- ([#37327](https://github.com/RocketChat/Rocket.Chat/pull/37327)) Adds complexity requirements to end-to-end encryption passphrase
+
+- ([#37524](https://github.com/RocketChat/Rocket.Chat/pull/37524)) Moves the expandable message composer out of feature preview
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 99255057f27b9d854a89da815681a03d0776f846]:</summary>
+
+  - @rocket.chat/ui-contexts@25.0.0-rc.0
+  - @rocket.chat/ui-avatar@21.0.0-rc.0
+  </details>
+
+## 24.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@20.0.2
+  - @rocket.chat/ui-contexts@24.0.2
+  </details>
+
+## 24.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@20.0.1
+  - @rocket.chat/ui-contexts@24.0.1
+  </details>
+
+## 24.0.0
+
+### Patch Changes
+
+- ([#37154](https://github.com/RocketChat/Rocket.Chat/pull/37154)) Fixes a GUI crash happening in the admin user page when attempting to display an invalid custom field
+
+- <details><summary>Updated dependencies [a25e88c06cafdbe3baf7a40e3bffe3aed5a81cf6]:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0
+  - @rocket.chat/ui-avatar@20.0.0
+  </details>
+
+## 24.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@20.0.0-rc.4
+  - @rocket.chat/ui-contexts@24.0.0-rc.4
+  </details>
+
+## 24.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@20.0.0-rc.3
+  - @rocket.chat/ui-contexts@24.0.0-rc.3
+  </details>
+
+## 24.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@20.0.0-rc.2
+  - @rocket.chat/ui-contexts@24.0.0-rc.2
+  </details>
+
+## 24.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@20.0.0-rc.1
+  - @rocket.chat/ui-contexts@24.0.0-rc.1
+  </details>
+
+## 24.0.0-rc.0
+
+### Patch Changes
+
+- ([#37154](https://github.com/RocketChat/Rocket.Chat/pull/37154)) Fixes a GUI crash happening in the admin user page when attempting to display an invalid custom field
+
+- <details><summary>Updated dependencies [a25e88c06cafdbe3baf7a40e3bffe3aed5a81cf6]:</summary>
+
+  - @rocket.chat/ui-contexts@24.0.0-rc.0
+  - @rocket.chat/ui-avatar@20.0.0-rc.0
+  </details>
+
+## 23.0.0
+
+### Minor Changes
+
+- ([#36397](https://github.com/RocketChat/Rocket.Chat/pull/36397)) Introduces a new flow for requesting device permissions for Voice Calling, prompting the user before the request. Also solves a few issues with the device selection menu.
+
+- ([#36974](https://github.com/RocketChat/Rocket.Chat/pull/36974)) Improves the Outbound Message modal’s scrolling on smaller viewports and with large templates
+
+### Patch Changes
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+- <details><summary>Updated dependencies [feba290fc403de27efb6bb9a571bec43413e976a, b0a4602a4461200b9872b2b073ec56fa55ecb466, c6ef437d9071dbd8c08152984dc39542b1ae7306]:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0
+  - @rocket.chat/ui-avatar@19.0.0
+  </details>
+
+## 23.0.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@19.0.0-rc.7
+  - @rocket.chat/ui-contexts@23.0.0-rc.7
+  </details>
+
+## 23.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@19.0.0-rc.6
+  - @rocket.chat/ui-contexts@23.0.0-rc.6
+  </details>
+
+## 23.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@19.0.0-rc.5
+  - @rocket.chat/ui-contexts@23.0.0-rc.5
+  </details>
+
+## 23.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@19.0.0-rc.4
+  - @rocket.chat/ui-contexts@23.0.0-rc.4
+  </details>
+
+## 23.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@19.0.0-rc.3
+  - @rocket.chat/ui-contexts@23.0.0-rc.3
+  </details>
+
+## 23.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-avatar@19.0.0-rc.2
+  - @rocket.chat/ui-contexts@23.0.0-rc.2
+  </details>
+
+## 23.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@19.0.0-rc.1
+  - @rocket.chat/ui-contexts@23.0.0-rc.1
+  </details>
+
+## 23.0.0-rc.0
+
+### Minor Changes
+
+- ([#36397](https://github.com/RocketChat/Rocket.Chat/pull/36397)) Introduces a new flow for requesting device permissions for Voice Calling, prompting the user before the request. Also solves a few issues with the device selection menu.
+
+- ([#36974](https://github.com/RocketChat/Rocket.Chat/pull/36974)) Improves the Outbound Message modal’s scrolling on smaller viewports and with large templates
+
+### Patch Changes
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+- <details><summary>Updated dependencies [feba290fc403de27efb6bb9a571bec43413e976a, b0a4602a4461200b9872b2b073ec56fa55ecb466, c6ef437d9071dbd8c08152984dc39542b1ae7306]:</summary>
+
+  - @rocket.chat/ui-contexts@23.0.0-rc.0
+  - @rocket.chat/ui-avatar@19.0.0-rc.0
+  </details>
+
+## 22.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@18.0.2
+  - @rocket.chat/ui-contexts@22.0.2
+  </details>
+
+## 22.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-avatar@18.0.1
+  - @rocket.chat/ui-contexts@22.0.1
+  </details>
+
 ## 22.0.0
 
 ### Minor Changes
@@ -1561,8 +1931,6 @@
 
   - @rocket.chat/ui-contexts@5.0.2
   </details>
-
-> > > > > > > origin/master
 
 ## 5.0.1
 

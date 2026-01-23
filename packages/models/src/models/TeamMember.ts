@@ -20,7 +20,7 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		super(db, 'team_member', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: { teamId: 1 },

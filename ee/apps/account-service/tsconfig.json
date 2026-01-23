@@ -1,7 +1,6 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
-		"allowJs": true, // TODO remove asap
 		"incremental": true,
 
 		/* Strict Type-Checking Options */
@@ -9,7 +8,6 @@
 		"strictFunctionTypes": false,
 
 		/* Additional Checks */
-		"noImplicitReturns": false,
 		"noFallthroughCasesInSwitch": false,
 
 		"outDir": "./dist/ee/apps/account-service/src",

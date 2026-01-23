@@ -7,8 +7,8 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { rocketLogger } from './logger';
-import { callbacks } from '../../../lib/callbacks';
 import { sleep } from '../../../lib/utils/sleep';
+import { callbacks } from '../../../server/lib/callbacks';
 import { createRoom } from '../../lib/server/functions/createRoom';
 import { sendMessage } from '../../lib/server/functions/sendMessage';
 import { setUserAvatar } from '../../lib/server/functions/setUserAvatar';
@@ -65,7 +65,7 @@ export default class RocketAdapter {
 					continue;
 				}
 
-				rocketLogger.debug('onRocketMessageDelete', rocketMessageDeleted);
+				rocketLogger.debug({ msg: 'onRocketMessageDelete', rocketMessageDeleted });
 				await slack.postDeleteMessage(rocketMessageDeleted);
 			} catch (err) {
 				rocketLogger.error({ msg: 'Unhandled error onMessageDelete', err });
@@ -137,7 +137,7 @@ export default class RocketAdapter {
 					// This is on a channel that the rocket bot is not subscribed
 					continue;
 				}
-				rocketLogger.debug('onRocketMessage', rocketMessage);
+				rocketLogger.debug({ msg: 'onRocketMessage', rocketMessage });
 
 				if (rocketMessage.editedAt) {
 					// This is an Edit Event
@@ -260,7 +260,7 @@ export default class RocketAdapter {
 	}
 
 	async addChannel(slackChannelID, hasRetried = false) {
-		rocketLogger.debug('Adding Rocket.Chat channel from Slack', slackChannelID);
+		rocketLogger.debug({ msg: 'Adding Rocket.Chat channel from Slack', slackChannelID });
 		let addedRoom;
 
 		for await (const slack of this.slackAdapters) {
@@ -296,12 +296,12 @@ export default class RocketAdapter {
 						slackChannel.rocketId = rocketChannel.rid;
 					} catch (e) {
 						if (!hasRetried) {
-							rocketLogger.debug('Error adding channel from Slack. Will retry in 1s.', e.message);
+							rocketLogger.debug({ msg: 'Error adding channel from Slack. Will retry in 1s.', err: e });
 							// If first time trying to create channel fails, could be because of multiple messages received at the same time. Try again once after 1s.
 							await sleep(1000);
 							return (await this.findChannel(slackChannelID)) || this.addChannel(slackChannelID, true);
 						}
-						rocketLogger.error(e);
+						rocketLogger.error({ msg: 'Error adding channel from Slack', err: e });
 					}
 
 					const roomUpdate = {
@@ -343,7 +343,7 @@ export default class RocketAdapter {
 	}
 
 	async addUser(slackUserID) {
-		rocketLogger.debug('Adding Rocket.Chat user from Slack', slackUserID);
+		rocketLogger.debug({ msg: 'Adding Rocket.Chat user from Slack', slackUserID });
 		let addedUser;
 		for await (const slack of this.slackAdapters) {
 			if (addedUser) {
@@ -410,8 +410,8 @@ export default class RocketAdapter {
 					if (url) {
 						try {
 							await setUserAvatar(user, url, null, 'url');
-						} catch (error) {
-							rocketLogger.debug('Error setting user avatar', error.message);
+						} catch (err) {
+							rocketLogger.debug({ msg: 'Error setting user avatar from Slack', err });
 						}
 					}
 				}
@@ -482,6 +482,7 @@ export default class RocketAdapter {
 					rocketMsgObj.tmid = tmessage._id;
 				}
 			}
+
 			if (slackMessage.subtype === 'bot_message') {
 				rocketUser = await Users.findOneById('rocket.cat', { projection: { username: 1 } });
 			}

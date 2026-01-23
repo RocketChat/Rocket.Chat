@@ -21,7 +21,6 @@ import {
 	isChatFollowMessageProps,
 	isChatUnfollowMessageProps,
 	isChatGetMentionedMessagesProps,
-	isChatOTRProps,
 	isChatReactProps,
 	isChatGetDeletedMessagesProps,
 	isChatSyncThreadsListProps,
@@ -41,7 +40,6 @@ import { messageSearch } from '../../../../server/methods/messageSearch';
 import { getMessageHistory } from '../../../../server/publications/messages';
 import { roomAccessAttributes } from '../../../authorization/server';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { deleteMessageValidatingPermission } from '../../../lib/server/functions/deleteMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
@@ -51,7 +49,6 @@ import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage'
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { pinMessage, unpinMessage } from '../../../message-pin/server/pinMessage';
 import { starMessage } from '../../../message-star/server/starMessage';
-import { OEmbed } from '../../../oembed/server/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
 import { followMessage } from '../../../threads/server/methods/followMessage';
@@ -282,6 +279,77 @@ const chatEndpoints = API.v1
 
 			return API.v1.success();
 		},
+	)
+	.post(
+		'chat.update',
+		{
+			authRequired: true,
+			body: isChatUpdateProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { type: 'object' },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { bodyParams } = this;
+
+			const msg = await Messages.findOneById(bodyParams.msgId);
+
+			// Ensure the message exists
+			if (!msg) {
+				return API.v1.failure(`No message found with the id of "${bodyParams.msgId}".`);
+			}
+
+			if (bodyParams.roomId !== msg.rid) {
+				return API.v1.failure('The room id provided does not match where the message is from.');
+			}
+
+			const hasContent = 'content' in bodyParams;
+
+			if (hasContent && msg.t !== 'e2e') {
+				return API.v1.failure('Only encrypted messages can have content updated.');
+			}
+
+			const updateData: Parameters<typeof executeUpdateMessage> = [
+				this.userId,
+				hasContent
+					? {
+							_id: msg._id,
+							rid: msg.rid,
+							content: bodyParams.content,
+							...(bodyParams.e2eMentions && { e2eMentions: bodyParams.e2eMentions }),
+						}
+					: {
+							_id: msg._id,
+							rid: msg.rid,
+							msg: bodyParams.text,
+							...(bodyParams.customFields && { customFields: bodyParams.customFields }),
+						},
+				'previewUrls' in bodyParams ? bodyParams.previewUrls : undefined,
+			];
+
+			// Permission checks are already done in the updateMessage method, so no need to duplicate them
+			await applyAirGappedRestrictionsValidation(() => executeUpdateMessage(...updateData));
+
+			const updatedMessage = await Messages.findOneById(msg._id);
+			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);
+
+			return API.v1.success({
+				message,
+			});
+		},
 	);
 
 API.v1.addRoute(
@@ -366,7 +434,7 @@ API.v1.addRoute(
 			}
 
 			const sent = await applyAirGappedRestrictionsValidation(() =>
-				executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, this.bodyParams.previewUrls),
+				executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
 			);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
@@ -388,7 +456,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			await starMessage(this.userId, {
+			await starMessage(this.user, {
 				_id: msg._id,
 				rid: msg.rid,
 				starred: true,
@@ -410,55 +478,13 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			await starMessage(this.userId, {
+			await starMessage(this.user, {
 				_id: msg._id,
 				rid: msg.rid,
 				starred: false,
 			});
 
 			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.update',
-	{ authRequired: true, validateParams: isChatUpdateProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.msgId);
-
-			// Ensure the message exists
-			if (!msg) {
-				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
-			}
-
-			if (this.bodyParams.roomId !== msg.rid) {
-				return API.v1.failure('The room id provided does not match where the message is from.');
-			}
-
-			const msgFromBody = this.bodyParams.text;
-
-			// Permission checks are already done in the updateMessage method, so no need to duplicate them
-			await applyAirGappedRestrictionsValidation(() =>
-				executeUpdateMessage(
-					this.userId,
-					{
-						_id: msg._id,
-						msg: msgFromBody,
-						rid: msg.rid,
-						...(this.bodyParams.customFields && { customFields: this.bodyParams.customFields }),
-					},
-					this.bodyParams.previewUrls,
-				),
-			);
-
-			const updatedMessage = await Messages.findOneById(msg._id);
-			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);
-
-			return API.v1.success({
-				message,
-			});
 		},
 	},
 );
@@ -878,28 +904,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'chat.otr',
-	{ authRequired: true, validateParams: isChatOTRProps },
-	{
-		async post() {
-			const { roomId, type: otrType } = this.bodyParams;
-
-			const { username, type } = this.user;
-
-			if (!username) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user');
-			}
-
-			await canSendMessageAsync(roomId, { uid: this.userId, username, type });
-
-			await Message.saveSystemMessage(otrType, roomId, username, { _id: this.userId, username });
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
 	'chat.getURLPreview',
 	{ authRequired: true, validateParams: isChatGetURLPreviewProps },
 	{
@@ -910,7 +914,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			const { urlPreview } = await OEmbed.parseUrl(url);
+			const { urlPreview } = await Message.parseOEmbedUrl(url);
 			urlPreview.ignoreParse = true;
 
 			return API.v1.success({ urlPreview });

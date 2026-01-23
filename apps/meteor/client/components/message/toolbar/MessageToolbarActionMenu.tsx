@@ -1,4 +1,5 @@
 import { isE2EEMessage, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
+import { isTruthy } from '@rocket.chat/tools';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
@@ -25,7 +26,6 @@ import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useViewOriginalTranslationAction } from './useViewOriginalTranslationAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
-import { isTruthy } from '../../../../lib/isTruthy';
 
 type MessageActionSection = {
 	id: string;
@@ -50,14 +50,18 @@ const MessageToolbarActionMenu = ({ message, context, room, subscription, onChan
 		usePinMessageAction(message, { room, subscription }),
 		useStarMessageAction(message, { room }),
 		useUnstarMessageAction(message, { room }),
-		usePermalinkAction(message, { id: 'permalink-star', context: ['starred'], order: 10 }),
-		usePermalinkAction(message, { id: 'permalink-pinned', context: ['pinned'], order: 5 }),
-		usePermalinkAction(message, {
-			id: 'permalink',
-			context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
-			type: 'duplication',
-			order: 5,
-		}),
+		usePermalinkAction(message, { id: 'permalink-star', context: ['starred'], order: 10 }, { room }),
+		usePermalinkAction(message, { id: 'permalink-pinned', context: ['pinned'], order: 5 }, { room }),
+		usePermalinkAction(
+			message,
+			{
+				id: 'permalink',
+				context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
+				type: 'duplication',
+				order: 5,
+			},
+			{ room },
+		),
 		useFollowMessageAction(message, { room, context }),
 		useUnFollowMessageAction(message, { room, context }),
 		useMarkAsUnreadMessageAction(message, { room, subscription }),

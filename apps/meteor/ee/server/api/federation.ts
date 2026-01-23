@@ -1,15 +1,15 @@
-import type { IFederationMatrixService } from '@rocket.chat/core-services';
+import { FederationMatrix } from '@rocket.chat/core-services';
+import { getFederationRoutes } from '@rocket.chat/federation-matrix';
 import { Logger } from '@rocket.chat/logger';
 import { ajv } from '@rocket.chat/rest-typings';
 import type express from 'express';
 import { WebApp } from 'meteor/webapp';
 
 import { API } from '../../../app/api/server';
-import { isRunningMs } from '../../../server/lib/isRunningMs';
+import { getTrimmedServerVersion } from '../../../app/api/server/lib/getTrimmedServerVersion';
 
 const logger = new Logger('FederationRoutes');
 
-let federationService: IFederationMatrixService | undefined;
 API.v1.get(
 	'/federation/matrixIds.verify',
 	{
@@ -35,28 +35,19 @@ API.v1.get(
 	},
 	async function () {
 		const { matrixIds } = this.queryParams;
-		if (!federationService) {
-			throw new Error('Federation service not registered');
-		}
 		return API.v1.success({
-			results: await federationService.verifyMatrixIds(matrixIds),
+			results: await FederationMatrix.verifyMatrixIds(matrixIds),
 		});
 	},
 );
 
-export async function registerFederationRoutes(f: IFederationMatrixService): Promise<void> {
-	federationService = f;
-	if (isRunningMs()) {
-		return;
-	}
-
+export async function registerFederationRoutes(): Promise<void> {
 	try {
-		const routes = federationService.getAllRoutes();
-		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(routes.matrix.router).use(routes.wellKnown.router);
+		const routes = getFederationRoutes(getTrimmedServerVersion());
 
-		logger.log('[Federation] Registered federation routes');
+		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(routes.matrix.router).use(routes.wellKnown.router);
 	} catch (error) {
-		logger.error('[Federation] Failed to register routes:', error);
+		logger.error({ msg: '[Federation] Failed to register routes:', err: error });
 		throw error;
 	}
 }

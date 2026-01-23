@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../lib/callbacks';
+import { callbacks } from '../../../server/lib/callbacks';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
 import { addWebdavAccountByToken } from '../../webdav/server/methods/addWebdavAccount';
@@ -28,8 +28,8 @@ Meteor.startup(() => {
 					};
 					try {
 						await addWebdavAccountByToken(user._id, data);
-					} catch (error) {
-						SystemLogger.error(error);
+					} catch (err) {
+						SystemLogger.error({ err });
 					}
 				},
 				callbacks.priority.MEDIUM,

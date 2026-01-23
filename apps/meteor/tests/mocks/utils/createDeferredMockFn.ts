@@ -1,4 +1,4 @@
-function createDeferredPromise<R = void>() {
+export function createDeferredPromise<R = void>() {
 	let resolve!: (value: R | PromiseLike<R>) => void;
 	let reject!: (reason?: unknown) => void;
 

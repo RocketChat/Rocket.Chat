@@ -2,7 +2,7 @@ import type { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy } from '@rocket.
 import { DEFAULT_SLA_CONFIG, isRoomNativeFederated, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import { PrivateCachedStore } from '../lib/cachedStores';
+import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
 import { Rooms, Subscriptions } from '../stores';
 
 class RoomsCachedStore extends PrivateCachedStore<IRoom> {
@@ -103,7 +103,7 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 		);
 	}
 
-	protected deserializeFromCache(record: unknown) {
+	protected override deserializeFromCache(record: unknown) {
 		const deserialized = super.deserializeFromCache(record);
 
 		if (deserialized?.lastMessage?._updatedAt) {
