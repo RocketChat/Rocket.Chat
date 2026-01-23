@@ -40,10 +40,6 @@ export abstract class OmnichannelAdmin {
 		await this.inputSearch.fill('');
 	}
 
-	get btnBack(): Locator {
-		return this.page.getByRole('button', { name: 'Back' });
-	}
-
 	waitForEmptyState() {
 		return expect(this.page.locator('h3 >> text="No results found"')).toBeVisible();
 	}

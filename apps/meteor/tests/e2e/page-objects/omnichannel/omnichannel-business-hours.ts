@@ -22,15 +22,19 @@ export class OmnichannelBusinessHours extends OmnichannelAdmin {
 	}
 
 	get btnCreateBusinessHour(): Locator {
-		return this.page.locator('header').locator('role=button[name="New"]');
+		return this.page.locator('header').getByRole('button', { name: 'New', exact: true });
 	}
 
 	get btnSave(): Locator {
-		return this.page.locator('role=button[name="Save"]');
+		return this.page.getByRole('button', { name: 'Save', exact: true });
+	}
+
+	get btnBack(): Locator {
+		return this.page.locator('header').getByRole('button', { name: 'Back', exact: true });
 	}
 
 	get inputName(): Locator {
-		return this.page.locator('[name="name"]');
+		return this.page.getByRole('textbox', { name: 'Name', exact: true });
 	}
 
 	get fieldDepartment(): Locator {
