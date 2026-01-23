@@ -101,11 +101,11 @@ const TagsTable = () => {
 			)}
 			{isSuccess && data?.tags.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable aria-label={t('Tags')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.tags.map(({ _id, name, description }) => (
-								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
+								<GenericTableRow key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
 									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{description}</GenericTableCell>
 									<GenericTableCell>
