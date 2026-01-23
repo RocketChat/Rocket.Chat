@@ -46,10 +46,7 @@ export class InvitesRaw extends BaseRaw<IInvite> implements IInvitesModel {
 	async ensureInviteToken(_id: string): Promise<string> {
 		const inviteToken = crypto.randomUUID();
 
-		const result = await this.updateOne(
-			{ _id, inviteToken: { $exists: false } },
-			{ $set: { inviteToken } },
-		);
+		const result = await this.updateOne({ _id, inviteToken: { $exists: false } }, { $set: { inviteToken } });
 
 		if (result.modifiedCount > 0) {
 			return inviteToken;
