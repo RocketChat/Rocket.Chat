@@ -124,8 +124,8 @@ test.describe('OC - Manage Units', () => {
 			await poOmnichannelUnits.search(editedUnitName);
 			await poOmnichannelUnits.table.findRowByName(editedUnitName).click();
 
-			await expect(poOmnichannelUnits.manageUnit.inputMonitors).toHaveText(/user2/);
-			await expect(poOmnichannelUnits.manageUnit.inputMonitors).toHaveText(/user3/);
+			await expect(poOmnichannelUnits.manageUnit.findMonitorChipOption('user2')).toBeVisible();
+			await expect(poOmnichannelUnits.manageUnit.findMonitorChipOption('user3')).toBeVisible();
 		});
 
 		await test.step('expect unit to remove one of the two monitors', async () => {

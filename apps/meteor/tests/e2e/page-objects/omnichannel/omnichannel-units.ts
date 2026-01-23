@@ -38,7 +38,7 @@ export class OmnichannelUnitFlexTab extends FlexTab {
 	}
 
 	findMonitorChipOption(name: string) {
-		return this.fieldDepartments.getByRole('option', { name, exact: true });
+		return this.fieldMonitors.getByRole('option', { name, exact: true });
 	}
 
 	async selectDepartment(name: string) {
