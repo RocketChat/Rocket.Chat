@@ -1,5 +1,5 @@
 <p align="center"> 
-  <img  src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" data-canonical-src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" width="400" />
+  <img  src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" data-canonical-src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" width="400"  alt="Rocket.Chat logo" />
 </p>
 
 <h1 align="center">
@@ -7,10 +7,10 @@
 </h1>
 
 <p align="center">
-  <img src="https://img.shields.io/github/v/release/RocketChat/Rocket.Chat?label=version">
-  <img src="https://img.shields.io/github/actions/workflow/status/RocketChat/Rocket.Chat/build_and_test.yml">
-  <img src="https://img.shields.io/badge/license-MIT-green">
-  <img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/RocketChat/Rocket.Chat/develop">
+  <img src="https://img.shields.io/github/v/release/RocketChat/Rocket.Chat?label=version" alt="Rocket.Chat release version badge">
+  <img src="https://img.shields.io/github/actions/workflow/status/RocketChat/Rocket.Chat/build_and_test.yml" alt="Rocket.Chat build and test status badge">
+  <img src="https://img.shields.io/badge/license-MIT-green"alt="Rocket.Chat MIT license badge">
+  <img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/RocketChat/Rocket.Chat/develop" alt="Rocket.Chat code coverage badge">
 </p>
 
 
@@ -33,7 +33,7 @@ Rocket.Chat provides endless possibilities. Here’s an overview of the features
 
 🤖 [**Extend and integrate**](https://docs.rocket.chat/docs/extend-and-integrate-rocketchat-capabilities): Install and use public apps from the Rocket.Chat Marketplace, build your own apps, and embed the workspace into your platform.
 
-<img src="https://global-uploads.webflow.com/611a19b9853b7414a0f6b3f6/6319c72bbd8af5c8c22efab6_heroImage.webp" data-canonical-src="https://global-uploads.webflow.com/611a19b9853b7414a0f6b3f6/6319c72bbd8af5c8c22efab6_heroImage.webp"  />
+<img src="https://global-uploads.webflow.com/611a19b9853b7414a0f6b3f6/6319c72bbd8af5c8c22efab6_heroImage.webp" data-canonical-src="https://global-uploads.webflow.com/611a19b9853b7414a0f6b3f6/6319c72bbd8af5c8c22efab6_heroImage.webp"  alt="Rocket.Chat platform overview image" />
 
 # 💻 Deploy Rocket.Chat
 
