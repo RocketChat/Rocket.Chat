@@ -22,7 +22,7 @@ test.describe.serial('omnichannel-manager', () => {
 
 		await test.step('expect add "user1" as manager', async () => {
 			await poOmnichannelManagers.selectUsername('user1');
-			await poOmnichannelManagers.btnAdd.click();
+			await poOmnichannelManagers.btnAddManager.click();
 
 			await expect(poOmnichannelManagers.table.findRowByName('user1')).toBeVisible();
 		});

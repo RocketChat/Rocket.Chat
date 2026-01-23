@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
+import { Listbox } from '../fragments/listbox';
 import { Table } from '../fragments/table';
 
 class OmnichannelManagersTable extends Table {
@@ -12,9 +13,12 @@ class OmnichannelManagersTable extends Table {
 export class OmnichannelManager extends OmnichannelAdmin {
 	readonly table: OmnichannelManagersTable;
 
+	readonly listbox: Listbox;
+
 	constructor(page: Page) {
 		super(page);
 		this.table = new OmnichannelManagersTable(page);
+		this.listbox = new Listbox(page);
 	}
 
 	get inputUsername(): Locator {
@@ -23,11 +27,11 @@ export class OmnichannelManager extends OmnichannelAdmin {
 
 	async selectUsername(username: string) {
 		await this.inputUsername.fill(username);
-		await this.page.locator(`role=option[name="${username}"]`).click();
+		await this.listbox.selectOption(username);
 	}
 
-	get btnAdd(): Locator {
-		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add manager"');
+	get btnAddManager(): Locator {
+		return this.page.getByRole('button', { name: 'Add manager' });
 	}
 
 	async removeManager(name: string) {
