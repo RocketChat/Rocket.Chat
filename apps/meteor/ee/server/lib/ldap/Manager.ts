@@ -78,8 +78,8 @@ export class LDAPEEManager extends LDAPManager {
 			if (disableMissingUsers) {
 				await this.disableMissingUsers([...touchedUsers]);
 			}
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 
 		ldap.disconnect();
@@ -99,8 +99,8 @@ export class LDAPEEManager extends LDAPManager {
 			} finally {
 				ldap.disconnect();
 			}
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
@@ -123,8 +123,8 @@ export class LDAPEEManager extends LDAPManager {
 			} finally {
 				ldap.disconnect();
 			}
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
@@ -145,8 +145,8 @@ export class LDAPEEManager extends LDAPManager {
 			} finally {
 				ldap.disconnect();
 			}
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
@@ -211,8 +211,8 @@ export class LDAPEEManager extends LDAPManager {
 			} finally {
 				ldap.disconnect();
 			}
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
@@ -443,9 +443,9 @@ export class LDAPEEManager extends LDAPManager {
 					await addUserToRoom(room._id, user);
 					logger.debug({ msg: 'Synced user channel from LDAP', roomId: room._id, username });
 				}
-			} catch (e) {
+			} catch (err) {
 				logger.debug({ msg: 'Failed to sync user room', username, userChannelName });
-				logger.error(e);
+				logger.error({ err });
 			}
 		}
 
@@ -692,10 +692,10 @@ export class LDAPEEManager extends LDAPManager {
 					converter.addObjectToMemory(userData, { dn: data.dn, username: this.getLdapUsername(data) });
 					return userData;
 				},
-				endCallback: (error: any): void => {
-					if (error) {
-						logger.error(error);
-						reject(error);
+				endCallback: (err: any): void => {
+					if (err) {
+						logger.error({ err });
+						reject(err);
 						return;
 					}
 
