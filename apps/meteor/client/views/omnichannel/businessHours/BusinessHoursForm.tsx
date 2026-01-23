@@ -112,7 +112,21 @@ const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
 							<FieldLabel htmlFor={`${daysTimeField + index}-finish`}>{t('Close')}</FieldLabel>
 							<Controller
 								name={`daysTime.${index}.finish.time`}
-								render={({ field }) => <InputBox id={`${daysTimeField + index}-finish`} type='time' {...field} />}
+								control={control}
+								rules={{
+									validate: (value) => {
+										const startTime = watch(`daysTime.${index}.start.time`);
+										if (value <= startTime) {
+											return t('Business_hours_finish_must_be_greater_than_start');
+										}
+									},
+								}}
+								render={({ field, fieldState: { error } }) => (
+									<>
+										<InputBox id={`${daysTimeField + index}-finish`} type='time' {...field} error={error?.message} />
+										<Field.Error>{error?.message}</Field.Error>
+									</>
+								)}
 							/>
 						</Box>
 					</FieldRow>
