@@ -58,7 +58,7 @@ class OmnichannelAgentInfoFlexTab extends FlexTab {
 	}
 
 	get btnRemove(): Locator {
-		return this.root.getByRole('button', { name: 'Remove' });
+		return this.root.getByRole('button', { name: 'Remove', exact: true });
 	}
 }
 
@@ -75,19 +75,22 @@ export class OmnichannelAgents extends OmnichannelAdmin {
 
 	readonly table: OmnichannelAgentsTable;
 
+	readonly listbox: Listbox;
+
 	constructor(page: Page) {
 		super(page);
 		this.editAgent = new OmnichannelEditAgentFlexTab(page);
 		this.agentInfo = new OmnichannelAgentInfoFlexTab(page);
 		this.table = new OmnichannelAgentsTable(page);
+		this.listbox = new Listbox(page);
 	}
 
 	get inputUsername(): Locator {
 		return this.page.getByRole('textbox', { name: 'Username' });
 	}
 
-	get btnAdd(): Locator {
-		return this.page.locator('role=button[name="Add agent"]');
+	get btnAddAgent(): Locator {
+		return this.page.getByRole('button', { name: 'Add agent', exact: true });
 	}
 
 	async deleteAgent(name: string) {
@@ -109,6 +112,6 @@ export class OmnichannelAgents extends OmnichannelAdmin {
 
 	async selectUsername(username: string) {
 		await this.inputUsername.fill(username);
-		await this.page.locator(`role=option[name="${username}"]`).click();
+		await this.listbox.selectOption(username);
 	}
 }

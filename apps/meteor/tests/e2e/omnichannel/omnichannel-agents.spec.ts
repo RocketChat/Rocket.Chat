@@ -42,7 +42,7 @@ test.describe.serial('OC - Manage Agents', () => {
 
 		await test.step('expect add "user1" as agent', async () => {
 			await poOmnichannelAgents.selectUsername('user1');
-			await poOmnichannelAgents.btnAdd.click();
+			await poOmnichannelAgents.btnAddAgent.click();
 
 			await poOmnichannelAgents.search('user1');
 			await expect(poOmnichannelAgents.table.findRowByName('user1')).toBeVisible();
@@ -61,7 +61,7 @@ test.describe.serial('OC - Manage Agents', () => {
 		test.skip(IS_EE, 'Community Edition Only');
 
 		await poOmnichannelAgents.selectUsername('user1');
-		await poOmnichannelAgents.btnAdd.click();
+		await poOmnichannelAgents.btnAddAgent.click();
 
 		await poOmnichannelAgents.search('user1');
 		await poOmnichannelAgents.table.findRowByName('user1').click();
@@ -88,7 +88,7 @@ test.describe.serial('OC - Manage Agents', () => {
 		test.skip(!IS_EE, 'Enterprise Only');
 
 		await poOmnichannelAgents.selectUsername('user1');
-		await poOmnichannelAgents.btnAdd.click();
+		await poOmnichannelAgents.btnAddAgent.click();
 
 		await poOmnichannelAgents.search('user1');
 		await poOmnichannelAgents.table.findRowByName('user1').click();
@@ -107,7 +107,7 @@ test.describe.serial('OC - Manage Agents', () => {
 
 	test('OC - Edit agent  - Manage departments', async ({ page }) => {
 		await poOmnichannelAgents.selectUsername('user1');
-		await poOmnichannelAgents.btnAdd.click();
+		await poOmnichannelAgents.btnAddAgent.click();
 		await poOmnichannelAgents.search('user1');
 		await poOmnichannelAgents.table.findRowByName('user1').click();
 
@@ -157,7 +157,7 @@ test.describe.serial('OC - Manage Agents', () => {
 
 		await test.step('expect to add agent', async () => {
 			await poOmnichannelAgents.selectUsername('user1');
-			await poOmnichannelAgents.btnAdd.click();
+			await poOmnichannelAgents.btnAddAgent.click();
 		});
 
 		await test.step('expect to edit agent', async () => {

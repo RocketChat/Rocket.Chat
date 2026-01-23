@@ -164,7 +164,7 @@ test.describe('OC - Manager Role', () => {
 
 		await test.step('expect add "user1" as agent', async () => {
 			await poOmnichannelAgents.selectUsername('user1');
-			await poOmnichannelAgents.btnAdd.click();
+			await poOmnichannelAgents.btnAddAgent.click();
 
 			await poOmnichannelAgents.inputSearch.fill('user1');
 			await expect(poOmnichannelAgents.table.findRowByName('user1')).toBeVisible();
@@ -186,7 +186,7 @@ test.describe('OC - Manager Role', () => {
 
 		await test.step('expect add "user1" as manager', async () => {
 			await poOmnichannelManagers.selectUsername('user1');
-			await poOmnichannelManagers.btnAdd.click();
+			await poOmnichannelManagers.btnAddManager.click();
 
 			await expect(poOmnichannelManagers.table.findRowByName('user1')).toBeVisible();
 		});
