@@ -92,12 +92,9 @@ export const findOrCreateInvite = async (userId: string, invite: Pick<IInvite, '
 
 	// If an existing invite was found, ensure it has an inviteToken and return it
 	if (existing) {
-		// If the existing invite doesn't have an inviteToken (legacy invites), generate one
-		if (!existing.inviteToken) {
-			const inviteToken = crypto.randomUUID();
-			await Invites.updateOne({ _id: existing._id }, { $set: { inviteToken } });
-			existing.inviteToken = inviteToken;
-		}
+		// Ensure the invite has an inviteToken (handles legacy invites atomically)
+		const inviteToken = await Invites.ensureInviteToken(existing._id);
+		existing.inviteToken = inviteToken;
 		existing.url = getInviteUrl(existing);
 		return existing;
 	}
