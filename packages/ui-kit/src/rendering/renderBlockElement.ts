@@ -25,6 +25,9 @@ const getBlockElementRenderer = <T>(renderers: BlockRenderers<T>, type: BlockEle
 
 		case 'linear_scale':
 			return renderers.linearScale as BlockElementRenderer<T> | undefined;
+
+		default:
+			return undefined;
 	}
 };
 

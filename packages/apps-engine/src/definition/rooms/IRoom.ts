@@ -7,6 +7,8 @@ export interface IRoom {
 	slugifiedName: string;
 	type: RoomType;
 	creator: IUser;
+	teamId?: string;
+	isTeamMain?: boolean;
 	/**
 	 * @deprecated usernames will be removed on version 2.0.0
 	 */

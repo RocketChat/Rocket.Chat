@@ -233,6 +233,7 @@ export const createFakeLicenseInfo = (partial: Partial<Omit<LicenseInfo, 'licens
 		'custom-roles',
 		'accessibility-certification',
 		'outbound-messaging',
+		'abac',
 	]),
 	externalModules: [],
 	preventedActions: {
@@ -256,6 +257,7 @@ export const createFakeLicenseInfo = (partial: Partial<Omit<LicenseInfo, 'licens
 		color: faker.internet.color(),
 	})),
 	trial: faker.datatype.boolean(),
+	hasValidLicense: faker.datatype.boolean(),
 	...partial,
 });
 
@@ -453,3 +455,12 @@ export function createFakeMonitor(overrides?: Partial<Serialized<ILivechatMonito
 		...overrides,
 	};
 }
+
+export const createMockedPagination = (results = 0, total = 0) => ({
+	current: 0,
+	setCurrent: () => undefined,
+	itemsPerPage: 25 as const,
+	setItemsPerPage: () => undefined,
+	itemsPerPageLabel: () => 'Items per page:',
+	showingResultsLabel: () => `Showing results 1 - ${results} of ${total}`,
+});

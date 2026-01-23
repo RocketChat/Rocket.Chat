@@ -10,7 +10,7 @@ import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/Omnichannel
 import type { LivechatInquiryLocalRecord } from '../../../../hooks/useLivechatInquiryStore';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
-import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnichannelPriorities';
+import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
 import { normalizeNavigationMessage } from '../../lib/normalizeNavigationMessage';
 import SidePanelItem from '../SidepanelItem';
 import RoomMenu from '../SidepanelItem/RoomMenu';

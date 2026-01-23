@@ -1,7 +1,7 @@
 import emojione from 'emojione';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../lib/callbacks';
+import { callbacks } from '../../../server/lib/callbacks';
 
 Meteor.startup(() => {
 	callbacks.add(

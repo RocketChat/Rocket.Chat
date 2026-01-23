@@ -6,10 +6,11 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { beforeAddUserToRoom } from '../../app/lib/server/lib/beforeAddUserToRoom';
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { getDefaultSubscriptionPref } from '../../app/utils/lib/getDefaultSubscriptionPref';
-import { callbacks } from '../../lib/callbacks';
+import { callbacks } from '../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../lib/getSubscriptionAutotranslateDefaultConfig';
 
 declare module '@rocket.chat/ddp-client' {
@@ -49,6 +50,11 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 			method: 'addAllToRoom',
 		});
 	}
+
+	await beforeAddUserToRoom(
+		users.map((u) => u.username!),
+		room,
+	);
 
 	const now = new Date();
 	for await (const user of users) {

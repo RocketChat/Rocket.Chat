@@ -1,11 +1,11 @@
-import type { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { ITeam, TeamType } from '@rocket.chat/core-typings';
 
 import { api, request } from './api-data';
 
 export const createTeam = async (
 	credentials: Record<string, any>,
 	teamName: string,
-	type: TEAM_TYPE,
+	type: TeamType,
 	members?: string[],
 ): Promise<ITeam> => {
 	const response = await request

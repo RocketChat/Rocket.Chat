@@ -24,6 +24,8 @@ const Wrapper = () => {
           transition: 0.5s ease;
           left: -100%;
         `;
+      default:
+        return undefined;
     }
   };
 

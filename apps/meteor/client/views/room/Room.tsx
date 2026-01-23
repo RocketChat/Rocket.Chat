@@ -1,35 +1,49 @@
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
-import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { isInviteSubscription } from '@rocket.chat/core-typings';
+import { ContextualbarSkeleton } from '@rocket.chat/ui-client';
+import { useSetting, useRoomToolbox, useUserId } from '@rocket.chat/ui-contexts';
+import { useMediaCallOpenRoomTracker } from '@rocket.chat/ui-voip';
 import type { ReactElement } from 'react';
 import { createElement, lazy, memo, Suspense } from 'react';
 import { FocusScope } from 'react-aria';
 import { ErrorBoundary } from 'react-error-boundary';
+import { useTranslation } from 'react-i18next';
 
 import RoomE2EESetup from './E2EESetup/RoomE2EESetup';
 import Header from './Header';
-import { HeaderV2 } from './HeaderV2';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
+import RoomInvite from './RoomInvite';
 import RoomBody from './body/RoomBody';
-import RoomBodyV2 from './body/RoomBodyV2';
-import { useRoom } from './contexts/RoomContext';
-import { useRoomToolbox } from './contexts/RoomToolboxContext';
+import { useRoom, useRoomSubscription } from './contexts/RoomContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
 import RoomLayout from './layout/RoomLayout';
 import ChatProvider from './providers/ChatProvider';
 import { DateListProvider } from './providers/DateListProvider';
 import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
-import { ContextualbarSkeleton } from '../../components/Contextualbar';
 
 const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContextualBar'));
 
 const Room = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
+	const userId = useUserId();
 	const room = useRoom();
+	const subscription = useRoomSubscription();
 	const toolbox = useRoomToolbox();
 	const contextualBarView = useAppsContextualBar();
 	const isE2EEnabled = useSetting('E2E_Enable');
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages');
 	const shouldDisplayE2EESetup = room?.encrypted && !unencryptedMessagesAllowed && isE2EEnabled;
+	const roomLabel =
+		room.t === 'd' ? t('Conversation_with__roomName__', { roomName: room.name }) : t('Channel__roomName__', { roomName: room.name });
+
+	useMediaCallOpenRoomTracker(room._id);
+
+	if (subscription && isInviteSubscription(subscription)) {
+		return (
+			<FocusScope>
+				<RoomInvite userId={userId} room={room} subscription={subscription} data-qa-rc-room={room._id} aria-label={roomLabel} />
+			</FocusScope>
+		);
+	}
 
 	return (
 		<ChatProvider>
@@ -38,39 +52,9 @@ const Room = (): ReactElement => {
 					<DateListProvider>
 						<RoomLayout
 							data-qa-rc-room={room._id}
-							aria-label={
-								room.t === 'd'
-									? t('Conversation_with__roomName__', { roomName: room.name })
-									: t('Channel__roomName__', { roomName: room.name })
-							}
-							header={
-								<>
-									<FeaturePreview feature='newNavigation'>
-										<FeaturePreviewOn>
-											<HeaderV2 room={room} />
-										</FeaturePreviewOn>
-										<FeaturePreviewOff>
-											<Header room={room} />
-										</FeaturePreviewOff>
-									</FeaturePreview>
-								</>
-							}
-							body={
-								shouldDisplayE2EESetup ? (
-									<RoomE2EESetup />
-								) : (
-									<>
-										<FeaturePreview feature='newNavigation'>
-											<FeaturePreviewOn>
-												<RoomBodyV2 />
-											</FeaturePreviewOn>
-											<FeaturePreviewOff>
-												<RoomBody />
-											</FeaturePreviewOff>
-										</FeaturePreview>
-									</>
-								)
-							}
+							aria-label={roomLabel}
+							header={<Header room={room} />}
+							body={shouldDisplayE2EESetup ? <RoomE2EESetup /> : <RoomBody />}
 							aside={
 								(toolbox.tab?.tabComponent && (
 									<ErrorBoundary fallback={null}>

@@ -1,7 +1,7 @@
 import { LivechatBusinessHourBehaviors } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { MultipleBusinessHoursBehavior } from '../business-hour/Multiple';
 
 callbacks.add(
