@@ -57,7 +57,10 @@ export const sendMail = async function ({
 			email,
 		});
 
-		SystemLogger.debug(`Sending email to ${email}`);
+		SystemLogger.debug({
+			msg: 'Sending email',
+			email,
+		});
 		return Mailer.send({
 			to: email,
 			from,
@@ -83,7 +86,10 @@ export const sendMail = async function ({
 				name: escapeHTML(user.name || ''),
 				email: escapeHTML(email),
 			});
-			SystemLogger.debug(`Sending email to ${email}`);
+			SystemLogger.debug({
+				msg: 'Sending email',
+				email,
+			});
 			await Mailer.send({
 				to: email,
 				from,

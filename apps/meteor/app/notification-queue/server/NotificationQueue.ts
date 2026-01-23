@@ -93,9 +93,9 @@ class NotificationClass {
 			}
 
 			await NotificationQueue.removeById(notification._id);
-		} catch (e) {
-			SystemLogger.error(e);
-			await NotificationQueue.setErrorById(notification._id, e instanceof Error ? e.message : String(e));
+		} catch (err) {
+			SystemLogger.error({ err });
+			await NotificationQueue.setErrorById(notification._id, err instanceof Error ? err.message : String(err));
 		}
 
 		if (counter >= this.maxBatchSize) {

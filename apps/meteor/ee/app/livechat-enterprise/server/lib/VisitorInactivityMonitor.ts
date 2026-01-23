@@ -80,7 +80,7 @@ export class VisitorInactivityMonitor {
 			{ projection: { _id: 1, abandonedRoomsCloseCustomMessage: 1 } },
 		);
 		if (!department) {
-			this.logger.error(`Department ${departmentId} not found`);
+			this.logger.error({ msg: 'Department not found', departmentId });
 			return;
 		}
 		this.messageCache.set(department._id, department.abandonedRoomsCloseCustomMessage);
@@ -98,7 +98,7 @@ export class VisitorInactivityMonitor {
 			user: this.user,
 		});
 		void notifyOnRoomChangedById(room._id);
-		this.logger.info(`Room ${room._id} closed`);
+		this.logger.info({ msg: 'Closed room due to visitor inactivity', roomId: room._id });
 	}
 
 	async placeRoomOnHold(room: IOmnichannelRoom) {
@@ -128,12 +128,12 @@ export class VisitorInactivityMonitor {
 		await LivechatRooms.findAbandonedOpenRooms(new Date(), extraQuery).forEach((room) => {
 			switch (action) {
 				case 'close': {
-					this.logger.info(`Closing room ${room._id}`);
+					this.logger.info({ msg: 'Closing room due to abandoned visitor', roomId: room._id });
 					promises.push(this.closeRooms(room));
 					break;
 				}
 				case 'on-hold': {
-					this.logger.info(`Placing room ${room._id} on hold`);
+					this.logger.info({ msg: 'Placing room on hold due to abandoned visitor', roomId: room._id });
 					promises.push(this.placeRoomOnHold(room));
 					break;
 				}
@@ -145,7 +145,7 @@ export class VisitorInactivityMonitor {
 		const errors = result.filter(isPromiseRejectedResult).map((r) => r.reason);
 
 		if (errors.length) {
-			this.logger.error({ msg: `Error while removing priority from ${errors.length} rooms`, reason: errors[0] });
+			this.logger.error({ msg: 'Error while removing priority from rooms', count: errors.length, reason: errors[0] });
 		}
 
 		this._initializeMessageCache();

@@ -1,0 +1,154 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby=":r0:-title"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <form
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+        id=":r0:"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-ogq2n4"
+        >
+          <header
+            class="rcx-box rcx-box--full rcx-modal__header"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-inner"
+            >
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
+                id=":r0:-title"
+              >
+                FileUpload
+              </h2>
+              <button
+                aria-label="Close"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </header>
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-56vo9k"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-t4oqeh"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-cifyzt"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-icon--name-file rcx-icon rcx-css-1c958sc"
+                  >
+                    ⦕
+                  </i>
+                  test.txt - 50 Bytes
+                </div>
+              </div>
+              <fieldset
+                class="rcx-box rcx-box--full rcx-field-group"
+                role="group"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                    for=":r1:"
+                  >
+                    Upload_file_name
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <input
+                      aria-describedby=":r1:-error"
+                      aria-invalid="false"
+                      aria-required="true"
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                      id=":r1:"
+                      name="name"
+                      size="1"
+                      type="text"
+                    />
+                  </span>
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                    for=":r2:"
+                  >
+                    Upload_file_description
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <input
+                      aria-describedby=":r2:-error"
+                      aria-invalid="false"
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                      id=":r2:"
+                      name="description"
+                      size="1"
+                      type="text"
+                    />
+                  </span>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+          >
+            <div
+              class="rcx-button-group rcx-button-group--align-end"
+              role="group"
+            >
+              <button
+                class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-button-group__item"
+                type="button"
+              >
+                <span
+                  class="rcx-button--content"
+                >
+                  Cancel
+                </span>
+              </button>
+              <button
+                class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+                type="submit"
+              >
+                <span
+                  class="rcx-button--content"
+                >
+                  Send
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </dialog>
+  </div>
+</body>
+`;

@@ -54,6 +54,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { expireAt: 1 }, expireAfterSeconds: 0 },
 			{ key: { msg: 'text' } },
 			{ key: { 'file._id': 1 }, sparse: true },
+			{ key: { 'files._id': 1 }, sparse: true },
 			{ key: { 'mentions.username': 1 }, sparse: true },
 			{ key: { pinned: 1 }, sparse: true },
 			{ key: { location: '2dsphere' } },
@@ -1521,7 +1522,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	getMessageByFileId(fileID: string): Promise<IMessage | null> {
-		return this.findOne({ 'file._id': fileID });
+		return this.findOne({
+			$or: [{ 'file._id': fileID }, { 'files._id': fileID }],
+		});
 	}
 
 	getMessageByFileIdAndUsername(fileID: string, userId: string): Promise<IMessage | null> {
