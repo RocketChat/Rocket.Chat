@@ -38,11 +38,10 @@ export abstract class OmnichannelAdmin {
 
 	async clearSearch() {
 		await this.inputSearch.fill('');
-		await this.page.waitForTimeout(500);
 	}
 
 	get btnBack(): Locator {
-		return this.page.locator('role=button[name="Back"]');
+		return this.page.getByRole('button', { name: 'Back' });
 	}
 
 	waitForEmptyState() {
