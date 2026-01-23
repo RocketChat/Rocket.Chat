@@ -131,7 +131,7 @@ test.describe('OC - Manage Units', () => {
 		await test.step('expect unit to remove one of the two monitors', async () => {
 			await poOmnichannelUnits.search(editedUnitName);
 			await poOmnichannelUnits.table.findRowByName(editedUnitName).click();
-			await poOmnichannelUnits.manageUnit.selectMonitor('user2');
+			await poOmnichannelUnits.manageUnit.removeMonitor('user2');
 			await poOmnichannelUnits.manageUnit.btnSave.click();
 			await expect(poOmnichannelUnits.manageUnit.root).not.toBeVisible();
 
@@ -145,7 +145,7 @@ test.describe('OC - Manage Units', () => {
 			await poOmnichannelUnits.table.findRowByName(editedUnitName).click();
 			await expect(poOmnichannelUnits.manageUnit.root).toBeVisible();
 
-			await poOmnichannelUnits.manageUnit.deleteUnit();
+			await poOmnichannelUnits.deleteUnit(editedUnitName);
 			await expect(poOmnichannelUnits.table.findRowByName(editedUnitName)).not.toBeVisible();
 		});
 	});
@@ -202,7 +202,7 @@ test.describe('OC - Manage Units', () => {
 			await poOmnichannelUnits.table.findRowByName(unit.name).click();
 			await expect(poOmnichannelUnits.manageUnit.root).toBeVisible();
 
-			await poOmnichannelUnits.manageUnit.deleteUnit();
+			await poOmnichannelUnits.deleteUnit(unit.name);
 			await expect(poOmnichannelUnits.table.findRowByName(unit.name)).not.toBeVisible();
 		});
 	});

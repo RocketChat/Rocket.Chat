@@ -13,7 +13,7 @@ export class OmnichannelUnitFlexTab extends FlexTab {
 		this.listbox = new Listbox(page);
 	}
 
-	get fieldDepartments() {
+	private get fieldDepartments() {
 		return this.root.getByLabel('Departments');
 	}
 
@@ -21,15 +21,23 @@ export class OmnichannelUnitFlexTab extends FlexTab {
 		return this.fieldDepartments.getByRole('textbox');
 	}
 
+	private get fieldMonitors() {
+		return this.root.getByLabel('Monitors');
+	}
+
 	get inputMonitors() {
-		return this.root.locator('[name="monitors"]');
+		return this.fieldMonitors.getByRole('textbox');
 	}
 
 	get inputVisibility(): Locator {
 		return this.root.getByText('Visibility');
 	}
 
-	public findDepartmentsChipOption(name: string) {
+	findDepartmentsChipOption(name: string) {
+		return this.fieldDepartments.getByRole('option', { name, exact: true });
+	}
+
+	findMonitorChipOption(name: string) {
 		return this.fieldDepartments.getByRole('option', { name, exact: true });
 	}
 
@@ -46,13 +54,13 @@ export class OmnichannelUnitFlexTab extends FlexTab {
 		await this.inputMonitors.click();
 	}
 
+	async removeMonitor(option: string) {
+		await this.findMonitorChipOption(option).click();
+	}
+
 	async selectVisibility(option: string) {
 		await this.inputVisibility.click();
 		await this.listbox.selectOption(option);
-	}
-
-	async deleteUnit() {
-		await this.btnDelete.click();
 	}
 }
 
