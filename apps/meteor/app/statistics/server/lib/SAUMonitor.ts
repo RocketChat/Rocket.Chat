@@ -173,10 +173,6 @@ export class SAUMonitorClass {
 			...params,
 		};
 
-		if (!data) {
-			return;
-		}
-
 		const searchTerm = this._getSearchTerm(data);
 
 		await Sessions.createOrUpdate({ ...data, searchTerm });
