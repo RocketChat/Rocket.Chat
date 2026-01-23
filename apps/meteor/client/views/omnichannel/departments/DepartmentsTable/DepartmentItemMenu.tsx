@@ -18,6 +18,7 @@ type DepartmentItemMenuProps = {
 	archived: boolean;
 };
 
+// TODO: Use MenuV2 instead of Menu
 const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): ReactElement => {
 	const t = useTranslation();
 	const queryClient = useQueryClient();
@@ -91,7 +92,7 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 			disabled: !departmentRemovalEnabled,
 		},
 	};
-	return <Menu options={menuOptions} />;
+	return <Menu title={t('Options')} options={menuOptions} />;
 };
 
 export default DepartmentItemMenu;

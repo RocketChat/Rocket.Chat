@@ -1,17 +1,8 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Locator } from '@playwright/test';
 
-import { OmnichannelSidenav } from './fragments';
+import { OmnichannelAdmin } from './omnichannel-admin';
 
-export class OmnichannelTranscript {
-	private readonly page: Page;
-
-	readonly sidenav: OmnichannelSidenav;
-
-	constructor(page: Page) {
-		this.page = page;
-		this.sidenav = new OmnichannelSidenav(page);
-	}
-
+export class OmnichannelTranscript extends OmnichannelAdmin {
 	get contactCenterChats(): Locator {
 		return this.page.locator('//button[contains(.,"Chats")]');
 	}
