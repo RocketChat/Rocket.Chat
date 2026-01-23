@@ -62,8 +62,8 @@ export const getAndCreateNpsSurvey = async function getNpsSurvey(npsId: string) 
 		};
 
 		await Banner.create(banner);
-	} catch (e) {
-		SystemLogger.error(e);
+	} catch (err) {
+		SystemLogger.error({ err });
 		return false;
 	}
 };

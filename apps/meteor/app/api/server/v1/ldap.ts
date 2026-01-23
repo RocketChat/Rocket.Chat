@@ -20,8 +20,8 @@ API.v1.addRoute(
 
 			try {
 				await LDAP.testConnection();
-			} catch (error) {
-				SystemLogger.error(error);
+			} catch (err) {
+				SystemLogger.error({ err });
 				throw new Error('Connection_failed');
 			}
 
