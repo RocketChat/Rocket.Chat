@@ -89,22 +89,22 @@ test.describe('Omnichannel SLA Policies', () => {
 				await poOmnichannelSlaPolicies.manageSlaPolicy.btnSave.click();
 
 				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.inputName).not.toBeVisible();
-				await expect(poOmnichannelSlaPolicies.findRowByName(INITIAL_SLA.name)).toBeVisible();
+				await expect(poOmnichannelSlaPolicies.table.findRowByName(INITIAL_SLA.name)).toBeVisible();
 			});
 		});
 
 		await test.step('Search SLA', async () => {
-			await poOmnichannelSlaPolicies.inputSearch.type('random_text_that_should_have_no_match');
-			await expect(poOmnichannelSlaPolicies.findRowByName(INITIAL_SLA.name)).not.toBeVisible();
+			await poOmnichannelSlaPolicies.inputSearch.fill('random_text_that_should_have_no_match');
+			await expect(poOmnichannelSlaPolicies.table.findRowByName(INITIAL_SLA.name)).not.toBeVisible();
 			await expect(poOmnichannelSlaPolicies.txtEmptyState).toBeVisible();
 			await poOmnichannelSlaPolicies.inputSearch.fill(INITIAL_SLA.name);
-			await expect(poOmnichannelSlaPolicies.findRowByName(INITIAL_SLA.name)).toBeVisible();
+			await expect(poOmnichannelSlaPolicies.table.findRowByName(INITIAL_SLA.name)).toBeVisible();
 			await expect(poOmnichannelSlaPolicies.txtEmptyState).not.toBeVisible();
 			await poOmnichannelSlaPolicies.inputSearch.fill('');
 		});
 
 		await test.step('Edit SLA', async () => {
-			await poOmnichannelSlaPolicies.findRowByName(INITIAL_SLA.name).click();
+			await poOmnichannelSlaPolicies.table.findRowByName(INITIAL_SLA.name).click();
 
 			await expect(poOmnichannelSlaPolicies.manageSlaPolicy.inputName).toHaveValue(INITIAL_SLA.name);
 			await expect(poOmnichannelSlaPolicies.manageSlaPolicy.inputDescription).toHaveValue(INITIAL_SLA.description);
@@ -129,13 +129,13 @@ test.describe('Omnichannel SLA Policies', () => {
 				await poOmnichannelSlaPolicies.manageSlaPolicy.btnSave.click();
 
 				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.inputName).not.toBeVisible();
-				await expect(poOmnichannelSlaPolicies.findRowByName(EDITED_SLA.name)).toBeVisible();
+				await expect(poOmnichannelSlaPolicies.table.findRowByName(EDITED_SLA.name)).toBeVisible();
 			});
 		});
 
 		await test.step('Remove SLA', async () => {
 			await poOmnichannelSlaPolicies.removeSLA(EDITED_SLA.name);
-			await expect(poOmnichannelSlaPolicies.findRowByName(EDITED_SLA.name)).not.toBeVisible();
+			await expect(poOmnichannelSlaPolicies.table.findRowByName(EDITED_SLA.name)).not.toBeVisible();
 		});
 	});
 });

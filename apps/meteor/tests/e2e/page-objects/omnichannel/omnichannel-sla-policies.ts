@@ -2,6 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextab';
+import { Table } from '../fragments/table';
 
 class OmnichannelManageSlaPolicyFlexTab extends FlexTab {
 	constructor(page: Page) {
@@ -9,32 +10,33 @@ class OmnichannelManageSlaPolicyFlexTab extends FlexTab {
 	}
 
 	get inputDescription(): Locator {
-		return this.root.locator('[name="description"]');
+		return this.root.getByRole('textbox', { name: 'Description' });
 	}
 
 	get inputEstimatedWaitTime(): Locator {
-		return this.root.locator('[name="dueTimeInMinutes"]');
+		return this.root.getByRole('spinbutton', { name: 'Estimated wait time' });
 	}
+}
 
-	errorMessage(message: string): Locator {
-		return this.root.locator(`.rcx-field__error >> text="${message}"`);
+class OmnichannelSlaPoliciesTable extends Table {
+	constructor(page: Page) {
+		super(page.getByRole('table', { name: 'SLA Policies' }));
 	}
 }
 
 export class OmnichannelSlaPolicies extends OmnichannelAdmin {
 	readonly manageSlaPolicy: OmnichannelManageSlaPolicyFlexTab;
 
+	readonly table: OmnichannelSlaPoliciesTable;
+
 	constructor(page: Page) {
 		super(page);
 		this.manageSlaPolicy = new OmnichannelManageSlaPolicyFlexTab(page);
-	}
-
-	findRowByName(name: string) {
-		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}"`) });
+		this.table = new OmnichannelSlaPoliciesTable(page);
 	}
 
 	btnRemove(name: string) {
-		return this.findRowByName(name).locator('button[title="Remove"]');
+		return this.table.findRowByName(name).getByRole('button', { name: 'Remove' });
 	}
 
 	async removeSLA(name: string) {

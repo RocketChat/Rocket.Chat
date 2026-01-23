@@ -115,11 +115,11 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			)}
 			{isSuccess && data?.sla.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable aria-label={t('SLA_Policies')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.sla.map(({ _id, name, description, dueTimeInMinutes }) => (
-								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action>
+								<GenericTableRow key={_id} tabIndex={0} onClick={onRowClick(_id)} action>
 									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{description}</GenericTableCell>
 									<GenericTableCell withTruncatedText>
