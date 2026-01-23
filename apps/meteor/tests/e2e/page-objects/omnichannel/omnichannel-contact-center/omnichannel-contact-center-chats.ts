@@ -6,7 +6,7 @@ import { Listbox } from '../../fragments/listbox';
 import { OmnichannelConfirmRemoveChat } from '../../fragments/modals';
 import { Table } from '../../fragments/table';
 
-class ConversationFlexTab extends FlexTab {
+class OmnichannelConversationFlexTab extends FlexTab {
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Conversation' }));
 	}
@@ -129,7 +129,7 @@ export class OmnichannelContactCenterChats extends OmnichannelContactCenter {
 
 	readonly confirmRemoveChatModal: OmnichannelConfirmRemoveChat;
 
-	readonly conversation: ConversationFlexTab;
+	readonly conversation: OmnichannelConversationFlexTab;
 
 	readonly table: OmnichannelContactCenterChatsTable;
 
@@ -137,7 +137,7 @@ export class OmnichannelContactCenterChats extends OmnichannelContactCenter {
 		super(page);
 		this.filters = new OmnichannelChatsFilters(page);
 		this.confirmRemoveChatModal = new OmnichannelConfirmRemoveChat(page);
-		this.conversation = new ConversationFlexTab(page);
+		this.conversation = new OmnichannelConversationFlexTab(page);
 		this.table = new OmnichannelContactCenterChatsTable(page);
 	}
 
