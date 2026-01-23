@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { HeaderState } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
