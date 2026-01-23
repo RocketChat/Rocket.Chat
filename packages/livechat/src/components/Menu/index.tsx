@@ -1,6 +1,6 @@
-import { Component, type ComponentChildren } from 'preact';
-import { useState, useRef, useLayoutEffect, useCallback } from 'preact/hooks';
+import type { ComponentChildren } from 'preact';
 import type { HTMLAttributes, TargetedEvent } from 'preact/compat';
+import { useState, useRef, useLayoutEffect, useCallback } from 'preact/hooks';
 
 import { createClassName } from '../../helpers/createClassName';
 import { normalizeDOMRect } from '../../helpers/normalizeDOMRect';
@@ -51,24 +51,17 @@ type PopoverMenuWrapperProps = {
 	overlayBounds: DOMRect;
 };
 
-type PopoverMenuWrapperState = {
-	position?: {
+
+
+const PopoverMenuWrapper = ({ children, dismiss, triggerBounds, overlayBounds }: PopoverMenuWrapperProps) => {
+	const [position, setPosition] = useState<{
 		left?: number;
 		right?: number;
 		top?: number;
 		bottom?: number;
-	};
-	placement?: string;
-};
-
-const PopoverMenuWrapper = ({ children, dismiss, triggerBounds, overlayBounds }: PopoverMenuWrapperProps) => {
-	const [position, setPosition] = useState<PopoverMenuWrapperState['position']>();
+	}>();
 	const [placement, setPlacement] = useState<string>();
 	const menuRef = useRef<HTMLDivElement | null>(null);
-
-	const handleRef = useCallback((ref: HTMLDivElement | null) => {
-		menuRef.current = ref;
-	}, []);
 
 	const handleClick = useCallback(
 		({ target }: TargetedEvent<HTMLElement, MouseEvent>) => {
@@ -108,7 +101,7 @@ const PopoverMenuWrapper = ({ children, dismiss, triggerBounds, overlayBounds }:
 
 	return (
 		<Menu
-			ref={handleRef}
+			ref={menuRef}
 			style={{ position: 'absolute', ...position }}
 			placement={placement}
 			onClickCapture={handleClick}
