@@ -70,7 +70,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					imperativeModal.close();
 					uploadNextFile();
 				},
-				onSubmit: async (fileName: string, description?: string): Promise<void> => {
+				onSubmit: async (fileName, description): Promise<void> => {
 					Object.defineProperty(file, 'name', {
 						writable: true,
 						value: fileName,
@@ -196,7 +196,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 						);
 					}
 				},
-				invalidContentType: !fileUploadIsValidContentType(file?.type),
+				invalidContentType: !fileUploadIsValidContentType(file.type),
 			},
 		});
 	};

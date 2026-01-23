@@ -1,9 +1,11 @@
-import { Apps } from '@rocket.chat/apps';
+import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { IMessageService } from '@rocket.chat/core-services';
 import { Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
-import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEditedMessage, type AtLeast } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
+import type { MessageUrl, IMessage, MessageTypesValues, IUser, IRoom, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 
+import { OEmbed } from './hooks/AfterSaveOEmbed';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
@@ -95,6 +97,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		files,
 		attachments,
 		thread,
+		ts,
 	}: {
 		fromId: string;
 		rid: string;
@@ -108,23 +111,28 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		files?: IMessage['files'];
 		attachments?: IMessage['attachments'];
 		thread?: { tmid: string; tshow: boolean };
+		ts: Date;
 	}): Promise<IMessage> {
-		return executeSendMessage(fromId, {
-			rid,
-			msg,
-			...thread,
-			federation: {
-				eventId: federation_event_id,
-				version: 1,
+		return executeSendMessage(
+			fromId,
+			{
+				rid,
+				msg,
+				...thread,
+				federation: {
+					eventId: federation_event_id,
+					version: 1,
+				},
+				...(file && { file }),
+				...(files && { files }),
+				...(attachments && { attachments }),
+				...(e2e_content && {
+					t: 'e2e',
+					content: e2e_content,
+				}),
 			},
-			...(file && { file }),
-			...(files && { files }),
-			...(attachments && { attachments }),
-			...(e2e_content && {
-				t: 'e2e',
-				content: e2e_content,
-			}),
-		});
+			{ ts },
+		);
 	}
 
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {
@@ -196,7 +204,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		}
 
 		if (Apps.self?.isLoaded()) {
-			void Apps.getBridges()?.getListenerBridge().messageEvent('IPostSystemMessageSent', createdMessage);
+			void Apps.self?.triggerEvent(AppEvents.IPostSystemMessageSent, createdMessage);
 		}
 
 		void notifyOnMessageChange({ id: createdMessage._id, data: createdMessage });
@@ -245,6 +253,17 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		}
 
 		return message;
+	}
+
+	// The actions made on this event should be asynchronous
+	// That means, caller should not expect to receive updated message
+	// after calling
+	async afterSave({ message }: { message: IMessage }): Promise<void> {
+		await OEmbed.rocketUrlParser(message);
+
+		// Since this will happen after the message is sent and ack on the UI
+		// we'll notify until after these hooks are finished
+		void notifyOnMessageChange({ id: message._id });
 	}
 
 	private getMarkdownConfig() {
@@ -301,5 +320,12 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		if (!FederationActions.shouldPerformAction(message, room)) {
 			throw new FederationMatrixInvalidConfigurationError('Unable to delete message');
 		}
+	}
+
+	async parseOEmbedUrl(url: string): Promise<{
+		urlPreview: MessageUrl;
+		foundMeta: boolean;
+	}> {
+		return OEmbed.parseUrl(url);
 	}
 }

@@ -1,4 +1,6 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { Room } from 'matrix-js-sdk';
+import { EventTimeline } from 'matrix-js-sdk';
 
 import {
 	createRoom,
@@ -231,7 +233,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rc1AdminRequestConfig,
 					});
 
-					expect(response.body).toHaveProperty('success', true);
+					expect(response.body).toHaveProperty('success', false);
 					expect(response.body).toHaveProperty('message');
 
 					// Parse the error message from the DDP response
@@ -709,6 +711,102 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(localUserInviteMessageUser1).toBeDefined();
 					expect(federatedUserInviteMessageUser1).toBeDefined();
+				});
+			});
+		});
+
+		describe('Create a room with a topic', () => {
+			describe('Create a federated room with a topic', () => {
+				let channelName: string;
+				let channelTopic: string;
+				let federatedChannel: any;
+
+				beforeAll(async () => {
+					channelName = `federated-channel-with-topic-${Date.now()}`;
+					channelTopic = 'This is a test topic for federation';
+
+					const createResponse = await createRoom({
+						type: 'p',
+						name: channelName,
+						members: [federationConfig.hs1.adminMatrixUserId],
+						extraData: {
+							federated: true,
+							topic: channelTopic,
+						},
+						config: rc1AdminRequestConfig,
+					});
+
+					federatedChannel = createResponse.body.group;
+
+					expect(federatedChannel).toHaveProperty('_id');
+					expect(federatedChannel).toHaveProperty('name', channelName);
+					expect(federatedChannel).toHaveProperty('t', 'p');
+					expect(federatedChannel).toHaveProperty('federated', true);
+
+					const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
+					expect(acceptedRoomId).not.toBe('');
+				}, 10000);
+
+				it('should set the topic on the Rocket.Chat side', async () => {
+					// RC view: Verify the topic is set in Rocket.Chat
+					const roomInfo = await getRoomInfo(federatedChannel._id, rc1AdminRequestConfig);
+					expect(roomInfo.room).toHaveProperty('topic', channelTopic);
+				});
+
+				it('should set the topic on the Matrix side', async () => {
+					const hs1Room1 = (await hs1AdminApp.matrixClient.getRoom(federatedChannel.federation.mrid)) as Room;
+
+					expect(hs1Room1).toBeDefined();
+
+					const [topic] = hs1Room1.getLiveTimeline().getState(EventTimeline.FORWARDS)?.getStateEvents('m.room.topic') || [];
+
+					expect(topic.getContent().topic).toBe(channelTopic);
+				});
+			});
+
+			describe('Create a federated room without a topic', () => {
+				let channelName: string;
+				let federatedChannel: any;
+
+				beforeAll(async () => {
+					channelName = `federated-channel-no-topic-${Date.now()}`;
+
+					const createResponse = await createRoom({
+						type: 'p',
+						name: channelName,
+						members: [federationConfig.hs1.adminMatrixUserId],
+						extraData: {
+							federated: true,
+						},
+						config: rc1AdminRequestConfig,
+					});
+
+					federatedChannel = createResponse.body.group;
+
+					expect(federatedChannel).toHaveProperty('_id');
+					expect(federatedChannel).toHaveProperty('name', channelName);
+					expect(federatedChannel).toHaveProperty('t', 'p');
+					expect(federatedChannel).toHaveProperty('federated', true);
+					expect(federatedChannel).toHaveProperty('federation.mrid');
+
+					const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
+					expect(acceptedRoomId).not.toBe('');
+				}, 10000);
+
+				it('should not set a topic on the Rocket.Chat side', async () => {
+					// RC view: Verify no topic is set in Rocket.Chat
+					const roomInfo = await getRoomInfo(federatedChannel._id, rc1AdminRequestConfig);
+					expect(roomInfo.room?.topic).toBeUndefined();
+				});
+
+				it('should not set a topic on the Matrix side', async () => {
+					const hs1Room1 = (await hs1AdminApp.matrixClient.getRoom(federatedChannel.federation.mrid)) as Room;
+
+					expect(hs1Room1).toBeDefined();
+
+					const [topic] = hs1Room1.getLiveTimeline().getState(EventTimeline.FORWARDS)?.getStateEvents('m.room.topic') || [];
+
+					expect(topic).toBeUndefined();
 				});
 			});
 		});

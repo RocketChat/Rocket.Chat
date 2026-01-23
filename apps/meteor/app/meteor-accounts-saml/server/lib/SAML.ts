@@ -38,7 +38,10 @@ const convertRoleNamesToIds = async (roleNamesOrIds: string[]): Promise<IRole['_
 	const roles = (await Roles.findInIdsOrNames(normalizedRoleNamesOrIds).toArray()).map((role) => role._id);
 
 	if (roles.length !== normalizedRoleNamesOrIds.length) {
-		SystemLogger.warn(`Failed to convert some role names to ids: ${normalizedRoleNamesOrIds.join(', ')}`);
+		SystemLogger.warn({
+			msg: 'Failed to convert some role names to ids',
+			roles: normalizedRoleNamesOrIds,
+		});
 	}
 
 	if (!roles.length) {
@@ -273,7 +276,7 @@ export class SAML {
 	}
 
 	private static async _logoutRemoveTokens(userId: string): Promise<void> {
-		SAMLUtils.log(`Found user ${userId}`);
+		SAMLUtils.log({ msg: 'Found user', userId });
 
 		await Users.unsetLoginTokens(userId);
 		await Users.removeSamlServiceSession(userId);
@@ -339,8 +342,8 @@ export class SAML {
 
 					redirect(url);
 				});
-			} catch (e: any) {
-				SystemLogger.error(e);
+			} catch (err: any) {
+				SystemLogger.error({ err });
 				redirect();
 			}
 		});
@@ -348,7 +351,7 @@ export class SAML {
 
 	private static async processLogoutResponse(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): Promise<void> {
 		if (!req.query.SAMLResponse) {
-			SAMLUtils.error('Invalid LogoutResponse, missing SAMLResponse', req.query);
+			SAMLUtils.error({ msg: 'Invalid LogoutResponse received: missing SAMLResponse parameter.', query: req.query });
 			throw new Error('Invalid LogoutResponse received.');
 		}
 
@@ -363,7 +366,7 @@ export class SAML {
 			}
 
 			const logOutUser = async (inResponseTo: string): Promise<void> => {
-				SAMLUtils.log(`Logging Out user via inResponseTo ${inResponseTo}`);
+				SAMLUtils.log({ msg: 'Processing logout for inResponseTo', inResponseTo });
 
 				const loggedOutUsers = await Users.findBySAMLInResponseTo(inResponseTo).toArray();
 				if (loggedOutUsers.length > 1) {
@@ -407,8 +410,7 @@ export class SAML {
 		try {
 			url = await serviceProvider.getAuthorizeUrl(samlObject.credentialToken);
 		} catch (err: any) {
-			SAMLUtils.error('Unable to generate authorize url');
-			SAMLUtils.error(err);
+			SAMLUtils.error({ err, msg: 'Unable to generate authorize url' });
 			url = Meteor.absoluteUrl();
 		}
 
@@ -452,8 +454,8 @@ export class SAML {
 					Location: url,
 				});
 				res.end();
-			} catch (error) {
-				SAMLUtils.error(error);
+			} catch (err) {
+				SAMLUtils.error({ err });
 				res.writeHead(302, {
 					Location: Meteor.absoluteUrl(),
 				});
@@ -518,7 +520,7 @@ export class SAML {
 				}
 			}
 		} catch (err: any) {
-			SystemLogger.error(err);
+			SystemLogger.error({ err });
 		}
 	}
 }

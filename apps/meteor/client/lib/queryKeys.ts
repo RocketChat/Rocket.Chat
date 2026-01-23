@@ -23,9 +23,18 @@ export const roomsQueryKeys = {
 	pinnedMessages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'pinned-messages'] as const,
 	messages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'messages'] as const,
 	message: (rid: IRoom['_id'], mid: IMessage['_id']) => [...roomsQueryKeys.messages(rid), mid] as const,
-	threads: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'threads'] as const,
+	threads: (rid: IRoom['_id'], ...args: [filters?: { type?: 'unread' | 'following'; text?: string }]) =>
+		[...roomsQueryKeys.room(rid), 'threads', ...args] as const,
 	roles: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'roles'] as const,
 	info: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'info'] as const,
+	members: (rid: IRoom['_id'], roomType: RoomType, type?: 'all' | 'online', filter?: string) =>
+		!type && !filter
+			? ([...roomsQueryKeys.room(rid), 'members', roomType] as const)
+			: ([...roomsQueryKeys.room(rid), 'members', roomType, type, filter] as const),
+	files: (rid: IRoom['_id'], options?: { type: string; text: string }) => [...roomsQueryKeys.room(rid), 'files', options] as const,
+	images: (rid: IRoom['_id'], options?: { startingFromId?: string }) => [...roomsQueryKeys.room(rid), 'images', options] as const,
+	autocomplete: (text: string) => [...roomsQueryKeys.all, 'autocomplete', text] as const,
+	discussions: (rid: IRoom['_id'], ...args: [filter: { text?: string }]) => [...roomsQueryKeys.room(rid), 'discussions', ...args] as const,
 };
 
 export const subscriptionsQueryKeys = {
@@ -35,7 +44,8 @@ export const subscriptionsQueryKeys = {
 
 export const cannedResponsesQueryKeys = {
 	all: ['canned-responses'] as const,
-};
+	list: (params: { filter: string; type: string }) => [...cannedResponsesQueryKeys.all, params] as const,
+} as const;
 
 export const rolesQueryKeys = {
 	all: ['roles'] as const,
@@ -80,7 +90,9 @@ export const omnichannelQueryKeys = {
 	},
 	contacts: (query?: { filter: string; limit?: number }) =>
 		!query ? [...omnichannelQueryKeys.all, 'contacts'] : ([...omnichannelQueryKeys.all, 'contacts', query] as const),
-	contact: (contactId?: string) => [...omnichannelQueryKeys.contacts(), contactId] as const,
+	contact: (contactId?: IRoom['_id']) => [...omnichannelQueryKeys.contacts(), contactId] as const,
+	contactMessages: (contactId: IRoom['_id'], filter: { searchTerm: string }) =>
+		[...omnichannelQueryKeys.contact(contactId), 'messages', filter] as const,
 	outboundProviders: (filter?: { type: IOutboundProvider['providerType'] }) =>
 		!filter
 			? ([...omnichannelQueryKeys.all, 'outbound-messaging', 'providers'] as const)
@@ -117,6 +129,8 @@ export const teamsQueryKeys = {
 	roomsOfUser: (teamId: ITeam['_id'], userId: IUser['_id'], options?: { canUserDelete: boolean }) =>
 		[...teamsQueryKeys.team(teamId), 'rooms-of-user', userId, options] as const,
 	listUserTeams: (userId: IUser['_id']) => [...teamsQueryKeys.all, 'listUserTeams', userId] as const,
+	listChannels: (teamId: ITeam['_id'], options?: { type: 'all' | 'autoJoin'; text: string }) =>
+		[...teamsQueryKeys.team(teamId), 'channels', options] as const,
 };
 
 export const appsQueryKeys = {
@@ -128,17 +142,17 @@ export const ABACQueryKeys = {
 	all: ['abac'] as const,
 	logs: {
 		all: () => [...ABACQueryKeys.all, 'logs'] as const,
-		list: (query?: PaginatedRequest) => [...ABACQueryKeys.logs.all(), 'list', query] as const,
+		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.logs.all(), 'list', ...args] as const,
 	},
 	roomAttributes: {
 		all: () => [...ABACQueryKeys.all, 'room-attributes'] as const,
-		list: (query?: PaginatedRequest) => [...ABACQueryKeys.roomAttributes.all(), query] as const,
+		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.roomAttributes.all(), ...args] as const,
 		attribute: (attributeId: string) => [...ABACQueryKeys.roomAttributes.all(), attributeId] as const,
 	},
 	rooms: {
 		all: () => [...ABACQueryKeys.all, 'rooms'] as const,
-		list: (query?: PaginatedRequest) => [...ABACQueryKeys.rooms.all(), query] as const,
-		autocomplete: (query?: PaginatedRequest) => [...ABACQueryKeys.rooms.all(), 'autocomplete', query] as const,
+		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.rooms.all(), ...args] as const,
+		autocomplete: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.rooms.all(), 'autocomplete', ...args] as const,
 		room: (roomId: string) => [...ABACQueryKeys.rooms.all(), roomId] as const,
 	},
 };
@@ -147,3 +161,29 @@ export const callHistoryQueryKeys = {
 	all: ['call-history'] as const,
 	info: (callId?: string) => [...callHistoryQueryKeys.all, 'info', callId] as const,
 };
+
+export const marketplaceQueryKeys = {
+	all: ['marketplace'] as const,
+	appsMarketplace: (...args: [canManageApps?: boolean]) => [...marketplaceQueryKeys.all, 'apps-marketplace', ...args] as const,
+	appsInstance: (...args: [canManageApps?: boolean]) => [...marketplaceQueryKeys.all, 'apps-instance', ...args] as const,
+	appsStored: (...args: unknown[]) => [...marketplaceQueryKeys.all, 'apps-stored', ...args] as const,
+	app: (appId: string) => [...marketplaceQueryKeys.all, 'apps', appId] as const,
+	appStatus: (appId: string) => [...marketplaceQueryKeys.app(appId), 'status'] as const,
+	appLogs: (
+		appId: string,
+		query: {
+			instanceId?: string | undefined;
+			endDate?: string | undefined;
+			startDate?: string | undefined;
+			method?: string | undefined;
+			logLevel?: '0' | '1' | '2' | undefined;
+			count: number;
+			offset: number;
+		},
+	) => [...marketplaceQueryKeys.app(appId), 'logs', query] as const,
+} as const;
+
+export const videoConferenceQueryKeys = {
+	all: ['video-conference'] as const,
+	fromRoom: (roomId: IRoom['_id']) => [...videoConferenceQueryKeys.all, 'rooms', roomId] as const,
+} as const;
