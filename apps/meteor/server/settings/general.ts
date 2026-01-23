@@ -34,6 +34,11 @@ export const createGeneralSettings = () =>
 				public: true,
 				alert: 'This_is_a_deprecated_feature_alert',
 			});
+
+			await this.add('API_Allow_Unsafe_Params_Usage_Counter', 0, {
+				type: 'int',
+				hidden: true,
+			});
 		});
 		await this.add('Show_Setup_Wizard', 'pending', {
 			type: 'select',

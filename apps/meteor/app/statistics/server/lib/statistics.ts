@@ -588,6 +588,9 @@ export const statistics = {
 			);
 		}
 
+		statistics.allowUnsafeQueryAndFieldsApiParamsEnabled = process.env.ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS === 'true';
+		statistics.allowUnsafeQueryAndFieldsApiParamsUsage = settings.get<number>('API_Allow_Unsafe_Params_Usage_Counter');
+
 		await Promise.all(statsPms).catch(log);
 
 		return statistics;
