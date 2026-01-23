@@ -184,7 +184,7 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): R
 	);
 
 	return (
-		<Box marginInline={-4} {...props}>
+		<Box marginInline={-4} alignItems='center' {...props}>
 			<Margins inline={4}>
 				<InputBox type='date' value={startDate} max={maxStartDate} flexGrow={1} height={20} onChange={handleChangeStart} />
 				<InputBox type='date' min={minEndDate} value={endDate} max={maxEndDate} flexGrow={1} height={20} onChange={handleChangeEnd} />
