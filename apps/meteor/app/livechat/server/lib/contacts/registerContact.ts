@@ -5,7 +5,7 @@ import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 
 import { getAllowedCustomFields } from './getAllowedCustomFields';
 import { validateCustomFields } from './validateCustomFields';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import {
 	notifyOnRoomChangedById,
 	notifyOnSubscriptionChangedByRoomId,
@@ -25,15 +25,10 @@ type RegisterContactProps = {
 	};
 };
 
-export async function registerContact({
-	token,
-	name,
-	email = '',
-	phone,
-	username,
-	customFields = {},
-	contactManager,
-}: RegisterContactProps): Promise<string> {
+export async function registerContact(
+	{ token, name, email = '', phone, username, customFields = {}, contactManager }: RegisterContactProps,
+	userId: string,
+): Promise<string> {
 	if (!token || typeof token !== 'string') {
 		throw new MeteorError('error-invalid-contact-data', 'Invalid visitor token');
 	}
@@ -98,7 +93,7 @@ export async function registerContact({
 
 	await LivechatVisitors.updateOne({ _id: visitorId }, updateUser);
 
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId });
 	const rooms: IOmnichannelRoom[] = await LivechatRooms.findByVisitorId(visitorId, {}, extraQuery).toArray();
 
 	if (rooms?.length) {

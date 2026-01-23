@@ -7,8 +7,9 @@ import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
+import { isOutgoingIntegration } from '../../../app/integrations/server/lib/definition';
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
-import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
+import { notifyGuestStatusChanged } from '../../../app/livechat/server/lib/guests';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { metrics } from '../../../app/metrics/server';
 import notifications from '../../../app/notifications/server/lib/Notifications';
@@ -17,6 +18,7 @@ import { use } from '../../../app/settings/server/Middleware';
 import { setValue, updateValue } from '../../../app/settings/server/raw';
 import { getURL } from '../../../app/utils/server/getURL';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { ListenersModule } from '../../modules/listeners/listeners.module';
 
 type Callbacks = {
@@ -202,12 +204,12 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		this.onEvent('watch.integrations', async ({ clientAction, id, data }) => {
 			switch (clientAction) {
 				case 'inserted':
-					if (data.type === 'webhook-outgoing') {
+					if (isOutgoingIntegration(data)) {
 						triggerHandler.addIntegration(data);
 					}
 					break;
 				case 'updated':
-					if (data.type === 'webhook-outgoing') {
+					if (isOutgoingIntegration(data)) {
 						triggerHandler.removeIntegration(data);
 						triggerHandler.addIntegration(data);
 					}
@@ -231,7 +233,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		}
 	}
 
-	async started(): Promise<void> {
+	override async started(): Promise<void> {
 		// Even after server startup, client versions might not be updated yet, the only way
 		// to make sure we can send the most up to date versions is using the publication below.
 		// Since it receives each document one at a time, we have to store them to be able to send
@@ -262,26 +264,37 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		return LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray();
 	}
 
-	async callMethodWithToken(userId: string, token: string, method: string, args: any[]): Promise<void | any> {
+	async callMethodWithToken(
+		userId: string,
+		token: string,
+		method: string,
+		args: any[],
+	): Promise<{
+		result: unknown;
+	}> {
 		const user = await Users.findOneByIdAndLoginHashedToken(userId, token, {
 			projection: { _id: 1 },
 		});
 		if (!user) {
 			return {
-				result: Meteor.callAsync(method, ...args),
+				result: await Meteor.callAsync(method, ...args),
 			};
 		}
 
 		return {
-			result: Meteor.runAsUser(userId, () => Meteor.callAsync(method, ...args)),
+			result: await Meteor.runAsUser(userId, () => Meteor.callAsync(method, ...args)),
 		};
 	}
 
 	async notifyGuestStatusChanged(token: string, status: UserStatus): Promise<void> {
-		return Livechat.notifyGuestStatusChanged(token, status);
+		return notifyGuestStatusChanged(token, status);
 	}
 
 	async getURL(path: string, params: Record<string, any> = {}, cloudDeepLinkUrl?: string): Promise<string> {
 		return getURL(path, params, cloudDeepLinkUrl);
+	}
+
+	async getMessageURLToReplyTo(roomType: string, roomId: string, messageIdToReplyTo: string): Promise<string> {
+		return getURL(`${roomCoordinator.getRouteLink(roomType, { rid: roomId })}?msg=${messageIdToReplyTo}`, { full: true });
 	}
 }

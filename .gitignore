@@ -55,7 +55,10 @@ storybook-static
 **/.vim/
 
 data/
+!**/tests/data/
 registration.yaml
 
 storybook-static
 development/tempo-data/
+
+.env

@@ -5,7 +5,7 @@ import { Roles } from '@rocket.chat/models';
 import { capitalize } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../../app/settings/server';
-import { callbacks } from '../../../lib/callbacks';
+import { callbacks } from '../../../server/lib/callbacks';
 import { OAuthEEManager } from '../lib/oauth/Manager';
 import { syncUserRoles } from '../lib/syncUserRoles';
 

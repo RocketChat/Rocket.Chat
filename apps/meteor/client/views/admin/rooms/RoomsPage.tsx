@@ -1,20 +1,21 @@
-import { useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarDialog, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EditRoomWithData from './EditRoomWithData';
 import RoomsTable from './RoomsTable';
-import { ContextualbarDialog } from '../../../components/Contextualbar';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const RoomsPage = (): ReactElement => {
 	const { t } = useTranslation();
-
+	const router = useRouter();
 	const id = useRouteParameter('id');
 	const context = useRouteParameter('context');
 
 	const reloadRef = useRef(() => null);
+	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/admin/rooms'));
 
 	return (
 		<Page flexDirection='row'>
@@ -25,8 +26,8 @@ const RoomsPage = (): ReactElement => {
 				</PageContent>
 			</Page>
 			{context && (
-				<ContextualbarDialog>
-					<EditRoomWithData rid={id} onReload={reloadRef.current} />
+				<ContextualbarDialog onClose={handleCloseContextualbar}>
+					<EditRoomWithData rid={id} onReload={reloadRef.current} onClose={handleCloseContextualbar} />
 				</ContextualbarDialog>
 			)}
 		</Page>

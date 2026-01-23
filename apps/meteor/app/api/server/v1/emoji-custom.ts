@@ -2,12 +2,14 @@ import { Media } from '@rocket.chat/core-services';
 import type { IEmojiCustom } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
 import { isEmojiCustomList } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import type { EmojiData } from '../../../emoji-custom/server/lib/insertOrUpdateEmoji';
 import { insertOrUpdateEmoji } from '../../../emoji-custom/server/lib/insertOrUpdateEmoji';
 import { uploadEmojiCustomWithBuffer } from '../../../emoji-custom/server/lib/uploadEmojiCustom';
+import { deleteEmojiCustom } from '../../../emoji-custom/server/methods/deleteEmojiCustom';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -78,10 +80,18 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, query } = await this.parseJsonQuery();
+			const { name } = this.queryParams;
 
 			return API.v1.success(
 				await findEmojisCustom({
-					query,
+					query: name
+						? {
+								name: {
+									$regex: escapeRegExp(name),
+									$options: 'i',
+								},
+							}
+						: query,
 					pagination: {
 						offset,
 						count,
@@ -203,7 +213,7 @@ API.v1.addRoute(
 				return API.v1.failure('The "emojiId" params is required!');
 			}
 
-			await Meteor.callAsync('deleteEmojiCustom', emojiId);
+			await deleteEmojiCustom(this.userId, emojiId);
 
 			return API.v1.success();
 		},

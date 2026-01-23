@@ -12,7 +12,7 @@ export const createAuxContext = async (
 	await page.goto(route);
 
 	if (waitForMainContent) {
-		await page.locator('.main-content').waitFor();
+		await page.locator('#main-content').waitFor();
 	}
 
 	return { page };

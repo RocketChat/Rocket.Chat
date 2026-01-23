@@ -13,9 +13,11 @@ import type {
 	DeleteOptions,
 	CountDocumentsOptions,
 	WithId,
+	ClientSession,
 } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection } from '../types/DocumentWithProjection';
 
 export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	getBadgeCount(uid: string): Promise<number>;
@@ -32,7 +34,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
-	countByRoomIdAndUserId(rid: string, uid: string | undefined): Promise<number>;
+	countByRoomIdAndUserId(rid: string, uid: string | undefined, includeInvitations?: boolean): Promise<number>;
 
 	countUnarchivedByRoomId(rid: string): Promise<number>;
 
@@ -215,6 +217,13 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		typeException: ISubscription['t'],
 		options?: FindOptions<ISubscription>,
 	): FindCursor<ISubscription>;
+
+	findByRoomIdAndRoles<P extends Document = ISubscription, O extends FindOptions<P> = FindOptions<P>>(
+		roomId: string,
+		roles: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<P, O>>;
+
 	findByRoomIdAndRoles(roomId: string, roles: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	findByRoomIdAndUserIds(
 		roomId: ISubscription['rid'],
@@ -238,7 +247,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite?: boolean): Promise<UpdateResult>;
 	hideByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	findByRoomIdWhenUserIdExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
-	updateNameAndFnameById(_id: string, name: string, fname: string): Promise<UpdateResult | Document>;
+	updateNameAndFnameById(_id: string, name: string, fname: string, options?: { session?: ClientSession }): Promise<UpdateResult | Document>;
 	setUserUsernameByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 	updateFnameByRoomId(rid: string, fname: string): Promise<UpdateResult | Document>;
 	updateDisplayNameByRoomId(roomId: string, fname: string): Promise<UpdateResult | Document>;
@@ -320,10 +329,14 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number>;
 	countByRoomId(roomId: string, options?: CountDocumentsOptions): Promise<number>;
-	countByUserId(userId: string): Promise<number>;
+	countByUserIdExceptType(userId: string, typeException: ISubscription['t']): Promise<number>;
 	openByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number>;
 	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<null | WithId<ISubscription>>;
 	countUsersInRoles(roles: IRole['_id'][], rid: IRoom['_id'] | undefined): Promise<number>;
+	findUserFederatedRoomIds(userId: IUser['_id']): AggregationCursor<{ _id: IRoom['_id']; externalRoomId: string }>;
+	findInvitedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<ISubscription | null>;
+	acceptInvitationById(subscriptionId: ISubscription['_id']): Promise<UpdateResult>;
+	setAbacLastTimeCheckedByUserIdAndRoomId(userId: string, roomId: string, time: Date): Promise<UpdateResult>;
 }

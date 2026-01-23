@@ -1,9 +1,9 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { HeaderState } from '@rocket.chat/ui-client';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
-import { HeaderState } from '../../../../components/Header';
 import { useUserIsSubscribed } from '../../contexts/RoomContext';
 import { useToggleFavoriteMutation } from '../../hooks/useToggleFavoriteMutation';
 
@@ -33,8 +33,7 @@ const Favorite = ({ room: { _id, f: favorite = false, t: type, name } }: { room:
 			title={favoriteLabel}
 			icon={favorite ? 'star-filled' : 'star'}
 			onClick={handleFavoriteClick}
-			color={favorite ? 'status-font-on-warning' : null}
-			tiny
+			color={favorite ? 'status-font-on-warning' : undefined}
 		/>
 	);
 };

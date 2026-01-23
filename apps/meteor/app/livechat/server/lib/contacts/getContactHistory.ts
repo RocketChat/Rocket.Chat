@@ -32,7 +32,7 @@ export const getContactHistory = makeFunction(
 	async (params: GetContactHistoryParams): Promise<PaginatedResult<{ history: VisitorSearchChatsResult[] }>> => {
 		const { contactId, count, offset, sort } = params;
 
-		const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id'>>(contactId, { projection: { _id: 1 } });
+		const contact = await LivechatContacts.findOneEnabledById<Pick<ILivechatContact, '_id'>>(contactId, { projection: { _id: 1 } });
 
 		if (!contact) {
 			throw new Error('error-contact-not-found');

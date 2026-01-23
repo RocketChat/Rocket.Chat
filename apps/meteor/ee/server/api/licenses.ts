@@ -60,7 +60,7 @@ API.v1.addRoute(
 				_id: this.userId,
 				username: this.user.username!,
 				ip: this.requestIp,
-				useragent: this.request.headers['user-agent'] || '',
+				useragent: this.request.headers.get('user-agent') || '',
 			});
 
 			(await auditSettingOperation(Settings.updateValueById, 'Enterprise_License', license)).modifiedCount &&

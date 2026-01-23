@@ -5,6 +5,9 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { slashCommands } from '../../app/utils/client/slashCommand';
+import { appsQueryKeys } from '../lib/queryKeys';
+
+type SlashCommandBasicInfo = Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview' | 'appId'>;
 
 export const useAppSlashCommands = () => {
 	const queryClient = useQueryClient();
@@ -15,7 +18,7 @@ export const useAppSlashCommands = () => {
 	const invalidate = useDebouncedCallback(
 		() => {
 			queryClient.invalidateQueries({
-				queryKey: ['apps', 'slashCommands'],
+				queryKey: appsQueryKeys.slashCommands(),
 			});
 		},
 		100,
@@ -27,43 +30,52 @@ export const useAppSlashCommands = () => {
 			return;
 		}
 		return apps('apps', ([key, [command]]) => {
-			if (['command/added', 'command/updated', 'command/disabled', 'command/removed'].includes(key)) {
-				if (typeof command === 'string') {
-					delete slashCommands.commands[command];
-				}
-				invalidate();
+			if (!key.startsWith('command/')) {
+				return;
 			}
+
+			if (['command/removed', 'command/disabled'].includes(key) && typeof command === 'string') {
+				delete slashCommands.commands[command];
+			}
+
+			invalidate();
 		});
 	}, [apps, uid, invalidate]);
 
 	const getSlashCommands = useEndpoint('GET', '/v1/commands.list');
 
 	const { data } = useQuery({
-		queryKey: ['apps', 'slashCommands'] as const,
-		queryFn: async () => {
-			let allCommands: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview' | 'appId'>[] = [];
-			let hasMore = true;
-			let offset = 0;
-			const count = 50;
-
-			while (hasMore) {
-				// eslint-disable-next-line no-await-in-loop
-				const { commands, total } = await getSlashCommands({ offset, count });
-				allCommands = allCommands.concat(commands);
-				hasMore = allCommands.length < total;
-				offset += count;
-			}
-
-			return allCommands;
-		},
+		queryKey: appsQueryKeys.slashCommands(),
 		enabled: !!uid,
+		structuralSharing: false,
+		queryFn: async () => {
+			const fetchBatch = async (currentOffset: number, accumulator: SlashCommandBasicInfo[] = []): Promise<SlashCommandBasicInfo[]> => {
+				const count = 50;
+				const { commands, total } = await getSlashCommands({ offset: currentOffset, count });
+
+				const newAccumulator = [...accumulator, ...commands];
+
+				if (newAccumulator.length < total) {
+					return fetchBatch(currentOffset + count, newAccumulator);
+				}
+
+				return newAccumulator;
+			};
+
+			return fetchBatch(0);
+		},
 	});
 
-	useEffect(() => {
-		if (!data) {
-			return;
-		}
-
-		data.forEach((command) => slashCommands.add(command));
-	}, [data]);
+	/**
+	 * We're deliberately not using `useEffect` here because we want the forEach to run on every call
+	 *
+	 * What we considered:
+	 *
+	 * 1. Slash command list is really small (< 100 items)
+	 * 2. `slashCommands.add` is idempotent
+	 * 3. `slashCommands.add` doesn't trigger re-renders
+	 *
+	 * @TODO the `slashCommands` singleton should be refactored to fit the React data flow
+	 */
+	data?.forEach((command) => slashCommands.add(command));
 };

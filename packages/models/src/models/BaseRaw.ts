@@ -26,6 +26,7 @@ import type {
 	DeleteOptions,
 	FindOneAndDeleteOptions,
 	CountDocumentsOptions,
+	ClientSession,
 } from 'mongodb';
 
 import { getCollectionName, UpdaterImpl } from '..';
@@ -43,7 +44,6 @@ type ModelOptions = {
 	preventSetUpdatedAt?: boolean;
 	collectionNameResolver?: (name: string) => string;
 	collection?: CollectionOptions;
-	_updatedAtIndexOptions?: Omit<IndexDescription, 'key'>;
 };
 
 export abstract class BaseRaw<
@@ -52,7 +52,7 @@ export abstract class BaseRaw<
 	TDeleted extends RocketChatRecordDeleted<T> = RocketChatRecordDeleted<T>,
 > implements IBaseModel<T, C, TDeleted>
 {
-	public readonly defaultFields: C | undefined;
+	protected defaultFields: C | undefined;
 
 	public readonly col: Collection<T>;
 
@@ -73,7 +73,7 @@ export abstract class BaseRaw<
 		private db: Db,
 		protected name: string,
 		protected trash?: Collection<TDeleted>,
-		private options?: ModelOptions,
+		options?: ModelOptions,
 	) {
 		this.collectionName = options?.collectionNameResolver ? options.collectionNameResolver(name) : getCollectionName(name);
 
@@ -90,9 +90,6 @@ export abstract class BaseRaw<
 
 	public async createIndexes() {
 		const indexes = this.modelIndexes();
-		if (this.options?._updatedAtIndexOptions) {
-			indexes?.push({ ...this.options._updatedAtIndexOptions, key: { _updatedAt: 1 } });
-		}
 
 		if (indexes?.length) {
 			if (this.pendingIndexes) {
@@ -176,6 +173,14 @@ export abstract class BaseRaw<
 
 	public findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<WithId<T> | null> {
 		this.setUpdatedAt(update);
+
+		if (options?.upsert && !('_id' in update || (update.$set && '_id' in update.$set)) && !('_id' in query)) {
+			update.$setOnInsert = {
+				...(update.$setOnInsert || {}),
+				_id: new ObjectId().toHexString(),
+			} as Partial<T> & { _id: string };
+		}
+
 		return this.col.findOneAndUpdate(query, update, options || {});
 	}
 
@@ -243,9 +248,15 @@ export abstract class BaseRaw<
 		return this[operation](filter, update, options);
 	}
 
-	updateOne(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<UpdateResult> {
+	updateOne(filter: Filter<T>, update: UpdateFilter<T>, options?: UpdateOptions): Promise<UpdateResult> {
 		this.setUpdatedAt(update);
 		if (options) {
+			if (options.upsert && !('_id' in update || (update.$set && '_id' in update.$set)) && !('_id' in filter)) {
+				update.$setOnInsert = {
+					...(update.$setOnInsert || {}),
+					_id: new ObjectId().toHexString(),
+				} as Partial<T> & { _id: string };
+			}
 			return this.col.updateOne(filter, update, options);
 		}
 		return this.col.updateOne(filter, update);
@@ -285,8 +296,8 @@ export abstract class BaseRaw<
 		return this.col.insertOne(doc as unknown as OptionalUnlessRequiredId<T>, options || {});
 	}
 
-	removeById(_id: T['_id']): Promise<DeleteResult> {
-		return this.deleteOne({ _id } as Filter<T>);
+	removeById(_id: T['_id'], options?: { session?: ClientSession }): Promise<DeleteResult> {
+		return this.deleteOne({ _id } as Filter<T>, { session: options?.session });
 	}
 
 	removeByIds(ids: T['_id'][]): Promise<DeleteResult> {

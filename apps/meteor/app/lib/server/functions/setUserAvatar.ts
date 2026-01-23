@@ -5,8 +5,10 @@ import { Users } from '@rocket.chat/models';
 import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
+import type { ClientSession } from 'mongodb';
 
 import { checkUrlForSsrf } from './checkUrlForSsrf';
+import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFile } from '../../../file/server';
@@ -68,6 +70,7 @@ export function setUserAvatar(
 	service: 'rest',
 	etag?: string,
 	updater?: Updater<IUser>,
+	session?: ClientSession,
 ): Promise<void>;
 export function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,
@@ -76,6 +79,7 @@ export function setUserAvatar(
 	service?: 'initials' | 'url' | 'rest' | string,
 	etag?: string,
 	updater?: Updater<IUser>,
+	session?: ClientSession,
 ): Promise<void>;
 export async function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,
@@ -84,12 +88,13 @@ export async function setUserAvatar(
 	service?: 'initials' | 'url' | 'rest' | string,
 	etag?: string,
 	updater?: Updater<IUser>,
+	session?: ClientSession,
 ): Promise<void> {
 	if (service === 'initials') {
 		if (updater) {
 			updater.set('avatarOrigin', origin);
 		} else {
-			await Users.setAvatarData(user._id, service, null);
+			await Users.setAvatarData(user._id, service, null, { session });
 		}
 		return;
 	}
@@ -109,7 +114,11 @@ export async function setUserAvatar(
 			try {
 				response = await fetch(dataURI, { redirect: 'error' });
 			} catch (e) {
-				SystemLogger.info(`Not a valid response, from the avatar url: ${encodeURI(dataURI)}`);
+				SystemLogger.info({
+					msg: 'Not a valid response from the avatar url',
+					url: encodeURI(dataURI),
+					err: e,
+				});
 				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${encodeURI(dataURI)}`, {
 					function: 'setUserAvatar',
 					url: dataURI,
@@ -118,7 +127,12 @@ export async function setUserAvatar(
 
 			if (response.status !== 200) {
 				if (response.status !== 404) {
-					SystemLogger.info(`Error while handling the setting of the avatar from a url (${encodeURI(dataURI)}) for ${user.username}`);
+					SystemLogger.info({
+						msg: 'Error while handling the setting of the avatar from a url',
+						url: encodeURI(dataURI),
+						username: user.username,
+						status: response.status,
+					});
 					throw new Meteor.Error(
 						'error-avatar-url-handling',
 						`Error while handling avatar setting from a URL (${encodeURI(dataURI)}) for ${user.username}`,
@@ -126,7 +140,11 @@ export async function setUserAvatar(
 					);
 				}
 
-				SystemLogger.info(`Not a valid response, ${response.status}, from the avatar url: ${dataURI}`);
+				SystemLogger.info({
+					msg: 'Not a valid response from the avatar url',
+					status: response.status,
+					url: dataURI,
+				});
 				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
 					function: 'setUserAvatar',
 					url: dataURI,
@@ -134,9 +152,11 @@ export async function setUserAvatar(
 			}
 
 			if (!/image\/.+/.test(response.headers.get('content-type') || '')) {
-				SystemLogger.info(
-					`Not a valid content-type from the provided url, ${response.headers.get('content-type')}, from the avatar url: ${dataURI}`,
-				);
+				SystemLogger.info({
+					msg: 'Not a valid content-type from the provided avatar url',
+					contentType: response.headers.get('content-type'),
+					url: dataURI,
+				});
 				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
 					function: 'setUserAvatar',
 					url: dataURI,
@@ -171,7 +191,7 @@ export async function setUserAvatar(
 	})();
 
 	const fileStore = FileUpload.getStore('Avatars');
-	user.username && (await fileStore.deleteByName(user.username));
+	user.username && (await fileStore.deleteByName(user.username, { session }));
 
 	const file = {
 		userId: user._id,
@@ -179,23 +199,24 @@ export async function setUserAvatar(
 		size: buffer.length,
 	};
 
-	const result = await fileStore.insert(file, buffer);
+	const result = await fileStore.insert(file, buffer, { session });
 
 	const avatarETag = etag || result?.etag || '';
 
-	setTimeout(async () => {
-		if (service) {
-			if (updater) {
-				updater.set('avatarOrigin', origin);
-				updater.set('avatarETag', avatarETag);
-			} else {
-				await Users.setAvatarData(user._id, service, avatarETag);
-			}
+	if (service) {
+		if (updater) {
+			updater.set('avatarOrigin', origin);
+			updater.set('avatarETag', avatarETag);
+		} else {
+			// TODO: Why was this timeout added?
+			setTimeout(async () => Users.setAvatarData(user._id, service, avatarETag, { session }), 500);
+		}
 
+		await onceTransactionCommitedSuccessfully(async () => {
 			void api.broadcast('user.avatarUpdate', {
 				username: user.username,
 				avatarETag,
 			});
-		}
-	}, 500);
+		}, session);
+	}
 }

@@ -1,4 +1,4 @@
 export enum MarketplacePurchaseType {
-    PurchaseTypeBuy = 'buy',
-    PurchaseTypeSubscription = 'subscription',
+	PurchaseTypeBuy = 'buy',
+	PurchaseTypeSubscription = 'subscription',
 }

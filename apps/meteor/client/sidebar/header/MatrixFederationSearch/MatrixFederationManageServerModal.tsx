@@ -1,9 +1,25 @@
-import { Divider, Modal, ButtonGroup, Button, Field, FieldLabel, FieldRow, FieldError, FieldHint, TextInput } from '@rocket.chat/fuselage';
+import {
+	Divider,
+	Modal,
+	ButtonGroup,
+	Button,
+	Field,
+	TextInput,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldHint,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+} from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { FormEvent } from 'react';
-import { useId, useState } from 'react';
+import { useState } from 'react';
 
 import MatrixFederationRemoveServerList from './MatrixFederationRemoveServerList';
 import MatrixFederationSearch from './MatrixFederationSearch';
@@ -61,21 +77,17 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 
 	const { data, isPending: isLoadingServerList } = useMatrixServerList();
 
-	const titleId = useId();
-	const serverNameId = useId();
-
 	return (
-		<Modal maxHeight='x600' open aria-labelledby={titleId}>
-			<Modal.Header>
-				<Modal.Title id={titleId}>{t('Manage_servers')}</Modal.Title>
-				<Modal.Close onClick={onClickClose} />
-			</Modal.Header>
-			<Modal.Content>
+		<Modal maxHeight='x600'>
+			<ModalHeader>
+				<ModalTitle>{t('Manage_servers')}</ModalTitle>
+				<ModalClose onClick={onClickClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Field>
-					<FieldLabel htmlFor={serverNameId}>{t('Server_name')}</FieldLabel>
+					<FieldLabel>{t('Server_name')}</FieldLabel>
 					<FieldRow>
 						<TextInput
-							id={serverNameId}
 							disabled={isPending}
 							value={serverName}
 							onChange={(e: FormEvent<HTMLInputElement>) => {
@@ -86,7 +98,7 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 							}}
 							mie={4}
 						/>
-						<Button primary loading={isPending} onClick={() => addServer()}>
+						<Button onClick={() => addServer()} primary loading={isPending}>
 							{t('Add')}
 						</Button>
 					</FieldRow>
@@ -95,12 +107,12 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 				</Field>
 				<Divider mb={16} />
 				{!isLoadingServerList && data?.servers && <MatrixFederationRemoveServerList servers={data.servers} />}
-			</Modal.Content>
-			<Modal.Footer>
+			</ModalContent>
+			<ModalFooter>
 				<ButtonGroup>
 					<Button onClick={onClickClose}>{t('Cancel')}</Button>
 				</ButtonGroup>
-			</Modal.Footer>
+			</ModalFooter>
 		</Modal>
 	);
 };

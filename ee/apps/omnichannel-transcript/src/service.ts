@@ -1,9 +1,11 @@
 import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import { registerServiceModels } from '@rocket.chat/models';
-import { broker } from '@rocket.chat/network-broker';
+import { startBroker } from '@rocket.chat/network-broker';
 import { startTracing } from '@rocket.chat/tracing';
 import polka from 'polka';
+
+import { i18n } from './i18n';
 
 const PORT = process.env.PORT || 3036;
 
@@ -14,12 +16,12 @@ const PORT = process.env.PORT || 3036;
 
 	registerServiceModels(db, await getTrashCollection());
 
-	api.setBroker(broker);
+	api.setBroker(startBroker());
 
 	// need to import service after models are registered
 	const { OmnichannelTranscript } = await import('@rocket.chat/omnichannel-services');
 
-	api.registerService(new OmnichannelTranscript(Logger), ['queue-worker']);
+	api.registerService(new OmnichannelTranscript(Logger, i18n), ['queue-worker']);
 
 	await api.start();
 

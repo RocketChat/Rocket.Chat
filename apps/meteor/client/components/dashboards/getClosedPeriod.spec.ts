@@ -1,101 +1,62 @@
 import { getClosedPeriod } from './periods';
 
-jest.mock('moment', () => {
-	return () => jest.requireActual('moment')('2024-05-19T12:00:00.000Z');
-});
+jest.useFakeTimers();
+jest.setSystemTime(Date.parse('2024-05-19T12:00:00.000Z'));
 
 it('should return the correct period range for this month', () => {
-	const monthExpectedReturn = {
-		start: new Date('5/1/2024').toISOString().split('T')[0],
-		end: new Date('5/19/2024').toISOString().split('T')[0],
-	};
-
 	const period = getClosedPeriod({ startOf: 'month' })(true);
 
-	expect(period.start.toISOString().split('T')[0]).toEqual(monthExpectedReturn.start);
-	expect(period.end.toISOString().split('T')[0]).toEqual(monthExpectedReturn.end);
+	expect(period.start).toEqual(new Date('2024-05-01T00:00:00.000Z'));
+	expect(period.end).toEqual(new Date('2024-05-19T23:59:59.999Z'));
 });
 
 it('should return the correct period range for this year', () => {
-	const yearExpectedReturn = {
-		start: new Date('1/1/2024').toISOString().split('T')[0],
-		end: new Date('5/19/2024').toISOString().split('T')[0],
-	};
-
 	const period = getClosedPeriod({ startOf: 'year' })(true);
 
-	expect(period.start.toISOString().split('T')[0]).toEqual(yearExpectedReturn.start);
-	expect(period.end.toISOString().split('T')[0]).toEqual(yearExpectedReturn.end);
+	expect(period.start).toEqual(new Date('2024-01-01T00:00:00.000Z'));
+	expect(period.end).toEqual(new Date('2024-05-19T23:59:59.999Z'));
 });
 
 it('should return the correct period range for last 6 months', () => {
-	const last6MonthsExpectedReturn = {
-		start: new Date('11/1/2023').toISOString().split('T')[0],
-		end: new Date('5/19/2024').toISOString().split('T')[0],
-	};
-
 	const period = getClosedPeriod({ startOf: 'month', subtract: { amount: 6, unit: 'months' } })(true);
 
-	expect(period.start.toISOString().split('T')[0]).toEqual(last6MonthsExpectedReturn.start);
-	expect(period.end.toISOString().split('T')[0]).toEqual(last6MonthsExpectedReturn.end);
+	expect(period.start).toEqual(new Date('2023-11-01T00:00:00.000Z'));
+	expect(period.end).toEqual(new Date('2024-05-19T23:59:59.999Z'));
 });
 
 it('should return the correct period range for this week', () => {
-	const weekExpectedReturn = {
-		start: new Date('5/19/2024').toISOString().split('T')[0],
-		end: new Date('5/19/2024').toISOString().split('T')[0],
-	};
-
 	const period = getClosedPeriod({ startOf: 'week' })(true);
 
-	expect(period.start.toISOString().split('T')[0]).toEqual(weekExpectedReturn.start);
-	expect(period.end.toISOString().split('T')[0]).toEqual(weekExpectedReturn.end);
+	expect(period.start).toEqual(new Date('2024-05-19T00:00:00.000Z'));
+	expect(period.end).toEqual(new Date('2024-05-19T23:59:59.999Z'));
 });
 
-it('should return the correct period range for this month using local time', () => {
-	const monthExpectedReturn = {
-		start: new Date('5/1/2024').toISOString().split('T')[0],
-		end: new Date('5/19/2024').toISOString().split('T')[0],
-	};
+describe('using local time', () => {
+	it('should return the correct period range for this month', () => {
+		const period = getClosedPeriod({ startOf: 'month' })(false);
 
-	const period = getClosedPeriod({ startOf: 'month' })(false);
+		expect(period.start).toEqual(new Date('2024-05-01T00:00:00.000'));
+		expect(period.end).toEqual(new Date('2024-05-19T23:59:59.999'));
+	});
 
-	expect(period.start.toISOString().split('T')[0]).toEqual(monthExpectedReturn.start);
-	expect(period.end.toISOString().split('T')[0]).toEqual(monthExpectedReturn.end);
-});
+	it('should return the correct period range for this year', () => {
+		const period = getClosedPeriod({ startOf: 'year' })(false);
 
-it('should return the correct period range for this year using local time', () => {
-	const yearExpectedReturn = {
-		start: new Date('1/1/2024').toISOString().split('T')[0],
-		end: new Date('5/19/2024').toISOString().split('T')[0],
-	};
+		expect(period.start).toEqual(new Date('2024-01-01T00:00:00.000'));
+		expect(period.end).toEqual(new Date('2024-05-19T23:59:59.999'));
+	});
 
-	const period = getClosedPeriod({ startOf: 'year' })(false);
+	it('should return the correct period range for last 6 months', () => {
+		const period = getClosedPeriod({ startOf: 'month', subtract: { amount: 6, unit: 'months' } })(false);
 
-	expect(period.start.toISOString().split('T')[0]).toEqual(yearExpectedReturn.start);
-	expect(period.end.toISOString().split('T')[0]).toEqual(yearExpectedReturn.end);
-});
+		expect(period.start).toEqual(new Date('2023-11-01T00:00:00.000'));
+		expect(period.end).toEqual(new Date('2024-05-19T23:59:59.999'));
+	});
 
-it('should return the correct period range for last 6 months using local time', () => {
-	const last6MonthsExpectedReturn = {
-		start: new Date('11/1/2023').toISOString().split('T')[0],
-		end: new Date('5/19/2024').toISOString().split('T')[0],
-	};
+	it('should return the correct period range for this week', () => {
+		const period = getClosedPeriod({ startOf: 'week' })(false);
 
-	const period = getClosedPeriod({ startOf: 'month', subtract: { amount: 6, unit: 'months' } })(true);
-
-	expect(period.start.toISOString().split('T')[0]).toEqual(last6MonthsExpectedReturn.start);
-	expect(period.end.toISOString().split('T')[0]).toEqual(last6MonthsExpectedReturn.end);
-});
-
-it('should return the correct period range for this week using local time', () => {
-	const weekExpectedReturn = {
-		start: new Date('5/19/2024').toISOString().split('T')[0],
-		end: new Date('5/19/2024').toISOString().split('T')[0],
-	};
-
-	const period = getClosedPeriod({ startOf: 'week' })(false);
-
-	expect(period.start.toISOString().split('T')[0]).toEqual(weekExpectedReturn.start);
-	expect(period.end.toISOString().split('T')[0]).toEqual(weekExpectedReturn.end);
+		expect(period.start).toEqual(new Date('2024-05-19T00:00:00.000'));
+		expect(period.end).toEqual(new Date('2024-05-19T23:59:59.999'));
+	});
 });

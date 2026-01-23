@@ -1,7 +1,6 @@
-import { Readable } from 'stream';
+import { ReadableStream } from 'stream/web';
 
 import { expect } from 'chai';
-import type { Request } from 'express';
 
 import { getUploadFormData } from './getUploadFormData';
 
@@ -13,7 +12,8 @@ const createMockRequest = (
 		content: string | Buffer;
 		mimetype?: string;
 	},
-): Readable & { headers: Record<string, string> } => {
+	options: { simulateError?: boolean } = {},
+): Request => {
 	const boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW';
 	const parts: string[] = [];
 
@@ -33,18 +33,25 @@ const createMockRequest = (
 
 	parts.push(`--${boundary}--`);
 
-	const mockRequest: any = new Readable({
-		read() {
-			this.push(Buffer.from(parts.join('\r\n')));
-			this.push(null);
-		},
-	});
+	const buffer = Buffer.from(parts.join('\r\n'));
 
-	mockRequest.headers = {
-		'content-type': `multipart/form-data; boundary=${boundary}`,
+	const mockRequest: any = {
+		headers: {
+			entries: () => [['content-type', `multipart/form-data; boundary=${boundary}`]],
+		},
+		body: new ReadableStream({
+			async pull(controller) {
+				if (options.simulateError) {
+					controller.error(new Error('aborted'));
+					return;
+				}
+				controller.enqueue(buffer);
+				controller.close();
+			},
+		}),
 	};
 
-	return mockRequest as Readable & { headers: Record<string, string> };
+	return mockRequest as Request & { headers: Record<string, string> };
 };
 
 describe('getUploadFormData', () => {
@@ -59,7 +66,7 @@ describe('getUploadFormData', () => {
 			},
 		);
 
-		const result = await getUploadFormData({ request: mockRequest as Request }, { field: 'fileField' });
+		const result = await getUploadFormData({ request: mockRequest }, { field: 'fileField' });
 
 		expect(result).to.deep.include({
 			fieldname: 'fileField',
@@ -86,7 +93,7 @@ describe('getUploadFormData', () => {
 			},
 		);
 
-		const result = await getUploadFormData({ request: mockRequest as Request }, { field: 'fileField' });
+		const result = await getUploadFormData({ request: mockRequest }, { field: 'fileField' });
 
 		expect(result).to.deep.include({
 			fieldname: 'fileField',
@@ -114,7 +121,7 @@ describe('getUploadFormData', () => {
 			},
 		);
 
-		const result = await getUploadFormData({ request: mockRequest as Request }, { fileOptional: true });
+		const result = await getUploadFormData({ request: mockRequest }, { fileOptional: true });
 
 		expect(result).to.deep.include({
 			fieldname: 'fileField',
@@ -131,7 +138,7 @@ describe('getUploadFormData', () => {
 		const mockRequest = createMockRequest({ fieldName: 'fieldValue' });
 
 		try {
-			await getUploadFormData({ request: mockRequest as Request }, { fileOptional: false });
+			await getUploadFormData({ request: mockRequest }, { fileOptional: false });
 			throw new Error('Expected function to throw');
 		} catch (error) {
 			expect((error as Error).message).to.equal('[No file uploaded]');
@@ -141,7 +148,7 @@ describe('getUploadFormData', () => {
 	it('should return fields without errors when no file is uploaded but fileOptional is true', async () => {
 		const mockRequest = createMockRequest({ fieldName: 'fieldValue' }); // No file
 
-		const result = await getUploadFormData({ request: mockRequest as Request }, { fileOptional: true });
+		const result = await getUploadFormData({ request: mockRequest }, { fileOptional: true });
 
 		expect(result).to.deep.equal({
 			fields: { fieldName: 'fieldValue' },
@@ -167,12 +174,23 @@ describe('getUploadFormData', () => {
 
 		try {
 			await getUploadFormData(
-				{ request: mockRequest as Request },
+				{ request: mockRequest },
 				{ sizeLimit: 1024 * 1024 }, // 1 MB limit
 			);
 			throw new Error('Expected function to throw');
 		} catch (error) {
 			expect((error as Error).message).to.equal('[error-file-too-large]');
+		}
+	});
+
+	it('should handle an aborted request stream', async () => {
+		const mockRequest = createMockRequest({}, undefined, { simulateError: true });
+
+		try {
+			await getUploadFormData({ request: mockRequest }, { fileOptional: true });
+			throw new Error('Expected function to throw');
+		} catch (error) {
+			expect((error as Error).message).to.equal('aborted');
 		}
 	});
 });

@@ -1,7 +1,22 @@
 import type { IMessage, MessageReport, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
-import { Message, MessageName, MessageToolbarItem, MessageToolbarWrapper, MessageUsername } from '@rocket.chat/fuselage';
+import {
+	Message,
+	MessageDivider,
+	MessageLeftContainer,
+	MessageContainer,
+	MessageHeader,
+	MessageTimestamp,
+	MessageRole,
+	MessageBody,
+	MessageName,
+	MessageToolbar,
+	MessageToolbarItem,
+	MessageToolbarWrapper,
+	MessageUsername,
+} from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +27,6 @@ import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessage
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
-import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 import MessageReportInfo from '../MessageReportInfo';
 import useDeleteMessage from '../hooks/useDeleteMessage';
 import { useDismissMessageAction } from '../hooks/useDismissMessageAction';
@@ -53,22 +67,22 @@ const ContextMessage = ({
 
 	return (
 		<>
-			<Message.Divider>{formatDate(message._updatedAt)}</Message.Divider>
+			<MessageDivider>{formatDate(message._updatedAt)}</MessageDivider>
 			<Message>
-				<Message.LeftContainer>
+				<MessageLeftContainer>
 					<UserAvatar username={message.u.username} />
-				</Message.LeftContainer>
-				<Message.Container>
-					<Message.Header>
+				</MessageLeftContainer>
+				<MessageContainer>
+					<MessageHeader>
 						<MessageName>{displayName}</MessageName>
 						<>{useRealName && <MessageUsername>&nbsp;{`@${message.u.username}`}</MessageUsername>}</>
-						<Message.Timestamp title={formatDateAndTime(message._updatedAt)}>
+						<MessageTimestamp title={formatDateAndTime(message._updatedAt)}>
 							{formatTime(message._updatedAt !== message.ts ? message._updatedAt : message.ts)}
 							{message._updatedAt !== message.ts && ` (${t('edited')})`}
-						</Message.Timestamp>
-						<Message.Role>{room.name || room.fname || 'DM'}</Message.Role>
-					</Message.Header>
-					<Message.Body>
+						</MessageTimestamp>
+						<MessageRole>{room.name || room.fname || 'DM'}</MessageRole>
+					</MessageHeader>
+					<MessageBody>
 						{!!quotes?.length && <Attachments attachments={quotes} />}
 						{!message.blocks?.length && !!message.md?.length ? (
 							<>
@@ -83,13 +97,13 @@ const ContextMessage = ({
 
 						{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}
 						{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
-					</Message.Body>
+					</MessageBody>
 					<ReportReasonCollapsible>
 						<MessageReportInfo msgId={message._id} />
 					</ReportReasonCollapsible>
-				</Message.Container>
+				</MessageContainer>
 				<MessageToolbarWrapper>
-					<Message.Toolbar>
+					<MessageToolbar>
 						<MessageToolbarItem
 							icon='checkmark-circled'
 							title={t('Moderation_Dismiss_reports')}
@@ -97,7 +111,7 @@ const ContextMessage = ({
 						/>
 						<MessageToolbarItem icon='arrow-forward' title={t('Moderation_Go_to_message')} onClick={() => onRedirect(message._id)} />
 						<MessageToolbarItem disabled={deleted} icon='trash' title={t('Moderation_Delete_message')} onClick={() => deleteMessage()} />
-					</Message.Toolbar>
+					</MessageToolbar>
 				</MessageToolbarWrapper>
 			</Message>
 		</>

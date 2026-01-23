@@ -29,7 +29,7 @@ const mongoMock = {
 		}),
 	},
 };
-const livechatMock = { Livechat: { closeRoom: sinon.stub() } };
+const livechatMock = { closeRoom: sinon.stub() };
 const settingsMock = { settings: { get: sinon.stub() } };
 
 const { OmnichannelQueueInactivityMonitorClass } = proxyquire
@@ -41,7 +41,7 @@ const { OmnichannelQueueInactivityMonitorClass } = proxyquire
 		'@rocket.chat/models': modelsMock,
 		'meteor/meteor': meteorMock,
 		'meteor/mongo': mongoMock,
-		'../../../../../app/livechat/server/lib/LivechatTyped': livechatMock,
+		'../../../../../app/livechat/server/lib/closeRoom': livechatMock,
 		'../../../../../app/settings/server': settingsMock,
 		'../../../../../server/lib/i18n': { i18n: { t: sinon.stub().returns('Closed automatically') } },
 	});
@@ -154,7 +154,7 @@ describe('OmnichannelQueueInactivityMonitorClass', () => {
 		beforeEach(() => {
 			modelsMock.LivechatInquiry.findOneById.reset();
 			modelsMock.LivechatRooms.findOneById.reset();
-			livechatMock.Livechat.closeRoom.reset();
+			livechatMock.closeRoom.reset();
 		});
 		it('should ignore the inquiry if its not in queue anymore', async () => {
 			const qclass = new OmnichannelQueueInactivityMonitorClass();
@@ -162,7 +162,7 @@ describe('OmnichannelQueueInactivityMonitorClass', () => {
 
 			await qclass.closeRoom({ attrs: { data: { inquiryId: 'inquiryId' } } });
 			expect(modelsMock.LivechatInquiry.findOneById.calledWith('inquiryId')).to.be.true;
-			expect(livechatMock.Livechat.closeRoom.notCalled).to.be.true;
+			expect(livechatMock.closeRoom.notCalled).to.be.true;
 		});
 		it('should ignore an inquiry with no room', async () => {
 			const qclass = new OmnichannelQueueInactivityMonitorClass();
@@ -172,7 +172,7 @@ describe('OmnichannelQueueInactivityMonitorClass', () => {
 
 			expect(modelsMock.LivechatInquiry.findOneById.calledWith('inquiryId')).to.be.true;
 			expect(modelsMock.LivechatRooms.findOneById.calledWith('roomId')).to.be.true;
-			expect(livechatMock.Livechat.closeRoom.notCalled).to.be.true;
+			expect(livechatMock.closeRoom.notCalled).to.be.true;
 		});
 		it('should close a room', async () => {
 			const qclass = new OmnichannelQueueInactivityMonitorClass();
@@ -185,7 +185,7 @@ describe('OmnichannelQueueInactivityMonitorClass', () => {
 			expect(modelsMock.LivechatInquiry.findOneById.calledWith('inquiryId')).to.be.true;
 			expect(modelsMock.LivechatRooms.findOneById.calledWith('roomId')).to.be.true;
 			expect(
-				livechatMock.Livechat.closeRoom.calledWith(
+				livechatMock.closeRoom.calledWith(
 					sinon.match({
 						comment: 'Closed automatically',
 						room: { _id: 'roomId' },

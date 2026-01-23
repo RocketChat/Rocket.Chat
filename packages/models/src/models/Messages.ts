@@ -1,4 +1,3 @@
-import { OtrSystemMessagesValues } from '@rocket.chat/core-typings';
 import type {
 	ILivechatDepartment,
 	IMessage,
@@ -44,7 +43,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		super(db, 'message', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { rid: 1, ts: 1, _updatedAt: 1 } },
 			{ key: { ts: 1 } },
@@ -55,11 +54,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { expireAt: 1 }, expireAfterSeconds: 0 },
 			{ key: { msg: 'text' } },
 			{ key: { 'file._id': 1 }, sparse: true },
+			{ key: { 'files._id': 1 }, sparse: true },
 			{ key: { 'mentions.username': 1 }, sparse: true },
 			{ key: { pinned: 1 }, sparse: true },
 			{ key: { location: '2dsphere' } },
 			{ key: { slackTs: 1, slackBotId: 1 }, sparse: true },
 			{ key: { unread: 1 }, sparse: true },
+			{ key: { rid: 1, unread: 1, ts: 1, tmid: 1, tshow: 1 }, partialFilterExpression: { unread: { $exists: true } } },
 			{ key: { 'pinnedBy._id': 1 }, sparse: true },
 			{ key: { 'starred._id': 1 }, sparse: true },
 
@@ -506,7 +507,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	async countByType(type: IMessage['t'], options: CountDocumentsOptions): Promise<number> {
-		return this.col.countDocuments({ t: type }, options);
+		return this.countDocuments({ t: type }, options);
 	}
 
 	async countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number> {
@@ -604,6 +605,19 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne({ 'federation.eventId': federationEventId });
 	}
 
+	async findLatestFederationThreadMessageByTmid(tmid: string, messageId: IMessage['_id']): Promise<IMessage | null> {
+		return this.findOne(
+			{
+				'_id': { $ne: messageId },
+				tmid,
+				'federation.eventId': { $exists: true },
+			},
+			{
+				sort: { ts: -1 },
+			},
+		);
+	}
+
 	async setFederationEventIdById(_id: string, federationEventId: string): Promise<void> {
 		await this.updateOne(
 			{ _id },
@@ -695,17 +709,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateOne({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
 
-	deleteOldOTRMessages(roomId: string, ts: Date): Promise<DeleteResult> {
-		const query: Filter<IMessage> = {
-			rid: roomId,
-			t: {
-				$in: ['otr', ...OtrSystemMessagesValues],
-			},
-			ts: { $lte: ts },
-		};
-		return this.col.deleteMany(query);
-	}
-
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult> {
 		const updateObj: DeepWritable<UpdateFilter<IMessage>['$set']> = { translationProvider: providerName };
 		Object.keys(translations).forEach((key) => {
@@ -756,7 +759,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	// FIND
@@ -766,12 +769,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findFilesByUserId(userId: string, options: FindOptions<IMessage> = {}): FindCursor<Pick<IMessage, 'file'>> {
+	findFilesByUserId(userId: string, options: FindOptions<IMessage> = {}): FindCursor<Pick<IMessage, 'file' | 'files'>> {
 		const query = {
 			'u._id': userId,
-			'file._id': { $exists: true },
+			'$or': [{ 'file._id': { $exists: true } }, { 'files._id': { $exists: true } }],
 		};
-		return this.find(query, { projection: { 'file._id': 1 }, ...options });
+		return this.find(query, { projection: { 'file._id': 1, 'files._id': 1 }, ...options });
 	}
 
 	findFilesByRoomIdPinnedTimestampAndUsers(
@@ -786,14 +789,21 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const query: Filter<IMessage> = {
 			rid,
 			ts,
-			'file._id': { $exists: true },
+			$or: [
+				{
+					'file._id': { $exists: true },
+				},
+				{
+					'files._id': { $exists: true },
+				},
+			],
 			...(excludePinned ? { pinned: { $ne: true } } : {}),
 			...(ignoreThreads ? { tmid: { $exists: false }, tcount: { $exists: false } } : {}),
 			...(ignoreDiscussion ? { drid: { $exists: false } } : {}),
 			...(users.length ? { 'u.username': { $in: users } } : {}),
 		};
 
-		return this.find(query, { projection: { 'file._id': 1 }, ...options });
+		return this.find(query, options);
 	}
 
 	findDiscussionByRoomIdPinnedTimestampAndUsers(
@@ -1022,7 +1032,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				}),
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	async getLastTimestamp(options: FindOptions<IMessage> = { projection: { _id: 0, ts: 1 } }): Promise<Date | undefined> {
@@ -1512,7 +1522,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	getMessageByFileId(fileID: string): Promise<IMessage | null> {
-		return this.findOne({ 'file._id': fileID });
+		return this.findOne({
+			$or: [{ 'file._id': fileID }, { 'files._id': fileID }],
+		});
 	}
 
 	getMessageByFileIdAndUsername(fileID: string, userId: string): Promise<IMessage | null> {
@@ -1556,12 +1568,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	setThreadMessagesAsRead(tmid: string, until: Date): Promise<UpdateResult | Document> {
+	setThreadMessagesAsRead(rid: string, tmid: string, until: Date): Promise<UpdateResult | Document> {
 		return this.updateMany(
 			{
-				tmid,
+				rid,
 				unread: true,
 				ts: { $lt: until },
+				tmid,
 			},
 			{
 				$unset: {
@@ -1586,8 +1599,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>> {
 		const query = {
-			unread: true,
 			rid,
+			unread: true,
 			$or: [
 				{
 					tmid: { $exists: false },
@@ -1611,13 +1624,15 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	findUnreadThreadMessagesByDate(
+		rid: string,
 		tmid: string,
 		userId: string,
 		after: Date,
 	): FindCursor<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>> {
 		const query = {
-			'u._id': { $ne: userId },
+			rid,
 			'unread': true,
+			'u._id': { $ne: userId },
 			tmid,
 			'tshow': { $exists: false },
 			...(after && { ts: { $gt: after } }),
@@ -1664,7 +1679,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	// threads
 
 	countThreads(): Promise<number> {
-		return this.col.countDocuments({ tcount: { $exists: true } });
+		return this.countDocuments({ tcount: { $exists: true } });
 	}
 
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult> {
@@ -1771,7 +1786,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	decreaseReplyCountById(_id: string, inc = -1): Promise<IMessage | null> {
@@ -1782,5 +1797,49 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
+	}
+
+	removeFileAttachmentsByMessageIds(_ids: string[], replaceWith?: MessageAttachment) {
+		if (!_ids || _ids.length === 0) {
+			return Promise.resolve({ acknowledged: true, modifiedCount: 0, upsertedId: null, upsertedCount: 0, matchedCount: 0 });
+		}
+		const setAttachments = replaceWith
+			? {
+					$map: {
+						input: '$attachments',
+						as: 'att',
+						in: {
+							$cond: [{ $eq: ['$$att.type', 'file'] }, replaceWith, '$$att'],
+						},
+					},
+				}
+			: {
+					$filter: {
+						input: '$attachments',
+						as: 'att',
+						cond: { $ne: ['$$att.type', 'file'] },
+					},
+				};
+
+		return this.updateMany({ _id: { $in: _ids } }, [
+			{
+				$set: {
+					attachments: setAttachments,
+				},
+			},
+		]);
+	}
+
+	clearFilesByMessageIds(_ids: string[]) {
+		if (!_ids || _ids.length === 0) {
+			return Promise.resolve({ acknowledged: true, modifiedCount: 0, upsertedId: null, upsertedCount: 0, matchedCount: 0 });
+		}
+		return this.updateMany(
+			{ _id: { $in: _ids } },
+			{
+				$set: { files: [] },
+				$unset: { file: 1 },
+			},
+		);
 	}
 }

@@ -1,9 +1,9 @@
-import type { Readable } from 'stream';
+import { Readable } from 'stream';
+import { ReadableStream } from 'stream/web';
 
 import { MeteorError } from '@rocket.chat/core-services';
 import type { ValidateFunction } from 'ajv';
 import busboy from 'busboy';
-import type { Request } from 'express';
 
 import { getMimeType } from '../../../utils/lib/mimeTypes';
 
@@ -66,12 +66,16 @@ export async function getUploadFormData<
 		fileOptional?: boolean;
 	} = {},
 ): Promise<UploadResultWithOptionalFile<K>> {
+	if (!(request.body instanceof ReadableStream)) {
+		return Promise.reject(new MeteorError('Invalid request body'));
+	}
+
 	const limits = {
 		files: 1,
 		...(options.sizeLimit && options.sizeLimit > -1 && { fileSize: options.sizeLimit }),
 	};
 
-	const bb = busboy({ headers: request.headers, defParamCharset: 'utf8', limits });
+	const bb = busboy({ headers: Object.fromEntries(request.headers.entries()), defParamCharset: 'utf8', limits });
 	const fields = Object.create(null) as K;
 
 	let uploadedFile: UploadResultWithOptionalFile<K> | undefined = {
@@ -84,12 +88,7 @@ export async function getUploadFormData<
 		file: undefined,
 	};
 
-	let returnResult = (_value: UploadResultWithOptionalFile<K>) => {
-		// noop
-	};
-	let returnError = (_error?: Error | string | null | undefined) => {
-		// noop
-	};
+	const { promise: resultPromise, resolve, reject } = Promise.withResolvers<UploadResultWithOptionalFile<K>>();
 
 	function onField(fieldname: keyof K, value: K[keyof K]) {
 		fields[fieldname] = value;
@@ -97,15 +96,15 @@ export async function getUploadFormData<
 
 	function onEnd() {
 		if (!uploadedFile) {
-			return returnError(new MeteorError('No file or fields were uploaded'));
+			return reject(new MeteorError('No file or fields were uploaded'));
 		}
 		if (!options.fileOptional && !uploadedFile?.file) {
-			return returnError(new MeteorError('No file uploaded'));
+			return reject(new MeteorError('No file uploaded'));
 		}
 		if (options.validate !== undefined && !options.validate(fields)) {
-			return returnError(new MeteorError(`Invalid fields ${options.validate.errors?.join(', ')}`));
+			return reject(new MeteorError(`Invalid fields ${options.validate.errors?.join(', ')}`));
 		}
-		return returnResult(uploadedFile);
+		return resolve(uploadedFile);
 	}
 
 	function onFile(
@@ -115,7 +114,7 @@ export async function getUploadFormData<
 	) {
 		if (options.field && fieldname !== options.field) {
 			file.resume();
-			return returnError(new MeteorError('invalid-field'));
+			return reject(new MeteorError('invalid-field'));
 		}
 
 		const fileChunks: Uint8Array[] = [];
@@ -126,7 +125,7 @@ export async function getUploadFormData<
 		file.on('end', () => {
 			if (file.truncated) {
 				fileChunks.length = 0;
-				return returnError(new MeteorError('error-file-too-large'));
+				return reject(new MeteorError('error-file-too-large'));
 			}
 
 			uploadedFile = {
@@ -142,8 +141,6 @@ export async function getUploadFormData<
 	}
 
 	function cleanup() {
-		request.unpipe(bb);
-		request.on('readable', request.read.bind(request));
 		bb.removeAllListeners();
 	}
 
@@ -154,23 +151,23 @@ export async function getUploadFormData<
 	bb.on('finish', onEnd);
 
 	bb.on('error', (err: Error) => {
-		returnError(err);
+		reject(err);
 	});
 
 	bb.on('partsLimit', () => {
-		returnError();
+		reject();
 	});
 	bb.on('filesLimit', () => {
-		returnError('Just 1 file is allowed');
+		reject('Just 1 file is allowed');
 	});
 	bb.on('fieldsLimit', () => {
-		returnError();
+		reject();
 	});
 
-	request.pipe(bb);
+	// Unclear why typescript complains that the ReadableStream from request.body is incompatible here
+	Readable.fromWeb(request.body satisfies ReadableStream)
+		.on('error', (err) => reject(err))
+		.pipe(bb);
 
-	return new Promise<UploadResultWithOptionalFile<K>>((resolve, reject) => {
-		returnResult = resolve;
-		returnError = reject;
-	});
+	return resultPromise;
 }

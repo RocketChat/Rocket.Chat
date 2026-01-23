@@ -42,14 +42,14 @@ test.describe('omnichannel-transcript', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('Expect to be able to send transcript to email', async () => {
 			await agent.poHomeChannel.content.btnSendTranscript.click();
 			await agent.poHomeChannel.content.btnSendTranscriptToEmail.click();
 			await agent.poHomeChannel.content.btnModalConfirm.click();
-			await expect(agent.poHomeChannel.toastSuccess).toBeVisible();
+			await agent.poHomeChannel.toastMessage.waitForDisplay();
 		});
 
 		await test.step('Expect to be not able send transcript as PDF', async () => {

@@ -56,16 +56,16 @@ export class OmnichannelTags extends OmnichannelAdministration {
 	}
 
 	private selectOption(name: string): Locator {
-		return this.page.locator(`[role=option][value="${name}"]`);
+		return this.page.locator('#position-container').getByRole('option', { name });
 	}
 
 	async search(text: string) {
 		await this.inputSearch.fill(text);
 	}
 
-	async selectDepartment({ name, _id }: { name: string; _id: string }) {
+	async selectDepartment(name: string) {
 		await this.inputDepartments.click();
 		await this.inputDepartments.fill(name);
-		await this.selectOption(_id).click();
+		await this.selectOption(name).click();
 	}
 }

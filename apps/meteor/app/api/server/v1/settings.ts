@@ -21,7 +21,9 @@ import _ from 'underscore';
 import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { disableCustomScripts } from '../../../lib/server/functions/disableCustomScripts';
+import { checkSettingValueBounds } from '../../../lib/server/lib/checkSettingValueBonds';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
+import { addOAuthServiceMethod } from '../../../lib/server/methods/addOAuthService';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
 import { API } from '../api';
@@ -123,7 +125,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
 			}
 
-			await Meteor.callAsync('addOAuthService', this.bodyParams.name, this.userId);
+			await addOAuthServiceMethod(this.userId, this.bodyParams.name);
 
 			return API.v1.success();
 		},
@@ -212,7 +214,7 @@ API.v1.addRoute(
 					_id: this.userId,
 					username: this.user.username!,
 					ip: this.requestIp,
-					useragent: this.request.headers['user-agent'] || '',
+					useragent: this.request.headers.get('user-agent') || '',
 				});
 
 				if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {
@@ -229,6 +231,8 @@ API.v1.addRoute(
 				}
 
 				if (isSettingsUpdatePropDefault(this.bodyParams)) {
+					checkSettingValueBounds(setting, this.bodyParams.value);
+
 					const { matchedCount } = await auditSettingOperation(
 						Settings.updateValueNotHiddenById,
 						this.urlParams._id,

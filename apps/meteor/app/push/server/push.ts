@@ -1,7 +1,7 @@
 import type { IAppsTokens, RequiredField, Optional, IPushNotificationConfig } from '@rocket.chat/core-typings';
 import { AppsTokens } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { pick } from '@rocket.chat/tools';
+import { pick, truncateString } from '@rocket.chat/tools';
 import Ajv from 'ajv';
 import { JWT } from 'google-auth-library';
 import { Match, check } from 'meteor/check';
@@ -10,11 +10,13 @@ import { Meteor } from 'meteor/meteor';
 import { initAPN, sendAPN } from './apn';
 import type { PushOptions, PendingPushNotification } from './definition';
 import { sendFCM } from './fcm';
-import { sendGCM } from './gcm';
 import { logger } from './logger';
 import { settings } from '../../settings/server';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
+
+const PUSH_TITLE_LIMIT = 65;
+const PUSH_MESSAGE_BODY_LIMIT = 240;
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -197,40 +199,24 @@ class PushClass {
 		} else if ('gcm' in app.token && app.token.gcm) {
 			countGcm.push(app._id);
 
-			// Send to GCM
-			// We do support multiple here - so we should construct an array
-			// and send it bulk - Investigate limit count of id's
-			// TODO: Remove this after the legacy provider is removed
-			const useLegacyProvider = settings.get<boolean>('Push_UseLegacy');
+			// override this.options.gcm.apiKey with the oauth2 token
+			const { projectId, token } = await this.getNativeNotificationAuthorizationCredentials();
+			const sendGCMOptions = {
+				...this.options,
+				gcm: {
+					...this.options.gcm,
+					apiKey: token,
+					projectNumber: projectId,
+				},
+			};
 
-			if (!useLegacyProvider) {
-				// override this.options.gcm.apiKey with the oauth2 token
-				const { projectId, token } = await this.getNativeNotificationAuthorizationCredentials();
-				const sendGCMOptions = {
-					...this.options,
-					gcm: {
-						...this.options.gcm,
-						apiKey: token,
-						projectNumber: projectId,
-					},
-				};
-
-				sendFCM({
-					userTokens: app.token.gcm,
-					notification,
-					_replaceToken: this.replaceToken,
-					_removeToken: this.removeToken,
-					options: sendGCMOptions as RequiredField<PushOptions, 'gcm'>,
-				});
-			} else if (this.options.gcm?.apiKey) {
-				sendGCM({
-					userTokens: app.token.gcm,
-					notification,
-					_replaceToken: this.replaceToken,
-					_removeToken: this.removeToken,
-					options: this.options as RequiredField<PushOptions, 'gcm'>,
-				});
-			}
+			sendFCM({
+				userTokens: app.token.gcm,
+				notification,
+				_replaceToken: this.replaceToken,
+				_removeToken: this.removeToken,
+				options: sendGCMOptions as RequiredField<PushOptions, 'gcm'>,
+			});
 		} else {
 			throw new Error('send got a faulty query');
 		}
@@ -317,7 +303,7 @@ class PushClass {
 			return;
 		}
 
-		logger.error({ msg: `Error sending push to gateway (${tries} try) ->`, err: response });
+		logger.error({ msg: 'Error sending push to gateway', tries, err: response });
 
 		if (tries <= 4) {
 			// [1, 2, 4, 8, 16] minutes (total 31)
@@ -382,7 +368,11 @@ class PushClass {
 			throw new Error('Push.send: option "text" not a string');
 		}
 
-		logger.debug(`send message "${notification.title}" to userId`, notification.userId);
+		logger.debug({
+			msg: 'send message to userId',
+			title: notification.title,
+			userId: notification.userId,
+		});
 
 		const query = {
 			userId: notification.userId,
@@ -403,12 +393,17 @@ class PushClass {
 		}
 
 		if (settings.get('Log_Level') === '2') {
-			logger.debug(`Sent message "${notification.title}" to ${countApn.length} ios apps ${countGcm.length} android apps`);
+			logger.debug({
+				msg: 'Sent message to apps',
+				title: notification.title,
+				iosApps: countApn.length,
+				androidApps: countGcm.length,
+			});
 
 			// Add some verbosity about the send result, making sure the developer
 			// understands what just happened.
 			if (!countApn.length && !countGcm.length) {
-				if ((await AppsTokens.col.estimatedDocumentCount()) === 0) {
+				if ((await AppsTokens.estimatedDocumentCount()) === 0) {
 					logger.debug('GUIDE: The "AppsTokens" is empty - No clients have registered on the server yet...');
 				}
 			} else if (!countApn.length) {
@@ -476,8 +471,10 @@ class PushClass {
 			createdBy: '<SERVER>',
 			sent: false,
 			sending: 0,
+			title: truncateString(options.title, PUSH_TITLE_LIMIT),
+			text: truncateString(options.text, PUSH_MESSAGE_BODY_LIMIT),
 
-			...pick(options, 'from', 'title', 'text', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority'),
+			...pick(options, 'from', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority'),
 
 			...(this.hasApnOptions(options)
 				? {
@@ -501,7 +498,11 @@ class PushClass {
 		try {
 			await this.sendNotification(notification);
 		} catch (error: any) {
-			logger.debug(`Could not send notification to user "${notification.userId}", Error: ${error.message}`);
+			logger.debug({
+				msg: 'Could not send notification to user',
+				userId: notification.userId,
+				err: error,
+			});
 			logger.debug(error.stack);
 		}
 	}

@@ -69,7 +69,7 @@ export class DDPStreamer extends ServiceClass {
 		InstanceStatus.updateConnections(this.wss?.clients.size ?? 0);
 	}, 30000);
 
-	async created(): Promise<void> {
+	override async created(): Promise<void> {
 		if (!this.context) {
 			return;
 		}
@@ -127,7 +127,37 @@ export class DDPStreamer extends ServiceClass {
 		async function sendUserData(client: Client, userId: string) {
 			// TODO figure out what fields to send. maybe to to export function getBaseUserFields to a package
 			const loggedUser = await Users.findOneById(userId, {
-				projection: { name: 1, username: 1, settings: 1, roles: 1, active: 1, statusLivechat: 1, statusDefault: 1, status: 1 },
+				projection: {
+					'name': 1,
+					'username': 1,
+					'nickname': 1,
+					'emails': 1,
+					'status': 1,
+					'statusDefault': 1,
+					'statusText': 1,
+					'statusConnection': 1,
+					'bio': 1,
+					'avatarOrigin': 1,
+					'utcOffset': 1,
+					'language': 1,
+					'settings': 1,
+					'enableAutoAway': 1,
+					'idleTimeLimit': 1,
+					'roles': 1,
+					'active': 1,
+					'defaultRoom': 1,
+					'customFields': 1,
+					'requirePasswordChange': 1,
+					'requirePasswordChangeReason': 1,
+					'statusLivechat': 1,
+					'banners': 1,
+					'oauth.authorizedClients': 1,
+					'_updatedAt': 1,
+					'avatarETag': 1,
+					'openBusinessHours': 1,
+					'services.totp.enabled': 1,
+					'services.email2fa.enabled': 1,
+				},
 			});
 			if (!loggedUser) {
 				return;
@@ -186,7 +216,7 @@ export class DDPStreamer extends ServiceClass {
 		});
 	}
 
-	async started(): Promise<void> {
+	override async started(): Promise<void> {
 		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?
 		try {
 			const versions = await MeteorService.getAutoUpdateClientVersions();
@@ -234,7 +264,7 @@ export class DDPStreamer extends ServiceClass {
 		}
 	}
 
-	async stopped(): Promise<void> {
+	override async stopped(): Promise<void> {
 		this.wss?.clients.forEach(function (client) {
 			client.terminate();
 		});

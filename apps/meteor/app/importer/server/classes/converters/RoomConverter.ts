@@ -1,5 +1,6 @@
 import type { IImportChannel, IImportChannelRecord, IRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
+import { removeEmpty } from '@rocket.chat/tools';
 import limax from 'limax';
 
 import { RecordConverter } from './RecordConverter';
@@ -19,7 +20,7 @@ export class RoomConverter extends RecordConverter<IImportChannelRecord> {
 		return this.convertData(callbacks);
 	}
 
-	protected async convertRecord(record: IImportChannelRecord): Promise<boolean> {
+	protected override async convertRecord(record: IImportChannelRecord): Promise<boolean> {
 		const { data } = record;
 
 		if (!data.name && data.t !== 'd') {
@@ -97,7 +98,10 @@ export class RoomConverter extends RecordConverter<IImportChannelRecord> {
 
 		if (roomData.t === 'd') {
 			if (members.length < roomData.users.length) {
-				this._logger.warn(`One or more imported users not found: ${roomData.users}`);
+				this._logger.warn({
+					msg: 'One or more imported users not found',
+					users: roomData.users,
+				});
 				throw new Error('importer-channel-missing-users');
 			}
 		}
@@ -124,8 +128,7 @@ export class RoomConverter extends RecordConverter<IImportChannelRecord> {
 
 			roomData._id = roomInfo.rid;
 		} catch (e) {
-			this._logger.warn({ msg: 'Failed to create new room', name: roomData.name, members });
-			this._logger.error(e);
+			this._logger.warn({ msg: 'Failed to create new room', name: roomData.name, members, err: e });
 			throw e;
 		}
 
@@ -150,7 +153,7 @@ export class RoomConverter extends RecordConverter<IImportChannelRecord> {
 		const roomUpdate: { $set?: Record<string, any>; $addToSet?: Record<string, any> } = {};
 
 		if (Object.keys(set).length > 0) {
-			roomUpdate.$set = set;
+			roomUpdate.$set = removeEmpty(set);
 		}
 
 		if (roomData.importIds.length) {
@@ -192,7 +195,7 @@ export class RoomConverter extends RecordConverter<IImportChannelRecord> {
 		throw new Error('importer-channel-invalid-creator');
 	}
 
-	protected getDataType(): 'channel' {
+	protected override getDataType(): 'channel' {
 		return 'channel';
 	}
 }

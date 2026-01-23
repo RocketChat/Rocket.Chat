@@ -1,5 +1,6 @@
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { SHA256 } from '@rocket.chat/sha256';
+import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetModal,
@@ -9,6 +10,7 @@ import {
 	useEndpoint,
 	useTranslation,
 	useSetting,
+	useLayout,
 } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useId, useState, useCallback } from 'react';
@@ -18,7 +20,6 @@ import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
 import { getProfileInitialValues } from './getProfileInitialValues';
 import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
-import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 
 // TODO: enforce useMutation
@@ -26,6 +27,7 @@ const AccountProfilePage = (): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const { isMobile } = useLayout();
 
 	const setModal = useSetModal();
 	const logout = useLogout();
@@ -119,7 +121,7 @@ const AccountProfilePage = (): ReactElement => {
 						<AccountProfileForm id={profileFormId} />
 					</FormProvider>
 					<Box mb={12}>
-						<ButtonGroup stretch>
+						<ButtonGroup stretch vertical={isMobile}>
 							<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
 								{t('Logout_Others')}
 							</Button>
@@ -137,14 +139,7 @@ const AccountProfilePage = (): ReactElement => {
 					<Button disabled={!isDirty} onClick={() => reset(getProfileInitialValues(user))}>
 						{t('Cancel')}
 					</Button>
-					<Button
-						form={profileFormId}
-						data-qa='AccountProfilePageSaveButton'
-						primary
-						disabled={!isDirty || loggingOut}
-						loading={isSubmitting}
-						type='submit'
-					>
+					<Button form={profileFormId} primary disabled={!isDirty || loggingOut} loading={isSubmitting} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

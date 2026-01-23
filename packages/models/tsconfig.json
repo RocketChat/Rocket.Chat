@@ -1,11 +1,9 @@
 {
-	"extends": "../../tsconfig.base.server.json",
+	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
-		// TODO migrate Users to TS
-		"allowJs": true,
 		"declaration": true,
 		"rootDir": "./src",
-		"outDir": "./dist",
+		"outDir": "./dist"
 	},
 	"include": ["./src/**/*"]
 }

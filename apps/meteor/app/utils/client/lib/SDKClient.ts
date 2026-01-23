@@ -49,15 +49,20 @@ type EventMap<N extends StreamNames = StreamNames, K extends StreamKeys<N> = Str
 
 type StreamMapValue = {
 	stop: () => void;
-	error: (cb: (...args: any[]) => void) => void;
+	onError: (cb: (...args: any[]) => void) => () => void;
 	onChange: ReturnType<ClientStream['subscribe']>['onChange'];
+	onStop: (cb: () => void) => () => void;
 	ready: () => Promise<void>;
 	isReady: boolean;
 	unsubList: Set<() => void>;
 };
 
 const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNames>, args: unknown[]): StreamMapValue => {
-	const ee = new Emitter();
+	const ee = new Emitter<{
+		ready: [error: any] | [undefined, any];
+		error: [error: any];
+		stop: undefined;
+	}>();
 	const meta = {
 		ready: false,
 	};
@@ -74,6 +79,9 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 			onError: (err: any) => {
 				ee.emit('ready', [err]);
 				ee.emit('error', err);
+			},
+			onStop: () => {
+				ee.emit('stop');
 			},
 		},
 	);
@@ -106,8 +114,14 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 		if (meta.ready) {
 			return Promise.resolve();
 		}
-		return new Promise<void>((r) => {
-			ee.once('ready', r);
+		return new Promise<void>((resolve, reject) => {
+			ee.once('ready', ([err]) => {
+				if (err) {
+					reject(err);
+					return;
+				}
+				resolve();
+			});
 		});
 	};
 
@@ -115,11 +129,12 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 		stop: sub.stop,
 		onChange,
 		ready,
-		error: (cb: (...args: any[]) => void) =>
+		onError: (cb: (...args: any[]) => void) =>
 			ee.once('error', (error) => {
 				cb(error);
 			}),
 
+		onStop: (cb: () => void) => ee.once('stop', cb),
 		get isReady() {
 			return meta.ready;
 		},
@@ -171,6 +186,8 @@ const createStreamManager = () => {
 
 		streamProxy.on(eventLiteral, proxyCallback);
 
+		const stream = streams.get(eventLiteral) || createNewMeteorStream(name, key, args);
+
 		const stop = (): void => {
 			streamProxy.off(eventLiteral, proxyCallback);
 			// If someone is still listening, don't unsubscribe
@@ -184,16 +201,20 @@ const createStreamManager = () => {
 			}
 		};
 
-		const stream = streams.get(eventLiteral) || createNewMeteorStream(name, key, args);
-
 		stream.unsubList.add(stop);
 		if (!streams.has(eventLiteral)) {
+			const offError = stream.onError(() => {
+				stream.unsubList.forEach((stop) => stop());
+			});
+
+			const offStop = stream.onStop(() => {
+				stream.unsubList.forEach((stop) => stop());
+			});
+
+			stream.unsubList.add(offError);
+			stream.unsubList.add(offStop);
 			streams.set(eventLiteral, stream);
 		}
-
-		stream.error(() => {
-			stream.unsubList.forEach((stop) => stop());
-		});
 
 		return {
 			id: '',
@@ -228,12 +249,22 @@ export const createSDK = (rest: RestClientInterface) => {
 		return Meteor.callAsync(method, ...args);
 	};
 
+	const disconnect = () => {
+		Meteor.disconnect();
+	};
+
+	const reconnect = () => {
+		Meteor.reconnect();
+	};
+
 	return {
 		rest,
 		stop: stopAll,
 		stream,
 		publish,
 		call,
+		disconnect,
+		reconnect,
 	};
 };
 

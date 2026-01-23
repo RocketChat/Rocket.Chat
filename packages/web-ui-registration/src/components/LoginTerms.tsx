@@ -12,6 +12,7 @@ export const LoginTerms = (): ReactElement => {
 	return (
 		<HorizontalWizardLayoutCaption>
 			<Box
+				color='default'
 				withRichContent
 				dangerouslySetInnerHTML={{
 					__html: loginTerms !== '' ? DOMPurify.sanitize(loginTerms) : DOMPurify.sanitize(t('Layout_Login_Terms_Content')),

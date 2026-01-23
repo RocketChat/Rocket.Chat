@@ -35,12 +35,6 @@ export const {
 		permissionGranted: (): boolean => hasPermission('view-moderation-console'),
 	},
 	{
-		href: '/admin/federation',
-		i18nLabel: 'Federation',
-		icon: 'discover',
-		permissionGranted: (): boolean => hasPermission('view-federation-data'),
-	},
-	{
 		href: '/admin/rooms',
 		i18nLabel: 'Rooms',
 		icon: 'hashtag',
@@ -69,6 +63,12 @@ export const {
 		i18nLabel: 'Permissions',
 		icon: 'user-lock',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']),
+	},
+	{
+		href: '/admin/ABAC',
+		i18nLabel: 'ABAC',
+		icon: 'team-lock',
+		permissionGranted: (): boolean => hasPermission('abac-management'),
 	},
 	{
 		href: '/admin/device-management',
@@ -114,7 +114,7 @@ export const {
 		permissionGranted: (): boolean => hasPermission('run-import'),
 	},
 	{
-		href: '/admin/reports',
+		href: '/admin/analytic-reports',
 		i18nLabel: 'Reports',
 		icon: 'post',
 		permissionGranted: (): boolean => hasPermission('view-logs'),

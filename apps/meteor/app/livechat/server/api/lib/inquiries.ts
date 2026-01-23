@@ -56,12 +56,18 @@ export async function findInquiries({
 		// V in Enum only works for numeric enums
 		...(status && Object.values(LivechatInquiryStatus).includes(status) && { status }),
 		$or: [
+			// Cases where this user is the default agent
 			{
-				$and: [{ defaultAgent: { $exists: true } }, { 'defaultAgent.agentId': userId }],
+				'defaultAgent': { $exists: true },
+				'defaultAgent.agentId': userId,
 			},
-			{ ...(department && { department }) },
-			// Add _always_ the "public queue" to returned list of inquiries, even if agent already has departments
-			{ department: { $exists: false } },
+			// Cases with no default agent assigned yet, AND either:
+			// - belongs to one of user's departments, or
+			// - has no department (public queue)
+			{
+				defaultAgent: { $exists: false },
+				$or: [...(department ? [{ department }] : []), { department: { $exists: false } }],
+			},
 		],
 	};
 

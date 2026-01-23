@@ -1,15 +1,9 @@
-import type { IRoom, IUser, IRole } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
-import { useMemo } from 'react';
-import { GroupedVirtuoso } from 'react-virtuoso';
-
-import { MembersListDivider } from './MembersListDivider';
-import RoomMembersRow from './RoomMembersRow';
 import {
+	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -18,11 +12,17 @@ import {
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
 	ContextualbarSection,
-} from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
-import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
+import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
+import { useMemo } from 'react';
+import { GroupedVirtuoso } from 'react-virtuoso';
 
-export type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
+import { MembersListDivider } from './MembersListDivider';
+import RoomMembersRow from './RoomMembersRow';
+import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
+import type { RoomMember } from '../../../hooks/useMembersList';
 
 type RoomMembersProps = {
 	rid: IRoom['_id'];
@@ -33,7 +33,7 @@ type RoomMembersProps = {
 	type: string;
 	setText: FormEventHandler<HTMLInputElement>;
 	setType: (type: 'online' | 'all') => void;
-	members: RoomMemberUser[];
+	members: RoomMember[];
 	total: number;
 	error?: Error;
 	onClickClose: () => void;
@@ -43,13 +43,14 @@ type RoomMembersProps = {
 	loadMoreItems: () => void;
 	renderRow?: ElementType<ComponentProps<typeof RoomMembersRow>>;
 	reload: () => void;
+	isABACRoom?: boolean;
 };
 
 const RoomMembers = ({
 	loading,
 	members = [],
 	text,
-	type,
+	type = 'online',
 	setText,
 	setType,
 	onClickClose,
@@ -64,6 +65,7 @@ const RoomMembers = ({
 	isTeam,
 	isDirect,
 	reload,
+	isABACRoom = false,
 }: RoomMembersProps): ReactElement => {
 	const t = useTranslation();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
@@ -88,9 +90,22 @@ const RoomMembers = ({
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	const { counts, titles } = useMemo(() => {
-		const owners = members.filter((member) => member.roles?.includes('owner'));
-		const moderators = members.filter((member) => !member.roles?.includes('owner') && member.roles?.includes('moderator'));
-		const normalMembers = members.filter((member) => !member.roles?.includes('owner') && !member.roles?.includes('moderator'));
+		const owners: RoomMember[] = [];
+		const leaders: RoomMember[] = [];
+		const moderators: RoomMember[] = [];
+		const normalMembers: RoomMember[] = [];
+
+		members.forEach((member) => {
+			if (member.roles?.includes('owner')) {
+				owners.push(member);
+			} else if (member.roles?.includes('leader')) {
+				leaders.push(member);
+			} else if (member.roles?.includes('moderator')) {
+				moderators.push(member);
+			} else {
+				normalMembers.push(member);
+			}
+		});
 
 		const counts = [];
 		const titles = [];
@@ -98,6 +113,11 @@ const RoomMembers = ({
 		if (owners.length > 0) {
 			counts.push(owners.length);
 			titles.push(<MembersListDivider title='Owners' count={owners.length} />);
+		}
+
+		if (leaders.length > 0) {
+			counts.push(leaders.length);
+			titles.push(<MembersListDivider title='Leaders' count={leaders.length} />);
 		}
 
 		if (moderators.length > 0) {
@@ -114,8 +134,8 @@ const RoomMembers = ({
 	}, [members]);
 
 	return (
-		<>
-			<ContextualbarHeader data-qa-id='RoomHeader-Members'>
+		<ContextualbarDialog>
+			<ContextualbarHeader>
 				<ContextualbarIcon name='members' />
 				<ContextualbarTitle>{isTeam ? t('Teams_members') : t('Members')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
@@ -156,20 +176,22 @@ const RoomMembers = ({
 						</Box>
 
 						<Box w='full' h='full' overflow='hidden' flexShrink={1}>
-							<GroupedVirtuoso
-								style={{
-									height: '100%',
-									width: '100%',
-								}}
-								overscan={50}
-								groupCounts={counts}
-								groupContent={(index): ReactElement => titles[index]}
-								// eslint-disable-next-line react/no-multi-comp
-								components={{ Scroller: VirtuosoScrollbars, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-								itemContent={(index): ReactElement => (
-									<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
-								)}
-							/>
+							<VirtualizedScrollbars>
+								<GroupedVirtuoso
+									style={{
+										height: '100%',
+										width: '100%',
+									}}
+									overscan={50}
+									groupCounts={counts}
+									groupContent={(index): ReactElement => titles[index]}
+									// eslint-disable-next-line react/no-multi-comp
+									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
+									itemContent={(index): ReactElement => (
+										<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
+									)}
+								/>
+							</VirtualizedScrollbars>
 						</Box>
 					</>
 				)}
@@ -178,7 +200,14 @@ const RoomMembers = ({
 				<ContextualbarFooter>
 					<ButtonGroup stretch>
 						{onClickInvite && (
-							<Button icon='link' onClick={onClickInvite} width='50%'>
+							<Button
+								icon='link'
+								onClick={onClickInvite}
+								width='50%'
+								disabled={isABACRoom}
+								title={isABACRoom ? t('Not_available_for_ABAC_enabled_rooms') : undefined}
+								aria-label={t('Invite_Link')}
+							>
 								{t('Invite_Link')}
 							</Button>
 						)}
@@ -190,7 +219,7 @@ const RoomMembers = ({
 					</ButtonGroup>
 				</ContextualbarFooter>
 			)}
-		</>
+		</ContextualbarDialog>
 	);
 };
 

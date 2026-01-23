@@ -1,3 +1,4 @@
+import type { FormEvent } from 'react';
 import { createContext, useCallback, useContext, useEffect, useSyncExternalStore } from 'react';
 
 import { selectedMessageStore } from '../../providers/SelectedMessagesProvider';
@@ -48,11 +49,16 @@ export const useIsSelecting = (): boolean => {
 	return useSyncExternalStore(subscribe, getSnapshot);
 };
 
-export const useToggleSelect = (mid: string): (() => void) => {
+export const useToggleSelect = (mid: string): ((event?: FormEvent<HTMLElement>) => void) => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
-	return useCallback(() => {
-		selectedMessageStore.toggle(mid);
-	}, [mid, selectedMessageStore]);
+
+	return useCallback(
+		(event) => {
+			event?.stopPropagation();
+			selectedMessageStore.toggle(mid);
+		},
+		[mid, selectedMessageStore],
+	);
 };
 
 export const useToggleSelectAll = (): (() => void) => {

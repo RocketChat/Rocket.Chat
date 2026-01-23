@@ -73,6 +73,7 @@ export class SAMLUtils {
 		globalSettings.mailOverwrite = Boolean(samlConfigs.mailOverwrite);
 		globalSettings.channelsAttributeUpdate = Boolean(samlConfigs.channelsAttributeUpdate);
 		globalSettings.includePrivateChannelsInUpdate = Boolean(samlConfigs.includePrivateChannelsInUpdate);
+		globalSettings.defaultUserRole = samlConfigs.defaultUserRole;
 
 		if (samlConfigs.immutableProperty && typeof samlConfigs.immutableProperty === 'string') {
 			globalSettings.immutableProperty = samlConfigs.immutableProperty;
@@ -80,10 +81,6 @@ export class SAMLUtils {
 
 		if (samlConfigs.usernameNormalize && typeof samlConfigs.usernameNormalize === 'string') {
 			globalSettings.usernameNormalize = samlConfigs.usernameNormalize;
-		}
-
-		if (samlConfigs.defaultUserRole && typeof samlConfigs.defaultUserRole === 'string') {
-			globalSettings.defaultUserRole = samlConfigs.defaultUserRole;
 		}
 
 		if (samlConfigs.userDataFieldMap && typeof samlConfigs.userDataFieldMap === 'string') {
@@ -157,7 +154,7 @@ export class SAMLUtils {
 			const buffer = Buffer.from(base64Data, 'base64');
 			zlib.inflateRaw(buffer, (err, decoded) => {
 				if (err) {
-					this.log(`Error while inflating. ${err}`);
+					this.log({ msg: 'Error while inflating.', err });
 					return reject(errorCallback(err));
 				}
 
@@ -429,7 +426,7 @@ export class SAMLUtils {
 		const attributeList = new Map();
 		for (const attributeName of userDataMap.attributeList) {
 			if (profile[attributeName] === undefined) {
-				this.log(`SAML user profile is missing the attribute ${attributeName}.`);
+				this.log({ msg: 'SAML user profile is missing the attribute.', attribute: attributeName });
 				continue;
 			}
 			attributeList.set(attributeName, profile[attributeName]);

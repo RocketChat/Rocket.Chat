@@ -1,19 +1,15 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Callout, IconButton } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { GenericMenu } from '@rocket.chat/ui-client';
-import { useTranslation } from 'react-i18next';
-
-import RoomInfoActions from './RoomInfoActions';
 import {
+	GenericMenu,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 	ContextualbarBack,
 	ContextualbarIcon,
 	ContextualbarClose,
 	ContextualbarTitle,
-} from '../../../../../components/Contextualbar';
-import {
+	ContextualbarDialog,
 	InfoPanel,
 	InfoPanelActionGroup,
 	InfoPanelAvatar,
@@ -22,12 +18,16 @@ import {
 	InfoPanelSection,
 	InfoPanelText,
 	InfoPanelTitle,
-} from '../../../../../components/InfoPanel';
+} from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
+
+import RoomInfoActions from './RoomInfoActions';
 import RetentionPolicyCallout from '../../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 import { useRoomActions } from '../hooks/useRoomActions';
 import { useSplitRoomActions } from '../hooks/useSplitRoomActions';
+import RoomInfoABACSection from './ABAC/RoomInfoABACSection';
 
 type RoomInfoProps = {
 	room: IRoom;
@@ -50,7 +50,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 	const { buttons, menu } = useSplitRoomActions(actions);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				{onClickBack ? <ContextualbarBack onClick={onClickBack} /> : <ContextualbarIcon name='info-circled' />}
 				<ContextualbarTitle>{isDiscussion ? t('Discussion_info') : t('Channel_info')}</ContextualbarTitle>
@@ -127,10 +127,11 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 						)}
 
 						{retentionPolicy?.isActive && <RetentionPolicyCallout room={room} />}
+						<RoomInfoABACSection room={room} />
 					</InfoPanelSection>
 				</InfoPanel>
 			</ContextualbarScrollableContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

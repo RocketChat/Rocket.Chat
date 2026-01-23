@@ -11,7 +11,7 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 		super(db, 'livechat_priority');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: {

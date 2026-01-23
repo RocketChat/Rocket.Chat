@@ -7,8 +7,8 @@ import { MongoInternals } from 'meteor/mongo';
 
 import { schedulerLogger } from './logger';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
-import { Livechat as LivechatTyped } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { returnRoomAsInquiry } from '../../../../../app/livechat/server/lib/rooms';
 import { settings } from '../../../../../app/settings/server';
 
 const SCHEDULER_NAME = 'omnichannel_scheduler';
@@ -43,12 +43,20 @@ export class AutoTransferChatSchedulerClass {
 		this.logger.info('Service started');
 	}
 
-	private async getSchedulerUser(): Promise<IUser | null> {
-		return Users.findOneById('rocket.cat');
+	private async getSchedulerUser(): Promise<IUser & { userType: 'user' }> {
+		const user = await Users.findOneById('rocket.cat');
+		if (!user) {
+			this.logger.error('Error while transferring room: user not found');
+			throw new Error('error-no-cat');
+		}
+		return {
+			...user,
+			userType: 'user',
+		};
 	}
 
 	public async scheduleRoom(roomId: string, timeout: number): Promise<void> {
-		this.logger.debug(`Scheduling room ${roomId} to be transferred in ${timeout} seconds`);
+		this.logger.debug({ msg: 'Scheduling room to be transferred', roomId, timeoutSeconds: timeout });
 		await this.unscheduleRoom(roomId);
 
 		const jobName = `${SCHEDULER_NAME}-${roomId}`;
@@ -61,7 +69,7 @@ export class AutoTransferChatSchedulerClass {
 	}
 
 	public async unscheduleRoom(roomId: string): Promise<void> {
-		this.logger.debug(`Unscheduling room ${roomId}`);
+		this.logger.debug({ msg: 'Unscheduling room', roomId });
 		const jobName = `${SCHEDULER_NAME}-${roomId}`;
 
 		await LivechatRooms.unsetAutoTransferOngoingById(roomId);
@@ -69,7 +77,7 @@ export class AutoTransferChatSchedulerClass {
 	}
 
 	private async transferRoom(roomId: string): Promise<void> {
-		this.logger.debug(`Transferring room ${roomId}`);
+		this.logger.debug({ msg: 'Transferring room', roomId });
 		const room = await LivechatRooms.findOneById(roomId, {
 			_id: 1,
 			v: 1,
@@ -89,9 +97,9 @@ export class AutoTransferChatSchedulerClass {
 		const timeoutDuration = settings.get<number>('Livechat_auto_transfer_chat_timeout').toString();
 
 		if (!RoutingManager.getConfig()?.autoAssignAgent) {
-			this.logger.debug(`Auto-assign agent is disabled, returning room ${roomId} as inquiry`);
+			this.logger.debug({ msg: 'Auto-assign agent is disabled, returning room as inquiry', roomId });
 
-			await LivechatTyped.returnRoomAsInquiry(room, departmentId, {
+			await returnRoomAsInquiry(room, departmentId, {
 				scope: 'autoTransferUnansweredChatsToQueue',
 				comment: timeoutDuration,
 				transferredBy: await this.getSchedulerUser(),
@@ -101,22 +109,21 @@ export class AutoTransferChatSchedulerClass {
 
 		const agent = await RoutingManager.getNextAgent(departmentId, ignoreAgentId);
 		if (!agent) {
-			this.logger.error(`No agent found to transfer room ${room._id} which hasn't been answered in ${timeoutDuration} seconds`);
+			this.logger.error({
+				msg: 'No agent found to transfer unanswered room',
+				roomId: room._id,
+				timeoutSeconds: timeoutDuration,
+			});
 			return;
 		}
 
-		this.logger.debug(`Transferring room ${roomId} to agent ${agent.agentId}`);
+		this.logger.debug({ msg: 'Transferring room to agent', roomId, agentId: agent.agentId });
 
 		const transferredBy = await this.getSchedulerUser();
 
-		if (!transferredBy) {
-			this.logger.error(`Error while transferring room ${room._id}: user not found`);
-			return;
-		}
-
 		await forwardRoomToAgent(room, {
 			userId: agent.agentId,
-			transferredBy: { ...transferredBy, userType: 'user' },
+			transferredBy,
 			transferredTo: agent,
 			scope: 'autoTransferUnansweredChatsToAgent',
 			comment: timeoutDuration,
@@ -131,7 +138,7 @@ export class AutoTransferChatSchedulerClass {
 
 			await Promise.all([LivechatRooms.setAutoTransferredAtById(roomId), this.unscheduleRoom(roomId)]);
 		} catch (error) {
-			this.logger.error(`Error while executing job ${SCHEDULER_NAME} for room ${roomId}:`, error);
+			this.logger.error({ msg: 'Error while executing auto-transfer job', schedulerName: SCHEDULER_NAME, roomId, err: error });
 		}
 	}
 }

@@ -1,9 +1,25 @@
 import type { VideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Button, Message, Box, Avatar, Palette, IconButton, ButtonGroup } from '@rocket.chat/fuselage';
+import {
+	Button,
+	Message,
+	MessageLeftContainer,
+	MessageContainer,
+	MessageHeader,
+	MessageName,
+	MessageTimestamp,
+	MessageBody,
+	MessageBlock,
+	Box,
+	Palette,
+	IconButton,
+	ButtonGroup,
+	AvatarStack,
+} from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
 
@@ -24,7 +40,6 @@ const VideoConfListItem = ({
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
-	const showRealName = useSetting('UI_Use_Real_Name', false);
 
 	const {
 		_id: callId,
@@ -35,6 +50,7 @@ const VideoConfListItem = ({
 		discussionRid,
 	} = videoConfData;
 
+	const displayName = useUserDisplayName({ name, username });
 	const joinedUsers = users.filter((user) => user._id !== _id);
 
 	const hovered = css`
@@ -64,15 +80,15 @@ const VideoConfListItem = ({
 			pb={8}
 		>
 			<Message {...props}>
-				<Message.LeftContainer>{username && <UserAvatar username={username} size='x36' />}</Message.LeftContainer>
-				<Message.Container>
-					<Message.Header>
-						<Message.Name title={username}>{showRealName ? name : username}</Message.Name>
-						<Message.Timestamp>{formatDate(createdAt)}</Message.Timestamp>
-					</Message.Header>
-					<Message.Body clamp={2} />
+				<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>
+				<MessageContainer>
+					<MessageHeader>
+						<MessageName title={username}>{displayName}</MessageName>
+						<MessageTimestamp>{formatDate(createdAt)}</MessageTimestamp>
+					</MessageHeader>
+					<MessageBody clamp={2} />
 					<Box display='flex'></Box>
-					<Message.Block flexDirection='row' alignItems='center'>
+					<MessageBlock flexDirection='row' alignItems='center'>
 						<ButtonGroup>
 							<Button disabled={Boolean(endedAt)} small alignItems='center' display='flex' onClick={handleJoinConference}>
 								{endedAt ? t('Call_ended') : t('Join_call')}
@@ -89,7 +105,7 @@ const VideoConfListItem = ({
 						</ButtonGroup>
 						{joinedUsers.length > 0 && (
 							<Box mis={8} fontScale='c1' display='flex' alignItems='center'>
-								<Avatar.Stack>
+								<AvatarStack>
 									{joinedUsers.map(
 										(user, index) =>
 											user.username &&
@@ -103,7 +119,7 @@ const VideoConfListItem = ({
 												/>
 											),
 									)}
-								</Avatar.Stack>
+								</AvatarStack>
 								<Box mis={4}>
 									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
 										? t('__usersCount__joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
@@ -116,8 +132,8 @@ const VideoConfListItem = ({
 								{t('Be_the_first_to_join')}
 							</Box>
 						)}
-					</Message.Block>
-				</Message.Container>
+					</MessageBlock>
+				</MessageContainer>
 			</Message>
 		</Box>
 	);

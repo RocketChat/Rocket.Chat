@@ -14,6 +14,10 @@ export interface IIntegrationHistory extends IRocketChatRecord {
 	data?: {
 		user?: any;
 		room?: any;
+		owner?: any;
+		message_id?: string;
+		channel_id?: string;
+		user_id?: string;
 	};
 	ranPrepareScript: boolean;
 	finished: boolean;

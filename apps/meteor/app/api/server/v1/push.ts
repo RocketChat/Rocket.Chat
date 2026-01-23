@@ -1,3 +1,4 @@
+import type { IAppsTokens } from '@rocket.chat/core-typings';
 import { Messages, AppsTokens, Users, Rooms, Settings } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
@@ -5,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { executePushTest } from '../../../../server/lib/pushConfig';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { pushUpdate } from '../../../push/server/methods';
 import PushNotification from '../../../push-notifications/server/lib/PushNotification';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
@@ -34,10 +36,15 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-appName-param-not-valid', 'The required "appName" body param is missing or invalid.');
 			}
 
-			const result = await Meteor.callAsync('raix:push-update', {
+			const authToken = this.request.headers.get('x-auth-token');
+			if (!authToken) {
+				throw new Meteor.Error('error-authToken-param-not-valid', 'The required "authToken" header param is missing or invalid.');
+			}
+
+			const result = await pushUpdate({
 				id: deviceId,
-				token: { [type]: value },
-				authToken: this.request.headers['x-auth-token'],
+				token: { [type]: value } as IAppsTokens['token'],
+				authToken,
 				appName,
 				userId: this.userId,
 			});

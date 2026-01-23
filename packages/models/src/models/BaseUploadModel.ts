@@ -10,6 +10,7 @@ import type {
 	Filter,
 	FindOptions,
 	FindCursor,
+	ClientSession,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -17,7 +18,7 @@ import { BaseRaw } from './BaseRaw';
 type T = IUpload;
 
 export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUploadsModel<T> {
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { name: 1 }, sparse: true },
 			{ key: { rid: 1 }, sparse: true },
@@ -91,8 +92,18 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
-	async findOneByName(name: string): Promise<T | null> {
-		return this.findOne({ name });
+	findByIds(_ids: string[], options?: FindOptions<T>): FindCursor<T> {
+		const query = {
+			_id: {
+				$in: _ids,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	async findOneByName(name: string, options?: { session?: ClientSession }): Promise<T | null> {
+		return this.findOne<T>({ name }, { session: options?.session });
 	}
 
 	async findOneByRoomId(rid: string): Promise<T | null> {
@@ -120,7 +131,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
-	async deleteFile(fileId: string): Promise<DeleteResult> {
-		return this.deleteOne({ _id: fileId });
+	async deleteFile(fileId: string, options?: { session?: ClientSession }): Promise<DeleteResult> {
+		return this.deleteOne({ _id: fileId }, { session: options?.session });
 	}
 }

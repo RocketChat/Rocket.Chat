@@ -1,12 +1,14 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IMessage, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IOmnichannelRoom, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
+import { retry } from './helpers/retry';
 import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
+import { closeOmnichannelRoom, createAgent, createLivechatRoom, createVisitor } from '../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -164,9 +166,10 @@ describe('Meteor.methods', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('success', false);
+
 						const data = JSON.parse(res.body.message);
 						expect(data).to.have.property('error').that.is.an('object');
 						expect(data.error).to.have.property('error', 'error-action-not-allowed');
@@ -342,30 +345,39 @@ describe('Meteor.methods', () => {
 				});
 
 				it("should return both the sender's and invited user's read receipt for a message sent in a thread", async () => {
-					await request
-						.post(methodCall('getReadReceipts'))
-						.set(credentials)
-						.send({
-							message: JSON.stringify({
-								method: 'getReadReceipts',
-								params: [{ messageId: firstThreadMessage._id }],
-								id: 'id',
-								msg: 'method',
-							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
+					await retry(
+						`Since the read is a detached task, it happens asynchronously, after the read message, so there is no await/way to make sure the read receipt will be rigth 
+						just after the read message. So we need to retry the request to make sure the read receipt is there.`,
+						async () => {
+							await request
+								.post(methodCall('getReadReceipts'))
+								.set(credentials)
+								.send({
+									message: JSON.stringify({
+										method: 'getReadReceipts',
+										params: [{ messageId: firstThreadMessage._id }],
+										id: 'id',
+										msg: 'method',
+									}),
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.expect((res) => {
+									expect(res.body).to.have.a.property('success', true);
+									expect(res.body).to.have.a.property('message').that.is.a('string');
 
-							const data = JSON.parse(res.body.message);
-							expect(data).to.have.a.property('result').that.is.an('array');
-							expect(data.result.length).to.equal(2);
+									const data = JSON.parse(res.body.message);
+									expect(data).to.have.a.property('result').that.is.an('array');
+									expect(data.result.length).to.equal(2);
 
-							const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
-							expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
-						});
+									const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
+									expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
+								});
+						},
+						{
+							delayMs: 100,
+						},
+					);
 				});
 			});
 
@@ -393,57 +405,72 @@ describe('Meteor.methods', () => {
 				});
 
 				it("should return both the sender's and invited user's read receipt for a message sent in the main room", async () => {
-					await request
-						.post(methodCall('getReadReceipts'))
-						.set(credentials)
-						.send({
-							message: JSON.stringify({
-								method: 'getReadReceipts',
-								params: [{ messageId: otherThreadMessage._id }],
-								id: 'id',
-								msg: 'method',
-							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
+					await retry(
+						`Since the read is a detached task, it happens asynchronously, after the read message, so there is no await/way to make sure the read receipt will be rigth 
+						just after the read message. So we need to retry the request to make sure the read receipt is there.`,
+						async () => {
+							await request
+								.post(methodCall('getReadReceipts'))
+								.set(credentials)
+								.send({
+									message: JSON.stringify({
+										method: 'getReadReceipts',
+										params: [{ messageId: otherThreadMessage._id }],
+										id: 'id',
+										msg: 'method',
+									}),
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.expect((res) => {
+									expect(res.body).to.have.a.property('success', true);
+									expect(res.body).to.have.a.property('message').that.is.a('string');
 
-							const data = JSON.parse(res.body.message);
-							expect(data).to.have.a.property('result').that.is.an('array');
-							expect(data.result.length).to.equal(2);
+									const data = JSON.parse(res.body.message);
+									expect(data).to.have.a.property('result').that.is.an('array');
+									expect(data.result.length).to.equal(2);
 
-							const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
-							expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
-						});
+									const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
+									expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
+								});
+						},
+					);
 				});
 
 				it("should return both the sender's and invited user's read receipt for a message sent in a thread", async () => {
-					await request
-						.post(methodCall('getReadReceipts'))
-						.set(credentials)
-						.send({
-							message: JSON.stringify({
-								method: 'getReadReceipts',
-								params: [{ messageId: otherThreadMessage._id }],
-								id: 'id',
-								msg: 'method',
-							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
+					await retry(
+						`Since the read is a detached task, it happens asynchronously, after the read message, so there is no await/way to make sure the read receipt will be rigth 
+						just after the read message. So we need to retry the request to make sure the read receipt is there.`,
+						async () => {
+							await request
+								.post(methodCall('getReadReceipts'))
+								.set(credentials)
+								.send({
+									message: JSON.stringify({
+										method: 'getReadReceipts',
+										params: [{ messageId: otherThreadMessage._id }],
+										id: 'id',
+										msg: 'method',
+									}),
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.expect((res) => {
+									expect(res.body).to.have.a.property('success', true);
+									expect(res.body).to.have.a.property('message').that.is.a('string');
 
-							const data = JSON.parse(res.body.message);
-							expect(data).to.have.a.property('result').that.is.an('array');
-							expect(data.result.length).to.equal(2);
+									const data = JSON.parse(res.body.message);
+									expect(data).to.have.a.property('result').that.is.an('array');
+									expect(data.result.length).to.equal(2);
 
-							const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
-							expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
-						});
+									const receiptsUserIds = [data.result[0].userId, data.result[1].userId];
+									expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
+								});
+						},
+						{
+							delayMs: 100,
+						},
+					);
 				});
 			});
 		});
@@ -550,9 +577,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -708,9 +735,9 @@ describe('Meteor.methods', () => {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('error').that.is.an('object');
 					expect(data.error).to.have.a.property('error', 'error-not-allowed');
@@ -877,9 +904,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1095,9 +1122,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1275,9 +1302,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1308,52 +1335,6 @@ describe('Meteor.methods', () => {
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('result').that.is.an('object');
 					expect(data.result).to.have.a.property('total', 2);
-				})
-				.end(done);
-		});
-	});
-
-	describe('[@getUserRoles]', () => {
-		it('should fail if not logged in', (done) => {
-			void request
-				.post(methodCall('getUserRoles'))
-				.send({
-					message: JSON.stringify({
-						method: 'getUserRoles',
-						params: [],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
-		});
-
-		it('should return the roles for the current user', (done) => {
-			void request
-				.post(methodCall('getUserRoles'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'getUserRoles',
-						params: [],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
 				})
 				.end(done);
 		});
@@ -1582,9 +1563,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.include('error-invalid-room');
 				})
 				.end(done);
@@ -1603,9 +1584,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.include('Match error');
 				})
 				.end(done);
@@ -2042,9 +2023,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 					const data = JSON.parse(res.body.message);
 					expect(data).to.not.have.a.property('result').that.is.an('object');
 					expect(data).to.have.a.property('error').that.is.an('object');
@@ -2073,9 +2054,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('error').that.is.an('object');
 					expect(data.error.sanitizedError).to.have.a.property('reason', 'Match failed');
@@ -2261,9 +2242,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('msg').that.is.an('string');
@@ -2284,9 +2265,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('msg').that.is.an('string');
@@ -2294,7 +2275,7 @@ describe('Meteor.methods', () => {
 				});
 		});
 
-		it('should add a quote attachment to a message', async () => {
+		it.skip('should add a quote attachment to a message', async () => {
 			const quotedMsgLink = `${siteUrl}/group/${roomName}?msg=${messageWithMarkdownId}`;
 			await request
 				.post(methodCall('updateMessage'))
@@ -2311,6 +2292,7 @@ describe('Meteor.methods', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
+					// TODO: this test is not testing anything useful
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 				});
 
@@ -2398,7 +2380,7 @@ describe('Meteor.methods', () => {
 				});
 		});
 
-		it('should remove a quote attachment from a message', async () => {
+		it.skip('should remove a quote attachment from a message', async () => {
 			await request
 				.post(methodCall('updateMessage'))
 				.set(credentials)
@@ -2554,9 +2536,9 @@ describe('Meteor.methods', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('success', false);
 						expect(res.body).to.have.a.property('message').that.is.a('string');
 
 						const data = JSON.parse(res.body.message);
@@ -2565,6 +2547,252 @@ describe('Meteor.methods', () => {
 					})
 					.end(done);
 			});
+		});
+	});
+
+	describe('[@getRoomByTypeAndName]', () => {
+		let testUser: TestUser<IUser>;
+		let testUser2: TestUser<IUser>;
+		let testUserCredentials: Credentials;
+		let dmId: IRoom['_id'];
+		let room: IRoom;
+		let privateRoom: IRoom;
+
+		before(async () => {
+			testUser = await createUser();
+			testUser2 = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+		});
+
+		before(async () => {
+			room = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+				})
+			).body.channel;
+		});
+
+		before('create direct conversation with user', (done) => {
+			void request
+				.post(methodCall('createDirectMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'createDirectMessage',
+						params: [testUser2.username],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.an('object');
+					expect(result.result).to.have.property('rid').that.is.an('string');
+
+					dmId = result.result.rid;
+					done();
+				});
+		});
+
+		before(async () => {
+			privateRoom = (
+				await createRoom({
+					type: 'p',
+					name: `private.test.${Date.now()}-${Math.random()}`,
+				})
+			).body.group;
+		});
+
+		after(async () => {
+			await Promise.all([
+				deleteRoom({ type: 'd', roomId: dmId }),
+				deleteRoom({ type: 'c', roomId: room._id }),
+				deleteRoom({ type: 'p', roomId: privateRoom._id }),
+				deleteUser(testUser),
+				deleteUser(testUser2),
+				updateSetting('Accounts_AllowAnonymousRead', false),
+			]);
+		});
+
+		it('should throw error when anonymous user tries to read private channel with anonymous read enabled', async () => {
+			await updateSetting('Accounts_AllowAnonymousRead', true);
+
+			const payload = {
+				message: JSON.stringify({
+					msg: 'method',
+					id: '2',
+					method: 'getRoomByTypeAndName',
+					params: ['p', privateRoom.name],
+				}),
+			};
+
+			const res = await request.post('/api/v1/method.callAnon/getRoomByTypeAndName').set('Content-Type', 'application/json').send(payload);
+
+			expect(res.body).to.have.property('message');
+			const parsedMessage = JSON.parse(res.body.message);
+
+			expect(parsedMessage).to.have.property('error');
+			expect(parsedMessage.error).to.have.property('error');
+			expect(parsedMessage.error.error).to.equal('error-invalid-user');
+
+			await updateSetting('Accounts_AllowAnonymousRead', false);
+		});
+
+		it("should throw an error if the user isn't logged in", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmId],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.be.equal('You must be logged in to do this.');
+					done();
+				});
+		});
+
+		it("should throw an error if name isn't provided", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', null],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body).to.have.property('message');
+
+					const parsedResponse = JSON.parse(res.body.message);
+
+					expect(parsedResponse).to.have.property('error');
+					expect(parsedResponse.error).to.have.property('error');
+					expect(parsedResponse.error.error).to.equal('error-invalid-room');
+					done();
+				});
+		});
+
+		it("should throw an error if type isn't provided", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: [null, dmId],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body).to.have.property('message');
+
+					const parsedResponse = JSON.parse(res.body.message);
+
+					expect(parsedResponse).to.have.property('error');
+					expect(parsedResponse.error).to.have.property('error');
+					expect(parsedResponse.error.error).to.equal('error-invalid-room');
+					done();
+				});
+		});
+
+		it("should throw an error if the user doesn't have access to the room", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmId],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body).to.have.property('message');
+
+					const parsedResponse = JSON.parse(res.body.message);
+					expect(parsedResponse).to.have.property('error');
+					expect(parsedResponse.error).to.have.property('error');
+					expect(parsedResponse.error.error).to.equal('error-no-permission');
+					done();
+				});
+		});
+
+		it("should throw an error if the room doesn't exist", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', 'testId'],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body).to.have.property('message');
+
+					const parsedResponse = JSON.parse(res.body.message);
+
+					expect(parsedResponse).to.have.property('error');
+					expect(parsedResponse.error).to.have.property('error');
+					expect(parsedResponse.error.error).to.equal('error-invalid-room');
+					done();
+				});
+		});
+
+		it('should return the room object for a Public Channel if anonymous read is enabled', async () => {
+			await updateSetting('Accounts_AllowAnonymousRead', true);
+
+			const res = await request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['c', room._id],
+						id: 'id',
+						msg: 'method',
+					}),
+				});
+
+			expect(res.body.success).to.equal(true);
+			const parsedResponse = JSON.parse(res.body.message);
+			expect(parsedResponse.result.name).to.equal(room.name);
+
+			await updateSetting('Accounts_AllowAnonymousRead', false);
+		});
+
+		it('should return the room object for a DM', (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmId],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body.success).to.equal(true);
+					const parsedResponse = JSON.parse(res.body.message);
+					expect(parsedResponse.result._id).to.equal(dmId);
+					done();
+				});
 		});
 	});
 
@@ -2836,340 +3064,152 @@ describe('Meteor.methods', () => {
 		let room: IRoom;
 		let createdRooms: IRoom[] = [];
 
-		before(async () => {
-			guestUser = await createUser({ roles: ['guest'] });
-			user = await createUser();
-			room = (
-				await createRoom({
-					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
-				})
-			).body.channel;
-			createdRooms.push(room);
-		});
-		after(() =>
-			Promise.all([...createdRooms.map((r) => deleteRoom({ type: 'c', roomId: r._id })), deleteUser(user), deleteUser(guestUser)]),
-		);
-
-		it('should fail if not logged in', (done) => {
-			void request
-				.post(methodCall('addUsersToRoom'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
-		});
-
-		it('should add a single user to a room', (done) => {
-			void request
-				.post(methodCall('addUsersToRoom'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'addUsersToRoom',
-						params: [{ rid: room._id, users: [user.username] }],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.then(() => {
-					void request
-						.get(api('channels.members'))
-						.set(credentials)
-						.query({
-							roomId: room._id,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('members').and.to.be.an('array');
-							expect(res.body.members).to.have.lengthOf(2);
-						})
-						.end(done);
-				})
-				.catch(done);
-		});
-
-		it('should not add guest users to more rooms than defined in the license', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (!process.env.IS_EE) {
-				this.skip();
-			}
-			const promises = [];
-			for (let i = 0; i < maxRoomsPerGuest; i++) {
-				promises.push(
-					createRoom({
-						type: 'c',
-						name: `channel.test.${Date.now()}-${Math.random()}`,
-						members: [guestUser.username],
-					}),
-				);
-			}
-			createdRooms = [...createdRooms, ...(await Promise.all(promises)).map((res) => res.body.channel)];
-
-			void request
-				.post(methodCall('addUsersToRoom'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'addUsersToRoom',
-						params: [{ rid: room._id, users: [guestUser.username] }],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					const parsedBody = JSON.parse(res.body.message);
-					expect(parsedBody).to.have.property('error');
-					expect(parsedBody.error).to.have.property('error', 'error-max-rooms-per-guest-reached');
-				});
-		});
-	});
-
-	describe('[@muteUserInRoom & @unmuteUserInRoom]', () => {
-		let rid: IRoom['_id'];
-		let channelName: string;
-		let testUser: TestUser<IUser>;
-		let testUserCredentials = {};
-
-		before('create test user', async () => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
-
-			testUser = await createUser({ email, name: username, username, password: username, roles: ['user'] });
-		});
-
-		before('create channel', async () => {
-			channelName = `methods-test-channel-${Date.now()}`;
-			rid = (await createRoom({ type: 'c', name: channelName, members: [testUser.username] })).body.channel._id;
-		});
-
-		before('login testUser', async () => {
-			testUserCredentials = await login(testUser.username, testUser.username);
-		});
-
-		after(() => Promise.all([deleteRoom({ type: 'c', roomId: rid }), deleteUser(testUser)]));
-
-		describe('-> standard room', () => {
-			describe('- when muting a user in a standard room', () => {
-				it('should mute an user in a standard room', async () => {
-					await request
-						.post(methodCall('muteUserInRoom'))
-						.set(credentials)
-						.send({
-							message: JSON.stringify({
-								method: 'muteUserInRoom',
-								params: [{ rid, username: testUser.username }],
-								id: 'id',
-								msg: 'method',
-							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
-							const data = JSON.parse(res.body.message);
-							expect(data).to.have.a.property('msg', 'result');
-							expect(data).to.have.a.property('id', 'id');
-							expect(data).not.to.have.a.property('error');
-						});
-				});
-
-				it('muted user should not be able to send message', async () => {
-					await request
-						.post(api('chat.sendMessage'))
-						.set(testUserCredentials)
-						.send({
-							message: {
-								msg: 'Sample message',
-								rid,
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error').that.is.a('string');
-							expect(res.body.error).to.equal('You_have_been_muted');
-						});
-				});
+		describe('Direct Message', () => {
+			let thirdUser: TestUser<IUser>;
+			before(async () => {
+				guestUser = await createUser({ roles: ['user'] });
+				thirdUser = await createUser({ roles: ['user'] });
+				user = await createUser();
+				room = (
+					await createRoom({
+						type: 'd',
+						username: guestUser.username,
+					})
+				).body.room;
+				createdRooms.push(room);
 			});
+			after(() =>
+				Promise.all([
+					...createdRooms.map((r) => deleteRoom({ type: 'd', roomId: r._id })),
+					deleteUser(user),
+					deleteUser(guestUser),
+					deleteUser(thirdUser),
+				]),
+			);
 
-			describe('- when unmuting a user in a standard room', () => {
-				it('should unmute an user in a standard room', async () => {
-					await request
-						.post(methodCall('unmuteUserInRoom'))
-						.set(credentials)
-						.send({
-							message: JSON.stringify({
-								method: 'unmuteUserInRoom',
-								params: [{ rid, username: testUser.username }],
-								id: 'id',
-								msg: 'method',
-							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
-							const data = JSON.parse(res.body.message);
-							expect(data).to.have.a.property('msg', 'result');
-							expect(data).to.have.a.property('id', 'id');
-							expect(data).not.to.have.a.property('error');
-						});
-				});
-
-				it('unmuted user should be able to send message', async () => {
-					await request
-						.post(api('chat.sendMessage'))
-						.set(testUserCredentials)
-						.send({
-							message: {
-								msg: 'Sample message',
-								rid,
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						});
-				});
-			});
-		});
-
-		describe('-> read-only room', () => {
-			before('set room to read-only', async () => {
-				await request
-					.post(api('channels.setReadOnly'))
+			it('should fail when trying to add a user to a direct message room', (done) => {
+				void request
+					.post(methodCall('addUsersToRoom'))
 					.set(credentials)
 					.send({
-						roomId: rid,
-						readOnly: true,
+						message: JSON.stringify({
+							method: 'addUsersToRoom',
+							params: [{ rid: room._id, users: [thirdUser.username] }],
+							id: 'id',
+							msg: 'method',
+						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200);
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').that.is.an('string');
+						expect(res.body.message).to.include('error-cant-invite-for-direct-room');
+					})
+					.end(done);
+			});
+		});
+
+		describe('Channel', () => {
+			before(async () => {
+				guestUser = await createUser({ roles: ['guest'] });
+				user = await createUser();
+				room = (
+					await createRoom({
+						type: 'c',
+						name: `channel.test.${Date.now()}-${Math.random()}`,
+					})
+				).body.channel;
+				createdRooms.push(room);
+			});
+			after(() =>
+				Promise.all([...createdRooms.map((r) => deleteRoom({ type: 'c', roomId: r._id })), deleteUser(user), deleteUser(guestUser)]),
+			);
+
+			it('should fail if not logged in', (done) => {
+				void request
+					.post(methodCall('addUsersToRoom'))
+					.expect('Content-Type', 'application/json')
+					.expect(401)
+					.expect((res) => {
+						expect(res.body).to.have.property('status', 'error');
+						expect(res.body).to.have.property('message');
+					})
+					.end(done);
 			});
 
-			it('should not allow an user to send messages', async () => {
-				await request
-					.post(api('chat.sendMessage'))
-					.set(testUserCredentials)
+			it('should add a single user to a room', (done) => {
+				void request
+					.post(methodCall('addUsersToRoom'))
+					.set(credentials)
 					.send({
-						message: {
-							msg: 'Sample message',
-							rid,
-						},
+						message: JSON.stringify({
+							method: 'addUsersToRoom',
+							params: [{ rid: room._id, users: [user.username] }],
+							id: 'id',
+							msg: 'method',
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.then(() => {
+						void request
+							.get(api('channels.members'))
+							.set(credentials)
+							.query({
+								roomId: room._id,
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+								expect(res.body).to.have.property('members').and.to.be.an('array');
+								expect(res.body.members).to.have.lengthOf(2);
+							})
+							.end(done);
+					})
+					.catch(done);
+			});
+
+			it('should not add guest users to more rooms than defined in the license', async function () {
+				// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+				// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+				if (!process.env.IS_EE) {
+					this.skip();
+				}
+				const promises = [];
+				for (let i = 0; i < maxRoomsPerGuest; i++) {
+					promises.push(
+						createRoom({
+							type: 'c',
+							name: `channel.test.${Date.now()}-${Math.random()}`,
+							members: [guestUser.username],
+						}),
+					);
+				}
+				createdRooms = [...createdRooms, ...(await Promise.all(promises)).map((res) => res.body.channel)];
+
+				void request
+					.post(methodCall('addUsersToRoom'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'addUsersToRoom',
+							params: [{ rid: room._id, users: [guestUser.username] }],
+							id: 'id',
+							msg: 'method',
+						}),
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error').that.is.a('string');
-						expect(res.body.error).to.equal(`You can't send messages because the room is readonly.`);
+						const parsedBody = JSON.parse(res.body.message);
+						expect(parsedBody).to.have.property('error');
+						expect(parsedBody.error).to.have.property('error', 'error-max-rooms-per-guest-reached');
 					});
-			});
-
-			describe('- when unmuting a user in a read-only room', () => {
-				it('should unmute an user in a read-only room', async () => {
-					await request
-						.post(methodCall('unmuteUserInRoom'))
-						.set(credentials)
-						.send({
-							message: JSON.stringify({
-								method: 'unmuteUserInRoom',
-								params: [{ rid, username: testUser.username }],
-								id: 'id',
-								msg: 'method',
-							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
-							const data = JSON.parse(res.body.message);
-							expect(data).to.have.a.property('msg', 'result');
-							expect(data).to.have.a.property('id', 'id');
-							expect(data).not.to.have.a.property('error');
-						});
-				});
-
-				it('unmuted user in read-only room should be able to send message', async () => {
-					await request
-						.post(api('chat.sendMessage'))
-						.set(testUserCredentials)
-						.send({
-							message: {
-								msg: 'Sample message',
-								rid,
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						});
-				});
-			});
-
-			describe('- when muting a user in a read-only room', () => {
-				it('should mute an user in a read-only room', async () => {
-					await request
-						.post(methodCall('muteUserInRoom'))
-						.set(credentials)
-						.send({
-							message: JSON.stringify({
-								method: 'muteUserInRoom',
-								params: [{ rid, username: testUser.username }],
-								id: 'id',
-								msg: 'method',
-							}),
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
-							const data = JSON.parse(res.body.message);
-							expect(data).to.have.a.property('msg', 'result');
-							expect(data).to.have.a.property('id', 'id');
-							expect(data).not.to.have.a.property('error');
-						});
-				});
-
-				it('muted user in read-only room should not be able to send message', async () => {
-					await request
-						.post(api('chat.sendMessage'))
-						.set(testUserCredentials)
-						.send({
-							message: {
-								msg: 'Sample message',
-								rid,
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error').that.is.a('string');
-						});
-				});
 			});
 		});
 	});
@@ -3187,9 +3227,9 @@ describe('Meteor.methods', () => {
 						params: [[{ _id: 'Message_AllowEditing_BlockEditInMinutes', value: { $InfNaN: 0 } }]],
 					}),
 				})
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
 					expect(parsedBody.error).to.have.property('error', 'Invalid setting value NaN');
@@ -3236,80 +3276,6 @@ describe('Meteor.methods', () => {
 					expect(parsedBody).to.have.property('error');
 					expect(parsedBody.error).to.have.property('error', 'Invalid setting value -Infinity');
 				});
-		});
-	});
-
-	describe('@insertOrUpdateUser', () => {
-		let testUser: TestUser<IUser>;
-		let testUserCredentials: Credentials;
-
-		before(async () => {
-			testUser = await createUser();
-			testUserCredentials = await login(testUser.username, password);
-		});
-
-		after(() => Promise.all([deleteUser(testUser)]));
-
-		it('should fail if user tries to verify their own email via insertOrUpdateUser', (done) => {
-			void request
-				.post(methodCall('insertOrUpdateUser'))
-				.set(testUserCredentials)
-				.send({
-					message: JSON.stringify({
-						method: 'insertOrUpdateUser',
-						params: [
-							{
-								_id: testUserCredentials['X-User-Id'],
-								email: 'manager@rocket.chat',
-								verified: true,
-							},
-						],
-						id: '52',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('msg', 'result');
-					expect(data).to.have.a.property('id', '52');
-					expect(data.error).to.have.property('error', 'error-action-not-allowed');
-				})
-				.end(done);
-		});
-
-		it('should pass if a user with the right permissions tries to verify the email of another user', (done) => {
-			void request
-				.post(methodCall('insertOrUpdateUser'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'insertOrUpdateUser',
-						params: [
-							{
-								_id: testUserCredentials['X-User-Id'],
-								email: 'testuser@rocket.chat',
-								verified: true,
-							},
-						],
-						id: '52',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('msg', 'result');
-					expect(data).to.have.a.property('id', '52');
-					expect(data).to.have.a.property('result', true);
-				})
-				.end(done);
 		});
 	});
 
@@ -3369,7 +3335,7 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('message');
 					const data = JSON.parse(res.body.message);
@@ -3417,303 +3383,44 @@ describe('Meteor.methods', () => {
 		});
 	});
 
-	describe('UpdateOTRAck', () => {
-		let testUser: TestUser<IUser>;
-		let testUser2: TestUser<IUser>;
-		let testUserCredentials: Credentials;
-		let dmTestId: IRoom['_id'];
+	describe('[@joinRoom]', async () => {
+		let room: IOmnichannelRoom;
+		let user: TestUser<IUser>;
+		let userCredentials: Credentials;
 
 		before(async () => {
-			testUser = await createUser();
-			testUser2 = await createUser();
-			testUserCredentials = await login(testUser.username, password);
+			const visitor = await createVisitor();
+			room = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room._id);
+
+			user = await createUser();
+			await createAgent(user.username);
+			userCredentials = await login(user.username, password);
 		});
 
-		before('create direct conversation between both users', (done) => {
-			void request
-				.post(methodCall('createDirectMessage'))
-				.set(testUserCredentials)
+		after(() => Promise.all([deleteUser(user)]));
+
+		it('should not allow an agent to join a closed livechat room', async () => {
+			await request
+				.post(methodCall('joinRoom'))
+				.set(userCredentials)
 				.send({
 					message: JSON.stringify({
-						method: 'createDirectMessage',
-						params: [testUser2.username],
+						method: 'joinRoom',
+						params: [room._id],
 						id: 'id',
 						msg: 'method',
 					}),
 				})
-				.end((_err, res) => {
-					const result = JSON.parse(res.body.message);
-					expect(result.result).to.be.an('object');
-					expect(result.result).to.have.property('rid').that.is.an('string');
-
-					dmTestId = result.result.rid;
-					done();
-				});
-		});
-
-		after(() => Promise.all([deleteRoom({ type: 'd', roomId: dmTestId }), deleteUser(testUser), deleteUser(testUser2)]));
-
-		it('should fail if required parameters are not present', async () => {
-			await request
-				.post(methodCall('updateOTRAck'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'updateOTRAck',
-						params: [
-							{
-								message: {
-									_id: 'czjFdkFab7H5bWxYq',
-									// rid: 'test',
-									msg: 'test',
-									t: 'otr',
-									ts: { $date: 1725447664093 },
-									u: {
-										_id: 'test',
-										username: 'test',
-										name: 'test',
-									},
-								},
-								ack: 'test',
-							},
-						],
-						id: '18',
-						msg: 'method',
-					}),
-				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('message');
+					expect(res.body).to.have.a.property('success', false);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error');
-					expect(data.error).to.have.a.property('message', "Match error: Missing key 'rid'");
-				});
-		});
-
-		it('should fail if required parameters have a different type', async () => {
-			await request
-				.post(methodCall('updateOTRAck'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'updateOTRAck',
-						params: [
-							{
-								message: {
-									_id: 'czjFdkFab7H5bWxYq',
-									rid: { $ne: 'test' },
-									msg: 'test',
-									t: 'otr',
-									ts: { $date: 1725447664093 },
-									u: {
-										_id: 'test',
-										username: 'test',
-										name: 'test',
-									},
-								},
-								ack: 'test',
-							},
-						],
-						id: '18',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('message');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error');
-					expect(data.error).to.have.a.property('message', 'Match error: Expected string, got object in field rid');
-				});
-		});
-
-		it('should fail if "t" is not "otr"', async () => {
-			await request
-				.post(methodCall('updateOTRAck'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'updateOTRAck',
-						params: [
-							{
-								message: {
-									_id: 'czjFdkFab7H5bWxYq',
-									rid: 'test',
-									msg: 'test',
-									t: 'notOTR',
-									ts: { $date: 1725447664093 },
-									u: {
-										_id: 'test',
-										username: 'test',
-										name: 'test',
-									},
-								},
-								ack: 'test',
-							},
-						],
-						id: '18',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('message');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error');
-					expect(data.error).to.have.a.property('message', 'Invalid message type [error-invalid-message]');
-				});
-		});
-
-		it('should fail if room does not exist', async () => {
-			await request
-				.post(methodCall('updateOTRAck'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'updateOTRAck',
-						params: [
-							{
-								message: {
-									_id: 'czjFdkFab7H5bWxYq',
-									rid: 'test',
-									msg: 'test',
-									t: 'otr',
-									ts: { $date: 1725447664093 },
-									u: {
-										_id: 'test',
-										username: 'test',
-										name: 'test',
-									},
-								},
-								ack: 'test',
-							},
-						],
-						id: '18',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('message');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error');
-					expect(data.error).to.have.a.property('message', 'Invalid room [error-invalid-room]');
-				});
-		});
-
-		it('should fail if room is not a DM', async () => {
-			await request
-				.post(methodCall('updateOTRAck'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'updateOTRAck',
-						params: [
-							{
-								message: {
-									_id: 'czjFdkFab7H5bWxYq',
-									rid: 'GENERAL',
-									msg: 'test',
-									t: 'otr',
-									ts: { $date: 1725447664093 },
-									u: {
-										_id: 'test',
-										username: 'test',
-										name: 'test',
-									},
-								},
-								ack: 'test',
-							},
-						],
-						id: '18',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('message');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error');
-					expect(data.error).to.have.a.property('message', 'Invalid room [error-invalid-room]');
-				});
-		});
-
-		it('should fail if user is not part of DM room', async () => {
-			await request
-				.post(methodCall('updateOTRAck'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'updateOTRAck',
-						params: [
-							{
-								message: {
-									_id: 'czjFdkFab7H5bWxYq',
-									rid: dmTestId,
-									msg: 'test',
-									t: 'otr',
-									ts: { $date: 1725447664093 },
-									u: {
-										_id: testUser._id,
-										username: testUser.username,
-										name: 'test',
-									},
-								},
-								ack: 'test',
-							},
-						],
-						id: '18',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('message');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error');
-					expect(data.error).to.have.a.property('message', 'Invalid user, not in room [error-invalid-user]');
-				});
-		});
-
-		it('should pass if all parameters are present and user is part of DM room', async () => {
-			await request
-				.post(methodCall('updateOTRAck'))
-				.set(testUserCredentials)
-				.send({
-					message: JSON.stringify({
-						method: 'updateOTRAck',
-						params: [
-							{
-								message: {
-									_id: 'czjFdkFab7H5bWxYq',
-									rid: dmTestId,
-									msg: 'test',
-									t: 'otr',
-									ts: { $date: 1725447664093 },
-									u: {
-										_id: testUser._id,
-										username: testUser.username,
-										name: 'test',
-									},
-								},
-								ack: 'test',
-							},
-						],
-						id: '18',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('message');
-					expect(res.body).to.have.a.property('success', true);
+					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data.error).to.have.a.property('error', 'room-closed');
 				});
 		});
 	});

@@ -6,12 +6,12 @@ import type { IUser } from '../users';
  * - IPostMessageDeleted
  */
 export interface IMessageDeleteContext {
-    /**
-     * The message that was deleted
-     */
-    message: IMessage;
-    /**
-     * The user who deleted the message
-     */
-    user: IUser;
+	/**
+	 * The message that was deleted
+	 */
+	message: IMessage;
+	/**
+	 * The user who deleted the message
+	 */
+	user: IUser;
 }

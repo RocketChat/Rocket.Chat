@@ -1,6 +1,6 @@
+import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IMessage, IRoom, MessageAttachment } from '@rocket.chat/core-typings';
 
-import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server/cached';
 import { getUserAvatarURL } from '../../../utils/server/getUserAvatarURL';

@@ -50,16 +50,18 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { userId: uid } = this;
-			const { startTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart } = this.bodyParams;
+			const { startTime, endTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart, busy } = this.bodyParams;
 
 			const id = await Calendar.create({
 				uid,
 				startTime: new Date(startTime),
+				...(endTime && { endTime: new Date(endTime) }),
 				externalId,
 				subject,
 				description,
 				meetingUrl,
 				reminderMinutesBeforeStart,
+				...(typeof busy === 'boolean' && { busy }),
 			});
 
 			return API.v1.success({ id });
@@ -73,16 +75,18 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { userId: uid } = this;
-			const { startTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart } = this.bodyParams;
+			const { startTime, endTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart, busy } = this.bodyParams;
 
 			const id = await Calendar.import({
 				uid,
 				startTime: new Date(startTime),
+				...(endTime && { endTime: new Date(endTime) }),
 				externalId,
 				subject,
 				description,
 				meetingUrl,
 				reminderMinutesBeforeStart,
+				...(typeof busy === 'boolean' && { busy }),
 			});
 
 			return API.v1.success({ id });
@@ -96,7 +100,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { userId } = this;
-			const { eventId, startTime, subject, description, meetingUrl, reminderMinutesBeforeStart } = this.bodyParams;
+			const { eventId, startTime, endTime, subject, description, meetingUrl, reminderMinutesBeforeStart, busy } = this.bodyParams;
 
 			const event = await Calendar.get(eventId);
 
@@ -106,10 +110,12 @@ API.v1.addRoute(
 
 			await Calendar.update(eventId, {
 				startTime: new Date(startTime),
+				...(endTime && { endTime: new Date(endTime) }),
 				subject,
 				description,
 				meetingUrl,
 				reminderMinutesBeforeStart,
+				...(typeof busy === 'boolean' && { busy }),
 			});
 
 			return API.v1.success();

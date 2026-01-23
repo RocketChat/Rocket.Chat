@@ -43,6 +43,7 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['block-livechat-contact'],
 		validateParams: isBlockContactProps,
+		license: ['livechat-enterprise'],
 	},
 	{
 		async post() {
@@ -69,6 +70,7 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['unblock-livechat-contact'],
 		validateParams: isBlockContactProps,
+		license: ['livechat-enterprise'],
 	},
 	{
 		async post() {

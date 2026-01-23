@@ -37,7 +37,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		return message.includes('retry');
 	}
 
-	async created(): Promise<void> {
+	override async created(): Promise<void> {
 		this.queue.databasePromise = () => {
 			return Promise.resolve(this.db);
 		};
@@ -62,7 +62,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		await this.db.collection(this.queue.collectionName).createIndex({ receivedTime: 1 }, { sparse: true });
 	}
 
-	async stopped(): Promise<void> {
+	override async stopped(): Promise<void> {
 		this.logger.info('Stopping queue worker');
 		this.queue.stopPolling();
 	}

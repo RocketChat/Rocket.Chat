@@ -1,14 +1,24 @@
-import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, Icon, PasswordInput } from '@rocket.chat/fuselage';
+import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
-import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useId } from 'react';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
+import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useAllowPasswordChange } from './useAllowPasswordChange';
 
 type PasswordFieldValues = { password: string; confirmationPassword: string };
+
+function getAriaDescribedbyForPassword(
+	passwordVerifierId: string,
+	passwordId: string,
+	allowPasswordChange: boolean,
+	passwordError: boolean,
+) {
+	const error = !allowPasswordChange || passwordError;
+	return [passwordVerifierId, !allowPasswordChange && `${passwordId}-hint`, error && `${passwordId}-error`].filter(Boolean).join(' ');
+}
 
 const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const { t } = useTranslation();
@@ -30,12 +40,15 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const passwordIsValid = useValidatePassword(password);
 	const { allowPasswordChange } = useAllowPasswordChange();
 
-	// FIXME: replace to endpoint
-	const updatePassword = useMethod('saveUserProfile');
+	const updatePassword = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
 
 	const handleSave = async ({ password }: { password?: string }) => {
 		try {
-			await updatePassword({ newPassword: password }, {});
+			await updatePassword({
+				data: {
+					newPassword: password,
+				},
+			});
 			dispatchToastMessage({ type: 'success', message: t('Password_changed_successfully') });
 			reset();
 		} catch (error) {
@@ -62,9 +75,13 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									id={passwordId}
 									error={errors.password?.message}
 									flexGrow={1}
-									addon={<Icon name='key' size='x20' />}
 									disabled={!allowPasswordChange}
-									aria-describedby={`${passwordVerifierId} ${passwordId}-hint ${passwordId}-error`}
+									aria-describedby={getAriaDescribedbyForPassword(
+										passwordVerifierId,
+										passwordId,
+										!!allowPasswordChange,
+										!!errors?.password,
+									)}
 									aria-invalid={errors.password ? 'true' : 'false'}
 								/>
 							)}
@@ -94,11 +111,10 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									id={confirmPasswordId}
 									error={errors.confirmationPassword?.message}
 									flexGrow={1}
-									addon={<Icon name='key' size='x20' />}
 									disabled={!allowPasswordChange || !passwordIsValid}
 									aria-required={password !== '' ? 'true' : 'false'}
 									aria-invalid={errors.confirmationPassword ? 'true' : 'false'}
-									aria-describedby={`${confirmPasswordId}-error`}
+									aria-describedby={errors.confirmationPassword ? `${confirmPasswordId}-error` : undefined}
 								/>
 							)}
 						/>

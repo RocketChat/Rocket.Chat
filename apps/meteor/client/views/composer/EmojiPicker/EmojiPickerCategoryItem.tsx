@@ -6,9 +6,8 @@ import type { EmojiCategory } from '../../../../app/emoji/client';
 
 type EmojiPickerCategoryItemProps = {
 	category: EmojiCategory;
-	index: number;
 	active: boolean;
-	handleGoToCategory: (categoryIndex: number) => void;
+	handleGoToCategory: () => void;
 } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
 const mapCategoryIcon = (category: string) => {
@@ -45,7 +44,7 @@ const mapCategoryIcon = (category: string) => {
 	}
 };
 
-const EmojiPickerCategoryItem = ({ category, index, active, handleGoToCategory, ...props }: EmojiPickerCategoryItemProps) => {
+const EmojiPickerCategoryItem = ({ category, active, handleGoToCategory, ...props }: EmojiPickerCategoryItemProps) => {
 	const { t } = useTranslation();
 
 	const icon = mapCategoryIcon(category.key);
@@ -58,7 +57,7 @@ const EmojiPickerCategoryItem = ({ category, index, active, handleGoToCategory, 
 			className={category.key}
 			small
 			aria-label={t(category.i18n)}
-			onClick={() => handleGoToCategory(index)}
+			onClick={handleGoToCategory}
 			icon={icon}
 			{...props}
 		/>

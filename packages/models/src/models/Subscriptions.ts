@@ -30,6 +30,7 @@ import type {
 	CountDocumentsOptions,
 	DeleteOptions,
 	WithId,
+	ClientSession,
 } from 'mongodb';
 
 import { Rooms, Users } from '../index';
@@ -40,7 +41,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		super(db, 'subscription', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		// Add all indexes from constructor to here
 		return [
 			{ key: { E2EKey: 1 }, unique: true, sparse: true },
@@ -142,7 +143,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
@@ -156,13 +157,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	}
 
-	countByRoomIdAndUserId(rid: string, uid: string | undefined): Promise<number> {
+	countByRoomIdAndUserId(rid: string, uid: string | undefined, includeInvitations = false): Promise<number> {
 		const query = {
 			rid,
 			'u._id': uid,
+			...(includeInvitations ? { $or: [{ status: { $exists: false } }, { status: 'INVITED' as const }] } : { status: { $exists: false } }),
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	countUnarchivedByRoomId(rid: string): Promise<number> {
@@ -171,7 +173,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'archived': { $ne: true },
 			'u._id': { $exists: true },
 		};
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	async isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<boolean> {
@@ -1146,15 +1148,19 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	 * @param {IRole['_id'][]} roles the list of roles
 	 * @param {any} options
 	 */
-	findByRoomIdAndRoles(roomId: string, roles: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
-		roles = ([] as string[]).concat(roles);
+	findByRoomIdAndRoles: ISubscriptionsModel['findByRoomIdAndRoles'] = (
+		roomId: string,
+		roles: string[],
+		options?: FindOptions<ISubscription>,
+	) => {
+		const rolesArray = ([] as string[]).concat(roles);
 		const query = {
 			rid: roomId,
-			roles: { $in: roles },
+			roles: { $in: rolesArray },
 		};
 
 		return this.find(query, options);
-	}
+	};
 
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number> {
 		roles = ([] as string[]).concat(roles);
@@ -1163,13 +1169,16 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			roles: { $in: roles },
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
-	countByUserId(userId: string): Promise<number> {
-		const query = { 'u._id': userId };
+	countByUserIdExceptType(userId: string, typeException: ISubscription['t']): Promise<number> {
+		const query: Filter<ISubscription> = {
+			'u._id': userId,
+			't': { $ne: typeException },
+		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	countByRoomId(roomId: string, options?: CountDocumentsOptions): Promise<number> {
@@ -1178,10 +1187,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		if (options) {
-			return this.col.countDocuments(query, options);
+			return this.countDocuments(query, options);
 		}
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	findByType(types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
@@ -1256,7 +1265,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number> {
 		const query = { rid, 'u.username': { $exists: true } };
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	findUnreadByUserId(userId: string): FindCursor<ISubscription> {
@@ -1319,6 +1328,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const query = {
 			'rid': roomId,
 			'u._id': userId,
+			'open': true,
 		};
 
 		const update: UpdateFilter<ISubscription> = {
@@ -1443,7 +1453,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	updateNameAndFnameById(_id: string, name: string, fname: string): Promise<UpdateResult | Document> {
+	updateNameAndFnameById(
+		_id: string,
+		name: string,
+		fname: string,
+		options?: { session?: ClientSession },
+	): Promise<UpdateResult | Document> {
 		const query = { _id };
 
 		const update: UpdateFilter<ISubscription> = {
@@ -1453,7 +1468,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateMany(query, update, { session: options?.session });
 	}
 
 	setUserUsernameByUserId(userId: string, username: string): Promise<UpdateResult | Document> {
@@ -2040,6 +2055,74 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const update: UpdateFilter<ISubscription> = {
 			$set: {
 				open: true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	findUserFederatedRoomIds(userId: IUser['_id']): AggregationCursor<{ _id: IRoom['_id']; externalRoomId: string }> {
+		return this.col.aggregate<{ _id: IRoom['_id']; externalRoomId: string }>([
+			{
+				$match: {
+					'u._id': userId,
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'rid',
+					foreignField: '_id',
+					as: 'room',
+				},
+			},
+			{
+				$match: {
+					'room.federated': true,
+				},
+			},
+			{
+				$project: {
+					_id: '$rid',
+					externalRoomId: { $arrayElemAt: ['$room.federation.mrid', 0] },
+				},
+			},
+		]);
+	}
+
+	async findInvitedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<ISubscription | null> {
+		return this.findOne({
+			'rid': roomId,
+			'u._id': userId,
+			'status': 'INVITED',
+		});
+	}
+
+	async acceptInvitationById(subscriptionId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: subscriptionId },
+			{
+				$unset: {
+					status: 1,
+					inviter: 1,
+				},
+				$set: {
+					open: true,
+					alert: false,
+				},
+			},
+		);
+	}
+
+	setAbacLastTimeCheckedByUserIdAndRoomId(userId: string, roomId: string, time: Date): Promise<UpdateResult> {
+		const query = {
+			'rid': roomId,
+			'u._id': userId,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				abacLastTimeChecked: time,
 			},
 		};
 

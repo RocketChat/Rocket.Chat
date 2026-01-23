@@ -43,7 +43,6 @@ declare module '@rocket.chat/model-typings' {
 		unsetPriorityByRoomId(roomId: string): Promise<UpdateResult>;
 		countPrioritizedRooms(): Promise<number>;
 		countRoomsWithSla(): Promise<number>;
-		countRoomsWithPdfTranscriptRequested(): Promise<number>;
 		countRoomsWithTranscriptSent(): Promise<number>;
 		getConversationsBySource(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult>;
 		getConversationsByStatus(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult>;
@@ -81,23 +80,19 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		super(db, trash);
 	}
 
-	countPrioritizedRooms(): Promise<number> {
-		return this.col.countDocuments({ priorityId: { $exists: true } });
+	override countPrioritizedRooms(): Promise<number> {
+		return this.countDocuments({ priorityId: { $exists: true } });
 	}
 
-	countRoomsWithSla(): Promise<number> {
-		return this.col.countDocuments({ slaId: { $exists: true } });
+	override countRoomsWithSla(): Promise<number> {
+		return this.countDocuments({ slaId: { $exists: true } });
 	}
 
-	countRoomsWithPdfTranscriptRequested(): Promise<number> {
-		return this.col.countDocuments({ pdfTranscriptRequested: true });
+	override countRoomsWithTranscriptSent(): Promise<number> {
+		return this.countDocuments({ pdfTranscriptFileId: { $exists: true } });
 	}
 
-	countRoomsWithTranscriptSent(): Promise<number> {
-		return this.col.countDocuments({ pdfTranscriptFileId: { $exists: true } });
-	}
-
-	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
+	override async unsetAllPredictedVisitorAbandonment(): Promise<void> {
 		return this.updateMany(
 			{
 				'open': true,
@@ -110,15 +105,15 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		).then();
 	}
 
-	setOnHoldByRoomId(roomId: string): Promise<UpdateResult> {
+	override setOnHoldByRoomId(roomId: string): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { onHold: true } });
 	}
 
-	unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult> {
+	override unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $unset: { onHold: 1 } });
 	}
 
-	unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult> {
+	override unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: roomId,
@@ -132,7 +127,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	setSlaForRoomById(
+	override setSlaForRoomById(
 		roomId: string,
 		sla: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>,
 	): Promise<UpdateResult | Document> {
@@ -151,7 +146,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	removeSlaFromRoomById(roomId: string): Promise<UpdateResult | Document> {
+	override removeSlaFromRoomById(roomId: string): Promise<UpdateResult | Document> {
 		return this.updateOne(
 			{
 				_id: roomId,
@@ -167,7 +162,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	bulkRemoveSlaFromRoomsById(slaId: string): Promise<UpdateResult | Document> {
+	override bulkRemoveSlaFromRoomsById(slaId: string): Promise<UpdateResult | Document> {
 		return this.updateMany(
 			{
 				open: true,
@@ -183,7 +178,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	findOpenBySlaId(
+	override findOpenBySlaId(
 		slaId: string,
 		options: FindOptions<IOmnichannelRoom>,
 		extraQuery?: Filter<IOmnichannelRoom>,
@@ -198,13 +193,13 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return this.find(query, options);
 	}
 
-	async setPriorityByRoomId(roomId: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<UpdateResult> {
+	override async setPriorityByRoomId(roomId: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<UpdateResult> {
 		const { _id: priorityId, sortItem: priorityWeight } = priority;
 
 		return this.updateOne({ _id: roomId }, { $set: { priorityId, priorityWeight } });
 	}
 
-	async unsetPriorityByRoomId(roomId: string): Promise<UpdateResult> {
+	override async unsetPriorityByRoomId(roomId: string): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id: roomId },
 			{
@@ -218,14 +213,14 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getPredictedVisitorAbandonmentByRoomIdUpdateQuery(
+	override getPredictedVisitorAbandonmentByRoomIdUpdateQuery(
 		date: Date,
 		roomUpdater: Updater<IOmnichannelRoom> = this.getUpdater(),
 	): Updater<IOmnichannelRoom> {
 		return roomUpdater.set('omnichannel.predictedVisitorAbandonmentAt', date);
 	}
 
-	setPredictedVisitorAbandonmentByRoomId(rid: string, willBeAbandonedAt: Date): Promise<UpdateResult> {
+	override setPredictedVisitorAbandonmentByRoomId(rid: string, willBeAbandonedAt: Date): Promise<UpdateResult> {
 		const query = {
 			_id: rid,
 		};
@@ -238,7 +233,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return this.updateOne(query, update);
 	}
 
-	findAbandonedOpenRooms(date: Date, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<IOmnichannelRoom> {
+	override findAbandonedOpenRooms(date: Date, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<IOmnichannelRoom> {
 		return this.find({
 			'omnichannel.predictedVisitorAbandonmentAt': { $lte: date },
 			'waitingResponse': { $exists: false },
@@ -248,7 +243,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		});
 	}
 
-	async unsetPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult> {
+	override async unsetPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: roomId,
@@ -259,7 +254,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	async associateRoomsWithDepartmentToUnit(departments: string[], unitId: string): Promise<void> {
+	override async associateRoomsWithDepartmentToUnit(departments: string[], unitId: string): Promise<void> {
 		const query = {
 			$and: [
 				{
@@ -295,7 +290,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		await this.updateMany(queryToDisassociateOldRoomsConnectedToUnit, updateToDisassociateRooms);
 	}
 
-	async removeUnitAssociationFromRooms(unitId: string): Promise<void> {
+	override async removeUnitAssociationFromRooms(unitId: string): Promise<void> {
 		const query = {
 			departmentAncestors: unitId,
 		};
@@ -303,7 +298,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		await this.updateMany(query, update);
 	}
 
-	async updateDepartmentAncestorsById(rid: string, departmentAncestors?: string[]) {
+	override async updateDepartmentAncestorsById(rid: string, departmentAncestors?: string[]) {
 		const query = {
 			_id: rid,
 		};
@@ -311,7 +306,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return this.updateOne(query, update);
 	}
 
-	getConversationsBySource(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {
+	override getConversationsBySource(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -363,7 +358,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getConversationsByStatus(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {
+	override getConversationsByStatus(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult> {
 		return this.col.aggregate(
 			[
 				{
@@ -470,7 +465,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getConversationsByDepartment(
+	override getConversationsByDepartment(
 		start: Date,
 		end: Date,
 		sort: Record<string, 1 | -1>,
@@ -547,8 +542,12 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getTotalConversationsWithoutDepartmentBetweenDates(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
-		return this.col.countDocuments({
+	override getTotalConversationsWithoutDepartmentBetweenDates(
+		start: Date,
+		end: Date,
+		extraQuery: Filter<IOmnichannelRoom>,
+	): Promise<number> {
+		return this.countDocuments({
 			t: 'l',
 			departmentId: {
 				$exists: false,
@@ -561,7 +560,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		});
 	}
 
-	getConversationsByTags(
+	override getConversationsByTags(
 		start: Date,
 		end: Date,
 		sort: Record<string, 1 | -1>,
@@ -625,8 +624,8 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getConversationsWithoutTagsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
-		return this.col.countDocuments({
+	override getConversationsWithoutTagsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
+		return this.countDocuments({
 			t: 'l',
 			ts: {
 				$gte: start,
@@ -648,7 +647,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		});
 	}
 
-	getConversationsByAgents(
+	override getConversationsByAgents(
 		start: Date,
 		end: Date,
 		sort: Record<string, 1 | -1>,
@@ -720,8 +719,8 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		);
 	}
 
-	getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
-		return this.col.countDocuments({
+	override getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
+		return this.countDocuments({
 			t: 'l',
 			ts: {
 				$gte: start,
@@ -734,7 +733,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		});
 	}
 
-	updateMergedContactIds(
+	override updateMergedContactIds(
 		contactIdsThatWereMerged: ILivechatContact['_id'][],
 		newContactId: ILivechatContact['_id'],
 		options?: UpdateOptions,
@@ -742,7 +741,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return this.updateMany({ contactId: { $in: contactIdsThatWereMerged } }, { $set: { contactId: newContactId } }, options);
 	}
 
-	findClosedRoomsByContactAndSourcePaginated({
+	override findClosedRoomsByContactAndSourcePaginated({
 		contactId,
 		source,
 		options = {},

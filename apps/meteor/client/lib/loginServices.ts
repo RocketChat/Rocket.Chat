@@ -35,7 +35,6 @@ class LoginServices extends Emitter<LoginServicesEvents> {
 		'dolphin': { title: 'Dolphin', icon: 'dophin' },
 		'drupal': { title: 'Drupal', icon: 'drupal' },
 		'nextcloud': { title: 'Nextcloud', icon: 'nextcloud' },
-		'tokenpass': { title: 'Tokenpass', icon: 'tokenpass' },
 		'meteor-developer': { title: 'Meteor', icon: 'meteor' },
 		'wordpress': { title: 'WordPress', icon: 'wordpress' },
 		'linkedin': { title: 'Linkedin', icon: 'linkedin' },
@@ -49,7 +48,11 @@ class LoginServices extends Emitter<LoginServicesEvents> {
 
 		if (state === 'loaded') {
 			this.retries = 0;
-			this.emit('loaded', services);
+			try {
+				this.emit('loaded', services);
+			} catch (e) {
+				console.error('Failed to apply loaded listed of login services.', e);
+			}
 		}
 	}
 
@@ -113,13 +116,15 @@ class LoginServices extends Emitter<LoginServicesEvents> {
 		return this.serviceButtons;
 	}
 
-	public onLoad(callback: (services: LoginServiceConfiguration[]) => void) {
+	public onLoad(callback: (services: LoginServiceConfiguration[]) => void): () => void {
 		if (this.ready) {
-			return callback(this.services);
+			callback(this.services);
+			return () => undefined;
 		}
 
 		void this.loadServices();
 		this.once('loaded', callback);
+		return () => this.off('loaded', callback);
 	}
 
 	public async loadServices(): Promise<void> {

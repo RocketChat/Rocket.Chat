@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { api } from '@rocket.chat/core-services';
 import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
 import {
@@ -12,7 +13,6 @@ import {
 	ReadReceipts,
 	LivechatUnitMonitors,
 	ModerationReports,
-	MatrixBridgedUser,
 } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -20,7 +20,7 @@ import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { updateGroupDMsName } from './updateGroupDMsName';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
@@ -31,7 +31,7 @@ import {
 	notifyOnUserChange,
 } from '../lib/notifyListener';
 
-export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<void> {
+export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<{ deletedRooms: string[] }> {
 	if (userId === 'rocket.cat') {
 		throw new Meteor.Error('error-action-not-allowed', 'Deleting the rocket.cat user is not allowed', {
 			method: 'deleteUser',
@@ -44,17 +44,10 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	});
 
 	if (!user) {
-		return;
+		return { deletedRooms: [] };
 	}
 
 	if (isUserFederated(user)) {
-		throw new Meteor.Error('error-not-allowed', 'Deleting federated, external user is not allowed', {
-			method: 'deleteUser',
-		});
-	}
-
-	const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
-	if (remoteUser) {
 		throw new Meteor.Error('error-not-allowed', 'User participated in federation, this user can only be deactivated permanently', {
 			method: 'deleteUser',
 		});
@@ -67,11 +60,12 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		throw new Meteor.Error('user-last-owner', '', rooms);
 	}
 
+	let deletedRooms: string[] = [];
 	// Users without username can't do anything, so there is nothing to remove
 	if (user.username != null) {
 		let userToReplaceWhenUnlinking: IUser | null = null;
 		const nameAlias = i18n.t('Removed_User');
-		await relinquishRoomOwnerships(userId, subscribedRooms);
+		deletedRooms = await relinquishRoomOwnerships(userId, subscribedRooms, true);
 
 		const messageErasureType = settings.get<'Delete' | 'Unlink' | 'Keep'>('Message_ErasureType');
 		switch (messageErasureType) {
@@ -79,11 +73,17 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 				const store = FileUpload.getStore('Uploads');
 				const cursor = Messages.findFilesByUserId(userId);
 
-				for await (const { file } of cursor) {
-					if (!file) {
-						continue;
+				for await (const { file, files } of cursor) {
+					const fileIds = files?.map(({ _id }) => _id) || [];
+					for await (const fileId of fileIds) {
+						if (fileId) {
+							await store.deleteById(fileId);
+						}
 					}
-					await store.deleteById(file._id);
+
+					if (file?._id && !fileIds.includes(file._id)) {
+						await store.deleteById(file._id);
+					}
 				}
 
 				await Messages.removeByUserId(userId);
@@ -169,6 +169,11 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	// Remove user from users database
 	await Users.removeById(userId);
 
+	// App IPostUserDeleted event hook
+	if (deletedBy) {
+		await Apps.self?.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Users.findOneById(deletedBy) });
+	}
+
 	// update name and fname of group direct messages
 	await updateGroupDMsName(user);
 
@@ -178,4 +183,6 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	void notifyOnUserChange({ clientAction: 'removed', id: user._id });
 
 	await callbacks.run('afterDeleteUser', user);
+
+	return { deletedRooms };
 }

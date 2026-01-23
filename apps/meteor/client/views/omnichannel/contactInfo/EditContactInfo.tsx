@@ -1,7 +1,19 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
-import { CustomFieldsForm } from '@rocket.chat/ui-client';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { validateEmail } from '@rocket.chat/tools';
+import {
+	CustomFieldsForm,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarDialog,
+	ContextualbarSkeleton,
+} from '@rocket.chat/ui-client';
+import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { Fragment, useId } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
@@ -11,19 +23,9 @@ import AdvancedContactModal from './AdvancedContactModal';
 import { useCreateContact } from './hooks/useCreateContact';
 import { useEditContact } from './hooks/useEditContact';
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import { validateEmail } from '../../../../lib/emailValidator';
-import {
-	ContextualbarScrollableContent,
-	ContextualbarContent,
-	ContextualbarFooter,
-	ContextualbarHeader,
-	ContextualbarIcon,
-	ContextualbarTitle,
-	ContextualbarClose,
-} from '../../../components/Contextualbar';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { ContactManagerInput } from '../additionalForms';
-import { FormSkeleton } from '../directory/components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../directory/hooks/useCustomFieldsMetadata';
 
 type ContactNewEditProps = {
@@ -70,12 +72,13 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
-	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
+	const { data: hasLicense = false } = useHasLicenseModule('contact-id-verification');
 	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
 	const editContact = useEditContact(['current-contacts']);
 	const createContact = useCreateContact(['current-contacts']);
-
+	const checkExistenceEndpoint = useEndpoint('GET', '/v1/omnichannel/contacts.checkExistence');
+	const queryClient = useQueryClient();
 	const handleOpenUpSellModal = () => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />);
 
 	const { data: customFieldsMetadata = [], isLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
@@ -117,21 +120,47 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const { emails, phones } = watch();
 
 	const validateEmailFormat = async (emailValue: string) => {
+		if (!emails) {
+			return true;
+		}
+
 		const currentEmails = emails.map(({ address }) => address);
-		const isDuplicated = currentEmails.filter((email) => email === emailValue).length > 1;
 
 		if (!validateEmail(emailValue)) {
 			return t('error-invalid-email-address');
 		}
 
-		return !isDuplicated ? true : t('Email_already_exists');
+		if (currentEmails.filter((email) => email === emailValue).length > 1) {
+			return t('Email_already_exists');
+		}
+
+		const initialEmails = initialValue.emails.map(({ address }) => address);
+
+		if (!initialEmails.includes(emailValue) && (await checkExistenceEndpoint({ email: emailValue })).exists) {
+			return t('Email_already_exists');
+		}
+
+		return true;
 	};
 
 	const validatePhone = async (phoneValue: string) => {
-		const currentPhones = phones.map(({ phoneNumber }) => phoneNumber);
-		const isDuplicated = currentPhones.filter((phone) => phone === phoneValue).length > 1;
+		if (!phones) {
+			return true;
+		}
 
-		return !isDuplicated ? true : t('Phone_already_exists');
+		const currentPhones = phones.map(({ phoneNumber }) => phoneNumber);
+
+		if (currentPhones.filter((phone) => phone === phoneValue).length > 1) {
+			return t('Phone_already_exists');
+		}
+
+		const initialPhones = initialValue.phones.map(({ phoneNumber }) => phoneNumber);
+
+		if (!initialPhones.includes(phoneValue) && (await checkExistenceEndpoint({ phone: phoneValue })).exists) {
+			return t('Phone_already_exists');
+		}
+
+		return true;
 	};
 
 	const validateName = (v: string): string | boolean => (!v.trim() ? t('Required_field', { field: t('Name') }) : true);
@@ -148,10 +177,13 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 		};
 
 		if (contactData) {
-			return editContact.mutate({ contactId: contactData?._id, ...payload });
+			await editContact.mutateAsync({ contactId: contactData?._id, ...payload });
+			await queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contacts() });
+			return;
 		}
 
-		return createContact.mutate(payload);
+		await createContact.mutateAsync(payload);
+		await queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contacts() });
 	};
 
 	const formId = useId();
@@ -160,15 +192,11 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const phoneField = useId();
 
 	if (isLoadingCustomFields) {
-		return (
-			<ContextualbarContent>
-				<FormSkeleton />
-			</ContextualbarContent>
-		);
+		return <ContextualbarSkeleton onClose={onClose} />;
 	}
 
 	return (
-		<>
+		<ContextualbarDialog onClose={onClose}>
 			<ContextualbarHeader>
 				<ContextualbarIcon name={contactData ? 'pencil' : 'user'} />
 				<ContextualbarTitle>{contactData ? t('Edit_Contact_Profile') : t('New_contact')}</ContextualbarTitle>
@@ -302,7 +330,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

@@ -4,7 +4,7 @@ import sinon from 'sinon';
 
 const modelsMock = {
 	LivechatContacts: {
-		findOneById: sinon.stub(),
+		findOneEnabledById: sinon.stub(),
 		updateContact: sinon.stub(),
 	},
 	LivechatRooms: {
@@ -28,19 +28,19 @@ const { updateContact } = proxyquire.noCallThru().load('./updateContact', {
 
 describe('updateContact', () => {
 	beforeEach(() => {
-		modelsMock.LivechatContacts.findOneById.reset();
+		modelsMock.LivechatContacts.findOneEnabledById.reset();
 		modelsMock.LivechatContacts.updateContact.reset();
 		modelsMock.LivechatRooms.updateContactDataByContactId.reset();
 	});
 
 	it('should throw an error if the contact does not exist', async () => {
-		modelsMock.LivechatContacts.findOneById.resolves(undefined);
+		modelsMock.LivechatContacts.findOneEnabledById.resolves(undefined);
 		await expect(updateContact('any_id')).to.be.rejectedWith('error-contact-not-found');
 		expect(modelsMock.LivechatContacts.updateContact.getCall(0)).to.be.null;
 	});
 
 	it('should update the contact with correct params', async () => {
-		modelsMock.LivechatContacts.findOneById.resolves({ _id: 'contactId' });
+		modelsMock.LivechatContacts.findOneEnabledById.resolves({ _id: 'contactId' });
 		modelsMock.LivechatContacts.updateContact.resolves({ _id: 'contactId', name: 'John Doe' } as any);
 
 		const updatedContact = await updateContact({ contactId: 'contactId', name: 'John Doe' });

@@ -6,25 +6,23 @@ import { UiKitContext } from './UiKitContext';
 const AppIdContext = createContext<string | undefined>(undefined);
 
 type AppIdProviderProps = {
-  children: ReactNode;
-  appId?: string;
+	children: ReactNode;
+	appId?: string;
 };
 
 export const AppIdProvider = ({ children, appId }: AppIdProviderProps) => {
-  if (!appId) {
-    return <>{children}</>;
-  }
+	if (!appId) {
+		return <>{children}</>;
+	}
 
-  return (
-    <AppIdContext.Provider value={appId}>{children}</AppIdContext.Provider>
-  );
+	return <AppIdContext.Provider value={appId}>{children}</AppIdContext.Provider>;
 };
 
 export const useAppId = () => {
-  const outerAppId = useContext(UiKitContext).appId ?? 'core';
-  const appId = useContext(AppIdContext) ?? outerAppId;
+	const outerAppId = useContext(UiKitContext).appId ?? 'core';
+	const appId = useContext(AppIdContext) ?? outerAppId;
 
-  useDebugValue(appId);
+	useDebugValue(appId);
 
-  return appId;
+	return appId;
 };

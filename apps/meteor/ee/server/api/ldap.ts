@@ -9,6 +9,7 @@ API.v1.addRoute(
 		authRequired: true,
 		forceTwoFactorAuthenticationForNonEnterprise: true,
 		twoFactorRequired: true,
+		// license: ['ldap-enterprise'],
 	},
 	{
 		async post() {

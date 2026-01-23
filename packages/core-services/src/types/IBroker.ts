@@ -30,6 +30,20 @@ export type BaseMetricOptions = {
 	[key: string]: unknown;
 };
 
+export type CallingOptions = {
+	nodeID?: string;
+	// timeout?: number;
+	// retries?: number;
+	// fallbackResponse?: FallbackResponse | FallbackResponse[] | FallbackResponseHandler;
+	// meta?: GenericObject;
+	// parentSpan?: ContextParentSpan;
+	// parentCtx?: Context;
+	// requestID?: string;
+	// tracking?: boolean;
+	// paramsCloning?: boolean;
+	// caller?: string;
+};
+
 export interface IServiceMetrics {
 	register(opts: BaseMetricOptions): void;
 
@@ -50,7 +64,7 @@ export interface IBroker {
 	metrics?: IServiceMetrics;
 	destroyService(service: IServiceClass): Promise<void>;
 	createService(service: IServiceClass, serviceDependencies?: string[]): void;
-	call(method: string, data: any): Promise<any>;
+	call(method: string, data: any, options?: CallingOptions): Promise<any>;
 	broadcastToServices<T extends keyof EventSignatures>(
 		services: string[],
 		event: T,

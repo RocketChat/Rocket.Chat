@@ -28,339 +28,356 @@ import { UserBuilder } from '../builders/UserBuilder.ts';
 import { AppVideoConference, VideoConferenceBuilder } from '../builders/VideoConferenceBuilder.ts';
 import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
 import { require } from '../../../lib/require.ts';
+import { formatErrorResponse } from '../formatResponseErrorHandler.ts';
 
 const { UIHelper } = require('@rocket.chat/apps-engine/server/misc/UIHelper.js') as { UIHelper: typeof _UIHelper };
 const { RoomType } = require('@rocket.chat/apps-engine/definition/rooms/RoomType.js') as { RoomType: typeof _RoomType };
 const { UserType } = require('@rocket.chat/apps-engine/definition/users/UserType.js') as { UserType: typeof _UserType };
 const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
-    RocketChatAssociationModel: typeof _RocketChatAssociationModel;
+	RocketChatAssociationModel: typeof _RocketChatAssociationModel;
 };
 
 export class ModifyCreator implements IModifyCreator {
-    constructor(private readonly senderFn: typeof Messenger.sendRequest) { }
+	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
-    getLivechatCreator(): ILivechatCreator {
-        return new Proxy(
-            { __kind: 'getLivechatCreator' },
-            {
-                get: (_target: unknown, prop: string) => {
-                    // It's not worthwhile to make an asynchronous request for such a simple method
-                    if (prop === 'createToken') {
-                        return () => randomBytes(16).toString('hex');
-                    }
+	getLivechatCreator(): ILivechatCreator {
+		return new Proxy(
+			{ __kind: 'getLivechatCreator' },
+			{
+				get: (_target: unknown, prop: string) => {
+					// It's not worthwhile to make an asynchronous request for such a simple method
+					if (prop === 'createToken') {
+						return () => randomBytes(16).toString('hex');
+					}
 
-                    if (prop === 'toJSON') {
-                        return () => ({});
-                    }
+					if (prop === 'toJSON') {
+						return () => ({});
+					}
 
-                    return (...params: unknown[]) =>
-                        this.senderFn({
-                            method: `accessor:getModifier:getCreator:getLivechatCreator:${prop}`,
-                            params,
-                        })
-                            .then((response) => response.result)
-                            .catch((err) => {
-                                throw new Error(err.error);
-                            });
-                },
-            },
-        ) as ILivechatCreator;
-    }
+					return (...params: unknown[]) =>
+						this.senderFn({
+							method: `accessor:getModifier:getCreator:getLivechatCreator:${prop}`,
+							params,
+						})
+							.then((response) => response.result)
+							.catch((err) => {
+								throw formatErrorResponse(err);
+							});
+				},
+			},
+		) as ILivechatCreator;
+	}
 
-    getUploadCreator(): IUploadCreator {
-        return new Proxy(
-            { __kind: 'getUploadCreator' },
-            {
-                get:
-                    (_target: unknown, prop: string) =>
-                        (...params: unknown[]) =>
-                            prop === 'toJSON'
-                                ? {}
-                                : this.senderFn({
-                                    method: `accessor:getModifier:getCreator:getUploadCreator:${prop}`,
-                                    params,
-                                })
-                                    .then((response) => response.result)
-                                    .catch((err) => {
-                                        throw new Error(err.error);
-                                    }),
-            },
-        ) as IUploadCreator;
-    }
+	getUploadCreator(): IUploadCreator {
+		return new Proxy(
+			{ __kind: 'getUploadCreator' },
+			{
+				get:
+					(_target: unknown, prop: string) =>
+					(...params: unknown[]) =>
+						prop === 'toJSON'
+							? {}
+							: this.senderFn({
+									method: `accessor:getModifier:getCreator:getUploadCreator:${prop}`,
+									params,
+								})
+									.then((response) => response.result)
+									.catch((err) => {
+										throw formatErrorResponse(err);
+									}),
+			},
+		) as IUploadCreator;
+	}
 
-    getEmailCreator(): IEmailCreator {
-        return new Proxy(
-            { __kind: 'getEmailCreator' },
-            {
-                get: (_target: unknown, prop: string) => 
-                        (...params: unknown[]) =>
-                            prop === 'toJSON'
-                                ? {}
-                                : this.senderFn({
-                                    method: `accessor:getModifier:getCreator:getEmailCreator:${prop}`,
-                                    params
-                                })
-                                    .then((response) => response.result)
-                                    .catch((err) => {
-                                        throw new Error(err.error);
-                                    }),
-            }
-        )
-    }
+	getEmailCreator(): IEmailCreator {
+		return new Proxy(
+			{ __kind: 'getEmailCreator' },
+			{
+				get:
+					(_target: unknown, prop: string) =>
+					(...params: unknown[]) =>
+						prop === 'toJSON'
+							? {}
+							: this.senderFn({
+									method: `accessor:getModifier:getCreator:getEmailCreator:${prop}`,
+									params,
+								})
+									.then((response) => response.result)
+									.catch((err) => {
+										throw formatErrorResponse(err);
+									}),
+			},
+		);
+	}
 
-    getContactCreator(): IContactCreator {
-        return new Proxy(
-            { __kind: 'getContactCreator' },
-            {
-                get: (_target: unknown, prop: string) => 
-                        (...params: unknown[]) =>
-                            prop === 'toJSON'
-                                ? {}
-                                : this.senderFn({
-                                    method: `accessor:getModifier:getCreator:getContactCreator:${prop}`,
-                                    params
-                                })
-                                    .then((response) => response.result)
-                                    .catch((err) => {
-                                        throw new Error(err.error);
-                                    }),
-            }
-        )
-    }
+	getContactCreator(): IContactCreator {
+		return new Proxy(
+			{ __kind: 'getContactCreator' },
+			{
+				get:
+					(_target: unknown, prop: string) =>
+					(...params: unknown[]) =>
+						prop === 'toJSON'
+							? {}
+							: this.senderFn({
+									method: `accessor:getModifier:getCreator:getContactCreator:${prop}`,
+									params,
+								})
+									.then((response) => response.result)
+									.catch((err) => {
+										throw formatErrorResponse(err);
+									}),
+			},
+		);
+	}
 
-    getBlockBuilder() {
-        return new BlockBuilder();
-    }
+	getBlockBuilder() {
+		return new BlockBuilder();
+	}
 
-    startMessage(data?: IMessage) {
-        if (data) {
-            delete data.id;
-        }
+	startMessage(data?: IMessage) {
+		if (data) {
+			delete data.id;
+		}
 
-        return new MessageBuilder(data);
-    }
+		return new MessageBuilder(data);
+	}
 
-    startLivechatMessage(data?: ILivechatMessage) {
-        if (data) {
-            delete data.id;
-        }
+	startLivechatMessage(data?: ILivechatMessage) {
+		if (data) {
+			delete data.id;
+		}
 
-        return new LivechatMessageBuilder(data);
-    }
+		return new LivechatMessageBuilder(data);
+	}
 
-    startRoom(data?: IRoom) {
-        if (data) {
-            // @ts-ignore - this has been imported from the Apps-Engine
-            delete data.id;
-        }
+	startRoom(data?: IRoom) {
+		if (data) {
+			// @ts-ignore - this has been imported from the Apps-Engine
+			delete data.id;
+		}
 
-        return new RoomBuilder(data);
-    }
+		return new RoomBuilder(data);
+	}
 
-    startDiscussion(data?: Partial<IRoom>) {
-        if (data) {
-            delete data.id;
-        }
+	startDiscussion(data?: Partial<IRoom>) {
+		if (data) {
+			delete data.id;
+		}
 
-        return new DiscussionBuilder(data);
-    }
+		return new DiscussionBuilder(data);
+	}
 
-    startVideoConference(data?: Partial<AppVideoConference>) {
-        return new VideoConferenceBuilder(data);
-    }
+	startVideoConference(data?: Partial<AppVideoConference>) {
+		return new VideoConferenceBuilder(data);
+	}
 
-    startBotUser(data?: Partial<IBotUser>) {
-        if (data) {
-            delete data.id;
+	startBotUser(data?: Partial<IBotUser>) {
+		if (data) {
+			delete data.id;
 
-            const { roles } = data;
+			const { roles } = data;
 
-            if (roles?.length) {
-                const hasRole = roles
-                    .map((role: string) => role.toLocaleLowerCase())
-                    .some((role: string) => role === 'admin' || role === 'owner' || role === 'moderator');
+			if (roles?.length) {
+				const hasRole = roles
+					.map((role: string) => role.toLocaleLowerCase())
+					.some((role: string) => role === 'admin' || role === 'owner' || role === 'moderator');
 
-                if (hasRole) {
-                    throw new Error('Invalid role assigned to the user. Should not be admin, owner or moderator.');
-                }
-            }
+				if (hasRole) {
+					throw new Error('Invalid role assigned to the user. Should not be admin, owner or moderator.');
+				}
+			}
 
-            if (!data.type) {
-                data.type = UserType.BOT;
-            }
-        }
+			if (!data.type) {
+				data.type = UserType.BOT;
+			}
+		}
 
-        return new UserBuilder(data);
-    }
+		return new UserBuilder(data);
+	}
 
-    public finish(
-        builder: IMessageBuilder | ILivechatMessageBuilder | IRoomBuilder | IDiscussionBuilder | IVideoConferenceBuilder | IUserBuilder,
-    ): Promise<string> {
-        switch (builder.kind) {
-            case RocketChatAssociationModel.MESSAGE:
-                return this._finishMessage(builder as IMessageBuilder);
-            case RocketChatAssociationModel.LIVECHAT_MESSAGE:
-                return this._finishLivechatMessage(builder as ILivechatMessageBuilder);
-            case RocketChatAssociationModel.ROOM:
-                return this._finishRoom(builder as IRoomBuilder);
-            case RocketChatAssociationModel.DISCUSSION:
-                return this._finishDiscussion(builder as IDiscussionBuilder);
-            case RocketChatAssociationModel.VIDEO_CONFERENCE:
-                return this._finishVideoConference(builder as IVideoConferenceBuilder);
-            case RocketChatAssociationModel.USER:
-                return this._finishUser(builder as IUserBuilder);
-            default:
-                throw new Error('Invalid builder passed to the ModifyCreator.finish function.');
-        }
-    }
+	public finish(
+		builder: IMessageBuilder | ILivechatMessageBuilder | IRoomBuilder | IDiscussionBuilder | IVideoConferenceBuilder | IUserBuilder,
+	): Promise<string> {
+		switch (builder.kind) {
+			case RocketChatAssociationModel.MESSAGE:
+				return this._finishMessage(builder as IMessageBuilder);
+			case RocketChatAssociationModel.LIVECHAT_MESSAGE:
+				return this._finishLivechatMessage(builder as ILivechatMessageBuilder);
+			case RocketChatAssociationModel.ROOM:
+				return this._finishRoom(builder as IRoomBuilder);
+			case RocketChatAssociationModel.DISCUSSION:
+				return this._finishDiscussion(builder as IDiscussionBuilder);
+			case RocketChatAssociationModel.VIDEO_CONFERENCE:
+				return this._finishVideoConference(builder as IVideoConferenceBuilder);
+			case RocketChatAssociationModel.USER:
+				return this._finishUser(builder as IUserBuilder);
+			default:
+				throw new Error('Invalid builder passed to the ModifyCreator.finish function.');
+		}
+	}
 
-    private async _finishMessage(builder: IMessageBuilder): Promise<string> {
-        const result = builder.getMessage();
-        delete result.id;
+	private async _finishMessage(builder: IMessageBuilder): Promise<string> {
+		const result = builder.getMessage();
+		delete result.id;
 
-        if (!result.sender || !result.sender.id) {
-            const response = await this.senderFn({
-                method: 'bridges:getUserBridge:doGetAppUser',
-                params: ['APP_ID'],
-            });
+		if (!result.sender || !result.sender.id) {
+			const response = await this.senderFn({
+				method: 'bridges:getUserBridge:doGetAppUser',
+				params: ['APP_ID'],
+			}).catch((err) => {
+				throw formatErrorResponse(err);
+			});
 
-            const appUser = response.result;
+			const appUser = response.result;
 
-            if (!appUser) {
-                throw new Error('Invalid sender assigned to the message.');
-            }
+			if (!appUser) {
+				throw new Error('Invalid sender assigned to the message.');
+			}
 
-            result.sender = appUser;
-        }
+			result.sender = appUser;
+		}
 
-        if (result.blocks?.length) {
-            // Can we move this elsewhere? This AppObjectRegistry usage doesn't really belong here, but where?
-            result.blocks = UIHelper.assignIds(result.blocks, AppObjectRegistry.get('id') || '');
-        }
+		if (result.blocks?.length) {
+			// Can we move this elsewhere? This AppObjectRegistry usage doesn't really belong here, but where?
+			result.blocks = UIHelper.assignIds(result.blocks, AppObjectRegistry.get('id') || '');
+		}
 
-        const response = await this.senderFn({
-            method: 'bridges:getMessageBridge:doCreate',
-            params: [result, AppObjectRegistry.get('id')],
-        });
+		const response = await this.senderFn({
+			method: 'bridges:getMessageBridge:doCreate',
+			params: [result, AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
+		});
 
-        return String(response.result);
-    }
+		return String(response.result);
+	}
 
-    private async _finishLivechatMessage(builder: ILivechatMessageBuilder): Promise<string> {
-        if (builder.getSender() && !builder.getVisitor()) {
-            return this._finishMessage(builder.getMessageBuilder());
-        }
+	private async _finishLivechatMessage(builder: ILivechatMessageBuilder): Promise<string> {
+		if (builder.getSender() && !builder.getVisitor()) {
+			return this._finishMessage(builder.getMessageBuilder());
+		}
 
-        const result = builder.getMessage();
-        delete result.id;
+		const result = builder.getMessage();
+		delete result.id;
 
-        if (!result.token && (!result.visitor || !result.visitor.token)) {
-            throw new Error('Invalid visitor sending the message');
-        }
+		if (!result.token && (!result.visitor || !result.visitor.token)) {
+			throw new Error('Invalid visitor sending the message');
+		}
 
-        result.token = result.visitor ? result.visitor.token : result.token;
+		result.token = result.visitor ? result.visitor.token : result.token;
 
-        const response = await this.senderFn({
-            method: 'bridges:getLivechatBridge:doCreateMessage',
-            params: [result, AppObjectRegistry.get('id')],
-        });
+		const response = await this.senderFn({
+			method: 'bridges:getLivechatBridge:doCreateMessage',
+			params: [result, AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
+		});
 
-        return String(response.result);
-    }
+		return String(response.result);
+	}
 
-    private async _finishRoom(builder: IRoomBuilder): Promise<string> {
-        const result = builder.getRoom();
-        delete result.id;
+	private async _finishRoom(builder: IRoomBuilder): Promise<string> {
+		const result = builder.getRoom();
+		delete result.id;
 
-        if (!result.type) {
-            throw new Error('Invalid type assigned to the room.');
-        }
+		if (!result.type) {
+			throw new Error('Invalid type assigned to the room.');
+		}
 
-        if (result.type !== RoomType.LIVE_CHAT) {
-            if (!result.creator || !result.creator.id) {
-                throw new Error('Invalid creator assigned to the room.');
-            }
-        }
+		if (result.type !== RoomType.LIVE_CHAT) {
+			if (!result.creator || !result.creator.id) {
+				throw new Error('Invalid creator assigned to the room.');
+			}
+		}
 
-        if (result.type !== RoomType.DIRECT_MESSAGE) {
-            if (result.type !== RoomType.LIVE_CHAT) {
-                if (!result.slugifiedName || !result.slugifiedName.trim()) {
-                    throw new Error('Invalid slugifiedName assigned to the room.');
-                }
-            }
+		if (result.type !== RoomType.DIRECT_MESSAGE) {
+			if (result.type !== RoomType.LIVE_CHAT) {
+				if (!result.slugifiedName || !result.slugifiedName.trim()) {
+					throw new Error('Invalid slugifiedName assigned to the room.');
+				}
+			}
 
-            if (!result.displayName || !result.displayName.trim()) {
-                throw new Error('Invalid displayName assigned to the room.');
-            }
-        }
+			if (!result.displayName || !result.displayName.trim()) {
+				throw new Error('Invalid displayName assigned to the room.');
+			}
+		}
 
-        const response = await this.senderFn({
-            method: 'bridges:getRoomBridge:doCreate',
-            params: [result, builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
-        });
+		const response = await this.senderFn({
+			method: 'bridges:getRoomBridge:doCreate',
+			params: [result, builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
+		});
 
-        return String(response.result);
-    }
+		return String(response.result);
+	}
 
-    private async _finishDiscussion(builder: IDiscussionBuilder): Promise<string> {
-        const room = builder.getRoom();
-        delete room.id;
+	private async _finishDiscussion(builder: IDiscussionBuilder): Promise<string> {
+		const room = builder.getRoom();
+		delete room.id;
 
-        if (!room.creator || !room.creator.id) {
-            throw new Error('Invalid creator assigned to the discussion.');
-        }
+		if (!room.creator || !room.creator.id) {
+			throw new Error('Invalid creator assigned to the discussion.');
+		}
 
-        if (!room.slugifiedName || !room.slugifiedName.trim()) {
-            throw new Error('Invalid slugifiedName assigned to the discussion.');
-        }
+		if (!room.slugifiedName || !room.slugifiedName.trim()) {
+			throw new Error('Invalid slugifiedName assigned to the discussion.');
+		}
 
-        if (!room.displayName || !room.displayName.trim()) {
-            throw new Error('Invalid displayName assigned to the discussion.');
-        }
+		if (!room.displayName || !room.displayName.trim()) {
+			throw new Error('Invalid displayName assigned to the discussion.');
+		}
 
-        if (!room.parentRoom || !room.parentRoom.id) {
-            throw new Error('Invalid parentRoom assigned to the discussion.');
-        }
+		if (!room.parentRoom || !room.parentRoom.id) {
+			throw new Error('Invalid parentRoom assigned to the discussion.');
+		}
 
-        const response = await this.senderFn({
-            method: 'bridges:getRoomBridge:doCreateDiscussion',
-            params: [room, builder.getParentMessage(), builder.getReply(), builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
-        });
+		const response = await this.senderFn({
+			method: 'bridges:getRoomBridge:doCreateDiscussion',
+			params: [room, builder.getParentMessage(), builder.getReply(), builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
+		});
 
-        return String(response.result);
-    }
+		return String(response.result);
+	}
 
-    private async _finishVideoConference(builder: IVideoConferenceBuilder): Promise<string> {
-        const videoConference = builder.getVideoConference();
+	private async _finishVideoConference(builder: IVideoConferenceBuilder): Promise<string> {
+		const videoConference = builder.getVideoConference();
 
-        if (!videoConference.createdBy) {
-            throw new Error('Invalid creator assigned to the video conference.');
-        }
+		if (!videoConference.createdBy) {
+			throw new Error('Invalid creator assigned to the video conference.');
+		}
 
-        if (!videoConference.providerName?.trim()) {
-            throw new Error('Invalid provider name assigned to the video conference.');
-        }
+		if (!videoConference.providerName?.trim()) {
+			throw new Error('Invalid provider name assigned to the video conference.');
+		}
 
-        if (!videoConference.rid) {
-            throw new Error('Invalid roomId assigned to the video conference.');
-        }
+		if (!videoConference.rid) {
+			throw new Error('Invalid roomId assigned to the video conference.');
+		}
 
-        const response = await this.senderFn({
-            method: 'bridges:getVideoConferenceBridge:doCreate',
-            params: [videoConference, AppObjectRegistry.get('id')],
-        });
+		const response = await this.senderFn({
+			method: 'bridges:getVideoConferenceBridge:doCreate',
+			params: [videoConference, AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
+		});
 
-        return String(response.result);
-    }
+		return String(response.result);
+	}
 
-    private async _finishUser(builder: IUserBuilder): Promise<string> {
-        const user = builder.getUser();
+	private async _finishUser(builder: IUserBuilder): Promise<string> {
+		const user = builder.getUser();
 
-        const response = await this.senderFn({
-            method: 'bridges:getUserBridge:doCreate',
-            params: [user, AppObjectRegistry.get('id')],
-        });
+		const response = await this.senderFn({
+			method: 'bridges:getUserBridge:doCreate',
+			params: [user, AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
+		});
 
-        return String(response.result);
-    }
+		return String(response.result);
+	}
 }

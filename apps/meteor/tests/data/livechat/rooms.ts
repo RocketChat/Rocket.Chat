@@ -55,6 +55,55 @@ export const createLivechatRoomWidget = async (
 	return response.body.room;
 };
 
+export const createVisitorWithCustomData = async ({
+	department,
+	visitorName,
+	customPhone,
+	customFields,
+	customToken,
+	customEmail,
+	ignoreEmail = false,
+	ignorePhone = false,
+}: {
+	department?: string;
+	customPhone?: string;
+	visitorName?: string;
+	customEmail?: string;
+	customFields?: { key: string; value: string; overwrite: boolean }[];
+	customToken?: string;
+	ignoreEmail?: boolean;
+	ignorePhone?: boolean;
+}): Promise<ILivechatVisitor> => {
+	const token = customToken || getRandomVisitorToken();
+	const email = customEmail || `${token}@${token}.com`;
+	const phone = customPhone || `${Math.floor(Math.random() * 10000000000)}`;
+
+	try {
+		const res = await request.get(api(`livechat/visitor/${token}`));
+		if (res?.body?.visitor) {
+			return res.body.visitor as ILivechatVisitor;
+		}
+	} catch {
+		// Ignore errors from GET; we will create the visitor below.
+	}
+
+	const res = await request
+		.post(api('livechat/visitor'))
+		.set(credentials)
+		.send({
+			visitor: {
+				name: visitorName || `Visitor ${Date.now()}`,
+				token,
+				customFields: customFields || [{ key: 'address', value: 'Rocket.Chat street', overwrite: true }],
+				...(department ? { department } : {}),
+				...(!ignoreEmail ? { email } : {}),
+				...(!ignorePhone ? { phone } : {}),
+			},
+		});
+
+	return res.body.visitor as ILivechatVisitor;
+};
+
 export const createVisitor = (
 	department?: string,
 	visitorName?: string,
@@ -195,6 +244,13 @@ export const updateDepartment = ({
 	});
 };
 
+export const deleteAgent = async (agentId: string = credentials['X-User-Id']): Promise<void> => {
+	await request
+		.delete(api(`livechat/users/agent/${agentId}`))
+		.set(credentials)
+		.expect(200);
+};
+
 export const createAgent = (overrideUsername?: string): Promise<ILivechatAgent> =>
 	new Promise((resolve, reject) => {
 		void request
@@ -226,6 +282,14 @@ export const createManager = (overrideUsername?: string): Promise<ILivechatAgent
 				resolve(res.body.user);
 			});
 	});
+
+export const switchLivechatStatus = async (status: 'available' | 'not-available', overrideCredentials?: Credentials): Promise<void> => {
+	await request
+		.post(api('livechat/agent.status'))
+		.set(overrideCredentials || credentials)
+		.send({ status })
+		.expect(200);
+};
 
 export const makeAgentAvailable = async (overrideCredentials?: Credentials): Promise<Response> => {
 	await restorePermissionToRoles('view-l-room');
@@ -423,16 +487,9 @@ export const placeRoomOnHold = async (roomId: string): Promise<void> => {
 
 export const moveBackToQueue = async (roomId: string, overrideCredentials?: Credentials): Promise<void> => {
 	await request
-		.post(methodCall('livechat:returnAsInquiry'))
+		.post(api('livechat/inquiries.returnAsInquiry'))
 		.set(overrideCredentials || credentials)
-		.send({
-			message: JSON.stringify({
-				method: 'livechat:returnAsInquiry',
-				params: [roomId],
-				id: 'id',
-				msg: 'method',
-			}),
-		})
+		.send({ roomId })
 		.expect('Content-Type', 'application/json')
 		.expect(200);
 };

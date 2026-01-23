@@ -31,9 +31,11 @@ test.describe('Omnichannel chat history', () => {
 		await api.delete('/livechat/users/agent/user1');
 		await api.delete('/livechat/users/manager/user1');
 		await agent.page.close();
+
+		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'owner', 'moderator', 'user'] }] });
 	});
 
-	test('Receiving a message from visitor', async ({ page }) => {
+	test('Receiving a message from visitor', async ({ page, api }) => {
 		await test.step('Expect send a message as a visitor', async () => {
 			await page.goto('/livechat');
 			await poLiveChat.openLiveChat();
@@ -43,14 +45,19 @@ test.describe('Omnichannel chat history', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeOmnichannel.navbar.openChat(newVisitor.name);
+		});
+
+		await test.step('expect to be able to edit room info', async () => {
+			await agent.poHomeOmnichannel.roomInfo.btnEditRoomInfo.click();
+			await agent.poHomeOmnichannel.roomInfo.inputTopic.fill('any_topic');
+			await agent.poHomeOmnichannel.roomInfo.btnSaveEditRoom.click();
+
+			await expect(agent.poHomeOmnichannel.roomInfo.dialogRoomInfo).toContainText('any_topic');
 		});
 
 		await test.step('Expect to be able to close an omnichannel to conversation', async () => {
-			await agent.poHomeOmnichannel.content.btnCloseChat.click();
-			await agent.poHomeOmnichannel.content.inputModalClosingComment.type('any_comment');
-			await agent.poHomeOmnichannel.content.btnModalConfirm.click();
-			await expect(agent.poHomeOmnichannel.toastSuccess).toBeVisible();
+			await agent.poHomeOmnichannel.quickActionsRoomToolbar.closeChat();
 		});
 
 		await test.step('Expect send a message as a visitor again to reopen chat', async () => {
@@ -61,7 +68,7 @@ test.describe('Omnichannel chat history', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeOmnichannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('Expect to be able to see conversation history', async () => {
@@ -71,6 +78,20 @@ test.describe('Omnichannel chat history', () => {
 
 			await agent.poHomeOmnichannel.contacts.contactInfo.historyItem.click();
 			await expect(agent.poHomeOmnichannel.contacts.contactInfo.historyMessage).toBeVisible();
+		});
+
+		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: [] }] });
+
+		await test.step('Expect agent to see conversation history, but not join room', async () => {
+			await agent.page.reload();
+
+			await agent.poHomeOmnichannel.contacts.contactInfo.historyItem.click();
+			await agent.poHomeOmnichannel.contacts.contactInfo.historyMessage.click();
+			await agent.poHomeOmnichannel.contacts.contactInfo.btnOpenChat.click();
+
+			// Should not show the NoSubscribedRoom.tsx component on livechat rooms
+			await expect(agent.page.locator('div >> text=This conversation is already closed.')).toBeVisible();
+			await expect(agent.page.locator('div >> text="this_a_test_message_from_visitor"')).toBeVisible();
 		});
 	});
 });

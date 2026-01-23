@@ -1,5 +1,6 @@
 import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
 import { Users } from '@rocket.chat/models';
+import { removeEmpty } from '@rocket.chat/tools';
 
 export class AppUsersConverter {
 	constructor(orch) {
@@ -34,6 +35,7 @@ export class AppUsersConverter {
 			isEnabled: user.active,
 			name: user.name,
 			roles: user.roles,
+			bio: user.bio,
 			status: user.status,
 			statusText: user.statusText,
 			statusConnection,
@@ -56,7 +58,7 @@ export class AppUsersConverter {
 			return undefined;
 		}
 
-		return {
+		return removeEmpty({
 			_id: user.id,
 			username: user.username,
 			emails: user.emails,
@@ -64,6 +66,7 @@ export class AppUsersConverter {
 			active: user.isEnabled,
 			name: user.name,
 			roles: user.roles,
+			bio: user.bio,
 			status: user.status,
 			statusConnection: user.statusConnection,
 			utcOffset: user.utfOffset,
@@ -71,7 +74,7 @@ export class AppUsersConverter {
 			_updatedAt: user.updatedAt,
 			lastLogin: user.lastLoginAt,
 			appId: user.appId,
-		};
+		});
 	}
 
 	_convertUserTypeToEnum(type) {

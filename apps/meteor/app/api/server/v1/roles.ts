@@ -1,7 +1,7 @@
-import { api } from '@rocket.chat/core-services';
+import { api, Authorization } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
-import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
+import { ajv, isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -9,9 +9,10 @@ import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUse
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { addUserToRole } from '../../../authorization/server/methods/addUserToRole';
 import { notifyOnRoleChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server/index';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
@@ -62,17 +63,13 @@ API.v1.addRoute(
 			}
 
 			const user = await getUserFromParams(this.bodyParams);
-			const { roleId, roleName, roomId } = this.bodyParams;
+			const { roleId, roomId } = this.bodyParams;
 
 			if (!roleId) {
-				if (!roleName) {
-					return API.v1.failure('error-invalid-role-properties');
-				}
-
-				apiDeprecationLogger.parameter(this.request.route, 'roleName', '7.0.0', this.response);
+				return API.v1.failure('error-invalid-role-properties');
 			}
 
-			const role = roleId ? await Roles.findOneById(roleId) : await Roles.findOneByIdOrName(roleName as string);
+			const role = await Roles.findOneById(roleId);
 			if (!role) {
 				return API.v1.failure('error-role-not-found', 'Role not found');
 			}
@@ -81,7 +78,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
 			}
 
-			await Meteor.callAsync('authorization:addUserToRole', role._id, user.username, roomId);
+			await addUserToRole(this.userId, role._id, user.username, roomId);
 
 			return API.v1.success({
 				role,
@@ -115,21 +112,10 @@ API.v1.addRoute(
 			}
 
 			const options = { projection: { _id: 1 } };
-			let roleData = await Roles.findOneById<Pick<IRole, '_id'>>(role, options);
-			if (!roleData) {
-				roleData = await Roles.findOneByName<Pick<IRole, '_id'>>(role, options);
-				if (!roleData) {
-					throw new Meteor.Error('error-invalid-roleId');
-				}
+			const roleData = await Roles.findOneById<Pick<IRole, '_id'>>(role, options);
 
-				apiDeprecationLogger.deprecatedParameterUsage(
-					this.request.route,
-					'role',
-					'7.0.0',
-					this.response,
-					({ parameter, endpoint, version }) =>
-						`Querying \`${parameter}\` by name is deprecated in ${endpoint} and will be removed on the removed on version ${version}`,
-				);
+			if (!roleData) {
+				throw new Meteor.Error('error-invalid-roleId');
 			}
 
 			const { cursor, totalCount } = await getUsersInRolePaginated(roleData._id, roomId, {
@@ -189,14 +175,10 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
 			}
 
-			const { roleId, roleName, username, scope } = bodyParams;
+			const { roleId, username, scope } = bodyParams;
 
 			if (!roleId) {
-				if (!roleName) {
-					return API.v1.failure('error-invalid-role-properties');
-				}
-
-				apiDeprecationLogger.parameter(this.request.route, 'roleName', '7.0.0', this.response);
+				return API.v1.failure('error-invalid-role-properties');
 			}
 
 			const user = await Users.findOneByUsername(username);
@@ -205,7 +187,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-user', 'There is no user with this username');
 			}
 
-			const role = roleId ? await Roles.findOneById(roleId) : await Roles.findOneByIdOrName(roleName as string);
+			const role = await Roles.findOneById(roleId);
 
 			if (!role) {
 				throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
@@ -242,3 +224,43 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const rolesRoutes = API.v1.get(
+	'roles.getUsersInPublicRoles',
+	{
+		authRequired: true,
+		response: {
+			200: ajv.compile<{
+				users: {
+					_id: string;
+					username: string;
+					roles: string[];
+				}[];
+			}>({
+				type: 'object',
+				properties: {
+					users: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: { _id: { type: 'string' }, username: { type: 'string' }, roles: { type: 'array', items: { type: 'string' } } },
+						},
+					},
+				},
+			}),
+		},
+	},
+
+	async () => {
+		return API.v1.success({
+			users: await Authorization.getUsersFromPublicRoles(),
+		});
+	},
+);
+
+type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesRoutes>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends RolesEndpoints {}
+}

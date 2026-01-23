@@ -17,7 +17,7 @@ import { updateHistory } from './updateHistory';
 
 type OutgoingRequestBaseData = {
 	token: IOutgoingIntegration['token'];
-	bot: false;
+	bot: boolean;
 	trigger_word: string;
 };
 
@@ -82,7 +82,7 @@ type OutgoingRequestUserCreatedData = OutgoingRequestBaseData & {
 	bot?: boolean;
 };
 
-type OutgoingRequestData =
+export type OutgoingRequestData =
 	| OutgoingRequestSendMessageData
 	| OutgoingRequestUploadedFileData
 	| OutgoingRequestRoomCreatedData
@@ -276,7 +276,11 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 		}
 
 		if (!script[method]) {
-			this.logger.error(`Method "${method}" not found in the Integration "${integration.name}"`);
+			this.logger.error({
+				msg: 'Script method not found in the Integration',
+				method,
+				integration: integration.name,
+			});
 			await updateHistory({ historyId, step: `execute-script-no-method-${method}` });
 			return;
 		}
@@ -327,12 +331,20 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 		}
 
 		const script = await wrapExceptions(() => this.getIntegrationScript(integration)).catch((e) => {
-			this.logger.error(e);
+			this.logger.error({
+				msg: 'Error getting Integration script',
+				integration: integration.name,
+				err: e,
+			});
 			throw e;
 		});
 
 		if (!script[method]) {
-			this.logger.error(`Method "${method}" not found in the Integration "${integration.name}"`);
+			this.logger.error({
+				msg: 'Script method not found in the Integration',
+				method,
+				integration: integration.name,
+			});
 			return;
 		}
 

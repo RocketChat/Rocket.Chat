@@ -1,6 +1,7 @@
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { AtLeast, ILivechatDepartment, ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
+import { isTruthy } from '@rocket.chat/tools';
 import moment from 'moment';
 
 import { openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
@@ -15,7 +16,6 @@ import {
 } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour } from '../../../../../app/livechat/server/business-hour/closeBusinessHour';
 import { settings } from '../../../../../app/settings/server';
-import { isTruthy } from '../../../../../lib/isTruthy';
 import { bhLogger } from '../lib/logger';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
@@ -157,6 +157,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		if (!department || !agentsId.length) {
 			return options;
 		}
+
 		return this.handleRemoveAgentsFromDepartments(department, agentsId, options);
 	}
 
@@ -228,7 +229,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		return this.onDepartmentDisabled(department);
 	}
 
-	allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
+	override allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
 
@@ -325,7 +326,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 		const [agentsWithDepartment, [agentsOfDepartment] = []] = await Promise.all([
 			LivechatDepartmentAgents.findByAgentIds(agentsIds, { projection: { agentId: 1 } }).toArray(),
-			LivechatDepartment.findAgentsByBusinessHourId(department.businessHourId).toArray(),
+			...[department?.businessHourId ? LivechatDepartment.findAgentsByBusinessHourId(department.businessHourId).toArray() : []],
 		]);
 
 		for (const agentId of agentsIds) {

@@ -6,44 +6,51 @@ import type { UserBridge } from '../../../src/server/bridges';
 import { TestData } from '../../test-data/utilities';
 
 export class UserReadAccessorTestFixture {
-    private user: IUser;
+	private user: IUser;
 
-    private mockUserBridge: UserBridge;
+	private mockUserBridge: UserBridge;
 
-    private mockAppId: 'test-appId';
+	private mockAppId: 'test-appId';
 
-    @SetupFixture
-    public setupFixture() {
-        this.user = TestData.getUser();
+	private roomIds: Array<string>;
 
-        const theUser = this.user;
-        this.mockUserBridge = {
-            doGetById(id, appId): Promise<IUser> {
-                return Promise.resolve(theUser);
-            },
-            doGetByUsername(id, appId): Promise<IUser> {
-                return Promise.resolve(theUser);
-            },
-            doGetAppUser(appId?: string): Promise<IUser> {
-                return Promise.resolve(theUser);
-            },
-        } as UserBridge;
-    }
+	@SetupFixture
+	public setupFixture() {
+		this.user = TestData.getUser();
+		this.roomIds = ['room-1', 'room-2'];
 
-    @AsyncTest()
-    public async expectDataFromMessageRead() {
-        Expect(() => new UserRead(this.mockUserBridge, 'testing-app')).not.toThrow();
+		const { user: theUser, roomIds } = this;
+		this.mockUserBridge = {
+			doGetById(id, appId): Promise<IUser> {
+				return Promise.resolve(theUser);
+			},
+			doGetByUsername(id, appId): Promise<IUser> {
+				return Promise.resolve(theUser);
+			},
+			doGetAppUser(appId?: string): Promise<IUser> {
+				return Promise.resolve(theUser);
+			},
+			doGetUserRoomIds(userId: string): Promise<Array<string>> {
+				return Promise.resolve(roomIds);
+			},
+		} as UserBridge;
+	}
 
-        const ur = new UserRead(this.mockUserBridge, 'testing-app');
+	@AsyncTest()
+	public async expectDataFromMessageRead() {
+		Expect(() => new UserRead(this.mockUserBridge, 'testing-app')).not.toThrow();
 
-        Expect(await ur.getById('fake')).toBeDefined();
-        Expect(await ur.getById('fake')).toEqual(this.user);
+		const ur = new UserRead(this.mockUserBridge, 'testing-app');
 
-        Expect(await ur.getByUsername('username')).toBeDefined();
-        Expect(await ur.getByUsername('username')).toEqual(this.user);
+		Expect(await ur.getById('fake')).toBeDefined();
+		Expect(await ur.getById('fake')).toEqual(this.user);
 
-        Expect(await ur.getAppUser(this.mockAppId)).toBeDefined();
-        Expect(await ur.getAppUser(this.mockAppId)).toEqual(this.user);
-        Expect(await ur.getAppUser()).toEqual(this.user);
-    }
+		Expect(await ur.getByUsername('username')).toBeDefined();
+		Expect(await ur.getByUsername('username')).toEqual(this.user);
+
+		Expect(await ur.getAppUser(this.mockAppId)).toBeDefined();
+		Expect(await ur.getAppUser(this.mockAppId)).toEqual(this.user);
+		Expect(await ur.getAppUser()).toEqual(this.user);
+		Expect(await ur.getUserRoomIds(this.user.id)).toEqual(this.roomIds);
+	}
 }

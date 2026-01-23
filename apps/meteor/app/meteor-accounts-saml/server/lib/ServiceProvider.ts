@@ -18,6 +18,13 @@ import { LogoutRequestParser } from './parsers/LogoutRequest';
 import { LogoutResponseParser } from './parsers/LogoutResponse';
 import { ResponseParser } from './parsers/Response';
 
+const signatureAlgorithms = {
+	'RSA-SHA1': 'http://www.w3.org/2000/09/xmldsig#rsa-sha1',
+	'RSA-SHA256': 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
+	'RSA-SHA384': 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha384',
+	'RSA-SHA512': 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha512',
+} as const;
+
 export class SAMLServiceProvider {
 	serviceProviderOptions: IServiceProviderOptions;
 
@@ -29,10 +36,35 @@ export class SAMLServiceProvider {
 		this.serviceProviderOptions = serviceProviderOptions;
 	}
 
-	private signRequest(xml: string): string {
-		const signer = crypto.createSign('RSA-SHA1');
+	private getSignatureAlgorithm(): keyof typeof signatureAlgorithms {
+		const algorithm = `RSA-${this.serviceProviderOptions.signatureAlgorithm}`;
+
+		if (algorithm in signatureAlgorithms) {
+			return algorithm as keyof typeof signatureAlgorithms;
+		}
+
+		return 'RSA-SHA256';
+	}
+
+	private maybeSignRequest(samlObject: Record<string, any>): Record<string, any> {
+		if (!this.serviceProviderOptions.privateKey) {
+			return samlObject;
+		}
+
+		const algorithm = this.getSignatureAlgorithm();
+
+		const alg = signatureAlgorithms[algorithm];
+		const xml = querystring.stringify({ ...samlObject, SigAlg: alg });
+
+		const signer = crypto.createSign(algorithm);
 		signer.update(xml);
-		return signer.sign(this.serviceProviderOptions.privateKey, 'base64');
+		const signature = signer.sign(this.serviceProviderOptions.privateKey, 'base64');
+
+		return {
+			...samlObject,
+			SigAlg: alg,
+			Signature: signature,
+		};
 	}
 
 	public generateAuthorizeRequest(credentialToken: string): string {
@@ -78,15 +110,10 @@ export class SAMLServiceProvider {
 				// TBD. We should really include a proper RelayState here
 				const relayState = Meteor.absoluteUrl();
 
-				const samlResponse: Record<string, any> = {
+				const samlResponse = this.maybeSignRequest({
 					SAMLResponse: base64,
 					RelayState: relayState,
-				};
-
-				if (this.serviceProviderOptions.privateCert) {
-					samlResponse.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
-					samlResponse.Signature = this.signRequest(querystring.stringify(samlResponse));
-				}
+				});
 
 				target += querystring.stringify(samlResponse);
 
@@ -127,15 +154,10 @@ export class SAMLServiceProvider {
 				relayState = this.serviceProviderOptions.provider;
 			}
 
-			const samlRequest: Record<string, any> = {
+			const samlRequest = this.maybeSignRequest({
 				SAMLRequest: base64,
 				RelayState: relayState,
-			};
-
-			if (this.serviceProviderOptions.privateCert) {
-				samlRequest.SigAlg = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
-				samlRequest.Signature = this.signRequest(querystring.stringify(samlRequest));
-			}
+			});
 
 			target += querystring.stringify(samlRequest);
 

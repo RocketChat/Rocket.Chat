@@ -6,7 +6,7 @@ const config: StorybookConfig = {
 	stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
 	addons: [
 		getAbsolutePath('@storybook/addon-essentials'),
-		getAbsolutePath('@storybook/addon-webpack5-compiler-babel'),
+		getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 		getAbsolutePath('@storybook/addon-styling-webpack'),
 	],
 

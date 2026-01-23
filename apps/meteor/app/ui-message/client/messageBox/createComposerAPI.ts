@@ -1,13 +1,20 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
+import type { RefObject } from 'react';
 
+import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
-export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
+export const createComposerAPI = (
+	input: HTMLTextAreaElement,
+	storageID: string,
+	quoteChainLimit: number,
+	composerRef: RefObject<HTMLElement>,
+): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
@@ -108,7 +115,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 	};
 
 	const quoteMessage = async (message: IMessage): Promise<void> => {
-		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), message];
+		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), limitQuoteChain(message, quoteChainLimit)];
 		notifyQuotedMessagesUpdate();
 		input.focus();
 	};
@@ -291,6 +298,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 	};
 
 	return {
+		composerRef,
 		replaceText,
 		insertNewLine,
 		blur: () => input.blur(),

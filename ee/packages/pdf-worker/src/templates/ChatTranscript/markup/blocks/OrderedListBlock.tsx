@@ -21,10 +21,10 @@ type OrderedListBlockProps = {
 };
 
 const OrderedListBlock = ({ items }: OrderedListBlockProps) => (
-	<View style={styles.wrapper}>
+	<View style={styles.wrapper} wrap>
 		{items.map(({ value, number }, index) => (
 			<Text style={styles.list} key={index}>
-				<Text style={styles.number}>{number}.</Text> <InlineElements children={value} />
+				<Text style={styles.number}>{number}.</Text> <InlineElements>{value}</InlineElements>
 			</Text>
 		))}
 	</View>

@@ -1,30 +1,40 @@
 import fs from 'fs/promises';
+import { resolve, join, relative } from 'node:path';
 
 import type { Locator, Page } from '@playwright/test';
 
+import { RoomComposer, ThreadComposer } from './composer';
 import { expect } from '../../utils/test';
+
+const FIXTURES_PATH = relative(process.cwd(), resolve(__dirname, '../../fixtures/files'));
+
+export function getFilePath(fileName: string): string {
+	return join(FIXTURES_PATH, fileName);
+}
 
 export class HomeContent {
 	protected readonly page: Page;
 
+	protected readonly composer: RoomComposer;
+
+	protected readonly threadComposer: ThreadComposer;
+
 	constructor(page: Page) {
 		this.page = page;
+		this.composer = new RoomComposer(page);
+		this.threadComposer = new ThreadComposer(page);
 	}
 
 	get channelHeader(): Locator {
 		return this.page.locator('main header');
 	}
 
+	get burgerButton(): Locator {
+		return this.channelHeader.getByRole('button', { name: 'Open sidebar' });
+	}
+
 	get channelRetentionPolicyWarning(): Locator {
 		return this.page.locator('main').getByRole('alert', { name: 'Retention policy warning banner' });
-	}
-
-	get inputMessage(): Locator {
-		return this.page.locator('[name="msg"]');
-	}
-
-	get inputThreadMessage(): Locator {
-		return this.page.getByRole('dialog').locator('[name="msg"]').last();
 	}
 
 	get messagePopupUsers(): Locator {
@@ -47,6 +57,10 @@ export class HomeContent {
 		return this.lastUserMessage.locator('[data-qa-type="message-body"]');
 	}
 
+	get lastUserMessageAttachment(): Locator {
+		return this.page.locator('[data-qa-type="message-attachment"]').last();
+	}
+
 	get lastUserMessageNotSequential(): Locator {
 		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
 	}
@@ -59,40 +73,47 @@ export class HomeContent {
 		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
 	}
 
-	get btnJoinRoom(): Locator {
-		return this.page.locator('role=button[name="Join"]');
-	}
-
-	async openRoomInfo(): Promise<void> {
-		await this.channelHeader.locator('button[data-qa-id="ToolBoxAction-info-circled"]').click();
-	}
-
-	async joinRoom(): Promise<void> {
-		await this.btnJoinRoom.click();
-	}
-
 	async joinRoomIfNeeded(): Promise<void> {
-		if (await this.inputMessage.isEnabled()) {
+		if (await this.composer.inputMessage.isEnabled()) {
 			return;
 		}
-		if (!(await this.btnJoinRoom.isVisible())) {
+		if (!(await this.composer.btnJoinRoom.isVisible())) {
 			return;
 		}
-		await this.joinRoom();
+		await this.composer.btnJoinRoom.click();
 	}
 
-	async sendMessage(text: string): Promise<void> {
+	async sendMessage(text: string, enforce = true): Promise<void> {
 		await this.joinRoomIfNeeded();
-		await this.page.waitForSelector('[name="msg"]:not([disabled])');
-		await this.page.locator('[name="msg"]').fill(text);
-		await this.page.getByRole('button', { name: 'Send', exact: true }).click();
+		await expect(this.composer.inputMessage).toBeEnabled();
+		await this.composer.inputMessage.fill(text);
+
+		if (enforce) {
+			const responsePromise = this.page.waitForResponse(
+				(response) =>
+					/api\/v1\/method.call\/sendMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
+			);
+
+			await this.composer.btnSend.click();
+
+			const response = await (await responsePromise).json();
+
+			const mid = JSON.parse(response.message).result._id;
+			const messageLocator = this.getMessageById(mid);
+
+			await expect(messageLocator).toBeVisible();
+			await expect(messageLocator).not.toHaveClass('rcx-message--pending');
+		} else {
+			await this.composer.btnSend.click();
+		}
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
 		await this.joinRoomIfNeeded();
-		await this.page.waitForSelector('[name="msg"]:not([disabled])');
-		await this.page.locator('[name="msg"]').fill('');
-		await this.page.locator('[name="msg"]').fill(text);
+		await expect(this.composer.inputMessage).toBeEnabled();
+
+		await this.composer.inputMessage.fill('');
+		await this.composer.inputMessage.fill(text);
 		await this.page.keyboard.press('Enter');
 		await this.page.keyboard.press('Enter');
 	}
@@ -108,12 +129,25 @@ export class HomeContent {
 		await this.page.locator('role=button[name="Forward"]').click();
 	}
 
+	// TODO: use modal fragments -----------------------------------------
 	get btnModalCancel(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
 	}
 
 	get fileUploadModal(): Locator {
 		return this.page.getByRole('dialog', { name: 'File Upload' });
+	}
+
+	get createDiscussionModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'Create discussion' });
+	}
+
+	get inputDiscussionName(): Locator {
+		return this.createDiscussionModal.getByRole('textbox', { name: 'Name' });
+	}
+
+	get btnCreateDiscussionModal(): Locator {
+		return this.createDiscussionModal.getByRole('button', { name: 'Create' });
 	}
 
 	get modalFilePreview(): Locator {
@@ -124,6 +158,14 @@ export class HomeContent {
 
 	get btnModalConfirm(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
+	}
+
+	get btnModalConfirmDelete(): Locator {
+		return this.page.getByRole('button', { name: 'Yes, delete', exact: true });
+	}
+
+	get btnCancelQuotePreview(): Locator {
+		return this.page.getByRole('button', { name: 'Dismiss quoted message' });
 	}
 
 	get descriptionInput(): Locator {
@@ -138,12 +180,62 @@ export class HomeContent {
 		return this.page.locator('//div[@id="modal-root"]//fieldset//div[1]//span//input');
 	}
 
+	// -----------------------------------------
+
 	get lastMessageFileName(): Locator {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
 	}
 
+	get lastMessageTextAttachment(): Locator {
+		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-attachment"]');
+	}
+
 	get lastMessageTextAttachmentEqualsText(): Locator {
 		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-message-body');
+	}
+
+	get btnQuoteMessage(): Locator {
+		return this.page.getByRole('button', { name: 'Quote' });
+	}
+
+	get quotePreview(): Locator {
+		return this.page.locator('footer blockquote');
+	}
+
+	get quotedMessage(): Locator {
+		return this.page.getByRole('blockquote');
+	}
+
+	quotedFileDescription(fileDescription: string): Locator {
+		return this.quotedMessage.getByText(fileDescription);
+	}
+
+	quotedFileName(fileName: string): Locator {
+		return this.quotedMessage.getByTitle(fileName);
+	}
+
+	threadMessageQuotedFileDescription(fileDescription: string): Locator {
+		return this.threadQuotedMessage.getByText(fileDescription);
+	}
+
+	threadMessageQuotedFileName(fileName: string): Locator {
+		return this.threadQuotedMessage.getByTitle(fileName);
+	}
+
+	get linkPreview(): Locator {
+		return this.lastUserMessage.getByText('Link Preview');
+	}
+
+	quotedLinkText(name: string): Locator {
+		return this.quotedMessage.getByRole('link', { name });
+	}
+
+	get threadQuotedMessage(): Locator {
+		return this.page.getByRole('dialog').getByRole('blockquote');
+	}
+
+	get threadQuotePreview(): Locator {
+		return this.page.getByRole('dialog').locator('footer blockquote');
 	}
 
 	get lastThreadMessageTextAttachmentEqualsText(): Locator {
@@ -170,40 +262,37 @@ export class HomeContent {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="attachment-title-link"]');
 	}
 
+	// TODO: improve locator specificity
+	get menuMore(): Locator {
+		return this.page.getByRole('menu', { name: 'More', exact: true });
+	}
+
+	get lastThreadMessageTextAttachment(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="message-attachment"]');
+	}
+
 	get btnOptionEditMessage(): Locator {
-		return this.page.locator('[data-qa-id="edit-message"]');
+		return this.menuMore.getByRole('menuitem', { name: 'Edit', exact: true });
 	}
 
 	get btnOptionDeleteMessage(): Locator {
-		return this.page.locator('[data-qa-id="delete-message"]');
+		return this.menuMore.getByRole('menuitem', { name: 'Delete', exact: true });
 	}
 
 	get btnOptionPinMessage(): Locator {
-		return this.page.locator('[data-qa-id="pin-message"]');
+		return this.menuMore.getByRole('menuitem', { name: 'Pin', exact: true });
 	}
 
 	get btnOptionStarMessage(): Locator {
-		return this.page.locator('[data-qa-id="star-message"]');
+		return this.menuMore.getByRole('menuitem', { name: 'Star', exact: true });
 	}
 
-	get btnOptionFileUpload(): Locator {
-		return this.page.locator('[data-qa-id="file-upload"]');
-	}
-
-	get btnVideoMessage(): Locator {
-		return this.page.locator('[data-qa-id="video-message"]');
-	}
-
-	get btnRecordAudio(): Locator {
-		return this.page.locator('[data-qa-id="audio-message"]');
-	}
-
-	get btnMenuMoreActions() {
-		return this.page.getByRole('button', { name: 'More actions', exact: true });
+	get btnVoiceCall(): Locator {
+		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Voice call' });
 	}
 
 	get userCard(): Locator {
-		return this.page.locator('[data-qa="UserCard"]');
+		return this.page.getByRole('dialog', { name: 'User card', exact: true });
 	}
 
 	get linkUserCard(): Locator {
@@ -211,15 +300,15 @@ export class HomeContent {
 	}
 
 	get btnContactInformation(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
+		return this.page.getByRole('button', { name: 'User Info' });
+	}
+
+	get btnContactInfoVoiceCall(): Locator {
+		return this.page.getByRole('group').getByRole('button', { name: 'Voice call' });
 	}
 
 	get btnContactEdit(): Locator {
 		return this.page.getByRole('dialog').getByRole('button', { name: 'Edit', exact: true });
-	}
-
-	get inputModalClosingComment(): Locator {
-		return this.page.locator('#modal-root input:nth-child(1)[name="comment"]');
 	}
 
 	get btnSendTranscript(): Locator {
@@ -232,10 +321,6 @@ export class HomeContent {
 
 	get btnSendTranscriptAsPDF(): Locator {
 		return this.page.locator('li.rcx-option', { hasText: 'Export as PDF' });
-	}
-
-	get btnCannedResponses(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-canned-response"]');
 	}
 
 	get btnNewCannedResponse(): Locator {
@@ -254,30 +339,8 @@ export class HomeContent {
 		return this.imageGallery.locator(`button[name="${name}"]`);
 	}
 
-	get btnComposerEmoji(): Locator {
-		return this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]');
-	}
-
-	get dialogEmojiPicker(): Locator {
-		return this.page.getByRole('dialog', { name: 'Emoji picker' });
-	}
-
-	getEmojiPickerTabByName(name: string) {
-		return this.dialogEmojiPicker.locator(`role=tablist >> role=tab[name="${name}"]`);
-	}
-
-	getEmojiByName(name: string) {
-		return this.dialogEmojiPicker.locator(`role=tabpanel >> role=button[name="${name}"]`);
-	}
-
-	async pickEmoji(emoji: string, section = 'Smileys & People') {
-		await this.btnComposerEmoji.click();
-		await this.getEmojiPickerTabByName(section).click();
-		await this.getEmojiByName(emoji).click();
-	}
-
 	async dragAndDropTxtFile(): Promise<void> {
-		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
+		const contract = await fs.readFile(getFilePath('any_file.txt'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
 			const file = new File([`${contract}`], 'any_file.txt', {
@@ -287,13 +350,13 @@ export class HomeContent {
 			return data;
 		}, contract);
 
-		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+		await this.composer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
 	async dragAndDropLstFile(): Promise<void> {
-		const contract = await fs.readFile('./tests/e2e/fixtures/files/lst-test.lst', 'utf-8');
+		const contract = await fs.readFile(getFilePath('lst-test.lst'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
 			const file = new File([`${contract}`], 'lst-test.lst', {
@@ -303,13 +366,13 @@ export class HomeContent {
 			return data;
 		}, contract);
 
-		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+		await this.composer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
 	async dragAndDropTxtFileToThread(): Promise<void> {
-		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
+		const contract = await fs.readFile(getFilePath('any_file.txt'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
 			const file = new File([`${contract}`], 'any_file.txt', {
@@ -319,25 +382,29 @@ export class HomeContent {
 			return data;
 		}, contract);
 
-		await this.inputThreadMessage.dispatchEvent('dragenter', { dataTransfer });
+		await this.threadComposer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
 	async sendFileMessage(fileName: string): Promise<void> {
-		await this.page.locator('input[type=file]').setInputFiles(`./tests/e2e/fixtures/files/${fileName}`);
+		await this.page.locator('input[type=file]').setInputFiles(getFilePath(fileName));
 	}
 
 	async openLastMessageMenu(): Promise<void> {
-		await this.page.locator('[data-qa-type="message"]').last().hover();
-		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
-		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').click();
+		await this.lastUserMessage.hover();
+		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).waitFor();
+		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).click();
+	}
+
+	get threadMessageList(): Locator {
+		return this.page.getByRole('list', { name: 'Thread message list' });
 	}
 
 	async openLastThreadMessageMenu(): Promise<void> {
-		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().hover();
-		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
-		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').click();
+		await this.threadMessageList.last().hover();
+		await this.threadMessageList.last().getByRole('button', { name: 'More', exact: true }).waitFor();
+		await this.threadMessageList.last().getByRole('button', { name: 'More', exact: true }).click();
 	}
 
 	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
@@ -355,36 +422,44 @@ export class HomeContent {
 		return this.page.locator('button.rcx-button--primary >> text="Resume"');
 	}
 
-	get btnOnHold(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
+	get primaryRoomActionsToolbar(): Locator {
+		return this.page.getByRole('toolbar', { name: 'Primary Room actions' });
 	}
 
-	get btnCall(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-phone"]');
+	get btnVideoCall(): Locator {
+		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]').getByRole('button', { name: 'Video call' });
 	}
 
-	get menuItemVideoCall(): Locator {
-		return this.page.locator('role=menuitem[name="Video call"]');
+	get btnToolbarOptions(): Locator {
+		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Options', exact: true });
+	}
+
+	get optionsMenu(): Locator {
+		return this.page.getByRole('menu', { name: 'Options', exact: true });
+	}
+
+	get starredMessagesMenuOption(): Locator {
+		return this.optionsMenu.getByRole('menuitem', { name: 'Starred Messages', exact: true });
+	}
+
+	getVideoConfPopup(name?: string): Locator {
+		return this.page.getByRole('dialog', { name });
 	}
 
 	get btnStartVideoCall(): Locator {
-		return this.page.locator('#video-conf-root .rcx-button--primary.rcx-button >> text="Start call"');
+		return this.getVideoConfPopup().getByRole('button', { name: 'Start call' });
+	}
+
+	get btnVideoConfMic(): Locator {
+		return this.getVideoConfPopup().getByRole('button', { name: 'Mic' });
 	}
 
 	get btnDeclineVideoCall(): Locator {
 		return this.page.locator('.rcx-button--secondary-danger.rcx-button >> text="Decline"');
 	}
 
-	videoConfRingCallText(text: string): Locator {
-		return this.page.locator(`#video-conf-root .rcx-box.rcx-box--full >> text="${text}"`);
-	}
-
 	get videoConfMessageBlock(): Locator {
 		return this.page.locator('.rcx-videoconf-message-block');
-	}
-
-	get videoConfMessageBlockAvatars(): Locator {
-		return this.videoConfMessageBlock.getByLabel('figure');
 	}
 
 	get btnAnonymousSignIn(): Locator {
@@ -420,6 +495,10 @@ export class HomeContent {
 		return this.page.locator('[role="listitem"][aria-roledescription="message"]', { hasText: text });
 	}
 
+	getMessageById(id: string): Locator {
+		return this.page.locator(`[data-qa-type="message"][id="${id}"]`);
+	}
+
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
@@ -436,11 +515,58 @@ export class HomeContent {
 	}
 
 	async sendMessageInThread(text: string): Promise<void> {
+		await this.threadComposer.inputMessage.fill(text);
+		await this.threadComposer.btnSend.click();
+	}
+
+	async sendMessageInVideoConfPopup(text: string): Promise<void> {
 		await this.page.getByRole('dialog').getByRole('textbox', { name: 'Message' }).fill(text);
 		await this.page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).click();
 	}
 
+	async deleteLastMessage(): Promise<void> {
+		await this.lastUserMessage.hover();
+		await this.openLastMessageMenu();
+		await this.btnOptionDeleteMessage.click();
+		await this.btnModalConfirmDelete.click();
+		await expect(this.btnModalConfirmDelete).toBeDisabled();
+	}
+
 	get btnClearSelection() {
 		return this.page.getByRole('button', { name: 'Clear selection' });
+	}
+
+	get contactUnknownCallout() {
+		return this.page.getByRole('status', { name: 'Unknown contact. This contact is not on the contact list.' });
+	}
+
+	get btnDismissContactUnknownCallout() {
+		return this.contactUnknownCallout.getByRole('button', { name: 'Dismiss' });
+	}
+
+	get btnOptionStartDiscussion(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Start a Discussion' });
+	}
+
+	async quoteMessage(quoteText: string, originalMessageText?: string): Promise<void> {
+		await this.lastUserMessage.hover();
+		await this.btnQuoteMessage.click();
+		if (originalMessageText) {
+			await expect(this.quotePreview).toBeVisible();
+			await expect(this.quotePreview).toContainText(originalMessageText);
+		}
+		await this.sendMessage(quoteText);
+	}
+
+	get clearAllUnreadsModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'Clear all unreads?' });
+	}
+
+	async markAllRoomsAsRead(): Promise<void> {
+		await this.page.keyboard.down('Shift');
+		await this.page.keyboard.press('Escape');
+		await this.page.keyboard.up('Shift');
+		await expect(this.clearAllUnreadsModal).toBeVisible();
+		await this.clearAllUnreadsModal.getByRole('button', { name: 'Yes, clear all!' }).click();
 	}
 }

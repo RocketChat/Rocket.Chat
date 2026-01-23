@@ -1,21 +1,25 @@
-import { ConnectionStatusContext } from '@rocket.chat/ui-contexts';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import type { ServerContextValue } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
-import type { ContextType, ReactElement } from 'react';
 
 import ConnectionStatusBar from './ConnectionStatusBar';
 
 export default {
-	title: 'Components/ConnectionStatusBar',
 	component: ConnectionStatusBar,
 	parameters: {
 		layout: 'fullscreen',
 	},
 } satisfies Meta<typeof ConnectionStatusBar>;
 
-const stateDecorator = (value: ContextType<typeof ConnectionStatusContext>) => (fn: () => ReactElement) => (
-	<ConnectionStatusContext.Provider value={value}>{fn()}</ConnectionStatusContext.Provider>
-);
+const stateDecorator = (value: Partial<ServerContextValue>) =>
+	mockAppRoot()
+		.withServerContext({
+			...value,
+			reconnect: action('reconnect'),
+			disconnect: action('disconnect'),
+		})
+		.buildStoryDecorator();
 
 const Template: StoryFn<typeof ConnectionStatusBar> = () => <ConnectionStatusBar />;
 
@@ -25,7 +29,6 @@ Connected.decorators = [
 		connected: true,
 		status: 'connected',
 		retryTime: undefined,
-		reconnect: action('reconnect'),
 	}),
 ];
 
@@ -35,7 +38,6 @@ Connecting.decorators = [
 		connected: false,
 		status: 'connecting',
 		retryTime: undefined,
-		reconnect: action('reconnect'),
 	}),
 ];
 
@@ -45,7 +47,6 @@ Failed.decorators = [
 		connected: false,
 		status: 'failed',
 		retryTime: undefined,
-		reconnect: action('reconnect'),
 	}),
 ];
 
@@ -55,7 +56,6 @@ Waiting.decorators = [
 		connected: false,
 		status: 'waiting',
 		retryTime: Date.now() + 300000,
-		reconnect: action('reconnect'),
 	}),
 ];
 
@@ -65,6 +65,5 @@ Offline.decorators = [
 		connected: false,
 		status: 'offline',
 		retryTime: undefined,
-		reconnect: action('reconnect'),
 	}),
 ];

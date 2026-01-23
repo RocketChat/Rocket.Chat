@@ -17,7 +17,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		super(db, 'moderation_reports', trash);
 	}
 
-	modelIndexes(): IndexDescription[] | undefined {
+	override modelIndexes(): IndexDescription[] | undefined {
 		return [
 			// TODO deprecated. remove within a migration in v7.0
 			// { key: { 'ts': 1, 'reports.ts': 1 } },
@@ -215,7 +215,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 	}
 
 	countMessageReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number> {
-		return this.col.countDocuments({
+		return this.countDocuments({
 			_hidden: { $ne: true },
 			ts: { $lt: latest, $gt: oldest },
 			...this.getSearchQueryForSelector(selector),

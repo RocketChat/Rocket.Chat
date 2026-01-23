@@ -1,8 +1,15 @@
-import type { ITranslatedMessage, IMessage, ISubscription } from '@rocket.chat/core-typings';
+import {
+	type ITranslatedMessage,
+	type IMessage,
+	type ISubscription,
+	isRoomFederated,
+	isRoomNativeFederated,
+} from '@rocket.chat/core-typings';
 import { useTranslation } from 'react-i18next';
 
-import { useAutoTranslate } from '../../../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useChat } from '../../../../../views/room/contexts/ChatContext';
+import { useRoom } from '../../../../../views/room/contexts/RoomContext';
+import { useMessageListAutoTranslate } from '../../../list/MessageListContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
 type QuoteMessageActionProps = {
@@ -12,8 +19,17 @@ type QuoteMessageActionProps = {
 
 const QuoteMessageAction = ({ message, subscription }: QuoteMessageActionProps) => {
 	const chat = useChat();
-	const autoTranslateOptions = useAutoTranslate(subscription);
+	const autoTranslateOptions = useMessageListAutoTranslate();
 	const { t } = useTranslation();
+
+	const room = useRoom();
+
+	const isFederated = room && isRoomFederated(room);
+	const isFederationBlocked = isFederated && !isRoomNativeFederated(room);
+
+	if (isFederationBlocked) {
+		return null;
+	}
 
 	if (!chat || !subscription) {
 		return null;

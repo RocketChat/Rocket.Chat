@@ -2,7 +2,7 @@ import type { IUser, IRoom, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Livechat } from '../../../livechat/server/lib/LivechatTyped';
+import { closeRoom } from '../../../livechat/server/lib/closeRoom';
 import type { CloseRoomParams } from '../../../livechat/server/lib/localTypes';
 
 export const closeLivechatRoom = async (
@@ -65,7 +65,7 @@ export const closeLivechatRoom = async (
 	};
 
 	if (forceClose) {
-		return Livechat.closeRoom({
+		return closeRoom({
 			room,
 			user,
 			options,
@@ -78,7 +78,7 @@ export const closeLivechatRoom = async (
 		throw new Error('error-room-already-closed');
 	}
 
-	return Livechat.closeRoom({
+	return closeRoom({
 		room,
 		user,
 		options,

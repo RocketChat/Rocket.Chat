@@ -1,4 +1,5 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { LayoutContext, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo, useState, useEffect } from 'react';
@@ -17,18 +18,27 @@ type LayoutProviderProps = {
 const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const showTopNavbarEmbeddedLayout = useSetting('UI_Show_top_navbar_embedded_layout', false);
 	const [isCollapsed, setIsCollapsed] = useState(false);
+	const [displaySidePanel, setDisplaySidePanel] = useState(true);
+	const [overlayed, setOverlayed] = useState(false);
+	const [navBarSearchExpanded, setNavBarSearchExpanded] = useState(false);
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 	const [hiddenActions, setHiddenActions] = useState(hiddenActionsDefaultValue);
+	const secondSidebarEnabled = useFeaturePreview('secondarySidebar');
 
 	const router = useRouter();
 	// Once the layout is embedded, it can't be changed
 	const [isEmbedded] = useState(() => router.getSearchParameters().layout === 'embedded');
 
 	const isMobile = !breakpoints.includes('md');
+	const isTablet = !breakpoints.includes('lg');
+
+	const shouldToggle = secondSidebarEnabled ? isTablet || isMobile : isMobile;
+	const shouldDisplaySidePanel = !isTablet || displaySidePanel;
+	const defaultSidebarWidth = secondSidebarEnabled ? '220px' : '240px';
 
 	useEffect(() => {
-		setIsCollapsed(isMobile);
-	}, [isMobile]);
+		setIsCollapsed(shouldToggle);
+	}, [shouldToggle]);
 
 	useEffect(() => {
 		const eventHandler = (event: MessageEvent<any>) => {
@@ -44,21 +54,34 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 
 	return (
 		<LayoutContext.Provider
-			children={children}
 			value={useMemo(
 				() => ({
 					isMobile,
+					isTablet,
 					isEmbedded,
 					showTopNavbarEmbeddedLayout,
+					navbar: {
+						searchExpanded: navBarSearchExpanded,
+						expandSearch: isMobile ? () => setNavBarSearchExpanded(true) : undefined,
+						collapseSearch: isMobile ? () => setNavBarSearchExpanded(false) : undefined,
+					},
 					sidebar: {
+						overlayed,
+						setOverlayed,
 						isCollapsed,
-						toggle: isMobile ? () => setIsCollapsed((isCollapsed) => !isCollapsed) : () => undefined,
+						shouldToggle,
+						toggle: shouldToggle ? () => setIsCollapsed((isCollapsed) => !isCollapsed) : () => undefined,
 						collapse: () => setIsCollapsed(true),
 						expand: () => setIsCollapsed(false),
 						close: () => (isEmbedded ? setIsCollapsed(true) : router.navigate('/home')),
 					},
+					sidePanel: {
+						displaySidePanel: shouldDisplaySidePanel,
+						closeSidePanel: () => setDisplaySidePanel(false),
+						openSidePanel: () => setDisplaySidePanel(true),
+					},
 					size: {
-						sidebar: '240px',
+						sidebar: shouldToggle ? '280px' : defaultSidebarWidth,
 						// eslint-disable-next-line no-nested-ternary
 						contextualBar: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
 					},
@@ -68,9 +91,25 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 					contextualBarPosition: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
 					hiddenActions,
 				}),
-				[isMobile, isEmbedded, showTopNavbarEmbeddedLayout, isCollapsed, breakpoints, router, hiddenActions],
+				[
+					isMobile,
+					isTablet,
+					isEmbedded,
+					showTopNavbarEmbeddedLayout,
+					navBarSearchExpanded,
+					overlayed,
+					isCollapsed,
+					shouldToggle,
+					shouldDisplaySidePanel,
+					defaultSidebarWidth,
+					breakpoints,
+					hiddenActions,
+					router,
+				],
 			)}
-		/>
+		>
+			{children}
+		</LayoutContext.Provider>
 	);
 };
 

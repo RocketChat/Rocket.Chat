@@ -1,8 +1,7 @@
 import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
-import filesize from 'filesize';
 
 import { API } from '../../../../api/server';
-import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData';
+import { MultipartUploadHandler } from '../../../../api/server/lib/MultipartUploadHandler';
 import { FileUpload } from '../../../../file-upload/server';
 import { settings } from '../../../../settings/server';
 import { fileUploadIsValidContentType } from '../../../../utils/server/restrictions';
@@ -10,7 +9,7 @@ import { sendFileLivechatMessage } from '../../../server/methods/sendFileLivecha
 
 API.v1.addRoute('livechat/upload/:rid', {
 	async post() {
-		if (!this.request.headers['x-visitor-token']) {
+		if (!this.request.headers.get('x-visitor-token')) {
 			return API.v1.forbidden();
 		}
 
@@ -22,7 +21,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 			});
 		}
 
-		const visitorToken = this.request.headers['x-visitor-token'];
+		const visitorToken = this.request.headers.get('x-visitor-token');
 		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken as string, {});
 
 		if (!visitor) {
@@ -36,42 +35,34 @@ API.v1.addRoute('livechat/upload/:rid', {
 
 		const maxFileSize = settings.get<number>('FileUpload_MaxFileSize') || 104857600;
 
-		const file = await getUploadFormData(
-			{
-				request: this.request,
-			},
-			{ field: 'file', sizeLimit: maxFileSize },
-		);
+		const { file, fields } = await MultipartUploadHandler.parseRequest(this.request, {
+			field: 'file',
+			maxSize: maxFileSize > -1 ? maxFileSize : undefined,
+		});
 
-		const { fields, fileBuffer, filename, mimetype } = file;
-
-		if (!fileUploadIsValidContentType(mimetype)) {
+		if (!file) {
 			return API.v1.failure({
-				reason: 'error-type-not-allowed',
+				reason: 'error-no-file-uploaded',
 			});
 		}
 
-		const buffLength = fileBuffer.length;
-
-		// -1 maxFileSize means there is no limit
-		if (maxFileSize > -1 && buffLength > maxFileSize) {
+		if (!fileUploadIsValidContentType(file.mimetype)) {
 			return API.v1.failure({
-				reason: 'error-size-not-allowed',
-				sizeAllowed: filesize(maxFileSize),
+				reason: 'error-type-not-allowed',
 			});
 		}
 
 		const fileStore = FileUpload.getStore('Uploads');
 
 		const details = {
-			name: filename,
-			size: buffLength,
-			type: mimetype,
+			name: file.filename,
+			size: file.size,
+			type: file.mimetype,
 			rid: this.urlParams.rid,
 			visitorToken,
 		};
 
-		const uploadedFile = await fileStore.insert(details, fileBuffer);
+		const uploadedFile = await fileStore.insert(details, file.tempFilePath);
 		if (!uploadedFile) {
 			return API.v1.failure('Invalid file');
 		}

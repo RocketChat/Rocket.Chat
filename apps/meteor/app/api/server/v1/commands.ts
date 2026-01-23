@@ -1,9 +1,10 @@
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Meteor } from 'meteor/meteor';
 import objectPath from 'object-path';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { executeSlashCommandPreview } from '../../../lib/server/methods/executeSlashCommandPreview';
+import { getSlashCommandPreviews } from '../../../lib/server/methods/getSlashCommandPreviews';
 import { slashCommands } from '../../../utils/server/slashCommand';
 import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
@@ -257,7 +258,7 @@ API.v1.addRoute(
 
 			const params = query.params ? query.params : '';
 
-			const preview = await Meteor.callAsync('getSlashCommandPreviews', {
+			const preview = await getSlashCommandPreviews({
 				cmd,
 				params,
 				msg: { rid: query.roomId },
@@ -320,15 +321,14 @@ API.v1.addRoute(
 				...(body.tmid && { tmid: body.tmid }),
 			};
 
-			await Meteor.callAsync(
-				'executeSlashCommandPreview',
+			await executeSlashCommandPreview(
 				{
 					cmd,
 					params,
 					msg,
+					triggerId: body.triggerId,
 				},
 				body.previewItem,
-				body.triggerId,
 			);
 
 			return API.v1.success();

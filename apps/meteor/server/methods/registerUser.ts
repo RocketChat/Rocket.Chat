@@ -16,7 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 	interface ServerMethods {
 		registerUser(
 			formData:
-				| { email: string; pass: string; username: IUser['username']; name: string; secretURL?: string; reason?: string }
+				| { email: string; pass: string; username: IUser['username']; name?: string; secretURL?: string; reason?: string }
 				| { email?: null },
 		):
 			| {
@@ -27,101 +27,115 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-Meteor.methods<ServerMethods>({
-	async registerUser(formData) {
-		const AllowAnonymousRead = settings.get<boolean>('Accounts_AllowAnonymousRead');
-		const AllowAnonymousWrite = settings.get<boolean>('Accounts_AllowAnonymousWrite');
-		const manuallyApproveNewUsers = settings.get<boolean>('Accounts_ManuallyApproveNewUsers');
-		if (AllowAnonymousRead === true && AllowAnonymousWrite === true && !formData.email) {
-			const userId = await Accounts.insertUserDoc(
-				{},
-				{
-					globalRoles: ['anonymous'],
-					active: true,
-				},
-			);
-
-			const stampedLoginToken = await Accounts._generateStampedLoginToken();
-
-			await Accounts._insertLoginToken(userId, stampedLoginToken);
-			return stampedLoginToken;
-		}
-		check(
-			formData,
-			Match.ObjectIncluding({
-				email: String,
-				pass: String,
-				name: String,
-				secretURL: Match.Optional(String),
-				reason: Match.Optional(String),
-			}),
+export const registerUser = async (
+	formData:
+		| { email: string; pass: string; username: IUser['username']; name?: string; secretURL?: string; reason?: string }
+		| { email?: null },
+): Promise<
+	| {
+			token: string;
+			when: Date;
+	  }
+	| string
+> => {
+	const AllowAnonymousRead = settings.get<boolean>('Accounts_AllowAnonymousRead');
+	const AllowAnonymousWrite = settings.get<boolean>('Accounts_AllowAnonymousWrite');
+	const manuallyApproveNewUsers = settings.get<boolean>('Accounts_ManuallyApproveNewUsers');
+	if (AllowAnonymousRead === true && AllowAnonymousWrite === true && !formData.email) {
+		const userId = await Accounts.insertUserDoc(
+			{},
+			{
+				globalRoles: ['anonymous'],
+				active: true,
+			},
 		);
 
-		if (settings.get('Accounts_RegistrationForm') === 'Disabled') {
-			throw new Meteor.Error('error-user-registration-disabled', 'User registration is disabled', {
+		const stampedLoginToken = await Accounts._generateStampedLoginToken();
+
+		await Accounts._insertLoginToken(userId, stampedLoginToken);
+		return stampedLoginToken;
+	}
+	check(
+		formData,
+		Match.ObjectIncluding({
+			email: String,
+			pass: String,
+			name: String,
+			secretURL: Match.Optional(String),
+			reason: Match.Optional(String),
+		}),
+	);
+
+	if (settings.get('Accounts_RegistrationForm') === 'Disabled') {
+		throw new Meteor.Error('error-user-registration-disabled', 'User registration is disabled', {
+			method: 'registerUser',
+		});
+	}
+
+	if (
+		settings.get('Accounts_RegistrationForm') === 'Secret URL' &&
+		(!formData.secretURL || formData.secretURL !== settings.get('Accounts_RegistrationForm_SecretURL'))
+	) {
+		if (!formData.secretURL) {
+			throw new Meteor.Error('error-user-registration-secret', 'User registration is only allowed via Secret URL', {
 				method: 'registerUser',
 			});
 		}
 
-		if (
-			settings.get('Accounts_RegistrationForm') === 'Secret URL' &&
-			(!formData.secretURL || formData.secretURL !== settings.get('Accounts_RegistrationForm_SecretURL'))
-		) {
-			if (!formData.secretURL) {
-				throw new Meteor.Error('error-user-registration-secret', 'User registration is only allowed via Secret URL', {
-					method: 'registerUser',
-				});
-			}
-
-			try {
-				await validateInviteToken(formData.secretURL);
-			} catch (e) {
-				throw new Meteor.Error('error-user-registration-secret', 'User registration is only allowed via Secret URL', {
-					method: 'registerUser',
-				});
-			}
-		}
-
-		passwordPolicy.validate(formData.pass);
-
-		await validateEmailDomain(formData.email);
-
-		const userData = {
-			email: trim(formData.email.toLowerCase()),
-			password: formData.pass,
-			name: formData.name,
-			reason: formData.reason,
-		};
-
-		let userId;
 		try {
-			userId = await Accounts.createUserAsync(userData);
+			await validateInviteToken(formData.secretURL);
 		} catch (e) {
-			if (e instanceof Meteor.Error) {
-				throw e;
-			}
+			throw new Meteor.Error('error-user-registration-secret', 'User registration is only allowed via Secret URL', {
+				method: 'registerUser',
+			});
+		}
+	}
 
-			if (e instanceof Error) {
-				throw new Meteor.Error(e.message);
-			}
+	passwordPolicy.validate(formData.pass);
 
-			throw new Meteor.Error(String(e));
+	await validateEmailDomain(formData.email);
+
+	const userData = {
+		email: trim(formData.email.toLowerCase()),
+		password: formData.pass,
+		name: formData.name,
+		reason: formData.reason,
+	};
+
+	let userId;
+	try {
+		userId = await Accounts.createUserAsync(userData);
+	} catch (e) {
+		if (e instanceof Meteor.Error) {
+			throw e;
 		}
 
-		await Users.setName(userId, trim(formData.name));
-
-		const reason = trim(formData.reason);
-		if (manuallyApproveNewUsers && reason) {
-			await Users.setReason(userId, reason);
+		if (e instanceof Error) {
+			throw new Meteor.Error(e.message);
 		}
 
-		try {
-			Accounts.sendVerificationEmail(userId, userData.email);
-		} catch (error) {
-			// throw new Meteor.Error 'error-email-send-failed', 'Error trying to send email: ' + error.message, { method: 'registerUser', message: error.message }
-		}
+		throw new Meteor.Error(String(e));
+	}
 
-		return userId;
+	await Users.setName(userId, trim(formData.name));
+
+	const reason = trim(formData.reason);
+	if (manuallyApproveNewUsers && reason) {
+		await Users.setReason(userId, reason);
+	}
+
+	try {
+		Accounts.sendVerificationEmail(userId, userData.email);
+	} catch (error) {
+		// throw new Meteor.Error 'error-email-send-failed', 'Error trying to send email: ' + error.message, { method: 'registerUser', message: error.message }
+	}
+
+	return userId;
+};
+
+Meteor.methods<ServerMethods>({
+	async registerUser(formData) {
+		return registerUser(formData);
 	},
 });
 

@@ -23,7 +23,7 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const AppearanceForm = () => {
 	const { t } = useTranslation();
-	const isEnterprise = useHasLicenseModule('livechat-enterprise');
+	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 
 	const { control, watch } = useFormContext();
 	const { Livechat_enable_message_character_limit } = watch();
@@ -52,6 +52,7 @@ const AppearanceForm = () => {
 	const livechatBackgroundField = useId();
 	const livechatHideSystemMessagesField = useId();
 	const omnichannelVisitorsCanCloseConversationField = useId();
+	const livechatHideExpandChat = useId();
 
 	return (
 		<Accordion>
@@ -152,6 +153,17 @@ const AppearanceForm = () => {
 								)}
 							/>
 						</FieldRow>
+					</Field>
+					<Field>
+						<FieldRow>
+							<AppearanceFieldLabel htmlFor={livechatHideExpandChat}>{t('Livechat_hide_expand_chat')}</AppearanceFieldLabel>
+							<Controller
+								name='Livechat_hide_expand_chat'
+								control={control}
+								render={({ field: { value, ...field } }) => <ToggleSwitch id={livechatHideExpandChat} {...field} checked={value} />}
+							/>
+						</FieldRow>
+						<FieldHint>{t('Livechat_hide_expand_chat_description')}</FieldHint>
 					</Field>
 				</FieldGroup>
 			</AccordionItem>

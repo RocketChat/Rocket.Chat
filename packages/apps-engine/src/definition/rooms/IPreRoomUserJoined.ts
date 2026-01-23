@@ -14,5 +14,5 @@ import type { IRoomUserJoinedContext } from './IRoomUserJoinedContext';
  * check the `IPreRoomCreate` events
  */
 export interface IPreRoomUserJoined {
-    executePreRoomUserJoined(context: IRoomUserJoinedContext, read: IRead, http: IHttp, persistence: IPersistence): Promise<void>;
+	executePreRoomUserJoined(context: IRoomUserJoinedContext, read: IRead, http: IHttp, persistence: IPersistence): Promise<void>;
 }

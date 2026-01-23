@@ -11,6 +11,9 @@ describe('setUsername', () => {
 			findOneById: sinon.stub(),
 			setUsername: sinon.stub(),
 		},
+		Subscriptions: {
+			findUserFederatedRoomIds: sinon.stub(),
+		},
 		Accounts: {
 			sendEnrollmentEmail: sinon.stub(),
 		},
@@ -46,9 +49,10 @@ describe('setUsername', () => {
 	const { setUsernameWithValidation, _setUsername } = proxyquire
 		.noCallThru()
 		.load('../../../../../../app/lib/server/functions/setUsername', {
+			'../../../../server/database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
 			'meteor/meteor': { Meteor: { Error } },
 			'@rocket.chat/core-services': { api: stubs.api },
-			'@rocket.chat/models': { Users: stubs.Users, Invites: stubs.Invites },
+			'@rocket.chat/models': { Users: stubs.Users, Invites: stubs.Invites, Subscriptions: stubs.Subscriptions },
 			'meteor/accounts-base': { Accounts: stubs.Accounts },
 			'underscore': stubs.underscore,
 			'../../../settings/server': { settings: stubs.settings },
@@ -60,13 +64,21 @@ describe('setUsername', () => {
 			'./saveUserIdentity': { saveUserIdentity: stubs.saveUserIdentity },
 			'./setUserAvatar': { setUserAvatar: stubs.setUserAvatar },
 			'./validateUsername': { validateUsername: stubs.validateUsername },
-			'../../../../lib/callbacks': { callbacks: stubs.callbacks },
+			'../../../../server/lib/callbacks': { callbacks: stubs.callbacks },
 			'../../../../server/lib/logger/system': { SystemLogger: stubs.SystemLogger },
 		});
+
+	beforeEach(() => {
+		stubs.Subscriptions.findUserFederatedRoomIds.returns({
+			hasNext: sinon.stub().resolves(false),
+			close: sinon.stub().resolves(),
+		});
+	});
 
 	afterEach(() => {
 		stubs.Users.findOneById.reset();
 		stubs.Users.setUsername.reset();
+		stubs.Subscriptions.findUserFederatedRoomIds.reset();
 		stubs.Accounts.sendEnrollmentEmail.reset();
 		stubs.settings.get.reset();
 		stubs.api.broadcast.reset();
@@ -139,6 +151,41 @@ describe('setUsername', () => {
 			} catch (error: any) {
 				expect(stubs.checkUsernameAvailability.calledOnce).to.be.true;
 				expect(error.message).to.equal('error-field-unavailable');
+			}
+		});
+
+		it('should throw an error if local user is in federated rooms', async () => {
+			stubs.Users.findOneById.resolves({ _id: userId, username: null });
+			stubs.validateUsername.returns(true);
+			stubs.checkUsernameAvailability.resolves(true);
+			stubs.Subscriptions.findUserFederatedRoomIds.returns({
+				hasNext: sinon.stub().resolves(true),
+				close: sinon.stub().resolves(),
+			});
+
+			try {
+				await setUsernameWithValidation(userId, 'newUsername');
+			} catch (error: any) {
+				expect(stubs.Subscriptions.findUserFederatedRoomIds.calledOnce).to.be.true;
+				expect(error.message).to.equal('error-not-allowed');
+			}
+		});
+
+		it('should throw an error if user is federated', async () => {
+			stubs.Users.findOneById.resolves({
+				_id: userId,
+				username: null,
+				federated: true,
+				federation: { version: 1, mui: '@user:origin', origin: 'origin' },
+			});
+			stubs.validateUsername.returns(true);
+			stubs.checkUsernameAvailability.resolves(true);
+
+			try {
+				await setUsernameWithValidation(userId, 'newUsername');
+			} catch (error: any) {
+				expect(stubs.Subscriptions.findUserFederatedRoomIds.notCalled).to.be.true;
+				expect(error.message).to.equal('error-not-allowed');
 			}
 		});
 

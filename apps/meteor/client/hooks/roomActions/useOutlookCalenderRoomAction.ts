@@ -1,15 +1,14 @@
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useUser } from '@rocket.chat/ui-contexts';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
-
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const OutlookEventsRoute = lazy(() => import('../../views/outlookCalendar/OutlookEventsRoute'));
 
 export const useOutlookCalenderRoomAction = () => {
-	const enabled = useSetting('Outlook_Calendar_Enabled', false);
+	const user = useUser();
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (!enabled) {
+		if (!user?.settings?.calendar?.outlook?.Enabled) {
 			return undefined;
 		}
 
@@ -21,5 +20,5 @@ export const useOutlookCalenderRoomAction = () => {
 			tabComponent: OutlookEventsRoute,
 			order: 999,
 		};
-	}, [enabled]);
+	}, [user?.settings?.calendar?.outlook?.Enabled]);
 };

@@ -1,5 +1,4 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { fireGlobalEvent } from './utils/fireGlobalEvent';
 import { isLayoutEmbedded } from './utils/isLayoutEmbedded';
@@ -25,11 +24,11 @@ export const actionLinks = {
 		const actionLink = message.actionLinks?.find((action) => action.method_id === actionMethodId);
 
 		if (!actionLink) {
-			throw new Meteor.Error('error-invalid-actionlink', 'Invalid action link');
+			throw new Error('error-invalid-actionlink');
 		}
 
 		if (!actionLinks.actions.has(actionLink.method_id)) {
-			throw new Meteor.Error('error-invalid-actionlink', 'Invalid action link');
+			throw new Error('error-invalid-actionlink');
 		}
 
 		const fn = actionLinks.actions.get(actionLink.method_id);

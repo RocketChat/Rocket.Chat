@@ -1,11 +1,10 @@
+import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import PruneMessages from './PruneMessages';
-import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/PruneMessages',
 	component: PruneMessages,
 	parameters: {
 		layout: 'fullscreen',

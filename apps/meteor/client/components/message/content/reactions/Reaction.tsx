@@ -1,4 +1,5 @@
 import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, MessageReactionCounter } from '@rocket.chat/fuselage';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { useTooltipClose, useTooltipOpen } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { useRef, useContext } from 'react';
@@ -8,6 +9,8 @@ import ReactionTooltip from './ReactionTooltip';
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 import { MessageListContext } from '../../list/MessageListContext';
 
+const normalizeUsernames = (names: string[]) => names.map((name) => (name.startsWith('@') ? name.slice(1) : name));
+
 // TODO: replace it with proper usage of i18next plurals
 type ReactionProps = {
 	hasReacted: (name: string) => boolean;
@@ -15,9 +18,10 @@ type ReactionProps = {
 	name: string;
 	names: string[];
 	messageId: string;
+	onClick: () => void;
 } & ComponentProps<typeof MessageReactionTemplate>;
 
-const Reaction = ({ hasReacted, counter, name, names, messageId, ...props }: ReactionProps): ReactElement => {
+const Reaction = ({ hasReacted, counter, name, names, messageId, onClick, ...props }: ReactionProps): ReactElement => {
 	const { t } = useTranslation();
 	const ref = useRef<HTMLDivElement>(null);
 	const openTooltip = useTooltipOpen();
@@ -27,6 +31,7 @@ const Reaction = ({ hasReacted, counter, name, names, messageId, ...props }: Rea
 	const mine = hasReacted(name);
 
 	const emojiProps = getEmojiClassNameAndDataTitle(name);
+	const buttonProps = useButtonPattern(onClick);
 
 	return (
 		<MessageReactionTemplate
@@ -44,7 +49,7 @@ const Reaction = ({ hasReacted, counter, name, names, messageId, ...props }: Rea
 					openTooltip(
 						<ReactionTooltip
 							emojiName={name}
-							usernames={names}
+							usernames={normalizeUsernames(names)}
 							mine={mine}
 							messageId={messageId}
 							showRealName={showRealName}
@@ -56,6 +61,7 @@ const Reaction = ({ hasReacted, counter, name, names, messageId, ...props }: Rea
 			onMouseLeave={(): void => {
 				closeTooltip();
 			}}
+			{...buttonProps}
 			{...props}
 		>
 			<MessageReactionEmoji {...emojiProps} />

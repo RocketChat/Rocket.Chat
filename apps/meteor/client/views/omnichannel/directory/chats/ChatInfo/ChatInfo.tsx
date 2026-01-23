@@ -1,21 +1,19 @@
-import type { ILivechatCustomField, IOmnichannelRoom, IVisitor, Serialized } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarScrollableContent, ContextualbarFooter, InfoPanelField, InfoPanelLabel, InfoPanelText } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
+import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission, useUserId } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
-import { InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../../components/InfoPanel';
 import MarkdownText from '../../../../../components/MarkdownText';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
 import CustomField from '../../../components/CustomField';
+import { useValidCustomFields } from '../../../contactInfo/hooks/useValidCustomFields';
 import { AgentField, SlaField, ContactField, SourceField } from '../../components';
 import PriorityField from '../../components/PriorityField';
 import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
@@ -32,13 +30,12 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const formatDateAndTime = useFormatDateAndTime();
-	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('/v1/livechat/custom-fields');
-	const [customFields, setCustomFields] = useState<Serialized<ILivechatCustomField>[]>([]);
 	const formatDuration = useFormatDuration();
 
 	const { data: room } = useOmnichannelRoomInfo(id); // FIXME: `room` is serialized, but we need to deserialize it
 
 	const {
+		_id: roomId,
 		ts,
 		tags,
 		closedAt,
@@ -54,29 +51,18 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 		livechatData,
 		source,
 		queuedAt,
-	} = room || { v: {} };
+	} = room ?? {};
 
 	const routePath = useRoute(route || 'omnichannel-directory');
-	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 	const subscription = useUserSubscription(id);
 	const hasGlobalEditRoomPermission = usePermission('save-others-livechat-room-info');
-	const hasLocalEditRoomPermission = servedBy?._id === Meteor.userId();
+	const hasLocalEditRoomPermission = servedBy?._id === useUserId();
 	const visitorId = v?._id;
 	const queueStartedAt = queuedAt || ts;
 
 	const queueTime = useMemo(() => formatQueuedAt(room), [room]);
 
-	useEffect(() => {
-		if (allCustomFields) {
-			const { customFields: customFieldsAPI } = allCustomFields;
-			setCustomFields(customFieldsAPI);
-		}
-	}, [allCustomFields, stateCustomFields]);
-
-	const checkIsVisibleAndScopeRoom = (key: string) => {
-		const field = customFields.find(({ _id }) => _id === key);
-		return field?.visibility === 'visible' && field?.scope === 'room';
-	};
+	const customFieldEntries = useValidCustomFields(livechatData);
 
 	const onEditClick = useEffectEvent(() => {
 		const hasEditAccess = !!subscription || hasLocalEditRoomPermission || hasGlobalEditRoomPermission;
@@ -99,10 +85,6 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 		);
 	});
 
-	const customFieldEntries: [string, any][] = Object.entries(livechatData || {}).filter(
-		([key]) => checkIsVisibleAndScopeRoom(key) && livechatData[key],
-	);
-
 	return (
 		<>
 			<ContextualbarScrollableContent p={24}>
@@ -114,15 +96,17 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 					{departmentId && <DepartmentField departmentId={departmentId} />}
 					{tags && tags.length > 0 && (
 						<InfoPanelField>
-							<InfoPanelLabel>{t('Tags')}</InfoPanelLabel>
+							<InfoPanelLabel id={`${roomId}-tags`}>{t('Tags')}</InfoPanelLabel>
 							<InfoPanelText>
-								{tags.map((tag) => (
-									<Box key={tag} mie={4} display='inline'>
-										<Tag style={{ display: 'inline' }} disabled>
-											{tag}
-										</Tag>
-									</Box>
-								))}
+								<ul aria-labelledby={`${roomId}-tags`}>
+									{tags.map((tag) => (
+										<Box is='li' key={tag} mie={4} display='inline'>
+											<Tag style={{ display: 'inline' }} disabled>
+												{tag}
+											</Tag>
+										</Box>
+									))}
+								</ul>
 							</InfoPanelText>
 						</InfoPanelField>
 					)}
@@ -176,14 +160,15 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 							<InfoPanelText>{moment(responseBy.lastMessageTs).fromNow(true)}</InfoPanelText>
 						</InfoPanelField>
 					)}
-					{canViewCustomFields && customFieldEntries.map(([key, value]) => <CustomField key={key} id={key} value={value} />)}
+					{customFieldEntries?.length > 0 &&
+						customFieldEntries.map(([key, value]) => <CustomField key={key} id={key} value={value as string} />)}
 					{slaId && <SlaField id={slaId} />}
 					{priorityId && <PriorityField id={priorityId} />}
 				</Margins>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button icon='pencil' onClick={onEditClick} data-qa-id='room-info-edit'>
+					<Button icon='pencil' onClick={onEditClick}>
 						{t('Edit')}
 					</Button>
 				</ButtonGroup>

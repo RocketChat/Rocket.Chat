@@ -1,4 +1,5 @@
 import type { IVideoConferenceUser, Serialized } from '@rocket.chat/core-typings';
+import { getUserDisplayName } from '@rocket.chat/core-typings';
 import { Avatar, Box, Icon } from '@rocket.chat/fuselage';
 import { useSetting, useUserAvatarPath, useUserPreference } from '@rocket.chat/ui-contexts';
 import { memo, type ReactElement } from 'react';
@@ -11,7 +12,7 @@ type VideoConfMessageUserStackProps = {
 
 const VideoConfMessageUserStack = ({ users }: VideoConfMessageUserStackProps): ReactElement => {
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
-	const showRealName = useSetting('UI_Use_Real_Name');
+	const showRealName = useSetting('UI_Use_Real_Name', false);
 	const getUserAvatarPath = useUserAvatarPath();
 
 	return (
@@ -23,8 +24,8 @@ const VideoConfMessageUserStack = ({ users }: VideoConfMessageUserStackProps): R
 							<Avatar
 								size='x28'
 								alt={username || ''}
-								title={showRealName ? name || username : username}
-								url={getUserAvatarPath(username as string)}
+								title={getUserDisplayName(name, username, showRealName)}
+								url={getUserAvatarPath(username)}
 							/>
 						</Box>
 					))}

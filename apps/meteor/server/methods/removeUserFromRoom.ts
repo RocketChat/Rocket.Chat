@@ -12,8 +12,8 @@ import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
 import { notifyOnRoomChanged, notifyOnSubscriptionChanged } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
-import { callbacks } from '../../lib/callbacks';
-import { afterRemoveFromRoomCallback } from '../../lib/callbacks/afterRemoveFromRoomCallback';
+import { callbacks } from '../lib/callbacks';
+import { afterRemoveFromRoomCallback } from '../lib/callbacks/afterRemoveFromRoomCallback';
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
@@ -55,6 +55,11 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 	}
 
 	const removedUser = await Users.findOneByUsernameIgnoringCase(data.username);
+	if (!removedUser) {
+		throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
+			method: 'removeUserFromRoom',
+		});
+	}
 
 	await Room.beforeUserRemoved(room);
 

@@ -2,7 +2,7 @@ import type { ILivechatVisitor, IMessage, IOmnichannelRoom, IRoom, IUser, IVisit
 import { LivechatVisitors, Messages, LivechatRooms, LivechatCustomField } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
 
 export async function findVisitorInfo({ visitorId }: { visitorId: IVisitor['_id'] }) {
@@ -62,7 +62,7 @@ export async function findChatHistory({
 		throw new Error('error-not-allowed');
 	}
 
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId });
 	const { cursor, totalCount } = LivechatRooms.findPaginatedByVisitorId(
 		visitorId,
 		{

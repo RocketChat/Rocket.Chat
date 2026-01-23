@@ -1,7 +1,8 @@
 import { MessageEmoji, ThreadMessageEmoji } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import DOMPurify from 'dompurify';
-import { ReactElement, useMemo, useContext, memo } from 'react';
+import type { ReactElement } from 'react';
+import { useMemo, useContext, memo } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
@@ -37,7 +38,7 @@ const EmojiRenderer = ({ big = false, preview = false, ...emoji }: EmojiProps): 
 					)}
 				</span>
 			)) ?? (
-				<span role='img' aria-label={sanitizedFallback.charAt(0) === ':' ? sanitizedFallback : undefined}>
+				<span title={sanitizedFallback} role='img' aria-label={sanitizedFallback.charAt(0) === ':' ? sanitizedFallback : undefined}>
 					{sanitizedFallback}
 				</span>
 			)}

@@ -18,6 +18,7 @@ function ColorSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	editor,
 	allowedTypes = [],
 	placeholder,
@@ -52,7 +53,7 @@ function ColorSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<Margins inline={4}>
 				<FieldRow>
@@ -60,7 +61,6 @@ function ColorSettingInput({
 						<Flex.Item grow={2}>
 							{editor === 'color' && (
 								<InputBox
-									data-qa-setting-id={_id}
 									type='color'
 									id={_id}
 									value={value}
@@ -73,7 +73,6 @@ function ColorSettingInput({
 							)}
 							{editor === 'expression' && (
 								<TextInput
-									data-qa-setting-id={_id}
 									id={_id}
 									value={value}
 									placeholder={placeholder}
@@ -85,7 +84,6 @@ function ColorSettingInput({
 							)}
 						</Flex.Item>
 						<Select
-							data-qa-setting-id={`${_id}_editor`}
 							type='color'
 							id={`${_id}_editor`}
 							value={editor}
@@ -99,6 +97,7 @@ function ColorSettingInput({
 				</FieldRow>
 			</Margins>
 			<FieldHint>Variable name: {_id.replace(/theme-color-/, '@')}</FieldHint>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

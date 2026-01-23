@@ -38,6 +38,7 @@ export type AccountPreferencesData = {
 	masterVolume?: number;
 	notificationsSoundVolume?: number;
 	voipRingerVolume?: number;
+	desktopNotificationVoiceCalls?: boolean;
 };
 
 export const useAccountPreferencesValues = (): AccountPreferencesData => {
@@ -51,7 +52,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 	const desktopNotifications = useUserPreference<string>('desktopNotifications');
 	const pushNotifications = useUserPreference<string>('pushNotifications');
 	const emailNotificationMode = useUserPreference<string>('emailNotificationMode');
-	const receiveLoginDetectionEmail = useUserPreference<boolean>('receiveLoginDetectionEmail');
+	const receiveLoginDetectionEmail = useUserPreference<boolean>('receiveLoginDetectionEmail', true);
 	const notifyCalendarEvents = useUserPreference<boolean>('notifyCalendarEvents');
 	const enableMobileRinging = useUserPreference<boolean>('enableMobileRinging');
 
@@ -76,6 +77,8 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 	const masterVolume = useUserPreference<number>('masterVolume', 100);
 	const notificationsSoundVolume = useUserPreference<number>('notificationsSoundVolume', 100);
 	const voipRingerVolume = useUserPreference<number>('voipRingerVolume', 100);
+
+	const desktopNotificationVoiceCalls = useUserPreference<boolean>('desktopNotificationVoiceCalls');
 
 	return {
 		language,
@@ -107,5 +110,6 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 		masterVolume,
 		notificationsSoundVolume,
 		voipRingerVolume,
+		desktopNotificationVoiceCalls,
 	};
 };

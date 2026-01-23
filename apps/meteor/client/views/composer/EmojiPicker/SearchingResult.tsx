@@ -1,4 +1,4 @@
-import { EmojiPickerNotFound } from '@rocket.chat/ui-client';
+import { EmojiPickerNotFound, VirtualizedScrollbars } from '@rocket.chat/ui-client';
 import type { MouseEvent } from 'react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +8,6 @@ import { VirtuosoGrid } from 'react-virtuoso';
 import EmojiElement from './EmojiElement';
 import SearchingResultWrapper from './SearchingResultWrapper';
 import type { EmojiItem } from '../../../../app/emoji/client';
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
 
 /**
  * the `SearchingResults` is missing the previous loadMore function that was implemented before on the latest version of EmojiPicker using the Blaze Template. It can't be implemented because of the issue with react-virtuoso and the custom scrollbars, since its using virtual list its not gonna be an issue rendering bigger results for search
@@ -29,18 +28,19 @@ const SearchingResult = ({ searchResults, handleSelectEmoji }: SearchingResultPr
 	}
 
 	return (
-		<VirtuosoGrid
-			ref={ref}
-			totalCount={searchResults.length}
-			components={{
-				Scroller: VirtuosoScrollbars,
-				List: SearchingResultWrapper,
-			}}
-			itemContent={(index) => {
-				const { emoji, image } = searchResults[index] || {};
-				return <EmojiElement emoji={emoji} image={image} onClick={handleSelectEmoji} />;
-			}}
-		/>
+		<VirtualizedScrollbars>
+			<VirtuosoGrid
+				ref={ref}
+				totalCount={searchResults.length}
+				components={{
+					List: SearchingResultWrapper,
+				}}
+				itemContent={(index) => {
+					const { emoji, image } = searchResults[index] || {};
+					return <EmojiElement emoji={emoji} image={image} onClick={handleSelectEmoji} />;
+				}}
+			/>
+		</VirtualizedScrollbars>
 	);
 };
 

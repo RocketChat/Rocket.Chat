@@ -1,3 +1,4 @@
+import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
@@ -6,7 +7,6 @@ import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import LocalTime from '../../../components/LocalTime';
 import { UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
@@ -86,21 +86,12 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			return null;
 		}
 
-		return (
-			<GenericMenu
-				title={t('More')}
-				key='menu'
-				data-qa-id='menu'
-				sections={menuOptions}
-				placement='bottom-start'
-				callbackAction={onClose}
-			/>
-		);
+		return <GenericMenu title={t('More')} key='menu' sections={menuOptions} placement='bottom-start' callbackAction={onClose} />;
 	}, [menuOptions, onClose, t]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { content, title, icon, onClick }]: [string, UserInfoAction]): ReactElement => (
-			<UserCardAction key={key} label={content || title} aria-label={content || title} onClick={onClick} icon={icon!} />
+		const mapAction = ([key, { content, title, icon, onClick, disabled }]: [string, UserInfoAction]): ReactElement => (
+			<UserCardAction key={key} label={content || title} aria-label={content || title} onClick={onClick} icon={icon!} disabled={disabled} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

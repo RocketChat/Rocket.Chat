@@ -3,7 +3,16 @@ import { Button, FieldGroup, Field, FieldLabel, ButtonGroup, PasswordInput, Fiel
 import { Form } from '@rocket.chat/layout';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useRouter, useRouteParameter, useUser, useMethod, useTranslation, useLoginWithToken } from '@rocket.chat/ui-contexts';
+import {
+	useSetting,
+	useRouter,
+	useRouteParameter,
+	useUser,
+	useMethod,
+	useTranslation,
+	useLoginWithToken,
+	useEndpoint,
+} from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useEffect, useId, useRef } from 'react';
 import { useForm } from 'react-hook-form';
@@ -18,7 +27,7 @@ const getChangePasswordReason = ({
 const ResetPasswordPage = (): ReactElement => {
 	const user = useUser();
 	const t = useTranslation();
-	const setUserPassword = useMethod('setUserPassword');
+	const setBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
 	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');
 
@@ -67,7 +76,11 @@ const ResetPasswordPage = (): ReactElement => {
 				await loginWithToken(result.token);
 				router.navigate('/home');
 			} else {
-				await setUserPassword(password);
+				await setBasicInfo({
+					data: {
+						newPassword: password,
+					},
+				});
 			}
 		} catch ({ error, reason }: any) {
 			const _error = reason ?? error;

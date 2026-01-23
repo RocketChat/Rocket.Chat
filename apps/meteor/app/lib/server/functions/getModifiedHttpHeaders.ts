@@ -1,5 +1,13 @@
-export const getModifiedHttpHeaders = (httpHeaders: Record<string, any>) => {
-	const modifiedHttpHeaders = { ...httpHeaders };
+export const normalizeHeaders = (httpHeaders?: Headers | Record<string, string>) => {
+	if (httpHeaders instanceof Headers) {
+		return { ...Object.fromEntries(httpHeaders.entries()) };
+	}
+
+	return { ...httpHeaders };
+};
+
+export const getModifiedHttpHeaders = (httpHeaders: Headers | Record<string, string>) => {
+	const modifiedHttpHeaders = normalizeHeaders(httpHeaders);
 
 	if ('x-auth-token' in modifiedHttpHeaders) {
 		modifiedHttpHeaders['x-auth-token'] = '[redacted]';

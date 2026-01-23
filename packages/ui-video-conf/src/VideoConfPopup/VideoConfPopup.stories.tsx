@@ -1,7 +1,6 @@
 import { Avatar, Icon } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
-import type { ReactElement } from 'react';
 
 import VideoConfButton from '../VideoConfButton';
 import VideoConfController from '../VideoConfController';
@@ -13,13 +12,14 @@ import VideoConfPopupFooter from './VideoConfPopupFooter';
 import VideoConfPopupFooterButtons from './VideoConfPopupFooterButtons';
 import VideoConfPopupHeader from './VideoConfPopupHeader';
 import VideoConfPopupInfo from './VideoConfPopupInfo';
+import VideoConfPopupSkeleton from './VideoConfPopupSkeleton';
 import VideoConfPopupTitle from './VideoConfPopupTitle';
 
 export default {
 	title: 'Components/VideoConfPopup',
 	component: VideoConfPopup,
 	decorators: [
-		(Story): ReactElement => (
+		(Story) => (
 			<VideoConfPopupBackdrop>
 				<Story />
 			</VideoConfPopupBackdrop>
@@ -53,3 +53,5 @@ export const StartCall: StoryFn<typeof VideoConfPopup> = () => (
 		</VideoConfPopupFooter>
 	</VideoConfPopup>
 );
+
+export const Skeleton: StoryFn<typeof VideoConfPopup> = () => <VideoConfPopupSkeleton />;

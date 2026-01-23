@@ -1,8 +1,8 @@
 import { type IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { afterAgentUserActivated, afterAgentAdded, afterRemoveAgent } from '../lib/hooks';
 
 type IAfterSaveUserProps = {
 	user: IUser;
@@ -16,30 +16,30 @@ const handleAgentUpdated = async (userData: IAfterSaveUserProps) => {
 	const { user: newUser, oldUser } = userData;
 
 	if (wasAgent(oldUser) && !isAgent(newUser)) {
-		await LivechatTyped.afterRemoveAgent(newUser);
+		await afterRemoveAgent(newUser);
 	}
 
 	if (!wasAgent(oldUser) && isAgent(newUser)) {
-		await LivechatTyped.afterAgentAdded(newUser);
+		await afterAgentAdded(newUser);
 	}
 };
 
 const handleAgentCreated = async (user: IUser) => {
 	// created === no prev roles :)
 	if (isAgent(user)) {
-		await LivechatTyped.afterAgentAdded(user);
+		await afterAgentAdded(user);
 	}
 };
 
 const handleDeactivateUser = async (user: IUser) => {
 	if (wasAgent(user)) {
-		await Users.makeAgentUnavailableAndUnsetExtension(user._id);
+		await Users.makeAgentUnavailable(user._id);
 	}
 };
 
 const handleActivateUser = async (user: IUser) => {
 	if (isAgent(user) && user.username) {
-		await LivechatTyped.afterAgentUserActivated(user);
+		await afterAgentUserActivated(user);
 	}
 };
 

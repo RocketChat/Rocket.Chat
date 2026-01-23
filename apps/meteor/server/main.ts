@@ -10,10 +10,10 @@ import './settings';
 import { configureServer } from './configuration';
 import { registerServices } from './services/startup';
 import { startup } from './startup';
+import { startRestAPI } from '../app/api/server/api';
 import { settings } from '../app/settings/server';
-import { startLicense } from '../ee/app/license/server/startup';
-import { registerEEBroker } from '../ee/server';
-import { startFederationService } from '../ee/server/startup/services';
+import { startupApp } from '../ee/server';
+import { startRocketChat } from '../startRocketChat';
 
 import './routes';
 import '../app/lib/server/startup';
@@ -24,8 +24,8 @@ import '../lib/oauthRedirectUriServer';
 import './lib/pushConfig';
 import './features/EmailInbox/index';
 
-await Promise.all([configureServer(settings), registerServices(), registerEEBroker(), startup()]);
+await Promise.all([configureServer(settings), registerServices(), startup()]);
 
-await startLicense();
-
-await Promise.all([startFederationService()]);
+await startRocketChat();
+await startupApp();
+await startRestAPI();

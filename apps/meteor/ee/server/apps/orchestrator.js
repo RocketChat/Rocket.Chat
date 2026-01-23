@@ -1,11 +1,17 @@
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
+
 import { registerOrchestrator } from '@rocket.chat/apps';
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Logger } from '@rocket.chat/logger';
-import { AppLogs, Apps as AppsModel, AppsPersistence } from '@rocket.chat/models';
+import { AppLogs, Apps as AppsModel, AppsPersistence, Statistics } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
+import { MarketplaceAPIClient } from './marketplace/MarketplaceAPIClient';
+import { isTesting } from './marketplace/isTesting';
 import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
 import {
@@ -24,18 +30,13 @@ import { AppThreadsConverter } from '../../../app/apps/server/converters/threads
 import { settings } from '../../../app/settings/server';
 import { canEnableApp } from '../../app/license/server/canEnableApp';
 
-function isTesting() {
-	return process.env.TEST_MODE === 'true';
-}
-
 const DISABLED_PRIVATE_APP_INSTALLATION = ['yes', 'true'].includes(String(process.env.DISABLE_PRIVATE_APP_INSTALLATION).toLowerCase());
-
-let appsSourceStorageType;
-let appsSourceStorageFilesystemPath;
 
 export class AppServerOrchestrator {
 	constructor() {
 		this._isInitialized = false;
+
+		this.marketplaceClient = new MarketplaceAPIClient();
 	}
 
 	initialize() {
@@ -45,18 +46,16 @@ export class AppServerOrchestrator {
 
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
 
-		if (typeof process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL === 'string' && process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL !== '') {
-			this._marketplaceUrl = process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL;
-		} else {
-			this._marketplaceUrl = 'https://marketplace.rocket.chat';
-		}
-
 		this._model = AppsModel;
 		this._logModel = AppLogs;
 		this._persistModel = AppsPersistence;
+		this._statisticsModel = Statistics;
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogStorage(this._logModel);
-		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
+		this._appSourceStorage = new ConfigurableAppSourceStorage(
+			settings.get('Apps_Framework_Source_Package_Storage_Type'),
+			settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path'),
+		);
 
 		this._converters = new Map();
 		this._converters.set('messages', new AppMessagesConverter(this));
@@ -73,11 +72,24 @@ export class AppServerOrchestrator {
 
 		this._bridges = new RealAppBridges(this);
 
+		const tempFilePath = path.join(os.tmpdir(), 'apps-engine-temp');
+
+		try {
+			// We call this only once at server startup, so using the synchronous version is fine
+			fs.mkdirSync(tempFilePath);
+		} catch (err) {
+			// If the temp directory already exists, we can continue
+			if (err.code !== 'EEXIST') {
+				throw new Error('Failed to initialize the Apps-Engine', { cause: err });
+			}
+		}
+
 		this._manager = new AppManager({
 			metadataStorage: this._storage,
 			logStorage: this._logStorage,
 			bridges: this._bridges,
 			sourceStorage: this._appSourceStorage,
+			tempFilePath,
 		});
 
 		this._communicators = new Map();
@@ -86,6 +98,10 @@ export class AppServerOrchestrator {
 		this._communicators.set('uikit', new AppUIKitInteractionApi(this));
 
 		this._isInitialized = true;
+	}
+
+	getMarketplaceClient() {
+		return this.marketplaceClient;
 	}
 
 	getModel() {
@@ -99,11 +115,19 @@ export class AppServerOrchestrator {
 		return this._persistModel;
 	}
 
+	getStatisticsModel() {
+		return this._statisticsModel;
+	}
+
 	getStorage() {
 		return this._storage;
 	}
 
 	getLogStorage() {
+		if (!this._logStorage) {
+			throw new Error('Apps-Engine not yet fully initialized');
+		}
+
 		return this._logStorage;
 	}
 
@@ -160,10 +184,6 @@ export class AppServerOrchestrator {
 		}
 	}
 
-	getMarketplaceUrl() {
-		return this._marketplaceUrl;
-	}
-
 	async load() {
 		// Don't try to load it again if it has
 		// already been loaded
@@ -183,7 +203,11 @@ export class AppServerOrchestrator {
 
 				await this.getManager().loadOne(app.getID(), true);
 			} catch (error) {
-				this._rocketchatLogger.warn(`App "${app.getInfo().name}" could not be enabled: `, error.message);
+				this._rocketchatLogger.warn({
+					msg: 'App could not be enabled',
+					appName: app.getInfo().name,
+					err: error,
+				});
 			}
 		}
 
@@ -191,7 +215,10 @@ export class AppServerOrchestrator {
 
 		const appCount = (await this.getManager().get({ enabled: true })).length;
 
-		this._rocketchatLogger.info(`Loaded the Apps Framework and loaded a total of ${appCount} Apps!`);
+		this._rocketchatLogger.info({
+			msg: 'Loaded the Apps Framework and apps',
+			appCount,
+		});
 	}
 
 	async migratePrivateApps() {
@@ -201,10 +228,121 @@ export class AppServerOrchestrator {
 		await Promise.all(apps.map((app) => this.getNotifier().appUpdated(app.getID())));
 	}
 
-	async disableMarketplaceApps() {
-		const apps = await this.getManager().get({ installationSource: 'marketplace' });
+	async findMajorVersionUpgradeDate(targetVersion = 7) {
+		let upgradeToV7Date = null;
+		let hadPreTargetVersion = false;
 
-		await Promise.all(apps.map((app) => this.getManager().disable(app.getID())));
+		try {
+			const statistics = await this.getStatisticsModel().findInstallationDates();
+			if (!statistics || statistics.length === 0) {
+				this._rocketchatLogger.info('No statistics found');
+				return upgradeToV7Date;
+			}
+
+			const statsAscendingByInstallDate = statistics.sort((a, b) => new Date(a.installedAt) - new Date(b.installedAt));
+			for (const stat of statsAscendingByInstallDate) {
+				const version = stat.version || '';
+
+				if (!version) {
+					continue;
+				}
+
+				const majorVersion = parseInt(version.split('.')[0], 10);
+				if (isNaN(majorVersion)) {
+					continue;
+				}
+
+				if (majorVersion < targetVersion) {
+					hadPreTargetVersion = true;
+				}
+
+				if (hadPreTargetVersion && majorVersion >= targetVersion) {
+					upgradeToV7Date = new Date(stat.installedAt);
+					this._rocketchatLogger.info({
+						msg: 'Found upgrade to target version date',
+						targetVersion,
+						upgradeToDate: upgradeToV7Date.toISOString(),
+					});
+					break;
+				}
+			}
+		} catch (err) {
+			this._rocketchatLogger.error({
+				msg: 'Error checking statistics for version history',
+				err,
+			});
+		}
+
+		return upgradeToV7Date;
+	}
+
+	async disableMarketplaceApps() {
+		return this.disableApps('marketplace', false, 5);
+	}
+
+	async disablePrivateApps() {
+		return this.disableApps('private', true, 0);
+	}
+
+	async disableApps(installationSource, grandfatherApps, maxApps) {
+		const upgradeToV7Date = await this.findMajorVersionUpgradeDate();
+		const apps = await this.getManager().get({ installationSource });
+
+		const grandfathered = [];
+		const toKeep = [];
+		const toDisable = [];
+
+		for (const app of apps) {
+			const storageItem = app.getStorageItem();
+			const isEnabled = ['enabled', 'manually_enabled', 'auto_enabled'].includes(storageItem.status);
+			const marketplaceInfo = storageItem.marketplaceInfo && storageItem.marketplaceInfo[0];
+
+			const wasInstalledBeforeV7 = upgradeToV7Date && storageItem.createdAt && new Date(storageItem.createdAt) < upgradeToV7Date;
+
+			if (wasInstalledBeforeV7 && isEnabled && grandfatherApps) {
+				grandfathered.push(app);
+				continue;
+			}
+
+			if (marketplaceInfo?.isEnterpriseOnly === true && installationSource === 'marketplace') {
+				toDisable.push(app);
+				continue;
+			}
+
+			if (isEnabled) {
+				toKeep.push(app);
+			}
+		}
+
+		toKeep.sort((a, b) => new Date(a.getStorageItem().createdAt || 0) - new Date(b.getStorageItem().createdAt || 0));
+
+		if (toKeep.length > maxApps) {
+			toDisable.push(...toKeep.splice(maxApps));
+		}
+
+		if (toDisable.length === 0) {
+			return;
+		}
+
+		const disablePromises = toDisable.map((app) => {
+			const appId = app.getID();
+			return this.getManager().disable(appId);
+		});
+
+		try {
+			await Promise.all(disablePromises);
+			this._rocketchatLogger.info({
+				msg: 'Apps processing complete',
+				installationSource,
+				keptCount: grandfathered.length + toKeep.length,
+				disabledCount: toDisable.length,
+			});
+		} catch (error) {
+			this._rocketchatLogger.error({
+				msg: 'Error disabling apps',
+				err: error,
+			});
+		}
 	}
 
 	async unload() {
@@ -217,7 +355,12 @@ export class AppServerOrchestrator {
 		return this._manager
 			.unload()
 			.then(() => this._rocketchatLogger.info('Unloaded the Apps Framework.'))
-			.catch((err) => this._rocketchatLogger.error({ msg: 'Failed to unload the Apps Framework!', err }));
+			.catch((err) =>
+				this._rocketchatLogger.error({
+					msg: 'Failed to unload the Apps Framework!',
+					err,
+				}),
+			);
 	}
 
 	async updateAppsMarketplaceInfo(apps = []) {
@@ -243,7 +386,7 @@ export class AppServerOrchestrator {
 
 		return this.getBridges()
 			.getListenerBridge()
-			.handleEvent(event, ...payload)
+			.handleEvent({ event, payload })
 			.catch((error) => {
 				if (error instanceof EssentialAppDisabledException) {
 					throw new Meteor.Error('error-essential-app-disabled');
@@ -256,19 +399,3 @@ export class AppServerOrchestrator {
 
 export const Apps = new AppServerOrchestrator();
 registerOrchestrator(Apps);
-
-settings.watch('Apps_Framework_Source_Package_Storage_Type', (value) => {
-	if (!Apps.isInitialized()) {
-		appsSourceStorageType = value;
-	} else {
-		Apps.getAppSourceStorage().setStorage(value);
-	}
-});
-
-settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) => {
-	if (!Apps.isInitialized()) {
-		appsSourceStorageFilesystemPath = value;
-	} else {
-		Apps.getAppSourceStorage().setFileSystemStoragePath(value);
-	}
-});

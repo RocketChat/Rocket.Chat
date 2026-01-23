@@ -1,4 +1,4 @@
-import type { IIntegration } from '@rocket.chat/core-typings';
+import type { IIntegration, IOutgoingIntegration } from '@rocket.chat/core-typings';
 
 export interface IScriptClass {
 	prepare_outgoing_request?: (params: Record<string, any>) => any;
@@ -17,3 +17,8 @@ export type CompiledScript = {
 export type CompatibilityScriptResult = IScriptClass & {
 	availableFunctions: (keyof IScriptClass)[];
 };
+
+export const isOutgoingIntegration = (
+	integration: Partial<IIntegration>,
+): integration is IOutgoingIntegration & { type: 'webhook-outgoing' } =>
+	integration.type === 'webhook-outgoing' && 'event' in integration && integration.event !== undefined;

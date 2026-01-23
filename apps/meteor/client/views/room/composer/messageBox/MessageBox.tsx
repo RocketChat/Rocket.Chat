@@ -1,15 +1,15 @@
 /* eslint-disable complexity */
-import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
+import { useContentBoxSize, useEffectEvent, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
 	MessageComposer,
-	MessageComposerInput,
 	MessageComposerToolbar,
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 	MessageComposerButton,
+	MessageComposerInputExpandable,
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -43,6 +43,7 @@ import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -111,7 +112,7 @@ const MessageBox = ({
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
-
+	const quoteChainLimit = useSetting('Message_QuoteChainLimit', 2);
 	const [typing, setTyping] = useReducer(reducer, false);
 
 	const { isMobile } = useLayout();
@@ -122,9 +123,8 @@ const MessageBox = ({
 		throw new Error('Chat context not found');
 	}
 
-	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const textareaRef = useRef(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
-	const shadowRef = useRef<HTMLDivElement>(null);
 
 	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
 
@@ -137,9 +137,9 @@ const MessageBox = ({
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(createComposerAPI(node, storageID));
+			chat.setComposerAPI(createComposerAPI(node, storageID, quoteChainLimit, messageComposerRef));
 		},
-		[chat, storageID],
+		[chat, storageID, quoteChainLimit],
 	);
 
 	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
@@ -172,19 +172,21 @@ const MessageBox = ({
 	});
 
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
-		if (chat.currentEditing) {
+		const mid = chat.currentEditingMessage.getMID();
+		if (mid) {
 			event.preventDefault();
 			event.stopPropagation();
 
-			chat.currentEditing.reset().then((reset) => {
+			chat.currentEditingMessage.reset().then((reset) => {
 				if (!reset) {
-					chat.currentEditing?.cancel();
+					chat.currentEditingMessage.cancel();
+					chat.currentEditingMessage.stop();
 				}
 			});
 		}
 	};
 
-	const handler = useEffectEvent((event: KeyboardEvent) => {
+	const keyboardEventHandler = useEffectEvent((event: KeyboardEvent) => {
 		const { which: keyCode } = event;
 
 		const input = event.target as HTMLTextAreaElement;
@@ -275,9 +277,31 @@ const MessageBox = ({
 
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
-	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef, isRecordingAudio);
+	const { autoGrowRef, textAreaStyle } = useAutoGrow(textareaRef, isRecordingAudio);
 
-	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(room._id), [room._id]));
+	const federationMatrixEnabled = useIsFederationEnabled();
+
+	const canSend = useReactiveValue(
+		useCallback(() => {
+			if (!room.t) {
+				return false;
+			}
+
+			if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
+				return false;
+			}
+
+			if (isRoomFederated(room)) {
+				// we are dropping the non native federation for now
+				if (!isRoomNativeFederated(room)) {
+					return false;
+				}
+
+				return federationMatrixEnabled;
+			}
+			return true;
+		}, [room, federationMatrixEnabled]),
+	);
 
 	const sizes = useContentBoxSize(textareaRef);
 
@@ -330,19 +354,28 @@ const MessageBox = ({
 	const popupOptions = useComposerPopupOptions();
 	const popup = useComposerBoxPopup(popupOptions);
 
-	const keyDownHandlerCallbackRef = useCallback(
-		(node: HTMLTextAreaElement) => {
-			if (node === null) {
-				return;
-			}
-			node.addEventListener('keydown', (e: KeyboardEvent) => {
-				handler(e);
-			});
-		},
-		[handler],
+	const keyDownHandlerCallbackRef = useSafeRefCallback(
+		useCallback(
+			(node: HTMLTextAreaElement) => {
+				const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
+				node.addEventListener('keydown', eventHandler);
+
+				return () => {
+					node.removeEventListener('keydown', eventHandler);
+				};
+			},
+			[keyboardEventHandler],
+		),
 	);
 
-	const mergedRefs = useMessageComposerMergedRefs(popup.callbackRef, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef);
+	const mergedRefs = useMessageComposerMergedRefs(
+		popup.callbackRef,
+		textareaRef,
+		autoGrowRef,
+		callbackRef,
+		autofocusRef,
+		keyDownHandlerCallbackRef,
+	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
 
@@ -386,7 +419,8 @@ const MessageBox = ({
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
-				<MessageComposerInput
+				<MessageComposerInputExpandable
+					dimensions={sizes}
 					ref={mergedRefs}
 					aria-label={composerPlaceholder}
 					name='msg'
@@ -397,7 +431,6 @@ const MessageBox = ({
 					onPaste={handlePaste}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 				/>
-				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction

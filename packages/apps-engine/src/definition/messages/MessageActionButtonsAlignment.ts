@@ -1,4 +1,4 @@
 export enum MessageActionButtonsAlignment {
-    VERTICAL = 'vertical',
-    HORIZONTAL = 'horizontal',
+	VERTICAL = 'vertical',
+	HORIZONTAL = 'horizontal',
 }

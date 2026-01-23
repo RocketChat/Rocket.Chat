@@ -1,9 +1,9 @@
-import type { ILivechatDepartment, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatUnit } from '@rocket.chat/models';
+import { getUnitsFromUser } from '@rocket.chat/omni-core-ee';
 
 import { hasAnyRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';
-import { callbacks } from '../../../../../lib/callbacks';
-import { getUnitsFromUser } from '../methods/getUnitsFromUserRoles';
+import { callbacks } from '../../../../../server/lib/callbacks';
 
 export const manageDepartmentUnit = async ({ userId, departmentId, unitId }: { userId: string; departmentId: string; unitId: string }) => {
 	const accessibleUnits = await getUnitsFromUser(userId);
@@ -26,9 +26,15 @@ export const manageDepartmentUnit = async ({ userId, departmentId, unitId }: { u
 	}
 
 	if (unitId) {
-		const unit = await LivechatUnit.findOneById<Pick<IOmnichannelBusinessUnit, '_id' | 'ancestors'>>(unitId, {
-			projection: { ancestors: 1 },
-		});
+		const unit = await LivechatUnit.findOneById(
+			unitId,
+			{
+				projection: { ancestors: 1 },
+			},
+			{
+				unitsFromUser: accessibleUnits,
+			},
+		);
 
 		if (!unit) {
 			return;

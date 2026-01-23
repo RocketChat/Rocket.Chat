@@ -7,6 +7,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
+import { registerGuest } from '@rocket.chat/omni-core';
 import { Random } from '@rocket.chat/random';
 import type { ParsedMail, Attachment } from 'mailparser';
 import { stripHtml } from 'string-strip-html';
@@ -14,9 +15,9 @@ import { stripHtml } from 'string-strip-html';
 import { logger } from './logger';
 import { FileUpload } from '../../../app/file-upload/server';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { setDepartmentForGuest } from '../../../app/livechat/server/lib/departmentsLib';
+import { sendMessage } from '../../../app/livechat/server/lib/messages';
 import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
 
@@ -35,18 +36,20 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 				delete guest.department;
 				return guest;
 			}
-			await setDepartmentForGuest({ token: guest.token, department });
-			return LivechatVisitors.findOneEnabledById(guest._id, {});
+			return setDepartmentForGuest({ visitorId: guest._id, department });
 		}
 		return guest;
 	}
 
-	const livechatVisitor = await LivechatTyped.registerGuest({
-		token: Random.id(),
-		name: name || email,
-		email,
-		department,
-	});
+	const livechatVisitor = await registerGuest(
+		{
+			token: Random.id(),
+			name: name || email,
+			email,
+			department,
+		},
+		{ shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle') },
+	);
 
 	if (!livechatVisitor) {
 		throw new Error('Error getting guest');
@@ -146,7 +149,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	const rid = room?._id ?? Random.id();
 	const msgId = Random.id();
 
-	LivechatTyped.sendMessage({
+	sendMessage({
 		guest,
 		message: {
 			_id: msgId,
