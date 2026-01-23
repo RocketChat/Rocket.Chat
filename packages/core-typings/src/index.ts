@@ -133,11 +133,4 @@ export * from './Abac';
 export * from './ServerAudit/IAuditServerAbacAction';
 export * from './ServerAudit/IAuditUserChangedEvent';
 
-export * from './DeviceLoginPayload';
-
-export * from './sau/LoginSessionPayload';
-export * from './sau/LogoutSessionPayload';
-export * from './sau/SocketDisconnectedPayload';
-export * from './sau/SocketConnectedPayload';
-
 export { schemas } from './Ajv';

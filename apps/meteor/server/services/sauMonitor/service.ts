@@ -20,7 +20,15 @@ export class SAUMonitorService extends ServiceClassInternal implements ISAUMonit
 			const userAgent = getHeader(connection.httpHeaders, 'user-agent');
 			const host = getHeader(connection.httpHeaders, 'host');
 
-			sauEvents.emit('sau.accounts.login', { userId, instanceId, connectionId: connection.id, loginToken: connection.loginToken, clientAddress, userAgent, host });
+			sauEvents.emit('sau.accounts.login', {
+				userId,
+				instanceId,
+				connectionId: connection.id,
+				loginToken: connection.loginToken,
+				clientAddress,
+				userAgent,
+				host,
+			});
 		});
 
 		this.onEvent('accounts.logout', async ({ userId, connection }) => {
@@ -33,7 +41,7 @@ export class SAUMonitorService extends ServiceClassInternal implements ISAUMonit
 
 		this.onEvent('socket.connected', async (data) => {
 			// console.log('socket.connected', data);
-			sauEvents.emit('sau.socket.connected', data);
+			sauEvents.emit('sau.socket.connected', { instanceId: InstanceStatus.id(), connectionId: data.id });
 		});
 	}
 }

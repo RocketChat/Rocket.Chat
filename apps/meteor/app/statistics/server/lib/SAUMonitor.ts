@@ -1,4 +1,4 @@
-import type { ISession, ISessionDevice, IUser, LoginSessionPayload, LogoutSessionPayload } from '@rocket.chat/core-typings';
+import type { ISession, ISessionDevice, IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import { Sessions, Users, aggregates } from '@rocket.chat/models';
@@ -30,6 +30,16 @@ const getUserRoles = mem(
 );
 
 const isProdEnv = process.env.NODE_ENV === 'production';
+
+type HandleSessionArgs = {
+	userId: string;
+	instanceId: string;
+	userAgent: string;
+	loginToken?: string;
+	connectionId: string;
+	clientAddress: string;
+	host: string;
+};
 
 /**
  * Server Session Monitor for SAU(Simultaneously Active Users) based on Meteor server sessions
@@ -110,24 +120,21 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		sauEvents.on(
-			'sau.accounts.login',
-			async ({ userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host }: LoginSessionPayload) => {
-				if (!this.isRunning()) {
-					return;
-				}
+		sauEvents.on('sau.accounts.login', async ({ userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host }) => {
+			if (!this.isRunning()) {
+				return;
+			}
 
-				const roles = await getUserRoles(userId);
+			const roles = await getUserRoles(userId);
 
-				const mostImportantRole = getMostImportantRole(roles);
+			const mostImportantRole = getMostImportantRole(roles);
 
-				const loginAt = new Date();
-				const params = { roles, mostImportantRole, loginAt, ...getDateObj() };
-				await this._handleSession({ userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host }, params);
-			},
-		);
+			const loginAt = new Date();
+			const params = { roles, mostImportantRole, loginAt, ...getDateObj() };
+			await this._handleSession({ userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host }, params);
+		});
 
-		sauEvents.on('sau.accounts.logout', async ({ userId, sessionId }: LogoutSessionPayload) => {
+		sauEvents.on('sau.accounts.logout', async ({ userId, sessionId }) => {
 			if (!this.isRunning()) {
 				return;
 			}
@@ -158,12 +165,12 @@ export class SAUMonitorClass {
 	}
 
 	private async _handleSession(
-		{ userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host }: LoginSessionPayload,
+		{ userId, instanceId, userAgent, loginToken, connectionId, clientAddress, host }: HandleSessionArgs,
 		params: Pick<ISession, 'mostImportantRole' | 'loginAt' | 'day' | 'month' | 'year' | 'roles'>,
 	): Promise<void> {
 		const data: Omit<ISession, '_id' | '_updatedAt' | 'createdAt' | 'searchTerm'> = {
 			userId,
-			loginToken,
+			...(loginToken && { loginToken }),
 			ip: clientAddress,
 			host,
 			sessionId: connectionId,

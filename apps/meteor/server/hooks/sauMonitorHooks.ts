@@ -1,10 +1,3 @@
-import type {
-	LoginSessionPayload,
-	LogoutSessionPayload,
-	SocketConnectedPayload,
-	SocketDisconnectedPayload,
-	DeviceLoginPayload,
-} from '@rocket.chat/core-typings';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -28,30 +21,21 @@ Accounts.onLogin((info: ILoginAttempt) => {
 	const { resume } = methodArguments.find((arg) => 'resume' in arg) ?? {};
 	const loginToken = resume ? Accounts._hashLoginToken(resume) : '';
 	const instanceId = InstanceStatus.id();
-	const userId = info.user._id;
-	const connectionId = info.connection.id;
 	const clientAddress = getClientAddress(info.connection);
 	const userAgent = getHeader(httpHeaders, 'user-agent');
 	const host = getHeader(httpHeaders, 'host');
 
-	const loginEventObject: LoginSessionPayload = {
-		userId,
+	sauEvents.emit('sau.accounts.login', {
+		userId: info.user._id,
 		instanceId,
 		userAgent,
 		loginToken,
-		connectionId,
+		connectionId: info.connection.id,
 		clientAddress,
 		host,
-	};
-	sauEvents.emit('sau.accounts.login', loginEventObject);
+	});
 
-	const deviceLoginEventObject: DeviceLoginPayload = {
-		userId,
-		userAgent,
-		loginToken,
-		clientAddress,
-	};
-	deviceManagementEvents.emit('device-login', deviceLoginEventObject);
+	deviceManagementEvents.emit('device-login', { userId: info.user._id, userAgent, loginToken, clientAddress });
 });
 
 Accounts.onLogout((info) => {
@@ -59,28 +43,16 @@ Accounts.onLogout((info) => {
 		return;
 	}
 
-	const logoutEventObject: LogoutSessionPayload = {
-		userId: info.user._id,
-		sessionId: info.connection.id,
-	};
-
-	sauEvents.emit('sau.accounts.logout', logoutEventObject);
+	sauEvents.emit('sau.accounts.logout', { userId: info.user._id, sessionId: info.connection.id });
 });
 
 Meteor.onConnection((connection) => {
 	connection.onClose(async () => {
-		const socketDisconnectedEventObject: SocketDisconnectedPayload = {
-			connectionId: connection.id,
-			instanceId: InstanceStatus.id(),
-		};
-		sauEvents.emit('sau.socket.disconnected', socketDisconnectedEventObject);
+		sauEvents.emit('sau.socket.disconnected', { connectionId: connection.id, instanceId: InstanceStatus.id() });
 	});
 });
 
 Meteor.onConnection((connection) => {
-	const socketConnectedEventObject: SocketConnectedPayload = {
-		// Implement SocketConnectedPayload type in case of using the sau.socket.connected hook
-		...connection,
-	};
-	sauEvents.emit('sau.socket.connected', socketConnectedEventObject);
+	// in case of implementing a listener of this event, define the parameters type in services/sauMonitor/events.ts
+	sauEvents.emit('sau.socket.connected', { instanceId: InstanceStatus.id(), connectionId: connection.id });
 });

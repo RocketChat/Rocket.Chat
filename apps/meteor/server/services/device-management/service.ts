@@ -12,10 +12,12 @@ export class DeviceManagementService extends ServiceClassInternal implements IDe
 		super();
 
 		this.onEvent('accounts.login', async ({ userId, connection }) => {
-			const clientAddress = getClientAddress(connection);
-			const userAgent = getHeader(connection.httpHeaders, 'user-agent');
 			// TODO need to add loginToken to data
-			deviceManagementEvents.emit('device-login', { userId, userAgent, clientAddress });
+			deviceManagementEvents.emit('device-login', {
+				userId,
+				userAgent: getHeader(connection.httpHeaders, 'user-agent'),
+				clientAddress: getClientAddress(connection),
+			});
 		});
 	}
 }
