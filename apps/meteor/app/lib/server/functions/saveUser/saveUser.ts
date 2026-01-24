@@ -70,6 +70,10 @@ const _saveUser = (session?: ClientSession) =>
 			throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
 		}
 
+		if (userData.email) {
+			userData.email = userData.email.trim();
+		}
+
 		await validateUserData(userId, userData);
 
 		await callbacks.run('beforeSaveUser', {
