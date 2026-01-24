@@ -114,7 +114,7 @@ const markRoomTaken = async (room: IRoom, user: IUser): Promise<void> => {
     if (!requestId) return;
 
     const request = await MedsenseRequests.findOneById(requestId);
-    if (!request || request.status !== 'pending') return;
+    if (!request || !['waiting_patient', 'ai_preassessment', 'waiting_staff'].includes(request.status)) return;
 
     await MedsenseRequests.markTaken(requestId, user._id, user.username || '');
 
@@ -155,7 +155,7 @@ const registerMedsensePendingCallbacks = (): void => {
             if (!roomData) return;
 
             // Check if room has active pending request
-            if (roomData.medsenseActiveRequestStatus !== 'pending' || !roomData.medsenseActiveRequestId) {
+            if (!['waiting_patient', 'ai_preassessment', 'waiting_staff'].includes(roomData.medsenseActiveRequestStatus ?? '') || !roomData.medsenseActiveRequestId) {
                 return;
             }
 

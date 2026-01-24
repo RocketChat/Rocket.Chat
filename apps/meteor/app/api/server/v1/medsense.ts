@@ -382,9 +382,11 @@ API.v1.addRoute(
                     reason: String,
                     requestedByUserId: String,
                     requestedByUsername: Match.Maybe(String),
+                    contextSummary: Match.Maybe(String),
+                    status: Match.Maybe(String),
                 }),
             );
-            const { roomId, pharmacyId, reason, requestedByUserId, requestedByUsername } = this.bodyParams;
+            const { roomId, pharmacyId, reason, requestedByUserId, requestedByUsername, contextSummary, status } = this.bodyParams;
 
             // Auth check: Admin or Bot (Orchestrator)
             const isAdmin = await hasPermissionAsync(this.userId, "admin");
@@ -401,13 +403,21 @@ API.v1.addRoute(
             }
 
             const now = new Date();
+            // Default 15 min expiry for pre-assessment
+            const preAssessmentExpiresAt = new Date(now.getTime() + 15 * 60 * 1000);
+
+            const requestStatus = status || 'waiting_staff';
             const requestId = await MedsenseRequests.createRequest({
                 roomId,
                 pharmacyId,
                 requestedByUserId,
                 requestedByUsername,
                 reason,
-                status: 'pending',
+                status: requestStatus,
+                patientStage: 'pre_assessment',
+                contextSummary: contextSummary || '',
+                answers: {},
+                preAssessmentExpiresAt,
                 createdAt: now,
             });
 
@@ -417,14 +427,96 @@ API.v1.addRoute(
                 {
                     $set: {
                         medsenseActiveRequestId: requestId,
-                        medsenseActiveRequestStatus: 'pending',
+                        medsenseActiveRequestStatus: requestStatus,
                     },
                 }
             );
 
-            api.broadcast('room.save', { _id: roomId, medsenseActiveRequestStatus: 'pending' });
+            api.broadcast('room.save', { _id: roomId, medsenseActiveRequestStatus: requestStatus });
 
             return API.v1.success({ requestId });
+        },
+    },
+);
+
+// Update Request Progress (Clinical Flow)
+API.v1.addRoute(
+    "medsense/request.update",
+    { authRequired: true },
+    {
+        async post() {
+            check(
+                this.bodyParams,
+                Match.ObjectIncluding({
+                    requestId: String,
+                    patientStage: Match.Maybe(String),
+                    contextSummary: Match.Maybe(String),
+                    answers: Match.Maybe(Object),
+                    currentStepId: Match.Maybe(String),
+                    status: Match.Maybe(String),
+                }),
+            );
+            const { requestId, patientStage, contextSummary, answers, currentStepId, status } = this.bodyParams;
+
+            // Auth check: Admin or Bot (likely Orchestrator/SmartForms) or Pharmacy Staff
+            if (!(await hasPermissionAsync(this.userId, "medsense-take-request"))) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                if (!user?.roles.includes('bot')) {
+                    return API.v1.forbidden();
+                }
+            }
+
+            const request = await MedsenseRequests.findOneById(requestId);
+            if (!request) {
+                return API.v1.failure("Request not found");
+            }
+
+            await MedsenseRequests.updateAssessmentProgress(requestId, {
+                patientStage,
+                contextSummary,
+                answers,
+                currentStepId,
+                status,
+            });
+
+            if (status) {
+                await Rooms.update(
+                    { _id: request.roomId },
+                    {
+                        $set: {
+                            medsenseActiveRequestStatus: status,
+                        },
+                    },
+                );
+                api.broadcast('room.save', { _id: request.roomId, medsenseActiveRequestStatus: status });
+            }
+
+            return API.v1.success();
+        },
+    },
+);
+
+// Get Request Info
+API.v1.addRoute(
+    "medsense/request.info",
+    { authRequired: true },
+    {
+        async get() {
+            check(this.queryParams, Match.ObjectIncluding({ requestId: String }));
+            const { requestId } = this.queryParams;
+
+            if (!(await hasPermissionAsync(this.userId, 'medsense-view-request'))) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                if (!user?.roles.includes('bot')) {
+                    return API.v1.forbidden();
+                }
+            }
+
+            const request = await MedsenseRequests.findOneById(requestId);
+            if (!request) {
+                return API.v1.failure("Request not found");
+            }
+            return API.v1.success({ request });
         },
     },
 );
@@ -504,7 +596,7 @@ API.v1.addRoute(
             }
 
             const request = await MedsenseRequests.findOneById(requestId);
-            if (!request || request.status !== 'pending') {
+            if (!request || !['waiting_patient', 'ai_preassessment', 'waiting_staff'].includes(request.status)) {
                 return API.v1.failure("Request not found or not pending");
             }
 
@@ -662,19 +754,20 @@ API.v1.addRoute(
                 }
 
                 const promises = enabledApps.map(async (app) => {
-                    const url = Meteor.absoluteUrl(`api/apps/public/${app.getID()}/hub.actions`);
-                    const response = await new Promise<{ error?: Error; result?: HTTP.HTTPResponse }>((resolve) => {
-                        HTTP.call('GET', url, { timeout: 1000 }, (error, result) => resolve({ error, result }));
-                    });
-
-                    if (response.result?.statusCode === 200 && response.result.data?.actions) {
-                        // Prefix IDs with App ID to route execution later
-                        return response.result.data.actions.map((action: any) => ({
-                            ...action,
-                            id: `${app.getID()}:${action.id}`
-                        }));
+                    try {
+                        const url = Meteor.absoluteUrl(`api/apps/public/${app.getID()}/hub.actions`);
+                        // Short timeout to avoid blocking
+                        const response = HTTP.get(url, { timeout: 1000 });
+                        if (response.statusCode === 200 && response.data && response.data.actions) {
+                            // Prefix IDs with App ID to route execution later
+                            return response.data.actions.map((action: any) => ({
+                                ...action,
+                                id: `${app.getID()}:${action.id}`
+                            }));
+                        }
+                    } catch (e) {
+                        // App does not implement this endpoint or failed
                     }
-
                     return [];
                 });
 
@@ -710,18 +803,22 @@ API.v1.addRoute(
             const appId = actionId.substring(0, separatorIndex);
             const realActionId = actionId.substring(separatorIndex + 1);
 
-            const url = Meteor.absoluteUrl(`api/apps/public/${appId}/hub.execute`);
-            const response = await new Promise<{ error?: Error; result?: HTTP.HTTPResponse }>((resolve) => {
-                HTTP.call('POST', url, { data: { actionId: realActionId }, timeout: 1000 }, (error, result) =>
-                    resolve({ error, result })
-                );
-            });
+            try {
+                // Relay to specific App
+                const url = Meteor.absoluteUrl(`api/apps/public/${appId}/hub.execute`);
+                const response = HTTP.post(url, {
+                    data: { actionId: realActionId }
+                });
 
-            if (!response.result || response.result.statusCode !== 200 || !response.result.data) {
-                return API.v1.failure('Failed to execute action via Hub App');
+                if (response.statusCode !== 200 || !response.data) {
+                    return API.v1.failure('Failed to execute action via Hub App');
+                }
+
+                return API.v1.success({ view: response.data.view });
+            } catch (error) {
+                console.error('Medsense Hub Error:', error);
+                return API.v1.failure('Error executing hub action');
             }
-
-            return API.v1.success({ view: response.result.data.view });
         },
     },
 );

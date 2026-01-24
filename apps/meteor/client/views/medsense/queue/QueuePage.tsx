@@ -33,6 +33,19 @@ const useFormatDate = () => {
     }, []);
 };
 
+const formatRequestStatus = (status?: string) => {
+    if (!status) return '-';
+    const map: Record<string, string> = {
+        waiting_patient: 'Waiting for patient',
+        ai_preassessment: 'AI pre-assessment',
+        waiting_staff: 'Waiting for staff',
+        taken: 'Taken',
+        closed: 'Closed',
+    };
+    if (map[status]) return map[status];
+    return status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+};
+
 // ============================================================================
 // WAITING QUEUE (requests.list)
 // ============================================================================
@@ -122,6 +135,7 @@ export const WaitingQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: s
                 <TableRow>
                     <TableCell>{t('Patient')}</TableCell>
                     <TableCell>{t('Issue')}</TableCell>
+                    <TableCell>{t('Status')}</TableCell>
                     <TableCell>{t('Room')}</TableCell>
                     <TableCell>{t('Waiting_Since')}</TableCell>
                     <TableCell>{t('Action')}</TableCell>
@@ -132,6 +146,9 @@ export const WaitingQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: s
                     <TableRow key={request._id}>
                         <TableCell>{request.requestedByUsername || 'Unknown'}</TableCell>
                         <TableCell>{request.reason || '-'}</TableCell>
+                        <TableCell>
+                            <Tag>{formatRequestStatus(request.status)}</Tag>
+                        </TableCell>
                         <TableCell>{request.roomName || '-'}</TableCell>
                         <TableCell>{formatDate(request.createdAt)}</TableCell>
                         <TableCell>

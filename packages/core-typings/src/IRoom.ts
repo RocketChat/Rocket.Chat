@@ -72,7 +72,7 @@ export interface IRoom extends IRocketChatRecord {
 
 	// MedSense Active Request (New)
 	medsenseActiveRequestId?: string;
-	medsenseActiveRequestStatus?: 'pending' | 'taken';
+	medsenseActiveRequestStatus?: 'waiting_patient' | 'ai_preassessment' | 'waiting_staff' | 'taken' | 'closed';
 
 	autoTranslateLanguage?: string;
 	autoTranslate?: boolean;

@@ -1219,3 +1219,236 @@ Ensure you’re using the integrated webhook payload that includes room.customFi
   - Hub icon visible only for users with `medsense-view-hub`.
   - Clicking icon opens dropdown (no modal).
   - Selecting action opens modal without console errors.
+
+## Medsense Clinical Flow + SmartForms Inline Forms (Plan)
+
+### End-to-end flow (UTI example)
+1) Triage detects clinical intent (e.g., UTI) and posts a **confirmation inline form** in the patient room.
+2) **No request record yet**. Confirmation timeout ends the flow if the patient does not confirm.
+3) Patient confirms -> create **request record**:
+   - status=pending
+   - patientStage=pre_assessment
+   - reason from triage
+   - nswers empty
+   - contextSummary seeded
+4) Orchestrator/SmartForms posts **one inline form message per step** (no modal). Each step:
+   - uses fixed required fields, but dynamic labels and helper text
+   - updates nswers + contextSummary
+   - advances patientStage when complete (e.g., pre_assessment -> waiting_staff).
+5) Queue shows request when status=pending.
+6) Staff takes -> status=taken, add staff to room, AI stops.
+7) Staff closes -> status=closed, remove staff from room, move to history.
+8) Pre-assessment timeout: if still in pre_assessment after expiry, auto-close.
+
+### Implementation plan (junior dev tasks)
+
+#### 1) Request model + typings (DONE)
+- Add/confirm fields (request record only; room fields limited to medsenseActiveRequestId/Status):
+  - patientStage (string enum)
+  - contextSummary (string)
+  - answers (object)
+  - currentStepId (string, optional)
+  - preAssessmentExpiresAt (Date, optional)
+- Files:
+  - packages/core-typings/src/IMedsenseRequest.ts (Updated)
+  - packages/model-typings/src/models/IMedsenseRequestsModel.ts (Updated)
+  - packages/models/src/models/MedsenseRequests.ts (Updated)
+  - packages/models/src/index.ts
+
+#### 2) Server API (medsense) (DONE)
+- Ensure request endpoints include new fields in create/update and list outputs.
+- Add helper method to update answers, contextSummary, patientStage, currentStepId.
+- Add periodic cleanup to auto-close expired pre-assessments.
+- Files:
+  - apps/meteor/app/api/server/v1/medsense.ts (Updated request.set & added request.update)
+  - apps/meteor/app/lib/server/startup/medsense.ts (permissions, scheduled job setup)
+
+#### 3) SmartForms app: inline-only forms
+- Remove modal/UIKit view usage for SmartForms intake steps.
+- Post **inline block form** message per step (static_select / multi_static_select / plain_text_input).
+- Handle submission via executeBlockActionHandler.
+- Validate required fields; if missing, re-post same step with error note.
+- On submit, call request update API to persist answers + contextSummary + patientStage.
+- Files:
+  - d:/medsense-chat-local/smart-forms-app/SmartFormsApp.ts
+  - d:/medsense-chat-local/smart-forms-app/src/... (inline block builders / submit handlers)
+  - d:/medsense-chat-local/smart-forms-app/app.json (remove modal-related permissions)
+
+#### 4) Orchestrator updates
+- Confirmation step posts inline form (no modal).
+- On confirm: create request with patientStage=pre_assessment + preAssessmentExpiresAt.
+- On each step: pass summary + required_fields to Gemini; validate response.
+- Update request record after each step.
+- Files:
+  - d:/medora-build/medsense-orchestrator/main.py
+  - d:/medora-build/medsense-orchestrator/rocketchat_client.py
+
+#### 5) Queue UI (request record source)
+- Use request record fields (patientStage, contextSummary, answers) for display.
+- Keep status for Waiting/Followed/History tabs.
+- Files:
+  - apps/meteor/client/views/medsense/queue/QueuePage.tsx
+
+### Confirmation checklist (for junior dev)
+- Confirm form appears inline in room and submits without modal.
+- Request created **only after confirm**; no request if user times out or declines.
+- Pre-assessment steps are inline messages; required fields validated.
+- Request record updates with answers + contextSummary each step.
+- patientStage transitions: pre_assessment -> waiting_staff.
+- Queue shows pending request with summary + reason.
+- Staff take sets status=taken and adds staff to room.
+- Close removes staff and sets status=closed (moves to history).
+- Pre-assessment timeout auto-closes stale requests.
+
+
+### Review Findings (Post-Junior Build)
+- SmartForms still modal-based: d:/medsense-chat-local/smart-forms-app/SmartFormsApp.ts still builds/updates modal views (openModalViewResponse/updateModalViewResponse). This conflicts with the plan for inline-only block forms.
+- Orchestrator still targets SmartForms modal flow: d:/medora-build/medsense-orchestrator/main.py still posts SmartForms payloads and handles modal submissions (/forms/submit, Smart Forms Agent). Needs alignment to inline block submissions if we remove modals.
+- Pre-assessment auto-close not implemented: no scheduler/cleanup found in apps/meteor/app/lib/server/startup/medsense.ts for preAssessmentExpiresAt. Current request.set hardcodes 15 min expiry but nothing enforces it.
+- patientStage enum mismatch: typings include in_consultation, plan mentions with_staff. Decide and align enums and UI labels.
+- Request update permissions: medsense/request.update currently gates on medsense-take-request (plus bot role). Consider dedicated permission (medsense-update-request) or explicitly allow orchestrator/service accounts.
+- Queue UI not using contextSummary/answers: apps/meteor/client/views/medsense/queue/QueuePage.tsx shows reason only. If summary should be displayed, update UI to prefer contextSummary when present.
+- DEV_NOTES text corruption: plan section contains control characters in words like answers/apps. Clean up those lines to avoid copy/paste issues for junior dev.
+
+### Orchestrator payload examples (minimal)
+#### 1) Orchestrator -> SmartForms (post into room)
+```json
+{
+  "text": "A few more questions",
+  "medsenseForm": {
+    "requestId": "req_9f7c0b",
+    "flowId": "uti",
+    "roomId": "69652e0c8352dcb643ebc028",
+    "aiFormRound": 2,
+    "patientStage": "pre_assessment",
+    "form": {
+      "id": "uti-round-2",
+      "fields": [
+        { "type": "single_select", "id": "fever", "label": "Do you have a fever?", "options": ["yes", "no"] }
+      ]
+    }
+  }
+}
+```
+
+#### 2) Orchestrator -> Request record update
+```json
+{
+  "requestId": "req_9f7c0b",
+  "aiFormRound": 2,
+  "patientStage": "pre_assessment",
+  "summary": "Burning and frequency x3 days. Need to rule out fever."
+}
+```
+
+#### 3) SmartForms -> /forms/submit (to webhook/orchestrator)
+```json
+{
+  "medsenseForm": {
+    "requestId": "req_9f7c0b",
+    "flowId": "uti",
+    "roomId": "69652e0c8352dcb643ebc028",
+    "aiFormRound": 2,
+    "patientStage": "pre_assessment",
+    "form": { "id": "uti-round-2" },
+    "answers": [
+      { "id": "fever", "value": "no" }
+    ],
+    "freeText": ""
+  }
+}
+```
+
+### Flow: Webhook -> Orchestrator -> UTI agent (new medsenseForm schema)
+#### Webhook (`d:/medora-build/medsense_webhook/server.js`)
+- `/forms/submit` should **pass through** the `medsenseForm` payload untouched to `ORCHESTRATOR_URL/forms/submit`.
+- No role/bot filtering for `/forms/submit` (that filter is only for `/rocketchat`).
+- Keep `X-Rocketchat-Secret` header forwarding as-is.
+
+#### Orchestrator (`d:/medora-build/medsense-orchestrator/main.py`)
+- In `/forms/submit`, detect `medsenseForm`:
+  - If present, **bypass** `_pending_forms` + old SmartForms `formId/steps/context` flow.
+  - Validate: `requestId`, `flowId`, `roomId`, `form.id`, `answers`.
+- Fetch request context before routing:
+  - Add `get_request_info(requestId)` in `rocketchat_client.py` and call it here.
+  - Merge request context + `answers` + `aiFormRound` + `patientStage` into agent input.
+- Route by `flowId`:
+  - `uti` -> `_execute_uti_assessment_agent` / `_execute_uti_assessment_apply`.
+  - Other flows can plug into the same pattern later.
+- Enforce `Medsense_AI_Form_Rounds_Limit` using `aiFormRound` (reject/escalate if exceeded).
+- After agent response:
+  - Call `medsense/request.update` to persist `summary`, `patientStage`, `aiFormRound`, `currentStepId`, and `answers`.
+  - Post next form into room using **new** `medsenseForm` shape (see examples).
+
+#### Rocket.Chat client (`d:/medora-build/medsense-orchestrator/rocketchat_client.py`)
+- Add:
+  - `get_medsense_request(request_id)` -> GET `/api/v1/medsense/request.info`
+  - `update_medsense_request(payload)` -> POST `/api/v1/medsense/request.update`
+- Keep `create_medsense_request` for confirm step (request.set).
+
+#### UTI agent (`d:/medora-build/medsense-orchestrator/uti_assessment.py` + main.py wrappers)
+- Input should be **pure data** (no network calls):
+  - `requestId`, `aiFormRound`, `patientStage`, `summary`, `answers`, `requirements`.
+- Output should include:
+  - `nextStage` (patientStage), `summary`, `nextForm` (fields array).
+- Agent does **not** update request or post messages directly; orchestrator does.
+
+#### Required fields checklist (for new medsenseForm flow)
+- Inbound `/forms/submit` payload must include:
+  - `medsenseForm.requestId`
+  - `medsenseForm.flowId`
+  - `medsenseForm.roomId`
+  - `medsenseForm.form.id`
+  - `medsenseForm.answers` (array; allow empty if freeText is used)
+- If any required fields are missing, return `400 { error: "invalid_medsense_form" }`.
+
+#### Orchestrator implementation detail (suggested logic)
+1) Receive `/forms/submit`:
+   - If `medsenseForm` is present -> use new flow.
+   - Else -> fallback to legacy SmartForms `_pending_forms` (until removed).
+2) Validate required fields.
+3) Call `get_medsense_request(requestId)`; if not found -> 404.
+4) Enforce `Medsense_AI_Form_Rounds_Limit` using `aiFormRound`; if exceeded:
+   - Update request: `patientStage="waiting_staff"` and summary explaining escalation.
+   - Post a short message to room (“We’re connecting you to staff”).
+5) Build agent input from request + answers:
+   - Include `summary`, `aiFormRound`, `patientStage`, and last `answers`.
+6) Call agent by `flowId` (UTI).
+7) Persist agent output:
+   - `request.update` with `summary`, `patientStage`, `aiFormRound+1`, `currentStepId`, `answers`.
+8) Post next form into room using `medsenseForm` (minimal schema).
+
+#### Request update vs staff actions
+- `medsense/request.update`: orchestrator-only fields (summary, patientStage, aiFormRound, answers).
+- `medsense/request.take` / `medsense/request.close`: staff actions (status transitions).
+
+### 2026-01-23: Clinical Flow Implementation Status (Completed)
+
+#### Summary
+Implemented the "Medsense Clinical Flow" enabling stateless, inline-only assessment forms driven by the Orchestrator. This replaces the modal-based SmartForms flow for clinical assessments.
+
+#### Components Delivered
+1.  **Server API (`medsense.webchat`)**
+    -   Added `GET /api/v1/medsense/request.info` to fetch request context by ID.
+    -   Verified `request.set` and `request.update` support new fields (`patientStage`, `contextSummary`, `answers`).
+
+2.  **Orchestrator (`medsense-orchestrator`)**
+    -   **`main.py`**:
+        -   Implemented `_handle_medsense_form_submit` to process inline form submissions.
+        -   Added `_execute_uti_assessment_agent` for stateless agent logic.
+        -   Enforced `MEDSENSE_AI_FORM_ROUNDS_LIMIT` (default 5).
+    -   **`uti_assessment.py`**:
+        -   Refactored to expose `get_consent_prompt`, `get_symptom_prompt`, etc. as public helpers.
+    -   **`rocketchat_client.py`**:
+        -   Added `get_medsense_request` and `update_medsense_request` wrappers.
+
+3.  **SmartForms App (`smart-forms-app`)**
+    -   **`SmartFormsApp.ts`**:
+        -   Updated `executePostMessageSent` to detect and normalize `customFields.medsenseForm` into a renderable payload.
+        -   Updated `submitFormPayload` to preserve the `medsenseForm` structure during submission to `/forms/submit`.
+        -   Confirmed inline rendering works without modals.
+
+#### Verification
+-   Orchestrator successfully posts `medsenseForm` payloads.
+-   SmartForms renders them as inline blocks.
+-   Submissions flow back to Orchestrator -> Agent -> Request Update -> Next Form.

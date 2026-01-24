@@ -10,4 +10,5 @@ export interface IMedsenseRequestsModel extends IBaseModel<IMedsenseRequest> {
     markTaken(requestId: string, userId: string, username: string): Promise<UpdateResult | Document>;
     markClosed(requestId: string, userId: string, username: string): Promise<UpdateResult | Document>;
     findActiveByRoomId(roomId: string): Promise<IMedsenseRequest | null>;
+    updateAssessmentProgress(requestId: string, data: Partial<Pick<IMedsenseRequest, 'answers' | 'contextSummary' | 'patientStage' | 'currentStepId' | 'status'>>): Promise<UpdateResult | Document>;
 }
