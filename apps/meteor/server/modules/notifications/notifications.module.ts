@@ -214,8 +214,8 @@ export class NotificationsModule {
 				}
 
 				return user[key] === username;
-			} catch (e) {
-				SystemLogger.error(e);
+			} catch (err) {
+				SystemLogger.error({ err });
 				return false;
 			}
 		}

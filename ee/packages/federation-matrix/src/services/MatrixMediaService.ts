@@ -36,7 +36,7 @@ export class MatrixMediaService {
 		try {
 			const file = await Uploads.findOneById(fileId);
 			if (!file) {
-				logger.error(`File ${fileId} not found in database`);
+				logger.error({ msg: 'File not found in database', fileId });
 				throw new Error(`File ${fileId} not found`);
 			}
 
@@ -54,9 +54,9 @@ export class MatrixMediaService {
 			});
 
 			return mxcUri;
-		} catch (error) {
-			logger.error(error, 'Error preparing file for Matrix');
-			throw error;
+		} catch (err) {
+			logger.error({ msg: 'Error preparing file for Matrix', err });
+			throw err;
 		}
 	}
 
@@ -73,8 +73,8 @@ export class MatrixMediaService {
 			}
 
 			return file;
-		} catch (error) {
-			logger.error(error, 'Error retrieving local file');
+		} catch (err) {
+			logger.error({ msg: 'Error retrieving local file', err });
 			return null;
 		}
 	}
@@ -129,9 +129,9 @@ export class MatrixMediaService {
 			});
 
 			return uploadedFile._id;
-		} catch (error) {
-			logger.error(error, 'Error downloading and storing remote file');
-			throw error;
+		} catch (err) {
+			logger.error({ msg: 'Error downloading and storing remote file', err });
+			throw err;
 		}
 	}
 

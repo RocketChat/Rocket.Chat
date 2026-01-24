@@ -10,10 +10,15 @@ export const loggerMiddleware =
 
 		let payload = {};
 
-		try {
-			payload = await c.req.raw.clone().json();
-			// eslint-disable-next-line no-empty
-		} catch {}
+		// We don't want to consume the request body stream for multipart requests
+		if (!c.req.header('content-type')?.includes('multipart/form-data')) {
+			try {
+				payload = await c.req.raw.clone().json();
+				// eslint-disable-next-line no-empty
+			} catch {}
+		} else {
+			payload = '[multipart/form-data]';
+		}
 
 		const log = logger.logger.child({
 			method: c.req.method,

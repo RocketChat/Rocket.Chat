@@ -27,13 +27,13 @@ const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
 		{children.map((child, index) => {
 			switch (child.type) {
 				case 'BOLD':
-					return <BoldSpan key={index} children={child.value} />;
+					return <BoldSpan key={index}>{child.value}</BoldSpan>;
 
 				case 'STRIKE':
-					return <StrikeSpan key={index} children={child.value} />;
+					return <StrikeSpan key={index}>{child.value}</StrikeSpan>;
 
 				case 'ITALIC':
-					return <ItalicSpan key={index} children={child.value} />;
+					return <ItalicSpan key={index}>{child.value}</ItalicSpan>;
 
 				case 'LINK':
 					return (
@@ -73,12 +73,12 @@ const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
 					);
 
 				case 'TIMESTAMP': {
-					return <Timestamp key={index} children={child} />;
+					return <Timestamp key={index}>{child}</Timestamp>;
 				}
 
 				default: {
 					if ('fallback' in child) {
-						return <InlineElements key={index} children={[child.fallback]} />;
+						return <InlineElements key={index}>{[child.fallback]}</InlineElements>;
 					}
 					return null;
 				}
