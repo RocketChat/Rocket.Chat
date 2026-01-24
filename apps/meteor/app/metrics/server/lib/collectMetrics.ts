@@ -208,7 +208,7 @@ const updatePrometheusConfig = async (): Promise<void> => {
 			gcStats(client.register)();
 		}
 	} catch (error) {
-		SystemLogger.error(error);
+		SystemLogger.error({ err: error });
 	}
 
 	Object.assign(was, is);

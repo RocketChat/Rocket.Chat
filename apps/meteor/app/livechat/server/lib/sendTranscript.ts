@@ -9,7 +9,7 @@ import {
 	isFileImageAttachment,
 	type AtLeast,
 } from '@rocket.chat/core-typings';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { Logger } from '@rocket.chat/logger';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { LivechatRooms, Messages, Uploads, Users } from '@rocket.chat/models';

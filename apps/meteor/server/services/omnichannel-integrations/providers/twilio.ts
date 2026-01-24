@@ -261,7 +261,7 @@ export class Twilio implements ISMSProvider {
 		}
 
 		if (!authToken || !siteUrl) {
-			SystemLogger.error(`(Twilio) -> URL or Twilio token not configured.`);
+			SystemLogger.error('(Twilio) -> URL or Twilio token not configured.');
 			return false;
 		}
 

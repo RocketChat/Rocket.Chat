@@ -42,7 +42,7 @@ export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: Prioritie
 			)}
 			{priorities?.length === 0 && <GenericNoResults />}
 			{priorities && priorities?.length > 0 && (
-				<GenericTable>
+				<GenericTable aria-label={t('Priorities')}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						{priorities?.map(({ _id, name, i18n, sortItem, dirty }) => (
