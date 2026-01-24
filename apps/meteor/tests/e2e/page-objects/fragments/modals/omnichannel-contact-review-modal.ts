@@ -9,7 +9,7 @@ export class OmnichannelContactReviewModal extends Modal {
 
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Review contact' }), page);
-		this.listbox = new Listbox(page.getByRole('listbox'));
+		this.listbox = new Listbox(page);
 	}
 
 	private getFieldByName(name: string): Locator {
