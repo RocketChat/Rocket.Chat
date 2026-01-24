@@ -8,15 +8,7 @@ import {
 } from '../../lib/server/lib/notifyListener';
 import { getMentions, getUserIdsFromHighlights } from '../../lib/server/lib/notifyUsersOnMessage';
 
-const filterUsersInRoom = async ({
-	roomId,
-	userIds,
-	room,
-}: {
-	roomId: string;
-	userIds: string[];
-	room: IRoom | null;
-}) => {
+const filterUsersInRoom = async ({ roomId, userIds, room }: { roomId: string; userIds: string[]; room: IRoom | null }) => {
 	if (!userIds.length || !room) {
 		return [];
 	}
@@ -36,12 +28,7 @@ const filterUsersInRoom = async ({
 	return [];
 };
 
-export async function reply(
-	{ tmid }: { tmid?: string },
-	message: IMessage,
-	parentMessage: IMessage,
-	followers: string[],
-) {
+export async function reply({ tmid }: { tmid?: string }, message: IMessage, parentMessage: IMessage, followers: string[]) {
 	if (!tmid || isEditedMessage(message)) {
 		return false;
 	}
@@ -56,22 +43,14 @@ export async function reply(
 		Messages.getThreadFollowsByThreadId(tmid),
 	]);
 
-	const [
-		followersInRoom,
-		mentionIdsInRoom,
-		highlightsUidsInRoom,
-		threadFollowersInRoom,
-	] = await Promise.all([
+	const [followersInRoom, mentionIdsInRoom, highlightsUidsInRoom, threadFollowersInRoom] = await Promise.all([
 		filterUsersInRoom({ roomId: rid, userIds: followers, room }),
 		filterUsersInRoom({ roomId: rid, userIds: mentionIds, room }),
 		filterUsersInRoom({ roomId: rid, userIds: highlightsUids, room }),
 		filterUsersInRoom({ roomId: rid, userIds: threadFollowers || [], room }),
 	]);
 
-	const baseReplyUsers =
-		Array.isArray(parentMessage.replies) && parentMessage.replies.length
-			? [u._id]
-			: [parentMessage.u._id, u._id];
+	const baseReplyUsers = Array.isArray(parentMessage.replies) && parentMessage.replies.length ? [u._id] : [parentMessage.u._id, u._id];
 
 	const baseReplyUsersInRoom = await filterUsersInRoom({
 		roomId: rid,
@@ -79,19 +58,11 @@ export async function reply(
 		room,
 	});
 
-	const addToReplies = [
-		...new Set([
-			...followersInRoom,
-			...mentionIdsInRoom,
-			...baseReplyUsersInRoom,
-		]),
-	];
+	const addToReplies = [...new Set([...followersInRoom, ...mentionIdsInRoom, ...baseReplyUsersInRoom])];
 
 	await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
 
-	const threadFollowersUids = threadFollowersInRoom.filter(
-		(userId) => userId !== u._id && !mentionIdsInRoom.includes(userId),
-	);
+	const threadFollowersUids = threadFollowersInRoom.filter((userId) => userId !== u._id && !mentionIdsInRoom.includes(userId));
 
 	const notifyOptions = toAll || toHere ? { groupMention: true } : {};
 
@@ -100,12 +71,7 @@ export async function reply(
 
 	const promises: Promise<unknown>[] = [
 		ReadReceipts.setAsThreadById(tmid),
-		Subscriptions.addUnreadThreadByRoomIdAndUserIds(
-			rid,
-			threadFollowersUids,
-			tmid,
-			notifyOptions,
-		),
+		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, threadFollowersUids, tmid, notifyOptions),
 	];
 
 	if (mentionedUsers.length) {
@@ -125,11 +91,7 @@ export async function reply(
 
 	await Promise.allSettled(promises);
 
-	void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, [
-		...threadFollowersUids,
-		...mentionedUsers,
-		...highlightsUidsInRoom,
-	]);
+	void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, [...threadFollowersUids, ...mentionedUsers, ...highlightsUidsInRoom]);
 }
 
 export async function follow({ tmid, uid }: { tmid: string; uid: string }) {
@@ -145,8 +107,7 @@ export async function unfollow({ tmid, rid, uid }: { tmid: string; rid: string; 
 		return false;
 	}
 
-	const removeUnreadThreadResponse =
-		await Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, uid, tmid);
+	const removeUnreadThreadResponse = await Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, uid, tmid);
 	if (removeUnreadThreadResponse.modifiedCount) {
 		void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, uid);
 	}
@@ -154,15 +115,7 @@ export async function unfollow({ tmid, rid, uid }: { tmid: string; rid: string; 
 	await Messages.removeThreadFollowerByThreadId(tmid, uid);
 }
 
-export const readThread = async ({
-	userId,
-	rid,
-	tmid,
-}: {
-	userId: string;
-	rid: string;
-	tmid: string;
-}) => {
+export const readThread = async ({ userId, rid, tmid }: { userId: string; rid: string; tmid: string }) => {
 	const sub = await Subscriptions.findOneByRoomIdAndUserId(rid, userId, { projection: { tunread: 1 } });
 	if (!sub) {
 		return;
@@ -171,12 +124,7 @@ export const readThread = async ({
 	// if the thread being marked as read is the last one unread also clear the unread subscription flag
 	const clearAlert = sub.tunread && sub.tunread?.length <= 1 && sub.tunread.includes(tmid);
 
-	const removeUnreadThreadResponse = await Subscriptions.removeUnreadThreadByRoomIdAndUserId(
-		rid,
-		userId,
-		tmid,
-		clearAlert,
-	);
+	const removeUnreadThreadResponse = await Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert);
 	if (removeUnreadThreadResponse.modifiedCount) {
 		void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, userId);
 	}
