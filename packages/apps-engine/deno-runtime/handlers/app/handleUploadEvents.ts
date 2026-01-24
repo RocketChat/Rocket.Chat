@@ -5,7 +5,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext.ts'
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails.ts'
 import { toArrayBuffer } from '@std/streams';
-import { Defined, JsonRpcError } from 'jsonrpc-lite';
+import { Defined, JsonRpcError, RequestObject } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { assertAppAvailable, assertHandlerFunction, isRecord } from '../lib/assertions.ts';
@@ -25,8 +25,10 @@ function assertString(v: unknown): asserts v is string {
 	throw JsonRpcError.invalidParams({ err: `Invalid 'path' parameter. Expected string, got`, value: v });
 }
 
-export default async function handleUploadEvents(method: typeof uploadEvents[number], params: unknown): Promise<Defined | JsonRpcError> {
-	const [{ file, path }] = params as [{ file?: IUpload, path?: string }];
+export default async function handleUploadEvents(request: RequestObject): Promise<Defined | JsonRpcError> {
+	const { method, params } = request as { method: typeof uploadEvents[number]; params: [{ file?: IUploadDetails, path?: string }]};
+
+	const [{ file, path }] = params;
 
 	const app = AppObjectRegistry.get<App>('app');
 	const handlerFunction = app?.[method as keyof App] as unknown;

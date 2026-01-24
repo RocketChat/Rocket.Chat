@@ -1,5 +1,5 @@
-import { Defined, JsonRpcError } from 'jsonrpc-lite';
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
+import { Defined, JsonRpcError, RequestObject } from 'jsonrpc-lite';
 
 import { require } from '../../lib/require.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
@@ -22,7 +22,9 @@ export const {
 
 export const { UIKitLivechatBlockInteractionContext } = require('@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext.js');
 
-export default async function handleUIKitInteraction(method: string, params: unknown): Promise<Defined | JsonRpcError> {
+export default async function handleUIKitInteraction(request: RequestObject): Promise<Defined | JsonRpcError> {
+	const { method, params } = request;
+
 	if (!uikitInteractions.includes(method)) {
 		return JsonRpcError.methodNotFound(null);
 	}

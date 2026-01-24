@@ -1,5 +1,6 @@
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import type { AppStatus as _AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.ts';
+import type { RequestObject } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { require } from '../../lib/require.ts';
@@ -8,7 +9,9 @@ const { AppStatus } = require('@rocket.chat/apps-engine/definition/AppStatus.js'
 	AppStatus: typeof _AppStatus;
 };
 
-export default async function handleSetStatus(params: unknown): Promise<null> {
+export default async function handleSetStatus(request: RequestObject): Promise<null> {
+	const { params } = request;
+
 	if (!Array.isArray(params) || !Object.values(AppStatus).includes(params[0])) {
 		throw new Error('Invalid params', { cause: 'invalid_param_type' });
 	}

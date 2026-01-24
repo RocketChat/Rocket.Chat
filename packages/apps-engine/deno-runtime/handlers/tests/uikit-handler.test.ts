@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { assertInstanceOf } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
+import jsonrpc from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import handleUIKitInteraction, {
@@ -30,7 +31,7 @@ describe('handlers > uikit', () => {
 	});
 
 	it('successfully handles a call for "executeBlockActionHandler"', async () => {
-		const result = await handleUIKitInteraction('executeBlockActionHandler', [
+		const request = jsonrpc.request(1, 'executeBlockActionHandler', [
 			{
 				actionId: 'actionId',
 				blockId: 'blockId',
@@ -39,11 +40,12 @@ describe('handlers > uikit', () => {
 			},
 		]);
 
+		const result = await handleUIKitInteraction(request);
 		assertInstanceOf(result, UIKitBlockInteractionContext);
 	});
 
 	it('successfully handles a call for "executeViewSubmitHandler"', async () => {
-		const result = await handleUIKitInteraction('executeViewSubmitHandler', [
+		const request = jsonrpc.request(1, 'executeViewSubmitHandler', [
 			{
 				viewId: 'viewId',
 				appId: 'appId',
@@ -53,11 +55,12 @@ describe('handlers > uikit', () => {
 			},
 		]);
 
+		const result = await handleUIKitInteraction(request);
 		assertInstanceOf(result, UIKitViewSubmitInteractionContext);
 	});
 
 	it('successfully handles a call for "executeViewClosedHandler"', async () => {
-		const result = await handleUIKitInteraction('executeViewClosedHandler', [
+		const request = jsonrpc.request(1, 'executeViewClosedHandler', [
 			{
 				viewId: 'viewId',
 				appId: 'appId',
@@ -66,11 +69,12 @@ describe('handlers > uikit', () => {
 			},
 		]);
 
+		const result = await handleUIKitInteraction(request);
 		assertInstanceOf(result, UIKitViewCloseInteractionContext);
 	});
 
 	it('successfully handles a call for "executeActionButtonHandler"', async () => {
-		const result = await handleUIKitInteraction('executeActionButtonHandler', [
+		const request = jsonrpc.request(1, 'executeActionButtonHandler', [
 			{
 				actionId: 'actionId',
 				appId: 'appId',
@@ -79,11 +83,12 @@ describe('handlers > uikit', () => {
 			},
 		]);
 
+		const result = await handleUIKitInteraction(request);
 		assertInstanceOf(result, UIKitActionButtonInteractionContext);
 	});
 
 	it('successfully handles a call for "executeLivechatBlockActionHandler"', async () => {
-		const result = await handleUIKitInteraction('executeLivechatBlockActionHandler', [
+		const request = jsonrpc.request(1, 'executeLivechatBlockActionHandler', [
 			{
 				actionId: 'actionId',
 				appId: 'appId',
@@ -94,6 +99,7 @@ describe('handlers > uikit', () => {
 			},
 		]);
 
+		const result = await handleUIKitInteraction(request);
 		assertInstanceOf(result, UIKitLivechatBlockInteractionContext);
 	});
 });

@@ -1,9 +1,11 @@
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
+import type { RequestObject } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
 
-export default function handleOnPreSettingUpdate(params: unknown): Promise<object> {
+export default function handleOnPreSettingUpdate(request: RequestObject): Promise<object> {
+	const { params } = request;
 	const app = AppObjectRegistry.get<App>('app');
 
 	if (typeof app?.onPreSettingUpdate !== 'function') {

@@ -8,8 +8,8 @@ if (!Deno.args.includes('--subprocess')) {
 	Deno.exit(1001);
 }
 
-import { JsonRpcError } from 'jsonrpc-lite';
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
+import { JsonRpcError, RequestObject } from 'jsonrpc-lite';
 
 import * as Messenger from './lib/messenger.ts';
 import { decoder } from './lib/codec.ts';
@@ -32,7 +32,7 @@ type Handlers = {
 	videoconference: typeof videoConferenceHandler;
 	outboundCommunication: typeof outboundMessageHandler;
 	scheduler: typeof handleScheduler;
-	ping: (method: string, params: unknown) => 'pong';
+	ping: (request: RequestObject) => 'pong';
 };
 
 const COMMAND_PING = '_zPING';
@@ -45,7 +45,7 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 		videoconference: videoConferenceHandler,
 		outboundCommunication: outboundMessageHandler,
 		scheduler: handleScheduler,
-		ping: (_method, _params) => 'pong',
+		ping: (_request) => 'pong',
 	};
 
 	// We're not handling notifications at the moment
@@ -53,7 +53,7 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 		return Messenger.sendInvalidRequestError();
 	}
 
-	const { id, method, params } = payload;
+	const { id, method } = payload;
 
 	const logger = new Logger(method);
 	AppObjectRegistry.set('logger', logger);
@@ -75,7 +75,7 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 		});
 	}
 
-	const result = await handler(method, params);
+	const result = await handler(payload);
 
 	if (result instanceof JsonRpcError) {
 		return Messenger.errorResponse({ id, error: result });

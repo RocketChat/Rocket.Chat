@@ -1,8 +1,8 @@
-import { Defined, JsonRpcError } from 'jsonrpc-lite';
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.ts';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
 import type { AppsEngineException as _AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException.ts';
+import { Defined, JsonRpcError, RequestObject } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { MessageExtender } from '../../lib/accessors/extenders/MessageExtender.ts';
@@ -18,7 +18,9 @@ const { AppsEngineException } = require('@rocket.chat/apps-engine/definition/exc
 	AppsEngineException: typeof _AppsEngineException;
 };
 
-export default async function handleListener(evtInterface: string, params: unknown): Promise<Defined | JsonRpcError> {
+export default async function handleListener(request: RequestObject): Promise<Defined | JsonRpcError> {
+	const { method, params } = request;
+	const [, evtInterface] = method.split(':');
 	const app = AppObjectRegistry.get<App>('app');
 
 	const eventExecutor = app?.[evtInterface as keyof App];
