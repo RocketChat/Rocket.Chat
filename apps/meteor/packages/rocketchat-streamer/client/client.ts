@@ -28,24 +28,30 @@ interface StreamerDDPConnection extends Meteor.IMeteorConnection {
 	call(methodName: string, ...args: unknown[]): void;
 }
 
-const isStreamerPayload = (
-	message: unknown,
-): message is {
+interface StreamerPayload {
 	collection: string;
 	fields: { eventName: string; args: StreamArgs };
-} => {
-	if (!message || typeof message !== 'object') {
+}
+
+const isStreamerPayload = (payload: unknown): payload is StreamerPayload => {
+	if (typeof payload !== 'object' || payload === null) {
 		return false;
 	}
-	const payload = message as Record<string, unknown>;
-	if (payload.msg !== 'changed' || typeof payload.collection !== 'string') {
+
+	if ('collection' in payload && typeof payload.collection !== 'string') {
 		return false;
 	}
-	const fields = payload.fields as Record<string, unknown> | undefined;
-	if (!fields) {
+	if (!('fields' in payload) || typeof payload.fields !== 'object' || payload.fields === null) {
 		return false;
 	}
-	return typeof fields.eventName === 'string' && Array.isArray(fields.args);
+
+	if ('eventName' in payload.fields && typeof payload.fields.eventName !== 'string') {
+		return false;
+	}
+	if ('args' in payload.fields && !Array.isArray(payload.fields.args)) {
+		return false;
+	}
+	return true;
 };
 
 class StreamerCentral extends EV {
@@ -90,6 +96,12 @@ export class Streamer extends EV {
 	constructor(name: string, options: StreamerOptions = {}) {
 		super();
 
+		const existingInstance = streamerCentral.instances[name];
+		if (existingInstance) {
+			console.warn('Streamer instance already exists:', name);
+			return existingInstance;
+		}
+
 		const { useCollection = false, ddpConnection = Meteor.connection as StreamerDDPConnection } = options;
 
 		this.ddpConnection = ddpConnection;
@@ -111,12 +123,6 @@ export class Streamer extends EV {
 		this.ddpConnection._stream.on('reset', () => {
 			this.emitLocal('__reconnect__');
 		});
-
-		const existingInstance = streamerCentral.instances[name];
-		if (existingInstance) {
-			console.warn('Streamer instance already exists:', name);
-			return existingInstance;
-		}
 	}
 
 	get name(): string {
@@ -128,7 +134,7 @@ export class Streamer extends EV {
 		this._name = name;
 	}
 
-	get subscriptionName(): string {
+	get subscriptionName(): `stream-${string}` {
 		return `stream-${this.name}`;
 	}
 
@@ -202,7 +208,7 @@ export class Streamer extends EV {
 		super.removeListener(eventName, callback);
 	}
 
-	override on(eventName: string, callback: EventHandler, ...args: unknown[]): Promise<void> {
+	override on(eventName: string, callback: EventHandler, ...args: StreamArgs): Promise<void> {
 		check(eventName, NonEmptyString);
 
 		check(callback, Function);
@@ -212,13 +218,13 @@ export class Streamer extends EV {
 		return this.subscribe(eventName, args);
 	}
 
-	override once(eventName: string, callback: EventHandler, ...args: unknown[]): Promise<void> {
+	override once(eventName: string, callback: EventHandler, ...args: StreamArgs): Promise<void> {
 		check(eventName, NonEmptyString);
 
 		check(callback, Function);
 
 		super.once(eventName, (...cbArgs: StreamArgs) => {
-			(callback as StreamerCallback)(...cbArgs);
+			callback(...cbArgs);
 			if (this.listenerCount(eventName) === 0) {
 				this.stop(eventName);
 			}

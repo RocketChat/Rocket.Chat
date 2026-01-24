@@ -1,7 +1,9 @@
 export type StreamArgs = unknown[];
-export type EventHandler<TArgs extends unknown[] = any> = (...args: TArgs) => void;
+export type EventHandler<TArgs extends StreamArgs = any> = (...args: TArgs) => void;
 
-type HandlerMap = Record<string, EventHandler[] | undefined>;
+type HandlerMap = {
+	[event: string]: EventHandler[] | undefined;
+};
 
 export class EV {
 	private handlers: HandlerMap = {};
@@ -18,11 +20,11 @@ export class EV {
 		return this.handlers[event]?.length ?? 0;
 	}
 
-	on<TArgs extends unknown[]>(event: string, callback: EventHandler<TArgs>): void {
+	on<TArgs extends StreamArgs>(event: string, callback: EventHandler<TArgs>): void {
 		if (!this.handlers[event]) {
 			this.handlers[event] = [];
 		}
-		this.handlers[event]!.push(callback);
+		this.handlers[event].push(callback);
 	}
 
 	once(event: string, callback: EventHandler): void {
