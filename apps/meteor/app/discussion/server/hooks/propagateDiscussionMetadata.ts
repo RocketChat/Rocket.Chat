@@ -21,12 +21,13 @@ const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<
  * system message
  */
 
-
 callbacks.add(
 	'afterSaveMessage',
-	async (message, context) => {  
-		const { room: { _id, prid } } = context;
-		
+	async (message, context) => {
+		const {
+			room: { _id, prid },
+		} = context;
+
 		if (!prid) {
 			return message;
 		}
@@ -36,7 +37,7 @@ callbacks.add(
 
 		setImmediate(async () => {
 			try {
-				const room = await Rooms.findOneById(_id, {  
+				const room = await Rooms.findOneById(_id, {
 					projection: { msgs: 1, lm: 1 },
 				});
 
