@@ -26,7 +26,9 @@ const Medium = ({ icon, title, avatar, actions, badges, unread, menu, ...props }
 		<SidebarV2Item {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
 			<SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>
 			{icon}
-			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
+			<SidebarV2ItemTitle unread={unread} title={typeof title === 'string' ? title : undefined}>
+				{title}
+			</SidebarV2ItemTitle>
 			{badges}
 			{actions}
 			{menu && (

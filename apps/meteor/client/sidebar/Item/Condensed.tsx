@@ -27,7 +27,9 @@ const Condensed = ({ icon, title, avatar, actions, unread, menu, badges, ...prop
 		<SidebarV2Item {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 			{icon}
-			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
+			<SidebarV2ItemTitle unread={unread} title={typeof title === 'string' ? title : undefined}>
+				{title}
+			</SidebarV2ItemTitle>
 			{badges}
 			{actions}
 			{menu && (
