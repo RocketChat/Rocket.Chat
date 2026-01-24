@@ -70,7 +70,7 @@ const PopoverMenuWrapper = ({ children, dismiss, triggerBounds, overlayBounds }:
 			}
 			dismiss();
 		},
-		[dismiss]
+		[dismiss],
 	);
 
 	useLayoutEffect(() => {
@@ -97,15 +97,10 @@ const PopoverMenuWrapper = ({ children, dismiss, triggerBounds, overlayBounds }:
 
 		setPosition({ left, right, top, bottom });
 		setPlacement(placementValue);
-	}, [triggerBounds, overlayBounds]);
+	}, [triggerBounds, overlayBounds],);
 
 	return (
-		<Menu
-			ref={menuRef}
-			style={{ position: 'absolute', ...position }}
-			placement={placement}
-			onClickCapture={handleClick}
-		>
+		<Menu ref={menuRef} style={{ position: 'absolute', ...position }} placement={placement} onClickCapture={handleClick}>
 			{children}
 		</Menu>
 	);
