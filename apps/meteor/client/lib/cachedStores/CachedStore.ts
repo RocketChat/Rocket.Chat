@@ -366,7 +366,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
 	protected override getToken() {
-		return undefined;
+		return 'public';
 	}
 
 	override clearCacheOnLogout() {
