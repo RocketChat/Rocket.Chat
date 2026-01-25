@@ -11,6 +11,6 @@ type RouterProviderProps = {
 	children?: ReactNode;
 };
 
-const RouterProvider = ({ children }: RouterProviderProps) => <RouterContext.Provider children={children} value={router} />;
+const RouterProvider = ({ children }: RouterProviderProps) => <RouterContext.Provider value={router}>{children}</RouterContext.Provider>;
 
 export default RouterProvider;

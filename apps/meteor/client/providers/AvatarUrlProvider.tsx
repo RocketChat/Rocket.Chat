@@ -34,7 +34,7 @@ const AvatarUrlProvider = ({ children }: AvatarUrlProviderProps) => {
 		};
 	}, []);
 
-	return <AvatarUrlContext.Provider children={children} value={contextValue} />;
+	return <AvatarUrlContext.Provider value={contextValue}>{children}</AvatarUrlContext.Provider>;
 };
 
 export default AvatarUrlProvider;

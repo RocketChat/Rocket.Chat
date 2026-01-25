@@ -35,14 +35,7 @@ if (typeof mongoOptionStr !== 'undefined') {
 		const mongoOptions = JSON.parse(mongoOptionStr);
 		Object.assign(mongoConnectionOptions, mongoOptions);
 	} catch (error) {
-		console.error('Failed to parse MONGO_OPTIONS environment variable');
-		console.error('Provided value:', mongoOptionStr);
-		console.error('Error:', error.message);
-		console.error('Please ensure MONGO_OPTIONS contains valid JSON');
-
-		throw new Error(
-			`Invalid MONGO_OPTIONS configuration: ${error.message}`,
-		);
+		throw new Error('Invalid MONGO_OPTIONS environment variable: must be valid JSON.', { cause: error });
 	}
 }
 
