@@ -1,6 +1,7 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
 import type { RouteName } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
+import type { ReactElement } from 'react';
 
 import { hasPermission } from '../../../app/authorization/client';
 import type {
@@ -15,9 +16,15 @@ import type {
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { router } from '../../providers/RouterProvider';
 import { Subscriptions } from '../../stores';
-import RoomRoute from '../../views/room/RoomRoute';
-import MainLayout from '../../views/root/MainLayout';
-import { appLayout } from '../appLayout';
+
+// Route element factory - set by startup code to avoid circular imports
+let createRoomRouteElement:
+	| ((props: { name: string; extractOpenRoomParams: Required<IRoomTypeClientDirectives>['extractOpenRoomParams'] }) => ReactElement)
+	| null = null;
+
+export const setRoomRouteElementFactory = (factory: typeof createRoomRouteElement): void => {
+	createRoomRouteElement = factory;
+};
 
 class RoomCoordinatorClient extends RoomCoordinator {
 	public add(roomConfig: IRoomTypeClientConfig, directives: Partial<IRoomTypeClientDirectives>): void {
@@ -178,15 +185,16 @@ class RoomCoordinatorClient extends RoomCoordinator {
 				route: { name, path },
 			} = roomConfig;
 			const { extractOpenRoomParams } = directives;
+
+			if (!createRoomRouteElement) {
+				throw new Error('Room route element factory not set. Call setRoomRouteElementFactory before registering room types.');
+			}
+
 			router.defineRoutes([
 				{
 					path,
 					id: name,
-					element: appLayout.wrap(
-						<MainLayout>
-							<RoomRoute key={name} extractOpenRoomParams={extractOpenRoomParams} />
-						</MainLayout>,
-					),
+					element: createRoomRouteElement({ name, extractOpenRoomParams }),
 				},
 			]);
 		}
