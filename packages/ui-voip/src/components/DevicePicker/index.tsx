@@ -22,15 +22,16 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 
     const availableInputDevice =
         availableDevices?.audioInput?.map<GenericMenuItemProps>((device) => {
-            if (!device.id || !device.label) {
+            // Only use default item when device.id is actually missing
+            if (!device.id) {
                 return getDefaultDeviceItem(t('Default'), 'input');
             }
 
             return {
                 id: `${device.id}-input`,
                 content: (
-                    <Box is='span' title={device.label} fontSize={14}>
-                        {device.label}
+                    <Box is='span' title={device.label || t('Default')} fontSize={14}>
+                        {device.label || t('Default')}
                     </Box>
                 ),
                 addon: <RadioButton checked={device.id === selectedAudioDevices?.audioInput?.id} />,
@@ -39,15 +40,16 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 
     const availableOutputDevice =
         availableDevices?.audioOutput?.map<GenericMenuItemProps>((device) => {
-            if (!device.id || !device.label) {
+            // Only use default item when device.id is actually missing
+            if (!device.id) {
                 return getDefaultDeviceItem(t('Default'), 'output');
             }
 
             return {
                 id: `${device.id}-output`,
                 content: (
-                    <Box is='span' title={device.label} fontSize={14}>
-                        {device.label}
+                    <Box is='span' title={device.label || t('Default')} fontSize={14}>
+                        {device.label || t('Default')}
                     </Box>
                 ),
                 addon: <RadioButton checked={device.id === selectedAudioDevices?.audioOutput?.id} />,
