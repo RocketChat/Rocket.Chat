@@ -33,6 +33,7 @@ export { useCurrentRoutePath } from './hooks/useCurrentRoutePath';
 export { useCustomSound } from './hooks/useCustomSound';
 export { useEndpoint } from './hooks/useEndpoint';
 export { useGoToRoom } from './hooks/useGoToRoom';
+export { useRoomRoute } from './hooks/useRoomRoute';
 export type { EndpointFunction } from './hooks/useEndpoint';
 export { useIsLoggingIn } from './hooks/useIsLoggingIn';
 export { useIsPrivilegedSettingsContext } from './hooks/useIsPrivilegedSettingsContext';

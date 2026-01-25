@@ -1,11 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { TeamType } from '@rocket.chat/core-typings';
-import { useUserId } from '@rocket.chat/ui-contexts';
+import { useGoToRoom, useUserId } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import ParentRoomButton from './ParentRoomButton';
 import { useTeamInfoQuery } from '../../../../hooks/useTeamInfoQuery';
-import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import { useUserTeamsQuery } from '../../hooks/useUserTeamsQuery';
 
 type APIErrorResult = { success: boolean; error: string };
@@ -19,6 +18,7 @@ const ParentTeam = ({ room }: ParentTeamProps) => {
 	const { teamId } = room;
 
 	const userId = useUserId();
+	const goToRoom = useGoToRoom();
 
 	if (!teamId) {
 		throw new Error('invalid rid');
@@ -46,7 +46,7 @@ const ParentTeam = ({ room }: ParentTeamProps) => {
 			return;
 		}
 
-		goToRoomById(rid);
+		goToRoom(rid);
 	};
 
 	if (teamInfoError || !shouldDisplayTeam) {
