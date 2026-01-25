@@ -78,8 +78,8 @@ export class LDAPEEManager extends LDAPManager {
 			if (disableMissingUsers) {
 				await this.disableMissingUsers([...touchedUsers]);
 			}
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 
 		ldap.disconnect();
@@ -99,8 +99,8 @@ export class LDAPEEManager extends LDAPManager {
 			} finally {
 				ldap.disconnect();
 			}
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
@@ -123,8 +123,8 @@ export class LDAPEEManager extends LDAPManager {
 			} finally {
 				ldap.disconnect();
 			}
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
@@ -145,8 +145,8 @@ export class LDAPEEManager extends LDAPManager {
 			} finally {
 				ldap.disconnect();
 			}
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
@@ -211,8 +211,8 @@ export class LDAPEEManager extends LDAPManager {
 			} finally {
 				ldap.disconnect();
 			}
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
@@ -221,9 +221,8 @@ export class LDAPEEManager extends LDAPManager {
 			await this.syncUserRoles(ldap, user, dn);
 			await this.syncUserChannels(ldap, user, dn);
 			await this.syncUserTeams(ldap, user, dn, isNewRecord);
-		} catch (e) {
-			logger.debug(`Advanced Sync failed for user: ${dn}`);
-			logger.error(e);
+		} catch (err) {
+			logger.error({ msg: 'Advanced Sync failed for user', dn, err });
 		}
 	}
 
@@ -264,9 +263,9 @@ export class LDAPEEManager extends LDAPManager {
 		const result = await ldap.searchRaw(baseDN, searchOptions);
 
 		if (!Array.isArray(result) || result.length === 0) {
-			logger.debug(`${username} is not in ${groupName} group!!!`);
+			logger.debug({ msg: 'User is not in group', username, groupName });
 		} else {
-			logger.debug(`${username} is in ${groupName} group.`);
+			logger.debug({ msg: 'User is in group', username, groupName });
 			return true;
 		}
 
@@ -444,9 +443,9 @@ export class LDAPEEManager extends LDAPManager {
 					await addUserToRoom(room._id, user);
 					logger.debug({ msg: 'Synced user channel from LDAP', roomId: room._id, username });
 				}
-			} catch (e) {
+			} catch (err) {
 				logger.debug({ msg: 'Failed to sync user room', username, userChannelName });
-				logger.error(e);
+				logger.error({ err });
 			}
 		}
 
@@ -465,7 +464,7 @@ export class LDAPEEManager extends LDAPManager {
 				const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
 				if (subscription) {
 					await removeUserFromRoom(room._id, user);
-					logger.debug(`Removed user ${username} from channel ${room._id}`);
+					logger.debug({ msg: 'Removed user from channel', username, roomId: room._id });
 				}
 			}
 		}
@@ -693,10 +692,10 @@ export class LDAPEEManager extends LDAPManager {
 					converter.addObjectToMemory(userData, { dn: data.dn, username: this.getLdapUsername(data) });
 					return userData;
 				},
-				endCallback: (error: any): void => {
-					if (error) {
-						logger.error(error);
-						reject(error);
+				endCallback: (err: any): void => {
+					if (err) {
+						logger.error({ err });
+						reject(err);
 						return;
 					}
 
