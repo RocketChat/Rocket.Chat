@@ -111,8 +111,9 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
                     return;
                 }
 
-                if (deviceId.includes('-input')) {
-                    const id = deviceId.replace('-input', '');
+                // Use endsWith to check suffix and slice to remove it
+                if (deviceId.endsWith('-input')) {
+                    const id = deviceId.slice(0, -6); // Remove '-input' suffix
                     const device = availableDevices?.audioInput?.find((device) => device.id === id);
                     if (device) {
                         onDeviceChange(device);
@@ -120,8 +121,8 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
                     return;
                 }
 
-                if (deviceId.includes('-output')) {
-                    const id = deviceId.replace('-output', '');
+                if (deviceId.endsWith('-output')) {
+                    const id = deviceId.slice(0, -7); // Remove '-output' suffix
                     const device = availableDevices?.audioOutput?.find((device) => device.id === id);
                     if (device) {
                         onDeviceChange(device);
