@@ -23,7 +23,8 @@ export const {
 export const { UIKitLivechatBlockInteractionContext } = require('@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext.js');
 
 export default async function handleUIKitInteraction(request: RequestObject): Promise<Defined | JsonRpcError> {
-	const { method, params } = request;
+	const { method: reqMethod, params } = request;
+	const [, method] = reqMethod.split(':');
 
 	if (!uikitInteractions.includes(method)) {
 		return JsonRpcError.methodNotFound(null);

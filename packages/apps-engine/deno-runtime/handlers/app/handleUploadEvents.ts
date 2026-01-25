@@ -31,7 +31,7 @@ export default async function handleUploadEvents(request: RequestObject): Promis
 	const [{ file, path }] = params;
 
 	const app = AppObjectRegistry.get<App>('app');
-	const handlerFunction = app?.[method as keyof App] as unknown;
+	const handlerFunction = app?.[method.split(':')?.at(1) as keyof App] as unknown;
 
 	try {
 		assertAppAvailable(app);

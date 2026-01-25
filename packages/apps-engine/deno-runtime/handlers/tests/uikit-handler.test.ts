@@ -31,7 +31,7 @@ describe('handlers > uikit', () => {
 	});
 
 	it('successfully handles a call for "executeBlockActionHandler"', async () => {
-		const request = jsonrpc.request(1, 'executeBlockActionHandler', [
+		const request = jsonrpc.request(1, 'app:executeBlockActionHandler', [
 			{
 				actionId: 'actionId',
 				blockId: 'blockId',
@@ -45,7 +45,7 @@ describe('handlers > uikit', () => {
 	});
 
 	it('successfully handles a call for "executeViewSubmitHandler"', async () => {
-		const request = jsonrpc.request(1, 'executeViewSubmitHandler', [
+		const request = jsonrpc.request(1, 'app:executeViewSubmitHandler', [
 			{
 				viewId: 'viewId',
 				appId: 'appId',
@@ -60,7 +60,7 @@ describe('handlers > uikit', () => {
 	});
 
 	it('successfully handles a call for "executeViewClosedHandler"', async () => {
-		const request = jsonrpc.request(1, 'executeViewClosedHandler', [
+		const request = jsonrpc.request(1, 'app:executeViewClosedHandler', [
 			{
 				viewId: 'viewId',
 				appId: 'appId',
@@ -74,7 +74,7 @@ describe('handlers > uikit', () => {
 	});
 
 	it('successfully handles a call for "executeActionButtonHandler"', async () => {
-		const request = jsonrpc.request(1, 'executeActionButtonHandler', [
+		const request = jsonrpc.request(1, 'app:executeActionButtonHandler', [
 			{
 				actionId: 'actionId',
 				appId: 'appId',
@@ -88,7 +88,7 @@ describe('handlers > uikit', () => {
 	});
 
 	it('successfully handles a call for "executeLivechatBlockActionHandler"', async () => {
-		const request = jsonrpc.request(1, 'executeLivechatBlockActionHandler', [
+		const request = jsonrpc.request(1, 'app:executeLivechatBlockActionHandler', [
 			{
 				actionId: 'actionId',
 				appId: 'appId',
