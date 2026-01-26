@@ -1,4 +1,4 @@
-import type { IMessage, MessageTypesValues, IUser, IRoom, AtLeast, MessageUrl, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, MessageTypesValues, IUser, IRoom, AtLeast, MessageUrl } from '@rocket.chat/core-typings';
 
 export interface IMessageService {
 	sendMessage({ fromId, rid, msg }: { fromId: string; rid: string; msg: string }): Promise<IMessage>;
@@ -54,5 +54,4 @@ export interface IMessageService {
 		urlPreview: MessageUrl;
 		foundMeta: boolean;
 	}>;
-	getNotificationAttachment(key: string): Promise<MessageAttachment>;
 }

@@ -1,4 +1,4 @@
-import { Message, ServiceClassInternal } from '@rocket.chat/core-services';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
 import type { IUpload, IUser, FilesAndAttachments, IMessage } from '@rocket.chat/core-typings';
 import { isFileAttachment } from '@rocket.chat/core-typings';
@@ -11,6 +11,8 @@ import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
+import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
+import { i18n } from '../../lib/i18n';
 
 const logger = new Logger('UploadService');
 
@@ -104,7 +106,8 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 	}
 
 	private async updateMessageRemovingFiles(msg: IMessage, filesToRemove: IUpload['_id'][], user: IUser): Promise<void> {
-		const newAttachment = await Message.getNotificationAttachment('File_removed');
+		const text = `_${i18n.t('File_removed')}_`;
+		const newAttachment = { color: NOTIFICATION_ATTACHMENT_COLOR, text };
 
 		const newFiles = msg.files?.filter((file) => !filesToRemove.includes(file._id));
 		const newAttachments = msg.attachments?.map((attachment) => {

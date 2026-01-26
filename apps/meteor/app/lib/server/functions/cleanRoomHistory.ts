@@ -1,8 +1,10 @@
-import { api, Message } from '@rocket.chat/core-services';
+import { api } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
 
 import { deleteRoom } from './deleteRoom';
+import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../../lib/constants';
+import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
 
@@ -36,6 +38,8 @@ export async function cleanRoomHistory({
 
 	const ts = { [gt]: oldest, [lt]: latest };
 
+	const text = `_${i18n.t('File_removed_by_prune')}_`;
+
 	let fileCount = 0;
 
 	const cursor = Messages.findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion, ts, fromUsers, ignoreThreads, {
@@ -44,7 +48,7 @@ export async function cleanRoomHistory({
 	});
 
 	const targetMessageIdsForAttachmentRemoval = new Set<string>();
-	const pruneMessageAttachment = await Message.getNotificationAttachment('File_removed_by_prune');
+	const pruneMessageAttachment = { color: NOTIFICATION_ATTACHMENT_COLOR, text };
 
 	async function performFileAttachmentCleanupBatch() {
 		if (targetMessageIdsForAttachmentRemoval.size === 0) return;

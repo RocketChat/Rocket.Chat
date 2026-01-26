@@ -2,7 +2,7 @@ import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { IMessageService } from '@rocket.chat/core-services';
 import { Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import type { MessageUrl, IMessage, MessageTypesValues, IUser, IRoom, AtLeast, MessageAttachment } from '@rocket.chat/core-typings';
+import type { MessageUrl, IMessage, MessageTypesValues, IUser, IRoom, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 
 import { OEmbed } from './hooks/AfterSaveOEmbed';
@@ -16,7 +16,6 @@ import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
-import { i18n } from '../../lib/i18n';
 import { FederationMatrixInvalidConfigurationError } from '../federation/utils';
 import { FederationActions } from './hooks/BeforeFederationActions';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
@@ -328,10 +327,5 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		foundMeta: boolean;
 	}> {
 		return OEmbed.parseUrl(url);
-	}
-
-	async getNotificationAttachment(key: string): Promise<MessageAttachment> {
-		const text = `_${i18n.t(key)}_`;
-		return { color: '#FD745E', text };
 	}
 }
