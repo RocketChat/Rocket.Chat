@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
-import { Defined, JsonRpcError, RequestObject } from 'jsonrpc-lite';
+import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import handleConstructApp from './construct.ts';
 import handleInitialize from './handleInitialize.ts';
@@ -11,14 +11,15 @@ import handleOnDisable from './handleOnDisable.ts';
 import handleOnUninstall from './handleOnUninstall.ts';
 import handleOnPreSettingUpdate from './handleOnPreSettingUpdate.ts';
 import handleOnSettingUpdated from './handleOnSettingUpdated.ts';
-import handleListener from '../listener/handler.ts';
-import handleUIKitInteraction, { uikitInteractions } from '../uikit/handler.ts';
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import handleOnUpdate from './handleOnUpdate.ts';
 import handleUploadEvents, { uploadEvents } from './handleUploadEvents.ts';
+import handleListener from '../listener/handler.ts';
+import handleUIKitInteraction, { uikitInteractions } from '../uikit/handler.ts';
 import { isOneOf } from '../lib/assertions.ts';
+import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
+import { RequestContext } from '../../lib/requestContext.ts';
 
-export default async function handleApp(request: RequestObject): Promise<Defined | JsonRpcError> {
+export default async function handleApp(request: RequestContext): Promise<Defined | JsonRpcError> {
 	const { method } = request;
 	const [, appMethod] = method.split(':');
 

@@ -1,11 +1,12 @@
 import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiEndpoint.ts';
-import { Defined, JsonRpcError, RequestObject } from 'jsonrpc-lite';
+import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';
 import { Logger } from '../lib/logger.ts';
 import { AppAccessorsInstance } from '../lib/accessors/mod.ts';
+import { RequestContext } from '../lib/requestContext.ts';
 
-export default async function apiHandler(request: RequestObject): Promise<JsonRpcError | Defined> {
+export default async function apiHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
 	const { method: call, params } = request;
 	const [, path, httpMethod] = call.split(':');
 

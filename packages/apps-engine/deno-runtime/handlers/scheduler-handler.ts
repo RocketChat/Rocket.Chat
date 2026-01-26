@@ -1,11 +1,12 @@
-import { Defined, JsonRpcError, RequestObject } from 'jsonrpc-lite';
+import { Defined, JsonRpcError } from 'jsonrpc-lite';
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor.ts';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../lib/accessors/mod.ts';
+import { RequestContext } from '../lib/requestContext.ts';
 
-export default async function handleScheduler(request: RequestObject): Promise<Defined | JsonRpcError> {
+export default async function handleScheduler(request: RequestContext): Promise<Defined | JsonRpcError> {
 	const { method, params } = request;
 	const [, processorId] = method.split(':');
 	if (!Array.isArray(params)) {

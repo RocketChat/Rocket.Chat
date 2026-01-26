@@ -9,7 +9,7 @@ if (!Deno.args.includes('--subprocess')) {
 }
 
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
-import { JsonRpcError, RequestObject } from 'jsonrpc-lite';
+import { JsonRpcError } from 'jsonrpc-lite';
 
 import * as Messenger from './lib/messenger.ts';
 import { decoder } from './lib/codec.ts';
@@ -24,6 +24,7 @@ import handleScheduler from './handlers/scheduler-handler.ts';
 import registerErrorListeners from './error-handlers.ts';
 import { sendMetrics } from './lib/metricsCollector.ts';
 import outboundMessageHandler from './handlers/outboundcomms-handler.ts';
+import { RequestContext } from './lib/requestContext.ts';
 
 type Handlers = {
 	app: typeof handleApp;
@@ -32,7 +33,7 @@ type Handlers = {
 	videoconference: typeof videoConferenceHandler;
 	outboundCommunication: typeof outboundMessageHandler;
 	scheduler: typeof handleScheduler;
-	ping: (request: RequestObject) => 'pong';
+	ping: (request: RequestContext) => 'pong';
 };
 
 const COMMAND_PING = '_zPING';
@@ -58,6 +59,10 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 	const logger = new Logger(method);
 	AppObjectRegistry.set('logger', logger);
 
+	const context: RequestContext = Object.assign(payload, {
+		context: { logger }
+	})
+
 	const app = AppObjectRegistry.get<App>('app');
 
 	if (app) {
@@ -75,7 +80,7 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 		});
 	}
 
-	const result = await handler(payload);
+	const result = await handler(context);
 
 	if (result instanceof JsonRpcError) {
 		return Messenger.errorResponse({ id, error: result });
