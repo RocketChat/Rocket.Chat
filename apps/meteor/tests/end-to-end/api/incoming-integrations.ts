@@ -442,7 +442,6 @@ describe('[Incoming Integrations]', () => {
 			});
 
 			it('should send a message if the payload is a application/x-www-form-urlencoded JSON AND the integration has a valid script', async () => {
-				// Note: The script expects `request.content.text`, so we send `text` not `msg`
 				const payload = { text: `Message as x-www-form-urlencoded JSON sent successfully at #${Date.now()}` };
 
 				await request
