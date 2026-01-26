@@ -22,14 +22,45 @@ jest.mock('../../lib/rooms/roomCoordinator', () => ({
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
+const room1 = createFakeRoom({ encrypted: true, fname: 'Encrypted Room 1' });
+const room2 = createFakeRoom({ encrypted: false, fname: 'Unencrypted Room 2' });
+
+const appRoot = mockAppRoot()
+	.withEndpoint('POST', '/v1/rooms.createDiscussion', () => ({
+		success: true,
+		discussion: {
+			...createFakeRoom({
+				_id: 'discussion-id',
+				t: 'p' as const,
+				name: 'discussion-name',
+				fname: 'Discussion Name',
+				prid: 'parent-room-id',
+			}),
+			rid: 'discussion-id',
+		} as any,
+	}))
+	.withEndpoint(
+		'GET',
+		'/v1/rooms.autocomplete.channelAndPrivate',
+		() =>
+			({
+				items: [room1, room2],
+			}) as any,
+	)
+	.withTranslations('en', 'core', {
+		Encrypted: 'Encrypted',
+		Unencrypted: 'Unencrypted',
+	})
+	.build();
+
 describe('CreateDiscussion', () => {
 	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const { baseElement } = render(<Story />);
+		const { baseElement } = render(<Story />, { wrapper: appRoot });
 		expect(baseElement).toMatchSnapshot();
 	});
 
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
-		const { container } = render(<Story />);
+		const { container } = render(<Story />, { wrapper: appRoot });
 
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
@@ -37,35 +68,6 @@ describe('CreateDiscussion', () => {
 
 	describe('Encrypted parent room behavior', () => {
 		it('should disable encrypted toggle and first message field when parent room is encrypted', () => {
-			const room1 = createFakeRoom({ encrypted: true, fname: 'Room 1' });
-			const room2 = createFakeRoom({ encrypted: false, fname: 'Room 2' });
-
-			const appRoot = mockAppRoot()
-				.withEndpoint('POST', '/v1/rooms.createDiscussion', () => ({
-					success: true,
-					discussion: {
-						...createFakeRoom({
-							_id: 'discussion-id',
-							t: 'p' as const,
-							name: 'discussion-name',
-							fname: 'Discussion Name',
-							prid: 'parent-room-id',
-						}),
-						rid: 'discussion-id',
-						// Just a mock
-					} as any,
-				}))
-				.withEndpoint(
-					'GET',
-					'/v1/rooms.autocomplete.channelAndPrivate',
-					() =>
-						({
-							items: [room1, room2],
-							// Just a mock
-						}) as any,
-				)
-				.build();
-
 			render(<CreateDiscussion onClose={jest.fn()} encryptedParentRoom={true} />, { wrapper: appRoot });
 
 			const encryptedToggle = screen.getByRole('checkbox', { name: 'Encrypted' });
@@ -76,35 +78,6 @@ describe('CreateDiscussion', () => {
 		});
 
 		it('should disable encrypted toggle and first message field when an encrypted parent room is selected', async () => {
-			const room1 = createFakeRoom({ encrypted: true, fname: 'Encrypted Room' });
-			const room2 = createFakeRoom({ encrypted: false, fname: 'General' });
-
-			const appRoot = mockAppRoot()
-				.withEndpoint('POST', '/v1/rooms.createDiscussion', () => ({
-					success: true,
-					discussion: {
-						...createFakeRoom({
-							_id: 'discussion-id',
-							t: 'p' as const,
-							name: 'discussion-name',
-							fname: 'Discussion Name',
-							prid: 'parent-room-id',
-						}),
-						rid: 'discussion-id',
-						// Just a mock
-					} as any,
-				}))
-				.withEndpoint(
-					'GET',
-					'/v1/rooms.autocomplete.channelAndPrivate',
-					() =>
-						({
-							items: [room1, room2],
-							// Just a mock
-						}) as any,
-				)
-				.build();
-
 			render(<CreateDiscussion onClose={jest.fn()} />, { wrapper: appRoot });
 
 			const parentRoomSelect = screen.getByRole('textbox', { name: 'Discussion_target_channel' });
@@ -112,10 +85,10 @@ describe('CreateDiscussion', () => {
 			await userEvent.click(parentRoomSelect);
 
 			await waitFor(() => {
-				expect(screen.getByText('Encrypted Room')).toBeInTheDocument();
+				expect(screen.getByText('Encrypted Room 1')).toBeInTheDocument();
 			});
 
-			await userEvent.click(screen.getByText('Encrypted Room'));
+			await userEvent.click(screen.getByText('Encrypted Room 1'));
 
 			const encryptedToggle = screen.getByRole('checkbox', { name: 'Encrypted' });
 			expect(encryptedToggle).toBeDisabled();
