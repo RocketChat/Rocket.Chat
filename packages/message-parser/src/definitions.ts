@@ -83,7 +83,12 @@ export type Quote = {
 	value: Paragraph[];
 };
 
-export type Markup = Italic | Strike | Bold | Plain | ChannelMention;
+export type Spoiler = {
+	type: 'SPOILER';
+	value: Array<MarkupExcluding<Spoiler> | Link | Emoji | UserMention | ChannelMention | InlineCode | Italic | Bold | Strike | Timestamp>;
+};
+
+export type Markup = Italic | Strike | Bold | Spoiler | Plain | ChannelMention;
 export type MarkupExcluding<T extends Markup> = Exclude<Markup, T>;
 
 export type Bold = {
@@ -163,6 +168,7 @@ export type Timestamp = {
 
 export type Types = {
 	BOLD: Bold;
+	SPOILER: Spoiler;
 	PARAGRAPH: Paragraph;
 	PLAIN_TEXT: Plain;
 	ITALIC: Italic;
@@ -190,6 +196,7 @@ export type Types = {
 export type ASTNode =
 	| BigEmoji
 	| Bold
+	| Spoiler
 	| Paragraph
 	| Plain
 	| Italic
@@ -211,6 +218,7 @@ export type TypesKeys = keyof Types;
 export type Inlines =
 	| Timestamp
 	| Bold
+	| Spoiler
 	| Plain
 	| Italic
 	| Strike

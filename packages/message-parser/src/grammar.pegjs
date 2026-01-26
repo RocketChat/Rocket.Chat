@@ -28,6 +28,7 @@
     plain,
     quote,
     reducePlainTexts,
+    spoiler,
     strike,
     task,
     tasks,
@@ -254,6 +255,7 @@ InlineItemPattern = Whitespace
   / AutolinkedPhone
   / AutolinkedEmail
   / AutolinkedURL
+  / Spoiler
   / EmphasisWithWhitespace
   / Emphasis
   / UserMention
@@ -265,6 +267,19 @@ InlineItemPattern = Whitespace
   / Color
   / KatexInline
   / Escaped
+
+/**
+ *
+ * Spoiler
+ * e.g: ||spoiler||, ||spoiler **bold**||
+ *
+ */
+Spoiler = "||" text:SpoilerContentItems "||" { return spoiler(text); }
+
+SpoilerContentItems = text:SpoilerContentItem+ { return reducePlainTexts(text); }
+
+// Ensure we consume at least one character and do not accidentally match the closing "||"
+SpoilerContentItem = !"||" item:InlineItemPattern { return item; } / !"||" item:Any { return item; }
 
 /**
  *
