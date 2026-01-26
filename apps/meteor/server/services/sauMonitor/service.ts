@@ -2,7 +2,6 @@
 
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISAUMonitorService } from '@rocket.chat/core-services';
-import { InstanceStatus } from '@rocket.chat/instance-status';
 
 import { sauEvents } from './events';
 import { getClientAddress } from '../../lib/getClientAddress';
@@ -15,18 +14,14 @@ export class SAUMonitorService extends ServiceClassInternal implements ISAUMonit
 		super();
 
 		this.onEvent('accounts.login', async ({ userId, connection }) => {
-			const clientAddress = getClientAddress(connection);
-			const userAgent = getHeader(connection.httpHeaders, 'user-agent');
-			const host = getHeader(connection.httpHeaders, 'host');
-
 			sauEvents.emit('sau.accounts.login', {
 				userId,
 				instanceId: connection.instanceId,
 				connectionId: connection.id,
 				loginToken: connection.loginToken,
-				clientAddress,
-				userAgent,
-				host,
+				clientAddress: getClientAddress(connection),
+				userAgent: getHeader(connection.httpHeaders, 'user-agent'),
+				host: getHeader(connection.httpHeaders, 'host'),
 			});
 		});
 
@@ -40,7 +35,7 @@ export class SAUMonitorService extends ServiceClassInternal implements ISAUMonit
 
 		this.onEvent('socket.connected', async (data) => {
 			// console.log('socket.connected', data);
-			sauEvents.emit('sau.socket.connected', { instanceId: InstanceStatus.id(), connectionId: data.id });
+			sauEvents.emit('sau.socket.connected', { instanceId: data.instanceId, connectionId: data.id });
 		});
 	}
 }
