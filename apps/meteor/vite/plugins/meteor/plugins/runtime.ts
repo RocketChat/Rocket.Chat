@@ -133,6 +133,7 @@ export function runtime(config: ResolvedPluginOptions): Plugin {
 			ROOT_URL: defaultRootUrl.href,
 			ROOT_URL_PATH_PREFIX: rootUrlPrefix,
 			DDP_DEFAULT_CONNECTION_URL: ddpUrl.href,
+			DISABLE_SOCKJS: true,
 			PUBLIC_SETTINGS: publicSettings,
 			meteorEnv: {
 				NODE_ENV: process.env.NODE_ENV === 'production' ? 'production' : 'development',
