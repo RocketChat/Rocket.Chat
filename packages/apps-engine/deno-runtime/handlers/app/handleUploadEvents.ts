@@ -26,12 +26,13 @@ function assertString(v: unknown): asserts v is string {
 }
 
 export default async function handleUploadEvents(request: RequestObject): Promise<Defined | JsonRpcError> {
-	const { method, params } = request as { method: typeof uploadEvents[number]; params: [{ file?: IUploadDetails, path?: string }]};
+	const { method: rawMethod, params } = request as { method: typeof uploadEvents[number]; params: [{ file?: IUploadDetails, path?: string }]};
+	const [, method] = rawMethod.split(':') as ['app', typeof uploadEvents[number]];
 
 	const [{ file, path }] = params;
 
 	const app = AppObjectRegistry.get<App>('app');
-	const handlerFunction = app?.[method.split(':')?.at(1) as keyof App] as unknown;
+	const handlerFunction = app?.[method as keyof App] as unknown;
 
 	try {
 		assertAppAvailable(app);
