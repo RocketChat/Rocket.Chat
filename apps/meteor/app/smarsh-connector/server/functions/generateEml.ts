@@ -1,3 +1,4 @@
+import type { FileProp, MessageAttachment } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, SmarshHistory, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -23,6 +24,19 @@ function _getLink(attachment: { title_link: string }): string {
 		return url;
 	}
 	return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
+}
+
+function _processMessageFiles(files: FileProp[], attachments: MessageAttachment[] | undefined): { fileIds: string[]; displayText: string } {
+	const fileIds = files.map((f) => f._id);
+
+	const fileLinks =
+		attachments
+			?.filter((a): a is MessageAttachment & { title: string } => 'title' in a && a.title !== undefined)
+			.map((a) => `${a.title} (${_getLink({ title_link: 'title_link' in a ? a.title_link || '' : '' })})`) || [];
+
+	const displayText = fileLinks.join(', ');
+
+	return { fileIds, displayText };
 }
 
 export const generateEml = async (): Promise<void> => {
@@ -93,9 +107,14 @@ export const generateEml = async (): Promise<void> => {
 					} else {
 						rows.push(`${message.msg} (${message.t})`);
 					}
+				} else if (message.files?.length) {
+					const fileResult = _processMessageFiles(message.files, message.attachments);
+					fileResult.fileIds.forEach((id) => data.files.push(id));
+					rows.push(fileResult.displayText);
 				} else if (message.file) {
-					data.files.push(message.file._id);
-					rows.push(`${message?.attachments?.[0].title} (${_getLink({ title_link: message?.attachments?.[0].title_link || '' })})})`);
+					const fileResult = _processMessageFiles([message.file], message.attachments);
+					fileResult.fileIds.forEach((id) => data.files.push(id));
+					rows.push(fileResult.displayText);
 				} else if (message.attachments) {
 					const attaches: string[] = [];
 					message.attachments.forEach((a) => {
