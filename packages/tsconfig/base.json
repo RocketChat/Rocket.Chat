@@ -1,7 +1,7 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"compilerOptions": {
-		"target": "es5",
+		"target": "es2022",
 		"module": "commonjs",
 
 		"esModuleInterop": true,
@@ -17,7 +17,7 @@
 		"noImplicitOverride": true,
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,
-		"noUnusedParameters": true,
+		"noUnusedParameters": true
 	},
 	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"]
 }
