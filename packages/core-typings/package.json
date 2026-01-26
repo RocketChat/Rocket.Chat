@@ -23,7 +23,7 @@
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"typia": "~9.7.2",
-		"zod": "~4.3.5"
+		"zod": "~4.3.6"
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",

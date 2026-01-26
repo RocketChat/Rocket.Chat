@@ -18,7 +18,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@rocket.chat/onboarding-ui": "~0.36.0",
+		"@rocket.chat/onboarding-ui": "~0.36.1",
 		"dompurify": "~3.2.7"
 	},
 	"devDependencies": {
@@ -37,13 +37,13 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-avatar": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:~",
-		"@storybook/react": "^8.6.14",
-		"@storybook/react-webpack5": "^8.6.14",
+		"@storybook/react": "^8.6.15",
+		"@storybook/react-webpack5": "^8.6.15",
 		"@testing-library/dom": "~10.4.1",
-		"@testing-library/react": "~16.3.0",
+		"@testing-library/react": "~16.3.2",
 		"@types/dompurify": "~3.2.0",
 		"@types/jest": "~30.0.0",
-		"@types/react": "~18.3.26",
+		"@types/react": "~18.3.27",
 		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
 		"eslint-plugin-anti-trojan-source": "~1.1.2",
@@ -59,7 +59,7 @@
 		"react-dom": "~18.3.1",
 		"react-hook-form": "~7.45.4",
 		"react-virtuoso": "^4.12.0",
-		"storybook": "^8.6.14",
+		"storybook": "^8.6.15",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
