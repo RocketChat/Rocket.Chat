@@ -14,7 +14,7 @@ const modelsMock = {
 
 const { updateContact } = proxyquire.noCallThru().load('./updateContact', {
 	'./getAllowedCustomFields': {
-		getAllowedCustomFields: sinon.stub(),
+		getAllowedCustomFields: sinon.stub().resolves([]),
 	},
 	'./validateContactManager': {
 		validateContactManager: sinon.stub(),

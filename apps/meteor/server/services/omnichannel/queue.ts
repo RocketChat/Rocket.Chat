@@ -228,7 +228,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	private async processWaitingQueue(department: string | null, inquiry: InquiryWithAgentInfo) {
 		const queue = department || 'Public';
 
-		queueLogger.debug(`Processing inquiry ${inquiry._id} from queue ${queue}`);
+		queueLogger.debug({ msg: 'Processing inquiry', inquiry: inquiry._id, queue });
 		const { defaultAgent } = inquiry;
 
 		const roomFromDb = await LivechatRooms.findOneById(inquiry.rid);

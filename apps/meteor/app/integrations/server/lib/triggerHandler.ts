@@ -782,12 +782,12 @@ class RocketChatIntegrationHandler {
 					}
 				}
 			})
-			.catch(async (error) => {
-				outgoingLogger.error(error);
+			.catch(async (err) => {
+				outgoingLogger.error({ err });
 				await updateHistory({
 					historyId,
 					step: 'after-http-call',
-					httpError: error,
+					httpError: err,
 					httpResult: null,
 				});
 			});
