@@ -123,9 +123,13 @@ export const generateEml = async (): Promise<void> => {
 				await SmarshHistory.updateOne(
 					{ _id: room._id },
 					{
-						_id: room._id,
-						lastRan: date,
-						lastResult: result,
+						$set: {
+							lastRan: date,
+							lastResult: result,
+						},
+						$setOnInsert: {
+							_id: room._id,
+						},
 					},
 					{ upsert: true },
 				);
