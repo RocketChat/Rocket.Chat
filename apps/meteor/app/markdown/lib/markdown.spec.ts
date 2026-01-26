@@ -1,18 +1,39 @@
+import { jest, describe, it, expect } from '@jest/globals';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { expect } from 'chai';
 
-import { Markdown, original, filtered } from './client.mocks';
+import { Markdown } from './markdown';
+import { filtered } from './parser/filtered/filtered';
+import { original } from './parser/original/original';
 
-const wrapper = (text, tag) => `<span class="copyonly">${tag}</span>${text}<span class="copyonly">${tag}</span>`;
-const boldWrapper = (text) => wrapper(`<strong>${text}</strong>`, '*');
-const italicWrapper = (text) => wrapper(`<em>${text}</em>`, '_');
-const strikeWrapper = (text) => wrapper(`<strike>${text}</strike>`, '~');
-const headerWrapper = (text, level) => `<h${level}>${text}</h${level}>`;
-const quoteWrapper = (text) =>
+// Mock Meteor
+jest.mock('meteor/meteor', () => ({
+	Meteor: {
+		absoluteUrl() {
+			return 'http://localhost:3000/';
+		},
+	},
+}));
+
+// Mock Random
+jest.mock('@rocket.chat/random', () => ({
+	Random: {
+		id() {
+			return Math.random().toString().replace('0.', 'A');
+		},
+	},
+}));
+
+const wrapper = (text: string, tag: string) => `<span class="copyonly">${tag}</span>${text}<span class="copyonly">${tag}</span>`;
+const boldWrapper = (text: string) => wrapper(`<strong>${text}</strong>`, '*');
+const italicWrapper = (text: string) => wrapper(`<em>${text}</em>`, '_');
+const strikeWrapper = (text: string) => wrapper(`<strike>${text}</strike>`, '~');
+const headerWrapper = (text: string, level: number) => `<h${level}>${text}</h${level}>`;
+const quoteWrapper = (text: string) =>
 	`<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span>${text}</blockquote>`;
-const linkWrapped = (link, title) => `<a data-title="${link}" href="${link}" target="_blank" rel="noopener noreferrer">${title}</a>`;
-const inlinecodeWrapper = (text) => wrapper(`<span><code class="code-colors inline">${text}</code></span>`, '`');
-const codeWrapper = (text, lang) =>
+const linkWrapped = (link: string, title: string) =>
+	`<a data-title="${link}" href="${link}" target="_blank" rel="noopener noreferrer">${title}</a>`;
+const inlinecodeWrapper = (text: string) => wrapper(`<span><code class="code-colors inline">${text}</code></span>`, '`');
+const codeWrapper = (text: string, lang: string) =>
 	`<pre><code class='code-colors hljs ${lang}'><span class='copyonly'>\`\`\`<br></span>${text}<span class='copyonly'><br>\`\`\`</span></code></pre>`;
 
 const bold = {
@@ -183,7 +204,7 @@ const quote = {
 	'He said Hello to her>': escapeHTML('He said Hello to her>'),
 };
 
-const link = {
+const link: Record<string, string> = {
 	'&lt;http://link|Text&gt;': escapeHTML('&lt;http://link|Text&gt;'),
 	'&lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt;': escapeHTML('&lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt;'),
 	'&lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&gt;': escapeHTML(
@@ -398,9 +419,10 @@ const blockcodeFiltered = {
 	'Here```code```lies': 'Herecodelies',
 };
 
-const defaultObjectTest = (result, object, objectKey) => expect(result.html).to.be.equal(object[objectKey]);
+const defaultObjectTest = (result: { html: string }, object: Record<string, string>, objectKey: string) =>
+	expect(result.html).toBe(object[objectKey]);
 
-const testObject = (object, parser = original, test = defaultObjectTest) => {
+const testObject = (object: Record<string, string>, parser = original, test = defaultObjectTest) => {
 	Object.keys(object).forEach((objectKey) => {
 		describe(objectKey, () => {
 			const message = parser === original ? { html: escapeHTML(objectKey) } : objectKey;
@@ -457,23 +479,3 @@ describe('Filtered', () => {
 
 	describe('blockcodeFilter', () => testObject(blockcodeFiltered, filtered));
 });
-
-// describe('Marked', function() {
-// 	describe('Bold', () => testObject(bold, marked));
-
-// 	describe('Italic', () => testObject(italic, marked));
-
-// 	describe('Strike', () => testObject(strike, marked));
-
-// 	describe('Headers', () => {
-// 		describe('Level 1', () => testObject(headersLevel1, marked));
-
-// 		describe('Level 2', () => testObject(headersLevel2, marked));
-
-// 		describe('Level 3', () => testObject(headersLevel3, marked));
-
-// 		describe('Level 4', () => testObject(headersLevel4, marked));
-// 	});
-
-// 	describe('Quote', () => testObject(quote, marked));
-// });

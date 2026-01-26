@@ -40,7 +40,7 @@ export default {
 				'<rootDir>/ee/app/license/server/**/*.spec.ts',
 				'<rootDir>/ee/server/patches/**/*.spec.ts',
 				'<rootDir>/app/cloud/server/functions/supportedVersionsToken/**.spec.ts',
-				'<rootDir>/app/utils/lib/**.spec.ts',
+				'<rootDir>/app/*/lib/**/*.spec.ts',
 				'<rootDir>/server/lib/auditServerEvents/**.spec.ts',
 				'<rootDir>/server/services/import/**/*.spec.ts',
 				'<rootDir>/server/settings/lib/**.spec.ts',
@@ -50,6 +50,9 @@ export default {
 				'<rootDir>/app/api/server/middlewares/**.spec.ts',
 				'<rootDir>/app/version-check/server/**/*.spec.ts',
 			],
+			moduleNameMapper: {
+				'^meteor/(.*)': '<rootDir>/tests/mocks/server/meteor.ts',
+			},
 			coveragePathIgnorePatterns: ['/node_modules/'],
 		},
 	],
