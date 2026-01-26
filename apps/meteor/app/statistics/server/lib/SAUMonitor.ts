@@ -176,7 +176,7 @@ export class SAUMonitorClass {
 			sessionId: connectionId,
 			instanceId,
 			type: 'session',
-			...this._getUserAgentInfo(userAgent),
+			...(loginToken && this._getUserAgentInfo(userAgent) ),
 			...params,
 		};
 

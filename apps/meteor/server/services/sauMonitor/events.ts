@@ -5,7 +5,7 @@ export const sauEvents = new Emitter<{
 		userId: string;
 		instanceId: string;
 		connectionId: string;
-		loginToken: string;
+		loginToken?: string;
 		clientAddress: string;
 		userAgent: string;
 		host: string;
