@@ -1,10 +1,10 @@
 import { InstanceStatus } from '@rocket.chat/instance-status';
+import { getHeader } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import type { ILoginAttempt } from '../../app/authentication/server/ILoginAttempt';
 import { getClientAddress } from '../lib/getClientAddress';
-import { getHeader } from '../lib/getHeader';
 import { deviceManagementEvents } from '../services/device-management/events';
 import { sauEvents } from '../services/sauMonitor/events';
 
