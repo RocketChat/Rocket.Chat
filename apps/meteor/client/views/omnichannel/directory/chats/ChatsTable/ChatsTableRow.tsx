@@ -46,7 +46,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	);
 
 	return (
-		<GenericTableRow key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
+		<GenericTableRow key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' flexDirection='column'>
 					<Box withTruncatedText>{fname}</Box>

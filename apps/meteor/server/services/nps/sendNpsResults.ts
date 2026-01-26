@@ -28,8 +28,8 @@ export const sendNpsResults = async function sendNpsResults(npsId: string, data:
 				body: data,
 			})
 		).json();
-	} catch (e) {
-		SystemLogger.error(e);
+	} catch (err) {
+		SystemLogger.error({ err });
 		return false;
 	}
 };
