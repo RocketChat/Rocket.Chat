@@ -349,7 +349,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 						const isPrivate = slackChannel.is_private;
 						const rocketChannel = await createRoom(isPrivate ? 'p' : 'c', slackChannelName, rocketUserCreator, rocketUsers);
 						slackChannel.rocketId = rocketChannel.rid;
-					} catch (e: any) {
+					} catch (e) {
 						if (!hasRetried) {
 							rocketLogger.debug({ msg: 'Error adding channel from Slack. Will retry in 1s.', err: e });
 							// If first time trying to create channel fails, could be because of multiple messages received at the same time. Try again once after 1s.
