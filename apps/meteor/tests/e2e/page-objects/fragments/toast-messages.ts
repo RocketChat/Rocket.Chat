@@ -5,10 +5,12 @@ import { expect } from '../../utils/test';
 export class ToastMessages {
 	constructor(private readonly page: Page) {}
 
-	private readonly toastByType = {
-		success: this.page.locator('.rcx-toastbar--success'),
-		error: this.page.locator('.rcx-toastbar--error'),
-	};
+	private get toastByType() {
+		return {
+			success: this.page.locator('.rcx-toastbar--success'),
+			error: this.page.locator('.rcx-toastbar--error'),
+		};
+	}
 
 	async dismissToast(type: 'success' | 'error' = 'success') {
 		await this.toastByType[type].last().getByRole('button', { name: 'Dismiss alert' }).click();

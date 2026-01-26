@@ -3,10 +3,10 @@
 	"compilerOptions": {
 		"rootDir": "./src",
 		"outDir": "./dist",
-		"target": "es6",
+		"target": "ES2023",
 		"module": "commonjs",
 		"esModuleInterop": true,
-		"sourceMap": true
+		"sourceMap": true,
 	},
-	"include": ["./src/**/*", "__examples__/test.ts"]
+	"include": ["./src/**/*", "__examples__/test.ts"],
 }
