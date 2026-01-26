@@ -1,6 +1,7 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import type { KeyboardEvent, ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import BoldSpan from './BoldSpan';
 import ItalicSpan from './ItalicSpan';
@@ -35,25 +36,30 @@ type SpoilerSpanProps = {
 };
 
 const SpoilerSpan = ({ children }: SpoilerSpanProps): ReactElement => {
+	const { t } = useTranslation();
 	const [revealed, setRevealed] = useState(false);
 
-	const toggle = useCallback(() => {
-		setRevealed((v) => !v);
+	const reveal = useCallback(() => {
+		setRevealed(true);
 	}, []);
 
 	const onKeyDown = useCallback(
 		(e: KeyboardEvent<HTMLSpanElement>) => {
 			if (e.key === 'Enter' || e.key === ' ') {
 				e.preventDefault();
-				toggle();
+				reveal();
 			}
 		},
-		[toggle],
+		[reveal],
 	);
 
 	const style = useMemo(() => {
 		if (revealed) {
-			return { cursor: 'pointer' } as const;
+			return {
+				cursor: 'pointer',
+				filter: 'none',
+				transition: 'filter 150ms ease',
+			} as const;
 		}
 
 		return {
@@ -61,22 +67,37 @@ const SpoilerSpan = ({ children }: SpoilerSpanProps): ReactElement => {
 			userSelect: 'none',
 			borderRadius: 2,
 			paddingInline: 2,
-			color: 'transparent',
-			backgroundColor: 'currentColor',
+			filter: 'blur(4px)',
+			transition: 'filter 150ms ease',
 		} as const;
 	}, [revealed]);
 
+	const srOnlyStyle = useMemo(
+		() =>
+			({
+				border: 0,
+				clip: 'rect(0 0 0 0)',
+				height: 1,
+				margin: -1,
+				overflow: 'hidden',
+				padding: 0,
+				position: 'absolute',
+				whiteSpace: 'nowrap',
+				width: 1,
+			}) as const,
+		[],
+	);
+
+	const srText = t('Spoiler_hidden_activate_to_reveal', { defaultValue: 'Spoiler hidden. Activate to reveal.' });
+
+	if (revealed) {
+		return <span style={style}>{children.map((block, index) => renderBlockComponent(block, index))}</span>;
+	}
+
 	return (
-		<span
-			role='button'
-			tabIndex={0}
-			aria-pressed={revealed}
-			aria-label='Reveal spoiler'
-			onClick={toggle}
-			onKeyDown={onKeyDown}
-			style={style}
-		>
-			{children.map((block, index) => renderBlockComponent(block, index))}
+		<span role='button' tabIndex={0} aria-expanded={false} aria-label={srText} onClick={reveal} onKeyDown={onKeyDown} style={style}>
+			<span style={srOnlyStyle}>{srText}</span>
+			<span aria-hidden>{children.map((block, index) => renderBlockComponent(block, index))}</span>
 		</span>
 	);
 };
