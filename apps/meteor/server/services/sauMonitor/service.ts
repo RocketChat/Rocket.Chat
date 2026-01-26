@@ -34,7 +34,6 @@ export class SAUMonitorService extends ServiceClassInternal implements ISAUMonit
 		});
 
 		this.onEvent('socket.connected', async (data) => {
-			// console.log('socket.connected', data);
 			sauEvents.emit('sau.socket.connected', { instanceId: data.instanceId, connectionId: data.id });
 		});
 	}
