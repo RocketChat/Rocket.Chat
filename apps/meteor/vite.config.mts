@@ -60,6 +60,13 @@ export default defineConfig(async () => {
 				exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
 			}),
 		],
+		define: {
+			process: {
+				env: {
+					NODE_ENV: process.env.NODE_ENV,
+				},
+			},
+		},
 		resolve: {
 			dedupe: ['react', 'react-dom'],
 			preserveSymlinks: true,
@@ -94,6 +101,7 @@ export default defineConfig(async () => {
 				// '@rocket.chat/logo': path.resolve('../../../fuselage/packages/logo/src/index.ts'),
 				// '@rocket.chat/onboarding-ui': path.resolve('../../../fuselage/packages/onboarding-ui/src/index.ts'),
 				// '@rocket.chat/styled': path.resolve('../../../fuselage/packages/styled/src/index.ts'),
+				// '@rocket.chat/css-in-js': path.resolve('../../../fuselage/packages/css-in-js/src/index.ts'),
 				// '@rocket.chat/fuselage': path.resolve('../../../fuselage/packages/fuselage/src/index.ts'),
 				// '@rocket.chat/fuselage-tokens': path.resolve('../../../fuselage/packages/fuselage-tokens'),
 				// '@rocket.chat/fuselage-tokens/breakpoints.mjs': path.resolve('../../../fuselage/packages/fuselage-tokens/breakpoints.mjs'),

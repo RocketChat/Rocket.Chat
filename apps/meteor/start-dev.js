@@ -1,25 +1,25 @@
-const { spawn, execSync } = require('child_process');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
+import { spawn, execSync } from 'child_process';
+import { existsSync, mkdirSync, unlinkSync } from 'fs';
+import { homedir } from 'os';
+import { join } from 'path';
 
-const meteorHome = path.join(os.homedir(), '.meteor');
+const meteorHome = join(homedir(), '.meteor');
 const projectRoot = process.cwd();
-const dbPath = path.join(projectRoot, '.meteor/local/db');
+const dbPath = join(projectRoot, '.meteor/local/db');
 const mongoPort = 3001;
 const mongoUrl = `mongodb://localhost:${mongoPort}/meteor`;
 const oplogUrl = `mongodb://localhost:${mongoPort}/local`;
 
 // Ensure db directory exists
-if (!fs.existsSync(dbPath)) {
-	fs.mkdirSync(dbPath, { recursive: true });
+if (!existsSync(dbPath)) {
+	mkdirSync(dbPath, { recursive: true });
 }
 
 // remove lock file if exists, assuming we are restarting clean or previous run crashed
-const lockFile = path.join(dbPath, 'mongod.lock');
-if (fs.existsSync(lockFile)) {
+const lockFile = join(dbPath, 'mongod.lock');
+if (existsSync(lockFile)) {
 	try {
-		fs.unlinkSync(lockFile);
+		unlinkSync(lockFile);
 	} catch (e) {
 		// ignore
 	}
