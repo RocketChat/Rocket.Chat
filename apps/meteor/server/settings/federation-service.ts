@@ -100,5 +100,13 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			modules: ['federation'],
 			invalidValue: false,
 		});
+
+		await this.add('Federation_Service_Validate_User_Domain', false, {
+			type: 'boolean',
+			public: false,
+			enterprise: true,
+			modules: ['federation'],
+			invalidValue: false,
+		});
 	});
 };
