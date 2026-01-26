@@ -17,7 +17,7 @@ export const emojiKeywords: Record<string, string[]> = {
 	lol: ['joy', 'rofl', 'laughing', 'grin', 'stuck_out_tongue_winking_eye'],
 	haha: ['joy', 'laughing', 'rofl', 'grin', 'smile'],
 	funny: ['joy', 'rofl', 'laughing', 'stuck_out_tongue_winking_eye', 'zany_face', 'clown'],
-	cool: ['sunglasses', 'metal', 'fire', 'ice_cube', 'snowflake', 'star2'],
+	cool: ['sunglasses', 'metal', 'fire', 'ice_cube', 'snowflake', 'star2', 'cool'],
 	awesome: ['fire', 'star2', '100', 'trophy', 'tada', 'rocket', 'boom'],
 	amazing: ['star_struck', 'heart_eyes', 'fire', 'sparkles', '100', 'trophy'],
 	perfect: ['ok_hand', '100', 'white_check_mark', 'trophy', 'star2', 'clap'],
@@ -175,7 +175,7 @@ export const emojiKeywords: Record<string, string[]> = {
 	sushi: ['sushi', 'fish', 'rice'],
 	chicken: ['poultry_leg', 'chicken', 'rooster'],
 	meat: ['meat_on_bone', 'cut_of_meat', 'bacon', 'poultry_leg'],
-	fish: ['fish', 'tropical_fish', 'sushi', 'fishing_pole_and_fish'],
+	fish: ['fish', 'tropical_fish', 'sushi', 'fishing_pole_and_fish', 'blowfish', 'shark', 'whale', 'dolphin'],
 	egg: ['egg', 'fried_egg', 'hatching_chick'],
 	bread: ['bread', 'baguette_bread', 'croissant', 'pretzel'],
 	cheese: ['cheese', 'pizza', 'hamburger'],
@@ -186,7 +186,7 @@ export const emojiKeywords: Record<string, string[]> = {
 	fruits: ['apple', 'banana', 'orange', 'grapes', 'watermelon', 'strawberry', 'peach', 'cherry'],
 	apple: ['apple', 'green_apple'],
 	banana: ['banana'],
-	orange: ['orange', 'tangerine'],
+	orange: ['orange', 'tangerine', 'orange_circle', 'orange_heart', 'carrot', 'basketball'],
 	strawberry: ['strawberry'],
 	cake: ['cake', 'birthday', 'shortcake', 'cupcake'],
 	chocolate: ['chocolate_bar', 'cookie', 'doughnut'],
@@ -214,10 +214,10 @@ export const emojiKeywords: Record<string, string[]> = {
 	// Weather
 	sun: ['sunny', 'sun_with_face', 'sunrise', 'sunrise_over_mountains', 'sun_behind_cloud'],
 	sunny: ['sunny', 'sun_with_face', 'sunrise', 'sunglasses'],
-	hot: ['fire', 'sunny', 'thermometer', 'hot_face', 'sweat'],
+	hot: ['fire', 'sunny', 'thermometer', 'hot_face', 'sweat', 'flame'],
 	warm: ['sunny', 'fire', 'thermometer'],
 	cold: ['cold_face', 'snowflake', 'ice_cube', 'freezing_face', 'snowman'],
-	cool: ['sunglasses', 'ice_cube', 'snowflake'],
+
 	rain: ['cloud_rain', 'umbrella', 'droplet', 'thunder_cloud_rain', 'closed_umbrella'],
 	rainy: ['cloud_rain', 'umbrella', 'droplet', 'thunder_cloud_rain'],
 	snow: ['snowflake', 'snowman', 'cloud_snow', 'snow_capped_mountain'],
@@ -261,7 +261,7 @@ export const emojiKeywords: Record<string, string[]> = {
 	cat: ['cat', 'cat2', 'smiley_cat', 'heart_eyes_cat', 'black_cat'],
 	kitten: ['cat', 'cat2', 'smiley_cat'],
 	bird: ['bird', 'baby_chick', 'eagle', 'owl', 'parrot', 'dove'],
-	fish: ['fish', 'tropical_fish', 'blowfish', 'shark', 'whale', 'dolphin'],
+
 	bear: ['bear', 'teddy_bear', 'polar_bear', 'panda_face'],
 	lion: ['lion_face', 'tiger', 'leopard'],
 	tiger: ['tiger', 'tiger2', 'leopard'],
@@ -409,7 +409,7 @@ export const emojiKeywords: Record<string, string[]> = {
 	blue: ['blue_circle', 'blue_heart', 'ocean', 'water_wave', 'droplet'],
 	green: ['green_circle', 'green_heart', 'green_apple', 'cucumber', 'broccoli', 'shamrock'],
 	yellow: ['yellow_circle', 'yellow_heart', 'star', 'sunny', 'banana', 'lemon'],
-	orange: ['orange_circle', 'orange_heart', 'tangerine', 'carrot', 'basketball'],
+
 	purple: ['purple_circle', 'purple_heart', 'grapes', 'eggplant'],
 	pink: ['pink_heart', 'cherry_blossom', 'hibiscus', 'pig'],
 	black: ['black_circle', 'black_heart', 'new_moon', 'spades'],
@@ -427,13 +427,13 @@ export const emojiKeywords: Record<string, string[]> = {
 
 	// Misc
 	fire: ['fire', 'flame', 'hot', 'boom', 'collision'],
-	hot: ['fire', 'hot_face', 'thermometer', 'sunny', 'sweat'],
+
 	new: ['new', 'sparkles', 'star2', 'tada'],
 	free: ['free', 'gift', 'tada'],
 	soon: ['soon', 'hourglass', 'timer'],
 	top: ['top', 'up', 'arrow_up', 'first_place', 'trophy'],
 	up: ['up', 'arrow_up', 'top', 'thumbsup'],
-	cool: ['cool', 'sunglasses', 'ice_cube', 'snowflake'],
+
 	info: ['information_source', 'question', 'bulb'],
 	help: ['sos', 'question', 'raised_hand', 'pray'],
 	emergency: ['sos', 'ambulance', 'rotating_light', 'police_car', 'fire_engine'],
