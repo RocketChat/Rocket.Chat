@@ -28,7 +28,7 @@ const LoginPage = ({ defaultRoute, children }: { defaultRoute?: LoginRoutes; chi
 	return (
 		<>
 			{showForcedLogoutBanner && <LoggedOutBanner />}
-			<RegistrationRoute defaultRoute={defaultRoute} children={children} />
+			<RegistrationRoute defaultRoute={defaultRoute}>{children}</RegistrationRoute>
 		</>
 	);
 };

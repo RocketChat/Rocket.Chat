@@ -21,7 +21,7 @@ const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUplo
 	'meteor/ostrio:cookies': { Cookies: sinon.stub() },
 	'sharp': sinon.stub(),
 	'stream-buffers': sinon.stub(),
-	'./streamToBuffer': sinon.stub(),
+	'@rocket.chat/tools': sinon.stub(),
 	'../../../../server/lib/i18n': sinon.stub(),
 	'../../../../server/lib/logger/system': sinon.stub(),
 	'../../../../server/lib/rooms/roomCoordinator': sinon.stub(),
@@ -31,6 +31,7 @@ const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUplo
 	'../../../utils/lib/mimeTypes': sinon.stub(),
 	'../../../utils/server/lib/JWTHelper': sinon.stub(),
 	'../../../utils/server/restrictions': sinon.stub(),
+	'../../../api/server/lib/MultipartUploadHandler': sinon.stub(),
 });
 
 describe('FileUpload', () => {

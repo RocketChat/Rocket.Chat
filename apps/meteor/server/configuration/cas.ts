@@ -1,4 +1,3 @@
-import type { Awaited } from '@rocket.chat/core-typings';
 import debounce from 'lodash.debounce';
 import { RoutePolicy } from 'meteor/routepolicy';
 import { WebApp } from 'meteor/webapp';
