@@ -1,6 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, AtLeast, MessageAttachment } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -72,6 +72,14 @@ export const updateMessage = async function (
 
 	if (!editedMessage.msg) {
 		delete editedMessage.md;
+	}
+
+	// Ensure attachments have proper md arrays before saving
+	if (editedMessage.attachments) {
+		editedMessage.attachments = editedMessage.attachments.map((attachment: MessageAttachment) => ({
+			...attachment,
+			md: Array.isArray(attachment.md) ? attachment.md : [],
+		}));
 	}
 
 	// do not send $unset if not defined. Can cause exceptions in certain mongo versions.
