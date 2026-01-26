@@ -17,15 +17,7 @@ const CustomUserStatusRow = ({ status, onClick }: CustomUserStatusRowProps): Rea
 	const { t } = useTranslation();
 
 	return (
-		<GenericTableRow
-			key={_id}
-			onKeyDown={(): void => onClick(_id)}
-			onClick={(): void => onClick(_id)}
-			tabIndex={0}
-			role='link'
-			action
-			qa-user-id={_id}
-		>
+		<GenericTableRow key={_id} onKeyDown={() => onClick(_id)} onClick={() => onClick(_id)} tabIndex={0} action>
 			<GenericTableCell fontScale='p2' color='default' style={style}>
 				<MarkdownText content={name} parseEmoji={true} variant='inline' />
 			</GenericTableCell>
