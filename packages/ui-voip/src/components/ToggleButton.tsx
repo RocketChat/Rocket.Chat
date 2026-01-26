@@ -2,6 +2,8 @@ import { Icon, IconButton } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import type { ComponentProps } from 'react';
 
+// TODO: move to actions folder
+
 type ToggleButtonProps = {
 	label: string; // label should not change due to a11y constraints
 	icons: [defaultIcon: Keys, pressedIcon: Keys];

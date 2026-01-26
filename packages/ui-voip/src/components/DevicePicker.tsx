@@ -11,6 +11,8 @@ import { ActionButton } from '.';
 import { useMediaCallContext } from '../context';
 import { useDevicePermissionPrompt2, stopTracks } from '../hooks/useDevicePermissionPrompt';
 
+// TODO: move to actions folder
+
 type DevicePickerButtonProps = {
 	secondary?: boolean;
 	small?: boolean;
