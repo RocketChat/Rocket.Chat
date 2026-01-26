@@ -45,9 +45,6 @@ const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../app/lib/s
 	'../../../../app/file-upload/server': {
 		FileUpload: stubs.FileUpload,
 	},
-	'../../../../app/lib/server/functions/setRealName': {
-		_setRealName: stubs.setRealName,
-	},
 	'../../../../app/lib/server/functions/setUsername': {
 		_setUsername: stubs.setUsername,
 		_setUsernameWithSession: () => stubs.setUsername,
@@ -115,15 +112,6 @@ describe('Users - saveUserIdentity', () => {
 		expect(stubs.updateDirectNameAndFnameByName.called).to.be.false;
 		expect(stubs.updateUserReferences.called).to.be.false;
 		expect(stubs.updateHistoryReferences.called).to.be.false;
-	});
-
-	it('should return false if _setName fails', async () => {
-		stubs.findOneUserById.returns({ name: 'oldName' });
-		stubs.setRealName.returns(false);
-		const result = await saveUserIdentity({ _id: 'valid_id', name: 'invalidName' });
-
-		expect(stubs.setRealName.calledWith('valid_id', 'invalidName', { name: 'oldName' })).to.be.true;
-		expect(result).to.be.false;
 	});
 
 	it('should update Subscriptions, VideoConference and Call History if name changes', async () => {
