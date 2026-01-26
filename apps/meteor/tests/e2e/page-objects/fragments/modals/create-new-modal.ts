@@ -8,7 +8,7 @@ export abstract class CreateNewModal extends Modal {
 
 	constructor(root: Locator, page: Page) {
 		super(root, page);
-		this.listbox = new Listbox(page.getByRole('listbox'));
+		this.listbox = new Listbox(page);
 	}
 
 	get inputName(): Locator {
