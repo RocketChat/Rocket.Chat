@@ -153,7 +153,14 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.updateOwnBasicInfo',
-	{ authRequired: true, validateParams: isUsersUpdateOwnBasicInfoParamsPOST },
+	{
+		authRequired: true,
+		validateParams: isUsersUpdateOwnBasicInfoParamsPOST,
+		rateLimiterOptions: {
+			numRequestsAllowed: 1,
+			intervalTimeInMS: 60000,
+		},
+	},
 	{
 		async post() {
 			const userData = {
