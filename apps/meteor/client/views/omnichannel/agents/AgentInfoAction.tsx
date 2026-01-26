@@ -9,7 +9,7 @@ type AgentInfoActionProps = {
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const AgentInfoAction = ({ icon, label, ...props }: AgentInfoActionProps) => (
-	<Button icon={icon} data-qa={`agent-info-action-${label?.toLowerCase()}`} title={label} {...props}>
+	<Button icon={icon} title={label} {...props}>
 		{label}
 	</Button>
 );
