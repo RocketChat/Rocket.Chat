@@ -4,14 +4,19 @@ import { spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
 
 import * as Messenger from '../messenger.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import { Logger } from '../logger.ts';
+import { createMockRequest } from '../../handlers/tests/helpers/mod.ts';
+import { RequestContext } from '../requestContext.ts';
+import { JsonRpc } from 'jsonrpc-lite';
 
 describe('Messenger', () => {
+	let context: RequestContext;
+
 	beforeEach(() => {
 		AppObjectRegistry.clear();
-		AppObjectRegistry.set('logger', new Logger('test'));
 		AppObjectRegistry.set('id', 'test');
 		Messenger.Transport.selectTransport('noop');
+
+		context = createMockRequest({ method: 'test', params: [] });
 	});
 
 	afterAll(() => {
@@ -21,18 +26,17 @@ describe('Messenger', () => {
 
 	it('should add logs to success responses', async () => {
 		const theSpy = spy(Messenger.Queue, 'enqueue');
-
-		const logger = AppObjectRegistry.get<Logger>('logger') as Logger;
+		const { logger } = context.context;
 
 		logger.info('test');
 
-		await Messenger.successResponse({ id: 'test', result: 'test' });
+		await Messenger.successResponse({ id: 'test', result: 'test' }, context);
 
 		assertEquals(theSpy.calls.length, 1);
 
 		const [responseArgument] = theSpy.calls[0].args;
 
-		assertObjectMatch(responseArgument, {
+		assertObjectMatch(responseArgument as JsonRpc, {
 			jsonrpc: '2.0',
 			id: 'test',
 			result: {
@@ -57,18 +61,17 @@ describe('Messenger', () => {
 
 	it('should add logs to error responses', async () => {
 		const theSpy = spy(Messenger.Queue, 'enqueue');
-
-		const logger = AppObjectRegistry.get<Logger>('logger') as Logger;
+		const { logger } = context.context;
 
 		logger.info('test');
 
-		await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test' } });
+		await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test' } }, context);
 
 		assertEquals(theSpy.calls.length, 1);
 
 		const [responseArgument] = theSpy.calls[0].args;
 
-		assertObjectMatch(responseArgument, {
+		assertObjectMatch(responseArgument as JsonRpc, {
 			jsonrpc: '2.0',
 			id: 'test',
 			error: {

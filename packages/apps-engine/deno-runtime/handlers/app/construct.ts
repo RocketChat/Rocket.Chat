@@ -99,9 +99,8 @@ export default async function handleConstructApp(request: RequestContext): Promi
 	// Applying the correct type here is quite difficult because of the dynamic nature of the code
 	// deno-lint-ignore no-explicit-any
 	const appClass = Object.values(exports)[0] as any;
-	const logger = AppObjectRegistry.get('logger');
 
-	const app = new appClass(appPackage.info, logger, AppAccessorsInstance.getDefaultAppAccessors());
+	const app = new appClass(appPackage.info, request.context.logger, AppAccessorsInstance.getDefaultAppAccessors());
 
 	if (typeof app.getName !== 'function') {
 		throw new Error('App must contain a getName function');

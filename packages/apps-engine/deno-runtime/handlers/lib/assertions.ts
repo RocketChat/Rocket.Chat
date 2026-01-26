@@ -29,8 +29,12 @@ export function isOneOf<T>(value: unknown, array: readonly T[]): value is T {
 	return array.includes(value as T);
 }
 
+export function isApp(v: unknown): v is App {
+	return !!v && typeof (v as App)['extendConfiguration'] === 'function';
+}
+
 export function assertAppAvailable(v: unknown): asserts v is App {
-	if (v && typeof (v as App)['extendConfiguration'] === 'function') return;
+	if (isApp(v)) return;
 
 	throw JsonRpcError.internalError({ err: 'App object not available', code: Errors.DRT_APP_NOT_AVAILABLE });
 }

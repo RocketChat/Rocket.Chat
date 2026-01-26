@@ -8,12 +8,10 @@ if (!Deno.args.includes('--subprocess')) {
 	Deno.exit(1001);
 }
 
-import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import { JsonRpcError } from 'jsonrpc-lite';
 
 import * as Messenger from './lib/messenger.ts';
 import { decoder } from './lib/codec.ts';
-import { AppObjectRegistry } from './AppObjectRegistry.ts';
 import { Logger } from './lib/logger.ts';
 
 import slashcommandHandler from './handlers/slashcommand-handler.ts';
@@ -25,6 +23,7 @@ import registerErrorListeners from './error-handlers.ts';
 import { sendMetrics } from './lib/metricsCollector.ts';
 import outboundMessageHandler from './handlers/outboundcomms-handler.ts';
 import { RequestContext } from './lib/requestContext.ts';
+import { RequestContextManager } from './AppObjectRegistry.ts';
 
 type Handlers = {
 	app: typeof handleApp;
@@ -56,19 +55,9 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 
 	const { id, method } = payload;
 
-	const logger = new Logger(method);
-	AppObjectRegistry.set('logger', logger);
-
-	const context: RequestContext = Object.assign(payload, {
-		context: { logger }
-	})
-
-	const app = AppObjectRegistry.get<App>('app');
-
-	if (app) {
-		// Same logic as applied in the ProxiedApp class previously
-		(app as unknown as Record<string, unknown>).logger = logger;
-	}
+	using context = RequestContextManager.newForRequest(payload, {
+		logger: new Logger(method),
+	});
 
 	const [methodPrefix] = method.split(':') as [keyof Handlers];
 	const handler = methodHandlers[methodPrefix];
@@ -77,16 +66,16 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 		return Messenger.errorResponse({
 			error: { message: 'Method not found', code: -32601 },
 			id,
-		});
+		}, context);
 	}
 
 	const result = await handler(context);
 
 	if (result instanceof JsonRpcError) {
-		return Messenger.errorResponse({ id, error: result });
+		return Messenger.errorResponse({ id, error: result }, context);
 	}
 
-	return Messenger.successResponse({ id, result });
+	return Messenger.successResponse({ id, result }, context);
 }
 
 function handleResponse(response: Messenger.JsonRpcResponse): void {

@@ -7,11 +7,12 @@ import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads
 import { assertInstanceOf, assertNotInstanceOf, assertEquals, assertStringIncludes } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 import { afterEach, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 import { assertSpyCalls, spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
-import jsonrpc, { JsonRpcError } from 'jsonrpc-lite';
+import { JsonRpcError } from 'jsonrpc-lite';
 
+import { createMockRequest } from './helpers/mod.ts';
 import handleUploadEvents from '../app/handleUploadEvents.ts';
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { Errors } from '../lib/assertions.ts';
+import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 
 describe('handlers > upload', () => {
 	let app: App & IPreFileUpload;
@@ -48,7 +49,7 @@ describe('handlers > upload', () => {
 	});
 
 	it('correctly handles valid parameters', async () => {
-		const result = await handleUploadEvents(jsonrpc.request(1, 'app:executePreFileUpload', [{ file, path }]));
+		const result = await handleUploadEvents(createMockRequest({ method: 'app:executePreFileUpload', params: [{ file, path }] }));
 
 		assertNotInstanceOf(result, JsonRpcError, 'result is JsonRpcError');
 	});
@@ -56,7 +57,7 @@ describe('handlers > upload', () => {
 	it('correctly loads the file contents for IPreFileUpload', async () => {
 		const _spy = spy(app as any, 'executePreFileUpload');
 
-		const result = await handleUploadEvents(jsonrpc.request(1, 'app:executePreFileUpload', [{ file, path }]));
+		const result = await handleUploadEvents(createMockRequest({ method: 'app:executePreFileUpload', params: [{ file, path }] }));
 
 		assertNotInstanceOf(result, JsonRpcError, 'result is JsonRpcError');
 		assertSpyCalls(_spy, 1);
@@ -66,7 +67,7 @@ describe('handlers > upload', () => {
 	it('fails when app object is not on registry', async () => {
 		AppObjectRegistry.clear();
 
-		const result = await handleUploadEvents(jsonrpc.request(1, 'app:executePreFileUpload', [{ file, path }]));
+		const result = await handleUploadEvents(createMockRequest({ method: 'app:executePreFileUpload', params: [{ file, path }] }));
 
 		assertInstanceOf(result, JsonRpcError);
 		assertEquals(result.data.code, Errors.DRT_APP_NOT_AVAILABLE);
@@ -75,21 +76,21 @@ describe('handlers > upload', () => {
 	it('fails when the app does not implement the IPreFileUpload event handler', async () => {
 		delete (app as any)['executePreFileUpload'];
 
-		const result = await handleUploadEvents(jsonrpc.request(1, 'app:executePreFileUpload', [{ file, path }]));
+		const result = await handleUploadEvents(createMockRequest({ method: 'app:executePreFileUpload', params: [{ file, path }] }));
 
 		assertInstanceOf(result, JsonRpcError);
 		assertEquals(result.data.code, Errors.DRT_EVENT_HANDLER_FUNCTION_MISSING);
 	});
 
 	it('fails when "file" is not a proper IUploadDetails object', async () => {
-		const result = await handleUploadEvents(jsonrpc.request(1, 'app:executePreFileUpload', [{ file: { nope: "bad" }, path }]));
+		const result = await handleUploadEvents(createMockRequest({ method: 'app:executePreFileUpload', params: [{ file: { nope: "bad" }, path }] }));
 
 		assertInstanceOf(result, JsonRpcError);
 		assertStringIncludes(result.data.err, 'Expected IUploadDetails');
 	});
 
 	it('fails when "path" is not a proper string', async () => {
-		const result = await handleUploadEvents(jsonrpc.request(1, 'app:executePreFileUpload', [{ file, path: {} }]));
+		const result = await handleUploadEvents(createMockRequest({ method: 'app:executePreFileUpload', params: [{ file, path: {} }] }));
 
 		assertInstanceOf(result, JsonRpcError);
 		assertStringIncludes(result.data.err, 'Expected string');
@@ -98,7 +99,7 @@ describe('handlers > upload', () => {
 	it('fails when "path" is not a readable file path', async () => {
 		await Deno.remove(path);
 
-		const result = await handleUploadEvents(jsonrpc.request(1, 'app:executePreFileUpload', [{ file, path }]));
+		const result = await handleUploadEvents(createMockRequest({ method: 'app:executePreFileUpload', params: [{ file, path }] }));
 
 		assertInstanceOf(result, JsonRpcError);
 		assertEquals(result.data.code, "ENOENT");

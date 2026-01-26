@@ -3,15 +3,16 @@ import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../lib/accessors/mod.ts';
-import { Logger } from '../lib/logger.ts';
 import { RequestContext } from '../lib/requestContext.ts';
+import { wrapComposedApp } from '../lib/wrapAppForRequest.ts';
 
 export default async function videoConferenceHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
 	const { method: call, params } = request;
+	const { logger } = request.context;
+
 	const [, providerName, methodName] = call.split(':');
 
 	const provider = AppObjectRegistry.get<IVideoConfProvider>(`videoConfProvider:${providerName}`);
-	const logger = AppObjectRegistry.get<Logger>('logger');
 
 	if (!provider) {
 		return new JsonRpcError(`Provider ${providerName} not found`, -32000);
@@ -27,13 +28,13 @@ export default async function videoConferenceHandler(request: RequestContext): P
 
 	const [videoconf, user, options] = params as Array<unknown>;
 
-	logger?.debug(`Executing ${methodName} on video conference provider...`);
+	logger.debug(`Executing ${methodName} on video conference provider...`);
 
 	const args = [...(videoconf ? [videoconf] : []), ...(user ? [user] : []), ...(options ? [options] : [])];
 
 	try {
 		// deno-lint-ignore ban-types
-		const result = await (method as Function).apply(provider, [
+		const result = await (method as Function).apply(wrapComposedApp(provider, request), [
 			...args,
 			AppAccessorsInstance.getReader(),
 			AppAccessorsInstance.getModifier(),
@@ -41,11 +42,11 @@ export default async function videoConferenceHandler(request: RequestContext): P
 			AppAccessorsInstance.getPersistence(),
 		]);
 
-		logger?.debug(`Video Conference Provider's ${methodName} was successfully executed.`);
+		logger.debug(`Video Conference Provider's ${methodName} was successfully executed.`);
 
 		return result;
 	} catch (e) {
-		logger?.debug(`Video Conference Provider's ${methodName} was unsuccessful.`);
+		logger.debug(`Video Conference Provider's ${methodName} was unsuccessful.`);
 		return new JsonRpcError(e.message, -32000);
 	}
 }
