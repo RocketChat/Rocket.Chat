@@ -347,22 +347,20 @@ describe('[Incoming Integrations]', () => {
 					.post(`/hooks/${integration._id}/${integration.token}`)
 					.set('Content-Type', 'application/x-www-form-urlencoded')
 					.send(`payload=${JSON.stringify(payload)}`)
-					.expect(200)
-					.expect(async () => {
-						return request
-							.get(api('channels.messages'))
-							.set(credentials)
-							.query({
-								roomId: 'GENERAL',
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', true);
-								expect(res.body).to.have.property('messages').and.to.be.an('array');
-								expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === payload.msg)).to.be.true;
-							});
-					});
+					.expect(200);
+
+				const messagesResult = await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(messagesResult.body).to.have.property('success', true);
+				expect(messagesResult.body).to.have.property('messages').and.to.be.an('array');
+				expect(!!(messagesResult.body.messages as IMessage[]).find((m) => m.msg === payload.msg)).to.be.true;
 			});
 		});
 
@@ -444,52 +442,50 @@ describe('[Incoming Integrations]', () => {
 			});
 
 			it('should send a message if the payload is a application/x-www-form-urlencoded JSON AND the integration has a valid script', async () => {
-				const payload = { msg: `Message as x-www-form-urlencoded JSON sent successfully at #${Date.now()}` };
+				// Note: The script expects `request.content.text`, so we send `text` not `msg`
+				const payload = { text: `Message as x-www-form-urlencoded JSON sent successfully at #${Date.now()}` };
 
 				await request
 					.post(`/hooks/${withScript._id}/${withScript.token}`)
 					.set('Content-Type', 'application/x-www-form-urlencoded')
 					.send(`payload=${JSON.stringify(payload)}`)
-					.expect(200)
-					.expect(async () => {
-						return request
-							.get(api('channels.messages'))
-							.set(credentials)
-							.query({
-								roomId: 'GENERAL',
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', true);
-								expect(res.body).to.have.property('messages').and.to.be.an('array');
-								expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === payload.msg)).to.be.true;
-							});
-					});
+					.expect(200);
+
+				const messagesResult = await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(messagesResult.body).to.have.property('success', true);
+				expect(messagesResult.body).to.have.property('messages').and.to.be.an('array');
+				expect(!!(messagesResult.body.messages as IMessage[]).find((m) => m.msg === payload.text)).to.be.true;
 			});
 
-			it('should send a message if the payload is a application/x-www-form-urlencoded JSON(when not set, default one) but theres no "payload" key, its just a string, the integration has a valid script', async () => {
+			it('should send a message if the payload is application/json and the integration has a valid script', async () => {
 				const payload = { test: 'test' };
 
 				await request
 					.post(`/hooks/${withScriptDefaultContentType._id}/${withScriptDefaultContentType.token}`)
+					.set('Content-Type', 'application/json')
 					.send(JSON.stringify(payload))
-					.expect(200)
-					.expect(async () => {
-						return request
-							.get(api('channels.messages'))
-							.set(credentials)
-							.query({
-								roomId: 'GENERAL',
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', true);
-								expect(res.body).to.have.property('messages').and.to.be.an('array');
-								expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === '[#VALUE](test)')).to.be.true;
-							});
-					});
+					.expect(200);
+
+				const messagesResult = await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(messagesResult.body).to.have.property('success', true);
+				expect(messagesResult.body).to.have.property('messages').and.to.be.an('array');
+				expect(!!(messagesResult.body.messages as IMessage[]).find((m) => m.msg === '[#VALUE](test)')).to.be.true;
 			});
 		});
 
