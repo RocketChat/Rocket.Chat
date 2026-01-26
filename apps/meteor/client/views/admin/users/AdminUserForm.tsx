@@ -19,7 +19,8 @@ import {
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
-import { CustomFieldsForm } from '@rocket.chat/ui-client';
+import { validateEmail } from '@rocket.chat/tools';
+import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useSetting,
@@ -37,10 +38,8 @@ import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordConte
 import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
 import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
-import { useVoipExtensionPermission } from './useVoipExtensionPermission';
-import { validateEmail } from '../../../../lib/emailValidator';
+import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
@@ -124,7 +123,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		mode: 'onBlur',
 	});
 
-	const canManageVoipExtension = useVoipExtensionPermission();
+	const showVoipExtension = useShowVoipExtension();
 
 	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
 
@@ -342,7 +341,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</FieldError>
 						)}
 					</Field>
-					{canManageVoipExtension && (
+					{showVoipExtension && (
 						<Field>
 							<FieldLabel htmlFor={voiceExtensionId}>{t('Voice_call_extension')}</FieldLabel>
 							<FieldRow>

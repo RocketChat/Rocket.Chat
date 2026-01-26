@@ -16,8 +16,11 @@ const AddUsersCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactEl
 		<GenericCard
 			title={t('Add_users')}
 			body={t('Invite_and_add_members_to_this_workspace_to_start_communicating')}
-			buttons={[<GenericCardButton key={1} onClick={handleOpenUsersRoute} children={t('Add_users')} primary />]}
-			data-qa-id='homepage-add-users-card'
+			buttons={[
+				<GenericCardButton key={1} onClick={handleOpenUsersRoute} primary>
+					{t('Add_users')}
+				</GenericCardButton>,
+			]}
 			width='x340'
 			{...props}
 		/>

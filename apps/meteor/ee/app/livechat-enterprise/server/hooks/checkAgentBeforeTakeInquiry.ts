@@ -3,7 +3,7 @@ import { Users } from '@rocket.chat/models';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { checkOnlineAgents } from '../../../../../app/livechat/server/lib/service-status';
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { isAgentWithinChatLimits } from '../lib/Helper';
 import { cbLogger } from '../lib/logger';
 
@@ -38,12 +38,12 @@ const validateMaxChats = async ({
 	}
 
 	if (!settings.get('Livechat_waiting_queue')) {
-		cbLogger.info(`Chat can be taken by Agent ${agentId}: waiting queue is disabled`);
+		cbLogger.info({ msg: 'Chat can be taken by Agent: waiting queue is disabled', agentId });
 		return agent;
 	}
 
 	if (await allowAgentSkipQueue(agent)) {
-		cbLogger.info(`Chat can be taken by Agent ${agentId}: agent can skip queue`);
+		cbLogger.info({ msg: 'Chat can be taken by Agent: agent can skip queue', agentId });
 		return agent;
 	}
 

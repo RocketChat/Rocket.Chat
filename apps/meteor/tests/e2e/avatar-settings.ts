@@ -8,16 +8,16 @@ test.use({ storageState: Users.admin.state });
 
 const testAvatars = (homeChannel: HomeChannel, channel: string, url: string) => {
 	test('expect sidebar avatar to have provider prefix', async () => {
-		expect(homeChannel.sidenav.getSidebarItemByName(channel).locator('img').getAttribute('src')).toBe(url);
+		expect(homeChannel.sidebar.getSidebarItemByName(channel).locator('img').getAttribute('src')).toBe(url);
 	});
 
 	test('expect channel header avatar to have provider prefix', async () => {
-		await homeChannel.sidenav.openChat(channel);
+		await homeChannel.navbar.openChat(channel);
 		expect(homeChannel.content.channelHeader.locator('img').getAttribute('src')).toBe(url);
 	});
 
 	test('expect channel info avatar to have provider prefix', async () => {
-		await homeChannel.sidenav.openChat(channel);
+		await homeChannel.navbar.openChat(channel);
 		expect(homeChannel.content.channelHeader.locator('img').getAttribute('src')).toBe(url);
 	});
 };
@@ -77,7 +77,7 @@ test.describe('avatar-settings', () => {
 
 				// send a message as user 2
 				test.use({ storageState: Users.user2.state });
-				await poHomeChannel.sidenav.openChat(Users.user1.data.username);
+				await poHomeChannel.navbar.openChat(Users.user1.data.username);
 				await poHomeChannel.content.sendMessage('hello world');
 
 				test.use({ storageState: Users.user1.state });

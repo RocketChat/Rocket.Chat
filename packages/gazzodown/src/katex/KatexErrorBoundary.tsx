@@ -1,6 +1,7 @@
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import styled from '@rocket.chat/styled';
-import { PropsWithChildren, ReactElement, useState } from 'react';
+import type { PropsWithChildren, ReactElement } from 'react';
+import { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 type KatexErrorBoundaryProps = PropsWithChildren<{ code: string }>;
@@ -12,7 +13,11 @@ const Fallback = styled('span')`
 
 const KatexErrorBoundary = ({ children, code }: KatexErrorBoundaryProps): ReactElement => {
 	const [error, setError] = useState<Error | null>(null);
-	return <ErrorBoundary children={children} onError={setError} fallback={<Fallback title={error?.message}>{code}</Fallback>} />;
+	return (
+		<ErrorBoundary onError={setError} fallback={<Fallback title={error?.message}>{code}</Fallback>}>
+			{children}
+		</ErrorBoundary>
+	);
 };
 
 export default KatexErrorBoundary;

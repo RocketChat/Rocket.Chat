@@ -20,11 +20,13 @@ import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
 import type { ReactElement, ComponentProps } from 'react';
-import { memo, useEffect, useId, useState } from 'react';
+import { memo, useCallback, useEffect, useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import CropFilePreview from './CropFilePreview';
 import FilePreview from './FilePreview';
+import { fileUploadIsValidContentType } from '../../../../../app/utils/client/restrictions';
+import { getMimeTypeFromFileName } from '../../../../../app/utils/lib/mimeTypes';
 
 type FileUploadModalProps = {
 	onClose: () => void;
@@ -61,6 +63,18 @@ const FileUploadModal = ({
 
 	const isDescriptionValid = (description: string) =>
 		description.length >= maxMsgSize ? t('Cannot_upload_file_character_limit', { count: maxMsgSize }) : true;
+
+	const validateFileName = useCallback(
+		(fieldValue: string) => {
+			const type = getMimeTypeFromFileName(fieldValue);
+			if (fileUploadIsValidContentType(type)) {
+				return undefined;
+			}
+
+			return t('FileUpload_MediaType_NotAccepted__type__', { type });
+		},
+		[t],
+	);
 
 	const submit = ({ name, description }: { name: string; description?: string }): void => {
 		// -1 maxFileSize means there is no limit
@@ -155,6 +169,7 @@ const FileUploadModal = ({
 									id={fileNameField}
 									{...register('name', {
 										required: t('error-the-field-is-required', { field: t('Upload_file_name') }),
+										validate: validateFileName,
 									})}
 									error={errors.name?.message}
 									aria-invalid={errors.name ? 'true' : 'false'}
@@ -162,7 +177,11 @@ const FileUploadModal = ({
 									aria-required='true'
 								/>
 							</FieldRow>
-							{errors.name && <FieldError id={`${fileNameField}-error`}>{errors.name.message}</FieldError>}
+							{errors.name && (
+								<FieldError role='alert' id={`${fileNameField}-error`}>
+									{errors.name.message}
+								</FieldError>
+							)}
 						</Field>
 						{showDescription && (
 							<Field>
@@ -177,7 +196,11 @@ const FileUploadModal = ({
 										aria-describedby={`${fileDescriptionField}-error`}
 									/>
 								</FieldRow>
-								{errors.description && <FieldError id={`${fileDescriptionField}-error`}>{errors.description.message}</FieldError>}
+								{errors.description && (
+									<FieldError role='alert' id={`${fileDescriptionField}-error`}>
+										{errors.description.message}
+									</FieldError>
+								)}
 							</Field>
 						)}
 					</FieldGroup>

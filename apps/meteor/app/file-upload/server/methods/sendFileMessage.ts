@@ -6,15 +6,16 @@ import type {
 	AtLeast,
 	FilesAndAttachments,
 	IMessage,
+	FileProp,
 } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import { omit } from '../../../../lib/utils/omit';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
@@ -42,13 +43,14 @@ export const parseFileIntoMessageAttachments = async (
 
 	const attachments: MessageAttachment[] = [];
 
-	const files = [
+	const files: FileProp[] = [
 		{
 			_id: file._id,
 			name: file.name || '',
 			type: file.type || 'file',
 			size: file.size || 0,
 			format: file.identify?.format || '',
+			typeGroup: file.typeGroup,
 		},
 	];
 
@@ -96,10 +98,11 @@ export const parseFileIntoMessageAttachments = async (
 					type: thumbnail.type || 'file',
 					size: thumbnail.size || 0,
 					format: thumbnail.identify?.format || '',
+					typeGroup: thumbnail.typeGroup || '',
 				});
 			}
-		} catch (e) {
-			SystemLogger.error(e);
+		} catch (err) {
+			SystemLogger.error({ err });
 		}
 		attachments.push(attachment);
 	} else if (/^audio\/.+/.test(file.type as string)) {

@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <section
+      aria-live="polite"
+      arial-label="Retention_policy_warning_callout"
+      class="rcx-box rcx-box--full rcx-callout rcx-callout--warning"
+      role="alert"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-warning rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+      >
+        
+      </i>
+      <div
+        class="rcx-box rcx-box--full rcx-callout__wrapper"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-callout__content"
+          >
+            <div>
+              <p>
+                a minute June 1, 2024 at 12:30 AM
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+`;
+
+exports[`renders InvalidSettings without crashing 1`] = `
+<body>
+  <div>
+    <section
+      aria-live="polite"
+      arial-label="Retention_policy_warning_callout"
+      class="rcx-box rcx-box--full rcx-callout rcx-callout--warning"
+      role="alert"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-warning rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+      >
+        
+      </i>
+      <div
+        class="rcx-box rcx-box--full rcx-callout__wrapper"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-callout__content"
+          >
+            <div>
+              <p>
+                a minute June 12, 2024 at 12:00 AM
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+`;

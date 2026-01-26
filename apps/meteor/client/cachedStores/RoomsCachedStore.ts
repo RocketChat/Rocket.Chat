@@ -103,7 +103,7 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 		);
 	}
 
-	protected deserializeFromCache(record: unknown) {
+	protected override deserializeFromCache(record: unknown) {
 		const deserialized = super.deserializeFromCache(record);
 
 		if (deserialized?.lastMessage?._updatedAt) {

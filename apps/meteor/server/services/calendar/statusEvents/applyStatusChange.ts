@@ -20,7 +20,14 @@ export async function applyStatusChange({
 	status?: UserStatus;
 	shouldScheduleRemoval?: boolean;
 }): Promise<void> {
-	logger.debug(`Applying status change for event ${eventId} at ${startTime} ${endTime ? `to ${endTime}` : ''} to ${status}`);
+	logger.debug({
+		msg: 'Applying status change for event',
+		eventId,
+		uid,
+		startTime,
+		endTime,
+		status: status ?? UserStatus.BUSY,
+	});
 
 	const user = await Users.findOneById(uid, { projection: { roles: 1, username: 1, name: 1, status: 1 } });
 	if (!user || user.status === UserStatus.OFFLINE) {

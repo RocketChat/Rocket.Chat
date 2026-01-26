@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`RoomFormAutocomplete renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-autocomplete rcx-css-t3n91h"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-6d871f"
+        role="group"
+      >
+        <input
+          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-rcil7k"
+          value=""
+        />
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-autocomplete__addon"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-1wz6xj9"
+        >
+          
+        </i>
+      </div>
+    </div>
+  </div>
+</body>
+`;

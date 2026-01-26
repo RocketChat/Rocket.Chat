@@ -2,7 +2,7 @@ import { isEditedMessage, isMessageFromVisitor, isSystemMessage } from '@rocket.
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { settings } from '../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 import { isMessageFromBot } from '../lib/isMessageFromBot';

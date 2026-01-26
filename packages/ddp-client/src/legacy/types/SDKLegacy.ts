@@ -86,10 +86,7 @@ export type RocketchatSdkLegacyEvents = {
 	'Users:NameChanged': StreamerCallbackArgs<'notify-logged', 'Users:NameChanged'>;
 	'Users:Deleted': StreamerCallbackArgs<'notify-logged', 'Users:Deleted'>;
 	'updateAvatar': StreamerCallbackArgs<'notify-logged', 'updateAvatar'>;
-
 	'user-message': StreamerCallbackArgs<'notify-user', `${string}/message`>;
-	'otr': StreamerCallbackArgs<'notify-user', `${string}/otr`>;
-	'webrtc': StreamerCallbackArgs<'notify-user', `${string}/webrtc`>;
 	'notification': StreamerCallbackArgs<'notify-user', `${string}/notification`>;
 	'rooms-changed': StreamerCallbackArgs<'notify-user', `${string}/rooms-changed`>;
 	'subscriptions-changed': StreamerCallbackArgs<'notify-user', `${string}/subscriptions-changed`>;

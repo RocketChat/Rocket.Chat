@@ -17,7 +17,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	const setModal = useSetModal();
 	const isModalOpen = !!useCurrentModal();
 
-	const hasDeviceManagement = useHasLicenseModule('device-management') as boolean;
+	const { data: hasDeviceManagement = false, isPending } = useHasLicenseModule('device-management');
 	const canViewDeviceManagement = usePermission('view-device-management');
 
 	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasDeviceManagement);
@@ -39,7 +39,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 		}
 	}, [shouldShowUpsell, router, setModal, t, handleManageSubscription]);
 
-	if (isModalOpen) {
+	if (isModalOpen || isPending) {
 		return <PageSkeleton />;
 	}
 

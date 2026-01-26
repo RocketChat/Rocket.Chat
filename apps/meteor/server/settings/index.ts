@@ -2,7 +2,6 @@ import { createAccountSettings } from './accounts';
 import { createAnalyticsSettings } from './analytics';
 import { createAssetsSettings } from './assets';
 import { createBotsSettings } from './bots';
-import { createCallCenterSettings } from './call-center';
 import { createCasSettings } from './cas';
 import { createCrowdSettings } from './crowd';
 import { createEmojiSettings } from './custom-emoji';
@@ -24,7 +23,6 @@ import { createMiscSettings } from './misc';
 import { createMobileSettings } from './mobile';
 import { createOauthSettings } from './oauth';
 import { createOmniSettings } from './omnichannel';
-import { createOTRSettings } from './otr';
 import { createPushSettings } from './push';
 import { createRateLimitSettings } from './rate';
 import { createRetentionSettings } from './retention-policy';
@@ -36,7 +34,6 @@ import { createTroubleshootSettings } from './troubleshoot';
 import { createUserDataSettings } from './userDataDownload';
 import { createVConfSettings } from './video-conference';
 import { createWebDavSettings } from './webdav';
-import { createWebRTCSettings } from './webrtc';
 import { addMatrixBridgeFederationSettings } from '../services/federation/Settings';
 
 await Promise.all([
@@ -45,7 +42,6 @@ await Promise.all([
 	createAnalyticsSettings(),
 	createAssetsSettings(),
 	createBotsSettings(),
-	createCallCenterSettings(),
 	createCasSettings(),
 	createCrowdSettings(),
 	createEmojiSettings(),
@@ -65,7 +61,6 @@ await Promise.all([
 	createMobileSettings(),
 	createOauthSettings(),
 	createOmniSettings(),
-	createOTRSettings(),
 	createPushSettings(),
 	createRateLimitSettings(),
 	createRetentionSettings(),
@@ -77,7 +72,6 @@ await Promise.all([
 	createVConfSettings(),
 	createUserDataSettings(),
 	createWebDavSettings(),
-	createWebRTCSettings(),
 ]);
 
 // Run after all the other settings are created since it depends on some of them

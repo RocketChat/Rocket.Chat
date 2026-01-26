@@ -3,7 +3,8 @@ import type { Page } from '@playwright/test';
 import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test } from '../utils/test';
 
 test.describe('Omnichannel close chat', () => {
@@ -42,7 +43,7 @@ test.describe('Omnichannel close chat', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeOmnichannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('Expect to be able to close an omnichannel to conversation', async () => {

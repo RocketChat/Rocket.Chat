@@ -17,30 +17,28 @@ export type DraggableListProps = {
   onDragEnd: OnDragEndResponder;
 };
 
-const DraggableList = memo(
-  ({ blocks, surface, onDragEnd }: DraggableListProps) => (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppable-list">
-        {(provided) => (
-          <div
-            style={{ padding: '10px' }}
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-          >
-            {blocks.map((block, index) => (
-              <DraggableListItem
-                surface={surface || SurfaceOptions.Message}
-                block={block}
-                index={index}
-                key={block.id}
-              />
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
-  )
+const DraggableList = ({ blocks, surface, onDragEnd }: DraggableListProps) => (
+  <DragDropContext onDragEnd={onDragEnd}>
+    <Droppable droppableId="droppable-list">
+      {(provided) => (
+        <div
+          style={{ padding: '10px' }}
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+        >
+          {blocks.map((block, index) => (
+            <DraggableListItem
+              surface={surface || SurfaceOptions.Message}
+              block={block}
+              index={index}
+              key={block.id}
+            />
+          ))}
+          {provided.placeholder}
+        </div>
+      )}
+    </Droppable>
+  </DragDropContext>
 );
 
-export default DraggableList;
+export default memo(DraggableList);

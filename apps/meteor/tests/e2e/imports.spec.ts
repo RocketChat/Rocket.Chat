@@ -4,7 +4,7 @@ import * as path from 'path';
 import { parse } from 'csv-parse';
 
 import { Users } from './fixtures/userStates';
-import { Admin } from './page-objects';
+import { AdminImports, AdminRooms } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -87,39 +87,39 @@ test.describe.serial('imports', () => {
 	});
 
 	test('expect import users data from slack', async ({ page }) => {
-		const poAdmin: Admin = new Admin(page);
+		const poAdminImports = new AdminImports(page);
 		await page.goto('/admin/import');
 
-		await poAdmin.btnImportNewFile.click();
+		await poAdminImports.btnImportNewFile.click();
 
-		await (await poAdmin.getOptionFileType("Slack's Users CSV")).click();
+		await (await poAdminImports.getOptionFileType("Slack's Users CSV")).click();
 
-		await poAdmin.inputFile.setInputFiles(slackCsvDir);
-		await poAdmin.btnImport.click();
+		await poAdminImports.inputFile.setInputFiles(slackCsvDir);
+		await poAdminImports.btnImport.click();
 
-		await poAdmin.btnStartImport.click();
+		await poAdminImports.btnStartImport.click();
 
-		await expect(poAdmin.importStatusTableFirstRowCell).toBeVisible({
+		await expect(poAdminImports.importStatusTableFirstRowCell).toBeVisible({
 			timeout: 30_000,
 		});
 	});
 
 	test('expect import users data from zipped CSV files', async ({ page }) => {
-		const poAdmin: Admin = new Admin(page);
+		const poAdminImports = new AdminImports(page);
 		await page.goto('/admin/import');
 
-		await poAdmin.btnImportNewFile.click();
+		await poAdminImports.btnImportNewFile.click();
 
-		await (await poAdmin.getOptionFileType('CSV')).click();
+		await (await poAdminImports.getOptionFileType('CSV')).click();
 
-		await poAdmin.inputFile.setInputFiles(zipCsvImportDir);
-		await poAdmin.btnImport.click();
+		await poAdminImports.inputFile.setInputFiles(zipCsvImportDir);
+		await poAdminImports.btnImport.click();
 
-		await poAdmin.findFileCheckboxByUsername('billy.billy').click();
+		await poAdminImports.findFileCheckboxByUsername('billy.billy').click();
 
-		await poAdmin.btnStartImport.click();
+		await poAdminImports.btnStartImport.click();
 
-		await expect(poAdmin.importStatusTableFirstRowCell).toBeVisible({
+		await expect(poAdminImports.importStatusTableFirstRowCell).toBeVisible({
 			timeout: 30_000,
 		});
 	});
@@ -137,7 +137,7 @@ test.describe.serial('imports', () => {
 	});
 
 	test('expect all imported rooms to be actually listed as rooms with correct members count', async ({ page }) => {
-		const poAdmin: Admin = new Admin(page);
+		const poAdmin: AdminRooms = new AdminRooms(page);
 		await page.goto('/admin/rooms');
 
 		for await (const room of importedRooms) {
@@ -149,7 +149,7 @@ test.describe.serial('imports', () => {
 	});
 
 	test('expect all imported rooms to have correct room type and owner', async ({ page }) => {
-		const poAdmin: Admin = new Admin(page);
+		const poAdmin = new AdminRooms(page);
 		await page.goto('/admin/rooms');
 
 		for await (const room of importedRooms) {
@@ -157,14 +157,14 @@ test.describe.serial('imports', () => {
 			await poAdmin.getRoomRow(room.name).click();
 
 			room.visibility === 'private'
-				? await expect(poAdmin.privateInput).toBeChecked()
-				: await expect(poAdmin.privateInput).not.toBeChecked();
-			await expect(poAdmin.roomOwnerInput).toHaveValue(room.ownerUsername);
+				? await expect(poAdmin.editRoom.privateInput).toBeChecked()
+				: await expect(poAdmin.editRoom.privateInput).not.toBeChecked();
+			await expect(poAdmin.editRoom.roomOwnerInput).toHaveValue(room.ownerUsername);
 		}
 	});
 
 	test('expect imported DM to be actually listed as a room with correct members and messages count', async ({ page }) => {
-		const poAdmin: Admin = new Admin(page);
+		const poAdmin = new AdminRooms(page);
 		await page.goto('/admin/rooms');
 
 		for await (const user of csvImportedUsernames) {
