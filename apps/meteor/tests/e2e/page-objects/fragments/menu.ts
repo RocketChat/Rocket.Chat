@@ -12,6 +12,10 @@ export abstract class Menu {
 	waitForDismissal() {
 		return expect(this.root).not.toBeVisible();
 	}
+
+	selectMenuItem(itemName: string) {
+		return this.root.getByRole('menuitem', { name: itemName, exact: true }).click();
+	}
 }
 
 export class MenuMore extends Menu {
