@@ -234,7 +234,7 @@ test.describe('OC - Manage Departments', () => {
 			});
 		});
 
-		test('Toggle department removal', async ({ api }) => {
+		test('Toggle department removal', async ({ api, page }) => {
 			await test.step('expect create new department', async () => {
 				await poOmnichannelDepartments.search(department.name);
 				await expect(poOmnichannelDepartments.departmentsTable.findRowByName(department.name)).toBeVisible();
@@ -244,6 +244,7 @@ test.describe('OC - Manage Departments', () => {
 				await poOmnichannelDepartments.search(department.name);
 				await poOmnichannelDepartments.getDepartmentMenuByName(department.name).click();
 				await expect(poOmnichannelDepartments.menuDeleteOption).toBeEnabled();
+				await page.keyboard.press('Escape');
 			});
 
 			await test.step('expect to disable department removal setting', async () => {
@@ -255,6 +256,7 @@ test.describe('OC - Manage Departments', () => {
 				await poOmnichannelDepartments.search(department.name);
 				await poOmnichannelDepartments.getDepartmentMenuByName(department.name).click();
 				await expect(poOmnichannelDepartments.menuDeleteOption).toBeDisabled();
+				await page.keyboard.press('Escape');
 			});
 
 			await test.step('expect to enable department removal setting', async () => {

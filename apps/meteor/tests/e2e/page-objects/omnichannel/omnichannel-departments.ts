@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
+import { MenuOptions } from '../fragments';
 import { Listbox } from '../fragments/listbox';
 import { OmnichannelUpsellDepartmentsModal, ConfirmDeleteDepartmentModal } from '../fragments/modals';
 import { Table } from '../fragments/table';
@@ -26,6 +27,8 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 
 	readonly listbox: Listbox;
 
+	readonly menOptions: MenuOptions;
+
 	override readonly deleteModal: ConfirmDeleteDepartmentModal;
 
 	constructor(page: Page) {
@@ -34,6 +37,7 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 		this.agentsTable = new OmnichannelDepartmentAgentsTable(page);
 		this.upsellDepartmentsModal = new OmnichannelUpsellDepartmentsModal(page);
 		this.listbox = new Listbox(page);
+		this.menOptions = new MenuOptions(page);
 		this.deleteModal = new ConfirmDeleteDepartmentModal(page);
 	}
 
@@ -62,7 +66,7 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 	}
 
 	get btnSave() {
-		return this.page.getByRole('button', { name: 'Save' });
+		return this.page.getByRole('button', { name: 'Save', exact: true });
 	}
 
 	get tabArchivedDepartments() {
@@ -74,19 +78,19 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 	}
 
 	get menuEditOption() {
-		return this.listbox.getOption('Edit');
+		return this.menOptions.getMenuItem('Edit');
 	}
 
 	get menuDeleteOption() {
-		return this.listbox.getOption('Delete');
+		return this.menOptions.getMenuItem('Delete');
 	}
 
 	get menuArchiveOption() {
-		return this.listbox.getOption('Archive');
+		return this.menOptions.getMenuItem('Archive');
 	}
 
 	get menuUnarchiveOption() {
-		return this.listbox.getOption('Unarchive');
+		return this.menOptions.getMenuItem('Unarchive');
 	}
 
 	async archiveDepartmentByName(name: string) {
