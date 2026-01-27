@@ -18,7 +18,7 @@ export class SAUMonitorService extends ServiceClassInternal implements ISAUMonit
 				instanceId: connection.instanceId,
 				connectionId: connection.id,
 				loginToken: connection.loginToken,
-				clientAddress: connection.clientAddress ?? getHeader(connection.httpHeaders, 'x-real-ip'),
+				clientAddress: connection.clientAddress || getHeader(connection.httpHeaders, 'x-real-ip'),
 				userAgent: getHeader(connection.httpHeaders, 'user-agent'),
 				host: getHeader(connection.httpHeaders, 'host'),
 			});

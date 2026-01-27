@@ -21,7 +21,7 @@ Accounts.onLogin((info: ILoginAttempt) => {
 	const { resume } = methodArguments.find((arg) => 'resume' in arg) ?? {};
 	const loginToken = resume ? hashLoginToken(resume) : '';
 	const instanceId = InstanceStatus.id();
-	const clientAddress = info.connection.clientAddress ?? getHeader(httpHeaders, 'x-real-ip');
+	const clientAddress = info.connection.clientAddress || getHeader(httpHeaders, 'x-real-ip');
 	const userAgent = getHeader(httpHeaders, 'user-agent');
 	const host = getHeader(httpHeaders, 'host');
 

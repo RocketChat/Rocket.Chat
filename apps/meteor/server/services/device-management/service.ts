@@ -14,7 +14,7 @@ export class DeviceManagementService extends ServiceClassInternal implements IDe
 			deviceManagementEvents.emit('device-login', {
 				userId,
 				userAgent: getHeader(connection.httpHeaders, 'user-agent'),
-				clientAddress: connection.clientAddress ?? getHeader(connection.httpHeaders, 'x-real-ip'),
+				clientAddress: connection.clientAddress || getHeader(connection.httpHeaders, 'x-real-ip'),
 				loginToken: connection.loginToken,
 			});
 		});
