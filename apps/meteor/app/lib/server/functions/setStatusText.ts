@@ -7,7 +7,7 @@ import type { ClientSession } from 'mongodb';
 import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 
 export async function setStatusText(
-	user: IUser,
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'statusText'>,
 	statusText: string,
 	{
 		updater,
