@@ -16,7 +16,7 @@ export class DeviceManagementService extends ServiceClassInternal implements IDe
 				userId,
 				userAgent: getHeader(connection.httpHeaders, 'user-agent'),
 				clientAddress: getClientAddress(connection),
-        loginToken: connection.loginToken,
+				loginToken: connection.loginToken,
 			});
 		});
 	}

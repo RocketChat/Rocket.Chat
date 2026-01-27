@@ -2,29 +2,34 @@ import type { IncomingHttpHeaders } from 'http';
 
 type HeaderLike = IncomingHttpHeaders | Headers | Record<string, string | string[] | undefined>;
 
-export const getHeader = (headers: HeaderLike, key: string): string => {
+export function getHeader(headers: HeaderLike, key: string): string;
+
+export function getHeader(headers: HeaderLike, key: string, asArray: true): string[];
+
+export function getHeader(headers: HeaderLike, key: string, asArray = false): string | string[] {
 	if (!headers) {
-		return '';
+		return asArray ? [] : '';
 	}
 
-  if (isHeadersType(headers)) {
-    return headers.get(key) ?? '';
-  }
+	let value: string | string[] | undefined;
 
-	const value = headers[key];
+	if (isHeadersType(headers)) {
+		value = headers.get(key) ?? undefined;
+	} else {
+		value = headers[key];
+	}
 
 	if (Array.isArray(value)) {
-		return value[0] ?? '';
+		return asArray ? value : (value[0] ?? '');
 	}
 
 	if (typeof value === 'string') {
-		return value;
+		return asArray ? [value] : value;
 	}
 
-	return '';
-};
-
-
-function isHeadersType(headers: HeaderLike): headers is Headers{
-  return headers instanceof Headers;
+	return asArray ? [] : '';
 }
+
+const isHeadersType = (headers: HeaderLike): headers is Headers => {
+	return headers instanceof Headers;
+};
