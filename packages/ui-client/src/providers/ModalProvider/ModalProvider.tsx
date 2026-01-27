@@ -35,7 +35,7 @@ const ModalProvider = ({ children, region }: ModalProviderProps) => {
 		[currentModal?.node, currentModal?.region, region, setModal],
 	);
 
-	return <ModalContext.Provider value={contextValue} children={children} />;
+	return <ModalContext.Provider value={contextValue}>{children}</ModalContext.Provider>;
 };
 
 export default memo<typeof ModalProvider>(ModalProvider);

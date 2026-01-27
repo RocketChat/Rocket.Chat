@@ -1,5 +1,6 @@
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { StreamNames } from '@rocket.chat/ddp-client';
+import { isTruthy } from '@rocket.chat/tools';
 import localforage from 'localforage';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -11,25 +12,30 @@ import { onLoggedIn } from '../loggedIn';
 import { CachedStoresManager } from './CachedStoresManager';
 import type { IDocumentMapStore } from './DocumentMapStore';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { isTruthy } from '../../../lib/isTruthy';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { getUserId } from '../user';
 import { getConfig } from '../utils/getConfig';
 
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
 
-const hasId = <T>(record: T): record is T & { _id: string } => typeof record === 'object' && record !== null && '_id' in record;
+const hasId = <T>(record: T): record is T & { _id: string } =>
+	typeof record === 'object' && record !== null && '_id' in record;
+
 const hasUpdatedAt = <T>(record: T): record is T & { _updatedAt: Date } =>
 	typeof record === 'object' &&
 	record !== null &&
 	'_updatedAt' in record &&
 	(record as unknown as { _updatedAt: unknown })._updatedAt instanceof Date;
+
 const hasDeletedAt = <T>(record: T): record is T & { _deletedAt: Date } =>
 	typeof record === 'object' &&
 	record !== null &&
 	'_deletedAt' in record &&
 	(record as unknown as { _deletedAt: unknown })._deletedAt instanceof Date;
-const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: ConstructorParameters<typeof Date>[0] } =>
+
+const hasUnserializedUpdatedAt = <T>(
+	record: T,
+): record is T & { _updatedAt: ConstructorParameters<typeof Date>[0] } =>
 	typeof record === 'object' &&
 	record !== null &&
 	'_updatedAt' in record &&
@@ -41,31 +47,42 @@ export interface IWithManageableCache {
 	clearCacheOnLogout(): void;
 }
 
-export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements IWithManageableCache {
+export abstract class CachedStore<T extends IRocketChatRecord, U = T>
+	implements IWithManageableCache
+{
 	private static readonly MAX_CACHE_TIME = 60 * 60 * 24 * 30;
 
 	readonly store: UseBoundStore<StoreApi<IDocumentMapStore<T>>>;
 
 	protected name: Name;
-
 	protected eventType: StreamNames;
 
 	private readonly version = 18;
-
 	private updatedAt = new Date(0);
 
 	protected log: (...args: any[]) => void;
-
 	private timer: ReturnType<typeof setTimeout>;
 
 	readonly useReady = create(() => false);
 
-	constructor({ name, eventType, store }: { name: Name; eventType: StreamNames; store: UseBoundStore<StoreApi<IDocumentMapStore<T>>> }) {
+	constructor({
+		name,
+		eventType,
+		store,
+	}: {
+		name: Name;
+		eventType: StreamNames;
+		store: UseBoundStore<StoreApi<IDocumentMapStore<T>>>;
+	}) {
 		this.name = name;
 		this.eventType = eventType;
 		this.store = store;
 
-		this.log = [getConfig(`debugCachedCollection-${this.name}`), getConfig('debugCachedCollection'), getConfig('debug')].includes('true')
+		this.log = [
+			getConfig(`debugCachedCollection-${this.name}`),
+			getConfig('debugCachedCollection'),
+			getConfig('debug'),
+		].includes('true')
 			? console.log.bind(console, `%cCachedCollection ${this.name}`, `color: navy; font-weight: bold;`)
 			: () => undefined;
 
@@ -82,13 +99,20 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	protected abstract getToken(): unknown;
 
 	private async loadFromCache() {
-		const data = await localforage.getItem<{ version: number; token: unknown; records: unknown[]; updatedAt: Date | string }>(this.name);
+		const data = await localforage.getItem<{
+			version: number;
+			token: unknown;
+			records: unknown[];
+			updatedAt: Date | string;
+		}>(this.name);
 
 		if (!data) {
 			return false;
 		}
 
-		if (data.version < this.version || data.token !== this.getToken()) {
+		const token = this.getToken();
+
+		if (data.version < this.version || (token !== undefined && data.token !== token)) {
 			return false;
 		}
 
@@ -96,7 +120,6 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			return false;
 		}
 
-		// updatedAt may be a Date or a string depending on the used localForage backend
 		if (!(data.updatedAt instanceof Date)) {
 			data.updatedAt = new Date(data.updatedAt);
 		}
@@ -107,16 +130,19 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 		this.log(`${data.records.length} records loaded from cache`);
 
-		const deserializedRecords = data.records.map((record) => this.deserializeFromCache(record)).filter(isTruthy);
+		const deserializedRecords = data.records
+			.map((record) => this.deserializeFromCache(record))
+			.filter(isTruthy);
 
-		const updatedAt = Math.max(...deserializedRecords.filter(hasUpdatedAt).map((record) => record?._updatedAt.getTime() ?? 0));
+		const updatedAt = Math.max(
+			...deserializedRecords.filter(hasUpdatedAt).map((record) => record._updatedAt.getTime()),
+		);
 
 		if (updatedAt > this.updatedAt.getTime()) {
 			this.updatedAt = new Date(updatedAt);
 		}
 
 		this.store.getState().replaceAll(deserializedRecords.filter(hasId));
-
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
 		return true;
@@ -128,7 +154,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		}
 
 		return {
-			...(record as unknown as T),
+			...(record as T),
 			...(hasUnserializedUpdatedAt(record) && {
 				_updatedAt: new Date(record._updatedAt),
 			}),
@@ -136,20 +162,19 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	}
 
 	private async callLoad() {
-		// TODO: workaround for bad function overload
 		const data = await sdk.call(`${this.name}/get`);
-		return data as unknown as U[];
+		return data as U[];
 	}
 
 	private async callSync(updatedSince: Date) {
-		// TODO: workaround for bad function overload
 		const data = await sdk.call(`${this.name}/get`, updatedSince);
-		return data as unknown as { update: U[]; remove: U[] };
+		return data as { update: U[]; remove: U[] };
 	}
 
 	private async loadFromServer() {
 		const startTime = new Date();
 		const lastTime = this.updatedAt;
+
 		const data = await this.callLoad();
 		this.log(`${data.length} records loaded from server`);
 
@@ -170,16 +195,12 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	}
 
 	protected mapRecord(record: U): T {
-		return record as unknown as T;
+		return record as T;
 	}
 
-	protected handleLoadedFromServer(_records: T[]): void {
-		// This method can be overridden to handle records after they are loaded from the server
-	}
+	protected handleLoadedFromServer(_records: T[]): void {}
 
-	protected handleSyncEvent(_action: 'removed' | 'changed', _record: T): void {
-		// This method can be overridden to handle sync events
-	}
+	protected handleSyncEvent(_action: 'removed' | 'changed', _record: T): void {}
 
 	private async loadFromServerAndPopulate() {
 		await this.loadFromServer();
@@ -206,10 +227,14 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	}
 
 	protected setupListener() {
-		return sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: U) => {
-			this.log('record received', action, record);
-			await this.handleRecordEvent(action, record);
-		}) as (...args: unknown[]) => void);
+		return sdk.stream(
+			this.eventType,
+			[this.eventName],
+			(async (action: 'removed' | 'changed', record: U) => {
+				this.log('record received', action, record);
+				await this.handleRecordEvent(action, record);
+			}) as (...args: unknown[]) => void,
+		);
 	}
 
 	protected async handleRecordEvent(action: 'removed' | 'changed', record: U) {
@@ -226,7 +251,6 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 	private trySync(delay = 10) {
 		clearTimeout(this.timer);
-		// Wait for an empty queue to load data again and sync
 		this.timer = setTimeout(async () => {
 			if (!(await this.sync())) {
 				return this.trySync(delay);
@@ -246,14 +270,13 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		this.log(`syncing from ${this.updatedAt}`);
 
 		const data = await this.callSync(this.updatedAt);
-		const changes = [];
+		const changes: { action: () => void; timestamp: number }[] = [];
 
-		if (data.update && data.update.length > 0) {
-			this.log(`${data.update.length} records updated in sync`);
+		if (data.update?.length) {
 			for (const record of data.update) {
 				const newRecord = this.mapRecord(record);
-
 				const actionTime = hasUpdatedAt(newRecord) ? newRecord._updatedAt : startTime;
+
 				changes.push({
 					action: () => {
 						this.store.getState().store(newRecord);
@@ -267,16 +290,13 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			}
 		}
 
-		if (data.remove && data.remove.length > 0) {
-			this.log(`${data.remove.length} records removed in sync`);
+		if (data.remove?.length) {
 			for (const record of data.remove) {
 				const newRecord = this.mapRecord(record);
-
-				if (!hasDeletedAt(newRecord)) {
-					continue;
-				}
+				if (!hasDeletedAt(newRecord)) continue;
 
 				const actionTime = newRecord._deletedAt;
+
 				changes.push({
 					action: () => {
 						this.store.getState().delete(newRecord._id);
@@ -290,11 +310,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			}
 		}
 
-		changes
-			.sort((a, b) => a.timestamp - b.timestamp)
-			.forEach((c) => {
-				c.action();
-			});
+		changes.sort((a, b) => a.timestamp - b.timestamp).forEach((c) => c.action());
 
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
 
@@ -302,6 +318,23 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	}
 
 	private listenerUnsubscriber: (() => void) | undefined;
+	private reconnectionComputation: Tracker.Computation | undefined;
+	private initializationPromise: Promise<void> | undefined;
+
+	init() {
+		if (this.initializationPromise) {
+			return this.initializationPromise;
+		}
+
+		this.initializationPromise = this.performInitialization()
+			.catch(console.error)
+			.finally(() => {
+				this.initializationPromise = undefined;
+				this.setReady(true);
+			});
+
+		return this.initializationPromise;
+	}
 
 	private async performInitialization() {
 		if (await this.loadFromCache()) {
@@ -312,6 +345,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 		this.reconnectionComputation?.stop();
 		let wentOffline = Tracker.nonreactive(() => Meteor.status().status === 'offline');
+
 		this.reconnectionComputation = Tracker.autorun(() => {
 			const { status } = Meteor.status();
 
@@ -331,23 +365,6 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		};
 	}
 
-	private initializationPromise: Promise<void> | undefined;
-
-	init() {
-		if (this.initializationPromise) {
-			return this.initializationPromise;
-		}
-
-		this.initializationPromise = this.performInitialization()
-			.catch(console.error)
-			.finally(() => {
-				this.initializationPromise = undefined;
-				this.setReady(true);
-			});
-
-		return this.initializationPromise;
-	}
-
 	async release() {
 		if (this.initializationPromise) {
 			await this.initializationPromise;
@@ -357,8 +374,6 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		this.setReady(false);
 	}
 
-	private reconnectionComputation: Tracker.Computation | undefined;
-
 	setReady(ready: boolean) {
 		this.useReady.setState(ready);
 	}
@@ -366,7 +381,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
 	protected override getToken() {
-		return undefined;
+		return 'public';
 	}
 
 	override clearCacheOnLogout() {
