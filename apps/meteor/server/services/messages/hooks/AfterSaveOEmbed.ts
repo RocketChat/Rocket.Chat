@@ -8,7 +8,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { OEmbedCache, Messages } from '@rocket.chat/models';
+import { OEmbedCache, Messages, Rooms } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import he from 'he';
 import iconv from 'iconv-lite';
@@ -327,13 +327,23 @@ const getRelevantMetaTags = function (metaObj: OEmbedMeta): Record<string, strin
 const insertMaxWidthInOembedHtml = (oembedHtml?: string): string | undefined =>
 	oembedHtml?.replace('iframe', 'iframe style="max-width: 100%;width:400px;height:225px"');
 
+
 const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	log.debug({ msg: 'Parsing message URLs' });
 
+	// 1. Keep the Global Check
 	if (!settings.get('API_Embed')) {
 		return message;
 	}
 
+	// 2. NEW: Check the Per-Channel Setting
+	// We fetch the room to see if the user disabled previews for this specific channel.
+	const room = await Rooms.findOneById(message.rid, { projection: { linksEmbed: 1 } });
+	if (room?.linksEmbed === false) {
+		return message; // STOP here if the room says "No Previews"
+	}
+
+	// 3. Keep the rest of the existing checks...
 	if (!Array.isArray(message.urls)) {
 		return message;
 	}

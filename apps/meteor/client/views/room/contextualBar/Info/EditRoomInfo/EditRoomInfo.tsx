@@ -228,6 +228,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionExcludePinnedField = useId();
 	const retentionFilesOnlyField = useId();
 	const retentionIgnoreThreads = useId();
+     
+	
+	const linksEmbedField = useId();
 
 	const showAdvancedSettings = canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
 	const showRetentionPolicy = canEditRoomRetentionPolicy && retentionPolicy?.enabled;
@@ -489,6 +492,25 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												</FieldRow>
 											</Field>
 										)}
+										{/* START OF NEW LINK PREVIEW TOGGLE */}
+										<Field>
+											<FieldRow>
+												<FieldLabel htmlFor={linksEmbedField}>Enable Link Previews</FieldLabel>
+												<Controller
+													control={control}
+													name='linksEmbed'
+													render={({ field: { value, ...field } }) => (
+														<ToggleSwitch
+															id={linksEmbedField}
+															{...field}
+															checked={value}
+															disabled={isFederated}
+														/>
+													)}
+												/>
+											</FieldRow>
+										</Field>
+										{/* END OF NEW LINK PREVIEW TOGGLE */}
 									</FieldGroup>
 								</AccordionItem>
 							)}
