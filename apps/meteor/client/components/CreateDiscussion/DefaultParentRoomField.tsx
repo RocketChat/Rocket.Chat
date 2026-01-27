@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
-const DefaultParentRoomField = ({ defaultParentRoom }: { defaultParentRoom: string }): ReactElement => {
+const DefaultParentRoomField = ({ defaultParentRoom, id }: { defaultParentRoom: string; id?: string }): ReactElement => {
 	const t = useTranslation();
 
 	const query = useMemo(
@@ -34,6 +34,7 @@ const DefaultParentRoomField = ({ defaultParentRoom }: { defaultParentRoom: stri
 
 	return (
 		<TextInput
+			id={id}
 			defaultValue={roomCoordinator.getRoomName(data.room.t, {
 				_id: data.room._id,
 				fname: data.room.fname,

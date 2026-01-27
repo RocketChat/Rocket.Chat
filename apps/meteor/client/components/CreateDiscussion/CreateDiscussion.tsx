@@ -117,7 +117,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 							<Controller
 								control={control}
 								name='parentRoom'
-								render={() => <DefaultParentRoomField defaultParentRoom={defaultParentRoom} />}
+								render={() => <DefaultParentRoomField defaultParentRoom={defaultParentRoom} id={parentRoomId} />}
 							/>
 						)}
 						{!defaultParentRoom && (
