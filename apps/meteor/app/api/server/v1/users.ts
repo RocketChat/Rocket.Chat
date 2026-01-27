@@ -1384,7 +1384,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		rateLimiterOptions: {
-			numRequestsAllowed: 1,
+			numRequestsAllowed: 5,
 			intervalTimeInMS: 60000,
 		},
 	},
