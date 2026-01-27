@@ -4446,7 +4446,6 @@ const POSTLivechatSaveCustomFieldsSchema = {
 		customFieldId: {
 			type: 'string',
 			pattern: '^[0-9a-zA-Z_-]+$',
-			nullable: true,
 		},
 		customFieldData: {
 			type: 'object',
