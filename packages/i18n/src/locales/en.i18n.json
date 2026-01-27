@@ -2062,6 +2062,7 @@
   "Enterprise_capabilities": "Enterprise capabilities",
   "Enterprise_capability": "Enterprise capability",
   "Entertainment": "Entertainment",
+  "Enable_Link_Previews": "Enable Link Previews",
   "Error": "Error",
   "Error_404": "Error:404",
   "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Error: Rocket.Chat requires oplog tailing when running in multiple instances",
