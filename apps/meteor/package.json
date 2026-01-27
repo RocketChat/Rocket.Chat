@@ -442,6 +442,7 @@
 		"oxc-parser": "^0.111.0",
 		"oxc-resolver": "^11.16.4",
 		"oxc-transform": "^0.111.0",
+		"oxc-walker": "^0.7.0",
 		"pino-pretty": "^7.6.1",
 		"playwright-core": "~1.52.0",
 		"playwright-qase-reporter": "~2.1.6",

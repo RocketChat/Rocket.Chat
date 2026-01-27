@@ -1,17 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import type {
-	Program,
-	Node,
-	CallExpression,
-	MemberExpression,
-	ObjectExpression,
-	PropertyKey,
-	Expression,
-	IdentifierReference,
-} from '@oxc-project/types';
-import { parse, Visitor } from 'oxc-parser';
+import { parse } from 'oxc-parser';
+
+import { collectModuleExports } from './visit-export';
 
 const exportCache = new Map<string, Promise<string[]>>();
 
@@ -20,8 +12,6 @@ export class MeteorResolver {
 
 	private meteorPackagesDir: string;
 
-	private meteorDynamicPackagesDir: string;
-
 	private meteorManifestPath: string;
 
 	private fileCache = new Map<string, string>();
@@ -29,7 +19,6 @@ export class MeteorResolver {
 	constructor(meteorProgramDir: string) {
 		this.meteorProgramDir = path.resolve(meteorProgramDir);
 		this.meteorPackagesDir = path.join(this.meteorProgramDir, 'packages');
-		this.meteorDynamicPackagesDir = path.join(this.meteorProgramDir, 'dynamic/node_modules/meteor');
 		this.meteorManifestPath = path.join(this.meteorProgramDir, 'program.json');
 	}
 
@@ -44,7 +33,7 @@ export class MeteorResolver {
 		return code;
 	}
 
-	getExportNames(pkgName: string): Promise<string[]> {
+	async getExportNames(pkgName: string): Promise<string[]> {
 		const exportCacheEntry = exportCache.get(pkgName);
 		if (exportCacheEntry) {
 			return exportCacheEntry;
@@ -56,20 +45,7 @@ export class MeteorResolver {
 			if (fs.existsSync(packageFile)) {
 				const code = await this.getPackageSource(pkgName);
 				const ast = await parse(packageFile, code);
-				collectConfigExports(ast.program, names);
 				collectModuleExports(ast.program, names, pkgName);
-			}
-
-			const dynamicModuleFiles = await this.getDynamicPackageModuleFiles(pkgName);
-			const programs = await Promise.all(
-				dynamicModuleFiles.map(async (file) => {
-					const moduleCode = await fs.promises.readFile(file, 'utf-8');
-					const moduleAst = await parse(file, moduleCode);
-					return moduleAst.program;
-				}),
-			);
-			for (const program of programs) {
-				collectModuleExports(program, names, pkgName);
 			}
 
 			const sanitized = Array.from(names).filter((name) => /^[A-Za-z_$][\w$]*$/.test(name));
@@ -79,47 +55,6 @@ export class MeteorResolver {
 
 		exportCache.set(pkgName, promise);
 		return promise;
-	}
-
-	async getDynamicPackageModuleFiles(pkgName: string): Promise<string[]> {
-		const dynamicRoot = path.join(this.meteorDynamicPackagesDir, pkgName);
-		if (!fs.existsSync(dynamicRoot)) {
-			return [];
-		}
-
-		const files: string[] = [];
-		const stack = [dynamicRoot];
-		while (stack.length > 0) {
-			const current = stack.pop();
-			if (!current) {
-				continue;
-			}
-			let entries: fs.Dirent[] = [];
-			try {
-				entries = fs.readdirSync(current, { withFileTypes: true });
-			} catch {
-				continue;
-			}
-
-			for (const entry of entries) {
-				const entryPath = path.join(current, entry.name);
-				if (entry.isDirectory()) {
-					stack.push(entryPath);
-					continue;
-				}
-
-				if (!entry.isFile() || entry.name.endsWith('.map')) {
-					continue;
-				}
-
-				const ext = path.extname(entry.name);
-				if (ext === '.js' || ext === '.ts' || ext === '.tsx') {
-					files.push(entryPath);
-				}
-			}
-		}
-
-		return files;
 	}
 
 	collectPackageEntries() {
@@ -167,157 +102,4 @@ export class MeteorResolver {
 
 		return files;
 	}
-}
-
-export function collectConfigExports(program: Program, names: Set<string>): void {
-	let foundExport = false;
-	const visitor = new Visitor({
-		ReturnStatement(node) {
-			if (foundExport) return;
-
-			if (is(node.argument, 'ObjectExpression')) {
-				collectExportsFromObjectExpression(node.argument, names);
-				foundExport = true;
-			}
-		},
-		AssignmentExpression(node) {
-			if (foundExport) return;
-
-			if (is(node.left, 'Identifier') && node.left.name === '__meteor_runtime_config__') {
-				if (is(node.right, 'ObjectExpression')) {
-					for (const prop of node.right.properties) {
-						if (is(prop, 'Property') && is(prop.key, 'Identifier')) {
-							names.add(prop.key.name);
-						}
-					}
-				}
-			}
-		},
-	});
-
-	visitor.visit(program);
-}
-
-export function collectModuleExports(ast: Program, names: Set<string>, pkgName: string): void {
-	const visitor = new Visitor({
-		CallExpression(node) {
-			if (isModuleExportCall(node)) {
-				const [arg] = node.arguments;
-				if (is(arg, 'ObjectExpression')) {
-					collectExportsFromObjectExpression(arg, names);
-				}
-			}
-
-			if (isPackageQueue(node)) {
-				const fn = node.arguments[1];
-				if (fn && (is(fn, 'FunctionExpression') || is(fn, 'ArrowFunctionExpression'))) {
-					// The Visitor will recurse into the function body automatically.
-				}
-			}
-		},
-		AssignmentExpression(node) {
-			if (is(node.left, 'Identifier')) {
-				if (is(node.right, 'ObjectExpression')) {
-					// collectExportsFromObjectExpression(node.right, names);
-					names.add(node.left.name);
-				}
-				return;
-			}
-
-			if (is(node.left, 'MemberExpression')) {
-				if (is(node.left.object, 'MemberExpression') && isPackageAccess(node.left.object.object)) {
-					if (isSpecificPackageAccess(node.left.object, pkgName)) {
-						const propName = getMemberPropertyName(node.left);
-						if (propName) names.add(propName);
-					}
-				}
-			}
-		},
-	});
-
-	visitor.visit(ast);
-}
-
-function collectExportsFromObjectExpression(node: ObjectExpression, names: Set<string>): void {
-	for (const prop of node.properties) {
-		if (!is(prop, 'Property')) continue;
-		if (prop.computed) continue;
-
-		const keyName = getPropertyName(prop.key);
-
-		if (keyName === 'export') {
-			const { value } = prop;
-			if (is(value, 'FunctionExpression') || is(value, 'ArrowFunctionExpression')) {
-				if (is(value.body, 'BlockStatement')) {
-					for (const stmt of value.body.body) {
-						if (is(stmt, 'ReturnStatement') && is(stmt.argument, 'ObjectExpression')) {
-							collectExportsFromObjectExpression(stmt.argument, names);
-						}
-					}
-				}
-			}
-			continue;
-		}
-
-		if (keyName && keyName !== 'require' && keyName !== 'eagerModulePaths') {
-			names.add(keyName);
-		}
-	}
-}
-
-function is<const T extends Node['type']>(node: Node | null | undefined, type: T): node is Extract<Node, { type: T }> {
-	return node?.type === type;
-}
-
-function isModuleExportCall(node: Node): node is CallExpression & {
-	callee: MemberExpression & { object: IdentifierReference & { name: 'module' }; property: IdentifierReference & { name: 'export' } };
-} {
-	if (node.type !== 'CallExpression') return false;
-	const { callee } = node;
-	return (
-		is(callee, 'MemberExpression') &&
-		!callee.computed &&
-		is(callee.object, 'Identifier') &&
-		callee.object.name === 'module' &&
-		is(callee.property, 'Identifier') &&
-		callee.property.name === 'export'
-	);
-}
-
-function getPropertyName(key: PropertyKey): string | undefined {
-	if (is(key, 'Identifier')) {
-		return key.name;
-	}
-
-	if (is(key, 'Literal') && typeof key.value === 'string') {
-		return key.value;
-	}
-
-	return undefined;
-}
-
-function isPackageAccess(node: Expression): node is IdentifierReference & { name: 'Package' } {
-	return is(node, 'Identifier') && node.name === 'Package';
-}
-
-function isSpecificPackageAccess(node: MemberExpression, pkgName: string): boolean {
-	const prop = getMemberPropertyName(node);
-	return prop === pkgName;
-}
-
-function getMemberPropertyName(node: MemberExpression): string | null {
-	if (is(node.property, 'Identifier') && !node.computed) {
-		return node.property.name;
-	}
-	if (is(node.property, 'Literal') && typeof node.property.value === 'string') {
-		return node.property.value;
-	}
-	return null;
-}
-
-function isPackageQueue(node: CallExpression): node is CallExpression & { callee: MemberExpression } {
-	if (is(node.callee, 'MemberExpression') && is(node.callee.property, 'Identifier') && node.callee.property.name === 'queue') {
-		return true;
-	}
-	return false;
 }
