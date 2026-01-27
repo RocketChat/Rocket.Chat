@@ -492,10 +492,10 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												</FieldRow>
 											</Field>
 										)}
-										{/* START OF NEW LINK PREVIEW TOGGLE */}
+										
 										<Field>
 											<FieldRow>
-												<FieldLabel htmlFor={linksEmbedField}>Enable Link Previews</FieldLabel>
+												<FieldLabel htmlFor={linksEmbedField}>{t('Enable_Link_Previews')}</FieldLabel>
 												<Controller
 													control={control}
 													name='linksEmbed'
@@ -510,7 +510,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												/>
 											</FieldRow>
 										</Field>
-										{/* END OF NEW LINK PREVIEW TOGGLE */}
+										
 									</FieldGroup>
 								</AccordionItem>
 							)}

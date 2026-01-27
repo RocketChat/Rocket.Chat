@@ -328,23 +328,25 @@ const insertMaxWidthInOembedHtml = (oembedHtml?: string): string | undefined =>
 	oembedHtml?.replace('iframe', 'iframe style="max-width: 100%;width:400px;height:225px"');
 
 
+
 const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	log.debug({ msg: 'Parsing message URLs' });
 
-	// 1. Keep the Global Check
+	// 1. Global Check stays at the top
 	if (!settings.get('API_Embed')) {
 		return message;
 	}
 
-	// 2. NEW: Check the Per-Channel Setting
-	// We fetch the room to see if the user disabled previews for this specific channel.
-	const room = await Rooms.findOneById(message.rid, { projection: { linksEmbed: 1 } });
-	if (room?.linksEmbed === false) {
-		return message; // STOP here if the room says "No Previews"
+	// 2. CHECK URLs FIRST (Optimization)
+	// If the message has no URLs, we stop here. We don't bother the database.
+	if (!Array.isArray(message.urls)) {
+		return message;
 	}
 
-	// 3. Keep the rest of the existing checks...
-	if (!Array.isArray(message.urls)) {
+	// 3. NOW check the Room Setting
+	// We only fetch the room data if we know we actually need to process URLs.
+	const room = await Rooms.findOneById(message.rid, { projection: { linksEmbed: 1 } });
+	if (room?.linksEmbed === false) {
 		return message;
 	}
 
