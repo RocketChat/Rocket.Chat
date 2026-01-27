@@ -29,9 +29,12 @@ echo "🐳 Building Docker Image (rocketchat:fips)..."
 # Context is $DIST_DIR because it contains the 'bundle' folder
 docker build -f apps/meteor/.docker/Dockerfile.fips -t rocketchat:fips "$DIST_DIR"
 
+# Stop and remove any existing containers defined in docker-compose-fips.yml
+echo "🛑 Stopping any existing Rocket.Chat FIPS containers..."
+docker compose -f docker-compose-fips.yml down --remove-orphans
+
 # Run Docker Compose
 echo "▶️  Starting Rocket.Chat in Docker (FIPS mode)..."
-docker compose -f docker-compose-fips.yml down --remove-orphans
 docker compose -f docker-compose-fips.yml up -d --remove-orphans
 
 echo "✅ Done! Rocket.Chat FIPS should be running at http://localhost:3000"

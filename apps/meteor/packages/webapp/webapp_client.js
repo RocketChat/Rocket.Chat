@@ -1,19 +1,11 @@
 export const WebApp = {
-  _isCssLoaded: function() {
-    if (document.styleSheets.length === 0) {
-      return true;
-    }
+	_isCssLoaded() {
+		if (document.styleSheets.length === 0) {
+			return true;
+		}
 
-    return _.every(document.styleSheets, function(sheet) {
-      if (sheet.cssRules) {
-        return true;
-      }
-
-      if (sheet.rules) {
-        return true;
-      }
-
-      return false;
-    });
-  },
+		return Array.prototype.find.call(document.styleSheets, (sheet) => {
+			return !Array.prototype.find.call(sheet.cssRules, (rule) => rule.selectorText === '.meteor-css-not-found-error');
+		});
+	},
 };
