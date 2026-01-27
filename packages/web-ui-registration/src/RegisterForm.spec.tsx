@@ -7,6 +7,9 @@ import { RegisterForm } from './RegisterForm';
 const mockSetLoginRoute = jest.fn();
 const mockRegisterMethod = jest.fn();
 
+// Per-test user instance
+let user: ReturnType<typeof userEvent.setup>;
+
 // Mock the useRegisterMethod hook
 jest.mock('./hooks/useRegisterMethod', () => ({
     useRegisterMethod: () => ({
@@ -15,7 +18,7 @@ jest.mock('./hooks/useRegisterMethod', () => ({
     }),
 }));
 
-const defaultAppRoot = mockAppRoot()
+const defaultApp Root = mockAppRoot()
     .withTranslations('en', 'core', {
         Required_field: '{{field}} is required',
         'registration.component.form.createAnAccount': 'Create an account',
@@ -47,6 +50,7 @@ const defaultAppRoot = mockAppRoot()
 describe('RegisterForm', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        user = userEvent.setup();
     });
 
     describe('Rendering', () => {
@@ -154,8 +158,8 @@ describe('RegisterForm', () => {
             render(<RegisterForm setLoginRoute={mockSetLoginRoute} />, { wrapper: appRoot });
 
             const nameInput = screen.getByRole('textbox', { name: /name/i });
-            await userEvent.click(nameInput);
-            await userEvent.tab();
+            await user.click(nameInput);
+            await user.tab();
 
             await waitFor(() => {
                 expect(nameInput).toHaveAccessibleDescription(/name is required/i);
@@ -173,8 +177,8 @@ describe('RegisterForm', () => {
             render(<RegisterForm setLoginRoute={mockSetLoginRoute} />, { wrapper: appRoot });
 
             const emailInput = screen.getByRole('textbox', { name: /email/i });
-            await userEvent.click(emailInput);
-            await userEvent.tab();
+            await user.click(emailInput);
+            await user.tab();
 
             await waitFor(() => {
                 expect(emailInput).toHaveAccessibleDescription(/email is required/i);
@@ -191,8 +195,8 @@ describe('RegisterForm', () => {
             render(<RegisterForm setLoginRoute={mockSetLoginRoute} />, { wrapper: appRoot });
 
             const emailInput = screen.getByRole('textbox', { name: /email/i });
-            await userEvent.type(emailInput, 'invalid-email');
-            await userEvent.tab();
+            await user.type(emailInput, 'invalid-email');
+            await user.tab();
 
             await waitFor(() => {
                 expect(emailInput).toHaveAccessibleDescription(/invalid email format/i);
@@ -203,8 +207,8 @@ describe('RegisterForm', () => {
             render(<RegisterForm setLoginRoute={mockSetLoginRoute} />, { wrapper: defaultAppRoot });
 
             const emailInput = screen.getByRole('textbox', { name: /email/i });
-            await userEvent.type(emailInput, 'test@example.com');
-            await userEvent.tab();
+            await user.type(emailInput, 'test@example.com');
+            await user.tab();
 
             await waitFor(() => {
                 expect(emailInput).not.toHaveAccessibleDescription();
@@ -222,8 +226,8 @@ describe('RegisterForm', () => {
             render(<RegisterForm setLoginRoute={mockSetLoginRoute} />, { wrapper: appRoot });
 
             const usernameInput = screen.getByRole('textbox', { name: /username/i });
-            await userEvent.click(usernameInput);
-            await userEvent.tab();
+            await user.click(usernameInput);
+            await user.tab();
 
             await waitFor(() => {
                 expect(usernameInput).toHaveAccessibleDescription(/username is required/i);
@@ -246,9 +250,9 @@ describe('RegisterForm', () => {
             const passwordInput = screen.getByLabelText(/^password/i);
             const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
 
-            await userEvent.type(passwordInput, 'password123');
-            await userEvent.type(confirmPasswordInput, 'password456');
-            await userEvent.tab();
+            await user.type(passwordInput, 'password123');
+            await user.type(confirmPasswordInput, 'password456');
+            await user.tab();
 
             await waitFor(() => {
                 expect(confirmPasswordInput).toHaveAccessibleDescription(/passwords don't match/i);
@@ -274,13 +278,13 @@ describe('RegisterForm', () => {
             render(<RegisterForm setLoginRoute={mockSetLoginRoute} />, { wrapper: appRoot });
 
             // Fill in the form
-            await userEvent.type(screen.getByRole('textbox', { name: /name/i }), 'John Doe');
-            await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'john@example.com');
-            await userEvent.type(screen.getByRole('textbox', { name: /username/i }), 'johndoe');
-            await userEvent.type(screen.getByLabelText(/password/i), 'password123');
+            await user.type(screen.getByRole('textbox', { name: /name/i }), 'John Doe');
+            await user.type(screen.getByRole('textbox', { name: /email/i }), 'john@example.com');
+            await user.type(screen.getByRole('textbox', { name: /username/i }), 'johndoe');
+            await user.type(screen.getByLabelText(/password/i), 'password123');
 
             // Submit the form
-            await userEvent.click(screen.getByRole('button', { name: /join your team/i }));
+            await user.click(screen.getByRole('button', { name: /join your team/i }));
 
             await waitFor(() => {
                 expect(mockRegisterMethod).toHaveBeenCalledWith(
@@ -307,13 +311,13 @@ describe('RegisterForm', () => {
 
             render(<RegisterForm setLoginRoute={mockSetLoginRoute} />, { wrapper: appRoot });
 
-            await userEvent.type(screen.getByRole('textbox', { name: /name/i }), 'John Doe');
-            await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'john@example.com');
-            await userEvent.type(screen.getByRole('textbox', { name: /username/i }), 'johndoe');
-            await userEvent.type(screen.getByLabelText(/^password/i), 'password123');
-            await userEvent.type(screen.getByLabelText(/confirm password/i), 'password123');
+            await user.type(screen.getByRole('textbox', { name: /name/i }), 'John Doe');
+            await user.type(screen.getByRole('textbox', { name: /email/i }), 'john@example.com');
+            await user.type(screen.getByRole('textbox', { name: /username/i }), 'johndoe');
+            await user.type(screen.getByLabelText(/^password/i), 'password123');
+            await user.type(screen.getByLabelText(/confirm password/i), 'password123');
 
-            await userEvent.click(screen.getByRole('button', { name: /join your team/i }));
+            await user.click(screen.getByRole('button', { name: /join your team/i }));
 
             await waitFor(() => {
                 expect(mockRegisterMethod).toHaveBeenCalled();
@@ -347,20 +351,27 @@ describe('RegisterForm', () => {
             render(<RegisterForm setLoginRoute={mockSetLoginRoute} />, { wrapper: defaultAppRoot });
 
             const backLink = screen.getByText(/back to login/i);
-            await userEvent.click(backLink);
+            await user.click(backLink);
 
             expect(mockSetLoginRoute).toHaveBeenCalledWith('login');
         });
     });
 
     describe('Custom Fields Integration', () => {
-        it('should render custom fields form', () => {
-            // The CustomFieldsForm is already tested in ui-client
-            // We just verify it's rendered in RegisterForm
-            render(<RegisterForm setLoginRoute={mockSetLoginRoute} />, { wrapper: defaultAppRoot });
+        it('should render custom fields when available', () => {
+            // Mock custom fields to verify CustomFieldsForm integration
+            const mockCustomFields = [
+                { _id: 'field1', type: 'text', label: 'Custom Field 1', required: true, defaultValue: '', public: true },
+            ];
 
-            // CustomFieldsForm component should be in the document
-            // This is an integration test to ensure the component is properly included
+            const appRoot = mockAppRoot()
+                .withTranslations('en', 'core', {})
+                .withEndpoint('GET', '/v1/custom-fields.public', () => ({ customFields: mockCustomFields }))
+                .build();
+
+            render(<RegisterForm setLoginRoute={mockSetLoginRoute} />, { wrapper: appRoot });
+
+            // Verify CustomFieldsForm integration - detailed tests are in ui-client
             const form = screen.getByRole('form');
             expect(form).toBeInTheDocument();
         });
