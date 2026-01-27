@@ -320,6 +320,7 @@ if (!globalThis[__meteorReactShimKey]) {
 }
 
 export const Package = __meteorRuntime;
+export const require = Package.modules.meteorInstall();
 `;
 }
 
