@@ -49,7 +49,6 @@ const appRoot = mockAppRoot()
 	)
 	.withTranslations('en', 'core', {
 		Encrypted: 'Encrypted',
-		Unencrypted: 'Unencrypted',
 		Discussion_first_message_title: 'Message',
 		Discussion_target_channel: 'Parent channel or team',
 	})
