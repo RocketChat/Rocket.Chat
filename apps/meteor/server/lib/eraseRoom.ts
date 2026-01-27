@@ -1,6 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message, Team } from '@rocket.chat/core-services';
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -8,7 +8,7 @@ import { roomCoordinator } from './rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
 
-export async function eraseRoom(roomOrId: string | IRoom, user: IUser): Promise<void> {
+export async function eraseRoom(roomOrId: string | IRoom, user: AtLeast<IUser, '_id' | 'name' | 'username'>): Promise<void> {
 	const room = typeof roomOrId === 'string' ? await Rooms.findOneById(roomOrId) : roomOrId;
 
 	if (!room) {
