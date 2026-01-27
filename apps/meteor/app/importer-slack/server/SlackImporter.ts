@@ -290,8 +290,8 @@ export class SlackImporter extends Importer {
 					ImporterWebsocket.progressUpdated({ rate });
 					oldRate = rate;
 				}
-			} catch (e) {
-				this.logger.error(e);
+			} catch (err) {
+				this.logger.error({ msg: 'Error updating progress', err });
 			}
 		};
 
@@ -332,8 +332,8 @@ export class SlackImporter extends Importer {
 						increaseProgress();
 						continue;
 					}
-				} catch (e) {
-					this.logger.error(e);
+				} catch (err) {
+					this.logger.error({ msg: 'Error adding missed type', err });
 				}
 			}
 
@@ -388,19 +388,19 @@ export class SlackImporter extends Importer {
 							this.logger.warn({ msg: 'Entry is not a valid JSON file; unable to import', entryName: entry.entryName, err: error });
 						}
 					}
-				} catch (e) {
-					this.logger.error(e);
+				} catch (err) {
+					this.logger.error({ msg: 'Error processing message entry', err });
 				}
 
 				increaseProgress();
 			}
 
 			if (Object.keys(missedTypes).length > 0) {
-				this.logger.info('Missed import types:', missedTypes);
+				this.logger.info({ msg: 'Missed import types', missedTypes });
 			}
-		} catch (e) {
-			this.logger.error(e);
-			throw e;
+		} catch (err) {
+			this.logger.error({ msg: 'Error preparing import using local file', err });
+			throw err;
 		}
 
 		ImporterWebsocket.progressUpdated({ rate: 100 });

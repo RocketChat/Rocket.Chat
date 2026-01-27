@@ -82,16 +82,16 @@ Meteor.startup(async () => {
 		settings.watch<string>('LDAP_Groups_To_Rocket_Chat_Teams', (value) => {
 			try {
 				LDAPEEManager.validateLDAPTeamsMappingChanges(value);
-			} catch (error) {
-				logger.error(error);
+			} catch (err) {
+				logger.error({ err });
 			}
 		});
 
 		settings.watch<string>('LDAP_ABAC_AttributeMap', (value) => {
 			try {
 				LDAPEEManager.validateLDAPABACAttributeMap(value);
-			} catch (error) {
-				logger.error(error);
+			} catch (err) {
+				logger.error({ err });
 			}
 		});
 

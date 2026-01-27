@@ -1,6 +1,6 @@
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLivechatAppearance } from '../page-objects/omnichannel-livechat-appearance';
+import { OmnichannelLivechatAppearance } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -13,7 +13,7 @@ test.describe.serial('OC - Livechat Appearance - EE', () => {
 		poLivechatAppearance = new OmnichannelLivechatAppearance(page);
 
 		await page.goto('/omnichannel');
-		await poLivechatAppearance.sidenav.linkLivechatAppearance.click();
+		await poLivechatAppearance.sidebar.linkLivechatAppearance.click();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -42,7 +42,7 @@ test.describe.serial('OC - Livechat Appearance - EE', () => {
 			await poLivechatAppearance.inputHideSystemMessages.locator('.rcx-icon--name-chevron-down').click();
 			await poLivechatAppearance.findHideSystemMessageOption('livechat_transfer_history').click();
 			await poLivechatAppearance.findHideSystemMessageOption('livechat-close').click();
-			await poLivechatAppearance.btnSave.click();
+			await poLivechatAppearance.btnSaveChanges.click();
 		});
 
 		await test.step('expect to have saved changes', async () => {
@@ -63,7 +63,7 @@ test.describe.serial('OC - Livechat Appearance - EE', () => {
 
 		await test.step('expect to change value', async () => {
 			await poLivechatAppearance.inputLivechatBackground.fill('rgb(186, 1, 85)');
-			await poLivechatAppearance.btnSave.click();
+			await poLivechatAppearance.btnSaveChanges.click();
 		});
 
 		await test.step('expect to have saved changes', async () => {
@@ -80,7 +80,7 @@ test.describe('OC - Livechat Appearance - CE', () => {
 		poLivechatAppearance = new OmnichannelLivechatAppearance(page);
 
 		await page.goto('/omnichannel');
-		await poLivechatAppearance.sidenav.linkLivechatAppearance.click();
+		await poLivechatAppearance.sidebar.linkLivechatAppearance.click();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -98,7 +98,7 @@ test.describe('OC - Livechat Appearance - CE', () => {
 
 		await test.step('expect to change value', async () => {
 			await poLivechatAppearance.inputLivechatTitle.fill('Test Title');
-			await poLivechatAppearance.btnSave.click();
+			await poLivechatAppearance.btnSaveChanges.click();
 		});
 
 		await test.step('expect to have saved changes', async () => {
