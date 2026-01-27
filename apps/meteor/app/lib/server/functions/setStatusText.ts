@@ -2,14 +2,11 @@ import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { RateLimiter } from '../lib';
 
-async function _setStatusText(
+export async function setStatusText(
 	userId: string,
 	statusText: string,
 	{
@@ -59,11 +56,3 @@ async function _setStatusText(
 
 	return true;
 }
-
-export const setStatusText = RateLimiter.limitFunction(_setStatusText, 5, 60000, {
-	async 0() {
-		// Administrators have permission to change others status, so don't limit those
-		const userId = Meteor.userId();
-		return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
-	},
-});
