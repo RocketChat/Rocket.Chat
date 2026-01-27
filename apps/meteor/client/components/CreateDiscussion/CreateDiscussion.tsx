@@ -93,14 +93,13 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	const membersId = useId();
 	const firstMessageId = useId();
 	const topicId = useId();
-	const modalId = useId();
-
+	
 	return (
 		<GenericModal
-			variant='default'
+			variant='warning'
+            icon={null}
 			title={t('Discussion_title')}
-			onClose={onClose}
-			onCancel={onClose}
+						onCancel={onClose}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
 			confirmText={t('Create')}
 			cancelText={t('Cancel')}
@@ -163,7 +162,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 									{...field}
 									aria-invalid={Boolean(errors.name)}
 									aria-required='true'
-									aria-describedby={`${discussionNameId}-error ${discussionNameId}-hint`}
+									aria-describedby={errors.name ? `${discussionNameId}-error` : undefined}
 									addon={<Icon name='baloons' size='x20' />}
 								/>
 							)}
