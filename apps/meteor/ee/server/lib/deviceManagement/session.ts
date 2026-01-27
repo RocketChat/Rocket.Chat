@@ -32,14 +32,10 @@ const uaParser = async (
 };
 
 export const listenSessionLogin = () => {
-	return deviceManagementEvents.on('device-login', async ({ userId, userAgent, loginToken, clientAddress }) => {
+	return deviceManagementEvents.on('device-login', async ({ userId, userAgent, clientAddress }) => {
 		const deviceEnabled = settings.get('Device_Management_Enable_Login_Emails');
 
 		if (!deviceEnabled) {
-			return;
-		}
-
-		if (loginToken) {
 			return;
 		}
 

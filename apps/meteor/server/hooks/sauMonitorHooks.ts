@@ -35,7 +35,9 @@ Accounts.onLogin((info: ILoginAttempt) => {
 		host,
 	});
 
-	deviceManagementEvents.emit('device-login', { userId: info.user._id, userAgent, loginToken, clientAddress });
+	if (!loginToken) {
+		deviceManagementEvents.emit('device-login', { userId: info.user._id, userAgent, clientAddress });
+	}
 });
 
 Accounts.onLogout((info) => {
@@ -53,6 +55,5 @@ Meteor.onConnection((connection) => {
 });
 
 Meteor.onConnection((connection) => {
-	// in case of implementing a listener of this event, define the parameters type in services/sauMonitor/events.ts
 	sauEvents.emit('sau.socket.connected', { instanceId: InstanceStatus.id(), connectionId: connection.id });
 });

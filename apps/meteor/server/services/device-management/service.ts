@@ -11,12 +11,13 @@ export class DeviceManagementService extends ServiceClassInternal implements IDe
 		super();
 
 		this.onEvent('accounts.login', async ({ userId, connection }) => {
-			deviceManagementEvents.emit('device-login', {
-				userId,
-				userAgent: getHeader(connection.httpHeaders, 'user-agent'),
-				clientAddress: connection.clientAddress || getHeader(connection.httpHeaders, 'x-real-ip'),
-				loginToken: connection.loginToken,
-			});
+			if (!connection.loginToken) {
+				deviceManagementEvents.emit('device-login', {
+					userId,
+					userAgent: getHeader(connection.httpHeaders, 'user-agent'),
+					clientAddress: connection.clientAddress || getHeader(connection.httpHeaders, 'x-real-ip'),
+				});
+			}
 		});
 	}
 }
