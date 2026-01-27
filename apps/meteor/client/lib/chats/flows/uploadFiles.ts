@@ -115,6 +115,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 								hashes: {
 									sha256: encryptedFile.hash,
 								},
+								fileId: _id,
 							};
 
 							if (/^image\/.+/.test(file.type)) {

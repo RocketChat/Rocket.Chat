@@ -23,7 +23,7 @@ const processMessage = async (msg: IMessage & { ignored?: boolean }, { subscript
 		msg.ignored = true;
 	}
 
-	if (msg.t === 'e2e' && !msg.file) {
+	if (msg.t === 'e2e') {
 		msg.e2e = 'pending';
 	}
 

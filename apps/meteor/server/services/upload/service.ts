@@ -107,7 +107,7 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 
 	private async updateMessageRemovingFiles(msg: IMessage, filesToRemove: IUpload['_id'][], user: IUser): Promise<void> {
 		const text = `_${i18n.t('File_removed')}_`;
-		const newAttachment = { color: NOTIFICATION_ATTACHMENT_COLOR, text };
+		const color = NOTIFICATION_ATTACHMENT_COLOR;
 
 		const newFiles = msg.files?.filter((file) => !filesToRemove.includes(file._id));
 		const newAttachments = msg.attachments?.map((attachment) => {
@@ -120,7 +120,13 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 				return attachment;
 			}
 
-			return newAttachment;
+			const attachmentFileId = attachment.fileId || filesToRemove[0];
+
+			if (attachmentFileId) {
+				return { type: 'removed-file', fileId: attachmentFileId, color, text };
+			}
+
+			return { color, text };
 		});
 		const newFile = msg.file?._id && !filesToRemove.includes(msg.file._id) ? msg.file : newFiles?.[0];
 
