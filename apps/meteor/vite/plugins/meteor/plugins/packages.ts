@@ -74,55 +74,10 @@ export function packages(config: ResolvedPluginOptions): Plugin {
 				const exportNames = await resolver.getExportNames(pkgName);
 				const exportLines = exportNames.map(generateExportStatement);
 
-				return `import '${runtimeImportId}';
-import * as __meteorHostReactNamespace from 'react';
-const __meteorHostReact = __meteorHostReactNamespace && __meteorHostReactNamespace.default ? __meteorHostReactNamespace.default : __meteorHostReactNamespace;
-const __meteorRuntime = globalThis.Package;
-if (!__meteorRuntime || typeof __meteorRuntime._promise !== 'function') {
-	throw new Error('Meteor runtime failed to initialize before loading package "${pkgName}".');
-}
-await __meteorRuntime._promise('${pkgName}');
-const __meteorModules = __meteorRuntime.modules;
-const __meteorInstall = __meteorModules && __meteorModules.meteorInstall;
-if (typeof __meteorInstall !== 'function') {
-	throw new Error('Meteor modules runtime failed to initialize before loading package "${pkgName}".');
-}
-const __meteorReactShimKey = '__meteorHostReactShimInstalled';
-if (!globalThis[__meteorReactShimKey]) {
-	const __meteorReactFactory = (require, exports, module) => {
-		module.exports = __meteorHostReact;
-		module.exports.default = __meteorHostReact;
-	};
-	__meteorInstall({
-		node_modules: {
-			react: {
-				'index.js': __meteorReactFactory,
-			},
-			'react.js': __meteorReactFactory,
-		},
-	});
-	globalThis[__meteorReactShimKey] = true;
-}
-const __meteorRequire = __meteorInstall();
-const __meteorModuleIds = ['meteor/${pkgName}.js', 'meteor/${pkgName}'];
-let __meteorModuleNamespace;
-let __meteorRequireError;
-for (const candidateId of __meteorModuleIds) {
-	try {
-		__meteorModuleNamespace = __meteorRequire(candidateId);
-		if (__meteorModuleNamespace) {
-			break;
-		}
-	} catch (error) {
-		__meteorRequireError = error;
-	}
-}
-if (!__meteorModuleNamespace) {
-	throw __meteorRequireError || new Error('Meteor package "${pkgName}" could not be required.');
-}
-const __meteorDefaultExport = __meteorModuleNamespace && __meteorModuleNamespace.__esModule && 'default' in __meteorModuleNamespace
-	? __meteorModuleNamespace.default
-	: __meteorModuleNamespace;
+				return `import { Package } from '${runtimeImportId}';
+await Package._promise('${pkgName}');
+const __meteorRequire = Package.modules.meteorInstall();
+const __meteorModuleNamespace = __meteorRequire('meteor/${pkgName}.js');
 ${exportLines.join('\n')}
 `;
 			},
@@ -132,7 +87,7 @@ ${exportLines.join('\n')}
 	function generateExportStatement(name: string): string {
 		switch (name) {
 			case 'default':
-				return 'export default __meteorDefaultExport;';
+				return 'export default __meteorModuleNamespace.default;';
 			case '__esModule':
 				return '';
 			case 'hasOwn':
