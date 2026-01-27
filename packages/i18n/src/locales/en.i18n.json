@@ -7096,5 +7096,6 @@
   "timestamps.relativeTimeDescription": "1 year ago",
   "Message_composer": "Message composer",
   "Thread_composer": "Thread composer",
-  "Room_composer": "Room composer"
+  "Room_composer": "Room composer",
+  "Date_range_presets": "Date range presets"
 }
