@@ -219,7 +219,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 									{...field}
 									rows={5}
 									disabled={encrypted}
-									aria-describedby={`${firstMessageId}-hint ${firstMessageId}-encrypted-hint`}
+									aria-describedby={encrypted ? `${firstMessageId}-encrypted-hint` : `${firstMessageId}-hint`}
 								/>
 							)}
 						/>
