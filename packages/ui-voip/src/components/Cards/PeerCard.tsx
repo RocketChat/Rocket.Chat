@@ -1,6 +1,7 @@
 import { Avatar, Box, Icon } from '@rocket.chat/fuselage';
 
-import CardSlotNameAndAudioState from './CardSlotNameAndAudioState';
+import CardSlotAudioState from './CardSlotAudioState';
+import CardSlotName from './CardSlotName';
 import CardSlotStreamingState from './CardSlotStreamingState';
 import GenericCard from './GenericCard';
 
@@ -16,7 +17,8 @@ const PeerCard = ({ displayName, avatarUrl, muted, held, sharing }: PeerCardProp
 	return (
 		<GenericCard
 			slots={{
-				bottomLeft: <CardSlotNameAndAudioState muted={muted} held={held} displayName={displayName} />,
+				topLeft: muted || held ? <CardSlotAudioState muted={muted} held={held} /> : null,
+				bottomLeft: <CardSlotName displayName={displayName} />,
 				bottomRight: sharing ? <CardSlotStreamingState /> : null,
 			}}
 			flexGrow={0}

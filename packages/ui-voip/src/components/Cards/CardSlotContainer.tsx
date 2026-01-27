@@ -24,7 +24,7 @@ const CardSlotContainer = styled('div', ({ position: _position, ...props }: Card
 	justify-content: center;
 	padding-block: 4px;
 	padding-inline: 8px;
-	margin: 8px;
+	margin: 4px;
 	${({ position }) => slotPositionStyles[position]}
 	border-radius: 8px;
 	color: ${Palette.text['font-default'].toString()};

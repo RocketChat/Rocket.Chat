@@ -1,25 +1,52 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import GenericCard from './GenericCard';
+import GenericCard, { CARD_HEIGHT } from './GenericCard';
 
 type StreamCardProps = {
 	children: React.ReactNode;
 	displayName: string;
 	own?: boolean;
+	onClickFocusStream?: () => void;
+	focused?: boolean;
+	square?: boolean;
 };
 
-const StreamCard = ({ children, own, displayName }: StreamCardProps) => {
+const alternateSizeProps = {
+	maxWidth: '100%',
+	maxHeight: '100%',
+	height: undefined,
+	width: undefined,
+};
+
+const StreamCard = ({ children, own, displayName, onClickFocusStream, focused, square = false }: StreamCardProps) => {
 	const { t } = useTranslation();
 	return (
 		<GenericCard
+			{...(focused ? alternateSizeProps : {})}
 			title={own ? t('Your_screen') : t('Peer__displayName__screen', { displayName })}
+			height={focused ? 'fit-content' : undefined}
+			width={square ? CARD_HEIGHT : undefined}
 			slots={{
 				bottomLeft: (
-					<Box fontScale='p2b' color='default'>
+					<Box fontScale='c2' color='default'>
 						{displayName}
 					</Box>
 				),
+				bottomRight: onClickFocusStream ? (
+					<IconButton
+						mb={-4}
+						mi={-8} // TODO: this should not have negative margins, SlotContainer needs to be updated for special cases like this.
+						tiny
+						secondary={false}
+						icon='pin'
+						onClick={onClickFocusStream}
+						title={focused ? t('Unpin') : t('Pin')}
+					/>
+				) : null,
+				// bottomRight: onClickFullScreen ? (
+				//	<IconButton tiny secondary={false} icon={focused ? 'arrow-collapse' : 'arrow-expand'} onClick={onClickFullScreen} />
+				// ) : null, // TODO: Add full screen button
 			}}
 		>
 			{children}

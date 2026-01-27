@@ -11,7 +11,7 @@ const boxShadow = css`
 		0px 0px 12px 0px ${Palette.shadow['shadow-elevation-2y'].toString()};
 `;
 
-const CARD_HEIGHT = 180;
+export const CARD_HEIGHT = 180;
 
 const CARD_MIN_WIDTH = CARD_HEIGHT;
 const CARD_MAX_WIDTH = 320;
