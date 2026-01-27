@@ -49,6 +49,9 @@ const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../app/lib/s
 		_setUsername: stubs.setUsername,
 		_setUsernameWithSession: () => stubs.setUsername,
 	},
+	'../../../../app/lib/server/functions/setRealName': {
+		setRealName: stubs.setRealName,
+	},
 	'../../../../app/lib/server/functions/updateGroupDMsName': {
 		updateGroupDMsName: sinon.stub(),
 	},
