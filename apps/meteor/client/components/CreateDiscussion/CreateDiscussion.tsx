@@ -1,6 +1,5 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import {
-	Modal,
 	Field,
 	FieldGroup,
 	ToggleSwitch,
@@ -13,13 +12,8 @@ import {
 	FieldLabel,
 	FieldRow,
 	FieldError,
-	ModalHeader,
-	ModalTitle,
-	ModalClose,
-	ModalContent,
-	ModalFooter,
-	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId } from 'react';
@@ -48,8 +42,7 @@ type CreateDiscussionProps = {
 	nameSuggestion?: string;
 };
 
-// TODO: Replace `Modal` in favor of `GenericModal`
-const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSuggestion }: CreateDiscussionProps): ReactElement => {
+const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSuggestion }: CreateDiscussionProps) => {
 	const t = useTranslation();
 
 	const {
@@ -103,161 +96,153 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	const modalId = useId();
 
 	return (
-		<Modal
-			aria-labelledby={`${modalId}-title`}
+		<GenericModal
+			variant='default'
+			title={t('Discussion_title')}
+			onClose={onClose}
+			onCancel={onClose}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
+			confirmText={t('Create')}
+			cancelText={t('Cancel')}
+			confirmLoading={createDiscussionMutation.isPending}
 		>
-			<ModalHeader>
-				<ModalTitle id={`${modalId}-title`}>{t('Discussion_title')}</ModalTitle>
-				<ModalClose tabIndex={-1} onClick={onClose} />
-			</ModalHeader>
-			<ModalContent>
-				<Box mbe={24}>{t('Discussion_description')}</Box>
-				<FieldGroup>
-					<Field>
-						<FieldLabel htmlFor={parentRoomId} required>
-							{t('Discussion_target_channel')}
-						</FieldLabel>
-						<FieldRow>
-							{defaultParentRoom && (
-								<Controller
-									control={control}
-									name='parentRoom'
-									render={() => <DefaultParentRoomField defaultParentRoom={defaultParentRoom} />}
-								/>
-							)}
-							{!defaultParentRoom && (
-								<Controller
-									control={control}
-									name='parentRoom'
-									rules={{ required: t('Required_field', { field: t('Discussion_target_channel') }) }}
-									render={({ field: { name, onBlur, onChange, value } }) => (
-										<RoomAutoComplete
-											name={name}
-											onBlur={onBlur}
-											onChange={onChange}
-											value={value}
-											id={parentRoomId}
-											placeholder={t('Search_options')}
-											disabled={Boolean(defaultParentRoom)}
-											aria-invalid={Boolean(errors.parentRoom)}
-											aria-required='true'
-											aria-describedby={`${parentRoomId}-error`}
-										/>
-									)}
-								/>
-							)}
-						</FieldRow>
-						{errors.parentRoom && (
-							<FieldError aria-live='assertive' id={`${parentRoomId}-error`}>
-								{errors.parentRoom.message}
-							</FieldError>
-						)}
-					</Field>
-					<Field>
-						<FieldLabel htmlFor={discussionNameId} required>
-							{t('Name')}
-						</FieldLabel>
-						<FieldRow>
+			<Box mbe={24}>{t('Discussion_description')}</Box>
+			<FieldGroup>
+				<Field>
+					<FieldLabel htmlFor={parentRoomId} required>
+						{t('Discussion_target_channel')}
+					</FieldLabel>
+					<FieldRow>
+						{defaultParentRoom && (
 							<Controller
-								name='name'
 								control={control}
-								rules={{ required: t('Required_field', { field: t('Name') }) }}
-								render={({ field }) => (
-									<TextInput
-										id={discussionNameId}
-										{...field}
-										aria-invalid={Boolean(errors.name)}
-										aria-required='true'
-										aria-describedby={`${discussionNameId}-error ${discussionNameId}-hint`}
-										addon={<Icon name='baloons' size='x20' />}
-									/>
-								)}
+								name='parentRoom'
+								render={() => <DefaultParentRoomField defaultParentRoom={defaultParentRoom} />}
 							/>
-						</FieldRow>
-						{errors.name && (
-							<FieldError aria-live='assertive' id={`${discussionNameId}-error`}>
-								{errors.name.message}
-							</FieldError>
 						)}
-					</Field>
-					<Field>
-						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								name='topic'
-								control={control}
-								render={({ field }) => <TextInput id={topicId} {...field} aria-describedby={`${topicId}-hint`} />}
-							/>
-						</FieldRow>
-						<FieldRow>
-							<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
-						</FieldRow>
-					</Field>
-					<Field>
-						<FieldLabel htmlFor={membersId}>{t('Members')}</FieldLabel>
-						<FieldRow>
+						{!defaultParentRoom && (
 							<Controller
 								control={control}
-								name='usernames'
-								render={({ field: { name, onChange, value, onBlur } }) => (
-									<UserAutoCompleteMultiple
-										id={membersId}
+								name='parentRoom'
+								rules={{ required: t('Required_field', { field: t('Discussion_target_channel') }) }}
+								render={({ field: { name, onBlur, onChange, value } }) => (
+									<RoomAutoComplete
 										name={name}
+										onBlur={onBlur}
 										onChange={onChange}
 										value={value}
-										onBlur={onBlur}
-										placeholder={t('Add_people')}
+										id={parentRoomId}
+										placeholder={t('Search_options')}
+										disabled={Boolean(defaultParentRoom)}
+										aria-invalid={Boolean(errors.parentRoom)}
+										aria-required='true'
+										aria-describedby={`${parentRoomId}-error`}
 									/>
 								)}
 							/>
-						</FieldRow>
-					</Field>
-					<Field>
-						<FieldLabel htmlFor={firstMessageId}>{t('Discussion_first_message_title')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								control={control}
-								name='firstMessage'
-								render={({ field }) => (
-									<TextAreaInput
-										id={firstMessageId}
-										{...field}
-										rows={5}
-										disabled={encrypted}
-										aria-describedby={`${firstMessageId}-hint ${firstMessageId}-encrypted-hint`}
-									/>
-								)}
-							/>
-						</FieldRow>
-						{encrypted ? (
-							<FieldHint id={`${firstMessageId}-encrypted-hint`}>{t('Discussion_first_message_disabled_due_to_e2e')}</FieldHint>
-						) : (
-							<FieldHint id={`${firstMessageId}-hint`}>{t('First_message_hint')}</FieldHint>
 						)}
-					</Field>
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor={encryptedId}>{t('Encrypted')}</FieldLabel>
-							<Controller
-								control={control}
-								name='encrypted'
-								render={({ field: { value, ...field } }) => <ToggleSwitch id={encryptedId} {...field} checked={value} />}
-							/>
-						</FieldRow>
-						<FieldHint id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate: true, encrypted })}</FieldHint>
-					</Field>
-				</FieldGroup>
-			</ModalContent>
-			<ModalFooter>
-				<ModalFooterControllers>
-					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' primary loading={createDiscussionMutation.isPending}>
-						{t('Create')}
-					</Button>
-				</ModalFooterControllers>
-			</ModalFooter>
-		</Modal>
+					</FieldRow>
+					{errors.parentRoom && (
+						<FieldError aria-live='assertive' id={`${parentRoomId}-error`}>
+							{errors.parentRoom.message}
+						</FieldError>
+					)}
+				</Field>
+				<Field>
+					<FieldLabel htmlFor={discussionNameId} required>
+						{t('Name')}
+					</FieldLabel>
+					<FieldRow>
+						<Controller
+							name='name'
+							control={control}
+							rules={{ required: t('Required_field', { field: t('Name') }) }}
+							render={({ field }) => (
+								<TextInput
+									id={discussionNameId}
+									{...field}
+									aria-invalid={Boolean(errors.name)}
+									aria-required='true'
+									aria-describedby={`${discussionNameId}-error ${discussionNameId}-hint`}
+									addon={<Icon name='baloons' size='x20' />}
+								/>
+							)}
+						/>
+					</FieldRow>
+					{errors.name && (
+						<FieldError aria-live='assertive' id={`${discussionNameId}-error`}>
+							{errors.name.message}
+						</FieldError>
+					)}
+				</Field>
+				<Field>
+					<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							name='topic'
+							control={control}
+							render={({ field }) => <TextInput id={topicId} {...field} aria-describedby={`${topicId}-hint`} />}
+						/>
+					</FieldRow>
+					<FieldRow>
+						<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel htmlFor={membersId}>{t('Members')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='usernames'
+							render={({ field: { name, onChange, value, onBlur } }) => (
+								<UserAutoCompleteMultiple
+									id={membersId}
+									name={name}
+									onChange={onChange}
+									value={value}
+									onBlur={onBlur}
+									placeholder={t('Add_people')}
+								/>
+							)}
+						/>
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel htmlFor={firstMessageId}>{t('Discussion_first_message_title')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='firstMessage'
+							render={({ field }) => (
+								<TextAreaInput
+									id={firstMessageId}
+									{...field}
+									rows={5}
+									disabled={encrypted}
+									aria-describedby={`${firstMessageId}-hint ${firstMessageId}-encrypted-hint`}
+								/>
+							)}
+						/>
+					</FieldRow>
+					{encrypted ? (
+						<FieldHint id={`${firstMessageId}-encrypted-hint`}>{t('Discussion_first_message_disabled_due_to_e2e')}</FieldHint>
+					) : (
+						<FieldHint id={`${firstMessageId}-hint`}>{t('First_message_hint')}</FieldHint>
+					)}
+				</Field>
+				<Field>
+					<FieldRow>
+						<FieldLabel htmlFor={encryptedId}>{t('Encrypted')}</FieldLabel>
+						<Controller
+							control={control}
+							name='encrypted'
+							render={({ field: { value, ...field } }) => <ToggleSwitch id={encryptedId} {...field} checked={value} />}
+						/>
+					</FieldRow>
+					<FieldHint id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate: true, encrypted })}</FieldHint>
+				</Field>
+			</FieldGroup>
+		</GenericModal>
 	);
 };
 
