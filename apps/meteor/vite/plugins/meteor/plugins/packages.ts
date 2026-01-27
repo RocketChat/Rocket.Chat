@@ -72,32 +72,11 @@ export function packages(config: ResolvedPluginOptions): Plugin {
 				}
 
 				const exportNames = await resolver.getExportNames(pkgName);
-				const exportLines = exportNames.map(generateExportStatement);
 
-				return `import { Package } from '${runtimeImportId}';
-await Package._promise('${pkgName}');
-const __meteorRequire = Package.modules.meteorInstall();
-const __meteorModuleNamespace = __meteorRequire('meteor/${pkgName}.js');
-${exportLines.join('\n')}
+				return `import { require } from '${runtimeImportId}';
+export const { ${exportNames.join(', ')} } = require('meteor/${pkgName}.js');
 `;
 			},
 		},
 	};
-
-	function generateExportStatement(name: string): string {
-		switch (name) {
-			case 'default':
-				return 'export default __meteorModuleNamespace.default;';
-			case '__esModule':
-				return '';
-			case 'hasOwn':
-				return `export const hasOwn = Object.hasOwn;`;
-			case 'global':
-				return `export const global = globalThis;`;
-			case 'export':
-				return '';
-			default:
-				return `export const ${name} = __meteorModuleNamespace['${name}'];`;
-		}
-	}
 }
