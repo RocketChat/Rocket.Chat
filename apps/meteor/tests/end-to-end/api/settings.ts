@@ -535,5 +535,45 @@ describe('[Settings]', () => {
 					});
 			});
 		});
+
+		describe('Sorting', () => {
+			const isSortedAscending = (events: IServerEvents['settings.changed'][]) =>
+				events.every((event, i) => i === 0 || new Date(event.ts).getTime() >= new Date(events[i - 1].ts).getTime());
+
+			const isSortedDescending = (events: IServerEvents['settings.changed'][]) =>
+				events.every((event, i) => i === 0 || new Date(event.ts).getTime() <= new Date(events[i - 1].ts).getTime());
+
+			it('should sort by timestamp ascending', async () => {
+				const response = await request
+					.get(api('audit.settings'))
+					.query({ sort: JSON.stringify({ ts: 1 }), start: formatDate(startDate), end: formatDate(endDate) })
+					.set(credentials)
+					.expect(200);
+
+				expect(response.body).to.have.property('success', true);
+				expect(response.body.events).to.have.length.greaterThanOrEqual(2);
+				expect(isSortedAscending(response.body.events)).to.be.true;
+			});
+
+			it('should sort by timestamp descending', async () => {
+				const response = await request
+					.get(api('audit.settings'))
+					.query({ sort: JSON.stringify({ ts: -1 }), start: formatDate(startDate), end: formatDate(endDate) })
+					.set(credentials)
+					.expect(200);
+
+				expect(response.body).to.have.property('success', true);
+				expect(response.body.events).to.have.length.greaterThanOrEqual(2);
+				expect(isSortedDescending(response.body.events)).to.be.true;
+			});
+
+			it('should sort by timestamp descending by default', async () => {
+				const response = await request.get(api('audit.settings')).set(credentials).expect(200);
+
+				expect(response.body).to.have.property('success', true);
+				expect(response.body.events).to.have.length.greaterThanOrEqual(2);
+				expect(isSortedDescending(response.body.events)).to.be.true;
+			});
+		});
 	});
 });
