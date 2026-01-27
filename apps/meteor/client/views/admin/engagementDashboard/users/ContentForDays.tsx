@@ -1,6 +1,6 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, IconButton, Margins, Skeleton } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
+import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';

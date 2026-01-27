@@ -1,4 +1,4 @@
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
+import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
@@ -19,10 +19,7 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 
 	const ref = useSafeRefCallback(
 		useCallback(
-			(element: HTMLElement | null) => {
-				if (!element) {
-					return;
-				}
+			(element: HTMLElement) => {
 				const checkPositionAndGetMore = withThrottling({ wait: 100 })(async () => {
 					if (!element.isConnected) {
 						return;

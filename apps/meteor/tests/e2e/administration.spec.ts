@@ -91,12 +91,12 @@ test.describe.parallel('administration', () => {
 			const username = faker.internet.userName();
 
 			await poAdminUsers.btnNewUser.click();
-			await poAdminUsers.editUser.inputName.type(faker.person.firstName());
-			await poAdminUsers.editUser.inputUserName.type(username);
-			await poAdminUsers.editUser.inputEmail.type(faker.internet.email());
+			await poAdminUsers.editUser.inputName.fill(faker.person.firstName());
+			await poAdminUsers.editUser.inputUserName.fill(username);
+			await poAdminUsers.editUser.inputEmail.fill(faker.internet.email());
 			await poAdminUsers.editUser.inputSetManually.click();
-			await poAdminUsers.editUser.inputPassword.type('P@ssw0rd1234.!');
-			await poAdminUsers.editUser.inputConfirmPassword.type('P@ssw0rd1234.!');
+			await poAdminUsers.editUser.inputPassword.fill('P@ssw0rd1234.!');
+			await poAdminUsers.editUser.inputConfirmPassword.fill('P@ssw0rd1234.!');
 			await expect(poAdminUsers.editUser.userRole).toBeVisible();
 			await expect(poAdminUsers.editUser.joinDefaultChannels).toBeVisible();
 			await poAdminUsers.editUser.btnAddUser.click();

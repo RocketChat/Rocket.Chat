@@ -47,7 +47,7 @@ export async function fetchMarketplaceCategories(): Promise<AppCategory[]> {
 
 	const response = await request.json();
 
-	Apps.getRocketChatLogger().error('Failed to fetch marketplace categories', response);
+	Apps.getRocketChatLogger().error({ msg: 'Error fetching marketplace categories', status: request.status, response });
 
 	// TODO: Refactor cloud to return a proper error code on unsupported version
 	if (request.status === 426 && 'errorMsg' in response && response.errorMsg === 'unsupported version') {

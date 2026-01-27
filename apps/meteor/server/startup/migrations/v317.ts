@@ -70,7 +70,7 @@ addMigration({
 					return;
 				}
 
-				SystemLogger.warn(`The default value of the setting ${key} has changed to ${newValue}. Please review your settings.`);
+				SystemLogger.warn({ msg: 'The default value of the setting has changed. Please review your settings.', key, newValue });
 
 				return Settings.updateOne({ _id: key }, { $set: { value: newValue } });
 			})
@@ -91,9 +91,11 @@ addMigration({
 					return;
 				}
 
-				SystemLogger.warn(
-					`The default value of the custom setting ${_id} has changed to ${newDefaultButtonColor}. Please review your settings.`,
-				);
+				SystemLogger.warn({
+					msg: 'The default value of the custom setting has changed. Please review your settings.',
+					_id,
+					newValue: newDefaultButtonColor,
+				});
 
 				return Settings.updateOne({ _id }, { $set: { value: newDefaultButtonColor } });
 			})
@@ -105,9 +107,11 @@ addMigration({
 					return;
 				}
 
-				SystemLogger.warn(
-					`The default value of the custom setting ${_id} has changed to ${newDefaultButtonLabelColor}. Please review your settings.`,
-				);
+				SystemLogger.warn({
+					msg: 'The default value of the custom setting has changed. Please review your settings.',
+					_id,
+					newValue: newDefaultButtonLabelColor,
+				});
 
 				return Settings.updateOne({ _id }, { $set: { value: newDefaultButtonLabelColor } });
 			})
