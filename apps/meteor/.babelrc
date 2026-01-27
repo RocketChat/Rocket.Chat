@@ -5,7 +5,8 @@
             {
                 "bugfixes": true,
                 "modules": false,
-                "targets": "last 2 versions, firefox esr, node 22.16.0"
+              	"targets": "last 2 versions, firefox ESR, node 22",
+				"exclude": ["@babel/plugin-transform-object-rest-spread"]
             }
         ],
 		"@babel/preset-react",
