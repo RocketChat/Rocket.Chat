@@ -292,6 +292,7 @@ export type TypedOptions = {
 } & SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
 
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
+	readonly logger: Logger;
 	userId: TOptions['authRequired'] extends true ? string : string | undefined;
 	user: TOptions['authRequired'] extends true ? IUser : IUser | null;
 	token: TOptions['authRequired'] extends true ? string : string | undefined;
