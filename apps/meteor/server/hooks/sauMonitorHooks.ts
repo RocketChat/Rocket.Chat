@@ -1,3 +1,4 @@
+import { hashLoginToken } from '@rocket.chat/account-utils';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { getHeader } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -19,7 +20,7 @@ Accounts.onLogin((info: ILoginAttempt) => {
 	}
 
 	const { resume } = methodArguments.find((arg) => 'resume' in arg) ?? {};
-	const loginToken = resume ? Accounts._hashLoginToken(resume) : '';
+	const loginToken = resume ? hashLoginToken(resume) : '';
 	const instanceId = InstanceStatus.id();
 	const clientAddress = getClientAddress(info.connection);
 	const userAgent = getHeader(httpHeaders, 'user-agent');

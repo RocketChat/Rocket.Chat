@@ -19,4 +19,3 @@ export const getHeader = (headers: HeaderLike, key: string): string => {
 
 	return '';
 };
-

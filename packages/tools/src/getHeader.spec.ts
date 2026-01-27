@@ -1,4 +1,5 @@
-import { IncomingHttpHeaders } from 'http';
+import type { IncomingHttpHeaders } from 'http';
+
 import { getHeader } from './getHeader';
 
 describe('getHeader', () => {
@@ -39,4 +40,3 @@ describe('getHeader', () => {
 		expect(getHeader(headers, 'host')).toBe('localhost:3000');
 	});
 });
-
