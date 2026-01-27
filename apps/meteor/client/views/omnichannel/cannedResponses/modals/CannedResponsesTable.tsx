@@ -152,7 +152,7 @@ const CannedResponsesTable = () => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.cannedResponses.map(({ _id, shortcut, scope, createdBy, _createdAt, tags = [] }) => (
-								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id, scope)} action qa-user-id={_id}>
+								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id, scope)} action>
 									<GenericTableCell withTruncatedText>{shortcut}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{defaultOptions[scope as Scope]}</GenericTableCell>
 									<GenericTableCell withTruncatedText>

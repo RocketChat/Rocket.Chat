@@ -104,7 +104,7 @@ export class GlobalSignalProcessor {
 
 			await agent.processSignal(call, signal);
 		} catch (e) {
-			logger.error(e);
+			logger.error({ err: e });
 			throw e;
 		}
 	}

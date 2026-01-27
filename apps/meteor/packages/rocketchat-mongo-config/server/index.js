@@ -43,6 +43,7 @@ if (typeof mongoOptionStr !== 'undefined') {
 		throw new Error(
 			`Invalid MONGO_OPTIONS configuration: ${error.message}`,
 		);
+		throw new Error('Invalid MONGO_OPTIONS environment variable: must be valid JSON.', { cause: error });
 	}
 }
 

@@ -6,6 +6,7 @@ import type {
 	AtLeast,
 	FilesAndAttachments,
 	IMessage,
+	FileProp,
 } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
@@ -42,13 +43,14 @@ export const parseFileIntoMessageAttachments = async (
 
 	const attachments: MessageAttachment[] = [];
 
-	const files = [
+	const files: FileProp[] = [
 		{
 			_id: file._id,
 			name: file.name || '',
 			type: file.type || 'file',
 			size: file.size || 0,
 			format: file.identify?.format || '',
+			typeGroup: file.typeGroup,
 		},
 	];
 
@@ -96,10 +98,11 @@ export const parseFileIntoMessageAttachments = async (
 					type: thumbnail.type || 'file',
 					size: thumbnail.size || 0,
 					format: thumbnail.identify?.format || '',
+					typeGroup: thumbnail.typeGroup || '',
 				});
 			}
-		} catch (e) {
-			SystemLogger.error(e);
+		} catch (err) {
+			SystemLogger.error({ err });
 		}
 		attachments.push(attachment);
 	} else if (/^audio\/.+/.test(file.type as string)) {

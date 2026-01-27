@@ -1,7 +1,7 @@
 import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
@@ -71,7 +71,7 @@ const workspaceClientPayloadSchema = z.object({
 				startAt: z.string().datetime(),
 				createdBy: z.enum(['cloud', 'system']),
 				createdAt: z.string().datetime(),
-				dictionary: z.record(z.record(z.string())),
+				dictionary: z.record(z.string(), z.record(z.string(), z.string())),
 				view: z.any(),
 				surface: z.enum(['banner', 'modal']),
 			}),

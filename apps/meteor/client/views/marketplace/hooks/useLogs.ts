@@ -4,6 +4,8 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
+import { marketplaceQueryKeys } from '../../../lib/queryKeys';
+
 export const useLogs = ({
 	appId,
 	current,
@@ -38,7 +40,7 @@ export const useLogs = ({
 	const logs = useEndpoint('GET', '/apps/:id/logs', { id: appId });
 
 	return useQuery({
-		queryKey: ['marketplace', 'apps', appId, 'logs', query],
+		queryKey: marketplaceQueryKeys.appLogs(appId, query),
 		queryFn: () => logs(query),
 	});
 };
