@@ -1,5 +1,5 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
-import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
@@ -153,7 +153,14 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.updateOwnBasicInfo',
-	{ authRequired: true, validateParams: isUsersUpdateOwnBasicInfoParamsPOST },
+	{
+		authRequired: true,
+		validateParams: isUsersUpdateOwnBasicInfoParamsPOST,
+		rateLimiterOptions: {
+			numRequestsAllowed: 1,
+			intervalTimeInMS: 60000,
+		},
+	},
 	{
 		async post() {
 			const userData = {
@@ -1374,7 +1381,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.setStatus',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		rateLimiterOptions: {
+			numRequestsAllowed: 5,
+			intervalTimeInMS: 60000,
+		},
+	},
 	{
 		async post() {
 			check(

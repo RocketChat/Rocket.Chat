@@ -102,8 +102,8 @@ export const parseFileIntoMessageAttachments = async (
 					typeGroup: thumbnail.typeGroup || '',
 				});
 			}
-		} catch (e) {
-			SystemLogger.error(e);
+		} catch (err) {
+			SystemLogger.error({ err });
 		}
 		attachments.push(attachment);
 	} else if (/^audio\/.+/.test(file.type as string)) {
