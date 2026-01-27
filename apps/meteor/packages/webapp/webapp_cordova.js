@@ -1,5 +1,5 @@
-export const WebApp = {
-  _isCssLoaded: function() {
-    return true;
-  },
-};
+Meteor.startup(() => {
+	WebAppLocalServer.onError((error) => {
+		console.error(error);
+	});
+});
