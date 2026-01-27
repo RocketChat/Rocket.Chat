@@ -228,8 +228,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionExcludePinnedField = useId();
 	const retentionFilesOnlyField = useId();
 	const retentionIgnoreThreads = useId();
-     
-	
 	const linksEmbedField = useId();
 
 	const showAdvancedSettings = canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
@@ -492,10 +490,10 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												</FieldRow>
 											</Field>
 										)}
-										
+
 										<Field>
 											<FieldRow>
-												<FieldLabel htmlFor={linksEmbedField}>{t('Enable_Link_Previews')}</FieldLabel>
+												<FieldLabel htmlFor={linksEmbedField}>{t('Enable_Link_Previews' as any)}</FieldLabel>
 												<Controller
 													control={control}
 													name='linksEmbed'
@@ -505,12 +503,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 															{...field}
 															checked={value}
 															disabled={isFederated}
+															aria-describedby={`${linksEmbedField}-hint`}
 														/>
 													)}
 												/>
 											</FieldRow>
+											<FieldHint id={`${linksEmbedField}-hint`}>{t('Enable_Link_Previews_Description' as any)}</FieldHint>
 										</Field>
-										
 									</FieldGroup>
 								</AccordionItem>
 							)}

@@ -331,27 +331,17 @@ const insertMaxWidthInOembedHtml = (oembedHtml?: string): string | undefined =>
 
 const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	log.debug({ msg: 'Parsing message URLs' });
-
-	// 1. Global Check stays at the top
 	if (!settings.get('API_Embed')) {
 		return message;
 	}
-
-	// 2. CHECK URLs FIRST (Optimization)
-	// If the message has no URLs, we stop here. We don't bother the database.
 	if (!Array.isArray(message.urls)) {
 		return message;
 	}
-
-	// 3. NOW check the Room Setting
-	// We only fetch the room data if we know we actually need to process URLs.
 	const room = await Rooms.findOneById(message.rid, { projection: { linksEmbed: 1 } });
 	if (room?.linksEmbed === false) {
 		return message;
 	}
-
 	log.debug({ msg: 'URLs found in message', count: message.urls.length });
-
 	if (
 		(message.attachments && message.attachments.length > 0) ||
 		message.urls.filter((item) => !item.url.includes(settings.get('Site_Url'))).length > MAX_EXTERNAL_URL_PREVIEWS
@@ -359,24 +349,19 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 		log.debug({ msg: 'All URLs ignored for OEmbed' });
 		return message;
 	}
-
 	let changed = false;
 	for await (const item of message.urls) {
 		if (item.ignoreParse === true) {
 			log.debug({ msg: 'URL ignored for OEmbed', url: item.url });
 			continue;
 		}
-
 		const { urlPreview, foundMeta } = await parseUrl(item.url);
-
 		Object.assign(item, foundMeta ? urlPreview : {});
 		changed = changed || foundMeta;
 	}
-
 	if (changed === true) {
 		await Messages.setUrlsById(message._id, message.urls);
 	}
-
 	return message;
 };
 
