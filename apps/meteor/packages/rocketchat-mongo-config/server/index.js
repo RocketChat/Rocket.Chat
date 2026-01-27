@@ -12,14 +12,14 @@ if (!shouldUseNativeOplog) {
 	Package['disable-oplog'] = {};
 }
 
-// FIX For TLS error
+// FIX for TLS error
 // https://github.com/RocketChat/Rocket.Chat/issues/9316
 // TODO: Remove after NodeJS fix
 tls.DEFAULT_ECDH_CURVE = 'auto';
 
 const mongoConnectionOptions = {
 	// add retryWrites=false if not present in MONGO_URL
-	...(!process.env.MONGO_URL.includes('retryWrites') && { retryWrites: false }),
+	...(!process.env.MONGO_URL?.includes('retryWrites') && { retryWrites: false }),
 	ignoreUndefined: false,
 
 	// TODO ideally we should call isTracingEnabled(), but since this is a Meteor package we can't :/
@@ -35,15 +35,13 @@ if (typeof mongoOptionStr !== 'undefined') {
 		const mongoOptions = JSON.parse(mongoOptionStr);
 		Object.assign(mongoConnectionOptions, mongoOptions);
 	} catch (error) {
-		console.error('Failed to parse MONGO_OPTIONS environment variable');
+		const message = 'Invalid MONGO_OPTIONS environment variable: must be valid JSON.';
+
+		console.error(message);
 		console.error('Provided value:', mongoOptionStr);
 		console.error('Error:', error.message);
-		console.error('Please ensure MONGO_OPTIONS contains valid JSON');
 
-		throw new Error(
-			`Invalid MONGO_OPTIONS configuration: ${error.message}`,
-		);
-		throw new Error('Invalid MONGO_OPTIONS environment variable: must be valid JSON.', { cause: error });
+		throw new Error(message, { cause: error });
 	}
 }
 
