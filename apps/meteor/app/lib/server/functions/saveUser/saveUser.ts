@@ -18,7 +18,6 @@ import type { UserChangedAuditStore } from '../../../../../server/lib/auditServe
 import { callbacks } from '../../../../../server/lib/callbacks';
 import { shouldBreakInVersion } from '../../../../../server/lib/shouldBreakInVersion';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { safeGetMeteorUser } from '../../../../utils/server/functions/safeGetMeteorUser';
 import { generatePassword } from '../../lib/generatePassword';
 import { notifyOnUserChange } from '../../lib/notifyListener';
 import { passwordPolicy } from '../../lib/passwordPolicy';
@@ -63,8 +62,19 @@ type SaveUserOptions = {
 	auditStore?: UserChangedAuditStore;
 };
 
+const findUserById = async (uid: IUser['_id']): Promise<IUser> => {
+	const user = await Users.findOneById(uid);
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+	}
+
+	return user;
+};
+
 const _saveUser = (session?: ClientSession) =>
 	async function (userId: IUser['_id'], userData: SaveUserData, options?: SaveUserOptions) {
+		const performedBy = await findUserById(userId);
+
 		const oldUserData = userData._id && (await Users.findOneById(userData._id));
 		if (oldUserData && isUserFederated(oldUserData)) {
 			throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
@@ -91,7 +101,7 @@ const _saveUser = (session?: ClientSession) =>
 
 		if (!isUpdateUserData(userData)) {
 			// TODO audit new users
-			return saveNewUser(userData, sendPassword);
+			return saveNewUser(userData, sendPassword, performedBy);
 		}
 
 		if (!oldUserData) {
@@ -212,7 +222,7 @@ const _saveUser = (session?: ClientSession) =>
 			await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, {
 				user: userUpdated,
 				previousUser: oldUserData,
-				performedBy: await safeGetMeteorUser(),
+				performedBy,
 			});
 
 			if (sendPassword) {
