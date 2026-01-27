@@ -1,11 +1,6 @@
-/* eslint-disable complexity */
 import {
 	FieldGroup,
 	TextInput,
-	Field,
-	FieldLabel,
-	FieldRow,
-	FieldError,
 	PasswordInput,
 	ButtonGroup,
 	Button,
@@ -13,16 +8,19 @@ import {
 	Callout,
 } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
-import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
+import { useAccountsCustomFields, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import EmailConfirmationForm from './EmailConfirmationForm';
+import { FormField } from './components/FormField';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
+import { useRegistrationValidation } from './hooks/useRegistrationValidation';
+import { useRegistrationErrors } from './hooks/useRegistrationErrors';
 
 type LoginRegisterPayload = {
 	name: string;
@@ -58,8 +56,6 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const [serverError, setServerError] = useState<string | undefined>(undefined);
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
 	const {
 		register,
 		handleSubmit,
@@ -72,7 +68,17 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	} = useForm<LoginRegisterPayload>({ mode: 'onBlur' });
 
 	const { password } = watch();
-	const passwordIsValid = useValidatePassword(password);
+	const {
+		getNameValidation,
+		getEmailValidation,
+		getUsernameValidation,
+		getPasswordValidation,
+		getPasswordConfirmationValidation,
+		getReasonValidation,
+		passwordIsValid,
+	} = useRegistrationValidation(password);
+
+	const { handleRegistrationError } = useRegistrationErrors(setError, setLoginRoute, setServerError);
 
 	const registerFormRef = useRef<HTMLElement>(null);
 
@@ -86,39 +92,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		registerUser.mutate(
 			{ pass: password, ...formData },
 			{
-				onError: (error: any) => {
-					if ([error.error, error.errorType].includes('error-invalid-email')) {
-						setError('email', { type: 'invalid-email', message: t('registration.component.form.invalidEmail') });
-					}
-					if (error.errorType === 'error-user-already-exists') {
-						setError('username', { type: 'user-already-exists', message: t('registration.component.form.usernameAlreadyExists') });
-					}
-					if (/Email already exists/.test(error.error)) {
-						setError('email', { type: 'email-already-exists', message: t('registration.component.form.emailAlreadyExists') });
-					}
-					if (/Username is already in use/.test(error.error)) {
-						setError('username', { type: 'username-already-exists', message: t('registration.component.form.userAlreadyExist') });
-					}
-					if (/The username provided is not valid/.test(error.error)) {
-						setError('username', {
-							type: 'username-contains-invalid-chars',
-							message: t('registration.component.form.usernameContainsInvalidChars'),
-						});
-					}
-					if (/Name contains invalid characters/.test(error.error)) {
-						setError('name', { type: 'name-contains-invalid-chars', message: t('registration.component.form.nameContainsInvalidChars') });
-					}
-					if (/error-too-many-requests/.test(error.error)) {
-						dispatchToastMessage({ type: 'error', message: error.error });
-					}
-					if (/error-user-is-not-activated/.test(error.error)) {
-						dispatchToastMessage({ type: 'info', message: t('registration.page.registration.waitActivationWarning') });
-						setLoginRoute('login');
-					}
-					if (error.error === 'error-user-registration-custom-field') {
-						setServerError(error.message);
-					}
-				},
+				onError: handleRegistrationError,
 			},
 		);
 	};
@@ -140,156 +114,119 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			</Form.Header>
 			<Form.Container>
 				<FieldGroup>
-					<Field>
-						<FieldLabel required={requireNameForRegister} htmlFor={nameId}>
-							{t('registration.component.form.name')}
-						</FieldLabel>
-						<FieldRow>
-							<TextInput
-								{...register('name', {
-									required: requireNameForRegister ? t('Required_field', { field: t('registration.component.form.name') }) : false,
-								})}
-								error={errors?.name?.message}
-								aria-required={requireNameForRegister}
-								aria-invalid={errors.name ? 'true' : 'false'}
-								placeholder={t('onboarding.form.adminInfoForm.fields.fullName.placeholder')}
-								aria-describedby={`${nameId}-error`}
-								id={nameId}
-							/>
-						</FieldRow>
-						{errors.name && (
-							<FieldError role='alert' id={`${nameId}-error`}>
-								{errors.name.message}
-							</FieldError>
-						)}
-					</Field>
-					<Field>
-						<FieldLabel required htmlFor={emailId}>
-							{t('registration.component.form.email')}
-						</FieldLabel>
-						<FieldRow>
-							<TextInput
-								{...register('email', {
-									required: t('Required_field', { field: t('registration.component.form.email') }),
-									pattern: {
-										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-										message: t('registration.component.form.invalidEmail'),
-									},
-								})}
-								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
-								error={errors?.email?.message}
-								aria-required='true'
-								aria-invalid={errors.email ? 'true' : 'false'}
-								aria-describedby={`${emailId}-error`}
-								id={emailId}
-							/>
-						</FieldRow>
-						{errors.email && (
-							<FieldError role='alert' id={`${emailId}-error`}>
-								{errors.email.message}
-							</FieldError>
-						)}
-					</Field>
-					<Field>
-						<FieldLabel required htmlFor={usernameId}>
-							{t('registration.component.form.username')}
-						</FieldLabel>
-						<FieldRow>
-							<TextInput
-								{...register('username', {
-									required: t('Required_field', { field: t('registration.component.form.username') }),
-								})}
-								error={errors?.username?.message}
-								aria-required='true'
-								aria-invalid={errors.username ? 'true' : 'false'}
-								aria-describedby={`${usernameId}-error`}
-								id={usernameId}
-								placeholder='jon.doe'
-							/>
-						</FieldRow>
-						{errors.username && (
-							<FieldError role='alert' id={`${usernameId}-error`}>
-								{errors.username.message}
-							</FieldError>
-						)}
-					</Field>
-					<Field>
-						<FieldLabel required htmlFor={passwordId}>
-							{t('registration.component.form.password')}
-						</FieldLabel>
-						<FieldRow>
-							<PasswordInput
-								{...register('password', {
-									required: t('Required_field', { field: t('registration.component.form.password') }),
-									validate: () => (!passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
-								})}
-								error={errors.password?.message}
-								aria-required='true'
-								aria-invalid={errors.password ? 'true' : undefined}
-								id={passwordId}
-								placeholder={passwordPlaceholder || t('Create_a_password')}
-								aria-describedby={`${passwordVerifierId} ${passwordId}-error`}
-							/>
-						</FieldRow>
-						{errors?.password && (
-							<FieldError role='alert' id={`${passwordId}-error`}>
-								{errors.password.message}
-							</FieldError>
-						)}
+					<FormField
+						label={t('registration.component.form.name')}
+						required={requireNameForRegister}
+						htmlFor={nameId}
+						error={errors?.name?.message}
+						errorId={`${nameId}-error`}
+					>
+						<TextInput
+							{...register('name', getNameValidation())}
+							error={errors?.name?.message}
+							aria-required={requireNameForRegister}
+							aria-invalid={errors.name ? 'true' : 'false'}
+							placeholder={t('onboarding.form.adminInfoForm.fields.fullName.placeholder')}
+							aria-describedby={`${nameId}-error`}
+							id={nameId}
+						/>
+					</FormField>
+
+					<FormField
+						label={t('registration.component.form.email')}
+						required
+						htmlFor={emailId}
+						error={errors?.email?.message}
+						errorId={`${emailId}-error`}
+					>
+						<TextInput
+							{...register('email', getEmailValidation())}
+							placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
+							error={errors?.email?.message}
+							aria-required='true'
+							aria-invalid={errors.email ? 'true' : 'false'}
+							aria-describedby={`${emailId}-error`}
+							id={emailId}
+						/>
+					</FormField>
+
+					<FormField
+						label={t('registration.component.form.username')}
+						required
+						htmlFor={usernameId}
+						error={errors?.username?.message}
+						errorId={`${usernameId}-error`}
+					>
+						<TextInput
+							{...register('username', getUsernameValidation())}
+							error={errors?.username?.message}
+							aria-required='true'
+							aria-invalid={errors.username ? 'true' : 'false'}
+							aria-describedby={`${usernameId}-error`}
+							id={usernameId}
+							placeholder='jon.doe'
+						/>
+					</FormField>
+
+					<FormField
+						label={t('registration.component.form.password')}
+						required
+						htmlFor={passwordId}
+						error={errors?.password?.message}
+						errorId={`${passwordId}-error`}
+					>
+						<PasswordInput
+							{...register('password', getPasswordValidation())}
+							error={errors.password?.message}
+							aria-required='true'
+							aria-invalid={errors.password ? 'true' : undefined}
+							id={passwordId}
+							placeholder={passwordPlaceholder || t('Create_a_password')}
+							aria-describedby={`${passwordVerifierId} ${passwordId}-error`}
+						/>
 						<PasswordVerifier password={password} id={passwordVerifierId} />
-					</Field>
+					</FormField>
+
 					{requiresPasswordConfirmation && (
-						<Field>
-							<FieldLabel required htmlFor={passwordConfirmationId}>
-								{t('registration.component.form.confirmPassword')}
-							</FieldLabel>
-							<FieldRow>
-								<PasswordInput
-									{...register('passwordConfirmation', {
-										required: t('Required_field', { field: t('registration.component.form.confirmPassword') }),
-										deps: ['password'],
-										validate: (val: string) => (watch('password') === val ? true : t('registration.component.form.invalidConfirmPass')),
-									})}
-									error={errors.passwordConfirmation?.message}
-									aria-required='true'
-									aria-invalid={errors.passwordConfirmation ? 'true' : 'false'}
-									id={passwordConfirmationId}
-									aria-describedby={`${passwordConfirmationId}-error`}
-									placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
-									disabled={!passwordIsValid}
-								/>
-							</FieldRow>
-							{errors.passwordConfirmation && (
-								<FieldError role='alert' id={`${passwordConfirmationId}-error`}>
-									{errors.passwordConfirmation.message}
-								</FieldError>
-							)}
-						</Field>
+						<FormField
+							label={t('registration.component.form.confirmPassword')}
+							required
+							htmlFor={passwordConfirmationId}
+							error={errors?.passwordConfirmation?.message}
+							errorId={`${passwordConfirmationId}-error`}
+						>
+							<PasswordInput
+								{...register('passwordConfirmation', getPasswordConfirmationValidation(watch('password')))}
+								error={errors.passwordConfirmation?.message}
+								aria-required='true'
+								aria-invalid={errors.passwordConfirmation ? 'true' : 'false'}
+								id={passwordConfirmationId}
+								aria-describedby={`${passwordConfirmationId}-error`}
+								placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
+								disabled={!passwordIsValid}
+							/>
+						</FormField>
 					)}
+
 					{manuallyApproveNewUsersRequired && (
-						<Field>
-							<FieldLabel required htmlFor={reasonId}>
-								{t('registration.component.form.reasonToJoin')}
-							</FieldLabel>
-							<FieldRow>
-								<TextAreaInput
-									{...register('reason', {
-										required: t('Required_field', { field: t('registration.component.form.reasonToJoin') }),
-									})}
-									error={errors?.reason?.message}
-									aria-required='true'
-									aria-invalid={errors.reason ? 'true' : 'false'}
-									aria-describedby={`${reasonId}-error`}
-									id={reasonId}
-								/>
-							</FieldRow>
-							{errors.reason && (
-								<FieldError role='alert' id={`${reasonId}-error`}>
-									{errors.reason.message}
-								</FieldError>
-							)}
-						</Field>
+						<FormField
+							label={t('registration.component.form.reasonToJoin')}
+							required
+							htmlFor={reasonId}
+							error={errors?.reason?.message}
+							errorId={`${reasonId}-error`}
+						>
+							<TextAreaInput
+								{...register('reason', getReasonValidation())}
+								error={errors?.reason?.message}
+								aria-required='true'
+								aria-invalid={errors.reason ? 'true' : 'false'}
+								aria-describedby={`${reasonId}-error`}
+								id={reasonId}
+							/>
+						</FormField>
 					)}
+
 					<CustomFieldsForm formName='customFields' formControl={control} metadata={customFields} />
 					{serverError && <Callout type='danger'>{serverError}</Callout>}
 				</FieldGroup>
