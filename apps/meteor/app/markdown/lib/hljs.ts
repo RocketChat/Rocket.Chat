@@ -7,7 +7,8 @@ hljs.registerLanguage('markdown', markdown);
 hljs.registerLanguage('clean', clean);
 hljs.registerLanguage('javascript', javascript);
 
-export const register = async (lang) => {
+// eslint-disable-next-line complexity
+export const register = async (lang: string) => {
 	switch (lang) {
 		case 'onec':
 			return hljs.registerLanguage('onec', (await import('highlight.js/lib/languages/1c')).default);
