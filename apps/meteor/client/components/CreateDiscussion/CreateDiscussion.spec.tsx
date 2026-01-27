@@ -50,6 +50,8 @@ const appRoot = mockAppRoot()
 	.withTranslations('en', 'core', {
 		Encrypted: 'Encrypted',
 		Unencrypted: 'Unencrypted',
+		Discussion_first_message_title: 'Message',
+		Discussion_target_channel: 'Parent channel or team',
 	})
 	.build();
 
@@ -73,14 +75,14 @@ describe('CreateDiscussion', () => {
 			const encryptedToggle = screen.getByRole('checkbox', { name: 'Encrypted' });
 			expect(encryptedToggle).toBeDisabled();
 
-			const firstMessageField = screen.getByLabelText('Discussion_first_message_title');
+			const firstMessageField = screen.getByLabelText('Message');
 			expect(firstMessageField).toBeDisabled();
 		});
 
 		it('should disable encrypted toggle and first message field when an encrypted parent room is selected', async () => {
 			render(<CreateDiscussion onClose={jest.fn()} />, { wrapper: appRoot });
 
-			const parentRoomSelect = screen.getByRole('textbox', { name: 'Discussion_target_channel' });
+			const parentRoomSelect = screen.getByRole('textbox', { name: 'Parent channel or team' });
 
 			await userEvent.click(parentRoomSelect);
 
@@ -93,7 +95,7 @@ describe('CreateDiscussion', () => {
 			const encryptedToggle = screen.getByRole('checkbox', { name: 'Encrypted' });
 			expect(encryptedToggle).toBeDisabled();
 
-			const firstMessageField = screen.getByLabelText('Discussion_first_message_title');
+			const firstMessageField = screen.getByLabelText('Message');
 			expect(firstMessageField).toBeDisabled();
 		});
 	});
