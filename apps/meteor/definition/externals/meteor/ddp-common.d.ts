@@ -2,8 +2,9 @@ declare module 'meteor/ddp-common' {
 	namespace DDPCommon {
 		function stringifyDDP(msg: EJSONable): string;
 		function parseDDP(msg: string): EJSONable;
-		class MethodInvocation {
-			constructor(options: {
+
+		interface MethodInvocationConstructor {
+			new (options: {
 				connection: {
 					id: string;
 					close: () => void;
@@ -12,8 +13,10 @@ declare module 'meteor/ddp-common' {
 				};
 				isSimulation?: boolean;
 				userId?: string;
-			});
+			}): MethodInvocation;
 		}
+
+		let MethodInvocation: MethodInvocationConstructor;
 
 		/**
 		 * Heartbeat options
