@@ -10,6 +10,8 @@ type StreamCardProps = {
 	onClickFocusStream?: () => void;
 	focused?: boolean;
 	square?: boolean;
+	autoHeight?: boolean;
+	maxHeight?: number;
 };
 
 const alternateSizeProps = {
@@ -19,14 +21,25 @@ const alternateSizeProps = {
 	width: undefined,
 };
 
-const StreamCard = ({ children, own, displayName, onClickFocusStream, focused, square = false }: StreamCardProps) => {
+const StreamCard = ({
+	children,
+	own,
+	displayName,
+	onClickFocusStream,
+	focused,
+	autoHeight,
+	maxHeight,
+	square = false,
+}: StreamCardProps) => {
 	const { t } = useTranslation();
 	return (
 		<GenericCard
 			{...(focused ? alternateSizeProps : {})}
 			title={own ? t('Your_screen') : t('Peer__displayName__screen', { displayName })}
-			height={focused ? 'fit-content' : undefined}
+			height={focused || autoHeight ? 'fit-content' : undefined}
+			minHeight={autoHeight ? 0 : undefined}
 			width={square ? CARD_HEIGHT : undefined}
+			maxHeight={maxHeight || '100%'}
 			slots={{
 				bottomLeft: (
 					<Box fontScale='c2' color='default'>

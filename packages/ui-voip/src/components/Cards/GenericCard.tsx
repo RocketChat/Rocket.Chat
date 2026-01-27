@@ -33,6 +33,7 @@ type GenericCardProps = {
 	height?: string | number;
 	flexGrow?: number;
 	flexShrink?: number;
+	minHeight?: number;
 };
 
 const GenericCard = ({
@@ -41,6 +42,7 @@ const GenericCard = ({
 	title,
 	maxWidth = CARD_MAX_WIDTH, // 4:3
 	maxHeight = CARD_HEIGHT, // 4:3
+	minHeight = CARD_HEIGHT,
 	width,
 	height = CARD_HEIGHT,
 	flexGrow = 0,
@@ -65,7 +67,7 @@ const GenericCard = ({
 			width={width}
 			height={height}
 			minWidth={CARD_MIN_WIDTH}
-			minHeight={CARD_HEIGHT}
+			minHeight={minHeight}
 			m={CARD_MARGIN}
 		>
 			{children}

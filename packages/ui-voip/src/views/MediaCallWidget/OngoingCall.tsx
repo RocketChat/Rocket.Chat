@@ -1,4 +1,4 @@
-import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -16,6 +16,7 @@ import {
 	useKeypad,
 	useInfoSlots,
 } from '../../components';
+import StreamCard from '../../components/Cards/StreamCard';
 import { useMediaCallContext } from '../../context';
 import useMediaStream from '../../context/useMediaStream';
 
@@ -35,6 +36,7 @@ const OngoingCall = () => {
 		peerInfo,
 		connectionState,
 		getRemoteVideoStream,
+		getLocalVideoStream,
 		toggleScreenSharing,
 		onClickDirectMessage,
 	} = useMediaCallContext();
@@ -47,9 +49,11 @@ const OngoingCall = () => {
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	const videoStreamWrapper = getRemoteVideoStream();
+	const remoteStreamWrapper = getRemoteVideoStream();
+	const localStreamWrapper = getLocalVideoStream();
 
-	const [remoteVideoStreamRefCallback] = useMediaStream(videoStreamWrapper?.stream ?? null);
+	const [remoteStreamRefCallback] = useMediaStream(remoteStreamWrapper?.stream ?? null);
+	const [localStreamRefCallback] = useMediaStream(localStreamWrapper?.stream ?? null);
 
 	const onClickShareScreen = () => {
 		toggleScreenSharing();
@@ -61,7 +65,7 @@ const OngoingCall = () => {
 	}
 
 	return (
-		<Widget expanded={videoStreamWrapper?.active}>
+		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer />}>
 				{onClickDirectMessage && (
@@ -71,27 +75,39 @@ const OngoingCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
-				{videoStreamWrapper?.active && (
-					<Box display='flex' flexDirection='column' w={432} h={243}>
-						<video controls preload='metadata' style={{ width: '100%', height: '100%' }} ref={remoteVideoStreamRefCallback}>
+				{/* TODO: Cannot get user info right here, I'm avoiding to other contexts, so it has to come from VoipContext */}
+				{localStreamWrapper?.active && (
+					<StreamCard displayName={t('You')} own autoHeight maxHeight={120}>
+						<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
 							<track kind='captions' />
 						</video>
-					</Box>
+					</StreamCard>
+				)}
+				{remoteStreamWrapper?.active && (
+					<StreamCard displayName={'displayName' in peerInfo ? peerInfo.displayName : ''} autoHeight maxHeight={120}>
+						<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
+							<track kind='captions' />
+						</video>
+					</StreamCard>
 				)}
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
 				{keypad}
 				<ButtonGroup large align='center'>
-					<ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} />
+					{'number' in peerInfo && (
+						<ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} />
+					)}
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
-					<ToggleButton
-						label={t('Screen_sharing')}
-						icons={['computer', 'computer']}
-						titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
-						pressed={videoStreamWrapper?.active ?? false}
-						onToggle={onClickShareScreen}
-					/>
+					{'username' in peerInfo && (
+						<ToggleButton
+							label={t('Screen_sharing')}
+							icons={['computer', 'computer']}
+							titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
+							pressed={localStreamWrapper?.active ?? false}
+							onToggle={onClickShareScreen}
+						/>
+					)}
 					<ToggleButton
 						label={t('Hold')}
 						icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
