@@ -2,6 +2,8 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"outDir": "dist",
+		"target": "es2022",
+		"module": "ESNext",
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,
