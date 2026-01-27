@@ -59,7 +59,7 @@ const verifyQuery = (query: Query, allowedAttributes: string[], allowedOperation
 			return false;
 		}
 
-		if (value instanceof Object) {
+		if (isRecord(value)) {
 			return verifyQuery(value, allowedAttributes, allowedOperations, path);
 		}
 		return true;
