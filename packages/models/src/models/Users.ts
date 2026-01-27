@@ -2398,7 +2398,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query, options);
 	}
 
-	findOneByRolesAndType<T extends Document = IUser>(roles: IRole['_id'][], type: string, options?: FindOptions<IUser>) {
+	findOneByRolesAndType<T extends Document = IUser>(roles: IRole['_id'], type: string, options?: FindOptions<IUser>) {
 		const query = { roles, type };
 
 		return this.findOne<T>(query, options);

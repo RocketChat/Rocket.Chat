@@ -66,7 +66,6 @@ interface EventLikeCallbackSignatures {
 	'beforeJoinDefaultChannels': (user: IUser) => void;
 	'beforeCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreateRoom': (owner: IUser, room: IRoom) => void;
-	'onValidateLogin': (login: ILoginAttempt) => void;
 	'federation.afterCreateFederatedRoom': (
 		room: IRoom,
 		second: {
@@ -184,6 +183,7 @@ type ChainedCallbackSignatures = {
 		{ room, topic, user }: { room: IRoom; topic: string; user: Pick<IUser, 'username' | '_id' | 'federation' | 'federated'> },
 	) => void;
 	'livechat.beforeInquiry': (data: IOmnichannelInquiryExtraData) => Partial<ILivechatInquiryRecord>;
+	'onValidateLogin': (login: ILoginAttempt) => ILoginAttempt;
 };
 
 export type Hook =

@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
-import { pick } from '@rocket.chat/tools';
+import { isTruthy, pick } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 
 import { logger } from './logger';
@@ -18,12 +18,10 @@ export const createNewUser = async (username: string, { attributes, casVersion, 
 		username: attributes.username || username,
 		active: true,
 		globalRoles: ['user'],
-		emails: [attributes.email]
-			.filter((e) => e)
-			.map((address) => ({
-				address,
-				verified: flagEmailAsVerified,
-			})),
+		emails: [attributes.email].filter(isTruthy).map((address) => ({
+			address,
+			verified: flagEmailAsVerified,
+		})),
 		services: {
 			cas: {
 				external_id: username,

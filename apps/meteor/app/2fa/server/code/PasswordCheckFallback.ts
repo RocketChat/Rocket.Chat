@@ -1,5 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
+import type { Meteor } from 'meteor/meteor';
 
 import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 import { settings } from '../../../settings/server';
