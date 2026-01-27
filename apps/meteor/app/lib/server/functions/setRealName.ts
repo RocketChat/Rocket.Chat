@@ -2,15 +2,12 @@ import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
-import { RateLimiter } from '../lib';
 
-export const _setRealName = async function (
+export const setRealName = async function (
 	userId: string,
 	name: string,
 	fullUser?: IUser,
@@ -65,10 +62,3 @@ export const _setRealName = async function (
 
 	return user;
 };
-
-export const setRealName = RateLimiter.limitFunction(_setRealName, 1, 60000, {
-	async 0() {
-		const userId = Meteor.userId();
-		return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
-	}, // Administrators have permission to change others names, so don't limit those
-});
