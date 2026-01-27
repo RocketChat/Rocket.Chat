@@ -293,7 +293,33 @@ function __loadMeteorScript(relPath) {
 	return promise;
 }
 
+await (async () => {
 ${loadStatements}
+})();
+
+import * as __meteorHostReactNamespace from 'react';
+const __meteorHostReact = __meteorHostReactNamespace && __meteorHostReactNamespace.default ? __meteorHostReactNamespace.default : __meteorHostReactNamespace;
+const __meteorReactShimKey = '__meteorHostReactShimInstalled';
+const __meteorRuntime = globalThis.Package;
+const __meteorModules = __meteorRuntime.modules;
+const __meteorInstall = __meteorModules && __meteorModules.meteorInstall;
+if (!globalThis[__meteorReactShimKey]) {
+	const __meteorReactFactory = (require, exports, module) => {
+		module.exports = __meteorHostReact;
+		module.exports.default = __meteorHostReact;
+	};
+	__meteorInstall({
+		node_modules: {
+			react: {
+				'index.js': __meteorReactFactory,
+			},
+			'react.js': __meteorReactFactory,
+		},
+	});
+	globalThis[__meteorReactShimKey] = true;
+}
+
+export const Package = __meteorRuntime;
 `;
 }
 

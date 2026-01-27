@@ -154,20 +154,36 @@ export default defineConfig(async () => {
 	});
 });
 
+async function checkUrl(url: string | Request | URL): Promise<boolean> {
+	try {
+		const response = await fetch(url, { method: 'HEAD' });
+		return response.ok;
+	} catch {
+		return false;
+	}
+}
+
 async function getDefaultHostUrl() {
 	if (process.env.ROOT_URL) {
 		return new URL(process.env.ROOT_URL);
 	}
 
 	// Check if http://localhost:3000 is reachable
-	try {
-		const response = await fetch('http://localhost:3000/api/info');
-		if (response.ok) {
-			return new URL('http://localhost:3000');
-		}
-	} catch {
-		// Ignore errors
+	if (await checkUrl('http://localhost:3000/api/info')) {
+		return new URL('http://localhost:3000');
 	}
 
-	return new URL('https://unstable.qa.rocket.chat');
+	if (await checkUrl('https://unstable.qa.rocket.chat/api/info')) {
+		return new URL('https://unstable.qa.rocket.chat');
+	}
+
+	if (await checkUrl('https://candidate.qa.rocket.chat/api/info')) {
+		return new URL('https://candidate.qa.rocket.chat');
+	}
+
+	if (await checkUrl('https://open.rocket.chat/api/info')) {
+		return new URL('https://open.rocket.chat');
+	}
+
+	throw new Error('Unable to determine ROOT_URL. Please set the ROOT_URL environment variable.');
 }
