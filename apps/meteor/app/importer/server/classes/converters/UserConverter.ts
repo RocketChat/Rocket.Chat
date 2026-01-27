@@ -4,6 +4,7 @@ import { Random } from '@rocket.chat/random';
 import { SHA256 } from '@rocket.chat/sha256';
 import { hash as bcryptHash } from 'bcrypt';
 import { Accounts } from 'meteor/accounts-base';
+import type { Meteor } from 'meteor/meteor';
 
 import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
 import { generateTempPassword } from './generateTempPassword';
@@ -410,7 +411,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 				skipAppsEngineEvent: !!process.env.IMPORTER_SKIP_APPS_EVENT,
 			},
 			{
-				...user,
+				...(user as Partial<Meteor.User>),
 				...(userData.roles?.length ? { globalRoles: userData.roles } : {}),
 			},
 		);

@@ -31,7 +31,7 @@ export const replacekey = (str: string, key: string, value = ''): string =>
 
 export const translate = (str: string): string => replaceVariables(str, (_match, key) => i18n.t(key, { lng }));
 
-export const replace = (str: string, data: { [key: string]: unknown } = {}): string => {
+export const replace = (str: string, data: Record<string, any> = {}): string => {
 	if (!str) {
 		return '';
 	}
@@ -54,14 +54,14 @@ export const replace = (str: string, data: { [key: string]: unknown } = {}): str
 
 const nonEscapeKeys = ['room_path'];
 
-export const replaceEscaped = (str: string, data: { [key: string]: unknown } = {}): string => {
+export const replaceEscaped = (str: string, data: Record<string, any> = {}): string => {
 	const siteName = settings.get<string>('Site_Name');
 	const siteUrl = settings.get<string>('Site_Url');
 
 	return replace(str, {
 		Site_Name: siteName ? escapeHTML(siteName) : undefined,
 		Site_Url: siteUrl ? escapeHTML(siteUrl) : undefined,
-		...Object.entries(data).reduce<{ [key: string]: string }>((ret, [key, value]) => {
+		...Object.entries(data).reduce<Record<string, string>>((ret, [key, value]) => {
 			if (value !== undefined && value !== null) {
 				ret[key] = nonEscapeKeys.includes(key) ? String(value) : escapeHTML(String(value));
 			}
