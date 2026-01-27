@@ -140,7 +140,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 						)}
 					</FieldRow>
 					{errors.parentRoom && (
-						<FieldError aria-live='assertive' id={`${parentRoomId}-error`}>
+						<FieldError role='alert' id={`${parentRoomId}-error`}>
 							{errors.parentRoom.message}
 						</FieldError>
 					)}
@@ -167,7 +167,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 						/>
 					</FieldRow>
 					{errors.name && (
-						<FieldError aria-live='assertive' id={`${discussionNameId}-error`}>
+						<FieldError role='alert' id={`${discussionNameId}-error`}>
 							{errors.name.message}
 						</FieldError>
 					)}
