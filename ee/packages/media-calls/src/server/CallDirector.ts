@@ -262,7 +262,7 @@ class MediaCallDirector {
 		agent: IMediaCallAgent,
 	): Promise<void> {
 		if (!agent.oppositeAgent) {
-			logger.error('Unable to transfer calls without a reference to the opposite agent.');
+			logger.error({ msg: 'Unable to transfer calls without a reference to the opposite agent.' });
 			return;
 		}
 

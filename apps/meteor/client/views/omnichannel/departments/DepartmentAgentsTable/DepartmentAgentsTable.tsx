@@ -26,22 +26,19 @@ function DepartmentAgentsTable({ control, register, 'aria-labelledby': ariaLabel
 	return (
 		<>
 			<AddAgent aria-labelledby={ariaLabelledBy} agentList={agentList} onAdd={append} />
-
-			<GenericTable>
+			<GenericTable aria-label={t('Agents')}>
 				<GenericTableHeader>
 					<GenericTableHeaderCell w='x200'>{t('Name')}</GenericTableHeaderCell>
 					<GenericTableHeaderCell w='x140'>{t('Count')}</GenericTableHeaderCell>
 					<GenericTableHeaderCell w='x120'>{t('Order')}</GenericTableHeaderCell>
 					<GenericTableHeaderCell w='x40'>{t('Remove')}</GenericTableHeaderCell>
 				</GenericTableHeader>
-
 				<GenericTableBody>
 					{page.map((agent, index) => (
 						<AgentRow key={agent.id} index={index} agent={agent} register={register} onRemove={() => remove(index)} />
 					))}
 				</GenericTableBody>
 			</GenericTable>
-
 			<Pagination
 				divider
 				current={current}
