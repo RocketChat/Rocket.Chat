@@ -1,6 +1,8 @@
+import type { Token } from '@rocket.chat/core-typings';
+
 import { addAsToken, isToken, validateAllowedTokens } from './token';
 
-const validateUrl = (url, message) => {
+const validateUrl = (url: string, message: { tokens?: Token[] }) => {
 	// Don't render markdown inside links
 	if (message?.tokens?.some((token) => url.includes(token.token))) {
 		return false;
@@ -19,20 +21,21 @@ const validateUrl = (url, message) => {
 	}
 };
 
-const endsWithWhitespace = (text) => text.substring(text.length - 1).match(/\s/);
+const endsWithWhitespace = (text: string) => text.substring(text.length - 1).match(/\s/);
 
-const getParseableMarkersCount = (start, end) => {
+const getParseableMarkersCount = (start: string, end: string) => {
 	const usableMarkers = start.length > 1 ? 2 : 1;
 	return end.length - usableMarkers >= 0 ? usableMarkers : 1;
 };
 
-const getTextWrapper = (marker, tagName) => (textPrepend, wrappedText, textAppend) =>
+const getTextWrapper = (marker: string, tagName: string) => (textPrepend: string, wrappedText: string, textAppend: string) =>
 	`${textPrepend}<span class="copyonly">${marker}</span><${tagName}>${wrappedText}</${tagName}><span class="copyonly">${marker}</span>${textAppend}`;
 
-const getRegexReplacer = (replaceFunction, getRegex) => (marker, tagName) => {
-	const wrapper = getTextWrapper(marker, tagName);
-	return (msg) => msg.replace(getRegex(marker), (...args) => replaceFunction(wrapper, ...args));
-};
+const getRegexReplacer =
+	(replaceFunction: (...args: any[]) => string, getRegex: (marker: string) => RegExp) => (marker: string, tagName: string) => {
+		const wrapper = getTextWrapper(marker, tagName);
+		return (msg: string) => msg.replace(getRegex(marker), (...args) => replaceFunction(wrapper, ...args));
+	};
 
 const getParserWithCustomMarker = getRegexReplacer(
 	(wrapper, match, p1, p2, p3) => {
@@ -61,7 +64,10 @@ const parseItalic = getRegexReplacer(
 	() => new RegExp('([^\\r\\n\\s~*_]){0,1}(\\_+(?!\\s))([^\\_\\r\\n]+)(\\_+)([^\\r\\n\\s]){0,1}', 'gm'),
 )('_', 'em');
 
-const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) => {
+const parseNotEscaped = (
+	message: { msg?: string; html: string; tokens?: Token[] },
+	{ supportSchemesForLink, headers, rootUrl }: { supportSchemesForLink?: string; headers?: boolean; rootUrl?: string },
+) => {
 	let msg = message.html;
 	if (!message.tokens) {
 		message.tokens = [];
@@ -182,7 +188,10 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 	return msg;
 };
 
-export const markdown = (message, options) => {
+export const markdown = <TMessage extends { msg?: string; html: string; tokens?: Token[] }>(
+	message: TMessage,
+	options: { supportSchemesForLink?: string; headers?: boolean; rootUrl?: string },
+) => {
 	message.html = parseNotEscaped(message, options);
 	return message;
 };

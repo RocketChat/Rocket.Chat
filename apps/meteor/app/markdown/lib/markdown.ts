@@ -1,7 +1,4 @@
-/*
- * Markdown is a named function that will parse markdown syntax
- * @param {Object} message - The message object
- */
+import type { Token } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
@@ -9,41 +6,36 @@ import { filtered } from './parser/filtered/filtered';
 import { code } from './parser/original/code';
 import { original } from './parser/original/original';
 
-const parsers = {
-	original,
-	filtered,
-};
-
 class MarkdownClass {
-	parse(text) {
+	parse(text: string) {
 		const message = {
 			html: escapeHTML(text),
 		};
 		return this.mountTokensBack(this.parseMessageNotEscaped(message)).html;
 	}
 
-	parseNotEscaped(text) {
+	parseNotEscaped(text: string) {
 		const message = {
 			html: text,
 		};
 		return this.mountTokensBack(this.parseMessageNotEscaped(message)).html;
 	}
 
-	parseMessageNotEscaped(message) {
+	parseMessageNotEscaped<TMessage extends { html: string; tokens?: Token[] }>(message: TMessage) {
 		const options = {
 			rootUrl: Meteor.absoluteUrl(),
 		};
 
-		return parsers.original(message, options);
+		return original(message, options);
 	}
 
-	mountTokensBackRecursively(message, tokenList, useHtml = true) {
+	mountTokensBackRecursively(message: { html: string; tokens?: Token[] }, tokenList: Token[], useHtml = true) {
 		const missingTokens = [];
 
 		if (tokenList.length > 0) {
 			for (const { token, text, noHtml } of tokenList) {
 				if (message.html.indexOf(token) >= 0) {
-					message.html = message.html.replace(token, () => (useHtml ? text : noHtml)); // Uses lambda so doesn't need to escape $
+					message.html = message.html.replace(token, () => (useHtml ? text : (noHtml ?? ''))); // Uses lambda so doesn't need to escape $
 				} else {
 					missingTokens.push({ token, text, noHtml });
 				}
@@ -57,7 +49,7 @@ class MarkdownClass {
 		}
 	}
 
-	mountTokensBack(message, useHtml = true) {
+	mountTokensBack<TMessage extends { html: string; tokens?: Token[] }>(message: TMessage, useHtml = true) {
 		if (message.tokens) {
 			this.mountTokensBackRecursively(message, message.tokens, useHtml);
 		}
@@ -65,30 +57,27 @@ class MarkdownClass {
 		return message;
 	}
 
-	code(...args) {
-		return code(...args);
+	code<TMessage extends { html: string; tokens?: Token[] }>(message: TMessage) {
+		return code(message);
 	}
 
-	/** @param {string} message */
-	filterMarkdownFromMessage(message) {
-		return parsers.filtered(message);
+	filterMarkdownFromMessage(message: string) {
+		return filtered(message);
 	}
 }
 
 export const Markdown = new MarkdownClass();
 
-/** @param {string} message */
-export const filterMarkdown = (message) => Markdown.filterMarkdownFromMessage(message);
+export const filterMarkdown = (message: string) => Markdown.filterMarkdownFromMessage(message);
 
-export const createMarkdownMessageRenderer = ({ ...options }) => {
-	const markedParser = parsers.marked;
-	return (message, useMarkedParser = false) => {
+export const createMarkdownMessageRenderer =
+	({ ...options }) =>
+	(message: { html: string; tokens?: Token[] }) => {
 		if (!message?.html?.trim()) {
 			return message;
 		}
 
-		return useMarkedParser ? markedParser(message, options) : parsers.original(message, options);
+		return original(message, options);
 	};
-};
 
-export const createMarkdownNotificationRenderer = () => (message) => parsers.filtered(message);
+export const createMarkdownNotificationRenderer = () => (message: string) => filtered(message);

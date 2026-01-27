@@ -1,30 +1,17 @@
-/**
- * Filter markdown tags in message
- * Use case: notifications
- * @param {string} message
- */
-export const filtered = (
-	message,
-	options = {
-		supportSchemesForLink: 'http,https',
-	},
-) => {
-	const schemes = options.supportSchemesForLink.split(',').join('|');
+export const filtered = (message: string) => {
+	const schemes = 'http|https';
 
 	// Remove block code backticks
 	message = message.replace(/```/g, '');
 
 	// Remove inline code backticks
-	message = message.replace(new RegExp(/`([^`\r\n]+)\`/gm), (match) => match.substr(1, match.length - 2));
+	message = message.replace(new RegExp(/`([^`\r\n]+)\`/gm), (match) => match.slice(1, -1));
 
 	// Filter [text](url), ![alt_text](image_url)
-	message = message.replace(new RegExp(`!?\\[([^\\]]+)\\]\\((?:${schemes}):\\/\\/[^\\)]+\\)`, 'gm'), (match, title) => title);
+	message = message.replace(new RegExp(`!?\\[([^\\]]+)\\]\\((?:${schemes}):\\/\\/[^\\)]+\\)`, 'gm'), (_, title) => title);
 
 	// Filter <http://link|Text>
-	message = message.replace(
-		new RegExp(`(?:<|&lt;)(?:${schemes}):\\/\\/[^\\|]+\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'),
-		(match, title) => title,
-	);
+	message = message.replace(new RegExp(`(?:<|&lt;)(?:${schemes}):\\/\\/[^\\|]+\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (_, title) => title);
 
 	// Filter headings
 	message = message.replace(

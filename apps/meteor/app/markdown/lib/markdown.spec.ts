@@ -422,11 +422,11 @@ const blockcodeFiltered = {
 const defaultObjectTest = (result: { html: string }, object: Record<string, string>, objectKey: string) =>
 	expect(result.html).toBe(object[objectKey]);
 
-const testObject = (object: Record<string, string>, parser = original, test = defaultObjectTest) => {
+const originalTestsObject = (object: Record<string, string>, test = defaultObjectTest) => {
 	Object.keys(object).forEach((objectKey) => {
 		describe(objectKey, () => {
-			const message = parser === original ? { html: escapeHTML(objectKey) } : objectKey;
-			const result = parser === original ? Markdown.mountTokensBack(parser(message)) : { html: parser(message) };
+			const message = { html: escapeHTML(objectKey) };
+			const result = Markdown.mountTokensBack(original(message));
 			it(`should be equal to ${object[objectKey]}`, () => {
 				test(result, object, objectKey);
 			});
@@ -435,47 +435,59 @@ const testObject = (object: Record<string, string>, parser = original, test = de
 };
 
 describe('Original', () => {
-	describe('Bold', () => testObject(bold));
+	describe('Bold', () => originalTestsObject(bold));
 
-	describe('Italic', () => testObject(italic));
+	describe('Italic', () => originalTestsObject(italic));
 
-	describe('Strike', () => testObject(strike));
+	describe('Strike', () => originalTestsObject(strike));
 
 	describe('Headers', () => {
-		describe('Level 1', () => testObject(headersLevel1));
+		describe('Level 1', () => originalTestsObject(headersLevel1));
 
-		describe('Level 2', () => testObject(headersLevel2));
+		describe('Level 2', () => originalTestsObject(headersLevel2));
 
-		describe('Level 3', () => testObject(headersLevel3));
+		describe('Level 3', () => originalTestsObject(headersLevel3));
 
-		describe('Level 4', () => testObject(headersLevel4));
+		describe('Level 4', () => originalTestsObject(headersLevel4));
 	});
 
-	describe('Quote', () => testObject(quote));
+	describe('Quote', () => originalTestsObject(quote));
 
-	describe('Link', () => testObject(link));
+	describe('Link', () => originalTestsObject(link));
 
-	describe('Inline Code', () => testObject(inlinecode));
+	describe('Inline Code', () => originalTestsObject(inlinecode));
 
-	describe('Code', () => testObject(code));
+	describe('Code', () => originalTestsObject(code));
 
-	describe('Nested', () => testObject(nested));
+	describe('Nested', () => originalTestsObject(nested));
 });
 
+const filteredTestsObject = (object: Record<string, string>, test = defaultObjectTest) => {
+	Object.keys(object).forEach((objectKey) => {
+		describe(objectKey, () => {
+			const message = objectKey;
+			const result = { html: filtered(message) };
+			it(`should be equal to ${object[objectKey]}`, () => {
+				test(result, object, objectKey);
+			});
+		});
+	});
+};
+
 describe('Filtered', () => {
-	describe('BoldFilter', () => testObject(boldFiltered, filtered));
+	describe('BoldFilter', () => filteredTestsObject(boldFiltered));
 
-	describe('Italic', () => testObject(italicFiltered, filtered));
+	describe('Italic', () => filteredTestsObject(italicFiltered));
 
-	describe('StrikeFilter', () => testObject(strikeFiltered, filtered));
+	describe('StrikeFilter', () => filteredTestsObject(strikeFiltered));
 
-	describe('HeadingFilter', () => testObject(headingFiltered, filtered));
+	describe('HeadingFilter', () => filteredTestsObject(headingFiltered));
 
-	describe('QuoteFilter', () => testObject(quoteFiltered, filtered));
+	describe('QuoteFilter', () => filteredTestsObject(quoteFiltered));
 
-	describe('LinkFilter', () => testObject(linkFiltered, filtered));
+	describe('LinkFilter', () => filteredTestsObject(linkFiltered));
 
-	describe('inlinecodeFilter', () => testObject(inlinecodeFiltered, filtered));
+	describe('inlinecodeFilter', () => filteredTestsObject(inlinecodeFiltered));
 
-	describe('blockcodeFilter', () => testObject(blockcodeFiltered, filtered));
+	describe('blockcodeFilter', () => filteredTestsObject(blockcodeFiltered));
 });

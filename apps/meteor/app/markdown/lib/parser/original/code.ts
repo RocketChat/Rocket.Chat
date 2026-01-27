@@ -1,13 +1,10 @@
-/*
- * code() is a named function that will parse `inline code` and ```codeblock``` syntaxes
- * @param {Object} message - The message object
- */
+import type { Token } from '@rocket.chat/core-typings';
 import { unescapeHTML } from '@rocket.chat/string-helpers';
 
 import { addAsToken } from './token';
 import hljs, { register } from '../../hljs';
 
-const inlinecode = (message) => {
+const inlinecode = (message: { html: string; tokens?: Token[] }) => {
 	// Support `text`
 	message.html = message.html.replace(/\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match, p1, p2) =>
 		addAsToken(
@@ -19,7 +16,7 @@ const inlinecode = (message) => {
 	);
 };
 
-const codeblocks = (message) => {
+const codeblocks = (message: { msg?: string; html: string; tokens?: Token[] }) => {
 	// Count occurencies of ```
 	const count = (message.html.match(/```/gm) || []).length;
 
@@ -48,7 +45,7 @@ const codeblocks = (message) => {
 				const result = (() => {
 					if (lang) {
 						try {
-							register(lang);
+							void register(lang);
 							return hljs.highlight(lang, code);
 						} catch (error) {
 							console.error(error);
@@ -77,7 +74,7 @@ const codeblocks = (message) => {
 	}
 };
 
-export const code = (message) => {
+export const code = <TMessage extends { msg?: string; html: string; tokens?: Token[] }>(message: TMessage) => {
 	if (message.html?.trim()) {
 		codeblocks(message);
 		inlinecode(message);
