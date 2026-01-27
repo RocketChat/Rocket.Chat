@@ -1,11 +1,15 @@
 import type { IncomingHttpHeaders } from 'http';
 
-type HeaderLike = IncomingHttpHeaders | Record<string, string | string[] | undefined>;
+type HeaderLike = IncomingHttpHeaders | Headers | Record<string, string | string[] | undefined>;
 
 export const getHeader = (headers: HeaderLike, key: string): string => {
 	if (!headers) {
 		return '';
 	}
+
+  if (isHeadersType(headers)) {
+    return headers.get(key) ?? '';
+  }
 
 	const value = headers[key];
 
@@ -19,3 +23,8 @@ export const getHeader = (headers: HeaderLike, key: string): string => {
 
 	return '';
 };
+
+
+function isHeadersType(headers: HeaderLike): headers is Headers{
+  return headers instanceof Headers;
+}
