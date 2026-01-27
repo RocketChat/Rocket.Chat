@@ -23,6 +23,7 @@ export const defaultFields = {
 	statusLivechat: 1,
 	abacAttributes: 1,
 	freeSwitchExtension: 1,
+	phone: 1,
 } as const;
 
 export const fullFields = {

@@ -22,6 +22,7 @@ import SelectSettingInput from './inputs/SelectSettingInput';
 import SelectTimezoneSettingInput from './inputs/SelectTimezoneSettingInput';
 import StringSettingInput from './inputs/StringSettingInput';
 import TimespanSettingInput from './inputs/TimespanSettingInput';
+import MedsenseStatusColorInput from './inputs/MedsenseStatusColorInput';
 
 // @todo: the props are loosely typed because `Setting` needs to typecheck them.
 const inputsByType: Record<ISettingBase['type'], ElementType<any>> = {
@@ -87,7 +88,10 @@ const MemoizedSetting = ({
 		return null;
 	}
 
-	const InputComponent = inputsByType[type];
+	let InputComponent = inputsByType[type];
+	if (inputProps._id === 'Medsense_Queue_Status_Colors') {
+		InputComponent = MedsenseStatusColorInput;
+	}
 
 	return (
 		<Field className={className} flexDirection='row' justifyContent='space-between' alignItems='flex-start'>

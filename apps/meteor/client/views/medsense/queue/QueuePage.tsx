@@ -3,6 +3,12 @@ import {
     Box,
     Button,
     Callout,
+    Modal,
+    ModalHeader,
+    ModalTitle,
+    ModalClose,
+    ModalContent,
+    ModalFooter,
     Select,
     States,
     StatesIcon,
@@ -17,8 +23,9 @@ import {
     TabsItem,
     Throbber,
     Tag,
+    TextAreaInput,
 } from '@rocket.chat/fuselage';
-import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { Page, PageContent, PageHeader } from '@rocket.chat/ui-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -39,11 +46,32 @@ const formatRequestStatus = (status?: string) => {
         waiting_patient: 'Waiting for patient',
         ai_preassessment: 'AI pre-assessment',
         waiting_staff: 'Waiting for staff',
+        ready_for_staff: 'Ready for staff',
         taken: 'Taken',
         closed: 'Closed',
     };
     if (map[status]) return map[status];
     return status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+};
+
+const useStatusColors = (): Record<string, string> => {
+    const settingValue = useSetting('Medsense_Queue_Status_Colors') as string | undefined;
+    return useMemo(() => {
+        const defaultColors: Record<string, string> = {
+            waiting_patient: 'warning',
+            ai_preassessment: 'secondary',
+            waiting_staff: 'warning',
+            ready_for_staff: 'featured',
+            taken: 'primary',
+            closed: 'secondary',
+        };
+        if (!settingValue) return defaultColors;
+        try {
+            return { ...defaultColors, ...JSON.parse(settingValue) };
+        } catch {
+            return defaultColors;
+        }
+    }, [settingValue]);
 };
 
 // ============================================================================
@@ -62,6 +90,12 @@ export const WaitingQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: s
         borderColor: '#2e8540',
         color: '#ffffff',
     };
+
+    // Modal states
+    const [previewRequest, setPreviewRequest] = useState<any>(null);
+    const [declineRequest, setDeclineRequest] = useState<any>(null);
+    const [declineMessage, setDeclineMessage] = useState('');
+    const statusColors = useStatusColors();
 
     const getWaitingQueue = useEndpoint('GET', '/v1/medsense/request.list');
     const { data: queueData, isLoading: isLoadingQueue, refetch } = useQuery({
@@ -84,6 +118,22 @@ export const WaitingQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: s
         mutationFn: async ({ requestId }: { requestId: string }) => takeAction({ requestId }),
         onSuccess: () => {
             dispatchToastMessage({ type: 'success', message: t('Request_taken') });
+            refetch();
+        },
+        onError: (error) => {
+            const message = (error as any)?.error || (error as any)?.message || String(error);
+            dispatchToastMessage({ type: 'error', message });
+        },
+    });
+
+    const declineAction = useEndpoint('POST', '/v1/medsense/request.decline');
+    const declineMutation = useMutation({
+        mutationFn: async ({ requestId, message }: { requestId: string; message?: string }) =>
+            declineAction({ requestId, message }),
+        onSuccess: () => {
+            dispatchToastMessage({ type: 'success', message: t('Request_declined') });
+            setDeclineRequest(null);
+            setDeclineMessage('');
             refetch();
         },
         onError: (error) => {
@@ -129,7 +179,7 @@ export const WaitingQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: s
         );
     }
 
-    return (
+    return (<>
         <Table>
             <TableHead>
                 <TableRow>
@@ -147,19 +197,79 @@ export const WaitingQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: s
                         <TableCell>{request.requestedByUsername || 'Unknown'}</TableCell>
                         <TableCell>{request.reason || '-'}</TableCell>
                         <TableCell>
-                            <Tag>{formatRequestStatus(request.status)}</Tag>
+                            <Tag variant={(statusColors[request.status] || 'secondary') as any}>{formatRequestStatus(request.status)}</Tag>
                         </TableCell>
                         <TableCell>{request.roomName || '-'}</TableCell>
                         <TableCell>{formatDate(request.createdAt)}</TableCell>
                         <TableCell>
-                            <Button small primary onClick={() => handleTake(request._id, request.roomId)} disabled={takeMutation.isLoading} {...({ style: joinButtonStyle } as any)}>
-                                {t('Take')}
-                            </Button>
+                            <Box display='flex' gap='x8' flexWrap='wrap'>
+                                <Button small onClick={() => setPreviewRequest(request)}>
+                                    {t('Preview')}
+                                </Button>
+                                <Button small primary onClick={() => handleTake(request._id, request.roomId)} disabled={takeMutation.isLoading} {...({ style: joinButtonStyle } as any)}>
+                                    {t('Take')}
+                                </Button>
+                                <Button small danger onClick={() => setDeclineRequest(request)}>
+                                    {t('Decline')}
+                                </Button>
+                            </Box>
                         </TableCell>
                     </TableRow>
                 ))}
             </TableBody>
         </Table>
+
+        {/* Preview Modal */}
+        {
+            previewRequest && (
+                <Modal>
+                    <ModalHeader>
+                        <ModalTitle>{t('Request_Preview')}</ModalTitle>
+                        <ModalClose onClick={() => setPreviewRequest(null)} />
+                    </ModalHeader>
+                    <ModalContent>
+                        <Box mb='x8'><b>{t('Patient')}:</b> {previewRequest.requestedByUsername || 'Unknown'}</Box>
+                        <Box mb='x8'><b>{t('Issue')}:</b> {previewRequest.reason || '-'}</Box>
+                        <Box mb='x8'><b>{t('Context_Summary')}:</b></Box>
+                        <Box whiteSpace='pre-wrap' p='x8' bg='neutral-100' borderRadius='x4'>
+                            {previewRequest.contextSummary || t('No summary available')}
+                        </Box>
+                    </ModalContent>
+                    <ModalFooter>
+                        <Button onClick={() => setPreviewRequest(null)}>{t('Close')}</Button>
+                    </ModalFooter>
+                </Modal>
+            )
+        }
+
+        {/* Decline Modal */}
+        {
+            declineRequest && (
+                <Modal>
+                    <ModalHeader>
+                        <ModalTitle>{t('Decline_Request')}</ModalTitle>
+                        <ModalClose onClick={() => { setDeclineRequest(null); setDeclineMessage(''); }} />
+                    </ModalHeader>
+                    <ModalContent>
+                        <Box mb='x8'>{t('Declining_request_for')}: <b>{declineRequest.requestedByUsername || 'Unknown'}</b></Box>
+                        <TextAreaInput
+                            placeholder={t('Reason_for_declining')}
+                            value={declineMessage}
+                            onChange={(e: any) => setDeclineMessage(e.target.value)}
+                            rows={4}
+                            w='full'
+                        />
+                    </ModalContent>
+                    <ModalFooter justifyContent='space-between'>
+                        <Button onClick={() => { setDeclineRequest(null); setDeclineMessage(''); }}>{t('Cancel')}</Button>
+                        <Button danger onClick={() => declineMutation.mutate({ requestId: declineRequest._id, message: declineMessage })} disabled={declineMutation.isLoading}>
+                            {t('Decline')}
+                        </Button>
+                    </ModalFooter>
+                </Modal>
+            )
+        }
+    </>
     );
 };
 
@@ -459,6 +569,8 @@ export const QueueContent = (): JSX.Element => {
             ) : (
                 <HistoryQueueContent pharmacyId={selectedPharmacy} pharmacyIds={pharmacyIds} />
             )}
+
+
         </Box>
     );
 };

@@ -1452,3 +1452,255 @@ Implemented the "Medsense Clinical Flow" enabling stateless, inline-only assessm
 -   Orchestrator successfully posts `medsenseForm` payloads.
 -   SmartForms renders them as inline blocks.
 -   Submissions flow back to Orchestrator -> Agent -> Request Update -> Next Form.
+
+### 2026-01-24: Medsense Hub & UTI App Implementation (Completed)
+
+#### Summary
+Implemented the **Medsense Hub** ecosystem and the **UTI Assessment App** as its first module. The architecture decouples the app logic from the Orchestrator via a public Webhook.
+
+#### Components Delivered
+1.  **Medsense Webhook (`medsense_webhook`)**
+    -   Added `POST /flow/start` endpoint to forward flow initiation requests to the Orchestrator (validated by secret).
+
+2.  **Orchestrator (`medsense-orchestrator`)**
+    -   Added `POST /flow/start` endpoint in `main.py`.
+    -   Maps `flowId="uti"` to `_execute_uti_assessment_entry`.
+    -   Initiates the flow by posting a confirmation form to the provided room (or resolving one via `patientUserId`).
+
+3.  **Medsense UTI App (`medsense-uti-app`)**
+    -   **Registry**: Implemented `HubActionsEndpoint` to register "UTI Assessment" with the Hub.
+    -   **UI**: Implemented `HubExecuteEndpoint` returning a Modal with a Patient Picker.
+    -   **Logic**: Implemented `executeViewSubmitHandler` to capture patient selection and call the Webhook.
+    -   **Lib**: Created `WebhookApi.ts` to abstract `POST /flow/start` calls.
+
+#### Architecture Flow
+1.  User clicks "UTI Assessment" in Hub Dropdown.
+2.  Core calls `HubExecuteEndpoint` -> App returns Modal.
+3.  User selects Patient -> Click Start.
+4.  App calls `WebhookApi.startFlow`.
+5.  Webhook forwards to Orchestrator `/flow/start`.
+6.  Orchestrator posts Confirmation Form to Room.
+7.  Patient confirms -> Standard Clinical Flow takes over.
+
+#### Next Steps
+-   Deploy `medsense-uti-app` via `rc-apps deploy`.
+-   Verify end-to-end connectivity in staging.
+---
+## Medsense Hub + UTI App – Framework Spec (Junior Dev)
+
+### Goal
+Implement a **separate UTI app** that plugs into the Medsense Hub dropdown (toolbar icon). The hub app stays generic and only lists installed hub apps. The UTI app launches the clinical flow using SmartForms + Orchestrator + request records.
+
+### Core Flow (End-to-End)
+1) Hub action: User opens Medsense Hub dropdown, selects UTI Assessment.
+2) App action: Hub app opens a UIKit modal (confirm “Start UTI assessment?”).
+3) Create room: Create (or reuse) a patient chat room with bot (private).
+4) Confirm form: Orchestrator posts a static confirm form in the room (SmartForms inline).
+5) Patient confirms: SmartForms submits to Orchestrator `/forms/submit` with `medsenseForm`.
+6) Create request: Orchestrator creates a request record with `status="ai_preassessment"`.
+7) Dynamic rounds: Orchestrator calls UTI agent each round to generate next form + summary.
+8) Staff handoff: When form completes or round limit reached, request status -> `waiting_staff`.
+9) Queue UI: Request shows in Waiting tab with status label (e.g. “AI preassessment”).
+
+### Request Schema (Minimal)
+- requestId
+- flowId = `uti`
+- roomId
+- status: `waiting_patient`, `ai_preassessment`, `waiting_staff`, `taken`, `closed`
+- aiFormRound (int)
+- contextSummary (string)
+- answers (object map field_id -> value/array)
+
+### Hub App Contract (Generic Hub)
+- Hub app only lists installed hub apps and proxies execution.
+- Expose:
+  - `hub.actions`: list of actions `{ id, label, icon?, order? }`
+  - `hub.execute`: accepts `{ actionId }` and returns a UIKit modal
+
+### UTI App Contract (Separate App)
+- Expose:
+  - `hub.actions`: returns UTI action (label “UTI Assessment”).
+  - `hub.execute`: returns UIKit modal with Start/Cancel.
+- On Start: call Orchestrator REST to create room / post confirm form.
+
+### SmartForms Payload (Inbound from Orchestrator)
+- In message `custom_fields.medsenseForm`:
+  - requestId, flowId, roomId
+  - form: { id, fields: [{ id, type, label, options? }] }
+- Field types:
+  - single_static_select, multi_static_select, text
+
+### SmartForms Payload (Submit to Orchestrator)
+POST `/forms/submit`:
+```
+{
+  "medsenseForm": {
+    "requestId": "...",
+    "flowId": "uti",
+    "roomId": "...",
+    "form": { "id": "..." },
+    "answers": [{ "id": "field_id", "value": "string|array" }],
+    "freeText": "string?"
+  }
+}
+```
+
+### Orchestrator Expectations
+- Validate required fields: `roomId`, `form.id`, non-empty `answers`.
+- Load request by requestId.
+- Update:
+  - aiFormRound (top-level)
+  - answers merge (multi-select preserved)
+  - contextSummary
+  - status -> `ai_preassessment` if next form, else `waiting_staff`
+- Post next form with `custom_fields.medsenseForm`.
+
+### Queue UI Expectations
+- Use request status to show:
+  - Waiting tab (waiting_patient/ai_preassessment/waiting_staff)
+  - Followed tab (taken)
+  - History tab (closed)
+- Display labels:
+  - waiting_patient -> “Waiting for patient”
+  - ai_preassessment -> “AI preassessment”
+  - waiting_staff -> “Waiting for staff”
+  - taken -> “Taken”
+  - closed -> “Closed”
+
+### Permissions
+- medsense-view-hub (hub icon visibility)
+- medsense-view-request (queue visibility)
+- medsense-take-request, medsense-close-request (actions)
+
+### Files to Touch (Core)
+- `apps/meteor/client/navbar/...` for hub icon + dropdown.
+- `apps/meteor/app/api/server/v1/medsense.ts` for hub endpoints if needed.
+- `apps/meteor/app/lib/server/startup/medsense.ts` for permissions.
+- `apps/meteor/client/views/medsense/queue/QueuePage.tsx` for status labels.
+
+### Files to Touch (Hub App - Generic)
+- `medsense-chat-local/medsense-hub-app/app.json`
+- `medsense-chat-local/medsense-hub-app/src/MedsenseHubApp.ts`
+- `medsense-chat-local/medsense-hub-app/src/endpoints/HubActionsEndpoint.ts`
+- `medsense-chat-local/medsense-hub-app/src/endpoints/HubExecuteEndpoint.ts`
+- `medsense-chat-local/medsense-hub-app/src/ui/views/*` (modal layout)
+
+### Files to Touch (UTI App - New App)
+- `medsense-chat-local/medsense-uti-app/app.json`
+- `medsense-chat-local/medsense-uti-app/src/MedsenseUtiApp.ts`
+- `medsense-chat-local/medsense-uti-app/src/endpoints/HubActionsEndpoint.ts`
+- `medsense-chat-local/medsense-uti-app/src/endpoints/HubExecuteEndpoint.ts`
+- `medsense-chat-local/medsense-uti-app/src/ui/views/*` (modal layout)
+
+### Verification Checklist
+- Hub dropdown shows UTI action.
+- Clicking action opens modal.
+- Start creates room and posts confirm form.
+- Confirm submission creates request and posts next form.
+- Queue shows request with "AI preassessment".
+- Round limit -> status `waiting_staff`.
+
+---
+
+## Queue Preview + Decline + Status Colors (2026-01-25)
+
+### Features Added
+- **Preview Modal**: Staff can preview request context summary before taking (shows patient info, issue, and AI assessment summary)
+- **Decline Modal**: Staff can decline pending requests with a reason, which posts a message to the room and closes the request
+- **Status Colors Setting**: `Medsense_Queue_Status_Colors` admin setting (JSON) controls Tag colors in Queue UI
+- **New Status**: `ready_for_staff` status indicates assessment is complete and ready for pharmacist review
+
+### Files Modified
+
+**Orchestrator (`medsense-orchestrator`):**
+- `main.py`: Context summaries now append per round (with `---` separator), final status is `ready_for_staff`
+
+**Core Typings:**
+- `packages/core-typings/src/IMedsenseRequest.ts`: Added `ready_for_staff` to status union
+
+**Models:**
+- `packages/models/src/models/MedsenseRequests.ts`: Updated `findPendingByPharmacyId` and `findActiveByRoomId` to include `ready_for_staff`
+
+**API:**
+- `apps/meteor/app/api/server/v1/medsense.ts`:
+  - Updated `request.take` to accept `ready_for_staff` status
+  - Added `request.decline` endpoint (posts decline message, closes request)
+
+**Settings:**
+- `apps/meteor/app/lib/server/startup/medsense.ts`:
+  - Added `Medsense_Queue_Status_Colors` JSON setting
+  - Updated status checks to include `ready_for_staff`
+
+**UI:**
+- `apps/meteor/client/views/medsense/queue/QueuePage.tsx`:
+  - Added Preview button + modal showing context summary
+  - Added Decline button + modal with textarea for reason
+  - Status label includes "Ready for staff"
+  - Tag colors read from `Medsense_Queue_Status_Colors` setting via `useStatusColors` hook
+
+### Status Color Setting (Admin → Settings → Message → Medsense)
+Default value:
+```json
+{
+  "waiting_patient": "warning",
+  "ai_preassessment": "secondary", 
+  "waiting_staff": "warning",
+  "ready_for_staff": "featured",
+  "taken": "primary",
+  "closed": "secondary"
+}
+```
+
+Available variants: `primary`, `secondary`, `danger`, `warning`, `secondary-danger`, `featured`
+
+---
+
+## Medsense Settings UI + Phone Number Integration (2026-01-26)
+
+### Features Added
+- **Interactive Status Colors Table**: Replaced raw JSON input for `Medsense_Queue_Status_Colors` with a custom Table UI in Admin Settings.
+  - Located in: Admin > Settings > Message > Medsense
+  - Includes live preview tags and dropdowns for color selection.
+- **Queue Page Cleanup**: Removed configuration button/modal from Queue Page to declutter usage.
+- **Phone Number Field Integration**:
+  - Added new `PhoneNumberInput` component (with country flag/code selector) to:
+    - **User Profile**: Below Email field.
+    - **Registration Form**: Below Email field.
+  - Automatically formats numbers to E.164.
+  - Saves to `user.customFields.phone`.
+
+### Files Modified & Created
+
+**Registration Package (`packages/web-ui-registration`):**
+- **New Component**: `src/components/PhoneNumberInput/PhoneNumberInput.tsx` (supports International/National formatting).
+- **Dependencies**: Added `google-libphonenumber` and `@types/google-libphonenumber`.
+- `src/RegisterForm.tsx`: Added phone number field and custom fields mapping payload.
+- `src/index.ts`: Exported `PhoneNumberInput`.
+
+**Core App (`apps/meteor`):**
+- `client/views/account/profile/AccountProfileForm.tsx`: Added phone number field using the new component.
+- `client/views/admin/settings/Setting/MemoizedSetting.tsx`: Intercepts `Medsense_Queue_Status_Colors` setting ID to render the custom `MedsenseStatusColorInput` component.
+- `client/views/admin/settings/Setting/inputs/MedsenseStatusColorInput.tsx`: New component rendering the configuration table.
+- `client/views/medsense/queue/QueuePage.tsx`: Reverted configuration UI (removed button/modal).
+
+**Important Note**:
+- **Build**: Added `google-libphonenumber` to workspace dependencies. Requires `yarn install` in root if "Module not found" or "sharp" errors occur.
+
+---
+
+## Twilio SMS Invitation Integration (2026-01-26)
+
+### Server-Side Integration (`apps/meteor`)
+- **New API Endpoint**: `POST /api/v1/medsense/invite.sms`
+  - Inputs: `roomId`, `phoneNumber`, `requestedBy`.
+  - **Logic**: Generates real invite link (`findOrCreateInvite`) and sends SMS using server's Twilio settings.
+  - **Validation**: Enforces E.164 phone format.
+
+### Orchestrator (`medsense-orchestrator`)
+- **Flow Update**: `flow_start` simplified.
+  - Passes `roomId` and `contactPhone` (from modal input only) to server.
+  - No longer constructs URLs or handles `fromNumber` locally.
+- **Client Wrapper**: Simplified `send_invite_sms` to remove unneeded arguments.
+
+### UTI App (`MedsenseUtiApp`)
+- **Strict Logic**: Modal submission now strictly uses the input field value for `contactPhone`, ensuring "Modal is Source of Truth" and preventing profile fallbacks.

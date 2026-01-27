@@ -6329,6 +6329,7 @@
   "error-invalid-param": "Invalid param",
   "error-invalid-params": "Invalid params",
   "error-invalid-password": "Invalid password",
+  "error-invalid-phone-number": "Invalid phone number",
   "error-invalid-permission": "Invalid permission",
   "error-invalid-port-number": "Invalid port number",
   "error-invalid-priority": "Invalid priority",
@@ -7242,6 +7243,8 @@
   "Medsense_Create_Intake_Channel_Description": "Create a team intake channel for new requests.",
   "Medsense_Create_Handover_Channel": "Create handover channel",
   "Medsense_Create_Handover_Channel_Description": "Create an optional handover channel for staff handoffs.",
+  "Medsense_Queue_Status_Colors": "Medsense queue status colors",
+  "Medsense_Queue_Status_Colors_Description": "JSON map of request status to UI color (e.g., waiting_staff: warning).",
   "Medsense_Unassigned_Count": "Unassigned requests: {{count}}",
   "view-directory": "View directory",
   "view-directory_description": "View the workspace directory page."

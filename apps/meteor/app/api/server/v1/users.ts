@@ -166,6 +166,7 @@ API.v1.addRoute(
 				statusType: this.bodyParams.data.statusType,
 				newPassword: this.bodyParams.data.newPassword,
 				typedPassword: this.bodyParams.data.currentPassword,
+				phone: this.bodyParams.data.phone,
 			};
 
 			if (userData.realname && !validateNameChars(userData.realname)) {
@@ -176,9 +177,9 @@ API.v1.addRoute(
 			const twoFactorOptions = !userData.typedPassword
 				? null
 				: {
-						twoFactorCode: userData.typedPassword,
-						twoFactorMethod: 'password',
-					};
+					twoFactorCode: userData.typedPassword,
+					twoFactorMethod: 'password',
+				};
 
 			await executeSaveUserProfile.call(
 				this as unknown as Meteor.MethodThisType,
@@ -547,10 +548,10 @@ API.v1.addRoute(
 			const limit =
 				count !== 0
 					? [
-							{
-								$limit: count,
-							},
-						]
+						{
+							$limit: count,
+						},
+					]
 					: [];
 
 			const result = await Users.col
@@ -708,6 +709,14 @@ API.v1.addRoute(
 				} catch (e) {
 					return API.v1.failure(e);
 				}
+			}
+			if (params.phone) {
+				const normalizedPhone = String(params.phone).trim();
+				const isValidPhoneNumber = (phone: string) => /^\+\d{7,15}$/.test(phone);
+				if (!isValidPhoneNumber(normalizedPhone)) {
+					return API.v1.failure('error-invalid-phone-number');
+				}
+				params.phone = normalizedPhone;
 			}
 
 			// Register the user
@@ -1501,5 +1510,5 @@ type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends UsersEndpoints {}
+	interface Endpoints extends UsersEndpoints { }
 }

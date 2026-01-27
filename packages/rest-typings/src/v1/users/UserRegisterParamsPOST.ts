@@ -9,6 +9,7 @@ export type UserRegisterParamsPOST = {
 	name?: string;
 	email: string;
 	pass: string;
+	phone?: string;
 	secret?: string;
 	reason?: string;
 	customFields?: object;
@@ -30,6 +31,10 @@ const UserRegisterParamsPostSchema = {
 		},
 		pass: {
 			type: 'string',
+		},
+		phone: {
+			type: 'string',
+			nullable: true,
 		},
 		secret: {
 			type: 'string',

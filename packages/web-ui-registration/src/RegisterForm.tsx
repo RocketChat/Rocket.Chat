@@ -18,11 +18,12 @@ import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket
 import { useAccountsCustomFields, useSetting, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useEffect, useId, useRef, useState, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 
 import EmailConfirmationForm from './EmailConfirmationForm';
+import PhoneNumberInput from './components/PhoneNumberInput/PhoneNumberInput';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
 
@@ -34,6 +35,7 @@ type LoginRegisterPayload = {
 	email: string;
 	reason: string;
 	pharmacyId?: string;
+	phoneNumber?: string;
 };
 
 export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
@@ -52,6 +54,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const passwordVerifierId = useId();
 	const nameId = useId();
 	const emailId = useId();
+	const phoneNumberId = useId();
 	const usernameId = useId();
 	const passwordId = useId();
 	const passwordConfirmationId = useId();
@@ -61,6 +64,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const customFields = useAccountsCustomFields();
 
 	const [serverError, setServerError] = useState<string | undefined>(undefined);
+	const [isPhoneValid, setIsPhoneValid] = useState(true);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -91,7 +95,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const { password } = watch();
 	const passwordIsValid = useValidatePassword(password);
-
+	console.log('[Medsense Debug] RegisterForm errors:', errors);
 	const registerFormRef = useRef<HTMLElement>(null);
 
 	useEffect(() => {
@@ -100,9 +104,19 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		}
 	}, []);
 
-	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
+	const handleRegister = async ({ password, passwordConfirmation: _, phoneNumber, ...formData }: LoginRegisterPayload) => {
+		const phoneFormatHint = `${t('error-invalid-phone-number')} (Use +1234567890 or 1234567890)`;
+		if (!isPhoneValid) {
+			setError('phoneNumber', { type: 'invalid-phone', message: phoneFormatHint });
+			return;
+		}
+
+		const payload = { pass: password, ...formData } as any;
+		if (phoneNumber) {
+			payload.phone = phoneNumber;
+		}
 		registerUser.mutate(
-			{ pass: password, ...formData },
+			payload,
 			{
 				onError: (error: any) => {
 					if ([error.error, error.errorType].includes('error-invalid-email')) {
@@ -135,6 +149,9 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					}
 					if (error.error === 'error-user-registration-custom-field') {
 						setServerError(error.message);
+					}
+					if (['error-invalid-phone', 'error-invalid-phone-number'].includes(error.error)) {
+						setError('phoneNumber', { type: 'invalid-phone', message: phoneFormatHint });
 					}
 				},
 			},
@@ -205,6 +222,37 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						{errors.email && (
 							<FieldError role='alert' id={`${emailId}-error`}>
 								{errors.email.message}
+							</FieldError>
+						)}
+					</Field>
+					<Field>
+						<FieldLabel required htmlFor={phoneNumberId}>
+							{t('Phone_number')}
+						</FieldLabel>
+						<FieldRow>
+							<Controller
+								control={control}
+								name='phoneNumber'
+								rules={{ required: t('Required_field', { field: t('Phone_number') }) }}
+								render={({ field }) => (
+									<PhoneNumberInput
+										{...field}
+										error={errors.phoneNumber?.message}
+										onValidityChange={(isValid) => {
+											setIsPhoneValid(isValid);
+											if (isValid) {
+												clearErrors('phoneNumber');
+											}
+										}}
+										name='phoneNumber'
+										id='phoneNumberInput'
+									/>
+								)}
+							/>
+						</FieldRow>
+						{errors.phoneNumber && (
+							<FieldError role='alert' id={`${phoneNumberId}-error`}>
+								{errors.phoneNumber.message}
 							</FieldError>
 						)}
 					</Field>

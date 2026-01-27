@@ -25,7 +25,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ReactElement } from 'react';
-import { useId, useCallback } from 'react';
+import { useId, useCallback, useState, useEffect } from 'react';
 import { VisuallyHidden } from 'react-aria';
 import { Controller, useFormContext } from 'react-hook-form';
 
@@ -36,6 +36,7 @@ import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
+import { PhoneNumberInput } from '@rocket.chat/web-ui-registration';
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactElement => {
 	const t = useTranslation();
@@ -63,6 +64,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		watch,
 		handleSubmit,
 		reset,
+		setError,
 		formState: { errors },
 	} = useFormContext<AccountProfileFormValues>();
 
@@ -109,7 +111,13 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
-	const handleSave = async ({ email, name, username, statusType, statusText, nickname, bio, customFields }: AccountProfileFormValues) => {
+	const handleSave = async ({ email, name, username, statusType, statusText, nickname, bio, customFields, phoneNumber }: AccountProfileFormValues) => {
+		const phoneFormatHint = `${t('error-invalid-phone-number')} (Use +1234567890 or 1234567890)`;
+		if (!isPhoneValid) {
+			setError('phoneNumber', { type: 'invalid-phone', message: phoneFormatHint });
+			return;
+		}
+
 		try {
 			await updateOwnBasicInfo({
 				data: {
@@ -120,18 +128,42 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					statusType,
 					nickname,
 					bio,
+					phone: phoneNumber,
 				},
-				customFields,
+				customFields: { ...customFields },
 			});
 
 			await updateAvatar();
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
-		} catch (error) {
+		} catch (error: any) {
+			const errorType = typeof error === 'string' ? error : error?.errorType || error?.error;
+			if (errorType === 'error-invalid-phone-number') {
+				setError('phoneNumber', { type: 'invalid-phone', message: phoneFormatHint });
+				return;
+			}
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
-			reset({ email, name, username, statusType, statusText, nickname, bio, customFields });
+			reset({ email, name, username, statusType, statusText, nickname, bio, customFields, phoneNumber });
 		}
 	};
+
+	const getUserInfo = useEndpoint('GET', '/v1/users.info');
+
+	useEffect(() => {
+		const fetchPhoneNumber = async () => {
+			if (user?.username && !user.phone) {
+				try {
+					const result = await getUserInfo({ username: user.username });
+					if (result.user?.phone) {
+						reset((values) => ({ ...values, phoneNumber: result.user.phone }));
+					}
+				} catch (error) {
+					// convert to a non-blocking log
+				}
+			}
+		};
+		fetchPhoneNumber();
+	}, [user?.username, user?.phone, getUserInfo, reset]);
 
 	const nameId = useId();
 	const usernameId = useId();
@@ -139,6 +171,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	const statusTextId = useId();
 	const bioId = useId();
 	const emailId = useId();
+	const phoneNumberId = useId();
+	const [isPhoneValid, setIsPhoneValid] = useState(true);
 
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
@@ -365,6 +399,30 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						</FieldError>
 					)}
 					{!allowEmailChange && <FieldHint id={`${emailId}-hint`}>{t('Email_Change_Disabled')}</FieldHint>}
+				</Field>
+				<Field>
+					<FieldLabel htmlFor={phoneNumberId}>{t('Phone_number')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='phoneNumber'
+							render={({ field }) => (
+								<PhoneNumberInput
+									value={field.value}
+									onChange={field.onChange}
+									onValidityChange={setIsPhoneValid}
+									error={errors.phoneNumber?.message}
+									name='phoneNumber'
+									id='phoneNumberInput'
+								/>
+							)}
+						/>
+					</FieldRow>
+					{errors.phoneNumber && (
+						<FieldError aria-live='assertive' id={`${phoneNumberId}-error`}>
+							{errors.phoneNumber.message}
+						</FieldError>
+					)}
 				</Field>
 				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</FieldGroup>

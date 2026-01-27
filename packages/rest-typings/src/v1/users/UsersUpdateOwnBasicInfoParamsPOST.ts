@@ -15,6 +15,7 @@ export type UsersUpdateOwnBasicInfoParamsPOST = {
 		statusType?: string;
 		currentPassword?: string;
 		newPassword?: string;
+		phone?: string;
 	};
 	customFields?: Record<string, unknown>;
 };
@@ -58,6 +59,10 @@ const UsersUpdateOwnBasicInfoParamsPostSchema = {
 					nullable: true,
 				},
 				newPassword: {
+					type: 'string',
+					nullable: true,
+				},
+				phone: {
 					type: 'string',
 					nullable: true,
 				},

@@ -6,7 +6,7 @@ export interface IMedsenseRequest extends IRocketChatRecord {
     requestedByUserId: string;
     requestedByUsername?: string;
     reason: string; // The issue/reason for the request
-    status: 'waiting_patient' | 'ai_preassessment' | 'waiting_staff' | 'taken' | 'closed'; // Status of the request
+    status: 'waiting_patient' | 'ai_preassessment' | 'waiting_staff' | 'ready_for_staff' | 'taken' | 'closed'; // Status of the request
 
     createdAt: Date;
     updatedAt: Date;

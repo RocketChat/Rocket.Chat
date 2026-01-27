@@ -1,4 +1,4 @@
-import { api } from "@rocket.chat/core-services";
+import { api, OmnichannelIntegration } from "@rocket.chat/core-services";
 import {
     MedsensePharmacies,
     MedsensePharmacyMemberships,
@@ -12,11 +12,13 @@ import { HTTP } from "meteor/http";
 import { Meteor } from "meteor/meteor";
 import { Apps } from '@rocket.chat/apps';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
+import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
 
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from "../../../authorization/server/functions/hasPermission";
 import { addUserToRoom } from "../../../lib/server/functions/addUserToRoom";
 import { removeUserFromRoom } from "../../../lib/server/functions/removeUserFromRoom";
 import { sendMessage } from "../../../lib/server/functions/sendMessage";
+import { settings } from '../../../settings/server';
 import { API } from "../api";
 
 // Pharmacies Management (Kept Intact)
@@ -596,7 +598,7 @@ API.v1.addRoute(
             }
 
             const request = await MedsenseRequests.findOneById(requestId);
-            if (!request || !['waiting_patient', 'ai_preassessment', 'waiting_staff'].includes(request.status)) {
+            if (!request || !['waiting_patient', 'ai_preassessment', 'waiting_staff', 'ready_for_staff'].includes(request.status)) {
                 return API.v1.failure("Request not found or not pending");
             }
 
@@ -694,6 +696,67 @@ API.v1.addRoute(
     },
 );
 
+// Decline Request (close with decline message)
+API.v1.addRoute(
+    "medsense/request.decline",
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                requestId: String,
+                message: Match.Maybe(String),
+            }));
+            const { requestId, message } = this.bodyParams;
+
+            if (!(await hasPermissionAsync(this.userId, 'medsense-close-request'))) {
+                return API.v1.forbidden();
+            }
+
+            const request = await MedsenseRequests.findOneById(requestId);
+            if (!request || !['waiting_patient', 'ai_preassessment', 'waiting_staff', 'ready_for_staff'].includes(request.status)) {
+                return API.v1.failure("Request not found or not pending");
+            }
+
+            const room = await Rooms.findOneById(request.roomId);
+            if (!room?.t) {
+                return API.v1.failure("Room type missing for request room");
+            }
+
+            // Mark Closed
+            await MedsenseRequests.markClosed(requestId, this.userId, this.user.username);
+
+            // Clear Room fields
+            await Rooms.update(
+                { _id: request.roomId },
+                {
+                    $unset: {
+                        medsenseActiveRequestId: 1,
+                        medsenseActiveRequestStatus: 1,
+                    },
+                }
+            );
+
+            // Post decline message (as bot if available)
+            const declineText = message
+                ? `Request declined by @${this.user.username}: ${message}`
+                : `Request declined by @${this.user.username}`;
+            const botUsername = settings.get<string>('Medsense_Bot_User') || 'bot';
+            const botUser = botUsername
+                ? await Users.findOneByUsername(botUsername, { projection: { username: 1 } })
+                : null;
+            const messageUser = botUser ?? this.user;
+            await sendMessage(messageUser, {
+                rid: request.roomId,
+                msg: declineText,
+            }, room);
+
+            api.broadcast('room.save', { _id: request.roomId, medsenseActiveRequestStatus: null });
+
+            return API.v1.success();
+        },
+    },
+);
+
 // Request History
 API.v1.addRoute(
     "medsense/request.history",
@@ -754,19 +817,31 @@ API.v1.addRoute(
                 }
 
                 const promises = enabledApps.map(async (app) => {
+                    const appId = app.getID();
                     try {
-                        const url = Meteor.absoluteUrl(`api/apps/public/${app.getID()}/hub.actions`);
-                        // Short timeout to avoid blocking
-                        const response = HTTP.get(url, { timeout: 1000 });
+                        const url = Meteor.absoluteUrl(`api/apps/public/${appId}/hub.actions`);
+                        console.warn(`[Medsense] Hub Discovery: Probing ${appId} -> ${url}`);
+
+                        const response = await HTTP.get(url, { timeout: 2000, throwError: false });
+
                         if (response.statusCode === 200 && response.data && response.data.actions) {
-                            // Prefix IDs with App ID to route execution later
+                            console.warn(`[Medsense] Hub Discovery: Found actions for ${appId}`);
                             return response.data.actions.map((action: any) => ({
                                 ...action,
-                                id: `${app.getID()}:${action.id}`
+                                id: `${appId}:${action.id}`
                             }));
                         }
+                        if (response.statusCode === 404 || response.statusCode === 401 || response.statusCode === 403) {
+                            console.warn(`[Medsense] Hub Discovery: ${appId} skipped (${response.statusCode})`);
+                            return [];
+                        }
                     } catch (e) {
-                        // App does not implement this endpoint or failed
+                        const error = e as any;
+                        if (error.response?.statusCode === 404 || error.statusCode === 404) {
+                            console.warn(`[Medsense] Hub Discovery: ${appId} skipped (No hub endpoint)`);
+                        } else {
+                            console.warn(`[Medsense] Hub Discovery Error for ${appId}:`, error.message);
+                        }
                     }
                     return [];
                 });
@@ -806,8 +881,13 @@ API.v1.addRoute(
             try {
                 // Relay to specific App
                 const url = Meteor.absoluteUrl(`api/apps/public/${appId}/hub.execute`);
-                const response = HTTP.post(url, {
-                    data: { actionId: realActionId }
+                const response = await HTTP.post(url, {
+                    data: {
+                        actionId: realActionId,
+                        userId: this.userId,
+                        username: this.user?.username,
+                    },
+                    throwError: false,
                 });
 
                 if (response.statusCode !== 200 || !response.data) {
@@ -821,4 +901,90 @@ API.v1.addRoute(
             }
         },
     },
+);
+
+// =========================================================================================
+// NEW: Invite SMS API (Server-side Twilio reuse)
+// =========================================================================================
+API.v1.addRoute(
+    "medsense/invite.sms",
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                roomId: String,
+                phoneNumber: String,
+                requestedBy: Match.Maybe(String),
+                patientName: Match.Maybe(String),
+            }));
+
+            const { roomId, phoneNumber, patientName } = this.bodyParams;
+
+            const isAdmin = await hasPermissionAsync(this.userId, "admin");
+            let allowed = isAdmin;
+            if (!allowed) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                if (user?.roles.includes('bot')) allowed = true;
+            }
+            if (!allowed && await hasPermissionAsync(this.userId, "medsense-take-request")) {
+                allowed = true;
+            }
+
+            if (!allowed) {
+                return API.v1.forbidden();
+            }
+
+            const room = await Rooms.findOneById(roomId);
+            if (!room) {
+                return API.v1.failure('Room not found');
+            }
+
+            const service = settings.get<string>('SMS_Service');
+            if (!service || service === 'false') {
+                return API.v1.failure('SMS Service is disabled in Administration settings');
+            }
+
+            const SMSService = await OmnichannelIntegration.getSmsService(service);
+            if (!SMSService) {
+                return API.v1.failure('SMS Service provider not found or configured');
+            }
+
+            // Resolve From Number from settings (new Medsense-specific setting)
+            const fromNumber = settings.get<string>('SMS_Twilio_Number');
+
+            if (!fromNumber) {
+                return API.v1.failure('Twilio "From" number not found in settings.');
+            }
+
+            // Validate Phone E.164
+            if (!/^\+[1-9]\d{1,14}$/.test(phoneNumber)) {
+                return API.v1.failure('Invalid phone number format. Must be E.164 (e.g. +1234567890)');
+            }
+
+            let inviteUrl = '';
+            try {
+                // days: 30 (expiry?), maxUses: 0 (infinite)
+                const invite = await findOrCreateInvite(this.userId, { rid: roomId, days: 30, maxUses: 0 });
+                if (!invite || !invite.url) {
+                    throw new Error('No invite URL returned');
+                }
+                inviteUrl = invite.url;
+            } catch (err: any) {
+                console.error('Invite Generation Error:', err);
+                return API.v1.failure(`Failed to create invite link: ${err.message}`);
+            }
+
+            try {
+                const greetingName = patientName?.trim();
+                const body = greetingName
+                    ? `Hello ${greetingName}, please join your Medsense assessment here: ${inviteUrl}`
+                    : `Hello, please join your Medsense assessment here: ${inviteUrl}`;
+                await SMSService.send(fromNumber, phoneNumber, body);
+                return API.v1.success();
+            } catch (e: any) {
+                console.error('SMS Invite Error:', e);
+                return API.v1.failure(`SMS Send Failed: ${e.message || e}`);
+            }
+        }
+    }
 );

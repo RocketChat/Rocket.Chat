@@ -68,6 +68,14 @@ export const addMedsenseSettings = async function (): Promise<void> {
                 i18nLabel: 'Medsense_Start_Chat_Roles',
                 i18nDescription: 'Medsense_Start_Chat_Roles_Description',
             });
+
+            await this.add('Medsense_Queue_Status_Colors', '{"waiting_patient":"warning","ai_preassessment":"secondary","waiting_staff":"warning","ready_for_staff":"featured","taken":"primary","closed":"secondary"}', {
+                type: 'string',
+                public: true,
+                multiline: true,
+                i18nLabel: 'Medsense_Queue_Status_Colors',
+                i18nDescription: 'Medsense_Queue_Status_Colors_Description',
+            });
         });
     });
 
@@ -114,7 +122,7 @@ const markRoomTaken = async (room: IRoom, user: IUser): Promise<void> => {
     if (!requestId) return;
 
     const request = await MedsenseRequests.findOneById(requestId);
-    if (!request || !['waiting_patient', 'ai_preassessment', 'waiting_staff'].includes(request.status)) return;
+    if (!request || !['waiting_patient', 'ai_preassessment', 'waiting_staff', 'ready_for_staff'].includes(request.status)) return;
 
     await MedsenseRequests.markTaken(requestId, user._id, user.username || '');
 
@@ -155,7 +163,7 @@ const registerMedsensePendingCallbacks = (): void => {
             if (!roomData) return;
 
             // Check if room has active pending request
-            if (!['waiting_patient', 'ai_preassessment', 'waiting_staff'].includes(roomData.medsenseActiveRequestStatus ?? '') || !roomData.medsenseActiveRequestId) {
+            if (!['waiting_patient', 'ai_preassessment', 'waiting_staff', 'ready_for_staff'].includes(roomData.medsenseActiveRequestStatus ?? '') || !roomData.medsenseActiveRequestId) {
                 return;
             }
 

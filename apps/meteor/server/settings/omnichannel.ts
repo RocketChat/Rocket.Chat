@@ -715,6 +715,15 @@ await settingsRegistry.addGroup('SMS', async function () {
 			i18nLabel: 'Auth_Token',
 			secret: true,
 		});
+		await this.add('SMS_Twilio_Number', '', {
+			type: 'string',
+			enableQuery: {
+				_id: 'SMS_Service',
+				value: 'twilio',
+			},
+			i18nLabel: 'Twilio_number',
+			i18nDescription: 'E.164 phone number Twilio will send messages from (example: +16475551234)',
+		});
 		await this.add('SMS_Twilio_FileUpload_Enabled', true, {
 			type: 'boolean',
 			enableQuery: {

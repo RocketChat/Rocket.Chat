@@ -13,6 +13,7 @@ export type AccountProfileFormValues = {
 	bio: string;
 	customFields: Record<string, string>;
 	nickname: string;
+	phoneNumber: string;
 };
 
 export const getProfileInitialValues = (user: IUser | null): AccountProfileFormValues => ({
@@ -26,4 +27,5 @@ export const getProfileInitialValues = (user: IUser | null): AccountProfileFormV
 	bio: user?.bio ?? '',
 	customFields: user?.customFields ?? {},
 	nickname: user?.nickname ?? '',
+	phoneNumber: user?.phone || '',
 });

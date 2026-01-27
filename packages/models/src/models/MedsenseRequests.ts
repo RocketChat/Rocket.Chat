@@ -20,7 +20,7 @@ export class MedsenseRequestsRaw extends BaseRaw<IMedsenseRequest> implements IM
 
     findPendingByPharmacyId(pharmacyId: string): FindCursor<IMedsenseRequest> {
         return this.find(
-            { pharmacyId, status: { $in: ['waiting_patient', 'ai_preassessment', 'waiting_staff'] } },
+            { pharmacyId, status: { $in: ['waiting_patient', 'ai_preassessment', 'waiting_staff', 'ready_for_staff'] } },
             { sort: { createdAt: 1 } },
         );
     }
@@ -70,7 +70,7 @@ export class MedsenseRequestsRaw extends BaseRaw<IMedsenseRequest> implements IM
     }
 
     findActiveByRoomId(roomId: string): Promise<IMedsenseRequest | null> {
-        return this.findOne({ roomId, status: { $in: ['waiting_patient', 'ai_preassessment', 'waiting_staff', 'taken'] } });
+        return this.findOne({ roomId, status: { $in: ['waiting_patient', 'ai_preassessment', 'waiting_staff', 'ready_for_staff', 'taken'] } });
     }
 
     updateAssessmentProgress(requestId: string, data: Partial<Pick<IMedsenseRequest, 'answers' | 'contextSummary' | 'patientStage' | 'currentStepId' | 'status'>>): Promise<UpdateResult | Document> {

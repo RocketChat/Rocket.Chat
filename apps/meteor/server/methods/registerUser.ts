@@ -16,7 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 	interface ServerMethods {
 		registerUser(
 			formData:
-				| { email: string; pass: string; username: IUser['username']; name?: string; secretURL?: string; reason?: string }
+				| { email: string; pass: string; username: IUser['username']; name?: string; phone?: string; secretURL?: string; reason?: string }
 				| { email?: null },
 		):
 			| {
@@ -29,7 +29,7 @@ declare module '@rocket.chat/ddp-client' {
 
 export const registerUser = async (
 	formData:
-		| { email: string; pass: string; username: IUser['username']; name?: string; secretURL?: string; reason?: string }
+		| { email: string; pass: string; username: IUser['username']; name?: string; phone?: string; secretURL?: string; reason?: string }
 		| { email?: null },
 ): Promise<
 	| {
@@ -61,6 +61,7 @@ export const registerUser = async (
 			email: String,
 			pass: String,
 			name: String,
+			phone: Match.Optional(String),
 			secretURL: Match.Optional(String),
 			reason: Match.Optional(String),
 		}),
@@ -102,6 +103,14 @@ export const registerUser = async (
 		reason: formData.reason,
 	};
 
+	const normalizedPhone = formData.phone?.trim();
+	const isValidPhoneNumber = (phone: string) => /^\+\d{7,15}$/.test(phone);
+	if (normalizedPhone && !isValidPhoneNumber(normalizedPhone)) {
+		throw new Meteor.Error('error-invalid-phone-number', 'Invalid phone number', {
+			method: 'registerUser',
+		});
+	}
+
 	let userId;
 	try {
 		userId = await Accounts.createUserAsync(userData);
@@ -118,6 +127,14 @@ export const registerUser = async (
 	}
 
 	await Users.setName(userId, trim(formData.name));
+	if (normalizedPhone) {
+		const updateResult = await Users.updateOne({ _id: userId }, { $set: { phone: normalizedPhone } });
+		if (!updateResult || updateResult.matchedCount === 0) {
+			throw new Meteor.Error('error-invalid-phone-number', 'Failed to save phone number', {
+				method: 'registerUser',
+			});
+		}
+	}
 
 	const reason = trim(formData.reason);
 	if (manuallyApproveNewUsers && reason) {

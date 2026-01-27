@@ -34,6 +34,7 @@ async function saveUserProfile(
 		statusType?: string;
 		bio?: string;
 		nickname?: string;
+		phone?: string;
 	},
 	customFields: Record<string, unknown>,
 	..._: unknown[]
@@ -114,6 +115,27 @@ async function saveUserProfile(
 
 	if (user && settings.email) {
 		await setEmailFunction(settings.email, user);
+	}
+
+	if (user && typeof settings.phone !== 'undefined') {
+		const normalizedPhone = typeof settings.phone === 'string' ? settings.phone.trim() : '';
+		const isValidPhoneNumber = (phone: string) => /^\+\d{7,15}$/.test(phone);
+
+		if (normalizedPhone && !isValidPhoneNumber(normalizedPhone)) {
+			throw new Meteor.Error('error-invalid-phone-number', 'Invalid phone number', {
+				method: 'saveUserProfile',
+			});
+		}
+
+		const updateResult = normalizedPhone
+			? await Users.updateOne({ _id: this.userId }, { $set: { phone: normalizedPhone } })
+			: await Users.updateOne({ _id: this.userId }, { $unset: { phone: 1 } });
+
+		if (!updateResult || updateResult.matchedCount === 0) {
+			throw new Meteor.Error('error-invalid-phone-number', 'Failed to save phone number', {
+				method: 'saveUserProfile',
+			});
+		}
 	}
 
 	const canChangePasswordForOAuth = rcSettings.get<boolean>('Accounts_AllowPasswordChangeForOAuthUsers');
@@ -221,6 +243,7 @@ export function executeSaveUserProfile(
 		statusType?: string;
 		bio?: string;
 		nickname?: string;
+		phone?: string;
 	},
 	customFields: Record<string, any> = {},
 	...args: unknown[]
