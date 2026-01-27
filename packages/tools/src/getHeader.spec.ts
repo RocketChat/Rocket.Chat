@@ -20,49 +20,35 @@ describe('getHeader', () => {
 			expect(getHeader({}, 'origin')).toBe('');
 		});
 
-		it('returns first value when header is array', () => {
-			expect(getHeader({ 'x-forwarded-for': ['127.0.0.1', '10.0.0.1'] }, 'x-forwarded-for')).toBe('127.0.0.1');
-		});
-
-		it('returns empty string when value is empty array', () => {
-			expect(getHeader({ 'x-forwarded-for': [] }, 'x-forwarded-for')).toBe('');
-		});
-
 		it('returns empty string when value is undefined', () => {
 			expect(getHeader({ origin: undefined }, 'origin')).toBe('');
 		});
 	});
 
-	describe('asArray mode (string[])', () => {
-		it('returns empty array when headers is undefined', () => {
-			expect(getHeader(undefined as unknown as IncomingHttpHeaders, 'origin', true)).toEqual([]);
-		});
-
-		it('returns empty array when header does not exist', () => {
-			expect(getHeader({ origin: 'localhost:3000' }, 'host', true)).toEqual([]);
-		});
-
-		it('returns array with single value when header is string', () => {
-			expect(getHeader({ origin: 'localhost:3000' }, 'origin', true)).toEqual(['localhost:3000']);
-		});
-
-		it('returns array when header already array', () => {
-			expect(getHeader({ 'x-forwarded-for': ['127.0.0.1', '10.0.0.1'] }, 'x-forwarded-for', true)).toEqual(['127.0.0.1', '10.0.0.1']);
+	describe('generic array mode (string[])', () => {
+		it('returns the correct array when header is array', () => {
+			expect(getHeader<string[]>({ 'x-forwarded-for': ['127.0.0.1', '10.0.0.1'] }, 'x-forwarded-for')).toStrictEqual([
+				'127.0.0.1',
+				'10.0.0.1',
+			]);
 		});
 
 		it('returns empty array when value is empty array', () => {
-			expect(getHeader({ 'x-forwarded-for': [] }, 'x-forwarded-for', true)).toEqual([]);
+			expect(getHeader<string[]>({ 'x-forwarded-for': [] }, 'x-forwarded-for')).toStrictEqual([]);
+		});
+
+		it('returns string even when T is string[] (by design)', () => {
+			expect(getHeader<string[]>({ origin: 'localhost:3000' }, 'origin')).toEqual('localhost:3000');
 		});
 	});
 
 	describe('IncomingHttpHeaders support', () => {
 		it('works with IncomingHttpHeaders', () => {
 			const headers: IncomingHttpHeaders = {
-				host: 'localhost:3000',
 				connection: 'keep-alive',
 			};
 
-			expect(getHeader(headers, 'host')).toBe('localhost:3000');
+			expect(getHeader(headers, 'connection')).toBe('keep-alive');
 			expect(getHeader(headers, 'origin')).toBe('');
 		});
 	});
@@ -73,7 +59,7 @@ describe('getHeader', () => {
 			headers.set('host', 'localhost:3000');
 
 			expect(getHeader(headers, 'host')).toBe('localhost:3000');
-			expect(getHeader(headers, 'origin')).toEqual('');
+			expect(getHeader(headers, 'origin')).toBe('');
 		});
 	});
 });

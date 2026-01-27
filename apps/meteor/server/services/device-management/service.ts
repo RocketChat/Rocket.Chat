@@ -3,7 +3,6 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import { getHeader } from '@rocket.chat/tools';
 
 import { deviceManagementEvents } from './events';
-import { getClientAddress } from '../../lib/getClientAddress';
 
 export class DeviceManagementService extends ServiceClassInternal implements IDeviceManagementService {
 	protected name = 'device-management';
@@ -15,7 +14,7 @@ export class DeviceManagementService extends ServiceClassInternal implements IDe
 			deviceManagementEvents.emit('device-login', {
 				userId,
 				userAgent: getHeader(connection.httpHeaders, 'user-agent'),
-				clientAddress: getClientAddress(connection),
+				clientAddress: connection.clientAddress ?? getHeader(connection.httpHeaders, 'x-real-ip'),
 				loginToken: connection.loginToken,
 			});
 		});

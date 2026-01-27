@@ -5,7 +5,6 @@ import type { ISAUMonitorService } from '@rocket.chat/core-services';
 import { getHeader } from '@rocket.chat/tools';
 
 import { sauEvents } from './events';
-import { getClientAddress } from '../../lib/getClientAddress';
 
 export class SAUMonitorService extends ServiceClassInternal implements ISAUMonitorService {
 	protected name = 'sau-monitor';
@@ -19,7 +18,7 @@ export class SAUMonitorService extends ServiceClassInternal implements ISAUMonit
 				instanceId: connection.instanceId,
 				connectionId: connection.id,
 				loginToken: connection.loginToken,
-				clientAddress: getClientAddress(connection),
+				clientAddress: connection.clientAddress ?? getHeader(connection.httpHeaders, 'x-real-ip'),
 				userAgent: getHeader(connection.httpHeaders, 'user-agent'),
 				host: getHeader(connection.httpHeaders, 'host'),
 			});

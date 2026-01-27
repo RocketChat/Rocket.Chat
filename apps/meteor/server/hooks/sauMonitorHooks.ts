@@ -5,7 +5,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import type { ILoginAttempt } from '../../app/authentication/server/ILoginAttempt';
-import { getClientAddress } from '../lib/getClientAddress';
 import { deviceManagementEvents } from '../services/device-management/events';
 import { sauEvents } from '../services/sauMonitor/events';
 
@@ -22,7 +21,7 @@ Accounts.onLogin((info: ILoginAttempt) => {
 	const { resume } = methodArguments.find((arg) => 'resume' in arg) ?? {};
 	const loginToken = resume ? hashLoginToken(resume) : '';
 	const instanceId = InstanceStatus.id();
-	const clientAddress = getClientAddress(info.connection);
+	const clientAddress = info.connection.clientAddress ?? getHeader(httpHeaders, 'x-real-ip');
 	const userAgent = getHeader(httpHeaders, 'user-agent');
 	const host = getHeader(httpHeaders, 'host');
 
