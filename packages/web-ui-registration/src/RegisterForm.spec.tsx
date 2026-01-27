@@ -18,7 +18,7 @@ jest.mock('./hooks/useRegisterMethod', () => ({
     }),
 }));
 
-const defaultApp Root = mockAppRoot()
+const defaultAppRoot = mockAppRoot()
     .withTranslations('en', 'core', {
         Required_field: '{{field}} is required',
         'registration.component.form.createAnAccount': 'Create an account',
