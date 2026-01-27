@@ -280,6 +280,26 @@ import { SynapseClient } from '../helper/synapse-client';
 	});
 
 	describe('Federation_Service_Validate_User_Domain Setting', () => {
+		const rcValidUser1 = {
+			username: `valid-user1-${Date.now()}`,
+			fullName: `Valid User1 ${Date.now()}`,
+			get matrixId() {
+				return `@${this.username}:${federationConfig.rc1.domain}`;
+			},
+			config: {} as IRequestConfig,
+			user: {} as TestUser<IUser>,
+		};
+
+		const rcValidUser2 = {
+			username: `valid-user2-${Date.now()}`,
+			fullName: `Valid User2 ${Date.now()}`,
+			get matrixId() {
+				return `@${this.username}:${federationConfig.rc1.domain}`;
+			},
+			config: {} as IRequestConfig,
+			user: {} as TestUser<IUser>,
+		};
+
 		beforeAll(async () => {
 			// Ensure access-federation is granted to all users
 			await rc1AdminRequestConfig.request
@@ -288,6 +308,62 @@ import { SynapseClient } from '../helper/synapse-client';
 				.send({ permissions: [{ _id: 'access-federation', roles: ['admin', 'user'] }] })
 				.expect('Content-Type', 'application/json')
 				.expect(200);
+
+			// Create RC users
+			rcValidUser1.user = await createUser(
+				{
+					username: rcValidUser1.username,
+					password: 'random',
+					email: `${rcValidUser1.username}@${federationConfig.rc1.domain}`,
+					name: rcValidUser1.fullName,
+				},
+				rc1AdminRequestConfig,
+			);
+
+			await rc1AdminRequestConfig.request
+				.post(api('users.update'))
+				.set(rc1AdminRequestConfig.credentials)
+				.send({
+					userId: rcValidUser1.user._id,
+					data: {
+						verified: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			rcValidUser1.config = await getRequestConfig(federationConfig.rc1.url, rcValidUser1.username, 'random');
+
+			rcValidUser2.user = await createUser(
+				{
+					username: rcValidUser2.username,
+					password: 'random',
+					email: `${rcValidUser2.username}@${federationConfig.rc1.domain}`,
+					name: rcValidUser2.fullName,
+				},
+				rc1AdminRequestConfig,
+			);
+
+			await rc1AdminRequestConfig.request
+				.post(api('users.update'))
+				.set(rc1AdminRequestConfig.credentials)
+				.send({
+					userId: rcValidUser2.user._id,
+					data: {
+						verified: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			rcValidUser2.config = await getRequestConfig(federationConfig.rc1.url, rcValidUser2.username, 'random');
+		});
+
+		afterAll(async () => {
+			await Promise.all([
+				deleteUser(rcValidUser1.user, {}, rc1AdminRequestConfig),
+				deleteUser(rcValidUser2.user, {}, rc1AdminRequestConfig),
+			]);
 		});
 
 		describe('When setting is enabled', () => {
@@ -312,40 +388,6 @@ import { SynapseClient } from '../helper/synapse-client';
 			});
 
 			describe('User with verified email matching federation domain', () => {
-				let userWithMatchingEmail: TestUser<IUser>;
-				let userRequestConfig: IRequestConfig;
-
-				beforeAll(async () => {
-					userWithMatchingEmail = await createUser(
-						{
-							username: `user-matching-${Date.now()}`,
-							password: 'password123',
-							email: `user-matching-${Date.now()}@${federationConfig.rc1.domain}`,
-							roles: ['user'],
-						},
-						rc1AdminRequestConfig,
-					);
-
-					// Verify the user's email
-					await rc1AdminRequestConfig.request
-						.post(api('users.update'))
-						.set(rc1AdminRequestConfig.credentials)
-						.send({
-							userId: userWithMatchingEmail._id,
-							data: {
-								verified: true,
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200);
-
-					userRequestConfig = await getRequestConfig(federationConfig.rc1.url, userWithMatchingEmail.username, 'password123');
-				});
-
-				afterAll(async () => {
-					await deleteUser(userWithMatchingEmail, {}, rc1AdminRequestConfig);
-				});
-
 				it('should be able to create a federated room', async () => {
 					const channelName = `federated-room-${Date.now()}`;
 					const createResponse = await createRoom({
@@ -355,7 +397,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						extraData: {
 							federated: true,
 						},
-						config: userRequestConfig,
+						config: rcValidUser1.config,
 					});
 
 					expect(createResponse.status).toBe(200);
@@ -373,19 +415,37 @@ import { SynapseClient } from '../helper/synapse-client';
 						extraData: {
 							federated: true,
 						},
-						config: rc1AdminRequestConfig,
+						config: rcValidUser1.config,
 					});
 
 					expect(createResponse.status).toBe(200);
 
 					const addUserResponse = await addUserToRoom({
-						usernames: [userWithMatchingEmail.username],
+						usernames: [rcValidUser2.username],
 						rid: createResponse.body.group._id,
-						config: rc1AdminRequestConfig,
+						config: rcValidUser1.config,
 					});
 
 					expect(addUserResponse.status).toBe(200);
 					expect(addUserResponse.body).toHaveProperty('success', true);
+				});
+
+				it('should be able to be added to a federated room during creation', async () => {
+					const channelName = `federated-room-${Date.now()}`;
+					const createResponse = await createRoom({
+						type: 'p',
+						name: channelName,
+						members: [rcValidUser2.username],
+						extraData: {
+							federated: true,
+						},
+						config: rcValidUser1.config,
+					});
+
+					expect(createResponse.status).toBe(200);
+					expect(createResponse.body).toHaveProperty('success', true);
+					expect(createResponse.body).toHaveProperty('group');
+					expect(createResponse.body.group).toHaveProperty('federated', true);
 				});
 			});
 
@@ -450,7 +510,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						extraData: {
 							federated: true,
 						},
-						config: rc1AdminRequestConfig,
+						config: rcValidUser1.config,
 					});
 
 					expect(createResponse.status).toBe(200);
@@ -458,12 +518,29 @@ import { SynapseClient } from '../helper/synapse-client';
 					const addUserResponse = await addUserToRoom({
 						usernames: [userWithNonMatchingEmail.username],
 						rid: createResponse.body.group._id,
-						config: rc1AdminRequestConfig,
+						config: rcValidUser1.config,
 					});
 
 					expect(addUserResponse.status).toBe(400);
 					expect(addUserResponse.body).toHaveProperty('success', false);
 					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
+				});
+
+				it('should NOT be able to be added to a federated room during creation', async () => {
+					const channelName = `federated-room-${Date.now()}`;
+					const createResponse = await createRoom({
+						type: 'p',
+						name: channelName,
+						members: [userWithNonMatchingEmail.username],
+						extraData: {
+							federated: true,
+						},
+						config: userRequestConfig,
+					});
+
+					expect(createResponse.status).toBe(400);
+					expect(createResponse.body).toHaveProperty('success', false);
+					expect(createResponse.body).toHaveProperty('errorType', 'error-not-authorized-federation');
 				});
 			});
 
@@ -515,7 +592,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						extraData: {
 							federated: true,
 						},
-						config: rc1AdminRequestConfig,
+						config: rcValidUser1.config,
 					});
 
 					expect(createResponse.status).toBe(200);
@@ -523,7 +600,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					const addUserResponse = await addUserToRoom({
 						usernames: [userWithUnverifiedEmail.username],
 						rid: createResponse.body.group._id,
-						config: rc1AdminRequestConfig,
+						config: rcValidUser1.config,
 					});
 
 					expect(addUserResponse.status).toBe(400);
@@ -579,7 +656,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						extraData: {
 							federated: true,
 						},
-						config: rc1AdminRequestConfig,
+						config: rcValidUser1.config,
 					});
 
 					expect(createResponse.status).toBe(200);
@@ -587,7 +664,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					const addUserResponse = await addUserToRoom({
 						usernames: [userWithoutEmail.username],
 						rid: createResponse.body.group._id,
-						config: rc1AdminRequestConfig,
+						config: rcValidUser1.config,
 					});
 
 					expect(addUserResponse.status).toBe(400);
