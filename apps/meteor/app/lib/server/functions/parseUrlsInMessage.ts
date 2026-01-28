@@ -13,7 +13,14 @@ export const parseUrlsInMessage = (message: AtLeast<IMessage, 'msg'> & { parseUr
 	message.html = message.msg;
 	message = Markdown.code(message);
 
-	const urls = message.html?.match(getMessageUrlRegex()) || [];
+	const urls = (message.html?.match(getMessageUrlRegex()) || []).map((url) => {
+		if (url && (!/^\w+:\/\/.*/i.test(url))) {
+			return `https://${url}`;
+		}
+
+		return url;
+	});
+
 	if (urls) {
 		message.urls = [...new Set(urls)].map((url) => ({
 			url,
