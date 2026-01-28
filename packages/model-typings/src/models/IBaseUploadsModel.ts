@@ -10,6 +10,8 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 
 	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult> | undefined;
 
+	confirmTemporaryFiles(fileIds: string[], userId: string): Promise<Document | UpdateResult> | undefined;
+
 	findByIds(_ids: string[], options?: FindOptions<T>): FindCursor<T>;
 
 	findOneByName(name: string, options?: { session?: ClientSession }): Promise<T | null>;
@@ -19,6 +21,8 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 	findExpiredTemporaryFiles(options?: FindOptions<T>): FindCursor<T>;
 
 	updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult>;
+
+	updateFileContentById(fileId: string, content: IUpload['content']): Promise<Document | UpdateResult>;
 
 	deleteFile(fileId: string, options?: { session?: ClientSession }): Promise<DeleteResult>;
 }

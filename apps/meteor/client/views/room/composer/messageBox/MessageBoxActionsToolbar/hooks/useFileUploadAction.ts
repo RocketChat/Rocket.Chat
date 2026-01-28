@@ -4,11 +4,12 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useFileInput } from '../../../../../../hooks/useFileInput';
+import type { UploadsAPI } from '../../../../../../lib/chats/ChatAPI';
 import { useChat } from '../../../../contexts/ChatContext';
 
 const fileInputProps = { type: 'file', multiple: true };
 
-export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => {
+export const useFileUploadAction = (disabled: boolean, uploadsStore: UploadsAPI): GenericMenuItemProps => {
 	const { t } = useTranslation();
 	const fileUploadEnabled = useSetting('FileUpload_Enabled', true);
 	const fileInputRef = useFileInput(fileInputProps);
@@ -31,12 +32,12 @@ export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => 
 				});
 				return file;
 			});
-			chat?.flows.uploadFiles(filesToUpload, resetFileInput);
+			chat?.flows.uploadFiles({ files: filesToUpload, uploadsStore, resetFileInput });
 		};
 
 		fileInputRef.current?.addEventListener('change', handleUploadChange);
 		return () => fileInputRef?.current?.removeEventListener('change', handleUploadChange);
-	}, [chat, fileInputRef]);
+	}, [chat, fileInputRef, uploadsStore]);
 
 	const handleUpload = () => {
 		fileInputRef?.current?.click();

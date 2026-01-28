@@ -3,7 +3,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { Modal, Box, IconButton, Select, ModalHeader, ModalTitle, ModalClose, ModalContent, ModalFooter } from '@rocket.chat/fuselage';
 import { useEffectEvent, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useSort } from '@rocket.chat/ui-client';
-import { useMethod, useToastMessageDispatch, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
+import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MouseEvent } from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
@@ -11,9 +11,7 @@ import FilePickerBreadcrumbs from './FilePickerBreadcrumbs';
 import WebdavFilePickerGrid from './WebdavFilePickerGrid';
 import WebdavFilePickerTable from './WebdavFilePickerTable';
 import { sortWebdavNodes } from './lib/sortWebdavNodes';
-import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
 import FilterByText from '../../../../components/FilterByText';
-import FileUploadModal from '../../modals/FileUploadModal';
 
 export type WebdavSortOptions = 'name' | 'size' | 'dataModified';
 
@@ -25,7 +23,6 @@ type WebdavFilePickerModalProps = {
 
 const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerModalProps): ReactElement => {
 	const t = useTranslation();
-	const setModal = useSetModal();
 	const getWebdavFilePreview = useMethod('getWebdavFilePreview');
 	const getWebdavFileList = useMethod('getWebdavFileList');
 	const getFileFromWebdav = useMethod('getFileFromWebdav');
@@ -147,15 +144,7 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 			const blob = new Blob([data]);
 			const file = new File([blob], webdavNode.basename, { type: webdavNode.mime });
 
-			setModal(
-				<FileUploadModal
-					fileName={webdavNode.basename}
-					onSubmit={(_, description): Promise<void> => uploadFile(file, description)}
-					file={file}
-					onClose={(): void => setModal(null)}
-					invalidContentType={Boolean(file.type && !fileUploadIsValidContentType(file.type))}
-				/>,
-			);
+			uploadFile(file);
 		} catch (error) {
 			return dispatchToastMessage({ type: 'error', message: error });
 		}

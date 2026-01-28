@@ -6,6 +6,7 @@ import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 import { processMessageEditing } from './processMessageEditing';
+import { processMessageUploads } from './processMessageUploads';
 import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
@@ -22,6 +23,10 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 	}
 
 	if (isSlashCommandAllowed && (await processSlashCommand(chat, message))) {
+		return;
+	}
+
+	if (await processMessageUploads(chat, message)) {
 		return;
 	}
 
@@ -45,7 +50,8 @@ export const sendMessage = async (
 		tshow,
 		previewUrls,
 		isSlashCommandAllowed,
-	}: { text: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean },
+		tmid,
+	}: { text: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean; tmid?: IMessage['tmid'] },
 ): Promise<boolean> => {
 	if (!(await chat.data.isSubscribedToRoom())) {
 		try {
@@ -58,14 +64,17 @@ export const sendMessage = async (
 
 	chat.readStateManager.clearUnreadMark();
 
+	const uploadsStore = tmid ? chat.threadUploads : chat.uploads;
+	const hasFiles = uploadsStore.get().length > 0;
+
 	text = text.trim();
 	const mid = chat.currentEditingMessage.getMID();
-	if (!text && !mid) {
+	if (!text && !mid && !hasFiles) {
 		// Nothing to do
 		return false;
 	}
 
-	if (text) {
+	if (text || hasFiles) {
 		const message = await chat.data.composeMessage(text, {
 			sendToChannel: tshow,
 			quotedMessages: chat.composer?.quotedMessages.get() ?? [],

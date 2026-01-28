@@ -39,19 +39,6 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 	expect(results).toHaveNoViolations();
 });
 
-it('should display error message when description exceeds character limit', async () => {
-	render(<FileUploadModal {...defaultProps} />, {
-		wrapper: defaultWrapper.withSetting('Message_MaxAllowedSize', 10).build(),
-	});
-
-	const input = await screen.findByRole('textbox', { name: 'File description' });
-	expect(input).toBeInTheDocument();
-	await userEvent.type(input, '12345678910');
-	await userEvent.tab();
-
-	expect(screen.getByText('Cannot upload file, description is over the 10 character limit')).toBeInTheDocument();
-});
-
 it('should not send a renamed file with not allowed mime-type', async () => {
 	render(<FileUploadModal {...defaultProps} />, {
 		wrapper: defaultWrapper.withSetting('FileUpload_MediaTypeBlackList', 'image/svg+xml').build(),
@@ -60,7 +47,7 @@ it('should not send a renamed file with not allowed mime-type', async () => {
 	const input = await screen.findByRole('textbox', { name: 'File name' });
 	await userEvent.type(input, 'testing.svg');
 
-	const button = await screen.findByRole('button', { name: 'Send' });
+	const button = await screen.findByRole('button', { name: 'Update' });
 	await userEvent.click(button);
 
 	expect(screen.getByText('Media type not accepted: image/svg+xml')).toBeInTheDocument();

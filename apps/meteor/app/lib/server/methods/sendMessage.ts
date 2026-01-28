@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IMessage, IUser, IUploadToConfirm } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import { MessageTypes } from '@rocket.chat/message-types';
@@ -9,6 +9,7 @@ import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
+import { MAX_MULTIPLE_UPLOADED_FILES } from '../../../../lib/constants';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
@@ -32,7 +33,7 @@ import { RateLimiter } from '../lib';
 export async function executeSendMessage(
 	uid: IUser['_id'],
 	message: AtLeast<IMessage, 'rid'>,
-	extraInfo?: { ts?: Date; previewUrls?: string[] },
+	extraInfo?: { ts?: Date; previewUrls?: string[]; filesToConfirm?: IUploadToConfirm[] },
 ) {
 	if (message.tshow && !message.tmid) {
 		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
@@ -106,7 +107,7 @@ export async function executeSendMessage(
 		}
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-		return await sendMessage(user, message, room, false, extraInfo?.previewUrls);
+		return await sendMessage(user, message, room, false, extraInfo?.previewUrls, extraInfo?.filesToConfirm);
 	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });
 
@@ -127,12 +128,12 @@ export async function executeSendMessage(
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[]): any;
+		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[], filesToConfirm?: IUploadToConfirm[]): any;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	async sendMessage(message, previewUrls) {
+	async sendMessage(message, previewUrls, filesToConfirm) {
 		check(message, {
 			_id: Match.Maybe(String),
 			rid: Match.Maybe(String),
@@ -151,6 +152,36 @@ Meteor.methods<ServerMethods>({
 			sentByEmail: Match.Maybe(Boolean),
 		});
 
+		check(
+			filesToConfirm,
+			Match.Maybe([
+				Match.ObjectIncluding({
+					_id: String,
+					name: Match.Maybe(String),
+					content: Match.Maybe(
+						Match.OneOf(
+							{
+								algorithm: 'rc.v1.aes-sha2',
+								ciphertext: String,
+							},
+							{
+								algorithm: 'rc.v2.aes-sha2',
+								ciphertext: String,
+								kid: String,
+								iv: String,
+							},
+						),
+					),
+				}),
+			]),
+		);
+
+		if (filesToConfirm && filesToConfirm.length > MAX_MULTIPLE_UPLOADED_FILES) {
+			throw new Meteor.Error('error-too-many-files', `Cannot send more than ${MAX_MULTIPLE_UPLOADED_FILES} files in one message`, {
+				method: 'sendMessage',
+			});
+		}
+
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -163,7 +194,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
-			return await applyAirGappedRestrictionsValidation(() => executeSendMessage(uid, message, { previewUrls }));
+			return await applyAirGappedRestrictionsValidation(() => executeSendMessage(uid, message, { previewUrls, filesToConfirm }));
 		} catch (error: any) {
 			if (['error-not-allowed', 'restricted-workspace'].includes(error.error || error.message)) {
 				throw new Meteor.Error(error.error || error.message, error.reason, {

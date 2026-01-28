@@ -79,18 +79,20 @@ test.describe.serial('Threads', () => {
 			await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
 		});
 	});
-	test('expect upload a file attachment in thread with description', async ({ page }) => {
+	test('should send a file with name updated in thread', async ({ page }) => {
+		const updatedFileName = 'any_file1.txt';
 		await poHomeChannel.content.lastThreadMessagePreviewText.click();
 
 		await expect(page).toHaveURL(/.*thread/);
 
 		await poHomeChannel.content.dragAndDropTxtFileToThread();
-		await poHomeChannel.content.descriptionInput.fill('any_description');
-		await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.threadComposer.getFileByName('any_file.txt').click();
+		await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
+		await poHomeChannel.content.btnUpdateFileUpload.click();
+		await poHomeChannel.threadComposer.btnSend.click();
 
-		await expect(poHomeChannel.content.lastThreadMessageFileDescription).toHaveText('any_description');
-		await expect(poHomeChannel.content.lastThreadMessageFileName).toContainText('any_file1.txt');
+		await expect(poHomeChannel.content.lastThreadMessageFileDescription).not.toBeVisible();
+		await expect(poHomeChannel.content.lastThreadMessageFileName).toContainText(updatedFileName);
 	});
 
 	test.describe('thread message actions', () => {

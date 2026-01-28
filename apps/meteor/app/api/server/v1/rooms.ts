@@ -274,7 +274,7 @@ API.v1.addRoute(
 				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }, { parseAttachmentsForE2EE: false }),
 			);
 
-			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
+			await Uploads.confirmTemporaryFile(file._id, this.userId);
 
 			const message = await Messages.getMessageByFileIdAndUsername(file._id, this.userId);
 

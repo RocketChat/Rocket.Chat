@@ -1,184 +1,224 @@
-import type { IMessage, IRoom, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
+import fileSize from 'filesize';
 
-import { UserAction, USER_ACTIVITIES } from '../../../app/ui/client/lib/UserAction';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { getErrorMessage } from '../errorHandling';
-import type { UploadsAPI } from './ChatAPI';
-import type { Upload } from './Upload';
+import type { UploadsAPI, EncryptedFileUploadContent } from './ChatAPI';
+import { isEncryptedUpload, type Upload } from './Upload';
+import { fileUploadIsValidContentType } from '../../../app/utils/client';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { i18n } from '../../../app/utils/lib/i18n';
+import { settings } from '../settings';
 
-let uploads: readonly Upload[] = [];
+class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }> implements UploadsAPI {
+	private rid: string;
 
-const emitter = new Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }>();
+	constructor({ rid }: { rid: string }) {
+		super();
 
-const updateUploads = (update: (uploads: readonly Upload[]) => readonly Upload[]): void => {
-	uploads = update(uploads);
-	emitter.emit('update');
-};
+		this.rid = rid;
+	}
 
-const get = (): readonly Upload[] => uploads;
+	uploads: readonly Upload[] = [];
 
-const subscribe = (callback: () => void): (() => void) => emitter.on('update', callback);
-
-const cancel = (id: Upload['id']): void => {
-	emitter.emit(`cancelling-${id}`);
-};
-
-const wipeFailedOnes = (): void => {
-	updateUploads((uploads) => uploads.filter((upload) => !upload.error));
-};
-
-const send = async (
-	file: File,
-	{
-		description,
-		msg,
-		rid,
-		tmid,
-		t,
-	}: {
-		description?: string;
-		msg?: string;
-		rid: string;
-		tmid?: string;
-		t?: IMessage['t'];
-	},
-	getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
-	fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
-): Promise<void> => {
-	const id = Random.id();
-
-	const upload: Upload = {
-		id,
-		name: fileContent?.raw.name || file.name,
-		percentage: 0,
+	set = (uploads: Upload[]): void => {
+		this.uploads = uploads;
+		this.emit('update');
 	};
 
-	updateUploads((uploads) => [...uploads, upload]);
+	get = (): readonly Upload[] => this.uploads;
 
-	try {
-		await new Promise((resolve, reject) => {
-			const xhr = sdk.rest.upload(
-				`/v1/rooms.media/${rid}`,
-				{
-					file,
-					...(fileContent && {
-						content: JSON.stringify(fileContent.encrypted),
-					}),
-				},
-				{
-					load: (event) => {
-						resolve(event);
-					},
-					progress: (event) => {
-						if (!event.lengthComputable) {
-							return;
-						}
-						const progress = (event.loaded / event.total) * 100;
-						if (progress === 100) {
-							return;
-						}
+	subscribe = (callback: () => void): (() => void) => this.on('update', callback);
 
-						updateUploads((uploads) =>
-							uploads.map((upload) => {
-								if (upload.id !== id) {
-									return upload;
-								}
+	cancel = (id: Upload['id']): void => {
+		this.emit(`cancelling-${id}`);
+	};
 
-								return {
-									...upload,
-									percentage: Math.round(progress) || 0,
-								};
-							}),
-						);
-					},
-					error: (event) => {
-						updateUploads((uploads) =>
-							uploads.map((upload) => {
-								if (upload.id !== id) {
-									return upload;
-								}
+	wipeFailedOnes = (): void => {
+		this.set(this.uploads.filter((upload) => !upload.error));
+	};
 
-								return {
-									...upload,
-									percentage: 0,
-									error: new Error(xhr.responseText),
-								};
-							}),
-						);
-						reject(event);
-					},
-				},
+	removeUpload = (id: Upload['id']): void => {
+		this.set(this.uploads.filter((upload) => upload.id !== id));
+	};
+
+	editUploadFileName = async (uploadId: Upload['id'], fileName: Upload['file']['name']): Promise<void> => {
+		try {
+			this.set(
+				this.uploads.map((upload) => {
+					if (upload.id !== uploadId) {
+						return upload;
+					}
+
+					return {
+						...upload,
+						file: new File([upload.file], fileName, upload.file),
+						...(isEncryptedUpload(upload) && {
+							metadataForEncryption: { ...upload.metadataForEncryption, name: fileName },
+						}),
+					};
+				}),
 			);
-
-			xhr.onload = async () => {
-				if (xhr.readyState === xhr.DONE) {
-					if (xhr.status === 400) {
-						const error = JSON.parse(xhr.responseText);
-						updateUploads((uploads) => [...uploads, { ...upload, error: new Error(error.error) }]);
-						return;
+		} catch (error) {
+			this.set(
+				this.uploads.map((upload) => {
+					if (upload.id !== uploadId) {
+						return upload;
 					}
 
-					if (xhr.status === 200) {
-						const result = JSON.parse(xhr.responseText);
-						let content;
-						if (getContent) {
-							content = await getContent(result.file._id, result.file.url);
+					return {
+						...upload,
+						percentage: 0,
+						error: new Error(i18n.t('FileUpload_Update_Failed')),
+					};
+				}),
+			);
+		}
+	};
+
+	clear = () => this.set([]);
+
+	async send(file: File, encrypted?: EncryptedFileUploadContent): Promise<void> {
+		const maxFileSize = settings.peek('FileUpload_MaxFileSize');
+		const invalidContentType = !fileUploadIsValidContentType(file.type);
+		const id = Random.id();
+
+		this.set([
+			...this.uploads,
+			{
+				id,
+				file: encrypted ? encrypted.rawFile : file,
+				percentage: 0,
+				encryptedFile: encrypted?.encryptedFile,
+				metadataForEncryption: encrypted?.fileContent.raw,
+			},
+		]);
+
+		try {
+			await new Promise((resolve, reject) => {
+				if (file.size === 0) {
+					reject(new Error(i18n.t('FileUpload_File_Empty')));
+				}
+
+				// -1 maxFileSize means there is no limit
+				if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
+					reject(new Error(i18n.t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })));
+				}
+
+				if (invalidContentType) {
+					reject(new Error(i18n.t('FileUpload_MediaType_NotAccepted__type__', { type: file.type })));
+				}
+
+				const xhr = sdk.rest.upload(
+					`/v1/rooms.media/${this.rid}`,
+					{
+						file,
+						...(encrypted && {
+							content: JSON.stringify(encrypted.fileContent.encrypted),
+						}),
+					},
+					{
+						load: (event) => {
+							resolve(event);
+						},
+						progress: (event) => {
+							if (!event.lengthComputable) {
+								return;
+							}
+							const progress = (event.loaded / event.total) * 100;
+							this.set(
+								this.uploads.map((upload) => {
+									if (upload.id !== id) {
+										return upload;
+									}
+
+									return {
+										...upload,
+										percentage: Math.round(progress) || 0,
+									};
+								}),
+							);
+						},
+						error: (event) => {
+							this.set(
+								this.uploads.map((upload) => {
+									if (upload.id !== id) {
+										return upload;
+									}
+
+									return {
+										...upload,
+										percentage: 0,
+										error: new Error(xhr.responseText),
+									};
+								}),
+							);
+							reject(event);
+						},
+					},
+				);
+
+				xhr.onload = () => {
+					if (xhr.readyState === xhr.DONE) {
+						if (xhr.status === 400) {
+							const error = JSON.parse(xhr.responseText);
+							this.set(
+								this.uploads.map((upload) => {
+									if (upload.id !== id) {
+										return upload;
+									}
+
+									return {
+										...upload,
+										error: new Error(error.error),
+									};
+								}),
+							);
+							return;
 						}
 
-						await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${result.file._id}`, {
-							msg,
-							tmid,
-							description,
-							t,
-							content,
-						});
+						if (xhr.status === 200) {
+							const result = JSON.parse(xhr.responseText);
+							this.set(
+								this.uploads.map((upload) => {
+									if (upload.id !== id) {
+										return upload;
+									}
+
+									return {
+										...upload,
+										id: result.file._id,
+										url: result.file.url,
+									};
+								}),
+							);
+						}
 					}
-				}
-			};
-
-			if (uploads.length) {
-				UserAction.performContinuously(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
-			}
-
-			emitter.once(`cancelling-${id}`, () => {
-				xhr.abort();
-				updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
-			});
-		});
-
-		updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
-	} catch (error: unknown) {
-		updateUploads((uploads) =>
-			uploads.map((upload) => {
-				if (upload.id !== id) {
-					return upload;
-				}
-
-				return {
-					...upload,
-					percentage: 0,
-					error: new Error(getErrorMessage(error)),
 				};
-			}),
-		);
-	} finally {
-		if (!uploads.length) {
-			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
+
+				this.once(`cancelling-${id}`, () => {
+					xhr.abort();
+					this.set(this.uploads.filter((upload) => upload.id !== id));
+					reject(new Error(i18n.t('FileUpload_Cancelled')));
+				});
+			});
+		} catch (error: unknown) {
+			this.set(
+				this.uploads.map((upload) => {
+					if (upload.id !== id) {
+						return upload;
+					}
+
+					return {
+						...upload,
+						percentage: 0,
+						error: new Error(getErrorMessage(error)),
+					};
+				}),
+			);
 		}
 	}
-};
+}
 
-export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI => ({
-	get,
-	subscribe,
-	wipeFailedOnes,
-	cancel,
-	send: (
-		file: File,
-		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
-		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
-		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
-	): Promise<void> => send(file, { description, msg, rid, tmid, t }, getContent, fileContent),
-});
+export const createUploadsAPI = ({ rid }: { rid: IRoom['_id'] }): UploadsAPI => new UploadsStore({ rid });
