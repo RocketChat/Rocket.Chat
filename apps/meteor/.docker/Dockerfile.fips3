@@ -1,0 +1,67 @@
+FROM registry.access.redhat.com/ubi9/nodejs-22:latest AS builder
+
+ENV LANG=C.UTF-8
+
+USER root
+
+# Install build tools for native node modules
+RUN dnf -y update \
+    && dnf -y install python3 make gcc-c++ tar gzip \
+    && dnf clean all
+
+# Copy the bundle (assumes build context contains the 'bundle' directory)
+COPY . /app
+
+ENV NODE_ENV=production
+
+# Install npm dependencies for the app
+RUN cd /app/bundle/programs/server \
+    # Force installation of sharp for linux-glibc-arm64
+    && npm install --omit=dev \
+    && npm install --cpu=arm64 --os=linux --libc=glibc sharp@0.33.5
+
+# Final Stage: FIPS 140-3 Base (RHEL UBI with Node.js 22)
+FROM registry.access.redhat.com/ubi9/nodejs-22:latest
+
+LABEL maintainer="buildmaster@rocket.chat"
+
+ENV LANG=C.UTF-8
+
+# Environment setup for Rocket.Chat
+ENV DEPLOY_METHOD=docker \
+    NODE_ENV=production \
+    MONGO_URL=mongodb://mongo:27017/rocketchat \
+    HOME=/tmp \
+    PORT=3000 \
+    ROOT_URL=http://localhost:3000 \
+    Accounts_AvatarStorePath=/app/uploads \
+    OPENSSL_MODULES=/usr/lib64/ossl-modules
+
+USER root
+
+# Enable FIPS crypto policy and install runtime tooling
+RUN dnf -y update \
+    && dnf -y install shadow-utils tar gzip tzdata \
+    && update-crypto-policies --set FIPS:NO-SHA1 \
+    && dnf clean all
+
+# Create application user and directories
+RUN groupadd -r rocketchat \
+    && useradd -u 65533 -r -g rocketchat rocketchat \
+    && mkdir -p /app/uploads \
+    && chown -R rocketchat:rocketchat /app
+
+USER rocketchat
+
+COPY --from=builder --chown=rocketchat:rocketchat /app /app
+
+# Verify that the OpenSSL provider in this image satisfies FIPS 140-3.
+# RHEL only enables container FIPS mode when the host kernel runs with fips=1
+# (see https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/security_hardening/switching-rhel-to-fips-mode_security-hardening#assembly_enabling-fips-mode-in-a-container_switching-rhel-to-fips-mode).
+RUN echo "const crypto = require('crypto'); try { crypto.setFips(1); console.log('FIPS mode enabled', crypto.getHashes()); } catch (e) { console.error('Failed to enable FIPS mode:', e.message); process.exit(1); }" > /app/enable-fips.js
+
+ENV NODE_OPTIONS="--tls-cipher-list=HIGH:!aNULL:!MD5:!SHA1 -r /app/enable-fips.js"
+
+WORKDIR /app/bundle
+
+CMD ["node", "main.js"]
