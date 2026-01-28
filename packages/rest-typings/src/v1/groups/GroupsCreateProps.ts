@@ -54,7 +54,7 @@ const GroupsCreatePropsSchema = {
 					nullable: true,
 				},
 			},
-			dependentSchemas: {
+			dependencies: {
 				extraData: { required: ['broadcast', 'encrypted'] },
 			},
 			additionalProperties: false,

@@ -1,8 +1,8 @@
 import type { IAppsTokens, RequiredField, Optional, IPushNotificationConfig } from '@rocket.chat/core-typings';
 import { AppsTokens } from '@rocket.chat/models';
+import { ajv } from '@rocket.chat/rest-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { pick, truncateString } from '@rocket.chat/tools';
-import { ajv } from '@rocket.chat/rest-typings';
 import { JWT } from 'google-auth-library';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
