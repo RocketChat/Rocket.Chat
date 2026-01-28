@@ -1,4 +1,4 @@
-import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
+import { Cloud } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import * as z from 'zod';
@@ -14,72 +14,6 @@ import { getWorkspaceLicense } from '../getWorkspaceLicense';
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
 import { handleBannerOnWorkspaceSync, handleNpsOnWorkspaceSync } from './handleCommsSync';
 
-const workspaceClientPayloadSchema = z.object({
-	workspaceId: z.string(),
-	publicKey: z.string().optional(),
-	trial: z
-		.object({
-			trialing: z.boolean(),
-			trialID: z.string(),
-			endDate: z.string().datetime(),
-			marketing: z.object({
-				utmContent: z.string(),
-				utmMedium: z.string(),
-				utmSource: z.string(),
-				utmCampaign: z.string(),
-			}),
-			DowngradesToPlan: z.object({
-				id: z.string(),
-			}),
-			trialRequested: z.boolean(),
-		})
-		.optional(),
-	nps: z.object({
-		id: z.string(),
-		startAt: z.string().datetime(),
-		expireAt: z.string().datetime(),
-	}),
-	banners: z.array(
-		z.object({
-			_id: z.string(),
-			_updatedAt: z.string().datetime(),
-			platform: z.array(z.string()),
-			expireAt: z.string().datetime(),
-			startAt: z.string().datetime(),
-			roles: z.array(z.string()).optional(),
-			createdBy: z.object({
-				_id: z.string(),
-				username: z.string().optional(),
-			}),
-			createdAt: z.string().datetime(),
-			view: z.any(),
-			active: z.boolean().optional(),
-			inactivedAt: z.string().datetime().optional(),
-			snapshot: z.string().optional(),
-		}),
-	),
-	announcements: z.object({
-		create: z.array(
-			z.object({
-				_id: z.string(),
-				_updatedAt: z.string().datetime(),
-				selector: z.object({
-					roles: z.array(z.string()),
-				}),
-				platform: z.array(z.enum(['web', 'mobile'])),
-				expireAt: z.string().datetime(),
-				startAt: z.string().datetime(),
-				createdBy: z.enum(['cloud', 'system']),
-				createdAt: z.string().datetime(),
-				dictionary: z.record(z.string(), z.record(z.string(), z.string())),
-				view: z.any(),
-				surface: z.enum(['banner', 'modal']),
-			}),
-		),
-		delete: z.array(z.string()),
-	}),
-});
-
 /** @deprecated */
 const fetchWorkspaceClientPayload = async ({
 	token,
@@ -87,7 +21,7 @@ const fetchWorkspaceClientPayload = async ({
 }: {
 	token: string;
 	workspaceRegistrationData: WorkspaceRegistrationData<undefined>;
-}): Promise<Serialized<Cloud.WorkspaceSyncPayload> | undefined> => {
+}): Promise<Cloud.WorkspaceSyncPayload | undefined> => {
 	const workspaceRegistrationClientUri = settings.get<string>('Cloud_Workspace_Registration_Client_Uri');
 	const response = await fetch(`${workspaceRegistrationClientUri}/client`, {
 		method: 'POST',
@@ -113,17 +47,19 @@ const fetchWorkspaceClientPayload = async ({
 		return undefined;
 	}
 
-	const assertWorkspaceClientPayload = workspaceClientPayloadSchema.safeParse(payload);
+	const result = Cloud.WorkspaceSyncPayloadSchema.safeParse(payload);
 
-	if (!assertWorkspaceClientPayload.success) {
-		throw new CloudWorkspaceConnectionError('Invalid response from Rocket.Chat Cloud');
+	if (!result.success) {
+		throw new CloudWorkspaceConnectionError('Invalid response from Rocket.Chat Cloud', {
+			cause: z.prettifyError(result.error),
+		});
 	}
 
-	return payload;
+	return result.data;
 };
 
 /** @deprecated */
-const consumeWorkspaceSyncPayload = async (result: Serialized<Cloud.WorkspaceSyncPayload>) => {
+const consumeWorkspaceSyncPayload = async (result: Cloud.WorkspaceSyncPayload) => {
 	if (result.publicKey) {
 		(await Settings.updateValueById('Cloud_Workspace_PublicKey', result.publicKey)).modifiedCount &&
 			void notifyOnSettingChangedById('Cloud_Workspace_PublicKey');

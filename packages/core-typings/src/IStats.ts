@@ -6,7 +6,7 @@ import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
 import type { MACStats } from './omnichannel';
 
-export interface IVoIPPeriodStats {
+interface IVoIPPeriodStats {
 	calls?: number;
 	externalInboundCalls?: number;
 	externalOutboundCalls?: number;
@@ -272,4 +272,5 @@ export interface IStats {
 	abacTotalAttributes?: number;
 	abacTotalAttributeValues?: number;
 	abacRoomsEnrolled?: number;
+	allowUnsafeQueryAndFieldsApiParamsEnabled?: boolean;
 }

@@ -497,7 +497,7 @@
   "All_messages": "All messages",
   "All_roles": "All roles",
   "All_rooms": "All rooms",
-  "All_status": "All status",
+  "All_statuses": "All statuses",
   "All_time": "All time",
   "All_users": "All users",
   "All_users_in_the_channel_can_write_new_messages": "All users in the channel can write new messages",
@@ -2345,6 +2345,7 @@
   "File_not_allowed_direct_messages": "File sharing not allowed in direct messages.",
   "File_removed_by_automatic_prune": "File removed by automatic prune",
   "File_removed_by_prune": "File removed by prune",
+  "File_removed": "File removed",
   "File_type_is_not_accepted": "File type is not accepted.",
   "File_uploaded": "File uploaded",
   "File_uploaded_successfully": "File uploaded successfully",
@@ -3903,6 +3904,7 @@
   "Omnichannel_Agent": "Omnichannel Agent",
   "Omnichannel_Contact_Center": "Omnichannel Contact Center",
   "Omnichannel_Contact_Center_Chats": "Omnichannel Contact Center Chats",
+  "Omnichannel_Contact_Center_Contacts": "Omnichannel Contact Center Contacts",
   "Omnichannel_Description": "Set up Omnichannel to communicate with customers from one place, regardless of how they connect with you.",
   "Omnichannel_Directory": "Omnichannel Directory",
   "Omnichannel_External_Frame": "External Frame",
@@ -7094,5 +7096,6 @@
   "timestamps.relativeTimeDescription": "1 year ago",
   "Message_composer": "Message composer",
   "Thread_composer": "Thread composer",
-  "Room_composer": "Room composer"
+  "Room_composer": "Room composer",
+  "Date_range_presets": "Date range presets"
 }
