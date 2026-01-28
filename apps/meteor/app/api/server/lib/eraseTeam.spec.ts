@@ -126,7 +126,7 @@ describe('eraseTeam (TypeScript) module', () => {
 
 			await subject.eraseTeam(user, team, []);
 
-			sinon.assert.calledWith(eraseRoomStub, team.roomId, 'u1');
+			sinon.assert.calledWith(eraseRoomStub, team.roomId, user);
 		});
 	});
 
