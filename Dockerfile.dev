@@ -1,0 +1,47 @@
+FROM ubuntu:22.04
+
+# Create non-root user
+RUN groupadd -r rocket && \
+    useradd -r -g rocket -m -d /home/rocket rocket && \
+    mkdir -p /app && \
+    chown rocket:rocket /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl ca-certificates build-essential git python3 unzip \
+    libjpeg-dev libpng-dev zlib1g-dev procps gifsicle \
+    libgif-dev autoconf automake \
+    libtool nasm && \
+    rm -rf /var/lib/apt/lists/*
+
+# Switch to rocket user and setup environment
+USER rocket
+# Setup environment variables
+ENV HOME=/home/rocket \
+    NVM_DIR=/home/rocket/.nvm \
+    DENO_INSTALL=/home/rocket/.deno \
+    PATH=/home/rocket/.nvm/versions/node/v20.18.0/bin:/home/rocket/.deno/bin:$PATH
+
+# Install NVM and Node.js
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash && \
+    . $NVM_DIR/nvm.sh && \
+    nvm install 20.18.0 && \
+    nvm use 20.18.0 && \
+    nvm alias default 20.18.0
+
+RUN curl -fsSL https://deno.land/install.sh | sh
+
+WORKDIR /app
+
+# Setup Yarn globally
+RUN . $NVM_DIR/nvm.sh && \
+    npm install -g yarn
+
+COPY --chown=rocket:rocket . .
+
+# Build commands with NVM context
+RUN . $NVM_DIR/nvm.sh && yarn install && yarn build
+
+EXPOSE 3000
+
+CMD ["/bin/bash", "-c", "source $NVM_DIR/nvm.sh && yarn dsv"]
