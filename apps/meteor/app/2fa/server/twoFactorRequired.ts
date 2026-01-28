@@ -11,10 +11,10 @@ export type AuthenticatedContext = {
 		clientAddress: string;
 		httpHeaders: Record<string, string>;
 	};
-	twoFactorChecked?: boolean;
+	twoFactorChecked: boolean;
 };
 
-export const twoFactorRequired = <TFunction extends (this: any, ...args: any) => any>(
+export const twoFactorRequired = <TFunction extends (this: any, ...args: any) => Promise<any>>(
 	fn: ThisParameterType<TFunction> extends AuthenticatedContext
 		? TFunction
 		: (this: AuthenticatedContext, ...args: Parameters<TFunction>) => ReturnType<TFunction>,
