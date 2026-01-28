@@ -673,10 +673,6 @@ export class E2ERoom extends Emitter {
 			return message;
 		}
 
-		if (!deletedAttachments.length) {
-			return message;
-		}
-
 		message.attachments = message.attachments.map((att) => {
 			if (!isFileAttachment(att)) {
 				return att;
