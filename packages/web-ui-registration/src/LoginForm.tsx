@@ -10,6 +10,9 @@ import {
 	ButtonGroup,
 	Button,
 	Callout,
+	Box,
+	CheckBox,
+	Icon,
 } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
@@ -214,6 +217,26 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 						</FieldGroup>
 						{errorOnSubmit && <FieldGroup disabled={loginMutation.isPending}>{renderErrorOnSubmit(errorOnSubmit)}</FieldGroup>}
 					</Form.Container>
+						<Field mbe='x12'>
+							<Box display='flex' alignItems='center' style={{ opacity: 0.8 }}> 
+								<CheckBox 
+									id='remember-me' 
+									checked={true}  
+									disabled       
+								/>
+								<FieldLabel 
+									htmlFor='remember-me' 
+									mis='x8' 
+								    title={t('Remember_Me_Description')}
+									style={{ cursor: 'help', color: 'var(--rcx-color-font-annotation, #9EA2A8)' }}
+								>
+								{t('Remember_Me')}
+
+
+									<Icon name='info-circled' size='x16' mis='x4' color='hint' />
+								</FieldLabel>
+							</Box>
+                        </Field>
 					<Form.Footer>
 						<ButtonGroup>
 							<Button loading={loginMutation.isPending} type='submit' primary>
