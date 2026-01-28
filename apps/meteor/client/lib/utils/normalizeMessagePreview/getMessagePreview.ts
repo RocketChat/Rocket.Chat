@@ -3,13 +3,9 @@ import { isDirectMessageRoom, isE2EEMessage, isMultipleDirectMessageRoom, isVide
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 
-import { normalizeNavigationMessage } from './normalizeNavigationMessage';
+import { normalizeMessagePreview } from './normalizeMessagePreview';
 
-export const getNavigationMessagePreview = (
-	room: SubscriptionWithRoom,
-	lastMessage: IMessage | undefined,
-	t: TFunction,
-): string | undefined => {
+export const getMessagePreview = (room: SubscriptionWithRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
 	if (!lastMessage) {
 		return t('No_messages_yet');
 	}
@@ -19,14 +15,20 @@ export const getNavigationMessagePreview = (
 	if (isE2EEMessage(lastMessage) && lastMessage.e2e !== 'done') {
 		return t('Encrypted_message_preview_unavailable');
 	}
+
+	const normalizedMessage = normalizeMessagePreview(lastMessage, t);
+	if (!normalizedMessage) {
+		return '';
+	}
+
 	if (!lastMessage.u) {
-		return normalizeNavigationMessage(lastMessage, t);
+		return normalizedMessage;
 	}
 	if (lastMessage.u?.username === room.u?.username) {
-		return `${t('You')}: ${normalizeNavigationMessage(lastMessage, t)}`;
+		return `${t('You')}: ${normalizedMessage}`;
 	}
 	if (isDirectMessageRoom(room) && !isMultipleDirectMessageRoom(room)) {
-		return normalizeNavigationMessage(lastMessage, t);
+		return normalizedMessage;
 	}
-	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeNavigationMessage(lastMessage, t)}`;
+	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizedMessage}`;
 };

@@ -3,9 +3,9 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import emojione from 'emojione';
 import type { TFunction } from 'i18next';
 
-import { filterMarkdown } from '../../../app/markdown/lib/markdown';
+import { filterMarkdown } from '../../../../app/markdown/lib/markdown';
 
-export const normalizeSidebarMessage = (message: IMessage, t: TFunction): string | undefined => {
+export const normalizeMessagePreview = (message: IMessage, t: TFunction): string | undefined => {
 	if (message.msg) {
 		return escapeHTML(filterMarkdown(emojione.shortnameToUnicode(message.msg)));
 	}

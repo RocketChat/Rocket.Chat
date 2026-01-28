@@ -10,8 +10,8 @@ import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/Omnichannel
 import type { LivechatInquiryLocalRecord } from '../../../../hooks/useLivechatInquiryStore';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
+import { normalizeMessagePreview } from '../../../../lib/utils/normalizeMessagePreview/normalizeMessagePreview';
 import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
-import { normalizeNavigationMessage } from '../../lib/normalizeNavigationMessage';
 import SidePanelItem from '../SidepanelItem';
 import RoomMenu from '../SidepanelItem/RoomMenu';
 
@@ -29,7 +29,7 @@ const InquireSidePanelItem = ({ room, openedRoom, ...props }: InquireSidePanelIt
 
 	const time = 'lastMessage' in room ? room.lastMessage?.ts : undefined;
 	const message =
-		room.lastMessage && `${room.lastMessage.u.name || room.lastMessage.u.username}: ${normalizeNavigationMessage(room.lastMessage, t)}`;
+		room.lastMessage && `${room.lastMessage.u.name || room.lastMessage.u.username}: ${normalizeMessagePreview(room.lastMessage, t)}`;
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 
