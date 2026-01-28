@@ -1,4 +1,4 @@
-import { FederationMatrix, Media, MeteorError, Team } from '@rocket.chat/core-services';
+import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
@@ -19,9 +19,9 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
+import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { adminFields } from '../../../../lib/rooms/adminFields';
 import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
@@ -55,7 +55,7 @@ import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
-import { getUploadFormData } from '../lib/getUploadFormData';
+import { MultipartUploadHandler } from '../lib/MultipartUploadHandler';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -148,7 +148,7 @@ API.v1.addRoute(
 				});
 			}
 
-			await eraseRoom(room, this.userId);
+			await eraseRoom(room, this.user);
 
 			return API.v1.success();
 		},
@@ -197,23 +197,17 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const file = await getUploadFormData(
-				{
-					request: this.request,
-				},
-				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize') },
-			);
+			const { file, fields } = await MultipartUploadHandler.parseRequest(this.incoming, {
+				field: 'file',
+				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
+			});
 
 			if (!file) {
-				throw new Meteor.Error('invalid-field');
+				throw new Meteor.Error('error-no-file-uploaded', 'No file was uploaded');
 			}
-
-			let { fileBuffer } = file;
 
 			const expiresAt = new Date();
 			expiresAt.setHours(expiresAt.getHours() + 24);
-
-			const { fields } = file;
 
 			let content;
 
@@ -228,7 +222,7 @@ API.v1.addRoute(
 
 			const details = {
 				name: file.filename,
-				size: fileBuffer.length,
+				size: file.size,
 				type: file.mimetype,
 				rid: this.urlParams.rid,
 				userId: this.userId,
@@ -236,15 +230,9 @@ API.v1.addRoute(
 				expiresAt,
 			};
 
-			const stripExif = settings.get('Message_Attachments_Strip_Exif');
-			if (stripExif) {
-				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
-				details.size = fileBuffer.length;
-			}
-
+			// TODO: In the future, we should isolate file receival from storage and post-processing.
 			const fileStore = FileUpload.getStore('Uploads');
-			const uploadedFile = await fileStore.insert(details, fileBuffer);
+			const uploadedFile = await fileStore.insert(details, file.tempFilePath);
 
 			uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
 

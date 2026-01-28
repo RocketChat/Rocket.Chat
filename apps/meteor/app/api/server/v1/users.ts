@@ -1,5 +1,5 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
-import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
@@ -31,7 +31,6 @@ import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/persona
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
 import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
-import { removeOtherTokens } from '../../../../server/lib/removeOtherTokens';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { registerUser } from '../../../../server/methods/registerUser';
 import { requestDataDownload } from '../../../../server/methods/requestDataDownload';
@@ -81,7 +80,7 @@ import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields
 
 API.v1.addRoute(
 	'users.getAvatar',
-	{ authRequired: false },
+	{ authRequired: true },
 	{
 		async get() {
 			const user = await getUserFromParams(this.queryParams);
@@ -153,7 +152,14 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.updateOwnBasicInfo',
-	{ authRequired: true, validateParams: isUsersUpdateOwnBasicInfoParamsPOST },
+	{
+		authRequired: true,
+		validateParams: isUsersUpdateOwnBasicInfoParamsPOST,
+		rateLimiterOptions: {
+			numRequestsAllowed: 1,
+			intervalTimeInMS: 60000,
+		},
+	},
 	{
 		async post() {
 			const userData = {
@@ -180,13 +186,7 @@ API.v1.addRoute(
 						twoFactorMethod: 'password',
 					};
 
-			await executeSaveUserProfile.call(
-				this as unknown as Meteor.MethodThisType,
-				this.user,
-				userData,
-				this.bodyParams.customFields,
-				twoFactorOptions,
-			);
+			await executeSaveUserProfile.call(this, this.user, userData, this.bodyParams.customFields, twoFactorOptions);
 
 			return API.v1.success({
 				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
@@ -1232,7 +1232,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			return API.v1.success(await removeOtherTokens(this.userId, this.connection.id));
+			return API.v1.success(await Users.removeNonLoginTokensExcept(this.userId, this.token));
 		},
 	},
 );
@@ -1374,7 +1374,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.setStatus',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		rateLimiterOptions: {
+			numRequestsAllowed: 5,
+			intervalTimeInMS: 60000,
+		},
+	},
 	{
 		async post() {
 			check(
@@ -1397,9 +1403,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = await (async (): Promise<
-				Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText' | 'roles'> | undefined | null
-			> => {
+			const user = await (async () => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Users.findOneById(this.userId);
 				}
@@ -1416,7 +1420,7 @@ API.v1.addRoute(
 			let { statusText, status } = user;
 
 			if (this.bodyParams.message || this.bodyParams.message === '') {
-				await setStatusText(user._id, this.bodyParams.message, { emit: false });
+				await setStatusText(user, this.bodyParams.message, { emit: false });
 				statusText = this.bodyParams.message;
 			}
 

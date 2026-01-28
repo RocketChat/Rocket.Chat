@@ -23,7 +23,8 @@ test.describe.serial('admin-rooms', () => {
 	});
 
 	test('should display the Rooms Table', async ({ page }) => {
-		await expect(page.locator('[data-qa-type="PageHeader-title"]')).toContainText('Rooms');
+		await expect(page.getByRole('main').getByRole('heading', { level: 1, name: 'Rooms', exact: true })).toBeVisible();
+		await expect(page.getByRole('main').getByRole('table')).toBeVisible();
 	});
 
 	test('should filter room by name', async ({ page }) => {

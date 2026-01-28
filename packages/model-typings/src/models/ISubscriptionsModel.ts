@@ -34,7 +34,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
-	countByRoomIdAndUserId(rid: string, uid: string | undefined): Promise<number>;
+	countByRoomIdAndUserId(rid: string, uid: string | undefined, includeInvitations?: boolean): Promise<number>;
 
 	countUnarchivedByRoomId(rid: string): Promise<number>;
 
@@ -329,7 +329,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number>;
 	countByRoomId(roomId: string, options?: CountDocumentsOptions): Promise<number>;
-	countByUserId(userId: string): Promise<number>;
+	countByUserIdExceptType(userId: string, typeException: ISubscription['t']): Promise<number>;
 	openByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number>;

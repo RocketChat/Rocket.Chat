@@ -104,11 +104,11 @@ const CustomFieldsTable = () => {
 
 			{isSuccess && data.customFields.length > 0 && (
 				<>
-					<GenericTable data-qa='GenericTableCustomFieldsInfoBody' aria-busy={isLoading} aria-live='assertive'>
+					<GenericTable aria-label={t('Custom_Fields')} aria-busy={isLoading} aria-live='polite'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.customFields.map(({ label, _id, scope, visibility }) => (
-								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
+								<GenericTableRow key={_id} tabIndex={0} onClick={onRowClick(_id)} action>
 									<GenericTableCell withTruncatedText>{_id}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{label}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{scope === 'visitor' ? t('Visitor') : t('Room')}</GenericTableCell>

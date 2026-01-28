@@ -1,6 +1,7 @@
 import { isInviteSubscription } from '@rocket.chat/core-typings';
 import { ContextualbarSkeleton } from '@rocket.chat/ui-client';
-import { useSetting, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useSetting, useRoomToolbox, useUserId } from '@rocket.chat/ui-contexts';
+import { useMediaCallOpenRoomTracker } from '@rocket.chat/ui-voip';
 import type { ReactElement } from 'react';
 import { createElement, lazy, memo, Suspense } from 'react';
 import { FocusScope } from 'react-aria';
@@ -23,6 +24,7 @@ const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContext
 
 const Room = (): ReactElement => {
 	const { t } = useTranslation();
+	const userId = useUserId();
 	const room = useRoom();
 	const subscription = useRoomSubscription();
 	const toolbox = useRoomToolbox();
@@ -33,10 +35,12 @@ const Room = (): ReactElement => {
 	const roomLabel =
 		room.t === 'd' ? t('Conversation_with__roomName__', { roomName: room.name }) : t('Channel__roomName__', { roomName: room.name });
 
+	useMediaCallOpenRoomTracker(room._id);
+
 	if (subscription && isInviteSubscription(subscription)) {
 		return (
 			<FocusScope>
-				<RoomInvite room={room} subscription={subscription} data-qa-rc-room={room._id} aria-label={roomLabel} />
+				<RoomInvite userId={userId} room={room} subscription={subscription} data-qa-rc-room={room._id} aria-label={roomLabel} />
 			</FocusScope>
 		);
 	}

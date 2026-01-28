@@ -5,12 +5,8 @@ import { Users, storeState, restoreState } from '../fixtures/userStates';
 import { AccountSecurity, HomeChannel } from '../page-objects';
 import { setupE2EEPassword } from './setupE2EEPassword';
 import { Navbar } from '../page-objects/fragments';
-import {
-	E2EEKeyDecodeFailureBanner,
-	EnterE2EEPasswordBanner,
-	EnterE2EEPasswordModal,
-	ResetE2EEPasswordModal,
-} from '../page-objects/fragments/e2ee';
+import { E2EEKeyDecodeFailureBanner, EnterE2EEPasswordBanner } from '../page-objects/fragments/e2ee';
+import { EnterE2EEPasswordModal, ResetE2EEPasswordModal } from '../page-objects/fragments/modals';
 import { LoginPage } from '../page-objects/login';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
@@ -232,7 +228,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await expect(poHomeChannel.roomToolbar.btnMembers).toBeVisible();
 		await expect(poHomeChannel.roomToolbar.btnRoomInfo).toBeVisible();
 
-		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
+		await expect(poHomeChannel.composer.inputMessage).not.toBeVisible();
 
 		await poHomeChannel.btnRoomSaveE2EEPassword.click();
 
@@ -243,7 +239,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		await poHomeChannel.btnSavedMyPassword.click();
 
-		await poHomeChannel.content.inputMessage.waitFor();
+		await poHomeChannel.composer.inputMessage.waitFor();
 
 		await poHomeChannel.content.sendMessage('hello world');
 
@@ -277,7 +273,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await expect(poHomeChannel.roomToolbar.btnMembers).toBeVisible();
 		await expect(poHomeChannel.roomToolbar.btnRoomInfo).toBeVisible();
 
-		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
+		await expect(poHomeChannel.composer.inputMessage).not.toBeVisible();
 
 		await poHomeChannel.btnRoomEnterE2EEPassword.click();
 
@@ -287,7 +283,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		await expect(poHomeChannel.bannerEnterE2EEPassword).not.toBeVisible();
 
-		await poHomeChannel.content.inputMessage.waitFor();
+		await poHomeChannel.composer.inputMessage.waitFor();
 		// For E2EE to complete init setup
 		await page.waitForTimeout(300);
 
@@ -338,7 +334,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await poHomeChannel.btnRoomSaveE2EEPassword.click();
 		await poHomeChannel.btnSavedMyPassword.click();
 
-		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
+		await expect(poHomeChannel.composer.inputMessage).not.toBeVisible();
 		await expect(page.locator('.rcx-states__title')).toContainText('Check back later');
 
 		await poHomeChannel.roomToolbar.btnDisableE2EEncryption.waitFor();

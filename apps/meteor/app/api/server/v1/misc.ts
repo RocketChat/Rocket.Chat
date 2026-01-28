@@ -476,6 +476,7 @@ API.v1.addRoute(
 		authRequired: true,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
+		applyMeteorContext: true,
 	},
 	{
 		async post() {
@@ -515,27 +516,29 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = await Meteor.callAsync(method, ...params);
-				return API.v1.success(mountResult({ id, result }));
+				return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
-					SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
+					SystemLogger.error({ msg: 'Exception while invoking method', err, method });
 				}
 
 				if (settings.get('Log_Level') === '2') {
 					Meteor._debug(`Exception while invoking method ${method}`, err);
 				}
-				return API.v1.success(mountResult({ id, error: err }));
+
+				return API.v1.failure(mountResult({ id, error: err }));
 			}
 		},
 	},
 );
+
 API.v1.addRoute(
 	'method.callAnon/:method',
 	{
 		authRequired: false,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
+		applyMeteorContext: true,
 	},
 	{
 		async post() {
@@ -571,16 +574,15 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = await Meteor.callAsync(method, ...params);
-				return API.v1.success(mountResult({ id, result }));
+				return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
-					SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
+					SystemLogger.error({ msg: 'Exception while invoking method', err, method });
 				}
 				if (settings.get('Log_Level') === '2') {
 					Meteor._debug(`Exception while invoking method ${method}`, err);
 				}
-				return API.v1.success(mountResult({ id, error: err }));
+				return API.v1.failure(mountResult({ id, error: err }));
 			}
 		},
 	},

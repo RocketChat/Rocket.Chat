@@ -62,7 +62,6 @@ const AutoCompleteDepartment = ({
 			setFilter={setDepartmentsFilter as (value?: string | number) => void}
 			options={departmentsItems}
 			placeholder={isPending ? t('Loading...') : t('Select_an_option')}
-			data-qa='autocomplete-department'
 			endReached={() => fetchNextPage()}
 			renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 		/>

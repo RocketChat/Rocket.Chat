@@ -10,7 +10,7 @@ module.exports = {
 	...base, // see https://github.com/mochajs/mocha/issues/3916
 	exit: true,
 	spec: [
-		'lib/callbacks.spec.ts',
+		'server/lib/callbacks.spec.ts',
 		'server/lib/ldap/*.spec.ts',
 		'server/lib/ldap/**/*.spec.ts',
 		'server/lib/dataExport/**/*.spec.ts',
@@ -28,5 +28,7 @@ module.exports = {
 		'tests/unit/server/**/*.spec.ts',
 		'app/api/server/lib/**/*.spec.ts',
 		'app/file-upload/server/**/*.spec.ts',
+		'app/statistics/server/**/*.spec.ts',
+		'app/livechat/server/lib/**/*.spec.ts',
 	],
 };
