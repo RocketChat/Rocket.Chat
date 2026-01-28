@@ -58,12 +58,22 @@ describe('updateContact', () => {
 		expect(updatedContact).to.be.deep.equal({ _id: 'contactId', name: 'John Doe' });
 	});
 
-	it('should be able to clear the contact manager', async () => {
+	it('should be able to clear the contact manager when passing an empty string for contactManager', async () => {
 		modelsMock.LivechatContacts.findOneEnabledById.resolves({ _id: 'contactId', contactManager: 'manager' });
 		modelsMock.LivechatContacts.patchContact.resolves({ _id: 'contactId' } as any);
 
-		const updatedContact = await updateContact({ contactId: 'contactId', contactManager: null });
+		const updatedContact = await updateContact({ contactId: 'contactId', contactManager: '' });
 
+		expect(modelsMock.LivechatContacts.patchContact.getCall(0).args[0]).to.be.equal('contactId');
+		expect(modelsMock.LivechatContacts.patchContact.getCall(0).args[1]).to.be.deep.contain({ unset: ['contactManager'] });
+		expect(updatedContact).to.be.deep.equal({ _id: 'contactId' });
+	});
+
+	it('should be able to clear the contact manager when passing undefined for contactManager', async () => {
+		modelsMock.LivechatContacts.findOneEnabledById.resolves({ _id: 'contactId', contactManager: 'manager' });
+		modelsMock.LivechatContacts.patchContact.resolves({ _id: 'contactId' } as any);
+
+		const updatedContact = await updateContact({ contactId: 'contactId', contactManager: undefined });
 		expect(modelsMock.LivechatContacts.patchContact.getCall(0).args[0]).to.be.equal('contactId');
 		expect(modelsMock.LivechatContacts.patchContact.getCall(0).args[1]).to.be.deep.contain({ unset: ['contactManager'] });
 		expect(updatedContact).to.be.deep.equal({ _id: 'contactId' });
