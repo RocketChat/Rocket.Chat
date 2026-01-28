@@ -666,18 +666,26 @@ export class E2ERoom extends Emitter {
 			return message;
 		}
 
-		// TODO(@cardoso): review backward compatibility
-		if (message.msg && !isEncryptedMessageContent(message)) {
-			const data = await this.decrypt(message.msg);
-			if (data.msg) {
-				message.msg = data.msg;
-			}
+		if (isEncryptedMessageContent(message)) {
+			return {
+				...(await this.decryptContent({ ...message })),
+				e2e: 'done' as const,
+			};
 		}
 
-		message = isEncryptedMessageContent(message) ? await this.decryptContent(message) : message;
+		if (!message.msg) {
+			return {
+				...message,
+				e2e: 'done' as const,
+			};
+		}
+
+		// TODO(@cardoso): review backward compatibility
+		const data = await this.decrypt(message.msg);
 
 		return {
 			...message,
+			msg: typeof data.msg === 'string' ? data.msg : message.msg,
 			e2e: 'done' as const,
 		};
 	}
