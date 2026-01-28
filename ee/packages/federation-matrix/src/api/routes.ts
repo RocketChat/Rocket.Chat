@@ -1,4 +1,5 @@
 import { Router } from '@rocket.chat/http-router';
+import { tracerSpanMiddleware } from '@rocket.chat/tracing';
 
 import { getWellKnownRoutes } from './.well-known/server';
 import { getMatrixInviteRoutes } from './_matrix/invite';
@@ -22,6 +23,7 @@ export const getFederationRoutes = (version: string): { matrix: Router<'/_matrix
 	matrix
 		.use(isFederationEnabledMiddleware)
 		.use(isLicenseEnabledMiddleware)
+		.use(tracerSpanMiddleware())
 		.use(getKeyServerRoutes())
 		.use(getFederationVersionsRoutes(version))
 		.use(isFederationDomainAllowedMiddleware)

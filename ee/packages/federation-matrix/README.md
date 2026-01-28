@@ -25,45 +25,60 @@ The integration test script builds Rocket.Chat locally, starts federation servic
 - `--keep-running`: Keeps containers running after tests complete for manual validation
 - `--element`: Includes Element web client in the test environment
 - `--no-test`: Starts containers and skips running tests (useful for manual testing or debugging)
+- `--observability`: Enables observability services (Grafana, Prometheus, Tempo) for tracing and metrics collection. Always includes Element web client and automatically keeps containers running after tests complete. Use this flag when you want to test observability code to verify that traces and metrics are being collected correctly. This requires manual testing/verification in Grafana and Prometheus, but the script helps set up the environment.
 
 ### Usage Examples
 
 **Basic local testing:**
+
 ```bash
 yarn test:integration
 ```
 
 **Test with pre-built image:**
+
 ```bash
 yarn test:integration --image
 ```
 
 **Test with specific pre-built image:**
+
 ```bash
 yarn test:integration --image rocketchat/rocket.chat:latest
 ```
 
 **Keep services running for manual inspection:**
+
 ```bash
 yarn test:integration --keep-running
 ```
 
 **Run with Element client:**
+
 ```bash
 yarn test:integration --element
 ```
 
 **Start containers only (skip tests):**
+
 ```bash
 yarn test:integration --no-test
 ```
 
 **Start containers with Element and keep them running (skip tests):**
+
 ```bash
 yarn test:integration --keep-running --element --no-test
 ```
 
+**Run with observability enabled:**
+
+```bash
+yarn test:integration --observability
+```
+
 **Combine flags:**
+
 ```bash
 yarn test:integration --image rocketchat/rocket.chat:latest --keep-running --element
 ```
@@ -71,6 +86,24 @@ yarn test:integration --image rocketchat/rocket.chat:latest --keep-running --ele
 ### Service URLs (when using --keep-running or --no-test)
 
 - **Rocket.Chat**: https://rc1
-- **Synapse**: https://hs1  
+- **Synapse**: https://hs1
 - **MongoDB**: localhost:27017
-- **Element**: https://element (when using --element flag)
+- **Element**: https://element (when using --element flag or --observability flag)
+
+### Observability Services (when using --observability flag)
+
+When the `--observability` flag is enabled, the following services are started for tracing and metrics collection:
+
+- **Grafana**: http://localhost:4001 - Visualization dashboard for traces and metrics
+- **Prometheus**: http://localhost:9090 - Metrics collection and querying
+- **Tempo**: http://localhost:3200 - Distributed tracing backend
+
+The observability services are automatically configured to:
+
+- Collect traces from Rocket.Chat via OpenTelemetry (OTLP) on port 4317
+- Scrape Prometheus metrics from Rocket.Chat on port 9458
+- Display traces and metrics in Grafana with pre-configured datasources
+
+**Use Case**: Use the `--observability` flag when you want to test observability code to see if it's collecting the right information. This requires manual testing and verification - you'll need to interact with the federation services, then check Grafana and Prometheus to verify that traces and metrics are being collected correctly. The script helps set up the environment, but the actual verification must be done manually.
+
+**Note**: The `--observability` flag automatically keeps containers running after tests complete (equivalent to `--keep-running`) and always includes Element web client. You don't need to specify `--element` separately when using `--observability`.

@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
+import { tracerSpanMiddleware } from '@rocket.chat/tracing';
 import type express from 'express';
 import { WebApp } from 'meteor/webapp';
 
@@ -9,7 +10,6 @@ import { cors } from './middlewares/cors';
 import { loggerMiddleware } from './middlewares/logger';
 import { metricsMiddleware } from './middlewares/metrics';
 import { remoteAddressMiddleware } from './middlewares/remoteAddressMiddleware';
-import { tracerSpanMiddleware } from './middlewares/tracer';
 import { type APIActionHandler, RocketChatAPIRouter } from './router';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
@@ -106,7 +106,7 @@ export const startRestAPI = () => {
 			.use(cors(settings))
 			.use(loggerMiddleware(logger))
 			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/v1\//), api: API.v1, settings, summary: metrics.rocketchatRestApi }))
-			.use(tracerSpanMiddleware)
+			.use(tracerSpanMiddleware())
 			.use(API.v1.router)
 			.use(API.default.router).router,
 	);
