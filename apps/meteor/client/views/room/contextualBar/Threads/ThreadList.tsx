@@ -81,27 +81,18 @@ const ThreadList = () => {
 				return {
 					rid,
 					text,
+					type,
+					uid,
 				};
-			}
-			switch (type) {
-				case 'following':
-					return {
-						rid,
-						text,
-						type,
-						uid,
-					};
-				case 'unread':
-					return {
-						rid,
-						text,
-						type,
-						tunread: tunread?.split(','),
-					};
-			}
-		}, [rid, subscribed, text, tunread, type, uid]),
-		300,
-	);
+			case 'unread':
+				return {
+					rid,
+					text,
+					type,
+					tunread: tunread?.split(','),
+				};
+		}
+	}, [rid, subscribed, text, tunread, type, uid]);
 
 	const { isPending, error, isSuccess, data, fetchNextPage } = useThreadsList(options);
 
@@ -142,15 +133,14 @@ const ThreadList = () => {
 					</Box>
 				)}
 
-				{error && (
-					<Callout mi={24} type='danger'>
-						{getErrorMessage(error, t('Something_went_wrong'))}
-					</Callout>
-				)}
+					{error && (
+						<Callout mi={24} type='danger'>
+							{getErrorMessage(error, t('Something_went_wrong'))}
+						</Callout>
+					)}
 
 				{isSuccess && itemCount === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
 					{!error && itemCount > 0 && items.length > 0 && (
 						<VirtualizedScrollbars>
 							<Virtuoso
