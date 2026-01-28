@@ -27,6 +27,7 @@ import type {
 	FindOneAndDeleteOptions,
 	CountDocumentsOptions,
 	ClientSession,
+	MongoClient,
 } from 'mongodb';
 
 import { getCollectionName, UpdaterImpl } from '..';
@@ -36,8 +37,8 @@ import { setUpdatedAt } from './setUpdatedAt';
 const warnFields =
 	process.env.NODE_ENV !== 'production' || process.env.SHOW_WARNINGS === 'true'
 		? (...rest: any): void => {
-				console.warn(...rest, new Error().stack);
-			}
+			console.warn(...rest, new Error().stack);
+		}
 		: new Function();
 
 type ModelOptions = {
@@ -50,8 +51,7 @@ export abstract class BaseRaw<
 	T extends { _id: string },
 	C extends DefaultFields<T> = undefined,
 	TDeleted extends RocketChatRecordDeleted<T> = RocketChatRecordDeleted<T>,
-> implements IBaseModel<T, C, TDeleted>
-{
+> implements IBaseModel<T, C, TDeleted> {
 	protected defaultFields: C | undefined;
 
 	public readonly col: Collection<T>;
@@ -304,6 +304,13 @@ export abstract class BaseRaw<
 		return this.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>);
 	}
 
+	/**
+	 * Atomically deletes a document and archives it to trash.
+	 * Uses MongoDB transactions to ensure data consistency.
+	 * @param filter - Query filter to find the document
+	 * @param options - Delete options including optional session
+	 * @returns DeleteResult with deletedCount
+	 */
 	async deleteOne(filter: Filter<T>, options?: DeleteOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteResult> {
 		if (!this.trash) {
 			if (options) {
@@ -312,7 +319,42 @@ export abstract class BaseRaw<
 			return this.col.deleteOne(filter);
 		}
 
-		const doc = await this.findOne(filter);
+		// If a session is already provided, use it (caller manages transaction)
+		if (options?.session) {
+			return this.deleteOneWithSession(filter, options);
+		}
+
+		// Start a new session and transaction for atomic operation
+		const session = (this.db as unknown as { client: MongoClient }).client.startSession();
+		try {
+			let result: DeleteResult = { acknowledged: true, deletedCount: 0 };
+
+			await session.withTransaction(async () => {
+				result = await this.deleteOneWithSession(filter, { ...options, session });
+			});
+
+			return result;
+		} catch (error) {
+			console.error(`[BaseRaw.deleteOne] Transaction failed for collection '${this.name}':`, error);
+			throw error;
+		} finally {
+			await session.endSession();
+		}
+	}
+
+	/**
+	 * Internal helper that performs deleteOne within an existing session.
+	 * @param filter - Query filter to find the document
+	 * @param options - Delete options with required session
+	 * @returns DeleteResult
+	 */
+	private async deleteOneWithSession(
+		filter: Filter<T>,
+		options: DeleteOptions & { session: ClientSession },
+	): Promise<DeleteResult> {
+		const { session, ...deleteOptions } = options;
+
+		const doc = await this.col.findOne(filter, { session });
 
 		if (doc) {
 			const { _id, ...record } = doc;
@@ -323,24 +365,76 @@ export abstract class BaseRaw<
 				__collection__: this.name,
 			} as unknown as TDeleted;
 
-			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
-			await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
-				upsert: true,
-			});
+			// Insert/update trash record within the transaction
+			await this.trash!.updateOne(
+				{ _id } as Filter<TDeleted>,
+				{ $set: trash } as UpdateFilter<TDeleted>,
+				{ upsert: true, session },
+			);
 		}
 
-		if (options) {
-			return this.col.deleteOne(filter, options);
+		// Delete from main collection within the same transaction
+		const result = await this.col.deleteOne(filter, { ...deleteOptions, session });
+
+		// Log warning if document was expected but not deleted (potential race condition)
+		if (doc && result.deletedCount === 0) {
+			console.warn(
+				`[BaseRaw.deleteOne] Document found but deletedCount=0 for collection '${this.name}'. ` +
+				`This may indicate a concurrent deletion. Filter: ${JSON.stringify(filter)}`,
+			);
 		}
-		return this.col.deleteOne(filter);
+
+		return result;
 	}
 
+	/**
+	 * Atomically finds, deletes a document, and archives it to trash.
+	 * Uses MongoDB transactions to ensure data consistency.
+	 * @param filter - Query filter to find the document
+	 * @param options - FindOneAndDelete options
+	 * @returns The deleted document or null
+	 */
 	async findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<WithId<T> | null> {
 		if (!this.trash) {
 			return this.col.findOneAndDelete(filter, options || {});
 		}
 
-		const doc = await this.col.findOne(filter);
+		// If a session is already provided, use it (caller manages transaction)
+		if (options?.session) {
+			return this.findOneAndDeleteWithSession(filter, options as FindOneAndDeleteOptions & { session: ClientSession });
+		}
+
+		// Start a new session and transaction for atomic operation
+		const session = (this.db as unknown as { client: MongoClient }).client.startSession();
+		try {
+			let result: WithId<T> | null = null;
+
+			await session.withTransaction(async () => {
+				result = await this.findOneAndDeleteWithSession(filter, { ...options, session });
+			});
+
+			return result;
+		} catch (error) {
+			console.error(`[BaseRaw.findOneAndDelete] Transaction failed for collection '${this.name}':`, error);
+			throw error;
+		} finally {
+			await session.endSession();
+		}
+	}
+
+	/**
+	 * Internal helper that performs findOneAndDelete within an existing session.
+	 * @param filter - Query filter to find the document
+	 * @param options - Options with required session
+	 * @returns The deleted document or null
+	 */
+	private async findOneAndDeleteWithSession(
+		filter: Filter<T>,
+		options: FindOneAndDeleteOptions & { session: ClientSession },
+	): Promise<WithId<T> | null> {
+		const { session } = options;
+
+		const doc = await this.col.findOne(filter, { session });
 		if (!doc) {
 			return null;
 		}
@@ -352,20 +446,36 @@ export abstract class BaseRaw<
 			__collection__: this.name,
 		} as unknown as TDeleted;
 
-		await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
-			upsert: true,
-		});
+		// Insert/update trash record within the transaction
+		await this.trash!.updateOne(
+			{ _id } as Filter<TDeleted>,
+			{ $set: trash } as UpdateFilter<TDeleted>,
+			{ upsert: true, session },
+		);
 
-		try {
-			await this.col.deleteOne({ _id } as Filter<T>);
-		} catch (e) {
-			await this.trash?.deleteOne({ _id } as Filter<TDeleted>);
-			throw e;
+		// Delete from main collection within the same transaction
+		const deleteResult = await this.col.deleteOne({ _id } as Filter<T>, { session });
+
+		// If deletion failed unexpectedly, log warning and return null to indicate failure
+		if (deleteResult.deletedCount === 0) {
+			console.warn(
+				`[BaseRaw.findOneAndDelete] Document found but deletedCount=0 for collection '${this.name}'. ` +
+				`DocId: ${_id}, Filter: ${JSON.stringify(filter)}`,
+			);
+			// Return null to indicate the document was not actually deleted (concurrent deletion)
+			return null;
 		}
 
 		return doc as WithId<T>;
 	}
 
+	/**
+	 * Atomically deletes multiple documents and archives them to trash.
+	 * Uses MongoDB transactions to ensure data consistency.
+	 * @param filter - Query filter to find documents
+	 * @param options - Delete options including optional onTrash callback
+	 * @returns DeleteResult with deletedCount
+	 */
 	async deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult> {
 		if (!this.trash) {
 			if (options) {
@@ -374,7 +484,42 @@ export abstract class BaseRaw<
 			return this.col.deleteMany(filter);
 		}
 
-		const cursor = this.find<ResultFields<T, C>>(filter, { session: options?.session });
+		// If a session is already provided, use it (caller manages transaction)
+		if (options?.session) {
+			return this.deleteManyWithSession(filter, options as DeleteOptions & { session: ClientSession; onTrash?: (record: ResultFields<T, C>) => void });
+		}
+
+		// Start a new session and transaction for atomic operation
+		const session = (this.db as unknown as { client: MongoClient }).client.startSession();
+		try {
+			let result: DeleteResult = { acknowledged: true, deletedCount: 0 };
+
+			await session.withTransaction(async () => {
+				result = await this.deleteManyWithSession(filter, { ...options, session });
+			});
+
+			return result;
+		} catch (error) {
+			console.error(`[BaseRaw.deleteMany] Transaction failed for collection '${this.name}':`, error);
+			throw error;
+		} finally {
+			await session.endSession();
+		}
+	}
+
+	/**
+	 * Internal helper that performs deleteMany within an existing session.
+	 * @param filter - Query filter to find documents
+	 * @param options - Options with required session
+	 * @returns DeleteResult
+	 */
+	private async deleteManyWithSession(
+		filter: Filter<T>,
+		options: DeleteOptions & { session: ClientSession; onTrash?: (record: ResultFields<T, C>) => void },
+	): Promise<DeleteResult> {
+		const { session, onTrash, ...deleteOptions } = options;
+
+		const cursor = this.col.find(filter, { session });
 
 		const ids: T['_id'][] = [];
 		for await (const doc of cursor) {
@@ -388,19 +533,35 @@ export abstract class BaseRaw<
 
 			ids.push(_id as T['_id']);
 
-			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
-			await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
-				upsert: true,
-				session: options?.session,
-			});
+			// Insert/update trash record within the transaction
+			await this.trash!.updateOne(
+				{ _id } as Filter<TDeleted>,
+				{ $set: trash } as UpdateFilter<TDeleted>,
+				{ upsert: true, session },
+			);
 
-			void options?.onTrash?.(doc);
+			void onTrash?.(doc as unknown as ResultFields<T, C>);
 		}
 
-		if (options) {
-			return this.col.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>, options);
+		if (ids.length === 0) {
+			return { acknowledged: true, deletedCount: 0 };
 		}
-		return this.col.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>);
+
+		// Delete all documents from main collection within the same transaction
+		const result = await this.col.deleteMany(
+			{ _id: { $in: ids } } as unknown as Filter<T>,
+			{ ...deleteOptions, session },
+		);
+
+		// Log warning if not all documents were deleted
+		if (result.deletedCount !== ids.length) {
+			console.warn(
+				`[BaseRaw.deleteMany] Mismatch in deletedCount for collection '${this.name}'. ` +
+				`Expected: ${ids.length}, Actual: ${result.deletedCount}. Filter: ${JSON.stringify(filter)}`,
+			);
+		}
+
+		return result;
 	}
 
 	// Trash
