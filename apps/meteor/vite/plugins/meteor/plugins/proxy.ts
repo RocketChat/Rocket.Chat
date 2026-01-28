@@ -1,4 +1,6 @@
-import type { ProxyOptions, ServerOptions } from 'vite';
+import type { Plugin, ProxyOptions, ServerOptions } from 'vite';
+
+import type { ResolvedPluginOptions } from './shared/config';
 
 function buildMeteorProxyConfig(userProxy: ServerOptions['proxy'], meteorProxyTarget: string) {
 	if (userProxy && typeof userProxy !== 'object') {
@@ -41,10 +43,32 @@ function buildMeteorProxyConfig(userProxy: ServerOptions['proxy'], meteorProxyTa
 	};
 }
 
-export function resolveMeteorProxy(
+function resolveMeteorProxy(
 	userProxy: ServerOptions['proxy'],
 	meteorProxyTarget: string,
 ): Record<string, string | ProxyOptions> | undefined {
 	const proxyResult = buildMeteorProxyConfig(userProxy, meteorProxyTarget);
 	return proxyResult?.proxy;
+}
+
+export function proxy(resolvedConfig: ResolvedPluginOptions): Plugin {
+	return {
+		name: 'meteor:proxy',
+		enforce: 'post',
+		config(userConfig) {
+
+			const proxy = resolveMeteorProxy(userConfig.server?.proxy, `http://127.0.0.1:${resolvedConfig.meteorServerPort}`);
+
+			if (proxy) {
+				return {
+					server: {
+						proxy,
+					},
+					preview: {
+						proxy,
+					},
+				};
+			}
+		},
+	}
 }
