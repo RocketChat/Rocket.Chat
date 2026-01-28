@@ -11,14 +11,16 @@ import handleOnDisable from './handleOnDisable.ts';
 import handleOnUninstall from './handleOnUninstall.ts';
 import handleOnPreSettingUpdate from './handleOnPreSettingUpdate.ts';
 import handleOnSettingUpdated from './handleOnSettingUpdated.ts';
-import handleListener from '../listener/handler.ts';
-import handleUIKitInteraction, { uikitInteractions } from '../uikit/handler.ts';
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import handleOnUpdate from './handleOnUpdate.ts';
 import handleUploadEvents, { uploadEvents } from './handleUploadEvents.ts';
+import handleListener from '../listener/handler.ts';
+import handleUIKitInteraction, { uikitInteractions } from '../uikit/handler.ts';
 import { isOneOf } from '../lib/assertions.ts';
+import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
+import { RequestContext } from '../../lib/requestContext.ts';
 
-export default async function handleApp(method: string, params: unknown): Promise<Defined | JsonRpcError> {
+export default async function handleApp(request: RequestContext): Promise<Defined | JsonRpcError> {
+	const { method } = request;
 	const [, appMethod] = method.split(':');
 
 	try {
@@ -52,49 +54,49 @@ export default async function handleApp(method: string, params: unknown): Promis
 		};
 
 		if (app && isOneOf(appMethod, uploadEvents)) {
-			return handleUploadEvents(appMethod, params).then(formatResult);
+			return handleUploadEvents(request).then(formatResult);
 		}
 
 		if (app && isOneOf(appMethod, uikitInteractions)) {
-			return handleUIKitInteraction(appMethod, params).then(formatResult);
+			return handleUIKitInteraction(request).then(formatResult);
 		}
 
 		if (app && (appMethod.startsWith('check') || appMethod.startsWith('execute'))) {
-			return handleListener(appMethod, params).then(formatResult);
+			return handleListener(request).then(formatResult);
 		}
 
 		let result: Defined | JsonRpcError;
 
 		switch (appMethod) {
 			case 'construct':
-				result = await handleConstructApp(params);
+				result = await handleConstructApp(request);
 				break;
 			case 'initialize':
-				result = await handleInitialize();
+				result = await handleInitialize(request);
 				break;
 			case 'setStatus':
-				result = await handleSetStatus(params);
+				result = await handleSetStatus(request);
 				break;
 			case 'onEnable':
-				result = await handleOnEnable();
+				result = await handleOnEnable(request);
 				break;
 			case 'onDisable':
-				result = await handleOnDisable();
+				result = await handleOnDisable(request);
 				break;
 			case 'onInstall':
-				result = await handleOnInstall(params);
+				result = await handleOnInstall(request);
 				break;
 			case 'onUninstall':
-				result = await handleOnUninstall(params);
+				result = await handleOnUninstall(request);
 				break;
 			case 'onPreSettingUpdate':
-				result = await handleOnPreSettingUpdate(params);
+				result = await handleOnPreSettingUpdate(request);
 				break;
 			case 'onSettingUpdated':
-				result = await handleOnSettingUpdated(params);
+				result = await handleOnSettingUpdated(request);
 				break;
 			case 'onUpdate':
-				result = await handleOnUpdate(params);
+				result = await handleOnUpdate(request);
 				break;
 			default:
 				throw new JsonRpcError('Method not found', -32601);

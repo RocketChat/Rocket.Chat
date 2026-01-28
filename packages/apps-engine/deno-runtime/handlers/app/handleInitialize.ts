@@ -2,8 +2,9 @@ import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
+import { RequestContext } from '../../lib/requestContext.ts';
 
-export default async function handleInitialize(): Promise<boolean> {
+export default async function handleInitialize(_request: RequestContext): Promise<boolean> {
 	const app = AppObjectRegistry.get<App>('app');
 
 	if (typeof app?.initialize !== 'function') {

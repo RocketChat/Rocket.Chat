@@ -1,11 +1,13 @@
-import { Defined, JsonRpcError } from 'jsonrpc-lite';
 import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/IVideoConfProvider.ts';
+import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../lib/accessors/mod.ts';
 import { Logger } from '../lib/logger.ts';
+import { RequestContext } from '../lib/requestContext.ts';
 
-export default async function videoConferenceHandler(call: string, params: unknown): Promise<JsonRpcError | Defined> {
+export default async function videoConferenceHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
+	const { method: call, params } = request;
 	const [, providerName, methodName] = call.split(':');
 
 	const provider = AppObjectRegistry.get<IVideoConfProvider>(`videoConfProvider:${providerName}`);

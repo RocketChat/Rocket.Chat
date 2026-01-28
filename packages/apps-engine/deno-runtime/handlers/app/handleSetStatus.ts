@@ -3,12 +3,15 @@ import type { AppStatus as _AppStatus } from '@rocket.chat/apps-engine/definitio
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { require } from '../../lib/require.ts';
+import { RequestContext } from '../../lib/requestContext.ts';
 
 const { AppStatus } = require('@rocket.chat/apps-engine/definition/AppStatus.js') as {
 	AppStatus: typeof _AppStatus;
 };
 
-export default async function handleSetStatus(params: unknown): Promise<null> {
+export default async function handleSetStatus(request: RequestContext): Promise<null> {
+	const { params } = request;
+
 	if (!Array.isArray(params) || !Object.values(AppStatus).includes(params[0])) {
 		throw new Error('Invalid params', { cause: 'invalid_param_type' });
 	}

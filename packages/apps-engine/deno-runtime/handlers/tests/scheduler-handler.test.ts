@@ -1,5 +1,6 @@
 import { assertEquals } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
+import jsonrpc from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { AppAccessors } from '../../lib/accessors/mod.ts';
@@ -39,7 +40,7 @@ describe('handlers > scheduler', () => {
 	});
 
 	it('correctly executes a request to a processor', async () => {
-		const result = await handleScheduler('scheduler:mockId', [{}]);
+		const result = await handleScheduler(jsonrpc.request(1, 'scheduler:mockId', [{}]));
 
 		assertEquals(result, null);
 	});

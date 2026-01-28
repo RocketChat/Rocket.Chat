@@ -1,11 +1,13 @@
-import { Defined, JsonRpcError } from 'jsonrpc-lite';
 import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiEndpoint.ts';
+import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';
 import { Logger } from '../lib/logger.ts';
 import { AppAccessorsInstance } from '../lib/accessors/mod.ts';
+import { RequestContext } from '../lib/requestContext.ts';
 
-export default async function apiHandler(call: string, params: unknown): Promise<JsonRpcError | Defined> {
+export default async function apiHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
+	const { method: call, params } = request;
 	const [, path, httpMethod] = call.split(':');
 
 	const endpoint = AppObjectRegistry.get<IApiEndpoint>(`api:${path}`);
@@ -21,14 +23,14 @@ export default async function apiHandler(call: string, params: unknown): Promise
 		return new JsonRpcError(`${path}'s ${httpMethod} not exists`, -32000);
 	}
 
-	const [request, endpointInfo] = params as Array<unknown>;
+	const [requestData, endpointInfo] = params as Array<unknown>;
 
-	logger?.debug(`${path}'s ${call} is being executed...`, request);
+	logger?.debug(`${path}'s ${call} is being executed...`, requestData);
 
 	try {
 		// deno-lint-ignore ban-types
 		const result = await (method as Function).apply(endpoint, [
-			request,
+			requestData,
 			endpointInfo,
 			AppAccessorsInstance.getReader(),
 			AppAccessorsInstance.getModifier(),
