@@ -4,6 +4,7 @@ import fs from 'fs';
 import { unlink, rename, writeFile } from 'fs/promises';
 import type * as http from 'http';
 import type * as https from 'https';
+import { URL as NodeURL } from 'node:url';
 import stream from 'stream';
 import { finished } from 'stream/promises';
 import URL from 'url';
@@ -637,25 +638,50 @@ export const FileUpload = {
 		res: http.ServerResponse,
 	) {
 		res.setHeader('Content-Disposition', `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(fileName)}"`);
+		const url = new NodeURL(fileUrl);
 
-		request.get(fileUrl, (fileRes) => {
-			if (fileRes.statusCode !== 200) {
-				res.setHeader('x-rc-proxyfile-status', String(fileRes.statusCode));
-				res.setHeader('content-length', 0);
-				res.writeHead(500);
-				res.end();
-				return;
-			}
+		request.get(
+			{
+				path: url.pathname + (url.search || ''),
+				hostname: url.hostname,
+				protocol: url.protocol,
+				headers: {
+					...(_req.headers.range ? { range: _req.headers.range } : {}),
+					...(_req.headers.accept ? { accept: _req.headers.accept } : {}),
+				},
+			},
+			(fileRes: http.IncomingMessage) => {
+				if (fileRes.statusCode !== 200 && fileRes.statusCode !== 206) {
+					res.setHeader('x-rc-proxyfile-status', String(fileRes.statusCode));
+					res.setHeader('content-length', 0);
+					res.writeHead(500);
+					res.end();
+					return;
+				}
 
-			// eslint-disable-next-line prettier/prettier
-			const headersToProxy = ['age', 'cache-control', 'content-length', 'content-type', 'date', 'expired', 'last-modified'];
+				const headersToProxy = [
+					'age',
+					'cache-control',
+					'content-length',
+					'content-type',
+					'content-range',
+					'date',
+					'expired',
+					'last-modified',
+					'Accept-Ranges',
+					'ETag',
+					'range',
+				];
 
-			headersToProxy.forEach((header) => {
-				fileRes.headers[header] && res.setHeader(header, String(fileRes.headers[header]));
-			});
+				headersToProxy.forEach((header) => {
+					fileRes.headers[header] && res.setHeader(header, String(fileRes.headers[header]));
+				});
 
-			fileRes.pipe(res);
-		});
+				fileRes.pipe(res);
+
+				res.writeHead(fileRes.statusCode);
+			},
+		);
 	},
 
 	generateJWTToFileUrls({ rid, userId, fileId }: { rid: string; userId: string; fileId: string }) {
