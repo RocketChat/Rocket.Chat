@@ -536,11 +536,14 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 																<NumberInput
 																	id={retentionMaxAgeField}
 																	{...field}
+																	placeholder='7'
+																	min={1}
 																	onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(Number(e.currentTarget.value))}
 																/>
 															)}
 														/>
 													</FieldRow>
+													<FieldHint>Enter the number of days (e.g., 7 for one week, 30 for one month)</FieldHint>
 												</Field>
 												<Field>
 													<FieldRow>
