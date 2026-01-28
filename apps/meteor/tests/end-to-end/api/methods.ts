@@ -2090,14 +2090,8 @@ describe('Meteor.methods', () => {
 				.end(done);
 		});
 
-		it('should fail when sending more files than allowed by FileUpload_MaxFilesPerMessage', async () => {
-			await updateSetting('FileUpload_MaxFilesPerMessage', 2);
-
-			const filesToConfirm = [
-				{ _id: 'file1', name: 'test1.txt' },
-				{ _id: 'file2', name: 'test2.txt' },
-				{ _id: 'file3', name: 'test3.txt' },
-			];
+		it('should fail when sending more than 10 files', async () => {
+			const filesToConfirm = Array.from({ length: 11 }, (_, i) => ({ _id: `file${i + 1}`, name: `test${i + 1}.txt` }));
 
 			await request
 				.post(methodCall('sendMessage'))
@@ -2118,8 +2112,6 @@ describe('Meteor.methods', () => {
 					expect(data).to.have.a.property('error').that.is.an('object');
 					expect(data.error).to.have.a.property('error', 'error-too-many-files');
 				});
-
-			await updateSetting('FileUpload_MaxFilesPerMessage', 10);
 		});
 	});
 
