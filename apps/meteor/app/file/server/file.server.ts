@@ -22,9 +22,9 @@ type IFile = {
 interface IRocketChatFileStore {
 	remove(fileId: string): Promise<void>;
 
-	createWriteStream(fileName: string, contentType: string): void;
+	createWriteStream(fileName: string, contentType: string): unknown;
 
-	createReadStream(fileName: string): void;
+	createReadStream(fileName: string): unknown;
 
 	getFileWithReadStream(fileName: string): Promise<
 		| {

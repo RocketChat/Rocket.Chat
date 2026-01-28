@@ -1,3 +1,5 @@
+import type { IncomingMessage, ServerResponse } from 'http';
+
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
@@ -5,13 +7,13 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { RocketChatFile } from '../../../file/server';
 import { settings } from '../../../settings/server';
 
-export let RocketChatFileCustomSoundsInstance;
+export let RocketChatFileCustomSoundsInstance: InstanceType<typeof RocketChatFile.GridFS | typeof RocketChatFile.FileSystem>;
 
 Meteor.startup(() => {
-	let storeType = 'GridFS';
+	let storeType: 'GridFS' | 'FileSystem' = 'GridFS';
 
-	if (settings.get('CustomSounds_Storage_Type')) {
-		storeType = settings.get('CustomSounds_Storage_Type');
+	if (settings.get<'GridFS' | 'FileSystem'>('CustomSounds_Storage_Type')) {
+		storeType = settings.get<'GridFS' | 'FileSystem'>('CustomSounds_Storage_Type');
 	}
 
 	const RocketChatStore = RocketChatFile[storeType];
@@ -26,9 +28,10 @@ Meteor.startup(() => {
 	});
 
 	let path = '~/uploads';
-	if (settings.get('CustomSounds_FileSystemPath') != null) {
-		if (settings.get('CustomSounds_FileSystemPath').trim() !== '') {
-			path = settings.get('CustomSounds_FileSystemPath');
+	if (settings.get<string>('CustomSounds_FileSystemPath') != null) {
+		const filePath = settings.get<string>('CustomSounds_FileSystemPath');
+		if (typeof filePath === 'string' && filePath.trim() !== '') {
+			path = filePath;
 		}
 	}
 
@@ -37,8 +40,8 @@ Meteor.startup(() => {
 		absolutePath: path,
 	});
 
-	return WebApp.connectHandlers.use('/custom-sounds/', async (req, res /* , next*/) => {
-		const fileId = decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''));
+	return WebApp.connectHandlers.use('/custom-sounds/', async (req: IncomingMessage, res: ServerResponse /* , next*/) => {
+		const fileId = decodeURIComponent(req.url?.replace(/^\//, '').replace(/\?.*$/, '') || '');
 
 		if (!fileId) {
 			res.writeHead(403);
@@ -57,8 +60,8 @@ Meteor.startup(() => {
 
 		res.setHeader('Content-Disposition', 'inline');
 
-		let fileUploadDate = undefined;
-		if (file.uploadDate != null) {
+		let fileUploadDate: string | undefined = undefined;
+		if ('uploadDate' in file && file.uploadDate != null) {
 			fileUploadDate = file.uploadDate.toUTCString();
 		}
 
@@ -80,7 +83,7 @@ Meteor.startup(() => {
 			res.setHeader('Last-Modified', new Date().toUTCString());
 		}
 
-		res.setHeader('Content-Type', file.contentType);
+		res.setHeader('Content-Type', file.contentType!);
 		res.setHeader('Content-Length', file.length);
 
 		file.readStream.pipe(res);
