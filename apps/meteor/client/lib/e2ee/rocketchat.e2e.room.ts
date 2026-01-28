@@ -9,7 +9,7 @@ import type {
 	EncryptedMessageContent,
 	EncryptedContent,
 } from '@rocket.chat/core-typings';
-import { isEncryptedMessageContent } from '@rocket.chat/core-typings';
+import { isEncryptedMessageContent, isFileAttachment, isRemovedFileAttachment } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Optional } from '@tanstack/react-query';
 import EJSON from 'ejson';
@@ -660,6 +660,45 @@ export class E2ERoom extends Emitter {
 		return data;
 	}
 
+	async decryptMessageContent(message: IE2EEMessage): Promise<IE2EEMessage> {
+		const { attachments } = message;
+		const deletedAttachments = attachments?.filter((att) => isRemovedFileAttachment(att)) || [];
+		const deletedAllAttachment = deletedAttachments.find((att) => !att.fileId);
+
+		const content = await this.decrypt(message.content);
+		Object.assign(message, content);
+
+		// If the encrypted message had deleted files and the decrypted message has files, compare both lists to remove from the final result any file that was flagged as deleted
+		if (!deletedAttachments.length || !message.attachments?.length || !content.attachments?.length) {
+			return message;
+		}
+
+		message.attachments = message.attachments.map((att) => {
+			if (!isFileAttachment(att)) {
+				return att;
+			}
+
+			if (deletedAllAttachment) {
+				return deletedAllAttachment;
+			}
+
+			const fileId = att.fileId || message.file?._id;
+			if (!fileId) {
+				return att;
+			}
+
+			for (const removedAttachment of deletedAttachments) {
+				if (removedAttachment.fileId === fileId) {
+					return removedAttachment;
+				}
+			}
+
+			return att;
+		});
+
+		return message;
+	}
+
 	// Decrypt messages
 	async decryptMessage(message: IMessage | IE2EEMessage): Promise<IE2EEMessage | IMessage> {
 		if (message.t !== 'e2e' || message.e2e === 'done') {
@@ -674,7 +713,7 @@ export class E2ERoom extends Emitter {
 			}
 		}
 
-		message = isEncryptedMessageContent(message) ? await this.decryptContent(message) : message;
+		message = isEncryptedMessageContent(message) ? await this.decryptMessageContent(message) : message;
 
 		return {
 			...message,

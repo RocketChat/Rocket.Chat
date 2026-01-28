@@ -271,7 +271,7 @@ API.v1.addRoute(
 			delete this.bodyParams.description;
 
 			await applyAirGappedRestrictionsValidation(() =>
-				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }, { parseAttachmentsForE2EE: false }),
+				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }),
 			);
 
 			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);

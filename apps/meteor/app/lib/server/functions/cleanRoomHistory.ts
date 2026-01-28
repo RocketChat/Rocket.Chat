@@ -48,7 +48,8 @@ export async function cleanRoomHistory({
 	});
 
 	const targetMessageIdsForAttachmentRemoval = new Set<string>();
-	const pruneMessageAttachment = { color: NOTIFICATION_ATTACHMENT_COLOR, text };
+	// Since we remove every file from the messages, we don't need to specify which fileId has been removed.
+	const pruneMessageAttachment = { type: 'removed-file', color: NOTIFICATION_ATTACHMENT_COLOR, text };
 
 	async function performFileAttachmentCleanupBatch() {
 		if (targetMessageIdsForAttachmentRemoval.size === 0) return;
