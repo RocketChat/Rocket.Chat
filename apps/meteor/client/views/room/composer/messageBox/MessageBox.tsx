@@ -71,6 +71,52 @@ const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: Forma
 	return true;
 };
 
+const handleOrderedList = (event: KeyboardEvent, composer: ComposerAPI) => {
+	const input = event.target as HTMLTextAreaElement;
+	const { value, selectionStart, selectionEnd } = input;
+
+	// Check if the user just typed a space
+	if (event.key !== ' ') {
+		return false;
+	}
+
+	// Check if there's text before the cursor
+	if (selectionStart < 2) {
+		return false;
+	}
+
+	// Get the text before the cursor
+	const textBeforeCursor = value.substring(0, selectionStart);
+
+	// Check if the text matches the pattern: number followed by a period at the beginning of a line
+	const match = /(?:^|\n)(\d+)\.$/.exec(textBeforeCursor);
+
+	if (!match) {
+		return false;
+	}
+
+	// Get the number that was typed
+	const number = match[1];
+	// Get the position where the number starts
+	const startPos = match.index;
+
+	// Replace the "number." with a non-editable format by adding a space before
+	// "1." becomes " 1." to indicate it's part of a list formatting
+	const newText = textBeforeCursor.substring(0, startPos) + textBeforeCursor.substring(startPos).replace(`${number}.`, ` ${number}. `);
+
+	// Set the new text
+	composer.setText(newText + value.substring(selectionEnd));
+
+	// Set the cursor position after the added spaces (2 spaces added)
+	const newCursorPos = selectionStart + 2;
+	setTimeout(() => {
+		input.focus();
+		input.setSelectionRange(newCursorPos, newCursorPos);
+	}, 0);
+
+	return true;
+};
+
 const emptySubscribe = () => () => undefined;
 const getEmptyFalse = () => false;
 const a: any[] = [];
@@ -190,6 +236,14 @@ const MessageBox = ({
 		const { which: keyCode } = event;
 
 		const input = event.target as HTMLTextAreaElement;
+		const { value } = input;
+
+		// Add handling for ordered list (when space is pressed)
+		if (chat.composer && event.key === ' ') {
+			if (handleOrderedList(event, chat.composer)) {
+				return;
+			}
+		}
 
 		const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
 
@@ -197,9 +251,57 @@ const MessageBox = ({
 			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
 			const isSending = (sendOnEnter && !withModifier) || (!sendOnEnter && withModifier);
 
+			// Handle Shift+Enter to exit from ordered list
+			if (event.shiftKey && !isSending && chat.composer) {
+				const cursorPosition = input.selectionStart;
+				const textBeforeCursor = value.substring(0, cursorPosition);
+
+				// Check if we're at the end of an empty list item
+				const emptyListItemMatch = /(?:^|\n) (\d+)\. $/.exec(textBeforeCursor);
+
+				if (emptyListItemMatch) {
+					// Remove the empty list item and insert a regular new line
+					const matchStart = emptyListItemMatch.index;
+					const newText = textBeforeCursor.substring(0, matchStart) + (matchStart > 0 ? '\n' : ''); // Only add a newline if not at the start
+
+					chat.composer.setText(newText + value.substring(cursorPosition));
+
+					setTimeout(() => {
+						input.focus();
+						input.setSelectionRange(newText.length, newText.length);
+					}, 0);
+
+					event.preventDefault();
+					return false;
+				}
+			}
+
 			event.preventDefault();
 			if (!isSending) {
 				chat.composer?.insertNewLine();
+
+				// Add auto-incrementing number for ordered lists
+				const cursorPosition = input.selectionStart;
+				const textBeforeCursor = value.substring(0, cursorPosition);
+
+				// Check if we're in an ordered list by looking at the previous line
+				// Updated regex to match our new format with a space before the number
+				const lastLineMatch = /(?:^|\n) (\d+)\. (.+)$/.exec(textBeforeCursor);
+
+				if (lastLineMatch) {
+					const lastNumber = parseInt(lastLineMatch[1], 10);
+					const nextNumber = lastNumber + 1;
+
+					// Insert the next number in the ordered list with the proper space prefixing
+					chat.composer?.insertText(` ${nextNumber}. `);
+
+					return false;
+				}
+
+				// Scroll to the new line if the message box is at max height
+				if (input.scrollHeight > input.clientHeight) {
+					input.scrollTop = input.scrollHeight; // Scroll to the bottom
+				}
 				return false;
 			}
 			handleSendMessage();
