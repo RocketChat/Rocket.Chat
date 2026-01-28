@@ -7,6 +7,6 @@ type ExternalLinkProps = {
 
 export const ExternalLink = ({ children, to, ...props }: ExternalLinkProps) => (
 	<Box is='a' href={to} target='_blank' rel='noopener noreferrer' {...props}>
-		{children || to}
+		{children ?? to}
 	</Box>
 );
