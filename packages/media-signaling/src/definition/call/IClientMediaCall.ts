@@ -1,6 +1,7 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
 import type { CallEvents } from './CallEvents';
+import type { IMediaStreamWrapper } from '../media/IMediaStreamWrapper';
 
 export type CallActorType = 'user' | 'sip';
 
@@ -17,6 +18,10 @@ export type CallContact = {
 export type CallRole = 'caller' | 'callee';
 
 export type CallService = 'webrtc';
+
+export type CallFeature = 'audio' | 'screen-share';
+
+export const callFeatureList: readonly CallFeature[] = ['audio', 'screen-share'];
 
 export type CallState =
 	| 'none' // trying to call with no idea if it'll reach anyone
@@ -99,18 +104,23 @@ export interface IClientMediaCall {
 	/** confirmed indicates if the call exists on the server */
 	readonly confirmed: boolean;
 
+	readonly screenShareRequested: boolean;
+
 	emitter: Emitter<CallEvents>;
 
-	getRemoteMediaStream(): MediaStream | null;
+	getLocalMediaStream(tag?: string): IMediaStreamWrapper | null;
+	getRemoteMediaStream(tag?: string): IMediaStreamWrapper | null;
 
 	accept(): void;
 	reject(): void;
 	hangup(): void;
 	setMuted(muted: boolean): void;
 	setHeld(onHold: boolean): void;
+	setScreenShareRequested(requested: boolean): void;
 	transfer(callee: { type: CallActorType; id: string }): void;
 
 	sendDTMF(dtmf: string, duration?: number): void;
 
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
+	isFeatureAvailable(feature: CallFeature): boolean;
 }

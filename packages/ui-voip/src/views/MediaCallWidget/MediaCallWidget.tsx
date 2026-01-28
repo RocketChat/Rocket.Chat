@@ -2,9 +2,9 @@ import { OngoingCall, NewCall, IncomingCall, OutgoingCall, IncomingCallTransfer,
 import { useMediaCallContext } from '../../context';
 
 const MediaCallWidget = () => {
-	const { state, hidden, transferredBy } = useMediaCallContext();
+	const { state, hidden, transferredBy, inRoomView } = useMediaCallContext();
 
-	if (hidden) {
+	if (hidden || inRoomView) {
 		return null;
 	}
 

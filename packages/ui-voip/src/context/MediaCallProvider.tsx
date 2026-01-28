@@ -38,6 +38,8 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [openRoomId, setOpenRoomId] = useState<string | undefined>(undefined);
 
+	const [inRoomView, setInRoomView] = useState(false);
+
 	const setModal = useSetModal();
 
 	const userId = user?._id;
@@ -47,7 +49,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 
 	useDesktopNotifications(session);
 
-	const [remoteStreamRefCallback, audioElement] = useMediaStream(instance);
+	const [remoteStreamRefCallback, audioElement] = useMediaStream(session.getRemoteStream());
 
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
@@ -268,6 +270,8 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 		hidden: session.hidden,
 		remoteMuted: session.remoteMuted,
 		remoteHeld: session.remoteHeld,
+		inRoomView,
+		setInRoomView,
 		onClickDirectMessage,
 		setOpenRoomId,
 		onMute,
@@ -281,6 +285,10 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 		onToggleWidget,
 		onSelectPeer,
 		getAutocompleteOptions,
+		getRemoteStream: session.getRemoteStream,
+		getRemoteVideoStream: session.getRemoteVideoStream,
+		getLocalVideoStream: session.getLocalVideoStream,
+		toggleScreenSharing: session.toggleScreenSharing,
 		getPeerInfo: () => Promise.resolve(session.peerInfo), // TODO remove this probably
 	};
 

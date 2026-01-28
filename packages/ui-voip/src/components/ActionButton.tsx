@@ -10,6 +10,7 @@ type ActionButtonProps = {
 	onClick?: () => void;
 } & Omit<ComponentProps<typeof IconButton>, 'icon' | 'title' | 'aria-label' | 'disabled' | 'onClick'>;
 
+// TODO: move to actions folder
 const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(function ActionButton(
 	{ disabled, label, icon, onClick, secondary = true, ...props },
 	ref,

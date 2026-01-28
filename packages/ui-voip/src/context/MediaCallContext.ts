@@ -1,4 +1,5 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
+import type { IMediaStreamWrapper } from '@rocket.chat/media-signaling';
 import type { Device } from '@rocket.chat/ui-contexts';
 import { createContext, useContext } from 'react';
 
@@ -38,6 +39,14 @@ type MediaCallContextType = {
 	remoteMuted: boolean;
 	remoteHeld: boolean;
 
+	inRoomView: boolean;
+	setInRoomView: (inRoomView: boolean) => void;
+
+	getRemoteStream: () => MediaStream | null;
+	getRemoteVideoStream: () => IMediaStreamWrapper | null;
+	getLocalVideoStream: () => IMediaStreamWrapper | null;
+	toggleScreenSharing: () => void;
+
 	onClickDirectMessage?: () => void;
 
 	onMute: () => void;
@@ -76,6 +85,14 @@ export const defaultMediaCallContextValue: MediaCallContextType = {
 	held: false,
 	remoteMuted: false,
 	remoteHeld: false,
+
+	inRoomView: false,
+	setInRoomView: () => undefined,
+
+	getRemoteStream: () => null,
+	getRemoteVideoStream: () => null,
+	getLocalVideoStream: () => null,
+	toggleScreenSharing: () => undefined,
 
 	onMute: () => undefined,
 	onHold: () => undefined,

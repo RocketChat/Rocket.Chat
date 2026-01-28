@@ -252,6 +252,11 @@ export class NegotiationManager {
 			return false;
 		}
 
+		// if (!this.call.hasVideoTrack() && this.call.screenShareRequested) {
+		// 	this.config.logger?.debug('Delaying WebRTC negotiations due to missing video track.');
+		// 	return false;
+		// }
+
 		return true;
 	}
 

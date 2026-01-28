@@ -1,5 +1,6 @@
 import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
-import { isBusyState, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
+import { isBusyState } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal, ServerMediaSignal, CallFeature } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { UserActorSignalProcessor } from './CallSignalProcessor';
@@ -20,12 +21,12 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		getMediaCallServer().sendSignal(this.actorId, signal);
 	}
 
-	public async onCallAccepted(callId: string, signedContractId: string): Promise<void> {
+	public async onCallAccepted(callId: string, data: { signedContractId: string; features: CallFeature[] }): Promise<void> {
 		await this.sendSignal({
 			callId,
 			type: 'notification',
 			notification: 'accepted',
-			signedContractId,
+			...data,
 		});
 
 		if (this.role !== 'callee') {
@@ -40,10 +41,11 @@ export class UserActorAgent extends BaseMediaCallAgent {
 
 		await this.sendSignal({
 			callId,
-			toContractId: signedContractId,
+			toContractId: data.signedContractId,
 			type: 'remote-sdp',
 			sdp: negotiation.offer,
 			negotiationId: negotiation._id,
+			streams: negotiation.offerStreams,
 		});
 	}
 
@@ -112,6 +114,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 				type: 'remote-sdp',
 				sdp: negotiation.answer,
 				negotiationId,
+				streams: negotiation.answerStreams,
 			});
 			return;
 		}
@@ -126,6 +129,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			type: 'remote-sdp',
 			sdp: negotiation.offer,
 			negotiationId,
+			streams: negotiation.offerStreams,
 		});
 	}
 

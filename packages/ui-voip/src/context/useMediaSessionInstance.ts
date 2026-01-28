@@ -117,9 +117,11 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 				webrtc: (config) => this.webrtcProcessorFactory(config),
 			},
 			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
+			displayMediaFactory: (...args) => navigator.mediaDevices.getDisplayMedia(...args),
 			randomStringFactory,
 			oldSessionId: this.getOldSessionId(userId),
 			logger: new MediaCallLogger(),
+			features: ['audio', 'screen-share'],
 		});
 
 		if (window.sessionStorage) {

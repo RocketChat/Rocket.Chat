@@ -181,6 +181,7 @@ export class GlobalSignalProcessor {
 
 		const services = signal.supportedServices ?? [];
 		const requestedService = services.includes('webrtc') ? 'webrtc' : services[0];
+		const features = signal.supportedFeatures ?? ['audio'];
 
 		const params: InternalCallParams = {
 			caller: {
@@ -196,6 +197,7 @@ export class GlobalSignalProcessor {
 			},
 			requestedCallId: signal.callId,
 			...(requestedService && { requestedService }),
+			features,
 		};
 
 		this.createCall(params);

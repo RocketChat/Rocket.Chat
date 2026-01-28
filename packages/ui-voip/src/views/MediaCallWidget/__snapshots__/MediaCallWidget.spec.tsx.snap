@@ -51,7 +51,7 @@ exports[`renders IncomingCall without crashing 1`] = `
         </div>
       </header>
       <section
-        class="rcx-box rcx-box--full rcx-css-1mjdwp7"
+        class="rcx-box rcx-box--full rcx-css-8j42zp"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-omrq7i"
@@ -218,7 +218,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
         </div>
       </span>
       <section
-        class="rcx-box rcx-box--full rcx-css-1mjdwp7"
+        class="rcx-box rcx-box--full rcx-css-8j42zp"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-omrq7i"
@@ -401,7 +401,7 @@ exports[`renders NewCall without crashing 1`] = `
         </div>
       </header>
       <section
-        class="rcx-box rcx-box--full rcx-css-1mjdwp7"
+        class="rcx-box rcx-box--full rcx-css-8j42zp"
       >
         <div
           class="rcx-box rcx-box--full rcx-field rcx-css-toq36"
@@ -507,7 +507,7 @@ exports[`renders NewCall without crashing 1`] = `
         >
           <button
             aria-label="customize"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
             disabled=""
             label="customize"
             title="Device_settings_not_supported_by_browser"
@@ -604,7 +604,7 @@ exports[`renders OngoingCall without crashing 1`] = `
         </div>
       </header>
       <section
-        class="rcx-box rcx-box--full rcx-css-1mjdwp7"
+        class="rcx-box rcx-box--full rcx-css-8j42zp"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-omrq7i"
@@ -662,23 +662,9 @@ exports[`renders OngoingCall without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-itk7e7"
       >
         <div
-          class="rcx-button-group rcx-button-group--align-start rcx-button-group--large"
+          class="rcx-button-group rcx-button-group--align-center rcx-button-group--large"
           role="group"
         >
-          <button
-            aria-label="Dialpad"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
-            label="Dialpad"
-            title="Open_dialpad"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-dialpad rcx-icon rcx-css-xb06ut"
-            >
-              
-            </i>
-          </button>
           <button
             aria-label="Mute"
             class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
@@ -691,6 +677,20 @@ exports[`renders OngoingCall without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
             >
               
+            </i>
+          </button>
+          <button
+            aria-label="Screen_sharing"
+            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            label="Screen_sharing"
+            title="Screen_sharing"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-computer rcx-icon rcx-css-xb06ut"
+            >
+              
             </i>
           </button>
           <button
@@ -797,7 +797,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
         </div>
       </header>
       <section
-        class="rcx-box rcx-box--full rcx-css-1mjdwp7"
+        class="rcx-box rcx-box--full rcx-css-8j42zp"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-omrq7i"
@@ -947,7 +947,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
         </div>
       </span>
       <section
-        class="rcx-box rcx-box--full rcx-css-1mjdwp7"
+        class="rcx-box rcx-box--full rcx-css-8j42zp"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-omrq7i"

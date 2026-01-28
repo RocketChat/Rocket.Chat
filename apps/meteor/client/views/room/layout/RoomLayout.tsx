@@ -60,7 +60,7 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 				<Suspense fallback={<HeaderSkeleton />}>{header}</Suspense>
 				<Box display='flex' flexGrow={1} overflow='hidden' height='full' position='relative'>
 					<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0}>
-						<Box is='div' display='flex' flexDirection='column' flexGrow={1}>
+						<Box is='div' display='flex' flexDirection='column' flexGrow={1} maxHeight='100%'>
 							<Suspense fallback={null}>{body}</Suspense>
 						</Box>
 						{footer && <Suspense fallback={null}>{footer}</Suspense>}

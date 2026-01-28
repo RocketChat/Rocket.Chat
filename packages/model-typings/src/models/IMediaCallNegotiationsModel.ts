@@ -1,4 +1,4 @@
-import type { IMediaCallNegotiation } from '@rocket.chat/core-typings';
+import type { IMediaCallNegotiation, MediaCallNegotiationStream } from '@rocket.chat/core-typings';
 import type { Document, FindOptions, UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -8,7 +8,7 @@ export interface IMediaCallNegotiationsModel extends IBaseModel<IMediaCallNegoti
 		callId: IMediaCallNegotiation['callId'],
 		options?: FindOptions<T>,
 	): Promise<T | null>;
-	setOfferById(id: string, offer: RTCSessionDescriptionInit): Promise<UpdateResult>;
-	setAnswerById(id: string, answer: RTCSessionDescriptionInit): Promise<UpdateResult>;
+	setOfferById(id: string, offer: RTCSessionDescriptionInit, offerStreams?: MediaCallNegotiationStream[]): Promise<UpdateResult>;
+	setAnswerById(id: string, answer: RTCSessionDescriptionInit, answerStreams?: MediaCallNegotiationStream[]): Promise<UpdateResult>;
 	setStableById(id: string): Promise<UpdateResult>;
 }

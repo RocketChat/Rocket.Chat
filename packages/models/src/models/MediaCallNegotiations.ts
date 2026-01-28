@@ -1,4 +1,4 @@
-import type { RocketChatRecordDeleted, IMediaCallNegotiation } from '@rocket.chat/core-typings';
+import type { RocketChatRecordDeleted, IMediaCallNegotiation, MediaCallNegotiationStream } from '@rocket.chat/core-typings';
 import type { IMediaCallNegotiationsModel } from '@rocket.chat/model-typings';
 import type { IndexDescription, Collection, Db, FindOptions, Document, UpdateResult } from 'mongodb';
 
@@ -31,7 +31,11 @@ export class MediaCallNegotiationsRaw extends BaseRaw<IMediaCallNegotiation> imp
 		);
 	}
 
-	public async setOfferById(id: string, offer: RTCSessionDescriptionInit): Promise<UpdateResult> {
+	public async setOfferById(
+		id: string,
+		offer: RTCSessionDescriptionInit,
+		offerStreams?: MediaCallNegotiationStream[],
+	): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: id,
@@ -41,12 +45,17 @@ export class MediaCallNegotiationsRaw extends BaseRaw<IMediaCallNegotiation> imp
 				$set: {
 					offer,
 					offerTimestamp: new Date(),
+					...(offerStreams && { offerStreams }),
 				},
 			},
 		);
 	}
 
-	public async setAnswerById(id: string, answer: RTCSessionDescriptionInit): Promise<UpdateResult> {
+	public async setAnswerById(
+		id: string,
+		answer: RTCSessionDescriptionInit,
+		answerStreams?: MediaCallNegotiationStream[],
+	): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: id,
@@ -56,6 +65,7 @@ export class MediaCallNegotiationsRaw extends BaseRaw<IMediaCallNegotiation> imp
 				$set: {
 					answer,
 					answerTimestamp: new Date(),
+					...(answerStreams && { answerStreams }),
 				},
 			},
 		);

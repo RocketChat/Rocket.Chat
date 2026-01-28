@@ -1,5 +1,5 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
-import type { MediaSignalingSession, CallState, CallRole } from '@rocket.chat/media-signaling';
+import type { MediaSignalingSession, CallState, CallRole, IMediaStreamWrapper } from '@rocket.chat/media-signaling';
 import { useUserAvatarPath, useUserPresence } from '@rocket.chat/ui-contexts';
 import { useEffect, useReducer, useMemo } from 'react';
 
@@ -23,6 +23,7 @@ const defaultSessionInfo: SessionInfo = {
 type MediaSession = SessionInfo & {
 	toggleMute: () => void;
 	toggleHold: () => void;
+	toggleScreenSharing: () => void;
 
 	toggleWidget: (peerInfo?: PeerInfo) => void;
 	selectPeer: (peerInfo: PeerInfo) => void;
@@ -35,6 +36,10 @@ type MediaSession = SessionInfo & {
 
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
+
+	getRemoteStream: () => MediaStream | null;
+	getRemoteVideoStream: () => IMediaStreamWrapper | null;
+	getLocalVideoStream: () => IMediaStreamWrapper | null;
 };
 
 export const getExtensionFromPeerInfo = (peerInfo: PeerInfo): string | undefined => {
@@ -331,6 +336,64 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			}
 		};
 
+		const getRemoteStream = () => {
+			try {
+				const mainCall = instance?.getMainCall();
+				if (!mainCall) {
+					return null;
+				}
+
+				return mainCall.getRemoteMediaStream('main')?.stream || null;
+			} catch (error) {
+				console.error('MediaCall: useMediaStream - Error getting remote media stream', error);
+				return null;
+			}
+		};
+
+		const getRemoteVideoStream = () => {
+			try {
+				const mainCall = instance?.getMainCall();
+				if (!mainCall) {
+					return null;
+				}
+
+				return mainCall.getRemoteMediaStream('screen-share');
+			} catch (error) {
+				console.error('MediaCall: useMediaStream - Error getting remote media stream', error);
+				return null;
+			}
+		};
+
+		const getLocalVideoStream = () => {
+			try {
+				const mainCall = instance?.getMainCall();
+				if (!mainCall) {
+					return null;
+				}
+				return mainCall.getLocalMediaStream('screen-share');
+			} catch (error) {
+				console.error('MediaCall: useMediaStream - Error getting local media stream', error);
+				return null;
+			}
+		};
+
+		const toggleScreenSharing = () => {
+			if (!instance) {
+				return;
+			}
+
+			const mainCall = instance.getMainCall();
+			if (!mainCall) {
+				return;
+			}
+
+			try {
+				mainCall.setScreenShareRequested(!mainCall.screenShareRequested);
+			} catch (error) {
+				console.error('Error toggling screen share', error);
+			}
+		};
+
 		return {
 			toggleWidget,
 			toggleHold,
@@ -341,7 +404,11 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			sendTone,
 			selectPeer,
 			toggleMute,
+			toggleScreenSharing,
 			acceptCall,
+			getRemoteStream,
+			getRemoteVideoStream,
+			getLocalVideoStream,
 		};
 	}, [instance]);
 
