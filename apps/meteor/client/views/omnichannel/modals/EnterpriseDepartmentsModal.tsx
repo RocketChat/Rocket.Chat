@@ -1,73 +1,49 @@
-import {
-	Button,
-	Modal,
-	Box,
-	ModalHeader,
-	ModalHeaderText,
-	ModalTagline,
-	ModalTitle,
-	ModalClose,
-	ModalContent,
-	ModalHeroImage,
-	ModalFooter,
-	ModalFooterControllers,
-} from '@rocket.chat/fuselage';
-import { useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { Button, Box } from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import GenericModal from '../../../components/GenericModal';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 
-// TODO: use `GenericModal` instead of creating a new modal from scratch
-// This seems a upSell modal for enterprise feature
 const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }): ReactElement => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const ref = useRef<HTMLDivElement>(null);
 
 	const openExternalLink = useExternalLink();
-	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'new-departments-page', action: 'upgrade' });
-
-	const goToManageSubscriptionPage = (): void => {
-		openExternalLink(manageSubscriptionUrl);
-		closeModal();
-	};
+	const manageSubscriptionUrl = useCheckoutUrl()({
+		target: 'new-departments-page',
+		action: 'upgrade',
+	});
 
 	const onClose = (): void => {
 		router.navigate('/omnichannel/departments');
 		closeModal();
 	};
 
-	useOutsideClick([ref], onClose);
+	const onUpgrade = (): void => {
+		openExternalLink(manageSubscriptionUrl);
+		closeModal();
+	};
 
 	return (
-		<Modal aria-label={t('Departments')} ref={ref}>
-			<ModalHeader>
-				<ModalHeaderText>
-					<ModalTagline>{t('Premium_capability')}</ModalTagline>
-					<ModalTitle>{t('Departments')}</ModalTitle>
-				</ModalHeaderText>
-				<ModalClose onClick={onClose} />
-			</ModalHeader>
-			<ModalContent fontScale='p2'>
-				<ModalHeroImage src='/images/departments.svg' />
-				<Box fontScale='h3' mbe={28}>
-					{t('Premium_Departments_title')}
-				</Box>
-				{t('Premium_Departments_description_upgrade')}
-			</ModalContent>
-			<ModalFooter>
-				<ModalFooterControllers>
-					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button onClick={goToManageSubscriptionPage} primary>
-						{t('Upgrade')}
-					</Button>
-				</ModalFooterControllers>
-			</ModalFooter>
-		</Modal>
+		<GenericModal
+			variant='info'
+			icon='department'
+			title={t('Departments')}
+			subtitle={t('Premium_capability')}
+			onClose={onClose}
+			confirmText={t('Upgrade')}
+			cancelText={t('Cancel')}
+			onConfirm={onUpgrade}
+			onCancel={onClose}
+		>
+			<Box mbe={28} fontScale='h3'>
+				{t('Premium_Departments_title')}
+			</Box>
+			{t('Premium_Departments_description_upgrade')}
+		</GenericModal>
 	);
 };
 
