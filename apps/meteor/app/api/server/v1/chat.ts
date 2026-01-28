@@ -10,7 +10,6 @@ import {
 	isChatGetThreadsListProps,
 	isChatDeleteProps,
 	isChatSyncMessagesProps,
-	isChatGetMessageProps,
 	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
@@ -144,39 +143,16 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'chat.getMessage',
-	{
-		authRequired: true,
-		validateParams: isChatGetMessageProps,
-	},
-	{
-		async get() {
-			if (!this.queryParams.msgId) {
-				return API.v1.failure('The "msgId" query parameter must be provided.');
-			}
-
-			const msg = await getSingleMessage(this.userId, this.queryParams.msgId);
-
-			if (!msg) {
-				return API.v1.failure();
-			}
-
-			const [message] = await normalizeMessagesForUser([msg], this.userId);
-
-			return API.v1.success({
-				message,
-			});
-		},
-	},
-);
-
 type ChatPinMessage = {
 	messageId: IMessage['_id'];
 };
 
 type ChatUnpinMessage = {
 	messageId: IMessage['_id'];
+};
+
+type ChatGetMessage = {
+	msgId: IMessage['_id'];
 };
 
 const ChatPinMessageSchema = {
@@ -203,9 +179,23 @@ const ChatUnpinMessageSchema = {
 	additionalProperties: false,
 };
 
+const ChatGetMessageSchema = {
+	type: 'object',
+	properties: {
+		msgId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['msgId'],
+	additionalProperties: false,
+};
+
 const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
+
+const isChatGetMessageProps = ajv.compile<ChatGetMessage>(ChatGetMessageSchema);
 
 const chatEndpoints = API.v1
 	.post(
@@ -345,6 +335,47 @@ const chatEndpoints = API.v1
 
 			const updatedMessage = await Messages.findOneById(msg._id);
 			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);
+
+			return API.v1.success({
+				message,
+			});
+		},
+	)
+	.get(
+		'chat.getMessage',
+		{
+			authRequired: true,
+			query: isChatGetMessageProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+
+		async function action() {
+			if (!this.queryParams.msgId) {
+				return API.v1.failure('The "msgId" query parameter must be provided.');
+			}
+
+			const msg: IMessage | null = await getSingleMessage(this.userId, this.queryParams.msgId);
+
+			if (!msg) {
+				return API.v1.failure();
+			}
+
+			const [message]: IMessage[] = await normalizeMessagesForUser([msg], this.userId);
 
 			return API.v1.success({
 				message,
