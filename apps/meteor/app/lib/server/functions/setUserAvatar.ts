@@ -1,7 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
-import { Users } from '@rocket.chat/models';
+import { Messages, Users } from '@rocket.chat/models';
 import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
@@ -81,6 +81,19 @@ export function setUserAvatar(
 	updater?: Updater<IUser>,
 	session?: ClientSession,
 ): Promise<void>;
+/**
+ * Stores and sets a user's avatar from a variety of sources and propagates the update to user records, messages, and realtime broadcasts.
+ *
+ * Supports data URIs, remote URLs, binary buffers from REST uploads, and the special "initials" origin.
+ *
+ * @param user - The target user (must include `_id` and `username`)
+ * @param dataURI - Avatar source: a data URI, a URL string when `service` is `"url"`, or a binary `Buffer` when `service` is `"rest"`
+ * @param contentType - Required when `service` is `"rest"`; the MIME type of the provided binary data
+ * @param service - Origin of the avatar: `"initials"`, `"url"`, `"rest"`, or other custom string values
+ * @param etag - Optional explicit ETag to associate with the stored avatar; if omitted the store-generated ETag is used
+ * @param updater - Optional Updater for in-transaction user field changes instead of persisting directly to the Users collection
+ * @param session - Optional MongoDB client session to perform operations within the same transaction
+ */
 export async function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,
 	dataURI: string | Buffer,
@@ -208,8 +221,17 @@ export async function setUserAvatar(
 			updater.set('avatarOrigin', origin);
 			updater.set('avatarETag', avatarETag);
 		} else {
-			// TODO: Why was this timeout added?
-			setTimeout(async () => Users.setAvatarData(user._id, service, avatarETag, { session }), 500);
+			await Users.setAvatarData(user._id, service, avatarETag, { session });
+			await Messages.updateMany(
+				{ 'u.username': user.username },
+				{
+					$set: {
+						'u.avatarETag': avatarETag,
+						'avatar': `/avatar/${user.username}?etag=${avatarETag}`,
+					},
+				},
+				{ session },
+			);
 		}
 
 		await onceTransactionCommitedSuccessfully(async () => {
