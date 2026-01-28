@@ -1,4 +1,15 @@
-import { Box, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Option, Select, Tag, type SelectOption } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Field,
+	FieldGroup,
+	FieldHint,
+	FieldLabel,
+	FieldRow,
+	Option,
+	SelectLegacy,
+	Tag,
+	type SelectOption,
+} from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useCallback, useId, useMemo } from 'react';
@@ -43,16 +54,16 @@ export const ActionForm = ({ control, trigger, index, ...props }: SendMessageFor
 	const isOptionDisabled = useCallback((value: string) => !hasLicense && PREMIUM_ACTIONS.includes(value), [hasLicense]);
 
 	const renderOption = useCallback(
-		(label: string, value: string) => {
+		(label: TranslationKey, value: string) => {
 			return (
 				<>
 					{isOptionDisabled(value) ? (
 						<Box justifyContent='space-between' flexDirection='row' display='flex' width='100%'>
-							{label}
+							{t(label)}
 							<Tag variant='featured'>{t('Premium')}</Tag>
 						</Box>
 					) : (
-						label
+						t(label)
 					)}
 				</>
 			);
@@ -70,22 +81,22 @@ export const ActionForm = ({ control, trigger, index, ...props }: SendMessageFor
 						control={control}
 						render={({ field: { onChange, value, name, ref } }) => {
 							return (
-								<Select
+								// TODO: Remove SelectLegacy once we have a new Select component
+								<SelectLegacy
 									ref={ref}
 									name={name}
 									onChange={onChange}
 									value={value}
 									id={actionFieldId}
 									options={actionOptions}
-									renderItem={({ label, value, ...props }) => (
+									renderSelected={({ label, value }) => <Box flexGrow='1'>{renderOption(label, value)}</Box>}
+									renderItem={({ label, value, onMouseDown, ...props }) => (
 										<Option
 											{...props}
-											label={label as string}
-											onClick={isOptionDisabled(value) ? undefined : props.onClick}
+											onMouseDown={isOptionDisabled(value) ? (e) => e.preventDefault() : onMouseDown}
 											disabled={isOptionDisabled(value)}
-										>
-											{renderOption(label as string, value)}
-										</Option>
+											label={renderOption(label, value)}
+										/>
 									)}
 								/>
 							);
