@@ -1,4 +1,4 @@
-import type { IOutgoingIntegration } from '@rocket.chat/core-typings';
+import type { OutgoingIntegrationEvent } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	FieldError,
@@ -26,30 +26,29 @@ import { outgoingEvents } from '../../../../../app/integrations/lib/outgoingEven
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 import { useExampleData } from '../hooks/useExampleIncomingData';
 
-type EditOutgoingWebhookPayload = Pick<
-	IOutgoingIntegration,
-	| 'enabled'
-	| 'impersonateUser'
-	| 'event'
-	| 'urls'
-	| 'token'
-	| 'triggerWords'
-	| 'targetRoom'
-	| 'channel'
-	| 'username'
-	| 'name'
-	| 'alias'
-	| 'avatar'
-	| 'emoji'
-	| 'scriptEnabled'
-	| 'scriptEngine'
-	| 'script'
-	| 'retryFailedCalls'
-	| 'retryCount'
-	| 'retryDelay'
-	| 'triggerWordAnywhere'
-	| 'runOnEdits'
->;
+type EditOutgoingWebhookFormData = {
+	enabled: boolean;
+	impersonateUser: boolean;
+	event: OutgoingIntegrationEvent;
+	urls: string;
+	token: string;
+	triggerWords: string;
+	targetRoom: string;
+	channel: string;
+	username: string;
+	name: string;
+	alias: string;
+	avatar: string;
+	emoji: string;
+	scriptEnabled: boolean;
+	scriptEngine: 'isolated-vm';
+	script: string;
+	retryFailedCalls: boolean;
+	retryCount: number;
+	retryDelay: string;
+	triggerWordAnywhere: boolean;
+	runOnEdits: boolean;
+};
 
 const OutgoingWebhookForm = () => {
 	const { t } = useTranslation();
@@ -58,7 +57,7 @@ const OutgoingWebhookForm = () => {
 		control,
 		watch,
 		formState: { errors },
-	} = useFormContext<EditOutgoingWebhookPayload>();
+	} = useFormContext<EditOutgoingWebhookFormData>();
 	const { event, alias, emoji, avatar } = watch();
 
 	const retryDelayOptions: SelectOption[] = useMemo(
@@ -77,9 +76,9 @@ const OutgoingWebhookForm = () => {
 
 	const scriptEngineOptions: SelectOption[] = useMemo(() => [['isolated-vm', t('Script_Engine_isolated_vm')]], [t]);
 
-	const showChannel = useMemo(() => outgoingEvents[event].use.channel, [event]);
-	const showTriggerWords = useMemo(() => outgoingEvents[event].use.triggerWords, [event]);
-	const showTargetRoom = useMemo(() => outgoingEvents[event].use.targetRoom, [event]);
+	const showChannel = useMemo(() => outgoingEvents[event as keyof typeof outgoingEvents]?.use?.channel ?? false, [event]);
+	const showTriggerWords = useMemo(() => outgoingEvents[event as keyof typeof outgoingEvents]?.use?.triggerWords ?? false, [event]);
+	const showTargetRoom = useMemo(() => outgoingEvents[event as keyof typeof outgoingEvents]?.use?.targetRoom ?? false, [event]);
 
 	const additionalFields = useMemo(
 		() => ({
@@ -249,7 +248,31 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='urls'
 									control={control}
-									rules={{ required: t('Required_field', { field: t('URLs') }) }}
+									rules={{
+										validate: (value: string) => {
+											const urls = value
+												.split('\n')
+												.map((url) => url.trim())
+												.filter((url) => url.length > 0);
+
+											if (urls.length === 0) {
+												return t('error-the-field-is-required', { field: t('URLs') });
+											}
+
+											for (const url of urls) {
+												try {
+													const parsed = new URL(url);
+													// Only allow http and https
+													if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+														return t('error-invalid-url-in-list', { url });
+													}
+												} catch {
+													return t('error-invalid-url-in-list', { url });
+												}
+											}
+											return true;
+										},
+									}}
 									render={({ field }) => (
 										<TextAreaInput
 											id={urlsField}
