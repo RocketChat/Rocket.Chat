@@ -1,6 +1,6 @@
 # Rocket.Chat Architecture Report
 
-> **Version:** 8.1.0-develop | **Node:** 22.16.0 | **Yarn:** 4.12.0
+> **Version:** 8.1.0-develop | **Node:** 22.16.5 | **Yarn:** 4.12.0
 
 ---
 
@@ -57,7 +57,7 @@ flowchart TB
 
 | Layer | Technology |
 |-------|------------|
-| Runtime | Node.js 22.16.0 |
+| Runtime | Node.js 22.16.5 |
 | Framework | Meteor.js |
 | Language | TypeScript 5.9.3 |
 | Database | MongoDB 6.10 (Replica Set) |
