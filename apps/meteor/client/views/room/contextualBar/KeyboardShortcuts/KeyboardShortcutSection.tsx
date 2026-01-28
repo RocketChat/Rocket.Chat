@@ -9,7 +9,7 @@ type KeyboardShortcutSectionProps = {
 const KeyboardShortcutSection = ({ title, command }: KeyboardShortcutSectionProps): ReactElement => (
 	<Margins block={16}>
 		<Box is='section' color='default'>
-			<Box fontScale='p2m' fontWeight='700'>
+			<Box fontScale='p2m' fontWeight={700}>
 				{title}
 			</Box>
 			<Divider />
