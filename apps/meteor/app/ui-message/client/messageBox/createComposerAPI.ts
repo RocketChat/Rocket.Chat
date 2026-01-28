@@ -230,11 +230,11 @@ export const createComposerAPI = (
 		focus();
 
 		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
-		const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.slice(selectionStart - index - 1, 1) === char);
+		const startPatternFound = input.value.slice(selectionStart - startPattern.length, selectionStart) === startPattern;
 
 		if (startPatternFound) {
 			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = [...endPattern].every((char, index) => input.value.slice(selectionEnd + index, 1) === char);
+			const endPatternFound = input.value.slice(selectionEnd, selectionEnd + endPattern.length) === endPattern;
 
 			if (endPatternFound) {
 				insertText(selectedText);
