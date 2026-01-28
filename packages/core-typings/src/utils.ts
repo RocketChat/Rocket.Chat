@@ -1,3 +1,5 @@
+import * as z from 'zod';
+
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 
 export type ExtractKeys<T, K extends keyof T, U> = T[K] extends U ? K : never;
@@ -70,3 +72,8 @@ export type Serialized<T> =
 						: T extends UnserializablePrimitive
 							? undefined
 							: null;
+
+export const TimestampSchema = z.codec(z.iso.datetime(), z.date(), {
+	encode: (date) => date.toISOString(),
+	decode: (str) => new Date(str),
+});
