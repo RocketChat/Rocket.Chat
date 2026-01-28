@@ -144,7 +144,6 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 
 	if (commentRequired || tagRequired || canSendTranscript) {
 		return (
-			//Model to GenericModel
 			<GenericModal
 				title={t('Wrap_up_conversation')}
 				icon='baloon-close-top-right'
@@ -176,7 +175,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 						<FieldError>{errors.tags?.message}</FieldError>
 					</Field>
 
-					{/* Transcript section unchanged */}
+					
 					{canSendTranscript && (
 						<>
 							<Field>
