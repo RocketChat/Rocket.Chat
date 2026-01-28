@@ -3056,6 +3056,52 @@ describe('[Chat]', () => {
 					})
 					.end(done);
 			});
+
+			it('should return a list of pinned messages sorted by timestamp in descending order by default', (done) => {
+				void request
+					.get(api('chat.getPinnedMessages'))
+					.set(credentials)
+					.query({
+						roomId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages.length).to.be.equal(1);
+						// Verify messages are sorted by ts in descending order
+						const { messages } = res.body;
+						for (let i = 0; i < messages.length - 1; i++) {
+							expect(new Date(messages[i].ts).getTime()).to.be.greaterThan(new Date(messages[i + 1].ts).getTime());
+						}
+					})
+					.end(done);
+			});
+
+			it('should return a list of pinned messages sorted by timestamp in ascending order when sort is specified', (done) => {
+				void request
+					.get(api('chat.getPinnedMessages'))
+					.set(credentials)
+					.query({
+						roomId,
+						sort: JSON.stringify({ ts: 1 }),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages.length).to.be.equal(1);
+						// Verify messages are sorted by ts in ascending order
+						const { messages } = res.body;
+						for (let i = 0; i < messages.length - 1; i++) {
+							expect(new Date(messages[i].ts).getTime()).to.be.lessThan(new Date(messages[i + 1].ts).getTime());
+						}
+					})
+					.end(done);
+			});
+
 			it('should return a list of pinned messages when the user sets count query parameter', (done) => {
 				void request
 					.get(api('chat.getPinnedMessages'))
