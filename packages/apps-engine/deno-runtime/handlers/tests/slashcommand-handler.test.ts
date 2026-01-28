@@ -7,6 +7,7 @@ import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { AppAccessors } from '../../lib/accessors/mod.ts';
 import { handleExecutor, handlePreviewItem } from '../slashcommand-handler.ts';
 import { Room } from '../../lib/room.ts';
+import { createMockRequest } from './helpers/mod.ts';
 
 describe('handlers > slashcommand', () => {
 	const mockAppAccessors = {
@@ -68,7 +69,9 @@ describe('handlers > slashcommand', () => {
 
 		const _spy = spy(mockCommandExecutorOnly, 'executor');
 
-		await handleExecutor({ AppAccessorsInstance: mockAppAccessors }, mockCommandExecutorOnly, 'executor', [mockContext]);
+		const mockRequest = createMockRequest({ method: 'slashcommand:executor-only:executor', params: [mockContext] });
+
+		await handleExecutor({ AppAccessorsInstance: mockAppAccessors, request: mockRequest }, mockCommandExecutorOnly, 'executor', [mockContext]);
 
 		const context = _spy.calls[0].args[0];
 
@@ -97,7 +100,9 @@ describe('handlers > slashcommand', () => {
 
 		const _spy = spy(mockCommandExecutorAndPreview, 'previewer');
 
-		await handleExecutor({ AppAccessorsInstance: mockAppAccessors }, mockCommandExecutorAndPreview, 'previewer', [mockContext]);
+		const mockRequest = createMockRequest({ method: 'slashcommand:executor-and-preview:previewer', params: [mockContext] });
+
+		await handleExecutor({ AppAccessorsInstance: mockAppAccessors, request: mockRequest }, mockCommandExecutorAndPreview, 'previewer', [mockContext]);
 
 		const context = _spy.calls[0].args[0];
 
@@ -132,7 +137,9 @@ describe('handlers > slashcommand', () => {
 
 		const _spy = spy(mockCommandExecutorAndPreview, 'executePreviewItem');
 
-		await handlePreviewItem({ AppAccessorsInstance: mockAppAccessors }, mockCommandExecutorAndPreview, [mockPreviewItem, mockContext]);
+		const mockRequest = createMockRequest({ method: 'slashcommand:executor-and-preview:previewer', params: [mockContext] });
+
+		await handlePreviewItem({ AppAccessorsInstance: mockAppAccessors, request: mockRequest }, mockCommandExecutorAndPreview, [mockPreviewItem, mockContext]);
 
 		const context = _spy.calls[0].args[1];
 
