@@ -2,8 +2,8 @@
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"extends": "./base.json",
 	"compilerOptions": {
-		"target": "es2015",
-		"lib": ["dom", "dom.iterable", "esnext"],
+		"target": "es2022",
+		"lib": ["DOM", "DOM.Iterable", "ESNext"],
 		"module": "esnext",
 		"declaration": true,
 		"declarationMap": true,
