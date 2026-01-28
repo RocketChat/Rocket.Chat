@@ -1,6 +1,6 @@
 import type { Cloud, Serialized } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
@@ -38,7 +38,7 @@ export async function fetchWorkspaceSyncPayload({
 	const assertWorkspaceSyncPayload = workspaceSyncPayloadSchema.safeParse(payload);
 
 	if (!assertWorkspaceSyncPayload.success) {
-		SystemLogger.error({ msg: 'workspaceCommPayloadSchema failed type validation', errors: assertWorkspaceSyncPayload.error.errors });
+		SystemLogger.error({ msg: 'workspaceCommPayloadSchema failed type validation', errors: assertWorkspaceSyncPayload.error.issues });
 	}
 
 	return payload;

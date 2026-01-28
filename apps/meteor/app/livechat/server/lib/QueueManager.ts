@@ -195,7 +195,7 @@ export class QueueManager {
 			await Promise.all([afterInquiryQueued(inquiry), afterRoomQueued(room)]);
 
 			if (defaultAgent) {
-				logger.debug(`Setting default agent for inquiry ${inquiry._id} to ${defaultAgent.username}`);
+				logger.debug({ msg: 'Setting default agent for inquiry', inquiryId: inquiry._id, agentUsername: defaultAgent.username });
 				await LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
 			}
 
@@ -225,7 +225,7 @@ export class QueueManager {
 		});
 
 		if (!newRoom) {
-			logger.error(`Room with id ${room._id} not found after inquiry verification.`);
+			logger.error({ msg: 'Room not found after inquiry verification', roomId: room._id });
 			throw new Error('room-not-found');
 		}
 
@@ -259,7 +259,7 @@ export class QueueManager {
 		try {
 			session.startTransaction();
 			const room = await createLivechatRoom(insertionRoom, session);
-			logger.debug(`Room for visitor ${guest._id} created with id ${room._id}`);
+			logger.debug({ msg: 'Room created for visitor', visitorId: guest._id, roomId: room._id });
 			const inquiry = await createLivechatInquiry({
 				rid,
 				name: room.fname,
@@ -301,7 +301,7 @@ export class QueueManager {
 		agent?: SelectedAgent;
 		extraData?: IOmnichannelRoomExtraData;
 	}) {
-		logger.debug(`Requesting a room for guest ${guest._id}`);
+		logger.debug({ msg: 'Requesting room for guest', guestId: guest._id });
 		check(
 			guest,
 			Match.ObjectIncluding({
@@ -386,7 +386,7 @@ export class QueueManager {
 		const newRoom = await LivechatRooms.findOneById(rid);
 
 		if (!newRoom) {
-			logger.error(`Room with id ${rid} not found`);
+			logger.error({ msg: 'Room not found', roomId: rid });
 			throw new Error('room-not-found');
 		}
 
@@ -427,11 +427,11 @@ export class QueueManager {
 			return archivedRoom;
 		}
 
-		logger.debug(`Attempting to unarchive room with id ${rid}`);
+		logger.debug({ msg: 'Attempting to unarchive room', roomId: rid });
 
 		const oldInquiry = await LivechatInquiry.findOneByRoomId<Pick<ILivechatInquiryRecord, '_id'>>(rid, { projection: { _id: 1 } });
 		if (oldInquiry) {
-			logger.debug(`Removing old inquiry (${oldInquiry._id}) for room ${rid}`);
+			logger.debug({ msg: 'Removing old inquiry before unarchiving room', inquiryId: oldInquiry._id, roomId: rid });
 			await LivechatInquiry.removeByRoomId(rid);
 			void notifyOnLivechatInquiryChangedById(oldInquiry._id, 'removed');
 		}
@@ -467,7 +467,7 @@ export class QueueManager {
 		}
 
 		await this.requeueInquiry(inquiry, room, defaultAgent);
-		logger.debug(`Inquiry ${inquiry._id} queued`);
+		logger.debug({ msg: 'Inquiry queued', inquiryId: inquiry._id });
 
 		return room;
 	}
@@ -477,7 +477,7 @@ export class QueueManager {
 			return;
 		}
 
-		logger.debug(`Notifying agents of new inquiry ${inquiry._id} queued`);
+		logger.debug({ msg: 'Notifying agents of queued inquiry', inquiryId: inquiry._id });
 
 		const { department, rid, v } = inquiry;
 		// Alert only the online agents of the queued request

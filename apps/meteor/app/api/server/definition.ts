@@ -1,3 +1,5 @@
+import type { IncomingMessage } from 'http';
+
 import type { IUser, LicenseModule } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
@@ -148,6 +150,7 @@ export type SharedOptions<TMethod extends string> = (
 		version: DeprecationLoggerNextPlannedVersion;
 		alternatives?: PathPattern[];
 	};
+	applyMeteorContext?: boolean;
 };
 
 export type GenericRouteExecutionContext = ActionThis<any, any, any>;
@@ -184,9 +187,12 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 				: // TODO remove the extra (optionals) params when all the endpoints that use these are typed correctly
 					Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
+	readonly incoming: IncomingMessage;
 
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
 	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
+
+	readonly twoFactorChecked: boolean;
 
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
@@ -289,6 +295,7 @@ export type TypedOptions = {
 } & SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
 
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
+	readonly logger: Logger;
 	userId: TOptions['authRequired'] extends true ? string : string | undefined;
 	user: TOptions['authRequired'] extends true ? IUser : IUser | null;
 	token: TOptions['authRequired'] extends true ? string : string | undefined;

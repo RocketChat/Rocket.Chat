@@ -5,7 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { createNewUser } from './createNewUser';
 import { findExistingCASUser } from './findExistingCASUser';
 import { logger } from './logger';
-import { _setRealName } from '../../../app/lib/server/functions/setRealName';
+import { setRealName } from '../../../app/lib/server/functions/setRealName';
 import { settings } from '../../../app/settings/server';
 
 export const loginHandlerCAS = async (options: any): Promise<undefined | Accounts.LoginMethodResult> => {
@@ -72,25 +72,25 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 
 			if (source !== replacedValue) {
 				internalAttributes[internalName] = replacedValue;
-				logger.debug(`Sourced internal attribute: ${internalName} = ${replacedValue}`);
+				logger.debug({ msg: 'Sourced internal attribute', internalName, value: replacedValue });
 			} else {
-				logger.debug(`Sourced internal attribute: ${internalName} skipped.`);
+				logger.debug({ msg: 'Sourced internal attribute skipped', internalName });
 			}
 		}
 	}
 
 	// Search existing user by its external service id
-	logger.debug(`Looking up user by id: ${username}`);
+	logger.debug({ msg: 'Looking up user by id', username });
 	// First, look for a user that has logged in from CAS with this username before
 	const user = await findExistingCASUser(username);
 
 	if (user) {
-		logger.debug(`Using existing user for '${username}' with id: ${user._id}`);
+		logger.debug({ msg: 'Using existing user', username, userId: user._id });
 		if (syncEnabled) {
 			logger.debug('Syncing user attributes');
 			// Update name
 			if (internalAttributes.name) {
-				await _setRealName(user._id, internalAttributes.name);
+				await setRealName(user._id, internalAttributes.name);
 			}
 
 			// Update email
@@ -107,7 +107,7 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 
 	if (!userCreationEnabled) {
 		// Should fail as no user exist and can't be created
-		logger.debug(`User "${username}" does not exist yet, will fail as no user creation is enabled`);
+		logger.debug({ msg: 'User does not exist yet, will fail as no user creation is enabled', username });
 		throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'no matching user account found');
 	}
 
