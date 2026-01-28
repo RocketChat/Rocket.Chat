@@ -97,20 +97,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'users.getAvatarSuggestion',
-	{
-		authRequired: true,
-	},
-	{
-		async get() {
-			const suggestions = await getAvatarSuggestionForUser(this.user);
-
-			return API.v1.success({ suggestions });
-		},
-	},
-);
-
-API.v1.addRoute(
 	'users.update',
 	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
 	{
@@ -120,6 +106,8 @@ API.v1.addRoute(
 			if (userData.name && !validateNameChars(userData.name)) {
 				return API.v1.failure('Name contains invalid characters');
 			}
+
+			
 			const auditStore = new UserChangedAuditStore({
 				_id: this.user._id,
 				ip: this.requestIp,
@@ -127,8 +115,30 @@ API.v1.addRoute(
 				username: this.user.username || '',
 			});
 
+			
 			await saveUser(this.userId, userData, { auditStore });
 
+			
+			
+			if (this.bodyParams.data.customFields) {
+				validateCustomFields(this.bodyParams.data.customFields);
+
+				const flattenedFields: Record<string, unknown> = {};
+
+				Object.keys(this.bodyParams.data.customFields).forEach((key) => {
+					flattenedFields[`customFields.${key}`] = this.bodyParams.data.customFields[key];
+				});
+
+				await Users.update({ _id: this.bodyParams.userId }, { $set: flattenedFields });
+				
+				
+				const updatedUser = await Users.findOneById(this.bodyParams.userId, { projection: { customFields: 1 } });
+				if (updatedUser?.customFields) {
+					await Subscriptions.setCustomFieldsDirectMessagesByUserId(this.bodyParams.userId, updatedUser.customFields);
+				}
+			}
+
+			
 			if (typeof this.bodyParams.data.active !== 'undefined') {
 				const {
 					userId,
@@ -146,6 +156,20 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({ user });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.getAvatarSuggestion',
+	{
+		authRequired: true,
+	},
+	{
+		async get() {
+			const suggestions = await getAvatarSuggestionForUser(this.user);
+
+			return API.v1.success({ suggestions });
 		},
 	},
 );
@@ -184,7 +208,7 @@ API.v1.addRoute(
 				: {
 						twoFactorCode: userData.typedPassword,
 						twoFactorMethod: 'password',
-					};
+				  };
 
 			await executeSaveUserProfile.call(this, this.user, userData, this.bodyParams.customFields, twoFactorOptions);
 
