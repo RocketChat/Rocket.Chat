@@ -1,7 +1,5 @@
-import Ajv from 'ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 import mem from 'mem';
-
-const ajv = new Ajv();
 
 const customFieldsValidate = mem(
 	(customFieldsSetting: string) => {
