@@ -1,7 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
-import { Users } from '@rocket.chat/models';
+import { Messages, Users } from '@rocket.chat/models';
 import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
@@ -208,8 +208,17 @@ export async function setUserAvatar(
 			updater.set('avatarOrigin', origin);
 			updater.set('avatarETag', avatarETag);
 		} else {
-			// TODO: Why was this timeout added?
-			setTimeout(async () => Users.setAvatarData(user._id, service, avatarETag, { session }), 500);
+			await Users.setAvatarData(user._id, service, avatarETag, { session });
+			await Messages.updateMany(
+				{ 'u._id': user._id },
+				{
+					$set: {
+						'u.avatarETag': avatarETag,
+						'avatar': avatarETag ? `/avatar/${user.username}?etag=${avatarETag}` : `/avatar/${user.username}`,
+					},
+				},
+				{ session },
+			);
 		}
 
 		await onceTransactionCommitedSuccessfully(async () => {
