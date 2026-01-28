@@ -28,7 +28,6 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 	};
 
 	return (
-		//Model to GenericModel
 		<GenericModal
 			variant='info'
 			icon='department'
