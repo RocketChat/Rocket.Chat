@@ -94,10 +94,10 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						setError('username', { type: 'user-already-exists', message: t('registration.component.form.usernameAlreadyExists') });
 					}
 					if (/Email already exists/.test(error.error)) {
-						setError('email', { type: 'email-already-exists', message: t('registration.component.form.emailAlreadyExists') });
+						setError('email', { type: 'email-already-exists', message: t('registration.component.form.emailAlreadyInUse') });
 					}
 					if (/Username is already in use/.test(error.error)) {
-						setError('username', { type: 'username-already-exists', message: t('registration.component.form.userAlreadyExist') });
+						setError('username', { type: 'username-already-exists', message: t('registration.component.form.usernameAlreadyInUse') });
 					}
 					if (/The username provided is not valid/.test(error.error)) {
 						setError('username', {
