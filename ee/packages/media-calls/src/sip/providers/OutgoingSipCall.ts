@@ -242,8 +242,10 @@ export class OutgoingSipCall extends BaseSipCall {
 				callerAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
 
 				logger.debug({ msg: 'modify', method: 'OutgoingSipCall.createDialog', req: this.session.stripDrachtioServerDetails(req) });
-			} catch (err) {
-				logger.error({ msg: 'An unexpected error occured while processing a modify event on an OutgoingSipCall dialog', err });
+        fix/spelling-comments
+			} catch (error) {
+				logger.error({ msg: 'An unexpected error occurred while processing a modify event on an OutgoingSipCall dialog', error });
+			} 
 
 				try {
 					res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);

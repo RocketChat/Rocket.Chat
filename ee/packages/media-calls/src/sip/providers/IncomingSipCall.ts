@@ -172,8 +172,10 @@ export class IncomingSipCall extends BaseSipCall {
 				calleeAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
 
 				logger.debug({ msg: 'modify', method: 'IncomingSipCall.createDialog', req: this.session.stripDrachtioServerDetails(req) });
-			} catch (err) {
-				logger.error({ msg: 'An unexpected error occured while processing a modify event on an IncomingSipCall dialog', err });
+ fix/spelling-comments
+			} catch (error) {
+				logger.error({ msg: 'An unexpected error occurred while processing a modify event on an IncomingSipCall dialog', error });
+			} 
 
 				try {
 					res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
