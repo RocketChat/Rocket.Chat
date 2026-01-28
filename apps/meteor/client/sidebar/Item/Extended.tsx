@@ -60,7 +60,9 @@ const Extended = ({
 			<SidebarV2ItemCol>
 				<SidebarV2ItemRow>
 					{icon}
-					<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
+					<SidebarV2ItemTitle unread={unread} title={typeof title === 'string' ? title : undefined}>
+						{title}
+					</SidebarV2ItemTitle>
 					{time && <SidebarV2ItemTimestamp>{formatDate(time)}</SidebarV2ItemTimestamp>}
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>

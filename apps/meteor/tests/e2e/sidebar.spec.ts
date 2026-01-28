@@ -102,6 +102,11 @@ test.describe.serial('Sidebar', () => {
 			expect(isExpanded).toBeTruthy();
 		});
 
+		test('should display full channel name on hover via tooltip', async () => {
+			const item = poHomeChannel.sidebar.getSidebarItemByName(targetChannel);
+			await expect(item.locator(`[title="${targetChannel}"]`)).toBeAttached();
+		});
+
 		test('should expand/collapse sidebar groups with keyboard', async ({ page }) => {
 			await page.goto('/home');
 
