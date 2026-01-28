@@ -10,18 +10,10 @@ const runtimeImportId = 'virtual:meteor-runtime';
 const packageVirtualPrefix = '\0meteor-package:';
 
 export function packages(config: ResolvedPluginOptions): Plugin {
-	const browser = new MeteorResolver(path.resolve(config.programsDir, 'web.browser'));
-	const server = new MeteorResolver(path.resolve(config.programsDir, 'server'));
+	const resolver = new MeteorResolver(path.resolve(config.programsDir, 'web.browser'));
 
-	const browserPackages = new Map(
-		browser.collectPackageEntries().map((entry) => {
-			const pkgName = entry.path.replace(/^packages\//, '').replace(/\.js$/, '');
-			return [pkgName, entry.path];
-		}),
-	);
-
-	const serverPackages = new Map(
-		server.collectPackageEntries().map((entry) => {
+	const packages = new Map(
+		resolver.collectPackageEntries().map((entry) => {
 			const pkgName = entry.path.replace(/^packages\//, '').replace(/\.js$/, '');
 			return [pkgName, entry.path];
 		}),
@@ -31,19 +23,20 @@ export function packages(config: ResolvedPluginOptions): Plugin {
 
 	return {
 		name: 'meteor:packages',
-		enforce: 'pre',
+		enforce: 'post',
 		resolveId: {
 			filter: {
 				id: prefixRegex(meteorSpecifierPrefix),
 			},
 			handler(source) {
-				const packagePathMap = this.environment.name === 'client' ? browserPackages : serverPackages;
 				if (source.startsWith(meteorSpecifierPrefix)) {
 					const pkgName = source.slice(meteorSpecifierPrefix.length).split('?')[0].split('#')[0];
-					if (!packagePathMap.has(pkgName)) {
+					if (!packages.has(pkgName)) {
 						throw new Error(`Unknown Meteor package: ${pkgName}`);
 					}
-					return packageVirtualPrefix + pkgName;
+					return {
+						id: `${packageVirtualPrefix}${pkgName}`,
+					};
 				}
 
 				return null;
@@ -59,17 +52,6 @@ export function packages(config: ResolvedPluginOptions): Plugin {
 				}
 
 				const pkgName = id.slice(packageVirtualPrefix.length);
-
-				const resolver = this.environment.name === 'client' ? browser : server;
-
-				if (this.environment.mode === 'build') {
-					const pkgSource = await resolver.getPackageSource(pkgName);
-					this.emitFile({
-						type: 'prebuilt-chunk',
-						fileName: `build_assets/${pkgName}.js`,
-						code: pkgSource,
-					});
-				}
 
 				const exportNames = await resolver.getExportNames(pkgName);
 
