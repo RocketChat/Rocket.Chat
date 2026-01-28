@@ -9,17 +9,23 @@ import { useDateRef } from '../providers/DateListProvider';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { useMessageListFormatDate } from '../../../components/message/list/MessageListContext';
 
+import {
+	useIsSelecting,
+	useIsSelectedMessage,
+	useToggleSelect,
+} from './contexts/SelectedMessagesContext';
+
 type MessageListItemProps = {
 	message: IMessage;
 	previous?: IMessage;
 	showUnreadDivider: boolean;
-
 	sequential: boolean;
 	showUserAvatar: boolean;
 	visible: boolean;
 	subscription: ISubscription | undefined;
 	system: boolean;
 };
+
 export const MessageListItem = ({
 	message,
 	previous,
@@ -32,8 +38,12 @@ export const MessageListItem = ({
 }: MessageListItemProps) => {
 	const { t } = useTranslation();
 	const formatDate = useMessageListFormatDate();
-
 	const ref = useDateRef();
+
+	// ✅ OFFICIAL selection hooks
+	const isSelecting = useIsSelecting();
+	const isSelected = useIsSelectedMessage(message._id);
+	const toggleSelect = useToggleSelect(message._id);
 
 	const newDay = isMessageNewDay(message, previous);
 	const showDivider = newDay || showUnreadDivider;
@@ -43,13 +53,25 @@ export const MessageListItem = ({
 	const ignoredUser = Boolean(subscription?.ignored?.includes(message.u._id));
 	const shouldShowAsSequential = sequential && !newDay;
 
+	const messageContent = (
+		<RoomMessage
+			message={message}
+			showUserAvatar={showUserAvatar}
+			sequential={shouldShowAsSequential}
+			unread={unread}
+			mention={mention}
+			all={all}
+			ignoredUser={ignoredUser}
+		/>
+	);
+
 	return (
 		<>
 			{showDivider && (
 				<Box
 					ref={ref}
 					data-id={message.ts}
-					role='listitem'
+					role="listitem"
 					{...(newDay && {
 						'data-time': new Date(message.ts)
 							.toISOString()
@@ -66,17 +88,22 @@ export const MessageListItem = ({
 					</MessageDivider>
 				</Box>
 			)}
-			{visible && (
-				<RoomMessage
-					message={message}
-					showUserAvatar={showUserAvatar}
-					sequential={shouldShowAsSequential}
-					unread={unread}
-					mention={mention}
-					all={all}
-					ignoredUser={ignoredUser}
-				/>
-			)}
+
+			{/* ✅ Keyboard-accessible selection (architecture-safe) */}
+			{visible &&
+				(isSelecting ? (
+					<Box
+						tabIndex={0}               // Keyboard focus (Tab)
+						role="option"              // Selectable list item
+						aria-selected={isSelected} // Screen reader state
+						onClick={toggleSelect}     // Mouse selection
+					>
+						{messageContent}
+					</Box>
+				) : (
+					messageContent
+				))}
+
 			{isThreadMessage(message) && (
 				<li>
 					<ThreadMessagePreview
@@ -90,7 +117,10 @@ export const MessageListItem = ({
 					/>
 				</li>
 			)}
+
 			{system && <SystemMessage showUserAvatar={showUserAvatar} message={message} />}
 		</>
 	);
 };
+
+
