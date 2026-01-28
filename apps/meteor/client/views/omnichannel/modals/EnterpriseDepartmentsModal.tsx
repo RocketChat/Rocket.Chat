@@ -1,18 +1,6 @@
-import {
-	Button,
-	Modal,
-	Box,
-	ModalHeader,
-	ModalHeaderText,
-	ModalTagline,
-	ModalTitle,
-	ModalClose,
-	ModalContent,
-	ModalHeroImage,
-	ModalFooter,
-	ModalFooterControllers,
-} from '@rocket.chat/fuselage';
+import { ModalHeroImage, ModalTagline, Box } from '@rocket.chat/fuselage';
 import { useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useRef } from 'react';
@@ -43,31 +31,25 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 
 	useOutsideClick([ref], onClose);
 
+	useOutsideClick([ref], onClose);
+
 	return (
-		<Modal aria-label={t('Departments')} ref={ref}>
-			<ModalHeader>
-				<ModalHeaderText>
-					<ModalTagline>{t('Premium_capability')}</ModalTagline>
-					<ModalTitle>{t('Departments')}</ModalTitle>
-				</ModalHeaderText>
-				<ModalClose onClick={onClose} />
-			</ModalHeader>
-			<ModalContent fontScale='p2'>
-				<ModalHeroImage src='/images/departments.svg' />
-				<Box fontScale='h3' mbe={28}>
-					{t('Premium_Departments_title')}
-				</Box>
-				{t('Premium_Departments_description_upgrade')}
-			</ModalContent>
-			<ModalFooter>
-				<ModalFooterControllers>
-					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button onClick={goToManageSubscriptionPage} primary>
-						{t('Upgrade')}
-					</Button>
-				</ModalFooterControllers>
-			</ModalFooter>
-		</Modal>
+		<GenericModal
+			variant='warning'
+			title={t('Departments')}
+			onConfirm={goToManageSubscriptionPage}
+			onCancel={onClose}
+			onClose={onClose}
+			confirmText={t('Upgrade')}
+			ref={ref}
+		>
+			<ModalTagline>{t('Premium_capability')}</ModalTagline>
+			<ModalHeroImage src='/images/departments.svg' />
+			<Box fontScale='h3' mbe={28}>
+				{t('Premium_Departments_title')}
+			</Box>
+			{t('Premium_Departments_description_upgrade')}
+		</GenericModal>
 	);
 };
 
