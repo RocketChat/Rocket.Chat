@@ -56,7 +56,6 @@ const SpoilerSpan = ({ children }: SpoilerSpanProps): ReactElement => {
 	const style = useMemo(() => {
 		if (revealed) {
 			return {
-				cursor: 'pointer',
 				filter: 'none',
 				transition: 'filter 150ms ease',
 			} as const;
