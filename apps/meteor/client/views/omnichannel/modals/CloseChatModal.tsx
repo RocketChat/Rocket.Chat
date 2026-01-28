@@ -144,6 +144,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 
 	if (commentRequired || tagRequired || canSendTranscript) {
 		return (
+			//Model to GenericModel
 			<GenericModal
 				title={t('Wrap_up_conversation')}
 				icon='baloon-close-top-right'
