@@ -7,6 +7,7 @@ import type { Locator, APIResponse, APIRequestContext } from '@playwright/test';
 import { test as baseTest, request as baseRequest } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 
+import { DatabaseClient } from './db';
 import { BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 
@@ -37,7 +38,17 @@ let apiContext: APIRequestContext;
 
 const cacheFromCredentials = new Map<string, string>();
 
-export const test = baseTest.extend<BaseTest>({
+export const test = baseTest.extend<BaseTest, { db: DatabaseClient }>({
+	db: [
+		// eslint-disable-next-line no-empty-pattern
+		async ({}, use) => {
+			const db = await DatabaseClient.connect();
+			await use(db);
+			await db.close();
+		},
+		{ scope: 'worker' },
+	],
+
 	context: async ({ context }, use) => {
 		if (!process.env.E2E_COVERAGE) {
 			await use(context);
