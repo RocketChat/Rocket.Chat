@@ -4903,12 +4903,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mongodb-js/saslprep@npm:^1.1.9":
-  version: 1.1.9
-  resolution: "@mongodb-js/saslprep@npm:1.1.9"
+"@mongodb-js/saslprep@npm:^1.1.5":
+  version: 1.4.4
+  resolution: "@mongodb-js/saslprep@npm:1.4.4"
   dependencies:
     sparse-bitfield: "npm:^3.0.3"
-  checksum: 10/6a0d5e9068635fff59815de387d71be0e3b9d683f1d299876b2760ac18bbf0a1d4b26eff6b1ab89ff8802c20ffb15c047ba675b2cc306a51077a013286c2694a
+  checksum: 10/76304af459fc9f391a21931b520f20b093bc1bec8189c637f11d4f2273ebf9d736144a08ccdec25fd2b26f60d25b1aa46c20fef74e54a78af652408d8635f8a8
   languageName: node
   linkType: hard
 
@@ -17024,7 +17024,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^6.10.0, bson@npm:^6.7.0":
+"bson@npm:^6.7.0":
   version: 6.10.1
   resolution: "bson@npm:6.10.1"
   checksum: 10/7b6d2a4c877bbe27d9e7fa0cd31e6b446ba08c5d70927403a6d42abf6e354fd12e79daf562fa5cc36e85cb8e701edc2ebdc2381c75c2376dde0f5e8d7ee3fd1b
@@ -25391,7 +25391,7 @@ __metadata:
   dependencies:
     lodash.get: "npm:^4.4.2"
     lodash.has: "npm:^4.5.2"
-    qase-javascript-commons: "npm:~2.4.16"
+    qase-javascript-commons: "npm:~2.4.13"
     uuid: "npm:^9.0.1"
   peerDependencies:
     jest: ">=28.0.0"
@@ -28107,8 +28107,8 @@ __metadata:
   version: 6.10.0
   resolution: "mongodb@npm:6.10.0"
   dependencies:
-    "@mongodb-js/saslprep": "npm:^1.1.9"
-    bson: "npm:^6.10.0"
+    "@mongodb-js/saslprep": "npm:^1.1.5"
+    bson: "npm:^6.7.0"
     mongodb-connection-string-url: "npm:^3.0.0"
   peerDependencies:
     "@aws-sdk/credential-providers": ^3.188.0
@@ -28235,7 +28235,7 @@ __metadata:
   version: 3.3.8
   resolution: "nanoid@npm:3.3.8"
   bin:
-    nanoid: bin/nanoid.js
+    nanoid: bin/nanoid.cjs
   checksum: 10/2d1766606cf0d6f47b6f0fdab91761bb81609b2e3d367027aff45e6ee7006f660fb7e7781f4a34799fe6734f1268eeed2e37a5fdee809ade0c2d4eb11b0f9c40
   languageName: node
   linkType: hard
@@ -31134,7 +31134,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qase-javascript-commons@npm:~2.4.16":
+"qase-javascript-commons@npm:~2.4.13":
   version: 2.4.16
   resolution: "qase-javascript-commons@npm:2.4.16"
   dependencies:
