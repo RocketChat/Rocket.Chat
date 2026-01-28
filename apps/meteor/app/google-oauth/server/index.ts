@@ -1,14 +1,35 @@
+import type { ServerResponse } from 'http';
+
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
 // The code on this file was copied directly from Meteor and modified to support mobile google oauth
 // https://github.com/meteor/meteor/blob/ffcfa5062cf1bf8a64ea64fef681ffcd99fe7939/packages/oauth/oauth_server.js
 
+type RenderOptions = {
+	loginStyle: string;
+	setCredentialToken: boolean;
+	credentialToken?: string;
+	credentialSecret?: string;
+	redirectUrl?: string;
+	isCordova: boolean;
+};
+
+type EndOfLoginDetails = {
+	loginStyle: string;
+	query: any;
+	error?: any;
+	credentials?: {
+		token: string;
+		secret: string;
+	};
+};
+
 Meteor.startup(() => {
 	const appRedirectUrl = 'rocketchat://auth';
 
-	const renderEndOfLoginResponse = async (options) => {
-		const escape = (s) => {
+	const renderEndOfLoginResponse = async (options: RenderOptions): Promise<string> => {
+		const escape = (s: string | undefined): string | undefined => {
 			if (!s) {
 				return s;
 			}
@@ -26,36 +47,36 @@ Meteor.startup(() => {
 			setCredentialToken: !!options.setCredentialToken,
 			credentialToken: escape(options.credentialToken),
 			credentialSecret: escape(options.credentialSecret),
-			storagePrefix: escape(OAuth._storageTokenPrefix),
+			storagePrefix: escape((OAuth as any)._storageTokenPrefix),
 			redirectUrl: escape(options.redirectUrl),
 			isCordova: Boolean(options.isCordova),
 		};
 
-		let template;
+		let template: string;
 		if (options.loginStyle === 'popup') {
-			template = await OAuth._endOfPopupResponseTemplate();
+			template = await (OAuth as any)._endOfPopupResponseTemplate();
 		} else if (options.loginStyle === 'redirect') {
-			template = await OAuth._endOfRedirectResponseTemplate();
+			template = await (OAuth as any)._endOfRedirectResponseTemplate();
 		} else {
 			throw new Error(`invalid loginStyle: ${options.loginStyle}`);
 		}
 
 		const result = template
 			.replace(/##CONFIG##/, JSON.stringify(config))
-			.replace(/##ROOT_URL_PATH_PREFIX##/, __meteor_runtime_config__.ROOT_URL_PATH_PREFIX);
+			.replace(/##ROOT_URL_PATH_PREFIX##/, (globalThis as any).__meteor_runtime_config__.ROOT_URL_PATH_PREFIX);
 
 		return `<!DOCTYPE html>\n${result}`;
 	};
 
-	OAuth._endOfLoginResponse = async (res, details) => {
+	(OAuth as any)._endOfLoginResponse = async (res: ServerResponse, details: EndOfLoginDetails) => {
 		res.writeHead(200, { 'Content-Type': 'text/html' });
-		let redirectUrl;
+		let redirectUrl: string | undefined;
 
 		if (details.loginStyle === 'redirect') {
-			redirectUrl = OAuth._stateFromQuery(details.query).redirectUrl;
+			redirectUrl = (OAuth as any)._stateFromQuery(details.query).redirectUrl;
 			const appHost = Meteor.absoluteUrl();
 
-			if (redirectUrl.startsWith(appRedirectUrl)) {
+			if (redirectUrl && redirectUrl.startsWith(appRedirectUrl)) {
 				redirectUrl = `${appRedirectUrl}?host=${appHost}&type=oauth`;
 
 				if (details.error) {
@@ -67,13 +88,16 @@ Meteor.startup(() => {
 					const { token, secret } = details.credentials;
 					redirectUrl = `${redirectUrl}&credentialToken=${token}&credentialSecret=${secret}`;
 				}
-			} else if (!Meteor.settings?.packages?.oauth?.disableCheckRedirectUrlOrigin && OAuth._checkRedirectUrlOrigin(redirectUrl)) {
+			} else if (
+				!(Meteor.settings as any)?.packages?.oauth?.disableCheckRedirectUrlOrigin &&
+				(OAuth as any)._checkRedirectUrlOrigin(redirectUrl)
+			) {
 				details.error = `redirectUrl (${redirectUrl}) is not on the same host as the app (${appHost})`;
 				redirectUrl = appHost;
 			}
 		}
 
-		const isCordova = OAuth._isCordovaFromQuery(details.query);
+		const isCordova = (OAuth as any)._isCordovaFromQuery(details.query);
 
 		if (details.error) {
 			res.end(
@@ -95,8 +119,8 @@ Meteor.startup(() => {
 			await renderEndOfLoginResponse({
 				loginStyle: details.loginStyle,
 				setCredentialToken: true,
-				credentialToken: details.credentials.token,
-				credentialSecret: details.credentials.secret,
+				credentialToken: details.credentials!.token,
+				credentialSecret: details.credentials!.secret,
 				redirectUrl,
 				isCordova,
 			}),
