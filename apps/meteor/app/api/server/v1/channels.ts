@@ -493,7 +493,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			await eraseRoom(room._id, this.userId);
+			await eraseRoom(room._id, this.user);
 
 			return API.v1.success();
 		},
