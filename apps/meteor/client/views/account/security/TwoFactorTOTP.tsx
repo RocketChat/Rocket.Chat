@@ -158,7 +158,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 						<Field>
 							<FieldLabel htmlFor={totpCodeId}>{t('Enter_code_provided_by_authentication_app')}</FieldLabel>
 							<FieldRow>
-								<TextInput id={totpCodeId} mie='8px' {...register('authCode')} />
+								<TextInput id={totpCodeId} mie='8px' {...register('authCode')} autoComplete="one-time-code"/>
 								<Button primary onClick={handleSubmit(handleVerifyCode)}>
 									{t('Verify')}
 								</Button>
