@@ -40,7 +40,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	}
 
 	const user = await Users.findOneById(userId, {
-		projection: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
+		projection: { username: 1, name: 1, avatarOrigin: 1, roles: 1, federated: 1 },
 	});
 
 	if (!user) {
@@ -61,18 +61,21 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	}
 
 	let deletedRooms: string[] = [];
+	const affectedRoomIds: string[] = [];
+
 	// Users without username can't do anything, so there is nothing to remove
 	if (user.username != null) {
 		let userToReplaceWhenUnlinking: IUser | null = null;
 		const nameAlias = i18n.t('Removed_User');
-		deletedRooms = await relinquishRoomOwnerships(userId, subscribedRooms, true);
+		deletedRooms = await relinquishRoomOwnerships(userId, subscribedRooms);
 
 		const messageErasureType = settings.get<'Delete' | 'Unlink' | 'Keep'>('Message_ErasureType');
 		switch (messageErasureType) {
-			case 'Delete':
+			case 'Delete': {
 				const store = FileUpload.getStore('Uploads');
 				const cursor = Messages.findFilesByUserId(userId);
 
+				// New Rocket.Chat Logic for File Deletion
 				for await (const { file, files } of cursor) {
 					const fileIds = files?.map(({ _id }) => _id) || [];
 					for await (const fileId of fileIds) {
@@ -87,6 +90,20 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 				}
 
 				await Messages.removeByUserId(userId);
+
+				// Our Fix: Update lastMessage for rooms
+				const roomsToUpdate = await Rooms.find({ 'lastMessage.u._id': userId }, { projection: { _id: 1 } }).toArray();
+				for await (const room of roomsToUpdate) {
+					affectedRoomIds.push(room._id);
+					const [newLastMessage] = await Messages.find({ rid: room._id }, { sort: { ts: -1 }, limit: 1 }).toArray();
+					const filter = { _id: room._id, 'lastMessage.u._id': userId };
+					if (newLastMessage) {
+						await Rooms.updateOne(filter, { $set: { lastMessage: newLastMessage } });
+					} else {
+						await Rooms.updateOne(filter, { $unset: { lastMessage: 1 } });
+					}
+				}
+
 				await ReadReceipts.removeByUserId(userId);
 
 				await ModerationReports.hideMessageReportsByUserId(
@@ -97,20 +114,37 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 				);
 
 				break;
-			case 'Unlink':
+			}
+			case 'Unlink': {
 				userToReplaceWhenUnlinking = await Users.findOneById('rocket.cat');
 				if (!userToReplaceWhenUnlinking?._id || !userToReplaceWhenUnlinking?.username) {
 					break;
 				}
 				await Messages.unlinkUserId(userId, userToReplaceWhenUnlinking?._id, userToReplaceWhenUnlinking?.username, nameAlias);
+
+				// Our Fix: Update lastMessage for rooms in Unlink case too
+				const roomsToUpdateUnlink = await Rooms.find({ 'lastMessage.u._id': userId }, { projection: { _id: 1 } }).toArray();
+				for await (const room of roomsToUpdateUnlink) {
+					affectedRoomIds.push(room._id);
+					const [newLastMessage] = await Messages.find({ rid: room._id }, { sort: { ts: -1 }, limit: 1 }).toArray();
+					const filter = { _id: room._id, 'lastMessage.u._id': userId };
+					if (newLastMessage) {
+						await Rooms.updateOne(filter, { $set: { lastMessage: newLastMessage } });
+					} else {
+						await Rooms.updateOne(filter, { $unset: { lastMessage: 1 } });
+					}
+				}
+
 				break;
+			}
 		}
 
 		await Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
 		await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
 		const rids = subscribedRooms.map((room) => room.rid);
-		void notifyOnRoomChangedById(rids);
+		const allAffectedRids = [...new Set([...rids, ...affectedRoomIds])];
+		void notifyOnRoomChangedById(allAffectedRids);
 
 		await Subscriptions.removeByUserId(userId);
 
