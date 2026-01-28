@@ -1,12 +1,12 @@
 import i18next from 'i18next';
 
 import { Livechat } from '../api';
+import type { LivechatMessageEventData } from './iframe';
 import type { StoreState } from '../store';
 import { initialState, store } from '../store';
-import type { LivechatMessageEventData } from '../widget';
 import CustomFields from './customFields';
+import { parentCall } from './iframe';
 import { loadConfig, updateBusinessUnit } from './main';
-import { parentCall } from './parentCall';
 import { createToken } from './random';
 import { loadMessages } from './room';
 import Triggers from './triggers';
