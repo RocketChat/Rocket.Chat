@@ -27,6 +27,8 @@ export async function sendRequest(
 			},
 			body: postData,
 			timeout,
+			// SECURITY: Webhooks can only be configured by users with enough privileges. It's ok to disable this check here.
+			ignoreSsrfValidation: true,
 		});
 
 		if (result.status === 200) {

@@ -10,4 +10,5 @@ export type ExtendedFetchOptions = FetchOptionsWithoutBody & {
 	timeout?: number;
 	params?: Record<string, any>;
 	body?: BodyInit | Record<string, any>;
+	ignoreSsrfValidation?: boolean;
 };
