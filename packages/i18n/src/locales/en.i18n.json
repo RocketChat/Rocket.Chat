@@ -932,6 +932,7 @@
   "Business_hours_is_disabled": "Business hours is disabled",
   "Business_hours_is_disabled_description": "Enable business hours at the workspace admin panel to let customers know when you're available and when can they expect a response.",
   "Business_hours_updated": "Business hours updated",
+  "Business_hours_finish_must_be_greater_than_start": "The finish time must be later than the start time.",
   "Business_hours_will_update_automatically": "Business hours will update automatically",
   "Busy": "Busy",
   "Buy": "Buy",
