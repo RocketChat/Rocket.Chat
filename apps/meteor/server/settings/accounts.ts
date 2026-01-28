@@ -23,12 +23,14 @@ export const createAccountSettings = () =>
 				type: 'boolean',
 				enableQuery: enable2FA,
 				public: true,
+				i18nDescription: 'Accounts_TwoFactorAuthentication_By_TOTP_Enabled_Description',
 			});
 
 			await this.add('Accounts_TwoFactorAuthentication_By_Email_Enabled', true, {
 				type: 'boolean',
 				enableQuery: enable2FA,
 				public: true,
+				i18nDescription: 'Accounts_TwoFactorAuthentication_By_Email_Enabled_Description',
 			});
 
 			await this.add('Accounts_twoFactorAuthentication_email_available_for_OAuth_users', true, {
