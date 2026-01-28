@@ -9,6 +9,7 @@ export * from './timezone';
 export * from './wrapExceptions';
 export * from './getLoginExpiration';
 export * from './converter';
+export * from './promiseTimeout';
 export * from './removeEmpty';
 export * from './isObject';
 export * from './isRecord';

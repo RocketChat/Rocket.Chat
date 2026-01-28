@@ -1053,7 +1053,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findOneBySlackBotIdAndSlackTs(slackBotId: string, slackTs: Date): Promise<IMessage | null> {
+	findOneBySlackBotIdAndSlackTs(slackBotId: string, slackTs: string): Promise<IMessage | null> {
 		const query = {
 			slackBotId,
 			slackTs,
@@ -1062,7 +1062,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query);
 	}
 
-	findOneBySlackTs(slackTs: Date): Promise<IMessage | null> {
+	findOneBySlackTs(slackTs: string): Promise<IMessage | null> {
 		const query = { slackTs };
 
 		return this.findOne(query);
@@ -1321,7 +1321,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateOne(query, update);
 	}
 
-	setSlackBotIdAndSlackTs(_id: string, slackBotId: string, slackTs: Date): Promise<UpdateResult> {
+	setSlackBotIdAndSlackTs(_id: string, slackBotId: string, slackTs: string): Promise<UpdateResult> {
 		const query = { _id };
 
 		const update: UpdateFilter<IMessage> = {
