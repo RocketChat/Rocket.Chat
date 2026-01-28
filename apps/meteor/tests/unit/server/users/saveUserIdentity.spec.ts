@@ -131,3 +131,26 @@ describe('Users - saveUserIdentity', () => {
 		expect(result).to.be.true;
 	});
 });
+
+describe('ReDoS detection for parseMessage', function () {
+	it('should parse a valid message within acceptable time', function () {
+	  const parseMessage = require('../../../../app/irc/server/servers/RFC2813/parseMessage');
+	  const validLine =
+		':' +
+		'myNick!user@host' + ' ' +
+		'PRIVMSG' + ' ' +
+		'#channel' + ' ' +
+		'Hello ' + " ".repeat(100000) + "\u0000" + 'Trailing';
+  
+	  const startTime = performance.now();
+	  const message = parseMessage(validLine);
+	  const endTime = performance.now();
+	  const timeTaken = endTime - startTime;
+
+	  console.log(message);
+	  console.log(`time taken: ${timeTaken.toFixed(3)} ms`);
+  
+	  expect(timeTaken).to.be.below(1000);
+	});
+  });
+
