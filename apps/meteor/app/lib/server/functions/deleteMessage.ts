@@ -30,6 +30,19 @@ export const deleteMessageValidatingPermission = async (message: AtLeast<IMessag
 
 export async function deleteMessage(message: IMessage, user: IUser): Promise<void> {
 	const deletedMsg: IMessage | null = await Messages.findOneById(message._id);
+	if (deletedMsg?.pinned) {
+		await Messages.updateOne(
+			{ _id: deletedMsg._id },
+			{
+				$unset: {
+					pinned: '',
+					pinnedAt: '',
+					pinnedBy: '',
+				},
+			},
+		);
+	}
+
 	const isThread = (deletedMsg?.tcount || 0) > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
