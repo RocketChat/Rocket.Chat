@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 import BoldSpan from './BoldSpan';
 import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
+import SpoilerSpan from './SpoilerSpan';
 import StrikeSpan from './StrikeSpan';
 import CodeElement from '../code/CodeElement';
 import EmojiElement from '../emoji/EmojiElement';
@@ -61,6 +62,9 @@ const renderBlockComponent = (block: MessageBlock, index: number): ReactElement 
 
 		case 'BOLD':
 			return <BoldSpan key={index}>{block.value}</BoldSpan>;
+
+		case 'SPOILER':
+			return <SpoilerSpan key={index}>{block.value}</SpoilerSpan>;
 
 		case 'INLINE_CODE':
 			return <CodeElement key={index} code={block.value.value} />;

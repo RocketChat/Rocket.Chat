@@ -60,6 +60,7 @@ export const inlineCode = generate('INLINE_CODE');
 export const tasks = generate('TASKS');
 
 export const italic = generate('ITALIC');
+export const spoiler = generate('SPOILER');
 
 export const plain = generate('PLAIN_TEXT');
 export const strike = generate('STRIKE');
