@@ -29,6 +29,7 @@ export interface IUpload {
 	token?: string;
 	uploadedAt?: Date;
 	modifiedAt?: Date;
+	expiresAt?: Date;
 	url?: string;
 	originalStore?: string;
 	originalId?: string;

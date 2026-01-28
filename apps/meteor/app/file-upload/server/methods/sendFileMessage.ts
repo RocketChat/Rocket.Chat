@@ -90,6 +90,7 @@ async function createFileAttachment(
 				image_url: fileUrl,
 				image_type: file.type,
 				image_size: file.size,
+				fileId: file._id,
 			};
 
 			if (file.identify?.size) {
@@ -148,6 +149,7 @@ async function createFileAttachment(
 					audio_url: fileUrl,
 					audio_type: file.type,
 					audio_size: file.size,
+					fileId: file._id,
 				},
 			};
 		}
@@ -163,6 +165,7 @@ async function createFileAttachment(
 					video_url: fileUrl,
 					video_type: file.type,
 					video_size: file.size as number,
+					fileId: file._id,
 				},
 			};
 		}
@@ -177,6 +180,7 @@ async function createFileAttachment(
 			title_link: fileUrl,
 			title_link_download: true,
 			size: file.size as number,
+			fileId: file._id,
 		},
 	};
 }

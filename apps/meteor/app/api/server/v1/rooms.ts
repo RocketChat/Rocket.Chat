@@ -148,7 +148,7 @@ API.v1.addRoute(
 				});
 			}
 
-			await eraseRoom(room, this.userId);
+			await eraseRoom(room, this.user);
 
 			return API.v1.success();
 		},
