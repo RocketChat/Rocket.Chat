@@ -15,6 +15,7 @@ import {
 	FieldGroup,
 	Select,
 	Accordion,
+	NumberInput,
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
@@ -476,7 +477,9 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='retryCount'
 									control={control}
-									render={({ field }) => <TextInput id={retryCountField} {...field} aria-describedby={`${retryCountField}-hint`} />}
+									render={({ field }) => (
+										<NumberInput {...field} id={retryCountField} min='0' step='1' aria-describedby={`${retryCountField}-hint`} />
+									)}
 								/>
 							</FieldRow>
 							<FieldHint id={`${retryCountField}-hint`}>{t('Integration_Retry_Count_Description')}</FieldHint>
