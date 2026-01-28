@@ -1,6 +1,5 @@
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-
 import { t } from '../../../../app/utils/lib/i18n';
+import { MAX_MULTIPLE_UPLOADED_FILES } from '../../../../lib/constants';
 import { e2e } from '../../e2ee';
 import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';
@@ -10,27 +9,15 @@ export const uploadFiles = async (
 	chat: ChatAPI,
 	{ files, uploadsStore, resetFileInput }: { files: readonly File[]; uploadsStore: UploadsAPI; resetFileInput?: () => void },
 ): Promise<void> => {
-	const maxFilesPerMessage = settings.peek('FileUpload_MaxFilesPerMessage') as number;
 	const mergedFilesLength = files.length + uploadsStore.get().length;
-	if (mergedFilesLength > maxFilesPerMessage) {
+	if (mergedFilesLength > MAX_MULTIPLE_UPLOADED_FILES) {
 		return dispatchToastMessage({
 			type: 'error',
-			message:
-				maxFilesPerMessage === 1
-					? t('You_cant_upload_more_than_one_file')
-					: t('You_cant_upload_more_than__count__files', { count: maxFilesPerMessage }),
+			message: t('You_cant_upload_more_than__count__files', { count: MAX_MULTIPLE_UPLOADED_FILES }),
 		});
 	}
 
 	const room = await chat.data.getRoom();
-
-	if (mergedFilesLength > 1 && isOmnichannelRoom(room)) {
-		return dispatchToastMessage({
-			type: 'error',
-			message: t('You_cant_upload_more_than_one_file'),
-		});
-	}
-
 	const queue = [...files];
 
 	const uploadFile = (file: File, encrypted?: EncryptedFileUploadContent) => {

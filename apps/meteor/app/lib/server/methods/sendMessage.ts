@@ -1,6 +1,5 @@
 import { api } from '@rocket.chat/core-services';
 import type { AtLeast, IMessage, IUser, IUploadToConfirm } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import { MessageTypes } from '@rocket.chat/message-types';
@@ -10,6 +9,7 @@ import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
+import { MAX_MULTIPLE_UPLOADED_FILES } from '../../../../lib/constants';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
@@ -106,12 +106,6 @@ export async function executeSendMessage(
 			}
 		}
 
-		if ((extraInfo?.filesToConfirm?.length || 0) > 1 && isOmnichannelRoom(room)) {
-			throw new Meteor.Error('error-too-many-files', `Cannot send more than one file per message in Omnichannel rooms`, {
-				method: 'sendMessage',
-			});
-		}
-
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return await sendMessage(user, message, room, false, extraInfo?.previewUrls, extraInfo?.filesToConfirm);
 	} catch (err: any) {
@@ -182,9 +176,8 @@ Meteor.methods<ServerMethods>({
 			]),
 		);
 
-		const maxFilesPerMessage = settings.get<number>('FileUpload_MaxFilesPerMessage');
-		if (filesToConfirm && maxFilesPerMessage && filesToConfirm.length > maxFilesPerMessage) {
-			throw new Meteor.Error('error-too-many-files', `Cannot send more than ${maxFilesPerMessage} files in one message`, {
+		if (filesToConfirm && filesToConfirm.length > MAX_MULTIPLE_UPLOADED_FILES) {
+			throw new Meteor.Error('error-too-many-files', `Cannot send more than ${MAX_MULTIPLE_UPLOADED_FILES} files in one message`, {
 				method: 'sendMessage',
 			});
 		}
