@@ -3,7 +3,6 @@ import type { FindOptions, FindCursor, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ILivechatCustomFieldModel extends IBaseModel<ILivechatCustomField> {
 	findByScope<T extends Document = ILivechatCustomField>(
 		scope: ILivechatCustomField['scope'],
