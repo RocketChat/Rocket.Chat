@@ -32,9 +32,54 @@ export class DDPStreamer extends ServiceClass {
 
 		// TODO this is triggered by local events too, need to find a way to ignore if it's local
 		this.onEvent('stream', ([streamer, eventName, args]): void => {
+			// Track when we receive an event from another service
+			const { broker, nodeID } = this.context || {};
+			const { metrics } = broker || {};
+
 			// TODO rename StreamerCentral to StreamerStore or something to use it only as a store
 			const stream = StreamerCentral.instances[streamer];
-			return stream?.emitWithoutBroadcast(eventName, ...args);
+
+			if (!metrics) {
+				stream?.emitWithoutBroadcast(eventName, ...args);
+				return;
+			}
+
+			// Count events received from other services
+			metrics.increment('ddp_streamer_events_received_total', {
+				streamer,
+				event: eventName,
+				nodeID,
+			});
+
+			// Start timing the relay to websocket clients
+			const endTimer = metrics.timer('ddp_streamer_relay_duration_milliseconds', {
+				streamer,
+				event: eventName,
+				nodeID,
+			});
+
+			try {
+				stream.emitWithoutBroadcast(eventName, ...args);
+
+				// Count successful emissions to websocket clients
+				metrics.increment('ddp_streamer_events_sent_total', {
+					streamer,
+					event: eventName,
+					nodeID,
+				});
+			} catch (error: any) {
+				// Track relay errors
+				metrics.increment('ddp_streamer_relay_errors_total', {
+					streamer,
+					event: eventName,
+					error_type: error.name || 'UnknownError',
+					nodeID,
+				});
+
+				throw error;
+			} finally {
+				endTimer();
+			}
 		});
 
 		this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
@@ -88,7 +133,7 @@ export class DDPStreamer extends ServiceClass {
 			name: 'rocketchat_subscription',
 			type: 'histogram',
 			labelNames: ['subscription'],
-			description: 'Client subscriptions to Rocket.Chat',
+			description: 'DDP subscription setup latency',
 			unit: 'millisecond',
 			quantiles: true,
 		});
@@ -105,6 +150,37 @@ export class DDPStreamer extends ServiceClass {
 			type: 'gauge',
 			labelNames: ['nodeID'],
 			description: 'Users logged by streamer',
+		});
+
+		// Event relay metrics (Moleculer → Websocket)
+		metrics.register({
+			name: 'ddp_streamer_events_received_total',
+			type: 'counter',
+			labelNames: ['streamer', 'event', 'nodeID'],
+			description: 'Events received from other services via Moleculer',
+		});
+
+		metrics.register({
+			name: 'ddp_streamer_events_sent_total',
+			type: 'counter',
+			labelNames: ['streamer', 'event', 'nodeID'],
+			description: 'Events successfully emitted to websocket clients',
+		});
+
+		metrics.register({
+			name: 'ddp_streamer_relay_duration_milliseconds',
+			type: 'histogram',
+			labelNames: ['streamer', 'event', 'nodeID'],
+			description: 'Time from receiving event to emitting to websocket clients (milliseconds)',
+			unit: 'milliseconds',
+			quantiles: true,
+		});
+
+		metrics.register({
+			name: 'ddp_streamer_relay_errors_total',
+			type: 'counter',
+			labelNames: ['streamer', 'event', 'error_type', 'nodeID'],
+			description: 'Errors during event relay to websocket clients',
 		});
 
 		server.setMetrics(metrics);
