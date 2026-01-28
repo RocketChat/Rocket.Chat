@@ -30,6 +30,20 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 			});
 		});
 
+		this.onEvent('presence.status.batch', async (batch): Promise<void> => {
+			for (const { user, previousStatus } of batch) {
+				try {
+					await Apps.self?.triggerEvent(AppEvents.IPostUserStatusChanged, {
+						user,
+						currentStatus: user.status,
+						previousStatus,
+					});
+				} catch (error) {
+					SystemLogger.error({ msg: 'Error triggering IPostUserStatusChanged event', error });
+				}
+			}
+		});
+
 		this.onEvent('apps.added', async (appId: string): Promise<void> => {
 			Apps.self?.getRocketChatLogger().debug({
 				msg: '"apps.added" event received for app',

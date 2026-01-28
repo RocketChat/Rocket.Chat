@@ -162,6 +162,12 @@ export type EventSignatures = {
 		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
 	}): void;
+	'presence.status.batch'(
+		data: {
+			user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
+			previousStatus: UserStatus | undefined;
+		}[],
+	): void;
 	'watch.messages'(data: { message: IMessage }): void;
 	'watch.roles'(
 		data:

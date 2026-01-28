@@ -22,6 +22,16 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private lostConTimeout?: NodeJS.Timeout;
 
+	private presenceBatch = new Map<
+		string,
+		{
+			user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
+			previousStatus: UserStatus | undefined;
+		}
+	>();
+
+	private batchTimeout?: NodeJS.Timeout;
+
 	private connsPerInstance = new Map<string, number>();
 
 	private peakConnections = 0;
@@ -118,10 +128,13 @@ export class Presence extends ServiceClass implements IPresence {
 
 	override async stopped(): Promise<void> {
 		this.reaper.stop();
-		if (!this.lostConTimeout) {
-			return;
+		if (this.lostConTimeout) {
+			clearTimeout(this.lostConTimeout);
 		}
-		clearTimeout(this.lostConTimeout);
+		if (this.batchTimeout) {
+			clearTimeout(this.batchTimeout);
+			this.batchTimeout = undefined;
+		}
 	}
 
 	async toggleBroadcast(enabled: boolean): Promise<void> {
@@ -233,8 +246,8 @@ export class Presence extends ServiceClass implements IPresence {
 	async setStatus(uid: string, statusDefault: UserStatus, statusText?: string): Promise<boolean> {
 		const userSessions = (await UsersSessions.findOneById(uid)) || { connections: [] };
 
-		const user = await Users.findOneById<Pick<IUser, 'username' | 'roles' | 'status'>>(uid, {
-			projection: { username: 1, roles: 1, status: 1 },
+		const user = await Users.findOneById<Pick<IUser, 'username' | 'name' | 'roles' | 'status'>>(uid, {
+			projection: { username: 1, name: 1, roles: 1, status: 1 },
 		});
 
 		const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
@@ -247,7 +260,10 @@ export class Presence extends ServiceClass implements IPresence {
 		});
 
 		if (result.modifiedCount > 0) {
-			this.broadcast({ _id: uid, username: user?.username, status, statusText, roles: user?.roles || [] }, user?.status);
+			this.broadcast(
+				{ _id: uid, username: user?.username, status, statusText, name: user?.name, roles: user?.roles || [] },
+				user?.status,
+			);
 		}
 
 		return !!result.modifiedCount;
@@ -262,9 +278,10 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async updateUserPresence(uid: string): Promise<void> {
-		const user = await Users.findOneById<Pick<IUser, 'username' | 'statusDefault' | 'statusText' | 'roles' | 'status'>>(uid, {
+		const user = await Users.findOneById<Pick<IUser, 'username' | 'name' | 'statusDefault' | 'statusText' | 'roles' | 'status'>>(uid, {
 			projection: {
 				username: 1,
+				name: 1,
 				statusDefault: 1,
 				statusText: 1,
 				roles: 1,
@@ -287,21 +304,42 @@ export class Presence extends ServiceClass implements IPresence {
 		});
 
 		if (result.modifiedCount > 0) {
-			this.broadcast({ _id: uid, username: user.username, status, statusText: user.statusText, roles: user.roles }, user.status);
+			this.broadcast(
+				{ _id: uid, username: user.username, status, statusText: user.statusText, name: user.name, roles: user.roles },
+				user.status,
+			);
 		}
 	}
 
 	private broadcast(
-		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'roles'>,
+		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>,
 		previousStatus: UserStatus | undefined,
 	): void {
 		if (!this.broadcastEnabled) {
 			return;
 		}
-		this.api?.broadcast('presence.status', {
-			user,
-			previousStatus,
-		});
+
+		this.presenceBatch.set(user._id, { user, previousStatus });
+
+		if (this.batchTimeout) {
+			return;
+		}
+
+		this.batchTimeout = setTimeout(() => {
+			this.batchTimeout = undefined;
+			if (this.presenceBatch.size === 0) {
+				return;
+			}
+
+			const batch = Array.from(this.presenceBatch.values());
+			this.presenceBatch.clear();
+
+			if (!this.broadcastEnabled) {
+				return;
+			}
+
+			this.api?.broadcast('presence.status.batch', batch);
+		}, 500);
 	}
 
 	private async validateAvailability(): Promise<void> {
