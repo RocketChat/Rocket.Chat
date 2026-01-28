@@ -1,25 +1,21 @@
-import { Defined, JsonRpcError } from 'jsonrpc-lite';
-import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor.ts';
+import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../lib/accessors/mod.ts';
 import { RequestContext } from '../lib/requestContext.ts';
+import { wrapComposedApp } from '../lib/wrapAppForRequest.ts';
 
 export default async function handleScheduler(request: RequestContext): Promise<Defined | JsonRpcError> {
 	const { method, params } = request;
+	const { logger } = request.context;
+
 	const [, processorId] = method.split(':');
 	if (!Array.isArray(params)) {
 		return JsonRpcError.invalidParams({ message: 'Invalid params' });
 	}
 
 	const [context] = params as [Record<string, unknown>];
-
-	const app = AppObjectRegistry.get<App>('app');
-
-	if (!app) {
-		return JsonRpcError.internalError({ message: 'App not found' });
-	}
 
 	// AppSchedulerManager will append the appId to the processor name to avoid conflicts
 	const processor = AppObjectRegistry.get<IProcessor>(`scheduler:${processorId}`);
@@ -30,10 +26,11 @@ export default async function handleScheduler(request: RequestContext): Promise<
 		});
 	}
 
-	app.getLogger().debug({ msg: 'Job processor is being executed...', processorId: processor.id });
+	logger.debug({ msg: 'Job processor is being executed...', processorId: processor.id });
 
 	try {
-		await processor.processor(
+		await processor.processor.call(
+			wrapComposedApp(processor, request),
 			context,
 			AppAccessorsInstance.getReader(),
 			AppAccessorsInstance.getModifier(),
@@ -41,12 +38,12 @@ export default async function handleScheduler(request: RequestContext): Promise<
 			AppAccessorsInstance.getPersistence(),
 		);
 
-		app.getLogger().debug({ msg: 'Job processor was successfully executed', processorId: processor.id });
+		logger.debug({ msg: 'Job processor was successfully executed', processorId: processor.id });
 
 		return null;
 	} catch (e) {
-		app.getLogger().error(e);
-		app.getLogger().error({ msg: 'Job processor was unsuccessful', processorId: processor.id });
+		logger.error(e);
+		logger.error({ msg: 'Job processor was unsuccessful', processorId: processor.id });
 
 		return JsonRpcError.internalError({ message: e.message });
 	}
