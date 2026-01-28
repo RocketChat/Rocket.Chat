@@ -803,6 +803,41 @@ describe('Apps - Video Conferences', () => {
 							expect(call2).to.have.a.property('_id').equal(callId2);
 						});
 				});
+
+				it('should paginate video conferences list with count parameter', async () => {
+					await request
+						.get(api('video-conference.list'))
+						.set(credentials)
+						.query({
+							roomId,
+							count: 1,
+						})
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+							expect(res.body).to.have.a.property('total').that.is.greaterThanOrEqual(2);
+							expect(res.body).to.have.a.property('data').that.is.an('array').with.lengthOf(1);
+							expect(res.body.data[0]).to.have.a.property('_id').equal(callId2);
+						});
+				});
+
+				it('should paginate video conferences list with offset parameter', async () => {
+					await request
+						.get(api('video-conference.list'))
+						.set(credentials)
+						.query({
+							roomId,
+							count: 1,
+							offset: 1,
+						})
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+							expect(res.body).to.have.a.property('total').that.is.greaterThanOrEqual(2);
+							expect(res.body).to.have.a.property('data').that.is.an('array').with.lengthOf(1);
+							expect(res.body.data[0]).to.have.a.property('_id').equal(callId1);
+						});
+				});
 			});
 
 			describe('[Persistent Chat Provider]', () => {
