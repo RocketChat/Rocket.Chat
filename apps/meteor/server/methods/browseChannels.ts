@@ -13,6 +13,13 @@ import { hasPermissionAsync } from '../../app/authorization/server/functions/has
 import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
 
+const BROWSE_CHANNELS_CONFIG = {
+	DEFAULT_LIMIT: 10,
+	CACHE_TTL_MS: 2000, // 2 seconds for team channels count cache
+	MAX_CALLS: 100,
+	INTERVAL_MS: 100000, // 100 seconds
+} as const;
+
 const sortChannels = (field: string, direction: 'asc' | 'desc'): Record<string, 1 | -1> => {
 	switch (field) {
 		case 'createdAt':
@@ -115,7 +122,7 @@ const getChannelsAndGroups = async (
 };
 
 const getChannelsCountForTeam = mem((teamId) => Rooms.countByTeamId(teamId), {
-	maxAge: 2000,
+	maxAge: BROWSE_CHANNELS_CONFIG.CACHE_TTL_MS,
 });
 
 const getTeams = async (
@@ -297,7 +304,7 @@ export const browseChannelsMethod = async (
 		sortDirection = 'asc',
 		page = 0,
 		offset = 0,
-		limit = 10,
+		limit = BROWSE_CHANNELS_CONFIG.DEFAULT_LIMIT,
 	}: BrowseChannelsParams,
 	user: AtLeast<IUser, '_id' | '__rooms'> | undefined | null,
 ) => {
@@ -320,7 +327,7 @@ export const browseChannelsMethod = async (
 
 	const skip = Math.max(0, offset || (page > -1 ? limit * page : 0));
 
-	limit = limit > 0 ? limit : 10;
+	limit = limit > 0 ? limit : BROWSE_CHANNELS_CONFIG.DEFAULT_LIMIT;
 
 	const pagination = {
 		skip,
@@ -358,6 +365,6 @@ DDPRateLimiter.addRule(
 			return true;
 		},
 	},
-	100,
-	100000,
+	BROWSE_CHANNELS_CONFIG.MAX_CALLS,
+	BROWSE_CHANNELS_CONFIG.INTERVAL_MS,
 );
