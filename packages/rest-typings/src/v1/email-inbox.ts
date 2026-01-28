@@ -91,6 +91,7 @@ const EmailInboxPropsSchema = {
 			properties: {
 				password: {
 					type: 'string',
+					minLength:8,
 				},
 				port: {
 					type: 'number',
@@ -114,6 +115,7 @@ const EmailInboxPropsSchema = {
 			properties: {
 				password: {
 					type: 'string',
+					minLength:8,
 				},
 				port: {
 					type: 'number',
