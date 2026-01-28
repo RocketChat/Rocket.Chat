@@ -18,8 +18,8 @@ const DENO_DIR = process.env.DENO_DIR ?? path.join(rootPath, '.deno-cache');
 childProcess.execSync('deno cache main.ts', {
 	cwd: denoRuntimePath,
 	env: {
+		...process.env,
 		DENO_DIR,
-		PATH: process.env.PATH,
 	},
 	stdio: 'inherit',
 });
