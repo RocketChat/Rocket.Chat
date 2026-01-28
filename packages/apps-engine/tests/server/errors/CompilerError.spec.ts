@@ -8,6 +8,6 @@ export class CompilerErrorTestFixture {
 		const er = new CompilerError('syntax');
 
 		Expect(er.name).toBe('CompilerError');
-		Expect(er.message).toBe('An error occured while compiling an App: syntax');
+		Expect(er.message).toBe('An error occurred while compiling an App: syntax');
 	}
 }

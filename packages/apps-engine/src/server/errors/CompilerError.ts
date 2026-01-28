@@ -4,6 +4,6 @@ export class CompilerError implements Error {
 	public message: string;
 
 	constructor(detail: string) {
-		this.message = `An error occured while compiling an App: ${detail}`;
+		this.message = `An error occurred while compiling an App: ${detail}`;
 	}
 }
