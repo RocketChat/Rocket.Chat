@@ -2,6 +2,7 @@ import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/cor
 import { LivechatContacts, LivechatInquiry, LivechatRooms, Settings, Subscriptions } from '@rocket.chat/models';
 
 import { getAllowedCustomFields } from './getAllowedCustomFields';
+import { patchContact } from './patchContact';
 import { validateContactManager } from './validateContactManager';
 import { validateCustomFields } from './validateCustomFields';
 import {
@@ -71,18 +72,18 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		});
 	}
 
-	const updatedContact = await LivechatContacts.patchContact(contactId, {
-		set: {
-			...(name !== undefined && { name }),
-			...(emails && { emails: emails?.map((address) => ({ address })) }),
-			...(phones && { phones: phones?.map((phoneNumber) => ({ phoneNumber })) }),
-			...(contactManager && { contactManager }),
-			...(channels && { channels }),
-			...(customFieldsToUpdate && { customFields: customFieldsToUpdate }),
-			...(wipeConflicts && { conflictingFields: [] }),
-		},
-		unset: 'contactManager' in params && !contactManager ? ['contactManager'] : undefined,
-	});
+	const set = {
+		...(name !== undefined && { name }),
+		...(emails && { emails: emails?.map((address) => ({ address })) }),
+		...(phones && { phones: phones?.map((phoneNumber) => ({ phoneNumber })) }),
+		...(contactManager && { contactManager }),
+		...(channels && { channels }),
+		...(customFieldsToUpdate && { customFields: customFieldsToUpdate }),
+		...(wipeConflicts && { conflictingFields: [] }),
+	};
+	const unset: (keyof ILivechatContact)[] = 'contactManager' in params && !contactManager ? ['contactManager'] : [];
+
+	const updatedContact = await patchContact(contactId, { set, unset });
 
 	if (!updatedContact) {
 		throw new Error('error-contact-not-found');

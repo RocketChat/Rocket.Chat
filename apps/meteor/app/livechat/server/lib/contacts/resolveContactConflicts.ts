@@ -1,6 +1,7 @@
 import type { ILivechatContact, ILivechatContactConflictingField } from '@rocket.chat/core-typings';
 import { LivechatContacts, Settings } from '@rocket.chat/models';
 
+import { patchContact } from './patchContact';
 import { validateContactManager } from './validateContactManager';
 import { notifyOnSettingChanged } from '../../../../lib/server/lib/notifyListener';
 
@@ -56,17 +57,16 @@ export async function resolveContactConflicts(params: ResolveContactConflictsPar
 		) as ILivechatContactConflictingField[];
 	}
 
-	const dataToUpdate = {
+	const set = {
 		...(name && { name }),
 		...(contactManager && { contactManager }),
 		...(customFields && { customFields: { ...contact.customFields, ...customFields } }),
 		conflictingFields: updatedConflictingFieldsArr,
 	};
 
-	const updatedContact = await LivechatContacts.patchContact(contactId, {
-		set: dataToUpdate,
-		unset: 'contactManager' in params && !contactManager ? ['contactManager'] : undefined,
-	});
+	const unset: (keyof ILivechatContact)[] = 'contactManager' in params && !contactManager ? ['contactManager'] : [];
+
+	const updatedContact = await patchContact(contactId, { set, unset });
 
 	if (!updatedContact) {
 		throw new Error('error-contact-not-found');
