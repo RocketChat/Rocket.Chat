@@ -2,7 +2,10 @@
 	"name": "Rocket.Chat Gitpod",
 	"build": {
         "context": "..",
-        "dockerfile": "./Dockerfile"
+        "dockerfile": "./Dockerfile",
+		"args": {
+			"DENO_VERSION": "1.37.1"
+		}
     },
 	"features": {
         "ghcr.io/devcontainers/features/docker-in-docker:2": {}
