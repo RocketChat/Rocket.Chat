@@ -188,6 +188,13 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			event.stopImmediatePropagation();
 			return true;
 		}
+
+		const hasItems = items.filter((item) => item.isSuccess).flatMap((item) => item.data as T[]).length > 0;
+
+		if (!hasItems) {
+			return;
+		}
+
 		if (event.which === keys.ARROW_UP && !(event.shiftKey || event.ctrlKey || event.altKey || event.metaKey)) {
 			setFocused((focused) => {
 				const list = items
