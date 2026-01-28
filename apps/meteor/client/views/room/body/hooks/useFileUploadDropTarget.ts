@@ -41,9 +41,9 @@ export const useFileUploadDropTarget = (): readonly [
 		const { getMimeType } = await import('../../../../../app/utils/lib/mimeTypes');
 		const getUniqueFiles = () => {
 			const uniqueFiles: File[] = [];
-			const st: Set<number> = new Set();
+			const st: Set<string> = new Set();
 			files.forEach((file) => {
-				const key = file.size;
+				const key = `${file.name}-${file.size}-${file.lastModified}`;
 				if (!st.has(key)) {
 					uniqueFiles.push(file);
 					st.add(key);
