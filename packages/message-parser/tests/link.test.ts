@@ -18,6 +18,56 @@ test.each([
 		'[Link](https://domain.com/link?a=%28node_filesystem_avail_bytes%29)',
 		[paragraph([link('https://domain.com/link?a=%28node_filesystem_avail_bytes%29', [plain('Link')])])],
 	],
+	// Parentheses in URL tests
+	[
+		'[link](https://example.com/query?this=(is)&a=problem)',
+		[paragraph([link('https://example.com/query?this=(is)&a=problem', [plain('link')])])],
+	],
+	[
+		'[Wikipedia](https://en.wikipedia.org/wiki/Bracket_(disambiguation))',
+		[paragraph([link('https://en.wikipedia.org/wiki/Bracket_(disambiguation)', [plain('Wikipedia')])])],
+	],
+	[
+		'[Nested (parentheses) in URL](https://example.com/path/(foo(bar))/file.html)',
+		[paragraph([link('https://example.com/path/(foo(bar))/file.html', [plain('Nested (parentheses) in URL')])])],
+	],
+	[
+		'[Multiple params](https://example.com/api?filter=(status=active)&sort=(name,date))',
+		[paragraph([link('https://example.com/api?filter=(status=active)&sort=(name,date)', [plain('Multiple params')])])],
+	],
+	[
+		'[URL with trailing paren](https://example.com/page(version))',
+		[paragraph([link('https://example.com/page(version)', [plain('URL with trailing paren')])])],
+	],
+	[
+		'Check out [this link](https://grafana.io/dashboard?var=(node_mem)) for metrics',
+		[paragraph([plain('Check out '), link('https://grafana.io/dashboard?var=(node_mem)', [plain('this link')]), plain(' for metrics')])],
+	],
+	['[Empty parens](https://example.com/path()/file)', [paragraph([link('https://example.com/path()/file', [plain('Empty parens')])])]],
+	[
+		'[Link 1](https://example.com/a(1)) and [Link 2](https://example.com/b(2))',
+		[paragraph([link('https://example.com/a(1)', [plain('Link 1')]), plain(' and '), link('https://example.com/b(2)', [plain('Link 2')])])],
+	],
+	[
+		'[Parens with slash](https://example.com/(api)/v1/users)',
+		[paragraph([link('https://example.com/(api)/v1/users', [plain('Parens with slash')])])],
+	],
+	[
+		'[Deep nesting](https://example.com/path/((nested(deep)))/end)',
+		[paragraph([link('https://example.com/path/((nested(deep)))/end', [plain('Deep nesting')])])],
+	],
+	[
+		'[URL ending with multiple parens](https://example.com/func(arg1)(arg2))',
+		[paragraph([link('https://example.com/func(arg1)(arg2)', [plain('URL ending with multiple parens')])])],
+	],
+	[
+		'[Parentheses in fragment](https://example.com/page#section(1))',
+		[paragraph([link('https://example.com/page#section(1)', [plain('Parentheses in fragment')])])],
+	],
+	[
+		'[Math expression](https://example.com/calc?expr=(2+3)*(4+5))',
+		[paragraph([link('https://example.com/calc?expr=(2+3)*(4+5)', [plain('Math expression')])])],
+	],
 	['[](https://rocket.chat)', [paragraph([link('https://rocket.chat')])]],
 	['[ ](https://rocket.chat)', [paragraph([link('https://rocket.chat', [plain(' ')])])]],
 
