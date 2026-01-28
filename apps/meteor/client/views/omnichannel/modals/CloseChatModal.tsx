@@ -80,31 +80,58 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 	};
 
 	const onSubmit = useCallback(
-		({ comment, tags, transcriptPDF, transcriptEmail, subject }: CloseChatModalFormData) => {
-			const preferences = {
-				omnichannelTranscriptPDF: !!transcriptPDF,
-				omnichannelTranscriptEmail: alwaysSendTranscript ? true : !!transcriptEmail,
-			};
-			const requestData = transcriptEmail && visitorEmail ? { email: visitorEmail, subject } : undefined;
+	({ comment, tags, transcriptPDF, transcriptEmail, subject }: CloseChatModalFormData) => {
+		const preferences = {
+			omnichannelTranscriptPDF: !!transcriptPDF,
+			omnichannelTranscriptEmail: alwaysSendTranscript ? true : !!transcriptEmail,
+		};
 
-			if (!comment?.trim() && commentRequired) {
-				setError('comment', { type: 'custom', message: t('Required_field', { field: t('Comment') }) });
-			}
+		const requestData =
+			transcriptEmail && visitorEmail ? { email: visitorEmail, subject } : undefined;
 
-			if (transcriptEmail && !subject) {
-				setError('subject', { type: 'custom', message: t('Required_field', { field: t('Subject') }) });
-			}
+		let hasError = false;
 
-			if (!tags?.length && tagRequired) {
-				setError('tags', { type: 'custom', message: t('error-tags-must-be-assigned-before-closing-chat') });
-			}
+		if (!comment?.trim() && commentRequired) {
+			setError('comment', {
+				type: 'custom',
+				message: t('Required_field', { field: t('Comment') }),
+			});
+			hasError = true;
+		}
 
-			if (!errors.comment || errors.tags) {
-				onConfirm(comment, tags, preferences, requestData);
-			}
-		},
-		[commentRequired, tagRequired, visitorEmail, errors, setError, t, onConfirm, alwaysSendTranscript],
-	);
+		if (transcriptEmail && !subject) {
+			setError('subject', {
+				type: 'custom',
+				message: t('Required_field', { field: t('Subject') }),
+			});
+			hasError = true;
+		}
+
+		if (!tags?.length && tagRequired) {
+			setError('tags', {
+				type: 'custom',
+				message: t('error-tags-must-be-assigned-before-closing-chat'),
+			});
+			hasError = true;
+		}
+
+		if (hasError) {
+			return;
+		}
+
+		onConfirm(comment, tags, preferences, requestData);
+	},
+	[
+		commentRequired,
+		tagRequired,
+		visitorEmail,
+		setError,
+		t,
+		onConfirm,
+		alwaysSendTranscript,
+	],
+);
+
 
 	const cannotSubmit = useMemo(() => {
 		const cannotSendTag = (tagRequired && !tags?.length) || errors.tags;
