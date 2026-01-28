@@ -74,12 +74,18 @@
 					response[key] = events[key];
 				}
 			}
-		} else {
-			response = events[evt] || (events[evt] = []);
-		}
+		} else if (typeof evt === 'string') {
+		// Modify this block to handle string-based event names
+		response = events[evt] || (events[evt] = []);
+	} else {
+		// Handle other cases or throw an error if needed
+		throw new Error('Invalid event type. Expecting either a string or RegExp.');
+	}
 
-		return response;
-	};
+	return response;
+};
+
+
 
 	/**
 	 * Takes a list of listener objects and flattens it into a list of listener functions.
