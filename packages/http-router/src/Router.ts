@@ -198,7 +198,13 @@ export class Router<
 		const [middlewares, action] = splitArray<MiddlewareHandler, TActionCallback>(actions);
 		const convertedAction = this.convertActionToHandler(action);
 
-		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
+		type RouteMethod = (path: string, ...handlers: MiddlewareHandler[]) => unknown;
+			const methodKey = method.toLowerCase() as keyof typeof this.innerRouter;
+
+			(this.innerRouter as unknown as Record<typeof methodKey, RouteMethod>)[methodKey](
+				`/${subpath}`.replace('//', '/'),
+				...middlewares,
+				async (c: Context) => {
 			const { req, res } = c;
 
 			let queryParams: Record<string, any>;
