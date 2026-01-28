@@ -11,6 +11,7 @@ import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { assertAppAvailable, assertHandlerFunction, isRecord } from '../lib/assertions.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
 import { RequestContext } from '../../lib/requestContext.ts';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
 
 export const uploadEvents = ['executePreFileUpload'] as const;
 
@@ -53,7 +54,7 @@ export default async function handleUploadEvents(request: RequestContext): Promi
 		}
 
 		return await handlerFunction.call(
-			app,
+			wrapAppForRequest(app, request),
 			context,
 			AppAccessorsInstance.getReader(),
 			AppAccessorsInstance.getHttp(),

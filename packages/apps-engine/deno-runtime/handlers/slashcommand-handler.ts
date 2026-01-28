@@ -1,4 +1,3 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
 import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand.ts';
 import type { SlashCommandContext as _SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands/SlashCommandContext.ts';
@@ -10,6 +9,7 @@ import { AppAccessors, AppAccessorsInstance } from '../lib/accessors/mod.ts';
 import { require } from '../lib/require.ts';
 import createRoom from '../lib/roomFactory.ts';
 import { RequestContext } from '../lib/requestContext.ts';
+import { wrapComposedApp } from '../lib/wrapAppForRequest.ts';
 
 // For some reason Deno couldn't understand the typecast to the original interfaces and said it wasn't a constructor type
 const { SlashCommandContext } = require('@rocket.chat/apps-engine/definition/slashcommands/SlashCommandContext.js') as {
@@ -18,6 +18,8 @@ const { SlashCommandContext } = require('@rocket.chat/apps-engine/definition/sla
 
 export default async function slashCommandHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
 	const { method: call, params } = request;
+	const { logger } = request.context;
+
 	const [, commandName, method] = call.split(':');
 
 	const command = AppObjectRegistry.get<ISlashCommand>(`slashcommand:${commandName}`);
@@ -28,28 +30,30 @@ export default async function slashCommandHandler(request: RequestContext): Prom
 
 	let result: Awaited<ReturnType<typeof handleExecutor>> | Awaited<ReturnType<typeof handlePreviewItem>>;
 
-	// If the command is registered, we're pretty safe to assume the app is not undefined
-	const app = AppObjectRegistry.get<App>('app')!;
-
-	app.getLogger().debug({ msg: `Command is being executed...`, commandName, method, params });
+	logger.debug({ msg: `Command is being executed...`, commandName, method, params });
 
 	try {
 		if (method === 'executor' || method === 'previewer') {
-			result = await handleExecutor({ AppAccessorsInstance }, command, method, params);
+			result = await handleExecutor({ AppAccessorsInstance, request }, command, method, params);
 		} else if (method === 'executePreviewItem') {
-			result = await handlePreviewItem({ AppAccessorsInstance }, command, params);
+			result = await handlePreviewItem({ AppAccessorsInstance, request }, command, params);
 		} else {
 			return new JsonRpcError(`Method ${method} not found on slashcommand ${commandName}`, -32000);
 		}
 
-		app.getLogger().debug({ msg: `Command was successfully executed.`, commandName, method });
+		logger.debug({ msg: `Command was successfully executed.`, commandName, method });
 	} catch (error) {
-		app.getLogger().debug({ msg: `Command was unsuccessful.`, commandName, method, err: error });
+		logger.debug({ msg: `Command was unsuccessful.`, commandName, method, err: error });
 
 		return new JsonRpcError(error.message, -32000);
 	}
 
 	return result;
+}
+
+type Deps = {
+	AppAccessorsInstance: AppAccessors,
+	request: RequestContext;
 }
 
 /**
@@ -58,7 +62,7 @@ export default async function slashCommandHandler(request: RequestContext): Prom
  * @param method The method that is being executed
  * @param params The parameters that are being passed to the method
  */
-export function handleExecutor(deps: { AppAccessorsInstance: AppAccessors }, command: ISlashCommand, method: 'executor' | 'previewer', params: unknown) {
+export function handleExecutor(deps: Deps, command: ISlashCommand, method: 'executor' | 'previewer', params: unknown) {
 	const executor = command[method];
 
 	if (typeof executor !== 'function') {
@@ -79,7 +83,7 @@ export function handleExecutor(deps: { AppAccessorsInstance: AppAccessors }, com
 		triggerId as _SlashCommandContext['triggerId'],
 	);
 
-	return executor.apply(command, [
+	return executor.apply(wrapComposedApp(command, deps.request), [
 		context,
 		deps.AppAccessorsInstance.getReader(),
 		deps.AppAccessorsInstance.getModifier(),
@@ -93,7 +97,7 @@ export function handleExecutor(deps: { AppAccessorsInstance: AppAccessors }, com
  * @param command The slashcommand that is being executed
  * @param params The parameters that are being passed to the method
  */
-export function handlePreviewItem(deps: { AppAccessorsInstance: AppAccessors }, command: ISlashCommand, params: unknown) {
+export function handlePreviewItem(deps: Deps, command: ISlashCommand, params: unknown) {
 	if (typeof command.executePreviewItem !== 'function') {
 		throw new Error(`Method  not found on slashcommand ${command.command}`);
 	}
@@ -112,7 +116,8 @@ export function handlePreviewItem(deps: { AppAccessorsInstance: AppAccessors }, 
 		triggerId as _SlashCommandContext['triggerId'],
 	);
 
-	return command.executePreviewItem(
+	return command.executePreviewItem.call(
+		wrapComposedApp(command, deps.request),
 		previewItem,
 		context,
 		deps.AppAccessorsInstance.getReader(),

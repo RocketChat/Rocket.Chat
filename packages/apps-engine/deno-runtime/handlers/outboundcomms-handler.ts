@@ -3,26 +3,28 @@ import { JsonRpcError, Defined } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../lib/accessors/mod.ts';
-import { Logger } from '../lib/logger.ts';
 import { RequestContext } from '../lib/requestContext.ts';
+import { wrapComposedApp } from '../lib/wrapAppForRequest.ts';
 
 export default async function outboundMessageHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
 	const { method: call, params } = request;
 	const [, providerName, methodName] = call.split(':');
 
 	const provider = AppObjectRegistry.get<IOutboundMessageProviders>(`outboundCommunication:${providerName}`);
+
 	if (!provider) {
 		return new JsonRpcError('error-invalid-provider', -32000);
 	}
+
 	const method = provider[methodName as keyof IOutboundMessageProviders];
-	const logger = AppObjectRegistry.get<Logger>('logger');
+	const { logger } = request.context;
 	const args = (params as Array<unknown>) ?? [];
 
 	try {
-		logger?.debug(`Executing ${methodName} on outbound communication provider...`);
+		logger.debug(`Executing ${methodName} on outbound communication provider...`);
 
 		// deno-lint-ignore ban-types
-		return await (method as Function).apply(provider, [
+		return await (method as Function).apply(wrapComposedApp(provider, request), [
 			...args,
 			AppAccessorsInstance.getReader(),
 			AppAccessorsInstance.getModifier(),
