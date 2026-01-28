@@ -203,7 +203,7 @@ flowchart TB
 | **Communication** | livechat, threads, reactions, mentions, e2e |
 | **Auth** | 2fa, authentication, authorization, meteor-accounts-saml, custom-oauth |
 | **Integrations** | apps, integrations, slackbridge, irc, importer-slack |
-| **Providers** | apple, github, gitlab, google-oauth, ldap |
+| **Providers** | apple, GitHub, GitLab, google-oauth, ldap |
 
 ---
 
