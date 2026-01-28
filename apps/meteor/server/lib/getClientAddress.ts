@@ -7,5 +7,14 @@ export function getClientAddress(connection: Pick<ISocketConnection, 'clientAddr
 
 	const { clientAddress, httpHeaders } = connection;
 
-	return clientAddress || (httpHeaders?.['x-real-ip'] as string);
+	if (clientAddress) {
+		return clientAddress;
+	}
+
+	const xRealIp = httpHeaders?.['x-real-ip'];
+	if (Array.isArray(xRealIp)) {
+		return xRealIp[0];
+	}
+
+	return xRealIp || '';
 }

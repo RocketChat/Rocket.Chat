@@ -1,5 +1,3 @@
-import type { IncomingHttpHeaders } from 'http';
-
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -26,7 +24,7 @@ Accounts.onLogin((info: ILoginAttempt) => {
 			...info.connection,
 			...(resume && { loginToken: Accounts._hashLoginToken(resume) }),
 			instanceId: InstanceStatus.id(),
-			httpHeaders: httpHeaders as IncomingHttpHeaders,
+			httpHeaders,
 		},
 	};
 	sauEvents.emit('accounts.login', eventObject);
@@ -41,7 +39,7 @@ Accounts.onLogout((info) => {
 	}
 	sauEvents.emit('accounts.logout', {
 		userId: info.user._id,
-		connection: { instanceId: InstanceStatus.id(), ...info.connection, httpHeaders: httpHeaders as IncomingHttpHeaders },
+		connection: { instanceId: InstanceStatus.id(), ...info.connection, httpHeaders },
 	});
 });
 
@@ -51,7 +49,7 @@ Meteor.onConnection((connection) => {
 		sauEvents.emit('socket.disconnected', {
 			instanceId: InstanceStatus.id(),
 			...connection,
-			httpHeaders: httpHeaders as IncomingHttpHeaders,
+			httpHeaders,
 		});
 	});
 });
@@ -59,5 +57,5 @@ Meteor.onConnection((connection) => {
 Meteor.onConnection((connection) => {
 	const { httpHeaders } = connection;
 
-	sauEvents.emit('socket.connected', { instanceId: InstanceStatus.id(), ...connection, httpHeaders: httpHeaders as IncomingHttpHeaders });
+	sauEvents.emit('socket.connected', { instanceId: InstanceStatus.id(), ...connection, httpHeaders });
 });
