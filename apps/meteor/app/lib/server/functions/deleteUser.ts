@@ -96,6 +96,20 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 					'DELETE_USER',
 				);
 
+				// Clean up lastMessage field in rooms where deleted user's message was the last one
+				// This prevents ghost messages from appearing on all clients (web, desktop, mobile)
+				// The lastMessage field contains embedded user data that becomes stale after user deletion
+				if (settings.get('Store_Last_Message')) {
+					const roomsWithDeletedUserLastMessage = await Rooms.find({
+						'lastMessage.u._id': userId,
+					}).toArray();
+
+					for (const room of roomsWithDeletedUserLastMessage) {
+						const lastMessageNotDeleted = await Messages.getLastVisibleUserMessageSentByRoomId(room._id);
+						await Rooms.resetLastMessageById(room._id, lastMessageNotDeleted);
+					}
+				}
+
 				break;
 			case 'Unlink':
 				userToReplaceWhenUnlinking = await Users.findOneById('rocket.cat');
