@@ -18,14 +18,14 @@ import { useTranslation } from 'react-i18next';
 
 import CustomUserStatusRow from './CustomUserStatusRow';
 import FilterByText from '../../../../components/FilterByText';
-import GenericNoResult from '../../../../components/GenericNoResults';
+import GenericError from '../../../../components/GenericError';
+import GenericNoResults from '../../../../components/GenericNoResults';
 
 type CustomUserStatusProps = {
 	reload: MutableRefObject<() => void>;
 	onClick: (id: string) => void;
 };
 
-// TODO: Missing error state
 const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElement | null => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
@@ -47,7 +47,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 
 	const getCustomUserStatus = useEndpoint('GET', '/v1/custom-user-status.list');
 
-	const { data, isLoading, refetch, isFetched } = useQuery({
+	const { data, isLoading, refetch, isFetched, isError } = useQuery({
 		queryKey: ['custom-user-statuses', query],
 
 		queryFn: async () => {
@@ -63,6 +63,10 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 		reload.current = refetch;
 	}, [reload, refetch]);
 
+	if (isError) {
+		return <GenericError buttonAction={refetch} />;
+	}
+
 	if (!data) {
 		return null;
 	}
@@ -70,7 +74,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 	return (
 		<>
 			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
-			{data.length === 0 && <GenericNoResult />}
+			{data.length === 0 && <GenericNoResults />}
 			{data && data.length > 0 && (
 				<>
 					<GenericTable>
