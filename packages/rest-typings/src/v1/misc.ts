@@ -1,11 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
+import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type ShieldSvg = {
 	type?: string;

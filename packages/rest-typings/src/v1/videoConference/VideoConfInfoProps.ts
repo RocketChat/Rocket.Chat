@@ -1,7 +1,6 @@
 import type { JSONSchemaType } from 'ajv';
-import Ajv from 'ajv';
 
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type VideoConfInfoProps = { callId: string };
 
