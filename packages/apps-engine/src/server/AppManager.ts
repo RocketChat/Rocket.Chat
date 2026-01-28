@@ -69,6 +69,7 @@ interface IPurgeAppConfigOpts {
 }
 
 export class AppManager {
+
 	public static Instance: AppManager;
 
 	// apps contains all of the Apps
@@ -652,7 +653,17 @@ export class AppManager {
 				// If an error occurs during this, oh well.
 			});
 
-		await this.installApp(app, user);
+		const installed = await this.installApp(app, user);
+
+		if (!installed) {
+			console.error(`App installation failed for ${app.getID()}. Skipping initialization.`);
+			const storageItem = app.getStorageItem();
+			storageItem.status = AppStatus.ERROR_DISABLED;
+			await this.appMetadataStorage.updateStatus(storageItem._id, AppStatus.ERROR_DISABLED);
+			aff.setStorageError('App installation failed and was disabled.');
+			return aff;
+		}
+
 
 		// Should enable === true, then we go through the entire start up process
 		// Otherwise, we only initialize it.
