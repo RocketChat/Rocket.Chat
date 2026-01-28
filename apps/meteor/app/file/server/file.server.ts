@@ -125,7 +125,7 @@ class GridFS implements IRocketChatFileStore {
 }
 
 class FileSystem implements IRocketChatFileStore {
-	private absolutePath: string;
+	absolutePath: string;
 
 	constructor({ absolutePath = '~/uploads' } = {}) {
 		if (absolutePath.split(path.sep)[0] === '~') {
