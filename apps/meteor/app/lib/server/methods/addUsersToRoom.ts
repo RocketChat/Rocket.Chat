@@ -1,4 +1,3 @@
-import { api } from '@rocket.chat/core-services';
 import { isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
@@ -6,7 +5,6 @@ import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { beforeAddUsersToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
-import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';
 
@@ -96,22 +94,17 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 			}
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
-			if (!subscription) {
-				return addUserToRoom(data.rid, newUser, user);
-			}
-			if (!newUser.username) {
-				return;
-			}
-			void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
-				msg: i18n.t('Username_is_already_in_here', {
-					postProcess: 'sprintf',
-					sprintf: [newUser.username],
-					lng: user?.language,
-				}),
-			});
+			if (subscription) {
+	           throw new Meteor.Error(
+					'error-user-already-in-room',
+					'User already in room',
+					{ method: 'addUsersToRoom' },
+				);
+            }
+
+			return addUserToRoom(data.rid, newUser, user);
 		}),
 	);
-
 	return true;
 };
 
