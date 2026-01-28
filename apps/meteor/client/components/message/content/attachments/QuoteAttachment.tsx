@@ -6,6 +6,7 @@ import type { ReactElement } from 'react';
 
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import MessageContentBody from '../../MessageContentBody';
+import GazzodownText from '../../../GazzodownText';
 import Attachments from '../Attachments';
 import AttachmentAuthor from './structure/AttachmentAuthor';
 import AttachmentAuthorAvatar from './structure/AttachmentAuthorAvatar';
@@ -33,9 +34,10 @@ const quoteStyles = css`
 
 type QuoteAttachmentProps = {
 	attachment: MessageQuoteAttachment;
+	searchText?: string;
 };
 
-export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElement => {
+export const QuoteAttachment = ({ attachment, searchText }: QuoteAttachmentProps): ReactElement => {
 	const formatTime = useTimeAgo();
 	const displayAvatarPreference = useUserPreference<boolean>('displayAvatars');
 
@@ -68,10 +70,19 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 					</AttachmentAuthor>
 					{attachment.attachments && (
 						<AttachmentInner>
-							<Attachments attachments={attachment.attachments} id={attachment.attachments[0]?.title_link} />
+							<Attachments attachments={attachment.attachments} id={attachment.attachments[0]?.title_link} searchText={searchText} />
 						</AttachmentInner>
 					)}
-					{attachment.md ? <MessageContentBody md={attachment.md} /> : attachment.text.substring(attachment.text.indexOf('\n') + 1)}
+					{(() => {
+						const textContent = attachment.text.substring(attachment.text.indexOf('\n') + 1);
+						return attachment.md ? (
+							<MessageContentBody md={attachment.md} searchText={searchText} />
+						) : searchText ? (
+							<GazzodownText searchText={searchText}>{textContent}</GazzodownText>
+						) : (
+							<span>{textContent}</span>
+						);
+					})()}
 				</AttachmentDetails>
 			</AttachmentContent>
 		</>
