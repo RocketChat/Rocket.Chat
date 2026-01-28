@@ -40,13 +40,11 @@ export class MeteorResolver {
 		}
 
 		const promise = (async () => {
-			const names = new Set<string>();
 			const packageFile = path.join(this.meteorPackagesDir, `${pkgName}.js`);
-			if (fs.existsSync(packageFile)) {
-				const code = await this.getPackageSource(pkgName);
-				const ast = await parse(packageFile, code);
-				collectModuleExports(ast.program, names, pkgName);
-			}
+
+			const code = await this.getPackageSource(pkgName);
+			const ast = await parse(packageFile, code);
+			const names = collectModuleExports(ast.program, pkgName);
 
 			const sanitized = Array.from(names).filter((name) => /^[A-Za-z_$][\w$]*$/.test(name));
 			console.log(`[meteor-packages] exports for ${pkgName}:`, sanitized);
