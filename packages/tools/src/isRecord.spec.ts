@@ -24,7 +24,16 @@ describe('isRecord', () => {
 	test.each([
 		['case-1', {}, true],
 		['case-2', { prop: 'value' }, true],
-		['case-2', Object.fromEntries([]), true],
+		['case-3', Object.fromEntries([]), true],
+		['case-4', Object.create(null), true],
+		['case-5', { 0: 'zero', 1: 'one' }, true],
+		['case-6', { [Symbol('key')]: 'value' }, true],
+		// we testing, we ignore eslint
+		// eslint-disable-next-line no-new-wrappers
+		['case-7', new String('string'), false],
+		// eslint-disable-next-line no-new-wrappers
+		['case-8', new Number(1), false],
+		['case-9', [], false],
 	])('should return true for records %# (%s)', (_caseId, input, expected) => {
 		expect(isRecord(input)).toEqual(expected);
 	});

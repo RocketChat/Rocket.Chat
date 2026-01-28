@@ -3,5 +3,15 @@ export function isRecord(record: unknown): record is Record<string | number | sy
 		return false;
 	}
 
-	return Object.getPrototypeOf(record).constructor === Object;
+	if (Array.isArray(record)) {
+		return false;
+	}
+
+	const prototype = Object.getPrototypeOf(record);
+
+	if (prototype === null) {
+		return true;
+	}
+
+	return prototype.constructor === Object;
 }

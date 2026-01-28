@@ -511,8 +511,6 @@ API.v1.addRoute(
 
 			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
 
-			const hasUserQuery = query && Object.keys(query).length > 0;
-
 			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
 
 			// if user provided a query, validate it with their allowed operators
@@ -528,7 +526,9 @@ API.v1.addRoute(
 						inclusiveFieldsKeys.includes('type') && 'type.*',
 						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
 					].filter(Boolean) as string[],
-					hasUserQuery ? this.queryOperations : [...this.queryOperations, '$regex', '$options'],
+					// At this point, we have already validated the user query not containing malicious fields
+					// On here we are using our own query so we can allow some extra fields
+					[...this.queryOperations, '$regex', '$options'],
 				)
 			) {
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));

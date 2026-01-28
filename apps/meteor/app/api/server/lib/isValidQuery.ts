@@ -1,3 +1,5 @@
+import { isRecord } from '@rocket.chat/tools';
+
 import { removeDangerousProps } from './cleanQuery';
 
 type Query = { [k: string]: any };
@@ -8,7 +10,8 @@ export const isValidQuery: {
 } = Object.assign(
 	(query: Query, allowedAttributes: string[], allowedOperations: string[]): boolean => {
 		isValidQuery.errors = [];
-		if (!(query instanceof Object)) {
+		// query is an object with null prototype, so it wont be instance of Object
+		if (!isRecord(query)) {
 			throw new Error('query must be an object');
 		}
 
@@ -21,7 +24,7 @@ export const isValidQuery: {
 );
 
 const verifyQuery = (query: Query, allowedAttributes: string[], allowedOperations: string[], parent = ''): boolean => {
-	return Object.entries(removeDangerousProps(query)).every(([key, value]) => {
+	return Object.entries(removeDangerousProps({ ...query })).every(([key, value]) => {
 		const path = parent ? `${parent}.${key}` : key;
 		if (key.startsWith('$')) {
 			if (!allowedOperations.includes(key)) {
@@ -56,7 +59,7 @@ const verifyQuery = (query: Query, allowedAttributes: string[], allowedOperation
 			return false;
 		}
 
-		if (value instanceof Object) {
+		if (isRecord(value)) {
 			return verifyQuery(value, allowedAttributes, allowedOperations, path);
 		}
 		return true;
