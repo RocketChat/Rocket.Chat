@@ -11,7 +11,7 @@ import DesktopAppsCard from './cards/DesktopAppsCard';
 import DocumentationCard from './cards/DocumentationCard';
 import JoinRoomsCard from './cards/JoinRoomsCard';
 import MobileAppsCard from './cards/MobileAppsCard';
-import { useMobileViewportFix } from '../hooks/useMobileViewportFix';
+import { useMobileViewportFix } from './hooks/useMobileViewportFix';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 
