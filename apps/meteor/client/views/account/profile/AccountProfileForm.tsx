@@ -66,7 +66,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		formState: { errors },
 	} = useFormContext<AccountProfileFormValues>();
 
-	const { email, avatar, username, name: userFullName } = watch();
+	const { email, avatar, username, name, statusType, statusText, nickname, bio, customFields } = watch();
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
 	const previousUsername = user?.username || '';
@@ -87,11 +87,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	}, [email, previousEmail, mutateConfirmationEmail]);
 
 	const validateUsername = async (username: string): Promise<string | undefined> => {
-		if (!username) {
-			return;
-		}
-
-		if (username === previousUsername) {
+		if (!username || username === previousUsername) {
 			return;
 		}
 
@@ -106,22 +102,31 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	};
 
 	const updateOwnBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
-
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
-	const handleSave = async ({ email, name, username, statusType, statusText, nickname, bio, customFields }: AccountProfileFormValues) => {
+	const handleSave = async (values: AccountProfileFormValues) => {
+		const trimmedValues = {
+			...values,
+			email: values.email?.trim(),
+			name: values.name?.trim(),
+			username: values.username?.trim(),
+			statusText: values.statusText?.trim(),
+			nickname: values.nickname?.trim(),
+			bio: values.bio?.trim(),
+		};
+
 		try {
 			await updateOwnBasicInfo({
 				data: {
-					name,
-					...(user ? getUserEmailAddress(user) !== email && { email } : {}),
-					username,
-					statusText,
-					statusType,
-					nickname,
-					bio,
+					name: trimmedValues.name,
+					...(user && getUserEmailAddress(user) !== trimmedValues.email && { email: trimmedValues.email }),
+					username: trimmedValues.username,
+					statusText: trimmedValues.statusText,
+					statusType: trimmedValues.statusType,
+					nickname: trimmedValues.nickname,
+					bio: trimmedValues.bio,
 				},
-				customFields,
+				customFields: trimmedValues.customFields,
 			});
 
 			await updateAvatar();
@@ -129,7 +134,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
-			reset({ email, name, username, statusType, statusText, nickname, bio, customFields });
+			reset(trimmedValues);
 		}
 	};
 
@@ -146,6 +151,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 				<VisuallyHidden>
 					<legend>{t('Profile_details')}</legend>
 				</VisuallyHidden>
+
+				{/* Avatar */}
 				<Field>
 					<Controller
 						control={control}
@@ -154,7 +161,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							<UserAvatarEditor
 								etag={user?.avatarETag}
 								currentUsername={user?.username}
-								name={userFullName}
+								name={name}
 								username={username}
 								setAvatarObj={onChange}
 								disabled={!allowUserAvatarChange}
@@ -162,18 +169,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						)}
 					/>
 				</Field>
-				<Box
-					display='flex'
-					flexDirection={isMobile ? 'column' : 'row'}
-					alignItems='stretch'
-					justifyContent='space-between'
-					className={[
-						css`
-							gap: 16px;
-						`,
-					]}
-				>
-					<Field flexShrink={1}>
+
+				{/* Name + Username */}
+				<Box display='flex' flexDirection={isMobile ? 'column' : 'row'} gap='x16'>
+					<Field>
 						<FieldLabel required htmlFor={nameId}>
 							{t('Name')}
 						</FieldLabel>
@@ -181,30 +180,16 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							<Controller
 								control={control}
 								name='name'
-								rules={{
-									required: requireName && t('Required_field', { field: t('Name') }),
-								}}
+								rules={{ required: requireName && t('Required_field', { field: t('Name') }) }}
 								render={({ field }) => (
-									<TextInput
-										{...field}
-										id={nameId}
-										error={errors.name?.message}
-										disabled={!allowRealNameChange}
-										aria-required='true'
-										aria-invalid={errors.username ? 'true' : 'false'}
-										aria-describedby={`${nameId}-error ${nameId}-hint`}
-									/>
+									<TextInput {...field} id={nameId} disabled={!allowRealNameChange} error={errors.name?.message} />
 								)}
 							/>
 						</FieldRow>
-						{errors.name && (
-							<FieldError aria-live='assertive' id={`${nameId}-error`}>
-								{errors.name.message}
-							</FieldError>
-						)}
-						{!allowRealNameChange && <FieldHint id={`${nameId}-hint`}>{t('RealName_Change_Disabled')}</FieldHint>}
+						{errors.name && <FieldError>{errors.name.message}</FieldError>}
 					</Field>
-					<Field flexShrink={1}>
+
+					<Field>
 						<FieldLabel required htmlFor={usernameId}>
 							{t('Username')}
 						</FieldLabel>
@@ -212,60 +197,35 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							<Controller
 								control={control}
 								name='username'
-								rules={{
-									required: t('Required_field', { field: t('Username') }),
-									validate: (username) => validateUsername(username),
-								}}
+								rules={{ validate: validateUsername }}
 								render={({ field }) => (
-									<TextInput
-										{...field}
-										id={usernameId}
-										disabled={!canChangeUsername}
-										error={errors.username?.message}
-										addon={<Icon name='at' size='x20' />}
-										aria-required='true'
-										aria-invalid={errors.username ? 'true' : 'false'}
-										aria-describedby={`${usernameId}-error ${usernameId}-hint`}
-									/>
+									<TextInput {...field} id={usernameId} disabled={!canChangeUsername} addon={<Icon name='at' />} />
 								)}
 							/>
 						</FieldRow>
-						{errors?.username && (
-							<FieldError aria-live='assertive' id={`${usernameId}-error`}>
-								{errors.username.message}
-							</FieldError>
-						)}
-						{!canChangeUsername && <FieldHint id={`${usernameId}-hint`}>{t('Username_Change_Disabled')}</FieldHint>}
+						{errors.username && <FieldError>{errors.username.message}</FieldError>}
 					</Field>
 				</Box>
+
+				{/* Status */}
 				<Field>
 					<FieldLabel htmlFor={statusTextId}>{t('StatusMessage')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							control={control}
 							name='statusText'
-							rules={{
-								maxLength: {
-									value: USER_STATUS_TEXT_MAX_LENGTH,
-									message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH),
-								},
-							}}
+							rules={{ maxLength: USER_STATUS_TEXT_MAX_LENGTH }}
 							render={({ field }) => (
 								<TextInput
 									{...field}
 									id={statusTextId}
-									error={errors?.statusText?.message}
 									disabled={!allowUserStatusMessageChange}
-									flexGrow={1}
-									placeholder={t('StatusMessage_Placeholder')}
-									aria-invalid={errors.statusText ? 'true' : 'false'}
-									aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
 									addon={
 										<Controller
 											control={control}
 											name='statusType'
 											render={({ field: { value, onChange } }) => (
-												<UserStatusMenu margin='neg-x2' onChange={onChange} initialStatus={value as IUser['status']} />
+												<UserStatusMenu onChange={onChange} initialStatus={value as IUser['status']} />
 											)}
 										/>
 									}
@@ -273,85 +233,40 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							)}
 						/>
 					</FieldRow>
-					{errors?.statusText && (
-						<FieldError aria-live='assertive' id={`${statusTextId}-error`}>
-							{errors?.statusText.message}
-						</FieldError>
-					)}
-					{!allowUserStatusMessageChange && <FieldHint id={`${statusTextId}-hint`}>{t('StatusMessage_Change_Disabled')}</FieldHint>}
 				</Field>
+
+				{/* Nickname */}
 				<Field>
 					<FieldLabel htmlFor={nicknameId}>{t('Nickname')}</FieldLabel>
 					<FieldRow>
-						<Controller
-							control={control}
-							name='nickname'
-							render={({ field }) => (
-								<TextInput {...field} id={nicknameId} flexGrow={1} addon={<Icon name='edit' size='x20' alignSelf='center' />} />
-							)}
-						/>
+						<Controller control={control} name='nickname' render={({ field }) => <TextInput {...field} />} />
 					</FieldRow>
 				</Field>
+
+				{/* Bio */}
 				<Field>
 					<FieldLabel htmlFor={bioId}>{t('Bio')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							control={control}
 							name='bio'
-							rules={{ maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) } }}
-							render={({ field }) => (
-								<TextAreaInput
-									{...field}
-									id={bioId}
-									error={errors.bio?.message}
-									rows={3}
-									flexGrow={1}
-									addon={<Icon name='edit' size='x20' alignSelf='center' />}
-									aria-invalid={errors.statusText ? 'true' : 'false'}
-									aria-describedby={`${bioId}-error`}
-								/>
-							)}
+							rules={{ maxLength: BIO_TEXT_MAX_LENGTH }}
+							render={({ field }) => <TextAreaInput {...field} rows={3} />}
 						/>
 					</FieldRow>
-					{errors?.bio && (
-						<FieldError aria-live='assertive' id={`${bioId}-error`}>
-							{errors.bio.message}
-						</FieldError>
-					)}
 				</Field>
+
+				{/* Email */}
 				<Field>
 					<FieldLabel required htmlFor={emailId}>
 						{t('Email')}
 					</FieldLabel>
-					<FieldRow
-						display='flex'
-						flexDirection={isMobile ? 'column' : 'row'}
-						alignItems='stretch'
-						justifyContent='space-between'
-						className={css`
-							gap: 8px;
-						`}
-					>
+					<FieldRow>
 						<Controller
 							control={control}
 							name='email'
-							rules={{
-								required: t('Required_field', { field: t('Email') }),
-								validate: { validateEmail: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')) },
-							}}
-							render={({ field }) => (
-								<TextInput
-									{...field}
-									id={emailId}
-									flexGrow={1}
-									error={errors.email?.message}
-									addon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
-									disabled={!allowEmailChange}
-									aria-required='true'
-									aria-invalid={errors.email ? 'true' : 'false'}
-									aria-describedby={`${emailId}-error ${emailId}-hint`}
-								/>
-							)}
+							rules={{ validate: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')) }}
+							render={({ field }) => <TextInput {...field} disabled={!allowEmailChange} />}
 						/>
 						{!isUserVerified && (
 							<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail}>
@@ -359,13 +274,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							</Button>
 						)}
 					</FieldRow>
-					{errors.email && (
-						<FieldError aria-live='assertive' id={`${emailId}-error`}>
-							{errors?.email?.message}
-						</FieldError>
-					)}
-					{!allowEmailChange && <FieldHint id={`${emailId}-hint`}>{t('Email_Change_Disabled')}</FieldHint>}
 				</Field>
+
 				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</FieldGroup>
 		</Box>
