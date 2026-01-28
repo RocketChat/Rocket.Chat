@@ -24,7 +24,7 @@ const { resolveContactConflicts } = proxyquire.noCallThru().load('./resolveConta
 	'./validateContactManager': {
 		validateContactManager: validateContactManagerMock,
 	},
-	'./patchContact.ts': {
+	'./patchContact': {
 		patchContact,
 	},
 });

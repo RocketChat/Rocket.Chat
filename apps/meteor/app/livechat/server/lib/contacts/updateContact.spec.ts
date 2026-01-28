@@ -29,7 +29,7 @@ const { updateContact } = proxyquire.noCallThru().load('./updateContact', {
 
 	'@rocket.chat/models': modelsMock,
 
-	'./patchContact.ts': {
+	'./patchContact': {
 		patchContact,
 	},
 });
