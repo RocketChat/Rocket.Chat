@@ -59,8 +59,9 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 				field: 'Alias_Set',
 			});
 		}
+
 		aliases = emojiData.aliases
-			.split(/\s*,\s*/)
+			.split(/[\s,]+/)
 			.filter(Boolean)
 			.map((alias) => limax(alias, { replacement: '_' }))
 			.filter((alias) => alias !== emojiData.name);
