@@ -11,7 +11,7 @@ runs:
         path: |
           ~/.cache/ms-playwright
         # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
-        key: playwright-${{ runner.arch }}-${{ runner.os }}-1.52.0
+        key: playwright-${{ runner.arch }}-${{ runner.os }}-1.57.0
 
     - name: Install Playwright
       shell: bash
