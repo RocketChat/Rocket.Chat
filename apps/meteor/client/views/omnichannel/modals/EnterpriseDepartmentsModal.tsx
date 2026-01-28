@@ -31,7 +31,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 
 	useOutsideClick([ref], onClose);
 
-	useOutsideClick([ref], onClose);
+
 
 	return (
 		<GenericModal
