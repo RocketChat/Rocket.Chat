@@ -35,7 +35,7 @@ import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
-import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
+import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactElement => {
 	const t = useTranslation();
@@ -110,16 +110,23 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
 	const handleSave = async ({ email, name, username, statusType, statusText, nickname, bio, customFields }: AccountProfileFormValues) => {
+		const trimmedName = name.trim();
+		const trimmedUsername = username.trim();
+		const trimmedEmail = email.trim();
+		const trimmedStatusText = statusText?.trim() ?? '';
+		const trimmedNickname = nickname?.trim() ?? '';
+		const trimmedBio = bio?.trim() ?? '';
+
 		try {
 			await updateOwnBasicInfo({
 				data: {
-					name,
-					...(user ? getUserEmailAddress(user) !== email && { email } : {}),
-					username,
-					statusText,
+					name: trimmedName,
+					...(user ? getUserEmailAddress(user) !== trimmedEmail && { email: trimmedEmail } : {}),
+					username: trimmedUsername,
+					statusText: trimmedStatusText,
 					statusType,
-					nickname,
-					bio,
+					nickname: trimmedNickname,
+					bio: trimmedBio,
 				},
 				customFields,
 			});
@@ -129,7 +136,16 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
-			reset({ email, name, username, statusType, statusText, nickname, bio, customFields });
+			reset({
+				email: trimmedEmail,
+				name: trimmedName,
+				username: trimmedUsername,
+				statusType,
+				statusText: trimmedStatusText,
+				nickname: trimmedNickname,
+				bio: trimmedBio,
+				customFields,
+			});
 		}
 	};
 
@@ -283,13 +299,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 				<Field>
 					<FieldLabel htmlFor={nicknameId}>{t('Nickname')}</FieldLabel>
 					<FieldRow>
-						<Controller
-							control={control}
-							name='nickname'
-							render={({ field }) => (
-								<TextInput {...field} id={nicknameId} flexGrow={1} addon={<Icon name='edit' size='x20' alignSelf='center' />} />
-							)}
-						/>
+						<Controller control={control} name='nickname' render={({ field }) => <TextInput {...field} id={nicknameId} flexGrow={1} />} />
 					</FieldRow>
 				</Field>
 				<Field>
@@ -298,7 +308,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						<Controller
 							control={control}
 							name='bio'
-							rules={{ maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) } }}
 							render={({ field }) => (
 								<TextAreaInput
 									{...field}
@@ -307,7 +316,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 									rows={3}
 									flexGrow={1}
 									addon={<Icon name='edit' size='x20' alignSelf='center' />}
-									aria-invalid={errors.statusText ? 'true' : 'false'}
+									aria-invalid={errors.bio ? 'true' : 'false'}
 									aria-describedby={`${bioId}-error`}
 								/>
 							)}
