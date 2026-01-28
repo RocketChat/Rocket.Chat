@@ -1,11 +1,7 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import { Virtuoso } from 'react-virtuoso';
-
-import OutlookEventItem from './OutlookEventItem';
 import {
+	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -13,8 +9,12 @@ import {
 	ContextualbarContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
-} from '../../../components/Contextualbar';
-import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
+} from '@rocket.chat/ui-client';
+import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import { Virtuoso } from 'react-virtuoso';
+
+import OutlookEventItem from './OutlookEventItem';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';

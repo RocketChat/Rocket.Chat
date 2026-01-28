@@ -1,11 +1,11 @@
 import { Field, FieldLabel, FieldRow, TextInput, Box, Margins, Button, ButtonGroup, IconButton } from '@rocket.chat/fuselage';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEvent } from 'react';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { validate, createSoundData } from './lib';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type AddCustomSoundProps = {

@@ -1,10 +1,9 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, CheckBox } from '@rocket.chat/fuselage';
+import { GenericTable, GenericTableHeaderCell, GenericTableBody, GenericTableHeader, useSort } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import ChannelDeletionTableRow from './ChannelDeletionTableRow';
-import { GenericTable, GenericTableHeaderCell, GenericTableBody, GenericTableHeader } from '../../../../../../components/GenericTable';
-import { useSort } from '../../../../../../components/GenericTable/hooks/useSort';
 
 type ChannelDeletionTableProps = {
 	rooms: Serialized<IRoom>[];

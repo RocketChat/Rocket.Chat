@@ -1,10 +1,10 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import RoomInfo from './RoomInfo';
 import FakeRoomProvider from '../../../../../../tests/mocks/client/FakeRoomProvider';
-import { Contextualbar } from '../../../../../components/Contextualbar';
 
 export default {
 	component: RoomInfo,
@@ -83,11 +83,10 @@ ABAC.args = {
 	...Default.args,
 	room: {
 		...roomArgs,
-		// @ts-expect-error - abacAttributes is not yet implemented in Rooms properties
 		abacAttributes: [
-			{ name: 'Chat-sensitivity', values: ['Classified', 'Top-Secret'] },
-			{ name: 'Country', values: ['US-only'] },
-			{ name: 'Project', values: ['Ruminator-2000'] },
+			{ key: 'Chat-sensitivity', values: ['Classified', 'Top-Secret'] },
+			{ key: 'Country', values: ['US-only'] },
+			{ key: 'Project', values: ['Ruminator-2000'] },
 		],
 	},
 };

@@ -11,7 +11,7 @@ import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
 import { newDecoder } from './codec';
 import { AppStatus, AppStatusUtils } from '../../../definition/AppStatus';
-import type { AppMethod } from '../../../definition/metadata';
+import { AppInterface, AppMethod } from '../../../definition/metadata';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
@@ -115,6 +115,8 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 	private readonly livenessManager: LivenessManager;
 
+	private readonly tempFilePath: string;
+
 	// We need to keep the appSource around in case the Deno process needs to be restarted
 	constructor(
 		manager: AppManager,
@@ -137,6 +139,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		this.api = manager.getApiManager();
 		this.logStorage = manager.getLogStorage();
 		this.bridges = manager.getBridges();
+		this.tempFilePath = manager.getTempFilePath();
 	}
 
 	public spawnProcess(): void {
@@ -151,9 +154,17 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			// process must be able to read in order to include files that use NPM packages
 			const parentNodeModulesDir = path.dirname(path.join(appsEngineDir, '..'));
 
+			const allowedDirs = [appsEngineDir, parentNodeModulesDir];
+
+			// If the app handles file upload events, it needs to be able to read the temp dir
+			if (this.appPackage.implemented.doesImplement(AppInterface.IPreFileUpload)) {
+				allowedDirs.push(this.tempFilePath);
+			}
+
 			const options = [
 				'run',
-				`--allow-read=${appsEngineDir},${parentNodeModulesDir}`,
+				'--cached-only',
+				`--allow-read=${allowedDirs.join(',')}`,
 				`--allow-env=${ALLOWED_ENVIRONMENT_VARIABLES.join(',')}`,
 				denoWrapperPath,
 				'--subprocess',
@@ -276,7 +287,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		this.debug('Restarting app subprocess');
 		const logger = new AppConsole('runtime:restart');
 
-		logger.info('Starting restart procedure for app subprocess...', this.livenessManager.getRuntimeData());
+		logger.info({ msg: 'Starting restart procedure for app subprocess...', runtimeData: this.livenessManager.getRuntimeData() });
 
 		this.state = 'restarting';
 
@@ -286,13 +297,13 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			const hasKilled = await this.killProcess();
 
 			if (hasKilled) {
-				logger.debug('Process successfully terminated', { pid });
+				logger.debug({ msg: 'Process successfully terminated', pid });
 			} else {
-				logger.warn('Could not terminate process. Maybe it was already dead?', { pid });
+				logger.warn({ msg: 'Could not terminate process. Maybe it was already dead?', pid });
 			}
 
 			await this.setupApp();
-			logger.info('New subprocess successfully spawned', { pid: this.deno.pid });
+			logger.info({ msg: 'New subprocess successfully spawned', pid: this.deno.pid });
 
 			// setupApp() changes the state to 'ready' - we'll need to workaround that for now
 			this.state = 'restarting';
@@ -308,7 +319,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 			logger.info('Successfully restarted app subprocess');
 		} catch (e) {
-			logger.error("Failed to restart app's subprocess", { error: e.message || e });
+			logger.error({ msg: "Failed to restart app's subprocess", err: e });
 			throw e;
 		} finally {
 			await this.logStorage.storeEntries(AppConsole.toStorageEntry(this.getAppId(), logger));

@@ -1,0 +1,286 @@
+import { randomBytes } from 'crypto';
+
+import { faker } from '@faker-js/faker';
+
+import { Users } from '../fixtures/userStates';
+import { Navbar } from '../page-objects/fragments';
+import { OmnichannelContactCenterContacts } from '../page-objects/omnichannel';
+import { test, expect } from '../utils/test';
+
+const createToken = (): string => {
+	const array = new Uint8Array(16);
+
+	const buffer = randomBytes(16);
+	array.set(buffer);
+
+	return Array.from(array)
+		.map((byte) => byte.toString(16).padStart(2, '0'))
+		.join('');
+};
+
+const createContact = (generateToken = false) => ({
+	id: null,
+	name: `${faker.person.firstName()} ${faker.person.lastName()}`,
+	email: faker.internet.email().toLowerCase(),
+	phone: faker.phone.number('+############'),
+	token: generateToken ? createToken() : null,
+	customFields: {},
+});
+
+const NEW_CONTACT = createContact();
+const EDIT_CONTACT = createContact();
+const EXISTING_CONTACT = {
+	id: undefined,
+	name: `${faker.person.firstName()} ${faker.person.lastName()}`,
+	emails: [faker.internet.email().toLowerCase()],
+	phones: [faker.phone.number('+############')],
+	token: undefined,
+};
+const DELETE_CONTACT = {
+	id: undefined,
+	name: `${faker.person.firstName()} ${faker.person.lastName()}`,
+	emails: [faker.internet.email().toLowerCase()],
+	phones: [faker.phone.number('+############')],
+};
+
+const URL = {
+	contactCenter: '/omnichannel-directory/contacts',
+	newContact: '/omnichannel-directory/contacts/new',
+	get editContact() {
+		return `${this.contactCenter}/edit/${NEW_CONTACT.id}`;
+	},
+	get contactInfo() {
+		return `${this.contactCenter}/details/${NEW_CONTACT.id}`;
+	},
+};
+
+const ERROR = {
+	nameRequired: 'Name required',
+	invalidEmail: 'Invalid email address',
+	emailRequired: 'Email required',
+	emailAlreadyExists: 'Email already exists',
+	phoneRequired: 'Phone required',
+	phoneAlreadyExists: 'Phone already exists',
+};
+
+test.use({ storageState: Users.admin.state });
+
+test.describe('OC - Contact Center - Contacts', () => {
+	let poContacts: OmnichannelContactCenterContacts;
+	let poNavbar: Navbar;
+
+	test.beforeAll(async ({ api }) => {
+		// Add contacts
+		await Promise.all([api.post('/omnichannel/contacts', EXISTING_CONTACT), api.post('/omnichannel/contacts', DELETE_CONTACT)]);
+	});
+
+	test.afterAll(async ({ api }) => {
+		// Remove added contacts
+		await Promise.all([api.delete(`/livechat/visitor/${NEW_CONTACT.token}`), api.delete(`/livechat/visitor/${EXISTING_CONTACT.token}`)]);
+	});
+
+	test.beforeEach(async ({ page }) => {
+		poContacts = new OmnichannelContactCenterContacts(page);
+		poNavbar = new Navbar(page);
+	});
+
+	test.afterEach(async ({ api }) => {
+		await api
+			.get('/omnichannel/contacts.search', { searchText: NEW_CONTACT.phone })
+			.then((res) => res.json())
+			.then((res) => {
+				NEW_CONTACT.token = res.contacts?.[0]?.token;
+				NEW_CONTACT.id = res.contacts?.[0]?._id;
+			});
+
+		await api
+			.get('/omnichannel/contacts.search', { searchText: EXISTING_CONTACT.phones[0] })
+			.then((res) => res.json())
+			.then((res) => {
+				EXISTING_CONTACT.token = res.contacts?.[0]?.token;
+				EXISTING_CONTACT.id = res.contacts?.[0]?._id;
+			});
+	});
+
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/');
+		await poNavbar.btnContactCenter.click();
+		await poContacts.tabContacts.click();
+		await page.waitForURL(URL.contactCenter);
+	});
+
+	test('Add new contact', async ({ page }) => {
+		await test.step('cancel button', async () => {
+			await poContacts.btnNewContact.click();
+			await page.waitForURL(URL.newContact);
+			await expect(poContacts.editContact.inputName).toBeVisible();
+			await poContacts.editContact.btnCancel.click();
+			await page.waitForURL(URL.contactCenter);
+			await expect(poContacts.editContact.inputName).not.toBeVisible();
+		});
+
+		await test.step('open contextual bar', async () => {
+			await poContacts.btnNewContact.click();
+			await page.waitForURL(URL.newContact);
+			await expect(poContacts.editContact.inputName).toBeVisible();
+		});
+
+		await test.step('input name', async () => {
+			await poContacts.editContact.inputName.fill(NEW_CONTACT.name);
+		});
+
+		await test.step('validate email format', async () => {
+			await poContacts.editContact.btnAddEmail.click();
+			await poContacts.editContact.inputEmail.fill('invalidemail');
+			await page.keyboard.press('Tab');
+			await expect(poContacts.editContact.getErrorMessage(ERROR.invalidEmail)).toBeVisible();
+		});
+
+		await test.step('validate email is duplicated', async () => {
+			await poContacts.editContact.inputEmail.fill(EXISTING_CONTACT.emails[0]);
+			await page.keyboard.press('Tab');
+			await expect(poContacts.editContact.getErrorMessage(ERROR.emailAlreadyExists)).toBeVisible();
+		});
+
+		await test.step('validate email is required', async () => {
+			await poContacts.editContact.inputEmail.clear();
+			await page.keyboard.press('Tab');
+			await expect(poContacts.editContact.getErrorMessage(ERROR.emailRequired)).toBeVisible();
+		});
+
+		await test.step('input email', async () => {
+			await poContacts.editContact.inputEmail.fill(NEW_CONTACT.email);
+			await page.keyboard.press('Tab');
+			await expect(poContacts.editContact.getErrorMessage(ERROR.invalidEmail)).not.toBeVisible();
+			await expect(poContacts.editContact.getErrorMessage(ERROR.emailRequired)).not.toBeVisible();
+			await expect(poContacts.editContact.getErrorMessage(ERROR.emailAlreadyExists)).not.toBeVisible();
+		});
+
+		await test.step('validate phone is duplicated', async () => {
+			await poContacts.editContact.btnAddPhone.click();
+			await poContacts.editContact.inputPhone.fill(EXISTING_CONTACT.phones[0]);
+			await page.keyboard.press('Tab');
+			await expect(poContacts.editContact.getErrorMessage(ERROR.phoneAlreadyExists)).toBeVisible();
+		});
+
+		await test.step('input phone', async () => {
+			await poContacts.editContact.inputPhone.fill(NEW_CONTACT.phone);
+			await page.keyboard.press('Tab');
+			await expect(poContacts.editContact.getErrorMessage(ERROR.phoneRequired)).not.toBeVisible();
+		});
+
+		await test.step('save new contact', async () => {
+			await expect(poContacts.editContact.btnSave).toBeEnabled();
+			await poContacts.editContact.btnSave.click();
+
+			await poContacts.inputSearch.fill(NEW_CONTACT.name);
+			await expect(poContacts.table.findRowByName(NEW_CONTACT.name)).toBeVisible();
+		});
+	});
+
+	test('Edit new contact', async ({ page }) => {
+		await test.step('search contact and open contextual bar', async () => {
+			await poContacts.inputSearch.fill(NEW_CONTACT.name);
+			const row = poContacts.table.findRowByName(NEW_CONTACT.name);
+			await expect(row).toBeVisible();
+			await row.click();
+			await page.waitForURL(URL.contactInfo);
+		});
+
+		await test.step('cancel button', async () => {
+			await poContacts.contactInfo.btnEdit.click();
+			await page.waitForURL(URL.editContact);
+			await poContacts.editContact.btnCancel.click();
+			await page.waitForURL(URL.contactInfo);
+		});
+
+		await test.step('edit contact', async () => {
+			await poContacts.contactInfo.btnEdit.click();
+			await page.waitForURL(URL.editContact);
+		});
+
+		await test.step('initial values', async () => {
+			await expect(poContacts.editContact.inputName).toHaveValue(NEW_CONTACT.name);
+			await expect(poContacts.editContact.inputEmail).toHaveValue(NEW_CONTACT.email);
+			await expect(poContacts.editContact.inputPhone).toHaveValue(NEW_CONTACT.phone);
+		});
+
+		await test.step('validate email format', async () => {
+			await poContacts.editContact.inputEmail.fill('invalidemail');
+			await page.keyboard.press('Tab');
+			await expect(poContacts.editContact.getErrorMessage(ERROR.invalidEmail)).toBeVisible();
+		});
+
+		await test.step('validate email is duplicated', async () => {
+			await poContacts.editContact.inputEmail.fill(EXISTING_CONTACT.emails[0]);
+			await page.keyboard.press('Tab');
+			await expect(poContacts.editContact.getErrorMessage(ERROR.emailAlreadyExists)).toBeVisible();
+		});
+
+		await test.step('validate email is required', async () => {
+			await poContacts.editContact.inputEmail.clear();
+			await page.keyboard.press('Tab');
+			await expect(poContacts.editContact.getErrorMessage(ERROR.emailRequired)).toBeVisible();
+		});
+
+		await test.step('validate name is required', async () => {
+			await poContacts.editContact.inputName.clear();
+			await page.keyboard.press('Tab');
+			await expect(poContacts.editContact.getErrorMessage(ERROR.nameRequired)).toBeVisible();
+		});
+
+		await test.step('edit name', async () => {
+			await poContacts.editContact.inputName.fill(EDIT_CONTACT.name);
+		});
+
+		await test.step('validate phone is duplicated', async () => {
+			await poContacts.editContact.inputPhone.fill(EXISTING_CONTACT.phones[0]);
+			await page.keyboard.press('Tab');
+			await expect(poContacts.editContact.getErrorMessage(ERROR.phoneAlreadyExists)).toBeVisible();
+		});
+
+		await test.step('input phone ', async () => {
+			await poContacts.editContact.inputPhone.fill(EDIT_CONTACT.phone);
+			await page.keyboard.press('Tab');
+			await expect(poContacts.editContact.getErrorMessage(ERROR.phoneRequired)).not.toBeVisible();
+		});
+
+		await test.step('input email', async () => {
+			await poContacts.editContact.inputEmail.fill(EDIT_CONTACT.email);
+			await page.keyboard.press('Tab');
+			await expect(poContacts.editContact.getErrorMessage(ERROR.invalidEmail)).not.toBeVisible();
+			await expect(poContacts.editContact.getErrorMessage(ERROR.emailRequired)).not.toBeVisible();
+			await expect(poContacts.editContact.getErrorMessage(ERROR.emailAlreadyExists)).not.toBeVisible();
+		});
+
+		await test.step('save new contact ', async () => {
+			await poContacts.editContact.btnSave.click();
+
+			await poContacts.inputSearch.fill(EDIT_CONTACT.name);
+			await expect(poContacts.table.findRowByName(EDIT_CONTACT.name)).toBeVisible();
+		});
+	});
+
+	test('Delete a contact', async () => {
+		await test.step('Find contact and open modal', async () => {
+			await poContacts.inputSearch.fill(DELETE_CONTACT.name);
+			await poContacts.deleteContact(DELETE_CONTACT.name);
+		});
+
+		await test.step('Fill confirmation and delete contact', async () => {
+			// Fills the input with the wrong confirmation
+			await poContacts.deleteContactModal.inputConfirmation.fill('wrong');
+			await expect(poContacts.deleteContactModal.btnDelete).toBeDisabled();
+
+			// Fills the input correctly
+			await poContacts.deleteContactModal.inputConfirmation.fill('delete');
+			await expect(poContacts.deleteContactModal.btnDelete).toBeEnabled();
+			await poContacts.deleteContactModal.delete();
+		});
+
+		await test.step('Confirm contact removal', async () => {
+			await poContacts.inputSearch.fill(DELETE_CONTACT.name);
+			await expect(poContacts.table.findRowByName(DELETE_CONTACT.name)).not.toBeVisible();
+		});
+	});
+});

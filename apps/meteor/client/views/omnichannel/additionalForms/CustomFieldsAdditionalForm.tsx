@@ -23,7 +23,7 @@ const CustomFieldsAdditionalForm = ({ className }: { className?: ComponentProps<
 		watch,
 		formState: { errors },
 	} = useFormContext<EditCustomFieldsFormData>();
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
 	const { visibility, type } = watch();
 

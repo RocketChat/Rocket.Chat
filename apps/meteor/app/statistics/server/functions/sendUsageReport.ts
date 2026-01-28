@@ -6,6 +6,7 @@ import { tracerSpan } from '@rocket.chat/tracing';
 import { Meteor } from 'meteor/meteor';
 
 import { statistics } from '..';
+import { shouldReportStatistics } from '../../../../server/cron/usageReport';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
 
 async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string | undefined> {
@@ -34,6 +35,10 @@ async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string
 }
 
 export async function sendUsageReport(logger: Logger): Promise<string | undefined> {
+	// Even when disabled, we still generate statistics locally to avoid breaking
+	// internal processes, such as restriction checks for air-gapped workspaces.
+	const shouldSendToCollector = shouldReportStatistics();
+
 	return tracerSpan('generateStatistics', {}, async () => {
 		const last = await Statistics.findLast();
 		if (last) {
@@ -48,13 +53,18 @@ export async function sendUsageReport(logger: Logger): Promise<string | undefine
 				}
 
 				// if it doesn't it means the request failed, so we try sending again with the same data
-				return sendStats(logger, last);
+				if (shouldSendToCollector) {
+					return sendStats(logger, last);
+				}
+
+				return;
 			}
 		}
 
 		// if our latest stats has more than 24h, it is time to generate a new one and send it
 		const cronStatistics = await statistics.save();
-
-		return sendStats(logger, cronStatistics);
+		if (shouldSendToCollector) {
+			return sendStats(logger, cronStatistics);
+		}
 	});
 }

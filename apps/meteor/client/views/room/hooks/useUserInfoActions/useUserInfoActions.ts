@@ -1,6 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
@@ -18,7 +19,6 @@ import { useRemoveUserAction } from './actions/useRemoveUserAction';
 import { useReportUser } from './actions/useReportUser';
 import { useUserMediaCallAction } from './actions/useUserMediaCallAction';
 import { useVideoCallAction } from './actions/useVideoCallAction';
-import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 
 export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation';
 
@@ -56,6 +56,7 @@ type UserInfoActionsParams = {
 	reload?: () => void;
 	size?: number;
 	isMember?: boolean;
+	isInvited?: boolean;
 };
 
 export const useUserInfoActions = ({
@@ -64,6 +65,7 @@ export const useUserInfoActions = ({
 	reload,
 	size = 2,
 	isMember,
+	isInvited,
 }: UserInfoActionsParams): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
 	const addUser = useAddUserAction(user, rid, reload);
 	const blockUser = useBlockUserAction(user, rid);
@@ -74,7 +76,7 @@ export const useUserInfoActions = ({
 	const openDirectMessage = useDirectMessageAction(user, rid);
 	const ignoreUser = useIgnoreUserAction(user, rid);
 	const muteUser = useMuteUserAction(user, rid);
-	const removeUser = useRemoveUserAction(user, rid, reload);
+	const removeUser = useRemoveUserAction(user, rid, reload, isInvited);
 	const videoCall = useVideoCallAction(user);
 	const reportUserOption = useReportUser(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
@@ -94,8 +96,8 @@ export const useUserInfoActions = ({
 			...(isMember && ignoreUser && { ignoreUser }),
 			...(isMember && muteUser && { muteUser }),
 			...(blockUser && { toggleBlock: blockUser }),
+			...((isMember || isInvited) && removeUser && { removeUser }),
 			...(reportUserOption && { reportUser: reportUserOption }),
-			...(isMember && removeUser && { removeUser }),
 		}),
 		[
 			openDirectMessage,
@@ -113,6 +115,7 @@ export const useUserInfoActions = ({
 			openModerationConsole,
 			addUser,
 			isMember,
+			isInvited,
 		],
 	);
 

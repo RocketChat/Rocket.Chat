@@ -3,7 +3,8 @@ import type { Page } from '@playwright/test';
 import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.describe('Omnichannel close inquiry', () => {
@@ -49,7 +50,7 @@ test.describe('Omnichannel close inquiry', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.getQueuedChat(newVisitor.name).click();
+			await agent.poHomeOmnichannel.sidebar.getSidebarItemByName(newVisitor.name).click();
 			await expect(agent.poHomeOmnichannel.content.btnTakeChat).toBeVisible();
 		});
 
@@ -58,9 +59,9 @@ test.describe('Omnichannel close inquiry', () => {
 		});
 
 		await test.step('Expect to inquiry be closed when navigate back', async () => {
-			await agent.poHomeOmnichannel.sidenav.openAdministrationByLabel('Omnichannel');
+			await agent.poHomeOmnichannel.navbar.openManageMenuItem('Omnichannel');
 			await agent.poHomeOmnichannel.omnisidenav.linkCurrentChats.click();
-			await agent.poHomeOmnichannel.currentChats.findRowByName(newVisitor.name).click();
+			await agent.poHomeOmnichannel.chats.openChat(newVisitor.name);
 			await expect(agent.poHomeOmnichannel.content.btnTakeChat).not.toBeVisible();
 		});
 	});
