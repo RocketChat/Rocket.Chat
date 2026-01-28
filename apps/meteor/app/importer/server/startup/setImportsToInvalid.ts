@@ -7,7 +7,7 @@ Meteor.startup(async () => {
 	const lastOperation = await Imports.findLastImport();
 
 	// If the operation is still on "ready to start" state, we don't need to invalidate it.
-	if (lastOperation && [ProgressStep.USER_SELECTION].includes(lastOperation.status)) {
+	if (lastOperation && [ProgressStep.USER_SELECTION].includes(lastOperation.status as any)) {
 		await Imports.invalidateOperationsExceptId(lastOperation._id);
 		return;
 	}
