@@ -1,7 +1,5 @@
 import path from 'node:path';
 
-import type * as vite from 'vite';
-
 export type PluginOptions = {
 	/**
 	 * The root URL of the Meteor application.
@@ -53,7 +51,7 @@ export type ResolvedPluginOptions = {
 	readonly meteorServerPort: number;
 }
 
-export function resolveConfig(pluginConfig: PluginOptions, _userConfig: vite.UserConfig, _viteEnv: vite.ConfigEnv): ResolvedPluginOptions {
+export function resolveConfig(pluginConfig: PluginOptions): ResolvedPluginOptions {
 	const parsePort = (value?: string | number | null) => {
 		if (typeof value === 'number') {
 			return Number.isFinite(value) && value > 0 ? value : undefined;

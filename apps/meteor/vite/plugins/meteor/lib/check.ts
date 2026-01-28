@@ -7,15 +7,4 @@ type Check = {
 	[K in Node as `is${K['type']}`]: NodePredicate<K['type']>;
 };
 
-export function is<const T extends string>(node: Node | null | undefined, type: T): node is NodeOfType<T> {
-	return node?.type === type;
-}
-
-export const check = Object.fromEntries(
-	Object.keys(visitorKeys).map((type) => [
-		`is${type}`,
-		(node) => {
-			return is(node, type);
-		},
-	]),
-) as Check;
+export const check = Object.fromEntries(Object.keys(visitorKeys).map((type) => [`is${type}`, (node) => node?.type === type])) as Check;
