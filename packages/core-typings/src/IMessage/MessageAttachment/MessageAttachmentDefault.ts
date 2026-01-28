@@ -27,6 +27,7 @@ export type MessageAttachmentDefault = {
 	mrkdwn_in?: Array<MarkdownFields>;
 	pretext?: string;
 	text?: string;
+	footer?: string;
 	md?: Root;
 
 	thumb_url?: string;
