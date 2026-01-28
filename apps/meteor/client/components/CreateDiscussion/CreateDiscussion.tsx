@@ -20,9 +20,10 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import type { ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -43,30 +44,48 @@ type CreateDiscussionFormValues = {
 
 type CreateDiscussionProps = {
 	parentMessageId?: IMessage['_id'];
+	encryptedParentRoom?: boolean;
 	onClose: () => void;
 	defaultParentRoom?: IRoom['_id'];
 	nameSuggestion?: string;
 };
 
 // TODO: Replace `Modal` in favor of `GenericModal`
-const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSuggestion }: CreateDiscussionProps): ReactElement => {
+const CreateDiscussion = ({
+	onClose,
+	defaultParentRoom,
+	parentMessageId,
+	nameSuggestion,
+	encryptedParentRoom = false,
+}: CreateDiscussionProps): ReactElement => {
 	const t = useTranslation();
+
+	const [encryptedDisabled, setEncryptedDisabled] = useState(encryptedParentRoom);
 
 	const {
 		formState: { errors },
 		handleSubmit,
 		control,
 		watch,
+		setValue,
 	} = useForm({
 		mode: 'onBlur',
 		defaultValues: {
 			name: nameSuggestion || '',
 			parentRoom: '',
-			encrypted: false,
+			encrypted: encryptedParentRoom,
 			usernames: [],
 			firstMessage: '',
 			topic: '',
 		},
+	});
+
+	const onParentRoomChange = useEffectEvent((room: IRoom | undefined) => {
+		if (!room) {
+			return;
+		}
+		setValue('encrypted', room.encrypted === true);
+		setEncryptedDisabled(room.encrypted === true);
 	});
 
 	const { encrypted } = watch();
@@ -143,6 +162,8 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 											aria-invalid={Boolean(errors.parentRoom)}
 											aria-required='true'
 											aria-describedby={`${parentRoomId}-error`}
+											setSelectedRoom={onParentRoomChange}
+											renderRoomIcon={({ encrypted }) => (encrypted ? <Icon name='key' /> : null)}
 										/>
 									)}
 								/>
@@ -242,7 +263,9 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 							<Controller
 								control={control}
 								name='encrypted'
-								render={({ field: { value, ...field } }) => <ToggleSwitch id={encryptedId} {...field} checked={value} />}
+								render={({ field: { value, ...field } }) => (
+									<ToggleSwitch id={encryptedId} {...field} checked={value} disabled={encryptedDisabled} />
+								)}
 							/>
 						</FieldRow>
 						<FieldHint id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate: true, encrypted })}</FieldHint>
