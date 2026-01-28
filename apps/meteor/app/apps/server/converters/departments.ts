@@ -1,19 +1,25 @@
+import type { IAppDepartmentsConverter, IAppsDepartment, IAppServerOrchestrator } from '@rocket.chat/apps';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
 
 import { transformMappedData } from './transformMappedData';
 
-export class AppDepartmentsConverter {
-	constructor(orch) {
-		this.orch = orch;
-	}
+export class AppDepartmentsConverter implements IAppDepartmentsConverter {
+	constructor(public orch: IAppServerOrchestrator) {}
 
-	async convertById(id) {
-		const department = await LivechatDepartment.findOneById(id);
+	async convertById(departmentId: ILivechatDepartment['_id']): Promise<IAppsDepartment | undefined> {
+		const department = await LivechatDepartment.findOneById(departmentId);
 
 		return this.convertDepartment(department);
 	}
 
-	async convertDepartment(department) {
+	convertDepartment(department: undefined | null): Promise<undefined>;
+
+	convertDepartment(department: ILivechatDepartment): Promise<IAppsDepartment>;
+
+	convertDepartment(department: ILivechatDepartment | undefined | null): Promise<IAppsDepartment | undefined>;
+
+	async convertDepartment(department: ILivechatDepartment | undefined | null): Promise<IAppsDepartment | undefined> {
 		if (!department) {
 			return undefined;
 		}
@@ -39,22 +45,28 @@ export class AppDepartmentsConverter {
 		return transformMappedData(department, map);
 	}
 
-	convertAppDepartment(department) {
+	convertAppDepartment(department: undefined | null): undefined;
+
+	convertAppDepartment(department: IAppsDepartment): ILivechatDepartment;
+
+	convertAppDepartment(department: IAppsDepartment | undefined | null): ILivechatDepartment | undefined;
+
+	convertAppDepartment(department: IAppsDepartment | undefined | null): ILivechatDepartment | undefined {
 		if (!department) {
 			return undefined;
 		}
 
-		const newDepartment = {
+		const newDepartment: ILivechatDepartment = {
 			_id: department.id,
-			name: department.name,
-			email: department.email,
+			name: department.name!,
+			email: department.email!,
 			_updatedAt: department.updatedAt,
 			enabled: department.enabled,
 			numAgents: department.numberOfAgents,
 			showOnOfflineForm: department.showOnOfflineForm,
 			showOnRegistration: department.showOnRegistration,
 			description: department.description,
-			offlineMessageChannelName: department.offlineMessageChannelName,
+			offlineMessageChannelName: department.offlineMessageChannelName!,
 			requestTagBeforeClosingChat: department.requestTagBeforeClosingChat,
 			chatClosingTags: department.chatClosingTags,
 			abandonedRoomsCloseCustomMessage: department.abandonedRoomsCloseCustomMessage,
@@ -62,6 +74,6 @@ export class AppDepartmentsConverter {
 			departmentsAllowedToForward: department.departmentsAllowedToForward,
 		};
 
-		return Object.assign(newDepartment, department._unmappedProperties_);
+		return Object.assign(newDepartment, (department as { _unmappedProperties_?: any })._unmappedProperties_);
 	}
 }

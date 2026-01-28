@@ -8,7 +8,7 @@ export interface IDepartment {
 	chatClosingTags?: Array<string>;
 	abandonedRoomsCloseCustomMessage?: string;
 	waitingQueueMessage?: string;
-	departmentsAllowedToForward?: string;
+	departmentsAllowedToForward?: string[];
 	enabled: boolean;
 	updatedAt: Date;
 	numberOfAgents: number;
