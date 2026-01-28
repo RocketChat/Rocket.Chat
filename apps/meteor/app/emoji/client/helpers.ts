@@ -2,6 +2,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import type { EmojiCategory, EmojiItem } from '.';
+import { searchEmojisByKeyword } from './emojiKeywords';
 import { emoji, emojiEmitter } from './lib';
 
 export const CUSTOM_CATEGORY = 'rocket';
@@ -148,13 +149,24 @@ export const getEmojisBySearchTerm = (
 ) => {
 	const emojis = [];
 	const searchRegExp = new RegExp(escapeRegExp(searchTerm.replace(/:/g, '')), 'i');
+	const searchTermLower = searchTerm.toLowerCase().trim();
+
+	// Get keyword matches for natural language search
+	const keywordMatches = searchEmojisByKeyword(searchTermLower);
+	const addedEmojis = new Set<string>(); // Track added emojis to avoid duplicates
 
 	for (let current in emoji.list) {
 		if (!emoji.list.hasOwnProperty(current)) {
 			continue;
 		}
 
-		if (searchRegExp.test(current)) {
+		const emojiName = current.replace(/:/g, '');
+
+		// Check if emoji matches by shortcode/name OR by keyword
+		const matchesByShortcode = searchRegExp.test(current);
+		const matchesByKeyword = keywordMatches.has(emojiName);
+
+		if (matchesByShortcode || matchesByKeyword) {
 			const emojiObject = emoji.list[current];
 			const { emojiPackage, shortnames = [] } = emojiObject;
 			let tone = '';
@@ -167,26 +179,36 @@ export const getEmojisBySearchTerm = (
 
 			let emojiFound = false;
 
-			for (const key in emoji.packages[emojiPackage].emojisByCategory) {
-				if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
-					const contents = emoji.packages[emojiPackage].emojisByCategory[key];
-					const searchValArray = alias !== undefined ? alias.replace(/:/g, '').split('_') : alias;
-					if (contents.indexOf(current) !== -1 || searchValArray?.includes(searchTerm)) {
-						emojiFound = true;
-						break;
+			// For keyword matches, we already know the emoji is valid
+			if (matchesByKeyword) {
+				emojiFound = true;
+			} else {
+				// Original shortcode matching logic
+				for (const key in emoji.packages[emojiPackage].emojisByCategory) {
+					if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
+						const contents = emoji.packages[emojiPackage].emojisByCategory[key];
+						const searchValArray = alias !== undefined ? alias.replace(/:/g, '').split('_') : alias;
+						if (contents.indexOf(current) !== -1 || searchValArray?.includes(searchTerm)) {
+							emojiFound = true;
+							break;
+						}
 					}
 				}
 			}
 
-			if (emojiFound) {
+			if (emojiFound && !addedEmojis.has(current)) {
 				const emojiToRender = `:${current}${tone}:`;
 
 				if (!emoji.list[emojiToRender]) {
 					removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
-					break;
+					continue;
 				}
 
-				emojis.push({ emoji: current, image: emoji.packages[emojiPackage].renderPicker(emojiToRender) });
+				const renderedEmoji = emoji.packages[emojiPackage].renderPicker(emojiToRender);
+				if (renderedEmoji) {
+					emojis.push({ emoji: current, image: renderedEmoji });
+					addedEmojis.add(current);
+				}
 			}
 		}
 	}
