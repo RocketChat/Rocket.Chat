@@ -323,7 +323,7 @@ export const FileUpload = {
 		const store = FileUpload.getStore('Uploads');
 		const image = await store._store.getReadStream(file._id, file);
 
-		let transformer = sharp().resize({ width, height, fit: 'inside' });
+		let transformer = sharp().resize({ width, height, fit: 'inside' }).rotate();
 
 		if (file.type === 'image/svg+xml') {
 			transformer = transformer.png();
