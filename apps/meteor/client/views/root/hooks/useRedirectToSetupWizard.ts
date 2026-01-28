@@ -7,11 +7,20 @@ export const useRedirectToSetupWizard = (): void => {
 	const router = useRouter();
 	const isAdmin = useRole('admin');
 
-	const isWizardInProgress = userId && isAdmin && setupWizardState === 'in_progress';
-	const mustRedirect = (!userId && setupWizardState === 'pending') || isWizardInProgress;
+	// Setup wizard conditions
+	const isWizardInProgress =
+		!!userId && !!isAdmin && setupWizardState === 'in_progress';
+
+	const mustRedirect =
+		(!userId && setupWizardState === 'pending') || isWizardInProgress;
+
+	// Detect 404 page
+	const routeName = router.getRouteName() ?? '';
+	const isNotFoundPage = routeName === 'not-found';
+
 	useEffect(() => {
-		if (mustRedirect) {
+		if (mustRedirect && !isNotFoundPage) {
 			router.navigate('/setup-wizard');
 		}
-	}, [mustRedirect, router]);
+	}, [mustRedirect, isNotFoundPage]);
 };
