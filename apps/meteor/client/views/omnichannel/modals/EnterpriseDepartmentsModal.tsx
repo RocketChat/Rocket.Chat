@@ -1,9 +1,7 @@
 import { ModalHeroImage, ModalTagline, Box } from '@rocket.chat/fuselage';
-import { useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
@@ -14,7 +12,6 @@ import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }): ReactElement => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const ref = useRef<HTMLDivElement>(null);
 
 	const openExternalLink = useExternalLink();
 	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'new-departments-page', action: 'upgrade' });
@@ -29,10 +26,6 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 		closeModal();
 	};
 
-	useOutsideClick([ref], onClose);
-
-
-
 	return (
 		<GenericModal
 			variant='warning'
@@ -41,7 +34,6 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 			onCancel={onClose}
 			onClose={onClose}
 			confirmText={t('Upgrade')}
-			ref={ref}
 		>
 			<ModalTagline>{t('Premium_capability')}</ModalTagline>
 			<ModalHeroImage src='/images/departments.svg' />
