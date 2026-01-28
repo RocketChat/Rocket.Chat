@@ -76,7 +76,6 @@ const ForwardChatModal = ({ onForward, onCancel, room }: ForwardChatModalProps):
 	}, [register]);
 
 	return (
-		//Model to GenericModel
 		<GenericModal
 			title={t('Forward_chat')}
 			onCancel={onCancel}
