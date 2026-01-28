@@ -114,13 +114,32 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return result.insertedId;
 	}
 
-	async updateContact(contactId: string, data: Partial<ILivechatContact>, options?: FindOneAndUpdateOptions): Promise<ILivechatContact> {
-		const updatedValue = await this.findOneAndUpdate(
+	async patchContact(
+		contactId: string,
+		changes: {
+			set?: Partial<ILivechatContact>;
+			unset?: Array<keyof ILivechatContact>;
+		},
+		options?: FindOneAndUpdateOptions,
+	) {
+		const { set = {}, unset = [] } = changes;
+
+		const $set = {
+			...set,
+			unknown: false,
+			...(set.channels && { preRegistration: !set.channels.length }),
+		};
+
+		const $unset = unset.reduce((acc, key) => ({ ...acc, [key]: '' }), {});
+
+		return this.findOneAndUpdate(
 			{ _id: contactId, enabled: { $ne: false } },
-			{ $set: { ...data, unknown: false, ...(data.channels && { preRegistration: !data.channels.length }) } },
+			{
+				$set,
+				...(unset.length > 0 && { $unset }),
+			},
 			{ returnDocument: 'after', ...options },
 		);
-		return updatedValue as ILivechatContact;
 	}
 
 	updateById(contactId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<Document | UpdateResult> {
