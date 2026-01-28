@@ -1,10 +1,19 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
+<<<<<<< HEAD
 
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
 
 
+=======
+import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
+import { Users, Subscriptions } from '@rocket.chat/models';
+import {
+	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+>>>>>>> 4396c0a619 (feat: consolidate migration, enable swagger, and purge legacy typings)
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
 	isUserDeactivateIdleParamsPOST,
@@ -30,7 +39,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
-import type { ExtractRoutesFromAPI } from '../ApiClass';
+
 import { generatePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/generateToken';
 import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
@@ -917,19 +926,19 @@ const usersEndpoints = API.v1.get(
 			return API.v1.success({ preferences });
 		}
 
-		throw new Meteor.Error(
-			'error-preferences-not-found',
-			i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase(),
-		);
+		throw new Meteor.Error('error-preferences-not-found', i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
 	},
 );
 
 export type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
+<<<<<<< HEAD
 	interface Endpoints extends UsersEndpoints { }
+=======
+	type Endpoints = UsersEndpoints;
+>>>>>>> 4396c0a619 (feat: consolidate migration, enable swagger, and purge legacy typings)
 }
-
 
 API.v1.addRoute(
 	'users.forgotPassword',
