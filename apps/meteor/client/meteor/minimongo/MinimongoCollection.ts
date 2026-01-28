@@ -44,13 +44,12 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 		});
 	}
 
-	protected _collection: LocalCollection<T>;
-
 	/**
 	 * The internal collection that manages the queries and results.
 	 *
 	 * It overrides the default Mongo.Collection's methods to use Zustand for state management.
 	 */
+	protected _collection: LocalCollection<T>;
 
 	constructor(
 		/**
