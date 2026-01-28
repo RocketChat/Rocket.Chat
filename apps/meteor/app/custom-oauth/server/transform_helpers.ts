@@ -1,6 +1,8 @@
-import { isObject } from '../../../lib/utils/isObject';
+import { isObject } from '@rocket.chat/tools';
 
-export const normalizers = {
+type Identity = Record<string, any>;
+
+export const normalizers: Record<string, (identity: Identity) => Identity | void> = {
 	// Set 'id' to '_id' for any sources that provide it
 	_id(identity) {
 		if (identity._id && !identity.id) {
@@ -37,8 +39,8 @@ export const normalizers = {
 
 	// Fix Dataporten having 'user.userid' instead of 'id'
 	dataporten(identity) {
-		if (identity.user && identity.user.userid && !identity.id) {
-			if (identity.user.userid_sec && identity.user.userid_sec[0]) {
+		if (identity.user?.userid && !identity.id) {
+			if (identity.user.userid_sec?.[0]) {
 				identity.id = identity.user.userid_sec[0];
 			} else {
 				identity.id = identity.user.userid;
@@ -49,7 +51,7 @@ export const normalizers = {
 
 	// Fix for Xenforo [BD]API plugin for 'user.user_id; instead of 'id'
 	xenforo(identity) {
-		if (identity.user && identity.user.user_id && !identity.id) {
+		if (identity.user?.user_id && !identity.id) {
 			identity.id = identity.user.user_id;
 			identity.email = identity.user.user_email;
 		}
@@ -102,7 +104,7 @@ export const normalizers = {
 };
 
 const IDENTITY_PROPNAME_FILTER = /(\.)/g;
-export const renameInvalidProperties = (input) => {
+export const renameInvalidProperties = (input: any): any => {
 	if (Array.isArray(input)) {
 		return input.map(renameInvalidProperties);
 	}
@@ -119,12 +121,12 @@ export const renameInvalidProperties = (input) => {
 	);
 };
 
-export const getNestedValue = (propertyPath, source) =>
+export const getNestedValue = (propertyPath: string, source: any): any =>
 	propertyPath.split('.').reduce((prev, curr) => (prev ? prev[curr] : undefined), source);
 
 // /^(.+)@/::email
 const REGEXP_FROM_FORMULA = /^\/((?!\/::).*)\/::(.+)/;
-export const getRegexpMatch = (formula, data) => {
+export const getRegexpMatch = (formula: string, data: any): any => {
 	const regexAndPath = REGEXP_FROM_FORMULA.exec(formula);
 	if (!regexAndPath) {
 		return getNestedValue(formula, data);
@@ -151,10 +153,10 @@ export const getRegexpMatch = (formula, data) => {
 };
 
 const templateStringRegex = /{{((?:(?!}}).)+)}}/g;
-export const fromTemplate = (template, data) => {
+export const fromTemplate = (template: string, data: any): any => {
 	if (!templateStringRegex.test(template)) {
 		return getNestedValue(template, data);
 	}
 
-	return template.replace(templateStringRegex, (fullMatch, match) => getRegexpMatch(match, data));
+	return template.replace(templateStringRegex, (_, match) => getRegexpMatch(match, data));
 };
