@@ -1,5 +1,10 @@
 {
-	"extends": ["@rocket.chat/eslint-config", "@rocket.chat/eslint-config/react", "plugin:you-dont-need-lodash-underscore/compatible", "plugin:storybook/recommended"],
+	"extends": [
+		"@rocket.chat/eslint-config",
+		"@rocket.chat/eslint-config/react",
+		"plugin:you-dont-need-lodash-underscore/compatible",
+		"plugin:storybook/recommended"
+	],
 	"globals": {
 		"__meteor_bootstrap__": false,
 		"__meteor_runtime_config__": false,
@@ -154,6 +159,14 @@
 			"files": ["**/*.d.ts"],
 			"rules": {
 				"@typescript-eslint/naming-convention": "off"
+			}
+		},
+		{
+			"files": [".mocharc.js", ".mocharc.*.js"],
+			"parser": "espree",
+			"parserOptions": {
+				"ecmaVersion": 2022,
+				"sourceType": "script"
 			}
 		}
 	]
