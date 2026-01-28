@@ -1,4 +1,13 @@
-import type { ObjectExpression, Program, PropertyKey } from 'oxc-parser';
+import type {
+	Directive,
+	IdentifierName,
+	ObjectExpression,
+	ObjectProperty,
+	ObjectPropertyKind,
+	Program,
+	ReturnStatement,
+	Statement,
+} from 'oxc-parser';
 import { walk } from 'oxc-walker';
 
 import { check } from './check';
@@ -8,121 +17,18 @@ import { check } from './check';
  * @param ast - The AST of the module.
  * @param names - The set to collect export names into.
  * @param pkgName - The name of the Meteor package.
- * 
- * @example
-{
-      "type": "ExpressionStatement",
-      "expression": {
-        "type": "CallExpression",
-        "callee": {
-          "type": "MemberExpression",
-          "object": {
-            "type": "MemberExpression",
-            "object": {
-              "type": "Identifier",
-              "name": "Package",
-            },
-            "property": {
-              "type": "Literal",
-              "value": "core-runtime",
-              "raw": "\"core-runtime\"",
-            },
-            "optional": false,
-            "computed": true,
-          },
-          "property": {
-            "type": "Identifier",
-            "name": "queue",
-          },
-          "optional": false,
-          "computed": false,
-        },
-        "arguments": [
-          {
-            "type": "Literal",
-            "value": "oauth",
-            "raw": "\"oauth\"",
-          },
-          {
-            "type": "FunctionExpression",
-            "id": null,
-            "generator": false,
-            "async": false,
-            "params": [],
-            "body": {
-              "type": "BlockStatement",
-              "body": [
-                {
-                  "type": "ReturnStatement",
-                  "argument": {
-                    "type": "ObjectExpression",
-                    "properties": [
-                      {
-                        "type": "Property",
-                        "kind": "init",
-                        "key": {
-                          "type": "Identifier",
-                          "name": "export",
-                        },
-                        "value": {
-                          "type": "FunctionExpression",
-                          "id": null,
-                          "generator": false,
-                          "async": false,
-                          "params": [],
-                          "body": {
-                            "type": "BlockStatement",
-                            "body": [
-                              {
-                                "type": "ReturnStatement",
-                                "argument": {
-                                  "type": "ObjectExpression",
-                                  "properties": [
-                                    {
-                                      "type": "Property",
-                                      "kind": "init",
-                                      "key": {
-                                        "type": "Identifier",
-                                        "name": "OAuth",
-                                      },
-                                      "value": {
-                                        "type": "Identifier",
-                                        "name": "OAuth",
-                                      },
-                                      "method": false,
-                                      "shorthand": false,
-                                      "computed": false,
-                                    }
-                                  ],
-                                },
-                              }
-                            ],
-                          },
-                          "expression": false,
-                        },
-                        "method": false,
-                        "shorthand": false,
-                        "computed": false,
-                      }
-                    ],
-                  },
-                }
-              ],
-            },
-            "expression": false,
-          }
-        ],
-        "optional": false,
-      },
-    }
  */
-export function collectModuleExports(ast: Program, names: Set<string>, pkgName: string): void {
-	// Traverse the AST
+export function collectModuleExports(ast: Program, pkgName: string): Set<string> {
+	const names = new Set<string>();
+
 	walk(ast, {
 		enter(node, parent) {
 			if (!check.isExpressionStatement(parent)) return;
 			if (!check.isCallExpression(node)) return;
-			const { callee, arguments: args } = node;
+			const {
+				callee,
+				arguments: [pkg, func],
+			} = node;
 			if (
 				check.isMemberExpression(callee) &&
 				!callee.computed &&
@@ -134,20 +40,17 @@ export function collectModuleExports(ast: Program, names: Set<string>, pkgName: 
 				callee.object.property.value === 'core-runtime' &&
 				check.isIdentifier(callee.property) &&
 				callee.property.name === 'queue' &&
-				args.length === 2 &&
-				check.isLiteral(args[0]) &&
-				args[0].value === pkgName &&
-				(check.isFunctionExpression(args[1]) || check.isArrowFunctionExpression(args[1]))
+				check.isLiteral(pkg) &&
+				pkg.value === pkgName &&
+				(check.isFunctionExpression(func) || check.isArrowFunctionExpression(func))
 			) {
-				const func = args[1];
 				if (!check.isBlockStatement(func.body)) return;
 				for (const stmt of func.body.body) {
-					if (!check.isReturnStatement(stmt)) continue;
-					if (!check.isObjectExpression(stmt.argument)) continue;
+					if (!isReturnStatementWithObject(stmt)) continue;
+
 					// Collect exports from the returned object
 					for (const prop of stmt.argument.properties) {
-						if (!check.isProperty(prop)) continue;
-						if (!check.isIdentifier(prop.key)) continue;
+						if (!isIdentifierObjectProperty(prop)) continue;
 						if (prop.key.name !== 'export') continue;
 
 						const { value } = prop;
@@ -156,51 +59,43 @@ export function collectModuleExports(ast: Program, names: Set<string>, pkgName: 
 						if (!check.isBlockStatement(value.body)) continue;
 
 						for (const stmt of value.body.body) {
-							if (!check.isReturnStatement(stmt)) continue;
-							if (!check.isObjectExpression(stmt.argument)) continue;
-
-							collectExportsFromObjectExpression(stmt.argument, names);
+							if (!isReturnStatementWithObject(stmt)) continue;
+							for (const prop of stmt.argument.properties) {
+								if (!isIdentifierObjectProperty(prop)) continue;
+								names.add(prop.key.name);
+							}
 						}
 					}
 				}
 			}
 		},
 	});
+
+	return names;
 }
 
-const collectExportsFromObjectExpression = (argument: ObjectExpression, names: Set<string>): void => {
-	for (const prop of argument.properties) {
-		if (!check.isProperty(prop)) continue;
-		if (prop.computed) continue;
-		if (!check.isIdentifier(prop.key)) continue;
+/**
+ * Type guard to check if a node is an ObjectProperty with an IdentifierName key.
+ * @param node - The AST node to check.
+ * @returns True if the node is an ObjectProperty with an IdentifierName key, false otherwise.
+ * @example
+ * ```ts
+ * { key: value }
+ * ```
+ */
+function isIdentifierObjectProperty(node: ObjectPropertyKind): node is ObjectProperty & { key: IdentifierName } {
+	return check.isProperty(node) && !node.computed && check.isIdentifier(node.key);
+}
 
-		const keyName = getPropertyName(prop.key);
-
-		if (keyName === 'export') {
-			const { value } = prop;
-			if (check.isFunctionExpression(value) || check.isArrowFunctionExpression(value)) {
-				if (check.isBlockStatement(value.body)) {
-					for (const stmt of value.body.body) {
-						if (check.isReturnStatement(stmt) && check.isObjectExpression(stmt.argument)) {
-							collectExportsFromObjectExpression(stmt.argument, names);
-						}
-					}
-				}
-			}
-			continue;
-		}
-
-		if (keyName && keyName !== 'require' && keyName !== 'eagerModulePaths') {
-			names.add(keyName);
-		}
-	}
-};
-function getPropertyName(key: PropertyKey) {
-	if (check.isIdentifier(key)) {
-		return key.name;
-	}
-
-	if (check.isLiteral(key) && typeof key.value === 'string') {
-		return key.value;
-	}
+/**
+ * Type guard to check if a node is a ReturnStatement with an ObjectExpression argument.
+ * @param node - The AST node to check.
+ * @returns True if the node is a ReturnStatement with an ObjectExpression argument, false otherwise.
+ * @example
+ * ```ts
+ * return { a: 1, b: 2 };
+ * ```
+ */
+function isReturnStatementWithObject(node: Directive | Statement): node is ReturnStatement & { argument: ObjectExpression } {
+	return check.isReturnStatement(node) && check.isObjectExpression(node.argument);
 }

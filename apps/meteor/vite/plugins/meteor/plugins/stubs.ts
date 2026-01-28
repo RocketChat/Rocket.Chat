@@ -5,13 +5,12 @@ import type { Plugin } from 'vite';
 
 import type { ResolvedPluginOptions } from './shared/config.ts';
 
-const meteorProgramDir = path.resolve('.meteor/local/build/programs/web.browser');
-const meteorPackagesDir = path.join(meteorProgramDir, 'packages');
-
 export function stubs(config: ResolvedPluginOptions): Plugin {
+	const meteorPackagesDir = path.join(config.programsDir, 'web.browser', 'packages');
+
 	return {
-		name: 'meteor-stubs',
-		enforce: 'pre',
+		name: 'meteor:stubs',
+		enforce: 'post',
 		transform: {
 			filter: {
 				// Only transform files in the Meteor packages
