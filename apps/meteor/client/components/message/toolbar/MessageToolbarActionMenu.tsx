@@ -5,6 +5,7 @@ import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import MessageToolbarItem from './MessageToolbarItem';
 import { useCopyAction } from './useCopyAction';
 import { useDeleteMessageAction } from './useDeleteMessageAction';
 import { useEditMessageAction } from './useEditMessageAction';
@@ -39,9 +40,17 @@ type MessageToolbarActionMenuProps = {
 	room: IRoom;
 	subscription: ISubscription | undefined;
 	onChangeMenuVisibility: (visible: boolean) => void;
+	expanded?: boolean;
 };
 
-const MessageToolbarActionMenu = ({ message, context, room, subscription, onChangeMenuVisibility }: MessageToolbarActionMenuProps) => {
+const MessageToolbarActionMenu = ({
+	message,
+	context,
+	room,
+	subscription,
+	onChangeMenuVisibility,
+	expanded,
+}: MessageToolbarActionMenuProps) => {
 	// TODO: move this to another place
 	const menuItems = [
 		useWebDAVMessageAction(message, { subscription }),
@@ -142,6 +151,29 @@ const MessageToolbarActionMenu = ({ message, context, room, subscription, onChan
 				],
 			};
 		});
+
+	if (expanded) {
+		return (
+			<>
+				{groupOptions
+					.flatMap((section) => section.items)
+					.map((item) => (
+						<MessageToolbarItem
+							key={item.id}
+							id={item.id}
+							icon={item.icon as any}
+							title={typeof item.content === 'string' ? item.content : ''}
+							onClick={(e) => {
+								item.onClick?.(e);
+								onChangeMenuVisibility(false);
+							}}
+							qa={item.id}
+							disabled={item.disabled}
+						/>
+					))}
+			</>
+		);
+	}
 
 	return <GenericMenu onOpenChange={onChangeMenuVisibility} detached title={t('More')} sections={groupOptions} placement='bottom-end' />;
 };

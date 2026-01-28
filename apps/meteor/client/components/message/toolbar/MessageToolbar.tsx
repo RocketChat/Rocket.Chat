@@ -4,7 +4,7 @@ import { isThreadMessage, isRoomFederated, isVideoConfMessage } from '@rocket.ch
 import { MessageToolbar as FuselageMessageToolbar } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ElementType, ReactElement } from 'react';
-import { memo, useRef } from 'react';
+import { memo, useRef, useState, useEffect } from 'react';
 
 import MessageToolbarActionMenu from './MessageToolbarActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
@@ -58,6 +58,32 @@ const itemsByContext: Record<
 	'search': SearchItems,
 };
 
+let isGlobalShiftDown = false;
+if (typeof window !== 'undefined') {
+	const handleDocumentKeyDown = (e: KeyboardEvent): void => {
+		if (e.key === 'Shift') {
+			isGlobalShiftDown = true;
+		}
+	};
+	const handleDocumentKeyUp = (e: KeyboardEvent): void => {
+		if (e.key === 'Shift') {
+			isGlobalShiftDown = false;
+		}
+	};
+	const handleWindowBlur = (): void => {
+		isGlobalShiftDown = false;
+	};
+
+	document.addEventListener('keydown', handleDocumentKeyDown);
+	document.addEventListener('keyup', handleDocumentKeyUp);
+	window.addEventListener('blur', handleWindowBlur);
+	window.addEventListener('unload', () => {
+		document.removeEventListener('keydown', handleDocumentKeyDown);
+		document.removeEventListener('keyup', handleDocumentKeyUp);
+		window.removeEventListener('blur', handleWindowBlur);
+	});
+}
+
 type MessageToolbarProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
 	messageContext?: MessageActionContext;
@@ -75,9 +101,73 @@ const MessageToolbar = ({
 	...props
 }: MessageToolbarProps): ReactElement | null => {
 	const t = useTranslation();
+	const [isHovered, setIsHovered] = useState(false);
+	const [shiftPressed, setShiftPressed] = useState(() => isGlobalShiftDown);
 
-	const toolbarRef = useRef(null);
+	const toolbarRef = useRef<HTMLDivElement>(null);
 	const { toolbarProps } = useToolbar(props, toolbarRef);
+
+	useEffect(() => {
+		const messageElement = toolbarRef.current?.closest('[data-qa-type="message"]') as HTMLElement | null;
+		if (!messageElement) {
+			return;
+		}
+
+		// Check if we are already hovering the message when component mounts.
+		// This is necessary to ensure the component's internal state matches the actual hover state
+		// in cases where the component mounts under the cursor (e.g. during scroll), preventing
+		// missed interactions or reliance on mouse movement to "waking up" the listeners.
+		if (messageElement.matches(':hover')) {
+			setIsHovered(true);
+		}
+
+		const handleMouseEnter = (e: MouseEvent) => {
+			setShiftPressed(e.shiftKey);
+			setIsHovered(true);
+		};
+
+		const handleMouseLeave = () => {
+			setIsHovered(false);
+			setShiftPressed(false);
+		};
+
+		// Robustly track shift state during movement to catch edge cases (missed enter, or holding before hover)
+		const handleMouseMove = (e: MouseEvent) => {
+			setShiftPressed((prev) => (prev === e.shiftKey ? prev : e.shiftKey));
+		};
+
+		messageElement.addEventListener('mouseenter', handleMouseEnter);
+		messageElement.addEventListener('mouseleave', handleMouseLeave);
+		messageElement.addEventListener('mousemove', handleMouseMove);
+
+		return () => {
+			messageElement.removeEventListener('mouseenter', handleMouseEnter);
+			messageElement.removeEventListener('mouseleave', handleMouseLeave);
+			messageElement.removeEventListener('mousemove', handleMouseMove);
+		};
+	}, []);
+
+	useEffect(() => {
+		if (!isHovered) {
+			return;
+		}
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === 'Shift') {
+				setShiftPressed(true);
+			}
+		};
+		const handleKeyUp = (e: KeyboardEvent) => {
+			if (e.key === 'Shift') {
+				setShiftPressed(false);
+			}
+		};
+		document.addEventListener('keydown', handleKeyDown);
+		document.addEventListener('keyup', handleKeyUp);
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown);
+			document.removeEventListener('keyup', handleKeyUp);
+		};
+	}, [isHovered]);
 
 	const context = getMessageContext(message, room, messageContext);
 
@@ -93,6 +183,7 @@ const MessageToolbar = ({
 				room={room}
 				subscription={subscription}
 				onChangeMenuVisibility={onChangeMenuVisibility}
+				expanded={shiftPressed}
 			/>
 		</FuselageMessageToolbar>
 	);
