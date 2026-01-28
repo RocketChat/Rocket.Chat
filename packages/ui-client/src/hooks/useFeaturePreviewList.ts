@@ -1,6 +1,9 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable = 'secondarySidebar' | 'expandableMessageComposer';
+export type FeaturesAvailable =
+	| 'secondarySidebar'
+	| 'expandableMessageComposer'
+	| 'imageCropPreview';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -19,6 +22,15 @@ export type FeaturePreviewProps = {
 
 // TODO: Move the features preview array to another directory to be accessed from both BE and FE.
 export const defaultFeaturesPreview: FeaturePreviewProps[] = [
+	{
+		name: 'imageCropPreview',
+		i18n: 'Image_crop',
+		description: 'Image_crop_description',
+		group: 'Message',
+		imageUrl: 'images/featurePreview/image-crop.png',
+		value: false,
+		enabled: true,
+	},
 	{
 		name: 'secondarySidebar',
 		i18n: 'Filters_and_secondary_sidebar',
