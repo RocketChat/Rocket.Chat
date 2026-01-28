@@ -1,3 +1,4 @@
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { AppBridges } from '@rocket.chat/apps-engine/server/bridges';
 
 import { AppActivationBridge } from './activation';
@@ -30,7 +31,63 @@ import { AppUserBridge } from './users';
 import { AppVideoConferenceBridge } from './videoConferences';
 
 export class RealAppBridges extends AppBridges {
-	constructor(orch) {
+	private _actBridge: AppActivationBridge;
+
+	private _cmdBridge: AppCommandsBridge;
+
+	private _apiBridge: AppApisBridge;
+
+	private _detBridge: AppDetailChangesBridge;
+
+	private _envBridge: AppEnvironmentalVariableBridge;
+
+	private _httpBridge: AppHttpBridge;
+
+	private _lisnBridge: AppListenerBridge;
+
+	private _msgBridge: AppMessageBridge;
+
+	private _persistBridge: AppPersistenceBridge;
+
+	private _roomBridge: AppRoomBridge;
+
+	private _internalBridge: AppInternalBridge;
+
+	private _setsBridge: AppSettingBridge;
+
+	private _userBridge: AppUserBridge;
+
+	private _livechatBridge: AppLivechatBridge;
+
+	private _uploadBridge: AppUploadBridge;
+
+	private _uiInteractionBridge: UiInteractionBridge;
+
+	private _schedulerBridge: AppSchedulerBridge;
+
+	private _cloudWorkspaceBridge: AppCloudBridge;
+
+	private _videoConfBridge: AppVideoConferenceBridge;
+
+	private _oAuthBridge: AppOAuthAppsBridge;
+
+	private _internalFedBridge: AppInternalFederationBridge;
+
+	private _moderationBridge: AppModerationBridge;
+
+	private _threadBridge: AppThreadBridge;
+
+	private _roleBridge: AppRoleBridge;
+
+	private _emailBridge: AppEmailBridge;
+
+	private _contactBridge: AppContactBridge;
+
+	private _outboundMessageBridge: OutboundCommunicationBridge;
+
+	private _experimentalBridge: AppExperimentalBridge;
+
+	constructor(orch: IAppServerOrchestrator) {
 		super();
 
 		this._actBridge = new AppActivationBridge(orch);
@@ -80,7 +137,7 @@ export class RealAppBridges extends AppBridges {
 	}
 
 	getListenerBridge() {
-		return this._lisnBridge;
+		return this._lisnBridge as any; // FIXME: AppListenerBridge does not implement IListenerBridge
 	}
 
 	getMessageBridge() {

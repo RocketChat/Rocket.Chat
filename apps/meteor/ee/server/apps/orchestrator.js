@@ -371,6 +371,9 @@ export class AppServerOrchestrator {
 		return this._manager.updateAppsMarketplaceInfo(apps).then(() => this._manager.get());
 	}
 
+	/**
+	 * @returns {Promise<import('@rocket.chat/apps-engine/server/ProxiedApp').ProxiedApp[] | undefined>}
+	 */
 	async installedApps(filter = {}) {
 		if (!this.isLoaded()) {
 			return;
