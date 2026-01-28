@@ -1,25 +1,31 @@
+import type { IAppServerOrchestrator, IAppsUser, IAppUsersConverter } from '@rocket.chat/apps';
 import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
+import type { IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { removeEmpty } from '@rocket.chat/tools';
 
-export class AppUsersConverter {
-	constructor(orch) {
-		this.orch = orch;
-	}
+export class AppUsersConverter implements IAppUsersConverter {
+	constructor(public orch: IAppServerOrchestrator) {}
 
-	async convertById(userId) {
+	async convertById(userId: IUser['_id']): Promise<IAppsUser | undefined> {
 		const user = await Users.findOneById(userId);
 
 		return this.convertToApp(user);
 	}
 
-	async convertByUsername(username) {
-		const user = await Users.findOneByUsername(username);
+	async convertByUsername(username: IUser['username']): Promise<IAppsUser | undefined> {
+		const user = await Users.findOneByUsername(username!);
 
 		return this.convertToApp(user);
 	}
 
-	convertToApp(user) {
+	convertToApp(user: undefined | null): undefined;
+
+	convertToApp(user: IUser): IAppsUser;
+
+	convertToApp(user: IUser | undefined | null): IAppsUser | undefined;
+
+	convertToApp(user: IUser | undefined | null): IAppsUser | undefined {
 		if (!user) {
 			return undefined;
 		}
@@ -29,21 +35,21 @@ export class AppUsersConverter {
 
 		return {
 			id: user._id,
-			username: user.username,
-			emails: user.emails,
+			username: user.username!,
+			emails: user.emails! as IAppsUser['emails'],
 			type,
 			isEnabled: user.active,
-			name: user.name,
+			name: user.name!,
 			roles: user.roles,
 			bio: user.bio,
-			status: user.status,
+			status: user.status!,
 			statusText: user.statusText,
-			statusConnection,
-			utcOffset: user.utcOffset,
+			statusConnection: statusConnection as UserStatusConnection,
+			utcOffset: user.utcOffset!,
 			createdAt: user.createdAt,
 			updatedAt: user._updatedAt,
-			lastLoginAt: user.lastLogin,
-			appId: user.appId,
+			lastLoginAt: user.lastLogin!,
+			appId: (user as any).appId, // FIXME
 			customFields: user.customFields,
 			settings: {
 				preferences: {
@@ -53,7 +59,13 @@ export class AppUsersConverter {
 		};
 	}
 
-	convertToRocketChat(user) {
+	convertToRocketChat(user: undefined | null): undefined;
+
+	convertToRocketChat(user: IAppsUser): IUser;
+
+	convertToRocketChat(user: IAppsUser | undefined | null): IUser | undefined;
+
+	convertToRocketChat(user: IAppsUser | undefined | null): IUser | undefined {
 		if (!user) {
 			return undefined;
 		}
@@ -67,9 +79,9 @@ export class AppUsersConverter {
 			name: user.name,
 			roles: user.roles,
 			bio: user.bio,
-			status: user.status,
+			status: user.status as UserStatus,
 			statusConnection: user.statusConnection,
-			utcOffset: user.utfOffset,
+			utcOffset: user.utcOffset,
 			createdAt: user.createdAt,
 			_updatedAt: user.updatedAt,
 			lastLogin: user.lastLoginAt,
@@ -77,7 +89,7 @@ export class AppUsersConverter {
 		});
 	}
 
-	_convertUserTypeToEnum(type) {
+	private _convertUserTypeToEnum(type: string): UserType {
 		switch (type) {
 			case 'user':
 				return UserType.USER;
@@ -90,11 +102,15 @@ export class AppUsersConverter {
 				return UserType.UNKNOWN;
 			default:
 				console.warn(`A new user type has been added that the Apps don't know about? "${type}"`);
-				return type.toUpperCase();
+				return type.toUpperCase() as UserType;
 		}
 	}
 
-	_convertStatusConnectionToEnum(username, userId, status) {
+	private _convertStatusConnectionToEnum(
+		username: IUser['username'],
+		userId: IUser['_id'],
+		status: string | undefined,
+	): UserStatusConnection {
 		switch (status) {
 			case 'offline':
 				return UserStatusConnection.OFFLINE;
@@ -111,7 +127,7 @@ export class AppUsersConverter {
 				console.warn(
 					`The user ${username} (${userId}) does not have a valid status (offline, online, away, or busy). It is currently: "${status}"`,
 				);
-				return !status ? UserStatusConnection.OFFLINE : status.toUpperCase();
+				return !status ? UserStatusConnection.OFFLINE : (status.toUpperCase() as UserStatusConnection);
 		}
 	}
 }
