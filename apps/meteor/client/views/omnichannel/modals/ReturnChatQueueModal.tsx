@@ -11,6 +11,7 @@ const ReturnChatQueueModal = ({ onCancel, onMoveChat }: ReturnChatQueueModalProp
 
 	return (
 		<GenericModal
+			//model to genericmodel
 			variant='warning'
 			icon='burger-arrow-left'
 			title={t('Return_to_the_queue')}
