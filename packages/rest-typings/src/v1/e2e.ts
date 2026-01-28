@@ -166,9 +166,6 @@ export type E2eEndpoints = {
 	'/v1/e2e.rejectSuggestedGroupKey': {
 		POST: (params: E2eGetUsersOfRoomWithoutKeyProps) => void;
 	};
-	'/v1/e2e.fetchMyKeys': {
-		GET: () => { public_key: string; private_key: string };
-	};
 	'/v1/e2e.fetchUsersWaitingForGroupKey': {
 		GET: (params: E2EFetchUsersWaitingForGroupKeyProps) => {
 			usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>;
