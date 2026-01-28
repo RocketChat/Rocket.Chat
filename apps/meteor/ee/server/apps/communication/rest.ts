@@ -515,6 +515,7 @@ export class AppsRestApi {
 
 					try {
 						const { event, externalComponent } = this.bodyParams;
+						// FIXME this fails since there is no implementation for externalComponentEvent in ListenerBridge
 						const result = (Apps.getBridges()?.getListenerBridge() as Record<string, any>).externalComponentEvent(event, externalComponent);
 
 						return API.v1.success({ result });

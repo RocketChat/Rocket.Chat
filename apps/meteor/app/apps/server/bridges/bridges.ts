@@ -1,4 +1,31 @@
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { AppBridges } from '@rocket.chat/apps-engine/server/bridges';
+import type {
+	ApiBridge,
+	CloudWorkspaceBridge,
+	CommandBridge,
+	ContactBridge,
+	EmailBridge,
+	EnvironmentalVariableBridge,
+	ExperimentalBridge,
+	HttpBridge,
+	IInternalBridge,
+	IInternalFederationBridge,
+	LivechatBridge,
+	MessageBridge,
+	ModerationBridge,
+	OutboundMessageBridge,
+	PersistenceBridge,
+	RoleBridge,
+	RoomBridge,
+	SchedulerBridge,
+	ServerSettingBridge,
+	ThreadBridge,
+	UserBridge,
+	VideoConferenceBridge,
+} from '@rocket.chat/apps-engine/server/bridges';
+import type { OAuthAppsBridge } from '@rocket.chat/apps-engine/server/bridges/OAuthAppsBridge';
+import type { UploadBridge } from '@rocket.chat/apps-engine/server/bridges/UploadBridge';
 
 import { AppActivationBridge } from './activation';
 import { AppApisBridge } from './api';
@@ -30,7 +57,63 @@ import { AppUserBridge } from './users';
 import { AppVideoConferenceBridge } from './videoConferences';
 
 export class RealAppBridges extends AppBridges {
-	constructor(orch) {
+	private _actBridge: AppActivationBridge;
+
+	private _cmdBridge: AppCommandsBridge;
+
+	private _apiBridge: AppApisBridge;
+
+	private _detBridge: AppDetailChangesBridge;
+
+	private _envBridge: AppEnvironmentalVariableBridge;
+
+	private _httpBridge: AppHttpBridge;
+
+	private _lisnBridge: AppListenerBridge;
+
+	private _msgBridge: AppMessageBridge;
+
+	private _persistBridge: AppPersistenceBridge;
+
+	private _roomBridge: AppRoomBridge;
+
+	private _internalBridge: AppInternalBridge;
+
+	private _setsBridge: AppSettingBridge;
+
+	private _userBridge: AppUserBridge;
+
+	private _livechatBridge: AppLivechatBridge;
+
+	private _uploadBridge: AppUploadBridge;
+
+	private _uiInteractionBridge: UiInteractionBridge;
+
+	private _schedulerBridge: AppSchedulerBridge;
+
+	private _cloudWorkspaceBridge: AppCloudBridge;
+
+	private _videoConfBridge: AppVideoConferenceBridge;
+
+	private _oAuthBridge: AppOAuthAppsBridge;
+
+	private _internalFedBridge: AppInternalFederationBridge;
+
+	private _moderationBridge: AppModerationBridge;
+
+	private _threadBridge: AppThreadBridge;
+
+	private _roleBridge: AppRoleBridge;
+
+	private _emailBridge: AppEmailBridge;
+
+	private _contactBridge: AppContactBridge;
+
+	private _outboundMessageBridge: OutboundCommunicationBridge;
+
+	private _experimentalBridge: AppExperimentalBridge;
+
+	constructor(orch: IAppServerOrchestrator) {
 		super();
 
 		this._actBridge = new AppActivationBridge(orch);
@@ -63,115 +146,115 @@ export class RealAppBridges extends AppBridges {
 		this._experimentalBridge = new AppExperimentalBridge(orch);
 	}
 
-	getCommandBridge() {
+	getCommandBridge(): CommandBridge {
 		return this._cmdBridge;
 	}
 
-	getApiBridge() {
+	getApiBridge(): ApiBridge {
 		return this._apiBridge;
 	}
 
-	getEnvironmentalVariableBridge() {
+	getEnvironmentalVariableBridge(): EnvironmentalVariableBridge {
 		return this._envBridge;
 	}
 
-	getHttpBridge() {
+	getHttpBridge(): HttpBridge {
 		return this._httpBridge;
 	}
 
 	getListenerBridge() {
-		return this._lisnBridge;
+		return this._lisnBridge as any; // FIXME: AppListenerBridge does not implement IListenerBridge
 	}
 
-	getMessageBridge() {
+	getMessageBridge(): MessageBridge {
 		return this._msgBridge;
 	}
 
-	getThreadBridge() {
+	getThreadBridge(): ThreadBridge {
 		return this._threadBridge;
 	}
 
-	getPersistenceBridge() {
+	getPersistenceBridge(): PersistenceBridge {
 		return this._persistBridge;
 	}
 
-	getAppActivationBridge() {
+	getAppActivationBridge(): AppActivationBridge {
 		return this._actBridge;
 	}
 
-	getAppDetailChangesBridge() {
+	getAppDetailChangesBridge(): AppDetailChangesBridge {
 		return this._detBridge;
 	}
 
-	getRoomBridge() {
+	getRoomBridge(): RoomBridge {
 		return this._roomBridge;
 	}
 
-	getInternalBridge() {
+	getInternalBridge(): IInternalBridge {
 		return this._internalBridge;
 	}
 
-	getServerSettingBridge() {
+	getServerSettingBridge(): ServerSettingBridge {
 		return this._setsBridge;
 	}
 
-	getUserBridge() {
+	getUserBridge(): UserBridge {
 		return this._userBridge;
 	}
 
-	getLivechatBridge() {
+	getLivechatBridge(): LivechatBridge {
 		return this._livechatBridge;
 	}
 
-	getUploadBridge() {
+	getUploadBridge(): UploadBridge {
 		return this._uploadBridge;
 	}
 
-	getUiInteractionBridge() {
+	getUiInteractionBridge(): UiInteractionBridge {
 		return this._uiInteractionBridge;
 	}
 
-	getSchedulerBridge() {
+	getSchedulerBridge(): SchedulerBridge {
 		return this._schedulerBridge;
 	}
 
-	getCloudWorkspaceBridge() {
+	getCloudWorkspaceBridge(): CloudWorkspaceBridge {
 		return this._cloudWorkspaceBridge;
 	}
 
-	getVideoConferenceBridge() {
+	getVideoConferenceBridge(): VideoConferenceBridge {
 		return this._videoConfBridge;
 	}
 
-	getOutboundMessageBridge() {
+	getOutboundMessageBridge(): OutboundMessageBridge {
 		return this._outboundMessageBridge;
 	}
 
-	getOAuthAppsBridge() {
+	getOAuthAppsBridge(): OAuthAppsBridge {
 		return this._oAuthBridge;
 	}
 
-	getInternalFederationBridge() {
+	getInternalFederationBridge(): IInternalFederationBridge {
 		return this._internalFedBridge;
 	}
 
-	getModerationBridge() {
+	getModerationBridge(): ModerationBridge {
 		return this._moderationBridge;
 	}
 
-	getRoleBridge() {
+	getRoleBridge(): RoleBridge {
 		return this._roleBridge;
 	}
 
-	getEmailBridge() {
+	getEmailBridge(): EmailBridge {
 		return this._emailBridge;
 	}
 
-	getContactBridge() {
+	getContactBridge(): ContactBridge {
 		return this._contactBridge;
 	}
 
-	getExperimentalBridge() {
+	getExperimentalBridge(): ExperimentalBridge {
 		return this._experimentalBridge;
 	}
 }
