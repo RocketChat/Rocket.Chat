@@ -1,10 +1,7 @@
 import type { IInvite, IRoom } from '@rocket.chat/core-typings';
 import type { JSONSchemaType } from 'ajv';
-import Ajv from 'ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from './Ajv';
 
 type UseInviteTokenProps = {
 	token: string;

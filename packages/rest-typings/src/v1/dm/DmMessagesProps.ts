@@ -1,8 +1,5 @@
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-
-const ajv = new Ajv({ coerceTypes: true });
+import { ajv } from '../Ajv';
 
 export type DmMessagesProps = PaginatedRequest<
 	({ roomId: string } | { username: string }) & {

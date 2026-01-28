@@ -1,9 +1,6 @@
 import type { IUserSettings } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../Ajv';
 
 export type UserCreateParamsPOST = {
 	email: string;
