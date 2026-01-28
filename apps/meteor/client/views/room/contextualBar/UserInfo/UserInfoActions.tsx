@@ -70,7 +70,11 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 	if (isPending) {
 		return <Skeleton w='full' />;
 	}
-	return <ButtonGroup align='center'>{actions}</ButtonGroup>;
+	return (
+		<ButtonGroup flexDirection='column' align='center' wrap>
+			{actions}
+		</ButtonGroup>
+	);
 };
 
 export default UserInfoActions;
