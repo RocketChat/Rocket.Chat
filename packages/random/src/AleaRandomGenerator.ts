@@ -8,13 +8,10 @@ function createAlea(seeds: readonly unknown[]) {
 		let n = 0xefc8249d;
 
 		const mash = (data: unknown) => {
-			data = String(data);
-			if (typeof data !== 'string') {
-				throw new Error('Expected a string');
-			}
+			const s = String(data);
 
-			for (let i = 0; i < data.length; i++) {
-				n += data.charCodeAt(i);
+			for (let i = 0; i < s.length; i++) {
+				n += s.charCodeAt(i);
 				let h = 0.02519603282416938 * n;
 				n = h >>> 0;
 				h -= n;
