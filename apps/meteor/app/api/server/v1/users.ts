@@ -1,8 +1,9 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
 import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
-import {ajv, 
-	validateBadRequestErrorResponse, 
+import {
+	ajv,
+	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -26,7 +27,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
-import type { ExtractRoutesFromAPI } from '../ApiClass';
+
 import { generatePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/generateToken';
 import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
@@ -70,6 +71,7 @@ import { deleteUserOwnAccount } from '../../../lib/server/methods/deleteUserOwnA
 import { settings } from '../../../settings/server';
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
@@ -773,7 +775,7 @@ const UserPreferencesResponseSchema = {
 			type: 'object',
 			additionalProperties: true,
 		},
-		success: {type: 'boolean', enum: [true]},
+		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['preferences', 'success'],
 	additionalProperties: false,
@@ -801,19 +803,15 @@ const usersEndpoints = API.v1.get(
 			return API.v1.success({ preferences });
 		}
 
-		throw new Meteor.Error(
-			'error-preferences-not-found',
-			i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase(),
-		);
+		throw new Meteor.Error('error-preferences-not-found', i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
 	},
 );
 
 export type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	interface Endpoints extends UsersEndpoints {}
+	type Endpoints = UsersEndpoints;
 }
-
 
 API.v1.addRoute(
 	'users.forgotPassword',
