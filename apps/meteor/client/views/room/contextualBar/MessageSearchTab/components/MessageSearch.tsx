@@ -4,6 +4,7 @@ import { VirtualizedScrollbars, ContextualbarEmptyContent } from '@rocket.chat/u
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { Fragment, memo, useState } from 'react';
+import { VisuallyHidden } from 'react-aria';
 import { Virtuoso } from 'react-virtuoso';
 
 import RoomMessage from '../../../../../components/message/variants/RoomMessage';
@@ -35,7 +36,21 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 		<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis={0}>
 			{messageSearchQuery.data && (
 				<>
-					{messageSearchQuery.data.length === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
+					{messageSearchQuery.data.length === 0 && (
+						<Box is='section' aria-live='assertive' aria-atomic='true' tabIndex={-1}
+							key={`no-results-${messageSearchQuery.data.length}`}
+							aria-label={t('Search_Messages_Count', { count: messageSearchQuery.data.length })}
+						>
+							<ContextualbarEmptyContent title={t('No_results_found')} />
+						</Box>
+					)}
+
+					{messageSearchQuery.data.length > 0 && (
+						<VisuallyHidden role='status' aria-live='assertive' aria-atomic='true' aria-relevant='text' id='search-results-announcer'>
+							{t('Search_Messages_Count', { count: messageSearchQuery.data.length })}
+						</VisuallyHidden>
+					)}
+
 					{messageSearchQuery.data.length > 0 && (
 						<MessageListErrorBoundary>
 							<MessageListProvider>
