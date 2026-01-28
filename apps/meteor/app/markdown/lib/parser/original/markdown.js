@@ -1,5 +1,14 @@
 import { addAsToken, isToken, validateAllowedTokens } from './token';
 
+const escapeHTML = (str = '') =>
+	str
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
+
+
 const validateUrl = (url, message) => {
 	// Don't render markdown inside links
 	if (message?.tokens?.some((token) => url.includes(token.token))) {
@@ -18,6 +27,7 @@ const validateUrl = (url, message) => {
 		return false;
 	}
 };
+
 
 const endsWithWhitespace = (text) => text.substring(text.length - 1).match(/\s/);
 
@@ -48,6 +58,8 @@ const getParserWithCustomMarker = getRegexReplacer(
 const parseBold = getParserWithCustomMarker('*', 'strong');
 
 const parseStrike = getParserWithCustomMarker('~', 'strike');
+const parseHighlight = getParserWithCustomMarker('=', 'mark');
+
 
 const parseItalic = getRegexReplacer(
 	(wrapper, match, p1, p2, p3, p4, p5) => {
@@ -61,11 +73,57 @@ const parseItalic = getRegexReplacer(
 	() => new RegExp('([^\\r\\n\\s~*_]){0,1}(\\_+(?!\\s))([^\\_\\r\\n]+)(\\_+)([^\\r\\n\\s]){0,1}', 'gm'),
 )('_', 'em');
 
+
+	const parseTables = (msg) => {
+	const tableRegex =
+		/^(\|.+\|\n)(\|[-:\s|]+\|\n)((?:\|.*\|\n?)*)/gm;
+
+	return msg.replace(tableRegex, (match, header, separator, body) => {
+		const headers = header
+			.trim()
+			.slice(1, -1)
+			.split('|')
+			.map((h) => `<th>${h.trim()}</th>`)
+			.join('');
+
+		const rows = body
+			.trim()
+			.split('\n')
+			.map((row) => {
+				const cols = row
+					.slice(1, -1)
+					.split('|')
+					.map((c) => `<td>${c.trim()}</td>`)
+					.join('');
+				return `<tr>${cols}</tr>`;
+			})
+			.join('');
+
+		return `<table><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
+	});
+};
+
+const parseTaskLists = (msg) =>
+	msg.replace(/^- \[(x| )\] (.*)$/gm, (_, checked, text) => {
+		const safeText = escapeHTML(text);
+
+		return `
+			<div class="task-list-item">
+				<input type="checkbox" disabled ${checked === 'x' ? 'checked' : ''} />
+				<span>${safeText}</span>
+			</div>
+		`;
+	});
+
+
+
 const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) => {
 	let msg = message.html;
 	if (!message.tokens) {
 		message.tokens = [];
 	}
+    // Support task lists
+    msg = parseTaskLists(msg);
 
 	const schemes = (supportSchemesForLink || '').split(',').join('|');
 
@@ -95,6 +153,10 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 		);
 	}
 
+
+	// Support markdown tables
+    msg = parseTables(msg);
+
 	// Support *text* to make bold
 	msg = parseBold(msg);
 
@@ -104,10 +166,16 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 	// // Support ~text~ to strike through text
 	msg = parseStrike(msg);
 
+	// Support ==text== for highlight
+    msg = parseHighlight(msg);
+
+	
+
 	// Support for block quote
 	// >>>
 	// Text
 	// <<<
+
 	msg = msg.replace(
 		/(?:&gt;){3}\n+([\s\S]*?)\n+(?:&lt;){3}/g,
 		'<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;&gt;&gt;</span>$1<span class="copyonly">&lt;&lt;&lt;</span></blockquote>',
