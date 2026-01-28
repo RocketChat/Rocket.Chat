@@ -1,7 +1,8 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { AccordionItem, Field, FieldGroup, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { AccordionItem, Box, Field, FieldGroup, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { useLanguages } from '@rocket.chat/ui-contexts';
 import { useId, useMemo } from 'react';
+import { VisuallyHidden } from 'react-aria';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -18,6 +19,11 @@ const PreferencesLocalizationSection = () => {
 	return (
 		<AccordionItem title={t('Localization')} defaultExpanded>
 			<FieldGroup>
+				<VisuallyHidden>
+					<Box is='legend' aria-hidden={true}>
+						{t('Localization')}
+					</Box>
+				</VisuallyHidden>
 				<Field>
 					<FieldLabel is='span' id={languageId}>
 						{t('Language')}
