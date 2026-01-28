@@ -17,7 +17,6 @@ import { getManifestFromZippedApp } from '../lib/getManifestFromZippedApp';
 export const useInstallApp = (file: File): { install: () => void; isInstalling: boolean } => {
 	const reloadAppsList = useAppsReload();
 	const setModal = useSetModal();
-
 	const router = useRouter();
 
 	const appCountQuery = useAppsCountQuery('private');
@@ -44,12 +43,20 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 		},
 
 		onSuccess: (data: { app: App }) => {
+			const { id, version } = data.app;
+
+			if (!version) {
+				return;
+			}
+
 			router.navigate({
 				name: 'marketplace',
 				params: {
 					context: 'private',
 					page: 'info',
-					id: data.app.id,
+					id,
+					version,
+					tab: 'details',
 				},
 			});
 		},
@@ -73,8 +80,8 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 	const isAppInstalled = async (appId: string) => {
 		try {
 			const app = await AppClientOrchestratorInstance.getApp(appId);
-			return !!app || false;
-		} catch (e) {
+			return !!app;
+		} catch {
 			return false;
 		}
 	};
@@ -98,7 +105,9 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 		}
 
 		if (isInstalled) {
-			return setModal(<AppUpdateModal cancel={cancelAction} confirm={() => handleAppPermissionsReview(permissions, appFile, id)} />);
+			return setModal(
+				<AppUpdateModal cancel={cancelAction} confirm={() => handleAppPermissionsReview(permissions, appFile, id)} />,
+			);
 		}
 
 		await handleAppPermissionsReview(permissions, appFile);
@@ -119,19 +128,17 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 			return cancelAction();
 		}
 
-		const appFile = file;
-
-		if (!appFile) {
+		if (!file) {
 			return cancelAction();
 		}
 
-		const manifest = await extractManifestFromAppFile(appFile);
+		const manifest = await extractManifestFromAppFile(file);
 
 		if (!manifest) {
 			return cancelAction();
 		}
 
-		return uploadFile(appFile, manifest);
+		return uploadFile(file, manifest);
 	};
 
 	return { install, isInstalling };
