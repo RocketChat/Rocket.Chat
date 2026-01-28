@@ -1,13 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-
-let fetch;
-let WebApp;
-
-if (Meteor.isServer) {
-	WebApp = require('meteor/webapp').WebApp;
-} else {
-	fetch = require('meteor/fetch').fetch;
-}
+import { WebApp } from 'meteor/webapp';
 
 const NoOp = () => {};
 const urlRE = /\/___cookie___\/set/;

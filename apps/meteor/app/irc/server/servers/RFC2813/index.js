@@ -5,7 +5,7 @@ import util from 'util';
 import { Logger } from '@rocket.chat/logger';
 
 import localCommandHandlers from './localCommandHandlers';
-import parseMessage from './parseMessage';
+import { parseMessage } from './parseMessage';
 import peerCommandHandlers from './peerCommandHandlers';
 
 const logger = new Logger('IRC Server');

@@ -3,7 +3,7 @@
  * by https://github.com/martynsmith
  */
 
-module.exports = {
+export default {
 	'001': {
 		name: 'rpl_welcome',
 		type: 'reply',

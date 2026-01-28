@@ -1,5 +1,5 @@
-export { WorkspaceLicensePayload } from './WorkspaceLicensePayload';
-export {
+export type { WorkspaceLicensePayload } from './WorkspaceLicensePayload';
+export type {
 	IAnnouncement,
 	WorkspaceSyncPayload,
 	WorkspaceSyncRequestPayload,
@@ -7,4 +7,4 @@ export {
 	WorkspaceCommsResponsePayload,
 	WorkspaceInteractionResponsePayload,
 } from './WorkspaceSyncPayload';
-export { ICloudSyncAnnouncement } from './CloudSyncAnnouncement';
+export type { ICloudSyncAnnouncement } from './CloudSyncAnnouncement';

@@ -1,6 +1,3 @@
-import QueryString from 'querystring';
-import URL from 'url';
-
 import type { IE2EEMessage, IMessage, IRoom, IUser, IUploadWithUser, Serialized, IE2EEPinnedMessage } from '@rocket.chat/core-typings';
 import { isE2EEMessage, isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
@@ -721,13 +718,13 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const urlObj = URL.parse(url);
+				const urlObj = new URL(url);
 				// if the URL doesn't have query params (doesn't reference message) skip
-				if (!urlObj.query) {
+				if (!urlObj?.searchParams) {
 					return;
 				}
 
-				const { msg: msgId } = QueryString.parse(urlObj.query);
+				const { msg: msgId } = Object.fromEntries(urlObj.searchParams.entries());
 
 				if (!msgId || Array.isArray(msgId)) {
 					return;

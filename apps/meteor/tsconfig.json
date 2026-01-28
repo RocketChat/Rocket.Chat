@@ -2,7 +2,9 @@
 	"extends": "@rocket.chat/tsconfig/base.json",
 	"compilerOptions": {
 		"target": "es2018",
-		"module": "esNext",
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"moduleDetection": "force",
 		"lib": ["esnext", "dom"],
 
 		"allowJs": true,
@@ -25,6 +27,8 @@
 			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"],
 		},
 		"preserveSymlinks": true,
+		"allowImportingTsExtensions": true,
+		"types": []
 
 		// "sourceMap": true,
 		// "declaration": true,
