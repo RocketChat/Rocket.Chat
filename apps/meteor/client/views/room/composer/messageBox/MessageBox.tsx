@@ -14,11 +14,12 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
+import { memo, useRef, useReducer, useCallback, useState, useSyncExternalStore } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
+import MessageBoxPreview from './MessageBoxPreview';
 import MessageBoxReplies from './MessageBoxReplies';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -169,6 +170,10 @@ const MessageBox = ({
 			previewUrls,
 			isSlashCommandAllowed,
 		});
+	});
+	const [previewText, setPreviewText] = useState<boolean>(false);
+	const handlePreviewMessage = useEffectEvent(() => {
+		setPreviewText(!previewText);
 	});
 
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
@@ -378,10 +383,12 @@ const MessageBox = ({
 	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
+	const text = chat.composer?.text ?? '';
 
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
+			{previewText && text.trim() && <MessageBoxPreview text={text} />}
 			{shouldPopupPreview && popup.option && (
 				<ComposerBoxPopup
 					select={popup.select}
@@ -438,6 +445,12 @@ const MessageBox = ({
 							disabled={!useEmojis || isRecording || !canSend}
 							onClick={handleOpenEmojiPicker}
 							title={t('Emoji')}
+						/>
+						<MessageComposerAction
+							icon='eye'
+							disabled={isRecording || !canSend || !text.trim()}
+							onClick={handlePreviewMessage}
+							title={t('Preview')}
 						/>
 						<MessageComposerActionsDivider />
 						{chat.composer && formatters.length > 0 && (
