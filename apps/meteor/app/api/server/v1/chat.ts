@@ -804,7 +804,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('The required "mid" body param is missing.');
 			}
 
-			await followMessage(this.userId, { mid });
+			await followMessage(this.user, { mid });
 
 			return API.v1.success();
 		},
@@ -822,7 +822,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('The required "mid" body param is missing.');
 			}
 
-			await unfollowMessage(this.userId, { mid });
+			await unfollowMessage(this.user, { mid });
 
 			return API.v1.success();
 		},
