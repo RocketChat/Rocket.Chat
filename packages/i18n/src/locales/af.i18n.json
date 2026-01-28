@@ -2457,7 +2457,7 @@
   "error-edit-permissions-not-allowed": "Redigeer toestemmings word nie toegelaat nie",
   "error-email-domain-blacklisted": "Die e-pos domein is swartlys",
   "error-email-send-failed": "Kon nie e-pos stuur nie: {{message}}",
-  "error-field-unavailable": "<strong>{{field}}</strong> is reeds in gebruik :(",
+  "error-field-unavailable": "**{{field}}** is reeds in gebruik :(",
   "error-file-too-large": "Lêer is te groot",
   "error-importer-not-defined": "Die invoerder is nie korrek gedefinieer nie, maar die Invoer-klas ontbreek.",
   "error-input-is-not-a-valid-field": "{{input}} is nie 'n geldige {{field}} nie",
