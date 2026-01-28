@@ -1258,6 +1258,7 @@ describe('[Users]', () => {
 		let user3Credentials: Credentials;
 		let group: IRoom;
 		let inviteToken: string;
+		let inviteId: string;
 
 		before(async () => {
 			const username = `deactivated_${Date.now()}${apiUsername}`;
@@ -1328,18 +1329,18 @@ describe('[Users]', () => {
 		});
 
 		before('Create invite link', async () => {
-			inviteToken = (
-				await request.post(api('findOrCreateInvite')).set(credentials).send({
-					rid: group._id,
-					days: 0,
-					maxUses: 0,
-				})
-			).body._id;
+			const response = await request.post(api('findOrCreateInvite')).set(credentials).send({
+				rid: group._id,
+				days: 0,
+				maxUses: 0,
+			});
+			inviteToken = response.body.inviteToken;
+			inviteId = response.body._id;
 		});
 
 		after('Remove invite link', async () =>
 			request
-				.delete(api(`removeInvite/${inviteToken}`))
+				.delete(api(`removeInvite/${inviteId}`))
 				.set(credentials)
 				.send(),
 		);
