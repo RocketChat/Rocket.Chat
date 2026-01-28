@@ -111,7 +111,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 					<TextInput
 						id={imageUrlField}
 						flexGrow={0}
-						placeholder={t('Use_url_for_avatar')}
+						placeholder='https://example.com/avatar.png'
 						value={avatarFromUrl}
 						mis={4}
 						onChange={handleAvatarFromUrlChange}
