@@ -6,7 +6,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { UpdateFilter } from 'mongodb';
 
-import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
+import { type AuthenticatedContext, twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
 import { getUserInfo } from '../../app/api/server/helpers/getUserInfo';
 import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
@@ -23,7 +23,7 @@ const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
 
 async function saveUserProfile(
-	this: Meteor.MethodThisType & { token: string },
+	this: AuthenticatedContext,
 	settings: {
 		email?: string;
 		username?: string;
@@ -215,7 +215,7 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 export function executeSaveUserProfile(
-	this: Meteor.MethodThisType & { token: string },
+	this: AuthenticatedContext,
 	user: IUser,
 	settings: {
 		email?: string;

@@ -186,13 +186,7 @@ API.v1.addRoute(
 						twoFactorMethod: 'password',
 					};
 
-			await executeSaveUserProfile.call(
-				this as unknown as Meteor.MethodThisType & { token: string },
-				this.user,
-				userData,
-				this.bodyParams.customFields,
-				twoFactorOptions,
-			);
+			await executeSaveUserProfile.call(this, this.user, userData, this.bodyParams.customFields, twoFactorOptions);
 
 			return API.v1.success({
 				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),

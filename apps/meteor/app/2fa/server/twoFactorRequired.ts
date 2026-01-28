@@ -3,10 +3,21 @@ import { Meteor } from 'meteor/meteor';
 import type { ITwoFactorOptions } from './code/index';
 import { checkCodeForUser } from './code/index';
 
+export type AuthenticatedContext = {
+	userId: string;
+	token: string;
+	connection: {
+		id: string;
+		clientAddress: string;
+		httpHeaders: Record<string, string>;
+	};
+	twoFactorChecked?: boolean;
+};
+
 export const twoFactorRequired = <TFunction extends (this: any, ...args: any) => any>(
-	fn: ThisParameterType<TFunction> extends Meteor.MethodThisType
+	fn: ThisParameterType<TFunction> extends AuthenticatedContext
 		? TFunction
-		: (this: Meteor.MethodThisType, ...args: Parameters<TFunction>) => ReturnType<TFunction>,
+		: (this: AuthenticatedContext, ...args: Parameters<TFunction>) => ReturnType<TFunction>,
 	options?: ITwoFactorOptions,
 ) =>
 	async function (this, ...args) {
