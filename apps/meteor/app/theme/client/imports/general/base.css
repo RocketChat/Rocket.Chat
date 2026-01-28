@@ -110,3 +110,19 @@ button {
 	max-width: 100%;
 	cursor: pointer;
 }
+
+/* Fix for issue #26723: Omnichannel transfer comment text wrapping */
+.rcx-message-system__block {
+	flex-wrap: wrap;
+}
+
+.rcx-message-system__body {
+	white-space: normal !important;
+	word-wrap: break-word;
+	word-break: break-word;
+	overflow-wrap: break-word;
+	text-overflow: clip !important;
+	overflow: visible !important;
+	flex-shrink: 1;
+	min-width: 0;
+}
