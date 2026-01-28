@@ -21,10 +21,10 @@ export const useMobileViewportFix = (): void => {
                     height: 0px !important;
                     background: transparent !important;
                 }
-                ::-webkit-scrollbar-track {
+                .rcx-navbar::-webkit-scrollbar-track {
                     background: transparent !important;
                 }
-                ::-webkit-scrollbar-thumb {
+                .rcx-navbar::-webkit-scrollbar-thumb {
                     background: transparent !important;
                 }
                 .rcx-navbar {
