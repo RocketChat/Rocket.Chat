@@ -3,7 +3,8 @@ import type { FileProp } from './FileProp';
 
 export type RemovedFileAttachmentProps = MessageAttachmentBase & {
 	type: 'removed-file';
-	fileId: FileProp['_id'];
+	/* If fileId is missing, then every file in the message has been removed */
+	fileId?: FileProp['_id'];
 };
 
 export const isRemovedFileAttachment = (attachment: MessageAttachmentBase): attachment is RemovedFileAttachmentProps =>

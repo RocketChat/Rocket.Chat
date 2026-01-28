@@ -120,13 +120,7 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 				return attachment;
 			}
 
-			const attachmentFileId = attachment.fileId || filesToRemove[0];
-
-			if (attachmentFileId) {
-				return { type: 'removed-file', fileId: attachmentFileId, color, text };
-			}
-
-			return { color, text };
+			return { type: 'removed-file', color, text, ...(attachment.fileId && { fileId: attachment.fileId }) };
 		});
 		const newFile = msg.file?._id && !filesToRemove.includes(msg.file._id) ? msg.file : newFiles?.[0];
 

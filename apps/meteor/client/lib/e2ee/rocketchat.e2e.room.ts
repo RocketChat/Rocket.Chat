@@ -663,6 +663,7 @@ export class E2ERoom extends Emitter {
 	async decryptMessageContent(message: IE2EEMessage): Promise<IE2EEMessage> {
 		const { attachments } = message;
 		const deletedAttachments = attachments?.filter((att) => isRemovedFileAttachment(att)) || [];
+		const deletedAllAttachment = deletedAttachments.find((att) => !att.fileId);
 
 		const content = await this.decrypt(message.content);
 		Object.assign(message, content);
@@ -679,6 +680,10 @@ export class E2ERoom extends Emitter {
 		message.attachments = message.attachments.map((att) => {
 			if (!isFileAttachment(att)) {
 				return att;
+			}
+
+			if (deletedAllAttachment) {
+				return deletedAllAttachment;
 			}
 
 			const fileId = att.fileId || message.file?._id;
