@@ -8,7 +8,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { OEmbedCache, Messages } from '@rocket.chat/models';
+import { OEmbedCache, Messages, Rooms } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import he from 'he';
 import iconv from 'iconv-lite';
@@ -327,19 +327,21 @@ const getRelevantMetaTags = function (metaObj: OEmbedMeta): Record<string, strin
 const insertMaxWidthInOembedHtml = (oembedHtml?: string): string | undefined =>
 	oembedHtml?.replace('iframe', 'iframe style="max-width: 100%;width:400px;height:225px"');
 
+
+
 const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	log.debug({ msg: 'Parsing message URLs' });
-
 	if (!settings.get('API_Embed')) {
 		return message;
 	}
-
 	if (!Array.isArray(message.urls)) {
 		return message;
 	}
-
+	const room = await Rooms.findOneById(message.rid, { projection: { linksEmbed: 1 } });
+	if (room?.linksEmbed === false) {
+		return message;
+	}
 	log.debug({ msg: 'URLs found in message', count: message.urls.length });
-
 	if (
 		(message.attachments && message.attachments.length > 0) ||
 		message.urls.filter((item) => !item.url.includes(settings.get('Site_Url'))).length > MAX_EXTERNAL_URL_PREVIEWS
@@ -347,24 +349,19 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 		log.debug({ msg: 'All URLs ignored for OEmbed' });
 		return message;
 	}
-
 	let changed = false;
 	for await (const item of message.urls) {
 		if (item.ignoreParse === true) {
 			log.debug({ msg: 'URL ignored for OEmbed', url: item.url });
 			continue;
 		}
-
 		const { urlPreview, foundMeta } = await parseUrl(item.url);
-
 		Object.assign(item, foundMeta ? urlPreview : {});
 		changed = changed || foundMeta;
 	}
-
 	if (changed === true) {
 		await Messages.setUrlsById(message._id, message.urls);
 	}
-
 	return message;
 };
 
