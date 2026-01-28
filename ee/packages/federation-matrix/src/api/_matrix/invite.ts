@@ -1,4 +1,4 @@
-import { Authorization } from '@rocket.chat/core-services';
+import { FederationMatrix } from '@rocket.chat/core-services';
 import { NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
@@ -175,7 +175,7 @@ export const getMatrixInviteRoutes = () => {
 			}
 
 			// check federation permission before processing the invite
-			if (!(await Authorization.hasPermission(ourUser._id, 'access-federation'))) {
+			if (!(await FederationMatrix.canUserAccessFederation(ourUser))) {
 				logger.info({ msg: 'User denied federation access, rejecting invite to room', userId: userToCheck, roomId });
 
 				return {

@@ -13,7 +13,6 @@ import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddU
 import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { syncRoomRolePriorityForUserAndRoom } from '../../../../server/lib/roles/syncRoomRolePriority';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
@@ -184,12 +183,7 @@ export const createRoom = async <T extends RoomType>(
 
 	const shouldBeHandledByFederation = extraData.federated === true;
 
-	if (
-		shouldBeHandledByFederation &&
-		owner &&
-		!isUserNativeFederated(owner) &&
-		!(await hasPermissionAsync(owner._id, 'access-federation'))
-	) {
+	if (shouldBeHandledByFederation && owner && !isUserNativeFederated(owner) && !(await FederationMatrix.canUserAccessFederation(owner))) {
 		throw new Meteor.Error('error-not-authorized-federation', 'Not authorized to access federation', {
 			method: 'createRoom',
 		});

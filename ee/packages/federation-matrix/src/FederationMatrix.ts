@@ -1,4 +1,4 @@
-import { type IFederationMatrixService, Room, ServiceClass } from '@rocket.chat/core-services';
+import { Authorization, type IFederationMatrixService, Room, ServiceClass } from '@rocket.chat/core-services';
 import {
 	isDeletedMessage,
 	isMessageFromMatrixFederation,
@@ -36,6 +36,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private processEDUPresence: boolean;
 
+	private validateUserDomain: boolean;
+
 	private readonly logger = new Logger(this.name);
 
 	override async created(): Promise<void> {
@@ -52,6 +54,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				this.processEDUTyping = value;
 			} else if (_id === 'Federation_Service_EDU_Process_Presence' && typeof value === 'boolean') {
 				this.processEDUPresence = value;
+			} else if (_id === 'Federation_Service_Validate_User_Domain' && typeof value === 'boolean') {
+				this.validateUserDomain = value;
 			}
 		});
 
@@ -98,6 +102,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		this.serverName = (await Settings.getValueById<string>('Federation_Service_Domain')) || '';
 		this.processEDUTyping = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Typing')) || false;
 		this.processEDUPresence = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Presence')) || false;
+		this.validateUserDomain = (await Settings.getValueById<boolean>('Federation_Service_Validate_User_Domain')) || false;
 	}
 
 	async createRoom(room: IRoom, owner: IUser): Promise<{ room_id: string; event_id: string }> {
@@ -801,5 +806,22 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw err;
 			}
 		}
+	}
+
+	async canUserAccessFederation(user: IUser): Promise<boolean> {
+		if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
+			return false;
+		}
+
+		if (!this.validateUserDomain) {
+			return true;
+		}
+
+		return (
+			user.emails?.some((email) => {
+				const domain = email.address.split('@')[1];
+				return domain === this.serverName && email.verified;
+			}) ?? false
+		);
 	}
 }
