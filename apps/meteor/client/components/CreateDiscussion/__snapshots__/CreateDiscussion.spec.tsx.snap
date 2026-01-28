@@ -1,0 +1,328 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`CreateDiscussion renders Default without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby=":r6:-title"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <form
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <h2
+              class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
+              id=":r6:-title"
+            >
+              Discussion_title
+            </h2>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              tabindex="-1"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-56vo9k"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-heem01"
+            >
+              Discussion_description
+            </div>
+            <fieldset
+              class="rcx-box rcx-box--full rcx-field-group"
+              role="group"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  for=":r0:"
+                >
+                  Parent channel or team
+                  <span
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+                  >
+                    *
+                  </span>
+                </label>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-autocomplete rcx-css-t3n91h"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-6d871f"
+                      role="group"
+                    >
+                      <input
+                        aria-describedby=":r0:-error"
+                        aria-invalid="false"
+                        aria-required="true"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-rcil7k"
+                        id=":r0:"
+                        name="parentRoom"
+                        placeholder="Search_options"
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-autocomplete__addon"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-1wz6xj9"
+                      >
+                        
+                      </i>
+                    </div>
+                  </div>
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  for=":r2:"
+                >
+                  Name
+                  <span
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+                  >
+                    *
+                  </span>
+                </label>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+                  >
+                    <input
+                      aria-describedby=":r2:-error :r2:-hint"
+                      aria-invalid="false"
+                      aria-required="true"
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
+                      id=":r2:"
+                      name="name"
+                      size="1"
+                      type="text"
+                      value=""
+                    />
+                    <span
+                      class="rcx-box rcx-box--full rcx-input-box__addon"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-baloons rcx-icon rcx-css-4pvxx3"
+                      >
+                        
+                      </i>
+                    </span>
+                  </label>
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  for=":r5:"
+                >
+                  Topic
+                </label>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <input
+                    aria-describedby=":r5:-hint"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                    id=":r5:"
+                    name="topic"
+                    size="1"
+                    type="text"
+                    value=""
+                  />
+                </span>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__hint"
+                    id=":r5:-hint"
+                  >
+                    Displayed_next_to_name
+                  </span>
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  for=":r3:"
+                >
+                  Members
+                </label>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-select"
+                    id=":r3:"
+                    name="usernames"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1sr8su7"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-w398ts"
+                        role="listbox"
+                      >
+                        <input
+                          aria-haspopup="listbox"
+                          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-pqpp8q"
+                          placeholder="Add_people"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-1bprq55"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+                      >
+                        
+                      </i>
+                    </div>
+                  </div>
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  for=":r4:"
+                >
+                  Message
+                </label>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <textarea
+                    aria-describedby=":r4:-hint :r4:-encrypted-hint"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-textarea rcx-input-box"
+                    cols="1"
+                    id=":r4:"
+                    name="firstMessage"
+                    rows="5"
+                    size="1"
+                  />
+                </span>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__hint"
+                  id=":r4:-hint"
+                >
+                  First_message_hint
+                </span>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-field__row"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                    for=":r1:"
+                  >
+                    Encrypted
+                  </label>
+                  <label
+                    class="rcx-box rcx-box--full rcx-toggle-switch"
+                  >
+                    <input
+                      class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                      id=":r1:"
+                      name="encrypted"
+                      type="checkbox"
+                    />
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                    />
+                  </label>
+                </span>
+                <span
+                  class="rcx-box rcx-box--full rcx-field__hint"
+                  id=":r1:-hint"
+                >
+                  Not_available_for_this_workspace
+                </span>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Cancel
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              type="submit"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Create
+              </span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+  </div>
+</body>
+`;

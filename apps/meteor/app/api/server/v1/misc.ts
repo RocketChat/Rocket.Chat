@@ -476,6 +476,7 @@ API.v1.addRoute(
 		authRequired: true,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
+		applyMeteorContext: true,
 	},
 	{
 		async post() {
@@ -515,8 +516,7 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = await Meteor.callAsync(method, ...params);
-				return API.v1.success(mountResult({ id, result }));
+				return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
 					SystemLogger.error({ msg: 'Exception while invoking method', err, method });
@@ -531,12 +531,14 @@ API.v1.addRoute(
 		},
 	},
 );
+
 API.v1.addRoute(
 	'method.callAnon/:method',
 	{
 		authRequired: false,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
+		applyMeteorContext: true,
 	},
 	{
 		async post() {
@@ -572,8 +574,7 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = await Meteor.callAsync(method, ...params);
-				return API.v1.success(mountResult({ id, result }));
+				return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
 					SystemLogger.error({ msg: 'Exception while invoking method', err, method });
