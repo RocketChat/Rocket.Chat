@@ -32,12 +32,19 @@ export const getValidRoomName = async (displayName: string, rid = '', options: {
 
 	let nameValidation;
 
-	try {
-		nameValidation = new RegExp(`^${settings.get('UTF8_Channel_Names_Validation')}$`);
-	} catch (error) {
-		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
-	}
 
+	if (options.nameValidationRegex) {
+		nameValidation = new RegExp(options.nameValidationRegex);
+	} else {
+		try {
+			const baseValidation = settings.get('UTF8_Channel_Names_Validation');
+			// Allow spaces between words, but don't allow a string consisting only of spaces
+			nameValidation = new RegExp(`^(?!\\s+$)${baseValidation}`);
+		} catch (error) {
+			nameValidation = new RegExp('^[0-9a-zA-Z-_. ]+$');
+		}
+
+	}
 	if (!nameValidation.test(slugifiedName) || !validateName(slugifiedName)) {
 		throw new Meteor.Error('error-invalid-room-name', `${escapeHTML(slugifiedName)} is not a valid room name.`, {
 			function: 'RocketChat.getValidRoomName',
