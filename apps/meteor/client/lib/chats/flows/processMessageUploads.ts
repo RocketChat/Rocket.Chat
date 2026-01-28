@@ -1,4 +1,6 @@
 import type { AtLeast, FileAttachmentProps, IMessage, IUploadToConfirm } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { imperativeModal, GenericModal } from '@rocket.chat/ui-client';
 
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
@@ -6,6 +8,7 @@ import { t } from '../../../../app/utils/lib/i18n';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import { e2e } from '../../e2ee/rocketchat.e2e';
 import type { E2ERoom } from '../../e2ee/rocketchat.e2e.room';
+import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 import { isEncryptedUpload, type EncryptedUpload } from '../Upload';
@@ -93,6 +96,7 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage): P
 
 	const store = tmid ? chat.threadUploads : chat.uploads;
 	const filesToUpload = store.get();
+	const multiFilePerMessageEnabled = settings.peek('FileUpload_EnableMultipleFilesPerMessage') as boolean;
 
 	if (filesToUpload.length === 0) {
 		return false;
@@ -185,7 +189,20 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage): P
 		} as const;
 
 		try {
-			await sdk.call('sendMessage', composedMessage, fileUrls, filesToConfirm);
+			if ((!multiFilePerMessageEnabled || isOmnichannelRoom(room)) && filesToConfirm.length > 1) {
+				await Promise.all(
+					filesToConfirm.map((fileToConfirm, index) => {
+						/**
+						 * The first message will keep the composedMessage,
+						 * subsequent messages will have a new ID with empty text
+						 * */
+						const messageToSend = index === 0 ? composedMessage : { ...composedMessage, _id: Random.id(), msg: '' };
+						return sdk.call('sendMessage', messageToSend, [fileUrls[index]], [fileToConfirm]);
+					}),
+				);
+			} else {
+				await sdk.call('sendMessage', composedMessage, fileUrls, filesToConfirm);
+			}
 			store.clear();
 		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
