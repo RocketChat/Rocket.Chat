@@ -11,7 +11,7 @@ export default function meteorPlugin(pluginConfig: PluginOptions = {}): vite.Plu
 
 	return {
 		name: 'vite-plugin-meteor',
-		enforce: 'pre',
+		enforce: 'post',
 		config(userConfig, viteEnv) {
 			const resolvedConfig = resolveConfig(pluginConfig, userConfig, viteEnv);
 			plugins.push(packages(resolvedConfig), runtime(resolvedConfig), stubs(resolvedConfig));
@@ -21,6 +21,9 @@ export default function meteorPlugin(pluginConfig: PluginOptions = {}): vite.Plu
 			if (proxy) {
 				const proxyConfig: vite.UserConfig = {
 					server: {
+						proxy,
+					},
+					preview: {
 						proxy,
 					},
 				};
