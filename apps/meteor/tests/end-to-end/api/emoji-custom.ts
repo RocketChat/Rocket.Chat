@@ -6,7 +6,10 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { imgURL } from '../../data/interactions';
 
 describe('[EmojiCustom]', () => {
-	const customEmojiName = `my-custom-emoji-${Date.now()}`;
+	const timestamp = Date.now();
+	const customEmojiName = `my-custom-emoji-${timestamp}`;
+	const multiAliasOne = `mycustomemoji${timestamp}aliasone`;
+	const multiAliasTwo = `mycustomemoji${timestamp}aliastwo`;
 
 	let withoutAliases: IEmojiCustom;
 
@@ -26,7 +29,7 @@ describe('[EmojiCustom]', () => {
 				.attach('emoji', imgURL)
 				.field({
 					name: customEmojiName,
-					aliases: `${customEmojiName}-alias`,
+					aliases: `${multiAliasOne} ${multiAliasTwo}`,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -91,6 +94,7 @@ describe('[EmojiCustom]', () => {
 					assert.isDefined(_withoutAliases);
 
 					createdCustomEmoji = _createdCustomEmoji;
+					expect(createdCustomEmoji.aliases).to.include.members([multiAliasOne, multiAliasTwo]);
 					withoutAliases = _withoutAliases;
 				})
 				.end(done);

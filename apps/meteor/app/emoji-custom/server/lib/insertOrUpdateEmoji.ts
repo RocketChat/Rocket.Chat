@@ -60,7 +60,7 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 			});
 		}
 		aliases = emojiData.aliases
-			.split(/\s*,\s*/)
+			.split(/[\s,]+/)
 			.filter(Boolean)
 			.map((alias) => limax(alias, { replacement: '_' }))
 			.filter((alias) => alias !== emojiData.name);
