@@ -27,7 +27,7 @@
 		".testunit:jest": "TZ=UTC TS_NODE_COMPILER_OPTIONS='{\"allowJs\": false}' jest",
 		".testunit:server": "mocha --config ./.mocharc.js",
 		".testunit:server:cov": "nyc -r text -r lcov mocha --config ./.mocharc.js",
-		"build:ci": "METEOR_DEBUG_BUILD=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --verbose --server-only --directory /tmp/dist",
+		"build:ci": "METEOR_DEBUG_BUILD=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --verbose --server-only --directory /tmp/dist; wattpm/inject.sh",
 		"coverage": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' nyc -r html mocha --config ./.mocharc.js",
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
