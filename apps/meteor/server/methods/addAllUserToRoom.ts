@@ -37,16 +37,16 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 		userFilter.active = true;
 	}
 
-	const users = await Users.find(userFilter).toArray();
-	if (users.length > settings.get<number>('API_User_Limit')) {
-		throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
+	const room = await Rooms.findOneById(rid);
+	if (!room) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 			method: 'addAllToRoom',
 		});
 	}
 
-	const room = await Rooms.findOneById(rid);
-	if (!room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+	const users = await Users.find(userFilter).toArray();
+	if (users.length > settings.get<number>('API_User_Limit')) {
+		throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
 			method: 'addAllToRoom',
 		});
 	}
