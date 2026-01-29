@@ -1,6 +1,5 @@
 import { EventEmitter } from 'events';
 import net from 'net';
-import util from 'util';
 
 import { Logger } from '@rocket.chat/logger';
 
@@ -10,8 +9,50 @@ import peerCommandHandlers from './peerCommandHandlers';
 
 const logger = new Logger('IRC Server');
 
-class RFC2813 {
-	constructor(config) {
+type Config = {
+	server: {
+		name: string;
+		host: string;
+		port: number;
+		description: string;
+	};
+	passwords: {
+		local: string;
+	};
+};
+
+type Command = {
+	prefix?: string;
+	command: string;
+	parameters?: string[];
+	trailer?: string;
+};
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+interface RFC2813 extends EventEmitter {
+	on(event: 'onReceiveFromLocal', listener: (command: string, parameters: any) => void): this;
+	on(event: 'peerCommand', listener: (command: any) => void): this;
+	on(event: string | symbol, listener: (...args: any[]) => void): this;
+	emit(event: 'peerCommand', command: any): boolean;
+	emit(event: 'onReceiveFromLocal', command: string, parameters: any): boolean;
+	emit(event: string | symbol, ...args: any[]): boolean;
+}
+
+class RFC2813 extends EventEmitter {
+	config: Config;
+
+	registerSteps: string[];
+
+	isRegistered: boolean;
+
+	serverPrefix: string | null;
+
+	receiveBuffer: Buffer;
+
+	socket?: net.Socket;
+
+	constructor(config: Config) {
+		super();
 		this.config = config;
 
 		// Hold registered state
@@ -28,7 +69,7 @@ class RFC2813 {
 	/**
 	 * Setup socket
 	 */
-	setupSocket() {
+	setupSocket(): void {
 		// Setup socket
 		this.socket = new net.Socket();
 		this.socket.setNoDelay();
@@ -49,7 +90,7 @@ class RFC2813 {
 	/**
 	 * Log helper
 	 */
-	log(message) {
+	log(message: string | Record<string, any>): void {
 		// TODO logger: debug?
 		if (typeof message === 'string') {
 			logger.info({ msg: message });
@@ -62,7 +103,7 @@ class RFC2813 {
 	/**
 	 * Connect
 	 */
-	register() {
+	register(): void {
 		this.log({
 			msg: 'Connecting to IRC server',
 			host: this.config.server.host,
@@ -73,13 +114,13 @@ class RFC2813 {
 			this.setupSocket();
 		}
 
-		this.socket.connect(this.config.server.port, this.config.server.host);
+		this.socket!.connect(this.config.server.port, this.config.server.host);
 	}
 
 	/**
 	 * Disconnect
 	 */
-	disconnect() {
+	disconnect(): void {
 		this.log('Disconnecting from server.');
 
 		if (this.socket) {
@@ -93,7 +134,7 @@ class RFC2813 {
 	/**
 	 * Setup the server connection
 	 */
-	onConnect() {
+	onConnect(): void {
 		this.log('Connected! Registering as server...');
 
 		this.write({
@@ -111,7 +152,7 @@ class RFC2813 {
 	/**
 	 * Sends a command message through the socket
 	 */
-	write(command) {
+	write(command: Command): boolean {
 		let buffer = command.prefix ? `:${command.prefix} ` : '';
 		buffer += command.command;
 
@@ -125,7 +166,7 @@ class RFC2813 {
 
 		this.log({ msg: 'Sending Command', buffer });
 
-		return this.socket.write(`${buffer}\r\n`);
+		return this.socket!.write(`${buffer}\r\n`);
 	}
 
 	/**
@@ -135,9 +176,9 @@ class RFC2813 {
 	 *
 	 *
 	 */
-	onReceiveFromPeer(chunk) {
+	onReceiveFromPeer(chunk: string | Buffer): void {
 		if (typeof chunk === 'string') {
-			this.receiveBuffer += chunk;
+			this.receiveBuffer = Buffer.concat([this.receiveBuffer, Buffer.from(chunk)]);
 		} else {
 			this.receiveBuffer = Buffer.concat([this.receiveBuffer, chunk]);
 		}
@@ -156,12 +197,12 @@ class RFC2813 {
 			if (line.length && !line.startsWith('a')) {
 				const parsedMessage = parseMessage(line);
 
-				if (peerCommandHandlers[parsedMessage.command]) {
+				if (peerCommandHandlers[parsedMessage.command as keyof typeof peerCommandHandlers]) {
 					this.log({ msg: 'Handling peer message', line });
 
-					const command = peerCommandHandlers[parsedMessage.command].call(this, parsedMessage);
+					const command = peerCommandHandlers[parsedMessage.command as keyof typeof peerCommandHandlers].call(this, parsedMessage);
 
-					if (command) {
+					if (command !== undefined) {
 						this.log({ msg: 'Emitting peer command to local', command });
 						this.emit('peerCommand', command);
 					}
@@ -173,23 +214,17 @@ class RFC2813 {
 	}
 
 	/**
-	 *
-	 *
 	 * Local message handling
-	 *
-	 *
 	 */
-	onReceiveFromLocal(command, parameters) {
-		if (localCommandHandlers[command]) {
+	onReceiveFromLocal(command: string, parameters: any): void {
+		if (localCommandHandlers[command as keyof typeof localCommandHandlers]) {
 			this.log({ msg: 'Handling local command', command });
 
-			localCommandHandlers[command].call(this, parameters, this);
+			localCommandHandlers[command as keyof typeof localCommandHandlers].call(this, parameters, this);
 		} else {
 			this.log({ msg: 'Unhandled local command', command });
 		}
 	}
 }
-
-util.inherits(RFC2813, EventEmitter);
 
 export default RFC2813;
