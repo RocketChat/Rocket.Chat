@@ -30,7 +30,6 @@ MongoInternals.Connection.prototype._observeChanges = async function (
 	_ordered: boolean,
 	callbacks: Callbacks,
 ): Promise<any> {
-	// console.error('Connection.Collection.prototype._observeChanges', collectionName, selector, options);
 	let cbs: Set<{ hashedToken: string; callbacks: Callbacks }>;
 	let data: { hashedToken: string; callbacks: Callbacks };
 	if (callbacks?.added) {
