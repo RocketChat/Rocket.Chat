@@ -133,7 +133,7 @@ API.v1.addRoute(
 
 			if (rooms.length) {
 				for await (const room of rooms) {
-					await eraseRoom(room, this.userId);
+					await eraseRoom(room, this.user);
 				}
 			}
 
