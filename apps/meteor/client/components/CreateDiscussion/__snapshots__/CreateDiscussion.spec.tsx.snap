@@ -18,12 +18,16 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
           <div
             class="rcx-box rcx-box--full rcx-modal__header-inner"
           >
-            <h2
-              class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
-              id=":r6:-title"
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
             >
-              Discussion_title
-            </h2>
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title"
+                id=":r6:-title"
+              >
+                Discussion_title
+              </h2>
+            </div>
             <button
               aria-label="Close"
               class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
@@ -43,7 +47,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-56vo9k"
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-heem01"
@@ -125,7 +129,6 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
                   >
                     <input
-                      aria-describedby=":r2:-error :r2:-hint"
                       aria-invalid="false"
                       aria-required="true"
                       class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
@@ -239,7 +242,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-field__row"
                 >
                   <textarea
-                    aria-describedby=":r4:-hint :r4:-encrypted-hint"
+                    aria-describedby=":r4:-hint"
                     class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-textarea rcx-input-box"
                     cols="1"
                     id=":r4:"
@@ -300,7 +303,7 @@ exports[`CreateDiscussion renders Default without crashing 1`] = `
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-button-group__item"
               type="button"
             >
               <span
