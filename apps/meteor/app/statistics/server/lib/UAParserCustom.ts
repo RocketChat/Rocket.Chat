@@ -1,6 +1,6 @@
 import UAParser from 'ua-parser-js';
 
-const mergeDeep = (target, source) => {
+const mergeDeep = (target: any, source: any): any => {
 	if (!(typeof target === 'object' && typeof source === 'object')) {
 		return target;
 	}
@@ -26,6 +26,11 @@ const mergeDeep = (target, source) => {
 	return target;
 };
 
+type PropConfig = {
+	list: string[];
+	get?: (prop: string, value: string) => string;
+};
+
 export const UAParserMobile = {
 	appName: 'RC Mobile',
 	device: 'mobile-app',
@@ -36,7 +41,7 @@ export const UAParserMobile = {
 		},
 		app: {
 			list: ['version', 'bundle'],
-			get: (prop, value) => {
+			get: (prop: string, value: string) => {
 				if (prop === 'bundle') {
 					return value.replace(/([()])/g, '');
 				}
@@ -48,15 +53,15 @@ export const UAParserMobile = {
 				return value;
 			},
 		},
-	},
+	} as Record<string, PropConfig>,
 
-	isMobileApp(uaString) {
+	isMobileApp(uaString: string): boolean {
 		if (!uaString || typeof uaString !== 'string') {
 			return false;
 		}
 
 		const splitUA = uaString.split(this.uaSeparator);
-		return splitUA && splitUA[0] && splitUA[0].trim() === this.appName;
+		return !!(splitUA && splitUA[0] && splitUA[0].trim() === this.appName);
 	},
 
 	/**
@@ -64,14 +69,14 @@ export const UAParserMobile = {
 	 * @param {string} uaString
 	 * @returns { device: { type: '' }, app: { name: '', version: '' } }
 	 */
-	uaObject(uaString) {
+	uaObject(uaString: string): Record<string, any> {
 		if (!this.isMobileApp(uaString)) {
 			return {};
 		}
 
 		const splitUA = uaString.split(this.uaSeparator);
 
-		let obj = {
+		let obj: any = {
 			device: {
 				type: this.device,
 			},
@@ -97,7 +102,7 @@ export const UAParserMobile = {
 				return;
 			}
 
-			const subProps = {};
+			const subProps: Record<string, any> = {};
 			splitProps.forEach((value, idx) => {
 				if (props.list.length > idx) {
 					const propName = props.list[idx];
@@ -105,7 +110,7 @@ export const UAParserMobile = {
 				}
 			});
 
-			const prop = {};
+			const prop: Record<string, any> = {};
 			prop[key] = subProps;
 			obj = mergeDeep(obj, prop);
 		});
@@ -117,7 +122,7 @@ export const UAParserMobile = {
 export const UAParserDesktop = {
 	device: 'desktop-app',
 
-	isDesktopApp(uaString) {
+	isDesktopApp(uaString: string): boolean {
 		if (!uaString || typeof uaString !== 'string') {
 			return false;
 		}
@@ -130,7 +135,7 @@ export const UAParserDesktop = {
 	 * @param {string} uaString
 	 * @returns { device: { type: '' }, os: '' || {}, app: { name: '', version: '' } }
 	 */
-	uaObject(uaString) {
+	uaObject(uaString: string): Record<string, any> {
 		if (!this.isDesktopApp(uaString)) {
 			return {};
 		}
