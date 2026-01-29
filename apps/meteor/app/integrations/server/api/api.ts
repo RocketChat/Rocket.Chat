@@ -401,16 +401,29 @@ const middleware = async (c: Context, next: Next): Promise<void> => {
 			return next();
 		}
 
+		/**
+		 * Slack/GitHub-style webhooks send JSON wrapped in a `payload` field with
+		 * Content-Type: application/x-www-form-urlencoded (e.g. `payload={"text":"hello"}`).
+		 * We unwrap it here so integrations receive the parsed JSON directly.
+		 *
+		 * Note: These webhooks only send the `payload` field with no additional form
+		 * parameters, so we simply replace bodyParams with the parsed JSON.
+		 */
 		if (body.payload) {
-			// need to compose the full payload in this weird way because body-parser thought it was a form
-			c.set('bodyParams-override', JSON.parse(body.payload));
+			if (typeof body.payload === 'string') {
+				try {
+					c.set('bodyParams-override', JSON.parse(body.payload));
+				} catch {
+					// Keep original without unwrapping
+				}
+			}
 			return next();
 		}
+
 		incomingLogger.debug({
 			msg: 'Body received as application/x-www-form-urlencoded without the "payload" key, parsed as string',
 			content,
 		});
-		c.set('bodyParams-override', JSON.parse(content));
 	} catch (e: any) {
 		c.body(JSON.stringify({ success: false, error: e.message }), 400);
 	}
