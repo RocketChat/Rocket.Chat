@@ -1,6 +1,7 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
-export default async function handleOnCreateUser(newUser) {
+export default async function handleOnCreateUser(this: any, newUser: IUser): Promise<void> {
 	if (!newUser) {
 		return this.log('Invalid handleOnCreateUser call');
 	}
@@ -29,9 +30,13 @@ export default async function handleOnCreateUser(newUser) {
 		_id: newUser._id,
 	});
 
+	if (!user) {
+		return;
+	}
+
 	this.sendCommand('registerUser', user);
 
-	const rooms = await Rooms.findBySubscriptionUserId(user._id).toArray();
+	const rooms = await (await Rooms.findBySubscriptionUserId(user._id)).toArray();
 
-	rooms.forEach((room) => this.sendCommand('joinedChannel', { room, user }));
+	rooms.forEach((room: any) => this.sendCommand('joinedChannel', { room, user }));
 }
