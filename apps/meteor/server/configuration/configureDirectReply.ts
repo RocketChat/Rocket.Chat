@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-import { DirectReplyIMAPInterceptor, POP3Helper } from '../../app/lib/server/lib/interceptDirectReplyEmails.js';
+import { DirectReplyIMAPInterceptor, POP3Helper } from '../../app/lib/server/lib/interceptDirectReplyEmails';
 import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
 import { logger } from '../features/EmailInbox/logger';
 
