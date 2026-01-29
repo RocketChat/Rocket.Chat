@@ -143,7 +143,7 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 		}
 
 		const containsQueryFields = queryFields.length > 0;
-		if (containsQueryFields && !isValidQuery(query, containsQueryFields ? queryFields : ['*'], queryOperations ?? pathAllowConf.def)) {
+		if (containsQueryFields && !isValidQuery(query, queryFields, queryOperations ?? pathAllowConf.def)) {
 			throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
 		}
 
