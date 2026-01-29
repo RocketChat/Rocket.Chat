@@ -114,6 +114,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				key: { teamMain: 1 },
 				sparse: true,
 			},
+			{
+				key: { 'lastMessage.u._id': 1 },
+				sparse: true,
+			},
 		];
 	}
 
