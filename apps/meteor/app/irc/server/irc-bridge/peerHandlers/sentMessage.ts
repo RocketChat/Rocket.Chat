@@ -1,3 +1,4 @@
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 
 import { createDirectRoom } from '../../../../lib/server/functions/createDirectRoom';
@@ -9,7 +10,7 @@ import { sendMessage } from '../../../../lib/server/functions/sendMessage';
  *
  *
  */
-const getDirectRoom = async (source, target) => {
+const getDirectRoom = async (source: IUser, target: IUser): Promise<IRoom> => {
 	const uids = [source._id, target._id];
 	const { _id, ...extraData } = await createDirectRoom([source, target]);
 
@@ -17,18 +18,25 @@ const getDirectRoom = async (source, target) => {
 	if (room) {
 		return {
 			t: 'd',
-			...room,
+			...(room as Omit<IRoom, 't'>),
 		};
 	}
 
 	return {
 		_id,
 		t: 'd',
-		...extraData,
-	};
+		...(extraData as Omit<IRoom, '_id' | 't'>),
+	} as IRoom;
 };
 
-export default async function handleSentMessage(args) {
+type SentMessageArgs = {
+	nick: string;
+	roomName?: string;
+	recipientNick?: string;
+	message: string;
+};
+
+export default async function handleSentMessage(args: SentMessageArgs): Promise<void> {
 	const user = await Users.findOne({
 		'profile.irc.nick': args.nick,
 	});
@@ -37,7 +45,7 @@ export default async function handleSentMessage(args) {
 		throw new Error(`Could not find a user with nick ${args.nick}`);
 	}
 
-	let room;
+	let room: IRoom | null;
 
 	if (args.roomName) {
 		room = await Rooms.findOneByName(args.roomName);
@@ -46,7 +54,15 @@ export default async function handleSentMessage(args) {
 			'profile.irc.nick': args.recipientNick,
 		});
 
+		if (!recipientUser) {
+			throw new Error(`Could not find recipient user with nick ${args.recipientNick}`);
+		}
+
 		room = await getDirectRoom(user, recipientUser);
+	}
+
+	if (!room) {
+		throw new Error(`Could not find or create room`);
 	}
 
 	const message = {
