@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet } from '@react-pdf/renderer';
 import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
 
-import type { PDFMessage } from '..';
+import type { PDFMessage } from '../../../types/ChatTranscriptData';
 import { Markup } from '../markup';
 import { Divider } from './Divider';
 import { Files } from './Files';
@@ -52,7 +52,7 @@ const processMessage = (message: PDFMessage) => {
 };
 
 const Message = ({ message, invalidFileMessage }: { message: PDFMessage; invalidFileMessage: string }) => (
-	<View style={styles.wrapper} wrap={!!message.quotes || messageLongerThanPage(message.msg)}>
+	<View style={styles.wrapper} wrap={!!message.quotes || messageLongerThanPage(message.msg) || (message.files && message.files.length > 0)}>
 		{message.divider && <Divider divider={message.divider} />}
 		<MessageHeader name={message.u.name || message.u.username} time={message.ts} />
 

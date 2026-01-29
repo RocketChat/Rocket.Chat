@@ -9,11 +9,11 @@ import './helpers/parseJsonQuery';
 import './default/info';
 import './v1/assets';
 import './v1/calendar';
+import './v1/call-history';
 import './v1/channels';
 import './v1/chat';
 import './v1/cloud';
 import './v1/commands';
-import './v1/dns';
 import './v1/e2e';
 import './v1/emoji-custom';
 import './v1/groups';
@@ -43,12 +43,8 @@ import './v1/banners';
 import './v1/email-inbox';
 import './v1/mailer';
 import './v1/teams';
-import './v1/voip/extensions';
-import './v1/voip/queues';
-import './v1/voip/omnichannel';
-import './v1/voip';
-import './v1/federation';
 import './v1/moderation';
+import './v1/uploads';
 
 // This has to come last so all endpoints are registered before generating the OpenAPI documentation
 import './default/openApi';

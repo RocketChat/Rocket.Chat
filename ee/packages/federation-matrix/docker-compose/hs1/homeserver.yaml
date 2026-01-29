@@ -1,0 +1,149 @@
+# Configuration file for Synapse.
+server_name: "hs1"
+pid_file: /data/hs1.pid
+
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    resources:
+      - names: [client, federation]
+
+use_x_forwarded_for: true
+serve_server_wellknown: true
+
+database:
+  name: sqlite3
+  args:
+    database: /data/hs1.db
+
+log_config: "/data/hs1.log.config"
+media_store_path: /data/media_store
+
+registration_shared_secret: "3l5H.Y5urc5@gKwYMe2^abk@nf.U_M6iyMgP,j&OL6pcSGrUQE"
+report_stats: false
+macaroon_secret_key: "3II&OLx=,6RcC&E~iksWi:tUU4J.~reK:MdU&JAPhlaGIL*+IA"
+form_secret: "B2EuUMKfg&.BsU;#DZ9;E,baB^wc=lV--F_PwkRLZvk=LHk+U4"
+signing_key_path: "/data/hs1.signing.key"
+
+trusted_key_servers: []
+  # - server_name: "matrix.org"
+  #   accept_keys_insecurely: true
+
+federation_client_minimum_tls_version: 1.2
+federation_verify_certificates: false
+suppress_key_server_warning: true
+
+enable_registration: true
+enable_registration_without_verification: true
+allow_public_rooms_over_federation: true
+
+password_config:
+  enabled: true
+  localdb_enabled: true
+  policy:
+    minimum_length: 1
+    require_lowercase: false
+    require_uppercase: false
+    require_digit: false
+    require_symbol: false
+
+# Optionally, add your Docker network to the whitelist
+ip_range_whitelist:
+  - '0.0.0.0/0'
+
+# --------------------------------------------------------------------
+# Development rate limits (set very high)
+# --------------------------------------------------------------------
+
+# Messaging
+rc_message:
+  per_second: 10000
+  burst_count: 10000
+
+# Registration
+rc_registration:
+  per_second: 10000
+  burst_count: 10000
+
+# Registration token validity checks
+rc_registration_token_validity:
+  per_second: 10000
+  burst_count: 10000
+
+# Login (IP, account, and failed-attempt buckets)
+rc_login:
+  address:
+    per_second: 10000
+    burst_count: 10000
+  account:
+    per_second: 10000
+    burst_count: 10000
+  failed_attempts:
+    per_second: 10000
+    burst_count: 10000
+
+# Joins
+rc_joins:
+  local:
+    per_second: 10000
+    burst_count: 10000
+  remote:
+    per_second: 10000
+    burst_count: 10000
+
+# Limit recent joins per room
+rc_joins_per_room:
+  per_second: 10000
+  burst_count: 10000
+
+# Invites
+rc_invites:
+  per_room:
+    per_second: 10000
+    burst_count: 10000
+  per_user:
+    per_second: 10000
+    burst_count: 10000
+
+# 3PID validation (email/phone)
+rc_3pid_validation:
+  per_second: 10000
+  burst_count: 10000
+
+# To-device and key requests
+rc_to_device:
+  per_second: 10000
+  burst_count: 10000
+rc_key_requests:
+  per_second: 10000
+  burst_count: 10000
+
+# Presence / typing / receipts / read markers
+rc_presence:
+  per_second: 10000
+  burst_count: 10000
+rc_typing:
+  per_second: 10000
+  burst_count: 10000
+rc_read_receipts:
+  per_second: 10000
+  burst_count: 10000
+rc_read_markers:
+  per_second: 10000
+  burst_count: 10000
+
+# Room-admin redactions
+rc_admin_redaction:
+  per_second: 10000
+  burst_count: 10000
+
+# Federation (uses *different* keys, not per_second/burst_count)
+rc_federation:
+  window_size: 10000      # ms
+  sleep_limit: 10000
+  sleep_delay: 0          # ms
+  reject_limit: 10000
+  concurrent: 10000
+# vim:ft=yaml

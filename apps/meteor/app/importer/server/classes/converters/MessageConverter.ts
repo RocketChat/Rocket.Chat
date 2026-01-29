@@ -27,7 +27,7 @@ type IMessageReactions = Record<string, IMessageReaction>;
 export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 	private rids: string[] = [];
 
-	async convertData({ afterImportAllMessagesFn, ...callbacks }: MessageConversionCallbacks = {}): Promise<void> {
+	override async convertData({ afterImportAllMessagesFn, ...callbacks }: MessageConversionCallbacks = {}): Promise<void> {
 		this.rids = [];
 		await super.convertData(callbacks);
 
@@ -41,9 +41,8 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		for await (const rid of this.rids) {
 			try {
 				await Rooms.resetLastMessageById(rid, null);
-			} catch (e) {
-				this._logger.warn(`Failed to update last message of room ${rid}`);
-				this._logger.error(e);
+			} catch (err) {
+				this._logger.error({ msg: 'Failed to update last message of room', roomId: rid, err });
 			}
 		}
 	}
@@ -55,7 +54,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 
 		const creator = await this._cache.findImportedUser(data.u._id);
 		if (!creator) {
-			this._logger.warn(`Imported user not found: ${data.u._id}`);
+			this._logger.warn({ msg: 'Imported user not found', userId: data.u._id });
 			throw new Error('importer-message-unknown-user');
 		}
 		const rid = await this._cache.findImportedRoomId(data.rid);
@@ -70,13 +69,12 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 
 		try {
 			await insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
-		} catch (e) {
-			this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
-			this._logger.error(e);
+		} catch (err) {
+			this._logger.error({ msg: 'Failed to import message', timestamp: msgObj.ts, roomId: rid, err });
 		}
 	}
 
-	protected async convertRecord(record: IImportMessageRecord): Promise<boolean> {
+	protected override async convertRecord(record: IImportMessageRecord): Promise<boolean> {
 		await this.insertMessage(record.data);
 		return true;
 	}
@@ -126,7 +124,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 			const { name, _id } = (await this.getMentionedChannelData(importId)) || {};
 
 			if (!_id || !name) {
-				this._logger.warn(`Mentioned room not found: ${importId}`);
+				this._logger.warn({ msg: 'Mentioned room not found', importId });
 				continue;
 			}
 
@@ -162,12 +160,12 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 			const data = await this._cache.findImportedUser(importId);
 
 			if (!data) {
-				this._logger.warn(`Mentioned user not found: ${importId}`);
+				this._logger.warn({ msg: 'Mentioned user not found', importId });
 				continue;
 			}
 
 			if (!data.username) {
-				this._logger.debug(importId);
+				this._logger.debug({ msg: 'Mentioned user has no username', importId });
 				throw new Error('importer-message-mentioned-username-not-found');
 			}
 
@@ -257,7 +255,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		}
 	}
 
-	protected getDataType(): 'message' {
+	protected override getDataType(): 'message' {
 		return 'message';
 	}
 }

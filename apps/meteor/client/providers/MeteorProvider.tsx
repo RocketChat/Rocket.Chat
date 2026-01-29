@@ -1,16 +1,15 @@
 import { ModalProvider } from '@rocket.chat/ui-client';
-import { VoipProvider } from '@rocket.chat/ui-voip';
 import type { ReactNode } from 'react';
 
 import ActionManagerProvider from './ActionManagerProvider';
 import AuthenticationProvider from './AuthenticationProvider/AuthenticationProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
-import { CallProvider as OmnichannelCallProvider } from './CallProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
 import EmojiPickerProvider from './EmojiPickerProvider';
 import LayoutProvider from './LayoutProvider';
+import MediaCallProvider from './MediaCallProvider';
 import OmnichannelProvider from './OmnichannelProvider';
 import RouterProvider from './RouterProvider';
 import ServerProvider from './ServerProvider';
@@ -49,11 +48,9 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 																		<UserPresenceProvider>
 																			<ActionManagerProvider>
 																				<VideoConfProvider>
-																					<VoipProvider>
-																						<OmnichannelCallProvider>
-																							<OmnichannelProvider>{children}</OmnichannelProvider>
-																						</OmnichannelCallProvider>
-																					</VoipProvider>
+																					<MediaCallProvider>
+																						<OmnichannelProvider>{children}</OmnichannelProvider>
+																					</MediaCallProvider>
 																				</VideoConfProvider>
 																			</ActionManagerProvider>
 																		</UserPresenceProvider>

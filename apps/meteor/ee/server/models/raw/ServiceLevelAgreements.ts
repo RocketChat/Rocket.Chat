@@ -8,7 +8,7 @@ export class ServiceLevelAgreements extends BaseRaw<IOmnichannelServiceLevelAgre
 		super(db, 'omnichannel_service_level_agreements');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { name: 1 }, unique: true },
 			{ key: { dueTimeInMinutes: 1 }, unique: true },

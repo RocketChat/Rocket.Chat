@@ -1,13 +1,13 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../../app/settings/client';
 import { getRoomAvatarURL } from '../../../../app/utils/client/getRoomAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getPrivateRoomType } from '../../../../lib/rooms/roomTypes/private';
 import { Rooms } from '../../../stores';
 import * as Federation from '../../federation/Federation';
+import { settings } from '../../settings';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const PrivateRoomType = getPrivateRoomType(roomCoordinator);
@@ -32,7 +32,7 @@ roomCoordinator.add(
 				case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
 					return Boolean(!room.broadcast && room.ro);
 				case RoomSettingsEnum.E2E:
-					return settings.get('E2E_Enable') === true;
+					return settings.watch('E2E_Enable') === true;
 				case RoomSettingsEnum.SYSTEM_MESSAGES:
 				default:
 					return true;
@@ -55,7 +55,7 @@ roomCoordinator.add(
 			if (roomData.prid || isRoomFederated(roomData)) {
 				return roomData.fname;
 			}
-			if (settings.get('UI_Allow_room_names_with_special_chars')) {
+			if (settings.watch('UI_Allow_room_names_with_special_chars')) {
 				return roomData.fname || roomData.name;
 			}
 
@@ -82,6 +82,13 @@ roomCoordinator.add(
 		},
 
 		getIcon(room) {
+			if (room.abacAttributes) {
+				if (room.teamMain) {
+					return 'team-shield';
+				}
+				return 'hash-shield';
+			}
+
 			if (room.prid) {
 				return 'discussion';
 			}

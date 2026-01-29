@@ -1,88 +1,66 @@
-import { faker } from '@faker-js/faker';
-import type { IUser } from '@rocket.chat/core-typings';
-
 import { Users } from './fixtures/userStates';
-import { expect, test } from './utils/test';
+import { AdminUsers } from './page-objects';
+import { setSettingValueById } from './utils/setSettingValueById';
+import { test, expect } from './utils/test';
+import type { ITestUser } from './utils/user-helpers';
+import { createTestUser } from './utils/user-helpers';
+
+let user: ITestUser;
+let admin: AdminUsers;
 
 test.use({ storageState: Users.admin.state });
 
 test.describe('Admin > Users', () => {
-	let user: IUser & { username: string };
-
 	test.beforeAll('Create a new user', async ({ api }) => {
-		const response = await api.post('/users.create', {
-			email: faker.internet.email(),
-			name: faker.person.fullName(),
-			password: faker.internet.password(),
-			username: faker.internet.userName(),
-		});
-		expect(response.status()).toBe(200);
-		const json = await response.json();
-		user = json.user;
-	});
-
-	test.beforeEach('Go to /admin/users', async ({ page }) => {
-		await page.goto('/admin/users');
+		await setSettingValueById(api, 'Accounts_ManuallyApproveNewUsers', true);
+		user = await createTestUser(api);
 	});
 
 	test.afterAll('Delete the new user', async ({ api }) => {
-		const response = await api.post('/users.delete', { userId: user._id });
-		expect(response.status()).toBe(200);
+		await user.delete();
+		await setSettingValueById(api, 'Accounts_ManuallyApproveNewUsers', false);
 	});
 
-	test(
-		'New user shows in correct tabs when deactivated',
-		{
-			tag: '@admin',
-			annotation: {
-				type: 'issue',
-				description: 'https://rocketchat.atlassian.net/browse/SUP-775',
-			},
-		},
-		async ({ page }) => {
-			const { username } = user;
+	test.beforeEach('Go to /admin/users', async ({ page }) => {
+		admin = new AdminUsers(page);
+		await page.goto('/admin/users');
+	});
 
-			await page.getByPlaceholder('Search Users').fill(username);
+	test('New user shows in correct tabs when deactivated', async () => {
+		await test.step('should be visible in the All tab', async () => {
+			await admin.getTabByName().click();
+			await admin.searchUser(user.data.username);
+		});
 
-			await test.step('is visible in the All tab', async () => {
-				await page.getByRole('tab', { name: 'All' }).click();
-				await expect(page.getByRole('link', { name: username })).toBeVisible();
-			});
+		await test.step('should be visible in the Pending tab', async () => {
+			await admin.getTabByName('Pending').click();
+			await expect(admin.getUserRowByUsername(user.data.username)).toBeVisible();
+		});
 
-			await test.step('is visible in the Pending tab', async () => {
-				await page.getByRole('tab', { name: 'Pending' }).click();
-				await expect(page.getByRole('link', { name: username })).toBeVisible();
-			});
+		await test.step('should not be visible in the Active tab', async () => {
+			await admin.getTabByName('Active').click();
+			await expect(admin.getUserRowByUsername(user.data.username)).not.toBeVisible();
+		});
 
-			await test.step('is not visible in the Active tab', async () => {
-				await page.getByRole('tab', { name: 'Active' }).click();
-				await expect(page.getByRole('link', { name: username })).not.toBeVisible();
-			});
+		await test.step('should not be visible in the Deactivated tab', async () => {
+			await admin.getTabByName('Deactivated').click();
+			await expect(admin.getUserRowByUsername(user.data.username)).not.toBeVisible();
+		});
 
-			await test.step('is not visible in the Deactivated tab', async () => {
-				await page.getByRole('tab', { name: 'Deactivated' }).click();
-				await expect(page.getByRole('link', { name: username })).not.toBeVisible();
-			});
+		await test.step('should move from Pending to Active tab', async () => {
+			await admin.getTabByName('Pending').click();
+			await admin.dispatchUserAction(user.data.username, 'Activate');
+			await expect(admin.getUserRowByUsername(user.data.username)).not.toBeVisible();
+			await admin.getTabByName('Active').click();
+			await expect(admin.getUserRowByUsername(user.data.username)).toBeVisible();
+		});
 
-			await test.step('moves from Pending to Deactivated tab', async () => {
-				await page.getByRole('tab', { name: 'Pending' }).click();
-				await page.getByRole('button', { name: 'More actions' }).click();
-				await page.getByRole('menuitem', { name: 'Deactivate' }).click();
-				await expect(page.getByRole('link', { name: username })).not.toBeVisible();
-
-				await page.getByRole('tab', { name: 'Deactivated' }).click();
-				await expect(page.getByRole('link', { name: username })).toBeVisible();
-			});
-
-			await test.step('moves from Deactivated to Pending tab', async () => {
-				await page.getByRole('tab', { name: 'Deactivated' }).click();
-				await page.getByRole('button', { name: 'More actions' }).click();
-				await page.getByRole('menuitem', { name: 'Activate' }).click();
-				await expect(page.getByRole('link', { name: username })).not.toBeVisible();
-
-				await page.getByRole('tab', { name: 'Pending' }).click();
-				await expect(page.getByRole('link', { name: username })).toBeVisible();
-			});
-		},
-	);
+		await test.step('should move from Active to Deactivated tab', async () => {
+			await admin.getTabByName('Active').click();
+			await admin.dispatchUserAction(user.data.username, 'Deactivate');
+			await expect(admin.getUserRowByUsername(user.data.username)).not.toBeVisible();
+			await admin.getTabByName('Deactivated').click();
+			await expect(admin.getUserRowByUsername(user.data.username)).toBeVisible();
+		});
+	});
 });

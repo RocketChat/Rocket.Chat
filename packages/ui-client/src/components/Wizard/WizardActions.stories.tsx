@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
-import { ComponentProps } from 'react';
 
 import Wizard from './Wizard';
+import type { WizardActionsProps } from './WizardActions';
 import WizardActions from './WizardActions';
 import WizardBackButton from './WizardBackButton';
 import WizardNextButton from './WizardNextButton';
@@ -33,7 +33,7 @@ export default {
 	},
 } satisfies Meta<typeof WizardActions>;
 
-const Template: StoryFn<ComponentProps<typeof WizardActions>> = (args) => (
+const Template: StoryFn<WizardActionsProps> = (args) => (
 	<WizardActions {...args}>
 		<WizardBackButton />
 		<WizardNextButton />

@@ -1,9 +1,9 @@
 import crypto from 'crypto';
 
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IGetRoomRoles, IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
+import type { IGetRoomRoles, PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
@@ -576,6 +576,231 @@ describe('[Users]', () => {
 					});
 			});
 		});
+
+		(IS_EE ? describe : describe.skip)('Voice call extension', () => {
+			beforeEach(async () => {
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
+			});
+
+			after(async () => {
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
+			});
+
+			it('should create a user with a voice call extension', async () => {
+				const freeSwitchExtension = '888999';
+				let user: TestUser<IUser>;
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email: 'success_extension_user@rocket.chat',
+						name: 'success_extension_user',
+						username: 'success_extension_user',
+						password,
+						active: true,
+						roles: ['user'],
+						joinDefaultChannels: true,
+						verified: true,
+						freeSwitchExtension,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.freeSwitchExtension', freeSwitchExtension);
+						user = res.body.user;
+					});
+
+				if (user!) {
+					await deleteUser(user);
+				}
+			});
+
+			it('should not create a user with a voice call extension that is already in use', async () => {
+				const freeSwitchExtension = '123123';
+				const user = await createUser({ freeSwitchExtension });
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email: 'fail_extension_in_use@rocket.chat',
+						name: 'fail_extension_in_use',
+						username: 'fail_extension_in_use',
+						password,
+						active: true,
+						roles: ['user'],
+						joinDefaultChannels: true,
+						verified: true,
+						freeSwitchExtension,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-extension-not-available');
+					});
+
+				await deleteUser(user);
+			});
+
+			it('should not create a user if voip is disabled', async () => {
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', false);
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email: 'fail_voip_disabled@rocket.chat',
+						name: 'fail_voip_disabled',
+						username: 'fail_voip_disabled',
+						password,
+						active: true,
+						roles: ['user'],
+						joinDefaultChannels: true,
+						verified: true,
+						freeSwitchExtension: '999',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+					});
+			});
+		});
+
+		describe('default email2fa auto opt in configuration', () => {
+			let user: IUser;
+
+			afterEach(async () => {
+				await deleteUser(user);
+				await updateSetting('Accounts_TwoFactorAuthentication_By_Email_Enabled', true);
+				await updateSetting('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In', true);
+				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
+			});
+
+			const dummyUser = {
+				email: 'email2fa_auto_opt_in@rocket.chat',
+				name: 'email2fa_auto_opt_in',
+				username: 'email2fa_auto_opt_in',
+				password,
+			};
+
+			it('should auto opt in new users for email2fa ', async () => {
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send(dummyUser)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						user = res.body.user;
+					});
+
+				const newUserCredentials = await login(dummyUser.username, dummyUser.password);
+
+				await request
+					.get(api('users.info'))
+					.set(newUserCredentials)
+					.query({
+						username: dummyUser.username,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.services.email2fa.enabled', true);
+					});
+			});
+
+			it('should not auto opt in new users for email2fa if email2fa is disabled', async () => {
+				await updateSetting('Accounts_TwoFactorAuthentication_By_Email_Enabled', false);
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send(dummyUser)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						user = res.body.user;
+					});
+
+				const newUserCredentials = await login(dummyUser.username, dummyUser.password);
+
+				await request
+					.get(api('users.info'))
+					.set(newUserCredentials)
+					.query({
+						username: dummyUser.username,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.nested.property('user.services.email2fa.enabled');
+					});
+			});
+
+			it('should not auto opt in new users for email2fa if two factor authentication is disabled', async () => {
+				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send(dummyUser)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						user = res.body.user;
+					});
+
+				const newUserCredentials = await login(dummyUser.username, dummyUser.password);
+
+				await request
+					.get(api('users.info'))
+					.set(newUserCredentials)
+					.query({
+						username: dummyUser.username,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.nested.property('user.services.email2fa.enabled');
+					});
+			});
+
+			it('should not auto opt in new users for email2fa if email2fa is enabled but auto opt in is disabled', async () => {
+				await updateSetting('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In', false);
+
+				await request
+					.post(api('users.create'))
+					.set(credentials)
+					.send(dummyUser)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						user = res.body.user;
+					});
+
+				const newUserCredentials = await login(dummyUser.username, dummyUser.password);
+
+				await request
+					.get(api('users.info'))
+					.set(newUserCredentials)
+					.query({
+						username: dummyUser.username,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.nested.property('user.services.email2fa.enabled');
+					});
+			});
+		});
 	});
 
 	describe('[/users.register]', () => {
@@ -592,7 +817,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -613,7 +838,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username: 'test$username<>',
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -631,7 +856,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -648,7 +873,7 @@ describe('[Users]', () => {
 					email,
 					name: '</\\name>',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -680,6 +905,53 @@ describe('[Users]', () => {
 				deleteRoom({ type: 'c', roomId: infoRoom._id }),
 			]),
 		);
+
+		it('should fail when request is without authentication credentials', async () => {
+			await request
+				.get(api('users.info'))
+				.query({
+					userId: targetUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				});
+		});
+
+		describe('authentication', () => {
+			before(() => updateSetting('Accounts_AllowAnonymousRead', true));
+			after(() => updateSetting('Accounts_AllowAnonymousRead', false));
+			it('should fail when request is without authentication credentials and Anonymous Read is enabled', async () => {
+				await request
+					.get(api('users.info'))
+					.query({
+						userId: targetUser._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(401)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					});
+			});
+
+			it('should fail when request is without token and Anonymous Read is enabled', async () => {
+				await request
+					.get(api('users.info'))
+					.query({
+						userId: targetUser._id,
+					})
+					.set({ 'X-User-Id': credentials['X-User-Id'] })
+					.expect('Content-Type', 'application/json')
+					.expect(401)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					});
+			});
+		});
 
 		it('should return an error when the user does not exist', (done) => {
 			void request
@@ -833,7 +1105,7 @@ describe('[Users]', () => {
 				email: `me-${Date.now()}@email.com`,
 				name: 'testuser',
 				username: ufsUsername,
-				password: '1234',
+				password,
 			});
 
 			await request
@@ -1899,7 +2171,7 @@ describe('[Users]', () => {
 						.send({
 							userId: targetUser._id,
 							data: {
-								password: 'itsnotworking',
+								password: '1tsn0tw0rkingP@ssw0rd1234.!',
 							},
 						})
 						.expect('Content-Type', 'application/json')
@@ -1921,7 +2193,7 @@ describe('[Users]', () => {
 						.send({
 							userId: targetUser._id,
 							data: {
-								password: 'itsnotworking',
+								password: '1tsn0tw0rkingP@ssw0rd1234.!',
 							},
 						})
 						.expect('Content-Type', 'application/json')
@@ -2249,6 +2521,74 @@ describe('[Users]', () => {
 				expect(updateResponse.body).to.have.nested.property('user.customFields.customFieldText1', null);
 			});
 		});
+
+		(IS_EE ? describe : describe.skip)('Voice call extension', () => {
+			let user: TestUser<IUser>;
+
+			before(async () => {
+				user = await createUser();
+			});
+
+			after(async () => {
+				await Promise.all([deleteUser(user), updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true)]);
+			});
+
+			beforeEach(async () => {
+				await Promise.all([updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true)]);
+			});
+
+			it("should update the user's voice call extension", async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: user._id,
+						data: {
+							freeSwitchExtension: '999',
+						},
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.freeSwitchExtension', '999');
+					});
+			});
+
+			it("should not update the user's voice call extension if the extension is already assigned to another user", async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: targetUser._id,
+						data: {
+							freeSwitchExtension: '999',
+						},
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Extension is already assigned to another user [error-extension-not-available]');
+					});
+			});
+
+			it("should not update the user's voice call extension if voip setting is disabled", async () => {
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', false);
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: user._id,
+						data: {
+							freeSwitchExtension: '9998',
+						},
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Edit user voice call extension is not allowed [error-action-not-allowed]');
+					});
+			});
+		});
 	});
 
 	describe('[/users.updateOwnBasicInfo]', () => {
@@ -2360,7 +2700,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.send({
 					data: {
-						newPassword: 'the new pass',
+						newPassword: '1Tsn3wP@ssw0rd1234.!',
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -2511,7 +2851,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.send({
 					data: {
-						newPassword: 'MyNewPassw0rd',
+						newPassword: '1Tsn3wP@ssw0rd1234.!',
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -2521,16 +2861,41 @@ describe('[Users]', () => {
 				});
 		});
 
+		it('should be able to erase bio and nickname', async () => {
+			const user = await createUser({
+				bio: `edited-bio-test`,
+				nickname: `edited-nickname-test`,
+			});
+			const userCredentials = await login(user.username, password);
+
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						bio: '',
+						nickname: '',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const userData = await getUserByUsername(user.username);
+			expect(userData).to.not.have.property('bio');
+			expect(userData).to.not.have.property('nickname');
+		});
+
 		describe('[Password Policy]', () => {
 			before(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
-				await updateSetting('Accounts_Password_Policy_Enabled', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 			});
 
 			after(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
-				await updateSetting('Accounts_Password_Policy_Enabled', false);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 			});
 
@@ -2719,7 +3084,7 @@ describe('[Users]', () => {
 					.send({
 						data: {
 							currentPassword,
-							newPassword: '123Abc@!',
+							newPassword: '1Tsn3wP@ssw0rd1234.!',
 						},
 					})
 					.expect('Content-Type', 'application/json')
@@ -4022,6 +4387,69 @@ describe('[Users]', () => {
 				})
 				.then(tryAuthentication);
 		});
+
+		it('should remove only logged out session push tokens', async () => {
+			const credentials1 = await login(user.username, password);
+			const credentials2 = await login(user.username, password);
+
+			await request
+				.post(api('push.token'))
+				.set(credentials1)
+				.send({
+					type: 'gcm',
+					value: 'device-1-token',
+					appName: 'com.example.device1',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('push.token'))
+				.set(credentials2)
+				.send({
+					type: 'gcm',
+					value: 'device-2-token',
+					appName: 'com.example.device2',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('users.logoutOtherClients'))
+				.set(credentials2)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			await request
+				.delete(api('push.token'))
+				.set(credentials2)
+				.send({
+					token: 'device-1-token',
+				})
+				.expect(404)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+
+			await request
+				.delete(api('push.token'))
+				.set(credentials2)
+				.send({
+					token: 'device-2-token',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
 	});
 
 	describe('[/users.autocomplete]', () => {
@@ -4037,21 +4465,26 @@ describe('[Users]', () => {
 			this.timeout(20000);
 
 			before(async () => {
-				user = await createUser({ joinDefaultChannels: false });
-				user2 = await createUser({ joinDefaultChannels: false });
+				const users = await Promise.all([createUser({ joinDefaultChannels: false }), createUser({ joinDefaultChannels: false })]);
 
-				userCredentials = await login(user.username, password);
-				user2Credentials = await login(user2.username, password);
+				user = users[0];
+				user2 = users[1];
 
-				await updatePermission('view-outside-room', []);
+				const credentials = await Promise.all([
+					login(user.username, password),
+					login(user2.username, password),
+					await updatePermission('view-outside-room', []),
+				]);
+
+				userCredentials = credentials[0];
+				user2Credentials = credentials[1];
 
 				roomId = (await createRoom({ type: 'c', credentials: userCredentials, name: `channel.autocomplete.${Date.now()}` })).body.channel
 					._id;
 			});
 
 			after(async () => {
-				await deleteRoom({ type: 'c', roomId });
-				await Promise.all([deleteUser(user), deleteUser(user2)]);
+				await Promise.all([deleteRoom({ type: 'c', roomId }), deleteUser(user), deleteUser(user2)]);
 			});
 
 			it('should return an empty list when the user does not have any subscription', (done) => {
@@ -4085,9 +4518,9 @@ describe('[Users]', () => {
 		});
 
 		describe('[with permission]', () => {
-			before(() => updatePermission('view-outside-room', ['admin', 'user']));
+			before(async () => updatePermission('view-outside-room', ['admin', 'user']));
 
-			it('should return an error when the required parameter "selector" is not provided', () => {
+			it('should return an error when the required parameter "selector" is not provided', (done) => {
 				void request
 					.get(api('users.autocomplete'))
 					.query({})
@@ -4096,7 +4529,8 @@ describe('[Users]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-					});
+					})
+					.end(done);
 			});
 			it('should return the users to fill auto complete', (done) => {
 				void request
@@ -4110,6 +4544,23 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('items').and.to.be.an('array');
 					})
 					.end(done);
+			});
+
+			(IS_EE ? it : it.skip)('should return users filtered by freeSwitchExtension and display it', async () => {
+				const user = await createUser({ joinDefaultChannels: false, freeSwitchExtension: '1234567890' });
+				await request
+					.get(api('users.autocomplete'))
+					.query({ selector: JSON.stringify({ conditions: { freeSwitchExtension: '1234567890' } }) })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(1);
+						expect(res.body.items[0]).to.have.property('freeSwitchExtension', '1234567890');
+					});
+
+				await deleteUser(user);
 			});
 
 			it('should filter results when using allowed operators', (done) => {
@@ -4527,6 +4978,49 @@ describe('[Users]', () => {
 			void updatePermission('logout-other-user', []).then(() => {
 				void request.post(api('users.logout')).set(userCredentials).expect('Content-Type', 'application/json').expect(200).end(done);
 			});
+		});
+
+		it('should remove all push tokens when user logs out', async () => {
+			const testCredentials = await login(user.username, password);
+
+			await request
+				.post(api('push.token'))
+				.set(testCredentials)
+				.send({
+					type: 'gcm',
+					value: 'logout-test-token',
+					appName: 'com.example.logout.test',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('users.logout'))
+				.set(testCredentials)
+				.send({
+					userId: user._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			const newCredentials = await login(user.username, password);
+
+			await request
+				.delete(api('push.token'))
+				.set(newCredentials)
+				.send({
+					token: 'logout-test-token',
+				})
+				.expect(404)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
 	});
 

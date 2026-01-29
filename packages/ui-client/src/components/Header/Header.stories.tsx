@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Avatar } from '@rocket.chat/fuselage';
+import { Avatar, Box, IconButton } from '@rocket.chat/fuselage';
 import { SettingsContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';
-import { ComponentType } from 'react';
+import type { ComponentPropsWithoutRef, ComponentType } from 'react';
 
 import {
 	Header,
@@ -16,14 +16,14 @@ import {
 	HeaderToolbarActionBadge,
 	HeaderTitle,
 	HeaderState,
-	HeaderSubtitle,
 } from '.';
+import AnnouncementBanner from '../AnnouncementBanner';
 
 const avatarUrl =
 	'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z';
 
 export default {
-	title: 'Components/Header',
+	title: 'Components/HeaderV2',
 	component: Header,
 	subcomponents: {
 		HeaderToolbar: HeaderToolbar as ComponentType<any>,
@@ -72,6 +72,8 @@ const room: IRoom = {
 	t: 'c',
 	name: 'general general general general general general general general general general general general general general general general general general general',
 	_id: 'GENERAL',
+	topic: 'lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum',
+	announcement: 'Announcement',
 	encrypted: true,
 	autoTranslate: true,
 	autoTranslateLanguage: 'pt-BR',
@@ -85,28 +87,27 @@ const room: IRoom = {
 	_updatedAt: new Date(),
 } as const;
 
-const avatar = <Avatar size='x40' url={avatarUrl} />;
+const CustomAvatar = (props: Omit<ComponentPropsWithoutRef<typeof Avatar>, 'url'>) => <Avatar size='x28' url={avatarUrl} {...props} />;
 const icon = { name: 'hash' } as const;
 
 export const Default = () => (
 	<Header>
-		<HeaderAvatar>{avatar}</HeaderAvatar>
+		<HeaderAvatar>
+			<CustomAvatar />
+		</HeaderAvatar>
 		<HeaderContent>
 			<HeaderContentRow>
 				{icon && <HeaderIcon icon={icon} />}
 				<HeaderTitle>{room.name}</HeaderTitle>
-				<HeaderState onClick={action('onClick')} icon='star' />
+				<HeaderState onClick={action('click')} title='star' icon='star' />
 				<HeaderState icon='key' />
 				<HeaderState icon='language' />
 			</HeaderContentRow>
-			<HeaderContentRow>
-				<HeaderSubtitle>{room.name}</HeaderSubtitle>
-			</HeaderContentRow>
 		</HeaderContent>
 		<HeaderToolbar>
-			<HeaderToolbarAction icon='magnifier' />
-			<HeaderToolbarAction icon='key' />
-			<HeaderToolbarAction icon='kebab' />
+			<HeaderToolbarAction title='magnifier' icon='magnifier' />
+			<HeaderToolbarAction title='key' icon='key' />
+			<HeaderToolbarAction title='menu' icon='kebab' />
 		</HeaderToolbar>
 	</Header>
 );
@@ -114,53 +115,101 @@ export const Default = () => (
 export const WithBurger = () => (
 	<Header>
 		<HeaderToolbar>
-			<HeaderToolbarAction icon='burger' />
+			<IconButton title='burger' icon='burger' />
 		</HeaderToolbar>
-		<HeaderAvatar>{avatar}</HeaderAvatar>
+		<HeaderAvatar>
+			<CustomAvatar />
+		</HeaderAvatar>
 		<HeaderContent>
 			<HeaderContentRow>
 				{icon && <HeaderIcon icon={icon} />}
 				<HeaderTitle>{room.name}</HeaderTitle>
-				<HeaderState onClick={action('onClick')} icon='star' />
+				<HeaderState onClick={action('onClick')} title='star' icon='star' />
 				<HeaderState icon='key' />
 				<HeaderState icon='language' />
 			</HeaderContentRow>
-			<HeaderContentRow>
-				<HeaderSubtitle>{room.name}</HeaderSubtitle>
-			</HeaderContentRow>
 		</HeaderContent>
 		<HeaderToolbar>
-			<HeaderToolbarAction icon='magnifier' />
-			<HeaderToolbarAction icon='key' />
-			<HeaderToolbarAction icon='kebab' />
+			<HeaderToolbarAction title='magnifier' icon='magnifier' />
+			<HeaderToolbarAction title='key' icon='key' />
+			<HeaderToolbarAction title='menu' icon='kebab' />
 		</HeaderToolbar>
 	</Header>
 );
 
 export const WithActionBadge = () => (
 	<Header>
-		<HeaderAvatar>{avatar}</HeaderAvatar>
+		<HeaderAvatar>
+			<CustomAvatar />
+		</HeaderAvatar>
 		<HeaderContent>
 			<HeaderContentRow>
 				{icon && <HeaderIcon icon={icon} />}
 				<HeaderTitle>{room.name}</HeaderTitle>
-				<HeaderState onClick={action('onClick')} icon='star' />
-			</HeaderContentRow>
-			<HeaderContentRow>
-				<HeaderSubtitle>{room.name}</HeaderSubtitle>
+				<HeaderState onClick={action('onClick')} title='star' icon='star' />
 			</HeaderContentRow>
 		</HeaderContent>
 		<HeaderToolbar>
-			<HeaderToolbarAction icon='phone'>
+			<HeaderToolbarAction title='call' icon='phone'>
 				<HeaderToolbarActionBadge variant='primary'>1</HeaderToolbarActionBadge>
 			</HeaderToolbarAction>
-			<HeaderToolbarAction icon='phone'>
+			<HeaderToolbarAction title='disable' icon='phone'>
 				<HeaderToolbarActionBadge variant='danger'>2</HeaderToolbarActionBadge>
 			</HeaderToolbarAction>
-			<HeaderToolbarAction icon='phone'>
+			<HeaderToolbarAction title='decline' icon='phone'>
 				<HeaderToolbarActionBadge variant='warning'>99</HeaderToolbarActionBadge>
 			</HeaderToolbarAction>
-			<HeaderToolbarAction icon='kebab' />
+			<HeaderToolbarAction title='menu' icon='kebab' />
 		</HeaderToolbar>
 	</Header>
+);
+
+export const WithTopic = () => (
+	<>
+		<Header>
+			<HeaderAvatar>
+				<CustomAvatar />
+			</HeaderAvatar>
+			<HeaderContent>
+				<HeaderContentRow>
+					{icon && <HeaderIcon icon={icon} />}
+					<HeaderTitle>{room.name}</HeaderTitle>
+					<HeaderState onClick={action('onClick')} title='star' icon='star' />
+					<HeaderState icon='key' />
+					<HeaderState icon='language' />
+					<Box withTruncatedText>{room.topic}</Box>
+				</HeaderContentRow>
+			</HeaderContent>
+			<HeaderToolbar>
+				<HeaderToolbarAction title='magnifier' icon='magnifier' />
+				<HeaderToolbarAction title='key' icon='key' />
+				<HeaderToolbarAction title='menu' icon='kebab' />
+			</HeaderToolbar>
+		</Header>
+	</>
+);
+
+export const WithAnnouncement = () => (
+	<>
+		<Header>
+			<HeaderAvatar>
+				<CustomAvatar />
+			</HeaderAvatar>
+			<HeaderContent>
+				<HeaderContentRow>
+					{icon && <HeaderIcon icon={icon} />}
+					<HeaderTitle>{room.name}</HeaderTitle>
+					<HeaderState onClick={action('onClick')} title='star' icon='star' />
+					<HeaderState icon='key' />
+					<HeaderState icon='language' />
+				</HeaderContentRow>
+			</HeaderContent>
+			<HeaderToolbar>
+				<HeaderToolbarAction title='magnifier' icon='magnifier' />
+				<HeaderToolbarAction title='key' icon='key' />
+				<HeaderToolbarAction title='menu' icon='kebab' />
+			</HeaderToolbar>
+		</Header>
+		<AnnouncementBanner onClick={action('clicked')}>{room.announcement}</AnnouncementBanner>
+	</>
 );

@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { ComponentProps, ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
+import type { ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
 import { useId, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +22,7 @@ import type { RequiredModalProps } from './withDoNotAskAgain';
 import { withDoNotAskAgain } from './withDoNotAskAgain';
 import { modalStore } from '../../../providers/ModalProvider/ModalStore';
 
-type VariantType = 'danger' | 'warning' | 'info' | 'success' | 'upsell';
+type VariantType = 'danger' | 'secondary-danger' | 'warning' | 'info' | 'success' | 'upsell';
 
 type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
@@ -46,10 +46,12 @@ const iconMap: Record<string, IconName> = {
 	success: 'check',
 };
 
-const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => {
+const getButtonProps = (variant: VariantType): ComponentPropsWithoutRef<typeof Button> => {
 	switch (variant) {
 		case 'danger':
 			return { danger: true };
+		case 'secondary-danger':
+			return { secondary: true, danger: true };
 		case 'warning':
 		case 'upsell':
 			return { primary: true };
@@ -59,7 +61,7 @@ const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => 
 };
 
 const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): ReactNode => {
-	if (icon === null) {
+	if (icon === null || iconMap[variant] === undefined) {
 		return null;
 	}
 

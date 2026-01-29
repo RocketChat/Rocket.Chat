@@ -1,25 +1,15 @@
+import type { IAbacAttributeDefinition } from './IAbacAttribute';
 import type { ILivechatDepartment } from './ILivechatDepartment';
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IUser, Username } from './IUser';
+import type { IUser } from './IUser';
 import type { RoomType } from './RoomType';
-
-type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
-
-export type RoomID = string;
-export type ChannelName = string;
-interface IRequestTranscript {
-	email: string; // the email address to send the transcript to
-	subject: string; // the subject of the email
-	requestedAt: Date;
-	requestedBy: Pick<IUser, '_id' | 'username' | 'name' | 'utcOffset'>;
-}
+import type { Branded } from './utils';
 
 export interface IRoom extends IRocketChatRecord {
-	_id: RoomID;
 	t: RoomType;
 	name?: string;
 	fname?: string;
@@ -33,6 +23,8 @@ export interface IRoom extends IRocketChatRecord {
 		style?: string;
 	};
 	encrypted?: boolean;
+	// The existence of an abac attribute definition indicates that ABAC is enabled for the room
+	abacAttributes?: IAbacAttributeDefinition[];
 	topic?: string;
 
 	reactWhenReadOnly?: boolean;
@@ -46,7 +38,6 @@ export interface IRoom extends IRocketChatRecord {
 	lastMessage?: IMessage;
 	lm?: Date;
 	usersCount: number;
-	callStatus?: CallStatus;
 	webRtcCallStartTime?: Date;
 	servedBy?: {
 		_id: string;
@@ -78,7 +69,6 @@ export interface IRoom extends IRocketChatRecord {
 	favorite?: boolean;
 	archived?: boolean;
 	description?: string;
-	createdOTR?: boolean;
 	e2eKeyId?: string;
 
 	/* @deprecated */
@@ -103,10 +93,24 @@ export interface IRoomWithJoinCode extends IRoom {
 }
 
 export interface IRoomFederated extends IRoom {
+	_id: Branded<string, 'IRoomFederated'>;
 	federated: true;
 }
 
-export const isRoomFederated = (room: Partial<IRoom>): room is IRoomFederated => 'federated' in room && (room as any).federated === true;
+export interface IRoomNativeFederated extends IRoomFederated {
+	federation: {
+		version: number;
+		// Matrix's room ID. Example: !XqJXqZxXqJXq:matrix.org
+		mrid: string;
+		origin: string;
+	};
+}
+
+export const isRoomFederated = (room: Partial<IRoom>): room is IRoomFederated => 'federated' in room && room.federated === true;
+
+export const isRoomNativeFederated = (room: Partial<IRoom>): room is IRoomNativeFederated =>
+	isRoomFederated(room) && 'federation' in room && room.federation !== undefined;
+
 export interface ICreatedRoom extends IRoom {
 	rid: string;
 	inserted: boolean;
@@ -131,7 +135,7 @@ export const isPrivateRoom = (room: Partial<IRoom>): room is IRoom => room.t ===
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
 	uids: Array<string>;
-	usernames: Array<Username>;
+	usernames: Array<NonNullable<IUser['username']>>;
 }
 
 export const isDirectMessageRoom = (room: Partial<IRoom> | IDirectMessageRoom): room is IDirectMessageRoom => room.t === 'd';
@@ -176,7 +180,7 @@ export interface IOmnichannelSourceFromApp extends IOmnichannelSource {
 }
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast'> {
-	t: 'l' | 'v';
+	t: 'l';
 	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity'> & {
 		lastMessageTs?: Date;
 		phone?: string;
@@ -191,7 +195,12 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	source: IOmnichannelSource;
 
 	// Note: this field is used only for email transcripts. For Pdf transcripts, we have a separate field.
-	transcriptRequest?: IRequestTranscript;
+	transcriptRequest?: {
+		email: string; // the email address to send the transcript to
+		subject: string; // the subject of the email
+		requestedAt: Date;
+		requestedBy: Pick<IUser, '_id' | 'username' | 'name' | 'utcOffset'>;
+	};
 
 	servedBy?: {
 		_id: string;
@@ -302,38 +311,6 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	verified?: boolean;
 }
 
-export interface IVoipRoom extends IOmnichannelGenericRoom {
-	t: 'v';
-	name: string;
-	// The timestamp when call was started
-	callStarted: Date;
-	// The amount of time the call lasted, in milliseconds
-	callDuration?: number;
-	// The amount of time call was in queue in milliseconds
-	callWaitingTime?: number;
-	// The total of hold time for call (calculated at closing time) in seconds
-	callTotalHoldTime?: number;
-	// The pbx queue the call belongs to
-	queue: string;
-	// The ID assigned to the call (opaque ID)
-	callUniqueId?: string;
-	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token'> & {
-		lastMessageTs?: Date;
-		phone?: string;
-	};
-	// Outbound means the call was initiated from Rocket.Chat and vise versa
-	direction: 'inbound' | 'outbound';
-}
-
-export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
-	source: IOmnichannelSourceFromApp;
-}
-
-export type IVoipRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> &
-	Pick<IVoipRoom, 'callDuration' | 'callTotalHoldTime'> & {
-		serviceTimeDuration?: number;
-	};
-
 export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> & {
 	serviceTimeDuration?: number;
 	chatDuration: number;
@@ -342,8 +319,6 @@ export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer'
 export type IOmnichannelRoomWithDepartment = IOmnichannelRoom & { department?: ILivechatDepartment };
 
 export const isOmnichannelRoom = (room: Pick<IRoom, 't'>): room is IOmnichannelRoom & IRoom => room.t === 'l';
-
-export const isVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
 
 export const isOmnichannelSourceFromApp = (source: IOmnichannelSource): source is IOmnichannelSourceFromApp => {
 	return source?.type === OmnichannelSourceType.APP;
@@ -382,7 +357,8 @@ export type RoomAdminFieldsType =
 	| 'description'
 	| 'broadcast'
 	| 'uids'
-	| 'avatarETag';
+	| 'avatarETag'
+	| 'abacAttributes';
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {

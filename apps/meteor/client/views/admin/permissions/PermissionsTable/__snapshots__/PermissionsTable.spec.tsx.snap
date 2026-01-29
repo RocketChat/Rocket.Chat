@@ -1,0 +1,1198 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-9x4qdd"
+    >
+      <input
+        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-1ltvj5u"
+        placeholder="Search"
+        size="1"
+        type="text"
+        value=""
+      />
+      <div
+        class="rcx-box rcx-box--full rcx-css-h9m6k6"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+          data-overlayscrollbars="host"
+        >
+          <div
+            class="os-size-observer"
+          >
+            <div
+              class="os-size-observer-listener"
+            />
+          </div>
+          <div
+            class=""
+            data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+            style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+            tabindex="-1"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-table__wrapper"
+            >
+              <table
+                class="rcx-box rcx-box--full rcx-table--sticky rcx-table rcx-css-x1oxcc"
+              >
+                <thead
+                  class="rcx-box rcx-box--full rcx-table__head"
+                >
+                  <tr
+                    class="rcx-box rcx-box--full rcx-table__row"
+                  >
+                    <th
+                      class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell rcx-css-16giopg"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-127j9mz"
+                        wrap="no-wrap"
+                      >
+                        Name
+                      </div>
+                    </th>
+                    <th
+                      class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell rcx-css-n319x1"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-127j9mz"
+                        wrap="no-wrap"
+                      >
+                        <button
+                          class="rcx-box rcx-box--full rcx-button--small rcx-button--secondary rcx-button"
+                          type="button"
+                        >
+                          <span
+                            class="rcx-button--content"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-edit rcx-icon rcx-css-1hdf9ok"
+                            >
+                              
+                            </i>
+                            Owner of the workspace
+                          </span>
+                        </button>
+                      </div>
+                    </th>
+                    <th
+                      class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell rcx-css-n319x1"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-127j9mz"
+                        wrap="no-wrap"
+                      >
+                        <button
+                          class="rcx-box rcx-box--full rcx-button--small rcx-button--secondary rcx-button"
+                          type="button"
+                        >
+                          <span
+                            class="rcx-button--content"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-edit rcx-icon rcx-css-1hdf9ok"
+                            >
+                              
+                            </i>
+                            Administrator
+                          </span>
+                        </button>
+                      </div>
+                    </th>
+                    <th
+                      class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell rcx-css-n319x1"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-127j9mz"
+                        wrap="no-wrap"
+                      >
+                        <button
+                          class="rcx-box rcx-box--full rcx-button--small rcx-button--secondary rcx-button"
+                          type="button"
+                        >
+                          <span
+                            class="rcx-button--content"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-edit rcx-icon rcx-css-1hdf9ok"
+                            >
+                              
+                            </i>
+                            Leader
+                          </span>
+                        </button>
+                      </div>
+                    </th>
+                    <th
+                      class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell rcx-css-n319x1"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-127j9mz"
+                        wrap="no-wrap"
+                      >
+                        <button
+                          class="rcx-box rcx-box--full rcx-button--small rcx-button--secondary rcx-button"
+                          type="button"
+                        >
+                          <span
+                            class="rcx-button--content"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-edit rcx-icon rcx-css-1hdf9ok"
+                            >
+                              
+                            </i>
+                            Moderator
+                          </span>
+                        </button>
+                      </div>
+                    </th>
+                    <th
+                      class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell rcx-css-n319x1"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-127j9mz"
+                        wrap="no-wrap"
+                      >
+                        <button
+                          class="rcx-box rcx-box--full rcx-button--small rcx-button--secondary rcx-button"
+                          type="button"
+                        >
+                          <span
+                            class="rcx-button--content"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-edit rcx-icon rcx-css-1hdf9ok"
+                            >
+                              
+                            </i>
+                            User
+                          </span>
+                        </button>
+                      </div>
+                    </th>
+                    <th
+                      class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell rcx-css-n319x1"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-127j9mz"
+                        wrap="no-wrap"
+                      >
+                        <button
+                          class="rcx-box rcx-box--full rcx-button--small rcx-button--secondary rcx-button"
+                          type="button"
+                        >
+                          <span
+                            class="rcx-button--content"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-edit rcx-icon rcx-css-1hdf9ok"
+                            >
+                              
+                            </i>
+                            Guest
+                          </span>
+                        </button>
+                      </div>
+                    </th>
+                    <th
+                      class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell rcx-css-n319x1"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-127j9mz"
+                        wrap="no-wrap"
+                      >
+                        <button
+                          class="rcx-box rcx-box--full rcx-button--small rcx-button--secondary rcx-button"
+                          type="button"
+                        >
+                          <span
+                            class="rcx-button--content"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-edit rcx-icon rcx-css-1hdf9ok"
+                            >
+                              
+                            </i>
+                            Bot
+                          </span>
+                        </button>
+                      </div>
+                    </th>
+                    <th
+                      class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell rcx-css-n319x1"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-127j9mz"
+                        wrap="no-wrap"
+                      >
+                        <button
+                          class="rcx-box rcx-box--full rcx-button--small rcx-button--secondary rcx-button"
+                          type="button"
+                        >
+                          <span
+                            class="rcx-button--content"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-edit rcx-icon rcx-css-1hdf9ok"
+                            >
+                              
+                            </i>
+                            App
+                          </span>
+                        </button>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  class="rcx-box rcx-box--full rcx-table__body"
+                >
+                  <tr
+                    class="rcx-box rcx-box--full rcx-table__row--action rcx-table__row"
+                    role="link"
+                    tabindex="0"
+                  >
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-117bfyn"
+                      title="0_description"
+                    >
+                      0
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="0 - Owner of the workspace"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Owner of the workspace
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="0 - Administrator"
+                          checked=""
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Administrator
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="0 - Leader"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Leader
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="0 - Moderator"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Moderator
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="0 - User"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        User
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="0 - Guest"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Guest
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="0 - Bot"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Bot
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="0 - App"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        App
+                      </div>
+                    </td>
+                  </tr>
+                  <tr
+                    class="rcx-box rcx-box--full rcx-table__row--action rcx-table__row"
+                    role="link"
+                    tabindex="0"
+                  >
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-117bfyn"
+                      title="1_description"
+                    >
+                      1
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="1 - Owner of the workspace"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Owner of the workspace
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="1 - Administrator"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Administrator
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="1 - Leader"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Leader
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="1 - Moderator"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Moderator
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="1 - User"
+                          checked=""
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        User
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="1 - Guest"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Guest
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="1 - Bot"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Bot
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="1 - App"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        App
+                      </div>
+                    </td>
+                  </tr>
+                  <tr
+                    class="rcx-box rcx-box--full rcx-table__row--action rcx-table__row"
+                    role="link"
+                    tabindex="0"
+                  >
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-117bfyn"
+                      title="2_description"
+                    >
+                      2
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="2 - Owner of the workspace"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Owner of the workspace
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="2 - Administrator"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Administrator
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="2 - Leader"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Leader
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="2 - Moderator"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Moderator
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="2 - User"
+                          checked=""
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        User
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="2 - Guest"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Guest
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="2 - Bot"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Bot
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="2 - App"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        App
+                      </div>
+                    </td>
+                  </tr>
+                  <tr
+                    class="rcx-box rcx-box--full rcx-table__row--action rcx-table__row"
+                    role="link"
+                    tabindex="0"
+                  >
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-117bfyn"
+                      title="3_description"
+                    >
+                      3
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="3 - Owner of the workspace"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Owner of the workspace
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="3 - Administrator"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Administrator
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="3 - Leader"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Leader
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="3 - Moderator"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Moderator
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="3 - User"
+                          checked=""
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        User
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="3 - Guest"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Guest
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="3 - Bot"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        Bot
+                      </div>
+                    </td>
+                    <td
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                    >
+                      <label
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                      >
+                        <input
+                          aria-label="3 - App"
+                          class="rcx-box rcx-box--full rcx-check-box__input"
+                          type="checkbox"
+                        />
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-check-box__fake"
+                        />
+                      </label>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
+                      >
+                        App
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div
+            class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+          >
+            <div
+              class="os-scrollbar-track"
+            >
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
+          </div>
+          <div
+            class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+          >
+            <div
+              class="os-scrollbar-track"
+            >
+              <div
+                class="os-scrollbar-handle"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <nav
+        class="rcx-box rcx-box--full rcx-pagination--divider rcx-pagination rcx-css-cnkcl9"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-pagination__left"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-pagination__label"
+          >
+            Items per page:
+          </span>
+          <ol
+            class="rcx-box rcx-box--full rcx-pagination__list"
+          >
+            <li
+              class="rcx-box rcx-box--full rcx-pagination__list-item"
+            >
+              <button
+                class="rcx-box rcx-box--full rcx-pagination__link"
+                disabled=""
+                tabindex="-1"
+              >
+                25
+              </button>
+            </li>
+            <li
+              class="rcx-box rcx-box--full rcx-pagination__list-item"
+            >
+              <button
+                class="rcx-box rcx-box--full rcx-pagination__link"
+                tabindex="0"
+              >
+                50
+              </button>
+            </li>
+            <li
+              class="rcx-box rcx-box--full rcx-pagination__list-item"
+            >
+              <button
+                class="rcx-box rcx-box--full rcx-pagination__link"
+                tabindex="0"
+              >
+                100
+              </button>
+            </li>
+          </ol>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-pagination__right"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-pagination__label"
+          >
+            Showing results 1 - 4 of 10
+          </span>
+          <ol
+            class="rcx-box rcx-box--full rcx-pagination__list"
+          >
+            <li
+              class="rcx-box rcx-box--full rcx-pagination__list-item"
+            >
+              <button
+                class="rcx-box rcx-box--full rcx-pagination__back"
+                disabled=""
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-chevron--left rcx-chevron"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
+                  >
+                    
+                  </i>
+                </span>
+              </button>
+            </li>
+            <li
+              class="rcx-box rcx-box--full rcx-pagination__list-item"
+            >
+              <button
+                class="rcx-box rcx-box--full rcx-pagination__link"
+                disabled=""
+              >
+                1
+              </button>
+            </li>
+            <li
+              class="rcx-box rcx-box--full rcx-pagination__list-item"
+            >
+              <button
+                class="rcx-box rcx-box--full rcx-pagination__forward"
+                disabled=""
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-chevron--right rcx-chevron"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
+                  >
+                    
+                  </i>
+                </span>
+              </button>
+            </li>
+          </ol>
+        </div>
+      </nav>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Empty without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-9x4qdd"
+    >
+      <input
+        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-1ltvj5u"
+        placeholder="Search"
+        size="1"
+        type="text"
+        value=""
+      />
+      <div
+        class="rcx-box rcx-box--full rcx-css-1wg1u9h"
+      >
+        <div
+          class="rcx-states"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
+          >
+            
+          </i>
+          <h3
+            class="rcx-states__title"
+          >
+            No_results_found
+          </h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

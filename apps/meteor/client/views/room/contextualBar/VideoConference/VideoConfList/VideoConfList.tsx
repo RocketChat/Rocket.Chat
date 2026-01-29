@@ -1,12 +1,8 @@
 import type { VideoConference } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Virtuoso } from 'react-virtuoso';
-
-import VideoConfListItem from './VideoConfListItem';
 import {
+	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -14,8 +10,12 @@ import {
 	ContextualbarContent,
 	ContextualbarEmptyContent,
 	ContextualbarDialog,
-} from '../../../../../components/Contextualbar';
-import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
+} from '@rocket.chat/ui-client';
+import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Virtuoso } from 'react-virtuoso';
+
+import VideoConfListItem from './VideoConfListItem';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 
 type VideoConfListProps = {
@@ -25,7 +25,7 @@ type VideoConfListProps = {
 	loading: boolean;
 	error?: Error;
 	reload: () => void;
-	loadMoreItems: (min: number, max: number) => void;
+	loadMoreItems: () => void;
 };
 
 const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loadMoreItems }: VideoConfListProps): ReactElement => {
@@ -76,13 +76,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 									width: inlineSize,
 								}}
 								totalCount={total}
-								endReached={
-									loading
-										? (): void => undefined
-										: (start) => {
-												loadMoreItems(start, Math.min(50, total - start));
-											}
-								}
+								endReached={loadMoreItems}
 								overscan={25}
 								data={videoConfs}
 								itemContent={(_index, data): ReactElement => <VideoConfListItem videoConfData={data} reload={reload} />}

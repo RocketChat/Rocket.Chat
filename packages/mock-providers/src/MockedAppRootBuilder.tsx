@@ -3,13 +3,21 @@ import type {
 	DirectCallData,
 	IRoom,
 	ISetting,
-	ISubscription,
 	IUser,
 	ProviderCapabilities,
 	Serialized,
 	SettingValue,
 } from '@rocket.chat/core-typings';
-import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
+import type {
+	ServerMethodName,
+	ServerMethodParameters,
+	ServerMethodReturn,
+	StreamerCallback,
+	StreamerCallbackArgs,
+	StreamerEvents,
+	StreamKeys,
+	StreamNames,
+} from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
@@ -53,9 +61,35 @@ type Mutable<T> = {
 };
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-interface MockedAppRootEvents {
+// interface MockedAppRootEvents extends Record<`stream-${StreamNames}-${StreamKeys<StreamNames>}`, any> {
+// 	'update-modal': void;
+// }
+// Extract all key values from objects that have a 'key' property
+type ExtractKeys<T, N extends string> = T extends readonly (infer U)[]
+	? U extends { key: infer K }
+		? K extends string
+			? string extends K
+				? never
+				: `stream-${N}-${K}`
+			: never
+		: never
+	: never;
+
+// Union of all key values from all streams
+type AllStreamerEventKeys = {
+	[K in keyof StreamerEvents]: ExtractKeys<StreamerEvents[K], K>;
+}[keyof StreamerEvents];
+
+type MockedAppRootEvents = {
 	'update-modal': void;
-}
+} & Record<AllStreamerEventKeys, any>;
+
+export type StreamControllerRef<N extends StreamNames> = {
+	controller?: {
+		emit: <K extends StreamKeys<N>>(eventName: K, args: StreamerCallbackArgs<N, K>) => void;
+		has: (eventName: StreamKeys<N>) => boolean;
+	};
+};
 
 const empty = [] as const;
 
@@ -95,6 +129,7 @@ export class MockedAppRootBuilder {
 		getLocationPathname: () => '/',
 		getLocationSearch: () => '',
 		getRouteName: () => undefined,
+		getPreviousRouteName: () => undefined,
 		getRouteParameters: () => ({}),
 		getSearchParameters: () => ({}),
 		navigate: () => undefined,
@@ -114,10 +149,13 @@ export class MockedAppRootBuilder {
 		onLogout: () => () => undefined,
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => this.room],
-		querySubscription: () => [() => () => undefined, () => this.subscriptions as unknown as ISubscription],
-		querySubscriptions: () => [() => () => undefined, () => this.subscriptions], // apply query and option
+		querySubscription: () => [() => () => undefined, () => this.subscription],
+		querySubscriptions: () => [
+			() => () => undefined,
+			() => (this.subscription ? [this.subscription, ...(this.subscriptions ?? [])] : (this.subscriptions ?? [])),
+		], // apply query and option
 		user: null,
-		userId: null,
+		userId: undefined,
 	};
 
 	private userPresence: ContextType<typeof UserPresenceContext> = {
@@ -168,7 +206,9 @@ export class MockedAppRootBuilder {
 
 	private room: IRoom | undefined = undefined;
 
-	private subscriptions: SubscriptionWithRoom[] = [];
+	private subscriptions: SubscriptionWithRoom[] | undefined = undefined;
+
+	private subscription: SubscriptionWithRoom | undefined = undefined;
 
 	private modal: ModalContextValue = {
 		currentModal: { component: null },
@@ -225,6 +265,20 @@ export class MockedAppRootBuilder {
 		permissionStatus: undefined,
 	};
 
+	private _providedQueryClient: QueryClient | undefined;
+
+	private get queryClient(): QueryClient {
+		return (
+			this._providedQueryClient ||
+			new QueryClient({
+				defaultOptions: {
+					queries: { retry: false },
+					mutations: { retry: false },
+				},
+			})
+		);
+	}
+
 	wrap(wrapper: (children: ReactNode) => ReactNode): this {
 		this.wrappers.push(wrapper);
 		return this;
@@ -253,6 +307,30 @@ export class MockedAppRootBuilder {
 		};
 
 		this.server.callEndpoint = outerFn;
+
+		return this;
+	}
+
+	withStream<N extends StreamNames>(streamName: N, ref: StreamControllerRef<N>): this {
+		const innerFn = this.server.getStream;
+
+		const outerFn: ServerContextValue['getStream'] = (innerStreamName) => {
+			if (innerStreamName === (streamName as StreamNames)) {
+				ref.controller = {
+					emit: <K extends StreamKeys<N>>(eventName: K, args: StreamerCallbackArgs<N, K>) => {
+						this.events.emit(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys, ...args);
+					},
+					has: (eventName: string) => this.events.has(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys),
+				};
+
+				return <K extends StreamKeys<N>>(eventName: K, callback: StreamerCallback<N, K>) =>
+					this.events.on(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys, callback);
+			}
+
+			return innerFn(innerStreamName);
+		};
+
+		this.server.getStream = outerFn;
 
 		return this;
 	}
@@ -351,7 +429,7 @@ export class MockedAppRootBuilder {
 	}
 
 	withAnonymous(): this {
-		this.user.userId = null;
+		this.user.userId = undefined;
 		this.user.user = null;
 
 		return this;
@@ -374,6 +452,12 @@ export class MockedAppRootBuilder {
 
 	withSubscriptions(subscriptions: SubscriptionWithRoom[]): this {
 		this.subscriptions = subscriptions;
+
+		return this;
+	}
+
+	withSubscription(subscription: SubscriptionWithRoom): this {
+		this.subscription = subscription;
 
 		return this;
 	}
@@ -409,8 +493,9 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	withSetting(id: string, value: SettingValue): this {
+	withSetting(id: string, value: SettingValue, settingStructure?: Partial<ISetting>): this {
 		const setting = {
+			...settingStructure,
 			_id: id,
 			value,
 		} as ISetting;
@@ -574,15 +659,26 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	build(): JSXElementConstructor<{ children: ReactNode }> {
-		const queryClient = new QueryClient({
-			defaultOptions: {
-				queries: { retry: false },
-				mutations: { retry: false },
-			},
-		});
+	withQueryClient(client: QueryClient): this {
+		this._providedQueryClient = client;
+		return this;
+	}
 
-		const { server, router, settings, user, userPresence, videoConf, i18n, authorization, wrappers, deviceContext, authentication } = this;
+	build(): JSXElementConstructor<{ children: ReactNode }> {
+		const {
+			queryClient,
+			server,
+			router,
+			settings,
+			user,
+			userPresence,
+			videoConf,
+			i18n,
+			authorization,
+			wrappers,
+			deviceContext,
+			authentication,
+		} = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {

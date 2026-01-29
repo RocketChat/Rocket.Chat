@@ -1,33 +1,29 @@
-import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import {
 	sidePanelFiltersConfig,
 	useRedirectToDefaultTab,
-	useSidePanelRoomsListTab,
+	useSidePanelQueueListTab,
 	useUnreadOnlyToggle,
 } from '../../../contexts/RoomsNavigationContext';
-import SidePanel from '../../SidePanel';
+import SidePanelInquiry from '../../SidePanelInquiry';
 
 const SidePanelQueue = () => {
 	const { t } = useTranslation();
-
-	const hasEEModule = useHasLicenseModule('livechat-enterprise');
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
-	const isQueueEnabled = useSetting('Livechat_waiting_queue');
 
-	const rooms = useSidePanelRoomsListTab('queue');
+	const rooms = useSidePanelQueueListTab();
 	const [unreadOnly, toggleUnreadOnly] = useUnreadOnlyToggle();
-	const shouldDisplayQueue = hasEEModule && canViewOmnichannelQueue && isQueueEnabled;
-	useRedirectToDefaultTab(!shouldDisplayQueue);
 
-	if (!shouldDisplayQueue) {
+	useRedirectToDefaultTab(!canViewOmnichannelQueue);
+
+	if (!canViewOmnichannelQueue) {
 		return null;
 	}
 
 	return (
-		<SidePanel
+		<SidePanelInquiry
 			title={t(sidePanelFiltersConfig.queue.title)}
 			currentTab='queue'
 			unreadOnly={unreadOnly}

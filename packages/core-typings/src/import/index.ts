@@ -4,8 +4,6 @@ export * from './IImportRecord';
 export * from './IImportMessage';
 export * from './IImportChannel';
 export * from './IImportContact';
-export * from './IImporterInfo';
-export * from './IImportFileData';
 export * from './IImportProgress';
 export * from './IImporterSelection';
 export * from './IImporterSelectionUser';

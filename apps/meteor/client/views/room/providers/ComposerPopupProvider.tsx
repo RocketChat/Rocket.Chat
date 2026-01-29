@@ -26,7 +26,7 @@ import type { ComposerBoxPopupUserProps } from '../composer/ComposerBoxPopupUser
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
 import useCannedResponsesQuery from './hooks/useCannedResponsesQuery';
-import { pipe } from '../../../lib/cachedStores';
+import { pipe } from '../../../lib/cachedStores/pipe';
 
 export type CannedResponse = { _id: string; shortcut: string; text: string };
 
@@ -153,7 +153,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 						};
 					});
 				},
-				getValue: (item) => item.username,
+				getValue: (item) => (item.username.startsWith('@') ? item.username.substring(1) : item.username),
 				renderItem: ({ item }) => <ComposerBoxPopupUser {...item} />,
 			}),
 			createMessageBoxPopupConfig<ComposerBoxPopupRoomProps>({
@@ -402,7 +402,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 		userSpotlight,
 	]);
 
-	return <ComposerPopupContext.Provider value={value} children={children} />;
+	return <ComposerPopupContext.Provider value={value}>{children}</ComposerPopupContext.Provider>;
 };
 
 export default ComposerPopupProvider;

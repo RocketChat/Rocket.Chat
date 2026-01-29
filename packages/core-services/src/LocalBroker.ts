@@ -71,6 +71,8 @@ export class LocalBroker implements IBroker {
 		}
 		instance.removeAllListeners();
 		await instance.stopped();
+
+		this.services.delete(namespace);
 	}
 
 	/**
@@ -166,20 +168,22 @@ export class LocalBroker implements IBroker {
 		const serviceName = service.instance.getName();
 
 		if (typeof service === 'string') {
-			logger.debug(`Service ${serviceName} is not in the services map. Bringing it back to queue`);
+			logger.debug({ msg: 'Service is not in the services map. Bringing it back to queue', serviceName });
 			return;
 		}
 
 		if (service?.isStarted) {
-			logger.debug(`Service ${serviceName} already started`);
+			logger.debug({ msg: 'Service already started', serviceName });
 			return;
 		}
 
 		const pendingDependencies = service.dependencies.filter((e) => !this.services.has(e) || !this.services.get(e)?.isStarted);
 		if (pendingDependencies.length > 0) {
-			logger.debug(
-				`Service ${serviceName} has dependencies that are not started yet, bringing it back to queue: ${pendingDependencies.join(', ')}`,
-			);
+			logger.debug({
+				msg: 'Service has dependencies that are not started yet, bringing it back to queue',
+				serviceName,
+				pendingDependencies,
+			});
 			return;
 		}
 
@@ -187,7 +191,7 @@ export class LocalBroker implements IBroker {
 		this.services.set(serviceName, { ...service, isStarted: true });
 		this.removePendingService(serviceName);
 
-		logger.debug(`Service ${serviceName} successfully started`);
+		logger.debug({ msg: 'Service successfully started', serviceName });
 	}
 
 	async start(): Promise<void> {
@@ -200,7 +204,7 @@ export class LocalBroker implements IBroker {
 				if (this.pendingServices.size === 0) {
 					const availableServices = Array.from(this.services.values()).filter((service) => service.isStarted);
 
-					logger.info(`All ${availableServices.length} services available`);
+					logger.info({ msg: 'All services available', count: availableServices.length });
 					clearInterval(intervalId);
 					return resolve();
 				}
@@ -208,9 +212,9 @@ export class LocalBroker implements IBroker {
 				if (elapsed > TIMEOUT) {
 					clearInterval(intervalId);
 					const pendingServices = Array.from(this.pendingServices).join(', ');
-					const error = new Error(`Timeout while waiting for LocalBroker services: ${pendingServices}`);
-					logger.error(error);
-					return reject(error);
+					const err = new Error(`Timeout while waiting for LocalBroker services: ${pendingServices}`);
+					logger.error({ msg: 'Timeout while waiting for LocalBroker services', err, pendingServices });
+					return reject(err);
 				}
 
 				for await (const service of Array.from(this.pendingServices)) {
@@ -220,7 +224,7 @@ export class LocalBroker implements IBroker {
 					}
 				}
 
-				logger.debug(`Waiting for ${this.pendingServices.size} pending services`);
+				logger.debug({ msg: 'Waiting for pending services', count: this.pendingServices.size });
 			}, INTERVAL);
 		});
 	}

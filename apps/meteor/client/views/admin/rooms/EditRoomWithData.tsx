@@ -1,10 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarSkeletonBody } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import EditRoom from './EditRoom';
-import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarSkeletonBody } from '../../../components/Contextualbar';
 
 type EditRoomWithDataProps = { rid?: IRoom['_id']; onReload: () => void; onClose: () => void };
 

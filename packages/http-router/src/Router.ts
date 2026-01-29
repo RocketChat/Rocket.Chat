@@ -1,13 +1,16 @@
+import { Logger } from '@rocket.chat/logger';
 import type { Method } from '@rocket.chat/rest-typings';
 import type { AnySchema } from 'ajv';
 import express from 'express';
 import type { Context, HonoRequest, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
 import type { StatusCode } from 'hono/utils/http-status';
-import qs from 'qs'; // Using qs specifically to keep express compatibility
 
 import type { ResponseSchema, TypedOptions } from './definition';
 import { honoAdapterForExpress } from './middlewares/honoAdapterForExpress';
+import { parseQueryParams } from './parseQueryParams';
+
+const logger = new Logger('HttpRouter');
 
 type MiddlewareHandlerListAndActionHandler<TOptions extends TypedOptions, TContext = (c: Context) => Promise<ResponseSchema<TOptions>>> = [
 	...MiddlewareHandler[],
@@ -152,10 +155,14 @@ export class Router<
 			let parsedBody = {};
 			const contentType = request.header('content-type');
 
+			if (contentType?.includes('multipart/form-data')) {
+				// Don't parse multipart here, routes handle it manually via UploadService.parse()
+				// since multipart/form-data is only used for file uploads
+				return parsedBody;
+			}
+
 			if (contentType?.includes('application/json')) {
 				parsedBody = await request.raw.clone().json();
-			} else if (contentType?.includes('multipart/form-data')) {
-				parsedBody = await request.raw.clone().formData();
 			} else if (contentType?.includes('application/x-www-form-urlencoded')) {
 				const req = await request.raw.clone().formData();
 				parsedBody = Object.fromEntries(req.entries());
@@ -179,7 +186,7 @@ export class Router<
 	}
 
 	protected parseQueryParams(request: HonoRequest) {
-		return qs.parse(request.raw.url.split('?')?.[1] || '');
+		return parseQueryParams(request.raw.url.split('?')?.[1] || '');
 	}
 
 	protected method<TSubPathPattern extends string, TOptions extends TypedOptions>(
@@ -194,11 +201,26 @@ export class Router<
 		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
 			const { req, res } = c;
 
-			const queryParams = this.parseQueryParams(req);
+			let queryParams: Record<string, any>;
+			try {
+				queryParams = this.parseQueryParams(req);
+			} catch (e) {
+				logger.warn({ msg: 'Error parsing query params for request', path: req.path, err: e });
+
+				return c.json({ success: false, error: 'Invalid query parameters' }, 400);
+			}
 
 			if (options.query) {
 				const validatorFn = options.query;
 				if (typeof options.query === 'function' && !validatorFn(queryParams)) {
+					logger.warn({
+						msg: 'Query parameters validation failed - route spec does not match request payload',
+						method: req.method,
+						path: req.url,
+						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						bodyParams: undefined,
+						queryParams,
+					});
 					return c.json(
 						{
 							success: false,
@@ -215,6 +237,14 @@ export class Router<
 			if (options.body) {
 				const validatorFn = options.body;
 				if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || bodyParams)) {
+					logger.warn({
+						msg: 'Request body validation failed - route spec does not match request payload',
+						method: req.method,
+						path: req.url,
+						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						bodyParams,
+						queryParams: undefined,
+					});
 					return c.json(
 						{
 							success: false,
@@ -240,6 +270,13 @@ export class Router<
 					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
 				}
 				if (responseValidatorFn && !responseValidatorFn(coerceDatesToStrings(body))) {
+					logger.warn({
+						msg: 'Response validation failed - response does not match route spec',
+						method: req.method,
+						path: req.url,
+						error: responseValidatorFn.errors?.map((error: any) => error.message).join('\n '),
+						originalResponse: body,
+					});
 					return c.json(
 						{
 							success: false,
@@ -400,6 +437,14 @@ export class Router<
 			),
 		);
 		return router;
+	}
+
+	getHonoRouter(): Hono<{
+		Variables: {
+			remoteAddress: string;
+		};
+	}> {
+		return this.innerRouter;
 	}
 }
 

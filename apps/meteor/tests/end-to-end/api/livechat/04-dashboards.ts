@@ -714,6 +714,28 @@ describe('LIVECHAT - dashboards', function () {
 		});
 	});
 
+	describe('livechat/analytics/dashboards/charts-data', () => {
+		it('should return the correct data structure for the charts', async () => {
+			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+
+			const result = await request
+				.get(api('livechat/analytics/dashboards/charts-data'))
+				.query({ chartName: 'Total_conversations', start: yesterday, end: today })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+
+			expect(result.body).to.have.property('chartLabel', 'Total_conversations');
+			expect(result.body).to.have.property('dataLabels').to.be.an('array');
+			expect(result.body).to.have.property('dataPoints').to.be.an('array');
+		});
+
+		// it('should return the correct data structure but empty for unavailable data');
+	});
+
 	describe('livechat/analytics/agent-overview', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');

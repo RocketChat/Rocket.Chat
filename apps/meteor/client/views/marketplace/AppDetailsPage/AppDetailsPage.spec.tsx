@@ -21,8 +21,8 @@ jest.mock('@rocket.chat/ui-contexts', () => {
 	};
 });
 
-jest.mock('../../../components/Page', () => {
-	const originalModule = jest.requireActual('../../../components/Page');
+jest.mock('@rocket.chat/ui-client', () => {
+	const originalModule = jest.requireActual('@rocket.chat/ui-client');
 	return {
 		...originalModule,
 		PageHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,

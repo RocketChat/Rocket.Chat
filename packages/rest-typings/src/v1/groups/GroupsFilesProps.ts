@@ -10,6 +10,7 @@ const ajv = new Ajv({
 export type GroupsFilesProps = PaginatedRequest<GroupsBaseProps> & {
 	name?: string;
 	typeGroup?: string;
+	onlyConfirmed?: boolean;
 };
 
 const GroupsFilesPropsSchema = {
@@ -46,6 +47,9 @@ const GroupsFilesPropsSchema = {
 		query: {
 			type: 'string',
 			nullable: true,
+		},
+		onlyConfirmed: {
+			type: 'boolean',
 		},
 	},
 	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],

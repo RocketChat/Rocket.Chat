@@ -1,7 +1,7 @@
 import type { IUser, UserReport, Serialized } from '@rocket.chat/core-typings';
+import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 
 import ModConsoleUserActions from './ModConsoleUserActions';
-import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import UserColumn from '../helpers/UserColumn';
 

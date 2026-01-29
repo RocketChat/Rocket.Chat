@@ -100,11 +100,11 @@ export const pushUpdate = async (options: PushUpdateOptions): Promise<Omit<IApps
 		).deletedCount;
 
 		if (removed) {
-			logger.debug(`Removed ${removed} existing app items`);
+			logger.debug({ msg: 'Removed existing app items', removed });
 		}
 	}
 
-	logger.debug('updated', doc);
+	logger.debug({ msg: 'Push token updated', doc });
 
 	// Return the doc we want to use
 	return doc;
@@ -112,7 +112,7 @@ export const pushUpdate = async (options: PushUpdateOptions): Promise<Omit<IApps
 
 Meteor.methods<ServerMethods>({
 	async 'raix:push-update'(options) {
-		logger.debug('Got push token from app:', options);
+		logger.debug({ msg: 'Got push token from app', options });
 
 		check(options, {
 			id: Match.Optional(String),
@@ -137,7 +137,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error(403, 'Forbidden access');
 		}
 
-		logger.debug(`Settings userId "${this.userId}" for app:`, id);
+		logger.debug({ msg: 'Setting userId for app', userId: this.userId, appId: id });
 		const found = await AppsTokens.updateOne({ _id: id }, { $set: { userId: this.userId } });
 
 		return !!found;

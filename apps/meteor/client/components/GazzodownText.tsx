@@ -3,15 +3,13 @@ import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useFeaturePreview } from '@rocket.chat/ui-client';
-import { useLayout, useRouter, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
+import { useLayout, useRouter, useUserPreference, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
 import { useCallback, memo, useMemo } from 'react';
 
 import { detectEmoji } from '../lib/utils/detectEmoji';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 import { useMessageListHighlights, useMessageListShowRealName } from './message/list/MessageListContext';
-import { useUserCard } from '../views/room/contexts/UserCardContext';
 import { useGoToRoom } from '../views/room/hooks/useGoToRoom';
 
 type GazzodownTextProps = {
@@ -27,7 +25,6 @@ type GazzodownTextProps = {
 };
 
 const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTextProps) => {
-	const enableTimestamp = useFeaturePreview('enable-timestamp-message-parser');
 	const [userLanguage] = useLocalStorage('userLanguage', 'en');
 
 	const highlights = useMessageListHighlights();
@@ -66,7 +63,12 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				return undefined;
 			}
 
-			const filterUser = ({ username, type }: UserMention) => (!type || type === 'user') && username === mention;
+			const normalizedMention = mention.startsWith('@') ? mention.substring(1) : mention;
+			const filterUser = ({ username, type }: UserMention) => {
+				if (!username || type === 'team') return false;
+				const normalizedUsername = username.startsWith('@') ? username.substring(1) : username;
+				return normalizedUsername === normalizedMention;
+			};
 			const filterTeam = ({ name, type }: UserMention) => type === 'team' && name === mention;
 
 			return mentions?.find((mention) => filterUser(mention) || filterTeam(mention));
@@ -132,7 +134,6 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				ownUserId,
 				showMentionSymbol,
 				triggerProps,
-				enableTimestamp,
 				language: userLanguage,
 			}}
 		>

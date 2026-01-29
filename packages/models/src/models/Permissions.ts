@@ -9,7 +9,7 @@ export class PermissionsRaw extends BaseRaw<IPermission> implements IPermissions
 		super(db, 'permissions', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: {

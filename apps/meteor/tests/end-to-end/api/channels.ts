@@ -1,11 +1,11 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import { TEAM_TYPE, type IIntegration, type IMessage, type IRoom, type ITeam, type IUser } from '@rocket.chat/core-typings';
+import { TeamType, type IIntegration, type IMessage, type IRoom, type ITeam, type IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect, assert } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, reservedWords } from '../../data/api-data';
-import { pinMessage, sendMessage, starMessage } from '../../data/chat.helper';
+import { pinMessage, sendMessage, starMessage, updateMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -1037,8 +1037,8 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.info.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [outsiderUser.username as string]),
-					createTeam(insideCredentials, `channels.info.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [outsiderUser.username as string]),
+					createTeam(insideCredentials, `channels.info.team.public.${Random.id()}`, TeamType.PUBLIC, [outsiderUser.username as string]),
+					createTeam(insideCredentials, `channels.info.team.private.${Random.id()}`, TeamType.PRIVATE, [outsiderUser.username as string]),
 				]);
 
 				const [
@@ -1887,8 +1887,8 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.members.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [outsiderUser.username as string]),
-					createTeam(insideCredentials, `channels.members.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+					createTeam(insideCredentials, `channels.members.team.public.${Random.id()}`, TeamType.PUBLIC, [outsiderUser.username as string]),
+					createTeam(insideCredentials, `channels.members.team.private.${Random.id()}`, TeamType.PRIVATE, [
 						outsiderUser.username as string,
 					]),
 				]);
@@ -2312,10 +2312,10 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.getIntegrations.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [
+					createTeam(insideCredentials, `channels.getIntegrations.team.public.${Random.id()}`, TeamType.PUBLIC, [
 						outsiderUser.username as string,
 					]),
-					createTeam(insideCredentials, `channels.getIntegrations.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+					createTeam(insideCredentials, `channels.getIntegrations.team.private.${Random.id()}`, TeamType.PRIVATE, [
 						outsiderUser.username as string,
 					]),
 				]);
@@ -2837,6 +2837,87 @@ describe('[Channels]', () => {
 		});
 	});
 
+	describe('auto-join default channels', () => {
+		let defaultChannel1: IRoom;
+		let defaultChannel2: IRoom;
+		let nonDefaultChannel: IRoom;
+		let userWithJoin: TestUser<IUser>;
+		let userWithoutJoin: TestUser<IUser>;
+		let userWithJoinCredentials: Credentials;
+		let userWithoutJoinCredentials: Credentials;
+
+		before(async () => {
+			const timestamp = Date.now();
+			defaultChannel1 = (await createRoom({ type: 'c', name: `auto-join-default-1-${timestamp}` })).body.channel;
+			defaultChannel2 = (await createRoom({ type: 'c', name: `auto-join-default-2-${timestamp}` })).body.channel;
+			nonDefaultChannel = (await createRoom({ type: 'c', name: `auto-join-non-default-${timestamp}` })).body.channel;
+
+			await Promise.all([
+				request.post(api('channels.setDefault')).set(credentials).send({ roomId: defaultChannel1._id, default: true }).expect(200),
+				request.post(api('channels.setDefault')).set(credentials).send({ roomId: defaultChannel2._id, default: true }).expect(200),
+			]);
+
+			[userWithJoin, userWithoutJoin] = await Promise.all([
+				createUser({ joinDefaultChannels: true }),
+				createUser({ joinDefaultChannels: false }),
+			]);
+
+			[userWithJoinCredentials, userWithoutJoinCredentials] = await Promise.all([
+				login(userWithJoin.username, password),
+				login(userWithoutJoin.username, password),
+			]);
+		});
+
+		after(async () => {
+			await Promise.all([
+				deleteUser(userWithJoin),
+				deleteUser(userWithoutJoin),
+				deleteRoom({ type: 'c', roomId: defaultChannel1._id }),
+				deleteRoom({ type: 'c', roomId: defaultChannel2._id }),
+				deleteRoom({ type: 'c', roomId: nonDefaultChannel._id }),
+			]);
+		});
+
+		it('should automatically join new users to default channels when joinDefaultChannels is true', async () => {
+			const [subscription1Response, subscription2Response] = await Promise.all([
+				request.get(api('subscriptions.getOne')).set(userWithJoinCredentials).query({ roomId: defaultChannel1._id }).expect(200),
+				request.get(api('subscriptions.getOne')).set(userWithJoinCredentials).query({ roomId: defaultChannel2._id }).expect(200),
+			]);
+
+			expect(subscription1Response.body).to.have.property('success', true);
+			expect(subscription1Response.body).to.have.property('subscription').that.is.an('object');
+			expect(subscription1Response.body.subscription).to.have.property('rid', defaultChannel1._id);
+
+			expect(subscription2Response.body).to.have.property('success', true);
+			expect(subscription2Response.body).to.have.property('subscription').that.is.an('object');
+			expect(subscription2Response.body.subscription).to.have.property('rid', defaultChannel2._id);
+		});
+
+		it('should not auto-join new users to non-default channels', async () => {
+			const subscriptionResponse = await request
+				.get(api('subscriptions.getOne'))
+				.set(userWithJoinCredentials)
+				.query({ roomId: nonDefaultChannel._id })
+				.expect(200);
+
+			expect(subscriptionResponse.body).to.have.property('success', true);
+			expect(subscriptionResponse.body).to.have.property('subscription').that.is.null;
+		});
+
+		it('should not auto-join users when joinDefaultChannels is false', async () => {
+			const [subscription1Response, subscription2Response] = await Promise.all([
+				request.get(api('subscriptions.getOne')).set(userWithoutJoinCredentials).query({ roomId: defaultChannel1._id }).expect(200),
+				request.get(api('subscriptions.getOne')).set(userWithoutJoinCredentials).query({ roomId: defaultChannel2._id }).expect(200),
+			]);
+
+			expect(subscription1Response.body).to.have.property('success', true);
+			expect(subscription1Response.body).to.have.property('subscription').that.is.null;
+
+			expect(subscription2Response.body).to.have.property('success', true);
+			expect(subscription2Response.body).to.have.property('subscription').that.is.null;
+		});
+	});
+
 	describe('/channels.setType', () => {
 		let testChannel: IRoom;
 		const name = `setType-${Date.now()}`;
@@ -3203,10 +3284,10 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.moderators.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [
+					createTeam(insideCredentials, `channels.moderators.team.public.${Random.id()}`, TeamType.PUBLIC, [
 						outsiderUser.username as string,
 					]),
-					createTeam(insideCredentials, `channels.moderators.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+					createTeam(insideCredentials, `channels.moderators.team.private.${Random.id()}`, TeamType.PRIVATE, [
 						outsiderUser.username as string,
 					]),
 				]);
@@ -3503,10 +3584,10 @@ describe('[Channels]', () => {
 						roomId: testChannel._id,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(401)
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', false);
-						expect(res.body).to.have.a.property('error', 'Enable "Allow Anonymous Read" [error-not-allowed]');
+						expect(res.body).to.have.a.property('error', 'You must be logged in to do this.');
 					})
 					.end(done);
 			});
@@ -3569,7 +3650,7 @@ describe('[Channels]', () => {
 				]);
 
 				// Create a private team
-				privateTeam = await createTeam(insideCredentials, `channels.anonymousread.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+				privateTeam = await createTeam(insideCredentials, `channels.anonymousread.team.private.${Random.id()}`, TeamType.PRIVATE, [
 					outsiderUser.username as string,
 				]);
 
@@ -3865,6 +3946,7 @@ describe('[Channels]', () => {
 		let emptyChannel: IRoom;
 		let firstUser: IUser;
 		let secondUser: IUser;
+		let pinnedMessageId: IMessage['_id'];
 
 		before(async () => {
 			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
@@ -3901,6 +3983,7 @@ describe('[Channels]', () => {
 				starMessage({ messageId: starredMessage.body.message._id }),
 				pinMessage({ messageId: pinnedMessage.body.message._id }),
 			]);
+			pinnedMessageId = pinnedMessage.body.message._id;
 		});
 
 		after(async () => {
@@ -4044,6 +4127,79 @@ describe('[Channels]', () => {
 				});
 		});
 
+		describe('_hidden messages behavior when Message_KeepHistory is enabled', async () => {
+			before(async () => {
+				await updateSetting('Message_KeepHistory', true);
+				await pinMessage({ messageId: pinnedMessageId, unpin: true });
+			});
+
+			after(async () => {
+				await updateSetting('Message_KeepHistory', false);
+			});
+
+			it('should return all messages, without any pinned messages', async () => {
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({ roomId: testChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages).to.have.lengthOf(5);
+
+						res.body.messages.forEach((msg: IMessage) => {
+							expect(msg).to.not.have.property('pinned', true);
+							expect(msg).to.not.have.property('_hidden');
+						});
+					});
+			});
+
+			it('should return no pinned messages', async () => {
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+						pinned: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.messages).to.have.lengthOf(0);
+						expect(res.body).to.have.property('count', 0);
+						expect(res.body).to.have.property('total', 0);
+					});
+			});
+
+			it('should not return old message when updating a message', async () => {
+				await updateMessage({ msgId: pinnedMessageId, updatedMessage: 'message was unpinned', roomId: testChannel._id });
+
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({ roomId: testChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages).to.have.lengthOf(5);
+
+						const updatedMessage = res.body.messages.find((msg: IMessage) => msg._id === pinnedMessageId);
+
+						expect(updatedMessage).to.have.property('msg', 'message was unpinned');
+						expect(updatedMessage).to.have.property('editedAt');
+
+						res.body.messages.forEach((msg: IMessage) => {
+							expect(msg).to.not.have.property('_hidden');
+						});
+					});
+			});
+		});
+
 		describe('Additional Visibility Tests', () => {
 			let outsiderUser: IUser;
 			let insideUser: IUser;
@@ -4075,10 +4231,8 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.messages.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [
-						outsiderUser.username as string,
-					]),
-					createTeam(insideCredentials, `channels.messages.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+					createTeam(insideCredentials, `channels.messages.team.public.${Random.id()}`, TeamType.PUBLIC, [outsiderUser.username as string]),
+					createTeam(insideCredentials, `channels.messages.team.private.${Random.id()}`, TeamType.PRIVATE, [
 						outsiderUser.username as string,
 					]),
 				]);
