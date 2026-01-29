@@ -160,14 +160,22 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 	}, [register, tagRequired]);
 
 	useEffect(() => {
-		if (transcriptEmail) {
-			if (!visitorEmail) {
-				dispatchToastMessage({ type: 'error', message: t('Customer_without_registered_email') });
-				return;
-			}
-			setValue('subject', subject || customSubject || t('Transcript_of_your_livechat_conversation'));
-		}
-	}, [transcriptEmail, setValue, visitorEmail, subject, t, customSubject, dispatchToastMessage]);
+	if (!transcriptEmail) {
+		return;
+	}
+
+	if (!visitorEmail) {
+		dispatchToastMessage({ type: 'error', message: t('Customer_without_registered_email') });
+		return;
+	}
+
+	setValue(
+		'subject',
+		customSubject || t('Transcript_of_your_livechat_conversation'),
+		{ shouldDirty: false },
+	);
+}, [transcriptEmail, setValue, visitorEmail, t, customSubject, dispatchToastMessage]);
+
 
 	if (commentRequired || tagRequired || canSendTranscript) {
 		return (
