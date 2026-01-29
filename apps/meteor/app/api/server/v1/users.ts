@@ -2,6 +2,9 @@ import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
+	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
 	isUserDeactivateIdleParamsPOST,
@@ -830,24 +833,50 @@ const usersEndpoints = API.v1.post(
 	},
 );
 
-API.v1.addRoute(
-	'users.getPreferences',
-	{ authRequired: true },
-	{
-		async get() {
-			const user = await Users.findOneById(this.userId);
-			if (user?.settings) {
-				const { preferences = {} } = user?.settings;
-				preferences.language = user?.language;
+const UserPreferencesResponseSchema = {
+	type: 'object',
+	properties: {
+		preferences: {
+			type: 'object',
+			additionalProperties: true,
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['preferences', 'success'],
+	additionalProperties: false,
+};
 
-				return API.v1.success({
-					preferences,
-				});
-			}
-			return API.v1.failure(i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
+const isUserPreferencesResponse = ajv.compile(UserPreferencesResponseSchema);
+
+const usersEndpoints = API.v1.get(
+	'users.getPreferences',
+	{
+		authRequired: true,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: isUserPreferencesResponse,
 		},
 	},
+	async function action() {
+		const user = await Users.findOneById(this.userId);
+
+		if (user?.settings) {
+			const { preferences = {} } = user.settings;
+			preferences.language = user.language;
+
+			return API.v1.success({ preferences });
+		}
+
+		throw new Meteor.Error('error-preferences-not-found', i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
+	},
 );
+
+export type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	type Endpoints = UsersEndpoints;
+}
 
 API.v1.addRoute(
 	'users.forgotPassword',
