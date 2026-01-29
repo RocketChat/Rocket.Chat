@@ -5,13 +5,16 @@ import { unlink, rename, writeFile } from 'fs/promises';
 import type * as http from 'http';
 import type * as https from 'https';
 import stream from 'stream';
+import { finished } from 'stream/promises';
 import URL from 'url';
+import { isArrayBufferView } from 'util/types';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { isE2EEUpload, type IUpload } from '@rocket.chat/core-typings';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
+import { streamToBuffer } from '@rocket.chat/tools';
 import type { NextFunction } from 'connect';
 import filesize from 'filesize';
 import { Match } from 'meteor/check';
@@ -22,13 +25,13 @@ import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 
-import { streamToBuffer } from './streamToBuffer';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { UploadFS } from '../../../../server/ufs';
 import { ufsComplete } from '../../../../server/ufs/ufs-methods';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
+import { MultipartUploadHandler } from '../../../api/server/lib/MultipartUploadHandler';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
@@ -133,7 +136,7 @@ export const FileUpload = {
 		);
 	},
 
-	async validateFileUpload(file: IUpload, content?: Buffer) {
+	async validateFileUpload(file: IUpload, content?: Buffer | string) {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
@@ -188,7 +191,7 @@ export const FileUpload = {
 
 		// App IPreFileUpload event hook
 		try {
-			await Apps.self?.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) });
+			await Apps.self?.triggerEvent(AppEvents.IPreFileUpload, { file, content });
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);
@@ -266,7 +269,7 @@ export const FileUpload = {
 		try {
 			await writeFile(tempFilePath, data);
 		} catch (err: any) {
-			SystemLogger.error(err);
+			SystemLogger.error({ err });
 		}
 
 		await this.getCollection().updateOne(
@@ -369,10 +372,6 @@ export const FileUpload = {
 
 		const s = sharp(tmpFile);
 		const metadata = await s.metadata();
-		// if (err != null) {
-		// 	SystemLogger.error(err);
-		// 	return fut.return();
-		// }
 
 		const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
 		const width = rotated ? metadata.height : metadata.width;
@@ -389,22 +388,36 @@ export const FileUpload = {
 					: undefined,
 		};
 
+		const shouldRotate = settings.get<boolean>('FileUpload_RotateImages');
+		const shouldStripExif = settings.get('Message_Attachments_Strip_Exif') === true;
+
+		let size = file.size || 0;
+
 		const reorientation = async () => {
-			if (!rotated || settings.get('FileUpload_RotateImages') !== true) {
-				return;
+			// sharp rotates AND removes metadata
+			const transform = s.rotate();
+
+			if (!shouldStripExif) {
+				transform.withMetadata();
 			}
 
-			await s.rotate().toFile(`${tmpFile}.tmp`);
+			const result = await transform.toFile(`${tmpFile}.sharp`);
+
+			size = result.size;
 
 			await unlink(tmpFile);
 
-			await rename(`${tmpFile}.tmp`, tmpFile);
-			// SystemLogger.error(err);
+			await rename(`${tmpFile}.sharp`, tmpFile);
 		};
 
-		await reorientation();
+		if (rotated && shouldRotate) {
+			// If there is EXIF orientation and the setting is enabled, rotate the image (which removes metadata)
+			await reorientation();
+		} else if (shouldStripExif) {
+			// If there is no EXIF orientation but the setting is enabled, still strip any metadata
+			size = await MultipartUploadHandler.stripExifFromFile(tmpFile);
+		}
 
-		const { size } = await fs.lstatSync(tmpFile);
 		await this.getCollection().updateOne(
 			{ _id: file._id },
 			{
@@ -524,12 +537,17 @@ export const FileUpload = {
 
 	getStoreByName(handlerName?: string) {
 		if (!handlerName) {
-			SystemLogger.error(`Empty Upload handler does not exists`);
+			SystemLogger.error({
+				msg: 'Empty Upload handler does not exists',
+			});
 			throw new Error(`Empty Upload handler does not exists`);
 		}
 
 		if (this.handlers[handlerName] == null) {
-			SystemLogger.error(`Upload handler "${handlerName}" does not exists`);
+			SystemLogger.error({
+				msg: 'Upload handler does not exists',
+				handlerName,
+			});
 		}
 		return this.handlers[handlerName];
 	},
@@ -789,51 +807,64 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
+	private async _validateFile(
+		fileData: OptionalId<IUpload>,
+		content: stream.Readable | Buffer | string,
+	): Promise<stream.Readable | Buffer | string> {
+		const filter = this.store.getFilter();
+		if (!filter?.check) {
+			return content;
+		}
+
+		if (content instanceof stream.Readable) {
+			// Currently, only the Slack Adapter passes a stream.Readable here
+			// We can't use _streamToTmpFile at this stage since the file hasn't been validated yet,
+			// and for security reasons we must not write it to disk before validation
+			content = await streamToBuffer(content);
+		} else if (content instanceof Uint8Array && !(content instanceof Buffer)) {
+			// Services compat - create a view into the underlying ArrayBuffer without copying the data
+			content = Buffer.from(content.buffer, content.byteOffset, content.byteLength);
+		}
+
+		try {
+			await filter.check(fileData, content);
+			return content;
+		} catch (e) {
+			throw e;
+		}
+	}
+
 	async _doInsert(
 		fileData: OptionalId<IUpload>,
-		streamOrBuffer: ReadableStream | stream | Buffer,
+		content: stream.Readable | Buffer | string,
 		options?: { session?: ClientSession },
 	): Promise<IUpload> {
 		const fileId = await this.store.create(fileData, { session: options?.session });
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
 		try {
-			if (streamOrBuffer instanceof stream) {
-				streamOrBuffer.pipe(fs.createWriteStream(tmpFile));
-			} else if (streamOrBuffer instanceof Buffer) {
-				fs.writeFileSync(tmpFile, streamOrBuffer);
+			if (typeof content === 'string') {
+				await fs.promises.rename(content, tmpFile);
+			} else if (isArrayBufferView(content)) {
+				await fs.promises.writeFile(tmpFile, content);
+			} else if (content instanceof stream.Readable) {
+				await finished(content.pipe(fs.createWriteStream(tmpFile)), { cleanup: true });
 			} else {
 				throw new Error('Invalid file type');
 			}
 
-			const file = await ufsComplete(fileId, this.name, { session: options?.session });
-
-			return file;
-		} catch (e: any) {
+			return ufsComplete(fileId, this.name, { session: options?.session });
+		} catch (e) {
 			throw e;
 		}
 	}
 
 	async insert(
 		fileData: OptionalId<IUpload>,
-		streamOrBuffer: ReadableStream | stream.Readable | Buffer,
+		streamOrBuffer: stream.Readable | Buffer | string,
 		options?: { session?: ClientSession },
-	) {
-		if (streamOrBuffer instanceof stream) {
-			streamOrBuffer = await streamToBuffer(streamOrBuffer);
-		}
-
-		if (streamOrBuffer instanceof Uint8Array) {
-			// Services compat :)
-			streamOrBuffer = Buffer.from(streamOrBuffer);
-		}
-
-		// Check if the fileData matches store filter
-		const filter = this.store.getFilter();
-		if (filter?.check) {
-			await filter.check(fileData, streamOrBuffer);
-		}
-
-		return this._doInsert(fileData, streamOrBuffer, { session: options?.session });
+	): Promise<IUpload> {
+		streamOrBuffer = await this._validateFile(fileData, streamOrBuffer);
+		return this._doInsert(fileData, streamOrBuffer, options);
 	}
 }

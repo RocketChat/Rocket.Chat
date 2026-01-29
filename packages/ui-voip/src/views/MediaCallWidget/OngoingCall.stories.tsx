@@ -62,3 +62,11 @@ export const OngoingCallWithSlotsAndRemoteStatus: StoryFn<typeof OngoingCall> = 
 		</MockedMediaCallProvider>
 	);
 };
+
+export const OngoingCallWithDmButton: StoryFn<typeof OngoingCall> = () => {
+	return (
+		<MockedMediaCallProvider onClickDirectMessage={() => undefined}>
+			<OngoingCall />
+		</MockedMediaCallProvider>
+	);
+};

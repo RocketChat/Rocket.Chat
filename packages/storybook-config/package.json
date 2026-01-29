@@ -37,7 +37,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",
-		"@rocket.chat/fuselage": "^0.70.0",
+		"@rocket.chat/fuselage": "^0.70.2",
 		"@rocket.chat/icons": "~0.46.0",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/react": "^8.6.14",

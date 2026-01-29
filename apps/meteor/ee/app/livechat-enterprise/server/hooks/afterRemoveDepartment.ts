@@ -9,7 +9,7 @@ const afterRemoveDepartment = async (options: {
 	agentsId: ILivechatAgent['_id'][];
 }) => {
 	if (!options?.department) {
-		cbLogger.warn('No department found in options', options);
+		cbLogger.warn({ msg: 'No department found in options', options });
 		return options;
 	}
 

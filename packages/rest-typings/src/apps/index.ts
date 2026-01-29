@@ -11,8 +11,7 @@ import type {
 	FeaturedAppsSection,
 	ILogItem,
 	AppRequestFilter,
-	AppRequestsStats,
-	PaginatedAppRequests,
+	AppRequest,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
@@ -198,11 +197,25 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/app-request': {
-		GET: (params: { appId: string; q?: AppRequestFilter; sort?: string; limit?: number; offset?: number }) => PaginatedAppRequests;
+		GET: (params: { appId: string; q?: AppRequestFilter; sort?: string; limit?: number; offset?: number }) => {
+			data: AppRequest[] | null;
+			meta: {
+				limit: 25 | 50 | 100;
+				offset: number;
+				sort: string;
+				filter: string;
+				total: number;
+			};
+		};
 	};
 
 	'/apps/app-request/stats': {
-		GET: () => AppRequestsStats;
+		GET: () => {
+			data: {
+				totalSeen: number;
+				totalUnseen: number;
+			};
+		};
 	};
 
 	'/apps/app-request/markAsSeen': {

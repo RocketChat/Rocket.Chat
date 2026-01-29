@@ -110,7 +110,7 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 							/>
 						</FieldRow>
 					</Field>
-					<Divider p={0} children={t('or')} />
+					<Divider p={0}>{t('or')}</Divider>
 					<Field>
 						<FieldLabel htmlFor={userFieldId}>{t('Forward_to_user')}</FieldLabel>
 						<FieldRow>
@@ -137,7 +137,7 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 							</Box>
 						</FieldLabel>
 						<FieldRow>
-							<TextAreaInput data-qa-id='ForwardChatModalTextAreaInputComment' {...register('comment')} rows={8} flexGrow={1} />
+							<TextAreaInput {...register('comment')} rows={8} flexGrow={1} />
 						</FieldRow>
 					</Field>
 				</FieldGroup>

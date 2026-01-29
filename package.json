@@ -26,6 +26,7 @@
 		"build:services": "turbo run build --filter=rocketchat-services...",
 		"dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
 		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
+		"ms": "turbo run ms --env-mode=loose",
 		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts",
 		"fuselage": "./fuselage.sh",
 		"lint": "turbo run lint",
@@ -66,17 +67,17 @@
 		"@types/js-yaml": "^4.0.9",
 		"@types/node": "~22.16.5",
 		"ts-node": "^10.9.2",
-		"turbo": "~2.6.3",
+		"turbo": "~2.7.4",
 		"typescript": "~5.9.3"
 	},
-	"packageManager": "yarn@4.11.0",
+	"packageManager": "yarn@4.12.0",
 	"engines": {
 		"node": "22.16.0",
-		"yarn": "4.11.0"
+		"yarn": "4.12.0"
 	},
 	"volta": {
 		"node": "22.16.0",
-		"yarn": "4.11.0"
+		"yarn": "4.12.0"
 	},
 	"houston": {
 		"minTag": "0.55.0-rc.0",

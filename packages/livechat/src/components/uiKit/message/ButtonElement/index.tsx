@@ -42,7 +42,6 @@ const ButtonElement = ({ text, actionId, url, value, style, context, confirm, pa
 
 	return (
 		<button
-			children={parser.text(text)}
 			className={createClassName(styles, 'uikit-button', {
 				style,
 				accessory: context === uikit.BlockContext.SECTION,
@@ -52,7 +51,9 @@ const ButtonElement = ({ text, actionId, url, value, style, context, confirm, pa
 			type='button'
 			onClick={handleClick}
 			onMouseUp={handleMouseUp}
-		/>
+		>
+			{parser.text(text)}
+		</button>
 	);
 };
 

@@ -1,6 +1,6 @@
 import { Authorization, License, Abac } from '@rocket.chat/core-services';
 import type { RoomAccessValidator } from '@rocket.chat/core-services';
-import { TEAM_TYPE, AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
+import { TeamType, AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
 import type { IUser, ITeam } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Settings, TeamMember, Team } from '@rocket.chat/models';
 
@@ -30,7 +30,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		const team = await Team.findOneById<Pick<ITeam, 'type'>>(room.teamId, {
 			projection: { type: 1 },
 		});
-		if (team?.type === TEAM_TYPE.PUBLIC) {
+		if (team?.type === TeamType.PUBLIC) {
 			return canAccessPublicRoom(user);
 		}
 

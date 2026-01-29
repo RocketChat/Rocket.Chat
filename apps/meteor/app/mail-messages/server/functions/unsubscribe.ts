@@ -6,7 +6,12 @@ export const unsubscribe = async function (_id: string, createdAt: string): Prom
 	if (_id && createdAt) {
 		const affectedRows = (await Users.rocketMailUnsubscribe(_id, createdAt)) === 1;
 
-		SystemLogger.debug('[Mailer:Unsubscribe]', _id, createdAt, new Date(parseInt(createdAt)), affectedRows);
+		SystemLogger.debug({
+			msg: '[Mailer:Unsubscribe]',
+			_id,
+			createdAt,
+			affectedRows,
+		});
 
 		return affectedRows;
 	}
