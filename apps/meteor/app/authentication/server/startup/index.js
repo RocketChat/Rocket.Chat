@@ -24,7 +24,6 @@ import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListen
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFields';
-import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 
 Accounts.config({
@@ -380,7 +379,7 @@ Accounts.insertUserDoc = async function (options, user) {
 
 	if (!options.skipAppsEngineEvent) {
 		// `post` triggered events don't need to wait for the promise to resolve
-		Apps.self?.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() }).catch((e) => {
+		Apps.self?.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: options.performedBy }).catch((e) => {
 			Apps.self?.getRocketChatLogger().error({ msg: 'Error while executing post user created event', err: e });
 		});
 	}

@@ -137,7 +137,7 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 							</Box>
 						</FieldLabel>
 						<FieldRow>
-							<TextAreaInput data-qa-id='ForwardChatModalTextAreaInputComment' {...register('comment')} rows={8} flexGrow={1} />
+							<TextAreaInput {...register('comment')} rows={8} flexGrow={1} />
 						</FieldRow>
 					</Field>
 				</FieldGroup>
