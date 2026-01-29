@@ -25,12 +25,12 @@ export default defineConfig(async () => {
 					'ecmascript-runtime': null,
 					'ecmascript': null,
 					'es5-shim': null,
-					'fetch': 'window.fetch',
+					// 'fetch': 'window.fetch',
 					'hot-code-push': null,
 					'minifier-css': null,
 					'modern-browsers': null,
 					'mongo-dev-server': null,
-					'promise': 'window.Promise',
+					// 'promise': 'window.Promise',
 					'react-fast-refresh': null,
 					'shell-server': null,
 					'standard-minifier-css': null,
@@ -40,7 +40,7 @@ export default defineConfig(async () => {
 					'zodern_standard-minifier-js': null,
 					'zodern_types': null,
 					'ddp-rate-limiter': null,
-					'url': 'globalThis',
+					// 'url': 'globalThis',
 					'email': null,
 					'routepolicy': null,
 					'oauth1': null,
@@ -111,9 +111,9 @@ export default defineConfig(async () => {
 		build: {
 			assetsDir: 'build_assets',
 			sourcemap: true,
+			
 			minify: false,
 		},
-		preview: {},
 		server: {
 			cors: true,
 			origin: ROOT_URL.origin,
@@ -124,6 +124,7 @@ export default defineConfig(async () => {
 				'/assets': { target: ROOT_URL.origin, changeOrigin: true },
 				'/images': { target: ROOT_URL.origin, changeOrigin: true },
 				'/sockjs': { target: ROOT_URL.origin, ws: true, rewriteWsOrigin: true, changeOrigin: true, autoRewrite: true },
+				'/websocket': { target: ROOT_URL.origin, ws: true, rewriteWsOrigin: true, changeOrigin: true, autoRewrite: true },
 				'/file-upload': {
 					target: ROOT_URL.origin,
 					changeOrigin: true,

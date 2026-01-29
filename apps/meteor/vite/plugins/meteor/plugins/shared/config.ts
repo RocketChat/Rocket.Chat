@@ -1,6 +1,14 @@
-import path from 'node:path';
-
 export type PluginOptions = {
+	/**
+	 * The prefix used to identify Meteor package imports.
+	 * @default 'meteor/'.
+	 */
+	prefix?: string;
+	/**
+	 * The module id used to import the Meteor runtime shim.
+	 * @default 'virtual:meteor-runtime'.
+	 */
+	runtimeImportId?: string;
 	/**
 	 * The root URL of the Meteor application.
 	 * @default process.env.ROOT_URL || 'http://localhost:3000/'.
@@ -26,9 +34,23 @@ export type PluginOptions = {
 	 * @default process.env.VITE_METEOR_SERVER_PORT || process.env.METEOR_SERVER_PORT || 33335
 	 */
 	meteorServerPort?: number;
-}
+
+	/**
+	 * Use the native WebSocket implementation instead of SockJS on the client side.
+	 * @default true
+	 */
+	disableSockJS?: boolean;
+};
 
 export type ResolvedPluginOptions = {
+	/**
+	 * The module id used to import the Meteor runtime shim.
+	 */
+	readonly runtimeImportId: string;
+	/**
+	 * The prefix used to identify Meteor package imports.
+	 */
+	readonly prefix: string;
 	/**
 	 * The root URL of the Meteor application.
 	 */
@@ -49,36 +71,8 @@ export type ResolvedPluginOptions = {
 	 * Port where the Meteor runtime's HTTP server listens.
 	 */
 	readonly meteorServerPort: number;
-}
-
-export function resolveConfig(pluginConfig: PluginOptions): ResolvedPluginOptions {
-	const parsePort = (value?: string | number | null) => {
-		if (typeof value === 'number') {
-			return Number.isFinite(value) && value > 0 ? value : undefined;
-		}
-		if (typeof value === 'string') {
-			const parsed = Number(value);
-			if (Number.isFinite(parsed) && parsed > 0) {
-				return parsed;
-			}
-		}
-		return undefined;
-	};
-
-	const projectRoot = pluginConfig.projectRoot ? path.resolve(pluginConfig.projectRoot) : process.cwd();
-	const programsDir = pluginConfig.programsDir
-		? path.resolve(pluginConfig.programsDir)
-		: path.join(projectRoot, '.meteor', 'local', 'build', 'programs');
-
-	return {
-		projectRoot,
-		programsDir,
-		modules: pluginConfig.modules || {},
-		rootUrl: new URL(pluginConfig.rootUrl || process.env.ROOT_URL || 'http://localhost:5173/'),
-		meteorServerPort:
-			parsePort(pluginConfig.meteorServerPort) ||
-			parsePort(process.env.VITE_METEOR_SERVER_PORT) ||
-			parsePort(process.env.METEOR_SERVER_PORT) ||
-			33335,
-	};
-}
+	/**
+	 * Whether to disable SockJS and use native WebSocket on the client side.
+	 */
+	readonly disableSockJS: boolean;
+};
