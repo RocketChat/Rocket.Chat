@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { SelectLegacy, Box, Button, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { Select, Box, Button, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -55,7 +55,7 @@ const AccountIntegrationsPage = () => {
 								control={control}
 								name='accountSelected'
 								rules={{ required: t('Required_field', { field: t('WebDAV_Accounts') }) }}
-								render={({ field }) => <SelectLegacy {...field} options={options} placeholder={t('Select_an_option')} />}
+								render={({ field }) => <Select {...field} options={options} placeholder={t('Select_an_option')} />}
 							/>
 							<Button type='submit' danger>
 								{t('Remove')}
