@@ -1,3 +1,4 @@
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Settings } from '@rocket.chat/models';
 import moment from 'moment';
@@ -16,6 +17,25 @@ import * as peerCommandHandlers from './peerHandlers';
 const logger = new Logger('IRC Bridge');
 const queueLogger = logger.section('Queue');
 
+type QueueItem = {
+	from: string;
+	command: string;
+	parameters: any[];
+};
+
+type BridgeConfig = {
+	server: {
+		protocol: any;
+		[key: string]: any;
+	};
+	[key: string]: any;
+};
+
+type PeerCommand = {
+	identifier: string;
+	args: any;
+};
+
 let removed = false;
 const updateLastPing = withThrottling({ wait: 10_000 })(() => {
 	if (removed) {
@@ -33,7 +53,19 @@ const updateLastPing = withThrottling({ wait: 10_000 })(() => {
 });
 
 class Bridge {
-	constructor(config) {
+	config: BridgeConfig;
+
+	loggedInUsers: string[];
+
+	server: any;
+
+	queue: Queue<QueueItem>;
+
+	queueTimeout: number;
+
+	initTime?: Date;
+
+	constructor(config: BridgeConfig) {
 		// General
 		this.config = config;
 
@@ -41,7 +73,7 @@ class Bridge {
 		this.loggedInUsers = [];
 
 		// Server
-		const Server = servers[this.config.server.protocol];
+		const Server = (servers as any)[this.config.server.protocol];
 
 		this.server = new Server(this.config);
 
@@ -53,14 +85,14 @@ class Bridge {
 		this.queueTimeout = 5;
 	}
 
-	async init() {
+	async init(): Promise<void> {
 		this.initTime = new Date();
 		removed = false;
 		this.loggedInUsers = [];
 
 		const lastPing = await Settings.findOneById('IRC_Bridge_Last_Ping');
 		if (lastPing) {
-			if (Math.abs(moment(lastPing.value).diff()) < 1000 * 30) {
+			if (Math.abs(moment(lastPing.value as any).diff(moment())) < 1000 * 30) {
 				this.log('Not trying to connect.');
 				this.remove();
 				return;
@@ -74,15 +106,15 @@ class Bridge {
 		this.server.on('registered', () => {
 			this.logQueue('Starting...');
 
-			this.runQueue();
+			void this.runQueue();
 		});
 	}
 
-	stop() {
+	stop(): void {
 		this.server.disconnect();
 	}
 
-	remove() {
+	remove(): void {
 		this.log('Removing current connection.');
 		removed = true;
 		this.server = null;
@@ -92,12 +124,12 @@ class Bridge {
 	/**
 	 * Log helper
 	 */
-	log(message) {
+	log(message: string): void {
 		// TODO logger: debug?
 		logger.info(message);
 	}
 
-	logQueue(message) {
+	logQueue(message: string | Record<string, any>): void {
 		// TODO logger: debug?
 		queueLogger.info(message);
 	}
@@ -109,17 +141,17 @@ class Bridge {
 	 *
 	 *
 	 */
-	onMessageReceived(from, command, ...parameters) {
+	onMessageReceived(from: string, command: string, ...parameters: any[]): void {
 		this.queue.enqueue({ from, command, parameters });
 	}
 
-	async runQueue() {
+	async runQueue(): Promise<void> {
 		if (!this.server) {
 			return;
 		}
 
-		const lastResetTime = Settings.findOneById('IRC_Bridge_Reset_Time');
-		if (lastResetTime && lastResetTime.value > this.initTime) {
+		const lastResetTime = await Settings.findOneById('IRC_Bridge_Reset_Time');
+		if (lastResetTime?.value && lastResetTime.value > this.initTime!) {
 			this.stop();
 			this.remove();
 			return;
@@ -129,11 +161,12 @@ class Bridge {
 
 		// If it is empty, skip and keep the queue going
 		if (this.queue.isEmpty()) {
-			return setTimeout(this.runQueue.bind(this), this.queueTimeout);
+			setTimeout(this.runQueue.bind(this), this.queueTimeout);
+			return;
 		}
 
 		// Get the command
-		const item = this.queue.dequeue();
+		const item = this.queue.dequeue() as QueueItem;
 
 		this.logQueue({ msg: 'Processing command from source', command: item.command, from: item.from });
 
@@ -142,22 +175,22 @@ class Bridge {
 			// Handle the command accordingly
 			switch (item.from) {
 				case 'local':
-					if (!localCommandHandlers[item.command]) {
+					if (!(localCommandHandlers as any)[item.command]) {
 						throw new Error(`Could not find handler for local:${item.command}`);
 					}
 
-					await localCommandHandlers[item.command].apply(this, item.parameters);
+					await (localCommandHandlers as any)[item.command].apply(this, item.parameters);
 					break;
 				case 'peer':
-					if (!peerCommandHandlers[item.command]) {
+					if (!(peerCommandHandlers as any)[item.command]) {
 						throw new Error(`Could not find handler for peer:${item.command}`);
 					}
 
-					await peerCommandHandlers[item.command].apply(this, item.parameters);
+					await (peerCommandHandlers as any)[item.command].apply(this, item.parameters);
 					break;
 			}
 		} catch (e) {
-			this.logQueue(e);
+			this.logQueue(e as any);
 		}
 
 		// Keep the queue going
@@ -171,8 +204,8 @@ class Bridge {
 	 *
 	 *
 	 */
-	setupPeerHandlers() {
-		this.server.on('peerCommand', (cmd) => {
+	setupPeerHandlers(): void {
+		this.server.on('peerCommand', (cmd: PeerCommand) => {
 			this.onMessageReceived('peer', cmd.identifier, cmd.args);
 		});
 	}
@@ -184,7 +217,7 @@ class Bridge {
 	 *
 	 *
 	 */
-	setupLocalHandlers() {
+	setupLocalHandlers(): void {
 		// Auth
 		callbacks.add('afterValidateLogin', this.onMessageReceived.bind(this, 'local', 'onLogin'), callbacks.priority.LOW, 'irc-on-login');
 		callbacks.add(
@@ -212,7 +245,7 @@ class Bridge {
 		// Chatting
 		callbacks.add(
 			'afterSaveMessage',
-			(message, { room }) => this.onMessageReceived('local', 'onSaveMessage', message, room),
+			(message: IMessage, { room }: { room: IRoom }) => this.onMessageReceived('local', 'onSaveMessage', message, room),
 			callbacks.priority.LOW,
 			'irc-on-save-message',
 		);
@@ -220,7 +253,7 @@ class Bridge {
 		afterLogoutCleanUpCallback.add(this.onMessageReceived.bind(this, 'local', 'onLogout'), callbacks.priority.LOW, 'irc-on-logout');
 	}
 
-	removeLocalHandlers() {
+	removeLocalHandlers(): void {
 		callbacks.remove('afterValidateLogin', 'irc-on-login');
 		callbacks.remove('afterCreateUser', 'irc-on-create-user');
 		callbacks.remove('afterCreateChannel', 'irc-on-create-channel');
@@ -231,7 +264,7 @@ class Bridge {
 		afterLogoutCleanUpCallback.remove('irc-on-logout');
 	}
 
-	sendCommand(command, parameters) {
+	sendCommand(command: string, parameters: any): void {
 		this.server.emit('onReceiveFromLocal', command, parameters);
 	}
 }
