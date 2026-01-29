@@ -3,8 +3,13 @@ import { Users, Rooms } from '@rocket.chat/models';
 import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../../lib/server/functions/createRoom';
 
+type JoinedChannelArgs = {
+	nick: string;
+	roomName: string;
+};
+
 // TODO doesn't seem to be used anywhere, remove
-export default async function handleJoinedChannel(args) {
+export default async function handleJoinedChannel(this: any, args: JoinedChannelArgs): Promise<void> {
 	const user = await Users.findOne({
 		'profile.irc.nick': args.nick,
 	});
