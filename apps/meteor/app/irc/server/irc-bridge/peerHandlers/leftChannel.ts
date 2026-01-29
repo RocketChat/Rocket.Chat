@@ -2,7 +2,12 @@ import { Users, Rooms } from '@rocket.chat/models';
 
 import { removeUserFromRoom } from '../../../../lib/server/functions/removeUserFromRoom';
 
-export default async function handleLeftChannel(args) {
+type LeftChannelArgs = {
+	nick: string;
+	roomName: string;
+};
+
+export default async function handleLeftChannel(this: any, args: LeftChannelArgs): Promise<void> {
 	const user = await Users.findOne({
 		'profile.irc.nick': args.nick,
 	});
