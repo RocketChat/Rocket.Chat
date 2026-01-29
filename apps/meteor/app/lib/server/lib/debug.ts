@@ -1,3 +1,5 @@
+import type { IncomingMessage, ServerResponse } from 'http';
+
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Logger } from '@rocket.chat/logger';
 import { tracerActiveSpan } from '@rocket.chat/tracing';
@@ -12,25 +14,32 @@ import { getModifiedHttpHeaders } from '../functions/getModifiedHttpHeaders';
 
 const logger = new Logger('Meteor');
 
-let Log_Trace_Methods;
-let Log_Trace_Subscriptions;
+let logTraceMethods: boolean | undefined;
+let logTraceSubscriptions: boolean | undefined;
 settings.watch('Log_Trace_Methods', (value) => {
-	Log_Trace_Methods = value;
+	logTraceMethods = value as boolean;
 });
 settings.watch('Log_Trace_Subscriptions', (value) => {
-	Log_Trace_Subscriptions = value;
+	logTraceSubscriptions = value as boolean;
 });
 
-let Log_Trace_Methods_Filter;
-let Log_Trace_Subscriptions_Filter;
+let logTraceMethodsFilter: RegExp | undefined;
+let logTraceSubscriptionsFilter: RegExp | undefined;
 settings.watch('Log_Trace_Methods_Filter', (value) => {
-	Log_Trace_Methods_Filter = value ? new RegExp(value) : undefined;
+	logTraceMethodsFilter = value ? new RegExp(value as string) : undefined;
 });
 settings.watch('Log_Trace_Subscriptions_Filter', (value) => {
-	Log_Trace_Subscriptions_Filter = value ? new RegExp(value) : undefined;
+	logTraceSubscriptionsFilter = value ? new RegExp(value as string) : undefined;
 });
 
-const traceConnection = (enable, filter, prefix, name, connection, userId) => {
+const traceConnection = (
+	enable: boolean | undefined,
+	filter: RegExp | undefined,
+	_prefix: string,
+	name: string,
+	connection: Meteor.Connection | null | undefined,
+	userId: string | null,
+): void => {
 	if (!enable) {
 		return;
 	}
@@ -51,13 +60,13 @@ const traceConnection = (enable, filter, prefix, name, connection, userId) => {
 	}
 };
 
-const wrapMethods = function (name, originalHandler, methodsMap) {
-	methodsMap[name] = function (...originalArgs) {
-		traceConnection(Log_Trace_Methods, Log_Trace_Methods_Filter, 'method', name, this.connection, this.userId);
+const wrapMethods = function (name: string, originalHandler: (...args: any[]) => any, methodsMap: Record<string, any>): void {
+	methodsMap[name] = function (this: Meteor.MethodThisType, ...originalArgs: any[]) {
+		traceConnection(logTraceMethods, logTraceMethodsFilter, 'method', name, this.connection, this.userId);
 
 		const method = name === 'stream' ? `${name}:${originalArgs[0]}` : name;
 
-		const end = metrics.meteorMethods.startTimer({
+		const end = (metrics.meteorMethods.startTimer as any)({
 			method,
 			has_connection: this.connection != null,
 			has_user: this.userId != null,
@@ -78,7 +87,7 @@ const wrapMethods = function (name, originalHandler, methodsMap) {
 			{
 				attributes: {
 					method: name,
-					userId: this.userId,
+					userId: this.userId ?? undefined,
 				},
 			},
 			async () => {
@@ -92,7 +101,7 @@ const wrapMethods = function (name, originalHandler, methodsMap) {
 
 const originalMeteorMethods = Meteor.methods;
 
-Meteor.methods = function (methodMap) {
+(Meteor as any).methods = function (methodMap: Record<string, (...args: any[]) => any>): void {
 	_.each(methodMap, (handler, name) => {
 		wrapMethods(name, handler, methodMap);
 	});
@@ -101,9 +110,9 @@ Meteor.methods = function (methodMap) {
 
 const originalMeteorPublish = Meteor.publish;
 
-Meteor.publish = function (name, func) {
-	return originalMeteorPublish(name, function (...args) {
-		traceConnection(Log_Trace_Subscriptions, Log_Trace_Subscriptions_Filter, 'subscription', name, this.connection, this.userId);
+(Meteor as any).publish = function (name: string, func: (...args: any[]) => any) {
+	return originalMeteorPublish(name, function (this: any, ...args: any[]) {
+		traceConnection(logTraceSubscriptions, logTraceSubscriptionsFilter, 'subscription', name, this.connection, this.userId);
 
 		logger.subscription({
 			publication: name,
@@ -114,19 +123,19 @@ Meteor.publish = function (name, func) {
 			instanceId: InstanceStatus.id(),
 		});
 
-		const end = metrics.meteorSubscriptions.startTimer({ subscription: name });
+		const end = (metrics.meteorSubscriptions.startTimer as any)({ subscription: name });
 
 		const originalReady = this.ready;
-		this.ready = function () {
+		this.ready = function (this: any) {
 			end();
-			return originalReady.apply(this, args);
+			return originalReady.call(this);
 		};
 
 		return func.apply(this, args);
 	});
 };
 
-WebApp.rawConnectHandlers.use((req, res, next) => {
+WebApp.rawConnectHandlers.use((_req: IncomingMessage, res: ServerResponse, next: () => void) => {
 	res.setHeader('X-Instance-ID', InstanceStatus.id());
 	return next();
 });
