@@ -51,7 +51,7 @@ describe('getMessagePreview', () => {
 		});
 
 		it('should proceed to normalization when e2e is done', () => {
-			const room = createFakeSubscription();
+			const room = createFakeSubscription({ t: 'c' });
 			const message = createFakeMessage({ t: 'e2e', e2e: 'done', u: { _id: 'user-id', username: 'testuser', name: 'Test User' } });
 			mockNormalizeMessagePreview.mockReturnValue('decrypted message');
 
