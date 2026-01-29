@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { Header, HeaderContent, HeaderContentRow, HeaderToolbar } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 import { Suspense } from 'react';
@@ -41,7 +42,9 @@ const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
 			{slots?.preContent}
 			<HeaderContent>
 				<HeaderContentRow>
-					<RoomTitle room={room} />
+					<Box display='flex' flexShrink={0}>
+						<RoomTitle room={room} />
+					</Box>
 					<Favorite room={room} />
 					{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
 					<Encrypted room={room} />
