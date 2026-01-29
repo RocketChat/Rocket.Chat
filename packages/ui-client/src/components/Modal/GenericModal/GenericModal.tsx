@@ -141,7 +141,7 @@ const GenericModal = ({
 					{tagline && <ModalTagline color={taglineColor}>{tagline}</ModalTagline>}
 					<ModalTitle id={`${genericModalId}-title`}>{title ?? t('Are_you_sure')}</ModalTitle>
 				</ModalHeaderText>
-				{onClose && <ModalClose aria-label={t('Close')} onClick={handleCloseButtonClick} />}
+				{onClose && <ModalClose tabIndex={-1} aria-label={t('Close')} onClick={handleCloseButtonClick} />}
 			</ModalHeader>
 			<ModalContent fontScale='p2'>{children}</ModalContent>
 			<ModalFooter justifyContent={dontAskAgain || annotation ? 'space-between' : 'end'}>
