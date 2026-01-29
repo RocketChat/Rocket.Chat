@@ -1,18 +1,22 @@
-import type { IMessage } from '@rocket.chat/core-typings';
-import { Emitter } from '@rocket.chat/emitter';
 import type { Options } from '@rocket.chat/message-parser';
 import { Accounts } from 'meteor/accounts-base';
 
-import type { FormattingButton } from './messageBoxFormatting';
-import { formattingButtons } from './messageBoxFormatting';
+import { createComposerAPI } from './createComposerAPI';
 import { escapeHTML } from './messageParser';
 import { resolveComposerBox } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
-export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: string, parseOptions: Options): ComposerAPI => {
-	const triggerEvent = (input: HTMLDivElement, evt: string): void => {
+export const createRichTextComposerAPI = (
+	input: HTMLDivElement,
+	storageID: string,
+	quoteChainLimit: number,
+	parseOptions: Options,
+): ComposerAPI => {
+	// @ts-expect-error - TODO: Find a way to handle both types
+	const composerAPI = createComposerAPI(input, storageID, quoteChainLimit, parseOptions);
+	const triggerEvent = (input: HTMLElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
 		const tracker = (input as any)._valueTracker;
@@ -21,17 +25,6 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 		}
 		input.dispatchEvent(event);
 	};
-
-	const emitter = new Emitter<{
-		quotedMessagesUpdate: void;
-		editing: void;
-		recording: void;
-		recordingVideo: void;
-		formatting: void;
-		mircophoneDenied: void;
-	}>();
-
-	let _quotedMessages: IMessage[] = [];
 
 	const persist = withDebouncing({ wait: 300 })(() => {
 		// Store the value entirely as HTML with the DOM structure intact
@@ -43,11 +36,6 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 		Accounts.storageLocation.removeItem(storageID);
 	});
 
-	const notifyQuotedMessagesUpdate = (): void => {
-		emitter.emit('quotedMessagesUpdate');
-	};
-
-	input.addEventListener('input', persist);
 	input.addEventListener('input', (event: Event) => {
 		resolveComposerBox(event, parseOptions);
 	});
@@ -93,23 +81,6 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 		!skipFocus && focus();
 	};
 
-	const insertText = (text: string): void => {
-		setText(text, {
-			selection: ({ start, end }) => ({
-				start: start + text.length,
-				end: end + text.length,
-			}),
-		});
-	};
-
-	const clear = (): void => {
-		setText('');
-	};
-
-	const focus = (): void => {
-		input.focus();
-	};
-
 	const replyWith = async (text: string): Promise<void> => {
 		if (input) {
 			input.innerText = text;
@@ -117,114 +88,12 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 		}
 	};
 
-	const quoteMessage = async (message: IMessage): Promise<void> => {
-		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), message];
-		notifyQuotedMessagesUpdate();
-		input.focus();
-	};
-
-	const dismissQuotedMessage = async (mid: IMessage['_id']): Promise<void> => {
-		_quotedMessages = _quotedMessages.filter((message) => message._id !== mid);
-		notifyQuotedMessagesUpdate();
-	};
-
-	const dismissAllQuotedMessages = async (): Promise<void> => {
-		_quotedMessages = [];
-		notifyQuotedMessagesUpdate();
-	};
-
-	const quotedMessages = {
-		get: () => _quotedMessages,
-		subscribe: (callback: () => void) => emitter.on('quotedMessagesUpdate', callback),
-	};
-
-	const [editing, setEditing] = (() => {
-		let editing = false;
-
-		return [
-			{
-				get: () => editing,
-				subscribe: (callback: () => void) => emitter.on('editing', callback),
-			},
-			(value: boolean) => {
-				editing = value;
-				emitter.emit('editing');
-			},
-		];
-	})();
-
-	const [recording, setRecordingMode] = (() => {
-		let recording = false;
-
-		return [
-			{
-				get: () => recording,
-				subscribe: (callback: () => void) => emitter.on('recording', callback),
-			},
-			(value: boolean) => {
-				recording = value;
-				emitter.emit('recording');
-			},
-		];
-	})();
-
-	const [recordingVideo, setRecordingVideo] = (() => {
-		let recordingVideo = false;
-
-		return [
-			{
-				get: () => recordingVideo,
-				subscribe: (callback: () => void) => emitter.on('recordingVideo', callback),
-			},
-			(value: boolean) => {
-				recordingVideo = value;
-				emitter.emit('recordingVideo');
-			},
-		];
-	})();
-
-	const [isMicrophoneDenied, setIsMicrophoneDenied] = (() => {
-		let isMicrophoneDenied = false;
-
-		return [
-			{
-				get: () => isMicrophoneDenied,
-				subscribe: (callback: () => void) => emitter.on('mircophoneDenied', callback),
-			},
-			(value: boolean) => {
-				isMicrophoneDenied = value;
-				emitter.emit('mircophoneDenied');
-			},
-		];
-	})();
-
-	const setEditingMode = (editing: boolean): void => {
-		setEditing(editing);
-	};
-
-	const [formatters, stopFormatterTracker] = (() => {
-		let actions: FormattingButton[] = [];
-
-		const c = Tracker.autorun(() => {
-			actions = formattingButtons.filter(({ condition }) => !condition || condition());
-			emitter.emit('formatting');
-		});
-
-		return [
-			{
-				get: () => actions,
-				subscribe: (callback: () => void) => emitter.on('formatting', callback),
-			},
-			c,
-		];
-	})();
-
 	const release = (): void => {
 		input.removeEventListener('input', persist);
 		input.removeEventListener('input', (event: Event) => {
 			resolveComposerBox(event, parseOptions);
 		});
-		stopFormatterTracker.stop();
+		composerAPI.stopFormatterTracker.stop();
 	};
 
 	const wrapSelection = (pattern: string): void => {
@@ -248,7 +117,7 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 			const endPatternFound = [...endPattern].every((char, index) => input.innerText.slice(selectionEnd + index, 1) === char);
 
 			if (endPatternFound) {
-				insertText(selectedText);
+				composerAPI.insertText(selectedText);
 
 				/* Get current selection range */
 				const { selectionStart } = getSelectionRange(input);
@@ -290,7 +159,7 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 		triggerEvent(input, 'change');
 	};
 
-	const insertNewLine = (): void => insertText('\n');
+	const insertNewLine = (): void => composerAPI.insertText('\n');
 
 	setText(Accounts.storageLocation.getItem(storageID) ?? '', {
 		skipFocus: true,
@@ -339,6 +208,7 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 	};
 
 	return {
+		...composerAPI,
 		replaceText,
 		insertNewLine,
 		blur: () => input.blur(),
@@ -373,24 +243,8 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 				end: selectionEnd,
 			};
 		},
-
-		editing,
-		setEditingMode,
-		recording,
-		setRecordingMode,
-		recordingVideo,
-		setRecordingVideo,
-		insertText,
 		setText,
-		clear,
 		focus,
 		replyWith,
-		quoteMessage,
-		dismissQuotedMessage,
-		dismissAllQuotedMessages,
-		quotedMessages,
-		formatters,
-		isMicrophoneDenied,
-		setIsMicrophoneDenied,
 	};
 };

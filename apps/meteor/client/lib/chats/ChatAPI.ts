@@ -63,6 +63,7 @@ export type ComposerAPI = {
 	readonly isMicrophoneDenied: Subscribable<boolean>;
 
 	readonly formatters: Subscribable<FormattingButton[]>;
+	readonly stopFormatterTracker: Tracker.Computation;
 
 	readonly composerRef: RefObject<HTMLElement>;
 };
