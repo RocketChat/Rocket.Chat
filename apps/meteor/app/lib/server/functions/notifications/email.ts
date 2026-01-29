@@ -1,3 +1,4 @@
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
@@ -16,13 +17,30 @@ Meteor.startup(() => {
 	settings.watch('email_style', () => {
 		goToMessage = Mailer.inlinecss('<p><a class=\'btn\' href="[room_path]">{Offline_Link_Message}</a></p>');
 	});
-	Mailer.getTemplate('Email_Footer_Direct_Reply', (value) => {
+	Mailer.getTemplate('Email_Footer_Direct_Reply', (value: string) => {
 		advice = value;
 	});
 });
 
-export async function getEmailContent({ message, user, room }) {
-	const lng = (user && user.language) || settings.get('Language') || 'en';
+export async function getEmailContent({
+	message,
+	user,
+	room,
+}: {
+	message: Partial<IMessage> & {
+		_id: string;
+		u: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
+		msg: string;
+		t?: string;
+		tokens?: any[];
+		file?: any;
+		files?: any[];
+		attachments?: any[];
+	};
+	user: (Partial<IUser> & { language?: string; name?: string; username?: string }) | null;
+	room: IRoom;
+}): Promise<string> {
+	const lng = (user && user.language) || settings.get<string>('Language') || 'en';
 
 	const roomName = escapeHTML(`#${await roomCoordinator.getRoomName(room.t, room)}`);
 	const userName = escapeHTML(settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);
@@ -34,11 +52,11 @@ export async function getEmailContent({ message, user, room }) {
 	const hasText = typeof message.msg === 'string' && message.msg.trim() !== '';
 	const isGroupChat = roomDirectives.isGroupChat(room);
 
-	let header;
+	let header: string;
 	if (hasFiles && !hasText) {
 		// file-only message
 		const isMultipleFiles = files.length > 1;
-		let headerKey;
+		let headerKey: string;
 		if (isGroupChat) {
 			headerKey = isMultipleFiles ? 'User_uploaded_files_on_channel' : 'User_uploaded_a_file_on_channel';
 		} else {
@@ -62,7 +80,7 @@ export async function getEmailContent({ message, user, room }) {
 		return header;
 	}
 
-	const contentParts = [];
+	const contentParts: string[] = [];
 
 	if (hasText) {
 		let messageContent = escapeHTML(message.msg);
@@ -79,6 +97,9 @@ export async function getEmailContent({ message, user, room }) {
 	if (hasFiles) {
 		const attachments = message.attachments || [];
 		const fileParts = files.map((file, index) => {
+			if (!file) {
+				return '';
+			}
 			let part = escapeHTML(file.name);
 			if (attachments[index]?.description) {
 				part += `<br/><br/>${escapeHTML(attachments[index].description)}`;
@@ -110,8 +131,18 @@ export async function getEmailContent({ message, user, room }) {
 	return header;
 }
 
-const getButtonUrl = (room, subscription, message) => {
-	const basePath = roomCoordinator.getRouteLink(room.t, subscription).replace(Meteor.absoluteUrl(), '');
+const getButtonUrl = (
+	room: IRoom,
+	subscription: any,
+	message: Partial<IMessage> & {
+		_id: string;
+		u: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
+		msg: string;
+		tmid?: string;
+	},
+): string => {
+	const routeLink = roomCoordinator.getRouteLink(room.t, subscription);
+	const basePath = typeof routeLink === 'string' ? routeLink.replace(Meteor.absoluteUrl(), '') : '';
 
 	const path = `${ltrim(basePath, '/')}?msg=${message._id}`;
 	return getURL(
@@ -129,11 +160,32 @@ const getButtonUrl = (room, subscription, message) => {
 	);
 };
 
-function generateNameEmail(name, email) {
+function generateNameEmail(name: string, email: string): string {
 	return `${String(name).replace(/@/g, '%40').replace(/[<>,]/g, '')} <${email}>`;
 }
 
-export async function getEmailData({ message, receiver, sender, subscription, room, emailAddress, hasMentionToUser }) {
+export async function getEmailData({
+	message,
+	receiver,
+	sender,
+	subscription,
+	room,
+	emailAddress,
+	hasMentionToUser,
+}: {
+	message: Partial<IMessage> & {
+		_id: string;
+		u: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
+		msg: string;
+		tmid?: string;
+	};
+	receiver: Partial<IUser> & { language?: string; name?: string; username?: string };
+	sender: Partial<IUser> & { _id: string; name?: string; username?: string; emails?: { address: string }[] };
+	subscription: any;
+	room: IRoom;
+	emailAddress: string;
+	hasMentionToUser: boolean;
+}) {
 	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
@@ -153,41 +205,50 @@ export async function getEmailData({ message, receiver, sender, subscription, ro
 		room,
 	});
 
-	const room_path = getButtonUrl(room, subscription, message);
+	const roomPath = getButtonUrl(room, subscription, message);
 
 	const receiverName = settings.get('UI_Use_Real_Name') ? receiver.name || receiver.username : receiver.username;
 
-	const email = {
+	const email: {
+		from: string;
+		to: string;
+		subject: string;
+		html: string;
+		data: { room_path: string };
+		headers: Record<string, string>;
+	} = {
 		from: generateNameEmail(username, settings.get('From_Email')),
-		to: generateNameEmail(receiverName, emailAddress),
+		to: generateNameEmail(receiverName || '', emailAddress),
 		subject: emailSubject,
 		html: content + goToMessage + (settings.get('Direct_Reply_Enable') ? advice : ''),
 		data: {
-			room_path,
+			room_path: roomPath,
 		},
 		headers: {},
 	};
 
-	if (sender.emails?.length > 0 && settings.get('Add_Sender_To_ReplyTo')) {
+	if (sender.emails?.length && sender.emails.length > 0 && settings.get('Add_Sender_To_ReplyTo')) {
 		const [senderEmail] = sender.emails;
 		email.headers['Reply-To'] = generateNameEmail(username, senderEmail.address);
 	}
 
 	// If direct reply enabled, email content with headers
 	if (settings.get('Direct_Reply_Enable')) {
-		const replyto = settings.get('Direct_Reply_ReplyTo') || settings.get('Direct_Reply_Username');
+		const replyto = (settings.get('Direct_Reply_ReplyTo') || settings.get('Direct_Reply_Username')) as string | undefined;
 
-		// Reply-To header with format "username+messageId@domain"
-		email.headers['Reply-To'] = `${replyto.split('@')[0].split(settings.get('Direct_Reply_Separator'))[0]}${settings.get(
-			'Direct_Reply_Separator',
-		)}${message.tmid || message._id}@${replyto.split('@')[1]}`;
+		if (replyto && typeof replyto === 'string') {
+			// Reply-To header with format "username+messageId@domain"
+			email.headers['Reply-To'] = `${replyto.split('@')[0].split(settings.get('Direct_Reply_Separator') as string)[0]}${settings.get(
+				'Direct_Reply_Separator',
+			)}${message.tmid || message._id}@${replyto.split('@')[1]}`;
+		}
 	}
 
 	metrics.notificationsSent.inc({ notification_type: 'email' });
 	return email;
 }
 
-export function sendEmailFromData(data) {
+export function sendEmailFromData(data: any) {
 	metrics.notificationsSent.inc({ notification_type: 'email' });
 	return Mailer.send(data);
 }
@@ -202,7 +263,17 @@ export function shouldNotifyEmail({
 	hasReplyToThread,
 	roomType,
 	isThread,
-}) {
+}: {
+	disableAllMessageNotifications: boolean;
+	statusConnection: string | undefined;
+	emailNotifications: string | null | undefined;
+	isHighlighted: boolean;
+	hasMentionToUser: boolean;
+	hasMentionToAll: boolean;
+	hasReplyToThread: boolean;
+	roomType: string;
+	isThread: boolean;
+}): boolean {
 	// email notifications are disabled globally
 	if (!settings.get('Accounts_AllowEmailNotifications')) {
 		return false;
