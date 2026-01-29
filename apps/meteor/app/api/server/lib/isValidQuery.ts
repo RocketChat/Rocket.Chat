@@ -36,7 +36,7 @@ const verifyQuery = (query: Query, allowedAttributes: string[], allowedOperation
 				return value.every((v) => verifyQuery(v, allowedAttributes, allowedOperations));
 			}
 
-			if (value instanceof Object) {
+			if (isRecord(value)) {
 				return verifyQuery(value, allowedAttributes, allowedOperations, path);
 			}
 
