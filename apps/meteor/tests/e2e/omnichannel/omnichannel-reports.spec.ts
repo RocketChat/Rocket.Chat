@@ -2,7 +2,7 @@ import type { Route } from '@playwright/test';
 
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelReports } from '../page-objects/omnichannel-reports';
+import { OmnichannelReports } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 const ENDPOINTS = {

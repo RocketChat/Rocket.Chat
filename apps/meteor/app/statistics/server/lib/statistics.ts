@@ -588,6 +588,8 @@ export const statistics = {
 			);
 		}
 
+		statistics.allowUnsafeQueryAndFieldsApiParamsEnabled = process.env.ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS?.toUpperCase() === 'TRUE';
+
 		await Promise.all(statsPms).catch(log);
 
 		return statistics;

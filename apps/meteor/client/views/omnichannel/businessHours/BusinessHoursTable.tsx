@@ -65,7 +65,7 @@ const BusinessHoursTable = () => {
 			{isSuccess && data?.businessHours.length === 0 && <GenericNoResults />}
 			{isSuccess && data?.businessHours.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable aria-label={t('Business_Hours')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.businessHours.map((businessHour) => <BusinessHoursRow key={businessHour._id} {...businessHour} />)}

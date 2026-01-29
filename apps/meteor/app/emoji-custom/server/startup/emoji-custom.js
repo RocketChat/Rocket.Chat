@@ -21,7 +21,10 @@ Meteor.startup(() => {
 		throw new Error(`Invalid RocketChatStore type [${storeType}]`);
 	}
 
-	SystemLogger.info(`Using ${storeType} for custom emoji storage`);
+	SystemLogger.info({
+		msg: 'Using custom emoji storage',
+		storeType,
+	});
 
 	let path = '~/uploads';
 	if (settings.get('EmojiUpload_FileSystemPath') != null) {

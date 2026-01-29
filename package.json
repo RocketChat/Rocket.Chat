@@ -26,6 +26,7 @@
 		"build:services": "turbo run build --filter=rocketchat-services...",
 		"dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
 		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
+		"ms": "turbo run ms --env-mode=loose",
 		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts",
 		"fuselage": "./fuselage.sh",
 		"lint": "turbo run lint",

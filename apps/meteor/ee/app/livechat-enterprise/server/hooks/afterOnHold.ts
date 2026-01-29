@@ -18,7 +18,7 @@ const handleAfterOnHold = async (room: Pick<IOmnichannelRoom, '_id'>): Promise<a
 		return;
 	}
 
-	cbLogger.debug(`Scheduling room ${rid} to be closed in ${autoCloseOnHoldChatTimeout} seconds`);
+	cbLogger.debug({ msg: 'Scheduling room to be closed', rid, autoCloseOnHoldChatTimeout });
 	const closeComment =
 		settings.get<string>('Livechat_auto_close_on_hold_chats_custom_message') ||
 		i18n.t('Closed_automatically_because_chat_was_onhold_for_seconds', {

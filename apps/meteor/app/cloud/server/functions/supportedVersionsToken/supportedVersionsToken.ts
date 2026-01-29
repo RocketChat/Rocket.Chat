@@ -64,7 +64,10 @@ const cacheValueInSettings = <T extends SettingValue>(
 	reset: (retry?: number) => Promise<T>;
 } => {
 	const reset = async (retry?: number) => {
-		SystemLogger.debug(`Resetting cached value ${key} in settings`);
+		SystemLogger.debug({
+			msg: 'Resetting cached value in settings',
+			key,
+		});
 		const value = await fn(retry);
 
 		if (
@@ -181,7 +184,10 @@ const getSupportedVersionsToken = async (retry = 0) => {
 			5000 * Math.pow(2, retry),
 		);
 	} else {
-		SystemLogger.error(`Failed to get supported versions from cloud after ${retry} retries.`);
+		SystemLogger.error({
+			msg: 'Failed to get supported versions from cloud after retries.',
+			retry,
+		});
 		await buildVersionUpdateMessage(supportedVersions?.versions);
 	}
 

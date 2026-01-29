@@ -137,7 +137,7 @@ const MessageBox = ({
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(createComposerAPI(node, storageID, quoteChainLimit));
+			chat.setComposerAPI(createComposerAPI(node, storageID, quoteChainLimit, messageComposerRef));
 		},
 		[chat, storageID, quoteChainLimit],
 	);

@@ -52,7 +52,7 @@ const AppsPageContent = () => {
 	const [statusFilterStructure, setStatusFilterStructure] = useState({
 		label: t('Filter_By_Status'),
 		items: [
-			{ id: 'all', label: t('All_status'), checked: true },
+			{ id: 'all', label: t('All_statuses'), checked: true },
 			{ id: 'enabled', label: t('Enabled'), checked: false },
 			{ id: 'disabled', label: t('Disabled'), checked: false },
 		],
