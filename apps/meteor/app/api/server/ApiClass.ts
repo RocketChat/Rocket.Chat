@@ -1088,7 +1088,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 					});
 
 					try {
-						const auth = await DDP._CurrentInvocation.withValue(invocation as any, async () => Meteor.callAsync('login', args));
+						const auth = await DDP._CurrentInvocation.withValue(invocation, async () => Meteor.callAsync('login', args));
 						this.user = await Users.findOne(
 							{
 								_id: auth.id,

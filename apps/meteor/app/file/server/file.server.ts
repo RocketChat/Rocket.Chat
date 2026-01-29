@@ -22,9 +22,9 @@ type IFile = {
 interface IRocketChatFileStore {
 	remove(fileId: string): Promise<void>;
 
-	createWriteStream(fileName: string, contentType: string): void;
+	createWriteStream(fileName: string, contentType: string): unknown;
 
-	createReadStream(fileName: string): void;
+	createReadStream(fileName: string): unknown;
 
 	getFileWithReadStream(fileName: string): Promise<
 		| {
@@ -125,7 +125,7 @@ class GridFS implements IRocketChatFileStore {
 }
 
 class FileSystem implements IRocketChatFileStore {
-	private absolutePath: string;
+	absolutePath: string;
 
 	constructor({ absolutePath = '~/uploads' } = {}) {
 		if (absolutePath.split(path.sep)[0] === '~') {

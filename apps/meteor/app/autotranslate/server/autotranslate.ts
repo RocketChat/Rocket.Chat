@@ -228,7 +228,7 @@ export abstract class AutoTranslate {
 	tokenizeCode(message: IMessage): IMessage {
 		let count = message.tokens?.length || 0;
 		message.html = message.msg;
-		message = Markdown.parseMessageNotEscaped(message);
+		message = Markdown.parseMessageNotEscaped(message as IMessage & { html: string });
 
 		// Some parsers (e. g. Marked) wrap the complete message in a <p> - this is unnecessary and should be ignored with respect to translations
 		const regexWrappedParagraph = new RegExp('^\\s*<p>|</p>\\s*$', 'gm');

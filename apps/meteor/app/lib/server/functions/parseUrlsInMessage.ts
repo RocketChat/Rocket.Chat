@@ -11,7 +11,7 @@ export const parseUrlsInMessage = (message: AtLeast<IMessage, 'msg'> & { parseUr
 	}
 
 	message.html = message.msg;
-	message = Markdown.code(message);
+	message = Markdown.code(message as IMessage & { html: string });
 
 	const urls = message.html?.match(getMessageUrlRegex()) || [];
 	if (urls) {
@@ -22,7 +22,7 @@ export const parseUrlsInMessage = (message: AtLeast<IMessage, 'msg'> & { parseUr
 		}));
 	}
 
-	message = Markdown.mountTokensBack(message, false);
+	message = Markdown.mountTokensBack(message as IMessage & { html: string }, false);
 	message.msg = message.html || message.msg;
 	delete message.html;
 	delete message.tokens;
