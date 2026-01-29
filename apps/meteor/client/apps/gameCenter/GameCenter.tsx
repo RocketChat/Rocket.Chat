@@ -1,5 +1,6 @@
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import type { MouseEvent, ReactElement } from 'react';
 
@@ -7,7 +8,6 @@ import GameCenterContainer from './GameCenterContainer';
 import GameCenterList from './GameCenterList';
 import { useExternalComponentsQuery } from './hooks/useExternalComponentsQuery';
 import { preventSyntheticEvent } from '../../lib/utils/preventSyntheticEvent';
-import { useRoomToolbox } from '../../views/room/contexts/RoomToolboxContext';
 
 export type IGame = IExternalComponent;
 

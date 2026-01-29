@@ -19,7 +19,7 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 		this.queueWorker = new OmnichannelQueue();
 	}
 
-	async created() {
+	override async created() {
 		this.onEvent('presence.status', async ({ user }): Promise<void> => {
 			if (!user?._id) {
 				return;
@@ -32,7 +32,7 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 		});
 	}
 
-	async started() {
+	override async started() {
 		settings.watchMultiple(['Livechat_enabled', 'Livechat_Routing_Method'], () => {
 			this.queueWorker.shouldStart();
 		});

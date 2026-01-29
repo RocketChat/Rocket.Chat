@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
+import { useMergedRefs, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback, useRef } from 'react';
 
@@ -49,12 +48,8 @@ export const useJumpToMessage = (messageId: IMessage['_id']) => {
 
 	const ref = useSafeRefCallback(
 		useCallback(
-			(node: HTMLElement | null) => {
-				if (!node || !scroll) {
-					return;
-				}
-
-				if (!listRef) {
+			(node: HTMLElement) => {
+				if (!listRef || !scroll) {
 					return;
 				}
 

@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import type { AtLeast, IIntegration, IMessage, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { assert, expect } from 'chai';
@@ -49,8 +49,42 @@ describe('[Incoming Integrations]', () => {
 	});
 
 	describe('[/integrations.create]', () => {
-		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to add an incoming integration', (done) => {
-			void updatePermission('manage-incoming-integrations', []).then(() => {
+		describe('Permission checks', () => {
+			before(async () => {
+				await Promise.all([updatePermission('manage-incoming-integrations', []), updatePermission('manage-own-incoming-integrations', [])]);
+			});
+
+			after(async () => {
+				await Promise.all([
+					updatePermission('manage-incoming-integrations', ['admin']),
+					updatePermission('manage-own-incoming-integrations', ['admin']),
+				]);
+			});
+
+			it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to add an incoming integration', (done) => {
+				void request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test',
+						enabled: true,
+						alias: 'test',
+						username: 'rocket.cat',
+						scriptEnabled: false,
+						overrideDestinationChannelEnabled: true,
+						channel: '#general',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'not_authorized');
+					})
+					.end(done);
+			});
+
+			it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to add an incoming integration', (done) => {
 				void request
 					.post(api('integrations.create'))
 					.set(credentials)
@@ -74,58 +108,21 @@ describe('[Incoming Integrations]', () => {
 			});
 		});
 
-		it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to add an incoming integration', (done) => {
-			void updatePermission('manage-own-incoming-integrations', []).then(() => {
-				void request
-					.post(api('integrations.create'))
-					.set(credentials)
-					.send({
-						type: 'webhook-incoming',
-						name: 'Incoming test',
-						enabled: true,
-						alias: 'test',
-						username: 'rocket.cat',
-						scriptEnabled: false,
-						overrideDestinationChannelEnabled: true,
-						channel: '#general',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'not_authorized');
-					})
-					.end(done);
+		describe('With manage-incoming-integrations permission', () => {
+			let tempIntegrationId: IIntegration['_id'];
+
+			before(async () => {
+				await updatePermission('manage-incoming-integrations', ['admin']);
 			});
-		});
 
-		it('should return an error when the user sends an invalid type of integration', (done) => {
-			void request
-				.post(api('integrations.create'))
-				.set(credentials)
-				.send({
-					type: 'webhook-incoming-invalid',
-					name: 'Incoming test',
-					enabled: true,
-					alias: 'test',
-					username: 'rocket.cat',
-					scriptEnabled: false,
-					overrideDestinationChannelEnabled: true,
-					channel: '#general',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Invalid integration type.');
-				})
-				.end(done);
-		});
+			after(async () => {
+				if (tempIntegrationId) {
+					await removeIntegration(tempIntegrationId, 'incoming');
+				}
+			});
 
-		it('should add the integration successfully when the user ONLY has the permission "manage-incoming-integrations" to add an incoming integration', (done) => {
-			let integrationId: IIntegration['_id'];
-			void updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
-				void request
+			it('should add the integration successfully when the user ONLY has the permission "manage-incoming-integrations" to add an incoming integration', async () => {
+				const res = await request
 					.post(api('integrations.create'))
 					.set(credentials)
 					.send({
@@ -139,343 +136,418 @@ describe('[Incoming Integrations]', () => {
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('integration').and.to.be.an('object');
+				tempIntegrationId = res.body.integration._id;
+			});
+
+			it('should set overrideDestinationChannelEnabled setting to false when it is not provided', async () => {
+				const res = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test',
+						enabled: true,
+						alias: 'test',
+						username: 'rocket.cat',
+						scriptEnabled: false,
+						channel: '#general',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('integration').and.to.be.an('object');
+				expect(res.body.integration).to.have.property('overrideDestinationChannelEnabled', false);
+				const integrationId = res.body.integration._id;
+				await removeIntegration(integrationId, 'incoming');
+			});
+		});
+
+		describe('With manage-own-incoming-integrations permission', () => {
+			before(async () => {
+				await Promise.all([
+					updatePermission('manage-incoming-integrations', []),
+					updatePermission('manage-own-incoming-integrations', ['admin']),
+				]);
+			});
+
+			after(async () => {
+				await Promise.all([
+					updatePermission('manage-incoming-integrations', ['admin']),
+					updatePermission('manage-own-incoming-integrations', ['admin']),
+				]);
+			});
+
+			it('should add the integration successfully when the user ONLY has the permission "manage-own-incoming-integrations" to add an incoming integration', (done) => {
+				void request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test 2',
+						enabled: true,
+						alias: 'test2',
+						username: 'rocket.cat',
+						scriptEnabled: false,
+						overrideDestinationChannelEnabled: false,
+						channel: '#general',
+					})
+					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('integration').and.to.be.an('object');
-						integrationId = res.body.integration._id;
+						integration = res.body.integration;
 					})
-					.end(() => removeIntegration(integrationId, 'incoming').then(done));
+					.end(done);
 			});
 		});
 
-		it('should set overrideDestinationChannelEnabled setting to false when it is not provided', async () => {
-			const res = await request
-				.post(api('integrations.create'))
-				.set(credentials)
-				.send({
-					type: 'webhook-incoming',
-					name: 'Incoming test',
-					enabled: true,
-					alias: 'test',
-					username: 'rocket.cat',
-					scriptEnabled: false,
-					channel: '#general',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+		describe('Incoming Integration execution', () => {
+			it('should return an error when the user sends an invalid type of integration', (done) => {
+				void request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming-invalid',
+						name: 'Incoming test',
+						enabled: true,
+						alias: 'test',
+						username: 'rocket.cat',
+						scriptEnabled: false,
+						overrideDestinationChannelEnabled: true,
+						channel: '#general',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Invalid integration type.');
+					})
+					.end(done);
+			});
 
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('integration').and.to.be.an('object');
-			expect(res.body.integration).to.have.property('overrideDestinationChannelEnabled', false);
-			const integrationId = res.body.integration._id;
-			await removeIntegration(integrationId, 'incoming');
-		});
+			it('should execute the incoming integration', (done) => {
+				void request
+					.post(`/hooks/${integration._id}/${integration.token}`)
+					.send({
+						text: 'Example message',
+					})
+					.expect(200)
+					.end(done);
+			});
 
-		it('should add the integration successfully when the user ONLY has the permission "manage-own-incoming-integrations" to add an incoming integration', (done) => {
-			void updatePermission('manage-incoming-integrations', []).then(() => {
-				void updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
-					void request
-						.post(api('integrations.create'))
-						.set(credentials)
-						.send({
-							type: 'webhook-incoming',
-							name: 'Incoming test 2',
-							enabled: true,
-							alias: 'test2',
-							username: 'rocket.cat',
-							scriptEnabled: false,
-							overrideDestinationChannelEnabled: false,
-							channel: '#general',
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('integration').and.to.be.an('object');
-							integration = res.body.integration;
-						})
-						.end(done);
-				});
+			it("should return an error when sending 'channel' field telling its configuration is disabled", (done) => {
+				void request
+					.post(`/hooks/${integration._id}/${integration.token}`)
+					.send({
+						text: 'Example message',
+						channel: [testChannelName],
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
+					})
+					.end(done);
+			});
+
+			it("should return an error when sending 'roomId' field telling its configuration is disabled", (done) => {
+				void request
+					.post(`/hooks/${integration._id}/${integration.token}`)
+					.send({
+						text: 'Example message',
+						roomId: channel._id,
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
+					})
+					.end(done);
+			});
+			it('should send a message for a channel that is specified in the webhooks configuration', (done) => {
+				const successfulMessage = `Message sent successfully at #${Date.now()}`;
+				void request
+					.post(`/hooks/${integration._id}/${integration.token}`)
+					.send({
+						text: successfulMessage,
+					})
+					.expect(200)
+					.end(() => {
+						return request
+							.get(api('channels.messages'))
+							.set(credentials)
+							.query({
+								roomId: 'GENERAL',
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+								expect(res.body).to.have.property('messages').and.to.be.an('array');
+								expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).to.be.true;
+							})
+							.end(done);
+					});
+			});
+			it('should send a message for a channel that is not specified in the webhooks configuration', async () => {
+				await request
+					.put(api('integrations.update'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						overrideDestinationChannelEnabled: true,
+						integrationId: integration._id,
+						username: 'rocket.cat',
+						channel: '#general',
+						scriptEnabled: true,
+						enabled: true,
+						name: integration.name,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('integration');
+						expect(res.body.integration.overrideDestinationChannelEnabled).to.be.equal(true);
+					});
+				const successfulMessage = `Message sent successfully at #${Date.now()}`;
+				await request
+					.post(`/hooks/${integration._id}/${integration.token}`)
+					.send({
+						text: successfulMessage,
+						channel: [testChannelName],
+					})
+					.expect(200);
+
+				return request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({
+						roomId: channel._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).to.be.true;
+					});
+			});
+
+			it('should send a message if the payload is a application/x-www-form-urlencoded JSON', async () => {
+				const payload = { msg: `Message as x-www-form-urlencoded JSON sent successfully at #${Date.now()}` };
+
+				await request
+					.post(`/hooks/${integration._id}/${integration.token}`)
+					.set('Content-Type', 'application/x-www-form-urlencoded')
+					.send(`payload=${JSON.stringify(payload)}`)
+					.expect(200);
+
+				const messagesResult = await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(messagesResult.body).to.have.property('success', true);
+				expect(messagesResult.body).to.have.property('messages').and.to.be.an('array');
+				expect(!!(messagesResult.body.messages as IMessage[]).find((m) => m.msg === payload.msg)).to.be.true;
 			});
 		});
 
-		it('should execute the incoming integration', (done) => {
-			void request
-				.post(`/hooks/${integration._id}/${integration.token}`)
-				.send({
-					text: 'Example message',
-				})
-				.expect(200)
-				.end(done);
-		});
+		describe('Script integration tests', () => {
+			let withScript: IIntegration;
+			let withScriptDefaultContentType: IIntegration;
 
-		it("should return an error when sending 'channel' field telling its configuration is disabled", (done) => {
-			void request
-				.post(`/hooks/${integration._id}/${integration.token}`)
-				.send({
-					text: 'Example message',
-					channel: [testChannelName],
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
-				})
-				.end(done);
-		});
+			before(async () => {
+				await updatePermission('manage-incoming-integrations', ['admin']);
 
-		it("should return an error when sending 'roomId' field telling its configuration is disabled", (done) => {
-			void request
-				.post(`/hooks/${integration._id}/${integration.token}`)
-				.send({
-					text: 'Example message',
-					roomId: channel._id,
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
-				})
-				.end(done);
-		});
-		it('should send a message for a channel that is specified in the webhooks configuration', (done) => {
-			const successfulMesssage = `Message sent successfully at #${Date.now()}`;
-			void request
-				.post(`/hooks/${integration._id}/${integration.token}`)
-				.send({
-					text: successfulMesssage,
-				})
-				.expect(200)
-				.end(() => {
-					return request
-						.get(api('channels.messages'))
-						.set(credentials)
-						.query({
-							roomId: 'GENERAL',
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('messages').and.to.be.an('array');
-							expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.true;
-						})
-						.end(done);
-				});
-		});
-		it('should send a message for a channel that is not specified in the webhooks configuration', async () => {
-			await request
-				.put(api('integrations.update'))
-				.set(credentials)
-				.send({
-					type: 'webhook-incoming',
-					overrideDestinationChannelEnabled: true,
-					integrationId: integration._id,
-					username: 'rocket.cat',
-					channel: '#general',
-					scriptEnabled: true,
-					enabled: true,
-					name: integration.name,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('integration');
-					expect(res.body.integration.overrideDestinationChannelEnabled).to.be.equal(true);
-				});
-			const successfulMesssage = `Message sent successfully at #${Date.now()}`;
-			await request
-				.post(`/hooks/${integration._id}/${integration.token}`)
-				.send({
-					text: successfulMesssage,
-					channel: [testChannelName],
-				})
-				.expect(200);
-
-			return request
-				.get(api('channels.messages'))
-				.set(credentials)
-				.query({
-					roomId: channel._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.true;
-				});
-		});
-
-		it('should send a message if the payload is a application/x-www-form-urlencoded JSON', async () => {
-			const payload = { msg: `Message as x-www-form-urlencoded JSON sent successfully at #${Date.now()}` };
-
-			await request
-				.post(`/hooks/${integration._id}/${integration.token}`)
-				.set('Content-Type', 'application/x-www-form-urlencoded')
-				.send(`payload=${JSON.stringify(payload)}`)
-				.expect(200)
-				.expect(async () => {
-					return request
-						.get(api('channels.messages'))
-						.set(credentials)
-						.query({
-							roomId: 'GENERAL',
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('messages').and.to.be.an('array');
-							expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === payload.msg)).to.be.true;
-						});
-				});
-		});
-
-		it('should send a message if the payload is a application/x-www-form-urlencoded JSON AND the integration has a valid script', async () => {
-			const payload = { msg: `Message as x-www-form-urlencoded JSON sent successfully at #${Date.now()}` };
-			let withScript: IIntegration | undefined;
-
-			await updatePermission('manage-incoming-integrations', ['admin']);
-			await request
-				.post(api('integrations.create'))
-				.set(credentials)
-				.send({
-					type: 'webhook-incoming',
-					name: 'Incoming test with script',
-					enabled: true,
-					alias: 'test',
-					username: 'rocket.cat',
-					scriptEnabled: true,
-					overrideDestinationChannelEnabled: false,
-					channel: '#general',
-					script: `
-						class Script {
-							process_incoming_request({ request }) {
-								return {
-									content:{
-										text: request.content.text
-									}
-								};
+				const res1 = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test with script',
+						enabled: true,
+						alias: 'test',
+						username: 'rocket.cat',
+						scriptEnabled: true,
+						overrideDestinationChannelEnabled: false,
+						channel: '#general',
+						script: `
+							class Script {
+								process_incoming_request({ request }) {
+									return {
+										content:{
+											text: request.content.text
+										}
+									};
+								}
 							}
-						}
-					`,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('integration').and.to.be.an('object');
-					withScript = res.body.integration;
-				});
+						`,
+					})
+					.expect(200);
+				withScript = res1.body.integration;
 
-			if (!withScript) {
-				throw new Error('Integration not created');
-			}
+				const res2 = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test with script and default content-type',
+						enabled: true,
+						alias: 'test',
+						username: 'rocket.cat',
+						scriptEnabled: true,
+						overrideDestinationChannelEnabled: false,
+						channel: '#general',
+						script:
+							'const buildMessage = (obj) => {\n' +
+							'  \n' +
+							'    const template = `[#VALUE](${ obj.test })`;\n' +
+							'  \n' +
+							'    return {\n' +
+							'      text: template\n' +
+							'    };\n' +
+							'  };\n' +
+							'  \n' +
+							'  class Script {\n' +
+							'    process_incoming_request({ request }) {\n' +
+							'      msg = buildMessage(request.content);\n' +
+							'  \n' +
+							'      return {\n' +
+							'        content:{\n' +
+							'              text: msg.text\n' +
+							'        }\n' +
+							'      };\n' +
+							'    }\n' +
+							'  }\n' +
+							'					\n',
+					})
+					.expect(200);
+				withScriptDefaultContentType = res2.body.integration;
+			});
 
-			await request
-				.post(`/hooks/${withScript._id}/${withScript.token}`)
-				.set('Content-Type', 'application/x-www-form-urlencoded')
-				.send(`payload=${JSON.stringify(payload)}`)
-				.expect(200)
-				.expect(async () => {
-					return request
-						.get(api('channels.messages'))
-						.set(credentials)
-						.query({
-							roomId: 'GENERAL',
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('messages').and.to.be.an('array');
-							expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === payload.msg)).to.be.true;
-						});
-				});
+			after(async () => {
+				await Promise.all([removeIntegration(withScript._id, 'incoming'), removeIntegration(withScriptDefaultContentType._id, 'incoming')]);
+			});
 
-			await removeIntegration(withScript._id, 'incoming');
+			it('should send a message if the payload is a application/x-www-form-urlencoded JSON AND the integration has a valid script', async () => {
+				const payload = { text: `Message as x-www-form-urlencoded JSON sent successfully at #${Date.now()}` };
+
+				await request
+					.post(`/hooks/${withScript._id}/${withScript.token}`)
+					.set('Content-Type', 'application/x-www-form-urlencoded')
+					.send(`payload=${JSON.stringify(payload)}`)
+					.expect(200);
+
+				const messagesResult = await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(messagesResult.body).to.have.property('success', true);
+				expect(messagesResult.body).to.have.property('messages').and.to.be.an('array');
+				expect(!!(messagesResult.body.messages as IMessage[]).find((m) => m.msg === payload.text)).to.be.true;
+			});
+
+			it('should send a message if the payload is application/json and the integration has a valid script', async () => {
+				const payload = { test: 'test' };
+
+				await request
+					.post(`/hooks/${withScriptDefaultContentType._id}/${withScriptDefaultContentType.token}`)
+					.set('Content-Type', 'application/json')
+					.send(JSON.stringify(payload))
+					.expect(200);
+
+				const messagesResult = await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(messagesResult.body).to.have.property('success', true);
+				expect(messagesResult.body).to.have.property('messages').and.to.be.an('array');
+				expect(!!(messagesResult.body.messages as IMessage[]).find((m) => m.msg === '[#VALUE](test)')).to.be.true;
+			});
 		});
 
-		it('should send a message if the payload is a application/x-www-form-urlencoded JSON(when not set, default one) but theres no "payload" key, its just a string, the integration has a valid script', async () => {
-			const payload = { test: 'test' };
-			let withScript: IIntegration | undefined;
+		describe('With manage-own-incoming-integrations permission', () => {
+			let integrationId: string;
 
-			await updatePermission('manage-incoming-integrations', ['admin']);
-			await request
-				.post(api('integrations.create'))
-				.set(credentials)
-				.send({
-					type: 'webhook-incoming',
-					name: 'Incoming test with script and default content-type',
-					enabled: true,
-					alias: 'test',
-					username: 'rocket.cat',
-					scriptEnabled: true,
-					overrideDestinationChannelEnabled: false,
-					channel: '#general',
-					script:
-						'const buildMessage = (obj) => {\n' +
-						'  \n' +
-						'    const template = `[#VALUE](${ obj.test })`;\n' +
-						'  \n' +
-						'    return {\n' +
-						'      text: template\n' +
-						'    };\n' +
-						'  };\n' +
-						'  \n' +
-						'  class Script {\n' +
-						'    process_incoming_request({ request }) {\n' +
-						'      msg = buildMessage(request.content);\n' +
-						'  \n' +
-						'      return {\n' +
-						'        content:{\n' +
-						'              text: msg.text\n' +
-						'        }\n' +
-						'      };\n' +
-						'    }\n' +
-						'  }\n' +
-						'					\n',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('integration').and.to.be.an('object');
-					withScript = res.body.integration;
-				});
+			before(async () => {
+				await updatePermission('manage-own-incoming-integrations', ['admin']);
+			});
 
-			if (!withScript) {
-				throw new Error('Integration not created');
-			}
+			after(async () => {
+				if (integrationId) {
+					await removeIntegration(integrationId, 'incoming');
+				}
+			});
 
-			await request
-				.post(`/hooks/${withScript._id}/${withScript.token}`)
-				.send(JSON.stringify(payload))
-				.expect(200)
-				.expect(async () => {
-					return request
-						.get(api('channels.messages'))
-						.set(credentials)
-						.query({
-							roomId: 'GENERAL',
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('messages').and.to.be.an('array');
-							expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === '[#VALUE](test)')).to.be.true;
-						});
-				});
+			it('should return scriptCompiled and no scriptError', async () => {
+				const res = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test',
+						enabled: true,
+						alias: 'test',
+						username: 'rocket.cat',
+						scriptEnabled: true,
+						scriptEngine: 'isolated-vm',
+						channel: '#general',
+						script: `
+          class Script {
+            process_incoming_request({ request }) {
+              return {
+                content:{
+                  text: request.content.text
+                }
+              };
+            }
+          }
+        `,
+					})
+					.expect(200);
 
-			await removeIntegration(withScript._id, 'incoming');
+				expect(res.body.integration).to.have.property('scriptCompiled');
+				expect(res.body.integration).to.not.have.property('scriptError');
+
+				integrationId = res.body.integration._id;
+			});
 		});
 	});
 
 	describe('[/integrations.history]', () => {
+		before(async () => {
+			await Promise.all([updatePermission('manage-incoming-integrations', []), updatePermission('manage-own-incoming-integrations', [])]);
+		});
+
+		after(async () => {
+			await Promise.all([
+				updatePermission('manage-incoming-integrations', ['admin']),
+				updatePermission('manage-own-incoming-integrations', ['admin']),
+			]);
+		});
+
 		it('should return an error when trying to get history of incoming integrations if user does NOT have enough permissions', (done) => {
 			void request
 				.get(api('integrations.history'))
@@ -542,96 +614,90 @@ describe('[Incoming Integrations]', () => {
 				.end(done);
 		});
 
-		it('should return the list of integrations created by the user only', (done) => {
-			void updatePermission('manage-incoming-integrations', []).then(() => {
-				void updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
-					void request
-						.get(api('integrations.list'))
-						.set(userCredentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							const integrationCreatedByAdmin = (res.body.integrations as IIntegration[]).find(
-								(createdIntegration) => createdIntegration._id === integration._id,
-							);
-							expect(integrationCreatedByAdmin).to.be.equal(undefined);
-							expect(res.body).to.have.property('offset');
-							expect(res.body).to.have.property('items');
-							expect(res.body).to.have.property('total');
-						})
-						.end(done);
-				});
+		describe('With manage-own-incoming-integrations permission', () => {
+			before(async () => {
+				await Promise.all([
+					updatePermission('manage-incoming-integrations', []),
+					updatePermission('manage-own-incoming-integrations', ['user']),
+				]);
+			});
+
+			after(async () => {
+				await Promise.all([
+					updatePermission('manage-incoming-integrations', ['admin']),
+					updatePermission('manage-own-incoming-integrations', ['admin']),
+				]);
+			});
+
+			it('should return the list of integrations created by the user only', (done) => {
+				void request
+					.get(api('integrations.list'))
+					.set(userCredentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						const integrationCreatedByAdmin = (res.body.integrations as IIntegration[]).find(
+							(createdIntegration) => createdIntegration._id === integration._id,
+						);
+						expect(integrationCreatedByAdmin).to.be.equal(undefined);
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('items');
+						expect(res.body).to.have.property('total');
+					})
+					.end(done);
 			});
 		});
 
-		it('should return unauthorized error when the user does not have any integrations permissions', async () => {
-			await Promise.all([
-				updatePermission('manage-incoming-integrations', []),
-				updatePermission('manage-own-incoming-integrations', []),
-				updatePermission('manage-outgoing-integrations', []),
-				updatePermission('manage-outgoing-integrations', []),
-			]);
-			await request
-				.get(api('integrations.list'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
-				});
+		describe('Without any permissions', () => {
+			before(async () => {
+				await Promise.all([
+					updatePermission('manage-incoming-integrations', []),
+					updatePermission('manage-own-incoming-integrations', []),
+					updatePermission('manage-outgoing-integrations', []),
+					updatePermission('manage-own-outgoing-integrations', []),
+				]);
+			});
+
+			after(async () => {
+				await Promise.all([
+					updatePermission('manage-incoming-integrations', ['admin']),
+					updatePermission('manage-own-incoming-integrations', ['admin']),
+					updatePermission('manage-outgoing-integrations', ['admin']),
+					updatePermission('manage-own-outgoing-integrations', ['admin']),
+				]);
+			});
+
+			it('should return unauthorized error when the user does not have any integrations permissions', async () => {
+				await request
+					.get(api('integrations.list'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					});
+			});
 		});
 	});
 
 	describe('[/integrations.get]', () => {
-		it('should return an error when the required "integrationId" query parameters is not sent', (done) => {
-			void request
-				.get(api('integrations.get'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', `must have required property 'integrationId' [invalid-params]`);
-				})
-				.end(done);
-		});
-
-		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration', (done) => {
-			void updatePermission('manage-incoming-integrations', []).then(() => {
+		describe('Invalid params', () => {
+			it('should return an error when the required "integrationId" query parameters is not sent', (done) => {
 				void request
 					.get(api('integrations.get'))
-					.query({ integrationId: integration._id })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'not-authorized');
+						expect(res.body).to.have.property('error', `must have required property 'integrationId' [invalid-params]`);
 					})
 					.end(done);
 			});
-		});
 
-		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration created by another user', (done) => {
-			void updatePermission('manage-incoming-integrations', []).then(() => {
-				void request
-					.get(api('integrations.get'))
-					.query({ integrationId: integrationCreatedByAnUser._id })
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'not-authorized');
-					})
-					.end(done);
-			});
-		});
-
-		it('should return an error when the user sends an invalid integration', (done) => {
-			void updatePermission('manage-incoming-integrations', ['admin']).then(() => {
+			it('should return an error when the user sends an invalid integration', (done) => {
 				void request
 					.get(api('integrations.get'))
 					.query({ integrationId: 'invalid' })
@@ -646,27 +712,53 @@ describe('[Incoming Integrations]', () => {
 			});
 		});
 
-		it('should return the integration successfully when the user is able to see only your own integrations', (done) => {
-			void updatePermission('manage-incoming-integrations', [])
-				.then(() => updatePermission('manage-own-incoming-integrations', ['user']))
-				.then(() => {
-					void request
-						.get(api('integrations.get'))
-						.query({ integrationId: integrationCreatedByAnUser._id })
-						.set(userCredentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('integration');
-							expect(res.body.integration._id).to.be.equal(integrationCreatedByAnUser._id);
-						})
-						.end(done);
-				});
+		describe('Without permissions', () => {
+			before(async () => {
+				await Promise.all([updatePermission('manage-incoming-integrations', []), updatePermission('manage-own-incoming-integrations', [])]);
+			});
+
+			after(async () => {
+				await Promise.all([
+					updatePermission('manage-incoming-integrations', ['admin']),
+					updatePermission('manage-own-incoming-integrations', ['admin']),
+				]);
+			});
+
+			it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration', (done) => {
+				void request
+					.get(api('integrations.get'))
+					.query({ integrationId: integration._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'not-authorized');
+					})
+					.end(done);
+			});
+
+			it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration created by another user', (done) => {
+				void request
+					.get(api('integrations.get'))
+					.query({ integrationId: integrationCreatedByAnUser._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'not-authorized');
+					})
+					.end(done);
+			});
 		});
 
-		it('should return the integration successfully', (done) => {
-			void updatePermission('manage-incoming-integrations', ['admin']).then(() => {
+		describe('With manage-incoming-integrations permission', () => {
+			before(async () => {
+				await updatePermission('manage-incoming-integrations', ['admin']);
+			});
+
+			it('should return the integration successfully', (done) => {
 				void request
 					.get(api('integrations.get'))
 					.query({ integrationId: integration._id })
@@ -677,6 +769,37 @@ describe('[Incoming Integrations]', () => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('integration');
 						expect(res.body.integration._id).to.be.equal(integration._id);
+					})
+					.end(done);
+			});
+		});
+
+		describe('With manage-own-incoming-integrations permission', () => {
+			before(async () => {
+				await Promise.all([
+					updatePermission('manage-incoming-integrations', []),
+					updatePermission('manage-own-incoming-integrations', ['user']),
+				]);
+			});
+
+			after(async () => {
+				await Promise.all([
+					updatePermission('manage-incoming-integrations', ['admin']),
+					updatePermission('manage-own-incoming-integrations', ['admin']),
+				]);
+			});
+
+			it('should return the integration successfully when the user is able to see only your own integrations', (done) => {
+				void request
+					.get(api('integrations.get'))
+					.query({ integrationId: integrationCreatedByAnUser._id })
+					.set(userCredentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('integration');
+						expect(res.body.integration._id).to.be.equal(integrationCreatedByAnUser._id);
 					})
 					.end(done);
 			});
@@ -769,11 +892,11 @@ describe('[Incoming Integrations]', () => {
 		});
 
 		it('should send messages to the channel under the updated username', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration._id}/${integration.token}`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(200);
 
@@ -788,15 +911,50 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					const message = (res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage);
+					const message = (res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage);
 					expect(message?.u).have.property('username', senderUser.username);
 				});
 		});
 	});
 
 	describe('[/integrations.remove]', () => {
-		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to remove an incoming integration', (done) => {
-			void updatePermission('manage-incoming-integrations', []).then(() => {
+		describe('Without permissions', () => {
+			before(async () => {
+				await Promise.all([
+					updatePermission('manage-incoming-integrations', []),
+					updatePermission('manage-own-incoming-integrations', []),
+					updatePermission('manage-outgoing-integrations', []),
+					updatePermission('manage-own-outgoing-integrations', []),
+				]);
+			});
+
+			after(async () => {
+				await Promise.all([
+					updatePermission('manage-incoming-integrations', ['admin']),
+					updatePermission('manage-own-incoming-integrations', ['admin']),
+					updatePermission('manage-outgoing-integrations', ['admin']),
+					updatePermission('manage-own-outgoing-integrations', ['admin']),
+				]);
+			});
+
+			it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to remove an incoming integration', (done) => {
+				void request
+					.post(api('integrations.remove'))
+					.set(credentials)
+					.send({
+						integrationId: integration._id,
+						type: 'webhook-incoming',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					})
+					.end(done);
+			});
+
+			it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to remove an incoming integration', (done) => {
 				void request
 					.post(api('integrations.remove'))
 					.set(credentials)
@@ -814,27 +972,12 @@ describe('[Incoming Integrations]', () => {
 			});
 		});
 
-		it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to remove an incoming integration', (done) => {
-			void updatePermission('manage-own-incoming-integrations', []).then(() => {
-				void request
-					.post(api('integrations.remove'))
-					.set(credentials)
-					.send({
-						integrationId: integration._id,
-						type: 'webhook-incoming',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
-					})
-					.end(done);
+		describe('Invalid params', () => {
+			before(async () => {
+				await updatePermission('manage-own-incoming-integrations', ['admin']);
 			});
-		});
 
-		it('should return an error when the user sends an invalid type of integration', (done) => {
-			void updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
+			it('should return an error when the user sends an invalid type of integration', (done) => {
 				void request
 					.post(api('integrations.remove'))
 					.set(credentials)
@@ -852,8 +995,12 @@ describe('[Incoming Integrations]', () => {
 			});
 		});
 
-		it('should remove the integration successfully when the user at least one of the necessary permission to remove an incoming integration', (done) => {
-			void updatePermission('manage-incoming-integrations', ['admin']).then(() => {
+		describe('With manage-incoming-integrations permission', () => {
+			before(async () => {
+				await updatePermission('manage-incoming-integrations', ['admin']);
+			});
+
+			it('should remove the integration successfully when the user at least one of the necessary permission to remove an incoming integration', (done) => {
 				void request
 					.post(api('integrations.remove'))
 					.set(credentials)
@@ -870,8 +1017,16 @@ describe('[Incoming Integrations]', () => {
 			});
 		});
 
-		it('the normal user should remove the integration successfully when the user have the "manage-own-incoming-integrations" to remove an incoming integration', (done) => {
-			void updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
+		describe('Normal user with manage-own-incoming-integrations', () => {
+			before(async () => {
+				await updatePermission('manage-own-incoming-integrations', ['user']);
+			});
+
+			after(async () => {
+				await updatePermission('manage-own-incoming-integrations', ['admin']);
+			});
+
+			it('the normal user should remove the integration successfully when the user have the "manage-own-incoming-integrations" to remove an incoming integration', (done) => {
 				void request
 					.post(api('integrations.remove'))
 					.set(userCredentials)
@@ -903,7 +1058,7 @@ describe('[Incoming Integrations]', () => {
 
 		before(async () => {
 			nonMemberUser = await createUser({ username: `g_${Random.id()}` });
-			privateTeam = await createTeam(credentials, `private.team.${Random.id()}`, TEAM_TYPE.PRIVATE);
+			privateTeam = await createTeam(credentials, `private.team.${Random.id()}`, TeamType.PRIVATE);
 
 			const [publicInPrivateResponse, privateRoomResponse, publicRoomResponse] = await Promise.all([
 				createRoom({
@@ -1055,11 +1210,11 @@ describe('[Incoming Integrations]', () => {
 		});
 
 		it('should not send a message in public room if token is invalid', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration4._id}/invalid-token`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(500)
 				.expect((res) => {
@@ -1076,16 +1231,16 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).to.be.undefined;
 				});
 		});
 
 		it('should not send a message in private room if token is invalid', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration2._id}/invalid-token`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(500)
 				.expect((res) => {
@@ -1102,16 +1257,16 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).to.be.undefined;
 				});
 		});
 
 		it('should not send a message to a private rooms on behalf of a non member', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration2._id}/${integration2.token}`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(400)
 				.expect((res) => {
@@ -1128,16 +1283,16 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).to.be.undefined;
 				});
 		});
 
 		it('should not add non member to private rooms when sending message', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration2._id}/${integration2.token}`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(400)
 				.expect((res) => {
@@ -1159,11 +1314,11 @@ describe('[Incoming Integrations]', () => {
 		});
 
 		it('should not send a message to public channel of a private team on behalf of a non team member', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration3._id}/${integration3.token}`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(400)
 				.expect((res) => {
@@ -1180,16 +1335,16 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).to.be.undefined;
 				});
 		});
 
 		it('should not add non team member to the public channel in a private team when sending message', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration3._id}/${integration3.token}`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(400)
 				.expect((res) => {
@@ -1211,11 +1366,11 @@ describe('[Incoming Integrations]', () => {
 		});
 
 		it('should send messages from non-members to public rooms and add them as room members', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration4._id}/${integration4.token}`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(200);
 
@@ -1230,7 +1385,7 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).not.to.be.undefined;
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).not.to.be.undefined;
 				});
 
 			await request

@@ -63,7 +63,6 @@ const UserStatusMenu = ({
 		}
 		ref.current.focus();
 		show();
-		ref.current.classList.add('focus-visible');
 	}, [show]);
 
 	const handleSelection = useCallback(

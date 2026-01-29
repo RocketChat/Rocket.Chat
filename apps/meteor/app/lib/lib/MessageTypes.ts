@@ -30,6 +30,14 @@ export const MessageTypesValues: Array<{ key: MessageTypesValuesType; i18nLabel:
 		i18nLabel: 'Message_HideType_au',
 	},
 	{
+		key: 'ui', // user invited to room
+		i18nLabel: 'Message_HideType_ui',
+	},
+	{
+		key: 'uir', // user rejected invitation to room
+		i18nLabel: 'Message_HideType_uir',
+	},
+	{
 		key: 'added-user-to-team',
 		i18nLabel: 'Message_HideType_added_user_to_team',
 	},

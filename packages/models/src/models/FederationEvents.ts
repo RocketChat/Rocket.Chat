@@ -10,7 +10,7 @@ export class FederationEventsModel extends BaseRaw<IFederationEvent> {
 		super(db, nameOrModel);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { hasChildren: 1 }, sparse: true }, { key: { timestamp: 1 } }];
 	}
 

@@ -233,7 +233,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		}
 	}
 
-	async started(): Promise<void> {
+	override async started(): Promise<void> {
 		// Even after server startup, client versions might not be updated yet, the only way
 		// to make sure we can send the most up to date versions is using the publication below.
 		// Since it receives each document one at a time, we have to store them to be able to send
@@ -294,7 +294,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		return getURL(path, params, cloudDeepLinkUrl);
 	}
 
-	async getMessageURLToReplyTo(roomType: string, roomId: string, roomName: string, messageIdToReplyTo: string): Promise<string> {
-		return getURL(`${roomCoordinator.getRouteLink(roomType, { rid: roomId, name: roomName })}?msg=${messageIdToReplyTo}`, { full: true });
+	async getMessageURLToReplyTo(roomType: string, roomId: string, messageIdToReplyTo: string): Promise<string> {
+		return getURL(`${roomCoordinator.getRouteLink(roomType, { rid: roomId })}?msg=${messageIdToReplyTo}`, { full: true });
 	}
 }

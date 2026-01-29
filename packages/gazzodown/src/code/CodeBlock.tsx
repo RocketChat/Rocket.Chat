@@ -1,6 +1,7 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import hljs from 'highlight.js';
-import { Fragment, ReactElement, useContext, useLayoutEffect, useMemo, useRef } from 'react';
+import type { ReactElement } from 'react';
+import { Fragment, useContext, useLayoutEffect, useMemo, useRef } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 

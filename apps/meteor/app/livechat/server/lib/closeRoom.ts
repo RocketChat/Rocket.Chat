@@ -9,8 +9,8 @@ import type { ClientSession } from 'mongodb';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
 import { livechatLogger as logger } from './logger';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
-import { callbacks } from '../../../../lib/callbacks';
 import { client, shouldRetryTransaction } from '../../../../server/database/utils';
+import { callbacks } from '../../../../server/lib/callbacks';
 import {
 	notifyOnLivechatInquiryChanged,
 	notifyOnRoomChanged,
@@ -46,7 +46,7 @@ export async function closeRoom(params: CloseRoomParams, attempts = 2): Promise<
 		// Dont propagate transaction errors
 		if (shouldRetryTransaction(e)) {
 			if (attempts > 0) {
-				logger.debug(`Retrying close room because of transient error. Attempts left: ${attempts}`);
+				logger.debug({ msg: 'Retrying close room because of transient error', attemptsLeft: attempts });
 				return closeRoom(params, attempts - 1);
 			}
 
@@ -77,7 +77,7 @@ async function afterRoomClosed(
 	// And passing just _some_ actions to the transaction creates some deadlocks since messages are updated in the afterSaveMessages callbacks.
 	const transcriptRequested =
 		!!params.room.transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
-	logger.debug(`Sending closing message to room ${newRoom._id}`);
+	logger.debug({ msg: 'Sending closing message to room', roomId: newRoom._id });
 	await Message.saveSystemMessageAndNotifyUser('livechat-close', newRoom._id, params.comment ?? '', chatCloser, {
 		groupable: false,
 		transcriptRequested,
@@ -88,15 +88,15 @@ async function afterRoomClosed(
 		await Message.saveSystemMessage('command', newRoom._id, 'promptTranscript', chatCloser);
 	}
 
-	logger.debug(`Running callbacks for room ${newRoom._id}`);
+	logger.debug({ msg: 'Running callbacks for room', roomId: newRoom._id });
 
 	process.nextTick(() => {
 		/**
 		 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
 		 * in the next major version of the Apps-Engine
 		 */
-		void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
-		void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
+		void Apps.self?.triggerEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
+		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
 	});
 
 	const visitor = isRoomClosedByVisitorParams(params) ? params.visitor : undefined;
@@ -118,7 +118,7 @@ async function afterRoomClosed(
 		void notifyOnLivechatInquiryChanged(inquiry, 'removed');
 	}
 
-	logger.debug(`Room ${newRoom._id} was closed`);
+	logger.debug({ msg: 'Room was closed', roomId: newRoom._id });
 }
 
 async function doCloseRoom(
@@ -128,9 +128,9 @@ async function doCloseRoom(
 	const { comment } = params;
 	const { room, forceClose } = params;
 
-	logger.debug({ msg: `Attempting to close room`, roomId: room._id, forceClose });
+	logger.debug({ msg: 'Attempting to close room', roomId: room._id, forceClose });
 	if (!room || !isOmnichannelRoom(room) || (!forceClose && !room.open)) {
-		logger.debug(`Room ${room._id} is not open`);
+		logger.debug({ msg: 'Room is not open', roomId: room._id });
 		throw new Error('error-room-closed');
 	}
 
@@ -140,7 +140,7 @@ async function doCloseRoom(
 	}
 
 	const { updatedOptions: options } = await resolveChatTags(room, params.options);
-	logger.debug(`Resolved chat tags for room ${room._id}`);
+	logger.debug({ msg: 'Resolved chat tags for room', roomId: room._id });
 
 	const now = new Date();
 	const { _id: rid, servedBy } = room;
@@ -152,11 +152,11 @@ async function doCloseRoom(
 		...(serviceTimeDuration && { serviceTimeDuration }),
 		...options,
 	};
-	logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.chatDuration})`);
+	logger.debug({ msg: 'Room was closed', roomId: room._id, closedAt: closeData.closedAt, chatDuration: closeData.chatDuration });
 
 	if (isRoomClosedByUserParams(params)) {
 		const { user } = params;
-		logger.debug(`Closing by user ${user?._id}`);
+		logger.debug({ msg: 'Closing by user', userId: user?._id });
 		closeData.closer = 'user';
 		closeData.closedBy = {
 			_id: user?._id || '',
@@ -164,7 +164,7 @@ async function doCloseRoom(
 		};
 	} else if (isRoomClosedByVisitorParams(params)) {
 		const { visitor } = params;
-		logger.debug(`Closing by visitor ${params.visitor._id}`);
+		logger.debug({ msg: 'Closing by visitor', visitorId: params.visitor._id });
 		closeData.closer = 'visitor';
 		closeData.closedBy = {
 			_id: visitor._id,
@@ -174,7 +174,7 @@ async function doCloseRoom(
 		throw new Error('Error: Please provide details of the user or visitor who closed the room');
 	}
 
-	logger.debug(`Updating DB for room ${room._id} with close data`);
+	logger.debug({ msg: 'Updating DB for room with close data', roomId: room._id });
 
 	const inquiry = await LivechatInquiry.findOneByRoomId(rid, { session });
 	const removedInquiry = await LivechatInquiry.removeByRoomId(rid, { session });
@@ -204,7 +204,7 @@ async function doCloseRoom(
 		}
 	}
 
-	logger.debug(`DB updated for room ${room._id}`);
+	logger.debug({ msg: 'DB updated for room', roomId: room._id });
 
 	// Retrieve the closed room
 	const newRoom = await LivechatRooms.findOneById(rid, { session });
@@ -220,7 +220,7 @@ async function resolveChatTags(
 	room: IOmnichannelRoom,
 	options: CloseRoomParams['options'] = {},
 ): Promise<{ updatedOptions: CloseRoomParams['options'] }> {
-	logger.debug(`Resolving chat tags for room ${room._id}`);
+	logger.debug({ msg: 'Resolving chat tags for room', roomId: room._id });
 
 	const concatUnique = (...arrays: (string[] | undefined)[]): string[] => [
 		...new Set(([] as string[]).concat(...arrays.filter((a): a is string[] => !!a))),
@@ -281,7 +281,7 @@ async function resolveChatTags(
 }
 
 export async function closeOpenChats(userId: string, comment?: string) {
-	logger.debug(`Closing open chats for user ${userId}`);
+	logger.debug({ msg: 'Closing open chats for user', userId });
 	const user = await Users.findOneById(userId);
 
 	const extraQuery = await applyDepartmentRestrictions({}, userId);

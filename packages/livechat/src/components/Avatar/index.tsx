@@ -19,7 +19,7 @@ type AvatarState = {
 };
 
 export class Avatar extends Component<AvatarProps, AvatarState> {
-	static getDerivedStateFromProps(props: AvatarProps) {
+	static override getDerivedStateFromProps(props: AvatarProps) {
 		if (props.src) {
 			return { errored: false };
 		}
@@ -27,7 +27,7 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
 		return null;
 	}
 
-	state = {
+	override state = {
 		errored: false,
 	};
 

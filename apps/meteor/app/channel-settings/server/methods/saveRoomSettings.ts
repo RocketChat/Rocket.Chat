@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
-import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues, ITeam, RequiredField } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
@@ -11,6 +11,7 @@ import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+import { settings } from '../../../settings/server';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
 import { saveRoomCustomFields } from '../functions/saveRoomCustomFields';
@@ -61,10 +62,29 @@ type RoomSettingsValidators = {
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
 	'retention' in room && room.retention !== undefined;
 
+const isAbacManagedRoom = (room: IRoom): boolean => {
+	return room.t === 'p' && settings.get<boolean>('ABAC_Enabled') && Array.isArray(room?.abacAttributes) && room.abacAttributes.length > 0;
+};
+
+const isAbacManagedTeam = (team: Partial<ITeam> | null, teamRoom: IRoom): boolean => {
+	return (
+		team?.type === TeamType.PRIVATE &&
+		settings.get<boolean>('ABAC_Enabled') &&
+		Array.isArray(teamRoom?.abacAttributes) &&
+		teamRoom.abacAttributes.length > 0
+	);
+};
+
 const validators: RoomSettingsValidators = {
-	async default({ userId }) {
+	async default({ userId, room, value }) {
 		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Viewing_room_administration',
+			});
+		}
+		if (isAbacManagedRoom(room) && value) {
+			throw new Meteor.Error('error-action-not-allowed', 'Setting an ABAC managed room as default is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Viewing_room_administration',
 			});
@@ -98,6 +118,13 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 
+		if (isAbacManagedRoom(room) && value !== 'p') {
+			throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private room to public is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
 		if (!room.teamId) {
 			return;
 		}
@@ -112,6 +139,13 @@ const validators: RoomSettingsValidators = {
 
 		if (value === 'p' && !(await hasPermissionAsync(userId, 'create-team-group', team?.roomId))) {
 			throw new Meteor.Error('error-action-not-allowed', `Changing a team's public channel to a private room is not allowed`, {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
+		if (isAbacManagedTeam(team, room) && value !== 'p') {
+			throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private team room to public is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
@@ -202,7 +236,7 @@ const validators: RoomSettingsValidators = {
 type RoomSettingsSavers = {
 	[TRoomSetting in keyof RoomSettings]?: (params: {
 		userId: IUser['_id'];
-		user: IUser & Required<Pick<IUser, 'username' | 'name'>>;
+		user: RequiredField<IUser, 'username' | 'name'>;
 		value: RoomSettings[TRoomSetting];
 		room: IRoom;
 		rid: IRoom['_id'];
@@ -217,7 +251,7 @@ const settingSavers: RoomSettingsSavers = {
 
 		if (room.teamId && room.teamMain) {
 			void Team.update(user._id, room.teamId, {
-				type: room.t === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE,
+				type: room.t === 'c' ? TeamType.PUBLIC : TeamType.PRIVATE,
 				name: value,
 				updateRoom: false,
 			});
@@ -262,7 +296,7 @@ const settingSavers: RoomSettingsSavers = {
 		}
 
 		if (room.teamId && room.teamMain) {
-			const type = value === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE;
+			const type = value === 'c' ? TeamType.PUBLIC : TeamType.PRIVATE;
 			void Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
 	},
@@ -372,7 +406,7 @@ async function save<TRoomSetting extends keyof RoomSettings>(
 	setting: TRoomSetting,
 	params: {
 		userId: IUser['_id'];
-		user: IUser & Required<Pick<IUser, 'username' | 'name'>>;
+		user: RequiredField<IUser, 'username' | 'name'>;
 		value: RoomSettings[TRoomSetting];
 		room: IRoom;
 		rid: IRoom['_id'];
@@ -475,7 +509,7 @@ export async function saveRoomSettings(
 	for await (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
 		await save(setting, {
 			userId,
-			user: user as IUser & Required<Pick<IUser, 'username' | 'name'>>,
+			user: user as RequiredField<IUser, 'username' | 'name'>,
 			value: settings[setting],
 			room,
 			rid,

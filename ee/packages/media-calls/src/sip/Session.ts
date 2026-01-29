@@ -47,8 +47,8 @@ export class SipServerSession {
 			return;
 		}
 
-		sipCall.reactToCallChanges(otherParams).catch((error) => {
-			logger.error({ msg: 'Failed to react to call changes', error, call: sipCall.call, otherParams });
+		sipCall.reactToCallChanges(otherParams).catch((err) => {
+			logger.error({ msg: 'Failed to react to call changes', err, call: sipCall.call, otherParams });
 		});
 	}
 
@@ -109,8 +109,14 @@ export class SipServerSession {
 		return `sip:${extension}@${host}${portStr}`;
 	}
 
+	public stripDrachtioServerDetails(reqOrRes: Srf.SipMessage): Record<string, any> {
+		const { _agent, socket: _socket, _req, _res, ...data } = reqOrRes as Record<string, any>;
+
+		return data;
+	}
+
 	private isEnabledOnSettings(settings: IMediaCallServerSettings): boolean {
-		return Boolean(settings.enabled && settings.sip.enabled && settings.sip.drachtio.host && settings.sip.drachtio.secret);
+		return Boolean(settings.sip.enabled && settings.sip.drachtio.host && settings.sip.drachtio.secret);
 	}
 
 	private initializeDrachtio(): void {
@@ -134,8 +140,8 @@ export class SipServerSession {
 		this.srf.invite((req, res) => {
 			logger.debug('Received a call on drachtio.');
 
-			void this.processInvite(req, res).catch((error) => {
-				logger.error({ msg: 'Error processing Drachtio Invite', error });
+			void this.processInvite(req, res).catch((err) => {
+				logger.error({ msg: 'Error processing Drachtio Invite', err });
 			});
 		});
 	}
@@ -183,8 +189,8 @@ export class SipServerSession {
 		res.send(exception.sipErrorCode);
 	}
 
-	private onDrachtioError(error: unknown, socket?: Socket): void {
-		logger.error({ msg: 'Drachtio Service Error', error });
+	private onDrachtioError(err: unknown, socket?: Socket): void {
+		logger.error({ msg: 'Drachtio Service Error', err });
 
 		if (this.isEnabledOnSettings(this.settings)) {
 			return;
