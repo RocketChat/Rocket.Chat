@@ -1,10 +1,18 @@
+import type { IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { notifyOnUserChange } from '../../../../lib/server/lib/notifyListener';
 
-export default async function handleUserRegistered(args) {
+type UserRegisteredArgs = {
+	username: string;
+	nick: string;
+	hostname: string;
+};
+
+export default async function handleUserRegistered(this: any, args: UserRegisteredArgs): Promise<void> {
 	// Check if there is an user with the given username
-	let user = await Users.findOne({
+	let user: IUser | null = await Users.findOne({
 		'profile.irc.username': args.username,
 	});
 
@@ -29,9 +37,12 @@ export default async function handleUserRegistered(args) {
 			},
 		};
 
-		user = await Users.create(userToInsert);
+		const insertResult = await Users.create(userToInsert as any);
+		user = await Users.findOne({ _id: insertResult.insertedId });
 
-		void notifyOnUserChange({ id: user._id, clientAction: 'inserted', data: user });
+		if (user) {
+			void notifyOnUserChange({ id: user._id, clientAction: 'inserted', data: user });
+		}
 	} else {
 		// ...otherwise, log the user in and update the information
 		this.log(`Logging in ${args.username} with nick: ${args.nick}`);
@@ -40,7 +51,7 @@ export default async function handleUserRegistered(args) {
 			{ _id: user._id },
 			{
 				$set: {
-					'status': 'online',
+					'status': UserStatus.ONLINE,
 					'profile.irc.nick': args.nick,
 					'profile.irc.username': args.username,
 					'profile.irc.hostname': args.hostname,
