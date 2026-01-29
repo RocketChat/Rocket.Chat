@@ -8,22 +8,21 @@ export const useRedirectToSetupWizard = (): void => {
   const isAdmin = useRole('admin');
 
   useEffect(() => {
-    //Guards – wait until data loads
     if (!router) return;
     if (setupWizardState === undefined) return;
 
-    //  Current route
-    const routeName = router.getRouteName() ?? '';
+    const routeName = router.getRouteName() ;
+	if (!routeName) return;
+
     const isNotFoundPage = routeName === 'not-found';
 
-    //  Conditions
     const isWizardInProgress =
       Boolean(userId) && Boolean(isAdmin) && setupWizardState === 'in_progress';
 
     const mustRedirect =
       (!userId && setupWizardState === 'pending') || isWizardInProgress;
 
-    // Redirect only if needed
+
     if (mustRedirect && !isNotFoundPage) {
       router.navigate('/setup-wizard');
     }
