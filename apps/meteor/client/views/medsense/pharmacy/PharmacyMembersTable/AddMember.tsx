@@ -54,6 +54,7 @@ const AddMember = ({ memberList, onAdd, 'aria-labelledby': ariaLabelledBy }: Add
     });
 
     const roleOptions: [string, string][] = [
+        ['owner', t('Owner')],
         ['manager', t('Manager')],
         ['staff', t('Staff')],
     ];

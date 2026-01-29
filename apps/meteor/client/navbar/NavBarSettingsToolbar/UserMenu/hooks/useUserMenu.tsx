@@ -42,5 +42,5 @@ export const useUserMenu = (user: IUser) => {
 		{
 			items: [logoutItem],
 		},
-	].filter((section) => section !== undefined);
+	].filter((section) => section !== undefined && section.items && section.items.length > 0);
 };

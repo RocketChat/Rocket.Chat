@@ -27,7 +27,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useEndpoint, useRoute, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { Page, PageContent, PageHeader } from '@rocket.chat/ui-client';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 const useFormatDate = () => {
@@ -77,8 +77,17 @@ const useStatusColors = (): Record<string, string> => {
 // ============================================================================
 // WAITING QUEUE (requests.list)
 // ============================================================================
-export const WaitingQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: string; pharmacyIds: string[] }): JSX.Element => {
+export const WaitingQueueContent = ({
+    requests,
+    isLoading,
+    refetch
+}: {
+    requests: any[];
+    isLoading: boolean;
+    refetch: () => void;
+}): JSX.Element => {
     const t = useTranslation();
+    const queryClient = useQueryClient();
     const dispatchToastMessage = useToastMessageDispatch();
     const channelRoute = useRoute('channel');
     const groupRoute = useRoute('group');
@@ -97,27 +106,12 @@ export const WaitingQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: s
     const [declineMessage, setDeclineMessage] = useState('');
     const statusColors = useStatusColors();
 
-    const getWaitingQueue = useEndpoint('GET', '/v1/medsense/request.list');
-    const { data: queueData, isLoading: isLoadingQueue, refetch } = useQuery({
-        queryKey: ['waiting-queue', pharmacyId, pharmacyIds],
-        queryFn: async () => {
-            if (!pharmacyId) return { requests: [] };
-            if (pharmacyId === 'all') {
-                const results = await Promise.all(pharmacyIds.map((id) => getWaitingQueue({ pharmacyId: id })));
-                const requests = results.flatMap((result) => result.requests || []);
-                return { requests };
-            }
-            return getWaitingQueue({ pharmacyId });
-        },
-        enabled: !!pharmacyId,
-        refetchInterval: 5000,
-    });
-
     const takeAction = useEndpoint('POST', '/v1/medsense/request.take');
     const takeMutation = useMutation({
         mutationFn: async ({ requestId }: { requestId: string }) => takeAction({ requestId }),
         onSuccess: () => {
             dispatchToastMessage({ type: 'success', message: t('Request_taken') });
+            queryClient.invalidateQueries({ queryKey: ['waiting-queue'] });
             refetch();
         },
         onError: (error) => {
@@ -134,6 +128,7 @@ export const WaitingQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: s
             dispatchToastMessage({ type: 'success', message: t('Request_declined') });
             setDeclineRequest(null);
             setDeclineMessage('');
+            queryClient.invalidateQueries({ queryKey: ['waiting-queue'] });
             refetch();
         },
         onError: (error) => {
@@ -160,16 +155,14 @@ export const WaitingQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: s
         try {
             await takeMutation.mutateAsync({ requestId });
             await openRoom(roomId);
-        } catch {
-            // Toast already handled in onError; prevent unhandled promise rejection.
-        }
+        } catch { }
     };
 
-    if (isLoadingQueue) {
+    if (isLoading) {
         return <Box display='flex' justifyContent='center' p='x32'><Throbber size='x32' /></Box>;
     }
 
-    if (!queueData?.requests.length) {
+    if (!requests.length) {
         return (
             <States>
                 <StatesIcon name='queue' />
@@ -192,7 +185,7 @@ export const WaitingQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: s
                 </TableRow>
             </TableHead>
             <TableBody>
-                {queueData.requests.map((request: any) => (
+                {requests.map((request: any) => (
                     <TableRow key={request._id}>
                         <TableCell>{request.requestedByUsername || 'Unknown'}</TableCell>
                         <TableCell>{request.reason || '-'}</TableCell>
@@ -276,8 +269,17 @@ export const WaitingQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: s
 // ============================================================================
 // FOLLOWED QUEUE (requests.followed)
 // ============================================================================
-export const FollowedQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: string; pharmacyIds: string[] }): JSX.Element => {
+export const FollowedQueueContent = ({
+    requests,
+    isLoading,
+    refetch
+}: {
+    requests: any[];
+    isLoading: boolean;
+    refetch: () => void;
+}): JSX.Element => {
     const t = useTranslation();
+    const queryClient = useQueryClient();
     const dispatchToastMessage = useToastMessageDispatch();
     const channelRoute = useRoute('channel');
     const groupRoute = useRoute('group');
@@ -285,27 +287,12 @@ export const FollowedQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: 
     const formatDate = useFormatDate();
     const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
 
-    const getFollowedQueue = useEndpoint('GET', '/v1/medsense/request.followed');
-    const { data: queueData, isLoading: isLoadingQueue, refetch } = useQuery({
-        queryKey: ['followed-queue', pharmacyId, pharmacyIds],
-        queryFn: async () => {
-            if (!pharmacyId) return { requests: [] };
-            if (pharmacyId === 'all') {
-                const results = await Promise.all(pharmacyIds.map((id) => getFollowedQueue({ pharmacyId: id })));
-                const requests = results.flatMap((result) => result.requests || []);
-                return { requests };
-            }
-            return getFollowedQueue({ pharmacyId });
-        },
-        enabled: !!pharmacyId,
-        refetchInterval: 5000,
-    });
-
     const closeAction = useEndpoint('POST', '/v1/medsense/request.close');
     const closeMutation = useMutation({
         mutationFn: async ({ requestId }: { requestId: string }) => closeAction({ requestId }),
         onSuccess: () => {
             dispatchToastMessage({ type: 'success', message: t('Request_closed') });
+            queryClient.invalidateQueries({ queryKey: ['followed-queue'] });
             refetch();
         },
         onError: (error) => {
@@ -328,11 +315,11 @@ export const FollowedQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: 
         } catch { }
     };
 
-    if (isLoadingQueue) {
+    if (isLoading) {
         return <Box display='flex' justifyContent='center' p='x32'><Throbber size='x32' /></Box>;
     }
 
-    if (!queueData?.requests.length) {
+    if (!requests.length) {
         return (
             <States>
                 <StatesIcon name='queue' />
@@ -354,7 +341,7 @@ export const FollowedQueueContent = ({ pharmacyId, pharmacyIds }: { pharmacyId: 
                 </TableRow>
             </TableHead>
             <TableBody>
-                {queueData.requests.map((request: any) => (
+                {requests.map((request: any) => (
                     <TableRow key={request._id}>
                         <TableCell>{request.requestedByUsername || 'Unknown'}</TableCell>
                         <TableCell>{request.reason || '-'}</TableCell>
@@ -484,42 +471,54 @@ export const QueueContent = (): JSX.Element => {
         }
     }, [pharmacyOptions, selectedPharmacy]);
 
-    // Live Badges
+    // FETCH DATA ONCE
     const getWaitingQueue = useEndpoint('GET', '/v1/medsense/request.list');
-    const { data: countData } = useQuery({
-        queryKey: ['waiting-count', selectedPharmacy],
+    const {
+        data: waitingQueueData,
+        isLoading: isLoadingWaiting,
+        refetch: refetchWaiting
+    } = useQuery({
+        queryKey: ['waiting-queue', selectedPharmacy, pharmacyIds],
         queryFn: async () => {
-            if (!selectedPharmacy) return { count: 0 };
+            if (!selectedPharmacy) return { requests: [] };
             if (selectedPharmacy === 'all') {
                 const results = await Promise.all(pharmacyIds.map((id) => getWaitingQueue({ pharmacyId: id })));
-                const count = results.reduce((total, result) => total + (result.requests?.length ?? 0), 0);
-                return { count };
+                const requests = results.flatMap((result) => result.requests || []);
+                return { requests };
             }
-            const result = await getWaitingQueue({ pharmacyId: selectedPharmacy });
-            return { count: result.requests?.length ?? 0 };
+            return getWaitingQueue({ pharmacyId: selectedPharmacy });
         },
         enabled: !!selectedPharmacy && (selectedPharmacy === 'all' ? pharmacyIds.length > 0 : true),
-        refetchInterval: 5000,
+        refetchInterval: 2000,
     });
-    const waitingCount = countData?.count ?? 0;
+
+    const waitingRequests = waitingQueueData?.requests || [];
+    const waitingCount = waitingRequests.length;
 
     const getFollowedQueue = useEndpoint('GET', '/v1/medsense/request.followed');
-    const { data: followedCountData } = useQuery({
-        queryKey: ['followed-count', selectedPharmacy],
+    const {
+        data: followedQueueData,
+        isLoading: isLoadingFollowed,
+        refetch: refetchFollowed
+    } = useQuery({
+        queryKey: ['followed-queue', selectedPharmacy, pharmacyIds],
         queryFn: async () => {
-            if (!selectedPharmacy) return { count: 0 };
+            if (!selectedPharmacy) return { requests: [] };
             if (selectedPharmacy === 'all') {
                 const results = await Promise.all(pharmacyIds.map((id) => getFollowedQueue({ pharmacyId: id })));
-                const count = results.reduce((total, result) => total + (result.requests?.length ?? 0), 0);
-                return { count };
+                const requests = results.flatMap((result) => result.requests || []);
+                return { requests };
             }
-            const result = await getFollowedQueue({ pharmacyId: selectedPharmacy });
-            return { count: result.requests?.length ?? 0 };
+            return getFollowedQueue({ pharmacyId: selectedPharmacy });
         },
         enabled: !!selectedPharmacy && (selectedPharmacy === 'all' ? pharmacyIds.length > 0 : true),
         refetchInterval: 5000,
     });
-    const followedCount = followedCountData?.count ?? 0;
+
+    const followedRequests = followedQueueData?.requests || [];
+    const followedCount = followedRequests.length;
+
+    const queryClient = useQueryClient();
 
     return (
         <Box display='flex' flexDirection='column' w='full' h='full'>
@@ -563,14 +562,20 @@ export const QueueContent = (): JSX.Element => {
             {!selectedPharmacy ? (
                 <Callout type='info'>{t('Please_select_a_pharmacy')}</Callout>
             ) : tab === 'waiting' ? (
-                <WaitingQueueContent pharmacyId={selectedPharmacy} pharmacyIds={pharmacyIds} />
+                <WaitingQueueContent
+                    requests={waitingRequests}
+                    isLoading={isLoadingWaiting}
+                    refetch={refetchWaiting}
+                />
             ) : tab === 'followed' ? (
-                <FollowedQueueContent pharmacyId={selectedPharmacy} pharmacyIds={pharmacyIds} />
+                <FollowedQueueContent
+                    requests={followedRequests}
+                    isLoading={isLoadingFollowed}
+                    refetch={refetchFollowed}
+                />
             ) : (
                 <HistoryQueueContent pharmacyId={selectedPharmacy} pharmacyIds={pharmacyIds} />
             )}
-
-
         </Box>
     );
 };

@@ -51,6 +51,7 @@ const EditPharmacy = ({ id }: { id?: string }) => {
 
     const inviteMember = useEndpoint('POST', '/v1/medsense/pharmacies.members.invite');
     const removeMember = useEndpoint('POST', '/v1/medsense/pharmacies.members.remove');
+    const updateMember = useEndpoint('POST', '/v1/medsense/pharmacies.members.update');
 
     const { data: pharmacyData, isLoading } = useQuery({
         queryKey: ['medsense-pharmacy', id],
@@ -114,6 +115,19 @@ const EditPharmacy = ({ id }: { id?: string }) => {
                     await removeMember({ pharmacyId: id, userId: (member as any).userId });
                 }
 
+                // Update existing members whose roles changed
+                for (const currentMember of currentMembers) {
+                    const initialMember = initialMembers.find((im: any) => im.userId === currentMember.userId);
+                    if (initialMember) {
+                        // Check if roles changed
+                        const initialRole = initialMember.roles?.[0];
+                        const currentRole = currentMember.roles?.[0];
+                        if (initialRole !== currentRole) {
+                            await updateMember({ pharmacyId: id, userId: currentMember.userId, roles: currentMember.roles });
+                        }
+                    }
+                }
+
                 dispatchToastMessage({ type: 'success', message: t('Saved') });
             } else {
                 const result = await createPharmacy({
@@ -122,9 +136,14 @@ const EditPharmacy = ({ id }: { id?: string }) => {
                     active: data.active
                 });
 
-                // For new pharmacy, we can add members immediately after creation if needed, 
-                // but usually simpler to redirect to edit first.
-                // Assuming basic creation for now.
+                // Add members for newly created pharmacy (if provided in form)
+                const createdPharmacyId = result?.pharmacy?._id;
+                const currentMembers = data.memberList || [];
+                if (createdPharmacyId && currentMembers.length) {
+                    for (const member of currentMembers) {
+                        await inviteMember({ pharmacyId: createdPharmacyId, username: member.username, roles: member.roles });
+                    }
+                }
 
                 dispatchToastMessage({ type: 'success', message: t('Saved') });
                 // @ts-ignore
@@ -192,15 +211,13 @@ const EditPharmacy = ({ id }: { id?: string }) => {
                             </FieldRow>
                         </Field>
 
-                        {id && (
-                            <>
-                                <Divider />
-                                <Field>
-                                    <FieldLabel>{t('Members')}</FieldLabel>
-                                    <PharmacyMembersTable control={control} register={register} />
-                                </Field>
-                            </>
-                        )}
+                        <>
+                            <Divider />
+                            <Field>
+                                <FieldLabel>{t('Members')}</FieldLabel>
+                                <PharmacyMembersTable control={control} register={register} />
+                            </Field>
+                        </>
                     </FieldGroup>
                 </PageScrollableContentWithShadow>
             </Page>

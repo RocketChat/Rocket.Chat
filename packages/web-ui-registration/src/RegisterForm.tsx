@@ -237,6 +237,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								render={({ field }) => (
 									<PhoneNumberInput
 										{...field}
+										value={field.value ?? ''}
 										error={errors.phoneNumber?.message}
 										onValidityChange={(isValid) => {
 											setIsPhoneValid(isValid);

@@ -27,7 +27,7 @@ const DefaultHomePage = (): ReactElement => {
     const workspaceName = useSetting('Site_Name');
     const isCustomContentBodyEmpty = useSetting('Layout_Home_Body', '') === '';
     const isCustomContentVisible = useSetting('Layout_Home_Custom_Block_Visible', false);
-    const canViewQueuePermission = usePermission('view-livechat-manager');
+    const canViewQueuePermission = usePermission('medsense-view-request');
     const getPharmacies = useEndpoint('GET', '/v1/medsense/pharmacies.list');
     const { data: pharmacyData } = useQuery({
         queryKey: ['home-pharmacies'],

@@ -5,6 +5,10 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useEffect, useCallback } from 'react';
 
+import { useCustomSound, useUserPreference } from '@rocket.chat/ui-contexts';
+
+import { useMedsenseQueue } from '../../hooks/medsense/useMedsenseQueue';
+import { useMedsenseQueueDelta } from '../../hooks/medsense/useMedsenseQueueDelta';
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 
 const useRouteTitleFocus = () => {
@@ -30,7 +34,37 @@ type DocumentTitleWrapperProps = {
 
 const DocumentTitleWrapper = ({ children }: DocumentTitleWrapperProps) => {
 	useDocumentTitle(useSetting('Site_Name', ''), false);
-	const { title, key } = useDocumentTitle(useUnreadMessages(), false);
+	const unreadMessagesTitle = useDocumentTitle(useUnreadMessages(), false);
+
+	const { canViewQueue } = useMedsenseQueue();
+	const { hasNewRequests, newRequestsCount } = useMedsenseQueueDelta();
+	const medsenseQueueNotificationsEnabled = useUserPreference<boolean>('medsenseQueueNotificationsEnabled', true);
+	const medsenseQueueNotificationSound = useUserPreference<string>('medsenseQueueNotificationSound', 'beep');
+	const customSound = useCustomSound();
+
+	useEffect(() => {
+		if (hasNewRequests && medsenseQueueNotificationsEnabled) {
+			customSound.play(medsenseQueueNotificationSound);
+		}
+	}, [hasNewRequests, medsenseQueueNotificationsEnabled, medsenseQueueNotificationSound, customSound]);
+
+	const getTitle = () => {
+		let newTitle = unreadMessagesTitle.title;
+		if (canViewQueue && newRequestsCount > 0) {
+			// If the title already has unread messages (e.g., "(3) ..."), insert the queue count
+			// Expected format: "(Unread) (Queue) Site Name" or similar combination
+			// This matches user request: "Add queue request count to the page title (alongside unread count)."
+			// Current unreadMessagesTitle.title might be "(N) Site Name" or just "Site Name"
+
+			// Simple append strategy to start prefix
+			const queueString = `(${newRequestsCount} new req)`;
+			newTitle = `${queueString} ${newTitle}`;
+		}
+		return newTitle;
+	};
+
+	const title = getTitle();
+	const key = unreadMessagesTitle.key + (canViewQueue && newRequestsCount > 0 ? `_queue_${newRequestsCount}` : '');
 
 	const refocusRef = useRouteTitleFocus();
 

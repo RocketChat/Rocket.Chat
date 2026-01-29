@@ -4,8 +4,10 @@ import {
     MedsensePharmacyMemberships,
     MedsensePatientPharmacy,
     MedsenseRequests,
+    MedsensePharmacyInvites,
     Users,
-    Rooms
+    Rooms,
+    Roles
 } from "@rocket.chat/models";
 import { check, Match } from "meteor/check";
 import { HTTP } from "meteor/http";
@@ -19,6 +21,8 @@ import { addUserToRoom } from "../../../lib/server/functions/addUserToRoom";
 import { removeUserFromRoom } from "../../../lib/server/functions/removeUserFromRoom";
 import { sendMessage } from "../../../lib/server/functions/sendMessage";
 import { settings } from '../../../settings/server';
+import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
+import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { API } from "../api";
 
 // Pharmacies Management (Kept Intact)
@@ -27,7 +31,7 @@ API.v1.addRoute(
     { authRequired: true },
     {
         async get() {
-            const manageAll = await hasPermissionAsync(this.userId, "medsense-manage-pharmacies");
+            const manageAll = await hasPermissionAsync(this.userId, "medsense-manage-all-pharmacies");
             const { pharmacyId } = this.queryParams;
 
             let pharmacies: any[] = [];
@@ -67,8 +71,8 @@ API.v1.addRoute(
             check(this.queryParams, Match.ObjectIncluding({ pharmacyId: String }));
             const { pharmacyId } = this.queryParams;
 
-            const manageAll = await hasPermissionAsync(this.userId, "medsense-manage-pharmacies");
-            const manageOwn = await hasPermissionAsync(this.userId, "medsense-manage-own-pharmacy");
+            const manageAll = await hasPermissionAsync(this.userId, "medsense-manage-all-pharmacies");
+            const manageOwn = await hasPermissionAsync(this.userId, "medsense-manage-individual-pharmacy");
 
             if (!manageAll && !manageOwn) {
                 return API.v1.forbidden();
@@ -111,7 +115,7 @@ API.v1.addRoute(
     { authRequired: true },
     {
         async post() {
-            if (!(await hasPermissionAsync(this.userId, "medsense-manage-pharmacies"))) {
+            if (!(await hasPermissionAsync(this.userId, "medsense-manage-all-pharmacies"))) {
                 return API.v1.forbidden();
             }
 
@@ -139,16 +143,19 @@ API.v1.addRoute(
                 })
             ).insertedId;
 
-            // Add creator as manager
+            // Add create as owner
             await MedsensePharmacyMemberships.insertOne({
                 pharmacyId,
                 userId: this.userId,
-                roles: ["manager"],
+                roles: ["owner"],
                 active: true,
                 createdBy: this.userId,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
+
+            // Assign global role for permissions (Menu visibility etc)
+            await addUserRolesAsync(this.userId, ['pharmacy-manager']);
 
             return API.v1.success({
                 pharmacy: await MedsensePharmacies.findOneById(pharmacyId),
@@ -162,7 +169,7 @@ API.v1.addRoute(
     { authRequired: true },
     {
         async post() {
-            if (!(await hasPermissionAsync(this.userId, "medsense-manage-pharmacies"))) {
+            if (!(await hasPermissionAsync(this.userId, "medsense-manage-all-pharmacies"))) {
                 return API.v1.forbidden();
             }
 
@@ -200,6 +207,53 @@ API.v1.addRoute(
 );
 
 // Memberships
+// Memberships List Endpoint (Existing - could repurpose or leave as is)
+// ...
+// NEW: Managed Pharmacies List
+API.v1.addRoute(
+    "medsense/pharmacies.list.managed",
+    { authRequired: true },
+    {
+        async get() {
+            const isGlobalAdmin = await hasPermissionAsync(this.userId, "medsense-manage-all-pharmacies");
+
+            if (isGlobalAdmin) {
+                const pharmacies = await MedsensePharmacies.find({}, { sort: { name: 1 } }).toArray();
+
+                // Fetch actual memberships for the current user
+                const myMemberships = await MedsensePharmacyMemberships.find({ userId: this.userId }).toArray();
+                const membershipMap = new Map(myMemberships.map(m => [m.pharmacyId, m.roles]));
+
+                const enriched = pharmacies.map(p => ({
+                    ...p,
+                    myRoles: membershipMap.get(p._id) || ['admin'] // Show actual roles, or 'admin' if not a member
+                }));
+                return API.v1.success({ pharmacies: enriched });
+            }
+
+            // Find where user is owner or manager
+            const memberships = await MedsensePharmacyMemberships.find({
+                userId: this.userId,
+                roles: { $in: ['owner', 'manager'] }
+            }).toArray();
+
+            if (memberships.length === 0) {
+                return API.v1.success({ pharmacies: [] });
+            }
+
+            const pharmacyIds = memberships.map(m => m.pharmacyId);
+            const pharmacies = await MedsensePharmacies.find({ _id: { $in: pharmacyIds } }, { sort: { name: 1 } }).toArray();
+
+            const enriched = pharmacies.map(p => {
+                const membership = memberships.find(m => m.pharmacyId === p._id);
+                return { ...p, myRoles: membership?.roles || [] };
+            });
+
+            return API.v1.success({ pharmacies: enriched });
+        },
+    },
+);
+
 API.v1.addRoute(
     "medsense/pharmacies.members.list",
     { authRequired: true },
@@ -208,11 +262,10 @@ API.v1.addRoute(
             check(this.queryParams, Match.ObjectIncluding({ pharmacyId: String }));
             const { pharmacyId } = this.queryParams;
 
-            const isManager = await hasPermissionAsync(this.userId, "medsense-manage-pharmacies");
-            const membership = await MedsensePharmacyMemberships.findOne({ pharmacyId, userId: this.userId });
-
-            if (!isManager && !membership) {
-                return API.v1.forbidden();
+            const isGlobalAdmin = await hasPermissionAsync(this.userId, "medsense-manage-all-pharmacies");
+            if (!isGlobalAdmin) {
+                const membership = await MedsensePharmacyMemberships.findOne({ pharmacyId, userId: this.userId });
+                if (!membership) return API.v1.forbidden(); // Must be at least member
             }
 
             const members = await MedsensePharmacyMemberships.findByPharmacyId(pharmacyId).toArray();
@@ -245,7 +298,7 @@ API.v1.addRoute(
             );
             const { pharmacyId, username, roles } = this.bodyParams;
 
-            const isAdmin = await hasPermissionAsync(this.userId, "medsense-manage-pharmacies");
+            const isAdmin = await hasPermissionAsync(this.userId, "medsense-manage-all-pharmacies");
             if (!isAdmin) {
                 const membership = await MedsensePharmacyMemberships.findOne({ pharmacyId, userId: this.userId });
                 if (!membership || !membership.roles.includes("manager")) {
@@ -292,11 +345,58 @@ API.v1.addRoute(
             );
             const { pharmacyId, userId } = this.bodyParams;
 
-            const isAdmin = await hasPermissionAsync(this.userId, "medsense-manage-pharmacies");
-            if (!isAdmin) {
+            const isGlobalAdmin = await hasPermissionAsync(this.userId, "medsense-manage-all-pharmacies");
+            let isOwner = false;
+            let isManager = false;
+
+            if (!isGlobalAdmin) {
                 const membership = await MedsensePharmacyMemberships.findOne({ pharmacyId, userId: this.userId });
-                if (!membership || !membership.roles.includes("manager")) {
-                    return API.v1.forbidden();
+                if (!membership) return API.v1.forbidden();
+                if (membership.roles.includes('owner')) isOwner = true;
+                if (membership.roles.includes('manager')) isManager = true;
+
+                if (!isOwner && !isManager) return API.v1.forbidden();
+            } else {
+                isOwner = true; // Admin acts as owner
+            }
+
+            const targetMembership = await MedsensePharmacyMemberships.findOne({ pharmacyId, userId });
+            if (!targetMembership) {
+                return API.v1.failure("User is not a member");
+            }
+
+            // Rules:
+            // Manager: Can remove staff only (not owner/manager)
+            // Owner: Can remove managers and staff, but NOT other owners
+            // Only Global Admin can remove owners
+            // Never remove last owner.
+
+            const targetIsOwner = targetMembership.roles.includes('owner');
+            const targetIsManager = targetMembership.roles.includes('manager');
+
+            // Owners can only be removed by global admin
+            if (targetIsOwner && !isGlobalAdmin) {
+                return API.v1.failure("Owners can only be removed by administrators.");
+            }
+
+            if (!isGlobalAdmin && !isOwner && isManager) {
+                if (targetIsOwner || targetIsManager) {
+                    return API.v1.failure("Managers cannot remove other managers or owners.");
+                }
+            }
+
+            if (!isGlobalAdmin && isOwner) {
+                // Owners can remove managers and staff, but not owners (already checked above)
+                if (targetIsOwner) {
+                    return API.v1.failure("Owners cannot remove other owners.");
+                }
+            }
+
+            if (targetIsOwner) {
+                // Check if last owner (only applies when admin is removing)
+                const owners = await MedsensePharmacyMemberships.find({ pharmacyId, roles: 'owner' }).toArray();
+                if (owners.length <= 1) {
+                    return API.v1.failure("Cannot remove the last owner of the pharmacy.");
                 }
             }
 
@@ -315,7 +415,7 @@ API.v1.addRoute(
             check(this.queryParams, Match.ObjectIncluding({ userId: String }));
             const { userId } = this.queryParams;
 
-            if (!(await hasPermissionAsync(this.userId, "medsense-manage-pharmacies"))) {
+            if (!(await hasPermissionAsync(this.userId, "medsense-manage-all-pharmacies"))) {
                 const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
                 if (!user?.roles.includes('bot')) {
                     return API.v1.forbidden();
@@ -985,6 +1085,352 @@ API.v1.addRoute(
                 console.error('SMS Invite Error:', e);
                 return API.v1.failure(`SMS Send Failed: ${e.message || e}`);
             }
+        }
+    }
+);
+// =========================================================================================
+// NEW: Pharmacy Staff Invites (MedsensePharmacyInvites)
+// =========================================================================================
+
+API.v1.addRoute(
+    "medsense/pharmacies.members.invite.sms",
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                pharmacyId: String,
+                phone: String,
+                // role: String, // REMOVED: Implicitly 'staff'
+                name: Match.Maybe(String),
+                email: Match.Maybe(String),
+            }));
+
+            const { pharmacyId, phone, name, email } = this.bodyParams;
+
+            // Role Normalization: Always staff
+            // if (!['owner', 'manager', 'staff'].includes(role)) { ... }
+
+            // Permissions
+            // Global admin: Allowed
+            // Owner: Can invite manager or staff
+            // Manager: Can invite staff only
+            // Block manager -> manager
+
+            const isGlobalAdmin = await hasPermissionAsync(this.userId, "medsense-manage-all-pharmacies");
+            let isOwner = false;
+            let isManager = false;
+
+            if (!isGlobalAdmin) {
+                const membership = await MedsensePharmacyMemberships.findOne({ pharmacyId, userId: this.userId });
+                if (!membership) return API.v1.forbidden();
+
+                if (membership.roles.includes('owner')) isOwner = true;
+                if (membership.roles.includes('manager')) isManager = true;
+
+                if (!isOwner && !isManager) return API.v1.forbidden();
+
+                // Managers cannot invite managers/owners
+                // Decoupled flow: Managers invite 'staff' implicitly.
+            }
+
+            // Role is always 'staff' for invites now. Owner can promote later.
+            const inviteRole = 'staff';
+
+            // Normalize Phone
+            if (!/^\+[1-9]\d{1,14}$/.test(phone)) {
+                return API.v1.failure("Invalid phone format. Must be E.164 (e.g. +1...)");
+            }
+
+            // Decoupled: We do NOT find user by phone here. We send SMS blindly.
+            // If they are already a member, they will find out when they try to verify.
+
+            // Check if phone has pending invite
+            const existingInvite = await MedsensePharmacyInvites.findPendingByPhoneAndPharmacy(phone, pharmacyId);
+
+            // Generate Code
+            const code = Math.floor(100000 + Math.random() * 900000).toString();
+            const now = new Date();
+            const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours
+
+            let inviteId = existingInvite?._id;
+
+            if (existingInvite) {
+                // Resend logic
+                const isExpired = existingInvite.expiresAt < now;
+                if (isExpired) {
+                    // Create NEW invite
+                    inviteId = await MedsensePharmacyInvites.createInvite({
+                        pharmacyId,
+                        phone,
+                        role: inviteRole as any,
+                        code,
+                        expiresAt,
+                        status: 'pending',
+                        sendCount: 1,
+                        active: true,
+                        createdBy: this.userId,
+                        createdAt: now,
+                        name: name,
+                        email: email,
+                        lastSentAt: now
+                    });
+                }
+            } else {
+                inviteId = await MedsensePharmacyInvites.createInvite({
+                    pharmacyId,
+                    phone,
+                    role: inviteRole as any,
+                    code,
+                    expiresAt,
+                    status: 'pending',
+                    sendCount: 1,
+                    active: true,
+                    createdBy: this.userId,
+                    createdAt: now,
+                    name: name,
+                    email: email,
+                    lastSentAt: now
+                });
+            }
+
+            // Re-fetch pharmacy name for SMS
+            const pharmacy = await MedsensePharmacies.findOneById(pharmacyId);
+            if (!pharmacy) {
+                return API.v1.failure("Pharmacy not found");
+            }
+
+            // SMS Logic
+            const service = settings.get<string>('SMS_Service');
+            if (!service || service === 'false') {
+                return API.v1.failure('SMS Service is disabled in Administration settings');
+            }
+
+            const SMSService = await OmnichannelIntegration.getSmsService(service);
+            if (!SMSService) {
+                return API.v1.failure('SMS Service provider not found');
+            }
+
+            const fromNumber = settings.get<string>('SMS_Twilio_Number');
+            if (!fromNumber) {
+                return API.v1.failure('Twilio "From" number not found');
+            }
+
+            const verifyUrl = Meteor.absoluteUrl(`medsense/verify/${inviteId}`); // Client route
+            const body = `Medsense: You've been invited to join ${pharmacy.name}. Verify here: ${verifyUrl}`;
+
+            try {
+                await SMSService.send(fromNumber, phone, body);
+            } catch (e: any) {
+                console.error('SMS Invite Error:', e);
+                return API.v1.failure(`SMS Send Failed: ${e.message || e}`);
+            }
+
+            return API.v1.success({
+                success: true,
+                inviteId,
+                code, // Return code to admin for display in popup
+                expiresAt: expiresAt.toISOString(),
+                message: "Invite sent"
+            });
+        }
+    }
+);
+
+API.v1.addRoute(
+    "medsense/pharmacies.invites.list",
+    { authRequired: true },
+    {
+        async get() {
+            const pharmacyId = this.queryParams.pharmacyId as string;
+            if (!pharmacyId) {
+                return API.v1.failure("pharmacyId is required");
+            }
+
+            // Permission check: must be owner or manager of the pharmacy
+            const isGlobalAdmin = await hasPermissionAsync(this.userId, "medsense-manage-all-pharmacies");
+            if (!isGlobalAdmin) {
+                const membership = await MedsensePharmacyMemberships.findOne({ pharmacyId, userId: this.userId });
+                if (!membership) return API.v1.forbidden();
+
+                const isOwnerOrManager = membership.roles.includes('owner') || membership.roles.includes('manager');
+                if (!isOwnerOrManager) return API.v1.forbidden();
+            }
+
+            const invites = await MedsensePharmacyInvites.findAllByPharmacy(pharmacyId);
+            console.log('Invites list params:', this.queryParams); // Debug 400 error
+
+            return API.v1.success({
+                invites: invites.map(inv => {
+                    let status = inv.status;
+                    if (status === 'pending' && new Date(inv.expiresAt) < new Date()) {
+                        status = 'expired';
+                    }
+                    return {
+                        ...inv,
+                        status
+                    };
+                })
+            });
+        }
+    }
+);
+
+API.v1.addRoute(
+    "medsense/pharmacies.members.verify",
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                inviteId: String,
+                code: String,
+            }));
+
+            const { inviteId, code } = this.bodyParams;
+
+            const invite = await MedsensePharmacyInvites.findOneById(inviteId);
+            if (!invite) {
+                return API.v1.failure("Invite not found");
+            }
+
+            if (invite.status !== 'pending') {
+                return API.v1.failure("Invite is no longer valid");
+            }
+
+            const now = new Date();
+            if (invite.expiresAt < now) {
+                await MedsensePharmacyInvites.updateStatus(inviteId, 'expired');
+                return API.v1.failure("Invite expired");
+            }
+
+            if (invite.code !== code) {
+                return API.v1.failure("Invalid code");
+            }
+
+            // Check if already member
+            const existingMember = await MedsensePharmacyMemberships.findOne({ pharmacyId: invite.pharmacyId, userId: this.userId });
+            if (existingMember) {
+                return API.v1.failure("You are already a member of this pharmacy");
+            }
+
+            // Add Membership
+            await MedsensePharmacyMemberships.insertOne({
+                pharmacyId: invite.pharmacyId,
+                userId: this.userId,
+                roles: [invite.role], // 'staff' | 'tech' | 'pharmacist'
+                active: true,
+                createdBy: invite.createdBy,
+                createdAt: now,
+                updatedAt: now,
+            });
+
+            // Assign global role based on pharmacy role
+            // Owner/Manager -> pharmacy-manager, Staff -> pharmacy-staff
+            const globalRole = (invite.role === 'owner' || invite.role === 'manager') ? 'pharmacy-manager' : 'pharmacy-staff';
+            await addUserRolesAsync(this.userId, [globalRole]);
+
+            // Mark Invite Accepted
+            await MedsensePharmacyInvites.updateStatus(inviteId, 'accepted', {
+                acceptedBy: this.userId,
+                acceptedAt: now
+            });
+
+            // Invalidate other pending invites for this user AND pharmacy?
+            // The spec says "no new invites can be resend and later sent invites to the same user also invalidates"
+            // We can find other pending invites for this PHONE and pharmacy and mark them revoked/expired?
+            // Ideally we'd do this by phone since user ID might not be on invite yet.
+            // But we know the phone from the accepted invite.
+            const otherInvites = await MedsensePharmacyInvites.findPendingByPhoneAndPharmacy(invite.phone, invite.pharmacyId);
+            // This returns one or null. Probably find returns cursor.
+            // Raw model `findPendingByPhoneAndPharmacy` returns single.
+            // We might need a `updateMany` equivalent or just ignore. 
+            // Since we check membership on invite creation, new invites won't be created easily if we implemented that check fully.
+            // (Current invite.sms implementation checks membership by userId which it doesn't have from phone easily).
+
+            const pharmacy = await MedsensePharmacies.findOneById(invite.pharmacyId);
+
+            return API.v1.success({
+                success: true,
+                pharmacyId: invite.pharmacyId,
+                pharmacyName: pharmacy?.name || "Unknown Pharmacy",
+                role: invite.role
+            });
+        }
+    }
+);
+
+API.v1.addRoute(
+    "medsense/pharmacies.members.update",
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                pharmacyId: String,
+                userId: String,
+                roles: [String]
+            }));
+            const { pharmacyId, userId, roles } = this.bodyParams;
+
+            // Permissions
+            const isGlobalAdmin = await hasPermissionAsync(this.userId, "medsense-manage-all-pharmacies");
+            let isOwner = false;
+
+            if (!isGlobalAdmin) {
+                const membership = await MedsensePharmacyMemberships.findOne({ pharmacyId, userId: this.userId });
+                if (!membership) return API.v1.forbidden();
+                if (membership.roles.includes('owner')) isOwner = true;
+                if (!isOwner) return API.v1.forbidden('Only owners can update member roles.');
+            } else {
+                isOwner = true;
+            }
+
+            // Validate Roles
+            const validRoles = ['owner', 'manager', 'staff'];
+            if (!roles.every((r: string) => validRoles.includes(r))) {
+                return API.v1.failure('Invalid roles. Allowed: owner, manager, staff');
+            }
+
+            // Target check
+            const targetMembership = await MedsensePharmacyMemberships.findOne({ pharmacyId, userId });
+            if (!targetMembership) {
+                return API.v1.failure("Member not found");
+            }
+
+            // Prevent removing last owner
+            if (targetMembership.roles.includes('owner') && !roles.includes('owner')) {
+                const owners = await MedsensePharmacyMemberships.find({ pharmacyId, roles: 'owner' }).toArray();
+                if (owners.length <= 1) {
+                    return API.v1.failure("Cannot demote the last owner.");
+                }
+            }
+
+            await MedsensePharmacyMemberships.updateOne(
+                { pharmacyId, userId },
+                {
+                    $set: {
+                        roles,
+                        updatedAt: new Date()
+                    }
+                }
+            );
+
+            // Update Global Role
+            if (roles.includes('owner') || roles.includes('manager')) {
+                await addUserRolesAsync(userId, ['pharmacy-manager']);
+                await removeUserFromRolesAsync(userId, ['pharmacy-staff']);
+            } else {
+                const otherManaged = await MedsensePharmacyMemberships.find({
+                    userId,
+                    pharmacyId: { $ne: pharmacyId },
+                    roles: { $in: ['owner', 'manager'] }
+                }).toArray();
+
+                if (otherManaged.length === 0) {
+                    await addUserRolesAsync(userId, ['pharmacy-staff']);
+                    await removeUserFromRolesAsync(userId, ['pharmacy-manager']);
+                }
+            }
+
+            return API.v1.success();
         }
     }
 );

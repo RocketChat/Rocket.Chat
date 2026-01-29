@@ -149,6 +149,7 @@ export * from './IMedsensePharmacyTeam';
 export * from './IMedsenseAudit';
 export * from './Abac';
 export * from './IMedsenseRequest';
+export * from './IMedsensePharmacyInvite';
 export * from './ServerAudit/IAuditServerAbacAction';
 
 export { schemas } from './Ajv';

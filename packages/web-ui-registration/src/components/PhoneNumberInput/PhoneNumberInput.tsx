@@ -13,12 +13,13 @@ type PhoneNumberInputProps = {
     disabled?: boolean;
     name?: string;
     id?: string;
+    defaultCountry?: string;
 };
 
 const countryOptions: [string, string][] = countries.map((c) => [c.code, `${c.name} (${c.dialCode})`]);
 
-const PhoneNumberInput = ({ value, onChange, onValidityChange, error, disabled, name, id }: PhoneNumberInputProps) => {
-    const [countryCode, setCountryCode] = useState('US');
+const PhoneNumberInput = ({ value, onChange, onValidityChange, error, disabled, name, id, defaultCountry = 'CA' }: PhoneNumberInputProps) => {
+    const [countryCode, setCountryCode] = useState(defaultCountry);
     const [localNumber, setLocalNumber] = useState('');
 
     // Initialize from external value

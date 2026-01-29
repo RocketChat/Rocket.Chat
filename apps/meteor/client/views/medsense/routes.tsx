@@ -4,27 +4,20 @@ import { createRouteGroup } from '../../lib/createRouteGroup';
 
 declare module '@rocket.chat/ui-contexts' {
     interface IRouterPaths {
-        'medsense-pharmacies': {
-            pattern: '/admin/pharmacies/:context?/:id?/:tab?';
-            pathname: `/admin/pharmacies${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
-        };
         'medsense-queue': {
             pattern: '/medsense/queue';
             pathname: '/medsense/queue';
         };
+        'medsense-manage-all-pharmacies': {
+            pattern: '/medsense/manage-pharmacies/:tab?';
+            pathname: '/medsense/manage-pharmacies';
+        };
+        'medsense-verify-invite': {
+            pattern: '/medsense/verify/:inviteId';
+            pathname: '/medsense/verify/:inviteId';
+        };
     }
 }
-
-export const registerMedsenseRoute = createRouteGroup(
-    'medsense',
-    '/admin/pharmacies',
-    lazy(() => import('./pharmacy/PharmacyRoute')),
-);
-
-registerMedsenseRoute('/:context?/:id?/:tab?', {
-    name: 'medsense-pharmacies',
-    component: lazy(() => import('./pharmacy/PharmacyRoute')),
-});
 
 export const registerQueueRoute = createRouteGroup(
     'medsense-queue',
@@ -35,4 +28,26 @@ export const registerQueueRoute = createRouteGroup(
 registerQueueRoute('/', {
     name: 'medsense-queue',
     component: lazy(() => import('./queue/QueueRoute')),
+});
+
+export const registerPharmacyRoute = createRouteGroup(
+    'medsense-manage-all-pharmacies',
+    '/medsense/manage-pharmacies',
+    lazy(() => import('./pharmacy/ManagerPharmacies')),
+);
+
+registerPharmacyRoute('/:tab?', {
+    name: 'medsense-manage-all-pharmacies',
+    component: lazy(() => import('./pharmacy/ManagerPharmacies')),
+});
+
+export const registerVerifyRoute = createRouteGroup(
+    'medsense-verify-invite',
+    '/medsense/verify',
+    lazy(() => import('./pharmacy/VerifyPharmacyInvite')),
+);
+
+registerVerifyRoute('/:inviteId', {
+    name: 'medsense-verify-invite',
+    component: lazy(() => import('./pharmacy/VerifyPharmacyInvite')),
 });

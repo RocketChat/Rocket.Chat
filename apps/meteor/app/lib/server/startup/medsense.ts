@@ -100,16 +100,23 @@ export const addMedsenseSettings = async function (): Promise<void> {
     }
 
     // Medsense Pharmacy Permissions
-    await Permissions.create('medsense-manage-pharmacies', ['admin']);
-    await Permissions.create('medsense-manage-own-pharmacy', ['admin', 'pharmacy-manager']);
-    await Permissions.create('medsense-view-pharmacy-members', ['admin', 'pharmacy-manager', 'pharmacy-staff']);
+    await Permissions.create('medsense-manage-all-pharmacies', ['admin']);
+    await Permissions.create('medsense-manage-individual-pharmacy', ['admin', 'pharmacy-manager']);
     await Permissions.create('medsense-invite-pharmacy-staff', ['admin', 'pharmacy-manager']);
+    await Permissions.create('medsense-remove-pharmacy-staff', ['admin', 'pharmacy-manager']);
+    await Permissions.create('medsense-change-staff-level', ['admin']);
 
     // Medsense Queue Permissions (Request-Record)
     await Permissions.create('medsense-view-request', ['admin', 'pharmacy-manager', 'pharmacy-staff']);
     await Permissions.create('medsense-take-request', ['admin', 'pharmacy-manager', 'pharmacy-staff']);
     await Permissions.create('medsense-close-request', ['admin', 'pharmacy-manager', 'pharmacy-staff']);
     await Permissions.create('medsense-view-hub', ['admin']);
+
+    // Remove deprecated permissions
+    await Permissions.deleteOne({ _id: 'medsense-manage-pharmacies' });
+    await Permissions.deleteOne({ _id: 'medsense-manage-own-pharmacy' });
+    await Permissions.deleteOne({ _id: 'medsense-view-pharmacy-members' });
+    await Permissions.deleteOne({ _id: 'medsense-create-pharmacy-teams' });
 };
 
 // Legacy stubs (Settings removed)

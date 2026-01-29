@@ -94,6 +94,7 @@ import type {
 	IMedsensePharmacyTeamsModel,
 	IMedsenseAuditModel,
 	IMedsenseRequestsModel,
+	IMedsensePharmacyInvitesModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -127,6 +128,7 @@ import {
 	MedsensePharmacyTeamsRaw,
 	MedsenseAuditRaw,
 	MedsenseRequestsRaw,
+	MedsensePharmacyInvitesRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -232,6 +234,7 @@ export const MedsensePatientPharmacy = proxify<IMedsensePatientPharmacyModel>('I
 export const MedsensePharmacyTeams = proxify<IMedsensePharmacyTeamsModel>('IMedsensePharmacyTeamsModel');
 export const MedsenseAudit = proxify<IMedsenseAuditModel>('IMedsenseAuditModel');
 export const MedsenseRequests = proxify<IMedsenseRequestsModel>('IMedsenseRequestsModel');
+export const MedsensePharmacyInvites = proxify<IMedsensePharmacyInvitesModel>('IMedsensePharmacyInvitesModel');
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
@@ -272,5 +275,6 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('IMedsensePatientPharmacyModel', () => new MedsensePatientPharmacyRaw(db));
 	registerModel('IMedsensePharmacyTeamsModel', () => new MedsensePharmacyTeamsRaw(db));
 	registerModel('IMedsenseAuditModel', () => new MedsenseAuditRaw(db));
-registerModel('IMedsenseRequestsModel', () => new MedsenseRequestsRaw(db));
+	registerModel('IMedsenseRequestsModel', () => new MedsenseRequestsRaw(db));
+	registerModel('IMedsensePharmacyInvitesModel', () => new MedsensePharmacyInvitesRaw(db));
 }

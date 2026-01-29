@@ -15,7 +15,7 @@ type PharmacyMembersTableProps = {
 
 const PharmacyMembersTable = ({ control, register }: PharmacyMembersTableProps) => {
     const { t } = useTranslation();
-    const { fields, append, remove } = useFieldArray({ control, name: 'memberList' });
+    const { fields, append, remove, update } = useFieldArray({ control, name: 'memberList' });
     const memberList = useWatch({ control, name: 'memberList' });
 
     const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
@@ -27,7 +27,16 @@ const PharmacyMembersTable = ({ control, register }: PharmacyMembersTableProps) 
         if (index > -1) {
             remove(index);
         }
-    }
+    };
+
+    // Helper to update role
+    const handleRoleChange = (userId: string, newRole: string) => {
+        const index = fields.findIndex((f: any) => f.userId === userId);
+        if (index > -1) {
+            const currentMember = memberList[index];
+            update(index, { ...currentMember, roles: [newRole] });
+        }
+    };
 
     return (
         <>
@@ -43,7 +52,7 @@ const PharmacyMembersTable = ({ control, register }: PharmacyMembersTableProps) 
 
                 <GenericTableBody>
                     {page.map((member: any, index: number) => (
-                        <MemberRow key={member.id} index={index} member={member} onRemove={handleRemove} />
+                        <MemberRow key={member.id} index={index} member={member} onRemove={handleRemove} onRoleChange={handleRoleChange} />
                     ))}
                 </GenericTableBody>
             </GenericTable>

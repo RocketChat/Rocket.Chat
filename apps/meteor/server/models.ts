@@ -83,6 +83,7 @@ import {
 	MedsensePharmacyTeamsRaw,
 	MedsenseAuditRaw,
 	MedsenseRequestsRaw,
+	MedsensePharmacyInvitesRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
 
@@ -177,3 +178,4 @@ registerModel('IMedsensePatientPharmacyModel', new MedsensePatientPharmacyRaw(db
 registerModel('IMedsensePharmacyTeamsModel', new MedsensePharmacyTeamsRaw(db));
 registerModel('IMedsenseAuditModel', new MedsenseAuditRaw(db));
 registerModel('IMedsenseRequestsModel', new MedsenseRequestsRaw(db));
+registerModel('IMedsensePharmacyInvitesModel', new MedsensePharmacyInvitesRaw(db));

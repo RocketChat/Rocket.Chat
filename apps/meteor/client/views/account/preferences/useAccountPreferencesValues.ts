@@ -39,6 +39,8 @@ export type AccountPreferencesData = {
 	notificationsSoundVolume?: number;
 	voipRingerVolume?: number;
 	desktopNotificationVoiceCalls?: boolean;
+	medsenseQueueNotificationsEnabled?: boolean;
+	medsenseQueueNotificationSound?: string;
 };
 
 export const useAccountPreferencesValues = (): AccountPreferencesData => {
@@ -78,6 +80,9 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 	const notificationsSoundVolume = useUserPreference<number>('notificationsSoundVolume', 100);
 	const voipRingerVolume = useUserPreference<number>('voipRingerVolume', 100);
 
+	const medsenseQueueNotificationsEnabled = useUserPreference<boolean>('medsenseQueueNotificationsEnabled', true);
+	const medsenseQueueNotificationSound = useUserPreference<string>('medsenseQueueNotificationSound', 'beep');
+
 	const desktopNotificationVoiceCalls = useUserPreference<boolean>('desktopNotificationVoiceCalls');
 
 	return {
@@ -110,6 +115,8 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 		masterVolume,
 		notificationsSoundVolume,
 		voipRingerVolume,
+		medsenseQueueNotificationsEnabled,
+		medsenseQueueNotificationSound,
 		desktopNotificationVoiceCalls,
 	};
 };

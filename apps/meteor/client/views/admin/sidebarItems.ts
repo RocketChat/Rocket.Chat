@@ -40,7 +40,7 @@ export const {
 		href: '/admin/pharmacies',
 		i18nLabel: 'Pharmacies',
 		iconElement: createElement(MedicalIcon, { width: '20px', height: '20px' }),
-		permissionGranted: (): boolean => hasAtLeastOnePermission(['medsense-manage-pharmacies', 'medsense-manage-own-pharmacy']),
+		permissionGranted: (): boolean => hasAtLeastOnePermission(['medsense-manage-all-pharmacies', 'medsense-manage-individual-pharmacy']),
 	},
 	{
 		href: '/admin/rooms',

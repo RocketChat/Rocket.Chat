@@ -43,6 +43,7 @@ export * from './models/MedsensePatientPharmacy';
 export * from './models/MedsensePharmacyTeams';
 export * from './models/MedsenseAudit';
 export * from './models/MedsenseRequests';
+export * from './models/MedsensePharmacyInvites';
 export * from './models/NotificationQueue';
 export * from './models/Nps';
 export * from './models/NpsVote';

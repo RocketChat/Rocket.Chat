@@ -1,4 +1,6 @@
 {
+  "Show_Medsense_Queue_Notifications": "Show Medsense Queue Notifications",
+  "Medsense_Queue_Notification_Sound": "Medsense Queue Notification Sound",
   "500": "Internal Server Error",
   "Pending_Queue": "Pending Queue",
   "Queue_is_empty": "Queue is empty",

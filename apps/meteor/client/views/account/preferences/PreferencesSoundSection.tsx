@@ -1,12 +1,13 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { AccordionItem, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, Slider, ToggleSwitch } from '@rocket.chat/fuselage';
+import { ActionButon, AccordionItem, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, Slider, ToggleSwitch } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useCustomSound, useTranslation } from '@rocket.chat/ui-contexts';
+import { useCustomSound, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 const PreferencesSoundSection = () => {
 	const t = useTranslation();
+	const canViewMedsenseQueue = usePermission('medsense-view-request');
 
 	const customSound = useCustomSound();
 	const soundsList: SelectOption[] = customSound.list?.map((value) => [value._id, t(value.name as TranslationKey)]) || [];
@@ -147,6 +148,30 @@ const PreferencesSoundSection = () => {
 						/>
 					</FieldRow>
 				</Field>
+				{canViewMedsenseQueue && (
+					<Field>
+						<FieldLabel is='span' id='medsenseQueueNotificationSound'>
+							{t('Medsense_Queue_Notification_Sound')}
+						</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='medsenseQueueNotificationSound'
+								control={control}
+								render={({ field: { value, onChange } }) => (
+									<Select
+										aria-labelledby='medsenseQueueNotificationSound'
+										value={value}
+										options={soundsList}
+										onChange={(value) => {
+											onChange(value);
+											customSound.play(String(value), { volume: notificationsSoundVolume / 100 });
+										}}
+									/>
+								)}
+							/>
+						</FieldRow>
+					</Field>
+				)}
 				<Field>
 					<FieldRow>
 						<FieldLabel htmlFor={muteFocusedConversationsId}>{t('Mute_Focused_Conversations')}</FieldLabel>

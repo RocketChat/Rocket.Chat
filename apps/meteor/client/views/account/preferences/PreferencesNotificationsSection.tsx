@@ -2,7 +2,7 @@ import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { AccordionItem, Button, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useUserPreference, useUser } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserPreference, useUser, usePermission } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -247,6 +247,20 @@ const PreferencesNotificationsSection = () => {
 								control={control}
 								render={({ field: { ref, value, onChange } }) => (
 									<ToggleSwitch id={enableMobileRingingId} ref={ref} checked={value} onChange={onChange} />
+								)}
+							/>
+						</FieldRow>
+					</Field>
+				)}
+				{usePermission('medsense-view-request') && (
+					<Field>
+						<FieldRow>
+							<FieldLabel htmlFor='medsenseQueueNotificationsEnabled'>{t('Show_Medsense_Queue_Notifications')}</FieldLabel>
+							<Controller
+								name='medsenseQueueNotificationsEnabled'
+								control={control}
+								render={({ field: { ref, value, onChange } }) => (
+									<ToggleSwitch id='medsenseQueueNotificationsEnabled' ref={ref} checked={value} onChange={onChange} />
 								)}
 							/>
 						</FieldRow>
