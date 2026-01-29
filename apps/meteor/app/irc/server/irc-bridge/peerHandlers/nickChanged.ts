@@ -2,7 +2,12 @@ import { Users } from '@rocket.chat/models';
 
 import { notifyOnUserChange } from '../../../../lib/server/lib/notifyListener';
 
-export default async function handleNickChanged(args) {
+type NickChangedArgs = {
+	nick: string;
+	newNick: string;
+};
+
+export default async function handleNickChanged(this: any, args: NickChangedArgs): Promise<void> {
 	const user = await Users.findOne({
 		'profile.irc.nick': args.nick,
 	});
