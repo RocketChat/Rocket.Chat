@@ -1,3 +1,4 @@
+// @ts-expect-error - no types available for @rocket.chat/poplib
 import POP3Lib from '@rocket.chat/poplib';
 import { simpleParser } from 'mailparser';
 
@@ -6,7 +7,7 @@ import { IMAPInterceptor } from '../../../../server/email/IMAPInterceptor';
 import { settings } from '../../../settings/server';
 
 export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
-	constructor(imapConfig, options = {}) {
+	constructor(imapConfig: Record<string, any> = {}, options: Record<string, any> = {}) {
 		imapConfig = {
 			user: settings.get('Direct_Reply_Username'),
 			password: settings.get('Direct_Reply_Password'),
@@ -19,13 +20,19 @@ export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
 
 		options.deleteAfterRead = settings.get('Direct_Reply_Delete');
 
-		super(imapConfig, options);
+		super(imapConfig as any, options as any, 'direct-reply');
 
 		this.on('email', (email) => processDirectEmail(email));
 	}
 }
 
 class POP3Intercepter {
+	pop3: any;
+
+	totalMsgCount: number;
+
+	currentMsgCount: number;
+
 	constructor() {
 		this.pop3 = new POP3Lib(settings.get('Direct_Reply_Port'), settings.get('Direct_Reply_Host'), {
 			enabletls: !settings.get('Direct_Reply_IgnoreTLS'),
@@ -41,7 +48,7 @@ class POP3Intercepter {
 			this.pop3.login(settings.get('Direct_Reply_Username'), settings.get('Direct_Reply_Password'));
 		});
 
-		this.pop3.on('login', (status) => {
+		this.pop3.on('login', (status: boolean) => {
 			if (!status) {
 				return console.log('Unable to Log-in ....');
 			}
@@ -51,7 +58,7 @@ class POP3Intercepter {
 		});
 
 		// on getting list of all emails
-		this.pop3.on('list', (status, msgcount) => {
+		this.pop3.on('list', (status: boolean, msgcount: number) => {
 			if (!status) {
 				console.log('Cannot Get Emails ....');
 			}
@@ -66,14 +73,14 @@ class POP3Intercepter {
 		});
 
 		// on retrieved email
-		this.pop3.on('retr', async (status, msgnumber, data) => {
+		this.pop3.on('retr', (status: boolean, msgnumber: number, data: any) => {
 			if (!status) {
 				return console.log('Cannot Retrieve Message ....');
 			}
 
 			// parse raw email data to  JSON object
-			simpleParser(data, (err, mail) => {
-				processDirectEmail(mail);
+			simpleParser(data, (_err, mail) => {
+				void processDirectEmail(mail);
 			});
 
 			this.currentMsgCount += 1;
@@ -83,7 +90,7 @@ class POP3Intercepter {
 		});
 
 		// on email deleted
-		this.pop3.on('dele', (status) => {
+		this.pop3.on('dele', (status: boolean) => {
 			if (!status) {
 				return console.log('Cannot Delete Message....');
 			}
@@ -98,34 +105,40 @@ class POP3Intercepter {
 		});
 
 		// invalid server state
-		this.pop3.on('invalid-state', (cmd) => {
+		this.pop3.on('invalid-state', (cmd: string) => {
 			console.log(`Invalid state. You tried calling ${cmd}`);
 		});
 
-		this.pop3.on('error', (cmd) => {
+		this.pop3.on('error', (cmd: string) => {
 			console.log(`error state. You tried calling ${cmd}`);
 		});
 
 		// locked => command already running, not finished yet
-		this.pop3.on('locked', (cmd) => {
+		this.pop3.on('locked', (cmd: string) => {
 			console.log(`Current command has not finished yet. You tried calling ${cmd}`);
 		});
 	}
 }
 
 export class POP3Helper {
-	constructor(frequency) {
+	frequency: number;
+
+	running: NodeJS.Timeout | false;
+
+	POP3: POP3Intercepter;
+
+	constructor(frequency: number) {
 		this.frequency = frequency;
 		this.running = false;
 
 		this.POP3 = new POP3Intercepter();
 	}
 
-	isActive() {
-		return this.running;
+	isActive(): boolean {
+		return this.running !== false;
 	}
 
-	start() {
+	start(): void {
 		this.log('POP3 started');
 		this.running = setInterval(
 			() => {
@@ -136,16 +149,18 @@ export class POP3Helper {
 		);
 	}
 
-	log(...args) {
+	log(...args: any[]): void {
 		console.log(...args);
 	}
 
-	stop(callback = new Function()) {
+	stop(callback: () => void = undefined as any): void {
 		this.log('POP3 stop called');
 		if (this.isActive()) {
-			clearInterval(this.running);
+			clearInterval(this.running as NodeJS.Timeout);
 		}
-		callback();
+		if (callback) {
+			callback();
+		}
 		this.log('POP3 stopped');
 	}
 }
