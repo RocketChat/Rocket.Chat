@@ -52,3 +52,49 @@ export class TestIPreFileUpload extends App implements IPreFileUpload {
 ```
 
 </details>
+
+#### Nested Requests simulation
+
+File name: `nested-requests_0.0.1.zip`
+
+An app that simulates a "nested request" scenario. It listens for `IPostMessageSent` events, and provides a slashcommand that sends a message. Executing the slashcommand will create a scenario where the event handler for `IPostMessageSent` will be triggered by the slashcommand executor handler.
+
+This situation used to cause logs for the originating handler (the slashcommand executor, in this case) to disappear, and only the logs for the nested request (`IPostMessageSent` handler, in this case) would be persisted to the database.
+
+<details>
+<summary>App source code</summary>
+
+```typescript
+export class NestedRequestsApp extends App implements IPostMessageSent {
+    public async executePostMessageSent(message: IMessage, _read: IRead, _http: IHttp, _persistence: IPersistence, _modify: IModify): Promise<void> {
+        this.getLogger().debug('executed_post_message_sent', message.id);
+    }
+
+    protected async extendConfiguration(configuration: IConfigurationExtend, _environmentRead: IEnvironmentRead): Promise<void> {
+        configuration.slashCommands.provideSlashCommand(new class implements ISlashCommand {
+            public command= 'nest';
+            public i18nParamsExample = 'nest';
+            public i18nDescription = 'nest';
+            public providesPreview = false;
+
+            constructor(private readonly app: IApp) { }
+
+            public async executor(context: SlashCommandContext, _read: IRead, modify: IModify, _http: IHttp, _persis: IPersistence): Promise<void> {
+                const [execId] = context.getArguments();
+
+                this.app.getLogger().debug('slashcommand_triggered', execId);
+
+                const mb = modify.getCreator().startMessage()
+                    .setText(`nested_test_message ${execId}`)
+                    .setRoom(context.getRoom());
+
+                const id = await modify.getCreator().finish(mb);
+
+                this.app.getLogger().debug('slashcommand_message_sent', id);
+            }
+        }(this));
+    }
+}
+```
+
+</details>
