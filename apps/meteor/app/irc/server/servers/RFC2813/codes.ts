@@ -3,7 +3,14 @@
  * by https://github.com/martynsmith
  */
 
-module.exports = {
+type CodeInfo = {
+	name: string;
+	type: 'reply' | 'error';
+};
+
+type Codes = Record<string, CodeInfo>;
+
+const codes = {
 	'001': {
 		name: 'rpl_welcome',
 		type: 'reply',
@@ -516,4 +523,6 @@ module.exports = {
 		name: 'err_usersdontmatch',
 		type: 'error',
 	},
-};
+} satisfies Codes;
+
+export default codes;
