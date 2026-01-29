@@ -8,7 +8,6 @@ import type { ContextType } from 'react';
 import Sidebar from './SidebarRegion';
 
 export default {
-	title: 'Sidebar',
 	component: Sidebar,
 } satisfies Meta<typeof Sidebar>;
 
@@ -98,6 +97,7 @@ const userContextValue: ContextType<typeof UserContext> = {
 	queryRoom: () => [() => () => undefined, () => undefined],
 
 	logout: () => Promise.resolve(),
+	onLogout: () => () => undefined,
 };
 
 export const SidebarStory: StoryFn<typeof Sidebar> = () => <Sidebar />;

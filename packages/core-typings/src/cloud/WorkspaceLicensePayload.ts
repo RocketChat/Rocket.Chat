@@ -1,10 +1,13 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+import * as z from 'zod';
 
-export interface WorkspaceLicensePayload {
-	version: number;
-	address: string;
-	license: string;
-	updatedAt: Date;
-	modules: string;
-	expireAt: Date;
-}
+import { TimestampSchema } from '../utils';
+
+export const WorkspaceLicensePayloadSchema = z.object({
+	version: z.number(),
+	address: z.string(),
+	license: z.string(),
+	updatedAt: TimestampSchema,
+	expireAt: TimestampSchema,
+});
+
+export type WorkspaceLicensePayload = z.infer<typeof WorkspaceLicensePayloadSchema>;

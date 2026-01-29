@@ -16,91 +16,93 @@ import type { IUserBuilder } from './IUserBuilder';
 import type { IVideoConferenceBuilder } from './IVideoConferenceBuilder';
 
 export interface IModifyCreator {
-    /**
-     * Get the creator object responsible for the
-     * Livechat integrations
-     */
-    getLivechatCreator(): ILivechatCreator;
+	/**
+	 * Get the creator object responsible for the
+	 * Livechat integrations
+	 */
+	getLivechatCreator(): ILivechatCreator;
 
-    /**
-     * Get the creator object responsible for the upload.
-     */
-    getUploadCreator(): IUploadCreator;
+	/**
+	 * Get the creator object responsible for the upload.
+	 */
+	getUploadCreator(): IUploadCreator;
 
-    /**
-     * Gets the creator object responsible for email sending
-     */
-    getEmailCreator(): IEmailCreator;
+	/**
+	 * Gets the creator object responsible for email sending
+	 */
+	getEmailCreator(): IEmailCreator;
 
-    /**
-     * Gets the creator object responsible for contact related operations.
-     */
-    getContactCreator(): IContactCreator;
+	/**
+	 * Gets the creator object responsible for contact related operations.
+	 */
+	getContactCreator(): IContactCreator;
 
-    /**
-     * @deprecated please prefer the rocket.chat/ui-kit components
-     *
-     * Gets a new instance of a BlockBuilder
-     */
-    getBlockBuilder(): BlockBuilder;
-    /**
-     * Starts the process for building a new message object.
-     *
-     * @param data (optional) the initial data to pass into the builder,
-     *          the `id` property will be ignored
-     * @return an IMessageBuilder instance
-     */
-    startMessage(data?: IMessage): IMessageBuilder;
+	/**
+	 * @deprecated please prefer the rocket.chat/ui-kit components
+	 *
+	 * Gets a new instance of a BlockBuilder
+	 */
+	getBlockBuilder(): BlockBuilder;
+	/**
+	 * Starts the process for building a new message object.
+	 *
+	 * @param data (optional) the initial data to pass into the builder,
+	 *          the `id` property will be ignored
+	 * @return an IMessageBuilder instance
+	 */
+	startMessage(data?: IMessage): IMessageBuilder;
 
-    /**
-     * Starts the process for building a new livechat message object.
-     *
-     * @param data (optional) the initial data to pass into the builder,
-     *          the `id` property will be ignored
-     * @return an IMessageBuilder instance
-     */
-    startLivechatMessage(data?: ILivechatMessage): ILivechatMessageBuilder;
+	/**
+	 * Starts the process for building a new livechat message object.
+	 *
+	 * @param data (optional) the initial data to pass into the builder,
+	 *          the `id` property will be ignored
+	 * @return an IMessageBuilder instance
+	 */
+	startLivechatMessage(data?: ILivechatMessage): ILivechatMessageBuilder;
 
-    /**
-     * Starts the process for building a new room.
-     *
-     * @param data (optional) the initial data to pass into the builder,
-     *          the `id` property will be ignored
-     * @return an IRoomBuilder instance
-     */
-    startRoom(data?: IRoom): IRoomBuilder;
+	/**
+	 * Starts the process for building a new room.
+	 *
+	 * @param data (optional) the initial data to pass into the builder,
+	 *          the `id` property will be ignored
+	 * @return an IRoomBuilder instance
+	 */
+	startRoom(data?: IRoom): IRoomBuilder;
 
-    /**
-     * Starts the process for building a new discussion.
-     *
-     * @param data (optional) the initial data to pass into the builder,
-     *          the `id` property will be ignored
-     * @return an IDiscussionBuilder instance
-     */
-    startDiscussion(data?: Partial<IRoom>): IDiscussionBuilder;
+	/**
+	 * Starts the process for building a new discussion.
+	 *
+	 * @param data (optional) the initial data to pass into the builder,
+	 *          the `id` property will be ignored
+	 * @return an IDiscussionBuilder instance
+	 */
+	startDiscussion(data?: Partial<IRoom>): IDiscussionBuilder;
 
-    /**
-     * Starts the process for building a new video conference.
-     *
-     * @param data (optional) the initial data to pass into the builder,
-     * @return an IVideoConferenceBuilder instance
-     */
-    startVideoConference(data?: Partial<AppVideoConference>): IVideoConferenceBuilder;
+	/**
+	 * Starts the process for building a new video conference.
+	 *
+	 * @param data (optional) the initial data to pass into the builder,
+	 * @return an IVideoConferenceBuilder instance
+	 */
+	startVideoConference(data?: Partial<AppVideoConference>): IVideoConferenceBuilder;
 
-    /**
-     * Starts the process for building a new bot user.
-     *
-     * @param data (optional) the initial data to pass into the builder,
-     *          the `id` property will be ignored
-     * @return an IUserBuilder instance
-     */
-    startBotUser(data?: Partial<IBotUser>): IUserBuilder;
+	/**
+	 * Starts the process for building a new bot user.
+	 *
+	 * @param data (optional) the initial data to pass into the builder,
+	 *          the `id` property will be ignored
+	 * @return an IUserBuilder instance
+	 */
+	startBotUser(data?: Partial<IBotUser>): IUserBuilder;
 
-    /**
-     * Finishes the creating process, saving the object to the database.
-     *
-     * @param builder the builder instance
-     * @return the resulting `id` of the resulting object
-     */
-    finish(builder: IMessageBuilder | ILivechatMessageBuilder | IRoomBuilder | IDiscussionBuilder | IVideoConferenceBuilder | IUserBuilder): Promise<string>;
+	/**
+	 * Finishes the creating process, saving the object to the database.
+	 *
+	 * @param builder the builder instance
+	 * @return the resulting `id` of the resulting object
+	 */
+	finish(
+		builder: IMessageBuilder | ILivechatMessageBuilder | IRoomBuilder | IDiscussionBuilder | IVideoConferenceBuilder | IUserBuilder,
+	): Promise<string>;
 }

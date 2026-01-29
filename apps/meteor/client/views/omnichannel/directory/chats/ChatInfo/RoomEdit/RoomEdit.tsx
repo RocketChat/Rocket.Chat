@@ -1,16 +1,16 @@
 import type { ILivechatVisitor, IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { CustomFieldsForm } from '@rocket.chat/ui-client';
+import { CustomFieldsForm, ContextualbarContent, ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
-import { ContextualbarContent, ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
-import Tags from '../../../../../../components/Omnichannel/Tags';
-import { useOmnichannelPriorities } from '../../../../../../omnichannel/hooks/useOmnichannelPriorities';
+import { roomsQueryKeys } from '../../../../../../lib/queryKeys';
 import { SlaPoliciesSelect, PrioritiesSelect } from '../../../../additionalForms';
+import Tags from '../../../../components/Tags';
+import { useOmnichannelPriorities } from '../../../../hooks/useOmnichannelPriorities';
 import { FormSkeleton } from '../../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';
 import { useSlaPolicies } from '../../../hooks/useSlaPolicies';
@@ -102,9 +102,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 
 			try {
 				await saveRoom({ guestData, roomData });
-				await queryClient.invalidateQueries({
-					queryKey: ['/v1/rooms.info', room._id],
-				});
+				await queryClient.invalidateQueries({ queryKey: roomsQueryKeys.info(room._id) });
 
 				dispatchToastMessage({ type: 'success', message: t('Saved') });
 				reload?.();

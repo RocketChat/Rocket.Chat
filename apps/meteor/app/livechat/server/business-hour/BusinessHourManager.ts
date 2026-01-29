@@ -6,7 +6,7 @@ import moment from 'moment-timezone';
 
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { closeBusinessHour } from './closeBusinessHour';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { businessHourLogger } from '../lib/logger';
@@ -287,7 +287,7 @@ export class BusinessHourManager {
 		const failed = result.filter((r) => r.status === 'rejected');
 		if (failed.length > 0) {
 			failed.forEach((error: any) => {
-				businessHourLogger.error('Failed to update business hours with new timezone', error.reason);
+				businessHourLogger.error({ msg: 'Failed to update business hours with new timezone', err: error });
 			});
 		}
 

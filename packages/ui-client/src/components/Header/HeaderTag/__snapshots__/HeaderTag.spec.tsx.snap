@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`should match snapshot 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1kopyx3"
+    >
+      <span
+        class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+      >
+        <span
+          class="rcx-tag__inner"
+        >
+          Test Tag
+        </span>
+      </span>
+    </div>
+  </div>
+</body>
+`;

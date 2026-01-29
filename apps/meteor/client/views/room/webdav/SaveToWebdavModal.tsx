@@ -1,6 +1,23 @@
 import type { MessageAttachment, IWebdavAccount } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Modal, Box, Button, FieldGroup, Field, FieldLabel, FieldRow, FieldError, Select, Throbber } from '@rocket.chat/fuselage';
+import {
+	Modal,
+	Box,
+	Button,
+	FieldGroup,
+	Field,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	Select,
+	Throbber,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { useMethod, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useState, useMemo, useEffect, useRef, useId } from 'react';
@@ -78,11 +95,11 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 
 	return (
 		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleSaveFile)} {...props} />}>
-			<Modal.Header>
-				<Modal.Title>{t('Save_To_Webdav')}</Modal.Title>
-				<Modal.Close title={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle>{t('Save_To_Webdav')}</ModalTitle>
+				<ModalClose title={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				{isLoading && (
 					<Box alignItems='center' display='flex' justifyContent='center' minHeight='x32'>
 						<Throbber />
@@ -106,15 +123,15 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 						</Field>
 					</FieldGroup>
 				)}
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button primary type='submit' loading={isLoading}>
 						{t('Save_To_Webdav')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

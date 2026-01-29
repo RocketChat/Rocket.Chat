@@ -1,0 +1,1301 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
+    <div
+      style="position: relative; user-select: auto; width: 380px; height: 100%; max-width: 50%; min-width: 380px; min-height: 100%; box-sizing: border-box; flex-shrink: 0;"
+    >
+      <div
+        aria-label="User Info"
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-183xqln"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
+          >
+            <div
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
+            <div
+              class=""
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-16efnhh"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-15qq8ie"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-13kmycs"
+                  >
+                    <figure
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x332"
+                    >
+                      <img
+                        alt=""
+                        aria-hidden="true"
+                        class="rcx-avatar__element rcx-avatar__element--x332"
+                        data-username="guilherme.gazzo"
+                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                        title="guilherme.gazzo"
+                      />
+                    </figure>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-902tla"
+                    >
+                      <svg
+                        class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                        fill="none"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        width="12"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle
+                          class="rcx-status-bullet rcx-status-bullet--offline"
+                          cx="6"
+                          cy="6"
+                          r="5"
+                          stroke-width="2"
+                        />
+                      </svg>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-dredvr"
+                        title="guilherme.gazzo"
+                      >
+                        guilherme.gazzo
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                      >
+                        <img
+                          alt="🛴"
+                          class="emojione"
+                          src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
+                          title=":scooter:"
+                        />
+                         currently working on User Card
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Nickname
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                      >
+                        gazzo
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Roles
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-9vcs0o"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-css-1sut473"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-tag "
+                            >
+                              <span
+                                class="rcx-tag__inner"
+                              >
+                                admin
+                              </span>
+                            </span>
+                          </div>
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-tag "
+                            >
+                              <span
+                                class="rcx-tag__inner"
+                              >
+                                user
+                              </span>
+                            </span>
+                          </div>
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Username
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                        data-qa="UserInfoUserName"
+                      >
+                        guilherme.gazzo
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Bio
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                        >
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Email
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-m9tmgj"
+                      >
+                        <a
+                          class="rcx-box rcx-box--full rcx-css-1te28na"
+                          href="mailto:rocketchat@rocket.chat"
+                        >
+                          rocketchat@rocket.chat
+                        </a>
+                        <span
+                          class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
+                        >
+                          <span
+                            class="rcx-tag__inner"
+                          >
+                            Not_verified
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-r98g7d"
+          />
+        </div>
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+        />
+      </div>
+    </div>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
+  </div>
+</body>
+`;
+
+exports[`renders InvitedUser without crashing 1`] = `
+<body>
+  <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
+    <div
+      style="position: relative; user-select: auto; width: 380px; height: 100%; max-width: 50%; min-width: 380px; min-height: 100%; box-sizing: border-box; flex-shrink: 0;"
+    >
+      <div
+        aria-label="User Info"
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-183xqln"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
+          >
+            <div
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
+            <div
+              class=""
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-16efnhh"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-15qq8ie"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-13kmycs"
+                  >
+                    <figure
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x332"
+                    >
+                      <img
+                        alt=""
+                        aria-hidden="true"
+                        class="rcx-avatar__element rcx-avatar__element--x332"
+                        data-username="guilherme.gazzo"
+                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                        title="guilherme.gazzo"
+                      />
+                    </figure>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-902tla"
+                    >
+                      <svg
+                        class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                        fill="none"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        width="12"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle
+                          class="rcx-status-bullet rcx-status-bullet--offline"
+                          cx="6"
+                          cy="6"
+                          r="5"
+                          stroke-width="2"
+                        />
+                      </svg>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-dredvr"
+                        title="guilherme.gazzo"
+                      >
+                        guilherme.gazzo
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                      >
+                        <img
+                          alt="🛴"
+                          class="emojione"
+                          src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
+                          title=":scooter:"
+                        />
+                         currently working on User Card
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Nickname
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                      >
+                        gazzo
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Roles
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-9vcs0o"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-css-1sut473"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-tag "
+                            >
+                              <span
+                                class="rcx-tag__inner"
+                              >
+                                admin
+                              </span>
+                            </span>
+                          </div>
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-tag "
+                            >
+                              <span
+                                class="rcx-tag__inner"
+                              >
+                                user
+                              </span>
+                            </span>
+                          </div>
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Username
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                        data-qa="UserInfoUserName"
+                      >
+                        guilherme.gazzo
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Bio
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                        >
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Email
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-m9tmgj"
+                      >
+                        <a
+                          class="rcx-box rcx-box--full rcx-css-1te28na"
+                          href="mailto:rocketchat@rocket.chat"
+                        >
+                          rocketchat@rocket.chat
+                        </a>
+                        <span
+                          class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
+                        >
+                          <span
+                            class="rcx-tag__inner"
+                          >
+                            Not_verified
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Invitation_date
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                      >
+                        January 1, 2025
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-r98g7d"
+          />
+        </div>
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+        />
+      </div>
+    </div>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
+  </div>
+</body>
+`;
+
+exports[`renders WithABACAttributes without crashing 1`] = `
+<body>
+  <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
+    <div
+      style="position: relative; user-select: auto; width: 380px; height: 100%; max-width: 50%; min-width: 380px; min-height: 100%; box-sizing: border-box; flex-shrink: 0;"
+    >
+      <div
+        aria-label="User Info"
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-183xqln"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
+          >
+            <div
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
+            <div
+              class=""
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-16efnhh"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-15qq8ie"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-13kmycs"
+                  >
+                    <figure
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x332"
+                    >
+                      <img
+                        alt=""
+                        aria-hidden="true"
+                        class="rcx-avatar__element rcx-avatar__element--x332"
+                        data-username="guilherme.gazzo"
+                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                        title="guilherme.gazzo"
+                      />
+                    </figure>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-902tla"
+                    >
+                      <svg
+                        class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                        fill="none"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        width="12"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle
+                          class="rcx-status-bullet rcx-status-bullet--offline"
+                          cx="6"
+                          cy="6"
+                          r="5"
+                          stroke-width="2"
+                        />
+                      </svg>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-dredvr"
+                        title="guilherme.gazzo"
+                      >
+                        guilherme.gazzo
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                      >
+                        <img
+                          alt="🛴"
+                          class="emojione"
+                          src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
+                          title=":scooter:"
+                        />
+                         currently working on User Card
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Nickname
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                      >
+                        gazzo
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Roles
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-9vcs0o"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-css-1sut473"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-tag "
+                            >
+                              <span
+                                class="rcx-tag__inner"
+                              >
+                                admin
+                              </span>
+                            </span>
+                          </div>
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-tag "
+                            >
+                              <span
+                                class="rcx-tag__inner"
+                              >
+                                user
+                              </span>
+                            </span>
+                          </div>
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Username
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                        data-qa="UserInfoUserName"
+                      >
+                        guilherme.gazzo
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Bio
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                        >
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Email
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-m9tmgj"
+                      >
+                        <a
+                          class="rcx-box rcx-box--full rcx-css-1te28na"
+                          href="mailto:rocketchat@rocket.chat"
+                        >
+                          rocketchat@rocket.chat
+                        </a>
+                        <span
+                          class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
+                        >
+                          <span
+                            class="rcx-tag__inner"
+                          >
+                            Not_verified
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        ABAC_Attributes
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-ffrv0l"
+                          title="ABAC_Attributes_description"
+                        >
+                          
+                        </i>
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-9vcs0o"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-iitt21"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-1drnhgd"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              Top Secret
+                            </span>
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-1drnhgd"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              Confidential
+                            </span>
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-1drnhgd"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              Top Secret
+                            </span>
+                          </span>
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-1drnhgd"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              Confidential
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-r98g7d"
+          />
+        </div>
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+        />
+      </div>
+    </div>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
+  </div>
+</body>
+`;
+
+exports[`renders WithVoiceCallExtension without crashing 1`] = `
+<body>
+  <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
+    <div
+      style="position: relative; user-select: auto; width: 380px; height: 100%; max-width: 50%; min-width: 380px; min-height: 100%; box-sizing: border-box; flex-shrink: 0;"
+    >
+      <div
+        aria-label="User Info"
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-183xqln"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
+          >
+            <div
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
+            <div
+              class=""
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-16efnhh"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-15qq8ie"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-13kmycs"
+                  >
+                    <figure
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x332"
+                    >
+                      <img
+                        alt=""
+                        aria-hidden="true"
+                        class="rcx-avatar__element rcx-avatar__element--x332"
+                        data-username="guilherme.gazzo"
+                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                        title="guilherme.gazzo"
+                      />
+                    </figure>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-902tla"
+                    >
+                      <svg
+                        class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                        fill="none"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        width="12"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle
+                          class="rcx-status-bullet rcx-status-bullet--offline"
+                          cx="6"
+                          cy="6"
+                          r="5"
+                          stroke-width="2"
+                        />
+                      </svg>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-dredvr"
+                        title="guilherme.gazzo"
+                      >
+                        guilherme.gazzo
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                      >
+                        <img
+                          alt="🛴"
+                          class="emojione"
+                          src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
+                          title=":scooter:"
+                        />
+                         currently working on User Card
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Nickname
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                      >
+                        gazzo
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Roles
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-9vcs0o"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-css-1sut473"
+                        >
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-tag "
+                            >
+                              <span
+                                class="rcx-tag__inner"
+                              >
+                                admin
+                              </span>
+                            </span>
+                          </div>
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          >
+                            <span
+                              class="rcx-box rcx-box--full rcx-tag "
+                            >
+                              <span
+                                class="rcx-tag__inner"
+                              >
+                                user
+                              </span>
+                            </span>
+                          </div>
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Username
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                        data-qa="UserInfoUserName"
+                      >
+                        guilherme.gazzo
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Bio
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                        >
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Email
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-m9tmgj"
+                      >
+                        <a
+                          class="rcx-box rcx-box--full rcx-css-1te28na"
+                          href="mailto:rocketchat@rocket.chat"
+                        >
+                          rocketchat@rocket.chat
+                        </a>
+                        <span
+                          class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
+                        >
+                          <span
+                            class="rcx-tag__inner"
+                          >
+                            Not_verified
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Voice_call_extension
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+                      >
+                        1234567890
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-r98g7d"
+          />
+        </div>
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+        />
+        <div
+          class=""
+          style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+        />
+      </div>
+    </div>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
+  </div>
+</body>
+`;

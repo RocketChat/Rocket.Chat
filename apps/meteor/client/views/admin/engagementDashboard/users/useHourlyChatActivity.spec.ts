@@ -22,7 +22,6 @@ it('should return utc time', async () => {
 		success: true,
 	};
 	const { result } = renderHook(() => useHourlyChatActivity({ displacement: 0, utc: true }), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/engagement-dashboard/users/chat-busier/hourly-data', () => expectedResult)
 			.build(),
@@ -76,7 +75,6 @@ it.skip('should return local time', async () => {
 	};
 
 	const { result } = renderHook(() => useHourlyChatActivity({ displacement: 0, utc: false }), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/engagement-dashboard/users/chat-busier/hourly-data', () => receivedData)
 			.build(),

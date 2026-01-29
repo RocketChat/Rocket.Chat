@@ -30,22 +30,22 @@ test.describe('video conference ringing', () => {
 	});
 
 	test('should display call ringing in direct message', async () => {
-		await poHomeChannel.sidenav.openChat('user2');
+		await poHomeChannel.navbar.openChat('user2');
 
-		await auxContext.poHomeChannel.sidenav.openChat('user1');
+		await auxContext.poHomeChannel.navbar.openChat('user1');
 		await test.step('should user1 calls user2', async () => {
 			await poHomeChannel.content.btnVideoCall.click();
 			await poHomeChannel.content.btnStartVideoCall.click();
 
-			await expect(poHomeChannel.content.getVideoConfPopupByName('Calling user2')).toBeVisible();
-			await expect(auxContext.poHomeChannel.content.getVideoConfPopupByName('Incoming call from user1')).toBeVisible();
+			await expect(poHomeChannel.content.getVideoConfPopup('Calling user2')).toBeVisible();
+			await expect(auxContext.poHomeChannel.content.getVideoConfPopup('Incoming call from user1')).toBeVisible();
 
 			await auxContext.poHomeChannel.content.btnDeclineVideoCall.click();
 		});
 
 		await test.step('should user1 be able to call user2 again ', async () => {
 			await poHomeChannel.content.videoConfMessageBlock.last().getByRole('button', { name: 'Call again' }).click();
-			await expect(poHomeChannel.content.getVideoConfPopupByName('Start a call with user2')).toBeVisible();
+			await expect(poHomeChannel.content.getVideoConfPopup('Start a call with user2')).toBeVisible();
 		});
 	});
 });

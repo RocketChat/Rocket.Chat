@@ -2,15 +2,16 @@ import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
+import { RequestContext } from '../../lib/requestContext.ts';
 
-export default function handleOnEnable(): Promise<boolean> {
-    const app = AppObjectRegistry.get<App>('app');
+export default function handleOnEnable(_request: RequestContext): Promise<boolean> {
+	const app = AppObjectRegistry.get<App>('app');
 
-    if (typeof app?.onEnable !== 'function') {
-        throw new Error('App must contain an onEnable function', {
-            cause: 'invalid_app',
-        });
-    }
+	if (typeof app?.onEnable !== 'function') {
+		throw new Error('App must contain an onEnable function', {
+			cause: 'invalid_app',
+		});
+	}
 
-    return app.onEnable(AppAccessorsInstance.getEnvironmentRead(), AppAccessorsInstance.getConfigurationModify());
+	return app.onEnable(AppAccessorsInstance.getEnvironmentRead(), AppAccessorsInstance.getConfigurationModify());
 }

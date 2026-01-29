@@ -7,7 +7,7 @@ module.exports = {
 	settings: {
 		'import/resolver': {
 			node: {
-				extensions: ['.js', '.ts', '.tsx'],
+				extensions: ['.js', '.ts', '.tsx', '.cts', '.mts'],
 			},
 		},
 	},
@@ -16,7 +16,7 @@ module.exports = {
 	},
 	overrides: [
 		{
-			files: ['**/*.ts', '**/*.tsx'],
+			files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
 			extends: [
 				'plugin:@typescript-eslint/recommended',
 				'plugin:@typescript-eslint/eslint-recommended',
@@ -62,6 +62,14 @@ module.exports = {
 						selector: ['function'],
 						format: ['camelCase', 'PascalCase'],
 						leadingUnderscore: 'allowSingleOrDouble',
+					},
+					{
+						selector: 'parameter',
+						format: null,
+						filter: {
+							regex: '^Story$',
+							match: true,
+						},
 					},
 					{
 						selector: 'parameter',
@@ -112,8 +120,9 @@ module.exports = {
 			settings: {
 				'import/resolver': {
 					node: {
-						extensions: ['.js', '.ts', '.tsx'],
+						extensions: ['.js', '.ts', '.tsx', '.cts', '.mts'],
 					},
+					typescript: {},
 				},
 			},
 		},

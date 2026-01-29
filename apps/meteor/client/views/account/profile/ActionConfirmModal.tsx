@@ -1,9 +1,8 @@
 import { Box, PasswordInput, TextInput, FieldGroup, Field, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import type { ChangeEvent } from 'react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import GenericModal from '../../../components/GenericModal';
 
 type ActionConfirmModalProps = {
 	isPassword: boolean;
@@ -38,6 +37,7 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 		[inputText, onConfirm, onCancel, t],
 	);
 
+	const actionTextId = useId();
 	return (
 		<GenericModal
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSave} {...props} />}
@@ -48,12 +48,14 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 			title={t('Delete_account?')}
 			confirmText={t('Delete_account')}
 		>
-			<Box mb={8}>{isPassword ? t('Enter_your_password_to_delete_your_account') : t('Enter_your_username_to_delete_your_account')}</Box>
+			<Box mb={8} id={actionTextId}>
+				{isPassword ? t('Enter_your_password_to_delete_your_account') : t('Enter_your_username_to_delete_your_account')}
+			</Box>
 			<FieldGroup w='full'>
 				<Field>
 					<FieldRow>
-						{isPassword && <PasswordInput value={inputText} onChange={handleChange} />}
-						{!isPassword && <TextInput value={inputText} onChange={handleChange} />}
+						{isPassword && <PasswordInput value={inputText} onChange={handleChange} aria-labelledby={actionTextId} />}
+						{!isPassword && <TextInput value={inputText} onChange={handleChange} aria-labelledby={actionTextId} />}
 					</FieldRow>
 					<FieldError>{inputError}</FieldError>
 				</Field>

@@ -1,5 +1,5 @@
 {
-	"extends": "../../tsconfig.base.json",
+	"extends": "@rocket.chat/tsconfig/base.json",
 	"compilerOptions": {
 		"target": "es2018",
 		"module": "esNext",
@@ -22,9 +22,9 @@
 		"paths": {
 			/* Support absolute /imports/* with a leading '/' */
 			"/*": ["*"],
-			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"]
+			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"],
 		},
-		"preserveSymlinks": true
+		"preserveSymlinks": true,
 
 		// "sourceMap": true,
 		// "declaration": true,
@@ -32,22 +32,17 @@
 		// "emitDecoratorMetadata": true,
 		// "experimentalDecorators": true,
 	},
-	"include": [
-		"./**/*",
-		"./.storybook/**/*",
-		"./jest.config.ts",
-		"./.scripts/**/*"
-	],
+	"include": ["./**/*", "./.storybook/**/*", "./jest.config.ts", "./.scripts/**/*"],
 	"exclude": [
 		"**/node_modules/**",
 		"./.meteor/**",
 		"./imports/client/**",
 		"**/dist/**",
-		"./public/**"
+		"./public/**",
 		// "./ee/server/services/**"
 	],
 	"ts-node": {
 		"files": false,
-		"swc": true
-	}
+		"swc": true,
+	},
 }

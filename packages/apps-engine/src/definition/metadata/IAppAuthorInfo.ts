@@ -1,5 +1,5 @@
 export interface IAppAuthorInfo {
-    name: string;
-    support: string;
-    homepage: string;
+	name: string;
+	support: string;
+	homepage: string;
 }

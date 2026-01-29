@@ -1,0 +1,9 @@
+export type E2ERoomState =
+	| 'NOT_STARTED'
+	| 'DISABLED'
+	| 'ESTABLISHING'
+	| 'CREATING_KEYS'
+	| 'WAITING_KEYS'
+	| 'KEYS_RECEIVED'
+	| 'READY'
+	| 'ERROR';

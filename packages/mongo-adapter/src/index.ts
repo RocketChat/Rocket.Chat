@@ -1,6 +1,5 @@
-import { compileDocumentSelector } from './query';
-import { compileSort } from './sort';
-
-export const createFilterFromQuery = compileDocumentSelector;
-export const createComparatorFromSort = compileSort;
-export { FieldExpression, Query, Sort } from './types';
+export { ArrayIndices } from './types';
+export { getBSONType } from './bson';
+export { createPredicateFromFilter, createDocumentMatcherFromFilter } from './filter';
+export { createComparatorFromSort } from './sort';
+export { createTransformFromUpdateFilter, createUpsertDocument } from './updateFilter';

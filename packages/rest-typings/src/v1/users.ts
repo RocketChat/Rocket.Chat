@@ -289,15 +289,6 @@ export type UsersEndpoints = {
 		};
 	};
 
-	'/v1/users.createToken': {
-		POST: (params: { userId?: string; username?: string; user?: string }) => {
-			data: {
-				userId: string;
-				authToken: string;
-			};
-		};
-	};
-
 	'/v1/users.create': {
 		POST: (params: UserCreateParamsPOST) => {
 			user: IUser;

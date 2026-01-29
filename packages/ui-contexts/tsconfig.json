@@ -1,9 +1,8 @@
 {
-	"extends": "../../tsconfig.base.client.json",
+	"extends": "@rocket.chat/tsconfig/client.json",
 	"compilerOptions": {
-		"module": "CommonJS",
-		"rootDir": "./src",
-		"outDir": "./dist",
+		"rootDirs": ["./src", "./"],
+		"outDir": "./dist"
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src/**/*", "./jest.config.ts"]
 }

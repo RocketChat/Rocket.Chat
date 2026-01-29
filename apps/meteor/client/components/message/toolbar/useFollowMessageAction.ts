@@ -2,11 +2,9 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useSetting, useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
 
-import { Messages } from '../../../../app/models/client';
 import type { MessageActionContext, MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { t } from '../../../../app/utils/lib/i18n';
-import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
-import { roomsQueryKeys } from '../../../lib/queryKeys';
+import { Messages } from '../../../stores';
 import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 
 export const useFollowMessageAction = (
@@ -28,9 +26,7 @@ export const useFollowMessageAction = (
 	});
 
 	const { tmid, _id } = message;
-	const messageQuery = useReactiveQuery(roomsQueryKeys.message(message.rid, message._id), () =>
-		Messages.findOne({ _id: tmid || _id }, { fields: { replies: 1 } }),
-	);
+	const parentMessage = Messages.use((state) => state.find((record) => record._id === tmid || record._id === _id));
 
 	if (!message || !threadsEnabled || isOmnichannelRoom(room)) {
 		return null;
@@ -38,7 +34,6 @@ export const useFollowMessageAction = (
 
 	let { replies = [] } = message;
 	if (tmid || context) {
-		const parentMessage = messageQuery.data;
 		if (parentMessage) {
 			replies = parentMessage.replies || [];
 		}

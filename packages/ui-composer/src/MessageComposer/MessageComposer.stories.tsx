@@ -13,6 +13,7 @@ import {
 	MessageComposerToolbarSubmit,
 	MessageComposerSkeleton,
 	MessageComposerHint,
+	MessageComposerInputExpandable,
 } from '.';
 
 export default {
@@ -68,11 +69,26 @@ export const RichTextComposer: StoryFn<typeof RichTextComposerInput> = (args) =>
 		</MessageComposer>
 	</>
 );
+export const Expandable: StoryFn<typeof MessageComposer> = () => (
+	<MessageComposer>
+		<MessageComposerInputExpandable
+			dimensions={{
+				inlineSize: 400,
+				blockSize: 120,
+			}}
+			placeholder='Type a message...'
+		/>
+		<MessageComposerToolbar>
+			<MessageToolbarActions />
+		</MessageComposerToolbar>
+	</MessageComposer>
+);
+
+export const ToolbarActions: StoryFn<typeof MessageComposerToolbarActions> = () => <MessageToolbarActions />;
 
 RichTextComposer.args = {
 	// Define the props (args) you want to control
 	placeholder: 'Type a message...',
-	hidePlaceholder: false,
 };
 
 export const MessageComposerWithHints: StoryFn<typeof MessageComposer> = () => (

@@ -1,6 +1,9 @@
 import type { IRole, IUser, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 
+/**
+ * @deprecated use `Authorization.hasAnyRole` instead
+ */
 export const hasAnyRoleAsync = async (
 	userId: IUser['_id'],
 	roleIds: IRole['_id'][],

@@ -1,8 +1,10 @@
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { Box } from '@rocket.chat/fuselage';
-import type { OperationParams } from '@rocket.chat/rest-typings';
-import type { ComponentPropsWithoutRef, MutableRefObject } from 'react';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type { ComponentPropsWithoutRef } from 'react';
 
-import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 import CounterContainer from '../counter/CounterContainer';
 
 const overviewInitalValue = {
@@ -13,16 +15,21 @@ const overviewInitalValue = {
 const initialData = [overviewInitalValue, overviewInitalValue, overviewInitalValue, overviewInitalValue];
 
 type ConversationOverviewProps = {
-	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/conversation-totalizers'>;
-	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
-} & Omit<ComponentPropsWithoutRef<typeof Box>, 'data'>;
+	departmentId: ILivechatDepartment['_id'];
+	dateRange: { start: string; end: string };
+} & ComponentPropsWithoutRef<typeof Box>;
 
-const ConversationOverview = ({ params, reloadRef, ...props }: ConversationOverviewProps) => {
-	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/conversation-totalizers', { params });
+const ConversationOverview = ({ departmentId, dateRange, ...props }: ConversationOverviewProps) => {
+	const getConversationTotals = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversation-totalizers');
+	const { data = initialData } = useQuery({
+		queryKey: omnichannelQueryKeys.analytics.conversationTotals(departmentId, dateRange),
+		queryFn: async () => {
+			const { totalizers } = await getConversationTotals({ departmentId, ...dateRange });
+			return totalizers;
+		},
+	});
 
-	reloadRef.current.conversationOverview = reload;
-
-	return <CounterContainer state={state} data={data} initialData={initialData} {...props} />;
+	return <CounterContainer totals={data} {...props} />;
 };
 
 export default ConversationOverview;

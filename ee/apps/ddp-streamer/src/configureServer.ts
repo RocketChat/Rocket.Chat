@@ -137,19 +137,4 @@ server.methods({
 		}
 		return Presence.setStatus(userId, status, statusText);
 	},
-	// Copied from /app/livechat/server/methods/setUpConnection.js
-	'livechat:setUpConnection'(data = {}) {
-		const { token } = data;
-
-		if (typeof token !== 'string') {
-			return new Error('Token must be string');
-		}
-
-		if (!this.connection.livechatToken) {
-			this.connection.livechatToken = token;
-			this.connection.onClose(async () => {
-				await MeteorService.notifyGuestStatusChanged(token, 'offline');
-			});
-		}
-	},
 });

@@ -1,5 +1,5 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
-import { isSettingColor } from '@rocket.chat/core-typings';
+import { isSettingColor, isSettingRange } from '@rocket.chat/core-typings';
 
 export const getSettingDefaults = (
 	setting: Partial<ISetting> & Pick<ISetting, '_id' | 'value' | 'type'>,
@@ -36,6 +36,10 @@ export const getSettingDefaults = (
 		...(options.displayQuery ? { displayQuery: JSON.stringify(options.displayQuery) } : undefined),
 		...(isSettingColor(setting as ISetting) && {
 			packageEditor: (setting as ISettingColor).editor,
+		}),
+		...(isSettingRange(setting as ISetting) && {
+			minValue: 0,
+			maxValue: 100,
 		}),
 	};
 };

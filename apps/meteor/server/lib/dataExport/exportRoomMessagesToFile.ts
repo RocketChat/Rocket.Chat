@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from 'fs/promises';
 
-import type { IMessage, IRoom, IUser, MessageAttachment, FileProp, RoomType } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, MessageAttachment, FileProp, RoomType, IExportOperation } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
@@ -8,24 +8,16 @@ import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { joinPath } from '../fileUtils';
 import { i18n } from '../i18n';
 
-const hideUserName = (
-	username: string,
-	userData: Pick<IUser, 'username'> | undefined,
-	usersMap: { userNameTable: Record<string, string> },
-) => {
-	if (!usersMap.userNameTable) {
-		usersMap.userNameTable = {};
-	}
-
-	if (!usersMap.userNameTable[username]) {
+const hideUserName = (username: string, userData: Pick<IUser, 'username'> | undefined, usersMap: Record<string, string>) => {
+	if (!usersMap[username]) {
 		if (userData && username === userData.username) {
-			usersMap.userNameTable[username] = username;
+			usersMap[username] = username;
 		} else {
-			usersMap.userNameTable[username] = `User_${Object.keys(usersMap.userNameTable).length + 1}`;
+			usersMap[username] = `User_${Object.keys(usersMap).length + 1}`;
 		}
 	}
 
-	return usersMap.userNameTable[username];
+	return usersMap[username];
 };
 
 const getAttachmentData = (attachment: MessageAttachment, message: IMessage) => {
@@ -66,7 +58,7 @@ export const getMessageData = (
 	msg: IMessage,
 	hideUsers: boolean,
 	userData: Pick<IUser, 'username'> | undefined,
-	usersMap: { userNameTable: Record<string, string> },
+	usersMap: IExportOperation['userNameTable'],
 ): MessageData => {
 	const username = hideUsers ? hideUserName(msg.u.username || msg.u.name || '', userData, usersMap) : msg.u.username;
 
@@ -86,6 +78,14 @@ export const getMessageData = (
 			break;
 		case 'ul':
 			messageObject.msg = i18n.t('User_left_this_channel');
+			break;
+		case 'ui':
+			messageObject.msg = i18n.t('User_invited_to_room', {
+				user_invited: hideUserName(msg.msg, userData, usersMap),
+			});
+			break;
+		case 'uir':
+			messageObject.msg = i18n.t('User_rejected_invitation_to_room');
 			break;
 		case 'ult':
 			messageObject.msg = i18n.t('User_left_this_team');
@@ -155,6 +155,9 @@ export const getMessageData = (
 		case 'livechat-started':
 			messageObject.msg = i18n.t('Chat_started');
 			break;
+		case 'abac-removed-user-from-room':
+			messageObject.msg = i18n.t('abac_removed_user_from_the_room');
+			break;
 	}
 
 	return messageObject;
@@ -199,7 +202,7 @@ export const exportRoomMessages = async (
 	limit: number,
 	userData: any,
 	filter: any = {},
-	usersMap: any = {},
+	usersMap: IExportOperation['userNameTable'] = {},
 	hideUsers = true,
 ) => {
 	const readPreference = readSecondaryPreferred();
@@ -254,7 +257,7 @@ export const exportRoomMessagesToFile = async function (
 	)[],
 	userData: IUser,
 	messagesFilter = {},
-	usersMap = {},
+	usersMap: IExportOperation['userNameTable'] = {},
 	hideUsers = true,
 ) {
 	await mkdir(exportPath, { recursive: true });

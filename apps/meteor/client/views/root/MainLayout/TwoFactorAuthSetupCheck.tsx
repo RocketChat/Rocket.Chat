@@ -1,11 +1,10 @@
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
-import { useLayout, useSetModal } from '@rocket.chat/ui-contexts';
+import { Box } from '@rocket.chat/fuselage';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import { lazy, useLayoutEffect } from 'react';
+import { lazy } from 'react';
 
 import LayoutWithSidebar from './LayoutWithSidebar';
-import LayoutWithSidebarV2 from './LayoutWithSidebarV2';
-import TwoFactorRequiredModal from './TwoFactorRequiredModal';
+import MainContent from './MainContent';
 import { useRequire2faSetup } from '../../hooks/useRequire2faSetup';
 
 const AccountSecurityPage = lazy(() => import('../../account/security/AccountSecurityPage'));
@@ -13,34 +12,18 @@ const AccountSecurityPage = lazy(() => import('../../account/security/AccountSec
 const TwoFactorAuthSetupCheck = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
 	const require2faSetup = useRequire2faSetup();
-	const setModal = useSetModal();
-
-	useLayoutEffect(() => {
-		if (require2faSetup) {
-			setModal(<TwoFactorRequiredModal />);
-		}
-	}, [setModal, require2faSetup]);
 
 	if (require2faSetup) {
 		return (
-			<main id='rocket-chat' className={embeddedLayout ? 'embedded-view' : undefined}>
-				<div className='main-content content-background-color'>
+			<Box bg='surface-light' id='rocket-chat' className={embeddedLayout ? 'embedded-view' : undefined}>
+				<MainContent>
 					<AccountSecurityPage />
-				</div>
-			</main>
+				</MainContent>
+			</Box>
 		);
 	}
 
-	return (
-		<FeaturePreview feature='newNavigation'>
-			<FeaturePreviewOff>
-				<LayoutWithSidebar>{children}</LayoutWithSidebar>
-			</FeaturePreviewOff>
-			<FeaturePreviewOn>
-				<LayoutWithSidebarV2>{children}</LayoutWithSidebarV2>
-			</FeaturePreviewOn>
-		</FeaturePreview>
-	);
+	return <LayoutWithSidebar>{children}</LayoutWithSidebar>;
 };
 
 export default TwoFactorAuthSetupCheck;

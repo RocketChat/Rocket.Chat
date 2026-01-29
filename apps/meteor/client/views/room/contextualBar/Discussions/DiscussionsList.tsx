@@ -1,14 +1,8 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import { useSetting } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, MouseEvent, RefObject } from 'react';
-import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Virtuoso } from 'react-virtuoso';
-
-import DiscussionsListRow from './DiscussionsListRow';
 import {
+	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarContent,
@@ -16,8 +10,15 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarTitle,
 	ContextualbarSection,
-} from '../../../../components/Contextualbar';
-import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
+import { useSetting } from '@rocket.chat/ui-contexts';
+import type { ChangeEvent, MouseEvent, RefObject } from 'react';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Virtuoso } from 'react-virtuoso';
+
+import DiscussionsListRow from './DiscussionsListRow';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 
 type DiscussionsListProps = {
@@ -55,7 +56,7 @@ function DiscussionsList({
 	});
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='discussion' />
 				<ContextualbarTitle>{t('Discussions')}</ContextualbarTitle>
@@ -92,7 +93,6 @@ function DiscussionsList({
 								style={{
 									height: blockSize,
 									width: inlineSize,
-									overflow: 'hidden',
 								}}
 								totalCount={total}
 								endReached={loading ? () => undefined : (start) => loadMoreItems(start, Math.min(50, total - start))}
@@ -104,7 +104,7 @@ function DiscussionsList({
 					)}
 				</Box>
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 }
 

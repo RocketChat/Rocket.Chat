@@ -1,51 +1,31 @@
 import { Base64 } from '@rocket.chat/base64';
-import type { RoomsImagesProps } from '@rocket.chat/rest-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { e2e } from '../../../../../app/e2e/client/rocketchat.e2e';
-import { useScrollableRecordList } from '../../../../hooks/lists/useScrollableRecordList';
-import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
-import { ImagesList } from '../../../../lib/lists/ImagesList';
+import { e2e } from '../../../../lib/e2ee/rocketchat.e2e';
+import { roomsQueryKeys } from '../../../../lib/queryKeys';
 
-export const useImagesList = (
-	options: RoomsImagesProps,
-): {
-	filesList: ImagesList;
-	initialItemCount: number;
-	reload: () => void;
-	loadMoreItems: (start: number) => void;
-} => {
-	const [filesList, setFilesList] = useState(() => new ImagesList(options));
-	const reload = useCallback(() => setFilesList(new ImagesList(options)), [options]);
+export const useImagesList = ({ roomId, startingFromId }: { roomId: IRoom['_id']; startingFromId?: string }) => {
+	const getFiles = useEndpoint('GET', '/v1/rooms.images');
 
-	useComponentDidUpdate(() => {
-		options && reload();
-	}, [options, reload]);
+	const count = 5;
 
-	useEffect(() => {
-		if (filesList.options !== options) {
-			filesList.updateFilters(options);
-		}
-	}, [filesList, options]);
-
-	const apiEndPoint = '/v1/rooms.images';
-
-	const getFiles = useEndpoint('GET', apiEndPoint);
-
-	const fetchMessages = useCallback(
-		async (start: number, end: number) => {
+	return useInfiniteQuery({
+		queryKey: roomsQueryKeys.images(roomId, { startingFromId }),
+		queryFn: async ({ pageParam: offset }) => {
 			const { files, total } = await getFiles({
-				roomId: options.roomId,
-				startingFromId: options.startingFromId,
-				offset: start,
-				count: end,
+				roomId,
+				startingFromId,
+				offset,
+				count,
 			});
 
 			const items = files.map((file) => ({
 				...file,
 				uploadedAt: file.uploadedAt ? new Date(file.uploadedAt) : undefined,
 				modifiedAt: file.modifiedAt ? new Date(file.modifiedAt) : undefined,
+				expiresAt: file.expiresAt ? new Date(file.expiresAt) : undefined,
 			}));
 
 			for await (const file of items) {
@@ -71,15 +51,13 @@ export const useImagesList = (
 				itemCount: total,
 			};
 		},
-		[getFiles, options.roomId, options.startingFromId],
-	);
-
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(filesList, fetchMessages, 5);
-
-	return {
-		reload,
-		filesList,
-		loadMoreItems,
-		initialItemCount,
-	};
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, _, lastOffset) => {
+			const nextOffset = lastOffset + count;
+			if (nextOffset >= lastPage.itemCount) return undefined;
+			return nextOffset;
+		},
+		// Remove duplicates while preserving order
+		select: ({ pages }) => Array.from(new Map(pages.flatMap((page) => page.items.map((item) => [item._id, item]))).values()),
+	});
 };

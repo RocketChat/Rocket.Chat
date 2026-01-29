@@ -1,7 +1,8 @@
 import type { IWebdavNode, IWebdavAccountIntegration } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Modal, Box, IconButton, Select } from '@rocket.chat/fuselage';
+import { Modal, Box, IconButton, Select, ModalHeader, ModalTitle, ModalClose, ModalContent, ModalFooter } from '@rocket.chat/fuselage';
 import { useEffectEvent, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useSort } from '@rocket.chat/ui-client';
 import { useMethod, useToastMessageDispatch, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MouseEvent } from 'react';
 import { useState, useEffect, useCallback } from 'react';
@@ -12,7 +13,6 @@ import WebdavFilePickerTable from './WebdavFilePickerTable';
 import { sortWebdavNodes } from './lib/sortWebdavNodes';
 import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
 import FilterByText from '../../../../components/FilterByText';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import FileUploadModal from '../../modals/FileUploadModal';
 
 export type WebdavSortOptions = 'name' | 'size' | 'dataModified';
@@ -183,11 +183,11 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 
 	return (
 		<Modal>
-			<Modal.Header>
-				<Modal.Title>{t('Upload_From', { name: account.name })}</Modal.Title>
-				<Modal.Close title={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle>{t('Upload_From', { name: account.name })}</ModalTitle>
+				<ModalClose title={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Box display='flex' justifyContent='space-between'>
 					<FilePickerBreadcrumbs parentFolders={parentFolders} handleBreadcrumb={handleBreadcrumb} handleBack={handleBack} />
 					<Box>
@@ -213,8 +213,8 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 					/>
 				)}
 				{typeView === 'grid' && <WebdavFilePickerGrid webdavNodes={webdavNodes} onNodeClick={handleNodeClick} isLoading={isLoading} />}
-			</Modal.Content>
-			<Modal.Footer />
+			</ModalContent>
+			<ModalFooter />
 		</Modal>
 	);
 };

@@ -88,6 +88,7 @@ export const createSettings = async (): Promise<void> => {
 				invalidValue: false,
 				modules: ['livechat-enterprise'],
 				enableQuery: omnichannelEnabledQuery,
+				public: true,
 			});
 
 			await this.add('Livechat_waiting_queue_message', '', {
@@ -328,5 +329,17 @@ export const createSettings = async (): Promise<void> => {
 	await Settings.addOptionValueById('Livechat_Routing_Method', {
 		key: 'Load_Rotation',
 		i18nLabel: 'Load_Rotation',
+	});
+
+	await settingsRegistry.add('Livechat_hide_expand_chat', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		i18nDescription: 'Livechat_hide_expand_chat_description',
+		invalidValue: false,
+		modules: ['livechat-enterprise'],
+		enterprise: false,
+		public: false,
+		enableQuery: omnichannelEnabledQuery,
 	});
 };

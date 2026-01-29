@@ -3,8 +3,6 @@ import type { ReactNode } from 'react';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 
-import type { AsyncState } from '../../../../lib/asyncState/AsyncState';
-import { AsyncStatePhase } from '../../../../lib/asyncState/AsyncStatePhase';
 import { OmnichannelRoomIconContext } from '../context/OmnichannelRoomIconContext';
 import OmnichannelRoomIconManager from '../lib/OmnichannelRoomIconManager';
 
@@ -30,32 +28,16 @@ export const OmnichannelRoomIconProvider = ({ children }: OmnichannelRoomIconPro
 	return (
 		<OmnichannelRoomIconContext.Provider
 			value={useMemo(() => {
-				const extractSnapshot = (app: string, iconName: string): AsyncState<string> => {
-					const icon = OmnichannelRoomIconManager.get(app, iconName);
-
-					if (icon) {
-						return {
-							phase: AsyncStatePhase.RESOLVED,
-							value: icon,
-							error: undefined,
-						};
-					}
-
-					return {
-						phase: AsyncStatePhase.LOADING,
-						value: undefined,
-						error: undefined,
-					};
-				};
+				const extractSnapshot = (app: string, iconName: string) => OmnichannelRoomIconManager.get(app, iconName);
 
 				// We cache all the icons here, so that we can use them in the OmnichannelRoomIcon component
-				const snapshots = new Map<string, AsyncState<string>>();
+				const snapshots = new Map<string, string | undefined>();
 
 				return {
 					queryIcon: (
 						app: string,
 						iconName: string,
-					): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => AsyncState<string>] => [
+					): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string | undefined] => [
 						(callback): (() => void) =>
 							OmnichannelRoomIconManager.on(`${app}-${iconName}`, () => {
 								snapshots.set(`${app}-${iconName}`, extractSnapshot(app, iconName));
@@ -65,7 +47,7 @@ export const OmnichannelRoomIconProvider = ({ children }: OmnichannelRoomIconPro
 							}),
 
 						// No problem here, because it's return value is a cached in the snapshots map on subsequent calls
-						(): AsyncState<string> => {
+						() => {
 							let snapshot = snapshots.get(`${app}-${iconName}`);
 
 							if (!snapshot) {

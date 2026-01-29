@@ -1,10 +1,8 @@
 import type { RoomType, IRoom } from '@rocket.chat/core-typings';
-
-import type { RoomToolboxActionConfig } from '../contexts/RoomToolboxContext';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 
 const groupsDict = {
 	l: 'live',
-	v: 'voip',
 	d: 'direct',
 	p: 'group',
 	c: 'channel',

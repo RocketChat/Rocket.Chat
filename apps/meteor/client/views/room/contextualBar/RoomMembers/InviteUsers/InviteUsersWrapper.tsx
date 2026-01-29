@@ -1,13 +1,13 @@
-import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-
 import {
 	ContextualbarHeader,
 	ContextualbarTitle,
 	ContextualbarBack,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
-} from '../../../../../components/Contextualbar';
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
+import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type InviteUsersWrapperProps = {
 	children: ReactElement;
@@ -19,14 +19,14 @@ const InviteUsersWrapper = ({ children, onClickBack, onClose }: InviteUsersWrapp
 	const { t } = useTranslation();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarBack onClick={onClickBack} />
 				<ContextualbarTitle>{t('Invite_Users')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>{children}</ContextualbarScrollableContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

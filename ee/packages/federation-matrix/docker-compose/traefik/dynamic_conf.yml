@@ -1,0 +1,13 @@
+tls:
+  certificates:
+    # synapse1
+    - certFile: "/etc/traefik/certs/hs1.pem"
+      keyFile: "/etc/traefik/certs/hs1-key.pem"
+
+    # rocket.chat rc1 (container)
+    - certFile: "/etc/traefik/certs/rc1.pem"
+      keyFile: "/etc/traefik/certs/rc1-key.pem"
+
+    # element
+    - certFile: "/etc/traefik/certs/element.pem"
+      keyFile: "/etc/traefik/certs/element-key.pem"

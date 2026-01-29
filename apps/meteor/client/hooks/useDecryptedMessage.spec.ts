@@ -2,14 +2,14 @@ import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { renderHook, waitFor } from '@testing-library/react';
 
 import { useDecryptedMessage } from './useDecryptedMessage';
-import { e2e } from '../../app/e2e/client/rocketchat.e2e';
+import { e2e } from '../lib/e2ee/rocketchat.e2e';
 
 // Mock the dependencies
 jest.mock('@rocket.chat/core-typings', () => ({
 	isE2EEMessage: jest.fn(),
 }));
 
-jest.mock('../../app/e2e/client/rocketchat.e2e', () => ({
+jest.mock('../lib/e2ee/rocketchat.e2e', () => ({
 	e2e: {
 		decryptMessage: jest.fn(),
 	},
@@ -80,7 +80,10 @@ describe('useDecryptedMessage', () => {
 			expect(result.current).toBe('E2E_message_encrypted_placeholder');
 		});
 
-		expect(result.current).toBe('Message_with_attachment');
+		await waitFor(() => {
+			expect(result.current).toBe('Message_with_attachment');
+		});
+
 		expect(e2e.decryptMessage).toHaveBeenCalledWith(message);
 	});
 });

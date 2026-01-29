@@ -22,7 +22,7 @@ export const useNotification = () => {
 			return;
 		}
 
-		const { rid } = notification.payload;
+		const { rid, name: roomName, _id: msgId } = notification.payload;
 		if (!rid) {
 			return;
 		}
@@ -35,7 +35,7 @@ export const useNotification = () => {
 		const n = new Notification(notification.title, {
 			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username as string),
 			body: stripTags(message?.msg),
-			tag: notification.payload._id,
+			tag: msgId,
 			canReply: true,
 			silent: true,
 			requireInteraction,
@@ -63,7 +63,7 @@ export const useNotification = () => {
 			n.close();
 			window.focus();
 
-			if (!notification.payload._id || !notification.payload.rid || !notification.payload.name) {
+			if (!msgId || !rid || !roomName) {
 				return;
 			}
 
@@ -72,47 +72,47 @@ export const useNotification = () => {
 					router.navigate({
 						pattern: '/direct/:rid/:tab?/:context?',
 						params: {
-							rid: notification.payload.rid,
+							rid,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
 						},
-						search: { ...router.getSearchParameters(), jump: notification.payload._id },
+						search: { ...router.getSearchParameters(), jump: msgId },
 					});
 					break;
 				case 'c':
 					return router.navigate({
 						pattern: '/channel/:name/:tab?/:context?',
 						params: {
-							name: notification.payload.name,
+							name: roomName,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
 						},
-						search: { ...router.getSearchParameters(), jump: notification.payload._id },
+						search: { ...router.getSearchParameters(), jump: msgId },
 					});
 				case 'p':
 					return router.navigate({
 						pattern: '/group/:name/:tab?/:context?',
 						params: {
-							name: notification.payload.name,
+							name: roomName,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
 						},
-						search: { ...router.getSearchParameters(), jump: notification.payload._id },
+						search: { ...router.getSearchParameters(), jump: msgId },
 					});
 				case 'l':
 					return router.navigate({
 						pattern: '/live/:id/:tab?/:context?',
 						params: {
-							id: notification.payload.rid,
+							id: rid,
 							tab: 'room-info',
 						},
-						search: { ...router.getSearchParameters(), jump: notification.payload._id },
+						search: { ...router.getSearchParameters(), jump: msgId },
 					});
 			}
 		};

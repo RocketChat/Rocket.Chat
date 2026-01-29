@@ -174,7 +174,7 @@ describe('isValidQuery', () => {
 					},
 				},
 			};
-			expect(isValidQuery(query, props, ['$or'])).to.be.true;
+			expect(isValidQuery(query, props, ['$or', '$regex'])).to.be.true;
 			expect(isValidQuery.errors.length).to.be.equals(0);
 		});
 
@@ -211,6 +211,16 @@ describe('isValidQuery', () => {
 					['$or', '$and'],
 				),
 			).to.be.false;
+		});
+
+		it('should return false if the query contains nested conditions with disallowed operators', () => {
+			const props = ['username'];
+			const allowedOps = ['$and', '$ne'];
+			const query = {
+				$and: [{ username: { $exists: true } }, { username: { $ne: '1000' } }],
+			};
+			expect(isValidQuery(query, props, allowedOps)).to.be.false;
+			expect(isValidQuery.errors.length).to.be.equals(1);
 		});
 	});
 });

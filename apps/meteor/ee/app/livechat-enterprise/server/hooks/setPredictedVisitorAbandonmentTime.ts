@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import { markRoomResponded } from '../../../../../app/livechat/server/hooks/markRoomResponded';
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { setPredictedVisitorAbandonmentTime } from '../lib/Helper';
 
 function shouldSaveInactivity(message: IMessage): boolean {

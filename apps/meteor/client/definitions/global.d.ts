@@ -1,4 +1,4 @@
-import type { IRocketChatDesktop } from './IRocketChatDesktop';
+import type { IRocketChatDesktop } from '@rocket.chat/desktop-api';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -26,6 +26,7 @@ declare global {
 		mozAudioContext?: AudioContext;
 		/** @deprecated use `window.AudioContext` */
 		webkitAudioContext?: AudioContext;
+		opera?: string;
 	}
 
 	interface Navigator {
@@ -57,6 +58,9 @@ declare global {
 			onSuccess?: (stream: MediaStream) => void,
 			onError?: (error: any) => void,
 		) => void;
+		userAgentData?: {
+			mobile: boolean;
+		};
 	}
 
 	interface RTCPeerConnection {

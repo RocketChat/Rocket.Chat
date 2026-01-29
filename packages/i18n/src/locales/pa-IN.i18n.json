@@ -3,7 +3,6 @@
   "Away": "ਦੂਰ",
   "Busy": "ਰੁਝੇਵਾਂ",
   "Chats_removed": "ਗੱਲਾਂਬਾਤਾਂ ਹਟਾਈਆਂ ਗਈਆਂ",
-  "Current_Chats": "ਮੌਜੂਦਾ ਗੱਲਾਂਬਾਤਾਂ",
   "FEDERATION_Status": "ਹਾਲਤ",
   "Incoming_Livechats": "ਕਤਾਰਬੱਧ ਗੱਲਾਂਬਾਤਾਂ",
   "Last_Status": "ਪਿਛਲੀ ਹਾਲਤ",
@@ -19,5 +18,5 @@
   "offline": "ਗੈਰ-ਹਾਜ਼ਰ",
   "online": "ਹਾਜ਼ਰ",
   "set__username__as__role_": "set {{username}} ਨੂੰ {{role}}",
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} empty rooms will be removed automatically:<br/> {{rooms}}."
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> empty rooms will be removed automatically:<br/> {{rooms}}."
 }

@@ -4,7 +4,6 @@ import { logLevel } from './logLevel';
 
 export * from './getPino';
 export * from './logLevel';
-export * from './logQueue';
 
 const getLevel = (level: LogLevelSetting): string => {
 	switch (level) {
@@ -50,76 +49,40 @@ export class Logger {
 		this.logger.level = newLevel;
 	}
 
-	log<T extends object>(obj: T, ...args: any[]): void;
-
-	log(obj: unknown, ...args: any[]): void;
-
-	log(msg: string, ...args: any[]): void {
-		this.logger.info(msg, ...args);
+	log(msg: object | string): void {
+		this.logger.info(msg);
 	}
 
-	debug<T extends object>(obj: T, ...args: any[]): void;
-
-	debug(obj: unknown, ...args: any[]): void;
-
-	debug(msg: string, ...args: any[]): void {
-		this.logger.debug(msg, ...args);
+	debug(msg: object | string): void {
+		this.logger.debug(msg);
 	}
 
-	info<T extends object>(obj: T, ...args: any[]): void;
-
-	info(obj: unknown, ...args: any[]): void;
-
-	info(msg: string, ...args: any[]): void {
-		this.logger.info(msg, ...args);
+	info(msg: object | string): void {
+		this.logger.info(msg);
 	}
 
-	startup<T extends object>(obj: T, ...args: any[]): void;
-
-	startup(obj: unknown, ...args: any[]): void;
-
-	startup(msg: string, ...args: any[]): void {
-		this.logger.startup(msg, ...args);
+	startup(msg: object | string): void {
+		this.logger.startup(msg);
 	}
 
-	success<T extends object>(obj: T, ...args: any[]): void;
-
-	success(obj: unknown, ...args: any[]): void;
-
-	success(msg: string, ...args: any[]): void {
-		this.logger.info(msg, ...args);
+	success(msg: object | string): void {
+		this.logger.info(msg);
 	}
 
-	warn<T extends object>(obj: T, ...args: any[]): void;
-
-	warn(obj: unknown, ...args: any[]): void;
-
-	warn(msg: string, ...args: any[]): void {
-		this.logger.warn(msg, ...args);
+	warn(msg: object | string): void {
+		this.logger.warn(msg);
 	}
 
-	error<T extends object>(obj: T, ...args: any[]): void;
-
-	error(obj: unknown, ...args: any[]): void;
-
-	error(msg: string, ...args: any[]): void {
-		this.logger.error(msg, ...args);
+	error(msg: object | string): void {
+		this.logger.error(msg);
 	}
 
-	method<T extends object>(obj: T, ...args: any[]): void;
-
-	method(obj: unknown, ...args: any[]): void;
-
-	method(msg: string, ...args: any[]): void {
-		this.logger.method(msg, ...args);
+	method(msg: object | string): void {
+		this.logger.method(msg);
 	}
 
-	subscription<T extends object>(obj: T, ...args: any[]): void;
-
-	subscription(obj: unknown, ...args: any[]): void;
-
-	subscription(msg: string, ...args: any[]): void {
-		this.logger.subscription(msg, ...args);
+	subscription(msg: object | string): void {
+		this.logger.subscription(msg);
 	}
 
 	fatal(err: unknown, ...args: any[]): void {

@@ -1,23 +1,24 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Box, MessageDivider, Throbber } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
-import type { UseQueryResult } from '@tanstack/react-query';
-import type { ReactElement, ReactNode } from 'react';
-import { useCallback } from 'react';
-import { Virtuoso } from 'react-virtuoso';
-
-import { MessageTypes } from '../../../../app/ui-utils/client';
-import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import { MessageTypes } from '@rocket.chat/message-types';
 import {
+	VirtualizedScrollbars,
 	ContextualbarContent,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarEmptyContent,
-} from '../../../components/Contextualbar';
-import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
+import { useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import type { UseQueryResult } from '@tanstack/react-query';
+import type { ReactElement, ReactNode } from 'react';
+import { useCallback } from 'react';
+import { Virtuoso } from 'react-virtuoso';
+
+import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
@@ -25,7 +26,6 @@ import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import { isMessageNewDay } from '../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../MessageList/providers/MessageListProvider';
 import { useRoomSubscription } from '../contexts/RoomContext';
-import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 
 type MessageListTabProps = {
 	iconName: IconName;
@@ -47,7 +47,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 	const subscription = useRoomSubscription();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name={iconName} />
 				<ContextualbarTitle>{title}</ContextualbarTitle>
@@ -112,7 +112,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 					</>
 				)}
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

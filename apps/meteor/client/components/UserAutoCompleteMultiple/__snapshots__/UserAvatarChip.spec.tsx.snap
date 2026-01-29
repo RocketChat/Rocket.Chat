@@ -1,0 +1,146 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`UserAvatarChip renders Default without crashing 1`] = `
+<body>
+  <div>
+    <button
+      class="rcx-box rcx-chip rcx-css-u2ekhj"
+      type="button"
+    >
+      <span
+        class="rcx-box rcx-chip__text rcx-css-trljwa"
+      >
+        <figure
+          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="rcx-avatar__element rcx-avatar__element--x20"
+            data-username="johndoe"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+            title="johndoe"
+          />
+        </figure>
+        <span
+          class="rcx-box rcx-box--full rcx-css-1wsppvb"
+        >
+          John Doe
+        </span>
+      </span>
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-trljwa rcx-css-1wv1vf9"
+      >
+        
+      </i>
+    </button>
+  </div>
+</body>
+`;
+
+exports[`UserAvatarChip renders Federated without crashing 1`] = `
+<body>
+  <div>
+    <button
+      class="rcx-box rcx-chip rcx-css-u2ekhj"
+      type="button"
+    >
+      <span
+        class="rcx-box rcx-chip__text rcx-css-trljwa"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-globe rcx-icon rcx-css-s0bbgk"
+        >
+          
+        </i>
+        <span
+          class="rcx-box rcx-box--full rcx-css-1wsppvb"
+        >
+          John Doe
+        </span>
+      </span>
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-trljwa rcx-css-1wv1vf9"
+      >
+        
+      </i>
+    </button>
+  </div>
+</body>
+`;
+
+exports[`UserAvatarChip renders WithoutClickEvent without crashing 1`] = `
+<body>
+  <div>
+    <button
+      class="rcx-box rcx-chip rcx-css-u2ekhj"
+      disabled=""
+      type="button"
+    >
+      <span
+        class="rcx-box rcx-chip__text rcx-css-trljwa"
+      >
+        <figure
+          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="rcx-avatar__element rcx-avatar__element--x20"
+            data-username="johndoe"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+            title="johndoe"
+          />
+        </figure>
+        <span
+          class="rcx-box rcx-box--full rcx-css-1wsppvb"
+        >
+          johndoe
+        </span>
+      </span>
+    </button>
+  </div>
+</body>
+`;
+
+exports[`UserAvatarChip renders WithoutName without crashing 1`] = `
+<body>
+  <div>
+    <button
+      class="rcx-box rcx-chip rcx-css-u2ekhj"
+      type="button"
+    >
+      <span
+        class="rcx-box rcx-chip__text rcx-css-trljwa"
+      >
+        <figure
+          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+        >
+          <img
+            alt=""
+            aria-hidden="true"
+            class="rcx-avatar__element rcx-avatar__element--x20"
+            data-username="johndoe"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+            title="johndoe"
+          />
+        </figure>
+        <span
+          class="rcx-box rcx-box--full rcx-css-1wsppvb"
+        >
+          johndoe
+        </span>
+      </span>
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-trljwa rcx-css-1wv1vf9"
+      >
+        
+      </i>
+    </button>
+  </div>
+</body>
+`;

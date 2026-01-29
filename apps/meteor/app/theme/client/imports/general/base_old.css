@@ -45,10 +45,6 @@
 		word-wrap: break-word;
 		-webkit-overflow-scrolling: touch;
 	}
-
-	& .footer {
-		flex-shrink: 0;
-	}
 }
 
 .messages-box {
@@ -239,26 +235,6 @@ blockquote {
 		& .messages-box {
 			margin-top: 0;
 		}
-
-		& .footer {
-			min-height: 36px;
-			padding: 0;
-
-			& .users-typing {
-				display: none;
-			}
-
-			& .formatting-tips {
-				display: none;
-			}
-		}
-	}
-}
-
-@media (width <= 767px) {
-	.main-content {
-		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform 0.1s linear;
-		will-change: transform;
 	}
 }
 

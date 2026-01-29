@@ -23,7 +23,6 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { browseChannelsMethod } from '../../../../server/methods/browseChannels';
 import { spotlightMethod } from '../../../../server/publications/spotlight';
 import { resetAuditedSettingByUser, updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
-import { getLogs } from '../../../../server/stream/stdout';
 import { passwordPolicy } from '../../../lib/server';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -364,6 +363,7 @@ API.v1.addRoute(
 			const sortBy = sort ? Object.keys(sort)[0] : undefined;
 			const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
+			const user = await Users.findOneById(this.userId, { projection: { __rooms: 1 } });
 			const result = await browseChannelsMethod(
 				{
 					...filter,
@@ -372,7 +372,7 @@ API.v1.addRoute(
 					offset: Math.max(0, offset),
 					limit: Math.max(0, count),
 				},
-				this.user,
+				user,
 			);
 
 			if (!result) {
@@ -436,15 +436,6 @@ API.v1.addRoute(
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute(
-	'stdout.queue',
-	{ authRequired: true, permissionsRequired: ['view-logs'] },
-	{
-		async get() {
-			return API.v1.success({ queue: getLogs() });
-		},
-	},
-);
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -485,6 +476,7 @@ API.v1.addRoute(
 		authRequired: true,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
+		applyMeteorContext: true,
 	},
 	{
 		async post() {
@@ -524,27 +516,29 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = await Meteor.callAsync(method, ...params);
-				return API.v1.success(mountResult({ id, result }));
+				return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
-					SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
+					SystemLogger.error({ msg: 'Exception while invoking method', err, method });
 				}
 
 				if (settings.get('Log_Level') === '2') {
 					Meteor._debug(`Exception while invoking method ${method}`, err);
 				}
-				return API.v1.success(mountResult({ id, error: err }));
+
+				return API.v1.failure(mountResult({ id, error: err }));
 			}
 		},
 	},
 );
+
 API.v1.addRoute(
 	'method.callAnon/:method',
 	{
 		authRequired: false,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
+		applyMeteorContext: true,
 	},
 	{
 		async post() {
@@ -580,16 +574,15 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = await Meteor.callAsync(method, ...params);
-				return API.v1.success(mountResult({ id, result }));
+				return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
-					SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
+					SystemLogger.error({ msg: 'Exception while invoking method', err, method });
 				}
 				if (settings.get('Log_Level') === '2') {
 					Meteor._debug(`Exception while invoking method ${method}`, err);
 				}
-				return API.v1.success(mountResult({ id, error: err }));
+				return API.v1.failure(mountResult({ id, error: err }));
 			}
 		},
 	},

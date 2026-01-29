@@ -99,7 +99,7 @@ export class DDPSDK implements SDK {
 		const timeoutControl = TimeoutControl.create(ddp, connection);
 
 		const rest = new (class RestApiClient extends RestClient {
-			getCredentials() {
+			override getCredentials() {
 				if (!account.uid || !account.user?.token) {
 					return;
 				}

@@ -10,8 +10,11 @@ import { useTranslation } from 'react-i18next';
 
 import MemoizedSetting from './MemoizedSetting';
 import MarkdownText from '../../../../components/MarkdownText';
+import { links } from '../../../../lib/links';
 import { useEditableSetting, useEditableSettingsDispatch, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
 import { useHasSettingModule } from '../hooks/useHasSettingModule';
+
+const PRICING_URL = links.go.pricing;
 
 type SettingProps = {
 	className?: string;
@@ -104,10 +107,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	const labelText = (i18n.exists(i18nLabel) && t(i18nLabel)) || (i18n.exists(_id) && t(_id)) || i18nLabel || _id;
 
 	const hint = useMemo(
-		() =>
-			i18nDescription && i18n.exists(i18nDescription) ? (
-				<MarkdownText variant='inline' preserveHtml content={t(i18nDescription)} />
-			) : undefined,
+		() => (i18nDescription && i18n.exists(i18nDescription) ? <MarkdownText variant='inline' content={t(i18nDescription)} /> : undefined),
 		[i18n, i18nDescription, t],
 	);
 
@@ -118,8 +118,6 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	);
 
 	const shouldDisableEnterprise = setting.enterprise && !hasSettingModule;
-
-	const PRICING_URL = 'https://go.rocket.chat/i/see-paid-plan-customize-homepage';
 
 	const showUpgradeButton = useMemo(
 		() =>
