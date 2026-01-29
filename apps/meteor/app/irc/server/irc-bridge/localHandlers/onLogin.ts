@@ -1,6 +1,11 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
-export default async function handleOnLogin(login) {
+type Login = {
+	user: IUser | null;
+};
+
+export default async function handleOnLogin(this: any, login: Login): Promise<void> {
 	if (login.user === null) {
 		return this.log('Invalid handleOnLogin call');
 	}
@@ -29,10 +34,14 @@ export default async function handleOnLogin(login) {
 		_id: login.user._id,
 	});
 
-	this.sendCommand('registerUser', user);
-	const rooms = await Rooms.findBySubscriptionUserId(user._id).toArray();
+	if (!user) {
+		return;
+	}
 
-	rooms.forEach((room) => {
+	this.sendCommand('registerUser', user);
+	const rooms = await (await Rooms.findBySubscriptionUserId(user._id)).toArray();
+
+	rooms.forEach((room: any) => {
 		if (room.t === 'd') {
 			return;
 		}
