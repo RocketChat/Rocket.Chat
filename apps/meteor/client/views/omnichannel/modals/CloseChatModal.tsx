@@ -4,7 +4,6 @@ import {
 	FieldGroup,
 	Button,
 	TextInput,
-	Modal,
 	Box,
 	CheckBox,
 	Divider,
@@ -12,13 +11,6 @@ import {
 	FieldLabel,
 	FieldRow,
 	FieldError,
-	ModalHeader,
-	ModalIcon,
-	ModalTitle,
-	ModalClose,
-	ModalFooter,
-	ModalFooterControllers,
-	ModalContent,
 } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { usePermission, useSetting, useUserPreference, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -88,31 +80,58 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 	};
 
 	const onSubmit = useCallback(
-		({ comment, tags, transcriptPDF, transcriptEmail, subject }: CloseChatModalFormData) => {
-			const preferences = {
-				omnichannelTranscriptPDF: !!transcriptPDF,
-				omnichannelTranscriptEmail: alwaysSendTranscript ? true : !!transcriptEmail,
-			};
-			const requestData = transcriptEmail && visitorEmail ? { email: visitorEmail, subject } : undefined;
+	({ comment, tags, transcriptPDF, transcriptEmail, subject }: CloseChatModalFormData) => {
+		const preferences = {
+			omnichannelTranscriptPDF: !!transcriptPDF,
+			omnichannelTranscriptEmail: alwaysSendTranscript ? true : !!transcriptEmail,
+		};
 
-			if (!comment?.trim() && commentRequired) {
-				setError('comment', { type: 'custom', message: t('Required_field', { field: t('Comment') }) });
-			}
+		const requestData =
+			transcriptEmail && visitorEmail ? { email: visitorEmail, subject } : undefined;
 
-			if (transcriptEmail && !subject) {
-				setError('subject', { type: 'custom', message: t('Required_field', { field: t('Subject') }) });
-			}
+		let hasError = false;
 
-			if (!tags?.length && tagRequired) {
-				setError('tags', { type: 'custom', message: t('error-tags-must-be-assigned-before-closing-chat') });
-			}
+		if (!comment?.trim() && commentRequired) {
+			setError('comment', {
+				type: 'custom',
+				message: t('Required_field', { field: t('Comment') }),
+			});
+			hasError = true;
+		}
 
-			if (!errors.comment || errors.tags) {
-				onConfirm(comment, tags, preferences, requestData);
-			}
-		},
-		[commentRequired, tagRequired, visitorEmail, errors, setError, t, onConfirm, alwaysSendTranscript],
-	);
+		if (transcriptEmail && !subject) {
+			setError('subject', {
+				type: 'custom',
+				message: t('Required_field', { field: t('Subject') }),
+			});
+			hasError = true;
+		}
+
+		if (!tags?.length && tagRequired) {
+			setError('tags', {
+				type: 'custom',
+				message: t('error-tags-must-be-assigned-before-closing-chat'),
+			});
+			hasError = true;
+		}
+
+		if (hasError) {
+			return;
+		}
+
+		onConfirm(comment, tags, preferences, requestData);
+	},
+	[
+		commentRequired,
+		tagRequired,
+		visitorEmail,
+		setError,
+		t,
+		onConfirm,
+		alwaysSendTranscript,
+	],
+);
+
 
 	const cannotSubmit = useMemo(() => {
 		const cannotSendTag = (tagRequired && !tags?.length) || errors.tags;
@@ -141,112 +160,110 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 	}, [register, tagRequired]);
 
 	useEffect(() => {
-		if (transcriptEmail) {
-			if (!visitorEmail) {
-				dispatchToastMessage({ type: 'error', message: t('Customer_without_registered_email') });
-				return;
-			}
-			setValue('subject', subject || customSubject || t('Transcript_of_your_livechat_conversation'));
-		}
-	}, [transcriptEmail, setValue, visitorEmail, subject, t, customSubject, dispatchToastMessage]);
+	if (!transcriptEmail) {
+		return;
+	}
+
+	if (!visitorEmail) {
+		dispatchToastMessage({ type: 'error', message: t('Customer_without_registered_email') });
+		return;
+	}
+
+	setValue(
+		'subject',
+		customSubject || t('Transcript_of_your_livechat_conversation'),
+		{ shouldDirty: false },
+	);
+}, [transcriptEmail, setValue, visitorEmail, t, customSubject, dispatchToastMessage]);
+
 
 	if (commentRequired || tagRequired || canSendTranscript) {
 		return (
-			// TODO: Replace Modal with GenericModal
-			<Modal
-				aria-label={t('Wrap_up_conversation')}
+			<GenericModal
+				title={t('Wrap_up_conversation')}
+				icon='baloon-close-top-right'
+				onCancel={onCancel}
+				onClose={onCancel}
+				confirmText={t('Confirm')}
+				cancelText={t('Cancel')}
+				confirmDisabled={cannotSubmit}
 				wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}
 			>
-				<ModalHeader>
-					<ModalIcon name='baloon-close-top-right' />
-					<ModalTitle>{t('Wrap_up_conversation')}</ModalTitle>
-					<ModalClose onClick={onCancel} />
-				</ModalHeader>
-				<ModalContent fontScale='p2'>
-					<Box color='annotation'>{t('Close_room_description')}</Box>
-					<FieldGroup>
-						<Field>
-							<FieldLabel required={commentRequired}>{t('Comment')}</FieldLabel>
-							<FieldRow>
-								<TextInput
-									{...register('comment')}
-									error={errors.comment && t('Required_field', { field: t('Comment') })}
-									flexGrow={1}
-									placeholder={t('Please_add_a_comment')}
-								/>
-							</FieldRow>
-							<FieldError>{errors.comment?.message}</FieldError>
-						</Field>
-						<Field>
-							<Tags tagRequired={tagRequired} tags={tags} handler={handleTags} {...(department && { department: department._id })} />
-							<FieldError>{errors.tags?.message}</FieldError>
-						</Field>
-						{canSendTranscript && (
-							<>
-								<Field>
-									<Divider />
-									<FieldLabel marginBlockStart={8}>{t('Chat_transcript')}</FieldLabel>
+				<Box color='annotation'>{t('Close_room_description')}</Box>
+
+				<FieldGroup>
+					<Field>
+						<FieldLabel required={commentRequired}>{t('Comment')}</FieldLabel>
+						<FieldRow>
+							<TextInput
+								{...register('comment')}
+								error={errors.comment && t('Required_field', { field: t('Comment') })}
+								flexGrow={1}
+								placeholder={t('Please_add_a_comment')}
+							/>
+						</FieldRow>
+						<FieldError>{errors.comment?.message}</FieldError>
+					</Field>
+
+					<Field>
+						<Tags tagRequired={tagRequired} tags={tags} handler={handleTags} {...(department && { department: department._id })} />
+						<FieldError>{errors.tags?.message}</FieldError>
+					</Field>
+
+					
+					{canSendTranscript && (
+						<>
+							<Field>
+								<Divider />
+								<FieldLabel marginBlockStart={8}>{t('Chat_transcript')}</FieldLabel>
+							</Field>
+
+							{canSendTranscriptPDF && (
+								<Field marginBlockStart={10}>
+									<FieldRow>
+										<FieldLabel>{t('Omnichannel_transcript_pdf')}</FieldLabel>
+										<CheckBox {...register('transcriptPDF', { value: userTranscriptPDF })} />
+									</FieldRow>
 								</Field>
-								{canSendTranscriptPDF && (
+							)}
+
+							{canSendTranscriptEmail && (
+								<>
 									<Field marginBlockStart={10}>
 										<FieldRow>
-											<FieldLabel htmlFor='transcript-pdf'>{t('Omnichannel_transcript_pdf')}</FieldLabel>
-											<CheckBox id='transcript-pdf' {...register('transcriptPDF', { value: userTranscriptPDF })} />
+											<FieldLabel>{t('Omnichannel_transcript_email')}</FieldLabel>
+											<CheckBox {...register('transcriptEmail', { value: userTranscriptEmail })} />
 										</FieldRow>
 									</Field>
-								)}
-								{canSendTranscriptEmail && (
-									<>
-										<Field marginBlockStart={10}>
-											<FieldRow>
-												<FieldLabel htmlFor='transcript-email'>{t('Omnichannel_transcript_email')}</FieldLabel>
-												<CheckBox id='transcript-email' {...register('transcriptEmail', { value: userTranscriptEmail })} />
-											</FieldRow>
-										</Field>
-										{transcriptEmail && (
-											<>
-												<Field marginBlockStart={14}>
-													<FieldLabel required>{t('Contact_email')}</FieldLabel>
-													<FieldRow>
-														<EmailInput value={visitorEmail} required disabled flexGrow={1} />
-													</FieldRow>
-												</Field>
-												<Field marginBlockStart={12}>
-													<FieldLabel required>{t('Subject')}</FieldLabel>
-													<FieldRow>
-														<TextInput
-															{...register('subject', { required: true })}
-															className='active'
-															error={errors.subject && t('Required_field', { field: t('Subject') })}
-															flexGrow={1}
-														/>
-													</FieldRow>
-													<FieldError>{errors.subject?.message}</FieldError>
-												</Field>
-											</>
-										)}
-									</>
-								)}
-								<Field marginBlockStart={16}>
-									<FieldLabel color='annotation' fontScale='c1'>
-										{canSendTranscriptPDF && canSendTranscriptEmail
-											? t('These_options_affect_this_conversation_only_To_set_default_selections_go_to_My_Account_Omnichannel')
-											: t('This_option_affect_this_conversation_only_To_set_default_selection_go_to_My_Account_Omnichannel')}
-									</FieldLabel>
-								</Field>
-							</>
-						)}
-					</FieldGroup>
-				</ModalContent>
-				<ModalFooter>
-					<ModalFooterControllers>
-						<Button onClick={onCancel}>{t('Cancel')}</Button>
-						<Button type='submit' disabled={cannotSubmit} primary>
-							{t('Confirm')}
-						</Button>
-					</ModalFooterControllers>
-				</ModalFooter>
-			</Modal>
+
+									{transcriptEmail && (
+										<>
+											<Field marginBlockStart={14}>
+												<FieldLabel required>{t('Contact_email')}</FieldLabel>
+												<FieldRow>
+													<EmailInput value={visitorEmail} required disabled flexGrow={1} />
+												</FieldRow>
+											</Field>
+
+											<Field marginBlockStart={12}>
+												<FieldLabel required>{t('Subject')}</FieldLabel>
+												<FieldRow>
+													<TextInput
+														{...register('subject', { required: true })}
+														error={errors.subject && t('Required_field', { field: t('Subject') })}
+														flexGrow={1}
+													/>
+												</FieldRow>
+												<FieldError>{errors.subject?.message}</FieldError>
+											</Field>
+										</>
+									)}
+								</>
+							)}
+						</>
+					)}
+				</FieldGroup>
+			</GenericModal>
 		);
 	}
 

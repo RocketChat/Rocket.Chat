@@ -4,19 +4,12 @@ import {
 	FieldGroup,
 	Button,
 	TextAreaInput,
-	Modal,
 	Box,
 	Divider,
 	FieldLabel,
 	FieldRow,
-	ModalHeader,
-	ModalIcon,
-	ModalTitle,
-	ModalClose,
-	ModalContent,
-	ModalFooter,
-	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useCallback, useEffect, useId } from 'react';
@@ -38,7 +31,7 @@ type ForwardChatModalProps = {
 	room: IOmnichannelRoom;
 };
 
-const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatModalProps): ReactElement => {
+const ForwardChatModal = ({ onForward, onCancel, room }: ForwardChatModalProps): ReactElement => {
 	const { t } = useTranslation();
 	const getUserData = useEndpoint('GET', '/v1/users.info');
 	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle', true);
@@ -83,74 +76,66 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 	}, [register]);
 
 	return (
-		<Modal
-			aria-label={t('Forward_chat')}
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}
-			{...props}
+		<GenericModal
+			title={t('Forward_chat')}
+			onCancel={onCancel}
+			onClose={onCancel}
+			confirmText={t('Forward')}
+			confirmDisabled={!username && !department}
+			onConfirm={handleSubmit(onSubmit)}
+			loading={isSubmitting}
 		>
-			<ModalHeader>
-				<ModalIcon name='baloon-arrow-top-right' />
-				<ModalTitle>{t('Forward_chat')}</ModalTitle>
-				<ModalClose onClick={onCancel} />
-			</ModalHeader>
-			<ModalContent fontScale='p2'>
-				<FieldGroup>
-					<Field>
-						<FieldLabel htmlFor={departmentFieldId}>{t('Forward_to_department')}</FieldLabel>
-						<FieldRow>
-							<AutoCompleteDepartment
-								id={departmentFieldId}
-								aria-label={t('Forward_to_department')}
-								withTitle={false}
-								maxWidth='100%'
-								flexGrow={1}
-								onChange={(value: string): void => {
-									setValue('department', value);
-								}}
-							/>
-						</FieldRow>
-					</Field>
-					<Divider p={0}>{t('or')}</Divider>
-					<Field>
-						<FieldLabel htmlFor={userFieldId}>{t('Forward_to_user')}</FieldLabel>
-						<FieldRow>
-							<AutoCompleteAgent
-								id={userFieldId}
-								aria-label={t('Forward_to_user')}
-								withTitle
-								onlyAvailable
-								value={getValues().username}
-								excludeId={room.servedBy?._id}
-								showIdleAgents={idleAgentsAllowedForForwarding}
-								placeholder={t('Username_name_email')}
-								onChange={(value) => {
-									setValue('username', value);
-								}}
-							/>
-						</FieldRow>
-					</Field>
-					<Field marginBlock={15}>
-						<FieldLabel>
-							{t('Leave_a_comment')}{' '}
-							<Box is='span' color='annotation'>
-								({t('Optional')})
-							</Box>
-						</FieldLabel>
-						<FieldRow>
-							<TextAreaInput {...register('comment')} rows={8} flexGrow={1} />
-						</FieldRow>
-					</Field>
-				</FieldGroup>
-			</ModalContent>
-			<ModalFooter>
-				<ModalFooterControllers>
-					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button type='submit' disabled={!username && !department} primary loading={isSubmitting}>
-						{t('Forward')}
-					</Button>
-				</ModalFooterControllers>
-			</ModalFooter>
-		</Modal>
+			<FieldGroup>
+				<Field>
+					<FieldLabel htmlFor={departmentFieldId}>{t('Forward_to_department')}</FieldLabel>
+					<FieldRow>
+						<AutoCompleteDepartment
+							id={departmentFieldId}
+							aria-label={t('Forward_to_department')}
+							withTitle={false}
+							maxWidth='100%'
+							flexGrow={1}
+							onChange={(value: string): void => {
+								setValue('department', value);
+							}}
+						/>
+					</FieldRow>
+				</Field>
+
+				<Divider p={0}>{t('or')}</Divider>
+
+				<Field>
+					<FieldLabel htmlFor={userFieldId}>{t('Forward_to_user')}</FieldLabel>
+					<FieldRow>
+						<AutoCompleteAgent
+							id={userFieldId}
+							aria-label={t('Forward_to_user')}
+							withTitle
+							onlyAvailable
+							value={getValues().username}
+							excludeId={room.servedBy?._id}
+							showIdleAgents={idleAgentsAllowedForForwarding}
+							placeholder={t('Username_name_email')}
+							onChange={(value) => {
+								setValue('username', value);
+							}}
+						/>
+					</FieldRow>
+				</Field>
+
+				<Field marginBlock={15}>
+					<FieldLabel>
+						{t('Leave_a_comment')}{' '}
+						<Box is='span' color='annotation'>
+							({t('Optional')})
+						</Box>
+					</FieldLabel>
+					<FieldRow>
+						<TextAreaInput {...register('comment')} rows={8} flexGrow={1} />
+					</FieldRow>
+				</Field>
+			</FieldGroup>
+		</GenericModal>
 	);
 };
 
