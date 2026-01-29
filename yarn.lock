@@ -10385,7 +10385,7 @@ __metadata:
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@rocket.chat/ui-voip": "workspace:^"
     "@rocket.chat/web-ui-registration": "workspace:^"
-    "@rolldown/pluginutils": "npm:^1.0.0-rc.1"
+    "@rolldown/pluginutils": "npm:^1.0.0-rc.2"
     "@slack/bolt": "npm:^3.22.0"
     "@slack/rtm-api": "npm:~7.0.4"
     "@storybook/addon-a11y": "npm:^8.6.15"
@@ -10586,7 +10586,7 @@ __metadata:
     overlayscrollbars: "npm:^2.11.4"
     overlayscrollbars-react: "npm:^0.5.6"
     oxc-parser: "npm:^0.111.0"
-    oxc-resolver: "npm:^11.16.4"
+    oxc-resolver: "npm:^11.17.0"
     oxc-transform: "npm:^0.111.0"
     oxc-walker: "npm:^0.7.0"
     path: "npm:^0.12.7"
@@ -10660,7 +10660,7 @@ __metadata:
     ua-parser-js: "npm:~1.0.41"
     underscore: "npm:^1.13.7"
     universal-perf-hooks: "npm:^1.0.1"
-    vite: "npm:^8.0.0-beta.10"
+    vite: "npm:^8.0.0-beta.11"
     webdav: "npm:^4.11.5"
     webpack: "npm:~5.99.9"
     xml-crypto: "npm:~3.2.1"
@@ -11804,7 +11804,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rolldown/pluginutils@npm:1.0.0-rc.6, @rolldown/pluginutils@npm:^1.0.0-rc.1":
+"@rolldown/pluginutils@npm:1.0.0-rc.6, @rolldown/pluginutils@npm:^1.0.0-rc.2":
   version: 1.0.0-rc.6
   resolution: "@rolldown/pluginutils@npm:1.0.0-rc.6"
   checksum: 10/7a66a7c01b9542ba7312e6b26dc5f4516b5a427484cfa852eb8fad9010796faac6ebe053fc29503e09c3cd3a3cd60c86151d351a51463e878a946c544b21f29f
@@ -31024,7 +31024,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"oxc-resolver@npm:^11.16.4":
+"oxc-resolver@npm:^11.17.0":
   version: 11.19.0
   resolution: "oxc-resolver@npm:11.19.0"
   dependencies:
@@ -39045,7 +39045,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^8.0.0-beta.10":
+"vite@npm:^8.0.0-beta.11":
   version: 8.0.0-beta.16
   resolution: "vite@npm:8.0.0-beta.16"
   dependencies:
