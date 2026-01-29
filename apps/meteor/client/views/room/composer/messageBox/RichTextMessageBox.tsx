@@ -7,7 +7,6 @@ import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
 	MessageComposer,
-	/* MessageComposerInput, */
 	MessageComposerToolbar,
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
@@ -24,7 +23,6 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
-// import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { createRichTextComposerAPI } from '../../../../../app/ui-message/client/messageBox/createRichTextComposerAPI';
@@ -35,6 +33,7 @@ import { getSelectionRange, setSelectionRange } from '../../../../../app/ui-mess
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useMessageListKatex, useMessageListShowColors } from '../../../../components/message/list/MessageListContext';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -51,7 +50,6 @@ import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
-import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 
 // The first boolean will be used to enable/disable the send button
 // The second boolean will be used to show/hide the placeholder
@@ -100,7 +98,6 @@ const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: Forma
 	// Prevent Ctrl+B from creating <b></b> and Ctrl+I from creating <i></i>
 	event.preventDefault();
 	composer.wrapSelection(formatter.pattern);
-
 	return true;
 };
 
@@ -145,6 +142,7 @@ const RichTextMessageBox = ({
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
+	const quoteChainLimit = useSetting('Message_QuoteChainLimit', 2);
 
 	const [stateTyping, setTyping] = useReducer(reducer, { isTyping: false, hideplaceholder: false });
 	const { isTyping: typing, hideplaceholder } = stateTyping;
@@ -236,9 +234,9 @@ const RichTextMessageBox = ({
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(createRichTextComposerAPI(node, storageID, parseOptions));
+			chat.setComposerAPI(createRichTextComposerAPI(node, storageID, quoteChainLimit, parseOptions));
 		},
-		[chat, storageID, parseOptions],
+		[chat, storageID, quoteChainLimit, parseOptions],
 	);
 
 	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
@@ -432,8 +430,7 @@ const RichTextMessageBox = ({
 		}, [room, federationMatrixEnabled]),
 	);
 
-
-	const newSizes = useContentBoxSize(contentEditableRef);
+	const sizes = useContentBoxSize(contentEditableRef);
 
 	const format = useFormatDateAndTime();
 
@@ -487,9 +484,6 @@ const RichTextMessageBox = ({
 	const keyDownHandlerCallbackRef = useSafeRefCallback(
 		useCallback(
 			(node: HTMLDivElement) => {
-				if (node === null) {
-					return;
-				}
 				const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
 				node.addEventListener('keydown', eventHandler);
 
@@ -504,7 +498,7 @@ const RichTextMessageBox = ({
 	/* const mergedRefs = useMessageComposerMergedRefs(popup.callbackRef, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef); */
 
 	/* New mergedRefs */
-	const newMergedRefs = useMessageComposerMergedRefs(
+	const mergedRefs = useMessageComposerMergedRefs(
 		popup.callbackRef,
 		contentEditableRef,
 		callbackRef,
@@ -558,7 +552,7 @@ const RichTextMessageBox = ({
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
 				<RichTextComposerInput
-					ref={newMergedRefs}
+					ref={mergedRefs}
 					aria-label={composerPlaceholder}
 					name='msg'
 					disabled={isRecording || !canSend}
@@ -583,7 +577,7 @@ const RichTextMessageBox = ({
 						{chat.composer && formatters.length > 0 && (
 							<MessageBoxFormattingToolbar
 								composer={chat.composer}
-								variant={newSizes.inlineSize < 480 ? 'small' : 'large'}
+								variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 								items={formatters}
 								disabled={isRecording || !canSend}
 							/>
@@ -595,7 +589,7 @@ const RichTextMessageBox = ({
 							rid={room._id}
 							tmid={tmid}
 							isRecording={isRecording}
-							variant={newSizes.inlineSize < 480 ? 'small' : 'large'}
+							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
