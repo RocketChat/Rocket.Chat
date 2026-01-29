@@ -3,7 +3,19 @@
  * by https://github.com/martynsmith
  */
 
-const replyFor = require('./codes');
+import replyFor from './codes';
+
+type ParsedMessage = {
+	prefix?: string;
+	nick?: string;
+	user?: string;
+	host?: string;
+	server?: string;
+	command: string;
+	rawCommand: string;
+	commandType: string;
+	args: string[];
+};
 
 /**
  * parseMessage(line, stripColors)
@@ -13,9 +25,9 @@ const replyFor = require('./codes');
  * @param {String} line Raw message from IRC server.
  * @return {Object} A parsed message object.
  */
-module.exports = function parseMessage(line) {
-	const message = {};
-	let match;
+export default function parseMessage(line: string): ParsedMessage {
+	const message: Partial<ParsedMessage> = {};
+	let match: RegExpMatchArray | null;
 
 	// Parse prefix
 	match = line.match(/^:([^ ]+) +/);
@@ -34,25 +46,25 @@ module.exports = function parseMessage(line) {
 
 	// Parse command
 	match = line.match(/^([^ ]+) */);
-	message.command = match[1];
-	message.rawCommand = match[1];
+	message.command = match![1];
+	message.rawCommand = match![1];
 	message.commandType = 'normal';
 	line = line.replace(/^[^ ]+ +/, '');
 
-	if (replyFor[message.rawCommand]) {
-		message.command = replyFor[message.rawCommand].name;
-		message.commandType = replyFor[message.rawCommand].type;
+	if (replyFor[message.rawCommand as keyof typeof replyFor]) {
+		message.command = replyFor[message.rawCommand as keyof typeof replyFor].name;
+		message.commandType = replyFor[message.rawCommand as keyof typeof replyFor].type;
 	}
 
 	message.args = [];
-	let middle;
-	let trailing;
+	let middle: string;
+	let trailing: string | undefined;
 
 	// Parse parameters
 	if (line.search(/^:|\s+:/) !== -1) {
 		match = line.match(/(.*?)(?:^:|\s+:)(.*)/);
-		middle = match[1].trimRight();
-		trailing = match[2];
+		middle = match![1].trimEnd();
+		trailing = match![2];
 	} else {
 		middle = line;
 	}
@@ -65,5 +77,5 @@ module.exports = function parseMessage(line) {
 		message.args.push(trailing);
 	}
 
-	return message;
-};
+	return message as ParsedMessage;
+}
