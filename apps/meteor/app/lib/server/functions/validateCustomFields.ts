@@ -3,21 +3,29 @@ import { Meteor } from 'meteor/meteor';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings/server';
 
-export const validateCustomFields = function (fields) {
+type CustomFieldMeta = {
+	required?: boolean;
+	type?: string;
+	options?: string[];
+	maxLength?: number;
+	minLength?: number;
+};
+
+export const validateCustomFields = function (fields: Record<string, any>): void {
 	// Special Case:
 	// If an admin didn't set any custom fields there's nothing to validate against so consider any customFields valid
 	if (trim(settings.get('Accounts_CustomFields')) === '') {
 		return;
 	}
 
-	let customFieldsMeta;
+	let customFieldsMeta: Record<string, CustomFieldMeta>;
 	try {
-		customFieldsMeta = JSON.parse(settings.get('Accounts_CustomFields'));
+		customFieldsMeta = JSON.parse(settings.get('Accounts_CustomFields') as string);
 	} catch (e) {
 		throw new Meteor.Error('error-invalid-customfield-json', 'Invalid JSON for Custom Fields');
 	}
 
-	const customFields = {};
+	const customFields: Record<string, any> = {};
 
 	Object.keys(customFieldsMeta).forEach((fieldName) => {
 		const field = customFieldsMeta[fieldName];
@@ -29,7 +37,7 @@ export const validateCustomFields = function (fields) {
 			throw new Meteor.Error('error-user-registration-custom-field', `Field ${fieldName} is required`, { method: 'registerUser' });
 		}
 
-		if (field.type === 'select' && field.options.indexOf(fields[fieldName]) === -1) {
+		if (field.type === 'select' && field.options?.indexOf(fields[fieldName]) === -1) {
 			throw new Meteor.Error('error-user-registration-custom-field', `Value for field ${fieldName} is invalid`, { method: 'registerUser' });
 		}
 
