@@ -8,7 +8,19 @@ const HomepageGridItem = ({ children }: { children: ReactNode }): ReactElement =
 	const isMedium = !breakpoints.includes('lg');
 
 	return (
-		<GridItem xs={4} sm={4} md={4} lg={6} xl={4} p={8} maxWidth={isMedium ? '100%' : '50%'} flexGrow={1}>
+		<GridItem
+			xs={4}
+			sm={4}
+			md={4}
+			lg={6}
+			xl={4}
+			p={8}
+			flexGrow={1}
+			style={{
+				maxWidth: isMedium ? '100%' : '50%',
+				overflowX: 'hidden',
+			}}
+		>
 			{children}
 		</GridItem>
 	);

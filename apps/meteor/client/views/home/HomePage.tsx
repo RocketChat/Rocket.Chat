@@ -7,11 +7,17 @@ import DefaultHomePage from './DefaultHomePage';
 const HomePage = (): ReactElement => {
 	const customOnly = useSetting('Layout_Custom_Body_Only');
 
-	if (customOnly) {
-		return <CustomHomePage />;
-	}
-
-	return <DefaultHomePage />;
+	return (
+		<div
+			style={{
+				width: '100%',
+				maxWidth: '100%',
+				overflowX: 'hidden',
+			}}
+		>
+			{customOnly ? <CustomHomePage /> : <DefaultHomePage />}
+		</div>
+	);
 };
 
 export default HomePage;
