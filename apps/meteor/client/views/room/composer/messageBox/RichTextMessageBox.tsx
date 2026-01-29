@@ -1,9 +1,8 @@
 /* eslint-disable complexity */
 // TODO: CRITICAL fix the race condition between the room composer and thread composer
-import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
+import { useContentBoxSize, useEffectEvent, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import type { Options } from '@rocket.chat/message-parser';
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -52,6 +51,7 @@ import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
+import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 
 // The first boolean will be used to enable/disable the send button
 // The second boolean will be used to show/hide the placeholder
@@ -270,7 +270,7 @@ const RichTextMessageBox = ({
 		/* TODO: Develop the parser function that will render inside the RichTextComposer component */
 		// This if-else block temporarily solves the problem of editing a message
 		// When a message is being edited, it is a flat text structure without any DOM tree
-		if (chat.currentEditing || isFirefox) {
+		if (chat.currentEditingMessage || isFirefox) {
 			onSend?.({
 				value: text,
 				tshow,
@@ -290,13 +290,13 @@ const RichTextMessageBox = ({
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
 		const input = contentEditableRef.current as HTMLDivElement;
 
-		if (chat.currentEditing) {
+		if (chat.currentEditingMessage) {
 			event.preventDefault();
 			event.stopPropagation();
 
-			chat.currentEditing.reset().then((reset) => {
+			chat.currentEditingMessage.reset().then((reset) => {
 				if (!reset) {
-					chat.currentEditing?.cancel();
+					chat.currentEditingMessage?.cancel();
 				}
 				// Sets the cursor position to the end after resetting an edited message
 				setSelectionRange(input, input.innerText.length, input.innerText.length);
@@ -408,9 +408,30 @@ const RichTextMessageBox = ({
 
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
-	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(room._id), [room._id]));
+	const federationMatrixEnabled = useIsFederationEnabled();
 
-	/* const sizes = useContentBoxSize(textareaRef); */
+	const canSend = useReactiveValue(
+		useCallback(() => {
+			if (!room.t) {
+				return false;
+			}
+
+			if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
+				return false;
+			}
+
+			if (isRoomFederated(room)) {
+				// we are dropping the non native federation for now
+				if (!isRoomNativeFederated(room)) {
+					return false;
+				}
+
+				return federationMatrixEnabled;
+			}
+			return true;
+		}, [room, federationMatrixEnabled]),
+	);
+
 
 	const newSizes = useContentBoxSize(contentEditableRef);
 
