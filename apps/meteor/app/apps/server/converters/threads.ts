@@ -1,7 +1,7 @@
 import type { IAppRoomsConverter, IAppThreadsConverter, IAppUsersConverter, IAppsMessage, IAppsUser } from '@rocket.chat/apps';
 import type { IMessage as AppsEngineMessage, IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import { isEditedMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage, isFileAttachment } from '@rocket.chat/core-typings';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
@@ -82,7 +82,6 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 			avatarUrl: 'avatar',
 			alias: 'alias',
 			file: 'file',
-			files: 'files',
 			customFields: 'customFields',
 			groupable: 'groupable',
 			token: 'token',
@@ -101,7 +100,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 				if (!message.attachments) {
 					return undefined;
 				}
-				const result = await this._convertAttachmentsToApp(message.attachments);
+				const result = await this._convertAttachmentsToApp(message.attachments, message);
 				delete message.attachments;
 				return result;
 			},
@@ -120,6 +119,23 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 
 				return user as IAppsUser;
 			},
+			files: async (message: IMessage) => {
+				return message.files?.map((file) => {
+					if (!file || file.typeGroup) {
+						return file;
+					}
+
+					// Thumbnails from older messages did not have any identification but we can extrapolate this information from other data
+					if (message.files?.length === 2 && message.attachments?.length === 1 && file === message.files[1]) {
+						return {
+							...file,
+							typeGroup: 'thumb',
+						};
+					}
+
+					return file;
+				});
+			},
 		} as const;
 
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
@@ -131,7 +147,10 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 		return transformMappedData(msgData, map);
 	}
 
-	async _convertAttachmentsToApp(attachments: NonNullable<IMessage['attachments']>): Promise<NonNullable<IAppsMessage['attachments']>> {
+	async _convertAttachmentsToApp(
+		attachments: NonNullable<IMessage['attachments']>,
+		message: IMessage,
+	): Promise<NonNullable<IAppsMessage['attachments']>> {
 		const map = {
 			collapsed: 'collapsed',
 			color: 'color',
@@ -180,6 +199,18 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 				const result = attachment.ts ? new Date(attachment.ts) : undefined;
 				delete attachment.ts;
 				return result;
+			},
+			fileId: (attachment: NonNullable<IMessage['attachments']>[number]) => {
+				if ('fileId' in attachment && attachment.fileId) {
+					return attachment.fileId;
+				}
+
+				// If the attachment is missing the fileId, but there's only one file in the message, use that file's ID
+				if (isFileAttachment(attachment) && message?.file?._id && message.attachments?.length === 1) {
+					return message.file._id;
+				}
+
+				return undefined;
 			},
 		} as const;
 
