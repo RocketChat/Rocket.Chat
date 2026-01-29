@@ -194,7 +194,6 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 												<FieldRow>
 													<TextInput
 														{...register('subject', { required: true })}
-														className='active'
 														error={errors.subject && t('Required_field', { field: t('Subject') })}
 														flexGrow={1}
 													/>
