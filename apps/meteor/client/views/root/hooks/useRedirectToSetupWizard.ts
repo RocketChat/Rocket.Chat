@@ -2,25 +2,30 @@ import { useRole, useRouter, useSetting, useUserId } from '@rocket.chat/ui-conte
 import { useEffect } from 'react';
 
 export const useRedirectToSetupWizard = (): void => {
-	const userId = useUserId();
-	const setupWizardState = useSetting('Show_Setup_Wizard');
-	const router = useRouter();
-	const isAdmin = useRole('admin');
+  const userId = useUserId();
+  const setupWizardState = useSetting('Show_Setup_Wizard');
+  const router = useRouter();
+  const isAdmin = useRole('admin');
 
-	// Setup wizard conditions
-	const isWizardInProgress =
-		!!userId && !!isAdmin && setupWizardState === 'in_progress';
+  useEffect(() => {
+    //Guards – wait until data loads
+    if (!router) return;
+    if (setupWizardState === undefined) return;
 
-	const mustRedirect =
-		(!userId && setupWizardState === 'pending') || isWizardInProgress;
+    //  Current route
+    const routeName = router.getRouteName() ?? '';
+    const isNotFoundPage = routeName === 'not-found';
 
-	// Detect 404 page
-	const routeName = router.getRouteName() ?? '';
-	const isNotFoundPage = routeName === 'not-found';
+    //  Conditions
+    const isWizardInProgress =
+      Boolean(userId) && Boolean(isAdmin) && setupWizardState === 'in_progress';
 
-	useEffect(() => {
-		if (mustRedirect && !isNotFoundPage) {
-			router.navigate('/setup-wizard');
-		}
-	}, [mustRedirect, isNotFoundPage]);
+    const mustRedirect =
+      (!userId && setupWizardState === 'pending') || isWizardInProgress;
+
+    // Redirect only if needed
+    if (mustRedirect && !isNotFoundPage) {
+      router.navigate('/setup-wizard');
+    }
+  }, [userId, setupWizardState, isAdmin, router]);
 };
