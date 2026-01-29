@@ -31,6 +31,7 @@ exports[`DeleteRoomModal should render without crashing 1`] = `
             <button
               aria-label="Close"
               class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              tabindex="-1"
               type="button"
             >
               <i
