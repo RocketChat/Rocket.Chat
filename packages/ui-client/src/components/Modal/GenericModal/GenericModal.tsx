@@ -154,12 +154,12 @@ const GenericModal = ({
 						</Button>
 					)}
 					{wrapperFunction && (
-						<Button {...getButtonProps(variant)} type='submit' disabled={confirmDisabled} loading={confirmLoading}>
+						<Button {...getButtonProps(variant)} type='submit' loading={confirmLoading} disabled={confirmDisabled}>
 							{confirmText ?? t('Ok')}
 						</Button>
 					)}
 					{!wrapperFunction && onConfirm && (
-						<Button {...getButtonProps(variant)} onClick={handleConfirm} disabled={confirmDisabled} loading={confirmLoading}>
+						<Button {...getButtonProps(variant)} onClick={handleConfirm} loading={confirmLoading} disabled={confirmDisabled}>
 							{confirmText ?? t('Ok')}
 						</Button>
 					)}
