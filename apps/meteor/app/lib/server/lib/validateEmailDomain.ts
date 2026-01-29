@@ -9,8 +9,8 @@ import { settings } from '../../../settings/server';
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 
-let emailDomainBlackList = [];
-let emailDomainWhiteList = [];
+let emailDomainBlackList: string[] = [];
+let emailDomainWhiteList: string[] = [];
 
 settings.watch('Accounts_BlockedDomainsList', (value) => {
 	if (!value) {
@@ -18,7 +18,7 @@ settings.watch('Accounts_BlockedDomainsList', (value) => {
 		return;
 	}
 
-	emailDomainBlackList = value
+	emailDomainBlackList = (value as string)
 		.split(',')
 		.filter(Boolean)
 		.map((domain) => domain.trim());
@@ -29,13 +29,13 @@ settings.watch('Accounts_AllowedDomainsList', (value) => {
 		return;
 	}
 
-	emailDomainWhiteList = value
+	emailDomainWhiteList = (value as string)
 		.split(',')
 		.filter(Boolean)
 		.map((domain) => domain.trim());
 });
 
-export const validateEmailDomain = async function (email) {
+export const validateEmailDomain = async function (email: string): Promise<void> {
 	if (!validateEmail(email)) {
 		throw new Meteor.Error('error-invalid-email', `Invalid email ${email}`, {
 			function: 'RocketChat.validateEmailDomain',
