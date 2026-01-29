@@ -1,18 +1,44 @@
-function PASS() {
+type ParsedMessage = {
+	prefix?: string;
+	command: string;
+	args: string[];
+	nick?: string;
+};
+
+type CommandResult = {
+	identifier: string;
+	args: Record<string, any>;
+};
+
+type RFC2813Context = {
+	log: (message: string) => void;
+	registerSteps: string[];
+	serverPrefix: string | null;
+	isRegistered: boolean;
+	emit: (event: string) => void;
+	write: (command: { prefix?: string; command: string; parameters?: string[] }) => void;
+	config: {
+		server: {
+			name: string;
+		};
+	};
+};
+
+function PASS(this: RFC2813Context): void {
 	this.log('Received PASS command, continue registering...');
 
 	this.registerSteps.push('PASS');
 }
 
-function SERVER(parsedMessage) {
+function SERVER(this: RFC2813Context, parsedMessage: ParsedMessage): void {
 	this.log('Received SERVER command, waiting for first PING...');
 
-	this.serverPrefix = parsedMessage.prefix;
+	this.serverPrefix = parsedMessage.prefix || null;
 
 	this.registerSteps.push('SERVER');
 }
 
-function PING() {
+function PING(this: RFC2813Context): void {
 	if (!this.isRegistered && this.registerSteps.length === 2) {
 		this.log('Received first PING command, server is registered!');
 
@@ -28,8 +54,8 @@ function PING() {
 	});
 }
 
-function NICK(parsedMessage) {
-	let command;
+function NICK(this: RFC2813Context, parsedMessage: ParsedMessage): CommandResult {
+	let command: CommandResult;
 
 	// Check if the message comes from the server,
 	// which means it is a new user
@@ -57,7 +83,7 @@ function NICK(parsedMessage) {
 	return command;
 }
 
-function JOIN(parsedMessage) {
+function JOIN(this: RFC2813Context, parsedMessage: ParsedMessage): CommandResult {
 	const command = {
 		identifier: 'joinedChannel',
 		args: {
@@ -69,7 +95,7 @@ function JOIN(parsedMessage) {
 	return command;
 }
 
-function PART(parsedMessage) {
+function PART(this: RFC2813Context, parsedMessage: ParsedMessage): CommandResult {
 	const command = {
 		identifier: 'leftChannel',
 		args: {
@@ -81,8 +107,8 @@ function PART(parsedMessage) {
 	return command;
 }
 
-function PRIVMSG(parsedMessage) {
-	const command = {
+function PRIVMSG(this: RFC2813Context, parsedMessage: ParsedMessage): CommandResult {
+	const command: CommandResult = {
 		identifier: 'sentMessage',
 		args: {
 			nick: parsedMessage.prefix,
@@ -99,7 +125,7 @@ function PRIVMSG(parsedMessage) {
 	return command;
 }
 
-function QUIT(parsedMessage) {
+function QUIT(this: RFC2813Context, parsedMessage: ParsedMessage): CommandResult {
 	const command = {
 		identifier: 'disconnected',
 		args: {
