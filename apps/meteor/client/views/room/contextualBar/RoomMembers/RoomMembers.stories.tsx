@@ -1,12 +1,11 @@
 import { UserStatus } from '@rocket.chat/core-typings';
+import { Contextualbar } from '@rocket.chat/ui-client';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import RoomMembers from './RoomMembers';
-import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/RoomMembers',
 	component: RoomMembers,
 	parameters: {
 		layout: 'fullscreen',
@@ -26,6 +25,11 @@ Default.args = {
 			username: 'rocket.cat',
 			status: UserStatus.ONLINE,
 			name: 'Rocket.Cat',
+			roles: ['user'],
+			subscription: {
+				_id: 'sub-rocket.cat',
+				ts: '2025-01-01T00:00:00Z',
+			},
 		},
 	],
 	text: 'filter',
@@ -47,4 +51,62 @@ Loading.args = {
 	setType: action('setType'),
 	loadMoreItems: action('loadMoreItems'),
 	reload: action('reload'),
+};
+
+export const WithABACRoom = Template.bind({});
+WithABACRoom.args = {
+	loading: false,
+	members: [
+		{
+			_id: 'rocket.cat',
+			username: 'rocket.cat',
+			status: UserStatus.ONLINE,
+			name: 'Rocket.Cat',
+			roles: ['user'],
+			subscription: {
+				_id: 'sub-rocket.cat',
+				ts: '2025-01-01T00:00:00Z',
+			},
+		},
+	],
+	text: 'filter',
+	type: 'online',
+	setText: action('Lorem Ipsum'),
+	setType: action('online'),
+	total: 123,
+	loadMoreItems: action('loadMoreItems'),
+	rid: '!roomId',
+	isTeam: false,
+	isDirect: false,
+	reload: action('reload'),
+	isABACRoom: true,
+};
+
+export const WithInvitedMember = Template.bind({});
+WithInvitedMember.args = {
+	loading: false,
+	members: [
+		{
+			_id: 'rocket.cat',
+			username: 'rocket.cat',
+			roles: ['user'],
+			subscription: {
+				_id: 'sub-rocket.cat',
+				status: 'INVITED',
+				ts: '2025-01-01T00:00:00Z',
+			},
+			name: 'Rocket.Cat',
+		},
+	],
+	text: 'filter',
+	type: 'online',
+	setText: action('Lorem Ipsum'),
+	setType: action('online'),
+	total: 123,
+	loadMoreItems: action('loadMoreItems'),
+	rid: '!roomId',
+	isTeam: false,
+	isDirect: false,
+	reload: action('reload'),
+	isABACRoom: true,
 };

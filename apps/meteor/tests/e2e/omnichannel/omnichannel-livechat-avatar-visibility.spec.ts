@@ -3,7 +3,8 @@ import type { Page } from '@playwright/test';
 import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChatEmbedded } from '../page-objects/omnichannel';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
@@ -64,7 +65,7 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 		});
 
 		await test.step('expect to send a message as agent', async () => {
-			await poAuxContext.poHomeOmnichannel.sidenav.openChat(visitor.name);
+			await poAuxContext.poHomeOmnichannel.navbar.openChat(visitor.name);
 			await poAuxContext.poHomeOmnichannel.content.sendMessage('this_is_a_test_message_from_agent');
 			await expect(poLiveChat.txtChatMessage('this_is_a_test_message_from_agent')).toBeVisible();
 		});
@@ -88,11 +89,8 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 		});
 
 		await test.step('should close the conversation', async () => {
-			await poAuxContext.poHomeOmnichannel.sidenav.openChat(visitor.name);
-			await poAuxContext.poHomeOmnichannel.content.btnCloseChat.click();
-			await poAuxContext.poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
-			await poAuxContext.poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
-			await expect(poAuxContext.poHomeOmnichannel.toastSuccess).toBeVisible();
+			await poAuxContext.poHomeOmnichannel.navbar.openChat(visitor.name);
+			await poAuxContext.poHomeOmnichannel.quickActionsRoomToolbar.closeChat({ comment: 'this_is_a_test_comment' });
 		});
 	});
 });

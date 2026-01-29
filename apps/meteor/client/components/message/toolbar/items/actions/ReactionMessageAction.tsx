@@ -1,6 +1,12 @@
-import { isOmnichannelRoom, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
-import { useFeaturePreview } from '@rocket.chat/ui-client';
-import { useUser, useMethod } from '@rocket.chat/ui-contexts';
+import {
+	isOmnichannelRoom,
+	isRoomFederated,
+	isRoomNativeFederated,
+	type IMessage,
+	type IRoom,
+	type ISubscription,
+} from '@rocket.chat/core-typings';
+import { useUser, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,13 +26,19 @@ type ReactionMessageActionProps = {
 const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageActionProps) => {
 	const chat = useChat();
 	const user = useUser();
-	const setReaction = useMethod('setReaction');
-	const quickReactionsEnabled = useFeaturePreview('quickReactions');
+	const setReaction = useEndpoint('POST', '/v1/chat.react');
 	const { quickReactions, addRecentEmoji } = useEmojiPickerData();
 	const { t } = useTranslation();
 
+	const isFederated = room && isRoomFederated(room);
+	const isFederationBlocked = isFederated && !isRoomNativeFederated(room);
+
 	const enabled = useReactiveValue(
 		useCallback(() => {
+			if (isFederationBlocked) {
+				return false;
+			}
+
 			if (!chat || isOmnichannelRoom(room) || !subscription || message.private || !user) {
 				return false;
 			}
@@ -36,7 +48,7 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 			}
 
 			return true;
-		}, [chat, room, subscription, message.private, user]),
+		}, [chat, room, subscription, message.private, user, isFederationBlocked]),
 	);
 
 	if (!enabled) {
@@ -44,16 +56,18 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 	}
 
 	const toggleReaction = (emoji: string) => {
-		setReaction(`:${emoji}:`, message._id);
+		setReaction({
+			emoji: `:${emoji}:`,
+			messageId: message._id,
+		});
 		addRecentEmoji(emoji);
 	};
 
 	return (
 		<>
-			{quickReactionsEnabled &&
-				quickReactions.slice(0, 3).map(({ emoji, image }) => {
-					return <EmojiElement key={emoji} small title={emoji} emoji={emoji} image={image} onClick={() => toggleReaction(emoji)} />;
-				})}
+			{quickReactions.slice(0, 3).map(({ emoji, image }) => {
+				return <EmojiElement key={emoji} small title={emoji} emoji={emoji} image={image} onClick={() => toggleReaction(emoji)} />;
+			})}
 			<MessageToolbarItem
 				id='reaction-message'
 				icon='add-reaction'

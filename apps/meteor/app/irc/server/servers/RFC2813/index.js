@@ -39,9 +39,9 @@ class RFC2813 {
 		this.socket.on('data', this.onReceiveFromPeer.bind(this));
 
 		this.socket.on('connect', this.onConnect.bind(this));
-		this.socket.on('error', (err) => logger.error(err));
-		this.socket.on('timeout', () => this.log('Timeout'));
-		this.socket.on('close', () => this.log('Connection Closed'));
+		this.socket.on('error', (err) => logger.error({ msg: 'Socket error', err }));
+		this.socket.on('timeout', () => this.log({ msg: 'Timeout' }));
+		this.socket.on('close', () => this.log({ msg: 'Connection Closed' }));
 		// Setup local
 		this.on('onReceiveFromLocal', this.onReceiveFromLocal.bind(this));
 	}
@@ -51,6 +51,11 @@ class RFC2813 {
 	 */
 	log(message) {
 		// TODO logger: debug?
+		if (typeof message === 'string') {
+			logger.info({ msg: message });
+			return;
+		}
+
 		logger.info(message);
 	}
 
@@ -58,7 +63,11 @@ class RFC2813 {
 	 * Connect
 	 */
 	register() {
-		this.log(`Connecting to @${this.config.server.host}:${this.config.server.port}`);
+		this.log({
+			msg: 'Connecting to IRC server',
+			host: this.config.server.host,
+			port: this.config.server.port,
+		});
 
 		if (!this.socket) {
 			this.setupSocket();
@@ -114,7 +123,7 @@ class RFC2813 {
 			buffer += ` :${command.trailer}`;
 		}
 
-		this.log(`Sending Command: ${buffer}`);
+		this.log({ msg: 'Sending Command', buffer });
 
 		return this.socket.write(`${buffer}\r\n`);
 	}
@@ -148,7 +157,7 @@ class RFC2813 {
 				const parsedMessage = parseMessage(line);
 
 				if (peerCommandHandlers[parsedMessage.command]) {
-					this.log(`Handling peer message: ${line}`);
+					this.log({ msg: 'Handling peer message', line });
 
 					const command = peerCommandHandlers[parsedMessage.command].call(this, parsedMessage);
 
@@ -172,7 +181,7 @@ class RFC2813 {
 	 */
 	onReceiveFromLocal(command, parameters) {
 		if (localCommandHandlers[command]) {
-			this.log(`Handling local command: ${command}`);
+			this.log({ msg: 'Handling local command', command });
 
 			localCommandHandlers[command].call(this, parameters, this);
 		} else {

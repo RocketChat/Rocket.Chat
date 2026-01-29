@@ -1,11 +1,4 @@
-import { Box, Label } from '@rocket.chat/fuselage';
-import { Controller } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
-import DateTimeFilter from './DateTimeFilter';
-import { InstanceFilterSelect } from './InstanceFilterSelect';
-import { SeverityFilterSelect } from './SeverityFilterSelect';
-import { TimeFilterSelect } from './TimeFilterSelect';
+import { Box, Button, Label } from '@rocket.chat/fuselage';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -13,7 +6,15 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarDialog,
-} from '../../../../../../components/Contextualbar';
+	ContextualbarFooter,
+} from '@rocket.chat/ui-client';
+import { Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import DateTimeFilter from './DateTimeFilter';
+import { InstanceFilterSelect } from './InstanceFilterSelect';
+import { SeverityFilterSelect } from './SeverityFilterSelect';
+import { TimeFilterSelect } from './TimeFilterSelect';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 
 type AppLogsFilterContextualBarProps = {
@@ -24,7 +25,7 @@ type AppLogsFilterContextualBarProps = {
 export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }: AppLogsFilterContextualBarProps) => {
 	const { t } = useTranslation();
 
-	const { control } = useAppLogsFilterFormContext();
+	const { control, reset } = useAppLogsFilterFormContext();
 
 	return (
 		<ContextualbarDialog onClose={onClose}>
@@ -71,6 +72,11 @@ export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }:
 					/>
 				</Box>
 			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<Button secondary w='full' aria-label={t('Clear_filters')} onClick={() => reset()}>
+					{t('Clear_filters')}
+				</Button>
+			</ContextualbarFooter>
 		</ContextualbarDialog>
 	);
 };

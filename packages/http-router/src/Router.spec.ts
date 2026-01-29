@@ -207,12 +207,12 @@ describe('Router', () => {
 			const invalidResponse = await request(app).post('/api/validate-body').send({ name: 'John' });
 
 			expect(invalidResponse.status).toBe(400);
-			expect(invalidResponse.body).toHaveProperty('errorType', 'error-invalid-params');
+			expect(invalidResponse.body).toHaveProperty('errorType', 'invalid-params');
 
 			const invalidTypeResponse = await request(app).post('/api/validate-body').send({ name: 'John', age: 'thirty' });
 
 			expect(invalidTypeResponse.status).toBe(400);
-			expect(invalidTypeResponse.body).toHaveProperty('errorType', 'error-invalid-params');
+			expect(invalidTypeResponse.body).toHaveProperty('errorType', 'invalid-params');
 		});
 
 		it('should validate response body in test mode', async () => {
@@ -446,7 +446,7 @@ describe('Router', () => {
 	});
 
 	describe('Content types', () => {
-		it('should handle different content types for requests', async () => {
+		it('should not auto-parse multipart/form-data and provide raw request for manual parsing', async () => {
 			const app = express();
 			const api = new Router('/api');
 
@@ -458,12 +458,18 @@ describe('Router', () => {
 					},
 				},
 				async (c) => {
-					const formData = await c.req.formData();
-					const name = formData.get('name');
+					// For multipart/form-data, routes use c.env.incoming for manual parsing
+					// In production, routes call UploadService.parse(c.env.incoming)
+					const hasIncoming = !!c.env.incoming;
+					const contentType = c.env.incoming?.headers['content-type'];
+					const isMultipart = contentType?.includes('multipart/form-data');
 
 					return {
 						statusCode: 200,
-						body: { received: { name } },
+						body: {
+							receivedRawRequest: hasIncoming,
+							receivedIncoming: isMultipart,
+						},
 					};
 				},
 			);
@@ -473,7 +479,10 @@ describe('Router', () => {
 			const response = await request(app).post('/api/form-data').field('name', 'Test User');
 
 			expect(response.status).toBe(200);
-			expect(response.body).toEqual({ received: { name: 'Test User' } });
+			expect(response.body).toEqual({
+				receivedRawRequest: true,
+				receivedIncoming: true,
+			});
 		});
 
 		it('should set custom response headers', async () => {

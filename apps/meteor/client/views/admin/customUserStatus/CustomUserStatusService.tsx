@@ -11,12 +11,13 @@ import {
 	StatesSubtitle,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
+import { ContextualbarContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { ContextualbarContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { links } from '../../../lib/links';
 import { useActiveConnections } from '../../hooks/useActiveConnections';
 
 const CustomUserStatusService = () => {
@@ -88,7 +89,7 @@ const CustomUserStatusService = () => {
 							<Box fontScale='p2' mb={8}>
 								<Trans i18nKey='Larger_amounts_of_active_connections'>
 									For larger amounts of active connections you can consider our
-									<Box is='a' href='https://docs.rocket.chat/deploy/scaling-rocket.chat' target='_blank' color='info'>
+									<Box is='a' href={links.scaling} target='_blank' color='info'>
 										multiple instance solutions
 									</Box>
 									.
@@ -110,7 +111,7 @@ const CustomUserStatusService = () => {
 			{!license?.isEnterprise && (
 				<ContextualbarFooter borderBlockStartWidth='default' borderBlockColor='extra-light'>
 					<ButtonGroup stretch vertical>
-						<Button primary width='100%' is='a' href='https://www.rocket.chat/enterprise' target='_blank'>
+						<Button primary width='100%' is='a' href={links.enterprise} target='_blank'>
 							{t('More_about_Premium_plans')}
 						</Button>
 					</ButtonGroup>

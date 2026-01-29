@@ -4,12 +4,15 @@ import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { parse } from 'cookie';
 import { json2csv } from 'json-2-csv';
 
-import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import type { AppsRestApi } from '../rest';
 import { makeAppLogsQuery } from './lib/makeAppLogsQuery';
 import { APIClass } from '../../../../../app/api/server/ApiClass';
+import type { GenericRouteExecutionContext } from '../../../../../app/api/server/definition';
 
-const isErrorResponse = ajv.compile({
+const isErrorResponse = ajv.compile<{
+	success: false;
+	error: string;
+}>({
 	type: 'object',
 	properties: {
 		success: {
@@ -23,18 +26,18 @@ const isErrorResponse = ajv.compile({
 });
 
 class ExportHandlerAPI extends APIClass {
-	protected async authenticatedRoute(req: Request): Promise<IUser | null> {
-		const { rc_uid, rc_token } = parse(req.headers.get('cookie') || '');
+	protected override async authenticatedRoute(routeContext: GenericRouteExecutionContext): Promise<IUser | null> {
+		const { rc_uid, rc_token } = parse(routeContext.request.headers.get('cookie') || '');
 
 		if (rc_uid) {
-			req.headers.set('x-user-id', rc_uid);
+			routeContext.request.headers.set('x-user-id', rc_uid);
 		}
 
 		if (rc_token) {
-			req.headers.set('x-auth-token', rc_token);
+			routeContext.request.headers.set('x-auth-token', rc_token);
 		}
 
-		return super.authenticatedRoute(req);
+		return super.authenticatedRoute(routeContext);
 	}
 }
 
@@ -74,13 +77,18 @@ export const registerAppLogsExportHandler = ({ api, _manager, _orch }: AppsRestA
 				return api.notFound(`No App found by the id of: ${this.urlParams.id}`);
 			}
 
-			const { count } = await getPaginationItems(this.queryParams);
+			let count = 100;
+
+			if (this.queryParams.count !== undefined && this.queryParams.count !== null) {
+				count = parseInt(String(this.queryParams.count || 100));
+			}
+
 			const { sort } = await this.parseJsonQuery();
 
 			const options = {
 				sort: sort || { _updatedAt: -1 },
 				skip: 0,
-				limit: Math.min(count || 100, 2000),
+				limit: Math.min(count, 2000),
 			};
 
 			let query: ReturnType<typeof makeAppLogsQuery>;

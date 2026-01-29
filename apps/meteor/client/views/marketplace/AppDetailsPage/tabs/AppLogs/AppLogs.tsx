@@ -1,5 +1,7 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
+import { CustomScrollbars, usePagination } from '@rocket.chat/ui-client';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useReducer, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,16 +9,18 @@ import AppLogsItem from './AppLogsItem';
 import { CollapsiblePanel } from './Components/CollapsiblePanel';
 import { AppLogsFilter } from './Filters/AppLogsFilter';
 import { useAppLogsFilterFormContext } from './useAppLogsFilterForm';
-import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
 import GenericError from '../../../../../components/GenericError';
 import GenericNoResults from '../../../../../components/GenericNoResults';
-import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useLogs } from '../../../hooks/useLogs';
 
 function expandedReducer(
 	expandedStates: { id: string; expanded: boolean }[],
-	action: { type: 'update'; id: string; expanded: boolean } | { type: 'expand-all' } | { type: 'reset'; logs: ILogItem[] },
+	action:
+		| { type: 'update'; id: string; expanded: boolean }
+		| { type: 'expand-all' }
+		| { type: 'reset-all' }
+		| { type: 'reset'; logs: ILogItem[] },
 ) {
 	switch (action.type) {
 		case 'update':
@@ -28,6 +32,9 @@ function expandedReducer(
 		case 'reset':
 			return action.logs.map((log) => ({ id: log._id, expanded: false }));
 
+		case 'reset-all':
+			return expandedStates.map((state) => ({ ...state, expanded: false }));
+
 		default:
 			return expandedStates;
 	}
@@ -36,7 +43,17 @@ function expandedReducer(
 const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const { t } = useTranslation();
 
-	const { watch } = useAppLogsFilterFormContext();
+	const router = useRouter();
+
+	const { instanceId: instanceLogsFilter } = router.getSearchParameters();
+
+	const { watch, setValue } = useAppLogsFilterFormContext();
+
+	useEffect(() => {
+		if (instanceLogsFilter) {
+			setValue('instance', instanceLogsFilter);
+		}
+	}, [instanceLogsFilter, setValue]);
 
 	const { startTime, endTime, startDate, endDate, event, severity, instance } = watch();
 
@@ -47,6 +64,8 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const handleExpand = ({ id, expanded }: { id: string; expanded: boolean }) => dispatch({ id, expanded, type: 'update' });
 
 	const handleExpandAll = () => dispatch({ type: 'expand-all' });
+
+	const handleCollapseAll = () => dispatch({ type: 'reset-all' });
 
 	const { data, isSuccess, isError, error, refetch, isFetching } = useLogs({
 		appId: id,
@@ -84,6 +103,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 					noResults={isFetching || !isSuccess || data?.logs?.length === 0}
 					isLoading={isFetching}
 					expandAll={() => handleExpandAll()}
+					collapseAll={() => handleCollapseAll()}
 					refetchLogs={() => refetch()}
 				/>
 			</Box>

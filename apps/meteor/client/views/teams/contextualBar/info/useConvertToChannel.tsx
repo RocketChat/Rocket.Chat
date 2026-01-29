@@ -4,7 +4,7 @@ import { usePermission, useSetModal, useToastMessageDispatch, useUserId } from '
 import { useTranslation } from 'react-i18next';
 
 import ConvertToChannelModal from './ConvertToChannelModal';
-import { useEndpointAction } from '../../../../hooks/useEndpointAction';
+import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 
 export const useConvertToChannel = ({ _id, teamId }: IRoom) => {
 	const { t } = useTranslation();
@@ -13,7 +13,14 @@ export const useConvertToChannel = ({ _id, teamId }: IRoom) => {
 	const canEdit = usePermission('edit-team-channel', _id);
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const convertTeamToChannel = useEndpointAction('POST', '/v1/teams.convertToChannel');
+	const { mutateAsync: convertTeamToChannel } = useEndpointMutation('POST', '/v1/teams.convertToChannel', {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Team_converted_to_channel') });
+		},
+		onSettled: () => {
+			setModal(null);
+		},
+	});
 
 	const onClickConvertToChannel = useEffectEvent(() => {
 		if (!userId || !teamId) {
@@ -21,18 +28,10 @@ export const useConvertToChannel = ({ _id, teamId }: IRoom) => {
 		}
 
 		const onConfirm = async (roomsToRemove: { [key: string]: Serialized<IRoom> }) => {
-			try {
-				await convertTeamToChannel({
-					teamId,
-					roomsToRemove: Object.keys(roomsToRemove),
-				});
-
-				dispatchToastMessage({ type: 'success', message: t('Success') });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			} finally {
-				setModal(null);
-			}
+			await convertTeamToChannel({
+				teamId,
+				roomsToRemove: Object.keys(roomsToRemove),
+			});
 		};
 
 		setModal(

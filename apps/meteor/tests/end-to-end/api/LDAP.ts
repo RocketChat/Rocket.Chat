@@ -15,7 +15,6 @@ describe('LDAP', function () {
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (process.env.IS_EE) {
 				this.skip();
-				return;
 			}
 			await request
 				.post(api('ldap.syncNow'))
@@ -31,7 +30,6 @@ describe('LDAP', function () {
 		it('should throw an error of LDAP disabled when running EE', async function () {
 			if (!process.env.IS_EE) {
 				this.skip();
-				return;
 			}
 			await request
 				.post(api('ldap.syncNow'))

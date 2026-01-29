@@ -7,7 +7,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-4jy2w6"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1w4asan"
+        class="rcx-box rcx-box--full rcx-css-rovs2w"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-1rfw4fq"
@@ -104,14 +104,14 @@ exports[`renders AppLogsItem without crashing 1`] = `
               </label>
             </div>
             <span
-              class="rcx-box rcx-box--full rcx-css-4w7o7u"
+              class="rcx-box rcx-box--full rcx-css-e3nij6"
               id="react-aria-:r7:"
             >
               All_time
             </span>
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1wz6xj9"
             >
               
             </i>
@@ -191,37 +191,21 @@ exports[`renders AppLogsItem without crashing 1`] = `
               </label>
             </div>
             <span
-              class="rcx-box rcx-box--full rcx-css-4w7o7u"
+              class="rcx-box rcx-box--full rcx-css-e3nij6"
               id="react-aria-:rf:"
             >
               All
             </span>
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1wz6xj9"
             >
               
             </i>
           </button>
         </div>
         <button
-          class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-css-qv9v2f"
-          type="button"
-        >
-          <span
-            class="rcx-button--content"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-arrow-expand rcx-icon rcx-css-1hdf9ok"
-            >
-              
-            </i>
-            Expand_all
-          </span>
-        </button>
-        <button
-          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-qv9v2f"
+          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1itpmo6"
           title="Refresh_logs"
           type="button"
         >
@@ -235,7 +219,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
         <button
           aria-disabled="false"
           aria-label="Export"
-          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-qv9v2f"
+          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1itpmo6"
           title="Export"
           type="button"
         >
@@ -244,6 +228,22 @@ exports[`renders AppLogsItem without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-icon--name-circle-arrow-down rcx-icon rcx-css-1x2l7ts"
           >
             
+          </i>
+        </button>
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-label="Options"
+          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button"
+          id="react-aria-:rg:"
+          title="Options"
+          type="button"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-1x2l7ts"
+          >
+            
           </i>
         </button>
       </div>

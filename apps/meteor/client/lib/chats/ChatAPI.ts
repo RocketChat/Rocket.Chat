@@ -1,9 +1,15 @@
-import type { IMessage, IRoom, ISubscription, IE2EEMessage, IUpload, Subscribable } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
+import type { RefObject } from 'react';
 
 import type { Upload } from './Upload';
 import type { ReadStateManager } from './readStateManager';
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
+
+type Subscribable<T> = {
+	get(): T;
+	subscribe(callback: () => void): () => void;
+};
 
 export type ComposerAPI = {
 	release(): void;
@@ -57,6 +63,8 @@ export type ComposerAPI = {
 	readonly isMicrophoneDenied: Subscribable<boolean>;
 
 	readonly formatters: Subscribable<FormattingButton[]>;
+
+	readonly composerRef: RefObject<HTMLElement>;
 };
 
 export type DataAPI = {
@@ -106,7 +114,7 @@ export type UploadsAPI = {
 };
 
 export type ChatAPI = {
-	readonly uid: string | null;
+	readonly uid: string | undefined;
 	readonly composer?: ComposerAPI;
 	readonly setComposerAPI: (composer?: ComposerAPI) => void;
 	readonly data: DataAPI;
@@ -118,14 +126,13 @@ export type ChatAPI = {
 		editMessage(message: IMessage, options?: { cursorAtStart?: boolean }): Promise<void>;
 	};
 
-	readonly currentEditing:
-		| {
-				readonly mid: IMessage['_id'];
-				reset(): Promise<boolean>;
-				stop(): Promise<void>;
-				cancel(): Promise<void>;
-		  }
-		| undefined;
+	readonly currentEditingMessage: {
+		setMID(mid: IMessage['_id']): void;
+		getMID(): string | undefined;
+		reset(): Promise<boolean>;
+		stop(): Promise<void>;
+		cancel(): Promise<void>;
+	};
 
 	readonly emojiPicker: {
 		open(el: Element, cb: (emoji: string) => void): void;

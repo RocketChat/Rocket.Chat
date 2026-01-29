@@ -3,8 +3,9 @@ import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definitio
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
-import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom, IMessage, IOTRMessage } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
+import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
 
 import { settings } from '../../../app/settings/server/cached';
@@ -144,6 +145,10 @@ export class ListenersModule {
 			},
 		);
 
+		service.onEvent('user.media-signal', ({ userId, signal }: { userId: string; signal: ServerMediaSignal }) => {
+			notifications.notifyUserInThisInstance(userId, 'media-signal', signal);
+		});
+
 		service.onEvent('room.video-conference', ({ rid, callId }) => {
 			/* deprecated */
 			(notifications.notifyRoom as any)(rid, callId);
@@ -164,7 +169,9 @@ export class ListenersModule {
 					status,
 					...(statusText && { statusText }),
 				},
-				unset: {},
+				unset: {
+					...(!statusText && { statusText: 1 }),
+				},
 			});
 
 			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText, name, roles]);
@@ -178,6 +185,10 @@ export class ListenersModule {
 			notifications.notifyLoggedInThisInstance('updateCustomUserStatus', {
 				userStatusData: userStatus,
 			});
+		});
+
+		service.onEvent('user.activity', ({ isTyping, roomId, user }) => {
+			notifications.notifyRoomInThisInstance(roomId, 'user-activity', user, isTyping ? ['user-typing'] : []);
 		});
 
 		service.onEvent('watch.messages', async ({ message }) => {
@@ -382,10 +393,6 @@ export class ListenersModule {
 			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
 		});
 
-		service.onEvent('voip.events', (userId, data): void => {
-			notifications.notifyUserInThisInstance(userId, 'voip.events', data);
-		});
-
 		service.onEvent('call.callerhangup', (userId, data): void => {
 			notifications.notifyUserInThisInstance(userId, 'call.hangup', data);
 		});
@@ -439,9 +446,6 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('connector.statuschanged', (enabled): void => {
-			notifications.notifyLoggedInThisInstance('voip.statuschanged', enabled);
-		});
 		service.onEvent('omnichannel.room', (roomId, data): void => {
 			notifications.streamLivechatRoom.emitWithoutBroadcast(roomId, data);
 		});
@@ -497,13 +501,6 @@ export class ListenersModule {
 		service.onEvent('actions.changed', () => {
 			notifications.streamApps.emitWithoutBroadcast('actions/changed');
 			notifications.streamApps.emitWithoutBroadcast('apps', ['actions/changed', []]);
-		});
-
-		service.onEvent('otrMessage', ({ roomId, message, user, room }: { roomId: string; message: IMessage; user: IUser; room: IRoom }) => {
-			notifications.streamRoomMessage.emit(roomId, message, user, room);
-		});
-		service.onEvent('otrAckUpdate', ({ roomId, acknowledgeMessage }: { roomId: string; acknowledgeMessage: IOTRMessage }) => {
-			notifications.streamRoomMessage.emit(roomId, acknowledgeMessage);
 		});
 	}
 }

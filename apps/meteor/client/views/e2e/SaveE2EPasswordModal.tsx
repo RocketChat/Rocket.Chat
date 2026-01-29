@@ -5,6 +5,8 @@ import DOMPurify from 'dompurify';
 import { useId, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { links } from '../../lib/links';
+
 type SaveE2EPasswordModalProps = {
 	randomPassword: string;
 	onClose: () => void;
@@ -12,7 +14,7 @@ type SaveE2EPasswordModalProps = {
 	onConfirm: () => void;
 };
 
-const DOCS_URL = 'https://go.rocket.chat/i/e2ee-guide';
+const DOCS_URL = links.go.e2eeGuide;
 
 const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: SaveE2EPasswordModalProps): ReactElement => {
 	const { t } = useTranslation();
@@ -27,7 +29,7 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 			cancelText={t('Do_It_Later')}
 			confirmText={t('I_Saved_My_Password')}
 			variant='warning'
-			title={t('Save_your_encryption_password')}
+			title={t('Save_your_new_E2EE_password')}
 			annotation={t('You_can_do_from_account_preferences')}
 		>
 			<p>

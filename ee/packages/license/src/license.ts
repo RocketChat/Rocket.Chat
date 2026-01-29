@@ -355,10 +355,8 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 			this.emit('installed');
 
 			return true;
-		} catch (e) {
-			logger.error('Invalid license');
-
-			logger.error({ msg: 'Invalid raw license', encryptedLicense, e });
+		} catch (err) {
+			logger.error({ msg: 'Invalid raw license', encryptedLicense, err });
 
 			throw new InvalidLicenseError();
 		}
@@ -384,6 +382,8 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		if (this._valid && this._license) {
 			return this._license;
 		}
+
+		return undefined;
 	}
 
 	public syncShouldPreventActionResults(actions: Record<LicenseLimitKind, boolean>): void {
@@ -566,6 +566,7 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
 			tags: license?.information.tags || [],
 			trial: Boolean(license?.information.trial),
+			hasValidLicense: this.hasValidLicense(),
 		};
 	}
 }

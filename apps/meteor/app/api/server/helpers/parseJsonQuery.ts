@@ -1,10 +1,11 @@
 import ejson from 'ejson';
 import { Meteor } from 'meteor/meteor';
 
+import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { API } from '../api';
-import type { PartialThis } from '../definition';
+import type { GenericRouteExecutionContext } from '../definition';
 import { clean } from '../lib/cleanQuery';
 import { isValidQuery } from '../lib/isValidQuery';
 
@@ -13,7 +14,7 @@ const pathAllowConf = {
 	'def': ['$or', '$and', '$regex'],
 };
 
-export async function parseJsonQuery(api: PartialThis): Promise<{
+export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise<{
 	sort: Record<string, 1 | -1>;
 	/**
 	 * @deprecated To access "fields" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
@@ -24,10 +25,14 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 	 */
 	query: Record<string, unknown>;
 }> {
-	const { userId, queryParams: params, logger, queryFields, queryOperations, response, route } = api;
+	const { userId = '', response, route, logger } = api;
+
+	const params = isPlainObject(api.queryParams) ? api.queryParams : {};
+	const queryFields = Array.isArray(api.queryFields) ? (api.queryFields as string[]) : [];
+	const queryOperations = Array.isArray(api.queryOperations) ? (api.queryOperations as string[]) : [];
 
 	let sort;
-	if (params.sort) {
+	if (typeof params?.sort === 'string') {
 		try {
 			sort = JSON.parse(params.sort);
 			Object.entries(sort).forEach(([key, value]) => {
@@ -38,8 +43,12 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 				}
 			});
 		} catch (e) {
-			logger.warn(`Invalid sort parameter provided "${params.sort}":`, e);
-			throw new Meteor.Error('error-invalid-sort', `Invalid sort parameter provided: "${params.sort}"`, {
+			logger.warn({
+				msg: 'Invalid sort parameter provided',
+				sort: params.sort,
+				err: e,
+			});
+			throw new Meteor.Error('error-invalid-sort', `Invalid sort parameter provided: \"${params.sort}\"`, {
 				helperMethod: 'parseJsonQuery',
 			});
 		}
@@ -50,9 +59,9 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 		`The usage of the "${parameter}" parameter in endpoint "${endpoint}" breaks the security of the API and can lead to data exposure. It has been deprecated and will be removed in the version ${version}.`;
 
 	let fields: Record<string, 0 | 1> | undefined;
-	if (params.fields && isUnsafeQueryParamsAllowed) {
+	if (typeof params?.fields === 'string' && isUnsafeQueryParamsAllowed) {
 		try {
-			apiDeprecationLogger.parameter(route, 'fields', '8.0.0', response, messageGenerator);
+			apiDeprecationLogger.parameter(route, 'fields', '9.0.0', response, messageGenerator);
 			fields = JSON.parse(params.fields) as Record<string, 0 | 1>;
 			Object.entries(fields).forEach(([key, value]) => {
 				if (value !== 1 && value !== 0) {
@@ -62,8 +71,12 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 				}
 			});
 		} catch (e) {
-			logger.warn(`Invalid fields parameter provided "${params.fields}":`, e);
-			throw new Meteor.Error('error-invalid-fields', `Invalid fields parameter provided: "${params.fields}"`, {
+			logger.warn({
+				msg: 'Invalid fields parameter provided',
+				fields: params.fields,
+				err: e,
+			});
+			throw new Meteor.Error('error-invalid-fields', `Invalid fields parameter provided: \"${params.fields}\"`, {
 				helperMethod: 'parseJsonQuery',
 			});
 		}
@@ -100,14 +113,18 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 	}
 
 	let query: Record<string, any> = {};
-	if (params.query && isUnsafeQueryParamsAllowed) {
-		apiDeprecationLogger.parameter(route, 'query', '8.0.0', response, messageGenerator);
+	if (typeof params?.query === 'string' && isUnsafeQueryParamsAllowed) {
+		apiDeprecationLogger.parameter(route, 'query', '9.0.0', response, messageGenerator);
 		try {
 			query = ejson.parse(params.query);
 			query = clean(query, pathAllowConf.def);
 		} catch (e) {
-			logger.warn(`Invalid query parameter provided "${params.query}":`, e);
-			throw new Meteor.Error('error-invalid-query', `Invalid query parameter provided: "${params.query}"`, {
+			logger.warn({
+				msg: 'Invalid query parameter provided',
+				query: params.query,
+				err: e,
+			});
+			throw new Meteor.Error('error-invalid-query', `Invalid query parameter provided: \"${params.query}\"`, {
 				helperMethod: 'parseJsonQuery',
 			});
 		}

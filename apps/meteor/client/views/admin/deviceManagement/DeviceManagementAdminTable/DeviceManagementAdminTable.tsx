@@ -1,16 +1,13 @@
 import type { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { GenericTableHeaderCell, usePagination, useSort } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement, MutableRefObject } from 'react';
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DeviceManagementAdminRow from './DeviceManagementAdminRow';
 import FilterByText from '../../../../components/FilterByText';
-import { GenericTableHeaderCell } from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import DeviceManagementTable from '../../../../components/deviceManagement/DeviceManagementTable';
 import { deviceManagementQueryKeys } from '../../../../lib/queryKeys';
 
@@ -25,7 +22,7 @@ const isSessionPopulatedSession = (
 	session: Serialized<DeviceManagementPopulatedSession | DeviceManagementSession>,
 ): session is Serialized<DeviceManagementPopulatedSession> => '_user' in session;
 
-const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }): ReactElement => {
+const DeviceManagementAdminTable = () => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination();
@@ -49,8 +46,6 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 		queryKey: deviceManagementQueryKeys.sessions(query),
 		queryFn: () => listAllSessions(query),
 	});
-
-	reloadRef.current = queryResult.refetch;
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
@@ -84,7 +79,7 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 			<DeviceManagementTable
 				{...queryResult}
 				headers={headers}
-				renderRow={(session): ReactElement => (
+				renderRow={(session) => (
 					<DeviceManagementAdminRow
 						key={session._id}
 						_id={session._id}
@@ -95,7 +90,6 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 						deviceOSName={session?.device?.os?.name}
 						rcVersion={session?.device?.version}
 						loginAt={session.loginAt}
-						onReload={queryResult.refetch}
 					/>
 				)}
 				current={current}

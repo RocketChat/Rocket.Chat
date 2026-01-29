@@ -1,27 +1,17 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
 
 import { trim } from '../../../lib/utils/stringUtils';
 import { i18n } from '../../../server/lib/i18n';
 import { settings } from '../../settings/server';
-import { MessageTypes } from '../lib/MessageTypes';
 
 export const Message = {
 	parse(msg: IMessage, language: string) {
 		const messageType = MessageTypes.getType(msg);
 		if (messageType) {
-			if (messageType.template) {
-				// Render message
-				return;
-			}
-			if (messageType.message) {
-				if (!language) {
-					language = Accounts.storageLocation.getItem('userLanguage') || 'en';
-				}
-				const data = (typeof messageType.data === 'function' && messageType.data(msg)) || {};
-				return i18n.t(messageType.message, { ...data, lng: language });
-			}
+			return messageType.text(i18n.getFixedT(language || Accounts.storageLocation.getItem('userLanguage') || 'en'), msg);
 		}
 		if (msg.u && msg.u.username === settings.get('Chatops_Username')) {
 			msg.html = msg.msg;

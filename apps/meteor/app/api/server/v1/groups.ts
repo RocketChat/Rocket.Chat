@@ -2,11 +2,11 @@ import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
+import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
@@ -380,7 +380,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			await eraseRoom(findResult.rid, this.userId);
+			await eraseRoom(findResult.rid, this.user);
 
 			return API.v1.success();
 		},
@@ -392,7 +392,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isGroupsFilesProps },
 	{
 		async get() {
-			const { typeGroup, name, roomId, roomName } = this.queryParams;
+			const { typeGroup, name, roomId, roomName, onlyConfirmed } = this.queryParams;
 
 			const findResult = await findPrivateGroupByIdOrName({
 				params: roomId ? { roomId } : { roomName },
@@ -408,6 +408,7 @@ API.v1.addRoute(
 				rid: findResult.rid,
 				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
+				...(onlyConfirmed && { expiresAt: { $exists: false } }),
 			};
 
 			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
@@ -792,6 +793,7 @@ API.v1.addRoute(
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
 				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+				_hidden: { $ne: true },
 			};
 
 			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
@@ -1215,11 +1217,11 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			const moderators = (
-				await Subscriptions.findByRoomIdAndRoles(findResult.rid, ['moderator'], {
-					projection: { u: 1 },
-				}).toArray()
-			).map((sub: any) => sub.u);
+			const moderators = await Subscriptions.findByRoomIdAndRoles(findResult.rid, ['moderator'], {
+				projection: { u: 1, _id: 0 },
+			})
+				.map((sub) => sub.u)
+				.toArray();
 
 			return API.v1.success({
 				moderators,

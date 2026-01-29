@@ -3,6 +3,7 @@ import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import AppsLogsFilterOptions from './AppLogsFilterOptions';
 import CompactFilterOptions from './CompactFilterOptions';
 import { EventFilterSelect } from './EventFilterSelect';
 import { InstanceFilterSelect } from './InstanceFilterSelect';
@@ -15,12 +16,13 @@ import { ExportLogsModal } from './ExportLogsModal';
 type AppsLogsFilterProps = {
 	appId: string;
 	expandAll: () => void;
+	collapseAll: () => void;
 	refetchLogs: () => void;
 	isLoading: boolean;
 	noResults?: boolean;
 };
 
-export const AppLogsFilter = ({ appId, expandAll, refetchLogs, isLoading, noResults = false }: AppsLogsFilterProps) => {
+export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLoading, noResults = false }: AppsLogsFilterProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues } = useAppLogsFilterFormContext();
@@ -44,14 +46,19 @@ export const AppLogsFilter = ({ appId, expandAll, refetchLogs, isLoading, noResu
 	const refreshLogs = () => {
 		refetchLogs();
 	};
+
+	const onExportConfirm = (url: string) => {
+		window.open(url, '_blank', 'noopener noreferrer');
+	};
+
 	const openExportModal = () => {
-		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} />);
+		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} onConfirm={onExportConfirm} />);
 	};
 
 	const compactMode = useCompactMode();
 
 	return (
-		<Box display='flex' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end'>
+		<Box display='flex' alignItems='flex-end' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end'>
 			<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 				<Label id='eventFilterLabel' htmlFor='eventFilter'>
 					{t('Event')}
@@ -63,69 +70,69 @@ export const AppLogsFilter = ({ appId, expandAll, refetchLogs, isLoading, noResu
 				/>
 			</Box>
 			{!compactMode && (
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label id='timeFilterLabel' htmlFor='timeFilter'>
-						{t('Time')}
-					</Label>
-					<TimeFilterSelect id='timeFilter' aria-labelledby='timeFilterLabel' />
-				</Box>
-			)}
-			{!compactMode && (
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label id='instanceFilterLabel' htmlFor='instanceFilter'>
-						{t('Instance')}
-					</Label>
-					<Controller
-						control={control}
-						name='instance'
-						render={({ field }) => (
-							<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
-						)}
+				<>
+					<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
+						<Label id='timeFilterLabel' htmlFor='timeFilter'>
+							{t('Time')}
+						</Label>
+						<TimeFilterSelect id='timeFilter' aria-labelledby='timeFilterLabel' />
+					</Box>
+
+					<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
+						<Label id='instanceFilterLabel' htmlFor='instanceFilter'>
+							{t('Instance')}
+						</Label>
+						<Controller
+							control={control}
+							name='instance'
+							render={({ field }) => (
+								<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
+							)}
+						/>
+					</Box>
+
+					<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
+						<Label>{t('Severity')}</Label>
+						<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
+					</Box>
+
+					<IconButton
+						title={isLoading ? t('Loading') : t('Refresh_logs')}
+						disabled={isLoading}
+						icon='refresh'
+						secondary
+						mie={10}
+						onClick={() => refreshLogs()}
 					/>
-				</Box>
+
+					<IconButton
+						title={noResults ? t('No_data_to_export') : t('Export')}
+						icon='circle-arrow-down'
+						disabled={noResults}
+						secondary
+						mie={10}
+						onClick={() => openExportModal()}
+						aria-label={noResults ? t('No_data_to_export') : t('Export')}
+						aria-disabled={noResults}
+					/>
+
+					<AppsLogsFilterOptions onExpandAll={openAllLogs} onCollapseAll={collapseAll} />
+				</>
 			)}
-			{!compactMode && (
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label>{t('Severity')}</Label>
-					<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
-				</Box>
-			)}
-			{!compactMode && (
-				<Button alignSelf='flex-end' icon='arrow-expand' secondary mie={10} onClick={() => openAllLogs()}>
-					{t('Expand_all')}
-				</Button>
-			)}
-			{!compactMode && (
-				<IconButton
-					title={isLoading ? t('Loading') : t('Refresh_logs')}
-					alignSelf='flex-end'
-					disabled={isLoading}
-					icon='refresh'
-					secondary
-					mie={10}
-					onClick={() => refreshLogs()}
-				/>
-			)}
-			{!compactMode && (
-				<IconButton
-					title={noResults ? t('No_data_to_export') : t('Export')}
-					alignSelf='flex-end'
-					icon='circle-arrow-down'
-					disabled={noResults}
-					secondary
-					mie={10}
-					onClick={() => openExportModal()}
-					aria-label={noResults ? t('No_data_to_export') : t('Export')}
-					aria-disabled={noResults}
-				/>
-			)}
+
 			{compactMode && (
-				<Button alignSelf='flex-end' icon='customize' secondary mie={10} onClick={() => openContextualBar()}>
-					{t('Filters')}
-				</Button>
-			)}
-			{compactMode && (
-				<CompactFilterOptions isLoading={isLoading} onExportLogs={openExportModal} onExpandAll={openAllLogs} onRefreshLogs={refreshLogs} />
+				<>
+					<Button alignSelf='flex-end' icon='customize' secondary mie={10} onClick={() => openContextualBar()}>
+						{t('Filters')}
+					</Button>
+					<CompactFilterOptions
+						isLoading={isLoading}
+						onExportLogs={openExportModal}
+						onExpandAll={openAllLogs}
+						onCollapseAll={collapseAll}
+						onRefreshLogs={refreshLogs}
+					/>
+				</>
 			)}
 		</Box>
 	);

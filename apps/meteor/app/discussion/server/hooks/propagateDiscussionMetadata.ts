@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, VideoConference } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 import { notifyOnMessageChange } from '../../../lib/server/lib/notifyListener';
 
@@ -48,7 +48,7 @@ callbacks.add(
 
 callbacks.add(
 	'afterDeleteMessage',
-	async (message, { _id, prid }) => {
+	async (message, { room: { _id, prid } }) => {
 		if (prid) {
 			const room = await Rooms.findOneById(_id, {
 				projection: {
@@ -87,7 +87,11 @@ callbacks.add(
 callbacks.add(
 	'afterRoomNameChange',
 	async (roomConfig) => {
-		const { rid, name, oldName } = roomConfig;
+		const {
+			room: { _id: rid },
+			name,
+			oldName,
+		} = roomConfig;
 		await Rooms.updateMany({ prid: rid, ...(oldName && { topic: oldName }) }, { $set: { topic: name } });
 		return roomConfig;
 	},

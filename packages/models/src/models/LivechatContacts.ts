@@ -33,7 +33,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		super(db, 'livechat_contact', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: { name: 1 },
@@ -326,6 +326,24 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 					channels: 1,
 					name: 1,
 					phones: 1,
+				},
+			},
+		);
+	}
+
+	disableByContactId(contactId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: contactId },
+			{
+				$set: { enabled: false },
+				$unset: {
+					emails: 1,
+					customFields: 1,
+					lastChat: 1,
+					channels: 1,
+					name: 1,
+					phones: 1,
+					conflictingFields: 1,
 				},
 			},
 		);

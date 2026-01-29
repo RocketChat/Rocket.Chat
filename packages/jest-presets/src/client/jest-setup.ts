@@ -1,3 +1,4 @@
+import { webcrypto } from 'node:crypto';
 import { TextEncoder, TextDecoder } from 'node:util';
 
 import { toHaveNoViolations } from 'jest-axe';
@@ -9,6 +10,10 @@ expect.extend(toHaveNoViolations);
 
 const urlByBlob = new WeakMap<Blob, string>();
 const blobByUrl = new Map<string, Blob>();
+
+Object.defineProperty(globalThis, 'crypto', {
+	value: webcrypto,
+});
 
 globalThis.URL.createObjectURL = (blob: Blob): string => {
 	const url = urlByBlob.get(blob) ?? `blob://${uuid.v4()}`;
@@ -65,5 +70,5 @@ globalThis.IntersectionObserver = class IntersectionObserver {
 	}
 };
 
-globalThis.TextEncoder = TextEncoder;
+globalThis.TextEncoder = TextEncoder as any;
 globalThis.TextDecoder = TextDecoder as any;

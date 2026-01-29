@@ -12,3 +12,6 @@ export * from './converter';
 export * from './removeEmpty';
 export * from './isObject';
 export * from './isRecord';
+export * from './validateEmail';
+export * from './truncateString';
+export * from './isTruthy';

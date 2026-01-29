@@ -1,6 +1,6 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
-import { Users, Subscriptions } from '@rocket.chat/models';
+import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -18,6 +18,7 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
+	ajv,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -30,9 +31,7 @@ import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/persona
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
 import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
-import { removeOtherTokens } from '../../../../server/lib/removeOtherTokens';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
-import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
 import { registerUser } from '../../../../server/methods/registerUser';
 import { requestDataDownload } from '../../../../server/methods/requestDataDownload';
 import { resetAvatar } from '../../../../server/methods/resetAvatar';
@@ -51,11 +50,13 @@ import {
 } from '../../../lib/server/functions/checkUsernameAvailability';
 import { deleteUser } from '../../../lib/server/functions/deleteUser';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
-import { getFullUserDataByIdOrUsernameOrImportId } from '../../../lib/server/functions/getFullUserData';
+import { getFullUserDataByIdOrUsernameOrImportId, defaultFields, fullFields } from '../../../lib/server/functions/getFullUserData';
 import { generateUsernameSuggestion } from '../../../lib/server/functions/getUsernameSuggestion';
 import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../../lib/server/functions/saveUser';
+import { sendWelcomeEmail } from '../../../lib/server/functions/saveUser/sendUserEmail';
+import { canEditExtension } from '../../../lib/server/functions/saveUser/validateUserEditing';
 import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
@@ -66,7 +67,9 @@ import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../lib/server
 import { generateAccessToken } from '../../../lib/server/methods/createToken';
 import { deleteUserOwnAccount } from '../../../lib/server/methods/deleteUserOwnAccount';
 import { settings } from '../../../settings/server';
+import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
@@ -77,7 +80,7 @@ import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields
 
 API.v1.addRoute(
 	'users.getAvatar',
-	{ authRequired: false },
+	{ authRequired: true },
 	{
 		async get() {
 			const user = await getUserFromParams(this.queryParams);
@@ -149,7 +152,14 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.updateOwnBasicInfo',
-	{ authRequired: true, validateParams: isUsersUpdateOwnBasicInfoParamsPOST },
+	{
+		authRequired: true,
+		validateParams: isUsersUpdateOwnBasicInfoParamsPOST,
+		rateLimiterOptions: {
+			numRequestsAllowed: 1,
+			intervalTimeInMS: 60000,
+		},
+	},
 	{
 		async post() {
 			const userData = {
@@ -176,7 +186,7 @@ API.v1.addRoute(
 						twoFactorMethod: 'password',
 					};
 
-			await executeSaveUserProfile.call(this as unknown as Meteor.MethodThisType, userData, this.bodyParams.customFields, twoFactorOptions);
+			await executeSaveUserProfile.call(this, this.user, userData, this.bodyParams.customFields, twoFactorOptions);
 
 			return API.v1.success({
 				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
@@ -318,6 +328,10 @@ API.v1.addRoute(
 				validateCustomFields(this.bodyParams.customFields);
 			}
 
+			if (this.bodyParams.freeSwitchExtension && !(await canEditExtension(this.bodyParams.freeSwitchExtension))) {
+				return API.v1.failure('Setting user voice call extension is not allowed', 'error-action-not-allowed');
+			}
+
 			const newUserId = await saveUser(this.userId, this.bodyParams);
 			const userId = typeof newUserId !== 'string' ? this.userId : newUserId;
 
@@ -349,9 +363,9 @@ API.v1.addRoute(
 			const user = await getUserFromParams(this.bodyParams);
 			const { confirmRelinquish = false } = this.bodyParams;
 
-			await deleteUser(user._id, confirmRelinquish, this.userId);
+			const { deletedRooms } = await deleteUser(user._id, confirmRelinquish, this.userId);
 
-			return API.v1.success();
+			return API.v1.success({ deletedRooms });
 		},
 	},
 );
@@ -491,13 +505,18 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
 			const nonEmptyFields = getNonEmptyFields(fields);
 
 			const inclusiveFields = getInclusiveFields(nonEmptyFields);
 
 			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
 
+			const hasUserQuery = query && Object.keys(query).length > 0;
+
+			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
+
+			// if user provided a query, validate it with their allowed operators
+			// otherwise we use the default query (with $regex and $options)
 			if (
 				!isValidQuery(
 					nonEmptyQuery,
@@ -509,7 +528,7 @@ API.v1.addRoute(
 						inclusiveFieldsKeys.includes('type') && 'type.*',
 						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
 					].filter(Boolean) as string[],
-					this.queryOperations,
+					hasUserQuery ? this.queryOperations : [...this.queryOperations, '$regex', '$options'],
 				)
 			) {
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
@@ -599,7 +618,7 @@ API.v1.addRoute(
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
-			const { status, hasLoggedIn, type, roles, searchTerm } = this.queryParams;
+			const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
 
 			return API.v1.success(
 				await findPaginatedUsersByStatus({
@@ -612,6 +631,7 @@ API.v1.addRoute(
 					searchTerm,
 					hasLoggedIn,
 					type,
+					inactiveReason,
 				}),
 			);
 		},
@@ -628,7 +648,22 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { email } = this.bodyParams;
-			await sendWelcomeEmail(email);
+
+			if (!isSMTPConfigured()) {
+				throw new MeteorError('error-email-send-failed', 'SMTP is not configured', {
+					method: 'sendWelcomeEmail',
+				});
+			}
+
+			const user = await Users.findOneByEmailAddress(email.trim(), { projection: { name: 1 } });
+
+			if (!user) {
+				throw new MeteorError('error-invalid-user', 'Invalid user', {
+					method: 'sendWelcomeEmail',
+				});
+			}
+
+			await sendWelcomeEmail({ ...user, email });
 
 			return API.v1.success();
 		},
@@ -728,17 +763,70 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const usersEndpoints = API.v1.post(
 	'users.createToken',
-	{ authRequired: true, deprecationVersion: '8.0.0' },
 	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			const data = await generateAccessToken(this.userId, user._id);
-
-			return data ? API.v1.success({ data }) : API.v1.forbidden();
+		authRequired: true,
+		body: ajv.compile<{ userId: string; secret: string }>({
+			type: 'object',
+			properties: {
+				userId: {
+					type: 'string',
+					minLength: 1,
+				},
+				secret: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['userId', 'secret'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<{ data: { userId: string; authToken: string } }>({
+				type: 'object',
+				properties: {
+					data: {
+						type: 'object',
+						properties: {
+							userId: {
+								type: 'string',
+								minLength: 1,
+							},
+							authToken: {
+								type: 'string',
+								minLength: 1,
+							},
+						},
+						required: ['userId'],
+						additionalProperties: false,
+					},
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['data', 'success'],
+				additionalProperties: false,
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [false] },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.bodyParams);
+
+		const data = await generateAccessToken(user._id, this.bodyParams.secret);
+
+		return API.v1.success({ data });
 	},
 );
 
@@ -1117,8 +1205,13 @@ API.v1.addRoute(
 			const selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string } = JSON.parse(selectorRaw);
 
 			try {
-				if (selector?.conditions && !isValidQuery(selector.conditions, ['*'], ['$or', '$and'])) {
-					throw new Error('error-invalid-query');
+				if (selector?.conditions) {
+					const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+					const allowedFields = canViewFullInfo ? [...Object.keys(defaultFields), ...Object.keys(fullFields)] : Object.keys(defaultFields);
+
+					if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
+						throw new Error('error-invalid-query');
+					}
 				}
 			} catch (e) {
 				return API.v1.failure(e);
@@ -1139,7 +1232,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			return API.v1.success(await removeOtherTokens(this.userId, this.connection.id));
+			return API.v1.success(await Users.removeNonLoginTokensExcept(this.userId, this.token));
 		},
 	},
 );
@@ -1245,6 +1338,8 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 			}
 
+			await Sessions.logoutAllByUserId(userId, this.userId);
+
 			void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [] } });
 
 			return API.v1.success({
@@ -1279,7 +1374,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.setStatus',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		rateLimiterOptions: {
+			numRequestsAllowed: 5,
+			intervalTimeInMS: 60000,
+		},
+	},
 	{
 		async post() {
 			check(
@@ -1302,9 +1403,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = await (async (): Promise<
-				Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText' | 'roles'> | undefined | null
-			> => {
+			const user = await (async () => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Users.findOneById(this.userId);
 				}
@@ -1317,15 +1416,18 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			// TODO refactor to not update the user twice (one inside of `setStatusText` and then later just the status + statusDefault)
+			const { _id, username, roles, name } = user;
+			let { statusText, status } = user;
 
 			if (this.bodyParams.message || this.bodyParams.message === '') {
-				await setStatusText(user._id, this.bodyParams.message);
+				await setStatusText(user, this.bodyParams.message, { emit: false });
+				statusText = this.bodyParams.message;
 			}
+
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
-					const { status } = this.bodyParams;
+					status = this.bodyParams.status;
 
 					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
 						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
@@ -1343,12 +1445,6 @@ API.v1.addRoute(
 						},
 					);
 
-					const { _id, username, statusText, roles, name } = user;
-					void api.broadcast('presence.status', {
-						user: { status, _id, username, statusText, roles, name },
-						previousStatus: user.status,
-					});
-
 					void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
@@ -1356,6 +1452,11 @@ API.v1.addRoute(
 					});
 				}
 			}
+
+			void api.broadcast('presence.status', {
+				user: { status, _id, username, statusText, roles, name },
+				previousStatus: user.status,
+			});
 
 			return API.v1.success();
 		},
@@ -1399,3 +1500,10 @@ settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 
 	API.v1.updateRateLimiterDictionaryForRoute(userRegisterRoute, value);
 });
+
+type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends UsersEndpoints {}
+}

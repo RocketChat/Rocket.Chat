@@ -13,6 +13,7 @@ import {
 	Icon,
 	Button,
 } from '@rocket.chat/fuselage';
+import { validateEmail } from '@rocket.chat/tools';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
@@ -20,17 +21,16 @@ import {
 	useTranslation,
 	useEndpoint,
 	useUser,
-	useMethod,
 	useLayout,
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ReactElement } from 'react';
 import { useId, useCallback } from 'react';
+import { VisuallyHidden } from 'react-aria';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
-import { validateEmail } from '../../../../lib/emailValidator';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
@@ -105,16 +105,15 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		}
 	};
 
-	// FIXME: replace to endpoint
-	const updateOwnBasicInfo = useMethod('saveUserProfile');
+	const updateOwnBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
 
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
 	const handleSave = async ({ email, name, username, statusType, statusText, nickname, bio, customFields }: AccountProfileFormValues) => {
 		try {
-			await updateOwnBasicInfo(
-				{
-					realname: name,
+			await updateOwnBasicInfo({
+				data: {
+					name,
 					...(user ? getUserEmailAddress(user) !== email && { email } : {}),
 					username,
 					statusText,
@@ -123,7 +122,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					bio,
 				},
 				customFields,
-			);
+			});
 
 			await updateAvatar();
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
@@ -144,6 +143,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
 			<FieldGroup>
+				<VisuallyHidden>
+					<legend>{t('Profile_details')}</legend>
+				</VisuallyHidden>
 				<Field>
 					<Controller
 						control={control}
@@ -242,7 +244,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						<Controller
 							control={control}
 							name='statusText'
-							rules={{ maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) } }}
+							rules={{
+								maxLength: {
+									value: USER_STATUS_TEXT_MAX_LENGTH,
+									message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH),
+								},
+							}}
 							render={({ field }) => (
 								<TextInput
 									{...field}

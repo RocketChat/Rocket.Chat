@@ -1,14 +1,14 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAgents, ILivechatAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
+import { isDepartmentCreationAvailable } from '@rocket.chat/omni-core';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { updateDepartmentAgents } from './Helper';
 import { afterDepartmentArchived, afterDepartmentUnarchived } from './hooks';
-import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
 import { livechatLogger } from './logger';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import {
 	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
 	notifyOnLivechatDepartmentAgentChanged,
@@ -139,10 +139,7 @@ export async function saveDepartment(
 	// Disable event
 	if (department?.enabled && !departmentDB?.enabled) {
 		await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
-		void Apps.self
-			?.getBridges()
-			?.getListenerBridge()
-			.livechatEvent(AppEvents.IPostLivechatDepartmentDisabled, { department: departmentDB });
+		void Apps.self?.triggerEvent(AppEvents.IPostLivechatDepartmentDisabled, { department: departmentDB });
 	}
 
 	if (departmentUnit) {
@@ -215,7 +212,7 @@ export async function setDepartmentForGuest({ visitorId, department }: { visitor
 }
 
 export async function removeDepartment(departmentId: string) {
-	livechatLogger.debug(`Removing department: ${departmentId}`);
+	livechatLogger.debug({ msg: 'Removing department', departmentId });
 
 	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'businessHourId' | 'parentId'>>(departmentId, {
 		projection: { _id: 1, businessHourId: 1, parentId: 1 },
@@ -272,7 +269,7 @@ export async function removeDepartment(departmentId: string) {
 	}
 
 	await callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds: removedAgents.map(({ agentId }) => agentId) });
-	void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatDepartmentRemoved, { department });
+	void Apps.self?.triggerEvent(AppEvents.IPostLivechatDepartmentRemoved, { department });
 
 	return ret;
 }

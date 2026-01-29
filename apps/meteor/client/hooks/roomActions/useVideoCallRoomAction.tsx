@@ -1,6 +1,7 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useEffectEvent, useStableArray } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfDispatchOutgoing,
 	useVideoConfIsCalling,
@@ -11,7 +12,6 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 
 export const useVideoCallRoomAction = () => {
@@ -50,8 +50,8 @@ export const useVideoCallRoomAction = () => {
 
 	const visible = groups.length > 0;
 	const allowed = visible && permittedToCallManagement && (!user?.username || !room.muted?.includes(user.username)) && !ownUser;
-	const disabled = federated || (!!room.ro && !permittedToPostReadonly);
-	const tooltip = disabled ? t('core.Video_Call_unavailable_for_this_type_of_room') : '';
+	const disabled = federated || (!!room.ro && !permittedToPostReadonly) || room.archived;
+	const tooltip = disabled ? t('core.Video_Call_unavailable_for_this_type_of_room') : undefined;
 
 	const handleOpenVideoConf = useEffectEvent(async () => {
 		if (isCalling || isRinging) {
@@ -77,7 +77,7 @@ export const useVideoCallRoomAction = () => {
 			icon: 'video',
 			featured: true,
 			action: handleOpenVideoConf,
-			order: -1,
+			order: 1,
 			groups,
 			disabled,
 			tooltip,
