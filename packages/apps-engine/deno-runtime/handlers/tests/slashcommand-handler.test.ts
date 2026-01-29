@@ -137,7 +137,7 @@ describe('handlers > slashcommand', () => {
 
 		const _spy = spy(mockCommandExecutorAndPreview, 'executePreviewItem');
 
-		const mockRequest = createMockRequest({ method: 'slashcommand:executor-and-preview:previewer', params: [mockContext] });
+		const mockRequest = createMockRequest({ method: 'slashcommand:executor-and-preview:executePreviewItem', params: [mockPreviewItem, mockContext] });
 
 		await handlePreviewItem({ AppAccessorsInstance: mockAppAccessors, request: mockRequest }, mockCommandExecutorAndPreview, [mockPreviewItem, mockContext]);
 
