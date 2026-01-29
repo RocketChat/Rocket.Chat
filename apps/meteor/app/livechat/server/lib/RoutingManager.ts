@@ -28,6 +28,7 @@ import {
 	updateChatDepartment,
 	allowAgentSkipQueue,
 } from './Helper';
+import { conditionalLockAgent } from './conditionalLockAgent';
 import { afterTakeInquiry, beforeDelegateAgent } from './hooks';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
@@ -257,17 +258,33 @@ export const RoutingManager: Routing = {
 			return room;
 		}
 
-		try {
-			await callbacks.run('livechat.checkAgentBeforeTakeInquiry', {
-				agent,
-				inquiry,
-				options,
+		const lock = await conditionalLockAgent(agent.agentId);
+		if (!lock.acquired && lock.required) {
+			logger.debug({
+				msg: 'Cannot take inquiry because agent is currently locked by another process',
+				agentId: agent.agentId,
+				inquiryId: _id,
 			});
-		} catch (e) {
 			if (options.clientAction && !options.forwardingToDepartment) {
-				throw e;
+				throw new Error('error-agent-is-locked');
 			}
 			agent = null;
+		}
+
+		if (agent) {
+			try {
+				await callbacks.run('livechat.checkAgentBeforeTakeInquiry', {
+					agent,
+					inquiry,
+					options,
+				});
+			} catch (e) {
+				await lock.unlock();
+				if (options.clientAction && !options.forwardingToDepartment) {
+					throw e;
+				}
+				agent = null;
+			}
 		}
 
 		if (!agent) {
@@ -279,35 +296,39 @@ export const RoutingManager: Routing = {
 			return cbRoom;
 		}
 
-		const result = await LivechatInquiry.takeInquiry(_id, inquiry.lockedAt);
-		if (result.modifiedCount === 0) {
-			logger.error({ msg: 'Failed to take inquiry, could not match lockedAt', inquiryId: _id, lockedAt: inquiry.lockedAt });
-			throw new Error('error-taking-inquiry-lockedAt-mismatch');
+		try {
+			const result = await LivechatInquiry.takeInquiry(_id, inquiry.lockedAt);
+			if (result.modifiedCount === 0) {
+				logger.error({ msg: 'Failed to take inquiry because lockedAt did not match', inquiryId: _id, lockedAt: inquiry.lockedAt });
+				throw new Error('error-taking-inquiry-lockedAt-mismatch');
+			}
+
+			logger.info({ msg: 'Inquiry taken', inquiryId: _id, agentId: agent.agentId });
+
+			// assignAgent changes the room data to add the agent serving the conversation. afterTakeInquiry expects room object to be updated
+			const { inquiry: returnedInquiry, user } = await this.assignAgent(inquiry, agent);
+			const roomAfterUpdate = await LivechatRooms.findOneById(rid);
+
+			if (!roomAfterUpdate) {
+				// This should never happen
+				throw new Error('error-room-not-found');
+			}
+
+			void Apps.self?.triggerEvent(AppEvents.IPostLivechatAgentAssigned, { room: roomAfterUpdate, user });
+			void afterTakeInquiry({ inquiry: returnedInquiry, room: roomAfterUpdate, agent });
+
+			void notifyOnLivechatInquiryChangedById(inquiry._id, 'updated', {
+				status: LivechatInquiryStatus.TAKEN,
+				takenAt: new Date(),
+				defaultAgent: undefined,
+				estimatedInactivityCloseTimeAt: undefined,
+				queuedAt: undefined,
+			});
+
+			return roomAfterUpdate;
+		} finally {
+			await lock.unlock();
 		}
-
-		logger.info({ msg: 'Inquiry taken by agent', inquiryId: inquiry._id, agentId: agent.agentId });
-
-		// assignAgent changes the room data to add the agent serving the conversation. afterTakeInquiry expects room object to be updated
-		const { inquiry: returnedInquiry, user } = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent);
-		const roomAfterUpdate = await LivechatRooms.findOneById(rid);
-
-		if (!roomAfterUpdate) {
-			// This should never happen
-			throw new Error('error-room-not-found');
-		}
-
-		void Apps.self?.triggerEvent(AppEvents.IPostLivechatAgentAssigned, { room: roomAfterUpdate, user });
-		void afterTakeInquiry({ inquiry: returnedInquiry, room: roomAfterUpdate, agent });
-
-		void notifyOnLivechatInquiryChangedById(inquiry._id, 'updated', {
-			status: LivechatInquiryStatus.TAKEN,
-			takenAt: new Date(),
-			defaultAgent: undefined,
-			estimatedInactivityCloseTimeAt: undefined,
-			queuedAt: undefined,
-		});
-
-		return roomAfterUpdate;
 	},
 
 	async transferRoom(room, guest, transferData) {
