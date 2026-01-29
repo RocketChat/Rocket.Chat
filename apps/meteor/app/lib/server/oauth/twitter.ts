@@ -1,12 +1,17 @@
 import { Match, check } from 'meteor/check';
+// @ts-expect-error - twit has no type definitions
 import Twit from 'twit';
-import _ from 'underscore';
 
 import { registerAccessTokenService } from './oauth';
 
 const whitelistedFields = ['id', 'name', 'description', 'profile_image_url', 'profile_image_url_https', 'lang', 'email'];
 
-const getIdentity = async function (accessToken, appId, appSecret, accessTokenSecret) {
+const getIdentity = async function (
+	accessToken: string,
+	appId: string,
+	appSecret: string,
+	accessTokenSecret: string,
+): Promise<Record<string, any>> {
 	const Twitter = new Twit({
 		consumer_key: appId,
 		consumer_secret: appSecret,
@@ -17,8 +22,8 @@ const getIdentity = async function (accessToken, appId, appSecret, accessTokenSe
 		const result = await Twitter.get('account/verify_credentials.json?include_email=true');
 
 		return result.data;
-	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch identity from Twwiter. ${err.message}`), {
+	} catch (err: any) {
+		throw Object.assign(new Error(`Failed to fetch identity from Twwiter. ${err.message}`), {
 			response: err.response,
 		});
 	}
@@ -38,13 +43,18 @@ registerAccessTokenService('twitter', async (options) => {
 
 	const identity = await getIdentity(options.accessToken, options.appId, options.appSecret, options.accessTokenSecret);
 
-	const serviceData = {
+	const serviceData: Record<string, any> = {
 		accessToken: options.accessToken,
-		expiresAt: +new Date() + 1000 * parseInt(options.expiresIn, 10),
+		expiresAt: +new Date() + 1000 * options.expiresIn,
 	};
 
-	const fields = _.pick(identity, whitelistedFields);
-	_.extend(serviceData, fields);
+	const fields: Record<string, any> = {};
+	for (const key of whitelistedFields) {
+		if (identity[key]) {
+			fields[key] = identity[key];
+		}
+	}
+	Object.assign(serviceData, fields);
 
 	return {
 		serviceData,
