@@ -10,7 +10,11 @@ Meteor.startup(() => {
 	onLoggedIn(() => {
 		// Only event I found triggers this is from ephemeral messages
 		// Other types of messages come from another stream
-		return sdk.stream('notify-user', [`${getUserId()}/message`], (msg: IMessage) => {
+		return sdk.stream('notify-user', [`${getUserId()}/message`], (msg: IMessage & { _deleted?: boolean }) => {
+			if (msg._deleted) {
+				return Messages.state.delete(msg._id);
+			}
+
 			msg.u = msg.u || { username: 'rocket.cat' };
 			msg.private = true;
 

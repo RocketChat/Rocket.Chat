@@ -31,6 +31,16 @@ export class Notifier implements INotifier {
 		await this.callMessageBridge('doNotifyUser', [user, message, AppObjectRegistry.get<string>('id')]);
 	}
 
+	public async deleteNotifyUser(user: IUser, message: IMessage): Promise<void> {
+		if (!message.sender || !message.sender.id) {
+			const appUser = await this.getAppUser();
+
+			message.sender = appUser;
+		}
+
+		await this.callMessageBridge('doDeleteNotifyUser', [user, message, AppObjectRegistry.get<string>('id')]);
+	}
+
 	public async notifyRoom(room: IRoom, message: IMessage): Promise<void> {
 		if (!message.sender || !message.sender.id) {
 			const appUser = await this.getAppUser();
