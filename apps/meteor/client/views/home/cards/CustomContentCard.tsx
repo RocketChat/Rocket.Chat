@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CustomHomepageContent from '../CustomHomePageContent';
 
+
 const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement | null => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -60,10 +61,12 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Re
 				</CardHeader>
 				<CardBody>{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}</CardBody>
 				<CardControls>
-					<Button medium onClick={() => router.navigate('/admin/settings/Layout')} title={t('Layout_Home_Page_Content')}>
+					<Box display='flex' flexWrap='wrap'>
+					<Button mie={4} mbe={4} medium onClick={() => router.navigate('/admin/settings/Layout')} title={t('Layout_Home_Page_Content')}>
 						{t('Customize_Content')}
 					</Button>
 					<Button
+					     mie={4} mbe={4}
 						icon={willNotShowCustomContent ? 'eye' : 'eye-off'}
 						disabled={isCustomContentBodyEmpty || (isCustomContentVisible && isCustomContentOnly)}
 						title={isCustomContentBodyEmpty ? t('Action_Available_After_Custom_Content_Added') : userVisibilityTooltipText}
@@ -73,6 +76,7 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Re
 						{willNotShowCustomContent ? t('Show_To_Workspace') : t('Hide_On_Workspace')}
 					</Button>
 					<Button
+					    mie={4} mbe={4}
 						icon='lightning'
 						disabled={willNotShowCustomContent || !isEnterprise}
 						title={!isEnterprise ? t('Premium_only') : customContentOnlyTooltipText}
@@ -81,6 +85,7 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Re
 					>
 						{!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
 					</Button>
+					</Box>
 				</CardControls>
 			</Card>
 		);
