@@ -37,7 +37,7 @@ Rocket.Chat provides endless possibilities. Here’s an overview of the features
 
 # 💻 Deploy Rocket.Chat
 
-We support different methods of deployment for different needs. Choose your method:
+We support multiple deployment  methods to different needs. Choose the option that best fits your use case :
 
 - Are you deploying Rocket.Chat on your own servers? You can deploy using one of the recommended methods: Docker, Podman, or Kubernetes. Refer to the [Deployment Guide](https://docs.rocket.chat/docs/deploy-rocketchat) for details. Before you deploy, make sure to check the [system requirements](https://docs.rocket.chat/docs/system-requirements) to deploy a workspace successfully. Alternatively, deploy Rocket.Chat using [Launchpad](https://docs.rocket.chat/docs/deploy-with-launchpad) for a quick and straightforward Kubernetes setup where you don't have to manage each dependency.
 
