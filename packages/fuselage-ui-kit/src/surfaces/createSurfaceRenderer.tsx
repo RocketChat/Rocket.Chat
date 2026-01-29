@@ -16,4 +16,3 @@ export const createSurfaceRenderer = <S extends UiKit.SurfaceRenderer<ReactEleme
 			</SurfaceComponent>
 		);
 	};
-

@@ -20,7 +20,6 @@ import { action } from '@storybook/addon-actions';
 import { UiKitContext, UiKitMessage } from '..';
 import * as payloads from './payloads';
 
-
 export default {
 	title: 'Surfaces/Message',
 	argTypes: {

@@ -5,7 +5,6 @@ import { action } from '@storybook/addon-actions';
 import { UiKitContext, UiKitBanner } from '..';
 import * as payloads from './payloads';
 
-
 export default {
 	title: 'Surfaces/Banner',
 	argTypes: {
