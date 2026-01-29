@@ -10,61 +10,78 @@ import { settings } from '../../../settings/server';
 
 const logger = new Logger('RateLimiter');
 
-const slowDownRate = parseInt(process.env.RATE_LIMITER_SLOWDOWN_RATE);
+const slowDownRate = parseInt(process.env.RATE_LIMITER_SLOWDOWN_RATE || '0');
 
-const rateLimiterConsoleLog = ({ msg, reply, input }) => {
+type RateLimiterInput = {
+	connectionId: string;
+	broadcastAuth?: boolean;
+	userId?: string;
+	clientAddress?: string;
+	type: string;
+	name: string;
+};
+
+type RateLimiterReply = {
+	allowed: boolean;
+	timeToReset: number;
+	numInvocationsLeft: number;
+	numInvocationsExceeded?: number;
+};
+
+const rateLimiterConsoleLog = ({ msg, reply, input }: { msg: string; reply: RateLimiterReply; input: RateLimiterInput }): void => {
 	console.warn('DDP RATE LIMIT:', msg);
 	console.warn(JSON.stringify({ reply, input }, null, 2));
 };
 
-const rateLimiterLogger = ({ msg, reply, input }) => logger.info({ msg, reply, input });
+const rateLimiterLogger = ({ msg, reply, input }: { msg: string; reply: RateLimiterReply; input: RateLimiterInput }): void =>
+	logger.info({ msg, reply, input });
 
 const rateLimiterLog = String(process.env.RATE_LIMITER_LOGGER) === 'console' ? rateLimiterConsoleLog : rateLimiterLogger;
 
 // Get initial set of names already registered for rules
 const names = new Set(
-	Object.values(DDPRateLimiter.printRules())
-		.map((rule) => rule._matchers)
-		.filter((match) => typeof match.name === 'string')
-		.map((match) => match.name),
+	Object.values((DDPRateLimiter as any).printRules())
+		.map((rule: any) => rule._matchers)
+		.filter((match: any) => typeof match.name === 'string')
+		.map((match: any) => match.name),
 );
 
 // Override the addRule to save new names added after this point
 const { addRule } = DDPRateLimiter;
-DDPRateLimiter.addRule = (matcher, calls, time, callback) => {
+DDPRateLimiter.addRule = (matcher: any, calls: number, time: number, callback?: any): string => {
 	if (matcher && typeof matcher.name === 'string') {
 		names.add(matcher.name);
 	}
-	return addRule.call(DDPRateLimiter, matcher, calls, time, callback);
+	return (addRule as any).call(DDPRateLimiter, matcher, calls, time, callback);
 };
 
-const { _increment } = DDPRateLimiter;
-DDPRateLimiter._increment = function (input) {
+const { _increment } = DDPRateLimiter as any;
+(DDPRateLimiter as any)._increment = function (input: RateLimiterInput) {
 	const session = Meteor.server.sessions.get(input.connectionId);
-	input.broadcastAuth = (session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
+	input.broadcastAuth = (session && (session as any).connectionHandle && (session as any).connectionHandle.broadcastAuth) === true;
 
 	return _increment.call(DDPRateLimiter, input);
 };
 
 // Need to override the meteor's code duo to a problem with the callback reply
 // being shared among all matchs
-RateLimiter.prototype.check = function (input) {
+(RateLimiter.prototype as any).check = function (input: RateLimiterInput): RateLimiterReply {
 	// ==== BEGIN OVERRIDE ====
 	const session = Meteor.server.sessions.get(input.connectionId);
-	input.broadcastAuth = (session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
+	input.broadcastAuth = (session && (session as any).connectionHandle && (session as any).connectionHandle.broadcastAuth) === true;
 	// ==== END OVERRIDE ====
 
-	const self = this;
-	const reply = {
+	const self = this as any;
+	const reply: RateLimiterReply = {
 		allowed: true,
 		timeToReset: 0,
 		numInvocationsLeft: Infinity,
 	};
 
 	const matchedRules = self._findAllMatchingRules(input);
-	_.each(matchedRules, (rule) => {
+	_.each(matchedRules, (rule: any) => {
 		// ==== BEGIN OVERRIDE ====
-		const callbackReply = {
+		const callbackReply: RateLimiterReply = {
 			allowed: true,
 			timeToReset: 0,
 			numInvocationsLeft: Infinity,
@@ -118,33 +135,35 @@ RateLimiter.prototype.check = function (input) {
 	return reply;
 };
 
-const checkNameNonStream = (name) => name && !names.has(name) && !name.startsWith('stream-');
-const checkNameForStream = (name) => name && !names.has(name) && name.startsWith('stream-');
+const checkNameNonStream = (name: string): boolean => !!(name && !names.has(name) && !name.startsWith('stream-'));
+const checkNameForStream = (name: string): boolean => !!(name && !names.has(name) && name.startsWith('stream-'));
 
-const ruleIds = {};
+const ruleIds: Record<string, string> = {};
 
-const callback = (msg, name) => async (reply, input) => {
-	if (reply.allowed === false) {
-		rateLimiterLog({ msg, reply, input });
-		metrics.ddpRateLimitExceeded.inc({
-			limit_name: name,
-			user_id: input.userId,
-			client_address: input.clientAddress,
-			type: input.type,
-			name: input.name,
-			connection_id: input.connectionId,
-		});
-		// sleep before sending the error to slow down next requests
-		if (slowDownRate > 0 && reply.numInvocationsExceeded) {
-			await sleep(slowDownRate * reply.numInvocationsExceeded);
+const callback =
+	(msg: string, name: string) =>
+	async (reply: RateLimiterReply, input: RateLimiterInput): Promise<void> => {
+		if (reply.allowed === false) {
+			rateLimiterLog({ msg, reply, input });
+			metrics.ddpRateLimitExceeded.inc({
+				limit_name: name,
+				user_id: input.userId,
+				client_address: input.clientAddress,
+				type: input.type,
+				name: input.name,
+				connection_id: input.connectionId,
+			});
+			// sleep before sending the error to slow down next requests
+			if (slowDownRate > 0 && reply.numInvocationsExceeded) {
+				await sleep(slowDownRate * reply.numInvocationsExceeded);
+			}
+			// } else {
+			// 	console.log('DDP RATE LIMIT:', message);
+			// 	console.log(JSON.stringify({ ...reply, ...input }, null, 2));
 		}
-		// } else {
-		// 	console.log('DDP RATE LIMIT:', message);
-		// 	console.log(JSON.stringify({ ...reply, ...input }, null, 2));
-	}
-};
+	};
 
-const messages = {
+const messages: Record<string, string> = {
 	IP: 'address',
 	User: 'userId',
 	Connection: 'connectionId',
@@ -152,7 +171,7 @@ const messages = {
 	Connection_By_Method: 'connectionId per method',
 };
 
-const reconfigureLimit = Meteor.bindEnvironment((name, rules, factor = 1) => {
+const reconfigureLimit = Meteor.bindEnvironment((name: string, rules: any, factor = 1): void => {
 	if (ruleIds[name + factor]) {
 		DDPRateLimiter.removeRule(ruleIds[name + factor]);
 	}
@@ -161,68 +180,68 @@ const reconfigureLimit = Meteor.bindEnvironment((name, rules, factor = 1) => {
 		return;
 	}
 
-	ruleIds[name + factor] = addRule(
+	ruleIds[name + factor] = (addRule as any)(
 		rules,
-		settings.get(`DDP_Rate_Limit_${name}_Requests_Allowed`) * factor,
-		settings.get(`DDP_Rate_Limit_${name}_Interval_Time`) * factor,
+		(settings.get(`DDP_Rate_Limit_${name}_Requests_Allowed`) as number) * factor,
+		(settings.get(`DDP_Rate_Limit_${name}_Interval_Time`) as number) * factor,
 		callback(`limit by ${messages[name]}`, name),
 	);
 });
 
-const configIP = _.debounce(() => {
+const configIP = _.debounce((): void => {
 	reconfigureLimit('IP', {
 		broadcastAuth: false,
-		clientAddress: (clientAddress) => clientAddress !== '127.0.0.1',
+		clientAddress: (clientAddress: string): boolean => clientAddress !== '127.0.0.1',
 	});
 }, 1000);
 
-const configUser = _.debounce(() => {
+const configUser = _.debounce((): void => {
 	reconfigureLimit('User', {
 		broadcastAuth: false,
-		userId: (userId) => userId != null,
+		userId: (userId: string | undefined): boolean => userId != null,
 	});
 }, 1000);
 
-const configConnection = _.debounce(() => {
+const configConnection = _.debounce((): void => {
 	reconfigureLimit('Connection', {
 		broadcastAuth: false,
-		connectionId: () => true,
+		connectionId: (): boolean => true,
 	});
 }, 1000);
 
-const configUserByMethod = _.debounce(() => {
+const configUserByMethod = _.debounce((): void => {
 	reconfigureLimit('User_By_Method', {
 		broadcastAuth: false,
-		type: () => true,
+		type: (): boolean => true,
 		name: checkNameNonStream,
-		userId: (userId) => userId != null,
+		userId: (userId: string | undefined): boolean => userId != null,
 	});
 	reconfigureLimit(
 		'User_By_Method',
 		{
 			broadcastAuth: false,
-			type: () => true,
+			type: (): boolean => true,
 			name: checkNameForStream,
-			userId: (userId) => userId != null,
+			userId: (userId: string | undefined): boolean => userId != null,
 		},
 		4,
 	);
 }, 1000);
 
-const configConnectionByMethod = _.debounce(() => {
+const configConnectionByMethod = _.debounce((): void => {
 	reconfigureLimit('Connection_By_Method', {
 		broadcastAuth: false,
-		type: () => true,
+		type: (): boolean => true,
 		name: checkNameNonStream,
-		connectionId: () => true,
+		connectionId: (): boolean => true,
 	});
 	reconfigureLimit(
 		'Connection_By_Method',
 		{
 			broadcastAuth: false,
-			type: () => true,
+			type: (): boolean => true,
 			name: checkNameForStream,
-			connectionId: () => true,
+			connectionId: (): boolean => true,
 		},
 		4,
 	);
