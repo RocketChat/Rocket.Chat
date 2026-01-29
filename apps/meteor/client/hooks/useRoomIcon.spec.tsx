@@ -44,13 +44,13 @@ const mockRooms = {
 		t: 'c',
 		name: 'abac-room',
 		teamMain: false,
-		abacAttributes: [{ _id: 'attr1', name: 'test', values: ['value1'] }],
+		abacAttributes: [{ key: 'department', values: ['engineering'] }],
 	}),
 	abacTeamRoom: createFakeRoom({
 		t: 'c',
 		name: 'abac-team-room',
 		teamMain: true,
-		abacAttributes: [{ _id: 'attr2', name: 'test', values: ['value2'] }],
+		abacAttributes: [{ key: 'team', values: ['core'] }],
 	}),
 };
 
