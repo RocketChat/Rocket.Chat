@@ -4,18 +4,8 @@
  */
 
 import replyFor from './codes';
-
-type ParsedMessage = {
-	prefix?: string;
-	nick?: string;
-	user?: string;
-	host?: string;
-	server?: string;
-	command: string;
-	rawCommand: string;
-	commandType: string;
-	args: string[];
-};
+import type * as peerCommandHandlers from './peerCommandHandlers';
+import type { ParsedMessage } from './types';
 
 /**
  * parseMessage(line, stripColors)
@@ -25,7 +15,7 @@ type ParsedMessage = {
  * @param {String} line Raw message from IRC server.
  * @return {Object} A parsed message object.
  */
-export default function parseMessage(line: string): ParsedMessage {
+export function parseMessage(line: string): ParsedMessage {
 	const message: Partial<ParsedMessage> = {};
 	let match: RegExpMatchArray | null;
 
@@ -46,13 +36,13 @@ export default function parseMessage(line: string): ParsedMessage {
 
 	// Parse command
 	match = line.match(/^([^ ]+) */);
-	message.command = match![1];
+	message.command = match![1] as keyof typeof peerCommandHandlers;
 	message.rawCommand = match![1];
 	message.commandType = 'normal';
 	line = line.replace(/^[^ ]+ +/, '');
 
 	if (replyFor[message.rawCommand as keyof typeof replyFor]) {
-		message.command = replyFor[message.rawCommand as keyof typeof replyFor].name;
+		message.command = replyFor[message.rawCommand as keyof typeof replyFor].name as keyof typeof peerCommandHandlers;
 		message.commandType = replyFor[message.rawCommand as keyof typeof replyFor].type;
 	}
 

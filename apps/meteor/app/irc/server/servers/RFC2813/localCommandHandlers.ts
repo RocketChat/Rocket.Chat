@@ -1,11 +1,4 @@
-type RFC2813Context = {
-	write: (command: { prefix?: string; command: string; parameters?: string[]; trailer?: string }) => void;
-	config: {
-		server: {
-			name: string;
-		};
-	};
-};
+import type { RFC2813Context } from './types';
 
 type RegisterUserParameters = {
 	name: string;
@@ -192,4 +185,4 @@ function disconnected(this: RFC2813Context, parameters: DisconnectedParameters):
 	});
 }
 
-export default { registerUser, joinChannel, joinedChannel, leftChannel, sentMessage, disconnected };
+export { registerUser, joinChannel, joinedChannel, leftChannel, sentMessage, disconnected };
