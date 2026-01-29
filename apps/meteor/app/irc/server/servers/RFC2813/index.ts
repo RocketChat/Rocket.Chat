@@ -3,30 +3,12 @@ import net from 'net';
 
 import { Logger } from '@rocket.chat/logger';
 
-import localCommandHandlers from './localCommandHandlers';
-import parseMessage from './parseMessage';
-import peerCommandHandlers from './peerCommandHandlers';
+import * as localCommandHandlers from './localCommandHandlers';
+import { parseMessage } from './parseMessage';
+import * as peerCommandHandlers from './peerCommandHandlers';
+import type { Config, Command } from './types';
 
 const logger = new Logger('IRC Server');
-
-type Config = {
-	server: {
-		name: string;
-		host: string;
-		port: number;
-		description: string;
-	};
-	passwords: {
-		local: string;
-	};
-};
-
-type Command = {
-	prefix?: string;
-	command: string;
-	parameters?: string[];
-	trailer?: string;
-};
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface RFC2813 extends EventEmitter {
@@ -197,10 +179,10 @@ class RFC2813 extends EventEmitter {
 			if (line.length && !line.startsWith('a')) {
 				const parsedMessage = parseMessage(line);
 
-				if (peerCommandHandlers[parsedMessage.command as keyof typeof peerCommandHandlers]) {
+				if (peerCommandHandlers[parsedMessage.command]) {
 					this.log({ msg: 'Handling peer message', line });
 
-					const command = peerCommandHandlers[parsedMessage.command as keyof typeof peerCommandHandlers].call(this, parsedMessage);
+					const command = peerCommandHandlers[parsedMessage.command].call(this, parsedMessage);
 
 					if (command !== undefined) {
 						this.log({ msg: 'Emitting peer command to local', command });
@@ -227,4 +209,4 @@ class RFC2813 extends EventEmitter {
 	}
 }
 
-export default RFC2813;
+export { RFC2813 };

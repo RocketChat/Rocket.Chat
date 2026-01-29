@@ -1,44 +1,24 @@
-type ParsedMessage = {
-	prefix?: string;
-	command: string;
-	args: string[];
-	nick?: string;
-};
+import type { ParsedMessage, CommandResult, RFC2813Context } from './types';
 
-type CommandResult = {
-	identifier: string;
-	args: Record<string, any>;
-};
-
-type RFC2813Context = {
-	log: (message: string) => void;
-	registerSteps: string[];
-	serverPrefix: string | null;
-	isRegistered: boolean;
-	emit: (event: string) => void;
-	write: (command: { prefix?: string; command: string; parameters?: string[] }) => void;
-	config: {
-		server: {
-			name: string;
-		};
-	};
-};
-
-function PASS(this: RFC2813Context): void {
+function PASS(this: RFC2813Context): undefined {
 	this.log('Received PASS command, continue registering...');
 
 	this.registerSteps.push('PASS');
+
+	return undefined;
 }
 
-function SERVER(this: RFC2813Context, parsedMessage: ParsedMessage): void {
+function SERVER(this: RFC2813Context, parsedMessage: ParsedMessage): undefined {
 	this.log('Received SERVER command, waiting for first PING...');
 
 	this.serverPrefix = parsedMessage.prefix || null;
 
 	this.registerSteps.push('SERVER');
+
+	return undefined;
 }
 
-function PING(this: RFC2813Context): void {
+function PING(this: RFC2813Context): undefined {
 	if (!this.isRegistered && this.registerSteps.length === 2) {
 		this.log('Received first PING command, server is registered!');
 
@@ -52,6 +32,8 @@ function PING(this: RFC2813Context): void {
 		command: 'PONG',
 		parameters: [this.config.server.name],
 	});
+
+	return undefined;
 }
 
 function NICK(this: RFC2813Context, parsedMessage: ParsedMessage): CommandResult {
@@ -136,4 +118,4 @@ function QUIT(this: RFC2813Context, parsedMessage: ParsedMessage): CommandResult
 	return command;
 }
 
-export default { PASS, SERVER, PING, NICK, JOIN, PART, PRIVMSG, QUIT };
+export { PASS, SERVER, PING, NICK, JOIN, PART, PRIVMSG, QUIT };
