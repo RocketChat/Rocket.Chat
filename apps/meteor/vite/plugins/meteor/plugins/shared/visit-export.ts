@@ -1,13 +1,5 @@
-import type {
-	Directive,
-	IdentifierName,
-	ObjectExpression,
-	ObjectProperty,
-	ObjectPropertyKind,
-	Program,
-	ReturnStatement,
-	Statement,
-} from 'oxc-parser';
+/* eslint-disable complexity */
+import type * as AST from '@oxc-project/types';
 import { walk } from 'oxc-walker';
 
 import { check } from './check';
@@ -18,8 +10,10 @@ import { check } from './check';
  * @param names - The set to collect export names into.
  * @param pkgName - The name of the Meteor package.
  */
-export function collectModuleExports(ast: Program, pkgName: string): Set<string> {
-	const names = new Set<string>();
+export function collectModuleExports(ast: AST.Program): { name: string; imports: Map<string, Set<string>>; exports: Set<string> } {
+	let name = '';
+	const imports = new Map<string, Set<string>>();
+	const exports = new Set<string>();
 
 	walk(ast, {
 		enter(node, parent) {
@@ -29,6 +23,7 @@ export function collectModuleExports(ast: Program, pkgName: string): Set<string>
 				callee,
 				arguments: [pkg, func],
 			} = node;
+
 			if (
 				check.isMemberExpression(callee) &&
 				!callee.computed &&
@@ -41,11 +36,44 @@ export function collectModuleExports(ast: Program, pkgName: string): Set<string>
 				check.isIdentifier(callee.property) &&
 				callee.property.name === 'queue' &&
 				check.isLiteral(pkg) &&
-				pkg.value === pkgName &&
+				typeof pkg.value === 'string' &&
 				(check.isFunctionExpression(func) || check.isArrowFunctionExpression(func))
 			) {
+				name = pkg.value;
 				if (!check.isBlockStatement(func.body)) return;
 				for (const stmt of func.body.body) {
+					// Collect imports
+					// var Meteor = Package.meteor.Meteor;
+					// var DDP = Package['ddp-client'].DDP;
+					if (check.isVariableDeclaration(stmt)) {
+						for (const decl of stmt.declarations) {
+							if (!check.isIdentifier(decl.id) || !check.isMemberExpression(decl.init)) {
+								continue;
+							}
+
+							const { object, property } = decl.init;
+							if (!check.isMemberExpression(object) || !check.isIdentifier(object.object) || object.object.name !== 'Package') {
+								continue;
+							}
+
+							let pkgName: string | null = null;
+							if (!object.computed && check.isIdentifier(object.property)) {
+								pkgName = object.property.name;
+							} else if (object.computed && check.isLiteral(object.property) && typeof object.property.value === 'string') {
+								pkgName = object.property.value;
+							}
+
+							if (pkgName && check.isIdentifier(property)) {
+								const packageImports = imports.get(pkgName);
+								if (packageImports) {
+									packageImports.add(property.name);
+								} else {
+									imports.set(pkgName, new Set([property.name]));
+								}
+							}
+						}
+					}
+
 					if (!isReturnStatementWithObject(stmt)) continue;
 
 					// Collect exports from the returned object
@@ -55,14 +83,13 @@ export function collectModuleExports(ast: Program, pkgName: string): Set<string>
 
 						const { value } = prop;
 
-						if (!check.isFunctionExpression(value)) continue;
-						if (!check.isBlockStatement(value.body)) continue;
+						if (!isFunctionWithBlock(value)) continue;
 
 						for (const stmt of value.body.body) {
 							if (!isReturnStatementWithObject(stmt)) continue;
 							for (const prop of stmt.argument.properties) {
 								if (!isIdentifierObjectProperty(prop)) continue;
-								names.add(prop.key.name);
+								exports.add(prop.key.name);
 							}
 						}
 					}
@@ -71,7 +98,11 @@ export function collectModuleExports(ast: Program, pkgName: string): Set<string>
 		},
 	});
 
-	return names;
+	return {
+		name,
+		imports,
+		exports,
+	};
 }
 
 /**
@@ -83,7 +114,7 @@ export function collectModuleExports(ast: Program, pkgName: string): Set<string>
  * { key: value }
  * ```
  */
-function isIdentifierObjectProperty(node: ObjectPropertyKind): node is ObjectProperty & { key: IdentifierName } {
+function isIdentifierObjectProperty(node: AST.ObjectPropertyKind): node is AST.ObjectProperty & { key: AST.IdentifierName } {
 	return check.isProperty(node) && !node.computed && check.isIdentifier(node.key);
 }
 
@@ -96,6 +127,21 @@ function isIdentifierObjectProperty(node: ObjectPropertyKind): node is ObjectPro
  * return { a: 1, b: 2 };
  * ```
  */
-function isReturnStatementWithObject(node: Directive | Statement): node is ReturnStatement & { argument: ObjectExpression } {
+function isReturnStatementWithObject(
+	node: AST.Directive | AST.Statement,
+): node is AST.ReturnStatement & { argument: AST.ObjectExpression } {
 	return check.isReturnStatement(node) && check.isObjectExpression(node.argument);
+}
+
+/**
+ * Type guard to check if a node is a Function with a BlockStatement body.
+ * @param node - The AST node to check.
+ * @returns True if the node is a Function with a BlockStatement body, false otherwise.
+ * @example
+ * ```ts
+ * function() { ... }
+ * ```
+ */
+function isFunctionWithBlock(node: AST.Expression): node is AST.Function & { body: AST.BlockStatement } {
+	return check.isFunctionExpression(node) && check.isBlockStatement(node.body);
 }

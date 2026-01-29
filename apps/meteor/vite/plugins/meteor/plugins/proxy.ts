@@ -54,9 +54,8 @@ function resolveMeteorProxy(
 export function proxy(resolvedConfig: ResolvedPluginOptions): Plugin {
 	return {
 		name: 'meteor:proxy',
-		enforce: 'post',
+		enforce: 'pre',
 		config(userConfig) {
-
 			const proxy = resolveMeteorProxy(userConfig.server?.proxy, `http://127.0.0.1:${resolvedConfig.meteorServerPort}`);
 
 			if (proxy) {
@@ -70,5 +69,5 @@ export function proxy(resolvedConfig: ResolvedPluginOptions): Plugin {
 				};
 			}
 		},
-	}
+	};
 }
