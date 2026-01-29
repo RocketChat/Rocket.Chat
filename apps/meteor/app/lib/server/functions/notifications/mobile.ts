@@ -1,3 +1,4 @@
+import type { AtLeast, IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 
 import { i18n } from '../../../../../server/lib/i18n';
@@ -8,7 +9,10 @@ import { settings } from '../../../../settings/server';
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
 
-function enableNotificationReplyButton(room, username) {
+function enableNotificationReplyButton(room: IRoom, username: string | undefined): boolean {
+	if (!username) {
+		return false;
+	}
 	// Some users may have permission to send messages even on readonly rooms, but we're ok with false negatives here in exchange of better perfomance
 	if (room.ro === true) {
 		return false;
@@ -30,12 +34,21 @@ export async function getPushData({
 	notificationMessage,
 	receiver,
 	shouldOmitMessage = true,
+}: {
+	room: IRoom;
+	message: AtLeast<IMessage, '_id' | 'msg' | 't' | 'u' | 'attachments'>;
+	userId: string;
+	senderUsername: string | undefined;
+	senderName: string | undefined;
+	notificationMessage: string;
+	receiver: AtLeast<IUser, 'language' | 'settings' | 'active' | 'username' | 'emails' | 'status' | 'statusConnection'>;
+	shouldOmitMessage?: boolean;
 }) {
 	const username = settings.get('Push_show_username_room') ? (settings.get('UI_Use_Real_Name') && senderName) || senderUsername : '';
 
-	const lng = receiver.language || settings.get('Language') || 'en';
+	const lng = receiver.language || settings.get<string>('Language') || 'en';
 
-	let messageText;
+	let messageText: string;
 	if (shouldOmitMessage && settings.get('Push_request_content_from_server')) {
 		messageText = i18n.t('You_have_a_new_message', { lng });
 	} else if (!settings.get('Push_show_message')) {
@@ -47,7 +60,7 @@ export async function getPushData({
 	return {
 		payload: {
 			sender: message.u,
-			senderName: username,
+			senderName: username || '',
 			type: room.t,
 			name: settings.get('Push_show_username_room') ? room.name : '',
 			messageType: message.t,
@@ -58,7 +71,7 @@ export async function getPushData({
 			settings.get('Push_show_username_room') && roomCoordinator.getRoomDirectives(room.t).isGroupChat(room)
 				? `#${await roomCoordinator.getRoomName(room.t, room, userId)}`
 				: '',
-		username,
+		username: username || '',
 		message: messageText,
 		badge: await Subscriptions.getBadgeCount(userId),
 		category: enableNotificationReplyButton(room, receiver.username) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
@@ -77,7 +90,19 @@ export function shouldNotifyMobile({
 	isVideoConf,
 	userPreferences,
 	roomUids,
-}) {
+}: {
+	disableAllMessageNotifications: boolean;
+	mobilePushNotifications: string | null | undefined;
+	hasMentionToAll: boolean;
+	isHighlighted: boolean;
+	hasMentionToUser: boolean;
+	hasReplyToThread: boolean;
+	roomType: RoomType;
+	isThread: boolean;
+	isVideoConf: boolean;
+	userPreferences: { enableMobileRinging?: boolean } | undefined;
+	roomUids: string[] | undefined;
+}): boolean {
 	if (settings.get('Push_enable') !== true) {
 		return false;
 	}
