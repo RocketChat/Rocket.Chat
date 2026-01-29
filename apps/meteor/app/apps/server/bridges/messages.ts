@@ -82,6 +82,21 @@ export class AppMessageBridge extends MessageBridge {
 		});
 	}
 
+	protected async deleteNotifyUser(user: IAppsUser, message: IAppsMessage, appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${appId} is deleting a notification message.`);
+
+		const msg = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
+
+		if (!msg) {
+			return;
+		}
+
+		void api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
+			...msg,
+			_deleted: true,
+		});
+	}
+
 	protected async notifyRoom(room: IRoom, message: IAppsMessage, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is notifying a room's users.`);
 

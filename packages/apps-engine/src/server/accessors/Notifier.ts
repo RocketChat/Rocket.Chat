@@ -12,7 +12,7 @@ export class Notifier implements INotifier {
 		private readonly userBridge: UserBridge,
 		private readonly msgBridge: MessageBridge,
 		private readonly appId: string,
-	) {}
+	) { }
 
 	public async notifyUser(user: IUser, message: IMessage): Promise<void> {
 		if (!message.sender?.id) {
@@ -22,6 +22,16 @@ export class Notifier implements INotifier {
 		}
 
 		await this.msgBridge.doNotifyUser(user, message, this.appId);
+	}
+
+	public async deleteNotifyUser(user: IUser, message: IMessage): Promise<void> {
+		if (!message.sender?.id) {
+			const appUser = await this.userBridge.doGetAppUser(this.appId);
+
+			message.sender = appUser;
+		}
+
+		await this.msgBridge.doDeleteNotifyUser(user, message, this.appId);
 	}
 
 	public async notifyRoom(room: IRoom, message: IMessage): Promise<void> {
