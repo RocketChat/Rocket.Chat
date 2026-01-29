@@ -6,7 +6,7 @@ export const createSurfaceRenderer = <S extends UiKit.SurfaceRenderer<ReactEleme
 	SurfaceComponent: ComponentType<{ children: ReactNode }>,
 	surfaceRenderer: S,
 ) =>
-	function Surface(blocks: readonly UiKit.LayoutBlock[], conditions: UiKit.Conditions = {}): ReactElement {
+	function renderSurface(blocks: readonly UiKit.LayoutBlock[], conditions: UiKit.Conditions = {}): ReactElement {
 		return (
 			<SurfaceComponent>
 				{surfaceRenderer.render(blocks, {
@@ -16,3 +16,4 @@ export const createSurfaceRenderer = <S extends UiKit.SurfaceRenderer<ReactEleme
 			</SurfaceComponent>
 		);
 	};
+

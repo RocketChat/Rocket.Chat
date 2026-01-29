@@ -1,4 +1,3 @@
-/* eslint-disable new-cap */
 import {
 	AnimatedVisibility,
 	Button,
@@ -17,6 +16,7 @@ import type { ReactNode } from 'react';
 
 import { UiKitContext, UiKitModal } from '..';
 import * as payloads from './payloads';
+
 
 type VisibilityType = 'hidden' | 'visible' | 'hiding' | 'unhiding' | undefined;
 

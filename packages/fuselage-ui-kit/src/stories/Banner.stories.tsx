@@ -1,10 +1,10 @@
-/* eslint-disable new-cap */
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
 
 import { UiKitContext, UiKitBanner } from '..';
 import * as payloads from './payloads';
+
 
 export default {
 	title: 'Surfaces/Banner',
