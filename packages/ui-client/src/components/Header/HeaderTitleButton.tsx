@@ -21,7 +21,9 @@ const HeaderTitleButton = ({ className, ...props }: HeaderTitleButtonProps) => {
 		}
 	`;
 
-	return <Box display='flex' alignItems='center' borderRadius={4} withTruncatedText className={[customClass, className]} {...props} />;
+	return (
+		<Box display='flex' alignItems='center' borderRadius={4} flexShrink={0} className={[customClass, className]} {...props} />
+	);
 };
 
 export default HeaderTitleButton;
