@@ -23,6 +23,7 @@ import registerErrorListeners from './error-handlers.ts';
 import { sendMetrics } from './lib/metricsCollector.ts';
 import outboundMessageHandler from './handlers/outboundcomms-handler.ts';
 import { RequestContext } from './lib/requestContext.ts';
+import { RequestContextManager } from './AppObjectRegistry.ts';
 
 type Handlers = {
 	app: typeof handleApp;
@@ -54,11 +55,9 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 
 	const { id, method } = payload;
 
-	const logger = new Logger(method);
-
-	const context: RequestContext = Object.assign(payload, {
-		context: { logger }
-	})
+	using context = RequestContextManager.newForRequest(payload, {
+		logger: new Logger(method),
+	});
 
 	const [methodPrefix] = method.split(':') as [keyof Handlers];
 	const handler = methodHandlers[methodPrefix];
