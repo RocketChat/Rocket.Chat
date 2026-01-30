@@ -1,6 +1,4 @@
-import { expect } from 'chai';
-
-import { UAParserMobile, UAParserDesktop } from '../../../../../../app/statistics/server/lib/UAParserCustom';
+import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 
 const UAMobile = 'RC Mobile; iOS 12.2; v3.4.0 (250)';
 const UADesktop =
@@ -11,19 +9,19 @@ const UAChrome =
 describe('UAParserCustom', () => {
 	describe('UAParserMobile', () => {
 		it('should identify mobile UA', () => {
-			expect(UAParserMobile.isMobileApp(UAMobile)).to.be.true;
+			expect(UAParserMobile.isMobileApp(UAMobile)).toBe(true);
 		});
 
 		it('should not identify desktop UA', () => {
-			expect(UAParserMobile.isMobileApp(UADesktop)).to.be.false;
+			expect(UAParserMobile.isMobileApp(UADesktop)).toBe(false);
 		});
 
 		it('should not identify chrome UA', () => {
-			expect(UAParserMobile.isMobileApp(UAChrome)).to.be.false;
+			expect(UAParserMobile.isMobileApp(UAChrome)).toBe(false);
 		});
 
 		it('should parse mobile UA', () => {
-			expect(UAParserMobile.uaObject(UAMobile)).to.be.deep.equal({
+			expect(UAParserMobile.uaObject(UAMobile)).toEqual({
 				device: {
 					type: 'mobile-app',
 				},
@@ -42,19 +40,19 @@ describe('UAParserCustom', () => {
 
 	describe('UAParserDesktop', () => {
 		it('should not identify mobile UA', () => {
-			expect(UAParserDesktop.isDesktopApp(UAMobile)).to.be.false;
+			expect(UAParserDesktop.isDesktopApp(UAMobile)).toBe(false);
 		});
 
 		it('should identify desktop UA', () => {
-			expect(UAParserDesktop.isDesktopApp(UADesktop)).to.be.true;
+			expect(UAParserDesktop.isDesktopApp(UADesktop)).toBe(true);
 		});
 
 		it('should not identify chrome UA', () => {
-			expect(UAParserDesktop.isDesktopApp(UAChrome)).to.be.false;
+			expect(UAParserDesktop.isDesktopApp(UAChrome)).toBe(false);
 		});
 
 		it('should parse desktop UA', () => {
-			expect(UAParserDesktop.uaObject(UADesktop)).to.be.deep.equal({
+			expect(UAParserDesktop.uaObject(UADesktop)).toEqual({
 				device: {
 					type: 'desktop-app',
 				},
