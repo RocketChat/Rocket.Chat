@@ -2905,7 +2905,7 @@
   "Private_Team": "فريق خاص",
   "Private_channels": "Channels خاصة",
   "Productivity": "الإنتاجية",
-  "Profile": "الملف الشخصي",
+  "Profile": "الملف الشخصي تعديل",
   "Profile_details": "تفاصيل الملف الشخصي",
   "Profile_picture": "صورة الملف الشخصي",
   "Profile_saved_successfully": "تم حفظ الملف الشخصي بنجاح",
@@ -3257,7 +3257,7 @@
   "Search_Page_Size": "حجم الصفحة",
   "Search_Private_Groups": "البحث في المجموعات الخاصة",
   "Search_Provider": "موفر البحث",
-  "Search_Rooms": "البحث عن Room",
+  "Search_Rooms": "البحث عن الغرف",
   "Search_Users": "البحث عن المستخدمين",
   "Search_by_category": "البحث حسب الفئة",
   "Search_by_file_name": "البحث حسب اسم الملف",
@@ -4807,5 +4807,9 @@
   "__count__empty_rooms_will_be_removed_automatically": "ستتم إزالة {{count}} من الغرف الفارغة تلقائيًا.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "ستتم إزالة <bold>{{count}}</bold> من الغرف الفارغة تلقائيًا: <br/> {{rooms}}",
   "__username__is_no_longer__role__defined_by__user_by_": "لم يعد {{username}} في دور {{role}} من قِبل {{user_by}}",
-  "__username__was_set__role__by__user_by_": "تم تعيين {{username}} في دور {{role}} من قِبل {{user_by}}"
+  "__username__was_set__role__by__user_by_": "تم تعيين {{username}} في دور {{role}} من قِبل {{user_by}}",
+  "Account": "الحساب",
+  "Accessibility_and_appearance": "إمكانية الوصول والمظهر",
+  "Search_rooms": "البحث عن الغرف",
+  "Empty": "فارغ"
 }

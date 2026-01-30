@@ -1,22 +1,23 @@
-import { Defined, JsonRpcError } from 'jsonrpc-lite';
-
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
 import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand.ts';
 import type { SlashCommandContext as _SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands/SlashCommandContext.ts';
 import type { Room as _Room } from '@rocket.chat/apps-engine/server/rooms/Room.ts';
+import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';
 import { AppAccessors, AppAccessorsInstance } from '../lib/accessors/mod.ts';
 import { require } from '../lib/require.ts';
 import createRoom from '../lib/roomFactory.ts';
+import { RequestContext } from '../lib/requestContext.ts';
 
 // For some reason Deno couldn't understand the typecast to the original interfaces and said it wasn't a constructor type
 const { SlashCommandContext } = require('@rocket.chat/apps-engine/definition/slashcommands/SlashCommandContext.js') as {
 	SlashCommandContext: typeof _SlashCommandContext;
 };
 
-export default async function slashCommandHandler(call: string, params: unknown): Promise<JsonRpcError | Defined> {
+export default async function slashCommandHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
+	const { method: call, params } = request;
 	const [, commandName, method] = call.split(':');
 
 	const command = AppObjectRegistry.get<ISlashCommand>(`slashcommand:${commandName}`);
