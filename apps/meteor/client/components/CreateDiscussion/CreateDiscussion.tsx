@@ -132,20 +132,6 @@ const CreateDiscussion = ({
 						{defaultParentRoom && (
 							<Controller
 								control={control}
-								rules={{ 
-									required: t('Required_field', { field: t('Name') }),
-									validate: (value) => value.trim().length > 0 || t('Required_field', { field: t('Name') })
-								}}
-								render={({ field }) => (
-									<TextInput
-										id={discussionNameId}
-										{...field}
-										aria-invalid={Boolean(errors.name)}
-										aria-required='true'
-										aria-describedby={`${discussionNameId}-error ${discussionNameId}-hint`}
-										addon={<Icon name='baloons' size='x20' />}
-									/>
-								)}
 								name='parentRoom'
 								render={() => <DefaultParentRoomField defaultParentRoom={defaultParentRoom} id={parentRoomId} />}
 							/>
@@ -188,7 +174,10 @@ const CreateDiscussion = ({
 						<Controller
 							name='name'
 							control={control}
-							rules={{ required: t('Required_field', { field: t('Name') }) }}
+							rules={{ 
+								required: t('Required_field', { field: t('Name') }),
+								validate: (value) => value.trim().length > 0 || t('Required_field', { field: t('Name') })
+							}}
 							render={({ field }) => (
 								<TextInput
 									id={discussionNameId}
