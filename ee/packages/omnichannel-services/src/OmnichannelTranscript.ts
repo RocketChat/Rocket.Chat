@@ -27,7 +27,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	currentJobNumber = 0;
 
-	// Cached settings
 	private reportingTimezone: 'server' | 'custom' | 'user' = 'server';
 
 	private customTimezone = '';
