@@ -1,8 +1,7 @@
 import path from 'node:path';
 
 import react from '@vitejs/plugin-react';
-import { defineConfig, esmExternalRequirePlugin } from 'vite';
-// import inspect from 'vite-plugin-inspect';
+import { defineConfig } from 'vite';
 
 import info from './vite/plugins/info';
 import meteor from './vite/plugins/meteor';
@@ -19,55 +18,21 @@ export default defineConfig(async () => {
 			meteor({
 				rootUrl: ROOT_URL.toString(),
 			}),
-			// inspect({
-			// 	build: true,
-			// 	outputDir: '.vite-inspect',
-			// }),
-			esmExternalRequirePlugin({
-				external: ['react', 'cron', 'react-aria']
-			}),
 			react({
 				exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
 			}),
-
 		],
-		optimizeDeps: {
-			
-		},
-		
-		define: {
-			process: {
-				env: {
-					NODE_ENV: process.env.NODE_ENV,
+		build: {
+			emptyOutDir: true,
+			assetsDir: 'build_assets',
+			rolldownOptions: {
+				output: {
+					format: 'iife',
 				},
 			},
 		},
-		build: {
-			minify: false,
-			sourcemap: true,
-			emptyOutDir: true,
-			target: 'esnext',
-			assetsDir: 'build_assets',
-			rolldownOptions: {
-				context: 'globalThis',
-				platform: 'browser',
-				
-				output: {
-					preserveModules: true,
-				},
-				optimization: {
-					inlineConst: true,
-				}
-
-			}
-
-		},
-		preview: {
-			
-		},
 		resolve: {
-			dedupe: ['react', 'react-dom'],
-			preserveSymlinks: true,
+			dedupe: ['react', 'react-dom', 'react-i18next', '@tanstack/react-query'],
 			alias: {
 				// Rocket.Chat Packages
 				'@rocket.chat/api-client': path.resolve('../../packages/api-client/src/index.ts'),
@@ -104,7 +69,6 @@ export default defineConfig(async () => {
 				// '@rocket.chat/fuselage-tokens': path.resolve('../../../fuselage/packages/fuselage-tokens'),
 				// '@rocket.chat/fuselage-tokens/breakpoints.mjs': path.resolve('../../../fuselage/packages/fuselage-tokens/breakpoints.mjs'),
 				// '@rocket.chat/fuselage-tokens/breakpoints.scss': path.resolve('../../../fuselage/packages/fuselage-tokens/breakpoints.scss'),
-				'@internationalized/date': path.resolve('./node_modules/@internationalized/date/src/index.ts'),
 			},
 		},
 		server: {
