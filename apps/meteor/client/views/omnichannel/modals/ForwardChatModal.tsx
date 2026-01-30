@@ -52,38 +52,38 @@ const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps): ReactEleme
 
 	const handleForwardChat = useCallback(
 		async ({ department: departmentId, username, comment }: ForwardChatModalFormData) => {
-			let userId;
-
-			if (username) {
-				const { user } = await getUserData({ username });
-				userId = user?._id;
-			}
-
-			if (departmentId && userId) {
-				return;
-			}
-
-			const payload: {
-				roomId: string;
-				departmentId?: string;
-				userId?: string;
-				comment?: string;
-				clientAction: boolean;
-			} = {
-				roomId: room._id,
-				comment,
-				clientAction: true,
-			};
-
-			if (departmentId) {
-				payload.departmentId = departmentId;
-			}
-
-			if (userId) {
-				payload.userId = userId;
-			}
-
 			try {
+				let userId;
+
+				if (username) {
+					const { user } = await getUserData({ username });
+					userId = user?._id;
+				}
+
+				if (departmentId && userId) {
+					return;
+				}
+
+				const payload: {
+					roomId: string;
+					departmentId?: string;
+					userId?: string;
+					comment?: string;
+					clientAction: boolean;
+				} = {
+					roomId: room._id,
+					comment,
+					clientAction: true,
+				};
+
+				if (departmentId) {
+					payload.departmentId = departmentId;
+				}
+
+				if (userId) {
+					payload.userId = userId;
+				}
+
 				await forwardChat(payload);
 				dispatchToastMessage({ type: 'success', message: t('Transferred') });
 				router.navigate('/home');
