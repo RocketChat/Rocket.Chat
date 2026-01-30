@@ -19,30 +19,26 @@ exports[`RoomInviteHeader renders Default without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1c6vtok"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-4jxexa"
+              aria-label="rocket.cat"
+              class="rcx-box rcx-box--full rcx-css-1xfh5sj rcx-css-f2vsf1"
+              role="button"
+              tabindex="0"
             >
               <div
-                aria-label="rocket.cat"
-                class="rcx-box rcx-box--full rcx-css-1xfh5sj rcx-css-f2vsf1"
-                role="button"
-                tabindex="0"
+                class="rcx-box rcx-box--full rcx-css-1vxtvqh"
               >
-                <div
-                  class="rcx-box rcx-box--full rcx-css-1vxtvqh"
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-globe rcx-icon rcx-css-1wz6xj9"
                 >
-                  <i
-                    aria-hidden="true"
-                    class="rcx-box rcx-box--full rcx-icon--name-globe rcx-icon rcx-css-1wz6xj9"
-                  >
-                    
-                  </i>
-                </div>
-                <h1
-                  class="rcx-box rcx-box--full rcx-css-uuz7h"
-                >
-                  rocket.cat
-                </h1>
+                  
+                </i>
               </div>
+              <h1
+                class="rcx-box rcx-box--full rcx-css-uuz7h"
+              >
+                rocket.cat
+              </h1>
             </div>
             <button
               class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-sdt442"
