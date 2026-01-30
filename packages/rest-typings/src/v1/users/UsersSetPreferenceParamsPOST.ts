@@ -55,6 +55,8 @@ export type UsersSetPreferencesParamsPOST = {
 		enableMobileRinging?: boolean;
 		mentionsWithSymbol?: boolean;
 		desktopNotificationVoiceCalls?: boolean;
+		medsenseQueueNotificationsEnabled?: boolean;
+		medsenseQueueNotificationSound?: string;
 	};
 };
 
@@ -270,6 +272,14 @@ const UsersSetPreferencesParamsPostSchema = {
 					type: 'boolean',
 					nullable: true,
 				},
+				medsenseQueueNotificationsEnabled: {
+					type: 'boolean',
+					nullable: true,
+				},
+				medsenseQueueNotificationSound: {
+					type: 'string',
+					nullable: true,
+				},
 			},
 			required: [],
 			additionalProperties: false,
@@ -280,3 +290,7 @@ const UsersSetPreferencesParamsPostSchema = {
 };
 
 export const isUsersSetPreferencesParamsPOST = ajv.compile<UsersSetPreferencesParamsPOST>(UsersSetPreferencesParamsPostSchema);
+
+
+
+
