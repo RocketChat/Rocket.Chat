@@ -6,8 +6,8 @@ import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
 import { cachedFunction } from './cachedFunction';
-import { transformMappedData } from './transformMappedData';
 import { convertMessageFiles } from './convertMessageFiles';
+import { transformMappedData } from './transformMappedData';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface Orchestrator {
