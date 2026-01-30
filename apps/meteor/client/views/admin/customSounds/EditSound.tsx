@@ -9,7 +9,7 @@ import { validate, createSoundData } from './lib';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type EditSoundProps = {
-	close?: () => void;
+	close: () => void;
 	onChange: () => void;
 	data: {
 		_id: string;
@@ -90,12 +90,14 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					message: t('Required_field', { field: t(invalidFieldName) }),
 				}),
 			);
+
+			close();
 		},
 		[_id, dispatchToastMessage, insertOrUpdateSound, name, previousName, previousSound, t, uploadCustomSound],
 	);
 
 	const handleSave = useCallback(async () => {
-		saveAction(sound);
+		await saveAction(sound);
 		onChange();
 	}, [saveAction, sound, onChange]);
 
