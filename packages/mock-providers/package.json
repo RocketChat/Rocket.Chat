@@ -17,7 +17,7 @@
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@storybook/react": "^8.6.14",
+		"@storybook/react": "^8.6.15",
 		"i18next": "~23.4.9",
 		"react-i18next": "~13.2.2"
 	},
@@ -30,14 +30,14 @@
 		"@tanstack/react-query": "~5.65.1",
 		"@testing-library/dom": "~10.4.1",
 		"@testing-library/jest-dom": "~6.8.0",
-		"@testing-library/react": "~16.3.0",
-		"@types/react": "~18.3.26",
+		"@testing-library/react": "~16.3.2",
+		"@types/react": "~18.3.27",
 		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
 		"jest": "~30.2.0",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
-		"storybook": "^8.6.14",
+		"storybook": "^8.6.15",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {

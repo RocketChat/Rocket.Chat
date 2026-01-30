@@ -32,7 +32,7 @@
 		"@rocket.chat/tracing": "workspace:^",
 		"@types/node": "~22.16.5",
 		"ejson": "^2.2.3",
-		"eventemitter3": "^5.0.1",
+		"eventemitter3": "^5.0.4",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.35",
 		"mongodb": "6.16.0",

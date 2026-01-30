@@ -35,7 +35,7 @@
 		"eslint": "~8.45.0",
 		"jest": "~30.2.0",
 		"supertest": "~7.1.4",
-		"ts-jest": "~29.4.5",
+		"ts-jest": "~29.4.6",
 		"typescript": "~5.9.3"
 	},
 	"volta": {
