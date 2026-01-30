@@ -1,10 +1,11 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { CannedResponse } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { getDepartmentsWhichUserCanAccess } from '../../../livechat-enterprise/server/api/lib/departments';
 
-export async function findAllCannedResponses({ userId }) {
+export async function findAllCannedResponses({ userId }: { userId: IUser['_id'] }) {
 	// If the user is an admin or livechat manager, get his own responses and all responses from all departments
 	if (await hasPermissionAsync(userId, 'view-all-canned-responses')) {
 		const cannedResponses = await CannedResponse.find({
@@ -48,27 +49,35 @@ export async function findAllCannedResponses({ userId }) {
 	return cannedResponses;
 }
 
-/**
- * @param {Object} param0
- * @param {String} param0.userId
- * @param {String} [param0.shortcut]
- * @param {String} [param0.text]
- * @param {String} [param0.departmentId]
- * @param {String} [param0.scope]
- * @param {String} [param0.createdBy]
- * @param {String[]} [param0.tags]
- * @param {Object} param0.options
- * @param {Number} param0.options.offset
- * @param {Number} param0.options.count
- * @param {Object} param0.options.sort
- * @param {Object} param0.options.fields
- */
-export async function findAllCannedResponsesFilter({ userId, shortcut, text, departmentId, scope, createdBy, tags = [], options = {} }) {
-	let extraFilter = [];
+export async function findAllCannedResponsesFilter({
+	userId,
+	shortcut,
+	text,
+	departmentId,
+	scope,
+	createdBy,
+	tags = [],
+	options = {},
+}: {
+	userId: IUser['_id'];
+	shortcut?: string;
+	text?: string;
+	departmentId?: string;
+	scope?: string;
+	createdBy?: string;
+	tags?: string[];
+	options?: {
+		offset?: number;
+		count?: number;
+		sort?: Record<string, any>;
+		fields?: Record<string, any>;
+	};
+}) {
+	let extraFilter: Record<string, any>[] = [];
 	// if user cannot see all, filter to private + public + departments user is in
 	if (!(await hasPermissionAsync(userId, 'view-all-canned-responses'))) {
 		const accessibleDepartments = await getDepartmentsWhichUserCanAccess(userId, true);
-		const isDepartmentInScope = (departmentId) => !!accessibleDepartments.includes(departmentId);
+		const isDepartmentInScope = (departmentId: string) => !!accessibleDepartments.includes(departmentId);
 
 		const departmentIds = departmentId && isDepartmentInScope(departmentId) ? [departmentId] : accessibleDepartments;
 
@@ -101,9 +110,9 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 		];
 	}
 
-	const textFilter = new RegExp(escapeRegExp(text), 'i');
+	const textFilter = new RegExp(escapeRegExp(text!), 'i');
 
-	let filter = {
+	let filter: Record<string, any> = {
 		$and: [
 			...(shortcut ? [{ shortcut }] : []),
 			...(text ? [{ $or: [{ shortcut: textFilter }, { text: textFilter }] }] : []),
@@ -138,7 +147,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 	};
 }
 
-export async function findOneCannedResponse({ userId, _id }) {
+export async function findOneCannedResponse({ userId, _id }: { userId: IUser['_id']; _id: string }) {
 	if (await hasPermissionAsync(userId, 'view-all-canned-responses')) {
 		return CannedResponse.findOneById(_id);
 	}
