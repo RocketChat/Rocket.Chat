@@ -456,6 +456,7 @@
 		"tsx": "~4.20.6",
 		"typescript": "~5.9.3",
 		"vite": "^8.0.0-beta.11",
+		"vite-plugin-inspect": "^11.3.3",
 		"webpack": "~5.99.9"
 	},
 	"volta": {

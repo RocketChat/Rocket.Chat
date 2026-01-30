@@ -23,12 +23,7 @@ export type PluginOptions = {
 	 * The path to the Meteor programs directory relative to the project root.
 	 * @default '.meteor/local/build/programs/'
 	 */
-	programsDir?: string;
-	/**
-	 * The Meteor packages to include or exclude.
-	 * @default {}
-	 */
-	modules?: Record<string, null | string>;
+	programsDir?: string
 	/**
 	 * Port where the Meteor server runtime should listen for HTTP/SockJS traffic.
 	 * @default process.env.VITE_METEOR_SERVER_PORT || process.env.METEOR_SERVER_PORT || 33335
@@ -40,6 +35,11 @@ export type PluginOptions = {
 	 * @default true
 	 */
 	disableSockJS?: boolean;
+	/**
+	 * Whether to configure the Meteor runtime for modern browsers.
+	 * @default true
+	 */
+	isModern?: boolean;
 };
 
 export type ResolvedPluginOptions = {
@@ -64,10 +64,6 @@ export type ResolvedPluginOptions = {
 	 */
 	readonly programsDir: string;
 	/**
-	 * The Meteor packages to include or exclude.
-	 */
-	readonly modules: Record<string, null | string>;
-	/**
 	 * Port where the Meteor runtime's HTTP server listens.
 	 */
 	readonly meteorServerPort: number;
@@ -75,4 +71,8 @@ export type ResolvedPluginOptions = {
 	 * Whether to disable SockJS and use native WebSocket on the client side.
 	 */
 	readonly disableSockJS: boolean;
+	/**
+	 * Whether to configure the Meteor runtime for modern browsers.
+	 */
+	readonly isModern: boolean;
 };

@@ -10,7 +10,7 @@ import { check } from './check';
  * @param names - The set to collect export names into.
  * @param pkgName - The name of the Meteor package.
  */
-export function collectModuleExports(ast: AST.Program): { name: string; imports: Map<string, Set<string>>; exports: Set<string> } {
+export function analyze(ast: AST.Program): { name: string; imports: Map<string, Set<string>>; exports: Set<string> } {
 	let name = '';
 	const imports = new Map<string, Set<string>>();
 	const exports = new Set<string>();
@@ -35,8 +35,7 @@ export function collectModuleExports(ast: AST.Program): { name: string; imports:
 				callee.object.property.value === 'core-runtime' &&
 				check.isIdentifier(callee.property) &&
 				callee.property.name === 'queue' &&
-				check.isLiteral(pkg) &&
-				typeof pkg.value === 'string' &&
+				isLiteralString(pkg) &&
 				(check.isFunctionExpression(func) || check.isArrowFunctionExpression(func))
 			) {
 				name = pkg.value;
@@ -59,7 +58,7 @@ export function collectModuleExports(ast: AST.Program): { name: string; imports:
 							let pkgName: string | null = null;
 							if (!object.computed && check.isIdentifier(object.property)) {
 								pkgName = object.property.name;
-							} else if (object.computed && check.isLiteral(object.property) && typeof object.property.value === 'string') {
+							} else if (object.computed && isLiteralString(object.property)) {
 								pkgName = object.property.value;
 							}
 
@@ -144,4 +143,17 @@ function isReturnStatementWithObject(
  */
 function isFunctionWithBlock(node: AST.Expression): node is AST.Function & { body: AST.BlockStatement } {
 	return check.isFunctionExpression(node) && check.isBlockStatement(node.body);
+}
+
+/**
+ * Type guard to check if a node is a StringLiteral.
+ * @param node - The AST node to check.
+ * @returns True if the node is a StringLiteral, false otherwise.
+ * @example
+ * ```ts
+ * "string value"
+ * ```
+ */
+function isLiteralString(node: AST.Node): node is AST.StringLiteral {
+	return check.isLiteral(node) && typeof node.value === 'string';
 }

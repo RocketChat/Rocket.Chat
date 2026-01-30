@@ -5,8 +5,8 @@ import { prefixRegex } from '@rolldown/pluginutils';
 import { parse } from 'oxc-parser';
 import type { Plugin } from 'vite';
 
+import { analyze } from './shared/analyze';
 import type { ResolvedPluginOptions } from './shared/config';
-import { collectModuleExports } from './shared/visit-export';
 
 export function shim(resolvedConfig: ResolvedPluginOptions): Plugin {
 	return {
@@ -17,21 +17,20 @@ export function shim(resolvedConfig: ResolvedPluginOptions): Plugin {
 				id: prefixRegex(path.resolve(resolvedConfig.programsDir)),
 			},
 			async handler(code, id) {
-				this.info(`Shimming Meteor package: ${id}`);
+				this.debug(id);
 				const ast = await parse(id, code);
-				const module = collectModuleExports(ast.program);
+				const module = analyze(ast.program);
 
 				const imports = Array.from(module.imports.keys())
 					.map((imp) => {
 						return `import '${resolvedConfig.prefix}${imp}';`;
-					})
-					.join('\n');
+					});
 
 				if (imports.length > 0) {
-					code = `${imports}\n${code}`;
+					code = `${imports.join('\n')}\n${code}`;
 				}
 
-				this.info(inspect(module, { colors: true }));
+				this.debug(inspect(module, { colors: true }));
 
 				code = code.replaceAll('global = this;', 'global = globalThis;');
 

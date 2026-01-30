@@ -1,7 +1,8 @@
 import path from 'node:path';
 
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, esmExternalRequirePlugin } from 'vite';
+// import inspect from 'vite-plugin-inspect';
 
 import info from './vite/plugins/info';
 import meteor from './vite/plugins/meteor';
@@ -16,56 +17,53 @@ export default defineConfig(async () => {
 		plugins: [
 			info(),
 			meteor({
-				modules: {
-					'autoupdate': null,
-					'babel-compiler': null,
-					'babel-runtime': null,
-					'ddp-server': null,
-					'ecmascript-runtime-client': null,
-					'ecmascript-runtime': null,
-					'ecmascript': null,
-					'es5-shim': null,
-					// 'fetch': 'window.fetch',
-					'hot-code-push': null,
-					'minifier-css': null,
-					'modern-browsers': null,
-					'mongo-dev-server': null,
-					// 'promise': 'window.Promise',
-					'react-fast-refresh': null,
-					'shell-server': null,
-					'standard-minifier-css': null,
-					'typescript': null,
-					'webapp-hashing': null,
-					'webapp': null,
-					'zodern_standard-minifier-js': null,
-					'zodern_types': null,
-					'ddp-rate-limiter': null,
-					// 'url': 'globalThis',
-					'email': null,
-					'routepolicy': null,
-					'oauth1': null,
-					'oauth2': null,
-					'rocketchat_version': null,
-					'ddp': 'Package["ddp-client"].DDP',
-					'meteor-base': null,
-					'meteorhacks_inject-initial': null,
-					'rocketchat_livechat': null,
-					'rocketchat_mongo-config': null,
-					'session': null,
-					'ostrio_cookies': null,
-				},
 				rootUrl: ROOT_URL.toString(),
+			}),
+			// inspect({
+			// 	build: true,
+			// 	outputDir: '.vite-inspect',
+			// }),
+			esmExternalRequirePlugin({
+				external: ['react', 'cron', 'react-aria']
 			}),
 			react({
 				exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
 			}),
+
 		],
+		optimizeDeps: {
+			
+		},
+		
 		define: {
 			process: {
 				env: {
 					NODE_ENV: process.env.NODE_ENV,
 				},
 			},
+		},
+		build: {
+			minify: false,
+			sourcemap: true,
+			emptyOutDir: true,
+			target: 'esnext',
+			assetsDir: 'build_assets',
+			rolldownOptions: {
+				context: 'globalThis',
+				platform: 'browser',
+				
+				output: {
+					preserveModules: true,
+				},
+				optimization: {
+					inlineConst: true,
+				}
+
+			}
+
+		},
+		preview: {
+			
 		},
 		resolve: {
 			dedupe: ['react', 'react-dom'],
@@ -106,13 +104,8 @@ export default defineConfig(async () => {
 				// '@rocket.chat/fuselage-tokens': path.resolve('../../../fuselage/packages/fuselage-tokens'),
 				// '@rocket.chat/fuselage-tokens/breakpoints.mjs': path.resolve('../../../fuselage/packages/fuselage-tokens/breakpoints.mjs'),
 				// '@rocket.chat/fuselage-tokens/breakpoints.scss': path.resolve('../../../fuselage/packages/fuselage-tokens/breakpoints.scss'),
+				'@internationalized/date': path.resolve('./node_modules/@internationalized/date/src/index.ts'),
 			},
-		},
-		build: {
-			assetsDir: 'build_assets',
-			sourcemap: true,
-			
-			minify: false,
 		},
 		server: {
 			cors: true,
