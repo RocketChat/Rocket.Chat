@@ -9,10 +9,10 @@ import { FormSkeleton } from '../../../components/Skeleton';
 type EditCustomSoundProps = {
 	_id: string | undefined;
 	onChange?: () => void;
-	close?: () => void;
+	close: () => void;
 };
 
-function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): ReactElement | null {
+function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProps): ReactElement | null {
 	const { t } = useTranslation();
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 
@@ -25,7 +25,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 			if (sounds.length === 0) {
 				throw new Error(t('No_results_found'));
 			}
-			return sounds[0];
+			return sounds.find((sound) => sound._id === _id);
 		},
 		meta: { apiErrorToastMessage: true },
 	});
@@ -43,7 +43,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 		refetch?.();
 	};
 
-	return <EditSound data={data} onChange={handleChange} {...props} />;
+	return <EditSound data={data} close={close} onChange={handleChange} {...props} />;
 }
 
 export default EditCustomSound;
