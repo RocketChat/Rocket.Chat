@@ -1,10 +1,12 @@
+import { Socket } from 'node:net';
+
 import type { IParseAppPackageResult } from '@rocket.chat/apps-engine/server/compiler/IParseAppPackageResult.ts';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { require } from '../../lib/require.ts';
 import { sanitizeDeprecatedUsage } from '../../lib/sanitizeDeprecatedUsage.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
-import { Socket } from 'node:net';
+import { RequestContext } from '../../lib/requestContext.ts';
 
 const ALLOWED_NATIVE_MODULES = ['path', 'url', 'crypto', 'buffer', 'stream', 'net', 'http', 'https', 'zlib', 'util', 'punycode', 'os', 'querystring', 'fs'];
 const ALLOWED_EXTERNAL_MODULES = ['uuid'];
@@ -13,7 +15,8 @@ function prepareEnvironment() {
 	// Deno does not behave equally to Node when it comes to piping content to a socket
 	// So we intervene here
 	const originalFinal = Socket.prototype._final;
-	Socket.prototype._final = function _final(cb) {
+	// deno-lint-ignore no-explicit-any
+	Socket.prototype._final = function _final(cb: any) {
 		// Deno closes the readable stream in the Socket earlier than Node
 		// The exact reason for that is yet unknown, so we'll need to simply delay the execution
 		// which allows data to be read in a response
@@ -71,7 +74,9 @@ function wrapAppCode(code: string): (require: (module: string) => unknown) => Pr
 	) as (require: (module: string) => unknown) => Promise<Record<string, unknown>>;
 }
 
-export default async function handleConstructApp(params: unknown): Promise<boolean> {
+export default async function handleConstructApp(request: RequestContext): Promise<boolean> {
+	const { params } = request;
+
 	if (!Array.isArray(params)) {
 		throw new Error('Invalid params', { cause: 'invalid_param_type' });
 	}
