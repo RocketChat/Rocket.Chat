@@ -227,6 +227,7 @@ export class BusinessHourManager {
 			return await this.behavior.openBusinessHoursByDayAndHour(day, hour);
 		} catch (err) {
 			businessHourLogger.error({ msg: 'Error while opening business hours', err });
+			throw err;
 		}
 	}
 
@@ -235,6 +236,7 @@ export class BusinessHourManager {
 			return await this.behavior.closeBusinessHoursByDayAndHour(day, hour);
 		} catch (err) {
 			businessHourLogger.error({ msg: 'Error while closing business hours', err });
+			throw err;
 		}
 	}
 
