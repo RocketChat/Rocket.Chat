@@ -429,7 +429,6 @@ export const createMessageSettings = () =>
 				i18nLabel: 'Medsense_Staff_Roles',
 				i18nDescription: 'Medsense_Staff_Roles_Description',
 			});
-
 			await this.add('Medsense_Start_Chat_Label', '', {
 				type: 'string',
 				public: true,

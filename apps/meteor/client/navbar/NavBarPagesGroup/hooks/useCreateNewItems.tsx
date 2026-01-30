@@ -59,7 +59,7 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 	const createMedsenseChatItem: GenericMenuItemProps = {
 		id: 'medsense-bot-room',
 		content: buttonLabel,
-		icon: 'lock',
+		icon: 'balloon',
 		onClick: () => {
 			createMedsenseBotRoom();
 		},
