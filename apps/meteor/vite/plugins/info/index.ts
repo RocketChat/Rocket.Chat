@@ -1,3 +1,4 @@
+import { exactRegex, makeIdFiltersToMatchWithQuery } from '@rolldown/pluginutils';
 import type { Plugin } from 'vite';
 
 import { loadInfo } from './lib/generate';
@@ -10,17 +11,25 @@ export default function infoPlugin(): Plugin {
 		name: 'rocketchat-info',
 		enforce: 'pre',
 		resolveId: {
+			filter: {
+				id: makeIdFiltersToMatchWithQuery(/\.info$/),
+			},
 			handler(source) {
 				if (source === rocketchatInfoId || source.endsWith('rocketchat.info')) {
 					return resolvedVirtualId;
 				}
 			},
 		},
-		async load(id) {
-			if (id === resolvedVirtualId) {
-				const info = await loadInfo();
-				return info;
-			}
+		load: {
+			filter: {
+				id: exactRegex(resolvedVirtualId),
+			},
+			async handler(id) {
+				if (id === resolvedVirtualId) {
+					const info = await loadInfo();
+					return info;
+				}
+			},
 		},
 	};
 }
