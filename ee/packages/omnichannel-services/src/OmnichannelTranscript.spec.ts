@@ -15,7 +15,9 @@ jest.mock('@rocket.chat/pdf-worker', () => ({
 }));
 
 jest.mock('@rocket.chat/core-services', () => ({
-	ServiceClass: class {},
+	ServiceClass: class {
+		onEvent = jest.fn();
+	},
 	Upload: {
 		getFileBuffer: jest.fn().mockResolvedValue(Buffer.from('')),
 		uploadFile: jest.fn().mockResolvedValue({ _id: 'fileId', name: 'fileName' }),
@@ -26,9 +28,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 	},
 	Room: {
 		createDirectMessage: jest.fn().mockResolvedValue({ rid: 'roomId' }),
-	},
-	Settings: {
-		get: jest.fn().mockResolvedValue(''),
 	},
 }));
 
@@ -50,6 +49,9 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 	LivechatVisitors: {
 		findOneEnabledById: jest.fn().mockResolvedValue({}),
+	},
+	Settings: {
+		getValueById: jest.fn().mockResolvedValue(''),
 	},
 }));
 

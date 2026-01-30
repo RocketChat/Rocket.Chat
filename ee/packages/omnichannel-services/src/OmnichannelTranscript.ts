@@ -1,19 +1,13 @@
 import type { Readable } from 'stream';
 
-import {
-	ServiceClass,
-	Upload as uploadService,
-	Message as messageService,
-	Room as roomService,
-	Settings as settingsService,
-} from '@rocket.chat/core-services';
+import { ServiceClass, Upload as uploadService, Message as messageService, Room as roomService } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
 import type { IMessage, IUpload, ILivechatAgent, AtLeast, IOmnichannelRoom, IUser, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 import { MessageTypes } from '@rocket.chat/message-types';
-import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
+import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors, Settings } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import type { MessageData, Quote, WorkerData } from '@rocket.chat/pdf-worker';
 import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
@@ -33,6 +27,21 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	currentJobNumber = 0;
 
+	// Cached settings
+	private reportingTimezone: 'server' | 'custom' | 'user' = 'server';
+
+	private customTimezone = '';
+
+	private showSystemMessages = true;
+
+	private siteName = 'Rocket.Chat';
+
+	private dateFormat = 'MMMM D, YYYY';
+
+	private timeAndDateFormat = 'MMMM D, YYYY h:mm A';
+
+	private serverLanguage = 'en';
+
 	constructor(
 		loggerConstructor: typeof Logger,
 		// Instance of i18n. Should already be init'd and loaded with the translation files
@@ -42,14 +51,65 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		this.worker = new PdfWorker('chat-transcript');
 		// eslint-disable-next-line new-cap
 		this.log = new loggerConstructor('OmnichannelTranscript');
+
+		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
+			if (clientAction === 'removed') {
+				return;
+			}
+
+			const { _id, value } = setting;
+			switch (_id) {
+				case 'Default_Timezone_For_Reporting':
+					this.reportingTimezone = value as 'server' | 'custom' | 'user';
+					break;
+				case 'Default_Custom_Timezone':
+					this.customTimezone = value as string;
+					break;
+				case 'Livechat_transcript_show_system_messages':
+					this.showSystemMessages = value as boolean;
+					break;
+				case 'Site_Name':
+					this.siteName = value as string;
+					break;
+				case 'Message_DateFormat':
+					this.dateFormat = value as string;
+					break;
+				case 'Message_TimeAndDateFormat':
+					this.timeAndDateFormat = value as string;
+					break;
+				case 'Language':
+					this.serverLanguage = value as string;
+					break;
+			}
+		});
+	}
+
+	override async started(): Promise<void> {
+		// Load initial settings values
+		const [reportingTimezone, customTimezone, showSystemMessages, siteName, dateFormat, timeAndDateFormat, serverLanguage] =
+			await Promise.all([
+				Settings.getValueById<'server' | 'custom' | 'user'>('Default_Timezone_For_Reporting'),
+				Settings.getValueById<string>('Default_Custom_Timezone'),
+				Settings.getValueById<boolean>('Livechat_transcript_show_system_messages'),
+				Settings.getValueById<string>('Site_Name'),
+				Settings.getValueById<string>('Message_DateFormat'),
+				Settings.getValueById<string>('Message_TimeAndDateFormat'),
+				Settings.getValueById<string>('Language'),
+			]);
+
+		this.reportingTimezone = reportingTimezone || 'server';
+		this.customTimezone = customTimezone || '';
+		this.showSystemMessages = showSystemMessages ?? true;
+		this.siteName = siteName || 'Rocket.Chat';
+		this.dateFormat = dateFormat || 'MMMM D, YYYY';
+		this.timeAndDateFormat = timeAndDateFormat || 'MMMM D, YYYY h:mm A';
+		this.serverLanguage = serverLanguage || 'en';
 	}
 
 	async getTimezone(agent?: AtLeast<ILivechatAgent, 'utcOffset'> | null): Promise<string> {
-		const reportingTimezone = await settingsService.get<'server' | 'custom' | 'user'>('Default_Timezone_For_Reporting');
-
-		switch (reportingTimezone) {
+		switch (this.reportingTimezone) {
 			case 'custom':
-				return settingsService.get<string>('Default_Custom_Timezone');
+				return this.customTimezone;
 			case 'user':
 				if (agent?.utcOffset) {
 					return guessTimezoneFromOffset(agent.utcOffset);
@@ -61,10 +121,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async getMessagesFromRoom({ rid }: { rid: string }): Promise<IMessage[]> {
-		const showSystemMessages = await settingsService.get<boolean>('Livechat_transcript_show_system_messages');
-
 		// Closing message should not appear :)
-		return Messages.findLivechatMessagesWithoutTypes(rid, ['command'], showSystemMessages, {
+		return Messages.findLivechatMessagesWithoutTypes(rid, ['command'], this.showSystemMessages, {
 			sort: { ts: 1 },
 			projection: {
 				_id: 1,
@@ -289,18 +347,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			throw new Error('retry');
 		}
 		this.currentJobNumber++;
-		// TODO: cache these with mem
-		const [siteName, dateFormat, timeAndDateFormat, serverLanguage] = await Promise.all([
-			settingsService.get<string>('Site_Name'),
-			settingsService.get<string>('Message_DateFormat'),
-			settingsService.get<string>('Message_TimeAndDateFormat'),
-			settingsService.get<string>('Language'),
-		]);
 
 		const user = await Users.findOneById<Pick<IUser, '_id' | 'language'>>(details.userId, { projection: { _id: 1, language: 1 } });
 		if (!user) return;
 
-		const language = user.language ?? serverLanguage;
+		const language = user.language ?? this.serverLanguage;
 		const i18n = this.translator.cloneInstance({ lng: language });
 
 		try {
@@ -344,10 +395,10 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				visitor,
 				agent,
 				closedAt: room.closedAt,
-				siteName,
+				siteName: this.siteName,
 				messages: messagesData,
-				dateFormat,
-				timeAndDateFormat,
+				dateFormat: this.dateFormat,
+				timeAndDateFormat: this.timeAndDateFormat,
 				timezone,
 			};
 
