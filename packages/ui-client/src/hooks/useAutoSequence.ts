@@ -11,5 +11,9 @@ export const useAutoSequence = <P>(sequence: readonly P[], delay = 700): P => {
 		};
 	}, [delay]);
 
+	if (sequence.length === 0) {
+		throw new Error('useAutoSequence requires a non-empty sequence');
+	}
+
 	return sequence[index % sequence.length];
 };
