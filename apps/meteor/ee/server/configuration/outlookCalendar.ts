@@ -9,5 +9,6 @@ Meteor.startup(() =>
 		addSettings();
 
 		await Calendar.setupNextNotification();
+		await Calendar.setupNextStatusChange();
 	}),
 );

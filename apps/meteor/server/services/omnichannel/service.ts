@@ -4,10 +4,10 @@ import type { AtLeast, IOmnichannelQueue, IOmnichannelRoom } from '@rocket.chat/
 import { License } from '@rocket.chat/license';
 import moment from 'moment';
 
-import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
-import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
-import { settings } from '../../../app/settings/server';
 import { OmnichannelQueue } from './queue';
+import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
+import { notifyAgentStatusChanged } from '../../../app/livechat/server/lib/omni-users';
+import { settings } from '../../../app/settings/server';
 
 export class OmnichannelService extends ServiceClassInternal implements IOmnichannelService {
 	protected name = 'omnichannel';
@@ -19,7 +19,7 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 		this.queueWorker = new OmnichannelQueue();
 	}
 
-	async created() {
+	override async created() {
 		this.onEvent('presence.status', async ({ user }): Promise<void> => {
 			if (!user?._id) {
 				return;
@@ -27,14 +27,14 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 			const hasRole = user.roles.some((role) => ['livechat-manager', 'livechat-monitor', 'livechat-agent'].includes(role));
 			if (hasRole) {
 				// TODO change `Livechat.notifyAgentStatusChanged` to a service call
-				await Livechat.notifyAgentStatusChanged(user._id, user.status);
+				await notifyAgentStatusChanged(user._id, user.status);
 			}
 		});
 	}
 
-	async started() {
-		settings.watch<boolean>('Livechat_enabled', (enabled) => {
-			void (enabled && RoutingManager.isMethodSet() ? this.queueWorker.shouldStart() : this.queueWorker.stop());
+	override async started() {
+		settings.watchMultiple(['Livechat_enabled', 'Livechat_Routing_Method'], () => {
+			this.queueWorker.shouldStart();
 		});
 
 		License.onLimitReached('monthlyActiveContacts', async (): Promise<void> => {
@@ -44,10 +44,12 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 		License.onValidateLicense(async (): Promise<void> => {
 			RoutingManager.isMethodSet() && (await this.queueWorker.shouldStart());
 		});
-	}
 
-	getQueueWorker(): IOmnichannelQueue {
-		return this.queueWorker;
+		// NOTE: When there's no license or license is invalid, we fallback to CE behavior
+		// CE behavior means there's no MAC limit, so we start the queue
+		License.onInvalidateLicense(async (): Promise<void> => {
+			this.queueWorker.isRunning() && (await this.queueWorker.shouldStart());
+		});
 	}
 
 	async isWithinMACLimit(room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {

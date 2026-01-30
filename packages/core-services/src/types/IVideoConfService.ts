@@ -2,13 +2,15 @@ import type {
 	IRoom,
 	IStats,
 	IUser,
-	UiKit,
+	IVoIPVideoConference,
 	VideoConference,
 	VideoConferenceCapabilities,
 	VideoConferenceCreateData,
 	VideoConferenceInstructions,
 } from '@rocket.chat/core-typings';
+import type { InsertionModel } from '@rocket.chat/model-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type * as UiKit from '@rocket.chat/ui-kit';
 
 export type VideoConferenceJoinOptions = {
 	mic?: boolean;
@@ -40,4 +42,6 @@ export interface IVideoConfService {
 		caller: IUser['_id'],
 		params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] },
 	): Promise<boolean>;
+	assignDiscussionToConference(callId: VideoConference['_id'], rid: IRoom['_id'] | undefined): Promise<void>;
+	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
 }

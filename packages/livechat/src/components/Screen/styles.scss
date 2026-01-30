@@ -1,6 +1,5 @@
 @use 'sass:math';
-
-@import '../../styles/colors';
+@use '../../styles/colors';
 
 $screen-padding: 16px;
 $screen-box-shadow: 0 (math.div($screen-padding, 2) - 1) $screen-padding 0 rgba(0, 0, 0, 0.1);
@@ -37,6 +36,10 @@ $max-lines: 12;
 		border: 0;
 		border-radius: 2em;
 		background: rgba(31, 35, 41, 0.4);
+	}
+
+	&--position-left {
+		align-items: flex-start !important;
 	}
 
 	&--minimized {
@@ -89,7 +92,7 @@ $max-lines: 12;
 	width: 100%;
 
 	border-radius: 4px;
-	background-color: $bg-color-white;
+	background-color: colors.$bg-color-white;
 	align-items: stretch;
 
 	&--fitTextSize {

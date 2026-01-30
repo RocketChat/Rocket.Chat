@@ -1,8 +1,8 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { MessageBubble } from '.';
-import { loremIpsum } from '../../../helpers.stories';
+import { loremIpsum } from '../../../../.storybook/helpers';
 
 const text = loremIpsum({ count: 1, units: 'sentences' });
 
@@ -20,7 +20,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof MessageBubble>>;
 
-const Template: Story<ComponentProps<typeof MessageBubble>> = (args) => <MessageBubble {...args} />;
+const Template: StoryFn<ComponentProps<typeof MessageBubble>> = (args) => <MessageBubble {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

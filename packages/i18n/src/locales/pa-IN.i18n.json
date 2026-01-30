@@ -1,0 +1,22 @@
+{
+  "500": "ਅੰਦਰੂਨੀ ਸਰਵਰ ਗੜਬੜ",
+  "Away": "ਦੂਰ",
+  "Busy": "ਰੁਝੇਵਾਂ",
+  "Chats_removed": "ਗੱਲਾਂਬਾਤਾਂ ਹਟਾਈਆਂ ਗਈਆਂ",
+  "FEDERATION_Status": "ਹਾਲਤ",
+  "Incoming_Livechats": "ਕਤਾਰਬੱਧ ਗੱਲਾਂਬਾਤਾਂ",
+  "Last_Status": "ਪਿਛਲੀ ਹਾਲਤ",
+  "Learn_more_about_current_chats": "ਮੌਜੂਦਾ ਗੱਲਾਂਬਾਤਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ",
+  "Livechat_forward_open_chats": "ਖੁੱਲ੍ਹੀਆਂ ਗੱਲਾਂਬਾਤਾਂ ਨੂੰ ਅੱਗੇ ਭੇਜੋ",
+  "Offline": "ਗੈਰ-ਹਾਜ਼ਰ",
+  "Online": "ਔਨਲਾਈਨ",
+  "Past_Chats": "ਪਿਛਲੀਆਂ ਗੱਲਾਂਬਾਤਾਂ",
+  "Private_Chats": "ਨਿੱਜੀ ਗੱਲਾਂਬਾਤਾਂ",
+  "Stats_Online_Users": "ਹਾਜ਼ਰ ਵਰਤੋਂਕਾਰ",
+  "away": "ਦੂਰ",
+  "busy": "ਰੁਝੇਵਾਂ",
+  "offline": "ਗੈਰ-ਹਾਜ਼ਰ",
+  "online": "ਹਾਜ਼ਰ",
+  "set__username__as__role_": "set {{username}} ਨੂੰ {{role}}",
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> empty rooms will be removed automatically:<br/> {{rooms}}."
+}

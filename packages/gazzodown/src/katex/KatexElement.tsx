@@ -1,5 +1,6 @@
 import katex from 'katex';
-import { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import { useMemo } from 'react';
 
 import 'katex/dist/katex.css';
 
@@ -15,6 +16,7 @@ const KatexElement = ({ code }: KatexElementProps): ReactElement => {
 				macros: {
 					'\\href': '\\@secondoftwo',
 				},
+				maxSize: 100,
 			}),
 		[code],
 	);

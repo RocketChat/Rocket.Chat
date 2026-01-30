@@ -1,33 +1,32 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import { hashQueryKey } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
-import React, { useMemo, useState, useEffect } from 'react';
-
-import FilterByText from '../../../../components/FilterByText';
-import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
+import { useDebouncedValue, useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableBody,
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
-} from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import { useAgentsQuery } from '../hooks/useAgentsQuery';
-import { useQuery } from '../hooks/useQuery';
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
+import { hashKey } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import AddAgent from './AddAgent';
 import AgentsTableRow from './AgentsTableRow';
+import FilterByText from '../../../../components/FilterByText';
+import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
+import { links } from '../../../../lib/links';
+import { useAgentsQuery } from '../hooks/useAgentsQuery';
+import { useQuery } from '../hooks/useQuery';
 
 // TODO: missing error state
-const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
-	const t = useTranslation();
-	const [filter, setFilter] = useState('');
+const AgentsTable = () => {
+	const { t } = useTranslation();
 
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'statusLivechat'>('name');
-	const debouncedFilter = useDebouncedValue(filter, 500);
+	const [text, setText] = useState('');
 	const debouncedSort = useDebouncedValue(
 		useMemo(() => [sortBy, sortDirection], [sortBy, sortDirection]),
 		500,
@@ -35,18 +34,13 @@ const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
-	const query = useQuery({ text: debouncedFilter, current, itemsPerPage }, debouncedSort);
-	const { data, isSuccess, isLoading, refetch } = useAgentsQuery(query);
+	const query = useQuery({ text, current, itemsPerPage }, debouncedSort);
+	const { data, isSuccess, isLoading } = useAgentsQuery(query);
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
-	useEffect(() => {
-		reload.current = refetch;
-	}, [reload, refetch]);
-	reload.current = refetch;
-
-	const onHeaderClick = useMutableCallback((id) => {
+	const onHeaderClick = useEffectEvent((id: 'name' | 'username' | 'emails.address' | 'statusLivechat') => {
 		if (sortBy === id) {
 			setSort(id, sortDirection === 'asc' ? 'desc' : 'asc');
 			return;
@@ -78,8 +72,10 @@ const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	return (
 		<>
-			<AddAgent reload={refetch} />
-			{((isSuccess && data?.users.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }) => setFilter(text)} />}
+			<AddAgent />
+			{((isSuccess && data?.users.length > 0) || queryHasChanged) && (
+				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
+			)}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -94,18 +90,16 @@ const AgentsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 					icon='headset'
 					title={t('No_agents_yet')}
 					description={t('No_agents_yet_description')}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_agents')}
 				/>
 			)}
 			{isSuccess && data?.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={filter !== debouncedFilter} aria-live='assertive'>
+					<GenericTable aria-label={t('Agents')} aria-busy={isLoading}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
-							{data?.users.map((user) => (
-								<AgentsTableRow key={user._id} user={user} mediaQuery={mediaQuery} reload={refetch} />
-							))}
+						<GenericTableBody>
+							{data?.users.map((user) => <AgentsTableRow key={user._id} user={user} mediaQuery={mediaQuery} />)}
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination

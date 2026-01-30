@@ -1,12 +1,10 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import { Contextualbar } from '@rocket.chat/ui-client';
+import type { Meta, StoryFn } from '@storybook/react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { Contextualbar } from '../../../../components/Contextualbar';
 import PruneMessages from './PruneMessages';
 
 export default {
-	title: 'Room/Contextual Bar/PruneMessages',
 	component: PruneMessages,
 	parameters: {
 		layout: 'fullscreen',
@@ -27,9 +25,9 @@ export default {
 			);
 		},
 	],
-} as ComponentMeta<typeof PruneMessages>;
+} satisfies Meta<typeof PruneMessages>;
 
-const Template: ComponentStory<typeof PruneMessages> = (args) => <PruneMessages {...args} />;
+const Template: StoryFn<typeof PruneMessages> = (args) => <PruneMessages {...args} />;
 
 export const Default = Template.bind({});
 

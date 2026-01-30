@@ -1,6 +1,6 @@
 import client from 'prom-client';
 
-const percentiles = [0.01, 0.1, 0.9, 0.99];
+const percentiles = [0.01, 0.1, 0.5, 0.9, 0.95, 0.99, 1];
 
 export const metrics = {
 	deprecations: new client.Counter({
@@ -63,9 +63,13 @@ export const metrics = {
 		labelNames: ['notification_type'],
 		help: 'cumulated number of notifications sent',
 	}),
-	messageRoundtripTime: new client.Gauge({
-		name: 'rocketchat_messages_roundtrip_time',
+	messageRoundtripTime: new client.Summary({
+		name: 'rocketchat_messages_roundtrip_time_summary',
 		help: 'time spent by a message from save to receive back',
+		percentiles,
+		maxAgeSeconds: 60,
+		ageBuckets: 5,
+		// pruneAgedBuckets: true, // Type not added to prom-client on 14.2 https://github.com/siimon/prom-client/pull/558
 	}),
 
 	ddpSessions: new client.Gauge({
@@ -195,6 +199,12 @@ export const metrics = {
 		name: 'rocketchat_apps_failed',
 		help: 'total apps that failed to load',
 	}),
+	appBridgeMethods: new client.Summary({
+		name: 'rocketchat_apps_bridge_methods',
+		help: 'summary of app bridge method calls count and time',
+		labelNames: ['bridge', 'method', 'app_id'],
+		percentiles,
+	}),
 
 	// Meteor Facts
 	meteorFacts: new client.Gauge({
@@ -213,6 +223,28 @@ export const metrics = {
 	totalLivechatWebhooksFailures: new client.Counter({
 		name: 'rocketchat_livechat_webhooks_failures',
 		help: 'failed livechat webhooks',
+	}),
+
+	totalItemsProcessedByQueue: new client.Counter({
+		name: 'rocketchat_queue_items_processed_total',
+		labelNames: ['queue'],
+		help: 'Total number of items processed by Rocket.Chat Omni queues',
+	}),
+	totalItemsFailedByQueue: new client.Counter({
+		name: 'rocketchat_queue_items_failed_total',
+		labelNames: ['queue'],
+		help: 'Total number of items failed by Rocket.Chat Omni queues',
+	}),
+	totalItemsProcessedByReconciliationQueue: new client.Counter({
+		name: 'rocketchat_reconciliation_queue_items_processed_total',
+		labelNames: ['queue', 'action'],
+		help: 'Total number of items processed by the Omnichannel queue that were reconciled before processing',
+	}),
+	timeToQueueProcessingByQueue: new client.Summary({
+		name: 'rocketchat_queue_wait_time_seconds',
+		labelNames: ['queue'],
+		help: 'Time taken in seconds for an item to be processed for the first time by Omni queues',
+		percentiles,
 	}),
 };
 

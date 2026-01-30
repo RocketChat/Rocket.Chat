@@ -1,13 +1,39 @@
-import { type ISetting, type Serialized, type SettingValue } from '@rocket.chat/core-typings';
+import type {
+	CallPreferences,
+	DirectCallData,
+	IRoom,
+	ISetting,
+	IUser,
+	ProviderCapabilities,
+	Serialized,
+	SettingValue,
+} from '@rocket.chat/core-typings';
+import type {
+	ServerMethodName,
+	ServerMethodParameters,
+	ServerMethodReturn,
+	StreamerCallback,
+	StreamerCallbackArgs,
+	StreamerEvents,
+	StreamKeys,
+	StreamNames,
+} from '@rocket.chat/ddp-client';
+import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
-import { type Method, type OperationParams, type OperationResult, type PathPattern, type UrlParams } from '@rocket.chat/rest-typings';
+import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
+import type {
+	Device,
+	DeviceContext,
+	LoginService,
+	ModalContextValue,
+	ServerContextValue,
+	SettingsContextQuery,
+	SubscriptionWithRoom,
+	TranslationKey,
+} from '@rocket.chat/ui-contexts';
 import {
-	type ServerMethodName,
-	type ServerMethodParameters,
-	type ServerMethodReturn,
-	type TranslationKey,
 	AuthorizationContext,
-	ConnectionStatusContext,
 	RouterContext,
 	ServerContext,
 	SettingsContext,
@@ -15,44 +41,86 @@ import {
 	UserContext,
 	ActionManagerContext,
 	ModalContext,
+	UserPresenceContext,
+	AuthenticationContext,
 } from '@rocket.chat/ui-contexts';
-import { type DecoratorFn } from '@storybook/react';
+import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
+import { VideoConfContext } from '@rocket.chat/ui-video-conf';
+import type { Decorator } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { type WrapperComponent } from '@testing-library/react-hooks';
 import { createInstance } from 'i18next';
-import { type ObjectId } from 'mongodb';
-import React, { type ContextType, type ReactNode, useEffect, useReducer } from 'react';
+import type { ObjectId } from 'mongodb';
+import type { ContextType, JSXElementConstructor, ReactNode } from 'react';
+import { useEffect, useReducer, useSyncExternalStore } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
+
+import { MockedDeviceContext } from './MockedDeviceContext';
 
 type Mutable<T> = {
 	-readonly [P in keyof T]: T[P];
 };
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
+// interface MockedAppRootEvents extends Record<`stream-${StreamNames}-${StreamKeys<StreamNames>}`, any> {
+// 	'update-modal': void;
+// }
+// Extract all key values from objects that have a 'key' property
+type ExtractKeys<T, N extends string> = T extends readonly (infer U)[]
+	? U extends { key: infer K }
+		? K extends string
+			? string extends K
+				? never
+				: `stream-${N}-${K}`
+			: never
+		: never
+	: never;
+
+// Union of all key values from all streams
+type AllStreamerEventKeys = {
+	[K in keyof StreamerEvents]: ExtractKeys<StreamerEvents[K], K>;
+}[keyof StreamerEvents];
+
+type MockedAppRootEvents = {
+	'update-modal': void;
+} & Record<AllStreamerEventKeys, any>;
+
+export type StreamControllerRef<N extends StreamNames> = {
+	controller?: {
+		emit: <K extends StreamKeys<N>>(eventName: K, args: StreamerCallbackArgs<N, K>) => void;
+		has: (eventName: StreamKeys<N>) => boolean;
+	};
+};
+
+const empty = [] as const;
+
 export class MockedAppRootBuilder {
+	private _settings: Map<string, ISetting> = new Map();
+
 	private wrappers: Array<(children: ReactNode) => ReactNode> = [];
 
-	private connectionStatus: ContextType<typeof ConnectionStatusContext> = {
+	private server: ContextType<typeof ServerContext> = {
 		connected: true,
 		status: 'connected',
-		retryTime: undefined,
-		reconnect: () => undefined,
-	};
-
-	private server: ContextType<typeof ServerContext> = {
+		retryCount: 0,
+		info: undefined,
 		absoluteUrl: (path: string) => `http://localhost:3000/${path}`,
-		callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>(_args: {
+		callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>({
+			method,
+			pathPattern,
+		}: {
 			method: TMethod;
 			pathPattern: TPathPattern;
 			keys: UrlParams<TPathPattern>;
 			params: OperationParams<TMethod, TPathPattern>;
 		}): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
-			throw new Error('not implemented');
+			throw new Error(`not implemented (method: ${method}, pathPattern: ${pathPattern})`);
 		},
-		getSingleStream: () => () => () => undefined,
 		getStream: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
 		callMethod: () => Promise.reject(new Error('not implemented')),
-		info: undefined,
+		disconnect: () => Promise.reject(new Error('not implemented')),
+		reconnect: () => Promise.reject(new Error('not implemented')),
+		writeStream: () => Promise.reject(new Error('not implemented')),
 	};
 
 	private router: ContextType<typeof RouterContext> = {
@@ -61,58 +129,155 @@ export class MockedAppRootBuilder {
 		getLocationPathname: () => '/',
 		getLocationSearch: () => '',
 		getRouteName: () => undefined,
+		getPreviousRouteName: () => undefined,
 		getRouteParameters: () => ({}),
-		getRoutes: () => [],
 		getSearchParameters: () => ({}),
 		navigate: () => undefined,
 		subscribeToRouteChange: () => () => undefined,
-		subscribeToRoutesChange: () => () => undefined,
+		getRoomRoute: () => ({ path: '/' }),
 	};
 
 	private settings: Mutable<ContextType<typeof SettingsContext>> = {
 		hasPrivateAccess: true,
-		isLoading: false,
 		querySetting: (_id: string) => [() => () => undefined, () => undefined],
-		querySettings: () => [() => () => undefined, () => []],
+		querySettings: (_query: SettingsContextQuery) => [() => () => undefined, () => empty as unknown as ISetting[]],
 		dispatch: async () => undefined,
 	};
 
 	private user: ContextType<typeof UserContext> = {
-		loginWithPassword: () => Promise.reject(new Error('not implemented')),
 		logout: () => Promise.reject(new Error('not implemented')),
-		loginWithService: () => () => Promise.reject(new Error('not implemented')),
-		loginWithToken: () => Promise.reject(new Error('not implemented')),
-		queryAllServices: () => [() => () => undefined, () => []],
+		onLogout: () => () => undefined,
 		queryPreference: () => [() => () => undefined, () => undefined],
-		queryRoom: () => [() => () => undefined, () => undefined],
-		querySubscription: () => [() => () => undefined, () => undefined],
-		querySubscriptions: () => [() => () => undefined, () => []],
+		queryRoom: () => [() => () => undefined, () => this.room],
+		querySubscription: () => [() => () => undefined, () => this.subscription],
+		querySubscriptions: () => [
+			() => () => undefined,
+			() => (this.subscription ? [this.subscription, ...(this.subscriptions ?? [])] : (this.subscriptions ?? [])),
+		], // apply query and option
 		user: null,
-		userId: null,
+		userId: undefined,
 	};
 
-	private modal: ContextType<typeof ModalContext> = {
-		currentModal: null,
+	private userPresence: ContextType<typeof UserPresenceContext> = {
+		queryUserData: (_uid) => ({ subscribe: () => () => undefined, get: () => undefined }),
+	};
+
+	private videoConf: ContextType<typeof VideoConfContext> = {
+		queryIncomingCalls: () => [() => () => undefined, () => []],
+		queryRinging: () => [() => () => undefined, () => false],
+		queryCalling: () => [() => () => undefined, () => false],
+		dispatchOutgoing(_options: Omit<VideoConfPopupPayload, 'id'>): void {
+			throw new Error('Function not implemented.');
+		},
+		dismissOutgoing(): void {
+			throw new Error('Function not implemented.');
+		},
+		startCall(_rid: IRoom['_id'], _title?: string): void {
+			throw new Error('Function not implemented.');
+		},
+		acceptCall(_callId: string): void {
+			throw new Error('Function not implemented.');
+		},
+		joinCall(_callId: string): void {
+			throw new Error('Function not implemented.');
+		},
+		dismissCall(_callId: string): void {
+			throw new Error('Function not implemented.');
+		},
+		rejectIncomingCall(_callId: string): void {
+			throw new Error('Function not implemented.');
+		},
+		abortCall(): void {
+			throw new Error('Function not implemented.');
+		},
+		setPreferences(_prefs: { mic?: boolean; cam?: boolean }): void {
+			throw new Error('Function not implemented.');
+		},
+		loadCapabilities(): Promise<void> {
+			throw new Error('Function not implemented.');
+		},
+		queryCapabilities(): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ProviderCapabilities] {
+			throw new Error('Function not implemented.');
+		},
+		queryPreferences(): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => CallPreferences] {
+			throw new Error('Function not implemented.');
+		},
+	};
+
+	private room: IRoom | undefined = undefined;
+
+	private subscriptions: SubscriptionWithRoom[] | undefined = undefined;
+
+	private subscription: SubscriptionWithRoom | undefined = undefined;
+
+	private modal: ModalContextValue = {
+		currentModal: { component: null },
 		modal: {
-			setModal: () => undefined,
+			setModal: (modal) => {
+				this.modal = {
+					...this.modal,
+					currentModal: { component: modal },
+				};
+				this.events.emit('update-modal');
+			},
 		},
 	};
 
-	private authorization: ContextType<typeof AuthorizationContext> = {
-		queryPermission: () => [() => () => undefined, () => false],
-		queryAtLeastOnePermission: () => [() => () => undefined, () => false],
-		queryAllPermissions: () => [() => () => undefined, () => false],
-		queryRole: () => [() => () => undefined, () => false],
-		roleStore: {
-			roles: {},
-			emit: () => undefined,
-			on: () => () => undefined,
-			off: () => undefined,
-			events: (): Array<'change'> => ['change'],
-			has: () => false,
-			once: () => () => undefined,
+	private authorization: ContextType<typeof AuthorizationContext> = (() => {
+		const dummyRolesMap: ReturnType<ContextType<typeof AuthorizationContext>['getRoles']> = new Map();
+
+		return {
+			queryPermission: () => [() => () => undefined, () => false],
+			queryAtLeastOnePermission: () => [() => () => undefined, () => false],
+			queryAllPermissions: () => [() => () => undefined, () => false],
+			queryRole: () => [() => () => undefined, () => false],
+			getRoles: () => dummyRolesMap,
+			subscribeToRoles: () => () => undefined,
+		};
+	})();
+
+	private authServices: LoginService[] = [];
+
+	private authentication: ContextType<typeof AuthenticationContext> = {
+		isLoggingIn: false,
+		loginWithPassword: () => Promise.resolve(),
+		loginWithToken: () => Promise.resolve(),
+		loginWithService: () => () => Promise.resolve(true),
+		loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),
+		loginWithTokenRoute: async () => Promise.reject('loginWithTokenRoute not implemented'),
+		queryLoginServices: {
+			getCurrentValue: () => this.authServices,
+			subscribe: () => () => undefined,
 		},
+		unstoreLoginToken: () => async () => Promise.reject('unstoreLoginToken not implemented'),
 	};
+
+	private events = new Emitter<MockedAppRootEvents>();
+
+	private deviceContext: Partial<ContextType<typeof DeviceContext>> = {
+		enabled: true,
+		availableAudioOutputDevices: [],
+		availableAudioInputDevices: [],
+		selectedAudioOutputDevice: undefined,
+		selectedAudioInputDevice: undefined,
+		setAudioOutputDevice: () => undefined,
+		setAudioInputDevice: () => undefined,
+		permissionStatus: undefined,
+	};
+
+	private _providedQueryClient: QueryClient | undefined;
+
+	private get queryClient(): QueryClient {
+		return (
+			this._providedQueryClient ||
+			new QueryClient({
+				defaultOptions: {
+					queries: { retry: false },
+					mutations: { retry: false },
+				},
+			})
+		);
+	}
 
 	wrap(wrapper: (children: ReactNode) => ReactNode): this {
 		this.wrappers.push(wrapper);
@@ -142,6 +307,30 @@ export class MockedAppRootBuilder {
 		};
 
 		this.server.callEndpoint = outerFn;
+
+		return this;
+	}
+
+	withStream<N extends StreamNames>(streamName: N, ref: StreamControllerRef<N>): this {
+		const innerFn = this.server.getStream;
+
+		const outerFn: ServerContextValue['getStream'] = (innerStreamName) => {
+			if (innerStreamName === (streamName as StreamNames)) {
+				ref.controller = {
+					emit: <K extends StreamKeys<N>>(eventName: K, args: StreamerCallbackArgs<N, K>) => {
+						this.events.emit(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys, ...args);
+					},
+					has: (eventName: string) => this.events.has(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys),
+				};
+
+				return <K extends StreamKeys<N>>(eventName: K, callback: StreamerCallback<N, K>) =>
+					this.events.on(`stream-${innerStreamName}-${eventName}` as AllStreamerEventKeys, callback);
+			}
+
+			return innerFn(innerStreamName);
+		};
+
+		this.server.getStream = outerFn;
 
 		return this;
 	}
@@ -221,7 +410,7 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	withJohnDoe(): this {
+	withJohnDoe(overrides: Partial<IUser> = {}): this {
 		this.user.userId = 'john.doe';
 
 		this.user.user = {
@@ -233,14 +422,48 @@ export class MockedAppRootBuilder {
 			_updatedAt: new Date(),
 			roles: ['admin'],
 			type: 'user',
+			...overrides,
 		};
 
 		return this;
 	}
 
 	withAnonymous(): this {
-		this.user.userId = null;
+		this.user.userId = undefined;
 		this.user.user = null;
+
+		return this;
+	}
+
+	withUser(user: IUser): this {
+		this.user.userId = user._id;
+		this.user.user = user;
+
+		return this;
+	}
+
+	withUsers(users: IUser[]): this {
+		users.forEach((user) => {
+			this.userPresence.queryUserData = (_uid) => ({ subscribe: () => () => undefined, get: () => user });
+		});
+
+		return this;
+	}
+
+	withSubscriptions(subscriptions: SubscriptionWithRoom[]): this {
+		this.subscriptions = subscriptions;
+
+		return this;
+	}
+
+	withSubscription(subscription: SubscriptionWithRoom): this {
+		this.subscription = subscription;
+
+		return this;
+	}
+
+	withRoom(room: IRoom): this {
+		this.room = room;
 
 		return this;
 	}
@@ -257,13 +480,12 @@ export class MockedAppRootBuilder {
 		const outerFn = (
 			innerRole: string | ObjectId,
 			innerScope?: string | undefined,
-			innerIgnoreSubscriptions?: boolean | undefined,
 		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean] => {
 			if (innerRole === role) {
 				return [() => () => undefined, () => true];
 			}
 
-			return innerFn(innerRole, innerScope, innerIgnoreSubscriptions);
+			return innerFn(innerRole, innerScope);
 		};
 
 		this.authorization.queryRole = outerFn;
@@ -271,14 +493,14 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	withSetting(id: string, value: SettingValue): this {
+	withSetting(id: string, value: SettingValue, settingStructure?: Partial<ISetting>): this {
 		const setting = {
+			...settingStructure,
 			_id: id,
 			value,
 		} as ISetting;
 
 		const innerFn = this.settings.querySetting;
-
 		const outerFn = (
 			innerSetting: string,
 		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISetting | undefined] => {
@@ -290,6 +512,26 @@ export class MockedAppRootBuilder {
 		};
 
 		this.settings.querySetting = outerFn;
+
+		this._settings.set(id, setting);
+
+		const cache = new WeakMap();
+
+		this.settings.querySettings = (query: SettingsContextQuery) => {
+			const filter =
+				cache.get(query) ??
+				createPredicateFromFilter({
+					...(query._id ? { _id: { $in: query._id } } : {}),
+				} as any);
+			cache.set(query, filter);
+			const arr = cache.get(filter) ?? Array.from(this._settings.values()).filter(filter);
+			return [
+				() => () => undefined,
+				() => {
+					return arr;
+				},
+			];
+		};
 
 		return this;
 	}
@@ -313,22 +555,72 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	private i18n = createInstance(
-		{
-			// debug: true,
-			lng: 'en',
-			fallbackLng: 'en',
-			ns: ['core'],
-			nsSeparator: '.',
-			partialBundledLanguages: true,
-			defaultNS: 'core',
-			interpolation: {
-				escapeValue: false,
-			},
-			initImmediate: false,
+	withIncomingCalls(calls: DirectCallData[]): this {
+		if (!this.videoConf) {
+			throw Error('videoConf is not defined');
+		}
+
+		const innerFn = this.videoConf.queryIncomingCalls;
+
+		const outerFn = (): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => DirectCallData[]] => {
+			if (calls.length) {
+				return [() => () => undefined, () => calls];
+			}
+
+			return innerFn();
+		};
+
+		this.videoConf.queryIncomingCalls = outerFn;
+
+		return this;
+	}
+
+	withOpenModal(modal: ReactNode) {
+		this.modal.currentModal = { component: modal };
+
+		return this;
+	}
+
+	withAudioInputDevices(devices: Device[]): this {
+		if (!this.deviceContext.enabled) {
+			throw new Error('DeviceContext is not enabled');
+		}
+
+		this.deviceContext.availableAudioInputDevices = devices;
+		return this;
+	}
+
+	withAudioOutputDevices(devices: Device[]): this {
+		if (!this.deviceContext.enabled) {
+			throw new Error('DeviceContext is not enabled');
+		}
+
+		this.deviceContext.availableAudioOutputDevices = devices;
+		return this;
+	}
+
+	withMicrophonePermissionState(status: PermissionStatus): this {
+		if (!this.deviceContext.enabled) {
+			throw new Error('DeviceContext is not enabled');
+		}
+
+		this.deviceContext.permissionStatus = status;
+		return this;
+	}
+
+	private i18n = createInstance({
+		// debug: true,
+		lng: 'en',
+		fallbackLng: 'en',
+		ns: ['core'],
+		nsSeparator: '.',
+		partialBundledLanguages: true,
+		defaultNS: 'core',
+		interpolation: {
+			escapeValue: false,
 		},
-		() => undefined,
-	).use(initReactI18next);
+		initImmediate: false,
+	}).use(initReactI18next);
 
 	withTranslations(lng: string, ns: string, resources: Record<string, string>): this {
 		const addResources = () => {
@@ -347,15 +639,46 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	build(): WrapperComponent<{ children: ReactNode }> {
-		const queryClient = new QueryClient({
-			defaultOptions: {
-				queries: { retry: false },
-				mutations: { retry: false },
-			},
+	// Manually changes the language in the i18next instance
+	// To be used with languages other than the default one
+	withDefaultLanguage(lng: string): this {
+		if (this.i18n.isInitialized) {
+			this.i18n.changeLanguage(lng);
+			return this;
+		}
+
+		this.i18n.on('initialized', () => {
+			this.i18n.changeLanguage(lng);
 		});
 
-		const { connectionStatus, server, router, settings, user, modal, i18n, authorization, wrappers } = this;
+		return this;
+	}
+
+	withServerContext(partial: Partial<ServerContextValue>): this {
+		this.server = { ...this.server, ...partial };
+		return this;
+	}
+
+	withQueryClient(client: QueryClient): this {
+		this._providedQueryClient = client;
+		return this;
+	}
+
+	build(): JSXElementConstructor<{ children: ReactNode }> {
+		const {
+			queryClient,
+			server,
+			router,
+			settings,
+			user,
+			userPresence,
+			videoConf,
+			i18n,
+			authorization,
+			wrappers,
+			deviceContext,
+			authentication,
+		} = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {
@@ -374,7 +697,7 @@ export class MockedAppRootBuilder {
 								name: new Intl.DisplayNames([key], { type: 'language' }).of(key) ?? key,
 								ogName: new Intl.DisplayNames([key], { type: 'language' }).of(key) ?? key,
 								key,
-						  }))
+							}))
 						: []),
 				],
 				loadLanguage: async (language) => {
@@ -394,6 +717,12 @@ export class MockedAppRootBuilder {
 			};
 		};
 
+		const subscribeToModal = (onStoreChange: () => void) => this.events.on('update-modal', onStoreChange);
+
+		const getModalSnapshot = () => this.modal;
+
+		i18n.init();
+
 		return function MockedAppRoot({ children }) {
 			const [translation, updateTranslation] = useReducer(reduceTranslation, undefined, () => reduceTranslation());
 
@@ -407,71 +736,84 @@ export class MockedAppRootBuilder {
 				};
 			}, []);
 
+			const modal = useSyncExternalStore(subscribeToModal, getModalSnapshot);
+
 			return (
 				<QueryClientProvider client={queryClient}>
-					<ConnectionStatusContext.Provider value={connectionStatus}>
-						<ServerContext.Provider value={server}>
-							<RouterContext.Provider value={router}>
-								<SettingsContext.Provider value={settings}>
-									<I18nextProvider i18n={i18n}>
-										<TranslationContext.Provider value={translation}>
-											{/* <SessionProvider>
+					<ServerContext.Provider value={server}>
+						<RouterContext.Provider value={router}>
+							<SettingsContext.Provider value={settings}>
+								<I18nextProvider i18n={i18n}>
+									<TranslationContext.Provider value={translation}>
+										{/* <SessionProvider>
 												<TooltipProvider>
 														<ToastMessagesProvider>
 																<LayoutProvider>
 																		<AvatarUrlProvider>
 																				<CustomSoundProvider> */}
-											<UserContext.Provider value={user}>
-												{/* <DeviceProvider>*/}
-												<ModalContext.Provider value={modal}>
-													<AuthorizationContext.Provider value={authorization}>
-														{/* <EmojiPickerProvider>
+										<UserContext.Provider value={user}>
+											<AuthenticationContext.Provider value={authentication}>
+												<MockedDeviceContext {...deviceContext}>
+													<ModalContext.Provider value={modal}>
+														<AuthorizationContext.Provider value={authorization}>
+															{/* <EmojiPickerProvider>
 																<OmnichannelRoomIconProvider>
-																		<UserPresenceProvider>*/}
-														<ActionManagerContext.Provider
-															value={{
-																generateTriggerId: () => '',
-																emitInteraction: () => Promise.reject(new Error('not implemented')),
-																getInteractionPayloadByViewId: () => undefined,
-																handleServerInteraction: () => undefined,
-																off: () => undefined,
-																on: () => undefined,
-																disposeView: () => undefined,
-															}}
-														>
-															{/* <VideoConfProvider>
-																	<CallProvider>
+																	*/}
+															<UserPresenceContext.Provider value={userPresence}>
+																<ActionManagerContext.Provider
+																	value={{
+																		generateTriggerId: () => '',
+																		emitInteraction: () => Promise.reject(new Error('not implemented')),
+																		getInteractionPayloadByViewId: () => undefined,
+																		handleServerInteraction: () => undefined,
+																		off: () => undefined,
+																		on: () => undefined,
+																		openView: () => undefined,
+																		disposeView: () => undefined,
+																		notifyBusy: () => undefined,
+																		notifyIdle: () => undefined,
+																	}}
+																>
+																	<VideoConfContext.Provider value={videoConf}>
+																		{/* <CallProvider>
 																		<OmnichannelProvider> */}
-															{wrappers.reduce((children, wrapper) => wrapper(children), children)}
-															{/* 		</OmnichannelProvider>
-																	</CallProvider>
-																</VideoConfProvider>*/}
-														</ActionManagerContext.Provider>
-														{/* 		</UserPresenceProvider>
+																		{wrappers.reduce<ReactNode>(
+																			(children, wrapper) => wrapper(children),
+																			<>
+																				{children}
+																				{modal.currentModal.component}
+																			</>,
+																		)}
+																		{/* </OmnichannelProvider>
+																	</CallProvider> */}
+																	</VideoConfContext.Provider>
+																</ActionManagerContext.Provider>
+															</UserPresenceContext.Provider>
+															{/*
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
-													</AuthorizationContext.Provider>
-												</ModalContext.Provider>
-												{/* </DeviceProvider>*/}
-											</UserContext.Provider>
-											{/* 					</CustomSoundProvider>
+														</AuthorizationContext.Provider>
+													</ModalContext.Provider>
+												</MockedDeviceContext>
+											</AuthenticationContext.Provider>
+										</UserContext.Provider>
+										{/* 					</CustomSoundProvider>
 																</AvatarUrlProvider>
 															</LayoutProvider>
 														</ToastMessagesProvider>
 													</TooltipProvider>
 												</SessionProvider> */}
-										</TranslationContext.Provider>
-									</I18nextProvider>
-								</SettingsContext.Provider>
-							</RouterContext.Provider>
-						</ServerContext.Provider>
-					</ConnectionStatusContext.Provider>
+									</TranslationContext.Provider>
+								</I18nextProvider>
+							</SettingsContext.Provider>
+						</RouterContext.Provider>
+					</ServerContext.Provider>
 				</QueryClientProvider>
 			);
 		};
 	}
 
-	buildStoryDecorator(): DecoratorFn {
+	buildStoryDecorator(): Decorator {
 		const WrapperComponent = this.build();
 
 		// eslint-disable-next-line react/display-name, react/no-multi-comp

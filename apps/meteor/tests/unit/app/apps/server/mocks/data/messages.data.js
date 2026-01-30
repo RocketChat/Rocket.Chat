@@ -1,3 +1,7 @@
+import { faker } from '@faker-js/faker';
+
+import { createFakeMessage, createFakeMessageWithAttachment } from '../../../../../../mocks/data';
+
 export const appMessageMock = {
 	id: 'appMessageMock',
 	text: 'rocket.cat',
@@ -50,6 +54,14 @@ export const appMessageMock = {
 	_unmappedProperties_: {
 		t: 'uj',
 	},
+};
+
+export const appPartialMessageMock = {
+	id: 'appPartialMessageMock',
+	text: 'rocket.cat',
+	groupable: false,
+	emoji: ':smirk:',
+	alias: 'rocket.feline',
 };
 
 export const appMessageInvalidRoomMock = {
@@ -105,3 +117,20 @@ export const appMessageInvalidRoomMock = {
 		t: 'uj',
 	},
 };
+
+const testUsername = faker.internet.userName();
+const testUserId = faker.database.mongodbObjectId();
+export const exportMessagesMock = [
+	createFakeMessage({ t: 'uj', u: { _id: testUserId, username: testUsername }, msg: testUsername }),
+	createFakeMessageWithAttachment(),
+	createFakeMessageWithAttachment({
+		attachments: [
+			{
+				type: 'file',
+				title_link: '/file-upload/txt-file-id/test.txt',
+			},
+		],
+	}),
+	createFakeMessage(),
+	createFakeMessage({ t: 'ujt', u: { _id: testUserId, username: testUsername }, msg: testUsername }),
+];

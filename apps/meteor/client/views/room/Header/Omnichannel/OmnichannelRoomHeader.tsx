@@ -1,53 +1,34 @@
-import { HeaderToolbox } from '@rocket.chat/ui-client';
-import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
-import React, { useCallback, useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { HeaderToolbar } from '@rocket.chat/ui-client';
+import { useRouter } from '@rocket.chat/ui-contexts';
+import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
-import BurgerMenu from '../../../../components/BurgerMenu';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 import RoomHeader from '../RoomHeader';
-import { BackButton } from './BackButton';
+import BackButton from './BackButton';
+import OmnichannelRoomHeaderTag from './OmnichannelRoomHeaderTag';
 import QuickActions from './QuickActions';
 
-type OmnichannelRoomHeaderProps = {
-	slots: {
-		start?: unknown;
-		preContent?: unknown;
-		insideContent?: unknown;
-		posContent?: unknown;
-		end?: unknown;
-		toolbox?: {
-			pre?: unknown;
-			content?: unknown;
-			pos?: unknown;
-		};
-	};
-};
-
-const OmnichannelRoomHeader: FC<OmnichannelRoomHeaderProps> = ({ slots: parentSlot }) => {
+const OmnichannelRoomHeader = () => {
 	const router = useRouter();
 
-	const currentRouteName = useSyncExternalStore(
+	const previousRouteName = useSyncExternalStore(
 		router.subscribeToRouteChange,
-		useCallback(() => router.getRouteName(), [router]),
+		useCallback(() => router.getPreviousRouteName(), [router]),
 	);
 
-	const { isMobile } = useLayout();
 	const room = useOmnichannelRoom();
 
 	const slots = useMemo(
 		() => ({
-			...parentSlot,
-			start: (!!isMobile || currentRouteName === 'omnichannel-directory' || currentRouteName === 'omnichannel-current-chats') && (
-				<HeaderToolbox>
-					{isMobile && <BurgerMenu />}
-					<BackButton routeName={currentRouteName} />
-				</HeaderToolbox>
+			start: (previousRouteName === 'omnichannel-directory' || previousRouteName === 'omnichannel-current-chats') && (
+				<HeaderToolbar>
+					<BackButton routeName={previousRouteName} />
+				</HeaderToolbar>
 			),
+			insideContent: <OmnichannelRoomHeaderTag />,
 			posContent: <QuickActions />,
 		}),
-		[isMobile, currentRouteName, parentSlot],
+		[previousRouteName],
 	);
 
 	return <RoomHeader slots={slots} room={room} />;

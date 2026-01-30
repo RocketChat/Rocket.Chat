@@ -7,12 +7,20 @@ export enum ILivechatAgentStatus {
 
 export interface ILivechatAgent extends IUser {
 	statusLivechat: ILivechatAgentStatus;
-	livechat: {
+	livechat?: {
 		maxNumberSimultaneousChat: number;
 	};
 	livechatCount: number;
 	lastRoutingTime: Date;
 	livechatStatusSystemModified?: boolean;
-
 	openBusinessHours?: string[];
+	agentLockedAt?: Date;
+	agentLocked?: boolean;
 }
+
+export type AvailableAgentsAggregation = {
+	agentId: string;
+	username: string;
+	maxChatsForAgent: number;
+	queueInfo: { chats: number; chatsForDepartment?: number };
+};

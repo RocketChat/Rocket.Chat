@@ -2,11 +2,11 @@ import type { Ref } from 'preact';
 import { memo, type TargetedEvent } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 
-import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
+import { createClassName } from '../../../helpers/createClassName';
 
 type DateInputProps = {
-	name: string;
+	name?: string;
 	value?: string;
 	placeholder?: string;
 	disabled?: boolean;

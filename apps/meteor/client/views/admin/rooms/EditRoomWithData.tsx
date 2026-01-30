@@ -1,40 +1,31 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarSkeletonBody } from '@rocket.chat/ui-client';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { FC } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import EditRoom from './EditRoom';
 
-const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onReload }) => {
+type EditRoomWithDataProps = { rid?: IRoom['_id']; onReload: () => void; onClose: () => void };
+
+const EditRoomWithData = ({ rid, onReload, onClose }: EditRoomWithDataProps) => {
+	const { t } = useTranslation();
+
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms.getRoom');
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const { data, isLoading, refetch } = useQuery(
-		['rooms', rid, 'admin'],
-		async () => {
+	const { data, isPending, refetch } = useQuery({
+		queryKey: ['rooms', rid, 'admin'],
+		queryFn: async () => {
 			const rooms = await getAdminRooms({ rid });
 			return rooms;
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+		meta: {
+			apiErrorToastMessage: true,
 		},
-	);
+	});
 
-	if (isLoading) {
-		return (
-			<Box w='full' p={24}>
-				<Skeleton mbe={4} />
-				<Skeleton mbe={8} />
-				<Skeleton mbe={4} />
-				<Skeleton mbe={8} />
-				<Skeleton mbe={4} />
-				<Skeleton mbe={8} />
-			</Box>
-		);
+	if (isPending) {
+		return <ContextualbarSkeletonBody />;
 	}
 
 	const handleChange = (): void => {
@@ -46,7 +37,15 @@ const EditRoomWithData: FC<{ rid?: string; onReload: () => void }> = ({ rid, onR
 		onReload();
 	};
 
-	return data ? <EditRoom room={data} onChange={handleChange} onDelete={handleDelete} /> : null;
+	return data ? (
+		<>
+			<ContextualbarHeader>
+				<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
+				<ContextualbarClose onClick={onClose} />
+			</ContextualbarHeader>
+			<EditRoom room={data as IRoom} onChange={handleChange} onDelete={handleDelete} onClose={onClose} />
+		</>
+	) : null;
 };
 
 export default EditRoomWithData;

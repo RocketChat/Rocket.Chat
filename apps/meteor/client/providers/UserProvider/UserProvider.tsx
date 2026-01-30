@@ -1,82 +1,140 @@
-import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import type { LoginService, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { UserContext, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
+import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import { afterLogoutCleanUpCallback } from '@rocket.chat/ui-client';
+import type { FindOptions, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { UserContext, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
+import type { Filter } from 'mongodb';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import type { StoreApi, UseBoundStore } from 'zustand';
 
-import { Subscriptions, ChatRoom } from '../../../app/models/client';
+import { useClearRemovedRoomsHistory } from './hooks/useClearRemovedRoomsHistory';
+import { useDeleteUser } from './hooks/useDeleteUser';
+import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
+import { useReloadAfterLogin } from './hooks/useReloadAfterLogin';
+import { useUpdateAvatar } from './hooks/useUpdateAvatar';
 import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
+import { useIdleConnection } from '../../hooks/useIdleConnection';
+import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
+import { applyQueryOptions } from '../../lib/cachedStores/applyQueryOptions';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
-import { useCreateFontStyleElement } from '../../views/account/accessibility/hooks/useCreateFontStyleElement';
-import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
-import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
-
-const getUserId = (): string | null => Meteor.userId();
-
-const getUser = (): IUser | null => Meteor.user() as IUser | null;
-
-const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
-
-const config: Record<string, Partial<LoginService>> = {
-	'apple': { title: 'Apple', icon: 'apple' },
-	'facebook': { title: 'Facebook', icon: 'facebook' },
-	'twitter': { title: 'Twitter', icon: 'twitter' },
-	'google': { title: 'Google', icon: 'google' },
-	'github': { title: 'Github', icon: 'github' },
-	'github_enterprise': { title: 'Github Enterprise', icon: 'github' },
-	'gitlab': { title: 'Gitlab', icon: 'gitlab' },
-	'dolphin': { title: 'Dolphin', icon: 'dophin' },
-	'drupal': { title: 'Drupal', icon: 'drupal' },
-	'nextcloud': { title: 'Nextcloud', icon: 'nextcloud' },
-	'tokenpass': { title: 'Tokenpass', icon: 'tokenpass' },
-	'meteor-developer': { title: 'Meteor', icon: 'meteor' },
-	'wordpress': { title: 'WordPress', icon: 'wordpress' },
-	'linkedin': { title: 'Linkedin', icon: 'linkedin' },
-};
-
-const logout = (): Promise<void> =>
-	new Promise((resolve, reject) => {
-		const user = getUser();
-
-		if (!user) {
-			return resolve();
-		}
-
-		Meteor.logout(async () => {
-			await afterLogoutCleanUpCallback.run(user);
-			sdk.call('logoutCleanUp', user).then(resolve, reject);
-		});
-	});
-
-export type LoginMethods = keyof typeof Meteor;
+import { userIdStore } from '../../lib/user';
+import { Users, Rooms, Subscriptions } from '../../stores';
+import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
 type UserProviderProps = {
 	children: ReactNode;
 };
 
-const UserProvider = ({ children }: UserProviderProps): ReactElement => {
-	const isLdapEnabled = useSetting<boolean>('LDAP_Enable');
-	const isCrowdEnabled = useSetting<boolean>('CROWD_Enable');
+const ee = new Emitter();
+Accounts.onLogout(() => ee.emit('logout'));
 
-	const userId = useReactiveValue(getUserId);
-	const user = useReactiveValue(getUser);
+ee.on('logout', async () => {
+	const userId = userIdStore.getState();
+	if (!userId) return;
+	const user = Users.state.get(userId);
+	if (!user) return;
+
+	await afterLogoutCleanUpCallback.run(user);
+	await sdk.call('logoutCleanUp', user);
+});
+
+const queryRoom = (
+	query: Filter<Pick<IRoom, '_id'>>,
+): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => IRoom | undefined] => {
+	const predicate = createPredicateFromFilter(query);
+	let snapshot = Rooms.state.find(predicate);
+
+	const subscribe = (onStoreChange: () => void) =>
+		Rooms.use.subscribe(() => {
+			const newSnapshot = Rooms.state.find(predicate);
+			if (newSnapshot === snapshot) return;
+			snapshot = newSnapshot;
+			onStoreChange();
+		});
+
+	const getSnapshot = () => snapshot;
+
+	return [subscribe, getSnapshot];
+};
+
+const UserProvider = ({ children }: UserProviderProps): ReactElement => {
+	const userId = userIdStore();
+
+	const user = Users.use((state) => {
+		if (!userId) return null;
+		return state.get(userId) ?? null;
+	});
+
+	const previousUserId = useRef(userId);
 	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
+	const [, setSamlInviteToken] = useSamlInviteToken();
+	const samlCredentialToken = useSearchParameter('saml_idp_credentialToken');
+	const inviteTokenHash = useRouteParameter('hash');
 
-	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
-
-	const createFontStyleElement = useCreateFontStyleElement();
-	createFontStyleElement(user?.settings?.preferences?.fontSize);
-
-	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
-
-	useLDAPAndCrowdCollisionWarning();
 	useEmailVerificationWarning(user ?? undefined);
+	useClearRemovedRoomsHistory(userId);
+
+	useDeleteUser();
+	useUpdateAvatar();
+	useIdleConnection(userId);
+	useReloadAfterLogin(user);
+
+	const querySubscriptions = useMemo(() => {
+		const createSubscriptionFactory =
+			<T extends SubscriptionWithRoom | IRoom>(store: UseBoundStore<StoreApi<IDocumentMapStore<T>>>) =>
+			(
+				query: object,
+				options: FindOptions = {},
+			): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => SubscriptionWithRoom[]] => {
+				const predicate = createPredicateFromFilter<T>(query);
+				let snapshot = applyQueryOptions(store.getState().filter(predicate), options);
+
+				const subscribe = (onStoreChange: () => void) =>
+					store.subscribe(() => {
+						const newSnapshot = applyQueryOptions(store.getState().filter(predicate), options);
+						if (newSnapshot === snapshot) return;
+						snapshot = newSnapshot;
+						onStoreChange();
+					});
+
+				// TODO: this type assertion is completely wrong; however, the `useUserSubscriptions` hook might be deleted in
+				// the future, so we can live with it for now
+				const getSnapshot = () => snapshot as SubscriptionWithRoom[];
+
+				return [subscribe, getSnapshot];
+			};
+
+		return userId ? createSubscriptionFactory(Subscriptions.use) : createSubscriptionFactory(Rooms.use);
+	}, [userId]);
+
+	const querySubscription = useMemo(() => {
+		return (query: object): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => SubscriptionWithRoom] => {
+			const predicate = createPredicateFromFilter<SubscriptionWithRoom>(query);
+			let snapshot = Subscriptions.use.getState().find(predicate);
+
+			const subscribe = (onStoreChange: () => void) =>
+				Subscriptions.use.subscribe(() => {
+					const newSnapshot = Subscriptions.use.getState().find(predicate);
+					if (newSnapshot === snapshot) return;
+					snapshot = newSnapshot;
+					onStoreChange();
+				});
+
+			// TODO: this type assertion is completely wrong; however, the `useUserSubscriptions` hook might be deleted in
+			// the future, so we can live with it for now
+			const getSnapshot = () => snapshot as SubscriptionWithRoom;
+
+			return [subscribe, getSnapshot];
+		};
+	}, []);
 
 	const contextValue = useMemo(
 		(): ContextType<typeof UserContext> => ({
@@ -85,101 +143,51 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			queryPreference: createReactiveSubscriptionFactory(
 				<T,>(key: string, defaultValue?: T) => getUserPreference(userId, key, defaultValue) as T,
 			),
-			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields, sort) =>
-				Subscriptions.findOne(query, { fields, sort }),
-			),
-			queryRoom: createReactiveSubscriptionFactory<IRoom | undefined>((query, fields) => ChatRoom.findOne(query, { fields })),
-			querySubscriptions: createReactiveSubscriptionFactory<SubscriptionWithRoom[]>((query, options) => {
-				if (userId) {
-					return Subscriptions.find(query, options).fetch();
-				}
-
-				return ChatRoom.find(query, options).fetch();
-			}),
-			loginWithToken: (token: string): Promise<void> =>
-				new Promise((resolve, reject) =>
-					Meteor.loginWithToken(token, (err) => {
-						if (err) {
-							return reject(err);
-						}
-						resolve(undefined);
-					}),
-				),
-			loginWithPassword: (user: string | { username: string } | { email: string } | { id: string }, password: string): Promise<void> =>
-				new Promise((resolve, reject) => {
-					Meteor[loginMethod](user, password, (error: Error | Meteor.Error | Meteor.TypedError | undefined) => {
-						if (error) {
-							reject(error);
-							return;
-						}
-
-						resolve();
-					});
-				}),
-			logout,
-			loginWithService: <T extends LoginService>({ service, clientConfig = {} }: T): (() => Promise<true>) => {
-				const loginMethods = {
-					'meteor-developer': 'MeteorDeveloperAccount',
-				};
-
-				const loginWithService = `loginWith${(loginMethods as any)[service] || capitalize(String(service || ''))}`;
-
-				const method: (config: unknown, cb: (error: any) => void) => Promise<true> = (Meteor as any)[loginWithService] as any;
-
-				if (!method) {
-					return () => Promise.reject(new Error('Login method not found'));
-				}
-
-				return () =>
-					new Promise((resolve, reject) => {
-						method(clientConfig, (error: any): void => {
-							if (!error) {
-								resolve(true);
-								return;
-							}
-							reject(error);
-						});
-					});
+			querySubscription,
+			queryRoom,
+			querySubscriptions,
+			logout: async () => Meteor.logout(),
+			onLogout: (cb) => {
+				return ee.on('logout', cb);
 			},
-			queryAllServices: createReactiveSubscriptionFactory(() =>
-				ServiceConfiguration.configurations
-					.find(
-						{
-							showButton: { $ne: false },
-						},
-						{
-							sort: {
-								service: 1,
-							},
-						},
-					)
-					.fetch()
-					.map(
-						({ appId: _, ...service }) =>
-							({
-								title: capitalize(String((service as any).service || '')),
-								...service,
-								...(config[(service as any).service] ?? {}),
-							} as any),
-					),
-			),
 		}),
-		[userId, user, loginMethod],
+		[userId, user, querySubscription, querySubscriptions],
 	);
 
+	// Mirror local preference changes into the live userLanguage state without hitting the server.
 	useEffect(() => {
-		if (!!userId && preferedLanguage !== userLanguage) {
-			setUserPreferences({ data: { language: preferedLanguage } });
-			setUserLanguage(preferedLanguage);
+		if (preferedLanguage === userLanguage) {
+			return;
 		}
 
+		setUserLanguage(preferedLanguage);
+	}, [preferedLanguage, setUserLanguage, userLanguage]);
+
+	// When the server reports a new language, overwrite both storage keys so every tab stays aligned.
+	useEffect(() => {
 		if (user?.language !== undefined && user.language !== userLanguage) {
 			setUserLanguage(user.language);
 			setPreferedLanguage(user.language);
 		}
-	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
+	}, [setPreferedLanguage, setUserLanguage, user?.language, userLanguage]);
 
-	return <UserContext.Provider children={children} value={contextValue} />;
+	useEffect(() => {
+		if (!samlCredentialToken && !inviteTokenHash) {
+			setSamlInviteToken(null);
+		}
+	}, [inviteTokenHash, samlCredentialToken, setSamlInviteToken]);
+
+	const queryClient = useQueryClient();
+
+	useEffect(() => {
+		if (previousUserId.current && previousUserId.current !== userId) {
+			queryClient.clear();
+		}
+
+		previousUserId.current = userId;
+	}, [queryClient, userId]);
+
+	return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;
 };
 
 export default UserProvider;

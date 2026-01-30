@@ -56,7 +56,7 @@ export class IsolatedVMScriptEngine<IsIncoming extends boolean> extends Integrat
 		const script = integration.scriptCompiled;
 		try {
 			this.logger.info({ msg: 'Will evaluate the integration script', integration: pick(integration, 'name', '_id') });
-			this.logger.debug(script);
+			this.logger.debug({ script });
 
 			const isolate = new ivm.Isolate({ memoryLimit: 8 });
 

@@ -1,8 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps, FC } from 'react';
-import React from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
-const AttachmentAuthor: FC<ComponentProps<typeof Box>> = (props) => (
+type AttachmentAuthorProps = ComponentPropsWithoutRef<typeof Box>;
+
+const AttachmentAuthor = (props: AttachmentAuthorProps) => (
 	<Box display='flex' flexDirection='row' alignItems='center' mbe={4} {...props} />
 );
 

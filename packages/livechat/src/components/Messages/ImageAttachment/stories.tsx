@@ -1,8 +1,8 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { ImageAttachment } from '.';
-import { sampleImage } from '../../../helpers.stories';
+import { sampleImage } from '../../../../.storybook/helpers';
 
 export default {
 	title: 'Messages/ImageAttachment',
@@ -15,5 +15,5 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof ImageAttachment>>;
 
-export const Default: Story<ComponentProps<typeof ImageAttachment>> = (args) => <ImageAttachment {...args} />;
+export const Default: StoryFn<ComponentProps<typeof ImageAttachment>> = (args) => <ImageAttachment {...args} />;
 Default.storyName = 'default';

@@ -1,12 +1,16 @@
+import type { IUser } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
+import type { ClientSession } from 'mongodb';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { RateLimiter, validateEmailDomain } from '../lib';
+import { validateEmailDomain } from '../lib';
 import { checkEmailAvailability } from './checkEmailAvailability';
+import { sendConfirmationEmail } from '../../../../server/methods/sendConfirmationEmail';
 
 let html = '';
 Meteor.startup(() => {
@@ -37,7 +41,14 @@ const _sendEmailChangeNotification = async function (to: string, newEmail: strin
 	}
 };
 
-const _setEmail = async function (userId: string, email: string, shouldSendVerificationEmail = true) {
+export const setEmail = async function (
+	userId: string,
+	email: string,
+	shouldSendVerificationEmail = true,
+	verified = false,
+	updater?: Updater<IUser>,
+	session?: ClientSession,
+) {
 	email = email.trim();
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
@@ -49,7 +60,7 @@ const _setEmail = async function (userId: string, email: string, shouldSendVerif
 
 	await validateEmailDomain(email);
 
-	const user = await Users.findOneById(userId);
+	const user = await Users.findOneById(userId, { session });
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
 	}
@@ -70,24 +81,26 @@ const _setEmail = async function (userId: string, email: string, shouldSendVerif
 	const oldEmail = user?.emails?.[0];
 
 	if (oldEmail) {
-		await _sendEmailChangeNotification(oldEmail.address, email);
+		await onceTransactionCommitedSuccessfully(async () => {
+			await _sendEmailChangeNotification(oldEmail.address, email);
+		}, session);
 	}
 
 	// Set new email
-	await Users.setEmail(user?._id, email);
+	if (updater) {
+		updater.set('emails', [{ address: email, verified }]);
+	} else {
+		await Users.setEmail(user?._id, email, verified, { session });
+	}
+
 	const result = {
 		...user,
 		email,
 	};
 	if (shouldSendVerificationEmail === true) {
-		await Meteor.callAsync('sendConfirmationEmail', result.email);
+		await onceTransactionCommitedSuccessfully(async () => {
+			await sendConfirmationEmail(result.email);
+		}, session);
 	}
 	return result;
 };
-
-export const setEmail = RateLimiter.limitFunction(_setEmail, 1, 60000, {
-	async 0() {
-		const userId = Meteor.userId();
-		return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
-	}, // Administrators have permission to change others emails, so don't limit those
-});

@@ -1,5 +1,9 @@
+import { PendingAvatarImporter } from './PendingAvatarImporter';
 import { Importers } from '../../importer/server';
-import { PendingAvatarImporter } from './importer';
-import { PendingAvatarImporterInfo } from './info';
 
-Importers.add(new PendingAvatarImporterInfo(), PendingAvatarImporter);
+Importers.add({
+	key: 'pending-avatars',
+	name: 'Pending Avatars',
+	visible: false,
+	importer: PendingAvatarImporter,
+});

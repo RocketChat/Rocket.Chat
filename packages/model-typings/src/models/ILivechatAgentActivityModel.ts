@@ -1,5 +1,5 @@
 import type { ILivechatAgentActivity, IServiceHistory } from '@rocket.chat/core-typings';
-import type { AggregationCursor, FindCursor, Document, ModifyResult, UpdateResult } from 'mongodb';
+import type { AggregationCursor, FindCursor, Document, WithId, UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -8,7 +8,7 @@ export interface ILivechatAgentActivityModel extends IBaseModel<ILivechatAgentAc
 
 	createOrUpdate(
 		data: Partial<Pick<ILivechatAgentActivity, 'date' | 'agentId' | 'lastStartedAt'>>,
-	): Promise<ModifyResult<ILivechatAgentActivity> | undefined>;
+	): Promise<null | WithId<ILivechatAgentActivity> | undefined>;
 
 	updateLastStoppedAt(
 		params: Pick<ILivechatAgentActivity, 'date' | 'agentId' | 'lastStoppedAt' | 'availableTime'>,
@@ -26,11 +26,19 @@ export interface ILivechatAgentActivityModel extends IBaseModel<ILivechatAgentAc
 		}[]
 	>;
 
-	findAvailableServiceTimeHistory(params: {
+	findAvailableServiceTimeHistory(p: {
 		start: string;
 		end: string;
 		fullReport: boolean;
-		onlyCount: boolean;
-		options: any;
+		onlyCount: true;
+		options?: { sort?: Record<string, number>; offset?: number; count?: number };
+	}): AggregationCursor<{ total: number }>;
+
+	findAvailableServiceTimeHistory(p: {
+		start: string;
+		end: string;
+		fullReport: boolean;
+		onlyCount?: false;
+		options?: { sort?: Record<string, number>; offset?: number; count?: number };
 	}): AggregationCursor<ILivechatAgentActivity>;
 }

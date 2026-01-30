@@ -1,4 +1,5 @@
-import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
+import type { ILicenseV3, LicenseLimitKind } from '@rocket.chat/core-typings';
+
 import type { LicenseManager } from './license';
 import { getModules } from './modules';
 import { defaultLimits } from './validation/validateDefaultLimits';
@@ -33,4 +34,6 @@ export function getUnmodifiedLicenseAndModules(this: LicenseManager) {
 			modules: getModules.call(this),
 		};
 	}
+
+	return undefined;
 }

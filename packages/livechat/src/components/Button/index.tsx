@@ -3,8 +3,8 @@ import type { CSSProperties } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 import { useTranslation } from 'react-i18next';
 
-import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
+import { createClassName } from '../../helpers/createClassName';
 
 const handleMouseUp: JSXInternal.EventHandler<JSXInternal.TargetedMouseEvent<HTMLButtonElement>> = ({ target }) =>
 	(target as HTMLButtonElement)?.blur();
@@ -27,6 +27,7 @@ type ButtonProps = {
 	style?: CSSProperties;
 	img?: string;
 	onClick?: JSXInternal.MouseEventHandler<HTMLButtonElement>;
+	onMouseUp?: JSXInternal.MouseEventHandler<HTMLButtonElement>;
 	full?: boolean;
 };
 
@@ -49,6 +50,7 @@ export const Button = ({
 	children,
 	img,
 	full,
+	...props
 }: ButtonProps) => {
 	const { t } = useTranslation();
 	return (
@@ -84,6 +86,7 @@ export const Button = ({
 					backgroundImage: `url(${img})`,
 				},
 			)}
+			{...props}
 		>
 			{badge ? (
 				<span role='status' aria-label={t('unread_messages_count', { count: badge })} className={createClassName(styles, 'button__badge')}>

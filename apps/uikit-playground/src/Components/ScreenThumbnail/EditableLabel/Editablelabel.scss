@@ -1,0 +1,22 @@
+.rc-editableLabel{
+    >input{
+        border-width: 0px !important;
+        padding: 0px !important;
+        min-height: 0px !important;
+
+        &:focus {
+            box-shadow: none !important;
+        }
+    }
+
+    &:focus-within{
+        &.rc-editableLabel>.editableLabel-icon{
+            visibility: hidden;
+        }
+    }
+
+    >.editableLabel-icon{
+        cursor: pointer;
+        scale: 1.2;
+    }
+}

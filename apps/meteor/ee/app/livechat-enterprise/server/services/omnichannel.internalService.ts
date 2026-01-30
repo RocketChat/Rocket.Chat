@@ -1,20 +1,25 @@
 import { ServiceClassInternal, Message } from '@rocket.chat/core-services';
 import type { IOmnichannelEEService } from '@rocket.chat/core-services';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { IOmnichannelRoom, IUser, ILivechatInquiryRecord, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Subscriptions, LivechatInquiry } from '@rocket.chat/models';
 
+import {
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnLivechatInquiryChangedById,
+	notifyOnRoomChangedById,
+} from '../../../../../app/lib/server/lib/notifyListener';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 
 export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelEEService {
 	protected name = 'omnichannel-ee';
 
-	protected internal = true;
+	protected override internal = true;
 
 	logger: Logger;
 
@@ -28,7 +33,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		comment: string,
 		onHoldBy: Pick<IUser, '_id' | 'username' | 'name'>,
 	) {
-		this.logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
+		this.logger.debug({ msg: 'Attempting to place room on hold', roomId: room._id, userId: onHoldBy?._id });
 
 		const { _id: roomId } = room;
 
@@ -52,11 +57,19 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			throw new Error('error-unserved-rooms-cannot-be-placed-onhold');
 		}
 
-		await Promise.all([
+		const [roomResult, subsResult] = await Promise.all([
 			LivechatRooms.setOnHoldByRoomId(roomId),
 			Subscriptions.setOnHoldByRoomId(roomId),
 			Message.saveSystemMessage<IOmnichannelSystemMessage>('omnichannel_placed_chat_on_hold', roomId, '', onHoldBy, { comment }),
 		]);
+
+		if (roomResult.modifiedCount) {
+			void notifyOnRoomChangedById(roomId);
+		}
+
+		if (subsResult.modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomId(roomId);
+		}
 
 		await callbacks.run('livechat:afterOnHold', room);
 	}
@@ -67,7 +80,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		resumeBy: Pick<IUser, '_id' | 'username' | 'name'>,
 		clientAction = false,
 	) {
-		this.logger.debug(`Attempting to resume room ${room._id} on hold by user ${resumeBy?._id}`);
+		this.logger.debug({ msg: 'Attempting to resume room on hold', roomId: room._id, userId: resumeBy?._id });
 
 		if (!room || !isOmnichannelRoom(room)) {
 			throw new Error('error-invalid-room');
@@ -84,13 +97,13 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		const { _id: roomId, servedBy } = room;
 
 		if (!servedBy) {
-			this.logger.error(`No serving agent found for room ${roomId}`);
+			this.logger.error({ msg: 'No serving agent found for room', roomId });
 			throw new Error('error-room-not-served');
 		}
 
 		const inquiry = await LivechatInquiry.findOneByRoomId(roomId, {});
 		if (!inquiry) {
-			this.logger.error(`No inquiry found for room ${roomId}`);
+			this.logger.error({ msg: 'No inquiry found for room', roomId });
 			throw new Error('error-invalid-inquiry');
 		}
 
@@ -101,11 +114,19 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			clientAction,
 		});
 
-		await Promise.all([
+		const [roomResult, subsResult] = await Promise.all([
 			LivechatRooms.unsetOnHoldByRoomId(roomId),
 			Subscriptions.unsetOnHoldByRoomId(roomId),
 			Message.saveSystemMessage<IOmnichannelSystemMessage>('omnichannel_on_hold_chat_resumed', roomId, '', resumeBy, { comment }),
 		]);
+
+		if (roomResult.modifiedCount) {
+			void notifyOnRoomChangedById(roomId);
+		}
+
+		if (subsResult.modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomId(roomId);
+		}
 
 		await callbacks.run('livechat:afterOnHoldChatResumed', room);
 	}
@@ -135,7 +156,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 
 			return;
 		} catch (e) {
-			this.logger.error(`Agent ${servingAgent._id} is not available to take the inquiry ${inquiry._id}`, e);
+			this.logger.error({ msg: 'Agent is not available to take inquiry', agentId: servingAgent._id, inquiryId: inquiry._id, err: e });
 			if (clientAction) {
 				// if the action was triggered by the client, we should throw the error
 				// so the client can handle it and show the error message to the user
@@ -161,7 +182,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		room: Pick<IOmnichannelRoom, '_id'>;
 		inquiry: ILivechatInquiryRecord;
 	}): Promise<void> {
-		this.logger.debug(`Attempting to remove current agent from room ${room._id}`);
+		this.logger.debug({ msg: 'Attempting to remove current agent from room', roomId: room._id });
 
 		const { _id: roomId } = room;
 
@@ -173,6 +194,15 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			RoutingManager.removeAllRoomSubscriptions(room),
 		]);
 
+		void notifyOnLivechatInquiryChangedById(inquiryId, 'updated', {
+			status: LivechatInquiryStatus.QUEUED,
+			queuedAt: new Date(),
+			takenAt: undefined,
+			defaultAgent: undefined,
+		});
+
 		await dispatchAgentDelegated(roomId);
+
+		void notifyOnRoomChangedById(roomId);
 	}
 }

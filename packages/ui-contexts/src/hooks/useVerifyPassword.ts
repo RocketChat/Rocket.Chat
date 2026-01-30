@@ -1,47 +1,11 @@
-import { PasswordPolicy } from '@rocket.chat/password-policies';
 import { useMemo } from 'react';
 
-import { useSetting } from './useSetting';
+import { usePasswordPolicy, type UsePasswordPolicyReturn } from './usePasswordPolicy';
+import { usePasswordPolicyOptions } from './usePasswordPolicyOptions';
 
-type PasswordVerifications = { isValid: boolean; limit?: number; name: string }[];
+export const useVerifyPassword: UsePasswordPolicyReturn = (password) => {
+	const options = usePasswordPolicyOptions();
+	const validate = usePasswordPolicy(options);
 
-export const useVerifyPassword = (password: string): PasswordVerifications => {
-	const enabled = Boolean(useSetting('Accounts_Password_Policy_Enabled'));
-	const minLength = Number(useSetting('Accounts_Password_Policy_MinLength'));
-	const maxLength = Number(useSetting('Accounts_Password_Policy_MaxLength'));
-	const forbidRepeatingCharacters = Boolean(useSetting('Accounts_Password_Policy_ForbidRepeatingCharacters'));
-	const forbidRepeatingCharactersCount = Number(useSetting('Accounts_Password_Policy_ForbidRepeatingCharactersCount'));
-	const mustContainAtLeastOneLowercase = Boolean(useSetting('Accounts_Password_Policy_AtLeastOneLowercase'));
-	const mustContainAtLeastOneUppercase = Boolean(useSetting('Accounts_Password_Policy_AtLeastOneUppercase'));
-	const mustContainAtLeastOneNumber = Boolean(useSetting('Accounts_Password_Policy_AtLeastOneNumber'));
-	const mustContainAtLeastOneSpecialCharacter = Boolean(useSetting('Accounts_Password_Policy_AtLeastOneSpecialCharacter'));
-
-	const validator = useMemo(
-		() =>
-			new PasswordPolicy({
-				enabled,
-				minLength,
-				maxLength,
-				forbidRepeatingCharacters,
-				forbidRepeatingCharactersCount,
-				mustContainAtLeastOneLowercase,
-				mustContainAtLeastOneUppercase,
-				mustContainAtLeastOneNumber,
-				mustContainAtLeastOneSpecialCharacter,
-				throwError: true,
-			}),
-		[
-			enabled,
-			minLength,
-			maxLength,
-			forbidRepeatingCharacters,
-			forbidRepeatingCharactersCount,
-			mustContainAtLeastOneLowercase,
-			mustContainAtLeastOneUppercase,
-			mustContainAtLeastOneNumber,
-			mustContainAtLeastOneSpecialCharacter,
-		],
-	);
-
-	return useMemo(() => validator.sendValidationMessage(password || ''), [password, validator]);
+	return useMemo(() => validate(password || ''), [password, validate]);
 };

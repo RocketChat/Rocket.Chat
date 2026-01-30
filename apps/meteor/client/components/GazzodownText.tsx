@@ -1,21 +1,21 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useLayout, useRouter, useSetting, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
+import { useLayout, useRouter, useUserPreference, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
-import React, { useCallback, memo, useMemo } from 'react';
+import { useCallback, memo, useMemo } from 'react';
 
 import { detectEmoji } from '../lib/utils/detectEmoji';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
-import { useChat } from '../views/room/contexts/ChatContext';
+import { useMessageListHighlights, useMessageListShowRealName } from './message/list/MessageListContext';
 import { useGoToRoom } from '../views/room/hooks/useGoToRoom';
-import { useMessageListHighlights } from './message/list/MessageListContext';
 
 type GazzodownTextProps = {
 	children: JSX.Element;
 	mentions?: {
-		type: 'user' | 'team';
+		type?: 'user' | 'team';
 		_id: string;
 		username?: string;
 		name?: string;
@@ -25,16 +25,22 @@ type GazzodownTextProps = {
 };
 
 const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTextProps) => {
+	const [userLanguage] = useLocalStorage('userLanguage', 'en');
+
 	const highlights = useMessageListHighlights();
+	const { triggerProps, openUserCard } = useUserCard();
+
 	const highlightRegex = useMemo(() => {
 		if (!highlights?.length) {
 			return;
 		}
 
-		const alternatives = highlights.map(({ highlight }) => escapeRegExp(highlight)).join('|');
-		const expression = `(?=^|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])(${alternatives})(?=$|\\b|[\\s\\n\\r\\t.,،'\\\"\\+!?:-])`;
+		// Due to unnecessary escaping in escapeRegExp, we need to remove the escape character for the following characters: - = ! :
+		// This is necessary because it was crashing the client due to Invalid regular expression error.
+		const alternatives = highlights.map(({ highlight }) => escapeRegExp(highlight).replace(/\\([-=!:])/g, '$1')).join('|');
+		const expression = `(?<=^|[\\p{P}\\p{Z}])(${alternatives})(?=$|[\\p{P}\\p{Z}])`;
 
-		return (): RegExp => new RegExp(expression, 'gmi');
+		return (): RegExp => new RegExp(expression, 'gmiu');
 	}, [highlights]);
 
 	const markRegex = useMemo(() => {
@@ -47,11 +53,9 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
 	const useEmoji = Boolean(useUserPreference('useEmojis'));
-	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const useRealName = useMessageListShowRealName();
 	const ownUserId = useUserId();
 	const showMentionSymbol = Boolean(useUserPreference<boolean>('mentionsWithSymbol'));
-
-	const chat = useChat();
 
 	const resolveUserMention = useCallback(
 		(mention: string) => {
@@ -59,7 +63,12 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				return undefined;
 			}
 
-			const filterUser = ({ username, type }: UserMention) => (!type || type === 'user') && username === mention;
+			const normalizedMention = mention.startsWith('@') ? mention.substring(1) : mention;
+			const filterUser = ({ username, type }: UserMention) => {
+				if (!username || type === 'team') return false;
+				const normalizedUsername = username.startsWith('@') ? username.substring(1) : username;
+				return normalizedUsername === normalizedMention;
+			};
 			const filterTeam = ({ name, type }: UserMention) => type === 'team' && name === mention;
 
 			return mentions?.find((mention) => filterUser(mention) || filterTeam(mention));
@@ -75,10 +84,10 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 			return (event: UIEvent): void => {
 				event.stopPropagation();
-				chat?.userCard.open(username)(event);
+				openUserCard(event, username);
 			};
 		},
-		[chat?.userCard],
+		[openUserCard],
 	);
 
 	const goToRoom = useGoToRoom();
@@ -124,6 +133,8 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				isMobile,
 				ownUserId,
 				showMentionSymbol,
+				triggerProps,
+				language: userLanguage,
 			}}
 		>
 			{children}

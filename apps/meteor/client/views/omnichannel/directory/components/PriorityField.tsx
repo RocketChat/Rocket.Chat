@@ -1,22 +1,21 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { FormSkeleton } from './FormSkeleton';
 import Field from '../../components/Field';
 import Info from '../../components/Info';
 import Label from '../../components/Label';
 import { usePriorityInfo } from '../hooks/usePriorityInfo';
-import { FormSkeleton } from './FormSkeleton';
 
 type PriorityFieldProps = {
 	id: string;
 };
 
 const PriorityField = ({ id }: PriorityFieldProps) => {
-	const t = useTranslation();
-	const { data, isInitialLoading, isError } = usePriorityInfo(id);
+	const { t } = useTranslation();
+	const { data, isLoading, isError } = usePriorityInfo(id);
 
-	if (isInitialLoading) {
+	if (isLoading) {
 		return <FormSkeleton />;
 	}
 

@@ -1,22 +1,28 @@
 import type { RoomType } from '@rocket.chat/core-typings';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { Contextualbar } from '@rocket.chat/ui-client';
+import type { Meta, StoryFn } from '@storybook/react';
 
-import { Contextualbar } from '../../../../../components/Contextualbar';
 import RoomInfo from './RoomInfo';
+import FakeRoomProvider from '../../../../../../tests/mocks/client/FakeRoomProvider';
 
 export default {
-	title: 'Room/Contextual Bar/RoomInfo',
 	component: RoomInfo,
 	parameters: {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on[A-Z].*' },
 	},
-	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
+	decorators: [
+		(fn) => (
+			<FakeRoomProvider roomOverrides={roomArgs}>
+				<Contextualbar height='100vh'>{fn()}</Contextualbar>
+			</FakeRoomProvider>
+		),
+	],
 	args: {
 		icon: 'lock',
 	},
-} as ComponentMeta<typeof RoomInfo>;
+} satisfies Meta<typeof RoomInfo>;
 
 const roomArgs = {
 	_id: 'myRoom',
@@ -39,7 +45,7 @@ const roomArgs = {
 		'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit libero',
 };
 
-const Template: ComponentStory<typeof RoomInfo> = (args) => <RoomInfo {...args} />;
+const Template: StoryFn<typeof RoomInfo> = (args) => <RoomInfo {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
@@ -61,5 +67,26 @@ Broadcast.args = {
 	room: {
 		...roomArgs,
 		broadcast: true,
+	},
+};
+
+export const ABAC = Template.bind({});
+ABAC.decorators = [
+	mockAppRoot().withSetting('ABAC_Enabled', true).withSetting('ABAC_ShowAttributesInRooms', true).buildStoryDecorator(),
+	(fn) => (
+		<FakeRoomProvider roomOverrides={roomArgs}>
+			<Contextualbar height='100vh'>{fn()}</Contextualbar>
+		</FakeRoomProvider>
+	),
+];
+ABAC.args = {
+	...Default.args,
+	room: {
+		...roomArgs,
+		abacAttributes: [
+			{ key: 'Chat-sensitivity', values: ['Classified', 'Top-Secret'] },
+			{ key: 'Country', values: ['US-only'] },
+			{ key: 'Project', values: ['Ruminator-2000'] },
+		],
 	},
 };

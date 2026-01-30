@@ -1,30 +1,17 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeFlextab, HomeSidenav } from './fragments';
+import { HomeChannel } from './home-channel';
 
-export class HomeTeam {
-	private readonly page: Page;
-
-	readonly content: HomeContent;
-
-	readonly sidenav: HomeSidenav;
-
-	readonly tabs: HomeFlextab;
-
+/**
+ * TODO: HomeTeam shouldn't exist since the rooms are the same
+ */
+export class HomeTeam extends HomeChannel {
 	constructor(page: Page) {
-		this.page = page;
-		this.content = new HomeContent(page);
-		this.sidenav = new HomeSidenav(page);
-		this.tabs = new HomeFlextab(page);
+		super(page);
 	}
 
 	get inputTeamName(): Locator {
-		return this.page.locator('.rcx-field-group__item:nth-child(1) input');
-	}
-
-	async addMember(memberName: string): Promise<void> {
-		await this.page.locator('.rcx-field-group__item:nth-child(7) input').type(memberName, { delay: 100 });
-		await this.page.locator(`.rcx-option__content:has-text("${memberName}")`).click();
+		return this.page.locator('role=textbox[name="Name"]');
 	}
 
 	get btnTeamCreate(): Locator {
@@ -32,10 +19,10 @@ export class HomeTeam {
 	}
 
 	get textPrivate(): Locator {
-		return this.page.locator('role=dialog[name="Create Team"] >> label >> text="Private"');
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Private' }) });
 	}
 
 	get textReadOnly(): Locator {
-		return this.page.locator('role=dialog[name="Create Team"] >> label >> text="Read Only"');
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Read-only' }) });
 	}
 }

@@ -1,5 +1,5 @@
+import apn from '@parse/node-apn';
 import type { IAppsTokens, RequiredField } from '@rocket.chat/core-typings';
-import apn from 'apn';
 import EJSON from 'ejson';
 
 import type { PushOptions, PendingPushNotification } from './definition';
@@ -7,7 +7,7 @@ import { logger } from './logger';
 
 let apnConnection: apn.Provider | undefined;
 
-declare module 'apn' {
+declare module '@parse/node-apn' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Notification {
 		setContentAvailable: (value: boolean | 1 | 0) => void;
@@ -65,15 +65,22 @@ export const sendAPN = ({
 	note.payload.messageFrom = notification.from;
 	note.priority = priority;
 
-	note.topic = `${notification.topic}${notification.apn?.topicSuffix || ''}`;
+	note.topic = notification.topic;
 	note.mutableContent = true;
 
 	void apnConnection.send(note, userToken).then((response) => {
 		response.failed.forEach((failure) => {
-			logger.debug(`Got error code ${failure.status} for token ${userToken}`);
+			logger.debug({
+				msg: 'Got error code for APN token',
+				status: failure.status,
+				token: userToken,
+			});
 
-			if (['400', '410'].includes(failure.status ?? '')) {
-				logger.debug(`Removing token ${userToken}`);
+			if (['400', '410'].includes(String(failure.status))) {
+				logger.debug({
+					msg: 'Removing APN token',
+					token: userToken,
+				});
 				_removeToken({
 					apn: userToken,
 				});
@@ -105,7 +112,10 @@ export const initAPN = ({ options, absoluteUrl }: { options: RequiredField<PushO
 			}
 		} else {
 			// Warn about gateways we dont know about
-			logger.warn(`WARNING: Push APN unknown gateway "${options.apn.gateway}"`);
+			logger.warn({
+				msg: 'WARNING: Push APN unknown gateway',
+				gateway: options.apn.gateway,
+			});
 		}
 	} else if (options.production) {
 		if (/http:\/\/localhost/.test(absoluteUrl)) {

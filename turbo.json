@@ -1,28 +1,28 @@
 {
 	"$schema": "https://turborepo.org/schema.json",
-	"globalDependencies": ["tsconfig.base.json", "tsconfig.base.server.json", "tsconfig.base.client.json"],
-	"pipeline": {
-		"build:ci": {
+	"tasks": {
+		"build-preview": {
 			"dependsOn": ["^build"],
-			"outputs": ["dist/**"]
+			"outputs": ["storybook-static/**", ".storybook/**", "dist/**"]
+		},
+		".:build-preview-move": {
+			"dependsOn": ["^build-preview"],
+			"cache": false
 		},
 		"build": {
 			"dependsOn": ["^build"],
 			"outputs": ["dist/**"]
 		},
+		"test-storybook": {
+			"outputs": ["coverage/**"]
+		},
 		"testunit": {
-			"dependsOn": ["build"],
 			"outputs": ["coverage/**"]
 		},
 		"lint": {
-			"dependsOn": ["build"],
-			"outputs": []
-		},
-		"translation-check": {
 			"outputs": []
 		},
 		"typecheck": {
-			"dependsOn": ["^build"],
 			"outputs": []
 		},
 		"dev": {
@@ -36,20 +36,12 @@
 		"ms": {
 			"dependsOn": ["^build"]
 		},
-		"@rocket.chat/ui-contexts#build": {
-			"dependsOn": ["^build"],
-			"cache": false
-		},
 		"@rocket.chat/meteor#build": {
 			"dependsOn": ["^build"],
 			"cache": false
 		},
-		"@rocket.chat/i18n#build": {
-			"dependsOn": ["^build"],
-			"cache": false
-		},
 		"@rocket.chat/meteor#build:ci": {
-			"dependsOn": ["^build"],
+			"env": ["BABEL_ENV"],
 			"cache": false
 		}
 	}

@@ -1,8 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useUserRoom } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useState } from 'react';
-
 import {
 	useVideoConfAcceptCall,
 	useVideoConfAbortCall,
@@ -10,7 +7,11 @@ import {
 	useVideoConfDismissCall,
 	useVideoConfStartCall,
 	useVideoConfDismissOutgoing,
-} from '../../../../../../contexts/VideoConfContext';
+} from '@rocket.chat/ui-video-conf';
+import type { ReactElement } from 'react';
+import { useEffect, useState } from 'react';
+import { useFocusManager } from 'react-aria';
+
 import IncomingPopup from './IncomingPopup';
 import OutgoingPopup from './OutgoingPopup';
 import StartCallPopup from './StartCallPopup';
@@ -38,7 +39,12 @@ const TimedVideoConfPopup = ({
 	const dismissCall = useVideoConfDismissCall();
 	const startCall = useVideoConfStartCall();
 	const dismissOutgoing = useVideoConfDismissOutgoing();
+	const focusManager = useFocusManager();
 	const room = useUserRoom(rid);
+
+	useEffect(() => {
+		focusManager?.focusFirst();
+	}, [focusManager]);
 
 	if (!room) {
 		return null;

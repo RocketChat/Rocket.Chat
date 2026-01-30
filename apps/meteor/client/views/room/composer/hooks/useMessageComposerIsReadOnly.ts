@@ -1,20 +1,11 @@
-import type { ISubscription, IUser } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { useUser } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 
-export const useMessageComposerIsReadOnly = (rid: string, subscription?: ISubscription): boolean => {
-	const [isReadOnly, isArchived] = useReactiveValue(
-		useCallback(
-			() => [
-				roomCoordinator.readOnly(rid, Meteor.users.findOne(Meteor.userId() as string, { fields: { username: 1 } }) as IUser),
-				roomCoordinator.archived(rid) || Boolean(subscription && subscription.t === 'd' && subscription.archived),
-			],
-			[rid, subscription],
-		),
-	);
-
-	return Boolean(isReadOnly || isArchived);
+export const useMessageComposerIsReadOnly = (room: IRoom): boolean => {
+	const user = useUser();
+	return useReactiveValue(useCallback(() => roomCoordinator.readOnly(room, user), [room, user]));
 };

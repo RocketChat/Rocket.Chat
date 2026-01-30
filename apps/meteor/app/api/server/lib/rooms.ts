@@ -67,6 +67,7 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid
 			name: 1,
 			t: 1,
 			avatarETag: 1,
+			encrypted: 1,
 		},
 		limit: 10,
 		sort: {
@@ -98,6 +99,7 @@ export async function findAdminRoomsAutocomplete({ uid, selector }: { uid: strin
 			name: 1,
 			t: 1,
 			avatarETag: 1,
+			encrypted: 1,
 		},
 		limit: 10,
 		sort: {

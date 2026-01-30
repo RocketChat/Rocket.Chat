@@ -1,5 +1,6 @@
 import type { IncomingMessage } from 'http';
 import https from 'https';
+import type { ParsedUrlQueryInput } from 'querystring';
 import url from 'url';
 
 import type { Cheerio, CheerioAPI } from 'cheerio';
@@ -13,15 +14,15 @@ export type CasOptions = {
 };
 
 export type CasCallbackExtendedData = {
-	username?: unknown;
-	attributes?: unknown;
+	username?: string;
+	attributes?: Record<string, string[]>;
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	PGTIOU?: unknown;
-	ticket?: unknown;
-	proxies?: unknown;
+	PGTIOU?: string;
+	ticket?: string;
+	proxies?: string[];
 };
 
-export type CasCallback = (err: any, status?: unknown, username?: unknown, extended?: CasCallbackExtendedData) => void;
+export type CasCallback = (err: any, status?: unknown, username?: string, extended?: CasCallbackExtendedData) => void;
 
 function parseJasigAttributes(elemAttribute: Cheerio<any>, cheerio: CheerioAPI): Record<string, string[]> {
 	// "Jasig Style" Attributes:
@@ -149,6 +150,19 @@ function parseAttributes(elemSuccess: Cheerio<any>, cheerio: CheerioAPI): Record
 	return attributes;
 }
 
+export function getQueryPath(
+	partialPathname: string,
+	validatePath: string,
+	query: string | ParsedUrlQueryInput | null | undefined,
+): string {
+	const pathname = partialPathname?.endsWith('/') ? partialPathname + validatePath : `${partialPathname}/${validatePath}`;
+
+	return url.format({
+		pathname,
+		query,
+	});
+}
+
 export function validate(options: CasOptions, ticket: string, callback: CasCallback, renew = false): void {
 	if (!options.base_url) {
 		throw new Error('Required CAS option `base_url` missing.');
@@ -176,10 +190,7 @@ export function validate(options: CasOptions, ticket: string, callback: CasCallb
 		...(renew ? { renew: 1 } : {}),
 	};
 
-	const queryPath = url.format({
-		pathname: `${pathname}/${validatePath}`,
-		query,
-	});
+	const queryPath = getQueryPath(pathname ?? '/', validatePath, query);
 
 	const req = https.get(
 		{

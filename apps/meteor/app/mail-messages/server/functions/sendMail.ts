@@ -36,32 +36,40 @@ export const sendMail = async function ({
 		userQuery = { $and: [userQuery, EJSON.parse(query)] };
 	}
 
-	const users = await Users.find(userQuery).toArray();
-
 	if (dryrun) {
-		for await (const u of users) {
-			const user: Partial<IUser> & Pick<IUser, '_id'> = u;
-			const email = `${user.name} <${user.emails?.[0].address}>`;
-			const html = placeholders.replace(body, {
-				unsubscribe: Meteor.absoluteUrl(
-					generatePath('mailer/unsubscribe/:_id/:createdAt', {
-						_id: user._id,
-						createdAt: user.createdAt?.getTime().toString() || '',
-					}),
-				),
-				name: user.name,
-				email,
-			});
+		const user = await Users.findOneByEmailAddress(from);
 
-			SystemLogger.debug(`Sending email to ${email}`);
-			await Mailer.send({
-				to: email,
-				from,
-				subject,
-				html,
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				function: 'Mailer.sendMail',
 			});
 		}
+
+		const email = `${user.name} <${user.emails?.[0].address}>`;
+		const html = placeholders.replace(body, {
+			unsubscribe: Meteor.absoluteUrl(
+				generatePath('mailer/unsubscribe/:_id/:createdAt', {
+					_id: user._id,
+					createdAt: user.createdAt?.getTime().toString() || '',
+				}),
+			),
+			name: user.name,
+			email,
+		});
+
+		SystemLogger.debug({
+			msg: 'Sending email',
+			email,
+		});
+		return Mailer.send({
+			to: email,
+			from,
+			subject,
+			html,
+		});
 	}
+
+	const users = await Users.find(userQuery).toArray();
 
 	for await (const u of users) {
 		const user: Partial<IUser> & Pick<IUser, '_id'> = u;
@@ -78,7 +86,10 @@ export const sendMail = async function ({
 				name: escapeHTML(user.name || ''),
 				email: escapeHTML(email),
 			});
-			SystemLogger.debug(`Sending email to ${email}`);
+			SystemLogger.debug({
+				msg: 'Sending email',
+				email,
+			});
 			await Mailer.send({
 				to: email,
 				from,

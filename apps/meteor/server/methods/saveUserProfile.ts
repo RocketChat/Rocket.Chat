@@ -1,18 +1,21 @@
-import type { UserStatus } from '@rocket.chat/core-typings';
+import { Apps, AppEvents } from '@rocket.chat/apps';
+import type { UserStatus, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import type { UpdateFilter } from 'mongodb';
 
-import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
+import { type AuthenticatedContext, twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
+import { getUserInfo } from '../../app/api/server/helpers/getUserInfo';
 import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
+import { notifyOnUserChange } from '../../app/lib/server/lib/notifyListener';
 import { passwordPolicy } from '../../app/lib/server/lib/passwordPolicy';
+import { setEmailFunction } from '../../app/lib/server/methods/setEmail';
 import { settings as rcSettings } from '../../app/settings/server';
 import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
-import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
 
@@ -20,7 +23,7 @@ const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
 
 async function saveUserProfile(
-	this: Meteor.MethodThisType,
+	this: AuthenticatedContext,
 	settings: {
 		email?: string;
 		username?: string;
@@ -34,6 +37,7 @@ async function saveUserProfile(
 	customFields: Record<string, unknown>,
 	..._: unknown[]
 ) {
+	const unset: UpdateFilter<IUser> = {};
 	if (!rcSettings.get<boolean>('Accounts_AllowUserProfileChange')) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'saveUserProfile',
@@ -57,6 +61,12 @@ async function saveUserProfile(
 
 	const user = await Users.findOneById(this.userId);
 
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'saveUserProfile',
+		});
+	}
+
 	if (settings.realname || settings.username) {
 		if (
 			!(await saveUserIdentity({
@@ -72,14 +82,14 @@ async function saveUserProfile(
 	}
 
 	if (settings.statusText || settings.statusText === '') {
-		await setUserStatusMethod(this.userId, undefined, settings.statusText);
+		await setUserStatusMethod(user, undefined, settings.statusText);
 	}
 
 	if (settings.statusType) {
-		await setUserStatusMethod(this.userId, settings.statusType as UserStatus, undefined);
+		await setUserStatusMethod(user, settings.statusType as UserStatus, undefined);
 	}
 
-	if (user && settings.bio) {
+	if (user && (settings.bio || settings.bio === '')) {
 		if (typeof settings.bio !== 'string') {
 			throw new Meteor.Error('error-invalid-field', 'bio', {
 				method: 'saveUserProfile',
@@ -93,7 +103,7 @@ async function saveUserProfile(
 		await Users.setBio(user._id, settings.bio.trim());
 	}
 
-	if (user && settings.nickname) {
+	if (user && (settings.nickname || settings.nickname === '')) {
 		if (typeof settings.nickname !== 'string') {
 			throw new Meteor.Error('error-invalid-field', 'nickname', {
 				method: 'saveUserProfile',
@@ -107,8 +117,8 @@ async function saveUserProfile(
 		await Users.setNickname(user._id, settings.nickname.trim());
 	}
 
-	if (settings.email) {
-		await Meteor.callAsync('setEmail', settings.email);
+	if (user && settings.email) {
+		await setEmailFunction(settings.email, user);
 	}
 
 	const canChangePasswordForOAuth = rcSettings.get<boolean>('Accounts_AllowPasswordChangeForOAuthUsers');
@@ -134,6 +144,12 @@ async function saveUserProfile(
 				logout: false,
 			});
 
+			if (user.requirePasswordChange) {
+				await Users.unsetRequirePasswordChange(user._id);
+				unset.requirePasswordChange = true;
+				unset.requirePasswordChangeReason = true;
+			}
+
 			await Users.addPasswordToHistory(
 				this.userId,
 				user.services?.password.bcrypt,
@@ -141,7 +157,7 @@ async function saveUserProfile(
 			);
 
 			try {
-				await Meteor.callAsync('removeOtherTokens');
+				await Users.removeNonLoginTokensExcept(this.userId, this.token);
 			} catch (e) {
 				Accounts._clearAllLoginTokens(this.userId);
 			}
@@ -156,7 +172,20 @@ async function saveUserProfile(
 
 	// App IPostUserUpdated event hook
 	const updatedUser = await Users.findOneById(this.userId);
-	await Apps.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
+
+	// This should never happen, but since `Users.findOneById` might return null, we'll handle it just in case
+	if (!updatedUser) {
+		throw new Error('Unexpected error after saving user profile: user not found');
+	}
+
+	void notifyOnUserChange({
+		clientAction: 'updated',
+		id: updatedUser._id,
+		diff: await getUserInfo(updatedUser),
+		...(Object.keys(unset).length > 0 && { unset }),
+	});
+
+	await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
 
 	return true;
 }
@@ -165,7 +194,7 @@ const saveUserProfileWithTwoFactor = twoFactorRequired(saveUserProfile, {
 	requireSecondFactor: true,
 });
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		saveUserProfile(
@@ -185,15 +214,31 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-Meteor.methods<ServerMethods>({
-	async saveUserProfile(settings, customFields, ...args) {
-		check(settings, Object);
-		check(customFields, Match.Maybe(Object));
-
-		if (settings.email || settings.newPassword) {
-			return saveUserProfileWithTwoFactor.call(this, settings, customFields, ...args);
-		}
-
-		return saveUserProfile.call(this, settings, customFields, ...args);
+export function executeSaveUserProfile(
+	this: AuthenticatedContext,
+	user: IUser,
+	settings: {
+		email?: string;
+		username?: string;
+		realname?: string;
+		newPassword?: string;
+		statusText?: string;
+		statusType?: string;
+		bio?: string;
+		nickname?: string;
 	},
-});
+	customFields: Record<string, any> = {},
+	...args: unknown[]
+) {
+	check(settings, Object);
+	check(customFields, Match.Maybe(Object));
+
+	if (
+		(settings.email && user.emails?.length) ||
+		(settings.newPassword && Object.keys(user.services || {}).length && !user.requirePasswordChange)
+	) {
+		return saveUserProfileWithTwoFactor.call(this, settings, customFields, ...args);
+	}
+
+	return saveUserProfile.call(this, settings, customFields, ...args);
+}

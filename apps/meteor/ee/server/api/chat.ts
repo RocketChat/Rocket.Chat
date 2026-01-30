@@ -1,8 +1,9 @@
-import type { IMessage, ReadReceipt } from '@rocket.chat/core-typings';
+import type { IMessage, IReadReceiptWithUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../app/api/server/api';
+import { getReadReceiptsFunction } from '../methods/getReadReceipts';
 
 type GetMessageReadReceiptsProps = {
 	messageId: IMessage['_id'];
@@ -13,7 +14,7 @@ declare module '@rocket.chat/rest-typings' {
 	interface Endpoints {
 		'/v1/chat.getMessageReadReceipts': {
 			GET: (params: GetMessageReadReceiptsProps) => {
-				receipts: ReadReceipt[];
+				receipts: IReadReceiptWithUser[];
 			};
 		};
 	}
@@ -21,7 +22,10 @@ declare module '@rocket.chat/rest-typings' {
 
 API.v1.addRoute(
 	'chat.getMessageReadReceipts',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		// license: ['message-read-receipt']
+	},
 	{
 		async get() {
 			if (!License.hasModule('message-read-receipt')) {
@@ -36,7 +40,7 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				receipts: await Meteor.callAsync('getReadReceipts', { messageId }),
+				receipts: await getReadReceiptsFunction(messageId, this.userId),
 			});
 		},
 	},

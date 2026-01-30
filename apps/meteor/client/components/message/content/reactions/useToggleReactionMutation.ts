@@ -14,11 +14,15 @@ export const useToggleReactionMutation = (
 	const uid = useUserId();
 	const reactToMessage = useEndpoint('POST', '/v1/chat.react');
 
-	return useMutation(async ({ mid, reaction }) => {
-		if (!uid) {
-			throw new Error('Not logged in');
-		}
+	return useMutation({
+		mutationFn: async ({ mid, reaction }) => {
+			if (!uid) {
+				throw new Error('Not logged in');
+			}
 
-		await reactToMessage({ messageId: mid, reaction });
-	}, options);
+			await reactToMessage({ messageId: mid, reaction });
+		},
+
+		...options,
+	});
 };

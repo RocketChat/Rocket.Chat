@@ -1,9 +1,11 @@
 import { SHA256 } from '@rocket.chat/sha256';
+import { imperativeModal } from '@rocket.chat/ui-client';
 import { Meteor } from 'meteor/meteor';
 import { lazy } from 'react';
 
-import { imperativeModal } from '../imperativeModal';
+import type { LoginCallback } from './overrideLoginMethod';
 import { isTotpInvalidError, isTotpRequiredError } from './utils';
+import { getUser } from '../user';
 
 const TwoFactorModal = lazy(() => import('../../components/TwoFactorModal'));
 
@@ -35,6 +37,23 @@ function assertModalProps(props: {
 	}
 }
 
+const getProps = (
+	method: 'totp' | 'email' | 'password',
+	emailOrUsername?: { username: string } | { email: string } | { id: string } | string,
+) => {
+	switch (method) {
+		case 'totp':
+			return { method };
+		case 'email':
+			return {
+				method,
+				emailOrUsername: typeof emailOrUsername === 'string' ? emailOrUsername : getUser()?.username,
+			};
+		case 'password':
+			return { method };
+	}
+};
+
 export async function process2faReturn({
 	error,
 	result,
@@ -42,23 +61,19 @@ export async function process2faReturn({
 	onCode,
 	emailOrUsername,
 }: {
-	error: unknown;
+	error: globalThis.Error | Meteor.Error | Meteor.TypedError | undefined;
 	result: unknown;
-	originalCallback: {
-		(error: unknown): void;
-		(error: unknown, result: unknown): void;
-	};
+	originalCallback: LoginCallback | undefined;
 	onCode: (code: string, method: string) => void;
-	emailOrUsername: string | null | undefined;
+	emailOrUsername: { username: string } | { email: string } | { id: string } | string | null | undefined;
 }): Promise<void> {
 	if (!(isTotpRequiredError(error) || isTotpInvalidError(error)) || !hasRequiredTwoFactorMethod(error)) {
-		originalCallback(error, result);
+		originalCallback?.(error, result);
 		return;
 	}
 
 	const props = {
-		method: error.details.method,
-		emailOrUsername: emailOrUsername || error.details.emailOrUsername || Meteor.user()?.username,
+		...getProps(error.details.method, emailOrUsername || error.details.emailOrUsername),
 		// eslint-disable-next-line no-nested-ternary
 		invalidAttempt: isTotpInvalidError(error),
 	};
@@ -69,7 +84,7 @@ export async function process2faReturn({
 		onCode(code, props.method);
 	} catch (error) {
 		process2faReturn({
-			error,
+			error: error as globalThis.Error | Meteor.Error | Meteor.TypedError | undefined,
 			result,
 			originalCallback,
 			onCode,
@@ -78,15 +93,15 @@ export async function process2faReturn({
 	}
 }
 
-export async function process2faAsyncReturn({
+export async function process2faAsyncReturn<TResult>({
 	error,
 	onCode,
 	emailOrUsername,
 }: {
 	error: unknown;
-	onCode: (code: string, method: string) => unknown | Promise<unknown>;
+	onCode: (code: string, method: string) => TResult | Promise<TResult>;
 	emailOrUsername: string | null | undefined;
-}): Promise<unknown> {
+}): Promise<TResult> {
 	// if the promise is rejected, we need to check if it's a 2fa error
 	// if it's not a 2fa error, we reject the promise
 	if (!(isTotpRequiredError(error) || isTotpInvalidError(error)) || !hasRequiredTwoFactorMethod(error)) {
@@ -95,7 +110,7 @@ export async function process2faAsyncReturn({
 
 	const props = {
 		method: error.details.method,
-		emailOrUsername: emailOrUsername || error.details.emailOrUsername || Meteor.user()?.username,
+		emailOrUsername: emailOrUsername || error.details.emailOrUsername || getUser()?.username,
 		// eslint-disable-next-line no-nested-ternary
 		invalidAttempt: isTotpInvalidError(error),
 	};

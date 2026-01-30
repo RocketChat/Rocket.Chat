@@ -15,7 +15,9 @@ const loginServiceConfigurationCollection = 'meteor_accounts_loginServiceConfigu
 const loginServiceConfigurationPublication = 'meteor.loginServiceConfiguration';
 const loginServices = new Map<string, any>();
 
-MeteorService.getLoginServiceConfiguration().then((records = []) => records.forEach((record) => loginServices.set(record._id, record)));
+MeteorService.getLoginServiceConfiguration()
+	.then((records = []) => records.forEach((record) => loginServices.set(record._id, record)))
+	.catch((err) => console.error('DDPStreamer not able to retrieve login services configuration', err));
 
 server.publish(loginServiceConfigurationPublication, async function () {
 	loginServices.forEach((record) => this.added(loginServiceConfigurationCollection, record._id, record));
@@ -134,20 +136,5 @@ server.methods({
 			return;
 		}
 		return Presence.setStatus(userId, status, statusText);
-	},
-	// Copied from /app/livechat/server/methods/setUpConnection.js
-	'livechat:setUpConnection'(data = {}) {
-		const { token } = data;
-
-		if (typeof token !== 'string') {
-			return new Error('Token must be string');
-		}
-
-		if (!this.connection.livechatToken) {
-			this.connection.livechatToken = token;
-			this.connection.onClose(async () => {
-				await MeteorService.notifyGuestStatusChanged(token, 'offline');
-			});
-		}
 	},
 });

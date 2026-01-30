@@ -1,12 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { VFC } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericNoResults from '../../../components/GenericNoResults';
 
-const FederatedRoomListEmptyPlaceholder: VFC = () => {
-	const t = useTranslation();
+const FederatedRoomListEmptyPlaceholder = () => {
+	const { t } = useTranslation();
 
 	return (
 		<Box display='flex' justifyContent='center' height='full' backgroundColor='surface'>

@@ -1,17 +1,15 @@
 import type { ReactElement } from 'react';
-import React from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useSyncExternalStore } from 'react';
 
-import * as banners from '../../lib/banners';
 import LegacyBanner from './LegacyBanner';
 import UiKitBanner from './UiKitBanner';
-import { useRemoteBanners } from './hooks/useRemoteBanners';
 import { useUserBanners } from './hooks/useUserBanners';
+import { withErrorBoundary } from '../../components/withErrorBoundary';
+import * as banners from '../../lib/banners';
 
 const BannerRegion = (): ReactElement | null => {
 	const payload = useSyncExternalStore(...banners.firstSubscription);
 
-	useRemoteBanners();
 	useUserBanners();
 
 	if (!payload) {
@@ -25,4 +23,4 @@ const BannerRegion = (): ReactElement | null => {
 	return <UiKitBanner key={payload.viewId} initialView={payload} />;
 };
 
-export default BannerRegion;
+export default withErrorBoundary(BannerRegion);

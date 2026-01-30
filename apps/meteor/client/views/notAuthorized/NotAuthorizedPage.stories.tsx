@@ -1,15 +1,13 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import NotAuthorizedPage from './NotAuthorizedPage';
 
 export default {
-	title: 'Not Authorized/NotAuthorizedPage',
 	component: NotAuthorizedPage,
 	parameters: {
 		layout: 'fullscreen',
 	},
-} as ComponentMeta<typeof NotAuthorizedPage>;
+} satisfies Meta<typeof NotAuthorizedPage>;
 
-export const Default: ComponentStory<typeof NotAuthorizedPage> = () => <NotAuthorizedPage />;
+export const Default: StoryFn<typeof NotAuthorizedPage> = () => <NotAuthorizedPage />;
 Default.storyName = 'NotAuthorizedPage';

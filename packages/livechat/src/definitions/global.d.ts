@@ -7,6 +7,48 @@ declare global {
 		SERVER_URL: string;
 		handleIframeClose?: () => void;
 		expandCall?: () => void;
+		RocketChat: {
+			// TODO: Discover what the hell does "_" do
+			_: any;
+			url?: string;
+			// TODO: Type this
+			livechat: {
+				pageVisited;
+				setCustomField;
+				initialize;
+				setTheme;
+				setDepartment;
+				clearDepartment;
+				setGuestToken;
+				setGuestName;
+				setGuestEmail;
+				setAgent;
+				registerGuest;
+				setLanguage;
+				showWidget;
+				hideWidget;
+				maximizeWidget;
+				minimizeWidget;
+				setBusinessUnit;
+				clearBusinessUnit;
+				setParentUrl;
+
+				// callbacks
+				onChatMaximized;
+				onChatMinimized;
+				onChatStarted;
+				onChatEnded;
+				onPrechatFormSubmit;
+				onOfflineFormSubmit;
+				onWidgetShown;
+				onWidgetHidden;
+				onAssignAgent;
+				onAgentStatusChange;
+				onQueuePositionChange;
+				onServiceOffline;
+			};
+		};
+		initRocket?: string[];
 	}
 
 	interface Document {

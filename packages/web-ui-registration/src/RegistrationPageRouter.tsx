@@ -1,3 +1,4 @@
+import { useSession } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 
 import GuestForm from './GuestForm';
@@ -15,7 +16,8 @@ export const RegistrationPageRouter = ({
 	defaultRoute?: LoginRoutes;
 	children?: ReactNode;
 }): ReactElement | null => {
-	const [route, setLoginRoute] = useLoginRouter(defaultRoute);
+	const defaultRouteSession = useSession('loginDefaultState') as LoginRoutes | undefined;
+	const [route, setLoginRoute] = useLoginRouter(defaultRouteSession || defaultRoute);
 
 	if (route === 'guest') {
 		return (
@@ -41,7 +43,7 @@ export const RegistrationPageRouter = ({
 		);
 	}
 
-	if (route === 'secret-register' || route === 'register') {
+	if (route === 'secret-register' || route === 'register' || route === 'invite-register') {
 		return <RegisterSecretPageRouter origin={route} setLoginRoute={setLoginRoute} />;
 	}
 

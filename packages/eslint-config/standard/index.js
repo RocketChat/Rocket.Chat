@@ -7,7 +7,7 @@ module.exports = {
 	settings: {
 		'import/resolver': {
 			node: {
-				extensions: ['.js', '.ts', '.tsx'],
+				extensions: ['.js', '.ts', '.tsx', '.cts', '.mts'],
 			},
 		},
 	},
@@ -16,7 +16,7 @@ module.exports = {
 	},
 	overrides: [
 		{
-			files: ['**/*.ts', '**/*.tsx'],
+			files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
 			extends: [
 				'plugin:@typescript-eslint/recommended',
 				'plugin:@typescript-eslint/eslint-recommended',
@@ -35,7 +35,19 @@ module.exports = {
 			},
 			plugins: ['@typescript-eslint', 'anti-trojan-source'],
 			rules: {
-				'@typescript-eslint/ban-types': 'warn',
+				'@typescript-eslint/ban-types': [
+					'warn',
+					{
+						types: {
+							'FC': 'Useless and has some drawbacks, see https://adr.rocket.chat/0094',
+							'React.FC': 'Useless and has some drawbacks, see https://adr.rocket.chat/0094',
+							'VFC': 'Useless and has some drawbacks, see https://adr.rocket.chat/0094',
+							'React.VFC': 'Useless and has some drawbacks, see https://adr.rocket.chat/0094',
+							'FunctionComponent': 'Useless and has some drawbacks, see https://adr.rocket.chat/0094',
+							'React.FunctionComponent': 'Useless and has some drawbacks, see https://adr.rocket.chat/0094',
+						},
+					},
+				],
 				'@typescript-eslint/ban-ts-comment': 'warn',
 				'@typescript-eslint/consistent-type-imports': 'error',
 				'@typescript-eslint/naming-convention': [
@@ -50,6 +62,14 @@ module.exports = {
 						selector: ['function'],
 						format: ['camelCase', 'PascalCase'],
 						leadingUnderscore: 'allowSingleOrDouble',
+					},
+					{
+						selector: 'parameter',
+						format: null,
+						filter: {
+							regex: '^Story$',
+							match: true,
+						},
 					},
 					{
 						selector: 'parameter',
@@ -100,8 +120,9 @@ module.exports = {
 			settings: {
 				'import/resolver': {
 					node: {
-						extensions: ['.js', '.ts', '.tsx'],
+						extensions: ['.js', '.ts', '.tsx', '.cts', '.mts'],
 					},
+					typescript: {},
 				},
 			},
 		},

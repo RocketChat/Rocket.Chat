@@ -1,21 +1,23 @@
 import { States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
-
-import GenericModal from '../../../components/GenericModal';
-import GenericNoResults from '../../../components/GenericNoResults';
 import {
+	GenericModal,
 	GenericTable,
 	GenericTableBody,
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
-} from '../../../components/GenericTable';
-import Page from '../../../components/Page';
+	Page,
+	PageHeader,
+	PageContent,
+} from '@rocket.chat/ui-client';
+import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type { ReactElement } from 'react';
+import { useMemo } from 'react';
+
 import InviteRow from './InviteRow';
+import GenericNoResults from '../../../components/GenericNoResults';
 
 const InvitesPage = (): ReactElement => {
 	const t = useTranslation();
@@ -24,18 +26,16 @@ const InvitesPage = (): ReactElement => {
 
 	const getInvites = useEndpoint('GET', '/v1/listInvites');
 
-	const { data, isLoading, refetch, isSuccess, isError } = useQuery(
-		['invites'],
-		async () => {
+	const { data, isLoading, refetch, isSuccess, isError } = useQuery({
+		queryKey: ['invites'],
+		queryFn: async () => {
 			const invites = await getInvites();
 			return invites;
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+		meta: {
+			apiErrorToastMessage: true,
 		},
-	);
+	});
 
 	const onRemove = (removeInvite: () => Promise<boolean>): void => {
 		const confirmRemove = async (): Promise<void> => {
@@ -55,14 +55,15 @@ const InvitesPage = (): ReactElement => {
 		setModal(
 			<GenericModal
 				title={t('Are_you_sure')}
-				children={t('Are_you_sure_you_want_to_delete_this_record')}
 				variant='danger'
 				confirmText={t('Yes')}
 				cancelText={t('No')}
 				onClose={(): void => setModal()}
 				onCancel={(): void => setModal()}
 				onConfirm={confirmRemove}
-			/>,
+			>
+				{t('Are_you_sure_you_want_to_delete_this_record')}
+			</GenericModal>,
 		);
 	};
 
@@ -88,8 +89,8 @@ const InvitesPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Invites')} />
-			<Page.Content>
+			<PageHeader title={t('Invites')} />
+			<PageContent>
 				<>
 					{isLoading && (
 						<GenericTable>
@@ -121,7 +122,7 @@ const InvitesPage = (): ReactElement => {
 						</States>
 					)}
 				</>
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };

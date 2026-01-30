@@ -3,10 +3,12 @@ import { Settings } from '@rocket.chat/models';
 import moment from 'moment';
 import Queue from 'queue-fifo';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
-import { afterLogoutCleanUpCallback } from '../../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
+import { callbacks } from '../../../../server/lib/callbacks';
+import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
+import { afterLogoutCleanUpCallback } from '../../../../server/lib/callbacks/afterLogoutCleanUpCallback';
+import { updateAuditedBySystem } from '../../../../server/settings/lib/auditedSettingUpdates';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import * as servers from '../servers';
 import * as localCommandHandlers from './localHandlers';
 import * as peerCommandHandlers from './peerHandlers';
@@ -19,15 +21,15 @@ const updateLastPing = withThrottling({ wait: 10_000 })(() => {
 	if (removed) {
 		return;
 	}
-	void Settings.updateOne(
-		{ _id: 'IRC_Bridge_Last_Ping' },
-		{
-			$set: {
-				value: new Date(),
-			},
-		},
-		{ upsert: true },
-	);
+
+	void (async () => {
+		const updatedValue = await updateAuditedBySystem({
+			reason: 'updateLastPing',
+		})(Settings.updateValueById, 'IRC_Bridge_Last_Ping', new Date(), { upsert: true });
+		if (updatedValue.modifiedCount || updatedValue.upsertedCount) {
+			void notifyOnSettingChangedById('IRC_Bridge_Last_Ping');
+		}
+	})();
 });
 
 class Bridge {
@@ -133,7 +135,7 @@ class Bridge {
 		// Get the command
 		const item = this.queue.dequeue();
 
-		this.logQueue(`Processing "${item.command}" command from "${item.from}"`);
+		this.logQueue({ msg: 'Processing command from source', command: item.command, from: item.from });
 
 		// Handle the command accordingly
 		try {
@@ -210,7 +212,7 @@ class Bridge {
 		// Chatting
 		callbacks.add(
 			'afterSaveMessage',
-			this.onMessageReceived.bind(this, 'local', 'onSaveMessage'),
+			(message, { room }) => this.onMessageReceived('local', 'onSaveMessage', message, room),
 			callbacks.priority.LOW,
 			'irc-on-save-message',
 		);

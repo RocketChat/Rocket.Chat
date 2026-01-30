@@ -1,10 +1,11 @@
-import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
+import { HomeChannel } from '../page-objects';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
@@ -32,26 +33,23 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
+		await agent1.page.close();
+		await agent2.page.close();
+
 		await Promise.all([
 			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
 			api.delete('/livechat/users/agent/user2').then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 0 }).then((res) => expect(res.status()).toBe(200)),
 		]);
-
-		await agent1.page.close();
-		await agent2.page.close();
 	});
 
 	test.beforeEach(async ({ page, api }) => {
 		// make "user-1" online
-		await agent1.poHomeChannel.sidenav.switchOmnichannelStatus('online');
-		await agent2.poHomeChannel.sidenav.switchOmnichannelStatus('offline');
+		await agent1.poHomeChannel.navbar.switchOmnichannelStatus('online');
+		await agent2.poHomeChannel.navbar.switchOmnichannelStatus('offline');
 
 		// start a new chat for each test
-		newVisitor = {
-			name: faker.person.firstName(),
-			email: faker.internet.email(),
-		};
+		newVisitor = createFakeVisitor();
 		poLiveChat = new OmnichannelLiveChat(page, api);
 		await page.goto('/livechat');
 		await poLiveChat.openLiveChat();
@@ -61,13 +59,13 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 	});
 
 	test('expect chat to be auto transferred to next agent within 5 seconds of no reply from first agent', async () => {
-		await agent1.poHomeChannel.sidenav.openChat(newVisitor.name);
+		await agent1.poHomeChannel.navbar.openChat(newVisitor.name);
 
-		await agent2.poHomeChannel.sidenav.switchOmnichannelStatus('online');
+		await agent2.poHomeChannel.navbar.switchOmnichannelStatus('online');
 
 		// wait for the chat to be closed automatically for 5 seconds
 		await agent1.page.waitForTimeout(7000);
 
-		await agent2.poHomeChannel.sidenav.openChat(newVisitor.name);
+		await agent2.poHomeChannel.navbar.openChat(newVisitor.name);
 	});
 });

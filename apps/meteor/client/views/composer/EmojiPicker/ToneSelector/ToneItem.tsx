@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import DOMPurify from 'dompurify';
 
 const ToneItem = ({ tone }: { tone: number }) => {
 	let toneEmoji;
@@ -24,7 +24,7 @@ const ToneItem = ({ tone }: { tone: number }) => {
 			toneEmoji = '<span class="emojione emojione-people _270b">✋</span>';
 	}
 
-	return <Box dangerouslySetInnerHTML={{ __html: toneEmoji }} />;
+	return <Box dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(toneEmoji) }} />;
 };
 
 export default ToneItem;

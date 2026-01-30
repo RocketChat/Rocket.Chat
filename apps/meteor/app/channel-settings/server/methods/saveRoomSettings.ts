@@ -1,8 +1,8 @@
 import { Team } from '@rocket.chat/core-services';
-import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues, ITeam, RequiredField } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -10,6 +10,8 @@ import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
+import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+import { settings } from '../../../settings/server';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
 import { saveRoomCustomFields } from '../functions/saveRoomCustomFields';
@@ -20,7 +22,6 @@ import { saveRoomReadOnly } from '../functions/saveRoomReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
 import { saveRoomType } from '../functions/saveRoomType';
-import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 
 type RoomSettings = {
 	roomAvatar: string;
@@ -36,7 +37,6 @@ type RoomSettings = {
 	systemMessages: MessageTypesValues[];
 	default: boolean;
 	joinCode: string;
-	streamingOptions: NonNullable<IRoom['streamingOptions']>;
 	retentionEnabled: boolean;
 	retentionMaxAge: number;
 	retentionExcludePinned: boolean;
@@ -62,10 +62,29 @@ type RoomSettingsValidators = {
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
 	'retention' in room && room.retention !== undefined;
 
+const isAbacManagedRoom = (room: IRoom): boolean => {
+	return room.t === 'p' && settings.get<boolean>('ABAC_Enabled') && Array.isArray(room?.abacAttributes) && room.abacAttributes.length > 0;
+};
+
+const isAbacManagedTeam = (team: Partial<ITeam> | null, teamRoom: IRoom): boolean => {
+	return (
+		team?.type === TeamType.PRIVATE &&
+		settings.get<boolean>('ABAC_Enabled') &&
+		Array.isArray(teamRoom?.abacAttributes) &&
+		teamRoom.abacAttributes.length > 0
+	);
+};
+
 const validators: RoomSettingsValidators = {
-	async default({ userId }) {
+	async default({ userId, room, value }) {
 		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Viewing_room_administration',
+			});
+		}
+		if (isAbacManagedRoom(room) && value) {
+			throw new Meteor.Error('error-action-not-allowed', 'Setting an ABAC managed room as default is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Viewing_room_administration',
 			});
@@ -79,20 +98,54 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
+
 	async roomType({ userId, room, value }) {
 		if (value === room.t) {
 			return;
 		}
 
-		if (value === 'c' && !(await hasPermissionAsync(userId, 'create-c'))) {
+		if (value === 'c' && !room.teamId && !(await hasPermissionAsync(userId, 'create-c'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a private group to a public channel is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 
-		if (value === 'p' && !(await hasPermissionAsync(userId, 'create-p'))) {
+		if (value === 'p' && !room.teamId && !(await hasPermissionAsync(userId, 'create-p'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a public channel to a private room is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
+		if (isAbacManagedRoom(room) && value !== 'p') {
+			throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private room to public is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
+		if (!room.teamId) {
+			return;
+		}
+		const team = await Team.getInfoById(room.teamId);
+
+		if (value === 'c' && !(await hasPermissionAsync(userId, 'create-team-channel', team?.roomId))) {
+			throw new Meteor.Error('error-action-not-allowed', `Changing a team's private group to a public channel is not allowed`, {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
+		if (value === 'p' && !(await hasPermissionAsync(userId, 'create-team-group', team?.roomId))) {
+			throw new Meteor.Error('error-action-not-allowed', `Changing a team's public channel to a private room is not allowed`, {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
+		if (isAbacManagedTeam(team, room) && value !== 'p') {
+			throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private team room to public is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
@@ -116,14 +169,10 @@ const validators: RoomSettingsValidators = {
 		}
 	},
 	async retentionEnabled({ userId, value, room, rid }) {
-		if (!hasRetentionPolicy(room)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
-
-		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.enabled) {
+		if (
+			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
+			(!hasRetentionPolicy(room) || value !== room.retention.enabled)
+		) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
@@ -131,14 +180,10 @@ const validators: RoomSettingsValidators = {
 		}
 	},
 	async retentionMaxAge({ userId, value, room, rid }) {
-		if (!hasRetentionPolicy(room)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
-
-		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.maxAge) {
+		if (
+			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
+			(!hasRetentionPolicy(room) || value !== room.retention.maxAge)
+		) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
@@ -146,14 +191,10 @@ const validators: RoomSettingsValidators = {
 		}
 	},
 	async retentionExcludePinned({ userId, value, room, rid }) {
-		if (!hasRetentionPolicy(room)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
-
-		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.excludePinned) {
+		if (
+			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
+			(!hasRetentionPolicy(room) || value !== room.retention.excludePinned)
+		) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
@@ -161,14 +202,10 @@ const validators: RoomSettingsValidators = {
 		}
 	},
 	async retentionFilesOnly({ userId, value, room, rid }) {
-		if (!hasRetentionPolicy(room)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
-
-		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.filesOnly) {
+		if (
+			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
+			(!hasRetentionPolicy(room) || value !== room.retention.filesOnly)
+		) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
@@ -176,14 +213,10 @@ const validators: RoomSettingsValidators = {
 		}
 	},
 	async retentionIgnoreThreads({ userId, value, room, rid }) {
-		if (!hasRetentionPolicy(room)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
-
-		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.ignoreThreads) {
+		if (
+			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
+			(!hasRetentionPolicy(room) || value !== room.retention.ignoreThreads)
+		) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
@@ -203,7 +236,7 @@ const validators: RoomSettingsValidators = {
 type RoomSettingsSavers = {
 	[TRoomSetting in keyof RoomSettings]?: (params: {
 		userId: IUser['_id'];
-		user: IUser & Required<Pick<IUser, 'username' | 'name'>>;
+		user: RequiredField<IUser, 'username' | 'name'>;
 		value: RoomSettings[TRoomSetting];
 		room: IRoom;
 		rid: IRoom['_id'];
@@ -218,7 +251,7 @@ const settingSavers: RoomSettingsSavers = {
 
 		if (room.teamId && room.teamMain) {
 			void Team.update(user._id, room.teamId, {
-				type: room.t === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE,
+				type: room.t === 'c' ? TeamType.PUBLIC : TeamType.PRIVATE,
 				name: value,
 				updateRoom: false,
 			});
@@ -263,12 +296,9 @@ const settingSavers: RoomSettingsSavers = {
 		}
 
 		if (room.teamId && room.teamMain) {
-			const type = value === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE;
+			const type = value === 'c' ? TeamType.PUBLIC : TeamType.PRIVATE;
 			void Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
-	},
-	async streamingOptions({ value, rid }) {
-		await saveStreamingOptions(rid, value);
 	},
 	async readOnly({ value, room, rid, user }) {
 		if (value !== room.ro) {
@@ -323,7 +353,7 @@ const settingSavers: RoomSettingsSavers = {
 	},
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		saveRoomSettings(rid: IRoom['_id'], settings: Partial<RoomSettings>): Promise<{ result: true; rid: IRoom['_id'] }>;
@@ -349,7 +379,6 @@ const fields: (keyof RoomSettings)[] = [
 	'systemMessages',
 	'default',
 	'joinCode',
-	'streamingOptions',
 	'retentionEnabled',
 	'retentionMaxAge',
 	'retentionExcludePinned',
@@ -377,7 +406,7 @@ async function save<TRoomSetting extends keyof RoomSettings>(
 	setting: TRoomSetting,
 	params: {
 		userId: IUser['_id'];
-		user: IUser & Required<Pick<IUser, 'username' | 'name'>>;
+		user: RequiredField<IUser, 'username' | 'name'>;
 		value: RoomSettings[TRoomSetting];
 		room: IRoom;
 		rid: IRoom['_id'];
@@ -468,7 +497,7 @@ export async function saveRoomSettings(
 			rid,
 		});
 
-		if (setting === 'retentionOverrideGlobal') {
+		if (setting === 'retentionOverrideGlobal' && settings.retentionOverrideGlobal === false) {
 			delete settings.retentionMaxAge;
 			delete settings.retentionExcludePinned;
 			delete settings.retentionFilesOnly;
@@ -480,12 +509,14 @@ export async function saveRoomSettings(
 	for await (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
 		await save(setting, {
 			userId,
-			user: user as IUser & Required<Pick<IUser, 'username' | 'name'>>,
+			user: user as RequiredField<IUser, 'username' | 'name'>,
 			value: settings[setting],
 			room,
 			rid,
 		});
 	}
+
+	void notifyOnRoomChangedById(rid);
 
 	return {
 		result: true,

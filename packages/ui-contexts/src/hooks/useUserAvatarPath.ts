@@ -1,5 +1,5 @@
 import { useContext } from 'react';
 
-import { AvatarUrlContext } from '../AvatarUrlContext';
+import { AvatarUrlContext, type AvatarUrlContextValue } from '../AvatarUrlContext';
 
-export const useUserAvatarPath = (): ((uid: string, etag?: string) => string) => useContext(AvatarUrlContext).getUserPathAvatar;
+export const useUserAvatarPath = (): AvatarUrlContextValue['getUserPathAvatar'] => useContext(AvatarUrlContext).getUserPathAvatar;

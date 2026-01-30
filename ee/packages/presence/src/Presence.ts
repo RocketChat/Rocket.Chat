@@ -4,6 +4,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Settings, Users, UsersSessions } from '@rocket.chat/models';
 
+import { PresenceReaper } from './lib/PresenceReaper';
 import { processPresenceAndStatus } from './lib/processConnectionStatus';
 
 const MAX_CONNECTIONS = 200;
@@ -13,6 +14,10 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private broadcastEnabled = true;
 
+	private hasPresenceLicense = false;
+
+	private hasScalabilityLicense = false;
+
 	private hasLicense = false;
 
 	private lostConTimeout?: NodeJS.Timeout;
@@ -21,8 +26,16 @@ export class Presence extends ServiceClass implements IPresence {
 
 	private peakConnections = 0;
 
+	private reaper: PresenceReaper;
+
 	constructor() {
 		super();
+
+		this.reaper = new PresenceReaper({
+			batchSize: 500,
+			staleThresholdMs: 5 * 60 * 1000, // 5 minutes
+			onUpdate: (userIds) => this.handleReaperUpdates(userIds),
+		});
 
 		this.onEvent('watch.instanceStatus', async ({ clientAction, id, diff }): Promise<void> => {
 			if (clientAction === 'removed') {
@@ -43,13 +56,22 @@ export class Presence extends ServiceClass implements IPresence {
 		});
 
 		this.onEvent('license.module', async ({ module, valid }) => {
-			if (module === 'scalability') {
-				this.hasLicense = valid;
+			switch (module) {
+				case 'unlimited-presence':
+					this.hasPresenceLicense = valid;
+					break;
+				case 'scalability':
+					this.hasScalabilityLicense = valid;
+					break;
+				default:
+					return;
+			}
 
-				// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
-				if (!this.broadcastEnabled && valid) {
-					await this.toggleBroadcast(true);
-				}
+			// The scalability module is also accepted as a way to enable the presence service for backwards compatibility
+			this.hasLicense = this.hasPresenceLicense || this.hasScalabilityLicense;
+			// broadcast should always be enabled if license is active (unless the troubleshoot setting is on)
+			if (!this.broadcastEnabled && this.hasLicense) {
+				await this.toggleBroadcast(true);
 			}
 		});
 	}
@@ -59,7 +81,8 @@ export class Presence extends ServiceClass implements IPresence {
 		return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
 	}
 
-	async started(): Promise<void> {
+	override async started(): Promise<void> {
+		this.reaper.start();
 		this.lostConTimeout = setTimeout(async () => {
 			const affectedUsers = await this.removeLostConnections();
 			return affectedUsers.forEach((uid) => this.updateUserPresence(uid));
@@ -68,13 +91,33 @@ export class Presence extends ServiceClass implements IPresence {
 		try {
 			await Settings.updateValueById('Presence_broadcast_disabled', false);
 
-			this.hasLicense = await License.hasModule('scalability');
+			this.hasScalabilityLicense = await License.hasModule('scalability');
+			this.hasPresenceLicense = await License.hasModule('unlimited-presence');
+			this.hasLicense = this.hasPresenceLicense || this.hasScalabilityLicense;
 		} catch (e: unknown) {
 			// ignore
 		}
 	}
 
-	async stopped(): Promise<void> {
+	private async handleReaperUpdates(userIds: string[]): Promise<void> {
+		const results = await Promise.allSettled(userIds.map((uid) => this.updateUserPresence(uid)));
+		const fulfilled = results.filter((result) => result.status === 'fulfilled');
+		const rejected = results.filter((result) => result.status === 'rejected');
+
+		if (fulfilled.length > 0) {
+			console.debug(`[PresenceReaper] Successfully updated presence for ${fulfilled.length} users.`);
+		}
+
+		if (rejected.length > 0) {
+			console.error(
+				`[PresenceReaper] Failed to update presence for ${rejected.length} users:`,
+				rejected.map(({ reason }) => reason),
+			);
+		}
+	}
+
+	override async stopped(): Promise<void> {
+		this.reaper.stop();
 		if (!this.lostConTimeout) {
 			return;
 		}
@@ -120,6 +163,28 @@ export class Presence extends ServiceClass implements IPresence {
 			uid,
 			connectionId: session,
 		};
+	}
+
+	async updateConnection(uid: string, connectionId: string): Promise<{ uid: string; connectionId: string } | undefined> {
+		const query = {
+			'_id': uid,
+			'connections.id': connectionId,
+		};
+
+		const update = {
+			$set: {
+				'connections.$._updatedAt': new Date(),
+			},
+		};
+
+		const result = await UsersSessions.updateOne(query, update);
+		if (result.modifiedCount === 0) {
+			return;
+		}
+
+		await this.updateUserPresence(uid);
+
+		return { uid, connectionId };
 	}
 
 	async removeConnection(uid: string | undefined, session: string | undefined): Promise<{ uid: string; session: string } | undefined> {

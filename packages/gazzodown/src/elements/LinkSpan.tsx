@@ -1,31 +1,14 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { ReactElement, useMemo } from 'react';
+import { getBaseURI, isExternal } from '@rocket.chat/ui-client/dist/helpers/getBaseURI';
+import type { ReactElement } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import BoldSpan from './BoldSpan';
 import ItalicSpan from './ItalicSpan';
 import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
-
-const getBaseURI = (): string => {
-	if (document.baseURI) {
-		return document.baseURI;
-	}
-
-	// Should be exactly one tag:
-	//   https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-	const base = document.getElementsByTagName('base');
-
-	// Return location from BASE tag.
-	if (base.length > 0) {
-		return base[0].href;
-	}
-
-	// Else use implementation of documentURI:
-	//   http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-baseURI
-	return document.URL;
-};
-
-const isExternal = (href: string): boolean => href.indexOf(getBaseURI()) !== 0;
+import { sanitizeUrl } from './sanitizeUrl';
 
 type LinkSpanProps = {
 	href: string;
@@ -33,6 +16,10 @@ type LinkSpanProps = {
 };
 
 const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
+	// Should sanitize 'href' if any of the insecure prefixes are present - see DSK-34 on Jira
+	const sanitizedHref = sanitizeUrl(href);
+
+	const { t } = useTranslation();
 	const children = useMemo(() => {
 		const labelArray = Array.isArray(label) ? label : [label];
 
@@ -42,13 +29,13 @@ const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
 					return <PlainSpan key={index} text={child.value} />;
 
 				case 'STRIKE':
-					return <StrikeSpan key={index} children={child.value} />;
+					return <StrikeSpan key={index}>{child.value}</StrikeSpan>;
 
 				case 'ITALIC':
-					return <ItalicSpan key={index} children={child.value} />;
+					return <ItalicSpan key={index}>{child.value}</ItalicSpan>;
 
 				case 'BOLD':
-					return <BoldSpan key={index} children={child.value} />;
+					return <BoldSpan key={index}>{child.value}</BoldSpan>;
 
 				default:
 					return null;
@@ -58,16 +45,16 @@ const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
 		return labelElements;
 	}, [label]);
 
-	if (isExternal(href)) {
+	if (isExternal(sanitizedHref)) {
 		return (
-			<a href={href} title={href} rel='noopener noreferrer' target='_blank'>
+			<a href={sanitizedHref} title={sanitizedHref} rel='noopener noreferrer' target='_blank'>
 				{children}
 			</a>
 		);
 	}
 
 	return (
-		<a href={href} title={href}>
+		<a href={sanitizedHref} title={t('Go_to_href', { href: sanitizedHref.replace(getBaseURI(), '') })}>
 			{children}
 		</a>
 	);

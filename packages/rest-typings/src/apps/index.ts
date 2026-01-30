@@ -5,15 +5,22 @@ import type { IPermission } from '@rocket.chat/apps-engine/definition/permission
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 import type {
+	AppCategory,
 	AppScreenshot,
 	App,
 	FeaturedAppsSection,
 	ILogItem,
 	AppRequestFilter,
-	AppRequestsStats,
-	PaginatedAppRequests,
-	UiKit,
+	AppRequest,
 } from '@rocket.chat/core-typings';
+import type * as UiKit from '@rocket.chat/ui-kit';
+
+import type { AppLogsExportProps } from './appLogsExportProps';
+import type { AppLogsProps } from './appLogsProps';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
+
+export * from './appLogsExportProps';
+export * from './appLogsProps';
 
 export type AppsEndpoints = {
 	'/apps/count': {
@@ -53,16 +60,15 @@ export type AppsEndpoints = {
 		GET: () => {
 			apps: {
 				id: string;
-				languages: {
-					[key: string]: {
-						Params: string;
-						Description: string;
-						Setting_Name: string;
-						Setting_Description: string;
-					};
-				};
+				languages: { [language: string]: { [key: string]: string } };
 			}[];
 		};
+	};
+
+	'/apps/logs': {
+		GET: (params: AppLogsProps) => PaginatedResult<{
+			logs: ILogItem[];
+		}>;
 	};
 
 	'/apps/public/:appId/get-sidebar-icon': {
@@ -91,21 +97,22 @@ export type AppsEndpoints = {
 
 	'/apps/:id/languages': {
 		GET: () => {
-			languages: {
-				[key: string]: {
-					Params: string;
-					Description: string;
-					Setting_Name: string;
-					Setting_Description: string;
-				};
-			};
+			languages: { [language: string]: { [key: string]: string } };
 		};
 	};
 
 	'/apps/:id/logs': {
-		GET: () => {
+		GET: (params: Omit<AppLogsProps, 'appId'>) => PaginatedResult<{
 			logs: ILogItem[];
-		};
+		}>;
+	};
+
+	'/apps/:id/logs/distinctValues': {
+		GET: () => { success: boolean; instanceIds: string[]; methods: string[] };
+	};
+
+	'/apps/:id/export-logs': {
+		GET: (params: AppLogsExportProps) => Buffer;
 	};
 
 	'/apps/:id/apis': {
@@ -129,9 +136,10 @@ export type AppsEndpoints = {
 	'/apps/:id/status': {
 		GET: () => {
 			status: string;
+			clusterStatus: App['clusterStatus'];
 		};
 		POST: (params: { status: AppStatus }) => {
-			status: string;
+			status: AppStatus;
 		};
 	};
 
@@ -169,13 +177,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/categories': {
-		GET: () => {
-			createdDate: Date;
-			description: string;
-			id: string;
-			modifiedDate: Date;
-			title: string;
-		}[];
+		GET: () => AppCategory[];
 	};
 
 	'/apps/buildExternalUrl': {
@@ -185,7 +187,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/installed': {
-		GET: () => { apps: App[] };
+		GET: (params: { includeClusterStatus?: 'true' | 'false' }) => { success: true; apps: App[] } | { success: false; error: string };
 	};
 
 	'/apps/buildExternalAppRequest': {
@@ -195,11 +197,25 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/app-request': {
-		GET: (params: { appId: string; q?: AppRequestFilter; sort?: string; limit?: number; offset?: number }) => PaginatedAppRequests;
+		GET: (params: { appId: string; q?: AppRequestFilter; sort?: string; limit?: number; offset?: number }) => {
+			data: AppRequest[] | null;
+			meta: {
+				limit: 25 | 50 | 100;
+				offset: number;
+				sort: string;
+				filter: string;
+				total: number;
+			};
+		};
 	};
 
 	'/apps/app-request/stats': {
-		GET: () => AppRequestsStats;
+		GET: () => {
+			data: {
+				totalSeen: number;
+				totalUnseen: number;
+			};
+		};
 	};
 
 	'/apps/app-request/markAsSeen': {
@@ -216,45 +232,27 @@ export type AppsEndpoints = {
 		};
 	};
 
-	'/apps/': {
-		GET:
-			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
-					url: string;
-			  })
-			| ((params: {
-					purchaseType?: 'buy' | 'subscription';
-					marketplace?: 'false';
-					version?: string;
-					appId?: string;
-					details?: 'true' | 'false';
-			  }) => {
-					apps: App[];
-			  })
-			| ((params: {
-					purchaseType?: 'buy' | 'subscription';
-					marketplace: 'true';
-					version?: string;
-					appId?: string;
-					details?: 'true' | 'false';
-			  }) => App[])
-			| ((params: { categories: 'true' }) => {
-					createdDate: Date;
-					description: string;
-					id: string;
-					modifiedDate: Date;
-					title: string;
-			  }[])
-			| (() => { apps: App[] });
-
-		POST: (params: {
-			appId: string;
-			marketplace: boolean;
-			version: string;
-			permissionsGranted?: IPermission[];
-			url?: string;
-			downloadOnly?: boolean;
-		}) => {
-			app: App;
+	'/apps': {
+		POST: {
+			(
+				params:
+					| {
+							appId: string;
+							marketplace: boolean;
+							version: string;
+							permissionsGranted?: IPermission[];
+							url?: string;
+					  }
+					| { url: string },
+			):
+				| {
+						app: App;
+				  }
+				| {
+						buff: {
+							data: ArrayLike<number>;
+						};
+				  };
 		};
 	};
 

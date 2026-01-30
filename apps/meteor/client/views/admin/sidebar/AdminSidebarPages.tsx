@@ -1,7 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
-import React, { memo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { memo, useSyncExternalStore } from 'react';
 
 import SidebarItemsAssembler from '../../../components/Sidebar/SidebarItemsAssembler';
 import { subscribeToAdminSidebarItems, getAdminSidebarItems } from '../sidebarItems';
@@ -10,7 +8,7 @@ type AdminSidebarPagesProps = {
 	currentPath: string;
 };
 
-const AdminSidebarPages: FC<AdminSidebarPagesProps> = ({ currentPath }) => {
+const AdminSidebarPages = ({ currentPath }: AdminSidebarPagesProps) => {
 	const items = useSyncExternalStore(subscribeToAdminSidebarItems, getAdminSidebarItems);
 
 	return (

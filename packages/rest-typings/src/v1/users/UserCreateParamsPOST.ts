@@ -1,3 +1,4 @@
+import type { IUserSettings } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -19,7 +20,9 @@ export type UserCreateParamsPOST = {
 	setRandomPassword?: boolean;
 	sendWelcomeEmail?: boolean;
 	verified?: boolean;
-	customFields?: object;
+	customFields?: Record<string, any>;
+	settings?: IUserSettings;
+	freeSwitchExtension?: string;
 	/* @deprecated */
 	fields: string;
 };
@@ -43,6 +46,7 @@ const userCreateParamsPostSchema = {
 		verified: { type: 'boolean', nullable: true },
 		customFields: { type: 'object' },
 		fields: { type: 'string', nullable: true },
+		freeSwitchExtension: { type: 'string', nullable: true },
 	},
 	additionalProperties: false,
 	required: ['email', 'name', 'password', 'username'],

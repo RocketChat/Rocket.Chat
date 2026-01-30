@@ -1,9 +1,7 @@
+import type { SAMLConfiguration } from '@rocket.chat/core-typings';
+import { LoginServiceConfiguration } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { settings, settingsRegistry } from '../../../settings/server';
-import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLUtils } from './Utils';
 import {
 	defaultAuthnContextTemplate,
@@ -16,14 +14,21 @@ import {
 	defaultMetadataTemplate,
 	defaultMetadataCertificateTemplate,
 } from './constants';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import {
+	notifyOnLoginServiceConfigurationChanged,
+	notifyOnLoginServiceConfigurationChangedByService,
+} from '../../../lib/server/lib/notifyListener';
+import { settings, settingsRegistry } from '../../../settings/server';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
-const getSamlConfigs = function (service: string): Record<string, any> {
-	const configs = {
+const getSamlConfigs = function (service: string): SAMLConfiguration {
+	const configs: SAMLConfiguration = {
 		buttonLabelText: settings.get(`${service}_button_label_text`),
 		buttonLabelColor: settings.get(`${service}_button_label_color`),
 		buttonColor: settings.get(`${service}_button_color`),
 		clientConfig: {
-			provider: settings.get(`${service}_provider`),
+			provider: settings.get<string>(`${service}_provider`),
 		},
 		entryPoint: settings.get(`${service}_entry_point`),
 		idpSLORedirectURL: settings.get(`${service}_idp_slo_redirect_url`),
@@ -41,6 +46,7 @@ const getSamlConfigs = function (service: string): Record<string, any> {
 			publicCert: settings.get(`${service}_public_cert`),
 			// People often overlook the instruction to remove the header and footer of the certificate on this specific setting, so let's do it for them.
 			cert: SAMLUtils.normalizeCert((settings.get(`${service}_cert`) as string) || ''),
+			algorithm: settings.get(`${service}_signature_algorithm`) || 'SHA1',
 		},
 		signatureValidationType: settings.get(`${service}_signature_validation_type`),
 		userDataFieldMap: settings.get(`${service}_user_data_fieldmap`),
@@ -66,6 +72,9 @@ const getSamlConfigs = function (service: string): Record<string, any> {
 const configureSamlService = function (samlConfigs: Record<string, any>): IServiceProviderOptions {
 	let privateCert = null;
 	let privateKey = null;
+	const rawCustomAuthnContext = samlConfigs.customAuthnContext;
+	const normalizedCustomAuthnContext = typeof rawCustomAuthnContext === 'string' ? rawCustomAuthnContext.trim() : rawCustomAuthnContext;
+	const customAuthnContext = typeof normalizedCustomAuthnContext === 'string' ? normalizedCustomAuthnContext : defaultAuthnContext;
 
 	if (samlConfigs.secret.privateKey && samlConfigs.secret.publicCert) {
 		privateKey = samlConfigs.secret.privateKey;
@@ -84,7 +93,8 @@ const configureSamlService = function (samlConfigs: Record<string, any>): IServi
 		cert: samlConfigs.secret.cert,
 		privateCert,
 		privateKey,
-		customAuthnContext: samlConfigs.customAuthnContext,
+		signatureAlgorithm: samlConfigs.secret.algorithm,
+		customAuthnContext,
 		authnContextComparison: samlConfigs.authnContextComparison,
 		defaultUserRole: samlConfigs.defaultUserRole,
 		allowedClockDrift: parseInt(samlConfigs.allowedClockDrift) || 0,
@@ -114,20 +124,24 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 			services.map(async ([key, value]) => {
 				if (value === true) {
 					const samlConfigs = getSamlConfigs(key);
-					SAMLUtils.log(key);
-					await ServiceConfiguration.configurations.upsertAsync(
-						{
-							service: serviceName.toLowerCase(),
-						},
-						{
-							$set: samlConfigs,
-						},
-					);
+					SAMLUtils.log({ key });
+					await LoginServiceConfiguration.createOrUpdateService(serviceName, samlConfigs);
+					void notifyOnLoginServiceConfigurationChangedByService(serviceName);
 					return configureSamlService(samlConfigs);
 				}
-				await ServiceConfiguration.configurations.removeAsync({
-					service: serviceName.toLowerCase(),
-				});
+
+				const service = await LoginServiceConfiguration.findOneByService(serviceName, { projection: { _id: 1 } });
+				if (!service?._id) {
+					return false;
+				}
+
+				const { deletedCount } = await LoginServiceConfiguration.removeService(service._id);
+				if (!deletedCount) {
+					return false;
+				}
+
+				void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
+
 				return false;
 			}),
 		)
@@ -137,7 +151,10 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 };
 
 export const addSamlService = function (name: string): void {
-	SystemLogger.warn(`Adding ${name} is deprecated`);
+	SystemLogger.warn({
+		msg: 'Adding SAML service is deprecated',
+		serviceName: name,
+	});
 };
 
 export const addSettings = async function (name: string): Promise<void> {
@@ -150,10 +167,12 @@ export const addSettings = async function (name: string): Promise<void> {
 				await this.add(`SAML_Custom_${name}`, false, {
 					type: 'boolean',
 					i18nLabel: 'Accounts_OAuth_Custom_Enable',
+					public: true,
 				});
 				await this.add(`SAML_Custom_${name}_provider`, 'provider-name', {
 					type: 'string',
 					i18nLabel: 'SAML_Custom_Provider',
+					public: true,
 				});
 				await this.add(`SAML_Custom_${name}_entry_point`, 'https://example.com/simplesaml/saml2/idp/SSOService.php', {
 					type: 'string',
@@ -162,6 +181,7 @@ export const addSettings = async function (name: string): Promise<void> {
 				await this.add(`SAML_Custom_${name}_idp_slo_redirect_url`, 'https://example.com/simplesaml/saml2/idp/SingleLogoutService.php', {
 					type: 'string',
 					i18nLabel: 'SAML_Custom_IDP_SLO_Redirect_URL',
+					public: true,
 				});
 				await this.add(`SAML_Custom_${name}_issuer`, 'https://your-rocket-chat/_saml/metadata/provider-name', {
 					type: 'string',
@@ -201,6 +221,18 @@ export const addSettings = async function (name: string): Promise<void> {
 						i18nLabel: 'SAML_Custom_Private_Key',
 						secret: true,
 					});
+					await this.add(`SAML_Custom_${name}_signature_algorithm`, 'SHA1', {
+						type: 'select',
+						values: [
+							{ key: 'SHA1', i18nLabel: 'SHA1' },
+							{ key: 'SHA256', i18nLabel: 'SHA256' },
+							{ key: 'SHA384', i18nLabel: 'SHA384' },
+							{ key: 'SHA512', i18nLabel: 'SHA512' },
+						],
+						i18nLabel: 'SAML_Custom_Signature_Algorithm',
+						i18nDescription: 'SAML_Custom_Signature_Algorithm_description',
+						secret: true,
+					});
 				});
 			},
 		);
@@ -218,10 +250,12 @@ export const addSettings = async function (name: string): Promise<void> {
 					await this.add(`SAML_Custom_${name}_button_label_color`, '#FFFFFF', {
 						type: 'string',
 						i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
+						alert: 'OAuth_button_colors_alert',
 					});
 					await this.add(`SAML_Custom_${name}_button_color`, '#1d74f5', {
 						type: 'string',
 						i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
+						alert: 'OAuth_button_colors_alert',
 					});
 				});
 
@@ -262,6 +296,7 @@ export const addSettings = async function (name: string): Promise<void> {
 							{ key: 'Local', i18nLabel: 'SAML_Custom_Logout_Behaviour_End_Only_RocketChat' },
 						],
 						i18nLabel: 'SAML_Custom_Logout_Behaviour',
+						public: true,
 					});
 					await this.add(`SAML_Custom_${name}_channels_update`, false, {
 						type: 'boolean',

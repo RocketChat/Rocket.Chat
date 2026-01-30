@@ -1,29 +1,27 @@
-import BusinessHoursMultipleContainer from '../../../ee/client/omnichannel/additionalForms/BusinessHoursMultipleContainer';
-import ContactManager from '../../../ee/client/omnichannel/additionalForms/ContactManager';
-import CurrentChatTags from '../../../ee/client/omnichannel/additionalForms/CurrentChatTags';
-import CustomFieldsAdditionalFormContainer from '../../../ee/client/omnichannel/additionalForms/CustomFieldsAdditionalFormContainer';
-import DepartmentBusinessHours from '../../../ee/client/omnichannel/additionalForms/DepartmentBusinessHours';
-import DepartmentForwarding from '../../../ee/client/omnichannel/additionalForms/DepartmentForwarding';
-import EeNumberInput from '../../../ee/client/omnichannel/additionalForms/EeNumberInput';
-import EeTextAreaInput from '../../../ee/client/omnichannel/additionalForms/EeTextAreaInput';
-import EeTextInput from '../../../ee/client/omnichannel/additionalForms/EeTextInput';
-import MaxChatsPerAgentContainer from '../../../ee/client/omnichannel/additionalForms/MaxChatsPerAgentContainer';
-import MaxChatsPerAgentDisplay from '../../../ee/client/omnichannel/additionalForms/MaxChatsPerAgentDisplay';
-import PrioritiesSelect from '../../../ee/client/omnichannel/additionalForms/PrioritiesSelect';
-import SlaPoliciesSelect from '../../../ee/client/omnichannel/additionalForms/SlaPoliciesSelect';
+import BusinessHoursMultiple from './additionalForms/BusinessHoursMultiple';
+import ContactManagerInput from './additionalForms/ContactManagerInput';
+import CurrentChatTags from './additionalForms/CurrentChatTags';
+import CustomFieldsAdditionalForm from './additionalForms/CustomFieldsAdditionalForm';
+import DepartmentBusinessHours from './additionalForms/DepartmentBusinessHours';
+import EeNumberInput from './additionalForms/EeNumberInput';
+import EeTextAreaInput from './additionalForms/EeTextAreaInput';
+import EeTextInput from './additionalForms/EeTextInput';
+import MaxChatsPerAgent from './additionalForms/MaxChatsPerAgent';
+import MaxChatsPerAgentDisplay from './additionalForms/MaxChatsPerAgentDisplay';
+import PrioritiesSelect from './additionalForms/PrioritiesSelect';
+import SlaPoliciesSelect from './additionalForms/SlaPoliciesSelect';
 
 export {
-	CustomFieldsAdditionalFormContainer,
-	MaxChatsPerAgentContainer,
+	CustomFieldsAdditionalForm,
+	MaxChatsPerAgent,
 	MaxChatsPerAgentDisplay,
 	EeNumberInput,
 	EeTextAreaInput,
-	BusinessHoursMultipleContainer,
+	BusinessHoursMultiple,
 	EeTextInput,
-	ContactManager,
+	ContactManagerInput,
 	CurrentChatTags,
 	DepartmentBusinessHours,
-	DepartmentForwarding,
 	SlaPoliciesSelect,
 	PrioritiesSelect,
 };

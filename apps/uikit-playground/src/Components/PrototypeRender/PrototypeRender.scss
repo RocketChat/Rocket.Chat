@@ -1,0 +1,41 @@
+@use '../../cssVariables.css';
+
+.rc-prototype-renderer {
+    background: white;
+    padding: 20px !important;
+
+    .rc-prototype_action{
+        position: relative;
+
+    }
+
+    .rcx-message{
+        &:hover{
+            background: none !important;
+        }
+    }
+}
+
+.rc-prototype_action-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: glow 1s ease-out both;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    background-color: var(--RCPG-tertary-color);
+}
+
+
+@keyframes glow {
+    0% {
+        opacity: 0;
+    }
+    2% {
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 0;
+    }
+}

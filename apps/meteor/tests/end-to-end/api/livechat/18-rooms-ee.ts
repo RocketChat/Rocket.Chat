@@ -1,3 +1,4 @@
+import type { Credentials } from '@rocket.chat/api-client';
 import type { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -14,29 +15,29 @@ import {
 	makeAgentAvailable,
 	createAgent,
 	closeOmnichannelRoom,
+	fetchMessages,
 } from '../../../data/livechat/rooms';
 import { sleep } from '../../../data/livechat/utils';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - rooms', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - rooms', () => {
 	before((done) => getCredentials(done));
 
-	let agent2: { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
+	let agent2: { user: IUser; credentials: Credentials };
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await createAgent();
 		await makeAgentAvailable();
 	});
 
 	before(async () => {
-		const user: IUser = await createUser();
+		const user = await createUser();
 		const userCredentials = await login(user.username, password);
 		await createAgent(user.username);
 		await updateSetting('Livechat_allow_manual_on_hold', true);
@@ -269,6 +270,28 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			const updatedRoom = await getLivechatRoomInfo(room._id);
 			expect(updatedRoom).to.not.have.property('onHold');
+		});
+		it('should resume room on hold and send proper system message', async () => {
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt();
+
+			await sendAgentMessage(room._id);
+			await placeRoomOnHold(room._id);
+
+			const response = await request
+				.post(api('livechat/room.resumeOnHold'))
+				.set(credentials)
+				.send({
+					roomId: room._id,
+				})
+				.expect(200);
+
+			expect(response.body.success).to.be.true;
+
+			const messages = await fetchMessages(room._id, visitor.token);
+			expect(messages).to.be.an('array');
+			expect(messages[0]).to.not.be.undefined;
+			expect(messages[0]).to.have.property('t', 'omnichannel_on_hold_chat_resumed');
+			expect(messages[0]).to.have.property('comment', 'The chat was manually resumed from On Hold by RocketChat Internal Admin Test');
 		});
 		it('should resume chat automatically if visitor sent a message', async () => {
 			const { room, visitor } = await startANewLivechatRoomAndTakeIt();

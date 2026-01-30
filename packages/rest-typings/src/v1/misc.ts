@@ -180,32 +180,7 @@ const FingerprintSchema = {
 
 export const isFingerprintProps = ajv.compile<Fingerprint>(FingerprintSchema);
 
-type PwGetPolicyReset = { token: string };
-
-const PwGetPolicyResetSchema = {
-	type: 'object',
-	properties: {
-		token: {
-			type: 'string',
-		},
-	},
-	required: ['token'],
-	additionalProperties: false,
-};
-
-export const validateParamsPwGetPolicyRest = ajv.compile<PwGetPolicyReset>(PwGetPolicyResetSchema);
-
 export type MiscEndpoints = {
-	'/v1/stdout.queue': {
-		GET: () => {
-			queue: {
-				id: string;
-				string: string;
-				ts: Date;
-			}[];
-		};
-	};
-
 	'/v1/shield.svg': {
 		GET: (params: ShieldSvg) => {
 			svg: string;
@@ -226,22 +201,15 @@ export type MiscEndpoints = {
 		};
 	};
 
-	'/v1/pw.getPolicyReset': {
-		GET: (params: PwGetPolicyReset) => {
-			enabled: boolean;
-			policy: [name: string, options?: Record<string, unknown>][];
-		};
-	};
-
 	'/v1/method.call/:method': {
 		POST: (params: { message: string }) => {
-			message: unknown;
+			message: string;
 		};
 	};
 
 	'/v1/method.callAnon/:method': {
 		POST: (params: { message: string }) => {
-			message: unknown;
+			message: string;
 		};
 	};
 

@@ -1,23 +1,38 @@
-import type { BehaviorWithContext } from '../definition/LicenseBehavior';
-import type { LicenseModule } from '../definition/LicenseModule';
+import type { BehaviorWithContext, LicenseModule } from '@rocket.chat/core-typings';
+
 import type { LicenseManager } from '../license';
 import { logger } from '../logger';
+import { isInternalModuleName } from '../modules';
 
 export function moduleValidated(this: LicenseManager, module: LicenseModule) {
 	try {
-		this.emit('module', { module, valid: true });
+		const external = !isInternalModuleName(module);
+
+		this.emit('module', { module, external, valid: true });
+	} catch (err) {
+		logger.error({ msg: 'Error running module (valid: true) event', module, err });
+	}
+
+	try {
 		this.emit(`valid:${module}`);
-	} catch (error) {
-		logger.error({ msg: 'Error running module added event', error });
+	} catch (err) {
+		logger.error({ msg: 'Error running module added event', module, err });
 	}
 }
 
 export function moduleRemoved(this: LicenseManager, module: LicenseModule) {
 	try {
-		this.emit('module', { module, valid: false });
+		const external = !isInternalModuleName(module);
+
+		this.emit('module', { module, external, valid: false });
+	} catch (err) {
+		logger.error({ msg: 'Error running module (valid: false) event', module, err });
+	}
+
+	try {
 		this.emit(`invalid:${module}`);
-	} catch (error) {
-		logger.error({ msg: 'Error running module removed event', error });
+	} catch (err) {
+		logger.error({ msg: 'Error running module removed event', module, err });
 	}
 }
 
@@ -29,8 +44,8 @@ export function behaviorTriggered(this: LicenseManager, options: BehaviorWithCon
 			reason,
 			...rest,
 		});
-	} catch (error) {
-		logger.error({ msg: 'Error running behavior triggered event', error });
+	} catch (err) {
+		logger.error({ msg: 'Error running behavior triggered event', behavior, err });
 	}
 
 	if (!['prevent_action'].includes(behavior)) {
@@ -43,8 +58,8 @@ export function behaviorTriggered(this: LicenseManager, options: BehaviorWithCon
 
 	try {
 		this.emit(`limitReached:${rest.limit}`);
-	} catch (error) {
-		logger.error({ msg: 'Error running limit reached event', error });
+	} catch (err) {
+		logger.error({ msg: 'Error running limit reached event', limit: rest.limit, err });
 	}
 }
 
@@ -56,23 +71,23 @@ export function behaviorTriggeredToggled(this: LicenseManager, options: Behavior
 			reason,
 			...rest,
 		});
-	} catch (error) {
-		logger.error({ msg: 'Error running behavior triggered event', error });
+	} catch (err) {
+		logger.error({ msg: 'Error running behavior triggered event', behavior, err });
 	}
 }
 
 export function licenseValidated(this: LicenseManager) {
 	try {
 		this.emit('validate');
-	} catch (error) {
-		logger.error({ msg: 'Error running license validated event', error });
+	} catch (err) {
+		logger.error({ msg: 'Error running license validated event', err });
 	}
 }
 
 export function licenseInvalidated(this: LicenseManager) {
 	try {
 		this.emit('invalidate');
-	} catch (error) {
-		logger.error({ msg: 'Error running license invalidated event', error });
+	} catch (err) {
+		logger.error({ msg: 'Error running license invalidated event', err });
 	}
 }

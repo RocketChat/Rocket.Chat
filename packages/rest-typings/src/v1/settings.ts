@@ -1,5 +1,7 @@
-import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
+import type { ISetting, ISettingColor, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 
+import { ajv } from './Ajv';
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 type SettingsUpdateProps = SettingsUpdatePropDefault | SettingsUpdatePropsActions | SettingsUpdatePropsColor;
@@ -7,46 +9,6 @@ type SettingsUpdateProps = SettingsUpdatePropDefault | SettingsUpdatePropsAction
 type SettingsUpdatePropsActions = {
 	execute: boolean;
 };
-
-export type OauthCustomConfiguration = {
-	_id: string;
-	clientId?: string;
-	custom: boolean;
-	service?: string;
-	serverURL: string;
-	tokenPath: string;
-	identityPath: string;
-	authorizePath: string;
-	scope: string;
-	loginStyle: 'popup' | 'redirect';
-	tokenSentVia: 'header' | 'payload';
-	identityTokenSentVia: 'default' | 'header' | 'payload';
-	keyField: 'username' | 'email';
-	usernameField: string;
-	emailField: string;
-	nameField: string;
-	avatarField: string;
-	rolesClaim: string;
-	groupsClaim: string;
-	mapChannels: string;
-	channelsMap: string;
-	channelsAdmin: string;
-	mergeUsers: boolean;
-	mergeUsersDistinctServices: boolean;
-	mergeRoles: boolean;
-	accessTokenParam: string;
-	showButton: boolean;
-
-	appId: string;
-	consumerKey?: string;
-
-	clientConfig: unknown;
-	buttonLabelText: string;
-	buttonLabelColor: string;
-	buttonColor: string;
-};
-
-export const isOauthCustomConfiguration = (config: any): config is OauthCustomConfiguration => Boolean(config);
 
 export const isSettingsUpdatePropsActions = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropsActions =>
 	'execute' in props;
@@ -65,16 +27,76 @@ type SettingsUpdatePropDefault = {
 
 export const isSettingsUpdatePropDefault = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropDefault => 'value' in props;
 
+type SettingsPublicWithPaginationProps = PaginatedRequest<{ _id?: string; query?: string }>;
+
+const SettingsPublicWithPaginationSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		_id: {
+			type: 'string',
+		},
+		query: {
+			type: 'string',
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isSettingsPublicWithPaginationProps = ajv.compile<SettingsPublicWithPaginationProps>(SettingsPublicWithPaginationSchema);
+
+type SettingsGetParams = PaginatedRequest<{ includeDefaults?: boolean; query?: string }>;
+
+const SettingsGetSchema = {
+	type: 'object',
+	properties: {
+		includeDefaults: {
+			type: 'boolean',
+		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
+		},
+		fields: {
+			type: 'string',
+		},
+		query: {
+			type: 'string',
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isSettingsGetParams = ajv.compile<SettingsGetParams>(SettingsGetSchema);
+
 export type SettingsEndpoints = {
 	'/v1/settings.public': {
-		GET: () => PaginatedResult & {
+		GET: (params: SettingsPublicWithPaginationProps) => PaginatedResult & {
 			settings: Array<ISetting>;
 		};
 	};
 
 	'/v1/settings.oauth': {
 		GET: () => {
-			services: Partial<OauthCustomConfiguration>[];
+			services: Partial<LoginServiceConfiguration>[];
 		};
 	};
 
@@ -83,7 +105,7 @@ export type SettingsEndpoints = {
 	};
 
 	'/v1/settings': {
-		GET: () => {
+		GET: (params: SettingsGetParams) => {
 			settings: ISetting[];
 		};
 	};
@@ -95,10 +117,7 @@ export type SettingsEndpoints = {
 
 	'/v1/service.configurations': {
 		GET: () => {
-			configurations: Array<{
-				appId: string;
-				secret: string;
-			}>;
+			configurations: Array<LoginServiceConfiguration>;
 		};
 	};
 };

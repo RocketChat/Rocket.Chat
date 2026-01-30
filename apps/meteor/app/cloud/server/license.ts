@@ -1,1 +1,1 @@
-export const LICENSE_VERSION = 2 as const;
+export const LICENSE_VERSION = 3 as const;

@@ -1,12 +1,11 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericUpsellModal from '../../components/GenericUpsellModal';
 import { useUpsellActions } from '../../components/GenericUpsellModal/hooks';
 
 const UnlimitedAppsUpsellModal = ({ onClose }: { onClose: () => void }) => {
-	const t = useTranslation();
-	const { handleManageSubscription, handleTalkToSales, cloudWorkspaceHadTrial } = useUpsellActions();
+	const { t } = useTranslation();
+	const { handleManageSubscription, cloudWorkspaceHadTrial } = useUpsellActions();
 
 	return (
 		<GenericUpsellModal
@@ -14,10 +13,8 @@ const UnlimitedAppsUpsellModal = ({ onClose }: { onClose: () => void }) => {
 			img='images/unlimited-apps-modal.png'
 			subtitle={t('Get_all_apps')}
 			description={!cloudWorkspaceHadTrial ? t('Workspaces_on_community_edition_trial_on') : t('Workspaces_on_community_edition_trial_off')}
-			confirmText={!cloudWorkspaceHadTrial ? t('Start_free_trial') : t('Learn_more')}
-			cancelText={t('Talk_to_sales')}
 			onConfirm={handleManageSubscription}
-			onCancel={handleTalkToSales}
+			onCancel={onClose}
 			onClose={onClose}
 		/>
 	);

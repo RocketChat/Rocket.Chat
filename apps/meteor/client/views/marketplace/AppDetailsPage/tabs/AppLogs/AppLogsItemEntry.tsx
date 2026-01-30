@@ -1,30 +1,21 @@
+import type { ILogItem } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
-import React from 'react';
+import DOMPurify from 'dompurify';
 
 import { useHighlightedCode } from '../../../../../hooks/useHighlightedCode';
 
 type AppLogsItemEntryProps = {
-	severity: string;
-	timestamp: string;
-	caller: string;
-	args: unknown;
+	fullLog: ILogItem;
 };
 
-const AppLogsItemEntry: FC<AppLogsItemEntryProps> = ({ severity, timestamp, caller, args }) => {
-	const t = useTranslation();
-
+const AppLogsItemEntry = ({ fullLog }: AppLogsItemEntryProps) => {
 	return (
 		<Box color='default'>
-			<Box>
-				{severity}: {timestamp} {t('Caller')}: {caller}
-			</Box>
 			<Box withRichContent width='full'>
 				<pre>
 					<code
 						dangerouslySetInnerHTML={{
-							__html: useHighlightedCode('json', JSON.stringify(args, null, 2)),
+							__html: DOMPurify.sanitize(useHighlightedCode('json', JSON.stringify(fullLog, null, 2))),
 						}}
 					/>
 				</pre>

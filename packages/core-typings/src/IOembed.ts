@@ -16,7 +16,8 @@ export type OEmbedUrlContent = {
 
 export type OEmbedProvider = {
 	urls: RegExp[];
-	endPoint: string;
+	endPoint?: string;
+	getHeaderOverrides?: () => { [k: string]: string };
 };
 
 export type OEmbedUrlContentResult = {
@@ -25,8 +26,6 @@ export type OEmbedUrlContentResult = {
 	statusCode: number;
 	attachments?: MessageAttachment[];
 };
-
-export const isOEmbedUrlContentResult = (value: any): value is OEmbedUrlContentResult => 'attachments' in value;
 
 export type OEmbedUrlWithMetadata = {
 	url: string;

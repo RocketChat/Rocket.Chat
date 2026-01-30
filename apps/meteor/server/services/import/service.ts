@@ -4,8 +4,7 @@ import type { IImportUser, IImport, ImportStatus } from '@rocket.chat/core-typin
 import { Imports, ImportData } from '@rocket.chat/models';
 import { ObjectId } from 'mongodb';
 
-import { Importers } from '../../../app/importer/lib/Importers';
-import { Selection } from '../../../app/importer/server/classes/ImporterSelection';
+import { Importers } from '../../../app/importer/server';
 import { settings } from '../../../app/settings/server';
 import { validateRoleList } from '../../lib/roles/validateRoleList';
 import { getNewUserRoles } from '../user/lib/getNewUserRoles';
@@ -56,6 +55,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 			case 'importer_preparing_users':
 			case 'importer_preparing_channels':
 			case 'importer_preparing_messages':
+			case 'importer_preparing_contacts':
 				return 'loading';
 			case 'importer_user_selection':
 				return 'ready';
@@ -63,6 +63,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 			case 'importer_importing_users':
 			case 'importer_importing_channels':
 			case 'importer_importing_messages':
+			case 'importer_importing_contacts':
 			case 'importer_importing_files':
 			case 'importer_finishing':
 				return 'importing';
@@ -92,7 +93,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 		};
 	}
 
-	private assertsValidStateForNewData(operation: IImport | null): asserts operation is IImport {
+	private assertsValidStateForNewData(operation: IImport | undefined): asserts operation is IImport {
 		if (!operation?.valid) {
 			throw new Error('Import operation not initialized.');
 		}
@@ -172,12 +173,9 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 			skipDefaultChannels: true,
 			enableEmail2fa: settings.get<boolean>('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In'),
 			quickUserInsertion: true,
-			// Do not update the data of existing users, but add the importId to them if it's missing
 			skipExistingUsers: true,
-			bindSkippedUsers: true,
 		});
 
-		const selection = new Selection(importer.name, [], [], 0);
-		await instance.startImport(selection, userId);
+		await instance.startImport({ users: { all: true } }, userId);
 	}
 }

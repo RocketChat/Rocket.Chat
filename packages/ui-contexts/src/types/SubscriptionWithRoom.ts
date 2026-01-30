@@ -9,7 +9,6 @@ export type SubscriptionWithRoom = ISubscription &
 		| 'announcement'
 		| 'avatarETag'
 		| 'lastMessage'
-		| 'streamingOptions'
 		| 'uids'
 		| 'usernames'
 		| 'usersCount'
@@ -36,4 +35,7 @@ export type SubscriptionWithRoom = ISubscription &
 		| 'queuedAt'
 	> & {
 		source?: IOmnichannelRoom['source'];
-	} & Pick<Partial<IRoomWithRetentionPolicy>, 'retention'>;
+	} & Pick<Partial<IRoomWithRetentionPolicy>, 'retention'> & {
+		lowerCaseName: string;
+		lowerCaseFName: string;
+	};

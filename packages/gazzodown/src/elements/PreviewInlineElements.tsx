@@ -1,6 +1,10 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { Fragment, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import { Fragment } from 'react';
 
+import BoldSpan from './BoldSpan';
+import ItalicSpan from './ItalicSpan';
+import StrikeSpan from './StrikeSpan';
 import PreviewCodeElement from '../code/PreviewCodeElement';
 import PreviewColorElement from '../colors/PreviewColorElement';
 import PreviewEmojiElement from '../emoji/PreviewEmojiElement';
@@ -8,9 +12,6 @@ import KatexErrorBoundary from '../katex/KatexErrorBoundary';
 import PreviewKatexElement from '../katex/PreviewKatexElement';
 import PreviewChannelMentionElement from '../mentions/PreviewChannelMentionElement';
 import PreviewUserMentionElement from '../mentions/PreviewUserMentionElement';
-import BoldSpan from './BoldSpan';
-import ItalicSpan from './ItalicSpan';
-import StrikeSpan from './StrikeSpan';
 
 type PreviewInlineElementsProps = {
 	children: MessageParser.Inlines[];
@@ -21,24 +22,26 @@ const PreviewInlineElements = ({ children }: PreviewInlineElementsProps): ReactE
 		{children.map((child, index) => {
 			switch (child.type) {
 				case 'BOLD':
-					return <BoldSpan key={index} children={child.value} />;
+					return <BoldSpan key={index}>{child.value}</BoldSpan>;
 
 				case 'STRIKE':
-					return <StrikeSpan key={index} children={child.value} />;
+					return <StrikeSpan key={index}>{child.value}</StrikeSpan>;
 
 				case 'ITALIC':
-					return <ItalicSpan key={index} children={child.value} />;
+					return <ItalicSpan key={index}>{child.value}</ItalicSpan>;
 
 				case 'LINK':
 					return (
-						<PreviewInlineElements key={index} children={Array.isArray(child.value.label) ? child.value.label : [child.value.label]} />
+						<PreviewInlineElements key={index}>
+							{Array.isArray(child.value.label) ? child.value.label : [child.value.label]}
+						</PreviewInlineElements>
 					);
 
 				case 'PLAIN_TEXT':
-					return <Fragment key={index} children={child.value} />;
+					return <Fragment key={index}>{child.value}</Fragment>;
 
 				case 'IMAGE':
-					return <PreviewInlineElements key={index} children={[child.value.label]} />;
+					return <PreviewInlineElements key={index}>{[child.value.label]}</PreviewInlineElements>;
 
 				case 'MENTION_USER':
 					return <PreviewUserMentionElement key={index} mention={child.value.value} />;

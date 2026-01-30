@@ -1,25 +1,29 @@
-import { Box, Accordion, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { Box, Accordion, AccordionItem, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
+import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import Page from '../../../components/Page';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import ChangePassword from './ChangePassword';
 import EndToEnd from './EndToEnd';
 import TwoFactorEmail from './TwoFactorEmail';
 import TwoFactorTOTP from './TwoFactorTOTP';
+import { useRequire2faSetup } from '../../hooks/useRequire2faSetup';
 
 const passwordDefaultValues = { password: '', confirmationPassword: '' };
 
 const AccountSecurityPage = (): ReactElement => {
 	const t = useTranslation();
+	const user = useUser();
+
+	const isEmail2FAAvailableForOAuth = useSetting('Accounts_twoFactorAuthentication_email_available_for_OAuth_users');
+	const isOAuthUser = user?.isOAuthUser;
+	const isEmail2FAAllowed = !isOAuthUser || isEmail2FAAvailableForOAuth;
 
 	const methods = useForm({
 		defaultValues: passwordDefaultValues,
-		mode: 'onBlur',
+		mode: 'all',
 	});
 	const {
 		reset,
@@ -30,53 +34,60 @@ const AccountSecurityPage = (): ReactElement => {
 	const twoFactorTOTP = useSetting('Accounts_TwoFactorAuthentication_By_TOTP_Enabled');
 	const twoFactorByEmailEnabled = useSetting('Accounts_TwoFactorAuthentication_By_Email_Enabled');
 	const e2eEnabled = useSetting('E2E_Enable');
+	const allowPasswordChange = useSetting('Accounts_AllowPasswordChange');
+	const showEmailTwoFactor = twoFactorByEmailEnabled && isEmail2FAAllowed;
 
-	const passwordFormId = useUniqueId();
+	const passwordFormId = useId();
 
-	if (!twoFactorEnabled && !e2eEnabled) {
-		return <NotAuthorizedPage />;
-	}
+	const require2faSetup = useRequire2faSetup();
 
 	return (
 		<Page>
-			<Page.Header title={t('Security')} />
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Security')} />
+			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center' color='default'>
-					<FormProvider {...methods}>
-						<Accordion>
-							<Accordion.Item title={t('Password')} defaultExpanded>
-								<ChangePassword id={passwordFormId} />
-							</Accordion.Item>
-						</Accordion>
-					</FormProvider>
+					{allowPasswordChange && (
+						<FormProvider {...methods}>
+							<Accordion>
+								<AccordionItem title={t('Password')} defaultExpanded={!require2faSetup}>
+									<ChangePassword id={passwordFormId} />
+								</AccordionItem>
+							</Accordion>
+						</FormProvider>
+					)}
 					<Accordion>
-						{(twoFactorTOTP || twoFactorByEmailEnabled) && twoFactorEnabled && (
-							<Accordion.Item title={t('Two Factor Authentication')}>
+						{(twoFactorTOTP || showEmailTwoFactor) && twoFactorEnabled && (
+							<AccordionItem defaultExpanded={require2faSetup} title={t('Two Factor Authentication')}>
+								{require2faSetup && (
+									<Callout type='warning' title={t('Enable_two-factor_authentication')} mbe='24px'>
+										{t('Enable_two-factor_authentication_callout_description')}
+									</Callout>
+								)}
 								{twoFactorTOTP && <TwoFactorTOTP />}
-								{twoFactorByEmailEnabled && <TwoFactorEmail />}
-							</Accordion.Item>
+								{showEmailTwoFactor && <TwoFactorEmail />}
+							</AccordionItem>
 						)}
 						{e2eEnabled && (
-							<Accordion.Item
-								title={t('E2E Encryption')}
-								aria-label={t('E2E Encryption')}
+							<AccordionItem
+								title={t('End-to-end_encryption')}
+								aria-label={t('End-to-end_encryption')}
 								defaultExpanded={!twoFactorEnabled}
 								data-qa-type='e2e-encryption-section'
 							>
 								<EndToEnd />
-							</Accordion.Item>
+							</AccordionItem>
 						)}
 					</Accordion>
 				</Box>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(passwordDefaultValues)}>{t('Cancel')}</Button>
 					<Button form={passwordFormId} primary disabled={!isDirty} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

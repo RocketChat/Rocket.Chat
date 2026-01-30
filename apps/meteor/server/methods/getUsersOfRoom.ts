@@ -1,6 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -8,7 +9,7 @@ import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorizatio
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { findUsersOfRoom } from '../lib/findUsersOfRoom';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		getUsersOfRoom(
@@ -54,7 +55,7 @@ Meteor.methods<ServerMethods>({
 
 		const { cursor } = findUsersOfRoom({
 			rid,
-			status: !showAll ? { $ne: 'offline' } : undefined,
+			status: !showAll ? { $ne: UserStatus.OFFLINE } : undefined,
 			limit,
 			skip,
 			filter,

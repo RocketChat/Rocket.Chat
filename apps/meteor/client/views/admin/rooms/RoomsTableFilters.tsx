@@ -1,11 +1,11 @@
 import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState } from 'react';
-import type { Dispatch, ReactElement, SetStateAction } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import type { ChangeEvent, Dispatch, FormEvent, ReactElement, SetStateAction } from 'react';
+import { useTranslation } from 'react-i18next';
 
-const roomTypeFilterStructure = [
+const initialRoomTypeFilterStructure = [
 	{
 		id: 'filter_by_room',
 		text: 'Filter_by_room',
@@ -44,13 +44,20 @@ const roomTypeFilterStructure = [
 ] as OptionProp[];
 
 const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction<any>> }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [text, setText] = useState('');
 
 	const [roomTypeSelectedOptions, setRoomTypeSelectedOptions] = useState<OptionProp[]>([]);
 
+	const roomTypeFilterStructure = useMemo(() => {
+		return initialRoomTypeFilterStructure.map((option) => ({
+			...option,
+			checked: roomTypeSelectedOptions.some((selectedOption) => selectedOption.id === option.id),
+		}));
+	}, [roomTypeSelectedOptions]);
+
 	const handleSearchTextChange = useCallback(
-		(event) => {
+		(event: ChangeEvent<HTMLInputElement>) => {
 			const text = event.currentTarget.value;
 			setFilters({ searchText: text, types: roomTypeSelectedOptions });
 			setText(text);
@@ -64,12 +71,12 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 			setRoomTypeSelectedOptions(options);
 		},
 		[text, setFilters],
-	) as Dispatch<SetStateAction<OptionProp[]>>;
+	);
 
 	return (
 		<Box
 			is='form'
-			onSubmit={useCallback((e) => e.preventDefault(), [])}
+			onSubmit={useCallback((e: FormEvent) => e.preventDefault(), [])}
 			mb='x8'
 			display='flex'
 			flexWrap='wrap'
@@ -89,7 +96,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 			<Box minWidth='x224' m='x4'>
 				<MultiSelectCustom
 					dropdownOptions={roomTypeFilterStructure}
-					defaultTitle={'All_rooms' as any}
+					defaultTitle='All_rooms'
 					selectedOptionsTitle='Rooms'
 					setSelectedOptions={handleRoomTypeChange}
 					selectedOptions={roomTypeSelectedOptions}

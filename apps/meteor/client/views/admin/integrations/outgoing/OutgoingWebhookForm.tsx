@@ -15,12 +15,13 @@ import {
 	FieldGroup,
 	Select,
 	Accordion,
+	NumberInput,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import DOMPurify from 'dompurify';
+import { useId, useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { outgoingEvents } from '../../../../../app/integrations/lib/outgoingEvents';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
@@ -52,7 +53,7 @@ type EditOutgoingWebhookPayload = Pick<
 >;
 
 const OutgoingWebhookForm = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const {
 		control,
@@ -75,13 +76,7 @@ const OutgoingWebhookForm = () => {
 		[t],
 	);
 
-	const scriptEngineOptions: SelectOption[] = useMemo(
-		() => [
-			['vm2', t('Script_Engine_vm2')],
-			['isolated-vm', t('Script_Engine_isolated_vm')],
-		],
-		[t],
-	);
+	const scriptEngineOptions: SelectOption[] = useMemo(() => [['isolated-vm', t('Script_Engine_isolated_vm')]], [t]);
 
 	const showChannel = useMemo(() => outgoingEvents[event].use.channel, [event]);
 	const showTriggerWords = useMemo(() => outgoingEvents[event].use.triggerWords, [event]);
@@ -103,27 +98,27 @@ const OutgoingWebhookForm = () => {
 
 	const hilightedExampleJson = useHighlightedCode('json', JSON.stringify(exampleData, null, 2));
 
-	const eventField = useUniqueId();
-	const enabledField = useUniqueId();
-	const nameField = useUniqueId();
-	const channelField = useUniqueId();
-	const triggerWordsField = useUniqueId();
-	const targetRoomField = useUniqueId();
-	const urlsField = useUniqueId();
-	const impersonateUserField = useUniqueId();
-	const usernameField = useUniqueId();
-	const aliasField = useUniqueId();
-	const avatarField = useUniqueId();
-	const emojiField = useUniqueId();
-	const tokenField = useUniqueId();
-	const scriptEnabledField = useUniqueId();
-	const scriptEngineField = useUniqueId();
-	const scriptField = useUniqueId();
-	const retryFailedCallsField = useUniqueId();
-	const retryCountField = useUniqueId();
-	const retryDelayField = useUniqueId();
-	const triggerWordAnywhereField = useUniqueId();
-	const runOnEditsField = useUniqueId();
+	const eventField = useId();
+	const enabledField = useId();
+	const nameField = useId();
+	const channelField = useId();
+	const triggerWordsField = useId();
+	const targetRoomField = useId();
+	const urlsField = useId();
+	const impersonateUserField = useId();
+	const usernameField = useId();
+	const aliasField = useId();
+	const avatarField = useId();
+	const emojiField = useId();
+	const tokenField = useId();
+	const scriptEnabledField = useId();
+	const scriptEngineField = useId();
+	const scriptField = useId();
+	const retryFailedCallsField = useId();
+	const retryCountField = useId();
+	const retryDelayField = useId();
+	const triggerWordAnywhereField = useId();
+	const runOnEditsField = useId();
 
 	return (
 		<Box maxWidth='x600' alignSelf='center' w='full'>
@@ -144,16 +139,14 @@ const OutgoingWebhookForm = () => {
 							<FieldHint id={`${eventField}-hint`}>{t('Event_Trigger_Description')}</FieldHint>
 						</Field>
 						<Field>
-							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<FieldRow>
 								<FieldLabel htmlFor={enabledField}>{t('Enabled')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='enabled'
-										control={control}
-										render={({ field: { value, ...field } }) => <ToggleSwitch id={enabledField} {...field} checked={value} />}
-									/>
-								</FieldRow>
-							</Box>
+								<Controller
+									name='enabled'
+									control={control}
+									render={({ field: { value, ...field } }) => <ToggleSwitch id={enabledField} {...field} checked={value} />}
+								/>
+							</FieldRow>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={nameField}>{t('Name')}</FieldLabel>
@@ -187,10 +180,18 @@ const OutgoingWebhookForm = () => {
 								<FieldHint
 									id={`${channelField}-hint-2`}
 									dangerouslySetInnerHTML={{
-										__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', '@', '#', '@john', '#general'),
+										__html: DOMPurify.sanitize(
+											t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
+												postProcess: 'sprintf',
+												sprintf: ['@', '#', '@john', '#general'],
+											}),
+										),
 									}}
 								/>
-								<FieldHint id={`${channelField}-hint-3`} dangerouslySetInnerHTML={{ __html: t('Integrations_for_all_channels') }} />
+								<FieldHint
+									id={`${channelField}-hint-3`}
+									dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Integrations_for_all_channels')) }}
+								/>
 							</Field>
 						)}
 						{showTriggerWords && (
@@ -231,7 +232,12 @@ const OutgoingWebhookForm = () => {
 								<FieldHint
 									id={`${targetRoomField}-hint-2`}
 									dangerouslySetInnerHTML={{
-										__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', '@', '#', '@john', '#general'),
+										__html: DOMPurify.sanitize(
+											t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
+												postProcess: 'sprintf',
+												sprintf: ['@', '#', '@john', '#general'],
+											}),
+										),
 									}}
 								/>
 							</Field>
@@ -244,7 +250,7 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='urls'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('URLs')) }}
+									rules={{ required: t('Required_field', { field: t('URLs') }) }}
 									render={({ field }) => (
 										<TextAreaInput
 											id={urlsField}
@@ -265,16 +271,14 @@ const OutgoingWebhookForm = () => {
 							)}
 						</Field>
 						<Field>
-							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<FieldRow>
 								<FieldLabel htmlFor={impersonateUserField}>{t('Impersonate_user')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='impersonateUser'
-										control={control}
-										render={({ field: { value, ...field } }) => <ToggleSwitch id={impersonateUserField} {...field} checked={value} />}
-									/>
-								</FieldRow>
-							</Box>
+								<Controller
+									name='impersonateUser'
+									control={control}
+									render={({ field: { value, ...field } }) => <ToggleSwitch id={impersonateUserField} {...field} checked={value} />}
+								/>
+							</FieldRow>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={usernameField} required>
@@ -284,7 +288,7 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='username'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Post_as')) }}
+									rules={{ required: t('Required_field', { field: t('Post_as') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={usernameField}
@@ -361,7 +365,10 @@ const OutgoingWebhookForm = () => {
 								/>
 							</FieldRow>
 							<FieldHint id={`${emojiField}-hint-1`}>{t('You_can_use_an_emoji_as_avatar')}</FieldHint>
-							<FieldHint id={`${emojiField}-hint-2`} dangerouslySetInnerHTML={{ __html: t('Example_s', ':ghost:') }} />
+							<FieldHint
+								id={`${emojiField}-hint-2`}
+								dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Example_s', { postProcess: 'sprintf', sprintf: [':ghost:'] })) }}
+							/>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={tokenField} required>
@@ -371,7 +378,7 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='token'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Token')) }}
+									rules={{ required: t('Required_field', { field: t('Token') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={tokenField}
@@ -391,16 +398,14 @@ const OutgoingWebhookForm = () => {
 							)}
 						</Field>
 						<Field>
-							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<FieldRow>
 								<FieldLabel htmlFor={scriptEnabledField}>{t('Script_Enabled')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='scriptEnabled'
-										control={control}
-										render={({ field: { value, ...field } }) => <ToggleSwitch id={scriptEnabledField} {...field} checked={value} />}
-									/>
-								</FieldRow>
-							</Box>
+								<Controller
+									name='scriptEnabled'
+									control={control}
+									render={({ field: { value, ...field } }) => <ToggleSwitch id={scriptEnabledField} {...field} checked={value} />}
+								/>
+							</FieldRow>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={scriptEngineField}>{t('Script_Engine')}</FieldLabel>
@@ -438,7 +443,7 @@ const OutgoingWebhookForm = () => {
 							<FieldRow>
 								<Box fontScale='p2' withRichContent flexGrow={1}>
 									<pre>
-										<code dangerouslySetInnerHTML={{ __html: hilightedExampleJson }}></code>
+										<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(hilightedExampleJson) }}></code>
 									</pre>
 								</Box>
 							</FieldRow>
@@ -449,23 +454,21 @@ const OutgoingWebhookForm = () => {
 				<AccordionItem title={t('Integration_Advanced_Settings')}>
 					<FieldGroup>
 						<Field>
-							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<FieldRow>
 								<FieldLabel htmlFor={retryFailedCallsField}>{t('Integration_Retry_Failed_Url_Calls')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name='retryFailedCalls'
-										control={control}
-										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch
-												id={retryFailedCallsField}
-												{...field}
-												checked={value}
-												aria-describedby={`${retryFailedCallsField}-hint`}
-											/>
-										)}
-									/>
-								</FieldRow>
-							</Box>
+								<Controller
+									name='retryFailedCalls'
+									control={control}
+									render={({ field: { value, ...field } }) => (
+										<ToggleSwitch
+											id={retryFailedCallsField}
+											{...field}
+											checked={value}
+											aria-describedby={`${retryFailedCallsField}-hint`}
+										/>
+									)}
+								/>
+							</FieldRow>
 							<FieldHint id={`${retryFailedCallsField}-hint`}>{t('Integration_Retry_Failed_Url_Calls_Description')}</FieldHint>
 						</Field>
 						<Field>
@@ -474,7 +477,9 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='retryCount'
 									control={control}
-									render={({ field }) => <TextInput id={retryCountField} {...field} aria-describedby={`${retryCountField}-hint`} />}
+									render={({ field }) => (
+										<NumberInput {...field} id={retryCountField} min='0' step='1' aria-describedby={`${retryCountField}-hint`} />
+									)}
 								/>
 							</FieldRow>
 							<FieldHint id={`${retryCountField}-hint`}>{t('Integration_Retry_Count_Description')}</FieldHint>
@@ -490,43 +495,42 @@ const OutgoingWebhookForm = () => {
 									)}
 								/>
 							</FieldRow>
-							<FieldHint id={`${retryDelayField}-hint`} dangerouslySetInnerHTML={{ __html: t('Integration_Retry_Delay_Description') }} />
+							<FieldHint
+								id={`${retryDelayField}-hint`}
+								dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Integration_Retry_Delay_Description')) }}
+							/>
 						</Field>
 						{event === 'sendMessage' && (
 							<FieldGroup>
 								<Field>
-									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+									<FieldRow>
 										<FieldLabel htmlFor={triggerWordAnywhereField}>{t('Integration_Word_Trigger_Placement')}</FieldLabel>
-										<FieldRow>
-											<Controller
-												name='triggerWordAnywhere'
-												control={control}
-												render={({ field: { value, ...field } }) => (
-													<ToggleSwitch
-														id={triggerWordAnywhereField}
-														{...field}
-														checked={value}
-														aria-describedby={`${triggerWordAnywhereField}-hint`}
-													/>
-												)}
-											/>
-										</FieldRow>
-									</Box>
+										<Controller
+											name='triggerWordAnywhere'
+											control={control}
+											render={({ field: { value, ...field } }) => (
+												<ToggleSwitch
+													id={triggerWordAnywhereField}
+													{...field}
+													checked={value}
+													aria-describedby={`${triggerWordAnywhereField}-hint`}
+												/>
+											)}
+										/>
+									</FieldRow>
 									<FieldHint id={`${triggerWordAnywhereField}-hint`}>{t('Integration_Word_Trigger_Placement_Description')}</FieldHint>
 								</Field>
 								<Field>
-									<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+									<FieldRow>
 										<FieldLabel htmlFor={runOnEditsField}>{t('Integration_Run_When_Message_Is_Edited')}</FieldLabel>
-										<FieldRow>
-											<Controller
-												name='runOnEdits'
-												control={control}
-												render={({ field: { value, ...field } }) => (
-													<ToggleSwitch id={runOnEditsField} {...field} checked={value} aria-describedby={`${runOnEditsField}-hint`} />
-												)}
-											/>
-										</FieldRow>
-									</Box>
+										<Controller
+											name='runOnEdits'
+											control={control}
+											render={({ field: { value, ...field } }) => (
+												<ToggleSwitch id={runOnEditsField} {...field} checked={value} aria-describedby={`${runOnEditsField}-hint`} />
+											)}
+										/>
+									</FieldRow>
 									<FieldHint id={`${runOnEditsField}-hint`}>{t('Integration_Run_When_Message_Is_Edited_Description')}</FieldHint>
 								</Field>
 							</FieldGroup>

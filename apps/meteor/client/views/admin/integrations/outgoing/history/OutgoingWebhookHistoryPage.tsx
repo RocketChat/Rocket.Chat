@@ -1,14 +1,12 @@
 import { Button, ButtonGroup, Pagination } from '@rocket.chat/fuselage';
+import { CustomScrollbars, usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useRouteParameter, useMethod, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
-import { sdk } from '../../../../../../app/utils/client/lib/SDKClient';
-import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
-import Page from '../../../../../components/Page';
-import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 import HistoryContent from './HistoryContent';
+import { sdk } from '../../../../../../app/utils/client/lib/SDKClient';
 
 const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -41,18 +39,16 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 
 	type HistoryData = Awaited<ReturnType<typeof fetchHistory>>;
 
-	const { data, isLoading, refetch } = useQuery(
+	const { data, isPending, refetch } = useQuery({
 		queryKey,
-		async () => {
+		queryFn: async () => {
 			const result = fetchHistory(query);
 			setMounted(true);
 			return result;
 		},
-		{
-			cacheTime: 99999,
-			staleTime: 99999,
-		},
-	);
+		gcTime: 99999,
+		staleTime: 99999,
+	});
 
 	const handleClearHistory = async (): Promise<void> => {
 		try {
@@ -106,20 +102,20 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 
 	return (
 		<Page flexDirection='column' {...props}>
-			<Page.Header title={t('Integration_Outgoing_WebHook_History')}>
+			<PageHeader
+				title={t('Integration_Outgoing_WebHook_History')}
+				onClickBack={() => router.navigate(`/admin/integrations/edit/outgoing/${id}`)}
+			>
 				<ButtonGroup>
-					<Button icon='back' onClick={() => router.navigate(`/admin/integrations/edit/outgoing/${id}`)}>
-						{t('Back')}
-					</Button>
 					<Button icon='trash' danger onClick={handleClearHistory} disabled={total === 0}>
 						{t('clear_history')}
 					</Button>
 				</ButtonGroup>
-			</Page.Header>
-			<Page.Content>
-				<ScrollableContentWrapper>
-					<HistoryContent key='historyContent' data={data?.history || []} isLoading={isLoading} />
-				</ScrollableContentWrapper>
+			</PageHeader>
+			<PageContent>
+				<CustomScrollbars>
+					<HistoryContent key='historyContent' data={data?.history || []} isLoading={isPending} />
+				</CustomScrollbars>
 				<Pagination
 					current={current}
 					itemsPerPage={itemsPerPage}
@@ -129,7 +125,7 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 					onSetItemsPerPage={setItemsPerPage}
 					onSetCurrent={setCurrent}
 				/>
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };

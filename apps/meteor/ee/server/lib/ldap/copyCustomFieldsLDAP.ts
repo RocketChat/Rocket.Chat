@@ -1,9 +1,9 @@
 import type { IImportUser, ILDAPEntry } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 
-import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler';
-import { getNestedProp } from './getNestedProp';
 import { replacesNestedValues } from './replacesNestedValues';
+import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler';
+import { getNestedProp } from '../../../../server/lib/getNestedProp';
 
 export const copyCustomFieldsLDAP = (
 	{
@@ -56,7 +56,7 @@ export const copyCustomFieldsLDAP = (
 
 	Object.entries(map).forEach(([ldapField, userField]) => {
 		if (!getNestedProp(customFields, userField)) {
-			logger.debug(`User attribute does not exist: ${userField}`);
+			logger.debug({ msg: 'User attribute does not exist', userField });
 			return;
 		}
 

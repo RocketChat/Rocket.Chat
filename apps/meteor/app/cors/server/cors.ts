@@ -1,14 +1,14 @@
-import { createHash } from 'crypto';
 import type http from 'http';
 import type { UrlWithParsedQuery } from 'url';
 import url from 'url';
 
 import { Logger } from '@rocket.chat/logger';
+import { OAuthApps } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
-import _ from 'underscore';
 
+import { getWebAppHash } from '../../../server/configuration/configureBoilerplate';
 import { settings } from '../../settings/server';
 
 // Taken from 'connect' types
@@ -16,14 +16,24 @@ type NextFunction = (err?: any) => void;
 
 const logger = new Logger('CORS');
 
-settings.watch<boolean>(
-	'Enable_CSP',
-	Meteor.bindEnvironment((enabled) => {
-		WebAppInternals.setInlineScriptsAllowed(!enabled);
-	}),
-);
+declare module 'meteor/webapp' {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace WebApp {
+		function setInlineScriptsAllowed(allowed: boolean): Promise<void>;
+	}
+}
 
-WebApp.rawConnectHandlers.use((_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
+let templatePromise: Promise<void> | void;
+export async function setInlineScriptsAllowed(allowed: boolean): Promise<void> {
+	templatePromise = WebAppInternals.setInlineScriptsAllowed(allowed);
+}
+
+WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
+	if (templatePromise) {
+		await templatePromise;
+		templatePromise = void 0;
+	}
+
 	// XSS Protection for old browsers (IE)
 	res.setHeader('X-XSS-Protection', '1');
 
@@ -35,10 +45,13 @@ WebApp.rawConnectHandlers.use((_req: http.IncomingMessage, res: http.ServerRespo
 	}
 
 	if (settings.get<boolean>('Enable_CSP')) {
+		const legacyZapierAvailable = Boolean(await OAuthApps.findOneById('zapier'));
+
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const cdn_prefixes = [
 			settings.get<string>('CDN_PREFIX'),
 			settings.get<string>('CDN_PREFIX_ALL') ? null : settings.get<string>('CDN_JSCSS_PREFIX'),
+			legacyZapierAvailable && 'https://cdn.zapier.com',
 		]
 			.filter(Boolean)
 			.join(' ');
@@ -46,6 +59,8 @@ WebApp.rawConnectHandlers.use((_req: http.IncomingMessage, res: http.ServerRespo
 		const inlineHashes = [
 			// Hash for `window.close()`, required by the CAS login popup.
 			"'sha256-jqxtvDkBbRAl9Hpqv68WdNOieepg8tJSYu1xIy7zT34='",
+			// Hash for /apps/meteor/packages/rocketchat-livechat/assets/demo.html:25
+			"'sha256-aui5xYk3Lu1dQcnsPlNZI+qDTdfzdUv3fzsw80VLJgw='",
 		]
 			.filter(Boolean)
 			.join(' ');
@@ -53,6 +68,7 @@ WebApp.rawConnectHandlers.use((_req: http.IncomingMessage, res: http.ServerRespo
 			settings.get<boolean>('Accounts_OAuth_Apple') && 'https://appleid.cdn-apple.com',
 			settings.get<boolean>('PiwikAnalytics_enabled') && settings.get('PiwikAnalytics_url'),
 			settings.get<boolean>('GoogleAnalytics_enabled') && 'https://www.google-analytics.com',
+			legacyZapierAvailable && 'https://zapier.com',
 			...settings
 				.get<string>('Extra_CSP_Domains')
 				.split(/[ \n\,]/gim)
@@ -89,9 +105,9 @@ declare module 'meteor/webapp' {
 }
 
 let cachingVersion = '';
-settings.watch<string>('Troubleshoot_Force_Caching_Version', (value) => {
-	cachingVersion = String(value).trim();
-});
+export function setCachingVersion(value: string): void {
+	cachingVersion = value.trim();
+}
 
 // @ts-expect-error - accessing internal property of webapp
 WebAppInternals.staticFilesMiddleware = function (
@@ -112,18 +128,9 @@ WebAppInternals.staticFilesMiddleware = function (
 	// a cache of the file for the wrong hash and start a client loop due to the mismatch
 	// of the hashes of ui versions which would be checked against a websocket response
 	if (path === '/meteor_runtime_config.js') {
-		const program = WebApp.clientPrograms[arch] as (typeof WebApp.clientPrograms)[string] & {
-			meteorRuntimeConfigHash?: string;
-			meteorRuntimeConfig: string;
-		};
+		const hash = getWebAppHash(arch);
 
-		if (!program?.meteorRuntimeConfigHash) {
-			program.meteorRuntimeConfigHash = createHash('sha1')
-				.update(JSON.stringify(encodeURIComponent(program.meteorRuntimeConfig)))
-				.digest('hex');
-		}
-
-		if (program.meteorRuntimeConfigHash !== url.query.hash) {
+		if (!hash || hash !== url.query.hash) {
 			res.writeHead(404);
 			return res.end();
 		}
@@ -158,15 +165,11 @@ WebApp.httpServer.addListener('request', (req, res, ...args) => {
 
 	const isLocal =
 		localhostRegexp.test(remoteAddress) &&
-		(!req.headers['x-forwarded-for'] || _.all((req.headers['x-forwarded-for'] as string).split(','), localhostTest));
+		(!req.headers['x-forwarded-for'] || (req.headers['x-forwarded-for'] as string).split(',').every(localhostTest));
 	// @ts-expect-error - `pair` is valid, but doesnt exists on types
 	const isSsl = req.connection.pair || (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'].indexOf('https') !== -1);
 
-	logger.debug('req.url', req.url);
-	logger.debug('remoteAddress', remoteAddress);
-	logger.debug('isLocal', isLocal);
-	logger.debug('isSsl', isSsl);
-	logger.debug('req.headers', req.headers);
+	logger.debug({ msg: 'CORS request info', url: req.url, remoteAddress, isLocal, isSsl, headers: req.headers });
 
 	if (!isLocal && !isSsl) {
 		let host = req.headers.host || url.parse(Meteor.absoluteUrl()).hostname || '';

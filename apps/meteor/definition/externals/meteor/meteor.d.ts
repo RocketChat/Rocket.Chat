@@ -1,6 +1,6 @@
 import 'meteor/meteor';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
+import type { DDPCommon, IStreamerConstructor, IStreamer } from 'meteor/ddp-common';
 
 type StringifyBuffers<T extends unknown[]> = {
 	[P in keyof T]: T[P] extends Buffer ? string : T[P];
@@ -8,7 +8,7 @@ type StringifyBuffers<T extends unknown[]> = {
 
 declare global {
 	namespace Assets {
-		function getBinaryAsync(assetPath: string): Promise<EJSON | undefined>;
+		function getBinaryAsync(assetPath: string): Promise<Uint8Array | undefined>;
 
 		function getTextAsync(assetPath: string): Promise<string | undefined>;
 	}
@@ -22,6 +22,8 @@ declare module 'meteor/meteor' {
 			const instances: {
 				[name: string]: IStreamer;
 			};
+
+			function on(name: string, callback: (...args: any[]) => void): void;
 		}
 
 		interface ErrorStatic {
@@ -37,11 +39,14 @@ declare module 'meteor/meteor' {
 			isDesktop: () => boolean;
 		}
 
-		const server: any;
+		const server: {
+			sessions: Map<string, { userId: string; heartbeat: DDPCommon.Heartbeat }>;
+			publish_handlers: {
+				meteor_autoupdate_clientVersions(): void;
+			};
+		};
 
 		const runAsUser: <T>(userId: string, scope: () => T) => T;
-		// https://github.com/meteor/meteor/pull/12274 - Function is there on meteor 2.9, but meteor.d.ts doesn't have it registered
-		function userAsync(options?: { fields?: Mongo.FieldSpecifier | undefined }): Promise<Meteor.User | null>;
 
 		interface MethodThisType {
 			twoFactorChecked: boolean | undefined;
@@ -60,6 +65,9 @@ declare module 'meteor/meteor' {
 		}
 
 		interface IMeteorConnection {
+			httpHeaders: Record<string, any>;
+			referer: string;
+			clientAddress: string;
 			_send(message: IDDPMessage): void;
 
 			_methodInvokers: Record<string, any>;
@@ -76,13 +84,16 @@ declare module 'meteor/meteor' {
 					send: (data: string) => void;
 				};
 				_launchConnectionAsync: () => void;
-				allowConnection: () => void;
 				on: (key: 'message', callback: (data: string) => void) => void;
 			};
 
 			_outstandingMethodBlocks: unknown[];
 
-			onMessage(message: string): void;
+			// Updated: onMessage is now inside _streamHandlers
+			_streamHandlers: {
+				onMessage(message: string): void;
+				onReset(): void;
+			};
 
 			status(): {
 				connected: boolean;
@@ -91,6 +102,7 @@ declare module 'meteor/meteor' {
 				status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
 				reconnect: () => void;
 			};
+
 			subscribe(
 				id: string,
 				name: string,
@@ -110,20 +122,6 @@ declare module 'meteor/meteor' {
 		function _relativeToSiteRootUrl(path: string): string;
 		const _localStorage: Window['localStorage'];
 
-		function loginWithLDAP(
-			username: string | object,
-			password: string,
-			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
-		): void;
-
-		function loginWithCrowd(
-			username: string | object,
-			password: string,
-			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
-		): void;
-
-		function loginWithSamlToken(token: string, cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void): void;
-
 		function methods<TServerMethods extends ServerMethods>(methods: {
 			[TMethodName in keyof TServerMethods]?: (
 				this: MethodThisType,
@@ -136,5 +134,20 @@ declare module 'meteor/meteor' {
 					config: (config: { onlineOnly: string[] }) => void;
 			  }
 			| undefined;
+
+		function _isPromise(obj: unknown): obj is Promise<unknown>;
+
+		function _runFresh(func: () => void): void;
+
+		class _SynchronousQueue {
+			queueTask(arg0: () => void): void;
+
+			drain(): unknown;
+		}
 	}
+
+	// eslint-disable-next-line no-var
+	var Meteor: {
+		[key: `loginWith${string}`]: any;
+	};
 }

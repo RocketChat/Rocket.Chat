@@ -1,14 +1,15 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AccountSecurityPage from './AccountSecurityPage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const AccountSecurityRoute = (): ReactElement => {
 	const isTwoFactorEnabled = useSetting('Accounts_TwoFactorAuthentication_Enabled');
 	const isE2EEnabled = useSetting('E2E_Enable');
-	const canViewSecurity = isTwoFactorEnabled || isE2EEnabled;
+	const allowPasswordChange = useSetting('Accounts_AllowPasswordChange');
+
+	const canViewSecurity = isTwoFactorEnabled || isE2EEnabled || allowPasswordChange;
 
 	if (!canViewSecurity) {
 		return <NotAuthorizedPage />;

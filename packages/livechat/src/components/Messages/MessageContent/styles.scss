@@ -1,9 +1,8 @@
 @use 'sass:math';
+@use '../../../styles/variables';
 
-@import '../../../styles/variables';
-
-$message-content-gap: math.div($default-gap, 2);
-$message-content-margin: math.div(-$message-content-gap, 2) math.div($default-gap, 2);
+$message-content-gap: math.div(variables.$default-gap, 2);
+$message-content-margin: math.div(-$message-content-gap, 2) math.div(variables.$default-gap, 2);
 
 .message-content {
 	display: flex;

@@ -1,5 +1,8 @@
+import { SlackUsersImporter } from './SlackUsersImporter';
 import { Importers } from '../../importer/server';
-import { SlackUsersImporterInfo } from '../lib/info';
-import { SlackUsersImporter } from './importer';
 
-Importers.add(new SlackUsersImporterInfo(), SlackUsersImporter);
+Importers.add({
+	key: 'slack-users',
+	name: 'Slack_Users',
+	importer: SlackUsersImporter,
+});

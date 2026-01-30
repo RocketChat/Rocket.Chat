@@ -1,13 +1,20 @@
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
+import { getWorkspaceAccessTokenOrThrow } from './getWorkspaceAccessToken';
+import { syncWorkspace } from './syncWorkspace';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/server/getURL';
-import { getWorkspaceAccessTokenOrThrow } from './getWorkspaceAccessToken';
 
-export const getCheckoutUrl = async () => {
+export const fallback = 'https://go.rocket.chat/i/contact-sales';
+
+export const getCheckoutUrl = async (): Promise<{
+	url: string;
+}> => {
 	try {
-		const token = await getWorkspaceAccessTokenOrThrow(false, 'workspace:billing');
+		await syncWorkspace();
+
+		const token = await getWorkspaceAccessTokenOrThrow(true, 'workspace:billing', false);
 
 		const subscriptionURL = getURL('admin/subscription', {
 			full: true,
@@ -40,6 +47,8 @@ export const getCheckoutUrl = async () => {
 			err,
 		});
 
-		throw err;
+		return {
+			url: fallback,
+		};
 	}
 };

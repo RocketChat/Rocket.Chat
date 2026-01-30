@@ -1,7 +1,5 @@
-import { Modal, Skeleton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
-import type { VFC } from 'react';
+import { Modal, ModalClose, ModalContent, ModalFooter, ModalHeader, ModalTitle, Skeleton } from '@rocket.chat/fuselage';
+import { useTranslation } from 'react-i18next';
 
 import MatrixFederationSearchModalContent from './MatrixFederationSearchModalContent';
 import { useMatrixServerList } from './useMatrixServerList';
@@ -11,17 +9,17 @@ type MatrixFederationSearchProps = {
 	defaultSelectedServer?: string;
 };
 
-const MatrixFederationSearch: VFC<MatrixFederationSearchProps> = ({ onClose, defaultSelectedServer }) => {
-	const t = useTranslation();
+const MatrixFederationSearch = ({ onClose, defaultSelectedServer }: MatrixFederationSearchProps) => {
+	const { t } = useTranslation();
 	const { data, isLoading } = useMatrixServerList();
 
 	return (
 		<Modal>
-			<Modal.Header>
-				<Modal.Title>{t('Federation_Federated_room_search')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content display='flex' flexDirection='column'>
+			<ModalHeader>
+				<ModalTitle>{t('Federation_Federated_room_search')}</ModalTitle>
+				<ModalClose onClick={onClose} />
+			</ModalHeader>
+			<ModalContent display='flex' flexDirection='column'>
 				{isLoading && (
 					<>
 						<Skeleton />
@@ -33,8 +31,8 @@ const MatrixFederationSearch: VFC<MatrixFederationSearchProps> = ({ onClose, def
 				{!isLoading && data?.servers && (
 					<MatrixFederationSearchModalContent defaultSelectedServer={defaultSelectedServer} servers={data.servers} />
 				)}
-			</Modal.Content>
-			<Modal.Footer />
+			</ModalContent>
+			<ModalFooter />
 		</Modal>
 	);
 };

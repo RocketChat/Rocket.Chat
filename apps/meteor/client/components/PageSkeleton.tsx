@@ -1,18 +1,17 @@
 import { Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuselage';
+import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React from 'react';
-
-import Page from './Page';
 
 const PageSkeleton = (): ReactElement => (
 	<Page>
-		<Page.Header title={<Skeleton width='x320' maxWidth='full' />}>
+		<PageHeader title={<Skeleton width='x320' maxWidth='full' />}>
 			<ButtonGroup>
-				<Button children={<Skeleton width='x80' />} disabled />
+				<Button disabled>
+					<Skeleton width='x80' />
+				</Button>
 			</ButtonGroup>
-		</Page.Header>
-
-		<Page.Content>
+		</PageHeader>
+		<PageContent>
 			<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
 				<Box is='p' color='hint' fontScale='p2'>
 					<Skeleton />
@@ -20,7 +19,7 @@ const PageSkeleton = (): ReactElement => (
 					<Skeleton width='75%' />
 				</Box>
 			</Box>
-		</Page.Content>
+		</PageContent>
 	</Page>
 );
 

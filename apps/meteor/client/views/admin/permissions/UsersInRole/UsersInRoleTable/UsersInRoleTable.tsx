@@ -1,80 +1,59 @@
-import type { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
+import type { IUserInRole, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React from 'react';
+import {
+	GenericTable,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+	GenericTableBody,
+	GenericTableLoadingTable,
+} from '@rocket.chat/ui-client';
+import type { usePagination } from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../../components/GenericModal';
-import GenericNoResults from '../../../../../components/GenericNoResults';
-import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../../components/GenericTable';
-import type { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import UsersInRoleTableRow from './UsersInRoleTableRow';
+import GenericError from '../../../../../components/GenericError';
+import GenericNoResults from '../../../../../components/GenericNoResults';
 
 type UsersInRoleTableProps = {
-	users: IUserInRole[];
-	reload: () => void;
-	roleName: IRole['name'];
-	roleId: IRole['_id'];
-	description: IRole['description'];
+	isLoading: boolean;
+	isError: boolean;
+	isSuccess: boolean;
 	total: number;
-	rid?: IRoom['_id'];
+	users: Serialized<IUserInRole>[];
+	onRemove: (username: IUserInRole['username']) => void;
 	paginationData: ReturnType<typeof usePagination>;
+	refetch: () => void;
 };
 
-// TODO: Missing error state
-const UsersInRoleTable = ({
-	users,
-	reload,
-	roleName,
-	roleId,
-	description,
-	total,
-	rid,
-	paginationData,
-}: UsersInRoleTableProps): ReactElement => {
-	const t = useTranslation();
-	const setModal = useSetModal();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const removeUser = useEndpoint('POST', '/v1/roles.removeUserFromRole');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = paginationData;
+const UsersInRoleTable = ({ isLoading, isSuccess, isError, total, users, onRemove, refetch, paginationData }: UsersInRoleTableProps) => {
+	const { t } = useTranslation();
+	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = paginationData;
 
-	const closeModal = (): void => setModal();
-
-	const handleRemove = useMutableCallback((username) => {
-		const remove = async (): Promise<void> => {
-			try {
-				await removeUser({ roleId, username, scope: rid });
-				dispatchToastMessage({ type: 'success', message: t('User_removed') });
-			} catch (error: unknown) {
-				dispatchToastMessage({ type: 'error', message: error });
-			} finally {
-				closeModal();
-				reload();
-			}
-		};
-
-		setModal(
-			<GenericModal variant='danger' onConfirm={remove} onClose={closeModal} onCancel={closeModal} confirmText={t('Delete')}>
-				{t('The_user_s_will_be_removed_from_role_s', username, description || roleName)}
-			</GenericModal>,
-		);
-	});
+	const headers = (
+		<>
+			<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell>{t('Email')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell w='x80'>{t('Actions')}</GenericTableHeaderCell>
+		</>
+	);
 
 	return (
 		<>
-			{users.length === 0 && <GenericNoResults />}
-			{users.length > 0 && (
+			{isLoading && (
+				<GenericTable>
+					<GenericTableHeader>{headers}</GenericTableHeader>
+					<GenericTableBody>
+						<GenericTableLoadingTable headerCells={3} />
+					</GenericTableBody>
+				</GenericTable>
+			)}
+			{isSuccess && users?.length > 0 && (
 				<>
 					<GenericTable>
-						<GenericTableHeader>
-							<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell>{t('Email')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell w='x80'></GenericTableHeaderCell>
-						</GenericTableHeader>
+						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{users.map((user) => (
-								<UsersInRoleTableRow onRemove={handleRemove} key={user?._id} user={user} />
+								<UsersInRoleTableRow key={user?._id} user={user} onRemove={onRemove} />
 							))}
 						</GenericTableBody>
 					</GenericTable>
@@ -83,12 +62,14 @@ const UsersInRoleTable = ({
 						current={current}
 						itemsPerPage={itemsPerPage}
 						count={total}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
 						{...paginationProps}
 					/>
 				</>
 			)}
+			{isSuccess && users?.length === 0 && <GenericNoResults />}
+			{isError && <GenericError buttonAction={refetch} />}
 		</>
 	);
 };

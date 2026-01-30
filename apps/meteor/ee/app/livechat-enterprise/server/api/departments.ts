@@ -8,7 +8,6 @@ import {
 	isLivechatAnalyticsDepartmentsTotalAbandonedChatsProps,
 	isLivechatAnalyticsDepartmentsPercentageAbandonedChatsProps,
 } from '@rocket.chat/rest-typings';
-import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../../app/api/server';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
@@ -25,7 +24,12 @@ import {
 
 API.v1.addRoute(
 	'livechat/analytics/departments/amount-of-chats',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatAnalyticsDepartmentsAmountOfChatsProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-manager'],
+		validateParams: isLivechatAnalyticsDepartmentsAmountOfChatsProps,
+		license: ['livechat-enterprise'],
+	},
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -45,7 +49,7 @@ API.v1.addRoute(
 			const { departments, total } = await findAllRoomsAsync({
 				start: startDate,
 				end: endDate,
-				answered: answered && answered === 'true',
+				answered: answered === 'true',
 				departmentId,
 				options: { offset, count },
 			});
@@ -65,6 +69,7 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['view-livechat-manager'],
 		validateParams: isLivechatAnalyticsDepartmentsAverageServiceTimeProps,
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {
@@ -104,6 +109,7 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['view-livechat-manager'],
 		validateParams: isLivechatAnalyticsDepartmentsAverageChatDurationTimeProps,
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {
@@ -143,6 +149,7 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['view-livechat-manager'],
 		validateParams: isLivechatAnalyticsDepartmentsTotalServiceTimeProps,
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {
@@ -182,16 +189,13 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['view-livechat-manager'],
 		validateParams: isLivechatAnalyticsDepartmentsAverageWaitingTimeProps,
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { start, end } = this.queryParams;
 			const { departmentId } = this.queryParams;
-
-			check(start, String);
-			check(end, String);
-			check(departmentId, Match.Maybe(String));
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -225,6 +229,7 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['view-livechat-manager'],
 		validateParams: isLivechatAnalyticsDepartmentsTotalTransferredChatsProps,
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {
@@ -264,6 +269,7 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['view-livechat-manager'],
 		validateParams: isLivechatAnalyticsDepartmentsTotalAbandonedChatsProps,
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {
@@ -303,6 +309,7 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['view-livechat-manager'],
 		validateParams: isLivechatAnalyticsDepartmentsPercentageAbandonedChatsProps,
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {

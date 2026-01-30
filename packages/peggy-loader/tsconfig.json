@@ -1,0 +1,7 @@
+{
+	"extends": "@rocket.chat/tsconfig/server.json",
+	"compilerOptions": {
+		"module": "esnext",
+	},
+	"include": ["src"]
+}

@@ -2,9 +2,13 @@ import { api } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
 
+import { deleteRoom } from './deleteRoom';
+import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../../lib/constants';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
-import { deleteRoom } from './deleteRoom';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
+
+const FILE_CLEANUP_BATCH_SIZE = 1000;
 
 export async function cleanRoomHistory({
 	rid = '',
@@ -43,6 +47,28 @@ export async function cleanRoomHistory({
 		limit,
 	});
 
+	const targetMessageIdsForAttachmentRemoval = new Set<string>();
+	const pruneMessageAttachment = { color: NOTIFICATION_ATTACHMENT_COLOR, text };
+
+	async function performFileAttachmentCleanupBatch() {
+		if (targetMessageIdsForAttachmentRemoval.size === 0) return;
+
+		const ids = [...targetMessageIdsForAttachmentRemoval];
+		await Messages.removeFileAttachmentsByMessageIds(ids, pruneMessageAttachment);
+		await Messages.clearFilesByMessageIds(ids);
+		void api.broadcast('notify.deleteMessageBulk', rid, {
+			rid,
+			excludePinned,
+			ignoreDiscussion,
+			ts,
+			users: fromUsers,
+			ids,
+			filesOnly: true,
+			replaceFileAttachmentsWith: pruneMessageAttachment,
+		});
+		targetMessageIdsForAttachmentRemoval.clear();
+	}
+
 	for await (const document of cursor) {
 		const uploadsStore = FileUpload.getStore('Uploads');
 
@@ -50,8 +76,16 @@ export async function cleanRoomHistory({
 
 		fileCount++;
 		if (filesOnly) {
-			await Messages.updateOne({ _id: document._id }, { $unset: { file: 1 }, $set: { attachments: [{ color: '#FD745E', text }] } });
+			targetMessageIdsForAttachmentRemoval.add(document._id);
 		}
+
+		if (targetMessageIdsForAttachmentRemoval.size >= FILE_CLEANUP_BATCH_SIZE) {
+			await performFileAttachmentCleanupBatch();
+		}
+	}
+
+	if (targetMessageIdsForAttachmentRemoval.size > 0) {
+		await performFileAttachmentCleanupBatch();
 	}
 
 	if (filesOnly) {
@@ -74,6 +108,7 @@ export async function cleanRoomHistory({
 
 	if (!ignoreThreads) {
 		const threads = new Set<string>();
+
 		await Messages.findThreadsByRoomIdPinnedTimestampAndUsers(
 			{ rid, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers },
 			{ projection: { _id: 1 } },
@@ -82,7 +117,14 @@ export async function cleanRoomHistory({
 		});
 
 		if (threads.size > 0) {
-			await Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);
+			const subscriptionIds: string[] = (
+				await Subscriptions.findUnreadThreadsByRoomId(rid, [...threads], { projection: { _id: 1 } }).toArray()
+			).map(({ _id }) => _id);
+
+			const { modifiedCount } = await Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);
+			if (modifiedCount) {
+				subscriptionIds.forEach((id) => notifyOnSubscriptionChangedById(id));
+			}
 		}
 	}
 
@@ -110,15 +152,21 @@ export async function cleanRoomHistory({
 	}
 
 	if (count) {
-		const lastMessage = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(rid);
-		await Rooms.resetLastMessageById(rid, lastMessage);
+		const lastMessage = await Messages.getLastVisibleUserMessageSentByRoomId(rid);
+
+		await Rooms.resetLastMessageById(rid, lastMessage, -count);
+
+		void notifyOnRoomChangedById(rid);
+
 		void api.broadcast('notify.deleteMessageBulk', rid, {
 			rid,
 			excludePinned,
 			ignoreDiscussion,
 			ts,
 			users: fromUsers,
+			ids: selectedMessageIds,
 		});
 	}
+
 	return count;
 }

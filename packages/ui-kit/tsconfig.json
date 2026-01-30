@@ -1,0 +1,14 @@
+{
+	"extends": "@rocket.chat/tsconfig/base.json",
+  "compilerOptions": {
+    "target": "es2024",
+    "module": "esnext",
+    "lib": ["ES2024"],
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "plugins": [{ "transform": "typia/lib/transform" }]
+  },
+	"include": ["./src/**/*.ts"],
+	"exclude": []
+}

@@ -1,31 +1,44 @@
-import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import type { IRoomWithRetentionPolicy, RoomType, MessageTypesValues } from '@rocket.chat/core-typings';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
+import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 
-const getPolicyRoomType = (roomType: IRoomWithRetentionPolicy['t']) => {
-	switch (roomType) {
-		case 'c':
-			return 'Channels';
-		case 'p':
-			return 'Groups';
-		case 'd':
-			return 'DMs';
-	}
+export type EditRoomInfoFormData = {
+	roomName: string;
+	roomTopic: string;
+	roomAnnouncement: string;
+	roomDescription: string;
+	roomType: RoomType;
+	roomAvatar?: string;
+	readOnly: boolean;
+	reactWhenReadOnly: boolean;
+	archived: boolean;
+	joinCodeRequired: boolean;
+	hideSysMes: boolean;
+	encrypted: boolean;
+	retentionEnabled: boolean;
+	retentionOverrideGlobal: boolean;
+	retentionMaxAge: number;
+	retentionExcludePinned: boolean;
+	retentionFilesOnly: boolean;
+	retentionIgnoreThreads: boolean;
+	showChannels: boolean;
+	showDiscussions: boolean;
+	joinCode: string;
+	systemMessages: MessageTypesValues[];
 };
 
-export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
+export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy): Partial<EditRoomInfoFormData> => {
+	const retentionPolicy = useRetentionPolicy(room);
+	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
+
 	const { t, ro, archived, topic, description, announcement, joinCodeRequired, sysMes, encrypted, retention, reactWhenReadOnly } = room;
 
-	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
-	const maxAgeDefault = useSetting<number>(`RetentionPolicy_MaxAge_${getPolicyRoomType(room.t)}`) || 30;
-	const retentionEnabledDefault = useSetting<boolean>(`RetentionPolicy_AppliesTo${getPolicyRoomType(room.t)}`);
-	const excludePinnedDefault = useSetting('RetentionPolicy_DoNotPrunePinned');
-	const filesOnlyDefault = useSetting('RetentionPolicy_FilesOnly');
-
 	return useMemo(
-		() => ({
+		(): Partial<EditRoomInfoFormData> => ({
 			roomName: t === 'd' && room.usernames ? room.usernames.join(' x ') : roomCoordinator.getRoomName(t, room),
 			roomType: t,
 			readOnly: !!ro,
@@ -40,25 +53,23 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
 			systemMessages: Array.isArray(sysMes) ? sysMes : [],
 			hideSysMes: Array.isArray(sysMes) ? !!sysMes?.length : !!sysMes,
 			encrypted,
-			...(retentionPolicyEnabled && {
-				retentionEnabled: retention?.enabled ?? retentionEnabledDefault,
-				retentionOverrideGlobal: !!retention?.overrideGlobal,
-				retentionMaxAge: Math.min(retention?.maxAge, maxAgeDefault) || maxAgeDefault,
-				retentionExcludePinned: retention?.excludePinned ?? excludePinnedDefault,
-				retentionFilesOnly: retention?.filesOnly ?? filesOnlyDefault,
-			}),
+			...(canEditRoomRetentionPolicy &&
+				retentionPolicy?.enabled && {
+					retentionEnabled: retention?.enabled ?? retentionPolicy.isActive,
+					retentionOverrideGlobal: !!retention?.overrideGlobal,
+					retentionMaxAge: retention?.maxAge ?? msToTimeUnit(TIMEUNIT.days, retentionPolicy.maxAge),
+					retentionExcludePinned: retention?.excludePinned ?? retentionPolicy.excludePinned,
+					retentionFilesOnly: retention?.filesOnly ?? retentionPolicy.filesOnly,
+					retentionIgnoreThreads: retention?.ignoreThreads ?? retentionPolicy.ignoreThreads,
+				}),
 		}),
 		[
 			announcement,
 			archived,
 			description,
-			excludePinnedDefault,
-			filesOnlyDefault,
 			joinCodeRequired,
-			maxAgeDefault,
 			retention,
-			retentionEnabledDefault,
-			retentionPolicyEnabled,
+			retentionPolicy,
 			ro,
 			room,
 			sysMes,
@@ -66,6 +77,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
 			topic,
 			encrypted,
 			reactWhenReadOnly,
+			canEditRoomRetentionPolicy,
 		],
 	);
 };

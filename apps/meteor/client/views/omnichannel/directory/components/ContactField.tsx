@@ -1,16 +1,16 @@
 import type { IOmnichannelGenericRoom, IVisitor } from '@rocket.chat/core-typings';
 import { Avatar, Box } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { FormSkeleton } from './FormSkeleton';
 import { UserStatus } from '../../../../components/UserStatus';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import AgentInfoDetails from '../../components/AgentInfoDetails';
 import Field from '../../components/Field';
 import Info from '../../components/Info';
 import Label from '../../components/Label';
-import { FormSkeleton } from './FormSkeleton';
 
 type ContactFieldProps = {
 	contact: IVisitor;
@@ -18,17 +18,19 @@ type ContactFieldProps = {
 };
 
 const ContactField = ({ contact, room }: ContactFieldProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { status } = contact;
 	const { fname, t: type } = room;
 	const avatarUrl = roomCoordinator.getRoomDirectives(type).getAvatarPath(room) || '';
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
-	const { data, isLoading, isError } = useQuery(['/v1/livechat/visitors.info', contact._id], () =>
-		getVisitorInfo({ visitorId: contact._id }),
-	);
+	const { data, isPending, isError } = useQuery({
+		queryKey: ['/v1/livechat/visitors.info', contact._id],
 
-	if (isLoading) {
+		queryFn: () => getVisitorInfo({ visitorId: contact._id }),
+	});
+
+	if (isPending) {
 		return <FormSkeleton />;
 	}
 

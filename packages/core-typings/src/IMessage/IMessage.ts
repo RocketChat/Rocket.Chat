@@ -8,105 +8,92 @@ import type { ILivechatPriority } from '../ILivechatPriority';
 import type { ILivechatVisitor } from '../ILivechatVisitor';
 import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { IRoom, RoomID } from '../IRoom';
+import type { IRoom } from '../IRoom';
 import type { IUser } from '../IUser';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 
-type MentionType = 'user' | 'team';
-
-type MessageUrl = {
+export type MessageUrl = {
 	url: string;
 	source?: string;
 	meta: Record<string, string>;
-	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
+	headers?: { contentLength?: string; contentType?: string };
 	ignoreParse?: boolean;
 	parsedUrl?: Pick<UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
 
-type VoipMessageTypesValues =
-	| 'voip-call-started'
-	| 'voip-call-declined'
-	| 'voip-call-on-hold'
-	| 'voip-call-unhold'
-	| 'voip-call-ended'
-	| 'voip-call-duration'
-	| 'voip-call-wrapup'
-	| 'voip-call-ended-unexpectedly';
+const TeamMessageTypesValues = [
+	'removed-user-from-team',
+	'added-user-to-team',
+	'ult',
+	'user-converted-to-team',
+	'user-converted-to-channel',
+	'user-removed-room-from-team',
+	'user-deleted-room-from-team',
+	'user-added-room-to-team',
+	'ujt',
+] as const;
 
-type TeamMessageTypes =
-	| 'removed-user-from-team'
-	| 'added-user-to-team'
-	| 'ult'
-	| 'user-converted-to-team'
-	| 'user-converted-to-channel'
-	| 'user-removed-room-from-team'
-	| 'user-deleted-room-from-team'
-	| 'user-added-room-to-team'
-	| 'ujt';
+const LivechatMessageTypesValues = [
+	'livechat_navigation_history',
+	'livechat_transfer_history',
+	'livechat_transcript_history',
+	'livechat_video_call',
+	'livechat_transfer_history_fallback',
+	'livechat-close',
+	'livechat-started',
+	'omnichannel_priority_change_history',
+	'omnichannel_sla_change_history',
+	'omnichannel_placed_chat_on_hold',
+	'omnichannel_on_hold_chat_resumed',
+] as const;
 
-type LivechatMessageTypes =
-	| 'livechat_navigation_history'
-	| 'livechat_transfer_history'
-	| 'omnichannel_priority_change_history'
-	| 'omnichannel_sla_change_history'
-	| 'livechat_transcript_history'
-	| 'livechat_video_call'
-	| 'livechat_transfer_history_fallback'
-	| 'livechat-close'
-	| 'livechat_webrtc_video_call'
-	| 'livechat-started';
-
-type OmnichannelTypesValues = 'omnichannel_placed_chat_on_hold' | 'omnichannel_on_hold_chat_resumed';
-
-type OtrMessageTypeValues = 'otr' | 'otr-ack';
-
-export type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
-
-export type MessageTypesValues =
-	| 'e2e'
-	| 'uj'
-	| 'ul'
-	| 'ru'
-	| 'au'
-	| 'mute_unmute'
-	| 'r'
-	| 'ut'
-	| 'wm'
-	| 'rm'
-	| 'subscription-role-added'
-	| 'subscription-role-removed'
-	| 'room-archived'
-	| 'room-unarchived'
-	| 'room_changed_privacy'
-	| 'room_changed_description'
-	| 'room_changed_announcement'
-	| 'room_changed_avatar'
-	| 'room_changed_topic'
-	| 'room_e2e_enabled'
-	| 'room_e2e_disabled'
-	| 'user-muted'
-	| 'user-unmuted'
-	| 'room-removed-read-only'
-	| 'room-set-read-only'
-	| 'room-allowed-reacting'
-	| 'room-disallowed-reacting'
-	| 'command'
-	| 'videoconf'
-	| 'message_pinned'
-	| 'new-moderator'
-	| 'moderator-removed'
-	| 'new-owner'
-	| 'owner-removed'
-	| 'new-leader'
-	| 'leader-removed'
-	| 'discussion-created'
-	| LivechatMessageTypes
-	| TeamMessageTypes
-	| VoipMessageTypesValues
-	| OmnichannelTypesValues
-	| OtrMessageTypeValues
-	| OtrSystemMessages;
+const MessageTypes = [
+	'e2e',
+	'uj',
+	'ui',
+	'uir',
+	'ul',
+	'ru',
+	'au',
+	'mute_unmute',
+	'r',
+	'ut',
+	'wm',
+	'rm',
+	'subscription-role-added',
+	'subscription-role-removed',
+	'room-archived',
+	'room-unarchived',
+	'room_changed_privacy',
+	'room_changed_description',
+	'room_changed_announcement',
+	'room_changed_avatar',
+	'room_changed_topic',
+	'room_e2e_enabled',
+	'room_e2e_disabled',
+	'user-muted',
+	'user-unmuted',
+	'room-removed-read-only',
+	'room-set-read-only',
+	'room-allowed-reacting',
+	'room-disallowed-reacting',
+	'command',
+	'videoconf',
+	'message_pinned',
+	'message_pinned_e2e',
+	'new-moderator',
+	'moderator-removed',
+	'new-owner',
+	'owner-removed',
+	'new-leader',
+	'leader-removed',
+	'discussion-created',
+	'abac-removed-user-from-room',
+	...TeamMessageTypesValues,
+	...LivechatMessageTypesValues,
+] as const;
+export type MessageTypesValues = (typeof MessageTypes)[number];
 
 export type TokenType = 'code' | 'inlinecode' | 'bold' | 'italic' | 'strike' | 'link';
 export type Token = {
@@ -121,15 +108,45 @@ export type TokenExtra = {
 	noHtml?: string;
 };
 
+export type MessageMention = {
+	type?: 'user' | 'team'; // mentions for 'all' and 'here' doesn't have type
+	_id: string;
+	name?: string;
+	username?: string;
+	fname?: string; // incase of channel mentions
+};
+
+interface IEncryptedContent {
+	algorithm: string;
+	ciphertext: string;
+}
+
+interface IEncryptedContentV1 extends IEncryptedContent {
+	algorithm: 'rc.v1.aes-sha2';
+	ciphertext: string;
+}
+
+interface IEncryptedContentV2 extends IEncryptedContent {
+	algorithm: 'rc.v2.aes-sha2';
+	ciphertext: string;
+	iv: string; // Initialization Vector
+	kid: string; // ID of the key used to encrypt the message
+}
+
+interface IEncryptedContentFederation extends IEncryptedContent {
+	algorithm: 'm.megolm.v1.aes-sha2';
+	ciphertext: string;
+}
+
+export type EncryptedContent = IEncryptedContentV1 | IEncryptedContentV2 | IEncryptedContentFederation;
+
 export interface IMessage extends IRocketChatRecord {
-	rid: RoomID;
+	rid: IRoom['_id'];
 	msg: string;
 	tmid?: string;
 	tshow?: boolean;
 	ts: Date;
-	mentions?: ({
-		type: MentionType;
-	} & Pick<IUser, '_id' | 'username' | 'name'>)[];
+	mentions?: MessageMention[];
 
 	groupable?: boolean;
 	channels?: Pick<IRoom, '_id' | 'name'>[];
@@ -151,14 +168,14 @@ export interface IMessage extends IRocketChatRecord {
 	pinnedBy?: Pick<IUser, '_id' | 'username'>;
 	unread?: boolean;
 	temp?: boolean;
-	drid?: RoomID;
+	drid?: IRoom['_id'];
 	tlm?: Date;
 
 	dcount?: number;
 	tcount?: number;
 	t?: MessageTypesValues;
 	e2e?: 'pending' | 'done';
-	otrAck?: string;
+	e2eMentions?: { e2eUserMentions?: string[]; e2eChannelMentions?: string[] };
 
 	urls?: MessageUrl[];
 
@@ -182,12 +199,12 @@ export interface IMessage extends IRocketChatRecord {
 	attachments?: MessageAttachment[];
 
 	reactions?: {
-		[key: string]: { names?: (string | undefined)[]; usernames: string[]; federationReactionEventIds?: Record<string, string> };
+		[key: string]: { names?: string[]; usernames: string[]; federationReactionEventIds?: Record<string, string> };
 	};
 
 	private?: boolean;
 	/* @deprecated */
-	bot?: boolean;
+	bot?: Record<string, any>;
 	sentByEmail?: boolean;
 	webRtcCallEndTs?: Date;
 	role?: string;
@@ -202,6 +219,7 @@ export interface IMessage extends IRocketChatRecord {
 	token?: string;
 	federation?: {
 		eventId: string;
+		version?: number;
 	};
 
 	/* used when message type is "omnichannel_sla_change_history" */
@@ -215,11 +233,36 @@ export interface IMessage extends IRocketChatRecord {
 		definedBy: Pick<IUser, '_id' | 'username'>;
 		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>;
 	};
+
+	customFields?: Record<string, any>;
+
+	content?: EncryptedContent;
 }
 
-export type MessageSystem = {
-	t: 'system';
-};
+export type EncryptedMessageContent = Required<Pick<IMessage, 'content'>>;
+
+export function isEncryptedMessageContent(value: unknown): value is EncryptedMessageContent {
+	return (
+		typeof value === 'object' &&
+		value !== null &&
+		'content' in value &&
+		typeof value.content === 'object' &&
+		value.content !== null &&
+		'algorithm' in value.content &&
+		(value.content.algorithm === 'rc.v1.aes-sha2' || value.content.algorithm === 'rc.v2.aes-sha2') &&
+		'ciphertext' in value.content &&
+		typeof value.content.ciphertext === 'string' &&
+		(value.content.algorithm === 'rc.v1.aes-sha2' ||
+			(value.content.algorithm === 'rc.v2.aes-sha2' &&
+				'iv' in value.content &&
+				typeof value.content.iv === 'string' &&
+				'kid' in value.content &&
+				typeof value.content.kid === 'string'))
+	);
+}
+interface ISystemMessage extends IMessage {
+	t: MessageTypesValues;
+}
 
 export interface IEditedMessage extends IMessage {
 	editedAt: Date;
@@ -235,8 +278,18 @@ export const isEditedMessage = (message: IMessage): message is IEditedMessage =>
 	'_id' in (message as IEditedMessage).editedBy &&
 	typeof (message as IEditedMessage).editedBy._id === 'string';
 
+export const isSystemMessage = (message: IMessage): message is ISystemMessage =>
+	message.t !== undefined && MessageTypes.includes(message.t);
+
 export const isDeletedMessage = (message: IMessage): message is IEditedMessage => isEditedMessage(message) && message.t === 'rm';
-export const isMessageFromMatrixFederation = (message: IMessage): boolean =>
+
+interface IFederatedMessage extends IMessage {
+	federation: {
+		eventId: string;
+	};
+}
+
+export const isMessageFromMatrixFederation = (message: IMessage): message is IFederatedMessage =>
 	'federation' in message && Boolean(message.federation?.eventId);
 
 export interface ITranslatedMessage extends IMessage {
@@ -268,24 +321,6 @@ export interface IDiscussionMessage extends IMessage {
 }
 
 export const isDiscussionMessage = (message: IMessage): message is IDiscussionMessage => !!message.drid;
-
-export interface IPrivateMessage extends IMessage {
-	private: true;
-}
-
-export const isPrivateMessage = (message: IMessage): message is IPrivateMessage => !!message.private;
-
-export interface IMessageReactionsNormalized extends IMessage {
-	reactions: {
-		[key: string]: {
-			usernames: Required<IUser['_id']>[];
-			names: Required<IUser>['name'][];
-		};
-	};
-}
-
-export const isMessageReactionsNormalized = (message: IMessage): message is IMessageReactionsNormalized =>
-	Boolean('reactions' in message && message.reactions && message.reactions[0] && 'names' in message.reactions[0]);
 
 export interface IOmnichannelSystemMessage extends IMessage {
 	navigation?: {
@@ -322,48 +357,34 @@ export interface IOmnichannelSystemMessage extends IMessage {
 	comment?: string;
 }
 
-export type IVoipMessage = IMessage & {
-	voipData: {
-		callDuration?: number;
-		callStarted?: string;
-		callWaitingTime?: string;
-	};
-};
-export interface IMessageDiscussion extends IMessage {
-	drid: RoomID;
-}
-
-export const isMessageDiscussion = (message: IMessage): message is IMessageDiscussion => {
-	return 'drid' in message;
-};
-
-export type IMessageInbox = IMessage & {
+export interface IMessageInbox extends IMessage {
 	// email inbox fields
 	email?: {
 		references?: string[];
 		messageId?: string;
 		thread?: string[];
 	};
-};
+}
 
 export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;
-export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'voipData' in message;
 
-export type IE2EEMessage = IMessage & {
+export interface IE2EEMessage extends IMessage {
 	t: 'e2e';
 	e2e: 'pending' | 'done';
-};
+	content: EncryptedContent;
+}
 
-export type IOTRMessage = IMessage & {
-	t: 'otr' | 'otr-ack';
-};
+export interface IE2EEPinnedMessage extends IMessage {
+	t: 'message_pinned_e2e';
+	attachments: [MessageAttachment & { content: EncryptedContent }];
+}
 
-export type IVideoConfMessage = IMessage & {
+interface IVideoConfMessage extends IMessage {
 	t: 'videoconf';
-};
+}
 
 export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
-export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr' || message.t === 'otr-ack';
+export const isE2EEPinnedMessage = (message: IMessage): message is IE2EEPinnedMessage => message.t === 'message_pinned_e2e';
 export const isVideoConfMessage = (message: IMessage): message is IVideoConfMessage => message.t === 'videoconf';
 
 export type IMessageWithPendingFileImport = IMessage & {
@@ -379,3 +400,9 @@ export type IMessageWithPendingFileImport = IMessage & {
 		downloaded?: boolean;
 	};
 };
+
+interface IMessageFromVisitor extends IMessage {
+	token: string;
+}
+
+export const isMessageFromVisitor = (message: IMessage): message is IMessageFromVisitor => 'token' in message;

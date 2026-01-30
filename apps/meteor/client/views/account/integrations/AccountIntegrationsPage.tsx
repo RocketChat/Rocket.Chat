@@ -1,66 +1,74 @@
-import type { IWebdavAccountIntegration } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { SelectLegacy, Box, Button, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { SelectLegacy, Box, Button, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import { WebdavAccounts } from '../../../../app/models/client';
-import Page from '../../../components/Page';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { useRemoveWebDAVAccountIntegrationMutation } from './hooks/useRemoveWebDAVAccountIntegrationMutation';
+import { useWebDAVAccountIntegrationsQuery } from '../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
 import { getWebdavServerName } from '../../../lib/getWebdavServerName';
 
-const getWebdavAccounts = (): IWebdavAccountIntegration[] => WebdavAccounts.find().fetch();
+const AccountIntegrationsPage = () => {
+	const { data: webdavAccountIntegrations } = useWebDAVAccountIntegrationsQuery();
 
-const AccountIntegrationsPage = (): ReactElement => {
-	const t = useTranslation();
-	const { handleSubmit, control } = useForm();
+	const {
+		handleSubmit,
+		control,
+		formState: { errors },
+	} = useForm<{ accountSelected: string }>();
+
+	const options: SelectOption[] = useMemo(
+		() => webdavAccountIntegrations?.map(({ _id, ...current }) => [_id, getWebdavServerName(current)]) ?? [],
+		[webdavAccountIntegrations],
+	);
+
 	const dispatchToastMessage = useToastMessageDispatch();
-	const accounts = useReactiveValue(getWebdavAccounts);
-	const removeWebdavAccount = useEndpoint('POST', '/v1/webdav.removeWebdavAccount');
+	const { t } = useTranslation();
 
-	const options: SelectOption[] = useMemo(() => accounts?.map(({ _id, ...current }) => [_id, getWebdavServerName(current)]), [accounts]);
-
-	const handleClickRemove = useMutableCallback(({ accountSelected }) => {
-		try {
-			removeWebdavAccount({ accountId: accountSelected });
+	const removeMutation = useRemoveWebDAVAccountIntegrationMutation({
+		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Webdav_account_removed') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error as Error });
-		}
+		},
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
+		},
 	});
+
+	const handleSubmitForm = useEffectEvent(({ accountSelected }: { accountSelected: string }) => {
+		removeMutation.mutate({ accountSelected });
+	});
+
+	const accountSelectedId = useId();
 
 	return (
 		<Page>
-			<Page.Header title={t('Integrations')} />
-			<Page.ScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
+			<PageHeader title={t('Integrations')} />
+			<PageScrollableContentWithShadow>
+				<Box is='form' maxWidth='x600' w='full' alignSelf='center' onSubmit={handleSubmit(handleSubmitForm)}>
 					<Field>
 						<FieldLabel>{t('WebDAV_Accounts')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								control={control}
 								name='accountSelected'
-								render={({ field: { onChange, value, name, ref } }): ReactElement => (
-									<SelectLegacy
-										ref={ref}
-										name={name}
-										options={options}
-										onChange={onChange}
-										value={value}
-										placeholder={t('Select_an_option')}
-									/>
-								)}
+								rules={{ required: t('Required_field', { field: t('WebDAV_Accounts') }) }}
+								render={({ field }) => <SelectLegacy {...field} options={options} placeholder={t('Select_an_option')} />}
 							/>
-							<Button danger onClick={handleSubmit(handleClickRemove)}>
+							<Button type='submit' danger>
 								{t('Remove')}
 							</Button>
 						</FieldRow>
+						{errors?.accountSelected && (
+							<FieldError aria-live='assertive' id={`${accountSelectedId}-error`}>
+								{errors.accountSelected.message}
+							</FieldError>
+						)}
 					</Field>
 				</Box>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

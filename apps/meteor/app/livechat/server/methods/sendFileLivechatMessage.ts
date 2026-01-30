@@ -1,5 +1,5 @@
 import type {
-	MessageAttachment,
+	FileAttachmentProps,
 	ImageAttachmentProps,
 	AudioAttachmentProps,
 	VideoAttachmentProps,
@@ -7,30 +7,16 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
-import { FileUpload } from '../../../file-upload/server';
 import { sendMessageLivechat } from './sendMessageLivechat';
+import { FileUpload } from '../../../file-upload/server';
 
 interface ISendFileLivechatMessage {
 	roomId: string;
 	visitorToken: string;
 	file: IUpload;
 	msgData?: { avatar?: string; emoji?: string; alias?: string; groupable?: boolean; msg?: string };
-}
-
-declare module '@rocket.chat/ui-contexts' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		sendFileLivechatMessage(
-			roomId: string,
-			visitorToken: string,
-			file: IUpload,
-			msgData?: { avatar?: string; emoji?: string; alias?: string; groupable?: boolean; msg?: string },
-		): boolean;
-	}
 }
 
 export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgData = {} }: ISendFileLivechatMessage): Promise<boolean> => {
@@ -56,7 +42,7 @@ export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgD
 
 	const fileUrl = file.name && FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
 
-	const attachment: MessageAttachment = {
+	const attachment: Partial<FileAttachmentProps> = {
 		title: file.name,
 		type: 'file',
 		description: file.description,
@@ -109,9 +95,3 @@ export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgD
 
 	return sendMessageLivechat({ message: msg });
 };
-
-Meteor.methods<ServerMethods>({
-	async sendFileLivechatMessage(roomId, visitorToken, file, msgData = {}) {
-		return sendFileLivechatMessage({ roomId, visitorToken, file, msgData });
-	},
-});

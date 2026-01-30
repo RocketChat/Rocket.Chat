@@ -1,5 +1,7 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
+import type { ExternalModuleName } from './license';
+
 export type AppScreenshot = {
 	id: string;
 	appId: string;
@@ -10,13 +12,6 @@ export type AppScreenshot = {
 	modifiedAt: string;
 };
 
-export type AppTiers = {
-	perUnit: boolean;
-	minimum: number;
-	maximum: number;
-	price: number;
-};
-
 export type AppPricingPlan = {
 	id: string;
 	enabled: boolean;
@@ -24,13 +19,12 @@ export type AppPricingPlan = {
 	trialDays: number;
 	strategy: string;
 	isPerSeat: boolean;
-	tiers?: AppTiers[];
-};
-
-export type AppLicense = {
-	license: string;
-	version: number;
-	expireDate: string;
+	tiers?: {
+		perUnit: boolean;
+		minimum: number;
+		maximum: number;
+		price: number;
+	}[];
 };
 
 export enum AppSubscriptionStatus {
@@ -48,7 +42,11 @@ export type AppSubscriptionInfo = {
 	isSeatBased: boolean;
 	seats: number;
 	maxSeats: number;
-	license: AppLicense;
+	license: {
+		license: string;
+		version: number;
+		expireDate: string;
+	};
 	startDate: string;
 	periodEnd: string;
 	endDate: string;
@@ -92,6 +90,8 @@ export type App = {
 	categories: string[];
 	version: string;
 	versionIncompatible?: boolean;
+	addon?: ExternalModuleName;
+	installedAddon?: ExternalModuleName;
 	price: number;
 	purchaseType: PurchaseType;
 	pricingPlans: AppPricingPlan[];
@@ -125,4 +125,129 @@ export type App = {
 	private: boolean;
 	documentationUrl: string;
 	migrated: boolean;
+	// Status of the app across the cluster (when deployment includes multiple instances)
+	clusterStatus?: {
+		instanceId: string;
+		status: AppStatus;
+	}[];
+};
+
+export type AppCategory = {
+	id: string;
+	title: string;
+	description: string;
+	hidden: boolean;
+	createdDate: string;
+	modifiedDate: string;
+};
+
+export type AppOverview = {
+	appId: string;
+	latest: {
+		internalId: string;
+		id: string;
+		name: string;
+		nameSlug: string;
+		version: string;
+		categories: string[];
+		languages: string[];
+		description: string;
+		privacyPolicySummary: string;
+		detailedDescription: {
+			raw: string;
+			rendered: string;
+		};
+		detailedChangelog: {
+			raw: string;
+			rendered: string;
+		};
+		requiredApiVersion: string;
+		permissions: {
+			name: string;
+			scopes?: string[];
+		}[];
+		author: {
+			name: string;
+			support: string;
+			homepage: string;
+		};
+		classFile: string;
+		iconFile: string;
+		iconFileData: string;
+		status: AppStatus;
+		isVisible: boolean;
+		createdDate: string;
+		modifiedDate: string;
+		isPurchased: boolean;
+		isSubscribed: boolean;
+		subscriptionInfo: AppSubscriptionInfo & { externallyManaged: boolean };
+		compileJobId: string;
+		compiled: boolean;
+		tosLink: string;
+		privacyLink: string;
+	};
+	isAddon: boolean;
+	addonId: string;
+	isEnterpriseOnly: boolean;
+	isBundle: boolean;
+	bundledAppIds: any[];
+	bundledIn: {
+		bundleId: string;
+		bundleName: string;
+		apps: App[];
+		addonTierId: string;
+	}[];
+	isPurchased: boolean;
+	isSubscribed: boolean;
+	subscriptionInfo: AppSubscriptionInfo & { externallyManaged: boolean };
+	price: number;
+	purchaseType: string;
+	pricingPlans: {
+		id: string;
+		enabled: boolean;
+		price: number;
+		trialDays: number;
+		strategy: string;
+		isPerSeat: boolean;
+	}[];
+	isUsageBased: boolean;
+	createdAt: string;
+	modifiedAt: string;
+	iconFileContent?: string;
+	marketplaceVersion?: string;
+	marketplace?: unknown;
+};
+
+export type FeaturedAppsSection = {
+	i18nLabel: string;
+	slug: string;
+	apps: AppOverview[];
+};
+
+export type AppRequestFilter = 'unseen' | 'seen' | 'notification-sent' | 'notification-not-sent' | '';
+
+type AppRequestEndUser = {
+	id: string;
+	username: string;
+	name: string;
+	nickname: string;
+	emails: string[];
+};
+
+export type AppRequest = {
+	id: string;
+	appId: string;
+
+	requester: AppRequestEndUser;
+	admins: AppRequestEndUser[];
+
+	workspaceId: string;
+	message: string;
+
+	seen: boolean;
+	seenAt: string;
+	notificationSent: boolean;
+	notificationSentAt: string;
+
+	createdDate: string;
 };

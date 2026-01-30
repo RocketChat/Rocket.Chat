@@ -1,0 +1,18 @@
+{
+	"extends": "@rocket.chat/tsconfig/base.json",
+	"compilerOptions": {
+		"target": "es2024",
+		"module": "node18",
+		"moduleResolution": "node16",
+		"rewriteRelativeImportExtensions": true,
+		"erasableSyntaxOnly": true,
+		"verbatimModuleSyntax": true,
+		"esModuleInterop": true,
+		"rootDirs": ["./src", "./"],
+		"outDir": "./dist",
+		"declaration": true,
+		"allowJs": false,
+		"lib": ["ES2024", "ESNext.Collection"],
+	},
+	"include": ["./src/**/*", "./jest.config.ts"]
+}

@@ -1,11 +1,10 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Tag } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { AppAvatar } from '@rocket.chat/ui-avatar';
 import moment from 'moment';
 import type { ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import AppAvatar from '../../../components/avatar/AppAvatar';
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
 import { appIncompatibleStatusProps } from '../helpers';
@@ -18,7 +17,7 @@ const versioni18nKey = (app: App): string => {
 };
 
 const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const {
 		iconFileData,
 		name,
@@ -37,7 +36,9 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 
 	return (
 		<Box color='default' display='flex' flexDirection='row' mbe={20} w='full'>
-			<AppAvatar size='x124' mie={32} iconFileContent={iconFileContent} iconFileData={iconFileData} />
+			<Box mie={32}>
+				<AppAvatar size='x124' iconFileContent={iconFileContent} iconFileData={iconFileData} />
+			</Box>
 			<Box display='flex' flexDirection='column'>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe={8}>
 					<Box fontScale='h1' mie={8}>

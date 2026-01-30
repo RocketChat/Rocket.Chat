@@ -1,10 +1,4 @@
 import { Field, FieldLabel, FieldRow, ButtonGroup, Button, CheckBox, Callout } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React from 'react';
-import { useFormContext, Controller } from 'react-hook-form';
-
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -12,9 +6,14 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarClose,
-} from '../../../../components/Contextualbar';
-import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
+import { useId, type ReactElement } from 'react';
+import { useFormContext, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
 import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
+import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 
 type PruneMessagesProps = {
 	callOutText?: string;
@@ -25,17 +24,17 @@ type PruneMessagesProps = {
 };
 
 const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }: PruneMessagesProps): ReactElement => {
-	const t = useTranslation();
-	const { control, register } = useFormContext();
+	const { t } = useTranslation();
+	const { control } = useFormContext();
 
-	const inclusiveCheckboxId = useUniqueId();
-	const pinnedCheckboxId = useUniqueId();
-	const discussionCheckboxId = useUniqueId();
-	const threadsCheckboxId = useUniqueId();
-	const attachedCheckboxId = useUniqueId();
+	const inclusiveCheckboxId = useId();
+	const pinnedCheckboxId = useId();
+	const discussionCheckboxId = useId();
+	const threadsCheckboxId = useId();
+	const attachedCheckboxId = useId();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='eraser' />
 				<ContextualbarTitle>{t('Prune_Messages')}</ContextualbarTitle>
@@ -56,32 +55,52 @@ const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }
 				</Field>
 				<Field>
 					<FieldRow>
-						<CheckBox id={inclusiveCheckboxId} {...register('inclusive')} />
 						<FieldLabel htmlFor={inclusiveCheckboxId}>{t('Inclusive')}</FieldLabel>
+						<Controller
+							control={control}
+							name='inclusive'
+							render={({ field: { value, ...field } }) => <CheckBox id={inclusiveCheckboxId} {...field} checked={value} />}
+						/>
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldRow>
-						<CheckBox id={pinnedCheckboxId} {...register('pinned')} />
 						<FieldLabel htmlFor={pinnedCheckboxId}>{t('RetentionPolicy_DoNotPrunePinned')}</FieldLabel>
+						<Controller
+							control={control}
+							name='pinned'
+							render={({ field: { value, ...field } }) => <CheckBox id={pinnedCheckboxId} {...field} checked={value} />}
+						/>
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldRow>
-						<CheckBox id={discussionCheckboxId} {...register('discussion')} />
 						<FieldLabel htmlFor={discussionCheckboxId}>{t('RetentionPolicy_DoNotPruneDiscussion')}</FieldLabel>
+						<Controller
+							control={control}
+							name='discussion'
+							render={({ field: { value, ...field } }) => <CheckBox id={discussionCheckboxId} {...field} checked={value} />}
+						/>
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldRow>
-						<CheckBox id={threadsCheckboxId} {...register('threads')} />
 						<FieldLabel htmlFor={threadsCheckboxId}>{t('RetentionPolicy_DoNotPruneThreads')}</FieldLabel>
+						<Controller
+							control={control}
+							name='threads'
+							render={({ field: { value, ...field } }) => <CheckBox id={threadsCheckboxId} {...field} checked={value} />}
+						/>
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldRow>
-						<CheckBox id={attachedCheckboxId} {...register('attached')} />
 						<FieldLabel htmlFor={attachedCheckboxId}>{t('Files_only')}</FieldLabel>
+						<Controller
+							control={control}
+							name='attached'
+							render={({ field: { value, ...field } }) => <CheckBox id={attachedCheckboxId} {...field} checked={value} />}
+						/>
 					</FieldRow>
 				</Field>
 				{callOutText && !validateText && <Callout type='warning'>{callOutText}</Callout>}
@@ -94,7 +113,7 @@ const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

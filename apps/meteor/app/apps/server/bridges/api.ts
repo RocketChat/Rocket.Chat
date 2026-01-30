@@ -1,3 +1,4 @@
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
 import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges/ApiBridge';
@@ -7,14 +8,10 @@ import express from 'express';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { apiServer } from './router';
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
-const apiServer = express();
-
-apiServer.disable('x-powered-by');
-
-WebApp.connectHandlers.use(apiServer);
+WebApp.rawConnectHandlers.use(apiServer);
 
 interface IRequestWithPrivateHash extends Request {
 	_privateHash?: string;
@@ -24,8 +21,7 @@ interface IRequestWithPrivateHash extends Request {
 export class AppApisBridge extends ApiBridge {
 	appRouters: Map<string, IRouter>;
 
-	// eslint-disable-next-line no-empty-function
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 		this.appRouters = new Map();
 

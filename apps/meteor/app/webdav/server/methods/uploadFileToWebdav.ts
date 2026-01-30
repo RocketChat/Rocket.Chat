@@ -1,7 +1,8 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
-import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
@@ -9,7 +10,7 @@ import { uploadFileToWebdav } from '../lib/uploadFileToWebdav';
 
 const logger = new Logger('WebDAV_Upload');
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		uploadFileToWebdav(
@@ -37,17 +38,17 @@ Meteor.methods<ServerMethods>({
 		try {
 			await uploadFileToWebdav(accountId, fileData instanceof ArrayBuffer ? Buffer.from(fileData) : fileData, name);
 			return { success: true };
-		} catch (error: any) {
-			if (typeof error === 'object' && error instanceof Error && error.name === 'error-invalid-account') {
-				throw new MeteorError(error.name, 'Invalid WebDAV Account', {
+		} catch (err: any) {
+			if (typeof err === 'object' && err instanceof Error && err.name === 'error-invalid-account') {
+				throw new MeteorError(err.name, 'Invalid WebDAV Account', {
 					method: 'uploadFileToWebdav',
 				});
 			}
 
-			logger.error(error);
+			logger.error({ err });
 
-			if (error.response) {
-				const { status } = error.response;
+			if (err.response) {
+				const { status } = err.response;
 				if (status === 404) {
 					return { success: false, message: 'webdav-server-not-found' };
 				}

@@ -1,10 +1,10 @@
 import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { settings } from '../../../settings/server';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { userLoggedOut } from './userLoggedOut';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../settings/server';
 
 export async function userLogout(userId: string): Promise<string | boolean> {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();

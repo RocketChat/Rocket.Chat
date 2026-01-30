@@ -1,18 +1,17 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
 
-import Page from '../../../components/Page';
 import QueueListTable from './QueueListTable';
 
 const QueueListPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Page>
-			<Page.Header title={t('Livechat_Queue')} />
-			<Page.Content>
+			<PageHeader title={t('Livechat_Queue')} />
+			<PageContent>
 				<QueueListTable />
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };

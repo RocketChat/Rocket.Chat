@@ -2,6 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 
 import type { IServiceClass } from './ServiceClass';
 
+// TODO: Fix this type to match `UiKit.UserInteraction` from `@rocket.chat/core-typings`
 export type UiKitCoreAppPayload = {
 	appId: string;
 	type: 'blockAction' | 'viewClosed' | 'viewSubmit';

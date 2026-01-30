@@ -1,8 +1,19 @@
-import { MessageDivider, Message, Avatar, Box } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import type { ReactElement } from 'react';
+import {
+	MessageDivider,
+	Message,
+	MessageLeftContainer,
+	MessageContainer,
+	MessageHeader,
+	MessageName,
+	MessageUsername,
+	MessageRole,
+	MessageTimestamp,
+	MessageBody,
+	Avatar,
+	Box,
+} from '@rocket.chat/fuselage';
+import type { Meta, StoryFn } from '@storybook/react';
 
-import '@rocket.chat/icons/dist/rocketchat.css';
 import { VideoConfMessage, VideoConfMessageIcon, VideoConfMessageRow, VideoConfMessageText } from '.';
 import VideoConfMessageAction from './VideoConfMessageAction';
 import VideoConfMessageActions from './VideoConfMessageActions';
@@ -17,36 +28,44 @@ export default {
 	title: 'Components/VideoConfMessage',
 	component: VideoConfMessage,
 	decorators: [
-		(Story): ReactElement => (
+		(Story) => (
 			<Box>
 				<MessageDivider>May, 24, 2020</MessageDivider>
 				<Message className='customclass'>
-					<Message.LeftContainer>
-						<Avatar url={avatarUrl} size={'x36'} />
-					</Message.LeftContainer>
-					<Message.Container>
-						<Message.Header>
-							<Message.Name>Haylie George</Message.Name>
-							<Message.Username>@haylie.george</Message.Username>
-							<Message.Role>Admin</Message.Role>
-							<Message.Role>User</Message.Role>
-							<Message.Role>Owner</Message.Role>
-							<Message.Timestamp>12:00 PM</Message.Timestamp>
-						</Message.Header>
-						<Message.Body>
+					<MessageLeftContainer>
+						<Avatar alt='' url={avatarUrl} size='x36' />
+					</MessageLeftContainer>
+					<MessageContainer>
+						<MessageHeader>
+							<MessageName>Haylie George</MessageName>
+							<MessageUsername>@haylie.george</MessageUsername>
+							<MessageRole>Admin</MessageRole>
+							<MessageRole>User</MessageRole>
+							<MessageRole>Owner</MessageRole>
+							<MessageTimestamp>12:00 PM</MessageTimestamp>
+						</MessageHeader>
+						<MessageBody>
 							<Story />
-						</Message.Body>
-					</Message.Container>
+						</MessageBody>
+					</MessageContainer>
 				</Message>
 			</Box>
 		),
 	],
-} as ComponentMeta<typeof VideoConfMessage>;
+} satisfies Meta<typeof VideoConfMessage>;
 
 const avatarUrl =
 	'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z';
 
-export const CallingDM: ComponentStory<typeof VideoConfMessage> = () => (
+const fakeUsers = Array.from({ length: 10 }).map((_, i) => ({
+	username: `user${i}`,
+	ts: new Date().toISOString(),
+	name: `User ${i}`,
+	_id: `id${i}`,
+	avatarETag: '',
+}));
+
+export const CallingDM: StoryFn<typeof VideoConfMessage> = () => (
 	<VideoConfMessage>
 		<VideoConfMessageRow>
 			<VideoConfMessageContent>
@@ -54,7 +73,7 @@ export const CallingDM: ComponentStory<typeof VideoConfMessage> = () => (
 				<VideoConfMessageText>Calling...</VideoConfMessageText>
 			</VideoConfMessageContent>
 			<VideoConfMessageActions>
-				<VideoConfMessageAction icon='info' />
+				<VideoConfMessageAction aria-label='info' icon='info' />
 			</VideoConfMessageActions>
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>
@@ -64,7 +83,7 @@ export const CallingDM: ComponentStory<typeof VideoConfMessage> = () => (
 	</VideoConfMessage>
 );
 
-export const CallEndedDM: ComponentStory<typeof VideoConfMessage> = () => (
+export const CallEndedDM: StoryFn<typeof VideoConfMessage> = () => (
 	<VideoConfMessage>
 		<VideoConfMessageRow>
 			<VideoConfMessageContent>
@@ -72,7 +91,7 @@ export const CallEndedDM: ComponentStory<typeof VideoConfMessage> = () => (
 				<VideoConfMessageText>Call ended</VideoConfMessageText>
 			</VideoConfMessageContent>
 			<VideoConfMessageActions>
-				<VideoConfMessageAction icon='info' />
+				<VideoConfMessageAction aria-label='info' icon='info' />
 			</VideoConfMessageActions>
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>
@@ -82,7 +101,7 @@ export const CallEndedDM: ComponentStory<typeof VideoConfMessage> = () => (
 	</VideoConfMessage>
 );
 
-export const CallOngoing: ComponentStory<typeof VideoConfMessage> = () => (
+export const CallOngoing: StoryFn<typeof VideoConfMessage> = () => (
 	<VideoConfMessage>
 		<VideoConfMessageRow>
 			<VideoConfMessageContent>
@@ -90,18 +109,18 @@ export const CallOngoing: ComponentStory<typeof VideoConfMessage> = () => (
 				<VideoConfMessageText>Call ongoing</VideoConfMessageText>
 			</VideoConfMessageContent>
 			<VideoConfMessageActions>
-				<VideoConfMessageAction icon='info' />
+				<VideoConfMessageAction aria-label='info' icon='info' />
 			</VideoConfMessageActions>
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>
 			<VideoConfMessageButton primary>Join</VideoConfMessageButton>
-			<VideoConfMessageUserStack users={Array(3).fill('')} />
-			<VideoConfMessageFooterText>Joined</VideoConfMessageFooterText>
+			<VideoConfMessageUserStack users={fakeUsers} />
+			<VideoConfMessageFooterText>joined</VideoConfMessageFooterText>
 		</VideoConfMessageFooter>
 	</VideoConfMessage>
 );
 
-export const CallEnded: ComponentStory<typeof VideoConfMessage> = () => (
+export const CallEnded: StoryFn<typeof VideoConfMessage> = () => (
 	<VideoConfMessage>
 		<VideoConfMessageRow>
 			<VideoConfMessageContent>
@@ -109,14 +128,33 @@ export const CallEnded: ComponentStory<typeof VideoConfMessage> = () => (
 				<VideoConfMessageText>Call ended</VideoConfMessageText>
 			</VideoConfMessageContent>
 			<VideoConfMessageActions>
-				<VideoConfMessageAction icon='info' />
+				<VideoConfMessageAction aria-label='info' icon='info' />
 			</VideoConfMessageActions>
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>
-			<VideoConfMessageUserStack users={Array(3).fill('')} />
-			<VideoConfMessageFooterText>Joined</VideoConfMessageFooterText>
+			<VideoConfMessageUserStack users={fakeUsers} />
+			<VideoConfMessageFooterText>joined</VideoConfMessageFooterText>
 		</VideoConfMessageFooter>
 	</VideoConfMessage>
 );
 
-export const Loading: ComponentStory<typeof VideoConfMessage> = () => <VideoConfMessageSkeleton />;
+export const Loading: StoryFn<typeof VideoConfMessage> = () => <VideoConfMessageSkeleton />;
+
+export const NoAvatars: StoryFn<typeof VideoConfMessage> = () => (
+	<VideoConfMessage>
+		<VideoConfMessageRow>
+			<VideoConfMessageContent>
+				<VideoConfMessageIcon variant='outgoing' />
+				<VideoConfMessageText>Call ongoing</VideoConfMessageText>
+			</VideoConfMessageContent>
+			<VideoConfMessageActions>
+				<VideoConfMessageAction aria-label='info' icon='info' />
+			</VideoConfMessageActions>
+		</VideoConfMessageRow>
+		<VideoConfMessageFooter>
+			<VideoConfMessageButton primary>Join</VideoConfMessageButton>
+			<VideoConfMessageUserStack users={fakeUsers} />
+			<VideoConfMessageFooterText>{fakeUsers.length} joined</VideoConfMessageFooterText>
+		</VideoConfMessageFooter>
+	</VideoConfMessage>
+);

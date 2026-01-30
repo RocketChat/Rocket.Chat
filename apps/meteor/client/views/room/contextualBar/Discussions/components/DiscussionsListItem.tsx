@@ -1,17 +1,32 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
-import { Box, Message } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	Box,
+	Message,
+	MessageLeftContainer,
+	MessageContainer,
+	MessageHeader,
+	MessageName,
+	MessageTimestamp,
+	MessageBody,
+	MessageBlock,
+	MessageMetrics,
+	MessageMetricsItem,
+	MessageMetricsItemLabel,
+	MessageMetricsItemIcon,
+} from '@rocket.chat/fuselage';
+import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import MessageAvatar from '../../../../../components/message/header/MessageAvatar';
+import Emoji from '../../../../../components/Emoji';
 import { clickableItem } from '../../../../../lib/clickableItem';
 
 type DiscussionListItemProps = {
 	_id: IDiscussionMessage['_id'];
 	msg: ReactNode;
 	dcount: number;
-	dlm: Date;
+	dlm: Date | undefined;
 	formatDate: (date: Date) => string;
 	username: IDiscussionMessage['u']['username'];
 	name?: IDiscussionMessage['u']['name'];
@@ -32,40 +47,40 @@ const DiscussionListItem = ({
 	emoji,
 	...props
 }: DiscussionListItemProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	return (
 		<Box is={Message} {...props} className={className} pbs={16} pbe={8}>
-			<Message.LeftContainer>
-				<MessageAvatar username={username} emoji={emoji} size='x36' />
-			</Message.LeftContainer>
-			<Message.Container>
-				<Message.Header>
-					<Message.Name title={username}>{name}</Message.Name>
-					<Message.Timestamp>{formatDate(ts)}</Message.Timestamp>
-				</Message.Header>
-				<Message.Body clamp={2}>{msg}</Message.Body>
-				<Message.Block>
-					<Message.Metrics>
+			<MessageLeftContainer>
+				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
+			</MessageLeftContainer>
+			<MessageContainer>
+				<MessageHeader>
+					<MessageName title={username}>{name}</MessageName>
+					<MessageTimestamp>{formatDate(ts)}</MessageTimestamp>
+				</MessageHeader>
+				<MessageBody clamp={2}>{msg}</MessageBody>
+				<MessageBlock>
+					<MessageMetrics>
 						{!dcount && (
-							<Message.Metrics.Item>
-								<Message.Metrics.Item.Label>{t('No_messages_yet')}</Message.Metrics.Item.Label>
-							</Message.Metrics.Item>
+							<MessageMetricsItem>
+								<MessageMetricsItemLabel>{t('No_messages_yet')}</MessageMetricsItemLabel>
+							</MessageMetricsItem>
 						)}
 						{!!dcount && (
-							<Message.Metrics.Item>
-								<Message.Metrics.Item.Icon name='discussion' />
-								<Message.Metrics.Item.Label>{dcount}</Message.Metrics.Item.Label>
-							</Message.Metrics.Item>
+							<MessageMetricsItem>
+								<MessageMetricsItemIcon name='discussion' />
+								<MessageMetricsItemLabel>{dcount}</MessageMetricsItemLabel>
+							</MessageMetricsItem>
 						)}
 						{!!dcount && (
-							<Message.Metrics.Item>
-								<Message.Metrics.Item.Icon name='clock' />
-								<Message.Metrics.Item.Label>{formatDate(dlm)}</Message.Metrics.Item.Label>
-							</Message.Metrics.Item>
+							<MessageMetricsItem>
+								<MessageMetricsItemIcon name='clock' />
+								<MessageMetricsItemLabel>{dlm ? formatDate(dlm) : undefined}</MessageMetricsItemLabel>
+							</MessageMetricsItem>
 						)}
-					</Message.Metrics>
-				</Message.Block>
-			</Message.Container>
+					</MessageMetrics>
+				</MessageBlock>
+			</MessageContainer>
 		</Box>
 	);
 };

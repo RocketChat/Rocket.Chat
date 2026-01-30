@@ -1,9 +1,9 @@
 import type { IMessageSearchSuggestion, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-import { SearchLogger } from '../logger/logger';
 import type { IRawSearchResult } from './ISearchResult';
 import { Settings } from './Settings';
+import { SearchLogger } from '../logger/logger';
 
 export abstract class SearchProvider<TPayload = any> {
 	private _key: string;
@@ -18,7 +18,10 @@ export abstract class SearchProvider<TPayload = any> {
 			throw new Error(`cannot instantiate provider: ${key} does not match key-pattern`);
 		}
 
-		SearchLogger.info(`create search provider ${key}`);
+		SearchLogger.info({
+			msg: 'create search provider',
+			providerKey: key,
+		});
 
 		this._key = key;
 		this._settings = new Settings(key);
@@ -64,11 +67,12 @@ export abstract class SearchProvider<TPayload = any> {
 	 * @param callback is used to return result an can be called with (error,result)
 	 */
 	public abstract search(
+		userId: string,
 		text: string,
 		context: { uid?: IUser['_id']; rid: IRoom['_id'] },
 		payload?: TPayload,
 		callback?: (error: Error | null, result: IRawSearchResult) => void,
-	): void;
+	): Promise<void>;
 
 	/**
 	 * Returns an ordered list of suggestions. The result should have at least the form [{text:string}]

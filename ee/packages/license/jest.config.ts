@@ -1,16 +1,7 @@
+import server from '@rocket.chat/jest-presets/server';
+import type { Config } from 'jest';
+
 export default {
-	preset: 'ts-jest',
-	errorOnDeprecated: true,
-	modulePathIgnorePatterns: ['<rootDir>/dist/'],
-	testMatch: ['**/**.spec.ts'],
-	transform: {
-		'^.+\\.(t|j)sx?$': '@swc/jest',
-	},
-	// transformIgnorePatterns: ['!node_modules/jose'],
-	moduleNameMapper: {
-		'\\.css$': 'identity-obj-proxy',
-		'^jose$': require.resolve('jose'),
-	},
-	collectCoverage: true,
-	collectCoverageFrom: ['src/**/*.{js,jsx,ts,tsx}'],
-};
+	preset: server.preset,
+	modulePathIgnorePatterns: ['<rootDir>/__tests__/MockedLicenseBuilder'],
+} satisfies Config;

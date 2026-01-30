@@ -1,13 +1,11 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
+import { useId } from 'react';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import Page from '../../../components/Page';
-import { getDirtyFields } from '../../../lib/getDirtyFields';
 import PreferencesGlobalSection from './PreferencesGlobalSection';
 import PreferencesHighlightsSection from './PreferencesHighlightsSection';
 import PreferencesLocalizationSection from './PreferencesLocalizationSection';
@@ -18,6 +16,7 @@ import PreferencesSoundSection from './PreferencesSoundSection';
 import PreferencesUserPresenceSection from './PreferencesUserPresenceSection';
 import type { AccountPreferencesData } from './useAccountPreferencesValues';
 import { useAccountPreferencesValues } from './useAccountPreferencesValues';
+import { getDirtyFields } from '../../../lib/getDirtyFields';
 
 const AccountPreferencesPage = (): ReactElement => {
 	const t = useTranslation();
@@ -71,12 +70,12 @@ const AccountPreferencesPage = (): ReactElement => {
 		setPreferencesAction.mutateAsync({ data });
 	};
 
-	const preferencesFormId = useUniqueId();
+	const preferencesFormId = useId();
 
 	return (
 		<Page>
-			<Page.Header title={t('Preferences')} />
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Preferences')} />
+			<PageScrollableContentWithShadow>
 				<FormProvider {...methods}>
 					<Box id={preferencesFormId} is='form' maxWidth='x600' w='full' alignSelf='center' onSubmit={handleSubmit(handleSaveData)}>
 						<Accordion>
@@ -91,15 +90,15 @@ const AccountPreferencesPage = (): ReactElement => {
 						</Accordion>
 					</Box>
 				</FormProvider>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(preferencesValues)}>{t('Cancel')}</Button>
 					<Button form={preferencesFormId} primary type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

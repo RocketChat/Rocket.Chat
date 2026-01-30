@@ -6,5 +6,5 @@ import type { IBaseModel } from './IBaseModel';
 export interface IOEmbedCacheModel extends IBaseModel<IOEmbedCache> {
 	createWithIdAndData(_id: string, data: any): Promise<IOEmbedCache>;
 
-	removeAfterDate(date: Date): Promise<DeleteResult>;
+	removeBeforeDate(date: Date): Promise<DeleteResult>;
 }

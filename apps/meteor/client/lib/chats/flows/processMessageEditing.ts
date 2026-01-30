@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 
-import { MessageTypes } from '../../../../app/ui-utils/client';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 
@@ -9,7 +9,8 @@ export const processMessageEditing = async (
 	message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>,
 	previewUrls?: string[],
 ): Promise<boolean> => {
-	if (!chat.currentEditing) {
+	const mid = chat.currentEditingMessage.getMID();
+	if (!mid) {
 		return false;
 	}
 
@@ -17,17 +18,17 @@ export const processMessageEditing = async (
 		return false;
 	}
 
-	if (!message.msg && !message.attachments?.length) {
+	if (!message.msg && !message.attachments?.length && !message.content) {
 		return false;
 	}
 
 	try {
-		await chat.data.updateMessage({ ...message, _id: chat.currentEditing.mid }, previewUrls);
+		await chat.data.updateMessage({ ...message, _id: mid }, previewUrls);
 	} catch (error) {
 		dispatchToastMessage({ type: 'error', message: error });
 	}
 
-	chat.currentEditing.stop();
+	chat.currentEditingMessage.stop();
 
 	return true;
 };

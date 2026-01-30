@@ -10,12 +10,19 @@ import {
 	defaultAuthnContextTemplate,
 } from '../constants';
 
+function resolveCustomAuthnContext(serviceProviderOptions: IServiceProviderOptions): string | undefined;
+function resolveCustomAuthnContext(serviceProviderOptions: IServiceProviderOptions, defaultValue: string): string;
+function resolveCustomAuthnContext(serviceProviderOptions: IServiceProviderOptions, defaultValue?: string): string | undefined {
+	const value = serviceProviderOptions.customAuthnContext.trim();
+	return value.length > 0 ? value : defaultValue;
+}
+
 /*
 	An Authorize Request is used to show the Identity Provider login form when the user clicks on the Rocket.Chat SAML login button
 */
 export class AuthorizeRequest {
-	public static generate(serviceProviderOptions: IServiceProviderOptions): ISAMLRequest {
-		const data = this.getDataForNewRequest(serviceProviderOptions);
+	public static generate(serviceProviderOptions: IServiceProviderOptions, credentialToken: string): ISAMLRequest {
+		const data = this.getDataForNewRequest(serviceProviderOptions, credentialToken);
 		const request = SAMLUtils.fillTemplateData(this.authorizeRequestTemplate(serviceProviderOptions), data);
 
 		return {
@@ -46,21 +53,19 @@ export class AuthorizeRequest {
 	}
 
 	private static authnContextTagTemplate(serviceProviderOptions: IServiceProviderOptions): string {
-		if (!serviceProviderOptions.customAuthnContext) {
+		if (!resolveCustomAuthnContext(serviceProviderOptions)) {
 			return '';
 		}
 
 		return serviceProviderOptions.authnContextTemplate || defaultAuthnContextTemplate;
 	}
 
-	private static getDataForNewRequest(serviceProviderOptions: IServiceProviderOptions): IAuthorizeRequestVariables {
-		let id = `_${SAMLUtils.generateUniqueID()}`;
+	private static getDataForNewRequest(
+		serviceProviderOptions: IServiceProviderOptions,
+		credentialToken?: string,
+	): IAuthorizeRequestVariables {
+		const id = credentialToken || `_${SAMLUtils.generateUniqueID()}`;
 		const instant = SAMLUtils.generateInstant();
-
-		// Post-auth destination
-		if (serviceProviderOptions.id) {
-			id = serviceProviderOptions.id;
-		}
 
 		return {
 			newId: id,
@@ -70,7 +75,7 @@ export class AuthorizeRequest {
 			issuer: serviceProviderOptions.issuer,
 			identifierFormat: serviceProviderOptions.identifierFormat || defaultIdentifierFormat,
 			authnContextComparison: serviceProviderOptions.authnContextComparison || 'exact',
-			authnContext: serviceProviderOptions.customAuthnContext || defaultAuthnContext,
+			authnContext: resolveCustomAuthnContext(serviceProviderOptions, defaultAuthnContext),
 		};
 	}
 }

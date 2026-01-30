@@ -32,6 +32,12 @@ export type ImportEndpoints = {
 	'/v1/getCurrentImportOperation': {
 		GET: () => { operation: IImport };
 	};
+	'/v1/importers.list': {
+		GET: () => Array<{
+			key: string;
+			name: string;
+		}>;
+	};
 	'/v1/import.clear': {
 		POST: () => void;
 	};

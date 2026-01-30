@@ -1,15 +1,13 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import MailerPage from './MailerPage';
 
 export default {
-	title: 'Admin/Mailer/Mailer',
 	component: MailerPage,
 	parameters: {
 		layout: 'fullscreen',
 	},
-} as ComponentMeta<typeof MailerPage>;
+} satisfies Meta<typeof MailerPage>;
 
-export const Default: ComponentStory<typeof MailerPage> = () => <MailerPage />;
+export const Default: StoryFn<typeof MailerPage> = () => <MailerPage />;
 Default.storyName = 'Mailer';

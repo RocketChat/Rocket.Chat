@@ -1,25 +1,39 @@
 import { isIMessageInbox } from '@rocket.chat/core-typings';
-import type { IEmailInbox, IUser, IMessage, IOmnichannelRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import type { IEmailInbox, IUser, IOmnichannelRoom, SlashCommandCallbackParams, IUpload } from '@rocket.chat/core-typings';
 import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/models';
+import { isTruthy } from '@rocket.chat/tools';
 import { Match } from 'meteor/check';
 import type Mail from 'nodemailer/lib/mailer';
 
-import { FileUpload } from '../../../app/file-upload/server';
-import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { settings } from '../../../app/settings/server';
-import { slashCommands } from '../../../app/utils/server/slashCommand';
-import { callbacks } from '../../../lib/callbacks';
-import { i18n } from '../../lib/i18n';
 import { inboxes } from './EmailInbox';
 import type { Inbox } from './EmailInbox';
 import { logger } from './logger';
+import { FileUpload } from '../../../app/file-upload/server';
+import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
+import { settings } from '../../../app/settings/server';
+import { slashCommands } from '../../../app/utils/server/slashCommand';
+import { callbacks } from '../../lib/callbacks';
+import { i18n } from '../../lib/i18n';
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 
 const getRocketCatUser = async (): Promise<IUser | null> => Users.findOneById('rocket.cat');
 
 const language = settings.get<string>('Language') || 'en';
-const t = (s: string): string => i18n.t(s, { lng: language });
+const t = i18n.getFixedT(language);
+
+async function buildMailAttachment(file: IUpload): Promise<Mail.Attachment | undefined> {
+	const buffer = await FileUpload.getBuffer(file);
+	if (!buffer) {
+		return;
+	}
+	return {
+		content: buffer,
+		contentType: file.type,
+		filename: file.name,
+	};
+}
 
 // TODO: change these messages with room notifications
 const sendErrorReplyMessage = async (error: string, options: any) => {
@@ -70,7 +84,7 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 				? {
 						name: inbox.config.senderInfo,
 						address: inbox.config.email,
-				  }
+					}
 				: inbox.config.email,
 			...mail,
 		})
@@ -97,12 +111,16 @@ slashCommands.add({
 		}
 
 		const message = await Messages.findOneById(params.trim());
-		if (!message?.file) {
+		if (!message) {
+			return;
+		}
+
+		const fileRefs = (message.files || [message.file]).filter(isTruthy);
+		if (!fileRefs.length) {
 			return;
 		}
 
 		const room = await Rooms.findOneById<IOmnichannelRoom>(message.rid);
-
 		if (!room?.email) {
 			return;
 		}
@@ -117,37 +135,35 @@ slashCommands.add({
 			});
 		}
 
-		const file = await Uploads.findOneById(message.file._id);
-
-		if (!file) {
+		const files = await Uploads.find({ _id: { $in: fileRefs.map((f) => f._id) } }).toArray();
+		const emailAttachments = await Promise.all(files.map(buildMailAttachment));
+		const validAttachments = emailAttachments.filter((a): a is Mail.Attachment => Boolean(a));
+		if (validAttachments.length === 0) {
 			return;
 		}
 
-		const buffer = await FileUpload.getBuffer(file);
-		if (buffer) {
-			void sendEmail(
-				inbox,
-				{
-					to: room.email?.replyTo,
-					subject: room.email?.subject,
-					text: message?.attachments?.[0].description || '',
-					attachments: [
-						{
-							content: buffer,
-							contentType: file.type,
-							filename: file.name,
-						},
-					],
-					inReplyTo: Array.isArray(room.email?.thread) ? room.email?.thread[0] : room.email?.thread,
-					references: ([] as string[]).concat(room.email?.thread || []),
-				},
-				{
-					msgId: message._id,
-					sender: message.u.username,
-					rid: message.rid,
-				},
-			).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
-		}
+		const emailText =
+			message?.attachments
+				?.map((a) => a.description)
+				.filter(Boolean)
+				.join('\n\n') || '';
+
+		void sendEmail(
+			inbox,
+			{
+				to: room.email?.replyTo,
+				subject: room.email?.subject,
+				text: emailText,
+				attachments: validAttachments,
+				inReplyTo: Array.isArray(room.email?.thread) ? room.email?.thread[0] : room.email?.thread,
+				references: ([] as string[]).concat(room.email?.thread || []),
+			},
+			{
+				msgId: message._id,
+				sender: message.u.username,
+				rid: message.rid,
+			},
+		).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
 
 		await Messages.updateOne(
 			{ _id: message._id },
@@ -170,6 +186,9 @@ slashCommands.add({
 				},
 			},
 		);
+		void notifyOnMessageChange({
+			id: message._id,
+		});
 
 		return sendSuccessReplyMessage({
 			msgId: message._id,
@@ -186,7 +205,9 @@ slashCommands.add({
 
 callbacks.add(
 	'afterSaveMessage',
-	async (message: IMessage, room: any) => {
+	async (message, { room: omnichannelRoom }) => {
+		const room = omnichannelRoom as IOmnichannelRoom;
+
 		if (!room?.email?.inbox) {
 			return message;
 		}

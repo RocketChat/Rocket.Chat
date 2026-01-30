@@ -20,6 +20,7 @@
 	"typescript.tsdk": "./node_modules/typescript/lib",
 	"cSpell.words": [
 		"autotranslate",
+		"ciphertext",
 		"Contextualbar",
 		"fname",
 		"Gazzodown",
@@ -29,6 +30,7 @@
 		"oauthapps",
 		"omnichannel",
 		"photoswipe",
+		"proxify",
 		"searchbox",
 		"tmid",
 		"tshow"

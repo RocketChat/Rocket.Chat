@@ -1,18 +1,8 @@
-import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import { minutesToMilliseconds } from 'date-fns';
+import type { IOmnichannelRoom, IRoom, Serialized } from '@rocket.chat/core-typings';
 
-export const useOmnichannelRoomInfo = (
-	roomId: string,
-	{ cacheTime = minutesToMilliseconds(15), staleTime = minutesToMilliseconds(5) } = {},
-) => {
-	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
-	const { data: roomData, ...props } = useQuery(['/v1/rooms.info', roomId], () => getRoomInfo({ roomId }), { cacheTime, staleTime });
-	const room = roomData?.room as unknown as Serialized<IOmnichannelRoom>;
+import { useRoomInfoEndpoint } from '../../../../hooks/useRoomInfoEndpoint';
 
-	return {
-		data: room,
-		...props,
-	};
-};
+export const useOmnichannelRoomInfo = (rid: IRoom['_id']) =>
+	useRoomInfoEndpoint(rid, {
+		select: (data) => (data.room as Serialized<IOmnichannelRoom>) ?? null,
+	});

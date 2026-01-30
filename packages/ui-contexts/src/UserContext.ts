@@ -1,4 +1,5 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { OffCallbackHandler } from '@rocket.chat/emitter';
 import type { ObjectId, Filter, FindOptions as MongoFindOptions, Document } from 'mongodb';
 import { createContext } from 'react';
 
@@ -23,20 +24,12 @@ export type Sort<TSchema extends Document = Document> = Exclude<MongoFindOptions
 export type FindOptions<TSchema extends Document = Document> = {
 	fields?: Fields<TSchema>;
 	sort?: Sort<TSchema>;
-};
-
-export type LoginService = {
-	clientConfig: unknown;
-
-	title: string;
-	service: string;
-
-	buttonLabelText?: string;
-	icon?: string;
+	skip?: number;
+	limit?: number;
 };
 
 export type UserContextValue = {
-	userId: string | null;
+	userId: string | undefined;
 	user: IUser | null;
 	queryPreference: <T>(
 		key: string | ObjectId,
@@ -44,8 +37,6 @@ export type UserContextValue = {
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T | undefined];
 	querySubscription: (
 		query: Filter<Pick<ISubscription, 'rid' | 'name'>>,
-		fields?: MongoFindOptions<ISubscription>['projection'],
-		sort?: MongoFindOptions<ISubscription>['sort'],
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISubscription | undefined];
 	queryRoom: (
 		query: Filter<Pick<IRoom, '_id'>>,
@@ -56,26 +47,17 @@ export type UserContextValue = {
 		query: SubscriptionQuery,
 		options?: FindOptions,
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => SubscriptionWithRoom[]];
-
-	loginWithPassword: (user: string | { username: string } | { email: string } | { id: string }, password: string) => Promise<void>;
-	loginWithToken: (user: string) => Promise<void>;
 	logout: () => Promise<void>;
-
-	queryAllServices(): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => LoginService[]];
-	loginWithService<T extends LoginService>(service: T): () => Promise<true>;
+	onLogout: (callback: () => void) => OffCallbackHandler;
 };
 
 export const UserContext = createContext<UserContextValue>({
-	userId: null,
+	userId: undefined,
 	user: null,
 	queryPreference: () => [() => (): void => undefined, (): undefined => undefined],
 	querySubscription: () => [() => (): void => undefined, (): undefined => undefined],
 	queryRoom: () => [() => (): void => undefined, (): undefined => undefined],
 	querySubscriptions: () => [() => (): void => undefined, (): [] => []],
-
-	queryAllServices: () => [() => (): void => undefined, (): LoginService[] => []],
-	loginWithService: () => () => Promise.reject('loginWithService not implemented'),
-	loginWithPassword: async () => Promise.reject('loginWithPassword not implemented'),
-	loginWithToken: async () => Promise.reject('loginWithToken not implemented'),
 	logout: () => Promise.resolve(),
+	onLogout: () => (): void => undefined,
 });

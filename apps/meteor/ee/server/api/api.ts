@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { License } from '@rocket.chat/license';
 
 import { API } from '../../../app/api/server/api';

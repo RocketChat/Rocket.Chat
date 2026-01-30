@@ -1,9 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { OAuthAccessTokens, Users } from '@rocket.chat/models';
 import type { Request, Response } from 'express';
+import type express from 'express';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
+import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { OAuth2Server } from '../../../../server/oauth2-server/oauth';
 import { API } from '../../../api/server';
 
@@ -18,13 +20,18 @@ async function getAccessToken(accessToken: string) {
 }
 
 export async function oAuth2ServerAuth(partialRequest: {
-	headers: Record<string, any>;
-	query: Record<string, any>;
-}): Promise<{ user: IUser } | undefined> {
+	headers: Record<string, string | undefined>;
+	query: Record<string, string | undefined>;
+}): Promise<IUser | undefined> {
 	const headerToken = partialRequest.headers.authorization?.replace('Bearer ', '');
 	const queryToken = partialRequest.query.access_token;
+	const incomingToken = headerToken || queryToken;
 
-	const accessToken = await getAccessToken(headerToken || queryToken);
+	if (!incomingToken) {
+		return;
+	}
+
+	const accessToken = await getAccessToken(incomingToken);
 
 	// If there is no token available or the token has expired, return undefined
 	if (!accessToken || (accessToken.expires != null && accessToken.expires < new Date())) {
@@ -37,12 +44,10 @@ export async function oAuth2ServerAuth(partialRequest: {
 		return;
 	}
 
-	return { user };
+	return user;
 }
 
 oauth2server.app.disable('x-powered-by');
-
-WebApp.connectHandlers.use(oauth2server.app);
 
 oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 	if (req.headers.authorization == null) {
@@ -70,6 +75,11 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 	});
 });
 
-API.v1.addAuthMethod(async function () {
-	return oAuth2ServerAuth(this.request);
+API.v1.addAuthMethod((routeContext) => {
+	const headers = Object.fromEntries(routeContext.request.headers.entries());
+	const query = (isPlainObject(routeContext.queryParams) ? routeContext.queryParams : {}) as Record<string, string | undefined>;
+
+	return oAuth2ServerAuth({ headers, query });
 });
+
+(WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(oauth2server.app);

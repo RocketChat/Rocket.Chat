@@ -1,6 +1,8 @@
 import { MessageEmoji, ThreadMessageEmoji } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { ReactElement, useMemo, useContext, memo } from 'react';
+import DOMPurify from 'dompurify';
+import type { ReactElement } from 'react';
+import { useMemo, useContext, memo } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
@@ -14,10 +16,12 @@ const EmojiRenderer = ({ big = false, preview = false, ...emoji }: EmojiProps): 
 
 	const fallback = useMemo(() => ('unicode' in emoji ? emoji.unicode : `:${emoji.shortCode ?? emoji.value.value}:`), [emoji]);
 
+	const sanitizedFallback = DOMPurify.sanitize(fallback);
+
 	const descriptors = useMemo(() => {
-		const detected = detectEmoji?.(fallback);
+		const detected = detectEmoji?.(sanitizedFallback);
 		return detected?.length !== 0 ? detected : undefined;
-	}, [detectEmoji, fallback]);
+	}, [detectEmoji, sanitizedFallback]);
 
 	return (
 		<>
@@ -34,8 +38,8 @@ const EmojiRenderer = ({ big = false, preview = false, ...emoji }: EmojiProps): 
 					)}
 				</span>
 			)) ?? (
-				<span role='img' aria-label={fallback.charAt(0) === ':' ? fallback : undefined}>
-					{fallback}
+				<span title={sanitizedFallback} role='img' aria-label={sanitizedFallback.charAt(0) === ':' ? sanitizedFallback : undefined}>
+					{sanitizedFallback}
 				</span>
 			)}
 		</>

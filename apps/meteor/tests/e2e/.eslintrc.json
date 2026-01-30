@@ -1,6 +1,6 @@
 {
 	"root": true,
-	"extends": ["@rocket.chat/eslint-config/original", "@rocket.chat/eslint-config/react", "prettier", "plugin:@typescript-eslint/recommended"],
+	"extends": ["@rocket.chat/eslint-config", "@rocket.chat/eslint-config/react", "prettier", "plugin:@typescript-eslint/recommended"],
 	"parser": "@typescript-eslint/parser",
 	"plugins": ["prettier", "testing-library", "anti-trojan-source", "no-floating-promise"],
 	"rules": {

@@ -1,9 +1,8 @@
-import { Card, CardBody, CardColSection, CardFooter, CardTitle } from '@rocket.chat/ui-client';
+import { Card, CardControls, CardTitle } from '@rocket.chat/fuselage';
 import type { ReactElement, ReactNode } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import InfoTextIconModal from './InfoTextIconModal';
-import UpgradeButton from './UpgradeButton';
 
 type FeatureUsageCardProps = {
 	children?: ReactNode;
@@ -12,28 +11,20 @@ type FeatureUsageCardProps = {
 
 export type CardProps = {
 	title: string;
-	infoText?: string;
-	showUpgradeButton?: boolean;
-	upgradeButtonText?: string;
+	infoText?: ReactNode;
+	upgradeButton?: ReactNode;
 };
 
 const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactElement => {
-	const { title, infoText, showUpgradeButton, upgradeButtonText = 'Upgrade' } = card;
+	const { title, infoText, upgradeButton } = card;
+
 	return (
-		<Card>
+		<Card height='full'>
 			<CardTitle>
 				{title} {infoText && <InfoTextIconModal title={title} infoText={infoText} />}
 			</CardTitle>
-			<CardBody height='x184'>
-				<CardColSection display='flex' flexDirection='row' justifyContent='center' alignItems='center' fontScale='p2' h='full' w='full'>
-					{children}
-				</CardColSection>
-			</CardBody>
-			{showUpgradeButton && (
-				<CardFooter>
-					<UpgradeButton small i18nKey={upgradeButtonText} />
-				</CardFooter>
-			)}
+			{children}
+			{upgradeButton && <CardControls>{upgradeButton}</CardControls>}
 		</Card>
 	);
 };

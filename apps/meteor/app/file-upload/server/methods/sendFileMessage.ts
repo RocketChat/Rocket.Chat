@@ -1,12 +1,21 @@
-import type { MessageAttachment, FileAttachmentProps, IUser, IUpload, AtLeast } from '@rocket.chat/core-typings';
+import type {
+	MessageAttachment,
+	FileAttachmentProps,
+	IUser,
+	IUpload,
+	AtLeast,
+	FilesAndAttachments,
+	IMessage,
+	FileProp,
+} from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import { omit } from '../../../../lib/utils/omit';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
@@ -25,7 +34,7 @@ export const parseFileIntoMessageAttachments = async (
 	file: Partial<IUpload>,
 	roomId: string,
 	user: IUser,
-): Promise<Record<string, any>> => {
+): Promise<FilesAndAttachments> => {
 	validateFileRequiredFields(file);
 
 	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
@@ -34,11 +43,14 @@ export const parseFileIntoMessageAttachments = async (
 
 	const attachments: MessageAttachment[] = [];
 
-	const files = [
+	const files: FileProp[] = [
 		{
 			_id: file._id,
-			name: file.name,
-			type: file.type,
+			name: file.name || '',
+			type: file.type || 'file',
+			size: file.size || 0,
+			format: file.identify?.format || '',
+			typeGroup: file.typeGroup,
 		},
 	];
 
@@ -52,6 +64,7 @@ export const parseFileIntoMessageAttachments = async (
 			image_url: fileUrl,
 			image_type: file.type as string,
 			image_size: file.size,
+			fileId: file._id,
 		};
 
 		if (file.identify?.size) {
@@ -62,8 +75,17 @@ export const parseFileIntoMessageAttachments = async (
 			attachment.image_preview = await FileUpload.resizeImagePreview(file);
 			const thumbResult = await FileUpload.createImageThumbnail(file);
 			if (thumbResult) {
-				const { data: thumbBuffer, width, height } = thumbResult;
-				const thumbnail = await FileUpload.uploadImageThumbnail(file, thumbBuffer, roomId, user._id);
+				const { data: thumbBuffer, width, height, thumbFileType, thumbFileName, originalFileId } = thumbResult;
+				const thumbnail = await FileUpload.uploadImageThumbnail(
+					{
+						thumbFileName,
+						thumbFileType,
+						originalFileId,
+					},
+					thumbBuffer,
+					roomId,
+					user._id,
+				);
 				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
 				attachment.image_url = thumbUrl;
 				attachment.image_type = thumbnail.type;
@@ -73,12 +95,15 @@ export const parseFileIntoMessageAttachments = async (
 				};
 				files.push({
 					_id: thumbnail._id,
-					name: file.name,
-					type: thumbnail.type,
+					name: thumbnail.name || '',
+					type: thumbnail.type || 'file',
+					size: thumbnail.size || 0,
+					format: thumbnail.identify?.format || '',
+					typeGroup: thumbnail.typeGroup || '',
 				});
 			}
-		} catch (e) {
-			SystemLogger.error(e);
+		} catch (err) {
+			SystemLogger.error({ err });
 		}
 		attachments.push(attachment);
 	} else if (/^audio\/.+/.test(file.type as string)) {
@@ -91,6 +116,7 @@ export const parseFileIntoMessageAttachments = async (
 			audio_url: fileUrl,
 			audio_type: file.type as string,
 			audio_size: file.size,
+			fileId: file._id,
 		};
 		attachments.push(attachment);
 	} else if (/^video\/.+/.test(file.type as string)) {
@@ -103,6 +129,7 @@ export const parseFileIntoMessageAttachments = async (
 			video_url: fileUrl,
 			video_type: file.type as string,
 			video_size: file.size as number,
+			fileId: file._id,
 		};
 		attachments.push(attachment);
 	} else {
@@ -114,13 +141,14 @@ export const parseFileIntoMessageAttachments = async (
 			title_link: fileUrl,
 			title_link_download: true,
 			size: file.size as number,
+			fileId: file._id,
 		};
 		attachments.push(attachment);
 	}
 	return { files, attachments };
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		sendFileMessage: (roomId: string, _store: string, file: Partial<IUpload>, msgData?: Record<string, any>) => boolean;
@@ -138,8 +166,16 @@ export const sendFileMessage = async (
 		file: Partial<IUpload>;
 		msgData?: Record<string, any>;
 	},
+	{
+		parseAttachmentsForE2EE,
+	}: {
+		parseAttachmentsForE2EE: boolean;
+	} = {
+		parseAttachmentsForE2EE: true,
+	},
 ): Promise<boolean> => {
-	const user = await Users.findOneById(userId);
+	const user = await Users.findOneById(userId, { projection: { services: 0 } });
+
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'sendFileMessage',
@@ -164,21 +200,34 @@ export const sendFileMessage = async (
 			groupable: Match.Optional(Boolean),
 			msg: Match.Optional(String),
 			tmid: Match.Optional(String),
+			customFields: Match.Optional(String),
+			t: Match.Optional(String),
+			content: Match.Optional(
+				Match.ObjectIncluding({
+					algorithm: String,
+					ciphertext: String,
+				}),
+			),
 		}),
 	);
 
-	const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
-
-	const msg = await executeSendMessage(userId, {
+	const data = {
 		rid: roomId,
 		ts: new Date(),
-		file: files[0],
-		files,
-		attachments,
-		...msgData,
+		...(msgData as Partial<IMessage>),
+		...(msgData?.customFields && { customFields: JSON.parse(msgData.customFields) }),
 		msg: msgData?.msg ?? '',
 		groupable: msgData?.groupable ?? false,
-	});
+	};
+
+	if (parseAttachmentsForE2EE || msgData?.t !== 'e2e') {
+		const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
+		data.file = files[0];
+		data.files = files;
+		data.attachments = attachments;
+	}
+
+	const msg = await executeSendMessage(userId, data);
 
 	callbacks.runAsync('afterFileUpload', { user, room, message: msg });
 

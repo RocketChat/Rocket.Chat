@@ -1,15 +1,14 @@
 import type { IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
 import type { IOmnichannelServiceLevelAgreementsModel } from '@rocket.chat/model-typings/src';
+import { BaseRaw } from '@rocket.chat/models';
 import type { Db, IndexDescription } from 'mongodb';
-
-import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
 export class ServiceLevelAgreements extends BaseRaw<IOmnichannelServiceLevelAgreements> implements IOmnichannelServiceLevelAgreementsModel {
 	constructor(db: Db) {
 		super(db, 'omnichannel_service_level_agreements');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { name: 1 }, unique: true },
 			{ key: { dueTimeInMinutes: 1 }, unique: true },

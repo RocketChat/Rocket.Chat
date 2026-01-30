@@ -1,25 +1,61 @@
-import { Media } from '@rocket.chat/core-services';
-import type { IRoom } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Users } from '@rocket.chat/models';
+import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
+import type { IRoom, IUpload } from '@rocket.chat/core-typings';
+import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
+import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
-import { isGETRoomsNameExists } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	isGETRoomsNameExists,
+	isRoomsImagesProps,
+	isRoomsMuteUnmuteUserProps,
+	isRoomsExportProps,
+	isRoomsIsMemberProps,
+	isRoomsCleanHistoryProps,
+	isRoomsOpenProps,
+	isRoomsMembersOrderedByRoleProps,
+	isRoomsChangeArchivationStateProps,
+	isRoomsHideProps,
+	isRoomsInviteProps,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
+import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { isTruthy } from '../../../../lib/isTruthy';
+import { adminFields } from '../../../../lib/rooms/adminFields';
+import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
-import { eraseRoom } from '../../../../server/methods/eraseRoom';
+import { eraseRoom } from '../../../../server/lib/eraseRoom';
+import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOfRoomOrderedByRole';
+import { openRoom } from '../../../../server/lib/openRoom';
+import type { RoomRoles } from '../../../../server/lib/roles/getRoomRoles';
+import { hideRoomMethod } from '../../../../server/methods/hideRoom';
+import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
+import { toggleFavoriteMethod } from '../../../../server/methods/toggleFavorite';
+import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
+import { roomsGetMethod } from '../../../../server/publications/room';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { FileUpload } from '../../../file-upload/server';
 import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
+import { syncRolePrioritiesForRoomIfRequired } from '../../../lib/server/functions/syncRolePrioritiesForRoomIfRequired';
+import { executeArchiveRoom } from '../../../lib/server/methods/archiveRoom';
+import { cleanRoomHistoryMethod } from '../../../lib/server/methods/cleanRoomHistory';
+import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
+import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
+import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
+import type { NotificationFieldType } from '../../../push-notifications/server/methods/saveNotificationSettings';
+import { saveNotificationSettingsMethod } from '../../../push-notifications/server/methods/saveNotificationSettings';
 import { settings } from '../../../settings/server';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { getUploadFormData } from '../lib/getUploadFormData';
+import { getUserFromParams } from '../helpers/getUserFromParams';
+import { MultipartUploadHandler } from '../lib/MultipartUploadHandler';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -29,7 +65,7 @@ import {
 	findRoomsAvailableForTeams,
 } from '../lib/rooms';
 
-async function findRoomByIdOrName({
+export async function findRoomByIdOrName({
 	params,
 	checkedArchived = true,
 }: {
@@ -78,7 +114,9 @@ API.v1.addRoute(
 		async get() {
 			const { roomName } = this.queryParams;
 
-			return API.v1.success({ exists: await Meteor.callAsync('roomNameExists', roomName) });
+			const room = await Rooms.findOneByName(roomName, { projection: { _id: 1 } });
+
+			return API.v1.success({ exists: !!room });
 		},
 	},
 );
@@ -96,7 +134,21 @@ API.v1.addRoute(
 				return API.v1.failure("The 'roomId' param is required");
 			}
 
-			await eraseRoom(roomId, this.userId);
+			const room = await Rooms.findOneById(roomId);
+
+			if (!room) {
+				throw new MeteorError('error-invalid-room', 'Invalid room', {
+					method: 'eraseRoom',
+				});
+			}
+
+			if (room.teamMain) {
+				throw new Meteor.Error('error-cannot-delete-team-channel', 'Cannot delete a team channel', {
+					method: 'eraseRoom',
+				});
+			}
+
+			await eraseRoom(room, this.user);
 
 			return API.v1.success();
 		},
@@ -119,7 +171,7 @@ API.v1.addRoute(
 				}
 			}
 
-			let result: { update: IRoom[]; remove: IRoom[] } = await Meteor.callAsync('rooms/get', updatedSinceDate);
+			let result = await roomsGetMethod(this.userId, updatedSinceDate);
 
 			if (Array.isArray(result)) {
 				result = {
@@ -137,52 +189,94 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'rooms.upload/:rid',
+	'rooms.media/:rid',
 	{ authRequired: true },
 	{
 		async post() {
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
-			const file = await getUploadFormData(
-				{
-					request: this.request,
-				},
-				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize') },
-			);
+			const { file, fields } = await MultipartUploadHandler.parseRequest(this.incoming, {
+				field: 'file',
+				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
+			});
 
 			if (!file) {
-				throw new Meteor.Error('invalid-field');
+				throw new Meteor.Error('error-no-file-uploaded', 'No file was uploaded');
 			}
 
-			const { fields } = file;
-			let { fileBuffer } = file;
+			const expiresAt = new Date();
+			expiresAt.setHours(expiresAt.getHours() + 24);
+
+			let content;
+
+			if (fields.content) {
+				try {
+					content = JSON.parse(fields.content);
+				} catch (e) {
+					console.error(e);
+					throw new Meteor.Error('invalid-field-content');
+				}
+			}
 
 			const details = {
 				name: file.filename,
-				size: fileBuffer.length,
+				size: file.size,
 				type: file.mimetype,
 				rid: this.urlParams.rid,
 				userId: this.userId,
+				content,
+				expiresAt,
 			};
 
-			const stripExif = settings.get('Message_Attachments_Strip_Exif');
-			if (stripExif) {
-				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+			// TODO: In the future, we should isolate file receival from storage and post-processing.
+			const fileStore = FileUpload.getStore('Uploads');
+			const uploadedFile = await fileStore.insert(details, file.tempFilePath);
+
+			uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
+
+			await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
+
+			return API.v1.success({
+				file: {
+					_id: uploadedFile._id,
+					url: uploadedFile.path,
+				},
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.mediaConfirm/:rid/:fileId',
+	{ authRequired: true },
+	{
+		async post() {
+			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
+				return API.v1.forbidden();
 			}
 
-			const fileStore = FileUpload.getStore('Uploads');
-			const uploadedFile = await fileStore.insert(details, fileBuffer);
+			const file = await Uploads.findOneById(this.urlParams.fileId);
 
-			uploadedFile.description = fields.description;
+			if (!file) {
+				throw new Meteor.Error('invalid-file');
+			}
 
-			delete fields.description;
+			if ((this.bodyParams.description?.length ?? 0) > settings.get<number>('Message_MaxAllowedSize')) {
+				throw new Meteor.Error('error-message-size-exceeded');
+			}
 
-			await sendFileMessage(this.userId, { roomId: this.urlParams.rid, file: uploadedFile, msgData: fields });
+			file.description = this.bodyParams.description;
+			delete this.bodyParams.description;
 
-			const message = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, this.userId);
+			await applyAirGappedRestrictionsValidation(() =>
+				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }, { parseAttachmentsForE2EE: false }),
+			);
+
+			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
+
+			const message = await Messages.getMessageByFileIdAndUsername(file._id, this.userId);
 
 			return API.v1.success({
 				message,
@@ -207,8 +301,8 @@ API.v1.addRoute(
 			}
 
 			await Promise.all(
-				Object.keys(notifications as Notifications).map(async (notificationKey) =>
-					Meteor.callAsync('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey as keyof Notifications]),
+				Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
+					saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
 				),
 			);
 
@@ -230,7 +324,7 @@ API.v1.addRoute(
 
 			const room = await findRoomByIdOrName({ params: this.bodyParams });
 
-			await Meteor.callAsync('toggleFavorite', room._id, favorite);
+			await toggleFavoriteMethod(this.userId, room._id, favorite);
 
 			return API.v1.success();
 		},
@@ -239,10 +333,15 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.cleanHistory',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsCleanHistoryProps },
 	{
 		async post() {
-			const { _id } = await findRoomByIdOrName({ params: this.bodyParams });
+			const room = await findRoomByIdOrName({ params: this.bodyParams });
+			const { _id } = room;
+
+			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+				return API.v1.failure('User does not have access to the room [error-not-allowed]', 'error-not-allowed');
+			}
 
 			const {
 				latest,
@@ -264,7 +363,7 @@ API.v1.addRoute(
 				return API.v1.failure('Body parameter "oldest" is required.');
 			}
 
-			const count = await Meteor.callAsync('cleanRoomHistory', {
+			const count = await cleanRoomHistoryMethod(this.userId, {
 				roomId: _id,
 				latest: new Date(latest),
 				oldest: new Date(oldest),
@@ -274,7 +373,7 @@ API.v1.addRoute(
 				filesOnly: [true, 'true', 1, '1'].includes(filesOnly ?? false),
 				ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads ?? false),
 				ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion ?? false),
-				fromUsers: users,
+				fromUsers: users?.filter(isTruthy) || [],
 			});
 
 			return API.v1.success({ _id, count });
@@ -294,7 +393,19 @@ API.v1.addRoute(
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
-			return API.v1.success({ room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined });
+			const discussionParent =
+				room.prid &&
+				(await Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | 'prid' | 'u'>>(room.prid, {
+					projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1 },
+				}));
+			const { team, parentRoom } = await Team.getRoomInfo(room);
+			const parent = discussionParent || parentRoom;
+
+			return API.v1.success({
+				room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
+				...(team && { team }),
+				...(parent && { parent }),
+			});
 		},
 	},
 );
@@ -316,13 +427,18 @@ API.v1.addRoute(
 	},
 );
 
+/*
+TO-DO: 8.0.0 should use the ajv validation
+which will change this endpoint's
+response errors.
+*/
 API.v1.addRoute(
 	'rooms.createDiscussion',
-	{ authRequired: true },
+	{ authRequired: true /* , validateParams: isRoomsCreateDiscussionProps */ },
 	{
 		async post() {
 			// eslint-disable-next-line @typescript-eslint/naming-convention
-			const { prid, pmid, reply, t_name, users, encrypted } = this.bodyParams;
+			const { prid, pmid, reply, t_name, users, encrypted, topic } = this.bodyParams;
 			if (!prid) {
 				return API.v1.failure('Body parameter "prid" is required.');
 			}
@@ -337,14 +453,17 @@ API.v1.addRoute(
 				return API.v1.failure('Body parameter "encrypted" must be a boolean when included.');
 			}
 
-			const discussion = await createDiscussion(this.userId, {
-				prid,
-				pmid,
-				t_name,
-				reply,
-				users: users?.filter(isTruthy) || [],
-				encrypted,
-			});
+			const discussion = await applyAirGappedRestrictionsValidation(() =>
+				createDiscussion(this.userId, {
+					prid,
+					pmid,
+					t_name,
+					reply,
+					users: users?.filter(isTruthy) || [],
+					encrypted,
+					topic,
+				}),
+			);
 
 			return API.v1.success({ discussion });
 		},
@@ -378,6 +497,48 @@ API.v1.addRoute(
 			return API.v1.success({
 				discussions,
 				count: discussions.length,
+				offset,
+				total,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.images',
+	{ authRequired: true, validateParams: isRoomsImagesProps },
+	{
+		async get() {
+			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(this.queryParams.roomId, {
+				projection: { t: 1, teamId: 1, prid: 1 },
+			});
+
+			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+				return API.v1.forbidden();
+			}
+
+			let initialImage: IUpload | null = null;
+			if (this.queryParams.startingFromId) {
+				initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
+			}
+
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			const { cursor, totalCount } = Uploads.findImagesByRoomId(room._id, initialImage?.uploadedAt, {
+				skip: offset,
+				limit: count,
+			});
+
+			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			// If the initial image was not returned in the query, insert it as the first element of the list
+			if (initialImage && !files.find(({ _id }) => _id === (initialImage as IUpload)._id)) {
+				files.splice(0, 0, initialImage);
+			}
+
+			return API.v1.success({
+				files,
+				count,
 				offset,
 				total,
 			});
@@ -534,16 +695,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.changeArchivationState',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsChangeArchivationStateProps },
 	{
 		async post() {
 			const { rid, action } = this.bodyParams;
 
 			let result;
 			if (action === 'archive') {
-				result = await Meteor.callAsync('archiveRoom', rid);
+				result = await executeArchiveRoom(this.userId, rid);
 			} else {
-				result = await Meteor.callAsync('unarchiveRoom', rid);
+				result = await executeUnarchiveRoom(this.userId, rid);
 			}
 
 			return API.v1.success({ result });
@@ -553,14 +714,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.export',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsExportProps },
 	{
 		async post() {
 			const { rid, type } = this.bodyParams;
-
-			if (!rid || !type || !['email', 'file'].includes(type)) {
-				throw new Meteor.Error('error-invalid-params');
-			}
 
 			if (!(await hasPermissionAsync(this.userId, 'mail-messages', rid))) {
 				throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
@@ -581,12 +738,8 @@ API.v1.addRoute(
 				const { dateFrom, dateTo } = this.bodyParams;
 				const { format } = this.bodyParams;
 
-				if (!['html', 'json'].includes(format || '')) {
-					throw new Meteor.Error('error-invalid-format');
-				}
-
-				const convertedDateFrom = new Date(dateFrom || '');
-				const convertedDateTo = new Date(dateTo || '');
+				const convertedDateFrom = dateFrom ? new Date(dateFrom) : new Date(0);
+				const convertedDateTo = dateTo ? new Date(dateTo) : new Date();
 				convertedDateTo.setDate(convertedDateTo.getDate() + 1);
 
 				if (convertedDateFrom > convertedDateTo) {
@@ -612,10 +765,6 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-recipient');
 				}
 
-				if (messages?.length === 0) {
-					throw new Meteor.Error('error-invalid-messages');
-				}
-
 				const result = await dataExport.sendViaEmail(
 					{
 						rid,
@@ -635,3 +784,323 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'rooms.isMember',
+	{
+		authRequired: true,
+		validateParams: isRoomsIsMemberProps,
+	},
+	{
+		async get() {
+			const { roomId, userId, username } = this.queryParams;
+			const [room, user] = await Promise.all([
+				findRoomByIdOrName({
+					params: { roomId },
+				}) as Promise<IRoom>,
+				Users.findOneByIdOrUsername(userId || username),
+			]);
+
+			if (!user?._id) {
+				return API.v1.failure('error-user-not-found');
+			}
+
+			if (await canAccessRoomAsync(room, { _id: this.user._id })) {
+				return API.v1.success({
+					isMember: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
+				});
+			}
+			return API.v1.forbidden();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.membersOrderedByRole',
+	{ authRequired: true, validateParams: isRoomsMembersOrderedByRoleProps },
+	{
+		async get() {
+			const findResult = await findRoomByIdOrName({
+				params: this.queryParams,
+				checkedArchived: false,
+			});
+
+			if (!(await canAccessRoomAsync(findResult, this.user))) {
+				return API.v1.notFound('The required "roomId" or "roomName" param provided does not match any room');
+			}
+
+			if (!isPublicRoom(findResult) && !isPrivateRoom(findResult)) {
+				return API.v1.failure('error-room-type-not-supported');
+			}
+
+			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+				return API.v1.unauthorized();
+			}
+
+			// Ensures that role priorities for the specified room are synchronized correctly.
+			// This function acts as a soft migration. If the `roomRolePriorities` field
+			// for the room has already been created and is up-to-date, no updates will be performed.
+			// If not, it will synchronize the role priorities of the users of the room.
+			await syncRolePrioritiesForRoomIfRequired(findResult._id);
+
+			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+			const { sort = {} } = await this.parseJsonQuery();
+
+			const { status, filter } = this.queryParams;
+
+			const { members, total } = await findUsersOfRoomOrderedByRole({
+				rid: findResult._id,
+				...(status && { status: { $in: status } }),
+				skip,
+				limit,
+				filter,
+				sort,
+			});
+
+			return API.v1.success({
+				members,
+				count: members.length,
+				offset: skip,
+				total,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.muteUser',
+	{ authRequired: true, validateParams: isRoomsMuteUnmuteUserProps },
+	{
+		async post() {
+			const user = await getUserFromParams(this.bodyParams);
+
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await muteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.unmuteUser',
+	{ authRequired: true, validateParams: isRoomsMuteUnmuteUserProps },
+	{
+		async post() {
+			const user = await getUserFromParams(this.bodyParams);
+
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await unmuteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.open',
+	{ authRequired: true, validateParams: isRoomsOpenProps },
+	{
+		async post() {
+			const { roomId } = this.bodyParams;
+
+			await openRoom(this.userId, roomId);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.hide',
+	{ authRequired: true, validateParams: isRoomsHideProps },
+	{
+		async post() {
+			const { roomId } = this.bodyParams;
+
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			const user = await Users.findOneById(this.userId, { projections: { _id: 1 } });
+
+			if (!user) {
+				return API.v1.failure('error-invalid-user');
+			}
+
+			const modCount = await hideRoomMethod(this.userId, roomId);
+
+			if (!modCount) {
+				return API.v1.failure('error-room-already-hidden');
+			}
+
+			return API.v1.success();
+		},
+	},
+);
+
+const isRoomGetRolesPropsSchema = {
+	type: 'object',
+	properties: {
+		rid: { type: 'string' },
+	},
+	additionalProperties: false,
+	required: ['rid'],
+};
+export const roomEndpoints = API.v1
+	.get(
+		'rooms.roles',
+		{
+			authRequired: true,
+			query: ajv.compile<{
+				rid: string;
+			}>(isRoomGetRolesPropsSchema),
+			response: {
+				200: ajv.compile<{
+					roles: RoomRoles[];
+				}>({
+					type: 'object',
+					properties: {
+						roles: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									rid: { type: 'string' },
+									u: {
+										type: 'object',
+										properties: { _id: { type: 'string' }, username: { type: 'string' } },
+										required: ['_id', 'username'],
+									},
+									roles: { type: 'array', items: { type: 'string' } },
+								},
+								required: ['rid', 'u', 'roles'],
+							},
+						},
+					},
+					required: ['roles'],
+				}),
+			},
+		},
+		async function () {
+			const { rid } = this.queryParams;
+			const roles = await executeGetRoomRoles(rid, this.userId);
+
+			return API.v1.success({
+				roles,
+			});
+		},
+	)
+	.get(
+		'rooms.adminRooms.privateRooms',
+		{
+			authRequired: true,
+			permissionsRequired: ['view-room-administration'],
+			query: ajv.compile<{
+				filter?: string;
+				offset?: number;
+				count?: number;
+				sort?: string;
+			}>({
+				type: 'object',
+				properties: {
+					filter: { type: 'string' },
+					offset: { type: 'number' },
+					count: { type: 'number' },
+					sort: { type: 'string' },
+				},
+				additionalProperties: true,
+			}),
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					rooms: IRoom[];
+					count: number;
+					offset: number;
+					total: number;
+				}>({
+					type: 'object',
+					properties: {
+						rooms: {
+							type: 'array',
+							items: { type: 'object' },
+						},
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['rooms', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { filter } = this.queryParams;
+
+			const name = (filter || '').trim();
+
+			const { cursor, totalCount } = Rooms.findPrivateRoomsAndTeamsPaginated(name, {
+				skip: offset,
+				limit: count,
+				sort: sort || { default: -1, name: 1 },
+				projection: adminFields,
+			});
+
+			const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				rooms,
+				count: rooms.length,
+				offset,
+				total,
+			});
+		},
+	);
+
+const roomInviteEndpoints = API.v1.post(
+	'rooms.invite',
+	{
+		authRequired: true,
+		body: isRoomsInviteProps,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+		},
+	},
+	async function action() {
+		const { roomId, action } = this.bodyParams;
+
+		try {
+			await FederationMatrix.handleInvite(roomId, this.userId, action);
+			return API.v1.success();
+		} catch (error) {
+			return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
+		}
+	},
+);
+
+type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> & ExtractRoutesFromAPI<typeof roomInviteEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends RoomEndpoints {}
+}

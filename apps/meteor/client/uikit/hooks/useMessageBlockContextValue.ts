@@ -1,18 +1,19 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
-import type { ContextType } from 'react';
-
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfDispatchOutgoing,
 	useVideoConfIsCalling,
 	useVideoConfIsRinging,
 	useVideoConfJoinCall,
-	useVideoConfManager,
+	useVideoConfLoadCapabilities,
 	useVideoConfSetPreferences,
-} from '../../contexts/VideoConfContext';
-import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
+} from '@rocket.chat/ui-video-conf';
+import type { ContextType } from 'react';
+
 import { useUiKitActionManager } from './useUiKitActionManager';
+import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 
 export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_id']): ContextType<typeof UiKitContext> => {
 	const joinCall = useVideoConfJoinCall();
@@ -21,16 +22,15 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 	const isRinging = useVideoConfIsRinging();
 	const dispatchWarning = useVideoConfWarning();
 	const dispatchPopup = useVideoConfDispatchOutgoing();
+	const loadVideoConfCapabilities = useVideoConfLoadCapabilities();
 
-	const videoConfManager = useVideoConfManager();
-
-	const handleOpenVideoConf = useMutableCallback(async (rid: IRoom['_id']) => {
+	const handleOpenVideoConf = useEffectEvent(async (rid: IRoom['_id']) => {
 		if (isCalling || isRinging) {
 			return;
 		}
 
 		try {
-			await videoConfManager?.loadCapabilities();
+			await loadVideoConfCapabilities();
 			dispatchPopup({ rid });
 		} catch (error: any) {
 			dispatchWarning(error.error);
@@ -38,6 +38,8 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 	});
 
 	const actionManager = useUiKitActionManager();
+
+	const { openTab } = useRoomToolbox();
 
 	return {
 		action: ({ appId, actionId, blockId, value }, event) => {
@@ -50,6 +52,12 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 
 				if (actionId === 'callBack') {
 					return handleOpenVideoConf(blockId);
+				}
+			}
+
+			if (appId === 'media-call-core') {
+				if (actionId === 'open-history') {
+					return openTab('media-call-history', blockId);
 				}
 			}
 

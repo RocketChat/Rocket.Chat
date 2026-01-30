@@ -1,12 +1,13 @@
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { notifyOnSubscriptionChangedByRoomIdAndUserIds } from '../lib/notifyListener';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		blockUser({ rid, blocked }: { rid: string; blocked: string }): boolean;
@@ -33,14 +34,22 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'blockUser' });
 		}
 
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userId);
-		const subscription2 = await Subscriptions.findOneByRoomIdAndUserId(rid, blocked);
+		const [blockedUser, blockerUser] = await Promise.all([
+			Subscriptions.findOneByRoomIdAndUserId(rid, blocked, { projection: { _id: 1 } }),
+			Subscriptions.findOneByRoomIdAndUserId(rid, userId, { projection: { _id: 1 } }),
+		]);
 
-		if (!subscription || !subscription2) {
+		if (!blockedUser || !blockerUser) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'blockUser' });
 		}
 
-		await Subscriptions.setBlockedByRoomId(rid, blocked, userId);
+		const [blockedResponse, blockerResponse] = await Subscriptions.setBlockedByRoomId(rid, blocked, userId);
+
+		const listenerUsers = [...(blockedResponse?.modifiedCount ? [blocked] : []), ...(blockerResponse?.modifiedCount ? [userId] : [])];
+
+		if (listenerUsers.length) {
+			void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, listenerUsers);
+		}
 
 		return true;
 	},

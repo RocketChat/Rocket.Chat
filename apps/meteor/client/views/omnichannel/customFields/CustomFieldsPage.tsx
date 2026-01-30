@@ -1,30 +1,38 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import type { MutableRefObject } from 'react';
-import React from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarDialog, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
-import Page from '../../../components/Page';
 import CustomFieldsTable from './CustomFieldsTable';
+import EditCustomFields from './EditCustomFields';
+import EditCustomFieldsWithData from './EditCustomFieldsWithData';
 
-const CustomFieldsPage = ({ reload }: { reload: MutableRefObject<() => void> }) => {
-	const t = useTranslation();
-	const router = useRoute('omnichannel-customfields');
+const CustomFieldsPage = () => {
+	const { t } = useTranslation();
+	const router = useRouter();
 
-	const onAddNew = useMutableCallback(() => router.push({ context: 'new' }));
+	const context = useRouteParameter('context');
+	const id = useRouteParameter('id');
+
+	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/omnichannel/customfields'));
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Custom_Fields')}>
-					<Button data-qa-id='CustomFieldPageBtnNew' onClick={onAddNew}>
-						{t('Create_custom_field')}
-					</Button>
-				</Page.Header>
-				<Page.Content>
-					<CustomFieldsTable reload={reload} />
-				</Page.Content>
+				<PageHeader title={t('Custom_Fields')}>
+					<Button onClick={() => router.navigate('/omnichannel/customfields/new')}>{t('Create_custom_field')}</Button>
+				</PageHeader>
+				<PageContent>
+					<CustomFieldsTable />
+				</PageContent>
 			</Page>
+			{context && (
+				<ContextualbarDialog onClose={handleCloseContextualbar}>
+					{context === 'edit' && id && <EditCustomFieldsWithData customFieldId={id} onClose={handleCloseContextualbar} />}
+					{context === 'new' && <EditCustomFields onClose={handleCloseContextualbar} />}
+				</ContextualbarDialog>
+			)}
 		</Page>
 	);
 };

@@ -1,6 +1,5 @@
 import type { ObjectId } from 'mongodb';
-import { useContext, useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useContext, useMemo, useSyncExternalStore } from 'react';
 
 import { AuthorizationContext } from '../AuthorizationContext';
 

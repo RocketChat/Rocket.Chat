@@ -4,7 +4,7 @@ import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
-import { removeTag, saveTags } from '../../../data/livechat/tags';
+import { saveTags, removeAllTags } from '../../../data/livechat/tags';
 import { createMonitor, createUnit } from '../../../data/livechat/units';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import type { IUserWithCredentials } from '../../../data/user';
@@ -12,9 +12,7 @@ import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[EE] Livechat - Tags', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[EE] Livechat - Tags', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
@@ -40,19 +38,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			};
 
 			// remove all existing tags
-			const allTags = await request
-				.get(api('livechat/tags'))
-				.set(credentials)
-				.query({ viewAll: 'true' })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-			const { tags } = allTags.body;
-			for await (const tag of tags) {
-				await removeTag(tag._id);
-			}
-			const response = await request.get(api('livechat/tags')).set(credentials).expect('Content-Type', 'application/json').expect(200);
-			expect(response.body).to.have.property('success', true);
-			expect(response.body).to.have.property('tags').and.to.be.an('array').that.is.empty;
+			await removeAllTags();
 
 			// should add 3 tags
 			const { department: dA, agent: agentA } = await createDepartmentWithAnOnlineAgent();
@@ -68,7 +54,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 
 		after(async () => {
-			await deleteUser(monitor);
+			await deleteUser(monitor.user);
+			await removeAllTags();
 		});
 
 		it('should throw unauthorized error when the user does not have the necessary permission', async () => {
@@ -237,8 +224,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should return null when the tag does not exist', async () => {
 			await updatePermission('manage-livechat-tags', ['admin']);
 			await updatePermission('view-l-room', ['livechat-agent']);
-			const response = await request.get(api('livechat/tags/123')).set(credentials).expect('Content-Type', 'application/json').expect(200);
-			expect(response.body.body).to.be.null;
+			await request.get(api('livechat/tags/123')).set(credentials).expect('Content-Type', 'application/json').expect(404);
 		});
 		it('should return a tag', async () => {
 			const tag = await saveTags();

@@ -1,29 +1,27 @@
-import { check } from 'meteor/check';
+import { isCloudConfirmationPollProps, isCloudCreateRegistrationIntentProps, isCloudManualRegisterProps } from '@rocket.chat/rest-typings';
 
+import { CloudWorkspaceRegistrationError } from '../../../../lib/errors/CloudWorkspaceRegistrationError';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { getCheckoutUrl } from '../../../cloud/server/functions/getCheckoutUrl';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
+import {
+	CloudWorkspaceAccessTokenEmptyError,
+	CloudWorkspaceAccessTokenError,
+} from '../../../cloud/server/functions/getWorkspaceAccessToken';
 import { registerPreIntentWorkspaceWizard } from '../../../cloud/server/functions/registerPreIntentWorkspaceWizard';
+import { removeLicense } from '../../../cloud/server/functions/removeLicense';
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
-import { saveRegistrationData } from '../../../cloud/server/functions/saveRegistrationData';
+import { saveRegistrationData, saveRegistrationDataManual } from '../../../cloud/server/functions/saveRegistrationData';
 import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
 import { syncWorkspace } from '../../../cloud/server/functions/syncWorkspace';
 import { API } from '../api';
 
 API.v1.addRoute(
 	'cloud.manualRegister',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['register-on-cloud'], validateParams: isCloudManualRegisterProps },
 	{
 		async post() {
-			check(this.bodyParams, {
-				cloudBlob: String,
-			});
-
-			if (!(await hasPermissionAsync(this.userId, 'register-on-cloud'))) {
-				return API.v1.unauthorized();
-			}
-
 			const registrationInfo = await retrieveRegistrationStatus();
 
 			if (registrationInfo.workspaceRegistered) {
@@ -32,7 +30,7 @@ API.v1.addRoute(
 
 			const settingsData = JSON.parse(Buffer.from(this.bodyParams.cloudBlob, 'base64').toString());
 
-			await saveRegistrationData(settingsData);
+			await saveRegistrationDataManual(settingsData);
 
 			return API.v1.success();
 		},
@@ -41,18 +39,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'cloud.createRegistrationIntent',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-cloud'], validateParams: isCloudCreateRegistrationIntentProps },
 	{
 		async post() {
-			check(this.bodyParams, {
-				resend: Boolean,
-				email: String,
-			});
-
-			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
-				return API.v1.unauthorized();
-			}
-
 			const intentData = await startRegisterWorkspaceSetupWizard(this.bodyParams.resend, this.bodyParams.email);
 
 			if (intentData) {
@@ -66,17 +55,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'cloud.registerPreIntent',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-cloud'] },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
-				return API.v1.unauthorized();
-			}
-
-			if (process.env.NODE_ENV === 'development') {
-				return API.v1.success({ offline: true });
-			}
-
 			return API.v1.success({ offline: !(await registerPreIntentWorkspaceWizard()) });
 		},
 	},
@@ -84,21 +65,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'cloud.confirmationPoll',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-cloud'], validateParams: isCloudConfirmationPollProps },
 	{
 		async get() {
 			const { deviceCode } = this.queryParams;
-			check(this.queryParams, {
-				deviceCode: String,
-			});
-
-			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
-				return API.v1.unauthorized();
-			}
-
-			if (!deviceCode) {
-				return API.v1.failure('Invalid query');
-			}
 
 			const pollData = await getConfirmationPoll(deviceCode);
 			if (pollData) {
@@ -118,8 +88,8 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			if (!(await hasRoleAsync(this.userId, 'admin'))) {
-				return API.v1.unauthorized();
+			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
+				return API.v1.forbidden();
 			}
 
 			const registrationStatus = await retrieveRegistrationStatus();
@@ -145,6 +115,45 @@ API.v1.addRoute(
 			} catch (error) {
 				return API.v1.failure('Error during workspace sync');
 			}
+		},
+	},
+);
+
+API.v1.addRoute(
+	'cloud.removeLicense',
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-cloud'],
+		rateLimiterOptions: { numRequestsAllowed: 2, intervalTimeInMS: 60000 },
+	},
+	{
+		async post() {
+			try {
+				await removeLicense();
+				return API.v1.success({ success: true });
+			} catch (error) {
+				switch (true) {
+					case error instanceof CloudWorkspaceRegistrationError:
+					case error instanceof CloudWorkspaceAccessTokenEmptyError:
+					case error instanceof CloudWorkspaceAccessTokenError: {
+						SystemLogger.info({
+							msg: 'Manual license removal failed',
+							endpoint: 'cloud.removeLicense',
+							error,
+						});
+						break;
+					}
+					default: {
+						SystemLogger.error({
+							msg: 'Manual license removal failed',
+							endpoint: 'cloud.removeLicense',
+							error,
+						});
+						break;
+					}
+				}
+			}
+			return API.v1.failure('License removal failed');
 		},
 	},
 );

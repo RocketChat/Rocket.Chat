@@ -1,31 +1,43 @@
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-import { AppInstallationSource } from '@rocket.chat/apps-engine/server/storage';
-import type { IUser, IMessage } from '@rocket.chat/core-typings';
+import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
+import type { AppStatusReport } from '@rocket.chat/core-services';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
+import { Logger } from '@rocket.chat/logger';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { Meteor } from 'meteor/meteor';
+import * as z from 'zod';
 
-import type { APIClass } from '../../../../app/api/server';
+import { registerActionButtonsHandler } from './endpoints/actionButtonsHandler';
+import { registerAppGeneralLogsHandler } from './endpoints/appGeneralLogsHandler';
+import { registerAppLogsDistinctInstanceHandler } from './endpoints/appLogsDistinctInstanceHandler';
+import { registerAppLogsExportHandler } from './endpoints/appLogsExportHandler';
+import { registerAppLogsHandler } from './endpoints/appLogsHandler';
+import { registerAppsCountHandler } from './endpoints/appsCountHandler';
 import { API } from '../../../../app/api/server';
-import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
+import type { APIClass } from '../../../../app/api/server/ApiClass';
 import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
+import { loggerMiddleware } from '../../../../app/api/server/middlewares/logger';
+import { metricsMiddleware } from '../../../../app/api/server/middlewares/metrics';
+import { tracerSpanMiddleware } from '../../../../app/api/server/middlewares/tracer';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
-import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
+import { metrics } from '../../../../app/metrics/server';
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
+import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
 import { canEnableApp } from '../../../app/license/server/canEnableApp';
+import { fetchAppsStatusFromCluster } from '../../../lib/misc/fetchAppsStatusFromCluster';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
-import { appEnableCheck } from '../marketplace/appEnableCheck';
-import { notifyAppInstall } from '../marketplace/appInstall';
+import { notifyMarketplace } from '../marketplace/appInstall';
+import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
+import { fetchMarketplaceCategories } from '../marketplace/fetchMarketplaceCategories';
+import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from '../marketplace/marketplaceErrors';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
-import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
-import { appsCountHandler } from './endpoints/appsCountHandler';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -50,49 +62,63 @@ export class AppsRestApi {
 
 	async loadAPI() {
 		this.api = new API.ApiClass({
-			version: 'apps',
+			apiPath: '',
 			useDefaultAuth: true,
 			prettyJson: false,
 			enableCors: false,
-			auth: API.getUserAuth(),
+			version: 'apps',
 		});
+
+		const logger = new Logger('APPS');
+		this.api.router
+			.use(loggerMiddleware(logger))
+			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/apps\//), api: this.api, settings, summary: metrics.rocketchatRestApi }))
+			.use(tracerSpanMiddleware);
+
 		this.addManagementRoutes();
+		// Using the same instance of the existing API for now, to be able to use the same api prefix(/api)
+		API.api.use(this.api.router);
 	}
 
 	addManagementRoutes() {
 		const orchestrator = this._orch;
 		const manager = this._manager;
 
-		const handleError = (message: string, e: any) => {
+		const handleError = (message: string, err: any) => {
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
-			if (!e.hasOwnProperty('response')) {
-				orchestrator.getRocketChatLogger().warn(message, e.message);
+			if (!err.hasOwnProperty('response')) {
+				orchestrator.getRocketChatLogger().warn({ msg: message, err });
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
 
-			orchestrator.getRocketChatLogger().error(message, e.response.data);
+			orchestrator.getRocketChatLogger().error({ msg: message, err });
 
-			if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
+			if (err.response.statusCode >= 500 && err.response.statusCode <= 599) {
 				return API.v1.internalError();
 			}
 
-			if (e.response.statusCode === 404) {
+			if (err.response.statusCode === 404) {
 				return API.v1.notFound();
 			}
 
 			return API.v1.failure();
 		};
 
-		this.api.addRoute('actionButtons', ...actionButtonsHandler(this));
-		this.api.addRoute('count', ...appsCountHandler(this));
+		registerActionButtonsHandler(this);
+		registerAppsCountHandler(this);
+
+		registerAppLogsDistinctInstanceHandler(this);
+		registerAppLogsHandler(this);
+		registerAppLogsExportHandler(this);
+		registerAppGeneralLogsHandler(this);
 
 		this.api.addRoute(
 			'incompatibleModal',
 			{ authRequired: true },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
+					const baseUrl = orchestrator.getMarketplaceClient().getMarketplaceUrl();
 					const workspaceId = settings.get('Cloud_Workspace_Id');
 					const { action, appId, appVersion } = this.queryParams;
 
@@ -108,37 +134,25 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-
-					// Gets the Apps from the marketplace
-					const headers = getDefaultHeaders();
-					const token = await getWorkspaceAccessToken();
-					if (token) {
-						headers.Authorization = `Bearer ${token}`;
-					}
-
-					let result;
 					try {
-						const request = await fetch(`${baseUrl}/v1/apps`, {
-							headers,
-							params: {
-								...(this.queryParams.isAdminUser === 'false' && { endUserID: this.user._id }),
-							},
-						});
-						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-							return API.v1.failure();
+						const apps = await fetchMarketplaceApps({ ...(this.queryParams.isAdminUser === 'false' && { endUserID: this.user._id }) });
+						return API.v1.success(apps);
+					} catch (err) {
+						if (err instanceof MarketplaceConnectionError) {
+							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
-						result = await request.json();
 
-						if (!request.ok) {
-							throw new Error(result.error);
+						if (err instanceof MarketplaceAppsError || err instanceof MarketplaceUnsupportedVersionError) {
+							return API.v1.failure({ error: err.message });
 						}
-					} catch (e) {
-						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
+
+						if (err instanceof z.ZodError) {
+							orchestrator.getRocketChatLogger().error({ msg: 'Error validating the response from Marketplace:', err });
+							return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Apps') });
+						}
+
+						return API.v1.internalError();
 					}
-
-					return API.v1.success(result);
 				},
 			},
 		);
@@ -148,27 +162,26 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-
-					const headers = getDefaultHeaders();
-					const token = await getWorkspaceAccessToken();
-					if (token) {
-						headers.Authorization = `Bearer ${token}`;
-					}
-
-					let result;
 					try {
-						const request = await fetch(`${baseUrl}/v1/categories`, { headers });
-						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-							return API.v1.failure();
+						const categories = await fetchMarketplaceCategories();
+						return API.v1.success(categories);
+					} catch (err) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error fetching categories from Marketplace:', err });
+						if (err instanceof MarketplaceConnectionError) {
+							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
-						result = await request.json();
-					} catch (e: any) {
-						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
-					}
 
-					return API.v1.success(result);
+						if (err instanceof MarketplaceAppsError || err instanceof MarketplaceUnsupportedVersionError) {
+							return API.v1.failure({ error: err.message });
+						}
+
+						if (err instanceof z.ZodError) {
+							orchestrator.getRocketChatLogger().error({ msg: 'Error validating the response from Marketplace:', err });
+							return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Categories') });
+						}
+
+						return API.v1.internalError();
+					}
 				},
 			},
 		);
@@ -178,7 +191,7 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
+					const baseUrl = orchestrator.getMarketplaceClient().getMarketplaceUrl();
 
 					const workspaceId = settings.get('Cloud_Workspace_Id');
 
@@ -186,7 +199,7 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Invalid purchase type' });
 					}
 
-					const response = await getWorkspaceAccessTokenWithScope('marketplace:purchase');
+					const response = await getWorkspaceAccessTokenWithScope({ scope: 'marketplace:purchase' });
 					if (!response.token) {
 						return API.v1.failure({ error: 'Unauthorized' });
 					}
@@ -209,8 +222,26 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const apps = manager.get().map(formatAppInstanceForRest);
-					return API.v1.success({ apps });
+					const apps = await manager.get();
+					let clusterStatus: AppStatusReport | undefined;
+
+					if (this.queryParams.includeClusterStatus === 'true') {
+						try {
+							clusterStatus = await fetchAppsStatusFromCluster();
+						} catch (error) {
+							if (!(error instanceof AppsEngineNoNodesFoundError)) {
+								throw error;
+							}
+
+							orchestrator
+								.getRocketChatLogger()
+								.debug('Request to /apps/installed with includeClusterStatus=true, but no cluster nodes found');
+						}
+					}
+
+					const formatted = await Promise.all(apps.map((app) => formatAppInstanceForRest(app, clusterStatus)));
+
+					return API.v1.success({ apps: formatted });
 				},
 			},
 		);
@@ -218,97 +249,11 @@ export class AppsRestApi {
 		// WE NEED TO MOVE EACH ENDPOINT HANDLER TO IT'S OWN FILE
 		this.api.addRoute(
 			'',
-			{ authRequired: true, permissionsRequired: ['manage-apps'] },
+			{ authRequired: true, permissionsRequired: ['manage-apps'], applyMeteorContext: true },
 			{
-				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-
-					// Gets the Apps from the marketplace
-					if ('marketplace' in this.queryParams && this.queryParams.marketplace) {
-						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/marketplace to get the apps list.');
-
-						const headers = getDefaultHeaders();
-						const token = await getWorkspaceAccessToken();
-						if (token) {
-							headers.Authorization = `Bearer ${token}`;
-						}
-
-						let result;
-						try {
-							const request = await fetch(`${baseUrl}/v1/apps`, { headers });
-							if (request.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-								return API.v1.failure();
-							}
-							result = await request.json();
-						} catch (e) {
-							return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
-						}
-
-						return API.v1.success(result);
-					}
-
-					if ('categories' in this.queryParams && this.queryParams.categories) {
-						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/categories to get the categories list.');
-						const headers = getDefaultHeaders();
-						const token = await getWorkspaceAccessToken();
-						if (token) {
-							headers.Authorization = `Bearer ${token}`;
-						}
-
-						let result;
-						try {
-							const request = await fetch(`${baseUrl}/v1/categories`, { headers });
-							if (request.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-								return API.v1.failure();
-							}
-							result = await request.json();
-						} catch (e: any) {
-							orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', e);
-							return API.v1.internalError();
-						}
-
-						return API.v1.success(result);
-					}
-
-					if (
-						'buildExternalUrl' in this.queryParams &&
-						'appId' in this.queryParams &&
-						this.queryParams.buildExternalUrl &&
-						this.queryParams.appId
-					) {
-						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/buildExternalUrl to get the modal URLs.');
-						const workspaceId = settings.get('Cloud_Workspace_Id');
-
-						if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
-							return API.v1.failure({ error: 'Invalid purchase type' });
-						}
-
-						const token = await getWorkspaceAccessTokenWithScope('marketplace:purchase');
-						if (!token) {
-							return API.v1.failure({ error: 'Unauthorized' });
-						}
-
-						const subscribeRoute = this.queryParams.details === 'true' ? 'subscribe/details' : 'subscribe';
-
-						const seats = await Users.getActiveLocalUserCount();
-
-						return API.v1.success({
-							url: `${baseUrl}/apps/${this.queryParams.appId}/${
-								this.queryParams.purchaseType === 'buy' ? this.queryParams.purchaseType : subscribeRoute
-							}?workspaceId=${workspaceId}&token=${token.token}&seats=${seats}`,
-						});
-					}
-					apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
-
-					const apps = manager.get().map(formatAppInstanceForRest);
-
-					return API.v1.success({ apps });
-				},
 				async post() {
 					let buff;
-					let marketplaceInfo;
+					let marketplaceInfo: IMarketplaceInfo[] | undefined;
 					let permissionsGranted;
 
 					if (this.bodyParams.url) {
@@ -321,33 +266,35 @@ export class AppsRestApi {
 								});
 							}
 
-							buff = Buffer.from(await response.arrayBuffer());
-						} catch (e: any) {
-							orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
+							buff = await response.buffer();
+						} catch (err: any) {
+							orchestrator.getRocketChatLogger().error({ msg: 'Error fetching App from URL:', err });
 							return API.v1.internalError();
 						}
-
-						if (this.bodyParams.downloadOnly) {
-							return API.v1.success({ buff });
-						}
-					} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
-						const baseUrl = orchestrator.getMarketplaceUrl();
-
+					} else if ('appId' in this.bodyParams && this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 						const headers = getDefaultHeaders();
 						try {
 							const downloadToken = await getWorkspaceAccessToken(true, 'marketplace:download', false);
 							const marketplaceToken = await getWorkspaceAccessToken();
 
 							const [downloadResponse, marketplaceResponse] = await Promise.all([
-								fetch(`${baseUrl}/v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${downloadToken}`, {
-									headers,
-								}),
-								fetch(`${baseUrl}/v1/apps/${this.bodyParams.appId}?appVersion=${this.bodyParams.version}`, {
-									headers: {
-										Authorization: `Bearer ${marketplaceToken}`,
-										...headers,
-									},
-								}),
+								Apps.getMarketplaceClient()
+									.fetch(`v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${downloadToken}`, {
+										headers,
+									})
+									.catch((cause) => {
+										throw new Error('App package download failed', { cause });
+									}),
+								Apps.getMarketplaceClient()
+									.fetch(`v1/apps/${this.bodyParams.appId}?appVersion=${this.bodyParams.version}`, {
+										headers: {
+											Authorization: `Bearer ${marketplaceToken}`,
+											...headers,
+										},
+									})
+									.catch((cause) => {
+										throw new Error('App metadata download failed', { cause });
+									}),
 							]);
 
 							if (downloadResponse.headers.get('content-type') !== 'application/zip') {
@@ -355,10 +302,27 @@ export class AppsRestApi {
 							}
 
 							buff = Buffer.from(await downloadResponse.arrayBuffer());
-							marketplaceInfo = (await marketplaceResponse.json()) as any;
+							marketplaceInfo = await marketplaceResponse.json();
+
+							// Note: marketplace responds with an array of the marketplace info on the app, but it is expected
+							// to always have one element since we are fetching a specific app version.
+							if (!Array.isArray(marketplaceInfo) || marketplaceInfo?.length !== 1) {
+								orchestrator.getRocketChatLogger().error({ msg: 'Error getting app information from marketplace', marketplaceInfo });
+								throw new Error('Invalid response from the Marketplace');
+							}
+
 							permissionsGranted = this.bodyParams.permissionsGranted;
-						} catch (err: any) {
-							return API.v1.failure(err.message);
+						} catch (err: unknown) {
+							let message;
+
+							if (err instanceof Error) {
+								orchestrator.getRocketChatLogger().error({ msg: 'Error installing app from marketplace:', err });
+								message = err.message;
+							} else {
+								message = err;
+							}
+
+							return API.v1.failure({ error: message });
 						}
 					} else {
 						const app = await getUploadFormData(
@@ -382,7 +346,7 @@ export class AppsRestApi {
 					}
 
 					if (!buff) {
-						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
+						return API.v1.failure({ error: 'app_file_error', message: 'Failed to get a file to install for the App. ' });
 					}
 
 					// Used mostly in Cloud hosting for security reasons
@@ -390,33 +354,44 @@ export class AppsRestApi {
 						return API.v1.internalError('private_app_install_disabled');
 					}
 
-					const user = orchestrator
-						?.getConverters()
-						?.get('users')
-						?.convertToApp(await Meteor.userAsync());
+					const user = orchestrator?.getConverters()?.get('users')?.convertToApp(this.user);
 
-					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: false, user });
+					const aff = await manager.add(buff, {
+						...(marketplaceInfo && { marketplaceInfo }),
+						permissionsGranted,
+						enable: false,
+						user,
+					});
 					const info: IAppInfo & { status?: AppStatus } = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
-						return API.v1.failure({ status: 'storage_error', messages: [aff.getStorageError()] });
+						return API.v1.failure({ error: 'app_storage_error', status: 'storage_error', messages: [aff.getStorageError()] });
 					}
 
 					if (aff.hasAppUserError()) {
 						return API.v1.failure({
+							error: 'app_user_error',
 							status: 'app_user_error',
 							messages: [(aff.getAppUserError() as Record<string, any>).message],
 							payload: { username: (aff.getAppUserError() as Record<string, any>).username },
 						});
 					}
 
-					info.status = aff.getApp().getStatus();
+					info.status = await aff.getApp().getStatus();
 
-					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'install', info);
+					void notifyMarketplace('install', info);
 
-					if (await canEnableApp(aff.getApp().getStorageItem())) {
-						const success = await manager.enable(info.id);
-						info.status = success ? AppStatus.AUTO_ENABLED : info.status;
+					try {
+						await canEnableApp(aff.getApp().getStorageItem());
+
+						const success = await manager.changeStatus(info.id, AppStatus.MANUALLY_ENABLED);
+						info.status = await success.getStatus();
+					} catch (error) {
+						orchestrator.getRocketChatLogger().warn({
+							msg: 'App was installed but could not be enabled',
+							appId: info.id,
+							err: error,
+						});
 					}
 
 					void orchestrator.getNotifier().appAdded(info.id);
@@ -439,7 +414,7 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Invalid request. Please ensure an appId is attached to the request.' });
 					}
 
-					const baseUrl = orchestrator.getMarketplaceUrl();
+					const baseUrl = orchestrator.getMarketplaceClient().getMarketplaceUrl();
 					const workspaceId = settings.get<string>('Cloud_Workspace_Id');
 
 					const requester = {
@@ -459,6 +434,7 @@ export class AppsRestApi {
 					try {
 						const adminsRaw = await Users.findUsersInRoles(['admin'], undefined, {
 							projection: {
+								_id: 1,
 								username: 1,
 								name: 1,
 								nickname: 1,
@@ -473,8 +449,8 @@ export class AppsRestApi {
 								nickname: a.nickname,
 							};
 						});
-					} catch (e) {
-						orchestrator.getRocketChatLogger().error('Error getting the admins to request an app be installed:', e);
+					} catch (err) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error fetching admins for app request', err });
 					}
 
 					const queryParams = new URLSearchParams();
@@ -506,8 +482,8 @@ export class AppsRestApi {
 			'languages',
 			{ authRequired: false },
 			{
-				get() {
-					const apps = manager.get().map((prl) => ({
+				async get() {
+					const apps = (await manager.get()).map((prl) => ({
 						id: prl.getID(),
 						languages: prl.getStorageItem().languageContent,
 					}));
@@ -532,14 +508,14 @@ export class AppsRestApi {
 
 					try {
 						const { event, externalComponent } = this.bodyParams;
-						const result = (Apps?.getBridges()?.getListenerBridge() as Record<string, any>).externalComponentEvent(
-							event,
-							externalComponent,
-						);
+						const result = (Apps.getBridges()?.getListenerBridge() as Record<string, any>).externalComponentEvent(event, externalComponent);
 
 						return API.v1.success({ result });
 					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error(`Error triggering external components' events ${e.response.data}`);
+						orchestrator.getRocketChatLogger().error({
+							msg: "Error triggering external components' events",
+							err: e,
+						});
 						return API.v1.internalError();
 					}
 				},
@@ -551,8 +527,6 @@ export class AppsRestApi {
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-
 					const headers: Record<string, any> = {};
 					const token = await getWorkspaceAccessToken();
 					if (token) {
@@ -561,14 +535,17 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						const request = await fetch(`${baseUrl}/v1/bundles/${this.urlParams.id}/apps`, { headers });
+						const request = await orchestrator.getMarketplaceClient().fetch(`v1/bundles/${this.urlParams.id}/apps`, { headers });
 						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error("Error getting the Bundle's Apps from the Marketplace:", await request.json());
+							orchestrator.getRocketChatLogger().error({
+								msg: "Error getting the Bundle's Apps from the Marketplace",
+								response: await request.json(),
+							});
 							return API.v1.failure();
 						}
 						result = await request.json();
-					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error("Error getting the Bundle's Apps from the Marketplace:", e.response.data);
+					} catch (err: any) {
+						orchestrator.getRocketChatLogger().error({ msg: "Error getting the Bundle's Apps from the Marketplace:", err });
 						return API.v1.internalError();
 					}
 
@@ -582,8 +559,6 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-
 					const headers = getDefaultHeaders();
 					const token = await getWorkspaceAccessToken();
 					if (token) {
@@ -592,9 +567,11 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						const request = await fetch(`${baseUrl}/v1/featured-apps`, { headers });
+						const request = await orchestrator.getMarketplaceClient().fetch(`v1/featured-apps`, { headers });
 						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the Featured Apps from the Marketplace:', await request.json());
+							orchestrator
+								.getRocketChatLogger()
+								.error({ msg: 'Error getting the Featured Apps from the Marketplace:', response: await request.json() });
 							return API.v1.failure();
 						}
 						result = await request.json();
@@ -608,13 +585,146 @@ export class AppsRestApi {
 		);
 
 		this.api.addRoute(
+			'app-request',
+			{ authRequired: true },
+			{
+				async get() {
+					const { appId, q = '', sort = '', limit = 25, offset = 0 } = this.queryParams;
+					const headers = getDefaultHeaders();
+
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					try {
+						const request = await orchestrator
+							.getMarketplaceClient()
+							.fetch(`v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
+								headers,
+							});
+						const result = await request.json();
+
+						if (!request.ok) {
+							throw new Error(result.error);
+						}
+						return API.v1.success(result);
+					} catch (err: any) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error getting the app requests from marketplace', err });
+
+						return API.v1.failure(err.message);
+					}
+				},
+			},
+		);
+
+		this.api.addRoute(
+			'app-request/stats',
+			{ authRequired: true },
+			{
+				async get() {
+					const headers = getDefaultHeaders();
+
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					try {
+						const request = await orchestrator.getMarketplaceClient().fetch(`v1/app-request/stats`, { headers });
+						const result = await request.json();
+						if (!request.ok) {
+							throw new Error(result.error);
+						}
+						return API.v1.success(result);
+					} catch (err: any) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error getting app request stats from marketplace', err });
+
+						return API.v1.failure(err.message);
+					}
+				},
+			},
+		);
+
+		this.api.addRoute(
+			'app-request/markAsSeen',
+			{ authRequired: true },
+			{
+				async post() {
+					const headers = getDefaultHeaders();
+
+					const token = await getWorkspaceAccessToken();
+					if (token) {
+						headers.Authorization = `Bearer ${token}`;
+					}
+
+					const { unseenRequests } = this.bodyParams;
+
+					try {
+						const request = await orchestrator.getMarketplaceClient().fetch(`v1/app-request/markAsSeen`, {
+							method: 'POST',
+							headers,
+							body: { ids: unseenRequests },
+						});
+						const result = await request.json();
+
+						if (!request.ok) {
+							throw new Error(result.error);
+						}
+
+						return API.v1.success(result);
+					} catch (err: any) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error marking app requests as seen in marketplace', err });
+
+						return API.v1.failure(err.message);
+					}
+				},
+			},
+		);
+
+		this.api.addRoute(
+			'notify-admins',
+			{ authRequired: true },
+			{
+				async post() {
+					const { appId, appName, appVersion, message } = this.bodyParams;
+					const workspaceUrl = settings.get<string>('Site_Url');
+
+					const regex = new RegExp('\\/$', 'gm');
+					const safeWorkspaceUrl = workspaceUrl.replace(regex, '');
+					const learnMore = `${safeWorkspaceUrl}/marketplace/explore/info/${appId}/${appVersion}/requests`;
+
+					try {
+						const msgs: (params: { adminUser: IUser }) => Promise<Partial<IMessage>> = async ({ adminUser }) => {
+							return {
+								msg: i18n.t('App_Request_Admin_Message', {
+									admin_name: adminUser.name || '',
+									app_name: appName || '',
+									user_name: `@${this.user.username}`,
+									message: message || '',
+									learn_more: learnMore,
+									interpolation: { escapeValue: false },
+								}),
+							};
+						};
+
+						await sendMessagesToAdmins({ msgs });
+
+						return API.v1.success();
+					} catch (err) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error notifying admins about app request', err });
+						return API.v1.failure();
+					}
+				},
+			},
+		);
+
+		this.api.addRoute(
 			':id',
-			{ authRequired: true, permissionsRequired: ['manage-apps'] },
+			{ authRequired: true, permissionsRequired: ['manage-apps'], applyMeteorContext: true },
 			{
 				async get() {
 					if (this.queryParams.marketplace && this.queryParams.version) {
-						const baseUrl = orchestrator.getMarketplaceUrl();
-
 						const headers: Record<string, any> = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
 						const token = await getWorkspaceAccessToken();
 						if (token) {
@@ -623,9 +733,13 @@ export class AppsRestApi {
 
 						let result: any;
 						try {
-							const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}?appVersion=${this.queryParams.version}`, { headers });
+							const request = await orchestrator
+								.getMarketplaceClient()
+								.fetch(`v1/apps/${this.urlParams.id}?appVersion=${this.queryParams.version}`, { headers });
 							if (request.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the App information from the Marketplace:', await request.json());
+								orchestrator
+									.getRocketChatLogger()
+									.error({ msg: 'Error getting the App from the Marketplace:', response: await request.json() });
 								return API.v1.failure();
 							}
 							result = await request.json();
@@ -637,8 +751,6 @@ export class AppsRestApi {
 					}
 
 					if (this.queryParams.marketplace && this.queryParams.update && this.queryParams.appVersion) {
-						const baseUrl = orchestrator.getMarketplaceUrl();
-
 						const headers = getDefaultHeaders();
 						const token = await getWorkspaceAccessToken();
 						if (token) {
@@ -647,11 +759,15 @@ export class AppsRestApi {
 
 						let result;
 						try {
-							const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}/latest?appVersion=${this.queryParams.appVersion}`, {
-								headers,
-							});
+							const request = await orchestrator
+								.getMarketplaceClient()
+								.fetch(`v1/apps/${this.urlParams.id}/latest?appVersion=${this.queryParams.appVersion}`, {
+									headers,
+								});
 							if (request.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the App update info from the Marketplace:', await request.json());
+								orchestrator
+									.getRocketChatLogger()
+									.error({ msg: 'Error getting the App update from the Marketplace:', response: await request.json() });
 								return API.v1.failure();
 							}
 							result = await request.json();
@@ -667,7 +783,7 @@ export class AppsRestApi {
 					}
 
 					return API.v1.success({
-						app: formatAppInstanceForRest(app),
+						app: await formatAppInstanceForRest(app),
 					});
 				},
 				async post() {
@@ -686,21 +802,20 @@ export class AppsRestApi {
 
 						buff = Buffer.from(await response.arrayBuffer());
 					} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
-						const baseUrl = orchestrator.getMarketplaceUrl();
-
 						const headers = getDefaultHeaders();
 						const token = await getWorkspaceAccessToken(true, 'marketplace:download', false);
 
 						try {
-							const response = await fetch(
-								`${baseUrl}/v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${token}`,
-								{
+							const response = await orchestrator
+								.getMarketplaceClient()
+								.fetch(`v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${token}`, {
 									headers,
-								},
-							);
+								});
 
 							if (response.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', await response.text());
+								orchestrator
+									.getRocketChatLogger()
+									.error({ msg: 'Error getting the App from the Marketplace:', response: await response.json() });
 								return API.v1.failure();
 							}
 
@@ -711,10 +826,12 @@ export class AppsRestApi {
 							}
 
 							buff = Buffer.from(await response.arrayBuffer());
-						} catch (e: any) {
-							orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', e.response.data);
+						} catch (err: any) {
+							orchestrator.getRocketChatLogger().error({ msg: 'Error getting the App from the Marketplace:', err });
 							return API.v1.internalError();
 						}
+
+						permissionsGranted = this.bodyParams.permissionsGranted;
 					} else {
 						isPrivateAppUpload = true;
 
@@ -746,7 +863,20 @@ export class AppsRestApi {
 						return API.v1.internalError('private_app_install_disabled');
 					}
 
-					const aff = await manager.update(buff, permissionsGranted);
+					const isCommunityWorkspace = !License.hasValidLicense();
+
+					// Note: exempt apps happen when a private app was uploaded to a community workspace before
+					//       the private app restriction was enforced. We still allow the users to use their
+					//       exempt apps, but they can't update them, since they could just upload a new version
+					//       containing a totally different app under the same id :(
+					const isExemptApp = isPrivateAppUpload && isCommunityWorkspace;
+					if (isExemptApp) {
+						return API.v1.failure({ error: 'Cannot_Update_Exempt_App' });
+					}
+
+					const user = orchestrator?.getConverters()?.get('users')?.convertToApp(this.user);
+
+					const aff = await manager.update(buff, permissionsGranted, { user, loadApp: true });
 					const info: IAppInfo & { status?: AppStatus } = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
@@ -761,9 +891,9 @@ export class AppsRestApi {
 						});
 					}
 
-					info.status = aff.getApp().getStatus();
+					info.status = await aff.getApp().getStatus();
 
-					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'update', info);
+					void notifyMarketplace('update', info);
 
 					void orchestrator.getNotifier().appUpdated(info.id);
 
@@ -780,17 +910,18 @@ export class AppsRestApi {
 						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 					}
 
-					const user = orchestrator
-						?.getConverters()
-						?.get('users')
-						.convertToApp(await Meteor.userAsync());
-
-					await manager.remove(prl.getID(), { user });
+					const user = orchestrator?.getConverters()?.get('users').convertToApp(this.user);
 
 					const info: IAppInfo & { status?: AppStatus } = prl.getInfo();
-					info.status = prl.getStatus();
+					try {
+						await manager.remove(prl.getID(), { user });
+						info.status = AppStatus.DISABLED;
+					} catch (e) {
+						info.status = await prl.getStatus();
+						return API.v1.failure({ app: info });
+					}
 
-					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'uninstall', info);
+					void notifyMarketplace('uninstall', info);
 
 					return API.v1.success({ app: info });
 				},
@@ -802,8 +933,6 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-
 					const headers: Record<string, any> = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
 					const token = await getWorkspaceAccessToken();
 					if (token) {
@@ -813,7 +942,7 @@ export class AppsRestApi {
 					let result;
 					let statusCode;
 					try {
-						const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}`, { headers });
+						const request = await orchestrator.getMarketplaceClient().fetch(`v1/apps/${this.urlParams.id}`, { headers });
 						statusCode = request.status;
 						result = await request.json();
 
@@ -825,7 +954,7 @@ export class AppsRestApi {
 					}
 
 					if (!result || statusCode !== 200) {
-						orchestrator.getRocketChatLogger().error('Error getting the App versions from the Marketplace:', result);
+						orchestrator.getRocketChatLogger().error({ msg: 'Error getting the App versions from the Marketplace:', result });
 						return API.v1.failure();
 					}
 
@@ -835,48 +964,10 @@ export class AppsRestApi {
 		);
 
 		this.api.addRoute(
-			'notify-admins',
-			{ authRequired: true },
-			{
-				async post() {
-					const { appId, appName, appVersion, message } = this.bodyParams;
-					const workspaceUrl = settings.get<string>('Site_Url');
-
-					const regex = new RegExp('\\/$', 'gm');
-					const safeWorkspaceUrl = workspaceUrl.replace(regex, '');
-					const learnMore = `${safeWorkspaceUrl}/marketplace/explore/info/${appId}/${appVersion}/requests`;
-
-					try {
-						const msgs: (params: { adminUser: IUser }) => Promise<Partial<IMessage>> = async ({ adminUser }) => {
-							return {
-								msg: i18n.t('App_Request_Admin_Message', {
-									admin_name: adminUser.name || '',
-									app_name: appName || '',
-									user_name: `@${this.user.username}`,
-									message: message || '',
-									learn_more: learnMore,
-								}),
-							};
-						};
-
-						await sendMessagesToAdmins({ msgs });
-
-						return API.v1.success();
-					} catch (e) {
-						orchestrator.getRocketChatLogger().error('Error when notifying admins that an user requested an app:', e);
-						return API.v1.failure();
-					}
-				},
-			},
-		);
-
-		this.api.addRoute(
 			':id/sync',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
 				async post() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-
 					const headers = getDefaultHeaders();
 					const token = await getWorkspaceAccessToken();
 					if (token) {
@@ -891,20 +982,23 @@ export class AppsRestApi {
 					let result;
 					let statusCode;
 					try {
-						const request = await fetch(`${baseUrl}/v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, { headers });
+						const request = await orchestrator
+							.getMarketplaceClient()
+							.fetch(`v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, { headers });
+
 						statusCode = request.status;
 						result = await request.json();
 
 						if (!request.ok) {
 							throw new Error(result.error);
 						}
-					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error('Error syncing the App from the Marketplace:', e);
+					} catch (err: any) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error syncing the App from the Marketplace:', err });
 						return API.v1.internalError();
 					}
 
 					if (statusCode !== 200) {
-						orchestrator.getRocketChatLogger().error('Error syncing the App from the Marketplace:', result);
+						orchestrator.getRocketChatLogger().error({ msg: 'Error getting the App from the Marketplace during sync:', result });
 						return API.v1.failure();
 					}
 
@@ -937,7 +1031,7 @@ export class AppsRestApi {
 					return {
 						statusCode: 200,
 						headers: {
-							'Content-Length': buf.length,
+							'Content-Length': String(buf.length),
 							'Content-Type': imageData[0].replace('data:', ''),
 						},
 						body: buf,
@@ -951,20 +1045,19 @@ export class AppsRestApi {
 			{ authRequired: false },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
 					const appId = this.urlParams.id;
 					const headers = getDefaultHeaders();
 
 					try {
-						const request = await fetch(`${baseUrl}/v1/apps/${appId}/screenshots`, { headers });
+						const request = await orchestrator.getMarketplaceClient().fetch(`v1/apps/${appId}/screenshots`, { headers });
 						const data = await request.json();
 
 						return API.v1.success({
 							screenshots: data,
 						});
-					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error('Error getting the screenshots from the Marketplace:', e.message);
-						return API.v1.failure(e.message);
+					} catch (err: any) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error getting the App screenshots from the Marketplace:', err });
+						return API.v1.failure(err.message);
 					}
 				},
 			},
@@ -981,34 +1074,6 @@ export class AppsRestApi {
 						const languages = prl.getStorageItem().languageContent || {};
 
 						return API.v1.success({ languages });
-					}
-					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
-				},
-			},
-		);
-
-		this.api.addRoute(
-			':id/logs',
-			{ authRequired: true, permissionsRequired: ['manage-apps'] },
-			{
-				async get() {
-					const prl = manager.getOneById(this.urlParams.id);
-
-					if (prl) {
-						const { offset, count } = await getPaginationItems(this.queryParams);
-						const { sort, fields, query } = await this.parseJsonQuery();
-
-						const ourQuery = Object.assign({}, query, { appId: prl.getID() });
-						const options = {
-							sort: sort || { _updatedAt: -1 },
-							skip: offset,
-							limit: count,
-							fields,
-						};
-
-						const logs = await orchestrator?.getLogStorage()?.find(ourQuery, options);
-
-						return API.v1.success({ logs });
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
@@ -1125,13 +1190,26 @@ export class AppsRestApi {
 			':id/status',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
-					const prl = manager.getOneById(this.urlParams.id);
+				async get() {
+					const app = manager.getOneById(this.urlParams.id);
 
-					if (prl) {
-						return API.v1.success({ status: prl.getStatus() });
+					if (!app) {
+						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 					}
-					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
+
+					const response: { status: AppStatus; clusterStatus?: AppStatusReport[string] } = { status: await app.getStatus() };
+
+					try {
+						const clusterStatus = await fetchAppsStatusFromCluster();
+
+						if (clusterStatus?.[app.getID()]) {
+							response.clusterStatus = clusterStatus[app.getID()];
+						}
+					} catch (e) {
+						orchestrator.getRocketChatLogger().warn({ msg: 'Could not fetch cluster status for app', appId: app.getID(), err: e });
+					}
+
+					return API.v1.success(response);
 				},
 				async post() {
 					const { id: appId } = this.urlParams;
@@ -1146,134 +1224,16 @@ export class AppsRestApi {
 						return API.v1.notFound(`No App found by the id of: ${appId}`);
 					}
 
-					const storedApp = prl.getStorageItem();
-					const { installationSource, marketplaceInfo } = storedApp;
-
-					if (!License.hasValidLicense() && installationSource === AppInstallationSource.MARKETPLACE) {
+					if (AppStatusUtils.isEnabled(status)) {
 						try {
-							const baseUrl = orchestrator.getMarketplaceUrl() as string;
-							const headers = getDefaultHeaders();
-							const { version } = prl.getInfo();
-
-							await appEnableCheck({
-								baseUrl,
-								headers,
-								appId,
-								version,
-								marketplaceInfo,
-								status,
-								logger: orchestrator.getRocketChatLogger(),
-							});
-						} catch (error: any) {
-							return API.v1.failure(error.message);
+							await canEnableApp(prl.getStorageItem());
+						} catch (error: unknown) {
+							return API.v1.failure((error as Error).message);
 						}
-					}
-
-					if (AppStatusUtils.isEnabled(status) && !(await canEnableApp(storedApp))) {
-						return API.v1.failure('Enabled apps have been maxed out');
 					}
 
 					const result = await manager.changeStatus(prl.getID(), status);
 					return API.v1.success({ status: result.getStatus() });
-				},
-			},
-		);
-
-		this.api.addRoute(
-			'app-request',
-			{ authRequired: true },
-			{
-				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-					const { appId, q = '', sort = '', limit = 25, offset = 0 } = this.queryParams;
-					const headers = getDefaultHeaders();
-
-					const token = await getWorkspaceAccessToken();
-					if (token) {
-						headers.Authorization = `Bearer ${token}`;
-					}
-
-					try {
-						const request = await fetch(`${baseUrl}/v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
-							headers,
-						});
-						const result = await request.json();
-
-						if (!request.ok) {
-							throw new Error(result.error);
-						}
-						return API.v1.success(result);
-					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error('Error getting all non sent app requests from the Marketplace:', e.message);
-
-						return API.v1.failure(e.message);
-					}
-				},
-			},
-		);
-
-		this.api.addRoute(
-			'app-request/stats',
-			{ authRequired: true },
-			{
-				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-					const headers = getDefaultHeaders();
-
-					const token = await getWorkspaceAccessToken();
-					if (token) {
-						headers.Authorization = `Bearer ${token}`;
-					}
-
-					try {
-						const request = await fetch(`${baseUrl}/v1/app-request/stats`, { headers });
-						const result = await request.json();
-						if (!request.ok) {
-							throw new Error(result.error);
-						}
-						return API.v1.success(result);
-					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error('Error getting the app requests stats from marketplace', e.message);
-
-						return API.v1.failure(e.message);
-					}
-				},
-			},
-		);
-
-		this.api.addRoute(
-			'app-request/markAsSeen',
-			{ authRequired: true },
-			{
-				async post() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-					const headers = getDefaultHeaders();
-
-					const token = await getWorkspaceAccessToken();
-					if (token) {
-						headers.Authorization = `Bearer ${token}`;
-					}
-
-					const { unseenRequests } = this.bodyParams;
-
-					try {
-						const request = await fetch(`${baseUrl}/v1/app-request/markAsSeen`, {
-							method: 'POST',
-							headers,
-							body: { ids: unseenRequests },
-						});
-						const result = await request.json();
-
-						if (!request.ok) {
-							throw new Error(result.error);
-						}
-
-						return API.v1.success(result);
-					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error('Error marking app requests as seen', e.message);
-
-						return API.v1.failure(e.message);
-					}
 				},
 			},
 		);

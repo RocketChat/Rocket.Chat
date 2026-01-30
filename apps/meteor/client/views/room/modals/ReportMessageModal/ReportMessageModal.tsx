@@ -1,12 +1,13 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { TextAreaInput, FieldGroup, Field, FieldRow, FieldError, Box } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
+import { TextAreaInput, FieldGroup, Field, FieldRow, FieldError, FieldLabel, FieldDescription, Box } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useId } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../components/GenericModal';
 import MarkdownText from '../../../../components/MarkdownText';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 
@@ -24,20 +25,25 @@ const wordBreak = css`
 `;
 
 const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
+	const reasonForReportId = useId();
 	const {
-		register,
+		control,
 		formState: { errors },
 		handleSubmit,
-	} = useForm<ReportMessageModalsFields>();
+	} = useForm<ReportMessageModalsFields>({
+		defaultValues: {
+			description: '',
+		},
+	});
 	const dispatchToastMessage = useToastMessageDispatch();
-	const reportMessage = useMethod('reportMessage');
+	const reportMessage = useEndpoint('POST', '/v1/chat.reportMessage');
 
 	const { _id } = message;
 
 	const handleReportMessage = async ({ description }: ReportMessageModalsFields): Promise<void> => {
 		try {
-			await reportMessage(_id, description);
+			await reportMessage({ messageId: _id, description });
 			dispatchToastMessage({ type: 'success', message: t('Report_has_been_sent') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -50,20 +56,39 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): Reac
 		<GenericModal
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleReportMessage)} {...props} />}
 			variant='danger'
-			title={t('Report_this_message_question_mark')}
-			onClose={onClose}
+			title={t('Report_message')}
 			onCancel={onClose}
-			confirmText={t('Report_exclamation_mark')}
+			confirmText={t('Report')}
 		>
 			<Box mbe={24} className={wordBreak}>
 				{message.md ? <MessageContentBody md={message.md} /> : <MarkdownText variant='inline' parseEmoji content={message.msg} />}
 			</Box>
 			<FieldGroup>
 				<Field>
+					<FieldLabel htmlFor={reasonForReportId}>{t('Report_reason')}</FieldLabel>
+					<FieldDescription id={`${reasonForReportId}-description`}>{t('Let_moderators_know_what_the_issue_is')}</FieldDescription>
 					<FieldRow>
-						<TextAreaInput {...register('description', { required: true })} placeholder={t('Why_do_you_want_to_report_question_mark')} />
+						<Controller
+							rules={{ required: t('Required_field', { field: t('Report_reason') }) }}
+							name='description'
+							control={control}
+							render={({ field }) => (
+								<TextAreaInput
+									{...field}
+									id={reasonForReportId}
+									rows={3}
+									aria-required='true'
+									aria-invalid={!!errors.description}
+									aria-describedby={`${reasonForReportId}-description ${reasonForReportId}-error`}
+								/>
+							)}
+						/>
 					</FieldRow>
-					{errors.description && <FieldError>{t('You_need_to_write_something')}</FieldError>}
+					{errors.description && (
+						<FieldError role='alert' id={`${reasonForReportId}-error`}>
+							{errors.description.message}
+						</FieldError>
+					)}
 				</Field>
 			</FieldGroup>
 		</GenericModal>

@@ -2,9 +2,9 @@ import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/preact';
 
 import { renderMessageBlocks } from '.';
-import { accessoryImage } from '../../../helpers.stories';
-import { PopoverContainer } from '../../Popover';
 import Surface from './Surface';
+import { accessoryImage } from '../../../../.storybook/helpers';
+import { PopoverContainer } from '../../Popover';
 
 export default {
 	title: 'UiKit/Message/Section block',
@@ -12,19 +12,20 @@ export default {
 		layout: 'centered',
 	},
 	decorators: [
-		(storyFn) => <div children={storyFn()} style={{ width: '100vw', maxWidth: 500 }} />,
-		(storyFn) => <PopoverContainer children={storyFn()} />,
+		(storyFn) => <div style={{ width: '100vw', maxWidth: 500 }}>{storyFn()}</div>,
+		(storyFn) => <PopoverContainer>{storyFn()}</PopoverContainer>,
 		(storyFn) => (
 			<Surface
-				children={storyFn()}
 				dispatchAction={async (payload: unknown) => {
 					await new Promise((resolve) => setTimeout(resolve, 1000));
 					action('dispatchAction')(payload);
 				}}
-			/>
+			>
+				{storyFn()}
+			</Surface>
 		),
 	],
-} as Meta;
+} satisfies Meta;
 
 export const TextAsPlainText = () =>
 	renderMessageBlocks([

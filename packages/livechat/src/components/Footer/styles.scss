@@ -1,6 +1,6 @@
-@import '../../styles/colors';
-@import '../../styles/helpers';
-@import '../../styles/variables';
+@use '../../styles/colors';
+@use '../../styles/helpers';
+@use '../../styles/variables';
 
 .footer {
 	z-index: 2;
@@ -12,9 +12,9 @@
 	width: 100%;
 	padding: 4px 8px;
 
-	color: $color-text-grey;
+	color: colors.$color-text-grey;
 
-	background-color: $bg-color-white;
+	background-color: colors.$bg-color-white;
 
 	font-size: 0.625rem;
 	align-items: stretch;
@@ -31,11 +31,11 @@
 
 		cursor: pointer;
 		user-select: none;
-		transition: trasform $default-time-animation;
+		transition: trasform variables.$default-time-animation;
 		text-align: left;
 		letter-spacing: 0.2px;
 
-		color: $color-text-grey;
+		color: colors.$color-text-grey;
 		border: none;
 		background: none;
 
@@ -48,7 +48,7 @@
 			color: black;
 		}
 
-		@include pressable-button(2px);
+		@include helpers.pressable-button(2px);
 	}
 
 	&__remainder {
@@ -60,7 +60,7 @@
 		&--highlight {
 			transition: color 0.2s;
 
-			color: $color-red;
+			color: colors.$color-red;
 		}
 	}
 }
@@ -86,7 +86,7 @@
 		align-items: center;
 
 		svg {
-			fill: #{$color-text-grey};
+			fill: #{colors.$color-text-grey};
 
 			&:hover {
 				fill: #db2323;

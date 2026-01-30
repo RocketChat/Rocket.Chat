@@ -1,5 +1,5 @@
 import { Apps } from '@rocket.chat/core-services';
-import type { LicenseAppSources } from '@rocket.chat/license';
+import type { LicenseAppSources } from '@rocket.chat/core-typings';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../../../lib/apps/getInstallationSourceFromAppStorageItem';
 

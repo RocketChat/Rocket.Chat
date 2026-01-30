@@ -1,13 +1,13 @@
-import { useSession, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useEffect, useRef } from 'react';
+import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../components/GenericModal';
-import { imperativeModal } from '../../../lib/imperativeModal';
 import { useClearUnreadAllMessagesMutation } from './useClearUnreadAllMessagesMutation';
 
 export const useEscapeKeyStroke = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const clearUnreadAllMessagesMutation = useClearUnreadAllMessagesMutation({
 		onError: (error) => {
@@ -18,17 +18,9 @@ export const useEscapeKeyStroke = () => {
 		},
 	});
 
-	const { current: unread } = useRef(useSession('unread'));
-
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
-			if (
-				event.code !== 'Escape' ||
-				!(event.shiftKey === true || event.ctrlKey === true) ||
-				unread === undefined ||
-				unread === null ||
-				unread === ''
-			) {
+			if (event.code !== 'Escape' || !(event.shiftKey === true || event.ctrlKey === true)) {
 				return;
 			}
 
@@ -54,5 +46,5 @@ export const useEscapeKeyStroke = () => {
 		return () => {
 			document.body.removeEventListener('keydown', handleKeyDown);
 		};
-	}, [clearUnreadAllMessagesMutation.mutate, dispatchToastMessage, t, unread]);
+	}, [clearUnreadAllMessagesMutation.mutate, dispatchToastMessage, t]);
 };

@@ -1,12 +1,11 @@
-import type { IUpload, IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IIntegration } from '@rocket.chat/core-typings';
+import type { IUploadWithUser, IMessage, IRoom, ITeam, IUser, IIntegration } from '@rocket.chat/core-typings';
 
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ChannelsAddAllProps } from './ChannelsAddAllProps';
 import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
 import type { ChannelsConvertToTeamProps } from './ChannelsConvertToTeamProps';
 import type { ChannelsCreateProps } from './ChannelsCreateProps';
 import type { ChannelsDeleteProps } from './ChannelsDeleteProps';
+import type { ChannelsFilesListProps } from './ChannelsFilesListProps';
 import type { ChannelsGetAllUserMentionsByChannelProps } from './ChannelsGetAllUserMentionsByChannelProps';
 import type { ChannelsGetIntegrationsProps } from './ChannelsGetIntegrationsProps';
 import type { ChannelsHistoryProps } from './ChannelsHistoryProps';
@@ -31,11 +30,18 @@ import type { ChannelsSetReadOnlyProps } from './ChannelsSetReadOnlyProps';
 import type { ChannelsSetTopicProps } from './ChannelsSetTopicProps';
 import type { ChannelsSetTypeProps } from './ChannelsSetTypeProps';
 import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
+import type { IGetRoomRoles } from '../../helpers/IGetRoomRoles';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../../helpers/PaginatedResult';
+
+export * from './ChannelsFilesListProps';
+export * from './ChannelsListProps';
+export * from './ChannelsOnlineProps';
 
 export type ChannelsEndpoints = {
 	'/v1/channels.files': {
-		GET: (params: PaginatedRequest<{ roomId: string } | { roomName: string }>) => PaginatedResult<{
-			files: IUpload[];
+		GET: (params: ChannelsFilesListProps) => PaginatedResult<{
+			files: IUploadWithUser[];
 		}>;
 	};
 	'/v1/channels.members': {

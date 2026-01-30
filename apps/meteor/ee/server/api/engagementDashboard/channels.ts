@@ -3,7 +3,7 @@ import { check, Match } from 'meteor/check';
 
 import { API } from '../../../../app/api/server';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
-import { findAllChannelsWithNumberOfMessages } from '../../lib/engagementDashboard/channels';
+import { findChannelsWithNumberOfMessages } from '../../lib/engagementDashboard/channels';
 import { isDateISOString, mapDateForAPI } from '../../lib/engagementDashboard/date';
 
 declare module '@rocket.chat/rest-typings' {
@@ -37,6 +37,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
+		license: ['engagement-dashboard'],
 	},
 	{
 		async get() {
@@ -53,7 +54,7 @@ API.v1.addRoute(
 			const { start, end } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
-			const { channels, total } = await findAllChannelsWithNumberOfMessages({
+			const { channels, total } = await findChannelsWithNumberOfMessages({
 				start: mapDateForAPI(start),
 				end: mapDateForAPI(end),
 				options: { offset, count },

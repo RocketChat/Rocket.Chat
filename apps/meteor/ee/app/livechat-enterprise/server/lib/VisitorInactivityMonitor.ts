@@ -4,11 +4,12 @@ import { cronJobs } from '@rocket.chat/cron';
 import type { MainLogger } from '@rocket.chat/logger';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 
-import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
-import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
-import { i18n } from '../../../../../server/lib/i18n';
 import { schedulerLogger } from './logger';
+import { notifyOnRoomChangedById } from '../../../../../app/lib/server/lib/notifyListener';
+import { closeRoom } from '../../../../../app/livechat/server/lib/closeRoom';
+import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../server/lib/callbacks';
+import { i18n } from '../../../../../server/lib/i18n';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
 
@@ -79,7 +80,7 @@ export class VisitorInactivityMonitor {
 			{ projection: { _id: 1, abandonedRoomsCloseCustomMessage: 1 } },
 		);
 		if (!department) {
-			this.logger.error(`Department ${departmentId} not found`);
+			this.logger.error({ msg: 'Department not found', departmentId });
 			return;
 		}
 		this.messageCache.set(department._id, department.abandonedRoomsCloseCustomMessage);
@@ -91,12 +92,13 @@ export class VisitorInactivityMonitor {
 		if (room.departmentId) {
 			comment = (await this._getDepartmentAbandonedCustomMessage(room.departmentId)) || comment;
 		}
-		await Livechat.closeRoom({
+		await closeRoom({
 			comment,
 			room,
 			user: this.user,
 		});
-		this.logger.info(`Room ${room._id} closed`);
+		void notifyOnRoomChangedById(room._id);
+		this.logger.info({ msg: 'Closed room due to visitor inactivity', roomId: room._id });
 	}
 
 	async placeRoomOnHold(room: IOmnichannelRoom) {
@@ -111,6 +113,8 @@ export class VisitorInactivityMonitor {
 			this.logger.error({ msg: 'Error placing room on hold', error: rejected });
 			throw new Error('Error placing room on hold. Please check logs for more details.');
 		}
+
+		void notifyOnRoomChangedById(room._id);
 	}
 
 	async handleAbandonedRooms() {
@@ -124,12 +128,12 @@ export class VisitorInactivityMonitor {
 		await LivechatRooms.findAbandonedOpenRooms(new Date(), extraQuery).forEach((room) => {
 			switch (action) {
 				case 'close': {
-					this.logger.info(`Closing room ${room._id}`);
+					this.logger.info({ msg: 'Closing room due to abandoned visitor', roomId: room._id });
 					promises.push(this.closeRooms(room));
 					break;
 				}
 				case 'on-hold': {
-					this.logger.info(`Placing room ${room._id} on hold`);
+					this.logger.info({ msg: 'Placing room on hold due to abandoned visitor', roomId: room._id });
 					promises.push(this.placeRoomOnHold(room));
 					break;
 				}
@@ -141,7 +145,7 @@ export class VisitorInactivityMonitor {
 		const errors = result.filter(isPromiseRejectedResult).map((r) => r.reason);
 
 		if (errors.length) {
-			this.logger.error({ msg: `Error while removing priority from ${errors.length} rooms`, reason: errors[0] });
+			this.logger.error({ msg: 'Error while removing priority from rooms', count: errors.length, reason: errors[0] });
 		}
 
 		this._initializeMessageCache();

@@ -1,9 +1,8 @@
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import React from 'react';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 
-import { useRoom } from '../../../contexts/RoomContext';
-import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
 import EditRoomInfo from './EditRoomInfo';
+import { useRoom } from '../../../contexts/RoomContext';
 
 const EditRoomInfoWithData = ({ onClickBack }: { onClickBack: () => void }) => {
 	const room = useRoom() as IRoomWithRetentionPolicy;

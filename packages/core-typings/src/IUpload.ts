@@ -1,3 +1,6 @@
+import type { EncryptedContent } from './IMessage';
+import type { IUser } from './IUser';
+
 export interface IUpload {
 	_id: string;
 	typeGroup?: string;
@@ -26,6 +29,7 @@ export interface IUpload {
 	token?: string;
 	uploadedAt?: Date;
 	modifiedAt?: Date;
+	expiresAt?: Date;
 	url?: string;
 	originalStore?: string;
 	originalId?: string;
@@ -46,4 +50,28 @@ export interface IUpload {
 	Webdav?: {
 		path: string;
 	};
+	content?: EncryptedContent;
+	encryption?: {
+		iv: string;
+		key: JsonWebKey;
+	};
+	hashes?: {
+		sha256: string;
+	};
+	federation?: {
+		mxcUri: string;
+		mrid: string;
+		serverName: string;
+		mediaId: string;
+	};
 }
+
+export interface IUploadWithUser extends IUpload {
+	user?: Pick<IUser, '_id' | 'name' | 'username'>;
+}
+
+export interface IE2EEUpload extends IUpload {
+	content: EncryptedContent;
+}
+
+export const isE2EEUpload = (upload: IUpload): upload is IE2EEUpload => Boolean(upload?.content?.ciphertext && upload?.content?.algorithm);

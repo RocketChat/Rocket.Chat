@@ -1,38 +1,58 @@
 import { EventEmitter } from 'events';
 
+import { Logger } from '@rocket.chat/logger';
 import { InstanceStatus } from '@rocket.chat/models';
+import { injectCurrentContext, tracerActiveSpan } from '@rocket.chat/tracing';
 
 import { asyncLocalStorage } from '.';
-import type { EventSignatures } from './Events';
-import type { IBroker, IBrokerNode } from './types/IBroker';
+import type { EventSignatures } from './events/Events';
+import type { CallingOptions, IBroker, IBrokerNode } from './types/IBroker';
 import type { ServiceClass, IServiceClass } from './types/ServiceClass';
 
+type ExtendedServiceClass = { instance: IServiceClass; dependencies: string[]; isStarted: boolean };
+
+const logger = new Logger('LocalBroker');
+
+const INTERVAL = 1000;
+const TIMEOUT = INTERVAL * 10;
+
 export class LocalBroker implements IBroker {
+	private started = false;
+
 	private methods = new Map<string, (...params: any) => any>();
 
 	private events = new EventEmitter();
 
-	private services = new Set<IServiceClass>();
+	private services = new Map<string, ExtendedServiceClass>();
 
-	async call(method: string, data: any): Promise<any> {
-		const result = await asyncLocalStorage.run(
-			{
-				id: 'ctx.id',
-				nodeID: 'ctx.nodeID',
-				requestID: 'ctx.requestID',
-				broker: this,
+	private pendingServices: Set<string> = new Set();
+
+	private defaultDependencies = ['settings'];
+
+	async call(method: string, data: any, options?: CallingOptions): Promise<any> {
+		if (options) {
+			logger.warn('Options are not supported in LocalBroker');
+		}
+
+		return tracerActiveSpan(
+			`action ${method}`,
+			{},
+			() => {
+				return asyncLocalStorage.run(
+					{
+						id: 'ctx.id',
+						nodeID: 'ctx.nodeID',
+						requestID: 'ctx.requestID',
+						broker: this,
+					},
+					(): any => this.methods.get(method)?.(...data),
+				);
 			},
-			(): any => this.methods.get(method)?.(...data),
+			injectCurrentContext(),
 		);
-
-		return result;
 	}
 
-	async waitAndCall(method: string, data: any): Promise<any> {
-		return this.call(method, data);
-	}
-
-	destroyService(instance: ServiceClass): void {
+	async destroyService(instance: ServiceClass): Promise<void> {
 		const namespace = instance.getName();
 
 		instance.getEvents().forEach((event) => event.listeners.forEach((listener) => this.events.removeListener(event.eventName, listener)));
@@ -41,6 +61,7 @@ export class LocalBroker implements IBroker {
 			instance.constructor?.name === 'Object'
 				? Object.getOwnPropertyNames(instance)
 				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
+
 		for (const method of methods) {
 			if (method === 'constructor') {
 				continue;
@@ -49,13 +70,29 @@ export class LocalBroker implements IBroker {
 			this.methods.delete(`${namespace}.${method}`);
 		}
 		instance.removeAllListeners();
-		instance.stopped();
+		await instance.stopped();
+
+		this.services.delete(namespace);
 	}
 
-	createService(instance: IServiceClass): void {
-		const namespace = instance.getName();
+	/**
+	 * Creates a service and adds it to the local broker. In case of the broker is already started, it will start the service automatically.
+	 */
+	createService(instance: IServiceClass, serviceDependencies: string[] = []): void {
+		const serviceName = instance.getName();
 
-		this.services.add(instance);
+		if (!serviceName || serviceName === '') {
+			throw new Error('Service name cannot be empty');
+		}
+
+		if (this.services.has(serviceName)) {
+			throw new Error(`Service ${serviceName} already exists`);
+		}
+
+		// TODO: find a better way to handle default dependencies and avoid loops
+		const dependencies = [...serviceDependencies, ...(serviceName === 'settings' ? [] : this.defaultDependencies)].filter(
+			(dependency) => dependency !== serviceName,
+		);
 
 		instance.created();
 
@@ -65,13 +102,20 @@ export class LocalBroker implements IBroker {
 			instance.constructor?.name === 'Object'
 				? Object.getOwnPropertyNames(instance)
 				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
+
 		for (const method of methods) {
 			if (method === 'constructor') {
 				continue;
 			}
 			const i = instance as any;
+			this.methods.set(`${serviceName}.${method}`, i[method].bind(i));
+		}
 
-			this.methods.set(`${namespace}.${method}`, i[method].bind(i));
+		this.services.set(serviceName, { instance, dependencies, isStarted: false });
+		this.registerPendingServices(Array.from(new Set([serviceName, ...dependencies])));
+
+		if (this.started) {
+			void this.start();
 		}
 	}
 
@@ -104,7 +148,84 @@ export class LocalBroker implements IBroker {
 		return instances.map(({ _id }) => ({ id: _id, available: true }));
 	}
 
+	/**
+	 * Registers services to be started. We're assuming that each service will only have one level of dependencies.
+	 */
+	private registerPendingServices(services: string[] = []): void {
+		services
+			.filter((e) => !this.services.has(e) || !this.services.get(e)?.isStarted)
+			.forEach((service) => this.pendingServices.add(service));
+	}
+
+	/**
+	 * Removes a service from the pending services set.
+	 */
+	private removePendingService(service: string): void {
+		this.pendingServices.delete(service);
+	}
+
+	private async startService(service: ExtendedServiceClass): Promise<void> {
+		const serviceName = service.instance.getName();
+
+		if (typeof service === 'string') {
+			logger.debug({ msg: 'Service is not in the services map. Bringing it back to queue', serviceName });
+			return;
+		}
+
+		if (service?.isStarted) {
+			logger.debug({ msg: 'Service already started', serviceName });
+			return;
+		}
+
+		const pendingDependencies = service.dependencies.filter((e) => !this.services.has(e) || !this.services.get(e)?.isStarted);
+		if (pendingDependencies.length > 0) {
+			logger.debug({
+				msg: 'Service has dependencies that are not started yet, bringing it back to queue',
+				serviceName,
+				pendingDependencies,
+			});
+			return;
+		}
+
+		await service.instance.started();
+		this.services.set(serviceName, { ...service, isStarted: true });
+		this.removePendingService(serviceName);
+
+		logger.debug({ msg: 'Service successfully started', serviceName });
+	}
+
 	async start(): Promise<void> {
-		await Promise.all([...this.services].map((service) => service.started()));
+		const startTime = Date.now();
+
+		return new Promise((resolve, reject) => {
+			const intervalId = setInterval(async () => {
+				const elapsed = Date.now() - startTime;
+
+				if (this.pendingServices.size === 0) {
+					const availableServices = Array.from(this.services.values()).filter((service) => service.isStarted);
+
+					logger.info({ msg: 'All services available', count: availableServices.length });
+					clearInterval(intervalId);
+					return resolve();
+				}
+
+				if (elapsed > TIMEOUT) {
+					clearInterval(intervalId);
+					const pendingServices = Array.from(this.pendingServices).join(', ');
+					const err = new Error(`Timeout while waiting for LocalBroker services: ${pendingServices}`);
+					logger.error({ msg: 'Timeout while waiting for LocalBroker services', err, pendingServices });
+					return reject(err);
+				}
+
+				for await (const service of Array.from(this.pendingServices)) {
+					const serviceInstance = this.services.get(service);
+					if (serviceInstance) {
+						await this.startService(serviceInstance);
+					}
+				}
+
+				logger.debug({ msg: 'Waiting for pending services', count: this.pendingServices.size });
+			}, INTERVAL);
+		});
 	}
 }

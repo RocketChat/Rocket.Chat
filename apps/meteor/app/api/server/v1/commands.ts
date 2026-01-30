@@ -1,9 +1,11 @@
+import { Apps } from '@rocket.chat/apps';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Meteor } from 'meteor/meteor';
 import objectPath from 'object-path';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { executeSlashCommandPreview } from '../../../lib/server/methods/executeSlashCommandPreview';
+import { getSlashCommandPreviews } from '../../../lib/server/methods/getSlashCommandPreviews';
 import { slashCommands } from '../../../utils/server/slashCommand';
 import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
@@ -142,6 +144,19 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+			if (!Apps.self?.isLoaded()) {
+				return {
+					statusCode: 202, // Accepted - apps are not ready, so the list is incomplete. Retry later
+					body: {
+						commands: [],
+						appsLoaded: false,
+						offset: 0,
+						count: 0,
+						total: 0,
+					},
+				};
+			}
+
 			const params = this.queryParams as Record<string, any>;
 			const { offset, count } = await getPaginationItems(params);
 			const { sort, query } = await this.parseJsonQuery();
@@ -160,6 +175,7 @@ API.v1.addRoute(
 					skip: offset,
 					limit: count,
 				}),
+				appsLoaded: true,
 				offset,
 				count: commands.length,
 				total: totalCount,
@@ -198,7 +214,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const params = body.params ? body.params : '';
@@ -252,12 +268,12 @@ API.v1.addRoute(
 			}
 
 			if (!(await canAccessRoomIdAsync(query.roomId, user?._id))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const params = query.params ? query.params : '';
 
-			const preview = await Meteor.callAsync('getSlashCommandPreviews', {
+			const preview = await getSlashCommandPreviews({
 				cmd,
 				params,
 				msg: { rid: query.roomId },
@@ -304,7 +320,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { params = '' } = body;
@@ -320,15 +336,14 @@ API.v1.addRoute(
 				...(body.tmid && { tmid: body.tmid }),
 			};
 
-			await Meteor.callAsync(
-				'executeSlashCommandPreview',
+			await executeSlashCommandPreview(
 				{
 					cmd,
 					params,
 					msg,
+					triggerId: body.triggerId,
 				},
 				body.previewItem,
-				body.triggerId,
 			);
 
 			return API.v1.success();

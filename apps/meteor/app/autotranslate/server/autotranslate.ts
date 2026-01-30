@@ -2,7 +2,6 @@ import type {
 	IMessage,
 	IRoom,
 	MessageAttachment,
-	ISupportedLanguages,
 	IProviderMetadata,
 	ISupportedLanguage,
 	ITranslationResult,
@@ -10,11 +9,12 @@ import type {
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Subscriptions } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { callbacks } from '../../../lib/callbacks';
-import { isTruthy } from '../../../lib/isTruthy';
+import { callbacks } from '../../../server/lib/callbacks';
+import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { Markdown } from '../../markdown/server';
 import { settings } from '../../settings/server';
 
@@ -78,7 +78,7 @@ export class TranslationProviderRegistry {
 			return null;
 		}
 
-		return provider.translateMessage(message, room, targetLanguage);
+		return provider.translateMessage(message, { room, targetLanguage });
 	}
 
 	static getProviders(): AutoTranslate[] {
@@ -112,7 +112,12 @@ export class TranslationProviderRegistry {
 			return;
 		}
 
-		callbacks.add('afterSaveMessage', provider.translateMessage.bind(provider), callbacks.priority.MEDIUM, 'autotranslate');
+		callbacks.add(
+			'afterSaveMessage',
+			(message, { room }) => provider.translateMessage(message, { room }),
+			callbacks.priority.MEDIUM,
+			'autotranslate',
+		);
 	}
 }
 
@@ -128,7 +133,9 @@ export abstract class AutoTranslate {
 
 	languages: string[];
 
-	supportedLanguages: ISupportedLanguages;
+	supportedLanguages: {
+		[language: string]: ISupportedLanguage[];
+	};
 
 	/**
 	 * Encapsulate the api key and provider settings.
@@ -289,7 +296,7 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguage
 	 * @returns {object} unmodified message object.
 	 */
-	async translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): Promise<IMessage | null> {
+	async translateMessage(message: IMessage, { room, targetLanguage }: { room: IRoom; targetLanguage?: string }): Promise<IMessage | null> {
 		let targetLanguages: string[];
 		if (targetLanguage) {
 			targetLanguages = [targetLanguage];
@@ -305,6 +312,7 @@ export abstract class AutoTranslate {
 				const translations = await this._translateMessage(targetMessage, targetLanguages);
 				if (!_.isEmpty(translations)) {
 					await Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider] || '');
+					this.notifyTranslatedMessage(message._id);
 				}
 			});
 		}
@@ -320,12 +328,19 @@ export abstract class AutoTranslate {
 
 						if (!_.isEmpty(translations)) {
 							await Messages.addAttachmentTranslations(message._id, String(index), translations);
+							this.notifyTranslatedMessage(message._id);
 						}
 					}
 				}
 			});
 		}
 		return Messages.findOneById(message._id);
+	}
+
+	private notifyTranslatedMessage(messageId: string): void {
+		void notifyOnMessageChange({
+			id: messageId,
+		});
 	}
 
 	/**

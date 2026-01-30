@@ -2,8 +2,8 @@ import type { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings'
 import { usePermission, useAtLeastOnePermission, useRole } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
+import { useTeamInfoQuery } from '../../../../../hooks/useTeamInfoQuery';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
 const getCanChangeType = (room: IRoom | IRoomWithRetentionPolicy, canCreateChannel: boolean, canCreateGroup: boolean, isAdmin: boolean) =>
@@ -14,7 +14,18 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 	const canCreateChannel = usePermission('create-c');
 	const canCreateGroup = usePermission('create-p');
 
-	const canChangeType = getCanChangeType(room, canCreateChannel, canCreateGroup, isAdmin);
+	const teamId = room.teamId || '';
+	const { data: teamInfo } = useTeamInfoQuery(teamId);
+
+	const canCreateTeamChannel = usePermission('create-team-channel', teamInfo?.roomId);
+	const canCreateTeamGroup = usePermission('create-team-group', teamInfo?.roomId);
+
+	const canChangeType = getCanChangeType(
+		room,
+		teamId ? canCreateTeamChannel : canCreateChannel,
+		teamId ? canCreateTeamGroup : canCreateGroup,
+		isAdmin,
+	);
 	const canSetReadOnly = usePermission('set-readonly', room._id);
 	const canSetReactWhenReadOnly = usePermission('set-react-when-readonly', room._id);
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
@@ -22,7 +33,6 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		useMemo(() => ['archive-room', 'unarchive-room'], []),
 		room._id,
 	);
-	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || e2e.isReady());
 
 	const [
 		canViewName,
@@ -34,7 +44,7 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canViewReadOnly,
 		canViewHideSysMes,
 		canViewJoinCode,
-		canViewEncrypted,
+		canViewReactWhenReadOnly,
 	] = useMemo(() => {
 		const isAllowed =
 			roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange ||
@@ -52,7 +62,6 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 			isAllowed(room, RoomSettingsEnum.SYSTEM_MESSAGES),
 			isAllowed(room, RoomSettingsEnum.JOIN_CODE),
 			isAllowed(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY),
-			isAllowed(room, RoomSettingsEnum.E2E),
 		];
 	}, [room]);
 
@@ -62,7 +71,6 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canSetReactWhenReadOnly,
 		canEditRoomRetentionPolicy,
 		canArchiveOrUnarchive,
-		canToggleEncryption,
 		canViewName,
 		canViewTopic,
 		canViewAnnouncement,
@@ -72,6 +80,6 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canViewReadOnly,
 		canViewHideSysMes,
 		canViewJoinCode,
-		canViewEncrypted,
+		canViewReactWhenReadOnly,
 	};
 };

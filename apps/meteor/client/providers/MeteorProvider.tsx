@@ -1,17 +1,15 @@
-import type { FC } from 'react';
-import React from 'react';
+import { ModalProvider } from '@rocket.chat/ui-client';
+import type { ReactNode } from 'react';
 
-import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 import ActionManagerProvider from './ActionManagerProvider';
+import AuthenticationProvider from './AuthenticationProvider/AuthenticationProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
-import { CallProvider } from './CallProvider';
-import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
 import EmojiPickerProvider from './EmojiPickerProvider';
 import LayoutProvider from './LayoutProvider';
-import ModalProvider from './ModalProvider';
+import MediaCallProvider from './MediaCallProvider';
 import OmnichannelProvider from './OmnichannelProvider';
 import RouterProvider from './RouterProvider';
 import ServerProvider from './ServerProvider';
@@ -23,19 +21,24 @@ import TranslationProvider from './TranslationProvider';
 import UserPresenceProvider from './UserPresenceProvider';
 import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
+import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 
-const MeteorProvider: FC = ({ children }) => (
-	<ConnectionStatusProvider>
-		<ServerProvider>
-			<RouterProvider>
-				<SettingsProvider>
-					<TranslationProvider>
-						<SessionProvider>
-							<TooltipProvider>
-								<ToastMessagesProvider>
-									<LayoutProvider>
-										<AvatarUrlProvider>
-											<UserProvider>
+type MeteorProviderProps = {
+	children?: ReactNode;
+};
+
+const MeteorProvider = ({ children }: MeteorProviderProps) => (
+	<ServerProvider>
+		<RouterProvider>
+			<SettingsProvider>
+				<TranslationProvider>
+					<SessionProvider>
+						<TooltipProvider>
+							<ToastMessagesProvider>
+								<AvatarUrlProvider>
+									<UserProvider>
+										<LayoutProvider>
+											<AuthenticationProvider>
 												<CustomSoundProvider>
 													<DeviceProvider>
 														<ModalProvider>
@@ -45,9 +48,9 @@ const MeteorProvider: FC = ({ children }) => (
 																		<UserPresenceProvider>
 																			<ActionManagerProvider>
 																				<VideoConfProvider>
-																					<CallProvider>
+																					<MediaCallProvider>
 																						<OmnichannelProvider>{children}</OmnichannelProvider>
-																					</CallProvider>
+																					</MediaCallProvider>
 																				</VideoConfProvider>
 																			</ActionManagerProvider>
 																		</UserPresenceProvider>
@@ -57,17 +60,17 @@ const MeteorProvider: FC = ({ children }) => (
 														</ModalProvider>
 													</DeviceProvider>
 												</CustomSoundProvider>
-											</UserProvider>
-										</AvatarUrlProvider>
-									</LayoutProvider>
-								</ToastMessagesProvider>
-							</TooltipProvider>
-						</SessionProvider>
-					</TranslationProvider>
-				</SettingsProvider>
-			</RouterProvider>
-		</ServerProvider>
-	</ConnectionStatusProvider>
+											</AuthenticationProvider>
+										</LayoutProvider>
+									</UserProvider>
+								</AvatarUrlProvider>
+							</ToastMessagesProvider>
+						</TooltipProvider>
+					</SessionProvider>
+				</TranslationProvider>
+			</SettingsProvider>
+		</RouterProvider>
+	</ServerProvider>
 );
 
 export default MeteorProvider;

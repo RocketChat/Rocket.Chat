@@ -1,7 +1,6 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable = 'quickReactions' | 'navigationBar';
+export type FeaturesAvailable = 'secondarySidebar' | 'expandableMessageComposer';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -11,46 +10,55 @@ export type FeaturePreviewProps = {
 	imageUrl?: string;
 	value: boolean;
 	enabled: boolean;
+	disabled?: boolean;
+	enableQuery?: {
+		name: FeaturesAvailable;
+		value: boolean;
+	};
 };
 
+// TODO: Move the features preview array to another directory to be accessed from both BE and FE.
 export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	{
-		name: 'quickReactions',
-		i18n: 'Quick_reactions',
-		description: 'Quick_reactions_description',
-		group: 'Message',
-		imageUrl: 'images/featurePreview/quick-reactions.png',
+		name: 'secondarySidebar',
+		i18n: 'Filters_and_secondary_sidebar',
+		description: 'Filters_and_secondary_sidebar_description',
+		group: 'Navigation',
+		imageUrl: 'images/featurePreview/secondary-sidebar.png',
 		value: false,
 		enabled: true,
-	},
-	{
-		name: 'navigationBar',
-		i18n: 'Navigation_bar',
-		description: 'Navigation_bar_description',
-		group: 'Navigation',
-		value: false,
-		enabled: false,
 	},
 ];
 
 export const enabledDefaultFeatures = defaultFeaturesPreview.filter((feature) => feature.enabled);
 
-export const useFeaturePreviewList = () => {
-	const featurePreviewEnabled = useSetting<boolean>('Accounts_AllowFeaturePreview');
-	const userFeaturesPreview = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
-
-	if (!featurePreviewEnabled) {
-		return { unseenFeatures: 0, features: [] as FeaturePreviewProps[], featurePreviewEnabled };
+// TODO: Remove this logic after we have a way to store object settings.
+export const parseSetting = (setting?: FeaturePreviewProps[] | string) => {
+	if (typeof setting === 'string') {
+		try {
+			return JSON.parse(setting) as FeaturePreviewProps[];
+		} catch (_) {
+			return;
+		}
 	}
+	return setting;
+};
 
+export const useFeaturePreviewList = (featuresList: FeaturePreviewProps[]) => {
 	const unseenFeatures = enabledDefaultFeatures.filter(
-		(feature) => !userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name),
+		(defaultFeature) => !featuresList?.find((feature) => feature.name === defaultFeature.name),
 	).length;
 
-	const mergedFeatures = enabledDefaultFeatures.map((feature) => {
-		const userFeature = userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name);
-		return { ...feature, ...userFeature };
+	const mergedFeatures = enabledDefaultFeatures.map((defaultFeature) => {
+		const feature = featuresList?.find((feature) => feature.name === defaultFeature.name);
+		// overwrite enableQuery and disabled with default value to avoid a migration to remove this from the DB
+		// payload on save now only have `name` and `value`
+		if (feature) {
+			feature.enableQuery = defaultFeature.enableQuery;
+			feature.disabled = defaultFeature.disabled;
+		}
+		return { ...defaultFeature, ...feature };
 	});
 
-	return { unseenFeatures, features: mergedFeatures, featurePreviewEnabled };
+	return { unseenFeatures, features: mergedFeatures };
 };

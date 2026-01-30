@@ -1,37 +1,36 @@
 @use 'sass:math';
+@use '../../styles/colors';
+@use '../../styles/helpers';
+@use '../../styles/variables';
 
-@import '../../styles/colors';
-@import '../../styles/helpers';
-@import '../../styles/variables';
-
-$button-border-width: $default-border;
-$button-border-radius: $default-border-radius;
-$button-padding: (0.75 * $default-gap - $default-border) (1.5 * $default-gap - $default-border);
-$button-small-padding: (0.25 * $default-gap - math.div($default-border, 2)) (1.5 * $default-gap - $default-border);
+$button-border-width: variables.$default-border;
+$button-border-radius: variables.$default-border-radius;
+$button-padding: (0.75 * variables.$default-gap - variables.$default-border) (1.5 * variables.$default-gap - variables.$default-border);
+$button-small-padding: (0.25 * variables.$default-gap - math.div(variables.$default-border, 2)) (1.5 * variables.$default-gap - variables.$default-border);
 
 $button-active-displacement: 2px;
 
-$button-color: $color-text-lighter;
-$button-background-color: $color-blue;
-$button-danger-background-color: $color-dark-red;
-$button-secondary-background-color: $color-text-grey;
+$button-color: colors.$color-text-lighter;
+$button-background-color: colors.$color-blue;
+$button-danger-background-color: colors.$color-dark-red;
+$button-secondary-background-color: colors.$color-text-grey;
 
-$button-font-family: $font-family;
+$button-font-family: variables.$font-family;
 $button-font-size: 0.875rem;
 $button-font-weight: 500;
 $button-line-height: 1.25rem;
 
-$button-disabled-opacity: $disabled-opacity;
+$button-disabled-opacity: variables.$disabled-opacity;
 
-$button-loading-border-width: (2 * $default-border);
-$button-loading-gap: math.div($default-gap, 2);
+$button-loading-border-width: (2 * variables.$default-border);
+$button-loading-gap: math.div(variables.$default-gap, 2);
 $button-loading-size: $button-line-height;
 $button-loading-color: #ffffff;
 
 $button-badge-size: 1.5rem;
-$button-badge-background-color: $color-red;
-$button-badge-color: $color-text-lighter;
-$button-badge-font-family: $font-family;
+$button-badge-background-color: colors.$color-red;
+$button-badge-color: colors.$color-text-lighter;
+$button-badge-font-family: variables.$font-family;
 $button-badge-font-size: 0.8125rem;
 $button-badge-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
 
@@ -65,10 +64,10 @@ $button-icon-padding: 10px;
 	cursor: pointer;
 	user-select: none;
 	transition:
-		color $default-time-animation,
-		background-color $default-time-animation,
-		border-color $default-time-animation,
-		transform math.div($default-time-animation, 2);
+		color variables.$default-time-animation,
+		background-color variables.$default-time-animation,
+		border-color variables.$default-time-animation,
+		transform math.div(variables.$default-time-animation, 2);
 	white-space: nowrap;
 	text-decoration: none;
 
@@ -83,7 +82,7 @@ $button-icon-padding: 10px;
 	justify-content: center;
 
 	@include state(var(--color, $button-background-color), transparent);
-	@include pressable-button($button-active-displacement, $button-border-width);
+	@include helpers.pressable-button($button-active-displacement, $button-border-width);
 
 	&:focus {
 		box-shadow: 0 0 5px rgba(#000000, 0.5);

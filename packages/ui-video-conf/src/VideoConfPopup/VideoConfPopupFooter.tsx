@@ -1,6 +1,6 @@
-import { Margins } from '@rocket.chat/fuselage';
-import type { ReactNode, ReactElement } from 'react';
+import { Box } from '@rocket.chat/fuselage';
+import type { ReactElement, ComponentProps } from 'react';
 
-const VideoConfPopupFooter = ({ children }: { children: ReactNode }): ReactElement => <Margins blockStart={28}>{children}</Margins>;
+const VideoConfPopupFooter = (props: ComponentProps<typeof Box>): ReactElement => <Box mbs={28} {...props} />;
 
 export default VideoConfPopupFooter;

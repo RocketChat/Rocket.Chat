@@ -1,8 +1,7 @@
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import type { ICannedResponseModel } from '@rocket.chat/model-typings';
+import { BaseRaw } from '@rocket.chat/models';
 import type { Db, DeleteResult, FindCursor, FindOptions, IndexDescription, UpdateFilter } from 'mongodb';
-
-import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
 // TODO need to define type for CannedResponse object
 export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> implements ICannedResponseModel {
@@ -10,7 +9,7 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 		super(db, 'canned_response');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: {
@@ -65,7 +64,7 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 		return Object.assign(record, { _id });
 	}
 
-	findOneById(_id: string, options?: FindOptions<IOmnichannelCannedResponse>): Promise<IOmnichannelCannedResponse | null> {
+	override findOneById(_id: string, options?: FindOptions<IOmnichannelCannedResponse>): Promise<IOmnichannelCannedResponse | null> {
 		const query = { _id };
 
 		return this.findOne(query, options);
@@ -101,7 +100,7 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 	}
 
 	// REMOVE
-	removeById(_id: string): Promise<DeleteResult> {
+	override removeById(_id: string): Promise<DeleteResult> {
 		const query = { _id };
 
 		return this.deleteOne(query);
@@ -114,6 +113,6 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 			},
 		};
 
-		return this.updateMany({}, update);
+		return this.updateMany({ tags: tagId }, update);
 	}
 }

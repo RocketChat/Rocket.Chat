@@ -1,10 +1,14 @@
-import { Messages, AppsTokens, Users, Rooms } from '@rocket.chat/models';
+import type { IAppsTokens } from '@rocket.chat/core-typings';
+import { Messages, AppsTokens, Users, Rooms, Settings } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { executePushTest } from '../../../../server/lib/pushConfig';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { pushUpdate } from '../../../push/server/methods';
 import PushNotification from '../../../push-notifications/server/lib/PushNotification';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -32,10 +36,15 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-appName-param-not-valid', 'The required "appName" body param is missing or invalid.');
 			}
 
-			const result = await Meteor.callAsync('raix:push-update', {
+			const authToken = this.request.headers.get('x-auth-token');
+			if (!authToken) {
+				throw new Meteor.Error('error-authToken-param-not-valid', 'The required "authToken" header param is missing or invalid.');
+			}
+
+			const result = await pushUpdate({
 				id: deviceId,
-				token: { [type]: value },
-				authToken: this.request.headers['x-auth-token'],
+				token: { [type]: value } as IAppsTokens['token'],
+				authToken,
 				appName,
 				userId: this.userId,
 			});
@@ -107,6 +116,45 @@ API.v1.addRoute(
 			const data = await PushNotification.getNotificationForMessageId({ receiver, room, message });
 
 			return API.v1.success({ data });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'push.info',
+	{ authRequired: true },
+	{
+		async get() {
+			const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
+			const defaultPushGateway = settings.get('Push_gateway') === defaultGateway;
+			return API.v1.success({
+				pushGatewayEnabled: settings.get('Push_enable'),
+				defaultPushGateway,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'push.test',
+	{
+		authRequired: true,
+		rateLimiterOptions: {
+			numRequestsAllowed: 1,
+			intervalTimeInMS: 1000,
+		},
+		permissionsRequired: ['test-push-notifications'],
+	},
+	{
+		async post() {
+			if (settings.get('Push_enable') !== true) {
+				throw new Meteor.Error('error-push-disabled', 'Push is disabled', {
+					method: 'push_test',
+				});
+			}
+
+			const tokensCount = await executePushTest(this.userId, this.user.username);
+			return API.v1.success({ tokensCount });
 		},
 	},
 );

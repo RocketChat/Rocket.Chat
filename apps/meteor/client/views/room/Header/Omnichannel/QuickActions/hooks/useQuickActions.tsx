@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	useSetModal,
 	useToastMessageDispatch,
@@ -7,29 +7,28 @@ import {
 	usePermission,
 	useRole,
 	useEndpoint,
-	useMethod,
 	useTranslation,
 	useRouter,
 } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
-import { LivechatInquiry } from '../../../../../../../app/livechat/client/collections/LivechatInquiry';
+import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
+import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
+import PlaceChatOnHoldModal from '../../../../../../../app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
-import PlaceChatOnHoldModal from '../../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
-import { useHasLicenseModule } from '../../../../../../../ee/client/hooks/useHasLicenseModule';
-import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
-import CloseChatModalData from '../../../../../../components/Omnichannel/modals/CloseChatModalData';
-import ForwardChatModal from '../../../../../../components/Omnichannel/modals/ForwardChatModal';
-import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
-import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
-import { useIsRoomOverMacLimit } from '../../../../../../hooks/omnichannel/useIsRoomOverMacLimit';
-import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
+import { useHasLicenseModule } from '../../../../../../hooks/useHasLicenseModule';
+import { useLivechatInquiryStore } from '../../../../../../hooks/useLivechatInquiryStore';
 import { quickActionHooks } from '../../../../../../ui';
+import { useIsRoomOverMacLimit } from '../../../../../omnichannel/hooks/useIsRoomOverMacLimit';
+import { useOmnichannelRouteConfig } from '../../../../../omnichannel/hooks/useOmnichannelRouteConfig';
+import CloseChatModal from '../../../../../omnichannel/modals/CloseChatModal';
+import CloseChatModalData from '../../../../../omnichannel/modals/CloseChatModalData';
+import ForwardChatModal from '../../../../../omnichannel/modals/ForwardChatModal';
+import ReturnChatQueueModal from '../../../../../omnichannel/modals/ReturnChatQueueModal';
+import TranscriptModal from '../../../../../omnichannel/modals/TranscriptModal';
 import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
 import type { QuickActionsActionConfig } from '../../../../lib/quickActions';
 import { QuickActionsEnum } from '../../../../lib/quickActions';
-import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
-import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 
 export const useQuickActions = (): {
 	quickActions: QuickActionsActionConfig[];
@@ -51,7 +50,7 @@ export const useQuickActions = (): {
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
 
-	const getVisitorEmail = useMutableCallback(async () => {
+	const getVisitorEmail = useEffectEvent(async () => {
 		if (!visitorRoomId) {
 			return;
 		}
@@ -105,12 +104,12 @@ export const useQuickActions = (): {
 		}
 	}, [dispatchToastMessage, sendTranscriptPDF, t]);
 
-	const sendTranscript = useMethod('livechat:sendTranscript');
+	const sendTranscript = useEndpoint('POST', '/v1/livechat/transcript');
 
 	const handleSendTranscript = useCallback(
 		async (email: string, subject: string, token: string) => {
 			try {
-				await sendTranscript(token, rid, email, subject);
+				await sendTranscript({ token, rid, email, subject });
 				closeModal();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -175,6 +174,8 @@ export const useQuickActions = (): {
 
 	const closeChat = useEndpoint('POST', '/v1/livechat/room.closeByUser');
 
+	const discardForRoom = useLivechatInquiryStore((state) => state.discardForRoom);
+
 	const handleClose = useCallback(
 		async (
 			comment?: string,
@@ -194,17 +195,17 @@ export const useQuickActions = (): {
 									sendToVisitor: preferences?.omnichannelTranscriptEmail,
 									requestData,
 								},
-						  }
+							}
 						: { transcriptEmail: { sendToVisitor: false } }),
 				});
-				LivechatInquiry.remove({ rid });
+				discardForRoom(rid);
 				closeModal();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeChat, closeModal, dispatchToastMessage, rid, t],
+		[closeChat, closeModal, dispatchToastMessage, rid, t, discardForRoom],
 	);
 
 	const returnChatToQueueMutation = useReturnChatToQueueMutation({
@@ -232,7 +233,7 @@ export const useQuickActions = (): {
 		},
 	});
 
-	const handleAction = useMutableCallback(async (id: string) => {
+	const handleAction = useEffectEvent(async (id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
 				setModal(
@@ -307,7 +308,7 @@ export const useQuickActions = (): {
 	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 	const canForwardGuest = usePermission('transfer-livechat-guest');
 	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
 	const canCloseRoom = usePermission('close-livechat-room');
 	const canCloseOthersRoom = usePermission('close-others-livechat-room');
@@ -352,7 +353,7 @@ export const useQuickActions = (): {
 		})
 		.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-	const actionDefault = useMutableCallback((actionId: string) => {
+	const actionDefault = useEffectEvent((actionId: string) => {
 		handleAction(actionId);
 	});
 

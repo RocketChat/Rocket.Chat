@@ -1,55 +1,52 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeOmnichannelContent, HomeSidenav, HomeFlextab, OmnichannelSidenav } from './fragments';
-import { OmnichannelCurrentChats } from './omnichannel-current-chats';
-import { OmnichannelTranscript } from './omnichannel-transcript';
-import { OmnichannelTriggers } from './omnichannel-triggers';
+import { HomeOmnichannelContent, OmnichannelQuickActionsRoomToolbar, OmnichannelRoomToolbar, OmnichannelSidebar } from './fragments';
+import { OmnichannelEditRoomFlexTab } from './fragments/edit-room-flextab';
+import { OmnichannelRoomInfoFlexTab } from './fragments/room-info-flextab';
+import { HomeChannel } from './home-channel';
+import {
+	OmnichannelCannedResponses,
+	OmnichannelTranscript,
+	OmnichannelContactCenterContacts,
+	OmnichannelContactCenterChats,
+} from './omnichannel';
 
-export class HomeOmnichannel {
-	private readonly page: Page;
-
-	readonly content: HomeOmnichannelContent;
-
-	readonly sidenav: HomeSidenav;
-
-	readonly tabs: HomeFlextab;
-
-	readonly triggers: OmnichannelTriggers;
-
-	readonly omnisidenav: OmnichannelSidenav;
-
-	readonly currentChats: OmnichannelCurrentChats;
+export class HomeOmnichannel extends HomeChannel {
+	readonly omnisidenav: OmnichannelSidebar;
 
 	readonly transcript: OmnichannelTranscript;
 
+	readonly cannedResponses: OmnichannelCannedResponses;
+
+	readonly contacts: OmnichannelContactCenterContacts;
+
+	readonly chats: OmnichannelContactCenterChats;
+
+	readonly roomInfo: OmnichannelRoomInfoFlexTab;
+
+	readonly editRoomInfo: OmnichannelEditRoomFlexTab;
+
+	readonly quickActionsRoomToolbar: OmnichannelQuickActionsRoomToolbar;
+
+	override readonly content: HomeOmnichannelContent;
+
+	override readonly roomToolbar: OmnichannelRoomToolbar;
+
 	constructor(page: Page) {
-		this.page = page;
-		this.content = new HomeOmnichannelContent(page);
-		this.sidenav = new HomeSidenav(page);
-		this.tabs = new HomeFlextab(page);
-		this.triggers = new OmnichannelTriggers(page);
-		this.omnisidenav = new OmnichannelSidenav(page);
-		this.currentChats = new OmnichannelCurrentChats(page);
+		super(page);
+		this.omnisidenav = new OmnichannelSidebar(page);
 		this.transcript = new OmnichannelTranscript(page);
+		this.cannedResponses = new OmnichannelCannedResponses(page);
+		this.contacts = new OmnichannelContactCenterContacts(page);
+		this.chats = new OmnichannelContactCenterChats(page);
+		this.roomInfo = new OmnichannelRoomInfoFlexTab(page);
+		this.quickActionsRoomToolbar = new OmnichannelQuickActionsRoomToolbar(page);
+		this.content = new HomeOmnichannelContent(page);
+		this.roomToolbar = new OmnichannelRoomToolbar(page);
+		this.editRoomInfo = new OmnichannelEditRoomFlexTab(page);
 	}
 
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
-	}
-
-	get btnContextualbarClose(): Locator {
-		return this.page.locator('[data-qa="ContextualbarActionClose"]');
-	}
-
-	get btnCurrentChats(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-clock"]');
-	}
-
-	get historyItem(): Locator {
-		return this.page.locator('[data-qa="chat-history-item"]').first();
-	}
-
-	get historyMessage(): Locator {
-		return this.page.locator('[data-qa="chat-history-message"]').first();
+	get btnContactInfo(): Locator {
+		return this.page.getByRole('button', { name: 'Contact Information' });
 	}
 }

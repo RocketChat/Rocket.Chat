@@ -1,47 +1,45 @@
+import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { ContextualbarSkeletonBody } from '@rocket.chat/ui-client';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from '../../../components/Skeleton';
 import AgentEdit from './AgentEdit';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
-type AgentEditWithDataProps = {
-	uid: string;
-	reload: () => void;
-};
+const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElement => {
+	const { t } = useTranslation();
 
-const AgentEditWithData = ({ uid, reload }: AgentEditWithDataProps): ReactElement => {
-	const t = useTranslation();
-	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
-
-	const getAgent = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });
-
+	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });
 	const getAgentDepartments = useEndpoint('GET', '/v1/livechat/agents/:agentId/departments', { agentId: uid });
 
-	const { data, isInitialLoading: isLoading, error } = useQuery(['getAgent'], async () => getAgent());
-	const {
-		data: userDepartments,
-		isLoading: isUserDepartmentsLoading,
-		error: userDepartmentsError,
-	} = useQuery({ queryKey: ['getAgentDepartments'], queryFn: async () => getAgentDepartments(), cacheTime: 0 });
+	const { data, isPending, error } = useQuery({
+		queryKey: ['livechat-getAgentById', uid],
+		queryFn: async () => getAgentById(),
+		refetchOnWindowFocus: false,
+	});
 
 	const {
-		data: availableDepartments,
-		isLoading: isAvailableDepartmentsLoading,
-		error: availableDepartmentsError,
-	} = useQuery(['getDepartments'], async () => getDepartments({ showArchived: 'true' }));
+		data: agentDepartments,
+		isPending: agentDepartmentsLoading,
+		error: agentsDepartmentsError,
+	} = useQuery({
+		queryKey: omnichannelQueryKeys.agentDepartments(uid),
+		queryFn: async () => getAgentDepartments(),
+		refetchOnWindowFocus: false,
+	});
 
-	if (isLoading || isAvailableDepartmentsLoading || isUserDepartmentsLoading || !userDepartments || !availableDepartments) {
-		return <FormSkeleton />;
+	if (isPending || agentDepartmentsLoading || !agentDepartments) {
+		return <ContextualbarSkeletonBody />;
 	}
 
-	if (error || userDepartmentsError || availableDepartmentsError || !data || !data.user) {
+	if (error || agentsDepartmentsError || !data?.user) {
 		return <Box p={16}>{t('User_not_found')}</Box>;
 	}
 
-	return <AgentEdit uid={uid} data={data} userDepartments={userDepartments} availableDepartments={availableDepartments} reset={reload} />;
+	return <AgentEdit agentData={data.user} agentDepartments={agentDepartments.departments} />;
 };
 
 export default AgentEditWithData;

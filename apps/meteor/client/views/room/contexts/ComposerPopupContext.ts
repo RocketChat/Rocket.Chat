@@ -1,3 +1,4 @@
+import type { Optional } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
 import { useContext, createContext } from 'react';
 
@@ -21,6 +22,7 @@ export type ComposerPopupOption<T extends { _id: string; sort?: number } = { _id
 	getValue: (item: T) => string;
 
 	renderItem?: ({ item }: { item: T }) => ReactElement;
+	disabled?: boolean;
 };
 
 export type ComposerPopupContextValue = ComposerPopupOption[];
@@ -28,7 +30,7 @@ export type ComposerPopupContextValue = ComposerPopupOption[];
 export const ComposerPopupContext = createContext<ComposerPopupContextValue | undefined>(undefined);
 
 export const createMessageBoxPopupConfig = <T extends { _id: string; sort?: number }>(
-	partial: Omit<ComposerPopupOption<T>, 'getValue'> & Partial<Pick<ComposerPopupOption<T>, 'getValue'>>,
+	partial: Optional<ComposerPopupOption<T>, 'getValue'>,
 ): ComposerPopupOption<T> => {
 	return {
 		blurOnSelectItem: true,
@@ -41,10 +43,10 @@ export const createMessageBoxPopupConfig = <T extends { _id: string; sort?: numb
 	};
 };
 
-export const useComposerPopup = () => {
+export const useComposerPopupOptions = () => {
 	const composerPopupContext = useContext(ComposerPopupContext);
 	if (!composerPopupContext) {
-		throw new Error('useComposerPopup must be used within ComposerPopupContext');
+		throw new Error('useComposerPopupOptions must be used within ComposerPopupContext');
 	}
 	return composerPopupContext;
 };

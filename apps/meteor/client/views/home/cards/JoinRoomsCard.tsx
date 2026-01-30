@@ -1,10 +1,10 @@
-import { Button } from '@rocket.chat/fuselage';
-import { Card, CardBody, CardFooter, CardFooterWrapper, CardTitle } from '@rocket.chat/ui-client';
+import type { Card } from '@rocket.chat/fuselage';
 import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 
-const JoinRoomsCard = (): ReactElement => {
+import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
+
+const JoinRoomsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
 	const t = useTranslation();
 
 	const router = useRouter();
@@ -13,15 +13,17 @@ const JoinRoomsCard = (): ReactElement => {
 	};
 
 	return (
-		<Card data-qa-id='homepage-join-rooms-card'>
-			<CardTitle>{t('Join_rooms')}</CardTitle>
-			<CardBody>{t('Discover_public_channels_and_teams_in_the_workspace_directory')}</CardBody>
-			<CardFooterWrapper>
-				<CardFooter>
-					<Button onClick={handleDirectory}>{t('Open_directory')}</Button>
-				</CardFooter>
-			</CardFooterWrapper>
-		</Card>
+		<GenericCard
+			title={t('Join_rooms')}
+			body={t('Discover_public_channels_and_teams_in_the_workspace_directory')}
+			buttons={[
+				<GenericCardButton key={1} onClick={handleDirectory}>
+					{t('Open_directory')}
+				</GenericCardButton>,
+			]}
+			width='x340'
+			{...props}
+		/>
 	);
 };
 

@@ -1,12 +1,13 @@
 import type { IOmnichannelRoom, IOmnichannelSystemMessage, IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Messages } from '@rocket.chat/models';
+import type { Response } from '@rocket.chat/server-fetch';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { settings } from '../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
-import { Livechat } from '../lib/Livechat';
-import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
+import { getLivechatRoomGuestInfo } from '../lib/guests';
+import { sendRequest } from '../lib/webhooks';
 
 type AdditionalFields =
 	| Record<string, unknown>
@@ -36,18 +37,28 @@ type OmnichannelRoomWithExtraFields = IOmnichannelRoom & {
 	oldDepartmentId?: IOmnichannelRoom['departmentId'];
 };
 
+type CRMActions =
+	| 'LivechatSessionStart'
+	| 'LivechatSessionQueued'
+	| 'LivechatSession'
+	| 'LivechatSessionTaken'
+	| 'LivechatSessionForwarded'
+	| 'LivechatEdit'
+	| 'Message'
+	| 'LeadCapture';
+
 const msgNavType = 'livechat_navigation_history';
 const msgClosingType = 'livechat-close';
 
-const isOmnichannelNavigationMessage = (message: IMessage): message is IOmnichannelSystemMessage => {
+export const isOmnichannelNavigationMessage = (message: IMessage): message is IOmnichannelSystemMessage => {
 	return message.t === msgNavType;
 };
 
-const isOmnichannelClosingMessage = (message: IMessage): message is IOmnichannelSystemMessage => {
+export const isOmnichannelClosingMessage = (message: IMessage): message is IOmnichannelSystemMessage => {
 	return message.t === msgClosingType;
 };
 
-const sendMessageType = (msgType: string): boolean => {
+export const sendMessageType = (msgType: string): boolean => {
 	switch (msgType) {
 		case msgClosingType:
 			return true;
@@ -61,10 +72,10 @@ const sendMessageType = (msgType: string): boolean => {
 	}
 };
 
-const getAdditionalFieldsByType = (type: string, room: OmnichannelRoomWithExtraFields): AdditionalFields => {
+export const getAdditionalFieldsByType = (type: CRMActions, room: OmnichannelRoomWithExtraFields): AdditionalFields => {
 	const { departmentId, servedBy, closedAt, closedBy, closer, oldServedBy, oldDepartmentId } = room;
 	switch (type) {
-		case 'LivechatSessionStarted':
+		case 'LivechatSessionStart':
 		case 'LivechatSessionQueued':
 			return { departmentId };
 		case 'LivechatSession':
@@ -78,8 +89,8 @@ const getAdditionalFieldsByType = (type: string, room: OmnichannelRoomWithExtraF
 	}
 };
 
-async function sendToCRM(
-	type: string,
+export async function sendToCRM(
+	type: CRMActions,
 	room: OmnichannelRoomWithExtraFields,
 	includeMessages: boolean | IOmnichannelSystemMessage[] = true,
 ): Promise<OmnichannelRoomWithExtraFields> {
@@ -87,12 +98,14 @@ async function sendToCRM(
 		return room;
 	}
 
-	const postData: Awaited<ReturnType<typeof Livechat.getLivechatRoomGuestInfo>> & { type: string; messages: IOmnichannelSystemMessage[] } =
-		{
-			...(await Livechat.getLivechatRoomGuestInfo(room)),
-			type,
-			messages: [],
-		};
+	const postData: Awaited<ReturnType<typeof getLivechatRoomGuestInfo>> & {
+		type: string;
+		messages: IOmnichannelSystemMessage[];
+	} = {
+		...(await getLivechatRoomGuestInfo(room)),
+		type,
+		messages: [],
+	};
 
 	let messages: IOmnichannelSystemMessage[] | null = null;
 	if (typeof includeMessages === 'boolean' && includeMessages) {
@@ -128,12 +141,15 @@ async function sendToCRM(
 	const additionalData = getAdditionalFieldsByType(type, room);
 	const responseData = Object.assign(postData, additionalData);
 
-	const response = await LivechatTyped.sendRequest(responseData);
-
-	if (response) {
+	// do not wait for the request to be answered
+	// this will avoid blocking the process of saving the message
+	void sendRequest(responseData, 5, async (response: Response) => {
+		if (!response) {
+			return;
+		}
 		const responseData = await response.text();
 		await LivechatRooms.saveCRMDataByRoomId(room._id, responseData);
-	}
+	});
 
 	return room;
 }
@@ -152,52 +168,6 @@ callbacks.add(
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-send-crm-close-room',
-);
-
-callbacks.add(
-	'livechat.newRoom',
-	async (room) => {
-		if (!settings.get('Livechat_webhook_on_start')) {
-			return room;
-		}
-
-		return sendToCRM('LivechatSessionStart', room);
-	},
-	callbacks.priority.MEDIUM,
-	'livechat-send-crm-start-room',
-);
-
-callbacks.add(
-	'livechat.afterTakeInquiry',
-	async (inquiry) => {
-		if (!settings.get('Livechat_webhook_on_chat_taken')) {
-			return inquiry;
-		}
-
-		const { rid } = inquiry;
-		const room = await LivechatRooms.findOneById(rid);
-
-		if (!room) {
-			return inquiry;
-		}
-
-		return sendToCRM('LivechatSessionTaken', room);
-	},
-	callbacks.priority.MEDIUM,
-	'livechat-send-crm-room-taken',
-);
-
-callbacks.add(
-	'livechat.chatQueued',
-	(room) => {
-		if (!settings.get('Livechat_webhook_on_chat_queued')) {
-			return room;
-		}
-
-		return sendToCRM('LivechatSessionQueued', room);
-	},
-	callbacks.priority.MEDIUM,
-	'livechat-send-crm-room-queued',
 );
 
 callbacks.add(
@@ -257,19 +227,14 @@ callbacks.add(
 );
 
 callbacks.add(
-	'afterSaveMessage',
-	async (message, room) => {
-		// only call webhook if it is a livechat room
-		if (!isOmnichannelRoom(room) || !room?.v?.token) {
-			return message;
-		}
-
+	'afterOmnichannelSaveMessage',
+	async (message, { room }) => {
 		// if the message has a token, it was sent from the visitor
 		// if not, it was sent from the agent
 		if (message.token && !settings.get('Livechat_webhook_on_visitor_message')) {
 			return message;
 		}
-		if (!settings.get('Livechat_webhook_on_agent_message')) {
+		if (!message.token && !settings.get('Livechat_webhook_on_agent_message')) {
 			return message;
 		}
 		// if the message has a type means it is a special message (like the closing comment), so skips

@@ -7,6 +7,7 @@ const ajv = new Ajv({
 export type e2eSetUserPublicAndPrivateKeysParamsPOST = {
 	public_key: string;
 	private_key: string;
+	force?: boolean;
 };
 
 const e2eSetUserPublicAndPrivateKeysParamsPOSTSchema = {
@@ -17,6 +18,9 @@ const e2eSetUserPublicAndPrivateKeysParamsPOSTSchema = {
 		},
 		private_key: {
 			type: 'string',
+		},
+		force: {
+			type: 'boolean',
 		},
 	},
 	additionalProperties: false,

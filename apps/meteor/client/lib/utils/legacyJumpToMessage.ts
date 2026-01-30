@@ -1,11 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 
-import { ChatRoom } from '../../../app/models/client';
+import { goToRoomById } from './goToRoomById';
 import { RoomHistoryManager } from '../../../app/ui-utils/client';
 import { router } from '../../providers/RouterProvider';
 import { RoomManager } from '../RoomManager';
-import { goToRoomById } from './goToRoomById';
 
 /** @deprecated */
 export const legacyJumpToMessage = async (message: IMessage) => {
@@ -16,33 +15,20 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 			return;
 		}
 
-		router.navigate(
-			{
-				name: router.getRouteName()!,
-				params: {
-					tab: 'thread',
-					context: message.tmid || message._id,
-					rid: message.rid,
-					name: ChatRoom.findOne({ _id: message.rid })?.name ?? '',
-				},
-				search: {
-					...router.getSearchParameters(),
-					msg: message._id,
-				},
-			},
-			{ replace: false },
-		);
+		await goToRoomById(message.rid, {
+			routeParamsOverrides: { tab: 'thread', context: message.tmid || message._id },
+			replace: RoomManager.opened === message.rid,
+		});
+		await RoomHistoryManager.getSurroundingMessages(message);
 		return;
 	}
 
 	if (RoomManager.opened === message.rid) {
-		RoomHistoryManager.getSurroundingMessages(message);
+		await RoomHistoryManager.getSurroundingMessages(message);
 		return;
 	}
 
 	await goToRoomById(message.rid);
 
-	setTimeout(() => {
-		RoomHistoryManager.getSurroundingMessages(message);
-	}, 400);
+	await RoomHistoryManager.getSurroundingMessages(message);
 };

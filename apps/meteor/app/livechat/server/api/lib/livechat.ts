@@ -1,66 +1,59 @@
-import type {
-	ILivechatAgent,
-	ILivechatDepartment,
-	ILivechatTrigger,
-	ILivechatVisitor,
-	IOmnichannelRoom,
-	SelectedAgent,
-} from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatDepartment, ILivechatTrigger, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
-import { Random } from '@rocket.chat/random';
+import { makeFunction } from '@rocket.chat/patch-injection';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../../lib/callbacks';
-import { i18n } from '../../../../../server/lib/i18n';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-
-export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): Promise<boolean> {
-	return LivechatTyped.online(department, skipSettingCheck, skipFallbackCheck);
-}
+import { getInitSettings } from '../../lib/settings';
 
 async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
 	const triggers = await LivechatTrigger.findEnabled().toArray();
-	return triggers.map(({ _id, actions, conditions, runOnce }) => ({
-		_id,
-		actions,
-		conditions,
-		runOnce,
-	}));
+	const hasLicense = License.hasModule('livechat-enterprise');
+	const premiumActions = ['use-external-service'];
+
+	return triggers
+		.filter(({ actions }) => hasLicense || actions.some((c) => !premiumActions.includes(c.name)))
+		.map(({ _id, actions, conditions, runOnce }) => ({
+			_id,
+			actions,
+			conditions,
+			runOnce,
+		}));
 }
+
+export type CheckUnitsFromUser = {
+	userId?: string;
+	businessUnit?: string;
+};
+
+export const checkUnitsFromUser = makeFunction(async (_params: CheckUnitsFromUser): Promise<void> => undefined);
 
 async function findDepartments(
 	businessUnit?: string,
-): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm'>[]> {
+	userId?: string,
+): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>[]> {
 	// TODO: check this function usage
-	return (
-		await (
-			await LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
-				_id: 1,
-				name: 1,
-				showOnRegistration: 1,
-				showOnOfflineForm: 1,
-			})
-		).toArray()
-	).map(({ _id, name, showOnRegistration, showOnOfflineForm }) => ({
-		_id,
-		name,
-		showOnRegistration,
-		showOnOfflineForm,
-	}));
+	await checkUnitsFromUser({ userId, businessUnit });
+
+	return LivechatDepartment.findEnabledWithAgentsAndBusinessUnit<
+		Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>
+	>(businessUnit, {
+		_id: 1,
+		name: 1,
+		showOnRegistration: 1,
+		showOnOfflineForm: 1,
+		departmentsAllowedToForward: 1,
+	}).toArray();
 }
 
 export function findGuest(token: string): Promise<ILivechatVisitor | null> {
-	return LivechatVisitors.getVisitorByToken(token, {
-		projection: {
-			name: 1,
-			username: 1,
-			token: 1,
-			visitorEmails: 1,
-			department: 1,
-			activity: 1,
-		},
-	});
+	return LivechatVisitors.getVisitorByToken(token);
+}
+
+export function findGuestWithoutActivity(token: string): Promise<ILivechatVisitor | null> {
+	return LivechatVisitors.getVisitorByToken(token, { projection: { name: 1, username: 1, token: 1, visitorEmails: 1, department: 1 } });
 }
 
 export async function findRoom(token: string, rid?: string): Promise<IOmnichannelRoom | null> {
@@ -80,17 +73,16 @@ export async function findRoom(token: string, rid?: string): Promise<IOmnichanne
 	return LivechatRooms.findOneByIdAndVisitorToken(rid, token, fields);
 }
 
-export async function findOpenRoom(token: string, departmentId?: string): Promise<IOmnichannelRoom | undefined> {
+export async function findOpenRoom(token: string, departmentId?: string, callerId?: string): Promise<IOmnichannelRoom | undefined> {
 	const options = {
 		projection: {
 			departmentId: 1,
 			servedBy: 1,
 			open: 1,
-			callStatus: 1,
 		},
 	};
 
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: callerId });
 	const rooms = departmentId
 		? await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options, extraQuery).toArray()
 		: await LivechatRooms.findOpenByVisitorToken(token, options, extraQuery).toArray();
@@ -98,52 +90,28 @@ export async function findOpenRoom(token: string, departmentId?: string): Promis
 		return rooms[0];
 	}
 }
-export function getRoom({
-	guest,
-	rid,
-	roomInfo,
-	agent,
-	extraParams,
-}: {
-	guest: ILivechatVisitor;
-	rid: string;
-	roomInfo: {
-		source?: IOmnichannelRoom['source'];
-	};
-	agent?: SelectedAgent;
-	extraParams?: Record<string, any>;
-}): Promise<{ room: IOmnichannelRoom; newRoom: boolean }> {
-	const token = guest?.token;
-
-	const message = {
-		_id: Random.id(),
-		rid,
-		msg: '',
-		token,
-		ts: new Date(),
-	};
-
-	return LivechatTyped.getRoom(guest, message, roomInfo, agent, extraParams);
-}
 
 export async function findAgent(agentId?: string): Promise<void | { hiddenInfo: boolean } | ILivechatAgent> {
 	return normalizeAgent(agentId);
 }
 
-export function normalizeHttpHeaderData(headers: Record<string, string | string[] | undefined> = {}): {
+export function normalizeHttpHeaderData(headers: Headers = new Headers()): {
 	httpHeaders: Record<string, string | string[] | undefined>;
 } {
-	const httpHeaders = Object.assign({}, headers);
+	const httpHeaders = Object.fromEntries(headers.entries());
 	return { httpHeaders };
 }
 
-export async function settings({ businessUnit = '' }: { businessUnit?: string } = {}): Promise<Record<string, string | number | any>> {
-	// Putting this ugly conversion while we type the livechat service
-	const initSettings = await LivechatTyped.getInitSettings();
-	const triggers = await findTriggers();
-	const departments = await findDepartments(businessUnit);
+export async function settings({ businessUnit = '', userId }: { businessUnit?: string; userId?: string } = {}): Promise<
+	Record<string, string | number | any>
+> {
+	const [initSettings, triggers, departments, emojis] = await Promise.all([
+		getInitSettings(),
+		findTriggers(),
+		findDepartments(businessUnit, userId),
+		EmojiCustom.find().toArray(),
+	]);
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
-	const emojis = await EmojiCustom.find().toArray();
 	return {
 		enabled: initSettings.Livechat_enabled,
 		settings: {
@@ -164,27 +132,20 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 			limitTextLength:
 				initSettings.Livechat_enable_message_character_limit &&
 				(initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
+			hiddenSystemMessages: initSettings.Livechat_hide_system_messages,
+			livechatLogo: initSettings.Assets_livechat_widget_logo,
+			hideWatermark: initSettings.Livechat_hide_watermark || false,
+			visitorsCanCloseChat: initSettings.Omnichannel_allow_visitors_to_close_conversation,
 		},
 		theme: {
 			title: initSettings.Livechat_title,
 			color: initSettings.Livechat_title_color,
 			offlineTitle: initSettings.Livechat_offline_title,
 			offlineColor: initSettings.Livechat_offline_title_color,
+			position: initSettings.Livechat_widget_position || 'right',
+			background: initSettings.Livechat_background,
+			hideExpandChat: initSettings.Livechat_hide_expand_chat,
 			actionLinks: {
-				webrtc: [
-					{
-						actionLinksAlignment: 'flex-start',
-						i18nLabel: 'Join_call',
-						label: i18n.t('Join_call'),
-						method_id: 'joinLivechatWebRTCCall',
-					},
-					{
-						i18nLabel: 'End_call',
-						label: i18n.t('End_call'),
-						method_id: 'endLivechatWebRTCCall',
-						danger: true,
-					},
-				],
 				jitsi: [
 					{ icon: 'icon-videocam', i18nLabel: 'Accept' },
 					{ icon: 'icon-cancel', i18nLabel: 'Decline' },
@@ -214,11 +175,22 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 	};
 }
 
-export async function getExtraConfigInfo(room?: IOmnichannelRoom): Promise<any> {
-	return callbacks.run('livechat.onLoadConfigApi', { room });
-}
+export const getExtraConfigInfo = makeFunction(
+	async (options: {
+		room?: IOmnichannelRoom;
+	}): Promise<{
+		queueInfo?: unknown;
+		customFields?: {
+			options?: string[] | undefined;
+			_id: string;
+			label: string;
+			regexp: string | undefined;
+			required: boolean;
+			type: string | undefined;
+			defaultValue: string | null;
+		}[];
+		room?: IOmnichannelRoom;
+	}> => options,
+);
 
-// TODO: please forgive me for this. Still finding the good types for these callbacks
-export function onCheckRoomParams(params: any): Promise<unknown> {
-	return callbacks.run('livechat.onCheckRoomApiParams', params);
-}
+export const onCheckRoomParams = makeFunction((params: any) => params);

@@ -1,89 +1,201 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import type { LicenseInfo } from '@rocket.chat/core-typings';
+import { Callout, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import type { OptionProp } from '@rocket.chat/ui-client';
+import {
+	ExternalLink,
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarDialog,
+	usePagination,
+	useSort,
+	Page,
+	PageHeader,
+	PageContent,
+} from '@rocket.chat/ui-client';
+import { useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Trans } from 'react-i18next';
 
-import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
-import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
-import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
-import Page from '../../../components/Page';
 import AdminInviteUsers from './AdminInviteUsers';
+import AdminUserCreated from './AdminUserCreated';
 import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
+import AdminUserUpgrade from './AdminUserUpgrade';
+import UsersPageHeaderContent from './UsersPageHeaderContent';
 import UsersTable from './UsersTable';
+import useFilteredUsers from './hooks/useFilteredUsers';
+import usePendingUsersCount from './hooks/usePendingUsersCount';
+import { useSeatsCap } from './useSeatsCap';
+import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
+import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
+import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 
-const UsersPage = (): ReactElement => {
+export type UsersFilters = {
+	text: string;
+	roles: OptionProp[];
+};
+
+export type AdminUsersTab = 'all' | 'active' | 'deactivated' | 'pending';
+
+export type UsersTableSortingOption = 'name' | 'username' | 'emails.address' | 'status' | 'active' | 'freeSwitchExtension';
+
+const AdminUsersPage = (): ReactElement => {
 	const t = useTranslation();
+
 	const seatsCap = useSeatsCap();
-	const reload = useRef(() => null);
+
+	const isSeatsCapExceeded = useShouldPreventAction('activeUsers');
+	const { prevent_action: preventAction } = useLicenseLimitsByBehavior() ?? {};
+	const manageSubscriptionUrl = useCheckoutUrl();
 
 	const router = useRouter();
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	const canCreateUser = usePermission('create-user');
-	const canBulkCreateUser = usePermission('bulk-register-user');
+	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
-	useEffect(() => {
-		if (!context || !seatsCap) {
-			return;
-		}
+	const getRoles = useEndpoint('GET', '/v1/roles.list');
+	const { data, error } = useQuery({
+		queryKey: ['roles'],
+		queryFn: async () => getRoles(),
+	});
 
-		if (seatsCap.activeUsers >= seatsCap.maxActiveUsers && !['edit', 'info'].includes(context)) {
-			router.navigate('/admin/users');
-		}
-	}, [router, context, seatsCap]);
+	const paginationData = usePagination();
+	const sortData = useSort<UsersTableSortingOption>('name');
+
+	const [tab, setTab] = useState<AdminUsersTab>('all');
+	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '', roles: [] });
+
+	const searchTerm = useDebouncedValue(userFilters.text, 500);
+	const prevSearchTerm = useRef('');
+
+	const filteredUsersQueryResult = useFilteredUsers({
+		searchTerm,
+		prevSearchTerm,
+		sortData,
+		paginationData,
+		tab,
+		selectedRoles: useMemo(() => userFilters.roles.map((role) => role.id), [userFilters.roles]),
+	});
+
+	const pendingUsersCount = usePendingUsersCount(filteredUsersQueryResult.data?.users);
 
 	const handleReload = (): void => {
 		seatsCap?.reload();
-		reload.current();
+		filteredUsersQueryResult?.refetch();
 	};
+
+	const handleTabChange = (tab: AdminUsersTab) => {
+		setTab(tab);
+
+		paginationData.setCurrent(0);
+		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
+	};
+
+	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/admin/users'));
+
+	useEffect(() => {
+		prevSearchTerm.current = searchTerm;
+	}, [searchTerm]);
+
+	const isRoutePrevented = useMemo(
+		() => context && ['new', 'invite'].includes(context) && isCreateUserDisabled,
+		[context, isCreateUserDisabled],
+	);
+
+	const toTranslationKey = (key: keyof LicenseInfo['limits']) => t(`subscription.callout.${key}`);
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Users')}>
-					{seatsCap && seatsCap.maxActiveUsers < Number.POSITIVE_INFINITY ? (
-						<UserPageHeaderContentWithSeatsCap {...seatsCap} />
-					) : (
-						<ButtonGroup>
-							{canCreateUser && (
-								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/new')}>
-									{t('New')}
-								</Button>
-							)}
-							{canBulkCreateUser && (
-								<Button icon='mail' onClick={() => router.navigate('/admin/users/invite')}>
-									{t('Invite')}
-								</Button>
-							)}
-						</ButtonGroup>
-					)}
-				</Page.Header>
-				<Page.Content>
-					<UsersTable reload={reload} />
-				</Page.Content>
+				<PageHeader title={t('Users')}>
+					<UsersPageHeaderContent isSeatsCapExceeded={isSeatsCapExceeded} seatsCap={seatsCap} />
+				</PageHeader>
+				{preventAction?.includes('activeUsers') && (
+					<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} mbe={19} mi={24}>
+						<Trans
+							i18nKey='subscription.callout.description.limitsExceeded'
+							count={preventAction.length}
+							values={{ val: preventAction.map(toTranslationKey) }}
+						>
+							Your workspace exceeded the <>{preventAction.map(toTranslationKey)}</> license limit.
+							<ExternalLink
+								to={manageSubscriptionUrl({
+									target: 'callout',
+									action: 'prevent_action',
+									limits: preventAction.join(','),
+								})}
+							>
+								Manage your subscription
+							</ExternalLink>
+							to increase limits.
+						</Trans>
+					</Callout>
+				)}
+				<Tabs>
+					<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChange('all')}>
+						{t('All')}
+					</TabsItem>
+					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChange('pending')} display='flex' flexDirection='row'>
+						{`${t('Pending')} `}
+						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' mis={8} />}
+						{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
+					</TabsItem>
+					<TabsItem selected={tab === 'active'} onClick={() => handleTabChange('active')}>
+						{t('Active')}
+					</TabsItem>
+					<TabsItem selected={tab === 'deactivated'} onClick={() => handleTabChange('deactivated')}>
+						{t('Deactivated')}
+					</TabsItem>
+				</Tabs>
+				<PageContent>
+					<UsersTable
+						users={filteredUsersQueryResult.data?.users || []}
+						isLoading={filteredUsersQueryResult.isLoading}
+						isError={filteredUsersQueryResult.isError}
+						isSuccess={filteredUsersQueryResult.isSuccess}
+						total={filteredUsersQueryResult.data?.total || 0}
+						setUserFilters={setUserFilters}
+						paginationData={paginationData}
+						sortData={sortData}
+						tab={tab}
+						isSeatsCapExceeded={isSeatsCapExceeded}
+						roleData={data}
+						onReload={handleReload}
+					/>
+				</PageContent>
 			</Page>
 			{context && (
-				<Contextualbar is='aside' aria-labelledby=''>
+				<ContextualbarDialog onClose={handleCloseContextualbar}>
 					<ContextualbarHeader>
+						{['new', 'created', 'upgrade'].includes(context) && <ContextualbarIcon name='user-plus' />}
 						<ContextualbarTitle>
 							{context === 'info' && t('User_Info')}
 							{context === 'edit' && t('Edit_User')}
-							{context === 'new' && t('Add_User')}
+							{(context === 'new' || context === 'created') && t('New_user')}
 							{context === 'invite' && t('Invite_Users')}
 						</ContextualbarTitle>
-						<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
+						<ContextualbarClose onClick={handleCloseContextualbar} />
 					</ContextualbarHeader>
-					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
-					{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
-					{context === 'new' && <AdminUserForm onReload={handleReload} />}
-					{context === 'invite' && <AdminInviteUsers />}
-				</Contextualbar>
+					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} tab={tab} />}
+					{context === 'edit' && id && (
+						<AdminUserFormWithData uid={id} onReload={handleReload} context={context} roleData={data} roleError={error} />
+					)}
+					{!isRoutePrevented && context === 'new' && (
+						<AdminUserForm onReload={handleReload} context={context} roleData={data} roleError={error} />
+					)}
+					{!isRoutePrevented && context === 'created' && id && <AdminUserCreated uid={id} />}
+					{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
+					{isRoutePrevented && <AdminUserUpgrade />}
+				</ContextualbarDialog>
 			)}
 		</Page>
 	);
 };
 
-export default UsersPage;
+export default AdminUsersPage;

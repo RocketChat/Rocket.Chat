@@ -1,24 +1,21 @@
-import { Box, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useId } from 'react';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 export const PreferencesGeneral = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { register } = useFormContext();
-	const omnichannelHideAfterClosing = useUniqueId();
+	const omnichannelHideAfterClosing = useId();
 
 	return (
 		<FieldGroup marginBlockEnd='1.5rem' paddingInline='0.5rem'>
 			<Field>
-				<Box display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+				<FieldRow>
 					<FieldLabel htmlFor={omnichannelHideAfterClosing}>{t('Omnichannel_hide_conversation_after_closing')}</FieldLabel>
-					<FieldRow>
-						<ToggleSwitch id={omnichannelHideAfterClosing} {...register('omnichannelHideConversationAfterClosing')} />
-					</FieldRow>
-				</Box>
+					<ToggleSwitch id={omnichannelHideAfterClosing} {...register('omnichannelHideConversationAfterClosing')} />
+				</FieldRow>
 				<FieldHint>{t('Omnichannel_hide_conversation_after_closing_description')}</FieldHint>
 			</Field>
 		</FieldGroup>

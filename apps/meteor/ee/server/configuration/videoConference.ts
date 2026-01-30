@@ -5,7 +5,7 @@ import { License } from '@rocket.chat/license';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../lib/callbacks';
+import { callbacks } from '../../../server/lib/callbacks';
 import { videoConfTypes } from '../../../server/lib/videoConfTypes';
 import { addSettings } from '../settings/video-conference';
 
@@ -27,7 +27,7 @@ Meteor.startup(async () => {
 		);
 
 		videoConfTypes.registerVideoConferenceType({ type: 'videoconference', ringing: true }, async ({ _id, t }, allowRinging) => {
-			if (!allowRinging || ['l', 'v'].includes(t)) {
+			if (!allowRinging || t === 'l') {
 				return false;
 			}
 
@@ -38,7 +38,7 @@ Meteor.startup(async () => {
 				}
 			}
 
-			if ((await Subscriptions.findByRoomId(_id).count()) > 10) {
+			if ((await Subscriptions.countByRoomId(_id)) > 10) {
 				return false;
 			}
 

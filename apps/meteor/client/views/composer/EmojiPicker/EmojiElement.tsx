@@ -1,7 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { IconButton } from '@rocket.chat/fuselage';
+import DOMPurify from 'dompurify';
 import type { MouseEvent, AllHTMLAttributes } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import type { EmojiItem } from '../../../../app/emoji/client';
 import { usePreviewEmoji } from '../../../contexts/EmojiPickerContext';
@@ -26,11 +27,10 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 		}
 	`;
 
-	const emojiElement = <div dangerouslySetInnerHTML={{ __html: image }} />;
+	const emojiElement = <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(image) }} />;
 
 	return (
 		<IconButton
-			{...props}
 			{...(small && { className: emojiSmallClass })}
 			small={small}
 			medium={!small}
@@ -40,6 +40,7 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 			data-emoji={emoji}
 			aria-label={emoji}
 			icon={emojiElement}
+			{...props}
 		/>
 	);
 };

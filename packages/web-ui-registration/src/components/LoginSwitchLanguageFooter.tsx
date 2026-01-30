@@ -1,20 +1,11 @@
 import { Button } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
+import { normalizeLanguage } from '@rocket.chat/tools';
 import { type TranslationLanguage, useSetting, useLoadLanguage, useLanguage, useLanguages } from '@rocket.chat/ui-contexts';
-import { type ReactElement, type UIEvent, useMemo, useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
+import type { ReactElement, UIEvent } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-
-const normalizeLanguage = (language: string): string => {
-	// Fix browsers having all-lowercase language settings eg. pt-br, en-us
-	const regex = /([a-z]{2,3})-([a-z]{2,4})/;
-	const matches = regex.exec(language);
-	if (matches) {
-		return `${matches[1]}-${matches[2].toUpperCase()}`;
-	}
-
-	return language;
-};
 
 const useSuggestedLanguages = ({
 	browserLanguage = normalizeLanguage(window.navigator.language ?? 'en'),
@@ -23,7 +14,7 @@ const useSuggestedLanguages = ({
 }) => {
 	const availableLanguages = useLanguages();
 	const currentLanguage = useLanguage();
-	const serverLanguage = normalizeLanguage(useSetting<string>('Language') || 'en');
+	const serverLanguage = normalizeLanguage(useSetting('Language', 'en'));
 
 	const suggestions = useMemo(() => {
 		const potentialLanguages = new Set([serverLanguage, browserLanguage, 'en'].map(normalizeLanguage));
@@ -69,13 +60,20 @@ const LoginSwitchLanguageFooter = ({
 
 	return (
 		<HorizontalWizardLayoutCaption>
-			{suggestions.map((suggestion) => (
-				<Button secondary small mie={8} key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
-					<Trans i18nKey='registration.component.switchLanguage' tOptions={{ lng: suggestion.key }}>
-						Change to <strong>{{ name: suggestion.ogName }}</strong>
-					</Trans>
-				</Button>
-			))}
+			{suggestions.map((suggestion) => {
+				// If suggestion is "Default", skip it
+				if (!suggestion.key) {
+					return;
+				}
+
+				return (
+					<Button secondary small mie={8} key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
+						<Trans i18nKey='registration.component.switchLanguage' tOptions={{ lng: suggestion.key }} values={{ name: suggestion.ogName }}>
+							Change to <strong>{suggestion.ogName}</strong>
+						</Trans>
+					</Button>
+				);
+			})}
 		</HorizontalWizardLayoutCaption>
 	);
 };

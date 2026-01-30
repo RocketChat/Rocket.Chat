@@ -1,18 +1,15 @@
 import { NPS, Banner } from '@rocket.chat/core-services';
-import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
-import { CloudAnnouncements } from '@rocket.chat/models';
+import type { Cloud, IBanner } from '@rocket.chat/core-typings';
 
 import { getAndCreateNpsSurvey } from '../../../../../server/services/nps/getAndCreateNpsSurvey';
 
-export const handleNpsOnWorkspaceSync = async (nps: Exclude<Serialized<Cloud.WorkspaceSyncPayload>['nps'], undefined>) => {
-	const { id: npsId, expireAt } = nps;
-
-	const startAt = new Date(nps.startAt);
+export const handleNpsOnWorkspaceSync = async (nps: Cloud.NpsSurveyAnnouncement) => {
+	const { id: npsId, startAt, expireAt } = nps;
 
 	await NPS.create({
 		npsId,
 		startAt,
-		expireAt: new Date(expireAt),
+		expireAt,
 		createdBy: {
 			_id: 'rocket.cat',
 			username: 'rocket.cat',
@@ -26,40 +23,34 @@ export const handleNpsOnWorkspaceSync = async (nps: Exclude<Serialized<Cloud.Wor
 	}
 };
 
-export const handleBannerOnWorkspaceSync = async (banners: Exclude<Serialized<Cloud.WorkspaceSyncPayload>['banners'], undefined>) => {
+export const handleBannerOnWorkspaceSync = async (banners: IBanner[]) => {
 	for await (const banner of banners) {
-		const { createdAt, expireAt, startAt, inactivedAt, _updatedAt, ...rest } = banner;
-
-		await Banner.create({
-			...rest,
-			createdAt: new Date(createdAt),
-			expireAt: new Date(expireAt),
-			startAt: new Date(startAt),
-			...(inactivedAt && { inactivedAt: new Date(inactivedAt) }),
-		});
+		await Banner.create(banner);
 	}
 };
 
-const deserializeAnnouncement = (announcement: Serialized<Cloud.Announcement>): Cloud.Announcement => ({
-	...announcement,
-	_updatedAt: new Date(announcement._updatedAt),
-	expireAt: new Date(announcement.expireAt),
-	startAt: new Date(announcement.startAt),
-	createdAt: new Date(announcement.createdAt),
-});
-
-export const handleAnnouncementsOnWorkspaceSync = async (
-	announcements: Exclude<Serialized<Cloud.WorkspaceCommsResponsePayload>['announcements'], undefined>,
-) => {
+export const handleAnnouncementsOnWorkspaceSync = async (announcements: {
+	create: Cloud.Announcement[];
+	delete?: Cloud.Announcement['_id'][];
+}) => {
 	const { create, delete: deleteIds } = announcements;
 
 	if (deleteIds) {
-		await CloudAnnouncements.deleteMany({ _id: { $in: deleteIds } });
+		await Promise.all(deleteIds.map((announcementId) => Banner.disable(announcementId)));
 	}
 
-	for await (const announcement of create.map(deserializeAnnouncement)) {
-		const { _id, ...rest } = announcement;
+	await Promise.all(
+		create.map((announcement) => {
+			const { view, selector } = announcement;
 
-		await CloudAnnouncements.updateOne({ _id }, { $set: rest }, { upsert: true });
-	}
+			return Banner.create({
+				...announcement,
+				...(selector?.roles ? { roles: selector.roles } : {}),
+				view: {
+					...view,
+					appId: 'cloud-announcements-core',
+				},
+			});
+		}),
+	);
 };

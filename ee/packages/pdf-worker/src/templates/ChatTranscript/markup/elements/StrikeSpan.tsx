@@ -13,11 +13,13 @@ const styles = StyleSheet.create({
 });
 
 type MessageBlock =
+	| MessageParser.Timestamp
 	| MessageParser.Emoji
 	| MessageParser.ChannelMention
 	| MessageParser.UserMention
 	| MessageParser.Link
-	| MessageParser.MarkupExcluding<MessageParser.Strike>;
+	| MessageParser.MarkupExcluding<MessageParser.Strike>
+	| MessageParser.InlineCode;
 
 type StrikeSpanProps = {
 	children: MessageBlock[];
@@ -47,10 +49,10 @@ const renderBlockComponent = (child: MessageBlock, index: number) => {
 			return <Text key={index}>{child.value}</Text>;
 
 		case 'ITALIC':
-			return <ItalicSpan key={index} children={child.value} />;
+			return <ItalicSpan key={index}>{child.value}</ItalicSpan>;
 
 		case 'BOLD':
-			return <BoldSpan key={index} children={child.value} />;
+			return <BoldSpan key={index}>{child.value}</BoldSpan>;
 
 		case 'EMOJI':
 			return <EmojiSpan key={index} {...child} />;

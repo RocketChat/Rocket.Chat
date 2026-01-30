@@ -1,19 +1,21 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Button, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, Tag, Margins, Icon } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouteParameter, usePermission, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useState, memo } from 'react';
+import { useCallback, useState, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import semver from 'semver';
 
+import AppStatusPriceDisplay from './AppStatusPriceDisplay';
+import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
+import AddonRequiredModal from '../../../AppsList/AddonRequiredModal';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
-import { marketplaceActions } from '../../../helpers/marketplaceActions';
 import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
-import AppStatusPriceDisplay from './AppStatusPriceDisplay';
+import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
 
 type AppStatusProps = {
 	app: App;
@@ -23,14 +25,13 @@ type AppStatusProps = {
 };
 
 const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [endUserRequested, setEndUserRequested] = useState(false);
 	const [loading, setLoading] = useSafely(useState(false));
 	const [isAppPurchased, setPurchased] = useSafely(useState(!!app?.isPurchased));
 	const setModal = useSetModal();
 	const isAdminUser = usePermission('manage-apps');
 	const context = useRouteParameter('context');
-
 	const { price, purchaseType, pricingPlans } = app;
 
 	const button = appButtonProps({ ...app, isAdminUser, endUserRequested });
@@ -41,6 +42,9 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const { data } = useIsEnterprise();
 	const isEnterprise = data?.isEnterprise ?? false;
 
+	const appAddon = app.addon;
+	const { data: workspaceHasAddon = false } = useHasLicenseModule(appAddon);
+
 	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '', isEnterprise);
 
 	const totalSeenRequests = app?.appRequestStats?.totalSeen;
@@ -48,18 +52,21 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const action = button?.action;
 
+	const marketplaceActions = useMarketplaceActions();
+
 	const confirmAction = useCallback<AppInstallationHandlerParams['onSuccess']>(
 		async (action, permissionsGranted) => {
-			if (action !== 'request') {
-				setPurchased(true);
-				await marketplaceActions[action]({ ...app, permissionsGranted });
-			} else {
-				setEndUserRequested(true);
+			if (action) {
+				if (action !== 'request') {
+					await marketplaceActions[action]({ ...app, permissionsGranted });
+				} else {
+					setEndUserRequested(true);
+				}
 			}
 
 			setLoading(false);
 		},
-		[app, setLoading, setPurchased],
+		[app, marketplaceActions, setLoading],
 	);
 
 	const cancelAction = useCallback(() => {
@@ -73,29 +80,42 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		isAppPurchased,
 		onDismiss: cancelAction,
 		onSuccess: confirmAction,
+		setIsPurchased: setPurchased,
 	});
 
 	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
-		appInstallationHandler();
-	}, [appInstallationHandler, setLoading]);
 
-	// @TODO we should refactor this to not use the label to determine the variant
+		if (isAdminUser && appAddon && !workspaceHasAddon) {
+			const actionType = button?.action === 'update' ? 'update' : 'install';
+			return setModal(<AddonRequiredModal actionType={actionType} onDismiss={cancelAction} onInstallAnyway={appInstallationHandler} />);
+		}
+
+		appInstallationHandler();
+	}, [button?.action, appAddon, appInstallationHandler, cancelAction, isAdminUser, setLoading, setModal, workspaceHasAddon]);
+
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {
-		if (isAppRequestsPage && totalUnseenRequests && (status.label === 'request' || status.label === 'requests')) {
+		if (isAppRequestsPage && totalUnseenRequests && status.type === 'primary') {
 			return 'primary';
 		}
 
-		if (isAppRequestsPage && status.label === 'Requested') {
-			return undefined;
-		}
-
-		// includes() here because the label can be 'Disabled' or 'Disabled*'
-		if (status.label.includes('Disabled')) {
+		if (status.type === 'danger') {
 			return 'secondary-danger';
 		}
 
 		return undefined;
+	};
+
+	const getStatusFontColor = (status: appStatusSpanResponseProps) => {
+		if (status.type === 'warning') {
+			return 'status-font-on-warning';
+		}
+
+		if (status.type === 'danger') {
+			return 'status-font-on-danger';
+		}
+
+		return 'font-default';
 	};
 
 	const handleAppRequestsNumber = (status: appStatusSpanResponseProps) => {
@@ -128,15 +148,15 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					invisible={!showStatus && !loading}
 				>
 					<Button
-						icon={!loading && button.icon ? button.icon : undefined}
+						icon={button.icon}
 						primary
 						small
-						disabled={loading || (action === 'request' && (app?.requestedEndUser || endUserRequested))}
+						loading={loading}
+						disabled={action === 'request' && (app?.requestedEndUser || endUserRequested)}
 						onClick={handleAcquireApp}
 						mie={8}
 					>
-						{loading && <Throbber inheritColor />}
-						{!loading && t(button.label.replace(' ', '_') as TranslationKey)}
+						{t(button.label)}
 					</Button>
 
 					{shouldShowPriceDisplay && !installed && (
@@ -146,9 +166,12 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			)}
 
 			{statuses?.map((status, index) => (
-				<Margins inlineEnd={8} key={index}>
-					<Tag variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
-						{handleAppRequestsNumber(status)} {t(`${status.label}` as TranslationKey)}
+				<Margins inlineEnd={index !== statuses.length - 1 ? 8 : undefined} key={index}>
+					<Tag data-qa-type='app-status-tag' variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
+						<Box display='flex' color={getStatusFontColor(status)} alignItems='center'>
+							{status.icon && <Icon name={status.icon} size={16} mie={2} />}
+							{handleAppRequestsNumber(status)} {t(status.label)}
+						</Box>
 					</Tag>
 				</Margins>
 			))}

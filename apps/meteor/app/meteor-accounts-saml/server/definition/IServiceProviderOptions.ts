@@ -1,3 +1,5 @@
+import type { SAMLSignatureAlgorithm } from '@rocket.chat/core-typings';
+
 export interface IServiceProviderOptions {
 	provider: string;
 	entryPoint: string;
@@ -6,6 +8,7 @@ export interface IServiceProviderOptions {
 	cert: string;
 	privateCert: string;
 	privateKey: string;
+	signatureAlgorithm: SAMLSignatureAlgorithm;
 	customAuthnContext: string;
 	authnContextComparison: string;
 	defaultUserRole: string;
@@ -20,7 +23,4 @@ export interface IServiceProviderOptions {
 	metadataCertificateTemplate: string;
 	metadataTemplate: string;
 	callbackUrl: string;
-
-	// The id attribute is filled midway through some operations
-	id?: string;
 }

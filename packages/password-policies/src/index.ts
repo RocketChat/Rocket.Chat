@@ -1,1 +1,1 @@
-export { PasswordPolicy } from './PasswordPolicyClass';
+export { PasswordPolicy, type PasswordPolicyOptions, type PasswordPolicyValidation } from './PasswordPolicy';

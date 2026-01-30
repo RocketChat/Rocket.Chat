@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 import type { JSXInternal } from 'preact/src/jsx';
 import { Controller, useForm } from 'react-hook-form';
@@ -21,7 +21,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Form>>;
 
-export const Default: Story<ComponentProps<typeof Form>> = (args) => {
+export const Default: StoryFn<ComponentProps<typeof Form>> = (args) => {
 	const {
 		handleSubmit,
 		formState: { errors },

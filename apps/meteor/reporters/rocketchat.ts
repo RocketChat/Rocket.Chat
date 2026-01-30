@@ -20,7 +20,7 @@ class RocketChatReporter implements Reporter {
 		this.run = options.run;
 	}
 
-	onTestEnd(test: TestCase, result: TestResult) {
+	async onTestEnd(test: TestCase, result: TestResult) {
 		if (process.env.REPORTER_ROCKETCHAT_REPORT !== 'true') {
 			console.log('REPORTER_ROCKETCHAT_REPORT is not true, skipping', {
 				draft: this.draft,
@@ -36,15 +36,23 @@ class RocketChatReporter implements Reporter {
 			draft: this.draft,
 			run: this.run,
 		};
-		console.log(`Sending test result to Rocket.Chat: ${JSON.stringify(payload)}`);
-		return fetch(this.url, {
-			method: 'POST',
-			body: JSON.stringify(payload),
-			headers: {
-				'Content-Type': 'application/json',
-				'X-Api-Key': this.apiKey,
-			},
-		});
+
+		try {
+			const res = await fetch(this.url, {
+				method: 'POST',
+				body: JSON.stringify(payload),
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Api-Key': this.apiKey,
+				},
+			});
+
+			if (!res.ok) {
+				console.error('Error sending test result to Rocket.Chat', JSON.stringify(payload), res);
+			}
+		} catch (error) {
+			console.error('Unknown error while sending test result to Rocket.Chat', JSON.stringify(payload), error);
+		}
 	}
 }
 

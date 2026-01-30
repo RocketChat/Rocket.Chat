@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Roles, Subscriptions, Rooms } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -10,7 +10,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { removeUserFromRoom } from '../functions/removeUserFromRoom';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		leaveRoom(rid: string): Promise<void>;
@@ -45,8 +45,7 @@ export const leaveRoomMethod = async (user: IUser, rid: string): Promise<void> =
 
 	// If user is room owner, check if there are other owners. If there isn't anyone else, warn user to set a new owner.
 	if (await hasRoleAsync(user._id, 'owner', room._id)) {
-		const cursor = await Roles.findUsersInRole('owner', room._id);
-		const numOwners = await cursor.count();
+		const numOwners = await Roles.countUsersInRole('owner', room._id);
 		if (numOwners === 1) {
 			throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', {
 				method: 'leaveRoom',

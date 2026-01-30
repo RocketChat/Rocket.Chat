@@ -1,19 +1,25 @@
 import { Callout } from '@rocket.chat/fuselage';
-import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
-import React from 'react';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
+import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
-import Page from '../../../components/Page';
-import PageSkeleton from '../../../components/PageSkeleton';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AppearancePage from './AppearancePage';
+import PageSkeleton from '../../../components/PageSkeleton';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
-const AppearancePageContainer: FC = () => {
-	const t = useTranslation();
+const AppearancePageContainer = () => {
+	const { t } = useTranslation();
 
-	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/appearance');
+	const getLivechatAppearance = useEndpoint('GET', '/v1/livechat/appearance');
+	const { isPending, isError, data } = useQuery({
+		queryKey: omnichannelQueryKeys.livechat.appearance(),
+		queryFn: async () => {
+			const { appearance } = await getLivechatAppearance();
+			return appearance;
+		},
+	});
 
 	const canViewAppearance = usePermission('view-livechat-appearance');
 
@@ -21,22 +27,22 @@ const AppearancePageContainer: FC = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	if (state === AsyncStatePhase.LOADING) {
+	if (isPending) {
 		return <PageSkeleton />;
 	}
 
-	if (!data?.appearance || error) {
+	if (isError) {
 		return (
 			<Page>
-				<Page.Header title={t('Edit_Custom_Field')} />
-				<Page.ScrollableContentWithShadow>
+				<PageHeader title={t('Edit_Custom_Field')} />
+				<PageScrollableContentWithShadow>
 					<Callout type='danger'>{t('Error')}</Callout>
-				</Page.ScrollableContentWithShadow>
+				</PageScrollableContentWithShadow>
 			</Page>
 		);
 	}
 
-	return <AppearancePage settings={data.appearance} />;
+	return <AppearancePage settings={data} />;
 };
 
 export default AppearancePageContainer;

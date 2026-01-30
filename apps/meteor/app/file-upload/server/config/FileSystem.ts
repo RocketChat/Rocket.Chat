@@ -1,5 +1,6 @@
 import fsp from 'fs/promises';
 
+import { getContentDisposition } from './helper';
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
@@ -26,7 +27,8 @@ const FileSystemUploads = new FileUploadClass({
 			}
 
 			file = FileUpload.addExtensionTo(file);
-			res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
+
+			res.setHeader('Content-Disposition', `${getContentDisposition(req)}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 			file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 			res.setHeader('Content-Type', file.type || 'application/octet-stream');
 

@@ -38,6 +38,7 @@ export interface ITeamMemberModel extends IBaseModel<ITeamMember> {
 		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): FindCursor<P> | FindCursor<ITeamMember>;
 
+	countByTeamId(teamId: string): Promise<number>;
 	findByTeamIds(teamIds: Array<string>): FindCursor<ITeamMember>;
 
 	findByTeamIds(teamIds: Array<string>, options: FindOptions<ITeamMember>): FindCursor<ITeamMember>;
@@ -60,6 +61,8 @@ export interface ITeamMemberModel extends IBaseModel<ITeamMember> {
 		role: IRole['_id'],
 		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): FindCursor<P> | FindCursor<ITeamMember>;
+
+	countByTeamIdAndRole(teamId: string, role: IRole['_id']): Promise<number>;
 
 	findByUserIdAndTeamIds(userId: string, teamIds: Array<string>, options?: FindOptions<ITeamMember>): FindCursor<ITeamMember>;
 

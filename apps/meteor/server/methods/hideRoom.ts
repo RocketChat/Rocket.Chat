@@ -1,9 +1,11 @@
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-declare module '@rocket.chat/ui-contexts' {
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../app/lib/server/lib/notifyListener';
+
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		hideRoom(rid: string): Promise<number>;
@@ -19,7 +21,13 @@ export const hideRoomMethod = async (userId: string, rid: string): Promise<numbe
 		});
 	}
 
-	return (await Subscriptions.hideByRoomIdAndUserId(rid, userId)).modifiedCount;
+	const { modifiedCount } = await Subscriptions.hideByRoomIdAndUserId(rid, userId);
+
+	if (modifiedCount) {
+		void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, userId);
+	}
+
+	return modifiedCount;
 };
 
 Meteor.methods<ServerMethods>({

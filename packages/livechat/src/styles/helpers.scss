@@ -1,3 +1,5 @@
+@use "sass:map";
+@use "sass:meta";
 $breakpoints: (
 	'small':  ( min-width:  767px ),
 	'medium': ( min-width:  992px ),
@@ -6,9 +8,9 @@ $breakpoints: (
 
 @mixin md($breakpoint) {
 	// If the key exists in the map
-	@if map-has-key($breakpoints, $breakpoint) {
+	@if map.has-key($breakpoints, $breakpoint) {
 		// Prints a media query based on the value
-		@media (#{inspect(map-get($breakpoints, $breakpoint))}) {
+		@media (#{meta.inspect(map.get($breakpoints, $breakpoint))}) {
 			@content;
 		}
 	}
@@ -16,7 +18,7 @@ $breakpoints: (
 	// If the key doesn't exist in the map
 	@else {
 		@warn "Unfortunately, there are no value to `#{$breakpoint}` breakpoints. "
-			+ "Available breakpoints are: #{map-keys($breakpoints)}.";
+			+ "Available breakpoints are: #{map.keys($breakpoints)}.";
 	}
 }
 
@@ -58,12 +60,9 @@ $breakpoints: (
 
 	&::before {
 		position: absolute;
-		top: (-$border-width);
-		right: (-$border-width);
-		bottom: (-$border-width);
-		left: (-$border-width);
 
 		content: "";
 		cursor: pointer;
+		inset: (-$border-width);
 	}
 }

@@ -20,7 +20,10 @@ Meteor.startup(() => {
 		throw new Error(`Invalid RocketChatStore type [${storeType}]`);
 	}
 
-	SystemLogger.info(`Using ${storeType} for custom sounds storage`);
+	SystemLogger.info({
+		msg: 'Using custom sounds storage',
+		storeType,
+	});
 
 	let path = '~/uploads';
 	if (settings.get('CustomSounds_FileSystemPath') != null) {
@@ -76,6 +79,7 @@ Meteor.startup(() => {
 		} else {
 			res.setHeader('Last-Modified', new Date().toUTCString());
 		}
+
 		res.setHeader('Content-Type', file.contentType);
 		res.setHeader('Content-Length', file.length);
 

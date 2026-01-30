@@ -1,6 +1,5 @@
-import React from 'react';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import Thread from './Thread';
 import ThreadList from './ThreadList';
 

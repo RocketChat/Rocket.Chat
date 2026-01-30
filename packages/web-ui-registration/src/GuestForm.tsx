@@ -1,11 +1,13 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { Form } from '@rocket.chat/layout';
+import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 
 const GuestForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
 	const { t } = useTranslation();
+	useDocumentTitle(t('registration.component.login'), false);
 
 	return (
 		<Form>

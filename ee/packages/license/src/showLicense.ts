@@ -1,4 +1,5 @@
-import type { ILicenseV3 } from './definition/ILicenseV3';
+import type { ILicenseV3 } from '@rocket.chat/core-typings';
+
 import type { LicenseManager } from './license';
 import { getModules } from './modules';
 

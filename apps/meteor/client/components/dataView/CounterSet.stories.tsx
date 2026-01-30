@@ -1,18 +1,16 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import CounterSet from './CounterSet';
 
 export default {
-	title: 'Components/Data/CounterSet',
 	component: CounterSet,
 	parameters: {
 		layout: 'padded',
 		controls: { hideNoControlsWarning: true },
 	},
-} as ComponentMeta<typeof CounterSet>;
+} satisfies Meta<typeof CounterSet>;
 
-export const Default: ComponentStory<typeof CounterSet> = (args) => <CounterSet {...args} />;
+export const Default: StoryFn<typeof CounterSet> = (args) => <CounterSet {...args} />;
 Default.storyName = 'CounterSet';
 Default.args = {
 	counters: [

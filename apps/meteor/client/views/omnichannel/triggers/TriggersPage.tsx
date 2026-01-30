@@ -1,30 +1,36 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarDialog, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
-import Page from '../../../components/Page';
 import EditTrigger from './EditTrigger';
 import EditTriggerWithData from './EditTriggerWithData';
 import TriggersTable from './TriggersTable';
 
 const TriggersPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const id = useRouteParameter('id');
 	const context = useRouteParameter('context');
 	const router = useRouter();
+	const handleClose = useEffectEvent(() => router.navigate('/omnichannel/triggers'));
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Livechat_Triggers')}>
+				<PageHeader title={t('Livechat_Triggers')}>
 					<Button onClick={() => router.navigate('/omnichannel/triggers/new')}>{t('Create_trigger')}</Button>
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<TriggersTable />
-				</Page.Content>
+				</PageContent>
 			</Page>
-			{context === 'edit' && id && <EditTriggerWithData triggerId={id} />}
-			{context === 'new' && <EditTrigger />}
+			{context && (
+				<ContextualbarDialog onClose={handleClose}>
+					{context === 'edit' && id && <EditTriggerWithData triggerId={id} onClose={handleClose} />}
+					{context === 'new' && <EditTrigger onClose={handleClose} />}
+				</ContextualbarDialog>
+			)}
 		</Page>
 	);
 };

@@ -1,16 +1,15 @@
 import type { ISession, ISessionDevice, ISocketConnectionLogged, IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
-import { Sessions, Users } from '@rocket.chat/models';
+import { Sessions, Users, aggregates } from '@rocket.chat/models';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import UAParser from 'ua-parser-js';
 
+import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
-import { aggregates } from '../../../../server/models/raw/Sessions';
 import { sauEvents } from '../../../../server/services/sauMonitor/events';
-import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 
 type DateObj = { day: number; month: number; year: number };
 
@@ -30,6 +29,8 @@ const getUserRoles = mem(
 	},
 	{ maxAge: 5000 },
 );
+
+const isProdEnv = process.env.NODE_ENV === 'production';
 
 /**
  * Server Session Monitor for SAU(Simultaneously Active Users) based on Meteor server sessions
@@ -57,7 +58,7 @@ export class SAUMonitorClass {
 		await this._startMonitoring();
 
 		this._started = true;
-		logger.debug('[start]');
+		logger.debug({ msg: '[start]' });
 	}
 
 	async stop(): Promise<void> {
@@ -74,7 +75,7 @@ export class SAUMonitorClass {
 			await this.scheduler.remove(this._dailyFinishSessionsJobName);
 		}
 
-		logger.debug('[stop]');
+		logger.debug({ msg: '[stop]' });
 	}
 
 	isRunning(): boolean {
@@ -128,9 +129,30 @@ export class SAUMonitorClass {
 			if (!this.isRunning()) {
 				return;
 			}
-			const { id: sessionId } = connection;
 
-			await Sessions.logoutBySessionIdAndUserId({ sessionId, userId });
+			if (!userId) {
+				logger.warn({ msg: "Received 'accounts.logout' event without 'userId'" });
+				return;
+			}
+
+			const { id: sessionId } = connection;
+			if (!sessionId) {
+				logger.warn({ msg: "Received 'accounts.logout' event without 'sessionId'" });
+				return;
+			}
+
+			const session = await Sessions.getLoggedInByUserIdAndSessionId<Pick<ISession, 'loginToken'>>(userId, sessionId, {
+				projection: { loginToken: 1 },
+			});
+			if (!session?.loginToken) {
+				if (!isProdEnv) {
+					throw new Error('Session not found during logout');
+				}
+				logger.error({ msg: 'Session not found during logout', userId, sessionId });
+				return;
+			}
+
+			await Sessions.logoutBySessionIdAndUserId({ loginToken: session.loginToken, userId });
 		});
 	}
 
@@ -146,7 +168,7 @@ export class SAUMonitorClass {
 
 		const searchTerm = this._getSearchTerm(data);
 
-		await Sessions.insertOne({ ...data, searchTerm, createdAt: new Date() });
+		await Sessions.createOrUpdate({ ...data, searchTerm });
 	}
 
 	private async _finishSessionsFromDate(yesterday: Date, today: Date): Promise<void> {
@@ -301,7 +323,7 @@ export class SAUMonitorClass {
 	}
 
 	private async _startCronjobs(): Promise<void> {
-		logger.info('[aggregate] - Start Cron.');
+		logger.info({ msg: '[aggregate] - Start Cron.' });
 		const dailyComputeProcessTime = '0 2 * * *';
 		const dailyFinishSessionProcessTime = '5 1 * * *';
 		await this.scheduler.add(this._dailyComputeJobName, dailyComputeProcessTime, async () => this._aggregate());

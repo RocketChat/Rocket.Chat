@@ -1,5 +1,4 @@
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import UrlAudioPreview from './UrlAudioPreview';
 import UrlImagePreview from './UrlImagePreview';

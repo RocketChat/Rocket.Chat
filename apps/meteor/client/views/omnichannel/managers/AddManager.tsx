@@ -1,28 +1,34 @@
 import { Button, Box, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { UserAutoComplete } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useState } from 'react';
+import { useId, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import UserAutoComplete from '../../../components/UserAutoComplete';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
-const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
-	const t = useTranslation();
+const AddManager = (): ReactElement => {
+	const { t } = useTranslation();
 	const [username, setUsername] = useState('');
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const saveAction = useEndpointAction('POST', '/v1/livechat/users/manager');
+	const usernameFieldId = useId();
 
-	const handleSave = useMutableCallback(async () => {
-		try {
-			await saveAction({ username });
-			dispatchToastMessage({ type: 'success', message: t('Manager_added') });
-			reload();
+	const queryClient = useQueryClient();
+
+	const { mutateAsync: saveAction } = useEndpointMutation('POST', '/v1/livechat/users/manager', {
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.managers() });
 			setUsername('');
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
+			dispatchToastMessage({ type: 'success', message: t('Manager_added') });
+		},
+	});
+
+	const handleSave = useEffectEvent(async () => {
+		await saveAction({ username });
 	});
 
 	const handleChange = (value: unknown): void => {
@@ -34,9 +40,9 @@ const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
 	return (
 		<Box display='flex' alignItems='center'>
 			<Field>
-				<FieldLabel>{t('Username')}</FieldLabel>
+				<FieldLabel htmlFor={usernameFieldId}>{t('Username')}</FieldLabel>
 				<FieldRow>
-					<UserAutoComplete value={username} onChange={handleChange} />
+					<UserAutoComplete id={usernameFieldId} value={username} onChange={handleChange} />
 					<Button disabled={!username} onClick={handleSave} mis={8} primary>
 						{t('Add_manager')}
 					</Button>

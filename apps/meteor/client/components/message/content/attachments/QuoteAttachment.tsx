@@ -1,8 +1,8 @@
 import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import MessageContentBody from '../../MessageContentBody';
@@ -18,7 +18,7 @@ import AttachmentInner from './structure/AttachmentInner';
 const quoteStyles = css`
 	.rcx-attachment__details {
 		.rcx-message-body {
-			color: ${Palette.text['font-hint']};
+			color: ${Palette.text['font-default']};
 		}
 	}
 	&:hover,
@@ -37,6 +37,7 @@ type QuoteAttachmentProps = {
 
 export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElement => {
 	const formatTime = useTimeAgo();
+	const displayAvatarPreference = useUserPreference<boolean>('displayAvatars');
 
 	return (
 		<>
@@ -50,27 +51,27 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 					borderInlineStartColor='light'
 				>
 					<AttachmentAuthor>
-						<AttachmentAuthorAvatar url={attachment.author_icon} />
+						{displayAvatarPreference && <AttachmentAuthorAvatar url={attachment.author_icon} />}
 						<AttachmentAuthorName
-							{...(attachment.author_link && { is: 'a', href: attachment.author_link, target: '_blank', color: 'hint' })}
+							{...(attachment.author_link && { is: 'a', href: attachment.author_link, target: '_blank', color: 'default' })}
 						>
 							{attachment.author_name}
 						</AttachmentAuthorName>
 						{attachment.ts && (
 							<Box
 								fontScale='c1'
-								{...(attachment.message_link ? { is: 'a', href: attachment.message_link, color: 'hint' } : { color: 'hint' })}
+								{...(attachment.message_link ? { is: 'a', href: attachment.message_link, color: 'default' } : { color: 'default' })}
 							>
 								{formatTime(attachment.ts)}
 							</Box>
 						)}
 					</AttachmentAuthor>
-					{attachment.md ? <MessageContentBody md={attachment.md} /> : attachment.text.substring(attachment.text.indexOf('\n') + 1)}
 					{attachment.attachments && (
 						<AttachmentInner>
-							<Attachments attachments={attachment.attachments} collapsed={attachment.collapsed} />
+							<Attachments attachments={attachment.attachments} id={attachment.attachments[0]?.title_link} />
 						</AttachmentInner>
 					)}
+					{attachment.md ? <MessageContentBody md={attachment.md} /> : attachment.text.substring(attachment.text.indexOf('\n') + 1)}
 				</AttachmentDetails>
 			</AttachmentContent>
 		</>

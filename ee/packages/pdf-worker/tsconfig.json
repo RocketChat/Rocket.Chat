@@ -1,10 +1,8 @@
 {
-	"extends": "../../../tsconfig.base.server.json",
+	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
-		"declaration": true,
-		"rootDir": "./src",
-		"outDir": "./dist",
-		"jsx": "react-jsx",
+		"jsx": "react-jsx"
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src/**/*", "./**/*.spec.ts", "./jest.config.ts", "./.storybook/**/*"],
+	"exclude": []
 }

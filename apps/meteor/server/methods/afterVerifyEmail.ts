@@ -1,11 +1,14 @@
 import type { IRole } from '@rocket.chat/core-typings';
-import { Roles, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
+
+import { addUserRolesAsync } from '../lib/roles/addUserRoles';
+import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
 
 const rolesToChangeTo: Map<IRole['_id'], [IRole['_id']]> = new Map([['anonymous', ['user']]]);
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		afterVerifyEmail(): void;
@@ -33,9 +36,9 @@ Meteor.methods<ServerMethods>({
 					rolesThatNeedChanges.map(async (role) => {
 						const rolesToAdd = rolesToChangeTo.get(role);
 						if (rolesToAdd) {
-							await Roles.addUserRoles(userId, rolesToAdd);
+							await addUserRolesAsync(userId, rolesToAdd);
 						}
-						await Roles.removeUserRoles(user._id, [role]);
+						await removeUserFromRolesAsync(user._id, [role]);
 					}),
 				);
 			}

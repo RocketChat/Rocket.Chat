@@ -1,4 +1,5 @@
-import type { IRoom, RoomType, IUser, IMessage, ReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
+import { getUserDisplayName } from '@rocket.chat/core-typings';
+import type { IRoom, RoomType, IUser, IMessage, IReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
@@ -40,21 +41,22 @@ class RoomCoordinatorServer extends RoomCoordinator {
 				sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 				notificationMessage: string,
 				userId: string,
-			): Promise<{ title: string | undefined; text: string }> {
+			): Promise<{ title: string | undefined; text: string; name: string | undefined }> {
 				const title = `#${await this.roomName(room, userId)}`;
-				const name = settings.get<boolean>('UI_Use_Real_Name') ? sender.name : sender.username;
+				const useRealName = settings.get<boolean>('UI_Use_Real_Name');
+				const senderName = getUserDisplayName(sender.name, sender.username, useRealName);
 
-				const text = `${name}: ${notificationMessage}`;
+				const text = `${senderName}: ${notificationMessage}`;
 
-				return { title, text };
+				return { title, text, name: room.name };
 			},
-			getMsgSender(senderId: IUser['_id']): Promise<IUser | null> {
-				return Users.findOneById(senderId);
+			getMsgSender(message: IMessage): Promise<IUser | null> {
+				return Users.findOneById(message.u._id);
 			},
 			includeInRoomSearch(): boolean {
 				return false;
 			},
-			getReadReceiptsExtraData(_message: IMessage): Partial<ReadReceipt> {
+			getReadReceiptsExtraData(_message: IMessage): Partial<IReadReceipt> {
 				return {};
 			},
 			includeInDashboard(): boolean {

@@ -1,12 +1,10 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { useContext, useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useContext, useMemo, useSyncExternalStore } from 'react';
 
-import type { Fields } from '../UserContext';
 import { UserContext } from '../UserContext';
 
-export const useUserSubscription = (rid: string, fields?: Fields): ISubscription | undefined => {
+export const useUserSubscription = (rid: string): ISubscription | undefined => {
 	const { querySubscription } = useContext(UserContext);
-	const [subscribe, getSnapshot] = useMemo(() => querySubscription({ rid }, fields), [querySubscription, rid, fields]);
+	const [subscribe, getSnapshot] = useMemo(() => querySubscription({ rid }), [querySubscription, rid]);
 	return useSyncExternalStore(subscribe, getSnapshot);
 };

@@ -1,34 +1,50 @@
 import type { IIncomingIntegration, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Tabs, TabsItem } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { GenericModal, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useSetModal, useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useId, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import GenericModal from '../../../../components/GenericModal';
-import Page from '../../../../components/Page';
+import IncomingWebhookForm from './IncomingWebhookForm';
 import { useCreateIntegration } from '../hooks/useCreateIntegration';
 import { useDeleteIntegration } from '../hooks/useDeleteIntegration';
 import { useUpdateIntegration } from '../hooks/useUpdateIntegration';
-import IncomingWebhookForm from './IncomingWebhookForm';
 
-const getInitialValue = (webhookData: Serialized<IIncomingIntegration> | undefined) => ({
-	enabled: webhookData?.enabled || false,
-	channel: webhookData?.channel.join(', ') || '',
-	username: webhookData?.username || '',
-	name: webhookData?.name || '',
-	alias: webhookData?.alias || '',
-	avatar: webhookData?.avatar || '',
-	emoji: webhookData?.emoji || '',
-	scriptEnabled: webhookData?.scriptEnabled || false,
-	scriptEngine: webhookData?.scriptEngine || 'isolated-vm',
-	overrideDestinationChannelEnabled: webhookData?.overrideDestinationChannelEnabled || false,
-	script: webhookData?.script || '',
+export type EditIncomingWebhookFormData = {
+	enabled: boolean;
+	channel: string;
+	username: string;
+	name: string;
+	alias: string;
+	avatar: string;
+	emoji: string;
+	scriptEnabled: boolean;
+	scriptEngine: 'isolated-vm';
+	overrideDestinationChannelEnabled: boolean;
+	script: string;
+};
+
+const getInitialValue = (webhookData: Serialized<IIncomingIntegration> | undefined): EditIncomingWebhookFormData => ({
+	enabled: webhookData?.enabled ?? true,
+	channel: webhookData?.channel.join(', ') ?? '',
+	username: webhookData?.username ?? '',
+	name: webhookData?.name ?? '',
+	alias: webhookData?.alias ?? '',
+	avatar: webhookData?.avatar ?? '',
+	emoji: webhookData?.emoji ?? '',
+	scriptEnabled: webhookData?.scriptEnabled ?? false,
+	scriptEngine: webhookData?.scriptEngine ?? 'isolated-vm',
+	overrideDestinationChannelEnabled: webhookData?.overrideDestinationChannelEnabled ?? false,
+	script: webhookData?.script ?? '',
 });
 
 const INCOMING_TYPE = 'webhook-incoming';
 
-const EditIncomingWebhook = ({ webhookData }: { webhookData?: Serialized<IIncomingIntegration> }) => {
+type EditIncomingWebhookProps = {
+	webhookData?: Serialized<IIncomingIntegration>;
+};
+
+const EditIncomingWebhook = ({ webhookData }: EditIncomingWebhookProps) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
@@ -38,7 +54,7 @@ const EditIncomingWebhook = ({ webhookData }: { webhookData?: Serialized<IIncomi
 	const updateIntegration = useUpdateIntegration(INCOMING_TYPE);
 	const createIntegration = useCreateIntegration(INCOMING_TYPE);
 
-	const methods = useForm({ mode: 'onBlur', values: getInitialValue(webhookData) });
+	const methods = useForm<EditIncomingWebhookFormData>({ mode: 'onBlur', values: getInitialValue(webhookData) });
 
 	const {
 		reset,
@@ -63,7 +79,7 @@ const EditIncomingWebhook = ({ webhookData }: { webhookData?: Serialized<IIncomi
 	}, [webhookData?._id, deleteIntegration, setModal, t]);
 
 	const handleSave = useCallback(
-		async (formValues) => {
+		async (formValues: EditIncomingWebhookFormData) => {
 			if (webhookData?._id) {
 				return updateIntegration.mutate({ integrationId: webhookData?._id, type: INCOMING_TYPE, ...formValues });
 			}
@@ -73,22 +89,19 @@ const EditIncomingWebhook = ({ webhookData }: { webhookData?: Serialized<IIncomi
 		[webhookData?._id, updateIntegration, createIntegration],
 	);
 
-	const formId = useUniqueId();
+	const formId = useId();
 
 	return (
 		<Page flexDirection='column'>
-			<Page.Header title={t('Integration_Incoming_WebHook')}>
+			<PageHeader title={t('Integration_Incoming_WebHook')} onClickBack={() => router.navigate('/admin/integrations/webhook-incoming')}>
 				<ButtonGroup>
-					<Button icon='back' onClick={() => router.navigate('/admin/integrations/webhook-incoming')}>
-						{t('Back')}
-					</Button>
 					{webhookData?._id && (
 						<Button danger onClick={handleDeleteIntegration}>
 							{t('Delete')}
 						</Button>
 					)}
 				</ButtonGroup>
-			</Page.Header>
+			</PageHeader>
 			{!webhookData?._id && (
 				<Tabs>
 					<TabsItem selected={tab === 'incoming'} onClick={() => router.navigate('/admin/integrations/new/incoming')}>
@@ -99,12 +112,12 @@ const EditIncomingWebhook = ({ webhookData }: { webhookData?: Serialized<IIncomi
 					</TabsItem>
 				</Tabs>
 			)}
-			<Page.ScrollableContentWithShadow id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
+			<PageScrollableContentWithShadow id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
 				<FormProvider {...methods}>
 					<IncomingWebhookForm webhookData={webhookData} />
 				</FormProvider>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button type='reset' onClick={() => reset()}>
 						{t('Cancel')}
@@ -113,7 +126,7 @@ const EditIncomingWebhook = ({ webhookData }: { webhookData?: Serialized<IIncomi
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

@@ -1,42 +1,34 @@
-import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarDialog, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
-import Page from '../../../components/Page';
-import EditRoomContextBar from './EditRoomContextBar';
+import EditRoomWithData from './EditRoomWithData';
 import RoomsTable from './RoomsTable';
 
 const RoomsPage = (): ReactElement => {
-	const t = useTranslation();
-
-	const context = useRouteParameter('context');
+	const { t } = useTranslation();
+	const router = useRouter();
 	const id = useRouteParameter('id');
-
-	const roomsRoute = useRoute('admin-rooms');
-
-	const handleContextualbarCloseButtonClick = (): void => {
-		roomsRoute.push({});
-	};
+	const context = useRouteParameter('context');
 
 	const reloadRef = useRef(() => null);
+	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/admin/rooms'));
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Rooms')} />
-				<Page.Content>
+				<PageHeader title={t('Rooms')} />
+				<PageContent>
 					<RoomsTable reload={reloadRef} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context && (
-				<Contextualbar>
-					<ContextualbarHeader>
-						<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
-						<ContextualbarClose onClick={handleContextualbarCloseButtonClick} />
-					</ContextualbarHeader>
-					<EditRoomContextBar rid={id} onReload={reloadRef.current} />
-				</Contextualbar>
+				<ContextualbarDialog onClose={handleCloseContextualbar}>
+					<EditRoomWithData rid={id} onReload={reloadRef.current} onClose={handleCloseContextualbar} />
+				</ContextualbarDialog>
 			)}
 		</Page>
 	);

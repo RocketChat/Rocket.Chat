@@ -1,7 +1,9 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
+import { useCategoryFlatList } from './useCategoryFlatList';
+import { useCategoryToggle } from './useCategoryToggle';
+import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import type {
 	CategoryDropDownGroups,
 	CategoryDropdownItem,
@@ -10,11 +12,9 @@ import type {
 	selectedCategoriesList,
 } from '../definitions/CategoryDropdownDefinitions';
 import { handleAPIError } from '../helpers/handleAPIError';
-import { useCategoryFlatList } from './useCategoryFlatList';
-import { useCategoryToggle } from './useCategoryToggle';
 
 export const useCategories = (): [CategoryDropDownGroups, selectedCategoriesList, selectedCategoriesList, CategoryOnSelected] => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [categories, setCategories] = useState<CategoryDropDownListProps['categories']>([]);
 
 	const fetchCategories = useCallback(async (): Promise<void> => {

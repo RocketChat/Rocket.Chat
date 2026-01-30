@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import type { StreamerEvents } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
-import type { StreamerEvents } from '@rocket.chat/ui-contexts';
 import type { IPublication, IStreamerConstructor, Connection, IStreamer } from 'meteor/rocketchat:streamer';
 
 type UserPresenceStreamProps = {
@@ -73,7 +73,7 @@ export class StreamPresence {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	static getInstance(Streamer: IStreamerConstructor, name = 'user-presence'): IStreamer<'user-presence'> {
 		return new (class StreamPresence extends Streamer<'user-presence'> {
-			async _publish(
+			override async _publish(
 				publication: IPublication,
 				_eventName: string,
 				options: boolean | { useCollection?: boolean; args?: any } = false,

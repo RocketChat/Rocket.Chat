@@ -2,8 +2,6 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageBlock } from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitMessage as UiKitMessageSurfaceRender, UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
-import React from 'react';
 
 import { useMessageBlockContextValue } from '../../../uikit/hooks/useMessageBlockContextValue';
 import GazzodownText from '../../GazzodownText';
@@ -14,7 +12,7 @@ type UiKitMessageBlockProps = {
 	blocks: MessageSurfaceLayout;
 };
 
-const UiKitMessageBlock = ({ rid, mid, blocks }: UiKitMessageBlockProps): ReactElement => {
+const UiKitMessageBlock = ({ rid, mid, blocks }: UiKitMessageBlockProps) => {
 	const contextValue = useMessageBlockContextValue(rid, mid);
 
 	return (

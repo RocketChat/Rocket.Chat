@@ -3,14 +3,19 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
 import { isLivechatRoomOnHoldProps, isLivechatRoomResumeOnHoldProps, isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
 
+import { removePriorityFromRoom, updateRoomPriority } from './lib/priorities';
 import { API } from '../../../../../app/api/server';
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { i18n } from '../../../../../server/lib/i18n';
-import { removePriorityFromRoom, updateRoomPriority } from './lib/priorities';
 
 API.v1.addRoute(
 	'livechat/room.onHold',
-	{ authRequired: true, permissionsRequired: ['on-hold-livechat-room'], validateParams: isLivechatRoomOnHoldProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['on-hold-livechat-room'],
+		validateParams: isLivechatRoomOnHoldProps,
+		license: ['livechat-enterprise'],
+	},
 	{
 		async post() {
 			const { roomId } = this.bodyParams;
@@ -43,7 +48,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/room.resumeOnHold',
-	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isLivechatRoomResumeOnHoldProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-l-room'],
+		validateParams: isLivechatRoomResumeOnHoldProps,
+		license: ['livechat-enterprise'],
+	},
 	{
 		async post() {
 			const { roomId } = this.bodyParams;
@@ -67,7 +77,7 @@ API.v1.addRoute(
 
 			const { name, username, _id: userId } = this.user;
 			const onHoldBy = { _id: userId, username, name };
-			const comment = i18n.t('Omnichannel_On_Hold_manually', {
+			const comment = i18n.t('Omnichannel_on_hold_chat_resumed_manually', {
 				user: onHoldBy.name || `@${onHoldBy.username}`,
 			});
 
@@ -87,6 +97,7 @@ API.v1.addRoute(
 			POST: { permissions: ['view-l-room'], operation: 'hasAny' },
 			DELETE: { permissions: ['view-l-room'], operation: 'hasAny' },
 		},
+		license: ['livechat-enterprise'],
 	},
 	{
 		async post() {

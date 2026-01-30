@@ -1,16 +1,15 @@
 import type { ISetting } from '@rocket.chat/core-typings';
-import type { LoginService, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, SettingsContext } from '@rocket.chat/ui-contexts';
-import type { Meta, Story } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import type { ObjectId } from 'mongodb';
 import type { ContextType } from 'react';
-import React from 'react';
 
 import Sidebar from './SidebarRegion';
 
 export default {
-	title: 'Sidebar',
-} as Meta;
+	component: Sidebar,
+} satisfies Meta<typeof Sidebar>;
 
 const settings: Record<string, ISetting> = {
 	UI_Use_Real_Name: {
@@ -31,7 +30,6 @@ const settings: Record<string, ISetting> = {
 
 const settingContextValue: ContextType<typeof SettingsContext> = {
 	hasPrivateAccess: true,
-	isLoading: false,
 	querySetting: (_id) => [() => () => undefined, () => settings[_id]],
 	querySettings: () => [() => () => undefined, () => []],
 	dispatch: async () => undefined,
@@ -98,14 +96,11 @@ const userContextValue: ContextType<typeof UserContext> = {
 	querySubscription: () => [() => () => undefined, () => undefined],
 	queryRoom: () => [() => () => undefined, () => undefined],
 
-	queryAllServices: () => [() => (): void => undefined, (): LoginService[] => []],
-	loginWithService: () => () => Promise.reject('loginWithService not implemented'),
-	loginWithPassword: async () => Promise.reject('loginWithPassword not implemented'),
-	loginWithToken: async () => Promise.reject('loginWithToken not implemented'),
 	logout: () => Promise.resolve(),
+	onLogout: () => () => undefined,
 };
 
-export const SidebarStory: Story = () => <Sidebar />;
+export const SidebarStory: StoryFn<typeof Sidebar> = () => <Sidebar />;
 SidebarStory.decorators = [
 	(fn) => (
 		<SettingsContext.Provider value={settingContextValue}>

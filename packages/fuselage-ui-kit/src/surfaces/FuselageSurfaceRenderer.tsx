@@ -6,12 +6,18 @@ import CalloutBlock from '../blocks/CalloutBlock';
 import ContextBlock from '../blocks/ContextBlock';
 import DividerBlock from '../blocks/DividerBlock';
 import ImageBlock from '../blocks/ImageBlock';
+import InfoCard from '../blocks/InfoCard';
 import InputBlock from '../blocks/InputBlock';
 import PreviewBlock from '../blocks/PreviewBlock';
 import SectionBlock from '../blocks/SectionBlock';
+import { AppIdProvider } from '../contexts/AppIdContext';
 import ButtonElement from '../elements/ButtonElement';
+import ChannelsSelectElement from '../elements/ChannelsSelectElement/ChannelsSelectElement';
+import MultiChannelsSelectElement from '../elements/ChannelsSelectElement/MultiChannelsSelectElement';
 import CheckboxElement from '../elements/CheckboxElement';
 import DatePickerElement from '../elements/DatePickerElement';
+import IconButtonElement from '../elements/IconButtonElement';
+import IconElement from '../elements/IconElement';
 import ImageElement from '../elements/ImageElement';
 import LinearScaleElement from '../elements/LinearScaleElement';
 import MarkdownTextElement from '../elements/MarkdownTextElement';
@@ -23,480 +29,352 @@ import RadioButtonElement from '../elements/RadioButtonElement';
 import StaticSelectElement from '../elements/StaticSelectElement';
 import TimePickerElement from '../elements/TimePickerElement';
 import ToggleSwitchElement from '../elements/ToggleSwitchElement';
+import MultiUsersSelectElement from '../elements/UsersSelectElement/MultiUsersSelectElement';
+import UsersSelectElement from '../elements/UsersSelectElement/UsersSelectElement';
 
 type TextObjectRenderers = {
-  [TTextObject in UiKit.TextObject as TTextObject['type']]: (
-    textObject: TTextObject,
-    index: number
-  ) => ReactElement | null;
+	[TTextObject in UiKit.TextObject as TTextObject['type']]: (textObject: TTextObject, index: number) => ReactElement | null;
 };
 
 const textObjectRenderers: TextObjectRenderers = {
-  plain_text: (textObject, index) => (
-    <PlainTextElement key={index} textObject={textObject} />
-  ),
-  mrkdwn: (textObject, index) => (
-    <MarkdownTextElement key={index} textObject={textObject} />
-  ),
+	plain_text: (textObject, index) => <PlainTextElement key={index} textObject={textObject} />,
+	mrkdwn: (textObject, index) => <MarkdownTextElement key={index} textObject={textObject} />,
 };
 
-export const renderTextObject = (
-  textObject: UiKit.TextObject,
-  context: UiKit.BlockContext,
-  index: number
-) => {
-  if (context === UiKit.BlockContext.BLOCK) {
-    return null;
-  }
+export const renderTextObject = (textObject: UiKit.TextObject, context: UiKit.BlockContext, index: number) => {
+	if (context === UiKit.BlockContext.BLOCK) {
+		return null;
+	}
 
-  switch (textObject.type) {
-    case 'plain_text':
-      return textObjectRenderers.plain_text(textObject, index);
+	switch (textObject.type) {
+		case 'plain_text':
+			return textObjectRenderers.plain_text(textObject, index);
 
-    case 'mrkdwn':
-      return textObjectRenderers.mrkdwn(textObject, index);
-  }
+		case 'mrkdwn':
+			return textObjectRenderers.mrkdwn(textObject, index);
+	}
 };
 
-type FuselageSurfaceRendererProps = ConstructorParameters<
-  typeof UiKit.SurfaceRenderer
->[0];
+const isImageBlock = (
+	_elementOrBlock: UiKit.ImageBlock | UiKit.ImageElement,
+	context: UiKit.BlockContext,
+): _elementOrBlock is UiKit.ImageBlock => context === UiKit.BlockContext.BLOCK;
+
+type FuselageSurfaceRendererProps = ConstructorParameters<typeof UiKit.SurfaceRenderer>[0];
 
 export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<ReactElement> {
-  public constructor(allowedBlocks?: FuselageSurfaceRendererProps) {
-    super(
-      allowedBlocks || [
-        'actions',
-        'context',
-        'divider',
-        'image',
-        'input',
-        'section',
-        'preview',
-      ]
-    );
-  }
+	public constructor(allowedBlocks?: FuselageSurfaceRendererProps) {
+		super(allowedBlocks || ['actions', 'context', 'divider', 'image', 'input', 'section', 'preview', 'info_card']);
+	}
 
-  public plain_text(
-    textObject: UiKit.PlainText,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
+	public plain_text(textObject: UiKit.PlainText, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
 
-    return textObjectRenderers.plain_text(textObject, index);
-  }
+		return textObjectRenderers.plain_text(textObject, index);
+	}
 
-  public mrkdwn(
-    textObject: UiKit.TextObject,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
+	public mrkdwn(textObject: UiKit.TextObject, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
 
-    return <MarkdownTextElement key={index} textObject={textObject} />;
-  }
+		return <MarkdownTextElement key={index} textObject={textObject} />;
+	}
 
-  public text(
-    textObject: UiKit.TextObject,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (textObject.type === 'mrkdwn') {
-      return this.mrkdwn(textObject, context, index);
-    }
+	public override text(textObject: UiKit.TextObject, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (textObject.type === 'mrkdwn') {
+			return this.mrkdwn(textObject, context, index);
+		}
 
-    return this.plain_text(textObject, context, index);
-  }
+		return this.plain_text(textObject, context, index);
+	}
 
-  actions(
-    block: UiKit.ActionsBlock,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return (
-        <ActionsBlock
-          key={index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
-      );
-    }
+	actions(block: UiKit.ActionsBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<ActionsBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  preview(
-    block: UiKit.PreviewBlock,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context !== UiKit.BlockContext.BLOCK) {
-      return null;
-    }
-    return (
-      <PreviewBlock
-        key={index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
+	preview(block: UiKit.PreviewBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context !== UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+		return <PreviewBlock key={index} block={block} context={context} index={index} surfaceRenderer={this} />;
+	}
 
-  context(
-    block: UiKit.ContextBlock,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return (
-        <ContextBlock
-          key={index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
-      );
-    }
+	context(block: UiKit.ContextBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<ContextBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  divider(
-    block: UiKit.DividerBlock,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return (
-        <DividerBlock
-          key={index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
-      );
-    }
+	divider(block: UiKit.DividerBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<DividerBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  image(
-    block: UiKit.ImageBlock | UiKit.ImageElement,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return (
-        <ImageBlock
-          key={index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
-      );
-    }
+	image(block: UiKit.ImageBlock | UiKit.ImageElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (isImageBlock(block, context)) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<ImageBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
 
-    return (
-      <ImageElement
-        key={index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
+		return <ImageElement key={index} block={block} context={context} index={index} surfaceRenderer={this} />;
+	}
 
-  input(
-    block: UiKit.InputBlock,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return (
-        <InputBlock
-          key={block.element.actionId || index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
-      );
-    }
+	input(block: UiKit.InputBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={block.element.actionId || index} appId={block.appId}>
+					<InputBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  section(
-    block: UiKit.SectionBlock,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return (
-        <SectionBlock
-          key={index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
-      );
-    }
+	section(block: UiKit.SectionBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<SectionBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  button(
-    block: UiKit.ButtonElement,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
+	button(block: UiKit.ButtonElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
 
-    return (
-      <ButtonElement
-        key={index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
+		return (
+			<AppIdProvider key={index} appId={block.appId}>
+				<ButtonElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
 
-  datepicker(
-    block: UiKit.DatePickerElement,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
+	datepicker(block: UiKit.DatePickerElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
 
-    return (
-      <DatePickerElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<DatePickerElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
 
-  static_select(
-    block: UiKit.StaticSelectElement,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
+	static_select(block: UiKit.StaticSelectElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
 
-    return (
-      <StaticSelectElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<StaticSelectElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
 
-  multi_static_select(
-    block: UiKit.MultiStaticSelectElement,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
+	multi_static_select(block: UiKit.MultiStaticSelectElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
 
-    return (
-      <MultiStaticSelectElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<MultiStaticSelectElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
 
-  overflow(
-    block: UiKit.OverflowElement,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
+	overflow(block: UiKit.OverflowElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
 
-    return (
-      <OverflowElement
-        key={index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
+		return (
+			<AppIdProvider key={index} appId={block.appId}>
+				<OverflowElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
 
-  plain_text_input(
-    block: UiKit.PlainTextInputElement,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
+	plain_text_input(block: UiKit.PlainTextInputElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
 
-    return (
-      <PlainTextInputElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<PlainTextInputElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
 
-  linear_scale(
-    block: UiKit.LinearScaleElement,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
+	linear_scale(block: UiKit.LinearScaleElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
 
-    return (
-      <LinearScaleElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<LinearScaleElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
 
-  toggle_switch(
-    block: UiKit.ToggleSwitchElement,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
+	toggle_switch(block: UiKit.ToggleSwitchElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
 
-    return (
-      <ToggleSwitchElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<ToggleSwitchElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
 
-  radio_button(
-    block: UiKit.RadioButtonElement,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
+	radio_button(block: UiKit.RadioButtonElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
 
-    return (
-      <RadioButtonElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<RadioButtonElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
 
-  checkbox(
-    block: UiKit.CheckboxElement,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
+	checkbox(block: UiKit.CheckboxElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
 
-    return (
-      <CheckboxElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<CheckboxElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
 
-  callout(
-    block: UiKit.CalloutBlock,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return (
-        <CalloutBlock
-          key={index}
-          block={block}
-          context={context}
-          index={index}
-          surfaceRenderer={this}
-        />
-      );
-    }
+	callout(block: UiKit.CalloutBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<CalloutBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  time_picker(
-    block: UiKit.TimePickerElement,
-    context: UiKit.BlockContext,
-    index: number
-  ): ReactElement | null {
-    if (context === UiKit.BlockContext.BLOCK) {
-      return null;
-    }
+	time_picker(block: UiKit.TimePickerElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
 
-    return (
-      <TimePickerElement
-        key={block.actionId || index}
-        block={block}
-        context={context}
-        index={index}
-        surfaceRenderer={this}
-      />
-    );
-  }
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<TimePickerElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
+
+	users_select(block: UiKit.UsersSelectElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.FORM) {
+			return <UsersSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+		}
+
+		return null;
+	}
+
+	channels_select(block: UiKit.ChannelsSelectElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.FORM) {
+			return <ChannelsSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+		}
+
+		return null;
+	}
+
+	multi_users_select(block: UiKit.MultiUsersSelectElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.FORM) {
+			return <MultiUsersSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+		}
+
+		return null;
+	}
+
+	multi_channels_select(block: UiKit.MultiChannelsSelectElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.FORM) {
+			return <MultiChannelsSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+		}
+
+		return null;
+	}
+
+	info_card(block: UiKit.InfoCardBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context !== UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={index} appId={block.appId}>
+				<InfoCard block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
+
+	icon(block: UiKit.IconElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return <IconElement block={block} context={context} index={index} surfaceRenderer={this} />;
+	}
+
+	icon_button(block: UiKit.IconButtonElement, context: UiKit.BlockContext, index: number): ReactElement | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<IconButtonElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
 }

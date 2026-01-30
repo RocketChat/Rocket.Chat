@@ -1,16 +1,19 @@
+import type { i18n } from 'i18next';
+
 import { ChatTranscript } from './strategies/ChatTranscript';
 import type { IStrategy } from './types/IStrategy';
+import type { WorkerData } from './types/WorkerData';
 
 export type Templates = 'chat-transcript';
+
+export { Quote, MessageData, WorkerData } from './types/WorkerData';
 
 export class PdfWorker {
 	protected validMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
 
-	mode: Templates;
+	readonly worker: IStrategy;
 
-	worker: IStrategy;
-
-	constructor(mode: Templates) {
+	constructor(public readonly mode: Templates) {
 		if (!mode) {
 			throw new Error('Invalid mode');
 		}
@@ -19,7 +22,7 @@ export class PdfWorker {
 		this.worker = this.getWorkerClass();
 	}
 
-	getWorkerClass(): IStrategy {
+	private getWorkerClass(): IStrategy {
 		switch (this.mode) {
 			case 'chat-transcript':
 				return new ChatTranscript();
@@ -35,8 +38,8 @@ export class PdfWorker {
 		return this.validMimeTypes.includes(mimeType?.toLowerCase());
 	}
 
-	async renderToStream({ data }: { data: Record<string, unknown | unknown[]> }): Promise<NodeJS.ReadableStream> {
-		const parsedData = this.worker.parseTemplateData(data);
+	async renderToStream({ data, i18n }: { data: WorkerData; i18n: i18n }): Promise<NodeJS.ReadableStream> {
+		const parsedData = this.worker.parseTemplateData(data, i18n);
 		return this.worker.renderTemplate(parsedData);
 	}
 }

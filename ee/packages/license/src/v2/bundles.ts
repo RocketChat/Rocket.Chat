@@ -1,32 +1,11 @@
-import type { LicenseModule } from '../definition/LicenseModule';
+import { CoreModules, type LicenseModule } from '@rocket.chat/core-typings';
 
 interface IBundle {
-	[key: string]: LicenseModule[];
+	[key: string]: readonly LicenseModule[];
 }
 
 const bundles: IBundle = {
-	enterprise: [
-		'auditing',
-		'canned-responses',
-		'ldap-enterprise',
-		'livechat-enterprise',
-		'voip-enterprise',
-		'omnichannel-mobile-enterprise',
-		'engagement-dashboard',
-		'push-privacy',
-		'scalability',
-		'saml-enterprise',
-		'oauth-enterprise',
-		'device-management',
-		'federation',
-		'videoconference-enterprise',
-		'message-read-receipt',
-		'outlook-calendar',
-		'teams-mention',
-		'hide-watermark',
-		'custom-roles',
-		'accessibility-certification',
-	],
+	enterprise: CoreModules,
 	pro: [],
 };
 
@@ -52,7 +31,7 @@ export function isBundle(moduleName: string): boolean {
 	return true;
 }
 
-export function getBundleModules(moduleName: string): string[] {
+export function getBundleModules(moduleName: string): readonly string[] {
 	if (moduleName === '*') {
 		return Object.keys(bundles).reduce<string[]>((modules, bundle) => modules.concat(bundles[bundle]), []);
 	}

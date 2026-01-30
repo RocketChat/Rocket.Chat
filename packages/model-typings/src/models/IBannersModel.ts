@@ -9,4 +9,8 @@ export interface IBannersModel extends IBaseModel<IBanner> {
 	findActiveByRoleOrId(roles: string[], platform: BannerPlatform, bannerId?: string, options?: FindOptions<IBanner>): FindCursor<IBanner>;
 
 	disable(bannerId: string): Promise<UpdateResult | Document>;
+
+	createOrUpdate(banner: Optional<IBanner, '_updatedAt'>): Promise<UpdateResult>;
+
+	findByIds(bannerIds: string[]): FindCursor<IBanner>;
 }

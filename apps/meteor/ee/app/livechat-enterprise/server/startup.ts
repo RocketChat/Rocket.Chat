@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { businessHourManager } from '../../../../app/livechat/server/business-hour';
-import { SingleBusinessHourBehavior } from '../../../../app/livechat/server/business-hour/Single';
-import { settings } from '../../../../app/settings/server';
 import { MultipleBusinessHoursBehavior } from './business-hour/Multiple';
 import { updatePredictedVisitorAbandonment, updateQueueInactivityTimeout } from './lib/Helper';
 import { VisitorInactivityMonitor } from './lib/VisitorInactivityMonitor';
 import { logger } from './lib/logger';
-import './lib/query.helper';
+import { businessHourManager } from '../../../../app/livechat/server/business-hour';
+import { SingleBusinessHourBehavior } from '../../../../app/livechat/server/business-hour/Single';
+import { settings } from '../../../../app/settings/server';
 
 const visitorActivityMonitor = new VisitorInactivityMonitor();
 const businessHours = {
@@ -31,15 +30,15 @@ Meteor.startup(async () => {
 		await updatePredictedVisitorAbandonment();
 	});
 	settings.change<string>('Livechat_business_hour_type', async (value) => {
-		logger.debug(`Changing business hour type to ${value}`);
+		logger.debug({ msg: 'Changing business hour type', value });
 		if (!Object.keys(businessHours).includes(value)) {
-			logger.error(`Invalid business hour type ${value}`);
+			logger.error({ msg: 'Invalid business hour type', value });
 			return;
 		}
 		businessHourManager.registerBusinessHourBehavior(businessHours[value as keyof typeof businessHours]);
 		if (settings.get('Livechat_enable_business_hours')) {
 			await businessHourManager.restartManager();
-			logger.debug(`Business hour manager started`);
+			logger.debug('Business hour manager started');
 		}
 	});
 });

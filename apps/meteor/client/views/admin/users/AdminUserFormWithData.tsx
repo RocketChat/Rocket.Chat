@@ -1,24 +1,31 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { isUserFederated } from '@rocket.chat/core-typings';
+import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import AdminUserForm from './AdminUserForm';
 import { FormSkeleton } from '../../../components/Skeleton';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
-import AdminUserForm from './AdminUserForm';
 
 type AdminUserFormWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
+	context: string;
+	roleData: { roles: IRole[] } | undefined;
+	roleError: Error | null;
 };
 
-const AdminUserFormWithData = ({ uid, onReload }: AdminUserFormWithDataProps): ReactElement => {
-	const t = useTranslation();
-	const { data, isLoading, isError } = useUserInfoQuery({ userId: uid });
+const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: AdminUserFormWithDataProps): ReactElement => {
+	const { t } = useTranslation();
+	const { data, isPending, isError, refetch } = useUserInfoQuery({ userId: uid });
 
-	if (isLoading) {
+	const handleReload = useEffectEvent(() => {
+		onReload();
+		refetch();
+	});
+
+	if (isPending) {
 		return (
 			<Box p={24}>
 				<FormSkeleton />
@@ -34,7 +41,7 @@ const AdminUserFormWithData = ({ uid, onReload }: AdminUserFormWithDataProps): R
 		);
 	}
 
-	if (data?.user && isUserFederated(data?.user as unknown as IUser)) {
+	if (data?.user && !!data.user.federated) {
 		return (
 			<Callout m={16} type='danger'>
 				{t('Edit_Federated_User_Not_Allowed')}
@@ -42,7 +49,16 @@ const AdminUserFormWithData = ({ uid, onReload }: AdminUserFormWithDataProps): R
 		);
 	}
 
-	return <AdminUserForm userData={data?.user} onReload={onReload} />;
+	return (
+		<AdminUserForm
+			userData={data?.user}
+			onReload={onReload}
+			context={context}
+			refetchUserFormData={handleReload}
+			roleData={roleData}
+			roleError={roleError}
+		/>
+	);
 };
 
 export default AdminUserFormWithData;

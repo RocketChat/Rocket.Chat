@@ -3,8 +3,8 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
-import { callbacks } from '../../../lib/callbacks';
 import { checkCodeForUser } from './code/index';
+import { callbacks } from '../../../server/lib/callbacks';
 
 const isMeteorError = (error: any): error is Meteor.Error => {
 	return error?.meteorError !== undefined;
@@ -26,19 +26,14 @@ Accounts.registerLoginHandler('totp', function (options) {
 callbacks.add(
 	'onValidateLogin',
 	async (login) => {
-		if (login.methodName === 'verifyEmail') {
-			throw new Meteor.Error('verify-email', 'E-mail verified');
-		}
-
-		if (login.type === 'resume' || login.type === 'proxy' || (login.type === 'password' && login.methodName === 'resetPassword')) {
-			return login;
-		}
-		// CAS login doesn't yet support 2FA.
-		if (login.type === 'cas') {
-			return login;
-		}
-
-		if (!login.user) {
+		if (
+			!login.user ||
+			login.type === 'resume' ||
+			login.type === 'proxy' ||
+			login.type === 'cas' ||
+			(login.type === 'password' && login.methodName === 'resetPassword') ||
+			login.methodName === 'verifyEmail'
+		) {
 			return login;
 		}
 
@@ -76,11 +71,11 @@ const recreateError = (errorDoc: Error | Meteor.Error): Error | Meteor.Error => 
 	return copyTo(errorDoc, error);
 };
 
-OAuth._retrievePendingCredential = function (key, ...args): string | Error | void {
+OAuth._retrievePendingCredential = async function (key, ...args): Promise<string | Error | void> {
 	const credentialSecret = args.length > 0 && args[0] !== undefined ? args[0] : undefined;
 	check(key, String);
 
-	const pendingCredential = OAuth._pendingCredentials.findOne({
+	const pendingCredential = await OAuth._pendingCredentials.findOneAsync({
 		key,
 		credentialSecret,
 	});
@@ -90,7 +85,7 @@ OAuth._retrievePendingCredential = function (key, ...args): string | Error | voi
 	}
 
 	if (isCredentialWithError(pendingCredential.credential)) {
-		OAuth._pendingCredentials.remove({
+		await OAuth._pendingCredentials.removeAsync({
 			_id: pendingCredential._id,
 		});
 		return recreateError(pendingCredential.credential.error);
@@ -100,7 +95,7 @@ OAuth._retrievePendingCredential = function (key, ...args): string | Error | voi
 	const future = new Date();
 	future.setMinutes(future.getMinutes() + 2);
 
-	OAuth._pendingCredentials.update(
+	await OAuth._pendingCredentials.updateAsync(
 		{
 			_id: pendingCredential._id,
 		},

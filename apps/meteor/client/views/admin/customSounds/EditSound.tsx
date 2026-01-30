@@ -1,12 +1,12 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, IconButton } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
+import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement, SyntheticEvent } from 'react';
-import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import { useCallback, useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
-import GenericModal from '../../../components/GenericModal';
-import { useFileInput } from '../../../hooks/useFileInput';
 import { validate, createSoundData } from './lib';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type EditSoundProps = {
 	close?: () => void;
@@ -19,7 +19,7 @@ type EditSoundProps = {
 };
 
 function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactElement {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
@@ -27,7 +27,14 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const previousSound = useMemo(() => data || {}, [data]);
 
 	const [name, setName] = useState(() => data?.name ?? '');
-	const [sound, setSound] = useState(() => data);
+	const [sound, setSound] = useState<
+		| {
+				_id: string;
+				name: string;
+				extension?: string;
+		  }
+		| File
+	>(() => data);
 
 	useEffect(() => {
 		setName(previousName || '');
@@ -38,14 +45,15 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const uploadCustomSound = useMethod('uploadCustomSound');
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 
-	const handleChangeFile = useCallback((soundFile) => {
+	const handleChangeFile = useCallback((soundFile: File) => {
 		setSound(soundFile);
 	}, []);
 
 	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, previousName, previousSound, sound]);
 
 	const saveAction = useCallback(
-		async (sound) => {
+		// FIXME
+		async (sound: any) => {
 			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound.extension });
 			const validation = validate(soundData, sound);
 			if (validation.length === 0) {
@@ -76,10 +84,10 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				}
 			}
 
-			validation.forEach((error) =>
+			validation.forEach((invalidFieldName) =>
 				dispatchToastMessage({
 					type: 'error',
-					message: t('error-the-field-is-required', { field: t(error) }),
+					message: t('Required_field', { field: t(invalidFieldName) }),
 				}),
 			);
 		},
@@ -107,14 +115,14 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 
 		const handleCancel = (): void => setModal(null);
 
-		setModal(() => (
+		setModal(
 			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} onClose={handleCancel} confirmText={t('Delete')}>
 				{t('Custom_Sound_Delete_Warning')}
-			</GenericModal>
-		));
+			</GenericModal>,
+		);
 	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange, setModal, t]);
 
-	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
+	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
 
 	return (
 		<>
@@ -131,9 +139,9 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				</Field>
 				<Field>
 					<FieldLabel alignSelf='stretch'>{t('Sound_File_mp3')}</FieldLabel>
-					<Box display='flex' flexDirection='row' mbs='none'>
+					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
 						<Margins inline={4}>
-							<IconButton icon='upload' secondary onClick={clickUpload} />
+							<IconButton secondary small icon='upload' onClick={clickUpload} />
 							{sound?.name || 'none'}
 						</Margins>
 					</Box>
@@ -146,11 +154,13 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup mbs={8} stretch>
-					<Button icon='trash' danger onClick={handleDeleteButtonClick}>
-						{t('Delete')}
-					</Button>
-				</ButtonGroup>
+				<Box mbs={8}>
+					<ButtonGroup stretch>
+						<Button icon='trash' danger onClick={handleDeleteButtonClick}>
+							{t('Delete')}
+						</Button>
+					</ButtonGroup>
+				</Box>
 			</ContextualbarFooter>
 		</>
 	);

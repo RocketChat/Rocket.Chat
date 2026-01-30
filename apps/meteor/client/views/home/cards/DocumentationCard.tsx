@@ -1,27 +1,29 @@
-import { Button } from '@rocket.chat/fuselage';
-import { Card, CardBody, CardFooter, CardFooterWrapper, CardTitle } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React from 'react';
+import type { Card } from '@rocket.chat/fuselage';
+import type { ComponentProps, ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import { useExternalLink } from '../../../hooks/useExternalLink';
+import { links } from '../../../lib/links';
 
-const DOCS_URL = 'https://go.rocket.chat/i/hp-documentation';
+const DOCS_URL = links.go.documentation;
 
-const DocumentationCard = (): ReactElement => {
-	const t = useTranslation();
+const DocumentationCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
+	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
 
 	return (
-		<Card data-qa-id='homepage-documentation-card'>
-			<CardTitle>{t('Documentation')}</CardTitle>
-			<CardBody>{t('Learn_how_to_unlock_the_myriad_possibilities_of_rocket_chat')}</CardBody>
-			<CardFooterWrapper>
-				<CardFooter>
-					<Button onClick={() => handleOpenLink(DOCS_URL)}>{t('See_documentation')}</Button>
-				</CardFooter>
-			</CardFooterWrapper>
-		</Card>
+		<GenericCard
+			title={t('Documentation')}
+			body={t('Learn_how_to_unlock_the_myriad_possibilities_of_rocket_chat')}
+			buttons={[
+				<GenericCardButton key={1} onClick={() => handleOpenLink(DOCS_URL)} role='link'>
+					{t('See_documentation')}
+				</GenericCardButton>,
+			]}
+			width='x340'
+			{...props}
+		/>
 	);
 };
 

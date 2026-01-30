@@ -1,8 +1,8 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
+import { applyDepartmentRestrictions } from '@rocket.chat/omni-core';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-
-import { callbacks } from '../../../../../lib/callbacks';
+import type { Filter } from 'mongodb';
 
 export const findAllDepartmentsAvailable = async (
 	uid: string,
@@ -14,14 +14,14 @@ export const findAllDepartmentsAvailable = async (
 ): Promise<{ departments: ILivechatDepartment[]; total: number }> => {
 	const filterReg = new RegExp(escapeRegExp(text || ''), 'i');
 
-	let query = {
+	let query: Filter<ILivechatDepartment> = {
 		type: { $ne: 'u' },
-		$or: [{ ancestors: { $in: [[unitId], null, []] } }, { ancestors: { $exists: false } }],
+		$or: [{ ancestors: { $in: [[unitId], undefined, []] } }, { ancestors: { $exists: false } }],
 		...(text && { name: filterReg }),
 	};
 
 	if (onlyMyDepartments) {
-		query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId: uid });
+		query = await applyDepartmentRestrictions(query, uid);
 	}
 
 	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, { limit: count, offset, sort: { name: 1 } });

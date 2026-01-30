@@ -1,5 +1,7 @@
 import { AuthorizationContext } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import type { ContextType, ReactNode } from 'react';
+
+const dummyRolesMap: ReturnType<ContextType<typeof AuthorizationContext>['getRoles']> = new Map();
 
 export const MockedAuthorizationContext = ({
 	permissions = [],
@@ -8,7 +10,7 @@ export const MockedAuthorizationContext = ({
 }: {
 	permissions: string[];
 	roles?: string[];
-	children: React.ReactNode;
+	children: ReactNode;
 }) => {
 	return (
 		<AuthorizationContext.Provider
@@ -20,15 +22,8 @@ export const MockedAuthorizationContext = ({
 				],
 				queryAllPermissions: (ids: string[]) => [() => (): void => undefined, (): boolean => ids.every((id) => permissions.includes(id))],
 				queryRole: (id: string) => [() => (): void => undefined, (): boolean => roles.includes(id)],
-				roleStore: {
-					roles: {},
-					emit: (): void => undefined,
-					on: () => (): void => undefined,
-					off: (): void => undefined,
-					events: (): 'change'[] => ['change'],
-					has: (): boolean => false,
-					once: () => (): void => undefined,
-				},
+				getRoles: () => dummyRolesMap,
+				subscribeToRoles: (): (() => void) => (): void => undefined,
 			}}
 		>
 			{children}

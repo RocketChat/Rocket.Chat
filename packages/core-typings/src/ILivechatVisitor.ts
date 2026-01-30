@@ -10,19 +10,8 @@ export interface IVisitorLastChat {
 	ts: Date;
 }
 
-export interface ILivechatVisitorConnectionData {
-	httpHeaders: {
-		[k: string]: string;
-	};
-	clientAddress: string;
-}
-
 export interface IVisitorEmail {
 	address: string;
-}
-
-interface ILivechatData {
-	[k: string]: unknown;
 }
 
 export interface ILivechatVisitor extends IRocketChatRecord {
@@ -43,9 +32,12 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 		agentId: string;
 		ts: Date;
 	};
-	livechatData?: ILivechatData;
+	livechatData?: Record<string, unknown>;
 	contactManager?: {
+		_id?: string;
 		username: string;
+		name?: string;
+		emails?: { address: string }[];
 	};
 	activity?: string[];
 	disabled?: boolean;

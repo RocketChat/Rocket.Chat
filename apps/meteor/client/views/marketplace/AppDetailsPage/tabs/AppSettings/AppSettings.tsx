@@ -1,52 +1,45 @@
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import type { SettingValue } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, MutableRefObject } from 'react';
-import React, { useMemo, useEffect } from 'react';
+import { Box, FieldGroup, Accordion, AccordionItem } from '@rocket.chat/fuselage';
+import { useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useMemo } from 'react';
 
-import type { ISettings } from '../../../../../../ee/client/apps/@types/IOrchestrator';
-import { useForm } from '../../../../../hooks/useForm';
-import AppSettingsAssembler from './AppSettingsAssembler';
+import AppSetting from './AppSetting';
+import type { ISettings } from '../../../../../apps/@types/IOrchestrator';
+import { useAppTranslation } from '../../../hooks/useAppTranslation';
 
-type AppSettingsProps = {
-	settings: ISettings;
-	setHasUnsavedChanges: (hasUnsavedChanges: boolean) => void;
-	settingsRef: MutableRefObject<Record<string, ISetting['value']>>;
-};
+const AppSettings = ({ settings }: { settings: ISettings }) => {
+	const appId = useRouteParameter('id');
+	const tApp = useAppTranslation(appId || '');
 
-const AppSettings: FC<AppSettingsProps> = ({ settings, setHasUnsavedChanges, settingsRef }) => {
-	const t = useTranslation();
+	const groupedSettings = useMemo(() => {
+		const groups = Object.values(settings).reduce(
+			(acc, setting) => {
+				const section = setting.section || 'general';
+				if (!acc[section]) {
+					acc[section] = [];
+				}
+				acc[section].push(setting);
+				return acc;
+			},
+			{} as Record<string, (typeof settings)[keyof typeof settings][]>,
+		);
 
-	const stringifiedSettings = JSON.stringify(settings);
-
-	const reducedSettings = useMemo(() => {
-		const settings: AppSettingsProps['settings'] = JSON.parse(stringifiedSettings);
-		return Object.values(settings).reduce((ret, { id, value, packageValue }) => ({ ...ret, [id]: value ?? packageValue }), {});
-	}, [stringifiedSettings]);
-
-	const { values, handlers, hasUnsavedChanges } = useForm(reducedSettings) as {
-		values: Record<string, SettingValue>;
-		handlers: Record<string, (eventOrValue: SettingValue) => void>;
-		hasUnsavedChanges: boolean;
-	};
-	const stringifiedValues = JSON.stringify(values);
-
-	useEffect(() => {
-		const values = JSON.parse(stringifiedValues);
-		setHasUnsavedChanges(hasUnsavedChanges);
-		settingsRef.current = values;
-	}, [hasUnsavedChanges, stringifiedValues, setHasUnsavedChanges, settingsRef]);
+		return Object.entries(groups);
+	}, [settings]);
 
 	return (
-		<>
-			<Box display='flex' flexDirection='column' maxWidth='x640' w='full' marginInline='auto'>
-				<Box fontScale='h4' mb={12}>
-					{t('Settings')}
-				</Box>
-				<AppSettingsAssembler settings={settings} values={values} handlers={handlers} />
-			</Box>
-		</>
+		<Box display='flex' flexDirection='column' maxWidth='x640' w='full' marginInline='auto'>
+			<Accordion>
+				{groupedSettings.map(([section, sectionSettings], index) => (
+					<AccordionItem key={section} title={tApp(section)} defaultExpanded={index === 0}>
+						<FieldGroup>
+							{sectionSettings.map((field) => (
+								<AppSetting key={field.id} {...field} />
+							))}
+						</FieldGroup>
+					</AccordionItem>
+				))}
+			</Accordion>
+		</Box>
 	);
 };
 

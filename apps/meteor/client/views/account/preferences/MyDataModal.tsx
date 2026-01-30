@@ -1,7 +1,17 @@
-import { Button, Box, Modal } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ReactNode } from 'react';
-import React from 'react';
+import {
+	Button,
+	Box,
+	Modal,
+	ModalHeader,
+	ModalIcon,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type MyDataModalProps = {
 	onCancel: () => void;
@@ -9,28 +19,28 @@ type MyDataModalProps = {
 	text?: ReactNode;
 };
 
-const MyDataModal: FC<MyDataModalProps> = ({ onCancel, title, text, ...props }) => {
-	const t = useTranslation();
+const MyDataModal = ({ onCancel, title, text, ...props }: MyDataModalProps) => {
+	const { t } = useTranslation();
 
 	return (
 		<Modal {...props}>
-			<Modal.Header>
-				<Modal.Icon color='status-font-on-success' name='circle-check' />
-				<Modal.Title>{title}</Modal.Title>
-				<Modal.Close onClick={onCancel} />
-			</Modal.Header>
+			<ModalHeader>
+				<ModalIcon color='status-font-on-success' name='circle-check' />
+				<ModalTitle>{title}</ModalTitle>
+				<ModalClose onClick={onCancel} />
+			</ModalHeader>
 			{text && (
-				<Modal.Content fontScale='p2'>
+				<ModalContent fontScale='p2'>
 					<Box mb={8}>{text}</Box>
-				</Modal.Content>
+				</ModalContent>
 			)}
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button primary onClick={onCancel}>
 						{t('Ok')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

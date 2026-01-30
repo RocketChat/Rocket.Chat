@@ -1,50 +1,56 @@
 {
 	"name": "@rocket.chat/ui-contexts",
-	"version": "2.0.5",
+	"version": "26.0.0",
 	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.build.json",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"testunit": "jest"
+	},
+	"dependencies": {
+		"@rocket.chat/password-policies": "workspace:^"
+	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/emitter": "next",
-		"@rocket.chat/fuselage-hooks": "^0.32.1",
+		"@rocket.chat/ddp-client": "workspace:~",
+		"@rocket.chat/emitter": "~0.31.25",
+		"@rocket.chat/fuselage": "^0.70.2",
+		"@rocket.chat/fuselage-hooks": "~0.38.1",
+		"@rocket.chat/fuselage-tokens": "~0.33.2",
+		"@rocket.chat/i18n": "workspace:~",
+		"@rocket.chat/icons": "~0.46.0",
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@types/jest": "~29.5.3",
-		"@types/react": "~17.0.62",
-		"@types/react-dom": "~17.0.20",
-		"@types/use-sync-external-store": "^0.0.3",
+		"@rocket.chat/tools": "workspace:~",
+		"@types/jest": "~30.0.0",
+		"@types/react": "~18.3.27",
+		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
-		"eslint-plugin-react-hooks": "^4.6.0",
-		"jest": "~29.6.1",
-		"mongodb": "^4.17.1",
-		"react": "~17.0.2",
-		"ts-jest": "~29.0.5",
-		"typescript": "~5.2.2",
-		"use-sync-external-store": "^1.2.0"
+		"eslint-plugin-react-hooks": "^5.0.0",
+		"i18next": "~23.4.9",
+		"jest": "~30.2.0",
+		"mongodb": "6.16.0",
+		"react": "~18.3.1",
+		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/emitter": "*",
 		"@rocket.chat/fuselage-hooks": "*",
+		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"react": "~17.0.2",
-		"use-sync-external-store": "^1.2.0"
-	},
-	"dependencies": {
-		"@rocket.chat/password-policies": "workspace:^"
+		"react": "*"
 	},
 	"volta": {
 		"extends": "../../package.json"
-	},
-	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"test": "jest",
-		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
-		"build": "rm -rf dist && tsc -p tsconfig.json"
-	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	]
+	}
 }

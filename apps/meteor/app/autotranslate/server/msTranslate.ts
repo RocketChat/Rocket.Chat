@@ -6,10 +6,10 @@ import type { IMessage, IProviderMetadata, ISupportedLanguage, ITranslationResul
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import _ from 'underscore';
 
-import { i18n } from '../../../server/lib/i18n';
-import { settings } from '../../settings/server';
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { msLogger } from './logger';
+import { i18n } from '../../../server/lib/i18n';
+import { settings } from '../../settings/server';
 
 /**
  * Microsoft translation service provider class representation.

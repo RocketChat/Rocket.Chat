@@ -1,48 +1,48 @@
 import { Users } from '../fixtures/userStates';
-import { OmnichannelCustomFields } from '../page-objects';
+import { OmnichannelCustomFields } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe.serial('omnichannel-agents', () => {
+test.describe('omnichannel-customFields', () => {
 	let poOmnichannelCustomFields: OmnichannelCustomFields;
 	const newField = 'any_field';
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelCustomFields = new OmnichannelCustomFields(page);
 
 		await page.goto('/omnichannel');
-		await poOmnichannelCustomFields.sidenav.linkCustomFields.click();
+		await poOmnichannelCustomFields.sidebar.linkCustomFields.click();
 	});
 
 	test('expect add new "custom field"', async ({ page }) => {
-		await poOmnichannelCustomFields.btnAdd.click();
+		await poOmnichannelCustomFields.createNew();
 
 		await page.waitForURL('/omnichannel/customfields/new');
-		await poOmnichannelCustomFields.inputField.type(newField);
-		await poOmnichannelCustomFields.inputLabel.type('any_label');
+		await poOmnichannelCustomFields.manageCustomFields.inputField.fill(newField);
+		await poOmnichannelCustomFields.manageCustomFields.inputLabel.fill('any_label');
+		await poOmnichannelCustomFields.manageCustomFields.save();
 
-		await poOmnichannelCustomFields.btnSave.click();
-
-		await expect(poOmnichannelCustomFields.firstRowInTable(newField)).toBeVisible();
+		await expect(poOmnichannelCustomFields.table.findRowByName(newField)).toBeVisible();
 	});
 
-	test('expect update "newField"', async ({ page }) => {
+	test('expect update "newField"', async () => {
 		const newLabel = 'new_any_label';
 		await poOmnichannelCustomFields.inputSearch.fill(newField);
-		await poOmnichannelCustomFields.firstRowInTable(newField).click();
+		await poOmnichannelCustomFields.table.findRowByName(newField).click();
 
-		await poOmnichannelCustomFields.inputLabel.fill('new_any_label');
-		await poOmnichannelCustomFields.btnEditSave.click();
+		await poOmnichannelCustomFields.manageCustomFields.inputLabel.fill('new_any_label');
+		await poOmnichannelCustomFields.manageCustomFields.labelVisible.click();
+		await poOmnichannelCustomFields.manageCustomFields.save();
 
-		await expect(page.locator(`[qa-user-id="${newField}"] td:nth-child(2)`)).toHaveText(newLabel);
+		await expect(poOmnichannelCustomFields.table.findRowByName(newField)).toContainText(newLabel);
 	});
 
 	test('expect remove "new_field"', async () => {
 		await poOmnichannelCustomFields.inputSearch.fill(newField);
-		await poOmnichannelCustomFields.btnDeletefirstRowInTable.click();
-		await poOmnichannelCustomFields.btnModalRemove.click();
+		await poOmnichannelCustomFields.table.findRowByName(newField).click();
+		await poOmnichannelCustomFields.deleteCustomField(newField);
 
 		await poOmnichannelCustomFields.inputSearch.fill(newField);
-		await expect(poOmnichannelCustomFields.firstRowInTable(newField)).toBeHidden();
+		await expect(poOmnichannelCustomFields.table.findRowByName(newField)).toBeHidden();
 	});
 });

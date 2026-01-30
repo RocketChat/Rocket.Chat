@@ -1,4 +1,5 @@
-import type { LicenseModule } from '../definition/LicenseModule';
+import type { LicenseModule } from '@rocket.chat/core-typings';
+
 import type { LicenseManager } from '../license';
 import { onLicense } from './deprecated';
 

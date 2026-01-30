@@ -1,5 +1,6 @@
 import type { ISettingStatistics, ISettingStatisticsObject } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
+
+import { settings } from '../../../app/settings/server';
 
 const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISettingStatisticsObject> => {
 	const {
@@ -25,7 +26,6 @@ const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISet
 		readReceiptEnabled,
 		readReceiptStoreUsers,
 		globalSearchEnabled,
-		otrEnable,
 		pushEnable,
 		threadsEnabled,
 		webRTCEnableChannel,
@@ -80,9 +80,6 @@ const setSettingsStatistics = async (settings: ISettingStatistics): Promise<ISet
 			readReceiptEnabled,
 			readReceiptStoreUsers,
 		},
-		otr: {
-			otrEnable,
-		},
 		push: {
 			pushEnable,
 		},
@@ -124,29 +121,22 @@ export const getSettingsStatistics = async (): Promise<ISettingStatisticsObject>
 			{ key: 'Message_Read_Receipt_Enabled', alias: 'readReceiptEnabled' },
 			{ key: 'Message_Read_Receipt_Store_Users', alias: 'readReceiptStoreUsers' },
 			{ key: 'Search.defaultProvider.GlobalSearchEnabled', alias: 'globalSearchEnabled' },
-			{ key: 'OTR_Enable', alias: 'otrEnable' },
 			{ key: 'Push_enable', alias: 'pushEnable' },
 			{ key: 'Threads_enabled', alias: 'threadsEnabled' },
 			{ key: 'WebRTC_Enable_Channel', alias: 'webRTCEnableChannel' },
 			{ key: 'WebRTC_Enable_Private', alias: 'webRTCEnablePrivate' },
 			{ key: 'WebRTC_Enable_Direct', alias: 'webRTCEnableDirect' },
 			{ key: 'Canned_Responses_Enable', alias: 'cannedResponsesEnabled' },
-		];
+		] as const;
 
-		// Mapping only _id values
-		const settingsIDs = settingsBase.map((el) => el.key);
+		const settingsStatistics = settingsBase.reduce<ISettingStatistics>((acc, { key, alias }) => {
+			if (!settings.has(key)) return acc;
 
-		const settingsStatistics = (
-			await Settings.findByIds(settingsIDs)
-				.map((el): ISettingStatistics => {
-					const alias = settingsBase.find((obj) => obj.key === el._id)?.alias || {};
+			acc[alias] = settings.get(key);
 
-					if (!!alias && Object.keys(el).length) return { [String(alias)]: el.value };
-					return alias;
-				})
-				.filter((el: ISettingStatistics) => Object.keys(el).length) // Filter to remove all empty objects
-				.toArray()
-		).reduce((a, b) => Object.assign(a, b), {}); // Convert array to objects
+			return acc;
+		}, {});
+
 		const staticticObject = await setSettingsStatistics(settingsStatistics);
 
 		return staticticObject;

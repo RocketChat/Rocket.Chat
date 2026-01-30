@@ -1,7 +1,7 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
 callbacks.add(
@@ -17,7 +17,7 @@ callbacks.add(
 		}
 		await LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
 
-		const department = await LivechatDepartment.findOneById(newDepartmentId, {
+		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'ancestors'>>(newDepartmentId, {
 			projection: { ancestors: 1 },
 		});
 		if (!department) {
@@ -30,7 +30,11 @@ callbacks.add(
 			return options;
 		}
 
-		cbLogger.debug(`Updating department ${newDepartmentId} ancestors for room ${rid}`);
+		cbLogger.debug({
+			msg: 'Updating department ancestors for room',
+			departmentId: newDepartmentId,
+			roomId: rid,
+		});
 		await LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors);
 
 		return options;

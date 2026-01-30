@@ -1,10 +1,11 @@
-import type { IExtras, IRoomActivity, IActionsObject, IUser } from '@rocket.chat/core-typings';
+import type { IExtras, IRoomActivity, IUser } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import { debounce } from 'lodash';
-import { Meteor } from 'meteor/meteor';
-import { ReactiveDict } from 'meteor/reactive-dict';
 
-import { Notifications } from '../../../notifications/client';
-import { settings } from '../../../settings/client';
+import { settings } from '../../../../client/lib/settings';
+import { getUser, getUserId } from '../../../../client/lib/user';
+import { Users } from '../../../../client/stores';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const TIMEOUT = 15000;
 const RENEW = TIMEOUT / 3;
@@ -24,13 +25,14 @@ const continuingIntervals = new Map();
 const roomActivities = new Map<string, Set<string>>();
 const rooms = new Map<string, (username: string, activityType: string[], extras?: object | undefined) => void>();
 
-const performingUsers = new ReactiveDict<IActionsObject>();
+const performingUsers = new Map<string, IRoomActivity>();
+const performingUsersEmitter = new Emitter<{ changed: void }>();
 
 const shownName = function (user: IUser | null | undefined): string | undefined {
 	if (!user) {
 		return;
 	}
-	if (settings.get('UI_Use_Real_Name')) {
+	if (settings.peek('UI_Use_Real_Name')) {
 		return user.name;
 	}
 	return user.username;
@@ -38,12 +40,12 @@ const shownName = function (user: IUser | null | undefined): string | undefined 
 
 const emitActivities = debounce(async (rid: string, extras: IExtras): Promise<void> => {
 	const activities = roomActivities.get(extras?.tmid || rid) || new Set();
-	Notifications.notifyRoom(rid, USER_ACTIVITY, shownName(Meteor.user() as unknown as IUser), [...activities], extras);
+	sdk.publish('notify-room', [`${rid}/${USER_ACTIVITY}`, shownName(getUser()), [...activities], extras]);
 }, 500);
 
 function handleStreamAction(rid: string, username: string, activityTypes: string[], extras?: IExtras): void {
 	rid = extras?.tmid || rid;
-	const roomActivities = performingUsers.get(rid) || {};
+	const roomActivities = { ...performingUsers.get(rid) };
 
 	for (const [, activity] of Object.entries(USER_ACTIVITIES)) {
 		roomActivities[activity] = roomActivities[activity] || new Map();
@@ -63,23 +65,33 @@ function handleStreamAction(rid: string, username: string, activityTypes: string
 	}
 
 	performingUsers.set(rid, roomActivities);
+	performingUsersEmitter.emit('changed');
 }
 export const UserAction = new (class {
-	addStream(rid: string): void {
+	addStream(rid: string): () => void {
 		if (rooms.get(rid)) {
-			return;
+			throw new Error('UserAction - addStream should only be called once per room');
 		}
+
 		const handler = function (username: string, activityType: string[], extras?: object): void {
-			const user = Meteor.users.findOne(Meteor.userId() || undefined, {
-				fields: { name: 1, username: 1 },
-			}) as IUser;
+			const uid = getUserId();
+			const user = uid ? Users.state.get(uid) : undefined;
+
 			if (username === shownName(user)) {
 				return;
 			}
 			handleStreamAction(rid, username, activityType, extras);
 		};
 		rooms.set(rid, handler);
-		Notifications.onRoom(rid, USER_ACTIVITY, handler);
+
+		const { stop } = sdk.stream('notify-room', [`${rid}/${USER_ACTIVITY}`], handler);
+		return () => {
+			if (!rooms.get(rid)) {
+				return;
+			}
+			stop();
+			rooms.delete(rid);
+		};
 	}
 
 	performContinuously(rid: string, activityType: string, extras: IExtras = {}): void {
@@ -156,16 +168,11 @@ export const UserAction = new (class {
 		void emitActivities(rid, extras);
 	}
 
-	cancel(rid: string): void {
-		if (!rooms.get(rid)) {
-			return;
-		}
-
-		Notifications.unRoom(rid, USER_ACTIVITY);
-		rooms.delete(rid);
-	}
-
 	get(roomId: string): IRoomActivity | undefined {
 		return performingUsers.get(roomId);
+	}
+
+	subscribe(onChanged: () => void): () => void {
+		return performingUsersEmitter.on('changed', onChanged);
 	}
 })();

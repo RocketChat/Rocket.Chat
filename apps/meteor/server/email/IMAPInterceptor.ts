@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { Readable } from 'stream';
 
 import { EmailInbox } from '@rocket.chat/models';
 import type { ImapMessage, ImapMessageBodyInfo } from 'imap';
@@ -6,6 +7,7 @@ import IMAP from 'imap';
 import type { ParsedMail } from 'mailparser';
 import { simpleParser } from 'mailparser';
 
+import { notifyOnEmailInboxChanged } from '../../app/lib/server/lib/notifyListener';
 import { logger } from '../features/EmailInbox/logger';
 
 type IMAPOptions = {
@@ -55,6 +57,9 @@ export class IMAPInterceptor extends EventEmitter {
 		});
 		this.retries = 0;
 		this.inboxId = id;
+		this.imap.on('error', async (err: Error) => {
+			logger.error({ msg: 'IMAP error', err });
+		});
 		void this.start();
 	}
 
@@ -75,19 +80,18 @@ export class IMAPInterceptor extends EventEmitter {
 		// On successfully connected.
 		this.imap.on('ready', async () => {
 			if (this.isActive()) {
-				logger.info(`IMAP connected to ${this.config.user}`);
+				logger.info({ msg: 'IMAP connected', user: this.config.user });
 				clearTimeout(this.backoff);
 				this.retries = 0;
 				this.backoffDurationMS = 3000;
 				await this.openInbox();
-				this.imap.on('mail', () => this.getEmails().catch((err: Error) => logger.debug('Error on getEmails: ', err.message)));
+				this.imap.on('mail', () => this.getEmails().catch((err: Error) => logger.debug({ msg: 'Error on getEmails', err })));
 			} else {
 				logger.error("Can't connect to IMAP server");
 			}
 		});
 
-		this.imap.on('error', async (err: Error) => {
-			logger.error({ msg: 'IMAP error', err });
+		this.imap.on('error', async () => {
 			this.retries++;
 			await this.reconnect();
 		});
@@ -104,6 +108,14 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	stop(callback = new Function()): void {
+		if (this.backoff) {
+			clearTimeout(this.backoff);
+			this.backoffDurationMS = 3000;
+		}
+		this.stopWithNoStopBackoff(callback);
+	}
+
+	private stopWithNoStopBackoff(callback = new Function()): void {
 		logger.debug('IMAP stop called');
 		this.imap.removeAllListeners();
 		this.imap.once('end', () => {
@@ -111,34 +123,30 @@ export class IMAPInterceptor extends EventEmitter {
 			callback?.();
 		});
 		this.imap.end();
+		this.imap.on('error', async (err: Error) => {
+			logger.error({ msg: 'IMAP error', err });
+		});
 	}
 
 	async reconnect(): Promise<void> {
 		if (!this.isActive() && !this.canRetry()) {
-			logger.info(`Max retries reached for ${this.config.user}`);
+			logger.info({ msg: 'Max retries reached', user: this.config.user });
 			this.stop();
 			return this.selfDisable();
 		}
+
 		if (this.backoff) {
 			clearTimeout(this.backoff);
 			this.backoffDurationMS = 3000;
 		}
-		const loop = async (): Promise<void> => {
-			logger.debug(`Reconnecting to ${this.config.user}: ${this.retries}`);
-			if (this.canRetry()) {
-				this.backoffDurationMS *= 2;
-				this.backoff = setTimeout(loop, this.backoffDurationMS);
-			} else {
-				logger.info(`IMAP reconnection failed on inbox ${this.config.user}`);
-				clearTimeout(this.backoff);
-				this.stop();
-				await this.selfDisable();
-				return;
-			}
-			this.stop();
-			await this.start();
-		};
-		this.backoff = setTimeout(loop, this.backoffDurationMS);
+
+		this.backoff = setTimeout(
+			() => {
+				this.stopWithNoStopBackoff();
+				void this.start();
+			},
+			(this.backoffDurationMS += this.backoffDurationMS),
+		);
 	}
 
 	imapSearch(): Promise<number[]> {
@@ -163,7 +171,7 @@ export class IMAPInterceptor extends EventEmitter {
 					resolve(mail);
 				}
 			};
-			simpleParser(stream, cb);
+			simpleParser(new Readable().wrap(stream), cb);
 		});
 	}
 
@@ -173,16 +181,16 @@ export class IMAPInterceptor extends EventEmitter {
 			const messagecb = (msg: ImapMessage, seqno: number) => {
 				out.push(seqno);
 				const bodycb = (stream: NodeJS.ReadableStream, _info: ImapMessageBodyInfo): void => {
-					simpleParser(stream, (_err, email) => {
+					simpleParser(new Readable().wrap(stream), (_err, email) => {
 						if (this.options.rejectBeforeTS && email.date && email.date < this.options.rejectBeforeTS) {
-							logger.error({ msg: `Rejecting email on inbox ${this.config.user}`, subject: email.subject });
+							logger.error({ msg: 'Rejecting email on inbox', user: this.config.user, subject: email.subject });
 							return;
 						}
 						this.emit('email', email);
 						if (this.options.deleteAfterRead) {
 							this.imap.seq.addFlags(email, 'Deleted', (err) => {
 								if (err) {
-									logger.warn(`Mark deleted error: ${err}`);
+									logger.warn({ msg: 'Mark deleted error', err });
 								}
 							});
 						}
@@ -191,7 +199,7 @@ export class IMAPInterceptor extends EventEmitter {
 				msg.once('body', bodycb);
 			};
 			const errorcb = (err: Error): void => {
-				logger.warn(`Fetch error: ${err}`);
+				logger.warn({ msg: 'Fetch error', err });
 				reject(err);
 			};
 			const endcb = (): void => {
@@ -220,10 +228,16 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	async selfDisable(): Promise<void> {
-		logger.info(`Disabling inbox ${this.inboxId}`);
+		logger.info({ msg: 'Disabling inbox', inboxId: this.inboxId });
+
 		// Again, if there's 2 inboxes with the same email, this will prevent looping over the already disabled one
 		// Active filter is just in case :)
-		await EmailInbox.findOneAndUpdate({ _id: this.inboxId, active: true }, { $set: { active: false } });
-		logger.info(`IMAP inbox ${this.inboxId} automatically disabled`);
+		const value = await EmailInbox.setDisabledById(this.inboxId);
+
+		if (value) {
+			void notifyOnEmailInboxChanged(value, 'updated');
+		}
+
+		logger.info({ msg: 'IMAP inbox automatically disabled', inboxId: this.inboxId });
 	}
 }

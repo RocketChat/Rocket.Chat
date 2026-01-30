@@ -1,10 +1,9 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useTranslation, useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useTranslation, useEndpoint, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
-import Page from '../../../components/Page';
 import PreferencesConversationTranscript from './PreferencesConversationTranscript';
 import { PreferencesGeneral } from './PreferencesGeneral';
 
@@ -17,12 +16,17 @@ const OmnichannelPreferencesPage = (): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
+	const alwaysSendEmailTranscript = useSetting('Livechat_transcript_send_always', false);
 	const omnichannelTranscriptPDF = useUserPreference<boolean>('omnichannelTranscriptPDF') ?? false;
 	const omnichannelTranscriptEmail = useUserPreference<boolean>('omnichannelTranscriptEmail') ?? false;
 	const omnichannelHideConversationAfterClosing = useUserPreference<boolean>('omnichannelHideConversationAfterClosing') ?? true;
 
 	const methods = useForm({
-		defaultValues: { omnichannelTranscriptPDF, omnichannelTranscriptEmail, omnichannelHideConversationAfterClosing },
+		defaultValues: {
+			omnichannelTranscriptPDF,
+			omnichannelTranscriptEmail: alwaysSendEmailTranscript || omnichannelTranscriptEmail,
+			omnichannelHideConversationAfterClosing,
+		},
 	});
 
 	const {
@@ -45,8 +49,8 @@ const OmnichannelPreferencesPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Omnichannel')} />
-			<Page.ScrollableContentWithShadow is='form' onSubmit={handleSubmit(handleSave)}>
+			<PageHeader title={t('Omnichannel')} />
+			<PageScrollableContentWithShadow is='form' onSubmit={handleSubmit(handleSave)}>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<Accordion>
 						<FormProvider {...methods}>
@@ -55,15 +59,15 @@ const OmnichannelPreferencesPage = (): ReactElement => {
 						</FormProvider>
 					</Accordion>
 				</Box>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset({ omnichannelTranscriptPDF, omnichannelTranscriptEmail })}>{t('Cancel')}</Button>
 					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

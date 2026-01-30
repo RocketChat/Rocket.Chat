@@ -1,35 +1,45 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsage } from '../../../components/GenericResourceUsage';
 
 const EnabledAppsCount = ({
-	variant,
-	percentage,
 	limit,
 	enabled,
 	context,
+	tooltip,
 }: {
-	variant: 'warning' | 'danger' | 'success';
-	percentage: number;
 	limit: number;
 	enabled: number;
 	context: 'private' | 'explore' | 'installed' | 'premium' | 'requested';
+	tooltip?: string;
 }): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
-	const privateAppsCountText: string = t('Private_Apps_Count_Enabled', { count: enabled });
-	const marketplaceAppsCountText: string = t('Apps_Count_Enabled', { count: enabled });
+	const variant = useMemo(() => {
+		if (enabled + 1 === limit) {
+			return 'warning';
+		}
+
+		if (limit === 0 || enabled >= limit) {
+			return 'danger';
+		}
+
+		return 'success';
+	}, [enabled, limit]);
+
+	const percentage = limit === 0 ? 100 : Math.round((enabled * 100) / limit);
 
 	return (
 		<GenericResourceUsage
-			title={context === 'private' ? privateAppsCountText : marketplaceAppsCountText}
+			title={context === 'private' ? t('Private_Apps_Count_Enabled', { count: enabled }) : t('Apps_Count_Enabled', { count: enabled })}
 			value={enabled}
 			max={limit}
 			percentage={percentage}
 			threshold={80}
 			variant={variant}
+			tooltip={tooltip}
 		/>
 	);
 };

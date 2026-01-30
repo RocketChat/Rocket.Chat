@@ -1,0 +1,57 @@
+{
+	"name": "@rocket.chat/peggy-loader",
+	"version": "0.31.27",
+	"description": "Peggy loader for webpack",
+	"keywords": [
+		"peggy",
+		"loader",
+		"webpack"
+	],
+	"homepage": "https://github.com/RocketChat/fuselage#readme",
+	"bugs": {
+		"url": "https://github.com/RocketChat/fuselage/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/fuselage.git",
+		"directory": "packages/peggy-loader"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
+	},
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		".:build:clean": "rimraf dist",
+		".:build:tsc": "tsc -p tsconfig.build.json",
+		"build": "run-s .:build:clean .:build:tsc",
+		"lint": "eslint src"
+	},
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:~",
+		"@rocket.chat/prettier-config": "~0.31.25",
+		"@types/node": "~22.16.5",
+		"eslint": "~8.45.0",
+		"npm-run-all": "^4.1.5",
+		"peggy": "4.1.1",
+		"prettier": "~3.3.3",
+		"rimraf": "^6.0.1",
+		"typescript": "~5.9.3",
+		"webpack": "~5.99.9"
+	},
+	"peerDependencies": {
+		"peggy": "*",
+		"webpack": "*"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

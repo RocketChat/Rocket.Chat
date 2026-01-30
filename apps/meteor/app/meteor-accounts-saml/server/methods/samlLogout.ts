@@ -1,5 +1,5 @@
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
@@ -25,10 +25,10 @@ function getSamlServiceProviderOptions(provider: string): IServiceProviderOption
 	return providers.filter(samlProvider)[0];
 }
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		samlLogout(provider: string): Promise<string | undefined>;
+		samlLogout(provider: string): string | undefined;
 	}
 }
 
@@ -63,8 +63,7 @@ Meteor.methods<ServerMethods>({
 			sessionIndex: idpSession,
 		});
 
-		SAMLUtils.log('----Logout Request----');
-		SAMLUtils.log(request);
+		SAMLUtils.log({ request, msg: '----Logout Request---' });
 
 		// request.request: actual XML SAML Request
 		// request.id: comminucation id which will be mentioned in the ResponseTo field of SAMLResponse
@@ -72,7 +71,7 @@ Meteor.methods<ServerMethods>({
 		await Users.setSamlInResponseTo(userId, request.id);
 
 		const result = await _saml.requestToUrl(request.request, 'logout');
-		SAMLUtils.log(`SAML Logout Request ${result}`);
+		SAMLUtils.log({ msg: 'SAML Logout Request URL generated', result });
 
 		return result;
 	},

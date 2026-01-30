@@ -1,205 +1,185 @@
-import type { ILivechatAgent, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatAgentStatus, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import { Field, FieldLabel, FieldGroup, FieldRow, TextInput, Button, Box, Icon, Select, ButtonGroup } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
-	Field,
-	FieldLabel,
-	FieldRow,
-	TextInput,
-	Button,
-	Box,
-	MultiSelect,
-	Icon,
-	Select,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarHeader,
+	ContextualbarScrollableContent,
 	ContextualbarFooter,
-	ButtonGroup,
-} from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, useSetting, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
-import React, { useMemo, useRef, useState } from 'react';
+} from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import { useId, useMemo } from 'react';
+import { useForm, Controller, FormProvider } from 'react-hook-form';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
-import UserInfo from '../../../components/UserInfo';
-import { useForm } from '../../../hooks/useForm';
-import { MaxChatsPerAgentContainer } from '../additionalForms';
+import { UserInfoAvatar } from '../../../components/UserInfo';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
+import { MaxChatsPerAgent } from '../additionalForms';
+import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 
-// TODO: TYPE:
-// Department
-
-type dataType = {
-	user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'>;
+type AgentEditFormData = {
+	name: string | undefined;
+	username: string | undefined;
+	email: string | undefined;
+	departments: { label: string; value: string }[];
+	status: ILivechatAgentStatus;
+	maxNumberSimultaneousChat: number;
 };
 
 type AgentEditProps = {
-	data: dataType;
-	userDepartments: { departments: Pick<ILivechatDepartmentAgents, 'departmentId'>[] };
-	availableDepartments: { departments: Pick<ILivechatDepartment, '_id' | 'name' | 'archived'>[] };
-	uid: string;
-	reset: () => void;
+	agentData: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'>;
+	agentDepartments: (Pick<ILivechatDepartmentAgents, 'departmentId'> & { departmentName: string })[];
 };
 
-const AgentEdit: FC<AgentEditProps> = ({ data, userDepartments, availableDepartments, uid, reset, ...props }) => {
+const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 	const t = useTranslation();
-	const agentsRoute = useRoute('omnichannel-agents');
-	const [maxChatUnsaved, setMaxChatUnsaved] = useState();
-	const voipEnabled = useSetting('VoIP_Enabled');
-
-	const { user } = data || { user: {} };
-	const { name, username, statusLivechat } = user;
-
-	const email = getUserEmailAddress(user);
-
-	const options: [string, string][] = useMemo(() => {
-		const archivedDepartment = (name: string, archived?: boolean) => (archived ? `${name} [${t('Archived')}]` : name);
-
-		return availableDepartments?.departments
-			? availableDepartments.departments.map(({ _id, name, archived }) =>
-					name ? [_id, archivedDepartment(name, archived)] : [_id, archivedDepartment(_id, archived)],
-			  )
-			: [];
-	}, [availableDepartments.departments, t]);
-
-	const initialDepartmentValue = useMemo(
-		() => (userDepartments.departments ? userDepartments.departments.map(({ departmentId }) => departmentId) : []),
-		[userDepartments],
-	);
-
-	const saveRef = useRef({
-		values: {},
-		hasUnsavedChanges: false,
-		reset: () => undefined,
-		commit: () => undefined,
-	});
-
-	const { reset: resetMaxChats, commit: commitMaxChats } = saveRef.current;
-
-	const onChangeMaxChats = useMutableCallback(({ hasUnsavedChanges, ...value }) => {
-		saveRef.current = value;
-
-		if (hasUnsavedChanges !== maxChatUnsaved) {
-			setMaxChatUnsaved(hasUnsavedChanges);
-		}
-	});
-
-	const { values, handlers, hasUnsavedChanges, commit } = useForm({
-		departments: initialDepartmentValue,
-		status: statusLivechat,
-		maxChats: 0,
-		voipExtension: '',
-	});
-
-	const { handleDepartments, handleStatus, handleVoipExtension } = handlers;
-	const { departments, status, voipExtension } = values as {
-		departments: string[];
-		status: ILivechatAgent['statusLivechat'];
-		voipExtension: string;
-	};
-
-	const saveAgentInfo = useMethod('livechat:saveAgentInfo');
-	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
+	const router = useRouter();
+	const queryClient = useQueryClient();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleReset = useMutableCallback(() => {
-		reset();
-		resetMaxChats();
+	const { name, username, livechat, statusLivechat } = agentData;
+
+	const email = getUserEmailAddress(agentData);
+
+	const statusOptions: SelectOption[] = useMemo(
+		() => [
+			['available', t('Available')],
+			['not-available', t('Not_Available')],
+		],
+		[t],
+	);
+
+	const initialDepartmentValue = useMemo(
+		() => agentDepartments.map(({ departmentName, departmentId }) => ({ label: departmentName, value: departmentId })) || [],
+		[agentDepartments],
+	);
+
+	const methods = useForm<AgentEditFormData>({
+		values: {
+			name,
+			username,
+			email,
+			departments: initialDepartmentValue,
+			status: statusLivechat,
+			maxNumberSimultaneousChat: livechat?.maxNumberSimultaneousChat || 0,
+		},
 	});
 
-	const handleSave = useMutableCallback(async () => {
+	const {
+		control,
+		handleSubmit,
+		reset,
+		formState: { isDirty },
+	} = methods;
+
+	const saveAgentInfo = useEndpoint('POST', '/v1/livechat/agents.saveInfo');
+	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
+
+	const handleSave = useEffectEvent(async ({ status, departments, ...data }: AgentEditFormData) => {
 		try {
-			await saveAgentStatus({ status, agentId: uid });
-			await saveAgentInfo(uid, saveRef.current.values, departments);
+			await saveAgentStatus({ agentId: agentData._id, status });
+			await saveAgentInfo({
+				agentId: agentData._id,
+				agentData: data,
+				agentDepartments: departments.map((dep) => dep.value),
+			});
 			dispatchToastMessage({ type: 'success', message: t('Success') });
-			agentsRoute.push({});
-			reset();
+			router.navigate('/omnichannel/agents');
+
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.agents() });
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.agentDepartments(agentData._id) });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-		commit();
-		commitMaxChats();
 	});
+
+	const formId = useId();
+	const nameField = useId();
+	const usernameField = useId();
+	const emailField = useId();
+	const departmentsFieldId = useId();
+	const statusField = useId();
 
 	return (
 		<>
-			<ContextualbarScrollableContent is='form' {...props}>
-				{username && (
-					<Box alignSelf='center'>
-						<UserInfo.Avatar data-qa='AgentEdit-Avatar' username={username} />
-					</Box>
-				)}
-				<Field>
-					<FieldLabel>{t('Name')}</FieldLabel>
-					<FieldRow>
-						<TextInput data-qa='AgentEditTextInput-Name' value={name} disabled />
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel>{t('Username')}</FieldLabel>
-					<FieldRow>
-						<TextInput data-qa='AgentEditTextInput-Username' value={username} disabled addon={<Icon name='at' size='x20' />} />
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel>{t('Email')}</FieldLabel>
-					<FieldRow>
-						<TextInput data-qa='AgentEditTextInput-Email' value={email} disabled addon={<Icon name='mail' size='x20' />} />
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel>{t('Departments')}</FieldLabel>
-					<FieldRow>
-						<MultiSelect
-							data-qa='AgentEditTextInput-Departaments'
-							options={options}
-							value={departments}
-							placeholder={t('Select_an_option')}
-							onChange={handleDepartments}
-						/>
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel>{t('Status')}</FieldLabel>
-					<FieldRow>
-						<Select
-							data-qa='AgentEditTextInput-Status'
-							options={[
-								['available', t('Available')],
-								['not-available', t('Not_Available')],
-							]}
-							value={status}
-							placeholder={t('Select_an_option')}
-							onChange={handleStatus}
-						/>
-					</FieldRow>
-				</Field>
-				<MaxChatsPerAgentContainer data={user as any} onChange={onChangeMaxChats} />
-				{voipEnabled && (
-					<Field>
-						<FieldLabel>{t('VoIP_Extension')}</FieldLabel>
-						<FieldRow>
-							<TextInput data-qa='AgentEditTextInput-VoIP_Extension' value={voipExtension as string} onChange={handleVoipExtension} />
-						</FieldRow>
-					</Field>
-				)}
+			<ContextualbarHeader>
+				<ContextualbarTitle>{t('Edit_User')}</ContextualbarTitle>
+				<ContextualbarClose onClick={() => router.navigate('/omnichannel/agents')} />
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
+				<FormProvider {...methods}>
+					<form id={formId} onSubmit={handleSubmit(handleSave)}>
+						{username && (
+							<Box display='flex' flexDirection='column' alignItems='center'>
+								<UserInfoAvatar username={username} />
+							</Box>
+						)}
+						<FieldGroup>
+							<Field>
+								<FieldLabel htmlFor={nameField}>{t('Name')}</FieldLabel>
+								<FieldRow>
+									<Controller name='name' control={control} render={({ field }) => <TextInput id={nameField} {...field} readOnly />} />
+								</FieldRow>
+							</Field>
+							<Field>
+								<FieldLabel htmlFor={usernameField}>{t('Username')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='username'
+										control={control}
+										render={({ field }) => <TextInput id={usernameField} {...field} readOnly addon={<Icon name='at' size='x20' />} />}
+									/>
+								</FieldRow>
+							</Field>
+							<Field>
+								<FieldLabel htmlFor={emailField}>{t('Email')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='email'
+										control={control}
+										render={({ field }) => <TextInput id={emailField} {...field} readOnly addon={<Icon name='mail' size='x20' />} />}
+									/>
+								</FieldRow>
+							</Field>
+							<Field>
+								<FieldLabel id={departmentsFieldId}>{t('Departments')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='departments'
+										control={control}
+										render={({ field }) => (
+											<AutoCompleteDepartmentMultiple aria-labelledby={departmentsFieldId} withCheckbox showArchived {...field} />
+										)}
+									/>
+								</FieldRow>
+							</Field>
+							<Field>
+								<FieldLabel htmlFor={statusField}>{t('Status')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='status'
+										control={control}
+										render={({ field }) => (
+											<Select id={statusField} {...field} options={statusOptions} placeholder={t('Select_an_option')} />
+										)}
+									/>
+								</FieldRow>
+							</Field>
+							{MaxChatsPerAgent && <MaxChatsPerAgent />}
+						</FieldGroup>
+					</form>
+				</FormProvider>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<ButtonGroup wrap>
-					<Button
-						data-qa='AgentEditButtonReset'
-						flexGrow={1}
-						type='reset'
-						disabled={!hasUnsavedChanges && !maxChatUnsaved}
-						onClick={handleReset}
-					>
+				<ButtonGroup stretch>
+					<Button type='reset' disabled={!isDirty} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button
-						data-qa='AgentEditButtonSave'
-						mie='none'
-						flexGrow={1}
-						disabled={!hasUnsavedChanges && !maxChatUnsaved}
-						onClick={handleSave}
-					>
+					<Button form={formId} primary type='submit' disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

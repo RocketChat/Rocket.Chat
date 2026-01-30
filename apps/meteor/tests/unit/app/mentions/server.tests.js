@@ -1,12 +1,12 @@
 import { expect } from 'chai';
 
-import MentionsServer from '../../../../app/mentions/server/Mentions';
+import { MentionsServer } from '../../../../app/mentions/server/Mentions';
 
 let mention;
 
 beforeEach(() => {
 	mention = new MentionsServer({
-		pattern: '[0-9a-zA-Z-_.]+',
+		pattern: () => '[0-9a-zA-Z-_.]+',
 		messageMaxAll: () => 4, // || RocketChat.settings.get('Message_MaxAll')
 		getUsers: async (usernames) =>
 			[
@@ -225,64 +225,61 @@ describe('Mention Server', () => {
 		});
 	});
 
-	describe('getters and setters', () => {
-		describe('messageMaxAll', () => {
-			const mention = new MentionsServer({});
-			describe('constant', () => {
-				it('should return the informed value', () => {
-					mention.messageMaxAll = 4;
-					expect(mention.messageMaxAll).to.be.deep.equal(4);
-				});
-			});
-			describe('function', () => {
-				it('should return the informed value', () => {
-					mention.messageMaxAll = () => 4;
-					expect(mention.messageMaxAll).to.be.deep.equal(4);
-				});
-			});
-		});
-		describe('getUsers', () => {
-			const mention = new MentionsServer({});
-			describe('constant', () => {
-				it('should return the informed value', async () => {
-					mention.getUsers = 4;
-					expect(await mention.getUsers()).to.be.deep.equal(4);
-				});
-			});
-			describe('function', () => {
-				it('should return the informed value', async () => {
-					mention.getUsers = () => 4;
-					expect(await mention.getUsers()).to.be.deep.equal(4);
+	describe('getUserMentions', () => {
+		describe('for message with only an md link', () => {
+			const result = [];
+			[
+				'[@rocket.cat](https://rocket.chat)',
+				'[@rocket.cat](https://rocket.chat) hello',
+				'[@rocket.cat](https://rocket.chat) hello how are you?',
+				'[test](https://rocket.chat)',
+			].forEach((text) => {
+				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
+					expect(result).to.be.deep.equal(mention.getUserMentions(text));
 				});
 			});
 		});
-		describe('getChannels', () => {
-			const mention = new MentionsServer({});
-			describe('constant', () => {
-				it('should return the informed value', () => {
-					mention.getChannels = 4;
-					expect(mention.getChannels()).to.be.deep.equal(4);
-				});
-			});
-			describe('function', () => {
-				it('should return the informed value', () => {
-					mention.getChannels = () => 4;
-					expect(mention.getChannels()).to.be.deep.equal(4);
+
+		describe('for message with md link and text', () => {
+			const result = ['@sauron'];
+			[
+				'@sauron please work on [user@password](https://rocket.chat)',
+				'@sauron hello [user@password](https://rocket.chat) hello',
+				'[user@password](https://rocket.chat) hello @sauron',
+				'@sauron please work on [user@password](https://rocket.chat) hello',
+			].forEach((text) => {
+				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
+					expect(result).to.be.deep.equal(mention.getUserMentions(text));
 				});
 			});
 		});
-		describe('getChannel', () => {
-			const mention = new MentionsServer({});
-			describe('constant', () => {
-				it('should return the informed value', () => {
-					mention.getChannel = true;
-					expect(mention.getChannel()).to.be.deep.equal(true);
+	});
+
+	describe('getChannelMentions', () => {
+		describe('for message with md link', () => {
+			const result = [];
+			[
+				'[#general](https://rocket.chat)',
+				'[#general](https://rocket.chat) hello',
+				'[#general](https://rocket.chat) hello how are you?',
+				'[test #general #other](https://rocket.chat)',
+			].forEach((text) => {
+				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
+					expect(result).to.be.deep.equal(mention.getChannelMentions(text));
 				});
 			});
-			describe('function', () => {
-				it('should return the informed value', () => {
-					mention.getChannel = () => true;
-					expect(mention.getChannel()).to.be.deep.equal(true);
+		});
+
+		describe('for message with md link and text', () => {
+			const result = ['#somechannel'];
+			[
+				'#somechannel please [user#password](https://rocket.chat)',
+				'#somechannel hello [user#password](https://rocket.chat) hello',
+				'[user#password](https://rocket.chat) hello #somechannel',
+				'#somechannel join [#general on #other](https://rocket.chat)',
+			].forEach((text) => {
+				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
+					expect(result).to.be.deep.equal(mention.getChannelMentions(text));
 				});
 			});
 		});

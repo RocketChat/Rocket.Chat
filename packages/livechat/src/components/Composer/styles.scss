@@ -1,22 +1,22 @@
-@import '../../styles/colors';
-@import '../../styles/helpers';
-@import '../../styles/variables';
+@use '../../styles/colors';
+@use '../../styles/helpers';
+@use '../../styles/variables';
 
 $composer-padding: 12px 6px;
-$composer-border-width: $default-border;
-$composer-border-color: $color-text-light;
-$composer-border-radius: $default-border-radius;
-$composer-background-color: $bg-color-white;
-$composer-focused-border-color: $color-text-grey;
+$composer-border-width: variables.$default-border;
+$composer-border-color: colors.$color-text-light;
+$composer-border-radius: variables.$default-border-radius;
+$composer-background-color: colors.$bg-color-white;
+$composer-focused-border-color: colors.$color-text-grey;
 
 $composer-input-min-height: 20px;
 $composer-input-max-height: 150px;
 $composer-input-padding: 2px 6px;
-$composer-input-color: $bg-color-dark;
+$composer-input-color: colors.$bg-color-dark;
 $composer-input-font-size: 0.875rem;
 $composer-input-font-weight: 500;
 $composer-input-line-height: 1.25rem;
-$composer-input-placeholder-color: $color-text-light;
+$composer-input-placeholder-color: colors.$color-text-light;
 
 .composer {
 	display: flex;
@@ -24,7 +24,7 @@ $composer-input-placeholder-color: $color-text-light;
 	width: 100%;
 	padding: $composer-padding;
 
-	transition: all $default-time-animation;
+	transition: all variables.$default-time-animation;
 
 	border: $composer-border-width solid $composer-border-color;
 	border-radius: $composer-border-radius;

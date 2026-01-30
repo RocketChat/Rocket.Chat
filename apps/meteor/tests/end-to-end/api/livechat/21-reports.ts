@@ -1,4 +1,5 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
@@ -6,7 +7,7 @@ import { api, request, credentials, getCredentials } from '../../../data/api-dat
 import { createDepartment, addOrRemoveAgentFromDepartment } from '../../../data/livechat/department';
 import { startANewLivechatRoomAndTakeIt, createAgent } from '../../../data/livechat/rooms';
 import { createMonitor, createUnit } from '../../../data/livechat/units';
-import { restorePermissionToRoles, updatePermission } from '../../../data/permissions.helper';
+import { restorePermissionToRoles, updateEESetting, updatePermission } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -14,11 +15,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 (IS_EE ? describe : describe.skip)('LIVECHAT - reports', () => {
 	before((done) => getCredentials(done));
 
-	let agent2: { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
-	let agent3: { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
+	let agent2: { user: IUser; credentials: Credentials };
+	let agent3: { user: IUser; credentials: Credentials };
 
 	before(async () => {
-		const user: IUser = await createUser();
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
+		const user = await createUser();
 		const userCredentials = await login(user.username, password);
 		if (!user.username) {
 			throw new Error('user not created');
@@ -32,7 +34,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 
 	before(async () => {
-		const user: IUser = await createUser();
+		const user = await createUser();
 		const userCredentials = await login(user.username, password);
 		await createAgent();
 		if (!user.username) {
@@ -146,7 +148,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.total).to.be.equal(0);
 			expect(body.success).to.be.true;
 		});
-		it('should return empty set for a monitor with no units', async () => {
+		it('should return only public rooms for a monitor with no units', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 			const now = new Date().toISOString();
 			const { body } = await request
@@ -156,8 +158,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(200);
 
 			expect(body).to.have.property('data').and.to.be.an('array');
-			expect(body.data).to.have.lengthOf(0);
-			expect(body.success).to.be.true;
+			expect(body.data.every((room: IOmnichannelRoom) => !room.departmentAncestors && !room.departmentId)).to.be.true;
 		});
 		it('should return only the data from the unit the monitor belongs to', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
@@ -256,7 +257,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.data).to.have.lengthOf(0);
 			expect(body.success).to.be.true;
 		});
-		it('should return empty set for a monitor with no units', async () => {
+		it('should return public rooms for a monitor with no units', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 			const now = new Date().toISOString();
 			const { body } = await request
@@ -266,8 +267,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(200);
 
 			expect(body).to.have.property('data').and.to.be.an('array');
-			expect(body.data).to.have.lengthOf(0);
-			expect(body.success).to.be.true;
+			expect(body.data.every((room: IOmnichannelRoom) => !room.departmentAncestors && !room.departmentId)).to.be.true;
 		});
 		it('should return the proper data when login as a manager', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
@@ -358,7 +358,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.data).to.have.lengthOf(0);
 			expect(body.success).to.be.true;
 		});
-		it('should return empty set for a monitor with no units', async () => {
+		it('should return public rooms for a monitor with no units', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 			const now = new Date().toISOString();
 			const { body } = await request
@@ -368,8 +368,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(200);
 
 			expect(body).to.have.property('data').and.to.be.an('array');
-			expect(body.data).to.have.lengthOf(0);
-			expect(body.success).to.be.true;
+			expect(body.data.every((room: IOmnichannelRoom) => !room.departmentAncestors && !room.departmentId)).to.be.true;
 		});
 		it('should return the proper data when login as a manager', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
@@ -452,7 +451,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.data).to.have.lengthOf(0);
 			expect(body.success).to.be.true;
 		});
-		it('should return empty set for a monitor with no units', async () => {
+		it('should return public rooms for a monitor with no units', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 			const now = new Date().toISOString();
 			const { body } = await request
@@ -462,8 +461,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(200);
 
 			expect(body).to.have.property('data').and.to.be.an('array');
-			expect(body.data).to.have.lengthOf(0);
-			expect(body.success).to.be.true;
+			expect(body.data.every((room: IOmnichannelRoom) => !room.departmentAncestors && !room.departmentId)).to.be.true;
 		});
 		it('should return the proper data when login as a manager', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
@@ -545,7 +543,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body).to.have.property('data').and.to.be.an('array');
 			expect(body.data).to.have.lengthOf(0);
 		});
-		it('should return empty set for a monitor with no units', async () => {
+		it('should return public rooms for a monitor with no units', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 			const now = new Date().toISOString();
 			const { body } = await request
@@ -555,8 +553,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(200);
 
 			expect(body).to.have.property('data').and.to.be.an('array');
-			expect(body.data).to.have.lengthOf(0);
-			expect(body.success).to.be.true;
+			expect(body.data.every((room: IOmnichannelRoom) => !room.departmentAncestors && !room.departmentId)).to.be.true;
 		});
 		it('should return the proper data when login as a manager', async () => {
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();

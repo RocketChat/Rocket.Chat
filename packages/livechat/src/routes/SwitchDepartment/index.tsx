@@ -1,11 +1,9 @@
-import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
-import { route } from 'preact-router';
 import { useContext } from 'preact/hooks';
-import type { JSXInternal } from 'preact/src/jsx';
-import type { FieldValues, SubmitHandler } from 'react-hook-form';
+import { route } from 'preact-router';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import styles from './styles.scss';
 import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
@@ -15,22 +13,27 @@ import Screen from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import { loadConfig } from '../../lib/main';
 import { createToken } from '../../lib/random';
+import type { StoreState } from '../../store';
 import { StoreContext } from '../../store';
-import styles from './styles.scss';
 
-const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unknown }; path: string }) => {
+type SwitchDepartmentFormData = { department: string };
+
+type SwitchDepartmentProps = {
+	path: string;
+};
+
+const SwitchDepartment = (_: SwitchDepartmentProps) => {
 	const { t } = useTranslation();
 
 	const {
 		config: {
 			messages: { switchDepartmentMessage },
 			departments: deps = [],
-			theme: { color },
 		},
 		iframe: { guest },
 		iframe,
 		room,
-		loading = false,
+		loading = true,
 		dispatch,
 		alerts,
 		token,
@@ -40,7 +43,7 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 		handleSubmit,
 		formState: { errors, isDirty, isValid, isSubmitting },
 		control,
-	} = useForm({ mode: 'onChange' });
+	} = useForm<SwitchDepartmentFormData>({ mode: 'onChange' });
 
 	const departments = deps.filter((dept) => dept.showOnRegistration && dept._id !== guest?.department);
 
@@ -52,7 +55,7 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 		return typeof result.success === 'boolean' && result.success;
 	};
 
-	const onSubmit = async ({ department }: { department: string }) => {
+	const onSubmit = async ({ department }: SwitchDepartmentFormData) => {
 		const confirm = await confirmChangeDepartment();
 		if (!confirm) {
 			return;
@@ -60,31 +63,25 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 
 		if (!room) {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { department, token } });
-			await dispatch({ user, alerts: (alerts.push({ id: createToken(), children: t('department_switched'), success: true }), alerts) });
-			return route('/');
+			await dispatch({
+				user: user as StoreState['user'],
+				alerts: (alerts.push({ id: createToken(), children: t('department_switched'), success: true }), alerts),
+			});
+			route('/');
+			return;
 		}
 
 		await dispatch({ loading: true });
 		try {
 			const { _id: rid } = room;
 			const result = await Livechat.transferChat({ rid, department });
-			// TODO: Investigate why the api results are not returning the correct type
-			const { success } = result as Serialized<
-				| {
-						room: IOmnichannelRoom;
-						success: boolean;
-				  }
-				| {
-						room: IOmnichannelRoom;
-						success: boolean;
-						warning: string;
-				  }
-			>;
+			const { success } = result;
+
 			if (!success) {
 				throw t('no_available_agents_to_transfer');
 			}
 
-			await dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false });
+			await dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false } as Pick<StoreState, 'iframe' | 'loading'>);
 			await loadConfig();
 
 			await ModalManager.alert({
@@ -110,14 +107,14 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 	const defaultMessage = t('choose_a_department_1');
 
 	return (
-		<Screen {...screenProps} color={color} theme={{ color }} title={defaultTitle} className={createClassName(styles, 'switch-department')}>
+		<Screen title={defaultTitle} className={createClassName(styles, 'switch-department')}>
 			<Screen.Content>
 				<p className={createClassName(styles, 'switch-department__message')}>{switchDepartmentMessage || defaultMessage}</p>
 
 				<Form
 					id='switchDepartment'
 					// The price of using react-hook-form on a preact project ¯\_(ツ)_/¯
-					onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>) as unknown as JSXInternal.GenericEventHandler<HTMLFormElement>}
+					onSubmit={handleSubmit(onSubmit)}
 				>
 					<FormField label={t('i_need_help_with')} error={errors.department?.message?.toString()}>
 						<Controller

@@ -18,6 +18,7 @@ API.v1.addRoute(
 			GET: isLivechatPrioritiesProps,
 			POST: isCreateOrUpdateLivechatSlaProps,
 		},
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {
@@ -39,11 +40,15 @@ API.v1.addRoute(
 		async post() {
 			const { name, description, dueTimeInMinutes } = this.bodyParams;
 
-			const newSla = await LivechatEnterprise.saveSLA(null, {
-				name,
-				description,
-				dueTimeInMinutes,
-			});
+			const newSla = await LivechatEnterprise.saveSLA(
+				null,
+				{
+					name,
+					description,
+					dueTimeInMinutes,
+				},
+				this.userId,
+			);
 
 			return API.v1.success({ sla: newSla });
 		},
@@ -62,6 +67,7 @@ API.v1.addRoute(
 		validateParams: {
 			PUT: isCreateOrUpdateLivechatSlaProps,
 		},
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {
@@ -77,7 +83,7 @@ API.v1.addRoute(
 		async delete() {
 			const { slaId } = this.urlParams;
 
-			await LivechatEnterprise.removeSLA(slaId);
+			await LivechatEnterprise.removeSLA(this.userId, slaId);
 
 			return API.v1.success();
 		},
@@ -85,11 +91,15 @@ API.v1.addRoute(
 			const { name, description, dueTimeInMinutes } = this.bodyParams;
 			const { slaId } = this.urlParams;
 
-			const updatedSla = await LivechatEnterprise.saveSLA(slaId, {
-				name,
-				description,
-				dueTimeInMinutes,
-			});
+			const updatedSla = await LivechatEnterprise.saveSLA(
+				slaId,
+				{
+					name,
+					description,
+					dueTimeInMinutes,
+				},
+				this.userId,
+			);
 
 			return API.v1.success({ sla: updatedSla });
 		},

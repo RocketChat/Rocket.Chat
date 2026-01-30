@@ -1,7 +1,5 @@
 import { Tracker } from 'meteor/tracker';
 
-import { queueMicrotask } from './utils/queueMicrotask';
-
 interface ISubscriptionFactory<T> {
 	(...args: any[]): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T];
 }
@@ -24,13 +22,15 @@ export const createReactiveSubscriptionFactory =
 
 		let computation: Tracker.Computation | undefined;
 
-		queueMicrotask(() => {
-			computation = Tracker.autorun(reactiveFn);
-		});
-
 		return [
 			(callback): (() => void) => {
 				callbacks.add(callback);
+
+				queueMicrotask(() => {
+					if (!computation || computation.stopped) {
+						computation = Tracker.autorun(reactiveFn);
+					}
+				});
 
 				return (): void => {
 					callbacks.delete(callback);

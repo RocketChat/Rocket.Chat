@@ -1,15 +1,23 @@
-import { Button, Modal } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
-import React from 'react';
+import {
+	Button,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+	ModalHeader,
+	ModalIcon,
+	ModalTitle,
+} from '@rocket.chat/fuselage';
+import { useTranslation } from 'react-i18next';
 
 type AppUpdateModalProps = {
 	confirm: () => void;
 	cancel: () => void;
 };
 
-const AppUpdateModal: FC<AppUpdateModalProps> = ({ confirm, cancel, ...props }) => {
-	const t = useTranslation();
+const AppUpdateModal = ({ confirm, cancel, ...props }: AppUpdateModalProps) => {
+	const { t } = useTranslation();
 
 	const handleCloseButtonClick = (): void => {
 		cancel();
@@ -25,22 +33,22 @@ const AppUpdateModal: FC<AppUpdateModalProps> = ({ confirm, cancel, ...props }) 
 
 	return (
 		<Modal {...props}>
-			<Modal.Header>
-				<Modal.Icon color='status-font-on-danger' name='info-circled' />
-				<Modal.Title>{t('Apps_Manual_Update_Modal_Title')}</Modal.Title>
-				<Modal.Close onClick={handleCloseButtonClick} />
-			</Modal.Header>
-			<Modal.Content fontScale='p2'>{t('Apps_Manual_Update_Modal_Body')}</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			<ModalHeader>
+				<ModalIcon color='status-font-on-danger' name='info-circled' />
+				<ModalTitle>{t('Apps_Manual_Update_Modal_Title')}</ModalTitle>
+				<ModalClose onClick={handleCloseButtonClick} />
+			</ModalHeader>
+			<ModalContent fontScale='p2'>{t('Apps_Manual_Update_Modal_Body')}</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button secondary onClick={handleCancelButtonClick}>
 						{t('No')}
 					</Button>
 					<Button danger onClick={handleConfirmButtonClick}>
 						{t('Yes')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

@@ -1,7 +1,22 @@
-import { Modal, Button, Box, Callout, Margins } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	Modal,
+	Button,
+	Box,
+	Callout,
+	Margins,
+	ModalHeader,
+	ModalHeaderText,
+	ModalTagline,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalHeroImage,
+	ModalFooter,
+	ModalFooterAnnotation,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type VideoConfConfigModalProps = {
 	onClose: () => void;
@@ -10,19 +25,19 @@ type VideoConfConfigModalProps = {
 };
 
 const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigModalProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Modal>
-			<Modal.Header>
-				<Modal.HeaderText>
-					<Modal.Tagline>{isAdmin ? t('Missing_configuration') : t('App_not_enabled')}</Modal.Tagline>
-					<Modal.Title>{isAdmin ? t('Configure_video_conference') : t('Video_Conference')}</Modal.Title>
-				</Modal.HeaderText>
-				<Modal.Close title={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
-				<Modal.HeroImage maxHeight='initial' src='/images/conf-call-config.svg' />
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTagline>{isAdmin ? t('Missing_configuration') : t('App_not_enabled')}</ModalTagline>
+					<ModalTitle>{isAdmin ? t('Configure_video_conference') : t('Video_Conference')}</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose title={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
+				<ModalHeroImage maxHeight='initial' src='/images/conf-call-config.svg' />
 				<Box fontScale='h3'>{t('Premium_capabilities')}</Box>
 				<Box withRichContent>
 					<Box is='ul' pis={24}>
@@ -50,22 +65,22 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 						? t('An_app_needs_to_be_installed_and_configured')
 						: t('A_workspace_admin_needs_to_install_and_configure_a_conference_call_app')}
 				</Callout>
-			</Modal.Content>
-			<Modal.Footer justifyContent='space-between'>
-				<Modal.FooterAnnotation>
+			</ModalContent>
+			<ModalFooter justifyContent='space-between'>
+				<ModalFooterAnnotation>
 					{isAdmin
 						? t('Configure_video_conference_to_make_it_available_on_this_workspace')
 						: t('Talk_to_your_workspace_administrator_about_enabling_video_conferencing')}
-				</Modal.FooterAnnotation>
-				<Modal.FooterControllers>
+				</ModalFooterAnnotation>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Close')}</Button>
 					{onConfirm && isAdmin && (
 						<Button primary onClick={onConfirm}>
 							{t('Open_settings')}
 						</Button>
 					)}
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

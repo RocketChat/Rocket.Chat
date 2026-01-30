@@ -24,14 +24,17 @@ await License.onLicense('saml-enterprise', () => {
 
 			const savedRoles = await Roles.findInIdsOrNames(ensureArray<string>(value)).toArray();
 
-			userObject.roles = savedRoles.map((role) => role.name);
+			userObject.roles = savedRoles.map((role) => role._id);
 		}
 	});
 
 	SAMLUtils.events.on('loadConfigs', (service: string, configs: Record<string, any>): void => {
 		// Include ee settings on the configs object so that they can be copied to the login service too
+		const rawCustomAuthnContext = settings.get(`${service}_custom_authn_context`);
+		const customAuthnContext = typeof rawCustomAuthnContext === 'string' ? rawCustomAuthnContext.trim() : undefined;
+
 		Object.assign(configs, {
-			customAuthnContext: settings.get(`${service}_custom_authn_context`),
+			...(customAuthnContext !== undefined && { customAuthnContext }),
 			authnContextComparison: settings.get(`${service}_authn_context_comparison`),
 			identifierFormat: settings.get(`${service}_identifier_format`),
 			nameIDPolicyTemplate: settings.get(`${service}_NameId_template`),

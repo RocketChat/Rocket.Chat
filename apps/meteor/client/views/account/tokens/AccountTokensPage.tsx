@@ -1,19 +1,18 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import Page from '../../../components/Page';
 import AccountTokensTable from './AccountTokensTable';
 
 const AccountTokensPage = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Page>
-			<Page.Header title={t('Personal_Access_Tokens')} />
-			<Page.Content>
+			<PageHeader title={t('Personal_Access_Tokens')} />
+			<PageContent>
 				<AccountTokensTable />
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };

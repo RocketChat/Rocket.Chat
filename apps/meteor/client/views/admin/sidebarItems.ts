@@ -1,3 +1,5 @@
+import { defaultFeaturesPreview } from '@rocket.chat/ui-client';
+
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 
@@ -20,12 +22,6 @@ export const {
 		permissionGranted: (): boolean => hasPermission('manage-cloud'),
 	},
 	{
-		href: '/admin/registration',
-		i18nLabel: 'Registration',
-		icon: 'cloud-plus',
-		permissionGranted: (): boolean => hasPermission('manage-cloud'),
-	},
-	{
 		href: '/admin/engagement/users',
 		i18nLabel: 'Engagement',
 		icon: 'dashboard',
@@ -37,12 +33,6 @@ export const {
 		icon: 'shield-alt',
 		tag: 'Beta',
 		permissionGranted: (): boolean => hasPermission('view-moderation-console'),
-	},
-	{
-		href: '/admin/federation',
-		i18nLabel: 'Federation',
-		icon: 'discover',
-		permissionGranted: (): boolean => hasPermission('view-federation-data'),
 	},
 	{
 		href: '/admin/rooms',
@@ -73,6 +63,12 @@ export const {
 		i18nLabel: 'Permissions',
 		icon: 'user-lock',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-permissions', 'access-setting-permissions']),
+	},
+	{
+		href: '/admin/ABAC',
+		i18nLabel: 'ABAC',
+		icon: 'team-lock',
+		permissionGranted: (): boolean => hasPermission('abac-management'),
 	},
 	{
 		href: '/admin/device-management',
@@ -118,7 +114,7 @@ export const {
 		permissionGranted: (): boolean => hasPermission('run-import'),
 	},
 	{
-		href: '/admin/reports',
+		href: '/admin/analytic-reports',
 		i18nLabel: 'Reports',
 		icon: 'post',
 		permissionGranted: (): boolean => hasPermission('view-logs'),
@@ -134,6 +130,12 @@ export const {
 		i18nLabel: 'Emoji',
 		icon: 'emoji',
 		permissionGranted: (): boolean => hasPermission('manage-emoji'),
+	},
+	{
+		href: '/admin/feature-preview',
+		i18nLabel: 'Feature_preview',
+		icon: 'flask',
+		permissionGranted: () => defaultFeaturesPreview?.length > 0,
 	},
 	{
 		href: '/admin/settings',

@@ -1,14 +1,14 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Rooms } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 import { readThread } from '../functions';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		getThreadMessages(params: { tmid: IMessage['_id']; limit?: number; skip?: number }): Promise<IMessage[]>;
@@ -55,7 +55,8 @@ Meteor.methods<ServerMethods>({
 			...(limit && { limit }),
 			sort: { ts: -1 },
 		}).toArray();
-		callbacks.runAsync('afterReadMessages', room._id, { uid: user._id, tmid });
+
+		callbacks.runAsync('afterReadMessages', room, { uid: user._id, tmid });
 
 		return [thread, ...result];
 	},

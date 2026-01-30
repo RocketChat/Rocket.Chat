@@ -1,14 +1,14 @@
 import type { Meta } from '@storybook/preact';
 
 import { renderMessageBlocks } from '.';
-import { imageBlock } from '../../../helpers.stories';
+import { imageBlock } from '../../../../.storybook/helpers';
 
 export default {
 	title: 'UiKit/Message/Image block',
 	parameters: {
 		layout: 'centered',
 	},
-	decorators: [(storyFn) => <div children={storyFn()} style={{ width: '100vw', maxWidth: 500 }} />],
+	decorators: [(storyFn) => <div style={{ width: '100vw', maxWidth: 500 }}>{storyFn()}</div>],
 } satisfies Meta;
 
 export const WithTitle = () =>

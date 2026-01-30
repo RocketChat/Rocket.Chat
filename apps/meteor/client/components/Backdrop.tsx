@@ -1,7 +1,6 @@
-import { Modal } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
+import { ModalBackdrop } from '@rocket.chat/fuselage';
+import type { ComponentProps } from 'react';
 
-type BackdropProps = ComponentProps<typeof Modal.Backdrop>;
+type BackdropProps = ComponentProps<typeof ModalBackdrop>;
 
-export const Backdrop = (props: BackdropProps): ReactElement => <Modal.Backdrop bg='transparent' {...props} />;
+export const Backdrop = (props: BackdropProps) => <ModalBackdrop bg='transparent' {...props} />;

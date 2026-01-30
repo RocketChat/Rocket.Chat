@@ -1,3 +1,5 @@
+import type { Dispatch, SetStateAction } from 'react';
+
 export type RadioDropDownProps = {
 	group: RadioDropDownGroup;
 	onSelected: RadioDropDownOnSelected;
@@ -16,8 +18,8 @@ export type RadioDropDownItem = {
 
 export type RadioDropDownOnSelected = (item: RadioDropDownItem) => void;
 
-export type RadioDropDownSetData = React.Dispatch<
-	React.SetStateAction<{
+export type RadioDropDownSetData = Dispatch<
+	SetStateAction<{
 		label: string;
 		items: RadioDropDownItem[];
 	}>

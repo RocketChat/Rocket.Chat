@@ -1,17 +1,25 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	ContextualbarHeader,
+	ContextualbarClose,
+	ContextualbarDialog,
+	ContextualbarTitle,
+	Page,
+	PageHeader,
+	PageContent,
+} from '@rocket.chat/ui-client';
+import { useRoute, useRouteParameter, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Contextualbar, ContextualbarHeader, ContextualbarClose } from '../../../components/Contextualbar';
-import Page from '../../../components/Page';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AddCustomEmoji from './AddCustomEmoji';
 import CustomEmoji from './CustomEmoji';
 import EditCustomEmojiWithData from './EditCustomEmojiWithData';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const CustomEmojiRoute = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const route = useRoute('emoji-custom');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
@@ -45,25 +53,27 @@ const CustomEmojiRoute = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page name='admin-emoji-custom'>
-				<Page.Header title={t('Emoji')}>
+				<PageHeader title={t('Emoji')}>
 					<Button primary onClick={handleAddEmoji} aria-label={t('New')}>
 						{t('New')}
 					</Button>
-				</Page.Header>
-				<Page.Content>
+				</PageHeader>
+				<PageContent>
 					<CustomEmoji reload={reload} onClick={handleItemClick} />
-				</Page.Content>
+				</PageContent>
 			</Page>
 			{context && (
-				<Contextualbar flexShrink={0}>
+				<ContextualbarDialog onClose={handleClose}>
 					<ContextualbarHeader>
-						{context === 'edit' && t('Custom_Emoji_Info')}
-						{context === 'new' && t('Custom_Emoji_Add')}
+						<ContextualbarTitle>
+							{context === 'edit' && t('Custom_Emoji_Info')}
+							{context === 'new' && t('Custom_Emoji_Add')}
+						</ContextualbarTitle>
 						<ContextualbarClose onClick={handleClose} />
 					</ContextualbarHeader>
 					{context === 'edit' && id && <EditCustomEmojiWithData _id={id} close={handleClose} onChange={handleChange} />}
 					{context === 'new' && <AddCustomEmoji close={handleClose} onChange={handleChange} />}
-				</Contextualbar>
+				</ContextualbarDialog>
 			)}
 		</Page>
 	);

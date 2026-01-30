@@ -1,27 +1,27 @@
-import { api } from '@rocket.chat/core-services';
+import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
-import type { Document } from 'mongodb';
+import { registerServiceModels } from '@rocket.chat/models';
+import { startBroker } from '@rocket.chat/network-broker';
+import { startTracing } from '@rocket.chat/tracing';
 import polka from 'polka';
 
-import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
-import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
-import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
+import { i18n } from './i18n';
 
 const PORT = process.env.PORT || 3036;
 
 (async () => {
-	const db = await getConnection();
+	const { db, client } = await getConnection();
 
-	const trash = await getCollection<Document>(Collections.Trash);
+	startTracing({ service: 'omnichannel-transcript', db: client });
 
-	registerServiceModels(db, trash);
+	registerServiceModels(db, await getTrashCollection());
 
-	api.setBroker(broker);
+	api.setBroker(startBroker());
 
 	// need to import service after models are registered
 	const { OmnichannelTranscript } = await import('@rocket.chat/omnichannel-services');
 
-	api.registerService(new OmnichannelTranscript(Logger), ['queue-worker']);
+	api.registerService(new OmnichannelTranscript(Logger, i18n), ['queue-worker']);
 
 	await api.start();
 

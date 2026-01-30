@@ -2,8 +2,6 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Option, Icon } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { VFC } from 'react';
-import React from 'react';
 
 type MatrixFederationRemoveServerListProps = {
 	servers: Array<{ name: string; default: boolean; local: boolean }>;
@@ -24,16 +22,20 @@ const style = css`
 	}
 `;
 
-const MatrixFederationRemoveServerList: VFC<MatrixFederationRemoveServerListProps> = ({ servers }) => {
+const MatrixFederationRemoveServerList = ({ servers }: MatrixFederationRemoveServerListProps) => {
 	const removeMatrixServer = useEndpoint('POST', '/v1/federation/removeServerByUser');
 
 	const queryClient = useQueryClient();
 
-	const { mutate: removeServer, isLoading: isRemovingServer } = useMutation(
-		['federation/removeServerByUser'],
-		(serverName: string) => removeMatrixServer({ serverName }),
-		{ onSuccess: () => queryClient.invalidateQueries(['federation/listServersByUsers']) },
-	);
+	const { mutate: removeServer, isPending: isRemovingServer } = useMutation({
+		mutationKey: ['federation/removeServerByUser'],
+		mutationFn: (serverName: string) => removeMatrixServer({ serverName }),
+
+		onSuccess: () =>
+			queryClient.invalidateQueries({
+				queryKey: ['federation/listServersByUsers'],
+			}),
+	});
 
 	const t = useTranslation();
 

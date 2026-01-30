@@ -1,6 +1,5 @@
 import { useSearchParameter, useUser } from '@rocket.chat/ui-contexts';
 import RegistrationPageRouter from '@rocket.chat/web-ui-registration';
-import React from 'react';
 
 import { getErrorMessage } from '../../lib/errorHandling';
 import PageLoading from '../root/PageLoading';
@@ -21,7 +20,7 @@ const OAuthAuthorizationPage = () => {
 		return <RegistrationPageRouter />;
 	}
 
-	if (oauthAppQuery.isLoading) {
+	if (oauthAppQuery.isPending) {
 		return <PageLoading />;
 	}
 

@@ -1,0 +1,227 @@
+import { faker } from '@faker-js/faker';
+import type { Page } from '@playwright/test';
+
+import { IS_EE } from '../config/constants';
+import { Users } from '../fixtures/userStates';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelAgents, OmnichannelManager, OmnichannelMonitors } from '../page-objects/omnichannel';
+import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
+import { createDepartment } from '../utils/omnichannel/departments';
+import { createManager } from '../utils/omnichannel/managers';
+import { createConversation } from '../utils/omnichannel/rooms';
+import { test, expect } from '../utils/test';
+
+const MANAGER = 'user3';
+const ROOM_A = faker.person.fullName();
+const ROOM_B = faker.person.fullName();
+const ROOM_C = faker.person.fullName();
+
+test.use({ storageState: Users.user3.state });
+
+test.describe('OC - Manager Role', () => {
+	test.skip(!IS_EE, 'Enterprise Edition Only');
+
+	let departments: Awaited<ReturnType<typeof createDepartment>>[];
+	let conversations: Awaited<ReturnType<typeof createConversation>>[];
+	let agents: Awaited<ReturnType<typeof createAgent>>[];
+	let poOmnichannel: HomeOmnichannel;
+
+	let manager: Awaited<ReturnType<typeof createManager>>;
+
+	// Allow manual on hold
+	test.beforeAll(async ({ api }) => {
+		const responses = await Promise.all([
+			api.post('/settings/Livechat_allow_manual_on_hold', { value: true }),
+			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: false }),
+		]);
+		responses.forEach((res) => expect(res.status()).toBe(200));
+	});
+
+	// Create agents
+	test.beforeAll(async ({ api }) => {
+		agents = await Promise.all([createAgent(api, 'user1'), createAgent(api, 'user2'), createAgent(api, MANAGER)]);
+
+		const agentsStatuses = await Promise.all(agents.slice(0, 2).map(({ data: agent }) => makeAgentAvailable(api, agent._id)));
+
+		agentsStatuses.forEach((res) => expect(res.status()).toBe(200));
+	});
+
+	// Create departments
+	test.beforeAll(async ({ api }) => {
+		departments = await Promise.all([createDepartment(api), createDepartment(api)]);
+	});
+
+	// Create manager
+	test.beforeAll(async ({ api }) => {
+		manager = await createManager(api, MANAGER);
+	});
+
+	// Create conversations
+	test.beforeAll(async ({ api }) => {
+		const [departmentA, departmentB] = departments.map(({ data }) => data);
+
+		conversations = await Promise.all([
+			createConversation(api, {
+				visitorName: ROOM_A,
+				visitorToken: 'roomA',
+				agentId: `user1`,
+				departmentId: departmentA._id,
+			}),
+			createConversation(api, {
+				visitorName: ROOM_B,
+				visitorToken: 'roomB',
+				agentId: `user2`,
+				departmentId: departmentB._id,
+			}),
+			createConversation(api, {
+				visitorName: ROOM_C,
+				visitorToken: 'roomC',
+				agentId: `user2`,
+			}),
+		]);
+	});
+
+	// Delete all created data
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			...agents.map((agent) => agent.delete()),
+			...departments.map((department) => department.delete()),
+			...conversations.map((conversation) => conversation.delete()),
+			manager.delete(),
+			// Reset setting
+			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }),
+			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: true }),
+		]);
+	});
+
+	test.beforeEach(async ({ page }: { page: Page }) => {
+		poOmnichannel = new HomeOmnichannel(page);
+
+		await page.goto('/omnichannel');
+	});
+
+	test('OC - Manager Role - Basic permissions', async () => {
+		await test.step('expect agent to not have access to omnichannel administration', async () => {
+			await expect(poOmnichannel.omnisidenav.linkCurrentChats).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.linkAnalytics).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.linkRealTimeMonitoring).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.linkAgents).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.linkDepartments).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.linkBusinessHours).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.linkReports).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.linkCannedResponses).toBeVisible();
+		});
+	});
+
+	test('OC - Manager Role - Contact Center', async ({ page }) => {
+		await test.step('expect to be able to view all chats', async () => {
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_A)).toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_B)).toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_C)).toBeVisible();
+		});
+
+		await test.step('expect to be able to join chats', async () => {
+			await poOmnichannel.chats.openChat(ROOM_A);
+			await expect(poOmnichannel.composer.btnJoinRoom).toBeVisible();
+			await expect(poOmnichannel.composer.inputMessage).not.toBeVisible();
+
+			await poOmnichannel.composer.btnJoinRoom.click();
+			await expect(poOmnichannel.content.lastSystemMessageBody).toHaveText('joined the channel');
+			await expect(poOmnichannel.composer.btnJoinRoom).not.toBeVisible();
+			await expect(poOmnichannel.composer.inputMessage).toBeVisible();
+		});
+
+		await test.step('expect to be able to put a conversation from another agent on hold', async () => {
+			await poOmnichannel.quickActionsRoomToolbar.placeChatOnHold();
+			await expect(poOmnichannel.content.lastSystemMessageBody).toHaveText(
+				`Chat On Hold: The chat was manually placed On Hold by ${MANAGER}`,
+			);
+			await expect(poOmnichannel.composer.inputMessage).not.toBeVisible();
+			await expect(poOmnichannel.content.btnResume).toBeVisible();
+		});
+
+		await test.step('expect to be able resume a conversation from another agent on hold', async () => {
+			await poOmnichannel.content.btnResume.click();
+			await expect(poOmnichannel.content.btnResume).not.toBeVisible();
+			await expect(poOmnichannel.composer.inputMessage).toBeVisible();
+			await expect(poOmnichannel.quickActionsRoomToolbar.btnOnHold).toBeVisible();
+		});
+
+		await test.step('expect to be able to close a conversation from another agent', async () => {
+			await poOmnichannel.quickActionsRoomToolbar.closeChat();
+			await page.goto('/omnichannel');
+		});
+
+		await test.step('expect to be able to remove closed rooms', async () => {
+			await poOmnichannel.chats.removeChatByName(ROOM_A);
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_A)).not.toBeVisible();
+		});
+	});
+
+	test('OC - Manager Role - Add/remove agents', async ({ page }) => {
+		const poOmnichannelAgents = new OmnichannelAgents(page);
+		await poOmnichannelAgents.sidebar.linkAgents.click();
+
+		await test.step('expect add "user1" as agent', async () => {
+			await poOmnichannelAgents.selectUsername('user1');
+			await poOmnichannelAgents.btnAddAgent.click();
+
+			await poOmnichannelAgents.inputSearch.fill('user1');
+			await expect(poOmnichannelAgents.table.findRowByName('user1')).toBeVisible();
+		});
+
+		await test.step('expect remove "user1" as agent', async () => {
+			await poOmnichannelAgents.inputSearch.fill('user1');
+			await poOmnichannelAgents.deleteAgent('user1');
+
+			await poOmnichannelAgents.inputSearch.fill('');
+			await poOmnichannelAgents.inputSearch.fill('user1');
+			await expect(poOmnichannelAgents.table.findRowByName('user1')).toBeHidden();
+		});
+	});
+
+	test('OC - Manager Role - Add/remove managers', async ({ page }) => {
+		const poOmnichannelManagers = new OmnichannelManager(page);
+		await poOmnichannelManagers.sidebar.linkManagers.click();
+
+		await test.step('expect add "user1" as manager', async () => {
+			await poOmnichannelManagers.selectUsername('user1');
+			await poOmnichannelManagers.btnAddManager.click();
+
+			await expect(poOmnichannelManagers.table.findRowByName('user1')).toBeVisible();
+		});
+
+		await test.step('expect search for manager', async () => {
+			await poOmnichannelManagers.search('user1');
+			await expect(poOmnichannelManagers.table.findRowByName('user1')).toBeVisible();
+
+			await poOmnichannelManagers.search('NonExistingUser');
+			await expect(poOmnichannelManagers.table.findRowByName('user1')).toBeHidden();
+			await poOmnichannelManagers.clearSearch();
+		});
+
+		await test.step('expect remove "user1" as manager', async () => {
+			await poOmnichannelManagers.search('user1');
+			await poOmnichannelManagers.removeManager('user1');
+
+			await expect(poOmnichannelManagers.table.findRowByName('user1')).toBeHidden();
+		});
+	});
+
+	test('OC - Manager Role - Add/remove monitors', async ({ page }) => {
+		const poOmnichannelMonitors = new OmnichannelMonitors(page);
+		await poOmnichannelMonitors.sidebar.linkMonitors.click();
+
+		await test.step('expect to add agent as monitor', async () => {
+			await expect(poOmnichannelMonitors.table.findRowByName('user1')).not.toBeVisible();
+			await poOmnichannelMonitors.addMonitor('user1');
+			await expect(poOmnichannelMonitors.table.findRowByName('user1')).toBeVisible();
+		});
+
+		await test.step('expect to remove agent from monitor', async () => {
+			await poOmnichannelMonitors.removeMonitor('user1');
+
+			await expect(poOmnichannelMonitors.table.findRowByName('user1')).not.toBeVisible();
+		});
+	});
+});

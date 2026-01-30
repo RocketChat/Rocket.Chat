@@ -1,10 +1,10 @@
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { i18n } from '../../../server/lib/i18n';
-import { SystemLogger } from '../../../server/lib/logger/system';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
+import { i18n } from '../../../server/lib/i18n';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 const makeError = (message: string): Record<string, any> => ({
 	type: 'saml',
@@ -33,16 +33,16 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 		SAMLUtils.events.emit('updateCustomFields', loginResult, updatedUser);
 
 		return updatedUser;
-	} catch (error: any) {
-		SystemLogger.error(error);
+	} catch (err: any) {
+		SystemLogger.error({ err });
 
-		let message = error.toString();
+		let message = err.toString();
 		let errorCode = '';
 
-		if (error instanceof Meteor.Error) {
-			errorCode = (error.error || error.message) as string;
-		} else if (error instanceof Error) {
-			errorCode = error.message;
+		if (err instanceof Meteor.Error) {
+			errorCode = (err.error || err.message) as string;
+		} else if (err instanceof Error) {
+			errorCode = err.message;
 		}
 
 		if (errorCode) {

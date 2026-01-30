@@ -1,22 +1,22 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { GenericTable, GenericTableBody, GenericTableHeader, GenericTableHeaderCell, usePagination } from '@rocket.chat/ui-client';
+import type { AriaAttributes } from 'react';
+import { useMemo } from 'react';
 import type { Control, UseFormRegister } from 'react-hook-form';
 import { useWatch, useFieldArray } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import { GenericTable, GenericTableBody, GenericTableHeader, GenericTableHeaderCell } from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import type { FormValues } from '../EditDepartment';
+import type { EditDepartmentFormData } from '../definitions';
 import AddAgent from './AddAgent';
 import AgentRow from './AgentRow';
 
-type DepartmentAgentsTableProps = {
-	control: Control<FormValues>;
-	register: UseFormRegister<FormValues>;
+type DepartmentAgentsTableProps = Pick<AriaAttributes, 'aria-labelledby'> & {
+	control: Control<EditDepartmentFormData>;
+	register: UseFormRegister<EditDepartmentFormData>;
 };
 
-function DepartmentAgentsTable({ control, register }: DepartmentAgentsTableProps) {
-	const t = useTranslation();
+function DepartmentAgentsTable({ control, register, 'aria-labelledby': ariaLabelledBy }: DepartmentAgentsTableProps) {
+	const { t } = useTranslation();
 	const { fields, append, remove } = useFieldArray({ control, name: 'agentList' });
 	const agentList = useWatch({ control, name: 'agentList' });
 
@@ -25,23 +25,20 @@ function DepartmentAgentsTable({ control, register }: DepartmentAgentsTableProps
 
 	return (
 		<>
-			<AddAgent agentList={agentList} data-qa='DepartmentSelect-AgentsTable' onAdd={append} />
-
-			<GenericTable>
+			<AddAgent aria-labelledby={ariaLabelledBy} agentList={agentList} onAdd={append} />
+			<GenericTable aria-label={t('Agents')}>
 				<GenericTableHeader>
 					<GenericTableHeaderCell w='x200'>{t('Name')}</GenericTableHeaderCell>
 					<GenericTableHeaderCell w='x140'>{t('Count')}</GenericTableHeaderCell>
 					<GenericTableHeaderCell w='x120'>{t('Order')}</GenericTableHeaderCell>
 					<GenericTableHeaderCell w='x40'>{t('Remove')}</GenericTableHeaderCell>
 				</GenericTableHeader>
-
 				<GenericTableBody>
 					{page.map((agent, index) => (
 						<AgentRow key={agent.id} index={index} agent={agent} register={register} onRemove={() => remove(index)} />
 					))}
 				</GenericTableBody>
 			</GenericTable>
-
 			<Pagination
 				divider
 				current={current}

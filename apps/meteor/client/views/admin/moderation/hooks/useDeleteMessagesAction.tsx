@@ -1,16 +1,16 @@
-import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useEndpoint, useRouteParameter, useRouter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React from 'react';
-
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
-import GenericModal from '../../../../components/GenericModal';
+import { useTranslation } from 'react-i18next';
 
 const useDeleteMessagesAction = (userId: string): GenericMenuItemProps => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const deleteMessages = useEndpoint('POST', '/v1/moderation.user.deleteReportedMessages');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
-	const moderationRoute = useRoute('moderation-console');
+	const router = useRouter();
+	const tab = useRouteParameter('tab');
 	const queryClient = useQueryClient();
 
 	const handleDeleteMessages = useMutation({
@@ -25,9 +25,9 @@ const useDeleteMessagesAction = (userId: string): GenericMenuItemProps => {
 
 	const onDeleteAll = async () => {
 		await handleDeleteMessages.mutateAsync({ userId });
-		queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
+		queryClient.invalidateQueries({ queryKey: ['moderation', 'msgReports', 'fetchAll'] });
 		setModal();
-		moderationRoute.push({});
+		router.navigate(`/admin/moderation/${tab}`);
 	};
 
 	const confirmDeletMessages = (): void => {

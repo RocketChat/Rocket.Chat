@@ -167,7 +167,7 @@ export async function getAvatarSuggestionForUser(
 				let blob = `data:${response.headers.get('content-type')};base64,`;
 				blob += Buffer.from(await response.arrayBuffer()).toString('base64');
 				newAvatar.blob = blob;
-				newAvatar.contentType = response.headers.get('content-type')!;
+				newAvatar.contentType = response.headers.get('content-type') as string;
 				validAvatars[avatar.service] = newAvatar;
 			}
 		} catch (error) {

@@ -1,3 +1,1 @@
-import Notifications from './lib/Notifications';
-
-export { Notifications };
+import './lib/Presence';

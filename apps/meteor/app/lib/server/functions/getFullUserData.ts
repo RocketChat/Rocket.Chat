@@ -7,7 +7,7 @@ import { settings } from '../../../settings/server';
 
 const logger = new Logger('getFullUserData');
 
-const defaultFields = {
+export const defaultFields = {
 	name: 1,
 	username: 1,
 	nickname: 1,
@@ -19,12 +19,13 @@ const defaultFields = {
 	reason: 1,
 	statusText: 1,
 	avatarETag: 1,
-	extension: 1,
 	federated: 1,
 	statusLivechat: 1,
+	abacAttributes: 1,
+	freeSwitchExtension: 1,
 } as const;
 
-const fullFields = {
+export const fullFields = {
 	emails: 1,
 	phone: 1,
 	statusConnection: 1,
@@ -59,7 +60,10 @@ settings.watch<string>('Accounts_CustomFields', (settingValue) => {
 			customFields[`customFields.${key}`] = 1;
 		});
 	} catch (e) {
-		logger.warn(`The JSON specified for "Accounts_CustomFields" is invalid. The following error was thrown: ${e}`);
+		logger.warn({
+			msg: 'The JSON specified for "Accounts_CustomFields" is invalid. The following error was thrown',
+			err: e,
+		});
 	}
 });
 

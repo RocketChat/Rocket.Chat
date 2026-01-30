@@ -1,28 +1,17 @@
-import type { Cloud, Serialized } from '@rocket.chat/core-typings';
+import { Cloud } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { v, compile } from 'suretype';
+import * as z from 'zod';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { CloudWorkspaceConnectionError } from '../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceLicenseError } from '../../../../lib/errors/CloudWorkspaceLicenseError';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { LICENSE_VERSION } from '../license';
-import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 
-const workspaceLicensePayloadSchema = v.object({
-	version: v.number().required(),
-	address: v.string().required(),
-	license: v.string().required(),
-	updatedAt: v.string().format('date-time').required(),
-	modules: v.string().required(),
-	expireAt: v.string().format('date-time').required(),
-});
-
-const assertWorkspaceLicensePayload = compile(workspaceLicensePayloadSchema);
-
-const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): Promise<Serialized<Cloud.WorkspaceLicensePayload>> => {
+const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): Promise<Cloud.WorkspaceLicensePayload> => {
 	const workspaceRegistrationClientUri = settings.get<string>('Cloud_Workspace_Registration_Client_Uri');
 	const response = await fetch(`${workspaceRegistrationClientUri}/license`, {
 		headers: {
@@ -44,41 +33,36 @@ const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): 
 
 	const payload = await response.json();
 
-	assertWorkspaceLicensePayload(payload);
+	const result = Cloud.WorkspaceLicensePayloadSchema.safeParse(payload);
 
-	return payload;
+	if (!result.success) {
+		throw new CloudWorkspaceLicenseError('failed type validation', {
+			cause: z.prettifyError(result.error),
+		});
+	}
+
+	return result.data;
 };
 
-export async function getWorkspaceLicense(): Promise<{ updated: boolean; license: string }> {
+export async function getWorkspaceLicense() {
 	const currentLicense = await Settings.findOne('Cloud_Workspace_License');
 	// it should never happen, since even if the license is not found, it will return an empty settings
+
 	if (!currentLicense?._updatedAt) {
 		throw new CloudWorkspaceLicenseError('Failed to retrieve current license');
 	}
 
-	const fromCurrentLicense = async () => {
-		const license = currentLicense?.value as string | undefined;
-		if (license) {
-			await callbacks.run('workspaceLicenseChanged', license);
-		}
-
-		return { updated: false, license: license ?? '' };
-	};
-
 	try {
 		const token = await getWorkspaceAccessToken();
 		if (!token) {
-			return fromCurrentLicense();
+			return;
 		}
 
 		const payload = await fetchCloudWorkspaceLicensePayload({ token });
 
-		if (currentLicense.value && Date.parse(payload.updatedAt) <= currentLicense._updatedAt.getTime()) {
-			return fromCurrentLicense();
+		if (currentLicense.value && payload.updatedAt.getTime() <= currentLicense._updatedAt.getTime()) {
+			return;
 		}
-
-		await Settings.updateValueById('Cloud_Workspace_License', payload.license);
-
 		await callbacks.run('workspaceLicenseChanged', payload.license);
 
 		return { updated: true, license: payload.license };
@@ -88,7 +72,5 @@ export async function getWorkspaceLicense(): Promise<{ updated: boolean; license
 			url: '/license',
 			err,
 		});
-
-		return fromCurrentLicense();
 	}
 }

@@ -1,61 +1,60 @@
 import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
-import { Box, Button, TextInput, Margins, Avatar, IconButton } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
-import React, { useState, useCallback } from 'react';
+import { useId, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { useFileInput } from '../../../hooks/useFileInput';
-import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
-import UserAvatar from '../UserAvatar';
+import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
+import { readFileAsDataURL } from './readFileAsDataURL';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
+import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 
-const toDataURL = (file: File, callback: (result: FileReader['result']) => void): void => {
-	const reader = new FileReader();
-	reader.onloadend = function (e): void {
-		callback(e?.target?.result || null);
-	};
-	reader.readAsDataURL(file);
-};
-
-type UserAvatarEditorType = {
+type UserAvatarEditorProps = {
 	currentUsername: IUser['username'];
 	username: IUser['username'];
 	setAvatarObj: (obj: AvatarObject) => void;
 	disabled?: boolean;
 	etag: IUser['avatarETag'];
+	name: IUser['name'];
 };
 
-function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, etag }: UserAvatarEditorType): ReactElement {
-	const t = useTranslation();
+function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disabled, etag }: UserAvatarEditorProps): ReactElement {
+	const { t } = useTranslation();
+	const useFullNameForDefaultAvatar = useSetting('UI_Use_Name_Avatar');
 	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
+	const imageUrlField = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const setUploadedPreview = useCallback(
-		async (file, avatarObj) => {
+		async (file: File, avatarObj: AvatarObject) => {
 			setAvatarObj(avatarObj);
-			toDataURL(file, async (dataURL) => {
-				if (typeof dataURL === 'string' && (await isValidImageFormat(dataURL))) {
-					setNewAvatarSource(dataURL);
-					return;
-				}
+			try {
+				const dataURL = await readFileAsDataURL(file);
 
+				if (await isValidImageFormat(dataURL)) {
+					setNewAvatarSource(dataURL);
+				}
+			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
-			});
+			}
 		},
 		[setAvatarObj, t, dispatchToastMessage],
 	);
 
-	const [clickUpload] = useFileInput(setUploadedPreview);
+	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
-	const clickUrl = (): void => {
+	const handleAddUrl = (): void => {
 		setNewAvatarSource(avatarFromUrl);
 		setAvatarObj({ avatarUrl: avatarFromUrl });
 	};
 
 	const clickReset = (): void => {
-		setNewAvatarSource(`/avatar/%40${username}`);
+		setNewAvatarSource(`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`);
 		setAvatarObj('reset');
 	};
 
@@ -65,6 +64,14 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 		setAvatarFromUrl(event.currentTarget.value);
 	};
 
+	const handleSelectSuggestion = useCallback(
+		(suggestion: UserAvatarSuggestion) => {
+			setAvatarObj(suggestion as unknown as AvatarObject);
+			setNewAvatarSource(suggestion.blob);
+		},
+		[setAvatarObj, setNewAvatarSource],
+	);
+
 	return (
 		<Box display='flex' flexDirection='column' fontScale='p2m' color='default'>
 			{t('Profile_picture')}
@@ -72,41 +79,43 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 				<UserAvatar
 					size='x124'
 					url={url}
+					key={url}
+					alt={t('__username__profile_picture', { username: currentUsername || 'user' })}
 					username={currentUsername || ''}
 					etag={etag}
 					style={{
-						objectFit: 'contain',
 						imageOrientation: rotateImages ? 'from-image' : 'none',
+						objectFit: 'contain',
 					}}
+					onError={() => dispatchToastMessage({ type: 'error', message: t('error-invalid-image-url') })}
 				/>
 				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis={4}>
 					<Box display='flex' flexDirection='row' mbs='none'>
-						<Margins inline={4}>
-							<Button square mis='none' onClick={clickReset} disabled={disabled} mie={4} title={t('Accounts_SetDefaultAvatar')}>
-								<Avatar url={`/avatar/%40${username}`} />
-							</Button>
-							<IconButton icon='upload' secondary onClick={clickUpload} disabled={disabled} title={t('Upload')} />
-							<IconButton
-								data-qa-id='UserAvatarEditorSetAvatarLink'
-								icon='permalink'
-								secondary
-								onClick={clickUrl}
-								disabled={disabled || !avatarFromUrl}
-								title={t('Add_URL')}
-							/>
-							<UserAvatarSuggestions setAvatarObj={setAvatarObj} setNewAvatarSource={setNewAvatarSource} disabled={disabled} />
-						</Margins>
-					</Box>
-					<Margins inlineStart={4}>
-						<Box>{t('Use_url_for_avatar')}</Box>
-						<TextInput
-							data-qa-id='UserAvatarEditorLink'
-							flexGrow={0}
-							placeholder={t('Use_url_for_avatar')}
-							value={avatarFromUrl}
-							onChange={handleAvatarFromUrlChange}
+						<Button square disabled={disabled} mi={4} title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
+							<Avatar url={`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`} />
+						</Button>
+						<IconButton icon='upload' secondary disabled={disabled} title={t('Upload')} mi={4} onClick={clickUpload} />
+						<IconButton
+							icon='permalink'
+							secondary
+							disabled={disabled || !avatarFromUrl}
+							title={t('Add_URL')}
+							mi={4}
+							onClick={handleAddUrl}
 						/>
-					</Margins>
+						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />
+					</Box>
+					<Label htmlFor={imageUrlField} mis={4}>
+						{t('Use_url_for_avatar')}
+					</Label>
+					<TextInput
+						id={imageUrlField}
+						flexGrow={0}
+						placeholder={t('Use_url_for_avatar')}
+						value={avatarFromUrl}
+						mis={4}
+						onChange={handleAvatarFromUrlChange}
+					/>
 				</Box>
 			</Box>
 		</Box>

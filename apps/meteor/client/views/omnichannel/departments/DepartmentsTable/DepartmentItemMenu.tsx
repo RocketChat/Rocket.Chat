@@ -1,10 +1,11 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import { Box, Icon, Menu } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useEndpoint, useRoute, useSetModal, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericMenu } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useEndpoint, useRoute, useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import RemoveDepartmentModal from './RemoveDepartmentModal';
 
@@ -18,8 +19,9 @@ type DepartmentItemMenuProps = {
 	archived: boolean;
 };
 
+// TODO: Use MenuV2 instead of Menu
 const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -32,62 +34,64 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 		_id,
 	});
 
-	const handleEdit = useMutableCallback(() => {
+	const handleEdit = useEffectEvent(() => {
 		route.push({ context: 'edit', id: _id });
 	});
 
 	const handleReload = useCallback(async () => {
-		await queryClient.invalidateQueries(['livechat-departments']);
+		await queryClient.invalidateQueries({
+			queryKey: ['livechat-departments'],
+		});
 	}, [queryClient]);
 
-	const handleToggleArchive = useMutableCallback(async () => {
+	const handleToggleArchive = useEffectEvent(async () => {
 		try {
 			await toggleArchive();
 			dispatchToastMessage({ type: 'success', message: archived ? t('Department_unarchived') : t('Department_archived') });
-			queryClient.removeQueries(['/v1/livechat/department/:_id', department._id]);
+			queryClient.removeQueries({
+				queryKey: ['/v1/livechat/department/:_id', department._id],
+			});
 			handleReload();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	const handlePermanentDepartmentRemoval = useMutableCallback(() => {
+	const handlePermanentDepartmentRemoval = useEffectEvent(() => {
 		setModal(<RemoveDepartmentModal _id={_id} reset={handleReload} onClose={() => setModal(null)} name={name} />);
 	});
 
-	const menuOptions = {
-		...(!archived && {
-			edit: {
-				label: (
-					<>
-						<Icon name='edit' size='x16' mie={4} />
-						{t('Edit')}
-					</>
-				),
-				action: (): void => handleEdit(),
+	const items = useMemo(
+		() => [
+			...(archived
+				? []
+				: [
+						{
+							id: 'edit',
+							icon: 'edit' as const,
+							content: t('Edit'),
+							onClick: handleEdit,
+						},
+					]),
+			{
+				id: archived ? 'unarchive' : 'archive',
+				icon: archived ? ('undo' as const) : ('arrow-down-box' as const),
+				content: archived ? t('Unarchive') : t('Archive'),
+				onClick: handleToggleArchive,
 			},
-		}),
-		[archived ? 'unarchive' : 'archive']: {
-			label: (
-				<>
-					<Icon name={archived ? 'undo' : 'arrow-down-box'} size='x16' mie={4} />
-					{archived ? t('Unarchive') : t('Archive')}
-				</>
-			),
-			action: (): Promise<void> => handleToggleArchive(),
-		},
-		delete: {
-			label: (
-				<Box data-tooltip={!departmentRemovalEnabled ? t('Department_Removal_Disabled') : undefined}>
-					<Icon name='trash' size='x16' mie={4} />
-					{t('Delete')}
-				</Box>
-			),
-			action: (): void => handlePermanentDepartmentRemoval(),
-			disabled: !departmentRemovalEnabled,
-		},
-	};
-	return <Menu options={menuOptions} />;
+			{
+				id: 'delete',
+				icon: 'trash' as const,
+				content: t('Delete'),
+				onClick: handlePermanentDepartmentRemoval,
+				disabled: !departmentRemovalEnabled,
+				tooltip: !departmentRemovalEnabled ? t('Department_Removal_Disabled') : undefined,
+			},
+		],
+		[archived, departmentRemovalEnabled, handleEdit, handleToggleArchive, handlePermanentDepartmentRemoval, t],
+	);
+
+	return <GenericMenu title={t('Options')} items={items} />;
 };
 
 export default DepartmentItemMenu;

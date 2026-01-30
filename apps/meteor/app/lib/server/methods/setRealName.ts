@@ -1,4 +1,4 @@
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -6,7 +6,7 @@ import { settings } from '../../../settings/server';
 import { setRealName } from '../functions/setRealName';
 import { RateLimiter } from '../lib';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		setRealName(name: string): string;
@@ -16,8 +16,8 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async setRealName(name) {
 		check(name, String);
-
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setRealName' });
 		}
 
@@ -25,7 +25,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setRealName' });
 		}
 
-		if (!(await setRealName(Meteor.userId(), name))) {
+		if (!(await setRealName(userId, name))) {
 			throw new Meteor.Error('error-could-not-change-name', 'Could not change name', {
 				method: 'setRealName',
 			});

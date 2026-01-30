@@ -1,12 +1,11 @@
-import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React from 'react';
-
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
-import GenericModal from '../../../../components/GenericModal';
+import { useTranslation } from 'react-i18next';
 
 const useResetAvatarAction = (userId: string): GenericMenuItemProps => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
@@ -25,8 +24,8 @@ const useResetAvatarAction = (userId: string): GenericMenuItemProps => {
 
 	const onResetAvatar = async () => {
 		setModal();
-		handleResetAvatar.mutateAsync({ userId });
-		queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
+		await handleResetAvatar.mutateAsync({ userId });
+		queryClient.invalidateQueries({ queryKey: ['moderation'] });
 	};
 
 	const confirmResetAvatar = (): void => {

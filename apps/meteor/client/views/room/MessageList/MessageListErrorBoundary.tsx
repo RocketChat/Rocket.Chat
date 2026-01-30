@@ -1,18 +1,16 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction, Icon } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../contexts/RoomContext';
 
 const MessageListErrorBoundary = ({ children }: { children: ReactNode }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const room = useRoom();
 
 	return (
 		<ErrorBoundary
-			children={children}
 			resetKeys={[room._id]}
 			fallback={
 				<States>
@@ -30,7 +28,9 @@ const MessageListErrorBoundary = ({ children }: { children: ReactNode }): ReactE
 					</StatesActions>
 				</States>
 			}
-		/>
+		>
+			{children}
+		</ErrorBoundary>
 	);
 };
 

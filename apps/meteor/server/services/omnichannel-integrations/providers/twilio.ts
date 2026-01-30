@@ -78,7 +78,7 @@ export class Twilio implements ISMSProvider {
 		}
 
 		if (isNaN(numMedia)) {
-			SystemLogger.error(`Error parsing NumMedia ${data.NumMedia}`);
+			SystemLogger.error({ msg: 'Error parsing NumMedia', numMedia: data.NumMedia });
 			return returnData;
 		}
 
@@ -114,7 +114,7 @@ export class Twilio implements ISMSProvider {
 			return twilio(sid, token);
 		} catch (error) {
 			await notifyAgent(userId, rid, i18n.t('SMS_Twilio_InvalidCredentials'));
-			SystemLogger.error(`(Twilio) -> ${error}`);
+			SystemLogger.error({ msg: '(Twilio) ->', err: error });
 		}
 	}
 
@@ -157,7 +157,7 @@ export class Twilio implements ISMSProvider {
 
 		if (reason) {
 			await notifyAgent(userId, rid, reason);
-			SystemLogger.error(`(Twilio) -> ${reason}`);
+			SystemLogger.error({ msg: '(Twilio) ->', reason });
 			return '';
 		}
 
@@ -204,7 +204,7 @@ export class Twilio implements ISMSProvider {
 		let persistentAction;
 		if (extraData?.location) {
 			const [longitude, latitude] = extraData.location.coordinates;
-			persistentAction = `geo:${latitude},${longitude}`;
+			persistentAction = [`geo:${latitude},${longitude}`];
 			body = i18n.t('Location', { lng: defaultLanguage });
 		}
 
@@ -219,7 +219,7 @@ export class Twilio implements ISMSProvider {
 
 			if (result.errorCode) {
 				await notifyAgent(userId, rid, result.errorMessage);
-				SystemLogger.error(`(Twilio) -> ${result.errorCode}`);
+				SystemLogger.error({ msg: '(Twilio) ->', errorCode: result.errorCode });
 			}
 
 			return {
@@ -242,6 +242,42 @@ export class Twilio implements ISMSProvider {
 			},
 			body: '<Response></Response>',
 		};
+	}
+
+	private getUrl(url: string, siteUrl: string): string {
+		const baseUrl = new URL(url);
+		const newUrl = new URL(siteUrl);
+		baseUrl.protocol = newUrl.protocol;
+		baseUrl.host = newUrl.host;
+
+		return baseUrl.toString();
+	}
+
+	async isRequestFromTwilio(signature: string, request: Request, requestBody: unknown): Promise<boolean> {
+		const authToken = settings.get<string>('SMS_Twilio_authToken');
+		let siteUrl = settings.get<string>('Site_Url');
+		if (siteUrl.endsWith('/')) {
+			siteUrl = siteUrl.replace(/.$/, '');
+		}
+
+		if (!authToken || !siteUrl) {
+			SystemLogger.error('(Twilio) -> URL or Twilio token not configured.');
+			return false;
+		}
+
+		const twilioUrl = request.url ? this.getUrl(request.url, siteUrl) : `${siteUrl}/api/v1/livechat/sms-incoming/twilio`;
+
+		return twilio.validateRequest(authToken, signature, twilioUrl, requestBody as Record<string, any>);
+	}
+
+	async validateRequest(request: Request, requestBody: unknown): Promise<boolean> {
+		// We're not getting original twilio requests on CI :p
+		if (process.env.TEST_MODE === 'true') {
+			return true;
+		}
+		const twilioHeader = request.headers.get('x-twilio-signature') || '';
+		const twilioSignature = Array.isArray(twilioHeader) ? twilioHeader[0] : twilioHeader;
+		return this.isRequestFromTwilio(twilioSignature, request, requestBody);
 	}
 
 	error(error: Error & { reason?: string }): SMSProviderResponse {

@@ -71,7 +71,7 @@ const generateUserFile = async (exportOperation: IExportOperation, userData?: IU
 		return;
 	}
 
-	return new Promise((resolve, reject) => {
+	return new Promise<void>((resolve, reject) => {
 		const stream = createWriteStream(fileName, { encoding: 'utf8' });
 
 		stream.on('finish', resolve);
@@ -178,6 +178,9 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 
 		// Run every room on every request, to avoid missing new messages on the rooms that finished first.
 		if (exportOperation.status === 'exporting') {
+			if (!exportOperation.userNameTable) {
+				exportOperation.userNameTable = {};
+			}
 			const { fileList } = await exportRoomMessagesToFile(
 				exportOperation.exportPath,
 				exportOperation.assetsPath,

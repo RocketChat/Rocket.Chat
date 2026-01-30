@@ -17,7 +17,8 @@ type MessageBlock =
 	| MessageParser.ChannelMention
 	| MessageParser.UserMention
 	| MessageParser.Link
-	| MessageParser.MarkupExcluding<MessageParser.Italic>;
+	| MessageParser.MarkupExcluding<MessageParser.Italic>
+	| MessageParser.InlineCode;
 
 type ItalicSpanProps = {
 	children: MessageBlock[];
@@ -47,10 +48,10 @@ const renderBlockComponent = (child: MessageBlock, index: number) => {
 			return <Text key={index}>{child.value}</Text>;
 
 		case 'STRIKE':
-			return <StrikeSpan key={index} children={child.value} />;
+			return <StrikeSpan key={index}>{child.value}</StrikeSpan>;
 
 		case 'BOLD':
-			return <BoldSpan key={index} children={child.value} />;
+			return <BoldSpan key={index}>{child.value}</BoldSpan>;
 
 		case 'EMOJI':
 			return <EmojiSpan key={index} {...child} />;

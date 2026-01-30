@@ -1,11 +1,12 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useActiveConnections } from '../../../../hooks/useActiveConnections';
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
+import FeatureUsageCardBody from '../FeatureUsageCardBody';
+import UpgradeButton from '../UpgradeButton';
 
 const getLimits = ({ max, current }: { max: number; current: number }) => {
 	const total = max || 0;
@@ -29,13 +30,14 @@ const ActiveSessionsCard = (): ReactElement => {
 	const card: CardProps = {
 		title: t('ActiveSessions'),
 		infoText: t('ActiveSessions_InfoText'),
-		showUpgradeButton: true,
 	};
 
-	if (result.isLoading || result.isError) {
+	if (result.isPending || result.isError) {
 		return (
 			<FeatureUsageCard card={card}>
-				<Skeleton variant='rect' width='x112' height='x112' />
+				<FeatureUsageCardBody justifyContent='flex-start'>
+					<Skeleton variant='rect' width='x112' height='x224' />
+				</FeatureUsageCardBody>
 			</FeatureUsageCard>
 		);
 	}
@@ -43,15 +45,26 @@ const ActiveSessionsCard = (): ReactElement => {
 	const { total, used, available, exceedLimit } = getLimits(result.data);
 
 	return (
-		<FeatureUsageCard card={{ ...card, showUpgradeButton: exceedLimit }}>
-			<Box textAlign='center'>
-				<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'}>
-					{used} / {total}
-				</Box>
-				<Box fontScale='p2' color='font-secondary-info' mbs={12}>
+		<FeatureUsageCard
+			card={{
+				...card,
+				...(exceedLimit && {
+					upgradeButton: (
+						<UpgradeButton target='active-session-card' action='upgrade' small>
+							{t('Upgrade')}
+						</UpgradeButton>
+					),
+				}),
+			}}
+		>
+			<FeatureUsageCardBody justifyContent='flex-start'>
+				<Box color='font-secondary-info' textAlign='center'>
+					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} mbe={12}>
+						{used} / {total}
+					</Box>
 					{available} {t('ActiveSessions_available')}
 				</Box>
-			</Box>
+			</FeatureUsageCardBody>
 		</FeatureUsageCard>
 	);
 };

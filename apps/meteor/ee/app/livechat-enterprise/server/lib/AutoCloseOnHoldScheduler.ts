@@ -6,12 +6,12 @@ import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
 
-import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { schedulerLogger } from './logger';
+import { closeRoom } from '../../../../../app/livechat/server/lib/closeRoom';
 
 const SCHEDULER_NAME = 'omnichannel_auto_close_on_hold_scheduler';
 
-class AutoCloseOnHoldSchedulerClass {
+export class AutoCloseOnHoldSchedulerClass {
 	scheduler: Agenda;
 
 	schedulerUser: IUser;
@@ -33,6 +33,7 @@ class AutoCloseOnHoldSchedulerClass {
 			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
 			db: { collection: SCHEDULER_NAME },
 			defaultConcurrency: 1,
+			processEvery: process.env.TEST_MODE === 'true' ? '3 seconds' : '1 minute',
 		});
 
 		await this.scheduler.start();
@@ -41,7 +42,11 @@ class AutoCloseOnHoldSchedulerClass {
 	}
 
 	public async scheduleRoom(roomId: string, timeout: number, comment: string): Promise<void> {
-		this.logger.debug(`Scheduling room ${roomId} to be closed in ${timeout} seconds`);
+		if (!this.running) {
+			throw new Error('AutoCloseOnHoldScheduler is not running');
+		}
+
+		this.logger.debug({ msg: 'Scheduling room to be closed', roomId, timeoutSeconds: timeout });
 		await this.unscheduleRoom(roomId);
 
 		const jobName = `${SCHEDULER_NAME}-${roomId}`;
@@ -52,13 +57,16 @@ class AutoCloseOnHoldSchedulerClass {
 	}
 
 	public async unscheduleRoom(roomId: string): Promise<void> {
-		this.logger.debug(`Unscheduling room ${roomId}`);
+		if (!this.running) {
+			throw new Error('AutoCloseOnHoldScheduler is not running');
+		}
+		this.logger.debug({ msg: 'Unscheduling room', roomId });
 		const jobName = `${SCHEDULER_NAME}-${roomId}`;
 		await this.scheduler.cancel({ name: jobName });
 	}
 
 	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
-		this.logger.debug(`Executing job for room ${data.roomId}`);
+		this.logger.debug({ msg: 'Executing job for room', roomId: data.roomId });
 		const { roomId, comment } = data;
 
 		const [room, user] = await Promise.all([LivechatRooms.findOneById(roomId), this.getSchedulerUser()]);
@@ -74,7 +82,7 @@ class AutoCloseOnHoldSchedulerClass {
 			comment,
 		};
 
-		await Livechat.closeRoom(payload);
+		await closeRoom(payload);
 	}
 
 	private async getSchedulerUser(): Promise<IUser> {

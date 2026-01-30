@@ -1,7 +1,5 @@
-import type { LoginService } from '@rocket.chat/ui-contexts';
 import { UserContext } from '@rocket.chat/ui-contexts';
-import React from 'react';
-import type { ContextType } from 'react';
+import type { ContextType, ReactNode } from 'react';
 
 const userContextValue: ContextType<typeof UserContext> = {
 	userId: 'john.doe',
@@ -23,11 +21,8 @@ const userContextValue: ContextType<typeof UserContext> = {
 	querySubscription: () => [() => () => undefined, () => undefined],
 	queryRoom: () => [() => () => undefined, () => undefined],
 
-	queryAllServices: () => [() => (): void => undefined, (): LoginService[] => []],
-	loginWithService: () => () => Promise.reject('loginWithService not implemented'),
-	loginWithPassword: async () => Promise.reject('loginWithPassword not implemented'),
-	loginWithToken: async () => Promise.reject('loginWithToken not implemented'),
 	logout: () => Promise.resolve(),
+	onLogout: () => () => undefined,
 };
 
 const createUserContextValue = ({ userPreferences }: { userPreferences?: Record<string, unknown> }): ContextType<typeof UserContext> => {
@@ -37,12 +32,6 @@ const createUserContextValue = ({ userPreferences }: { userPreferences?: Record<
 	};
 };
 
-export const MockedUserContext = ({
-	userPreferences,
-	children,
-}: {
-	children: React.ReactNode;
-	userPreferences?: Record<string, unknown>;
-}) => {
+export const MockedUserContext = ({ userPreferences, children }: { children: ReactNode; userPreferences?: Record<string, unknown> }) => {
 	return <UserContext.Provider value={createUserContextValue({ userPreferences })}>{children}</UserContext.Provider>;
 };

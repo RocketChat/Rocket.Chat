@@ -1,62 +1,44 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRef, useEffect } from 'react';
+import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { useRef, useCallback, useEffect } from 'react';
+import type { AllHTMLAttributes } from 'react';
 
-export const useFileInput = (
-	onSetFile: (file: FileList[number], formData: FormData) => void,
-	fileType = 'image/*',
-	fileField = 'image',
-): [onClick: () => void, reset: () => void] => {
-	const ref = useRef<HTMLInputElement>();
+import { useChat } from '../views/room/contexts/ChatContext';
+
+export const useFileInput = (props: AllHTMLAttributes<HTMLInputElement>) => {
+	const fileInputRef = useRef<HTMLInputElement>();
+	const chatContext = useChat();
+
+	const setupFileInput = useSafeRefCallback(
+		useCallback(
+			(composerNode: HTMLElement) => {
+				const fileInput = document.createElement('input');
+				fileInput.setAttribute('style', 'display: none;');
+				Object.entries(props).forEach(([key, value]) => {
+					fileInput.setAttribute(key, value);
+				});
+
+				composerNode.appendChild(fileInput);
+				fileInputRef.current = fileInput;
+
+				return (): void => {
+					fileInputRef.current = undefined;
+					fileInput.remove();
+				};
+			},
+			[props],
+		),
+	);
 
 	useEffect(() => {
-		const fileInput = document.createElement('input');
-		fileInput.setAttribute('type', 'file');
-		fileInput.setAttribute('style', 'display: none');
-		document.body.appendChild(fileInput);
-		ref.current = fileInput;
-
-		return (): void => {
-			ref.current = undefined;
-			fileInput.remove();
-		};
-	}, []);
-
-	useEffect(() => {
-		const fileInput = ref.current;
-		if (!fileInput) {
-			return;
+		const { current: composerNode } = chatContext?.composer?.composerRef || {};
+		if (composerNode) {
+			setupFileInput(composerNode);
 		}
 
-		fileInput.setAttribute('accept', fileType);
-	}, [fileType]);
-
-	useEffect(() => {
-		const fileInput = ref.current;
-		if (!fileInput) {
-			return;
-		}
-
-		const handleFiles = (): void => {
-			if (!fileInput?.files?.length) {
-				return;
-			}
-			const formData = new FormData();
-			formData.append(fileField, fileInput.files[0]);
-			onSetFile(fileInput.files[0], formData);
+		return () => {
+			setupFileInput(null);
 		};
+	}, [setupFileInput]);
 
-		fileInput.addEventListener('change', handleFiles, false);
-
-		return (): void => {
-			fileInput.removeEventListener('change', handleFiles, false);
-		};
-	}, [fileField, fileType, onSetFile]);
-
-	const onClick = useMutableCallback(() => ref?.current?.click());
-	const reset = useMutableCallback(() => {
-		if (ref.current) {
-			ref.current.value = '';
-		}
-	});
-	return [onClick, reset];
+	return fileInputRef;
 };

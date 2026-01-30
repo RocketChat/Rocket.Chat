@@ -5,13 +5,19 @@ import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
-import * as Mailer from '../../../mailer/server/api';
-import { settings } from '../../../settings/server';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
+import { callbacks } from '../../../../server/lib/callbacks';
+import * as Mailer from '../../../mailer/server/api';
+import { settings } from '../../../settings/server';
+import {
+	notifyOnRoomChangedById,
+	notifyOnRoomChangedByUserDM,
+	notifyOnSubscriptionChangedByNameAndRoomType,
+	notifyOnUserChange,
+} from '../lib/notifyListener';
 
 async function reactivateDirectConversations(userId: string) {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active
@@ -37,10 +43,18 @@ async function reactivateDirectConversations(userId: string) {
 		return acc;
 	}, []);
 
-	await Rooms.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false);
+	const setDmReadOnlyResponse = await Rooms.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false);
+	if (setDmReadOnlyResponse.modifiedCount) {
+		void notifyOnRoomChangedById(roomsToReactivate);
+	}
 }
 
-export async function setUserActiveStatus(userId: string, active: boolean, confirmRelinquish = false): Promise<boolean | undefined> {
+export async function setUserActiveStatus(
+	userId: string,
+	active: boolean,
+	confirmRelinquish = false,
+	executedBy?: string,
+): Promise<boolean | undefined> {
 	check(userId, String);
 	check(active, Boolean);
 
@@ -79,7 +93,7 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 
 		// We don't want one killing the other :)
 		await Promise.allSettled([
-			closeOmnichannelConversations(user, livechatSubscribedRooms),
+			closeOmnichannelConversations(user, livechatSubscribedRooms, executedBy),
 			relinquishRoomOwnerships(user._id, chatSubscribedRooms, false),
 		]);
 	}
@@ -99,16 +113,25 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 	}
 
 	if (user.username) {
-		await Subscriptions.setArchivedByUsername(user.username, !active);
+		const { modifiedCount } = await Subscriptions.setArchivedByUsername(user.username, !active);
+		if (modifiedCount) {
+			void notifyOnSubscriptionChangedByNameAndRoomType({ t: 'd', name: user.username });
+		}
 	}
 
 	if (active === false) {
 		await Users.unsetLoginTokens(userId);
 		await Rooms.setDmReadOnlyByUserId(userId, undefined, true, false);
+
+		void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [], active } });
+		void notifyOnRoomChangedByUserDM(userId);
 	} else {
 		await Users.unsetReason(userId);
+
+		void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { active } });
 		await reactivateDirectConversations(userId);
 	}
+
 	if (active && !settings.get('Accounts_Send_Email_When_Activating')) {
 		return true;
 	}

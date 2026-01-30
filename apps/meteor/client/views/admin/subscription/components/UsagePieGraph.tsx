@@ -2,7 +2,8 @@ import type { DatumId } from '@nivo/pie';
 import { Pie } from '@nivo/pie';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactElement, CSSProperties, ReactNode } from 'react';
-import React, { useMemo, useCallback, memo } from 'react';
+import { useMemo, useCallback, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useLocalePercentage } from '../../../../hooks/useLocalePercentage';
 
@@ -13,7 +14,7 @@ const graphColors = (color: CSSProperties['color']): GraphColorsReturn => ({
 	free: Palette.stroke['stroke-extra-light'].toString(),
 });
 
-export type UsagePieGraphProps = {
+type UsagePieGraphProps = {
 	used: number;
 	total: number;
 	label?: ReactNode;
@@ -28,6 +29,7 @@ type GraphData = Array<{
 }>;
 
 const UsagePieGraph = ({ used = 0, total = 0, label, color, size = 140 }: UsagePieGraphProps): ReactElement => {
+	const { t } = useTranslation();
 	const parsedData = useMemo(
 		(): GraphData => [
 			{
@@ -85,11 +87,21 @@ const UsagePieGraph = ({ used = 0, total = 0, label, color, size = 140 }: UsageP
 				</Box>
 			</Box>
 			<Box is='span' fontScale='p2' color='font-secondary-info'>
-				{used} / {unlimited ? '∞' : total}
+				{unlimited &&
+					t('used_limit_infinite', {
+						used,
+					})}
+				{!unlimited &&
+					t('used_limit', {
+						used,
+						limit: total,
+					})}
 			</Box>
-			<Box is='span' mbs={4} color='font-secondary-info'>
-				{label}
-			</Box>
+			{label && (
+				<Box is='span' mbs={4} color='font-secondary-info'>
+					{label}
+				</Box>
+			)}
 		</Box>
 	);
 };

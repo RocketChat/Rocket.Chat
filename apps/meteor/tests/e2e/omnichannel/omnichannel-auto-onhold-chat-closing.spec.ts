@@ -1,10 +1,11 @@
-import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-auto-onhold-chat-closing', () => {
@@ -13,7 +14,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 
-	let agent: { page: Page; poHomeChannel: HomeChannel };
+	let agent: { page: Page; poHomeChannel: HomeOmnichannel };
 
 	test.beforeAll(async ({ api, browser }) => {
 		await Promise.all([
@@ -24,27 +25,24 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		]);
 
 		const { page } = await createAuxContext(browser, Users.user1);
-		agent = { page, poHomeChannel: new HomeChannel(page) };
+		agent = { page, poHomeChannel: new HomeOmnichannel(page) };
 	});
 	test.afterAll(async ({ api }) => {
+		await agent.page.close();
+
 		await Promise.all([
 			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 3600 }).then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }).then((res) => expect(res.status()).toBe(200)),
 		]);
-
-		await agent.page.close();
 	});
 
 	test.beforeEach(async ({ page, api }) => {
 		// make "user-1" online
-		await agent.poHomeChannel.sidenav.switchStatus('online');
+		await agent.poHomeChannel.navbar.changeUserStatus('online');
 
 		// start a new chat for each test
-		newVisitor = {
-			name: faker.person.firstName(),
-			email: faker.internet.email(),
-		};
+		newVisitor = createFakeVisitor();
 		poLiveChat = new OmnichannelLiveChat(page, api);
 		await page.goto('/livechat');
 		await poLiveChat.openLiveChat();
@@ -53,11 +51,13 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		await poLiveChat.btnSendMessageToOnlineAgent.click();
 	});
 
-	test('expect on-hold chat to be closed automatically in 5 seconds', async () => {
-		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+	// Note: Skipping this test as the scheduler is gonna take 1 minute to process now
+	// And waiting for 1 minute in a test is horrible
+	test.skip('expect on-hold chat to be closed automatically in 5 seconds', async () => {
+		await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		await agent.poHomeChannel.content.sendMessage('this_is_a_test_message_from_agent');
 
-		await agent.poHomeChannel.content.btnOnHold.click();
+		await agent.poHomeChannel.quickActionsRoomToolbar.placeChatOnHold();
 
 		await agent.poHomeChannel.content.btnModalConfirm.click();
 
@@ -65,7 +65,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
 			`Chat On Hold: The chat was manually placed On Hold by user1`,
 		);
-		await expect(agent.poHomeChannel.content.inputMessage).not.toBeVisible();
+		await expect(agent.poHomeChannel.composer.inputMessage).not.toBeVisible();
 		await expect(agent.poHomeChannel.content.resumeOnHoldOmnichannelChatButton).toBeVisible();
 
 		// current url

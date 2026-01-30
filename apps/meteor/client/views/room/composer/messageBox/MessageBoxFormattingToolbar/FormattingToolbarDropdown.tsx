@@ -1,55 +1,42 @@
-import { Dropdown, IconButton, Option, OptionTitle, OptionIcon, OptionContent } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useRef } from 'react';
+import { GenericMenu } from '@rocket.chat/ui-client';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
 
-import type { FormattingButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import { isPromptButton, type FormattingButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import type { ComposerAPI } from '../../../../../lib/chats/ChatAPI';
-import { useDropdownVisibility } from '../../../../../sidebar/header/hooks/useDropdownVisibility';
 
 type FormattingToolbarDropdownProps = {
 	composer: ComposerAPI;
 	items: FormattingButton[];
+	disabled: boolean;
 };
 
-const FormattingToolbarDropdown = ({ composer, items, ...props }: FormattingToolbarDropdownProps) => {
-	const t = useTranslation();
-	const reference = useRef(null);
-	const target = useRef(null);
+const FormattingToolbarDropdown = ({ composer, items, disabled }: FormattingToolbarDropdownProps) => {
+	const { t } = useTranslation();
 
-	const { isVisible, toggle } = useDropdownVisibility({ reference, target });
+	const formattingItems: GenericMenuItemProps[] = items.map((formatter) => {
+		const handleFormattingAction = () => {
+			if ('link' in formatter) {
+				window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
+				return;
+			}
+			if (isPromptButton(formatter)) {
+				return formatter.prompt(composer);
+			}
+			composer.wrapSelection(formatter.pattern);
+		};
 
-	return (
-		<>
-			<IconButton {...props} small ref={reference} icon='meatballs' onClick={() => toggle()} />
-			{isVisible && (
-				<Dropdown reference={reference} ref={target} placement='bottom-start'>
-					<OptionTitle>{t('Message_Formatting_Toolbox')}</OptionTitle>
-					{items.map((formatter, index) => {
-						const handleFormattingAction = () => {
-							if ('link' in formatter) {
-								window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
-								return;
-							}
-							composer.wrapSelection(formatter.pattern);
-						};
+		return {
+			id: `formatter-${formatter.label}`,
+			content: t(formatter.label),
+			icon: 'icon' in formatter ? formatter.icon : 'link',
+			onClick: () => handleFormattingAction(),
+		};
+	});
 
-						return (
-							<Option
-								key={index}
-								onClick={() => {
-									handleFormattingAction();
-									toggle();
-								}}
-							>
-								<OptionIcon name={'icon' in formatter ? formatter.icon : 'link'} />
-								<OptionContent>{t(formatter.label)}</OptionContent>
-							</Option>
-						);
-					})}
-				</Dropdown>
-			)}
-		</>
-	);
+	const sections = [{ title: t('Message_Formatting_toolbox'), items: formattingItems }];
+
+	return <GenericMenu title={t('Message_Formatting_toolbox')} disabled={disabled} detached icon='meatballs' sections={sections} />;
 };
 
 export default FormattingToolbarDropdown;

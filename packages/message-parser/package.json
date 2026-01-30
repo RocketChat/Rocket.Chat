@@ -1,0 +1,71 @@
+{
+	"name": "@rocket.chat/message-parser",
+	"version": "0.31.32",
+	"description": "Rocket.Chat parser for messages",
+	"homepage": "https://github.com/RocketChat/fuselage#readme",
+	"bugs": {
+		"url": "https://github.com/RocketChat/fuselage/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/fuselage.git",
+		"directory": "packages/message-parser"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
+	},
+	"exports": {
+		".": {
+			"default": "./dist/messageParser.js",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"main": "dist/messageParser.js",
+	"module": "dist/messageParser.js",
+	"types": "dist/index.d.ts",
+	"directories": {
+		"test": "test"
+	},
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		".:build:bundle": "webpack-cli",
+		".:build:clean": "rimraf dist",
+		"build": "run-s .:build:clean .:build:bundle",
+		"lint": "eslint .",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"tldts": "~6.1.86"
+	},
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/peggy-loader": "workspace:~",
+		"@rocket.chat/prettier-config": "~0.31.25",
+		"@types/jest": "~30.0.0",
+		"@types/node": "~22.16.5",
+		"@typescript-eslint/parser": "~5.60.1",
+		"eslint": "~8.45.0",
+		"jest": "~30.2.0",
+		"npm-run-all": "^4.1.5",
+		"peggy": "4.1.1",
+		"prettier-plugin-pegjs": "~0.5.4",
+		"rimraf": "^6.0.1",
+		"ts-loader": "~9.5.4",
+		"typescript": "~5.9.3",
+		"webpack": "~5.99.9",
+		"webpack-cli": "~5.1.4"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}
