@@ -4,6 +4,7 @@ import { Random } from '@rocket.chat/random';
 import { removeEmpty } from '@rocket.chat/tools';
 
 import { cachedFunction } from './cachedFunction';
+import { convertMessageFiles } from './convertMessageFiles';
 import { transformMappedData } from './transformMappedData';
 
 export class AppMessagesConverter {
@@ -25,7 +26,7 @@ export class AppMessagesConverter {
 		}
 
 		const { attachments, ...message } = msgObj;
-		const getAttachments = async () => this._convertAttachmentsToApp(attachments, msgObj);
+		const getAttachments = async () => this._convertAttachmentsToApp(attachments, msgObj.file);
 
 		const map = {
 			id: '_id',
@@ -77,6 +78,8 @@ export class AppMessagesConverter {
 
 		this.mem.set(cacheObj, cache);
 
+		const { attachments, file: mainFile } = msgObj;
+
 		const map = {
 			id: '_id',
 			threadId: 'tmid',
@@ -95,23 +98,7 @@ export class AppMessagesConverter {
 			token: 'token',
 			blocks: 'blocks',
 			type: 't',
-			files: async (message) => {
-				return message.files?.map((file) => {
-					if (!file || file.typeGroup) {
-						return file;
-					}
-
-					// Thumbnails from older messages did not have any identification but we can extrapolate this information from other data
-					if (message.files.length === 2 && message.attachments?.length === 1 && file === message.files[1]) {
-						return {
-							...file,
-							typeGroup: 'thumb',
-						};
-					}
-
-					return file;
-				});
-			},
+			files: async (message) => convertMessageFiles(message.files, attachments),
 			room: async (message) => {
 				const result = await cache.get('room')(message.rid);
 				delete message.rid;
@@ -128,7 +115,7 @@ export class AppMessagesConverter {
 				return cache.get('user.convertById')(editedBy._id);
 			},
 			attachments: async (message) => {
-				const result = await this._convertAttachmentsToApp(message.attachments, message);
+				const result = await this._convertAttachmentsToApp(message.attachments, mainFile);
 				delete message.attachments;
 				return result;
 			},
@@ -289,7 +276,7 @@ export class AppMessagesConverter {
 		);
 	}
 
-	async _convertAttachmentsToApp(attachments, message) {
+	async _convertAttachmentsToApp(attachments, mainFile) {
 		if (typeof attachments === 'undefined' || !Array.isArray(attachments)) {
 			return undefined;
 		}
@@ -341,8 +328,8 @@ export class AppMessagesConverter {
 			},
 			fileId: (attachment) => {
 				// If the attachment is missing the fileId, but there's only one file in the message, use that file's ID
-				if (!attachment.fileId && attachment.type === 'file' && message?.file?._id && message.attachments.length === 1) {
-					return message.file._id;
+				if (!attachment.fileId && attachment.type === 'file' && mainFile?._id && attachments.length === 1) {
+					return mainFile._id;
 				}
 
 				return attachment.fileId;
