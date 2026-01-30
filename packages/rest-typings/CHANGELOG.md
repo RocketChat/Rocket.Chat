@@ -1,5 +1,16 @@
 # @rocket.chat/rest-typings
 
+## 8.1.0-rc.1
+
+### Patch Changes
+
+- ([#38267](https://github.com/RocketChat/Rocket.Chat/pull/38267)) Fixes an issue where web clients could remain with a stale slashcommand list during a rolling workspace update
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.1.0-rc.1
+  </details>
+
 ## 8.1.0-rc.0
 
 ### Minor Changes

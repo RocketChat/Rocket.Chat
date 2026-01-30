@@ -1,5 +1,48 @@
 # @rocket.chat/meteor
 
+## 8.1.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#38267](https://github.com/RocketChat/Rocket.Chat/pull/38267)) Fixes an issue where web clients could remain with a stale slashcommand list during a rolling workspace update
+
+- <details><summary>Updated dependencies [fd319d58a621d66c20029fd962ddb24a1a24ecc3]:</summary>
+
+  - @rocket.chat/rest-typings@8.1.0-rc.1
+  - @rocket.chat/federation-matrix@0.0.10-rc.1
+  - @rocket.chat/omnichannel-services@0.3.45-rc.1
+  - @rocket.chat/presence@0.2.48-rc.1
+  - @rocket.chat/api-client@0.2.48-rc.1
+  - @rocket.chat/core-services@0.12.1-rc.1
+  - @rocket.chat/http-router@7.9.15-rc.1
+  - @rocket.chat/models@2.0.1-rc.1
+  - @rocket.chat/ui-contexts@27.0.0-rc.1
+  - @rocket.chat/web-ui-registration@27.0.0-rc.1
+  - @rocket.chat/abac@0.1.1-rc.1
+  - @rocket.chat/network-broker@0.2.27-rc.1
+  - @rocket.chat/omni-core-ee@0.0.13-rc.1
+  - @rocket.chat/media-calls@0.2.1-rc.1
+  - @rocket.chat/cron@0.1.48-rc.1
+  - @rocket.chat/instance-status@0.1.48-rc.1
+  - @rocket.chat/omni-core@0.0.13-rc.1
+  - @rocket.chat/ui-client@27.0.0-rc.1
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/fuselage-ui-kit@27.0.0-rc.1
+  - @rocket.chat/gazzodown@27.0.0-rc.1
+  - @rocket.chat/ui-avatar@23.0.0-rc.1
+  - @rocket.chat/ui-video-conf@27.0.0-rc.1
+  - @rocket.chat/ui-voip@17.0.0-rc.1
+  - @rocket.chat/core-typings@8.1.0-rc.1
+  - @rocket.chat/license@1.1.8-rc.1
+  - @rocket.chat/pdf-worker@0.3.27-rc.1
+  - @rocket.chat/apps@0.6.1-rc.1
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/model-typings@2.0.1-rc.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
 ## 8.1.0-rc.0
 
 ### Minor Changes
