@@ -32,21 +32,22 @@ callbacks.add(
 			return message;
 		}
 
-		// Read room state after all callbacks complete to get accurate final count
-		// after roomUpdater changes have been applied to the database
+		setImmediate(() => {
+			void (async () => {
+				try {
+					const room = await Rooms.findOneById(_id, {
+						projection: { msgs: 1, lm: 1 },
+					});
 
-		setImmediate(async () => {
-			try {
-				const room = await Rooms.findOneById(_id, {
-					projection: { msgs: 1, lm: 1 },
-				});
-
-				if (room) {
-					await updateAndNotifyParentRoomWithParentMessage(room);
+					if (room) {
+						await updateAndNotifyParentRoomWithParentMessage(room);
+					}
+				} catch (error) {
+					console.error('Error updating discussion metadata:', error);
 				}
-			} catch (error) {
-				console.error('Error updating discussion metadata:', error);
-			}
+			})().catch((error) => {
+				console.error('Unhandled error in discussion metadata update:', error);
+			});
 		});
 
 		return message;
