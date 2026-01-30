@@ -59,8 +59,7 @@
 		"testunit": "yarn .testunit:definition && yarn .testunit:jest && yarn .testunit:server:cov",
 		"testunit-watch": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --watch --config ./.mocharc.js",
 		"typecheck": "meteor lint && cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" tsc --noEmit --skipLibCheck",
-		"version": "node .scripts/version.js",
-		"vite:debug": "DEBUG_METEOR_VITE_EXPORTS=true vite"
+		"version": "node .scripts/version.js"
 	},
 	"browserslist": [
 		"last 2 versions",
