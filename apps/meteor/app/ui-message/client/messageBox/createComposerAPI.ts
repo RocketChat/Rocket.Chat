@@ -349,6 +349,7 @@ export const createComposerAPI = (
 		dismissAllQuotedMessages,
 		quotedMessages,
 		formatters,
+		stopFormatterTracker,
 		isMicrophoneDenied,
 		setIsMicrophoneDenied,
 	};
