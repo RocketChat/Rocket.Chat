@@ -33,5 +33,6 @@ module.exports = {
 		'app/utils/server/**/*.spec.ts',
 		'!app/custom-oauth/server/**/*.spec.ts',
 		'!app/highlight-words/client/**/*.spec.ts',
+		'!app/mentions/server/**/*.spec.ts',
 	],
 };

@@ -1,8 +1,6 @@
-import { expect } from 'chai';
+import { MentionsServer } from './Mentions';
 
-import { MentionsServer } from '../../../../app/mentions/server/Mentions';
-
-let mention;
+let mention: MentionsServer;
 
 beforeEach(() => {
 	mention = new MentionsServer({
@@ -11,25 +9,29 @@ beforeEach(() => {
 		getUsers: async (usernames) =>
 			[
 				{
-					_id: 1,
+					type: 'user' as const,
+					_id: '1',
 					username: 'rocket.cat',
 				},
 				{
-					_id: 2,
+					type: 'user' as const,
+					_id: '2',
 					username: 'jon',
 				},
 			].filter((user) => usernames.includes(user.username)), // Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
-		getChannels(channels) {
-			return [
+		getChannels: async (channels) =>
+			[
 				{
-					_id: 1,
+					_id: '1',
 					name: 'general',
 				},
-			].filter((channel) => channels.includes(channel.name));
-			// return RocketChat.models.Rooms.find({ name: {$in: _.unique(channels)}, t: 'c'	}, { fields: {_id: 1, name: 1 }}).fetch();
+			].filter((channel) => channels.includes(channel.name)) as any,
+		// return RocketChat.models.Rooms.find({ name: {$in: _.unique(channels)}, t: 'c'	}, { fields: {_id: 1, name: 1 }}).fetch();
+		getUser: async (userId) => ({ _id: userId, language: 'en' }) as any,
+		getTotalChannelMembers: async (/* rid*/) => 2,
+		onMaxRoomMembersExceeded: async () => {
+			/* do nothing */
 		},
-		getUser: (userId) => ({ _id: userId, language: 'en' }),
-		getTotalChannelMembers: (/* rid*/) => 2,
 	});
 });
 
@@ -37,27 +39,27 @@ describe('Mention Server', () => {
 	describe('getUsersByMentions', () => {
 		describe('for @all but the number of users is greater than messageMaxAll', () => {
 			beforeEach(() => {
-				mention.getTotalChannelMembers = () => 5;
+				mention.getTotalChannelMembers = async () => 5;
 			});
 			it('should return nothing', async () => {
 				const message = {
 					msg: '@all',
-				};
-				const expected = [];
+				} as any;
+				const expected: any[] = [];
 				const result = await mention.getUsersByMentions(message);
-				expect(expected).to.be.deep.equal(result);
+				expect(result).toEqual(expected);
 			});
 		});
 		describe('for one user', () => {
 			beforeEach(() => {
-				mention.getChannel = () => ({
+				(mention as any).getChannel = () => ({
 					usernames: [
 						{
-							_id: 1,
+							_id: '1',
 							username: 'rocket.cat',
 						},
 						{
-							_id: 2,
+							_id: '2',
 							username: 'jon',
 						},
 					],
@@ -67,7 +69,7 @@ describe('Mention Server', () => {
 			it('should return "all"', async () => {
 				const message = {
 					msg: '@all',
-				};
+				} as any;
 				const expected = [
 					{
 						_id: 'all',
@@ -75,12 +77,12 @@ describe('Mention Server', () => {
 					},
 				];
 				const result = await mention.getUsersByMentions(message);
-				expect(expected).to.be.deep.equal(result);
+				expect(result).toEqual(expected);
 			});
 			it('should return "here"', async () => {
 				const message = {
 					msg: '@here',
-				};
+				} as any;
 				const expected = [
 					{
 						_id: 'here',
@@ -88,27 +90,28 @@ describe('Mention Server', () => {
 					},
 				];
 				const result = await mention.getUsersByMentions(message);
-				expect(expected).to.be.deep.equal(result);
+				expect(result).toEqual(expected);
 			});
 			it('should return "rocket.cat"', async () => {
 				const message = {
 					msg: '@rocket.cat',
-				};
+				} as any;
 				const expected = [
 					{
-						_id: 1,
+						type: 'user',
+						_id: '1',
 						username: 'rocket.cat',
 					},
 				];
 				const result = await mention.getUsersByMentions(message);
-				expect(expected).to.be.deep.equal(result);
+				expect(result).toEqual(expected);
 			});
 		});
 		describe('for two user', () => {
 			it('should return "all and here"', async () => {
 				const message = {
 					msg: '@all @here',
-				};
+				} as any;
 				const expected = [
 					{
 						_id: 'all',
@@ -120,46 +123,49 @@ describe('Mention Server', () => {
 					},
 				];
 				const result = await mention.getUsersByMentions(message);
-				expect(expected).to.be.deep.equal(result);
+				expect(result).toEqual(expected);
 			});
 			it('should return "here and rocket.cat"', async () => {
 				const message = {
 					msg: '@here @rocket.cat',
-				};
+				} as any;
 				const expected = [
 					{
 						_id: 'here',
 						username: 'here',
 					},
 					{
-						_id: 1,
+						type: 'user',
+						_id: '1',
 						username: 'rocket.cat',
 					},
 				];
 				const result = await mention.getUsersByMentions(message);
-				expect(expected).to.be.deep.equal(result);
+				expect(result).toEqual(expected);
 			});
 
 			it('should return "here, rocket.cat, jon"', async () => {
 				const message = {
 					msg: '@here @rocket.cat @jon',
-				};
+				} as any;
 				const expected = [
 					{
 						_id: 'here',
 						username: 'here',
 					},
 					{
-						_id: 1,
+						type: 'user',
+						_id: '1',
 						username: 'rocket.cat',
 					},
 					{
-						_id: 2,
+						type: 'user',
+						_id: '2',
 						username: 'jon',
 					},
 				];
 				const result = await mention.getUsersByMentions(message);
-				expect(expected).to.be.deep.equal(result);
+				expect(result).toEqual(expected);
 			});
 		});
 
@@ -167,10 +173,10 @@ describe('Mention Server', () => {
 			it('should return "nothing"', async () => {
 				const message = {
 					msg: '@unknow',
-				};
-				const expected = [];
+				} as any;
+				const expected: any[] = [];
 				const result = await mention.getUsersByMentions(message);
-				expect(expected).to.be.deep.equal(result);
+				expect(result).toEqual(expected);
 			});
 		});
 	});
@@ -178,56 +184,56 @@ describe('Mention Server', () => {
 		it('should return the channel "general"', async () => {
 			const message = {
 				msg: '#general',
-			};
+			} as any;
 			const expected = [
 				{
-					_id: 1,
+					_id: '1',
 					name: 'general',
 				},
 			];
 			const result = await mention.getChannelbyMentions(message);
-			expect(result).to.be.deep.equal(expected);
+			expect(result).toEqual(expected);
 		});
 		it('should return nothing"', async () => {
 			const message = {
 				msg: '#unknow',
-			};
-			const expected = [];
+			} as any;
+			const expected: any[] = [];
 			const result = await mention.getChannelbyMentions(message);
-			expect(result).to.be.deep.equal(expected);
+			expect(result).toEqual(expected);
 		});
 	});
 	describe('execute', () => {
 		it('should return the channel "general"', async () => {
 			const message = {
 				msg: '#general',
-			};
+			} as any;
 			const expected = [
 				{
-					_id: 1,
+					_id: '1',
 					name: 'general',
 				},
 			];
 			const result = await mention.getChannelbyMentions(message);
-			expect(result).to.be.deep.equal(expected);
+			expect(result).toEqual(expected);
 		});
 		it('should return nothing"', async () => {
 			const message = {
 				msg: '#unknow',
-			};
+			} as any;
 			const expected = {
 				msg: '#unknow',
 				mentions: [],
 				channels: [],
 			};
 			const result = await mention.execute(message);
-			expect(result).to.be.deep.equal(expected);
+			expect(result).toEqual(expected);
 		});
 	});
 
 	describe('getUserMentions', () => {
 		describe('for message with only an md link', () => {
-			const result = [];
+			const result: string[] = [];
 			[
 				'[@rocket.cat](https://rocket.chat)',
 				'[@rocket.cat](https://rocket.chat) hello',
@@ -235,7 +241,7 @@ describe('Mention Server', () => {
 				'[test](https://rocket.chat)',
 			].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
-					expect(result).to.be.deep.equal(mention.getUserMentions(text));
+					expect(mention.getUserMentions(text)).toEqual(result);
 				});
 			});
 		});
@@ -249,7 +255,7 @@ describe('Mention Server', () => {
 				'@sauron please work on [user@password](https://rocket.chat) hello',
 			].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
-					expect(result).to.be.deep.equal(mention.getUserMentions(text));
+					expect(mention.getUserMentions(text)).toEqual(result);
 				});
 			});
 		});
@@ -257,7 +263,7 @@ describe('Mention Server', () => {
 
 	describe('getChannelMentions', () => {
 		describe('for message with md link', () => {
-			const result = [];
+			const result: string[] = [];
 			[
 				'[#general](https://rocket.chat)',
 				'[#general](https://rocket.chat) hello',
@@ -265,7 +271,7 @@ describe('Mention Server', () => {
 				'[test #general #other](https://rocket.chat)',
 			].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
-					expect(result).to.be.deep.equal(mention.getChannelMentions(text));
+					expect(mention.getChannelMentions(text)).toEqual(result);
 				});
 			});
 		});
@@ -279,7 +285,7 @@ describe('Mention Server', () => {
 				'#somechannel join [#general on #other](https://rocket.chat)',
 			].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
-					expect(result).to.be.deep.equal(mention.getChannelMentions(text));
+					expect(mention.getChannelMentions(text)).toEqual(result);
 				});
 			});
 		});
