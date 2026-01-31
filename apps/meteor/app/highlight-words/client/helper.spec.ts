@@ -1,6 +1,4 @@
-import { expect } from 'chai';
-
-import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from '../../../../app/highlight-words/client/helper';
+import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from './helper';
 
 describe('helper', () => {
 	describe('highlightWords', () => {
@@ -14,7 +12,7 @@ describe('helper', () => {
 				})),
 			);
 
-			expect(res).to.be.equal('here is some <mark class="highlight-text">word</mark>');
+			expect(res).toBe('here is some <mark class="highlight-text">word</mark>');
 		});
 
 		describe('handles links', () => {
@@ -28,7 +26,7 @@ describe('helper', () => {
 					})),
 				);
 
-				expect(res).to.be.equal('here we go https://somedomain.com/here-some.word/pulls more words after');
+				expect(res).toBe('here we go https://somedomain.com/here-some.word/pulls more words after');
 			});
 
 			it('not highlighting two links', () => {
@@ -42,7 +40,7 @@ describe('helper', () => {
 					})),
 				);
 
-				expect(res).to.be.equal(msg);
+				expect(res).toBe(msg);
 			});
 
 			it('not highlighting link but keep words on message highlighted', () => {
@@ -55,7 +53,7 @@ describe('helper', () => {
 					})),
 				);
 
-				expect(res).to.be.equal('here we go https://somedomain.com/here-some.foo/pulls more <mark class="highlight-text">foo</mark> after');
+				expect(res).toBe('here we go https://somedomain.com/here-some.foo/pulls more <mark class="highlight-text">foo</mark> after');
 			});
 		});
 	});
