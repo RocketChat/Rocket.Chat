@@ -55,7 +55,10 @@ const DraggableElement = ({
 			backgroundColor={backgroundColor ?? 'blue'}
 			data-testid='draggable-box'
 		>
-			<Box ref={handleRef} id='drag-handle' width='100%' height={40} backgroundColor='red' data-testid='drag-handle' />
+			{/* This text inside the handle is necessary so that the text selection test doesn't fail due to having no text nodes */}
+			<Box ref={handleRef} id='drag-handle' width='100%' height={40} backgroundColor='red' data-testid='drag-handle'>
+				Handle
+			</Box>
 			{!!onClick && (
 				<Button data-testid='change-view' onClick={onClick}>
 					Change view
@@ -494,6 +497,13 @@ export const ScrollablePage: Story = {
 			const startX = handleRect.left + handleRect.width / 2;
 			const startY = handleRect.top + handleRect.height / 2;
 
+			// Caveat: We use "user-select: none" to prevent text selection behind the widget
+			// but when simulating mouse events with `userEvent`, the text selection is triggered
+			// regardless of the "user-select: none" property
+			// This most likely happens because the events are simulated and not a real mouse interaction
+			// This means we cannot test the text behind the widget, but we can test if the text inside the handle was selected
+			// During manual tests, either both texts (inside and behind the widget) are selected or neither is selected
+			// So this test should cover the issue even though it's not a perfect solution
 			await user.pointer([
 				{
 					target: handle,
@@ -504,10 +514,9 @@ export const ScrollablePage: Story = {
 					},
 				},
 				{
-					// we need to set offset and target to trigger text selection
-					// if target or offset is not set, the issue doesn't happen
-					// I believe this is due to events being simulated and not exact mouse interaction
-					target: document.documentElement,
+					// we need to set offset to trigger text selection
+					// this is what makes testing difficult, as setting the offset and target to "document.documentElement"
+					// always triggers text selection, regardless of the css styles
 					offset: 0,
 					pointerName: 'mouse',
 					coords: {
