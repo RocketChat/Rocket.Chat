@@ -13,7 +13,13 @@ const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
 	const router = useRouter();
 
 	const handleGoHomeClick = () => {
-		router.navigate('/home');
+		const handleGoHomeClick = () => {
+			if (router?.navigate) {
+				router.navigate('/home');
+			} else {
+				window.location.href = '/';
+			}
+		};
 	};
 
 	return (
