@@ -21,7 +21,9 @@ export const loggerMiddleware =
 				...(['POST', 'PUT', 'PATCH', 'DELETE'].includes(c.req.method) && (await getRestPayload(c.req))),
 			},
 			{
-				redact: ['password'],
+				redact: [
+					'payload.password', // Potentially logged by v1/login
+				],
 			},
 		);
 
