@@ -35,5 +35,6 @@ module.exports = {
 		'!app/highlight-words/client/**/*.spec.ts',
 		'!app/mentions/server/**/*.spec.ts',
 		'!app/mentions/lib/**/*.spec.ts',
+		'!app/utils/lib/**/*.spec.ts',
 	],
 };
