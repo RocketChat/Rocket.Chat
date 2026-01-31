@@ -16,7 +16,7 @@ const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
 		if (router?.navigate) {
 			router.navigate('/home');
 		} else {
-			window.location.href = '/';
+			window.location.href = '/home';
 		}
 	};
 
