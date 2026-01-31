@@ -8,8 +8,8 @@ if (!Deno.args.includes('--subprocess')) {
 	Deno.exit(1001);
 }
 
-import { JsonRpcError } from 'jsonrpc-lite';
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
+import { JsonRpcError } from 'jsonrpc-lite';
 
 import * as Messenger from './lib/messenger.ts';
 import { decoder } from './lib/codec.ts';
@@ -24,6 +24,7 @@ import handleScheduler from './handlers/scheduler-handler.ts';
 import registerErrorListeners from './error-handlers.ts';
 import { sendMetrics } from './lib/metricsCollector.ts';
 import outboundMessageHandler from './handlers/outboundcomms-handler.ts';
+import { RequestContext } from './lib/requestContext.ts';
 
 type Handlers = {
 	app: typeof handleApp;
@@ -32,7 +33,7 @@ type Handlers = {
 	videoconference: typeof videoConferenceHandler;
 	outboundCommunication: typeof outboundMessageHandler;
 	scheduler: typeof handleScheduler;
-	ping: (method: string, params: unknown) => 'pong';
+	ping: (request: RequestContext) => 'pong';
 };
 
 const COMMAND_PING = '_zPING';
@@ -45,7 +46,7 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 		videoconference: videoConferenceHandler,
 		outboundCommunication: outboundMessageHandler,
 		scheduler: handleScheduler,
-		ping: (_method, _params) => 'pong',
+		ping: (_request) => 'pong',
 	};
 
 	// We're not handling notifications at the moment
@@ -53,10 +54,14 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 		return Messenger.sendInvalidRequestError();
 	}
 
-	const { id, method, params } = payload;
+	const { id, method } = payload;
 
 	const logger = new Logger(method);
 	AppObjectRegistry.set('logger', logger);
+
+	const context: RequestContext = Object.assign(payload, {
+		context: { logger }
+	})
 
 	const app = AppObjectRegistry.get<App>('app');
 
@@ -75,7 +80,7 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 		});
 	}
 
-	const result = await handler(method, params);
+	const result = await handler(context);
 
 	if (result instanceof JsonRpcError) {
 		return Messenger.errorResponse({ id, error: result });

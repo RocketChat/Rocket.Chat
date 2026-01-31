@@ -155,7 +155,7 @@ const dmDeleteAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
-		await eraseRoom(room._id, this.userId);
+		await eraseRoom(room._id, this.user);
 
 		return API.v1.success();
 	};

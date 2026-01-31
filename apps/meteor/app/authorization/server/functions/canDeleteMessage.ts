@@ -12,7 +12,7 @@ const elapsedTime = (ts: Date): number => {
 
 export const canDeleteMessageAsync = async (
 	uid: string,
-	{ u, rid, ts }: { u: Pick<IUser, '_id' | 'username'>; rid: string; ts: Date },
+	{ u, rid, ts }: { u: Pick<IUser, '_id' | 'username'>; rid: string; ts?: Date },
 ): Promise<boolean> => {
 	const room = await Rooms.findOneById<Pick<IRoom, '_id' | 'ro' | 'unmuted' | 't' | 'teamId' | 'prid'>>(rid, {
 		projection: {
