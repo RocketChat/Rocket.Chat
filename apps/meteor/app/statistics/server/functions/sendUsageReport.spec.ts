@@ -1,43 +1,61 @@
-import { expect } from 'chai';
-import { describe, it, beforeEach, afterEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import type { Logger } from '@rocket.chat/logger';
+import { Statistics } from '@rocket.chat/models';
+import { serverFetch } from '@rocket.chat/server-fetch';
 
-const sandbox = sinon.createSandbox();
+import { statistics } from '..';
+import { sendUsageReport } from './sendUsageReport';
 
-const mocks = {
+jest.mock('@rocket.chat/models', () => ({
 	Statistics: {
-		findLast: sandbox.stub(),
-		updateOne: sandbox.stub(),
+		findLast: jest.fn(),
+		updateOne: jest.fn(),
 	},
+}));
+
+jest.mock('@rocket.chat/server-fetch', () => ({
+	serverFetch: jest.fn(),
+}));
+
+jest.mock('..', () => ({
 	statistics: {
-		save: sandbox.stub(),
+		save: jest.fn(),
 	},
-	serverFetch: sandbox.stub(),
-	getWorkspaceAccessToken: sandbox.stub().resolves('workspace-token'),
+}));
+
+jest.mock('../../../cloud/server', () => ({
+	getWorkspaceAccessToken: jest.fn().mockResolvedValue('workspace-token'),
+}));
+
+jest.mock('meteor/meteor', () => ({
 	Meteor: {
-		absoluteUrl: sandbox.stub().returns('http://localhost:3000/'),
+		absoluteUrl: jest.fn().mockReturnValue('http://localhost:3000/'),
 	},
-	logger: {
-		error: sandbox.stub(),
-	},
+}));
+
+jest.mock('../../../utils/rocketchat.info', () => ({
 	Info: {
 		version: '3.0.1',
 	},
-};
+}));
 
-const { sendUsageReport } = proxyquire.noCallThru().load('./sendUsageReport', {
-	'@rocket.chat/models': { Statistics: mocks.Statistics },
-	'@rocket.chat/server-fetch': { serverFetch: mocks.serverFetch },
-	'..': { statistics: mocks.statistics },
-	'../../../cloud/server': { getWorkspaceAccessToken: mocks.getWorkspaceAccessToken },
-	'meteor/meteor': { Meteor: mocks.Meteor },
-	'../../../utils/rocketchat.info': { Info: mocks.Info },
-});
+require('@rocket.chat/models');
+require('@rocket.chat/server-fetch');
+require('..');
+require('../../../cloud/server');
+require('meteor/meteor');
+require('../../../utils/rocketchat.info');
+
+const mockFindLast = Statistics.findLast as jest.Mock;
+const mockSave = statistics.save as jest.Mock;
+const mockServerFetch = serverFetch as jest.Mock;
 
 describe('sendUsageReport', () => {
+	const mockLogger = {
+		error: jest.fn(),
+	} as unknown as Logger;
+
 	beforeEach(() => {
-		sandbox.resetHistory();
+		jest.clearAllMocks();
 	});
 
 	afterEach(() => {
@@ -47,59 +65,59 @@ describe('sendUsageReport', () => {
 	it('should save statistics locally and not send to collector when RC_DISABLE_STATISTICS_REPORTING is true', async () => {
 		process.env.RC_DISABLE_STATISTICS_REPORTING = 'true';
 
-		const result = await sendUsageReport(mocks.logger);
+		const result = await sendUsageReport(mockLogger);
 
-		expect(mocks.statistics.save.called).to.be.true;
-		expect(mocks.serverFetch.called).to.be.false;
-		expect(result).to.be.undefined;
+		expect(mockSave).toHaveBeenCalled();
+		expect(mockServerFetch).not.toHaveBeenCalled();
+		expect(result).toBeUndefined();
 	});
 
 	it('should save statistics locally and send to collector when RC_DISABLE_STATISTICS_REPORTING is false', async () => {
 		process.env.RC_DISABLE_STATISTICS_REPORTING = 'false';
 
-		const result = await sendUsageReport(mocks.logger);
+		const result = await sendUsageReport(mockLogger);
 
-		expect(mocks.statistics.save.called).to.be.true;
-		expect(mocks.serverFetch.calledOnce).to.be.true;
-		expect(mocks.serverFetch.calledWith('https://collector.rocket.chat/', sinon.match({ method: 'POST' }))).to.be.true;
-		expect(result).to.be.undefined;
+		expect(mockSave).toHaveBeenCalled();
+		expect(mockServerFetch).toHaveBeenCalledTimes(1);
+		expect(mockServerFetch).toHaveBeenCalledWith('https://collector.rocket.chat/', expect.objectContaining({ method: 'POST' }));
+		expect(result).toBeUndefined();
 	});
 
 	it('should generate new statistics when version changes', async () => {
-		mocks.Statistics.findLast.resolves({
+		mockFindLast.mockResolvedValue({
 			_id: 'stats-id',
 			version: '2.9.0',
 			createdAt: new Date(),
 		});
 
-		mocks.statistics.save.resolves({ _id: 'new-stats-id' });
+		mockSave.mockResolvedValue({ _id: 'new-stats-id' });
 
-		const result = await sendUsageReport(mocks.logger);
+		const result = await sendUsageReport(mockLogger);
 
-		expect(mocks.statistics.save.calledOnce).to.be.true;
-		expect(result).to.be.undefined;
+		expect(mockSave).toHaveBeenCalledTimes(1);
+		expect(result).toBeUndefined();
 	});
 
 	it('should NOT generate new statistics if last version equals current version', async () => {
-		mocks.Statistics.findLast.resolves({
+		mockFindLast.mockResolvedValue({
 			_id: 'stats-id',
 			version: '3.0.1',
 			createdAt: new Date(),
 			statsToken: 'token',
 		});
 
-		const result = await sendUsageReport(mocks.logger);
+		const result = await sendUsageReport(mockLogger);
 
-		expect(mocks.statistics.save.called).to.be.false;
-		expect(result).to.equal('token');
+		expect(mockSave).not.toHaveBeenCalled();
+		expect(result).toBe('token');
 	});
 
 	it('should generate new statistics when no previous stats exist', async () => {
-		mocks.Statistics.findLast.resolves(undefined);
-		mocks.statistics.save.resolves({ _id: 'new-stats-id' });
+		mockFindLast.mockResolvedValue(undefined);
+		mockSave.mockResolvedValue({ _id: 'new-stats-id' });
 
-		await sendUsageReport(mocks.logger);
+		await sendUsageReport(mockLogger);
 
-		expect(mocks.statistics.save.calledOnce).to.be.true;
+		expect(mockSave).toHaveBeenCalledTimes(1);
 	});
 });
