@@ -6,6 +6,7 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { createOrUpdateFederatedUser } from '../helpers/createOrUpdateFederatedUser';
 import { getUsernameServername } from '../helpers/getUsernameServername';
+import { federationMetrics, extractOriginFromMatrixRoomId } from '../helpers/metricsHelpers';
 
 const logger = new Logger('federation-matrix:member');
 
@@ -193,38 +194,64 @@ async function handleInvite({
 	if (room.t === 'd') {
 		await Room.updateDirectMessageRoomName(room);
 	}
+
+	federationMetrics.federationEventsProcessed.inc({
+		event_type: 'membership',
+		direction: 'incoming',
+	});
 }
 
 async function handleJoin({
 	room_id: roomId,
 	state_key: userId,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
-	const joiningUser = await getOrCreateFederatedUser(userId);
-	if (!joiningUser?.username) {
-		throw new Error(`Failed to get or create joining user: ${userId}`);
-	}
+	const roomOrigin = extractOriginFromMatrixRoomId(roomId);
+	const endTimer = federationMetrics.federationRoomJoinDuration.startTimer({ origin: roomOrigin });
 
-	const room = await Rooms.findOneFederatedByMrid(roomId);
-	if (!room) {
-		throw new Error(`Room not found while joining user ${userId} to room ${roomId}`);
-	}
+	try {
+		const joiningUser = await getOrCreateFederatedUser(userId);
+		if (!joiningUser?.username) {
+			throw new Error(`Failed to get or create joining user: ${userId}`);
+		}
 
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
-	if (!subscription) {
-		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
-	}
+		const room = await Rooms.findOneFederatedByMrid(roomId);
+		if (!room) {
+			throw new Error(`Room not found while joining user ${userId} to room ${roomId}`);
+		}
 
-	// update room name for DMs
-	if (room.t === 'd') {
-		await Room.updateDirectMessageRoomName(room, [subscription._id]);
-	}
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
+		if (!subscription) {
+			throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
+		}
 
-	if (!subscription.status) {
-		logger.info('User is already joined to the room, skipping...');
-		return;
-	}
+		// update room name for DMs
+		if (room.t === 'd') {
+			await Room.updateDirectMessageRoomName(room, [subscription._id]);
+		}
 
-	await Room.performAcceptRoomInvite(room, subscription, joiningUser);
+		if (!subscription.status) {
+			logger.info('User is already joined to the room, skipping...');
+			return;
+		}
+
+		await Room.performAcceptRoomInvite(room, subscription, joiningUser);
+
+		// Increment counter for rooms joined from external servers
+		const serverName = federationSDK.getConfig('serverName');
+		if (roomOrigin !== serverName) {
+			federationMetrics.federatedRoomsJoined.inc({
+				room_type: room.t,
+				origin: roomOrigin,
+			});
+		}
+
+		federationMetrics.federationEventsProcessed.inc({
+			event_type: 'membership',
+			direction: 'incoming',
+		});
+	} finally {
+		endTimer();
+	}
 }
 
 async function handleLeave({
@@ -251,6 +278,11 @@ async function handleLeave({
 		await Room.updateDirectMessageRoomName(room);
 	}
 
+	federationMetrics.federationEventsProcessed.inc({
+		event_type: 'membership',
+		direction: 'incoming',
+	});
+
 	// TODO check if there are no pending invites to the room, and if so, delete the room
 }
 
@@ -275,6 +307,11 @@ export function member() {
 			}
 		} catch (err) {
 			logger.error({ msg: 'Failed to process Matrix membership event', err });
+			federationMetrics.federationEventsFailed.inc({
+				event_type: 'membership',
+				direction: 'incoming',
+				error_type: err instanceof Error ? err.constructor.name : 'Unknown',
+			});
 		}
 	});
 }

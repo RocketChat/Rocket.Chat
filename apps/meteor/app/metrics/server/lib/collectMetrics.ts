@@ -1,6 +1,6 @@
 import http from 'http';
 
-import { Statistics } from '@rocket.chat/models';
+import { Rooms, Statistics, Users } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
 import connect from 'connect';
 import { Facts } from 'meteor/facts-base';
@@ -86,6 +86,90 @@ const setPrometheusData = async (): Promise<void> => {
 	metrics.totalLivechatAgents.set(statistics.totalLivechatAgents);
 
 	metrics.pushQueue.set(statistics.pushQueue || 0);
+
+	// Federation statistics
+	await collectFederationMetrics();
+};
+
+/**
+ * Collects federation-related gauge metrics by querying the database.
+ * This includes counts of federated rooms and users.
+ */
+const collectFederationMetrics = async (): Promise<void> => {
+	try {
+		// Check if federation is enabled before collecting metrics
+		const federationEnabled = settings.get<boolean>('Federation_Matrix_enabled');
+		if (!federationEnabled) {
+			return;
+		}
+
+		const serverName = settings.get<string>('Federation_Matrix_homeserver_domain') || '';
+
+		// Count federated rooms by type
+		const federatedChannels = await Rooms.col.countDocuments({
+			't': 'c',
+			'federation.mrid': { $exists: true },
+		});
+		const federatedPrivateGroups = await Rooms.col.countDocuments({
+			't': 'p',
+			'federation.mrid': { $exists: true },
+		});
+		const federatedDirect = await Rooms.col.countDocuments({
+			't': 'd',
+			'federation.mrid': { $exists: true },
+		});
+
+		metrics.totalFederatedChannels.set(federatedChannels);
+		metrics.totalFederatedPrivateGroups.set(federatedPrivateGroups);
+		metrics.totalFederatedDirectMessages.set(federatedDirect);
+
+		// Count federated rooms by origin
+		const federatedRoomsByOrigin = await Rooms.col
+			.aggregate<{ _id: { room_type: string; origin: string }; count: number }>([
+				{ $match: { 'federation.mrid': { $exists: true } } },
+				{
+					$group: {
+						_id: { room_type: '$t', origin: '$federation.origin' },
+						count: { $sum: 1 },
+					},
+				},
+			])
+			.toArray();
+
+		// Reset all federated room gauges before setting new values
+		metrics.totalFederatedRooms.reset();
+
+		for (const { _id, count } of federatedRoomsByOrigin) {
+			const isLocal = _id.origin === serverName;
+			metrics.totalFederatedRooms.set(
+				{
+					room_type: _id.room_type,
+					origin: isLocal ? 'local' : _id.origin || 'unknown',
+				},
+				count,
+			);
+		}
+
+		// Count federated users by origin
+		const federatedUsersByOrigin = await Users.col
+			.aggregate<{
+				_id: string;
+				count: number;
+			}>([
+				{ $match: { 'federated': true, 'federation.origin': { $exists: true } } },
+				{ $group: { _id: '$federation.origin', count: { $sum: 1 } } },
+			])
+			.toArray();
+
+		// Reset federated users gauge before setting new values
+		metrics.totalFederatedUsers.reset();
+
+		for (const { _id: origin, count } of federatedUsersByOrigin) {
+			metrics.totalFederatedUsers.set({ origin: origin || 'unknown' }, count);
+		}
+	} catch (error) {
+		SystemLogger.error({ msg: 'Error collecting federation metrics', error });
+	}
 };
 
 const app = connect();

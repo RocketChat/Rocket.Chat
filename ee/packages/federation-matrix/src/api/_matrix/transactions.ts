@@ -6,6 +6,7 @@ import { addSpanAttributes } from '@rocket.chat/tracing';
 
 import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
+import { federationMetrics, bucketizePduCount, bucketizeEduCount } from '../../helpers/metricsHelpers';
 
 const SendTransactionParamsSchema = {
 	type: 'object',
@@ -358,9 +359,17 @@ export const getMatrixTransactionsRoutes = () => {
 						'federation.edu_types': Array.from(eduTypes).join(','),
 					});
 
+					// Start duration timer for transaction processing
+					const endTimer = federationMetrics.federationTransactionProcessDuration.startTimer({
+						pdu_count: bucketizePduCount(pdus.length),
+						edu_count: bucketizeEduCount(edus.length),
+						origin: body.origin,
+					});
+
 					try {
 						await federationSDK.processIncomingTransaction(body);
 					} catch (error: any) {
+						endTimer();
 						// TODO custom error types?
 						if (error.message === 'too-many-concurrent-transactions') {
 							return {
@@ -378,6 +387,7 @@ export const getMatrixTransactionsRoutes = () => {
 						};
 					}
 
+					endTimer();
 					return {
 						body: {
 							pdus: {},

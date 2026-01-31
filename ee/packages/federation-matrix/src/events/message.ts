@@ -6,6 +6,7 @@ import { Users, Rooms, Messages } from '@rocket.chat/models';
 
 import { fileTypes } from '../FederationMatrix';
 import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../helpers/message.parsers';
+import { federationMetrics, extractOriginFromMatrixUserId, determineMessageType } from '../helpers/metricsHelpers';
 import { MatrixMediaService } from '../services/MatrixMediaService';
 
 const logger = new Logger('federation-matrix:message');
@@ -112,6 +113,11 @@ async function handleMediaMessage(
 
 export function message() {
 	federationSDK.eventEmitterService.on('homeserver.matrix.message', async ({ event, event_id: eventId }) => {
+		const messageType = determineMessageType(event);
+		const endTimer = federationMetrics.federationIncomingMessageProcessDuration.startTimer({
+			message_type: messageType,
+		});
+
 		try {
 			const { msgtype, body } = event.content;
 			const messageBody = body.toString();
@@ -133,6 +139,7 @@ export function message() {
 			}
 
 			const serverName = federationSDK.getConfig('serverName');
+			const origin = extractOriginFromMatrixUserId(event.sender);
 
 			const relation = event.content['m.relates_to'];
 
@@ -227,6 +234,17 @@ export function message() {
 					thread,
 					ts: new Date(event.origin_server_ts),
 				});
+
+				// Track received message
+				federationMetrics.federatedMessagesReceived.inc({
+					room_type: room.t,
+					message_type: messageType,
+					origin,
+				});
+				federationMetrics.federationEventsProcessed.inc({
+					event_type: 'message',
+					direction: 'incoming',
+				});
 				return;
 			}
 
@@ -261,12 +279,36 @@ export function message() {
 					ts: new Date(event.origin_server_ts),
 				});
 			}
+
+			// Track received message
+			federationMetrics.federatedMessagesReceived.inc({
+				room_type: room.t,
+				message_type: messageType,
+				origin,
+			});
+			federationMetrics.federationEventsProcessed.inc({
+				event_type: 'message',
+				direction: 'incoming',
+			});
 		} catch (err) {
 			logger.error({ msg: 'Error processing Matrix message', err });
+			federationMetrics.federationEventsFailed.inc({
+				event_type: 'message',
+				direction: 'incoming',
+				error_type: err instanceof Error ? err.constructor.name : 'Unknown',
+			});
+		} finally {
+			endTimer();
 		}
 	});
 
 	federationSDK.eventEmitterService.on('homeserver.matrix.encrypted', async ({ event, event_id: eventId }) => {
+		const messageType = 'encrypted';
+		const endTimer = federationMetrics.federationIncomingMessageProcessDuration.startTimer({
+			message_type: messageType,
+		});
+		const origin = extractOriginFromMatrixUserId(event.sender);
+
 		try {
 			if (!event.content.ciphertext) {
 				logger.debug('No message content found in event');
@@ -363,6 +405,17 @@ export function message() {
 					thread,
 					ts: new Date(event.origin_server_ts),
 				});
+
+				// Track received encrypted message
+				federationMetrics.federatedMessagesReceived.inc({
+					room_type: room.t,
+					message_type: messageType,
+					origin,
+				});
+				federationMetrics.federationEventsProcessed.inc({
+					event_type: 'message',
+					direction: 'incoming',
+				});
 				return;
 			}
 
@@ -377,8 +430,26 @@ export function message() {
 				thread,
 				ts: new Date(event.origin_server_ts),
 			});
+
+			// Track received encrypted message
+			federationMetrics.federatedMessagesReceived.inc({
+				room_type: room.t,
+				message_type: messageType,
+				origin,
+			});
+			federationMetrics.federationEventsProcessed.inc({
+				event_type: 'message',
+				direction: 'incoming',
+			});
 		} catch (err) {
 			logger.error({ msg: 'Error processing Matrix message', err });
+			federationMetrics.federationEventsFailed.inc({
+				event_type: 'message',
+				direction: 'incoming',
+				error_type: err instanceof Error ? err.constructor.name : 'Unknown',
+			});
+		} finally {
+			endTimer();
 		}
 	});
 
@@ -409,8 +480,18 @@ export function message() {
 			}
 
 			await Message.deleteMessage(user, rcMessage);
+
+			federationMetrics.federationEventsProcessed.inc({
+				event_type: 'redaction',
+				direction: 'incoming',
+			});
 		} catch (err) {
 			logger.error({ msg: 'Failed to process Matrix removal redaction', err });
+			federationMetrics.federationEventsFailed.inc({
+				event_type: 'redaction',
+				direction: 'incoming',
+				error_type: err instanceof Error ? err.constructor.name : 'Unknown',
+			});
 		}
 	});
 }
