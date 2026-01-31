@@ -7,6 +7,7 @@ import { registerAccessTokenService } from './oauth';
 async function getIdentity(accessToken: string): Promise<Record<string, any>> {
 	try {
 		const request = await fetch('https://www.googleapis.com/oauth2/v1/userinfo', {
+			ignoreSsrfValidation: true,
 			params: { access_token: accessToken },
 		});
 
@@ -25,6 +26,7 @@ async function getIdentity(accessToken: string): Promise<Record<string, any>> {
 async function getScopes(accessToken: string): Promise<string[]> {
 	try {
 		const request = await fetch('https://www.googleapis.com/oauth2/v1/tokeninfo', {
+			ignoreSsrfValidation: true,
 			params: { access_token: accessToken },
 		});
 
@@ -62,7 +64,7 @@ registerAccessTokenService('google', async (options) => {
 	};
 
 	const fields: Record<string, any> = {};
-	const { whitelistedFields } = Google as any;
+	const { whitelistedFields } = Google;
 	for (const key of whitelistedFields) {
 		if (identity[key]) {
 			fields[key] = identity[key];

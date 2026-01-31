@@ -17,6 +17,7 @@ const getIdentity = async function (accessToken: string, fields: string[], secre
 
 	try {
 		const request = await fetch(`${FB_URL}/${FB_API_VERSION}/me`, {
+			ignoreSsrfValidation: true,
 			params: {
 				access_token: accessToken,
 				appsecret_proof: hmac.digest('hex'),

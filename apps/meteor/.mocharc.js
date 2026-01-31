@@ -34,5 +34,6 @@ module.exports = {
 		'!app/custom-oauth/server/**/*.spec.ts',
 		'!app/highlight-words/client/**/*.spec.ts',
 		'!app/mentions/server/**/*.spec.ts',
+		'!app/mentions/lib/**/*.spec.ts',
 	],
 };

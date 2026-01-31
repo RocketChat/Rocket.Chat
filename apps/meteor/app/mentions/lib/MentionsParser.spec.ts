@@ -1,8 +1,8 @@
-import { expect } from 'chai';
+import type { IMessage } from '@rocket.chat/core-typings';
 
-import { MentionsParser } from '../../../../app/mentions/lib/MentionsParser';
+import { MentionsParser } from './MentionsParser';
 
-let mentionsParser;
+let mentionsParser: MentionsParser;
 beforeEach(() => {
 	mentionsParser = new MentionsParser({
 		pattern: () => '[0-9a-zA-Z-_.]+',
@@ -13,10 +13,10 @@ beforeEach(() => {
 describe('Mention', () => {
 	describe('getUserMentions', () => {
 		describe('for simple text, no mentions', () => {
-			const result = [];
+			const result: string[] = [];
 			['#rocket.cat', 'hello rocket.cat how are you?'].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
-					expect(result).to.be.deep.equal(mentionsParser.getUserMentions(text));
+					expect(result).toEqual(mentionsParser.getUserMentions(text));
 				});
 			});
 		});
@@ -33,20 +33,20 @@ describe('Mention', () => {
 				'hello @rocket.cat how are you?',
 			].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
-					expect(result).to.be.deep.equal(mentionsParser.getUserMentions(text));
+					expect(result).toEqual(mentionsParser.getUserMentions(text));
 				});
 			});
 
 			it.skip('should return without the "." from "@rocket.cat."', () => {
-				expect(result).to.be.deep.equal(mentionsParser.getUserMentions('@rocket.cat.'));
+				expect(result).toEqual(mentionsParser.getUserMentions('@rocket.cat.'));
 			});
 
 			it.skip('should return without the "_" from "@rocket.cat_"', () => {
-				expect(result).to.be.deep.equal(mentionsParser.getUserMentions('@rocket.cat_'));
+				expect(result).toEqual(mentionsParser.getUserMentions('@rocket.cat_'));
 			});
 
 			it.skip('should return without the "-" from "@rocket.cat-"', () => {
-				expect(result).to.be.deep.equal(mentionsParser.getUserMentions('@rocket.cat-'));
+				expect(result).toEqual(mentionsParser.getUserMentions('@rocket.cat-'));
 			});
 		});
 
@@ -60,7 +60,7 @@ describe('Mention', () => {
 				'hello @rocket.cat and @all how are you?',
 			].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
-					expect(result).to.be.deep.equal(mentionsParser.getUserMentions(text));
+					expect(result).toEqual(mentionsParser.getUserMentions(text));
 				});
 			});
 		});
@@ -68,10 +68,10 @@ describe('Mention', () => {
 
 	describe('getChannelMentions', () => {
 		describe('for simple text, no mentions', () => {
-			const result = [];
+			const result: string[] = [];
 			['@rocket.cat', 'hello rocket.cat how are you?'].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
-					expect(result).to.be.deep.equal(mentionsParser.getChannelMentions(text));
+					expect(result).toEqual(mentionsParser.getChannelMentions(text));
 				});
 			});
 		});
@@ -80,20 +80,20 @@ describe('Mention', () => {
 			const result = ['#general'];
 			['#general', ' #general ', 'hello #general', '#general, hello', 'hello #general, how are you?'].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
-					expect(result).to.be.deep.equal(mentionsParser.getChannelMentions(text));
+					expect(result).toEqual(mentionsParser.getChannelMentions(text));
 				});
 			});
 
 			it.skip('should return without the "." from "#general."', () => {
-				expect(result).to.be.deep.equal(mentionsParser.getUserMentions('#general.'));
+				expect(result).toEqual(mentionsParser.getUserMentions('#general.'));
 			});
 
 			it.skip('should return without the "_" from "#general_"', () => {
-				expect(result).to.be.deep.equal(mentionsParser.getUserMentions('#general_'));
+				expect(result).toEqual(mentionsParser.getUserMentions('#general_'));
 			});
 
 			it.skip('should return without the "-" from "#general."', () => {
-				expect(result).to.be.deep.equal(mentionsParser.getUserMentions('#general-'));
+				expect(result).toEqual(mentionsParser.getUserMentions('#general-'));
 			});
 		});
 
@@ -107,16 +107,16 @@ describe('Mention', () => {
 				'hello #general #other, how are you?',
 			].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
-					expect(result).to.be.deep.equal(mentionsParser.getChannelMentions(text));
+					expect(result).toEqual(mentionsParser.getChannelMentions(text));
 				});
 			});
 		});
 
 		describe('for url with fragments', () => {
-			const result = [];
+			const result: string[] = [];
 			['http://localhost/#general'].forEach((text) => {
 				it(`should return nothing from "${text}"`, () => {
-					expect(result).to.be.deep.equal(mentionsParser.getChannelMentions(text));
+					expect(result).toEqual(mentionsParser.getChannelMentions(text));
 				});
 			});
 		});
@@ -125,14 +125,14 @@ describe('Mention', () => {
 			const result = ['#general'];
 			['http://localhost/#general #general'].forEach((text) => {
 				it(`should return "${JSON.stringify(result)}" from "${text}"`, () => {
-					expect(result).to.be.deep.equal(mentionsParser.getChannelMentions(text));
+					expect(result).toEqual(mentionsParser.getChannelMentions(text));
 				});
 			});
 		});
 	});
 });
 
-const message = {
+const message: IMessage = {
 	mentions: [
 		{ username: 'rocket.cat', name: 'Rocket.Cat' },
 		{ username: 'admin', name: 'Admin' },
@@ -143,35 +143,35 @@ const message = {
 		{ name: 'general', _id: '42' },
 		{ name: 'rocket.cat', _id: '169' },
 	],
-};
+} as any;
 
 describe('replace methods', () => {
 	describe('replaceUsers', () => {
 		it('should render for @all', () => {
 			const result = mentionsParser.replaceUsers('@all', message, 'me');
-			expect(result).to.be.equal('<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>');
+			expect(result).toBe('<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>');
 		});
 
 		const str2 = 'rocket.cat';
 
 		it(`should render for "@${str2}"`, () => {
 			const result = mentionsParser.replaceUsers(`@${str2}`, message, 'me');
-			expect(result).to.be.equal(`<a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2}</a>`);
+			expect(result).toBe(`<a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2}</a>`);
 		});
 
 		it(`should render for "hello ${str2}"`, () => {
 			const result = mentionsParser.replaceUsers(`hello @${str2}`, message, 'me');
-			expect(result).to.be.equal(`hello <a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2}</a>`);
+			expect(result).toBe(`hello <a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2}</a>`);
 		});
 
 		it('should render for unknow/private user "hello @unknow"', () => {
 			const result = mentionsParser.replaceUsers('hello @unknow', message, 'me');
-			expect(result).to.be.equal('hello @unknow');
+			expect(result).toBe('hello @unknow');
 		});
 
 		it('should render for me', () => {
 			const result = mentionsParser.replaceUsers('hello @me', message, 'me');
-			expect(result).to.be.equal('hello <a class="mention-link mention-link--me mention-link--user" data-username="me" title="me">me</a>');
+			expect(result).toBe('hello <a class="mention-link mention-link--me mention-link--user" data-username="me" title="me">me</a>');
 		});
 	});
 
@@ -182,7 +182,7 @@ describe('replace methods', () => {
 
 		it('should render for @all', () => {
 			const result = mentionsParser.replaceUsers('@all', message, 'me');
-			expect(result).to.be.equal('<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>');
+			expect(result).toBe('<a class="mention-link mention-link--all mention-link--group" data-group="all">all</a>');
 		});
 
 		const str2 = 'rocket.cat';
@@ -190,14 +190,12 @@ describe('replace methods', () => {
 
 		it(`should render for "@${str2}"`, () => {
 			const result = mentionsParser.replaceUsers(`@${str2}`, message, 'me');
-			expect(result).to.be.equal(`<a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2Name}</a>`);
+			expect(result).toBe(`<a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2Name}</a>`);
 		});
 
 		it(`should render for "hello @${str2}"`, () => {
 			const result = mentionsParser.replaceUsers(`hello @${str2}`, message, 'me');
-			expect(result).to.be.equal(
-				`hello <a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2Name}</a>`,
-			);
+			expect(result).toBe(`hello <a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2Name}</a>`);
 		});
 
 		const specialchars = 'specialchars';
@@ -205,78 +203,78 @@ describe('replace methods', () => {
 
 		it(`should escape special characters in "hello @${specialchars}"`, () => {
 			const result = mentionsParser.replaceUsers(`hello @${specialchars}`, message, 'me');
-			expect(result).to.be.equal(
+			expect(result).toBe(
 				`hello <a class="mention-link mention-link--user" data-username="${specialchars}" title="${specialchars}">${specialcharsName}</a>`,
 			);
 		});
 
 		it(`should render for "hello<br>@${str2} <br>"`, () => {
 			const result = mentionsParser.replaceUsers(`hello<br>@${str2} <br>`, message, 'me');
-			expect(result).to.be.equal(
+			expect(result).toBe(
 				`hello<br><a class="mention-link mention-link--user" data-username="${str2}" title="${str2}">${str2Name}</a> <br>`,
 			);
 		});
 
 		it('should render for unknow/private user "hello @unknow"', () => {
 			const result = mentionsParser.replaceUsers('hello @unknow', message, 'me');
-			expect(result).to.be.equal('hello @unknow');
+			expect(result).toBe('hello @unknow');
 		});
 
 		it('should render for me', () => {
 			const result = mentionsParser.replaceUsers('hello @me', message, 'me');
-			expect(result).to.be.equal('hello <a class="mention-link mention-link--me mention-link--user" data-username="me" title="me">Me</a>');
+			expect(result).toBe('hello <a class="mention-link mention-link--me mention-link--user" data-username="me" title="me">Me</a>');
 		});
 	});
 
 	describe('replaceChannels', () => {
 		it('should render for #general', () => {
 			const result = mentionsParser.replaceChannels('#general', message);
-			expect('<).to.be.equal(class="mention-link mention-link--room" data-channel="42">#general</a>', result);
+			expect(result).toBe('<a class="mention-link mention-link--room" data-channel="42">#general</a>');
 		});
 
 		const str2 = '#rocket.cat';
 
 		it(`should render for ${str2}`, () => {
 			const result = mentionsParser.replaceChannels(str2, message);
-			expect(result).to.be.equal(`<a class="mention-link mention-link--room" data-channel="169">${str2}</a>`);
+			expect(result).toBe(`<a class="mention-link mention-link--room" data-channel="169">${str2}</a>`);
 		});
 
 		it(`should render for "hello ${str2}"`, () => {
 			const result = mentionsParser.replaceChannels(`hello ${str2}`, message);
-			expect(result).to.be.equal(`hello <a class="mention-link mention-link--room" data-channel="169">${str2}</a>`);
+			expect(result).toBe(`hello <a class="mention-link mention-link--room" data-channel="169">${str2}</a>`);
 		});
 
 		it('should render for unknow/private channel "hello #unknow"', () => {
 			const result = mentionsParser.replaceChannels('hello #unknow', message);
-			expect(result).to.be.equal('hello #unknow');
+			expect(result).toBe('hello #unknow');
 		});
 	});
 
 	describe('parse all', () => {
 		it('should render for #general', () => {
-			message.html = '#general';
-			const result = mentionsParser.parse(message, 'me');
-			expect(result.html).to.be.equal('<a class="mention-link mention-link--room" data-channel="42">#general</a>');
+			const testMessage = { ...message, html: '#general' };
+			const result = mentionsParser.parse(testMessage);
+			expect(result.html).toBe('<a class="mention-link mention-link--room" data-channel="42">#general</a>');
 		});
 
 		it('should render for "#general and @rocket.cat', () => {
-			message.html = '#general and @rocket.cat';
-			const result = mentionsParser.parse(message, 'me');
-			expect(result.html).to.be.equal(
+			const testMessage = { ...message, html: '#general and @rocket.cat' };
+			const result = mentionsParser.parse(testMessage);
+			expect(result.html).toBe(
 				'<a class="mention-link mention-link--room" data-channel="42">#general</a> and <a class="mention-link mention-link--user" data-username="rocket.cat" title="rocket.cat">rocket.cat</a>',
 			);
 		});
 
 		it('should render for "', () => {
-			message.html = '';
-			const result = mentionsParser.parse(message, 'me');
-			expect(result.html).to.be.equal('');
+			const testMessage = { ...message, html: '' };
+			const result = mentionsParser.parse(testMessage);
+			expect(result.html).toBe('');
 		});
 
 		it('should render for "simple text', () => {
-			message.html = 'simple text';
-			const result = mentionsParser.parse(message, 'me');
-			expect(result.html).to.be.equal('simple text');
+			const testMessage = { ...message, html: 'simple text' };
+			const result = mentionsParser.parse(testMessage);
+			expect(result.html).toBe('simple text');
 		});
 	});
 
@@ -286,29 +284,29 @@ describe('replace methods', () => {
 		});
 
 		it('should render for #general', () => {
-			message.html = '#general';
-			const result = mentionsParser.parse(message, 'me');
-			expect(result.html).to.be.equal('<a class="mention-link mention-link--room" data-channel="42">#general</a>');
+			const testMessage = { ...message, html: '#general' };
+			const result = mentionsParser.parse(testMessage);
+			expect(result.html).toBe('<a class="mention-link mention-link--room" data-channel="42">#general</a>');
 		});
 
 		it('should render for "#general and @rocket.cat', () => {
-			message.html = '#general and @rocket.cat';
-			const result = mentionsParser.parse(message, 'me');
-			expect(result.html).to.be.equal(
+			const testMessage = { ...message, html: '#general and @rocket.cat' };
+			const result = mentionsParser.parse(testMessage);
+			expect(result.html).toBe(
 				'<a class="mention-link mention-link--room" data-channel="42">#general</a> and <a class="mention-link mention-link--user" data-username="rocket.cat" title="rocket.cat">Rocket.Cat</a>',
 			);
 		});
 
 		it('should render for "', () => {
-			message.html = '';
-			const result = mentionsParser.parse(message, 'me');
-			expect(result.html).to.be.equal('');
+			const testMessage = { ...message, html: '' };
+			const result = mentionsParser.parse(testMessage);
+			expect(result.html).toBe('');
 		});
 
 		it('should render for "simple text', () => {
-			message.html = 'simple text';
-			const result = mentionsParser.parse(message, 'me');
-			expect(result.html).to.be.equal('simple text');
+			const testMessage = { ...message, html: 'simple text' };
+			const result = mentionsParser.parse(testMessage);
+			expect(result.html).toBe('simple text');
 		});
 	});
 });
