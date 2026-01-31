@@ -13,7 +13,6 @@ import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/feder
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
 import { addSpanAttributes, traced, tracedClass } from '@rocket.chat/tracing';
-import { addSpanAttributes, traced, tracedClass } from '@rocket.chat/tracing';
 import emojione from 'emojione';
 
 import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser';
