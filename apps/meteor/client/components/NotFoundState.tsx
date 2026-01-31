@@ -14,6 +14,7 @@ const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
 
 	const handleGoHomeClick = () => {
 		if (router?.navigate) {
+			
 			router.navigate('/home');
 		} else {
 			window.location.href = '/';
