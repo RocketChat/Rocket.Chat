@@ -104,7 +104,23 @@ export const normalizers: Record<string, (identity: Identity) => Identity | void
 };
 
 const IDENTITY_PROPNAME_FILTER = /(\.)/g;
-export const renameInvalidProperties = (input: any): any => {
+
+type Replace<S extends string, From extends string, To extends string> = S extends `${infer Prefix}${From}${infer Suffix}`
+	? `${Prefix}${To}${Replace<Suffix, From, To>}`
+	: S;
+type TransformObjectKeys<T> = {
+	[K in keyof T as K extends string ? (K extends `${string}.${string}` ? Replace<K, '.', '_'> : K) : K]: T[K] extends any[]
+		? TransformArrayItems<T[K]>
+		: T[K] extends Record<string, any>
+			? TransformObjectKeys<T[K]>
+			: T[K];
+};
+type TransformArrayItems<T> = T extends Array<infer U> ? (U extends Record<string, any> ? Array<TransformObjectKeys<U>> : U[]) : T;
+
+export function renameInvalidProperties<T extends any[]>(input: T): T;
+export function renameInvalidProperties<T extends string | number | boolean | null | undefined>(input: T): T;
+export function renameInvalidProperties<T extends Record<string, any>>(input: T): TransformObjectKeys<T>;
+export function renameInvalidProperties(input: any): any {
 	if (Array.isArray(input)) {
 		return input.map(renameInvalidProperties);
 	}
@@ -119,7 +135,7 @@ export const renameInvalidProperties = (input: any): any => {
 		}),
 		{},
 	);
-};
+}
 
 export const getNestedValue = (propertyPath: string, source: any): any =>
 	propertyPath.split('.').reduce((prev, curr) => (prev ? prev[curr] : undefined), source);
