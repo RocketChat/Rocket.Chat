@@ -41,10 +41,9 @@ export default async function handleScheduler(request: RequestContext): Promise<
 		logger.debug({ msg: 'Job processor was successfully executed', processorId: processor.id });
 
 		return null;
-	} catch (e) {
-		logger.error(e);
-		logger.error({ msg: 'Job processor was unsuccessful', processorId: processor.id });
+	} catch (err) {
+		logger.error({ err, msg: 'Job processor was unsuccessful', processorId: processor.id });
 
-		return JsonRpcError.internalError({ message: e.message });
+		return JsonRpcError.internalError({ message: err.message });
 	}
 }
