@@ -11,6 +11,7 @@ import { useToggleNotificationAction } from '../../../../hooks/menuActions/useTo
 import { useToggleReadAction } from '../../../../hooks/menuActions/useToggleReadAction';
 import { useHideRoomAction } from '../../../../hooks/useHideRoomAction';
 import { useOmnichannelPrioritiesMenu } from '../../../omnichannel/hooks/useOmnichannelPrioritiesMenu';
+import { Rooms } from '../../../../stores';
 
 type RoomMenuActionsProps = {
 	rid: string;
@@ -36,6 +37,7 @@ export const useRoomMenuActions = ({
 	const { t } = useTranslation();
 	const subscription = useUserSubscription(rid);
 	const router = useRouter();
+	const room = Rooms.use((state) => state.get(rid));
 
 	const isFavorite = Boolean(subscription?.f);
 	const canLeaveChannel = usePermission('leave-c');
@@ -56,7 +58,7 @@ export const useRoomMenuActions = ({
 	const handleHide = useHideRoomAction({ rid, type, name }, { redirect: false });
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
-	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
+	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen, teamId: room?.teamId, teamMain: room?.teamMain });
 	const handleToggleNotification = useToggleNotificationAction({ rid, isNotificationEnabled, roomName: name });
 
 	const isOmnichannelRoom = type === 'l';
