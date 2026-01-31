@@ -160,23 +160,20 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 						</FieldLabel>
 						<FieldRow>
 							<Controller
+								name='name'
 								control={control}
-								name='parentRoom'
-								// Add the required rule back here:
-								rules={{ required: t('Required_field', { field: t('Discussion_target_channel') }) }}
-								render={({ field: { name, onBlur, onChange, value } }) => (
-									<RoomAutoComplete
-										name={name}
-										onBlur={onBlur}
-										onChange={onChange}
-										value={value}
-										id={parentRoomId}
-										placeholder={t('Search_options')}
-										disabled={Boolean(defaultParentRoom)}
-										aria-invalid={Boolean(errors.parentRoom)}
+								rules={{required: t('Required_field', { field: t('Name') }),validate: (value) => value.trim().length > 0 || t('Required_field', { field: t('Name') }) }}
+								render={({ field }) => (
+									<TextInput
+										id={discussionNameId}
+										{...field}
+										aria-invalid={Boolean(errors.name)}
 										aria-required='true'
-										aria-describedby={`${parentRoomId}-error`}
+										aria-describedby={errors.name ? `${discussionNameId}-error` : undefined}
+										addon={<Icon name='baloons' size='x20' />}
 									/>
+								)}
+							/>
 						</FieldRow>
 						{errors.name && (
 							<FieldError aria-live='assertive' id={`${discussionNameId}-error`}>
