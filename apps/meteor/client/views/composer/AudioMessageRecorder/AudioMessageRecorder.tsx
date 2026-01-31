@@ -72,7 +72,7 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 			);
 			setRecordingRoomId(rid);
 		} catch (error) {
-			console.log(error);
+			console.error('Failed to start audio recording:', error);
 			chat?.composer?.setRecordingMode(false);
 		}
 	});
