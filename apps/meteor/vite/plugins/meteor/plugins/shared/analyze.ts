@@ -2,7 +2,7 @@
 import type * as AST from '@oxc-project/types';
 import { walk } from 'oxc-walker';
 
-import { check } from './check';
+import { expect, check } from './check';
 
 /**
  * Collects exported names from Meteor package modules.
@@ -25,16 +25,11 @@ export function analyze(ast: AST.Program): { name: string; imports: Map<string, 
 			} = node;
 
 			if (
-				check.isMemberExpression(callee) &&
-				!callee.computed &&
-				check.isMemberExpression(callee.object) &&
-				callee.object.computed &&
-				check.isIdentifier(callee.object.object) &&
-				callee.object.object.name === 'Package' &&
-				check.isLiteral(callee.object.property) &&
-				callee.object.property.value === 'core-runtime' &&
-				check.isIdentifier(callee.property) &&
-				callee.property.name === 'queue' &&
+				isNonComputedMemberExpression(callee) &&
+				isComputedMemberExpression(callee.object) &&
+				isIdentifierWithName(callee.object.object, 'Package') &&
+				isLiteralWithValue(callee.object.property, 'core-runtime') &&
+				isIdentifierWithName(callee.property, 'queue') &&
 				isLiteralString(pkg) &&
 				(check.isFunctionExpression(func) || check.isArrowFunctionExpression(func))
 			) {
@@ -55,12 +50,7 @@ export function analyze(ast: AST.Program): { name: string; imports: Map<string, 
 								continue;
 							}
 
-							let pkgName: string | null = null;
-							if (!object.computed && check.isIdentifier(object.property)) {
-								pkgName = object.property.name;
-							} else if (object.computed && isLiteralString(object.property)) {
-								pkgName = object.property.value;
-							}
+							const pkgName = extractPackageName(object);
 
 							if (pkgName && check.isIdentifier(property)) {
 								const packageImports = imports.get(pkgName);
@@ -102,6 +92,49 @@ export function analyze(ast: AST.Program): { name: string; imports: Map<string, 
 		imports,
 		exports,
 	};
+}
+
+function extractPackageName(object: AST.MemberExpression): string {
+	if (check.isLiteral(object.property)) {
+		if (typeof object.property.value === 'string') {
+			return object.property.value;
+		}
+		throw new Error('Unexpected non-string package name literal');
+	}
+
+	return expect(check.isIdentifier, object.property).name;
+}
+
+function isComputedMemberExpression(node: AST.Expression): node is Extract<AST.MemberExpression, { computed: true }> {
+	return check.isMemberExpression(node) && node.computed;
+}
+
+function isNonComputedMemberExpression(node: AST.Expression): node is Extract<AST.MemberExpression, { computed: false }> {
+	return check.isMemberExpression(node) && !node.computed;
+}
+
+function isIdentifierWithName<T extends string>(node: AST.Node, name: T): node is AST.IdentifierName & { name: T } {
+	return check.isIdentifier(node) && node.name === name;
+}
+
+type WidenLiteral<T> = T extends string
+	? string
+	: T extends number
+		? number
+		: T extends bigint
+			? bigint
+			: T extends boolean
+				? boolean
+				: T extends RegExp
+					? RegExp
+					: T extends null
+						? null
+						: never;
+function isLiteralWithValue<T extends string | number | bigint | boolean | RegExp | null>(
+	node: AST.Expression,
+	value: T,
+): node is Extract<AST.Expression, { type: 'Literal'; value: WidenLiteral<T> }> {
+	return check.isLiteral(node) && node.value === value;
 }
 
 /**

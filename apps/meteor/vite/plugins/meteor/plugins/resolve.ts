@@ -6,7 +6,6 @@ import type { ResolvedPluginOptions } from './shared/config';
 export function resolve(resolvedConfig: ResolvedPluginOptions): Plugin {
 	return {
 		name: 'meteor:resolve',
-		enforce: 'post',
 		resolveId: {
 			filter: {
 				id: prefixRegex(resolvedConfig.prefix),
