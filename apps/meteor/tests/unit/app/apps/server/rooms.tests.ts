@@ -31,21 +31,26 @@ describe('The AppMessagesConverter instance', () => {
 
 		const usersConverter = orchestrator.getConverters().get('users');
 
-		usersConverter.convertById = function convertUserByIdStub(id: string) {
-			return UsersMock.convertedData[id as 'rocket.cat'] || undefined;
-		};
-
-		usersConverter.convertToApp = function convertUserToAppStub(user: UsersMock['data']['rocket.cat']) {
-			return {
-				id: user._id,
-				username: user.username,
-				name: user.name,
+		if (usersConverter) {
+			usersConverter.convertById = function convertUserByIdStub(id: string) {
+				return UsersMock.convertedData[id as 'rocket.cat'] || undefined;
 			};
-		};
 
-		orchestrator.getConverters().get('messages').convertById = async function convertRoomByIdStub(_id: string) {
-			return {};
-		};
+			usersConverter.convertToApp = function convertUserToAppStub(user: UsersMock['data']['rocket.cat']) {
+				return {
+					id: user._id,
+					username: user.username,
+					name: user.name,
+				};
+			};
+		}
+
+		const messagesConverter = orchestrator.getConverters().get('messages');
+		if (messagesConverter) {
+			messagesConverter.convertById = async function convertRoomByIdStub(_id: string) {
+				return {};
+			};
+		}
 
 		roomConverter = new AppRoomsConverter(orchestrator);
 		roomsMock = new RoomsMock();

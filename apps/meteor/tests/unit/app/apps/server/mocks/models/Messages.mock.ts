@@ -1,10 +1,12 @@
+import type { IMessage } from '@rocket.chat/core-typings';
+
 import { BaseModelMock } from './BaseModel.mock';
 
-export class MessagesMock extends BaseModelMock {
-	data = {
+export class MessagesMock extends BaseModelMock<IMessage> {
+	override data = {
 		SimpleMessageMock: {
 			_id: 'SimpleMessageMock',
-			t: 'uj',
+			t: 'uj' as const,
 			rid: 'GENERAL',
 			ts: new Date('2019-03-30T01:22:08.389Z'),
 			msg: 'rocket.cat',

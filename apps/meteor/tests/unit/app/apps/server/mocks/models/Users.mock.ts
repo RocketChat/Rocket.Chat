@@ -1,15 +1,17 @@
+import { UserStatus, type IUser } from '@rocket.chat/core-typings';
+
 import { BaseModelMock } from './BaseModel.mock';
 
-export class UsersMock extends BaseModelMock {
-	data = {
+export class UsersMock extends BaseModelMock<IUser> {
+	override data = {
 		'rocket.cat': {
 			_id: 'rocket.cat',
 			createdAt: new Date('2019-03-27T20:51:36.821Z'),
 			avatarOrigin: 'local',
 			name: 'Rocket.Cat',
 			username: 'rocket.cat',
-			status: 'online',
-			statusDefault: 'online',
+			status: UserStatus.ONLINE,
+			statusDefault: UserStatus.ONLINE,
 			utcOffset: 0,
 			active: true,
 			type: 'bot',
@@ -32,8 +34,8 @@ export class UsersMock extends BaseModelMock {
 			isEnabled: true,
 			name: 'Rocket.Cat',
 			roles: ['bot'],
-			status: 'online',
-			statusConnection: 'online',
+			status: UserStatus.ONLINE,
+			statusConnection: UserStatus.ONLINE,
 			utcOffset: 0,
 			createdAt: new Date(),
 			updatedAt: new Date(),

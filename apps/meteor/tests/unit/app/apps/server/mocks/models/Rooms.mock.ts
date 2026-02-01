@@ -1,11 +1,13 @@
+import type { IRoom } from '@rocket.chat/core-typings';
+
 import { BaseModelMock } from './BaseModel.mock';
 
-export class RoomsMock extends BaseModelMock {
-	data = {
+export class RoomsMock extends BaseModelMock<IRoom> {
+	override data = {
 		GENERAL: {
 			_id: 'GENERAL',
 			ts: new Date('2019-03-27T20:51:36.808Z'),
-			t: 'c',
+			t: 'c' as const,
 			name: 'general',
 			usernames: [],
 			msgs: 31,
@@ -13,8 +15,8 @@ export class RoomsMock extends BaseModelMock {
 			default: true,
 			_updatedAt: new Date('2019-04-10T17:44:34.931Z'),
 			lastMessage: {
-				_id: 1,
-				t: 'uj',
+				_id: 1 as unknown as string, // FIXME
+				t: 'uj' as const,
 				rid: 'GENERAL',
 				ts: new Date('2019-03-30T01:22:08.389Z'),
 				msg: 'rocket.cat',
@@ -26,6 +28,10 @@ export class RoomsMock extends BaseModelMock {
 				_updatedAt: new Date('2019-03-30T01:22:08.412Z'),
 			},
 			lm: new Date('2019-04-10T17:44:34.873Z'),
+			u: {
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
+			},
 		},
 
 		LivechatRoom: {
@@ -34,7 +40,7 @@ export class RoomsMock extends BaseModelMock {
 			usersCount: 1,
 			lm: new Date('2019-04-07T23:45:25.407Z'),
 			fname: 'Livechat Guest',
-			t: 'l',
+			t: 'l' as const,
 			ts: new Date('2019-04-06T03:56:17.040Z'),
 			v: {
 				_id: 'yDLaWs5Rzf5mzQsmB',
@@ -87,6 +93,11 @@ export class RoomsMock extends BaseModelMock {
 			responseBy: {
 				_id: 'rocket.cat',
 				username: 'rocket.cat',
+			},
+			u: {
+				_id: '3Wz2wANqwrd7Hu5Fo',
+				username: 'dgubert',
+				name: 'Douglas Gubert',
 			},
 		},
 	};
