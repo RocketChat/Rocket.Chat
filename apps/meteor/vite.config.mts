@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, esmExternalRequirePlugin } from 'vite';
 
 import info from './vite/plugins/info';
 import meteor from './vite/plugins/meteor';
@@ -15,6 +15,9 @@ export default defineConfig(async () => {
 		appType: 'spa',
 		plugins: [
 			info(),
+			esmExternalRequirePlugin({
+				external: ['react', 'react-dom'],
+			}),
 			meteor({
 				rootUrl: ROOT_URL.toString(),
 			}),
