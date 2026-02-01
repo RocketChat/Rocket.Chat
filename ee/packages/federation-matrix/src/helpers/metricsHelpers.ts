@@ -1,3 +1,4 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import type { FileMessageType } from '@rocket.chat/federation-sdk';
 import client from 'prom-client';
 
@@ -10,10 +11,7 @@ const percentiles = [0.01, 0.1, 0.5, 0.9, 0.95, 0.99, 1];
  * This ensures we don't get duplicate registration errors when the same metric
  * is accessed from different parts of the application.
  */
-function getOrCreateMetric<T extends client.Metric>(
-	name: string,
-	createFn: () => T,
-): T {
+function getOrCreateMetric<T extends client.Metric>(name: string, createFn: () => T): T {
 	const existing = client.register.getSingleMetric(name);
 	if (existing) {
 		return existing as T;
@@ -22,88 +20,204 @@ function getOrCreateMetric<T extends client.Metric>(
 }
 
 /**
- * Federation metrics for incoming operations.
+ * Federation metrics for both incoming and outgoing operations.
  * These use getOrCreateMetric to safely access metrics that may already
  * be registered by the meteor app's metrics.ts.
  */
 export const federationMetrics = {
+	// =====================================
+	// INCOMING METRICS
+	// =====================================
+
 	/** Counter for messages received from other federated servers */
 	get federatedMessagesReceived() {
-		return getOrCreateMetric('rocketchat_federation_messages_received', () =>
-			new client.Counter({
-				name: 'rocketchat_federation_messages_received',
-				labelNames: ['room_type', 'message_type', 'origin'],
-				help: 'Total federated messages received',
-			}),
+		return getOrCreateMetric(
+			'rocketchat_federation_messages_received',
+			() =>
+				new client.Counter({
+					name: 'rocketchat_federation_messages_received',
+					labelNames: ['room_type', 'message_type', 'origin'],
+					help: 'Total federated messages received',
+				}),
 		);
 	},
 
 	/** Counter for rooms joined (users invited to rooms created elsewhere) */
 	get federatedRoomsJoined() {
-		return getOrCreateMetric('rocketchat_federation_rooms_joined', () =>
-			new client.Counter({
-				name: 'rocketchat_federation_rooms_joined',
-				labelNames: ['room_type', 'origin'],
-				help: 'Total federated rooms joined (users invited to rooms created elsewhere)',
-			}),
+		return getOrCreateMetric(
+			'rocketchat_federation_rooms_joined',
+			() =>
+				new client.Counter({
+					name: 'rocketchat_federation_rooms_joined',
+					labelNames: ['room_type', 'origin'],
+					help: 'Total federated rooms joined (users invited to rooms created elsewhere)',
+				}),
 		);
 	},
 
-	/** Counter for federation events processed */
+	/** Counter for federation events processed (both incoming and outgoing) */
 	get federationEventsProcessed() {
-		return getOrCreateMetric('rocketchat_federation_events_processed', () =>
-			new client.Counter({
-				name: 'rocketchat_federation_events_processed',
-				labelNames: ['event_type', 'direction'],
-				help: 'Total federation events processed',
-			}),
+		return getOrCreateMetric(
+			'rocketchat_federation_events_processed',
+			() =>
+				new client.Counter({
+					name: 'rocketchat_federation_events_processed',
+					labelNames: ['event_type', 'direction'],
+					help: 'Total federation events processed',
+				}),
 		);
 	},
 
-	/** Counter for failed federation events */
+	/** Counter for failed federation events (both incoming and outgoing) */
 	get federationEventsFailed() {
-		return getOrCreateMetric('rocketchat_federation_events_failed', () =>
-			new client.Counter({
-				name: 'rocketchat_federation_events_failed',
-				labelNames: ['event_type', 'direction', 'error_type'],
-				help: 'Total federation events that failed to process',
-			}),
+		return getOrCreateMetric(
+			'rocketchat_federation_events_failed',
+			() =>
+				new client.Counter({
+					name: 'rocketchat_federation_events_failed',
+					labelNames: ['event_type', 'direction', 'error_type'],
+					help: 'Total federation events that failed to process',
+				}),
 		);
 	},
 
 	/** Duration to process incoming federation transaction */
 	get federationTransactionProcessDuration() {
-		return getOrCreateMetric('rocketchat_federation_transaction_process_duration_seconds', () =>
-			new client.Summary({
-				name: 'rocketchat_federation_transaction_process_duration_seconds',
-				labelNames: ['pdu_count', 'edu_count', 'origin'],
-				help: 'Time to process incoming federation transaction',
-				percentiles,
-			}),
+		return getOrCreateMetric(
+			'rocketchat_federation_transaction_process_duration_seconds',
+			() =>
+				new client.Summary({
+					name: 'rocketchat_federation_transaction_process_duration_seconds',
+					labelNames: ['pdu_count', 'edu_count', 'origin'],
+					help: 'Time to process incoming federation transaction',
+					percentiles,
+				}),
 		);
 	},
 
 	/** Duration to process incoming federated message */
 	get federationIncomingMessageProcessDuration() {
-		return getOrCreateMetric('rocketchat_federation_incoming_message_process_duration_seconds', () =>
-			new client.Summary({
-				name: 'rocketchat_federation_incoming_message_process_duration_seconds',
-				labelNames: ['message_type'],
-				help: 'Time to process incoming federated message',
-				percentiles,
-			}),
+		return getOrCreateMetric(
+			'rocketchat_federation_incoming_message_process_duration_seconds',
+			() =>
+				new client.Summary({
+					name: 'rocketchat_federation_incoming_message_process_duration_seconds',
+					labelNames: ['message_type'],
+					help: 'Time to process incoming federated message',
+					percentiles,
+				}),
 		);
 	},
 
 	/** Duration to join a federated room (invite acceptance) */
 	get federationRoomJoinDuration() {
-		return getOrCreateMetric('rocketchat_federation_room_join_duration_seconds', () =>
-			new client.Summary({
-				name: 'rocketchat_federation_room_join_duration_seconds',
-				labelNames: ['origin'],
-				help: 'Time to join a federated room (invite acceptance)',
-				percentiles,
-			}),
+		return getOrCreateMetric(
+			'rocketchat_federation_room_join_duration_seconds',
+			() =>
+				new client.Summary({
+					name: 'rocketchat_federation_room_join_duration_seconds',
+					labelNames: ['origin'],
+					help: 'Time to join a federated room (invite acceptance)',
+					percentiles,
+				}),
+		);
+	},
+
+	// =====================================
+	// OUTGOING METRICS
+	// =====================================
+
+	/** Counter for messages sent to federated rooms */
+	get federatedMessagesSent() {
+		return getOrCreateMetric(
+			'rocketchat_federation_messages_sent',
+			() =>
+				new client.Counter({
+					name: 'rocketchat_federation_messages_sent',
+					labelNames: ['room_type', 'message_type'],
+					help: 'Total messages sent to federated rooms',
+				}),
+		);
+	},
+
+	/** Counter for federated rooms created */
+	get federatedRoomsCreated() {
+		return getOrCreateMetric(
+			'rocketchat_federation_rooms_created',
+			() =>
+				new client.Counter({
+					name: 'rocketchat_federation_rooms_created',
+					labelNames: ['room_type'],
+					help: 'Total federated rooms created',
+				}),
+		);
+	},
+
+	/** Counter for federation invites sent */
+	get federatedInvitesSent() {
+		return getOrCreateMetric(
+			'rocketchat_federation_invites_sent',
+			() =>
+				new client.Counter({
+					name: 'rocketchat_federation_invites_sent',
+					labelNames: ['room_type'],
+					help: 'Total federation invites sent',
+				}),
+		);
+	},
+
+	/** Counter for reactions sent/removed */
+	get federatedReactionsSent() {
+		return getOrCreateMetric(
+			'rocketchat_federation_reactions_sent',
+			() =>
+				new client.Counter({
+					name: 'rocketchat_federation_reactions_sent',
+					labelNames: ['action'],
+					help: 'Total reactions sent or removed via federation',
+				}),
+		);
+	},
+
+	/** Duration to send a message via federation */
+	get federationOutgoingMessageSendDuration() {
+		return getOrCreateMetric(
+			'rocketchat_federation_outgoing_message_send_duration_seconds',
+			() =>
+				new client.Summary({
+					name: 'rocketchat_federation_outgoing_message_send_duration_seconds',
+					labelNames: ['message_type'],
+					help: 'Time to send a message via federation',
+					percentiles,
+				}),
+		);
+	},
+
+	/** Duration to create a federated room */
+	get federationRoomCreateDuration() {
+		return getOrCreateMetric(
+			'rocketchat_federation_room_create_duration_seconds',
+			() =>
+				new client.Summary({
+					name: 'rocketchat_federation_room_create_duration_seconds',
+					labelNames: ['room_type'],
+					help: 'Time to create a federated room',
+					percentiles,
+				}),
+		);
+	},
+
+	/** Duration to send an invitation via federation */
+	get federationInviteSendDuration() {
+		return getOrCreateMetric(
+			'rocketchat_federation_invite_send_duration_seconds',
+			() =>
+				new client.Summary({
+					name: 'rocketchat_federation_invite_send_duration_seconds',
+					labelNames: ['room_type'],
+					help: 'Time to send an invitation via federation',
+					percentiles,
+				}),
 		);
 	},
 };
@@ -125,13 +239,10 @@ export function extractOriginFromMatrixUserId(userId: string): string {
 }
 
 /**
- * Determines the message type from a Matrix event for metrics labeling.
+ * Determines the message type from a Matrix event for metrics labeling (incoming).
  * @returns 'text' | 'file' | 'encrypted'
  */
-export function determineMessageType(event: {
-	type?: string;
-	content?: { msgtype?: string };
-}): 'text' | 'file' | 'encrypted' {
+export function determineMessageType(event: { type?: string; content?: { msgtype?: string } }): 'text' | 'file' | 'encrypted' {
 	if (event.type === 'm.room.encrypted') {
 		return 'encrypted';
 	}
@@ -141,6 +252,17 @@ export function determineMessageType(event: {
 		return 'file';
 	}
 
+	return 'text';
+}
+
+/**
+ * Determines the message type from a Rocket.Chat message for outgoing metrics labeling.
+ * @returns 'text' | 'file'
+ */
+export function determineOutgoingMessageType(message: IMessage): 'text' | 'file' {
+	if (message.files && message.files.length > 0) {
+		return 'file';
+	}
 	return 'text';
 }
 
