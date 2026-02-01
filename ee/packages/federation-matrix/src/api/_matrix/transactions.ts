@@ -4,9 +4,9 @@ import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 import { addSpanAttributes } from '@rocket.chat/tracing';
 
+import { federationMetrics, bucketizePduCount, bucketizeEduCount } from '../../helpers/metricsHelpers';
 import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
-import { federationMetrics, bucketizePduCount, bucketizeEduCount } from '../../helpers/metricsHelpers';
 
 const SendTransactionParamsSchema = {
 	type: 'object',
