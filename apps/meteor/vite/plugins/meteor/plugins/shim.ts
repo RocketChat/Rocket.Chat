@@ -7,11 +7,13 @@ import type { Plugin } from 'vite';
 
 import { analyze } from './shared/analyze';
 import type { ResolvedPluginOptions } from './shared/config';
+import { treeshake } from './shared/treeshake';
+import { printCode } from './shared/print';
 
 export function shim(resolvedConfig: ResolvedPluginOptions): Plugin {
 	return {
 		name: 'meteor:shim',
-		enforce: 'pre',
+		// enforce: 'pre',
 		transform: {
 			filter: {
 				id: prefixRegex(path.resolve(resolvedConfig.programsDir)),
@@ -19,12 +21,19 @@ export function shim(resolvedConfig: ResolvedPluginOptions): Plugin {
 			async handler(code, id) {
 				this.debug(id);
 				const ast = await parse(id, code);
+
+				if (path.basename(id) === 'modules.js') {
+					console.log(`[Shim] processing modules.js ${code.length}`);
+					treeshake(ast.program);
+					code = printCode(ast.program);
+					console.log(`[Shim] processed modules.js ${code.length}`);
+				}
+
 				const module = analyze(ast.program);
 
-				const imports = Array.from(module.imports.keys())
-					.map((imp) => {
-						return `import '${resolvedConfig.prefix}${imp}';`;
-					});
+				const imports = Array.from(module.imports.keys()).map((imp) => {
+					return `import '${resolvedConfig.prefix}${imp}';`;
+				});
 
 				if (imports.length > 0) {
 					code = `${imports.join('\n')}\n${code}`;

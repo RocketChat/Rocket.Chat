@@ -117,7 +117,9 @@ function isIdentifierWithName<T extends string>(node: AST.Node, name: T): node i
 	return check.isIdentifier(node) && node.name === name;
 }
 
-type WidenLiteral<T> = T extends string
+type Primitive = string | number | bigint | boolean | RegExp | null;
+
+type ToPrimitive<T> = T extends string
 	? string
 	: T extends number
 		? number
@@ -129,11 +131,11 @@ type WidenLiteral<T> = T extends string
 					? RegExp
 					: T extends null
 						? null
-						: never;
-function isLiteralWithValue<T extends string | number | bigint | boolean | RegExp | null>(
+						: T;
+function isLiteralWithValue<T extends Primitive>(
 	node: AST.Expression,
 	value: T,
-): node is Extract<AST.Expression, { type: 'Literal'; value: WidenLiteral<T> }> {
+): node is Extract<AST.Expression, { type: 'Literal'; value: ToPrimitive<T> }> {
 	return check.isLiteral(node) && node.value === value;
 }
 
