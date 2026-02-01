@@ -1,32 +1,34 @@
 import type { IAppRoomsConverter, IAppsRoom } from '@rocket.chat/apps';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
 
-import { MessagesMock } from './mocks/models/Messages.mock';
-import { RoomsMock } from './mocks/models/Rooms.mock';
-import { UsersMock } from './mocks/models/Users.mock';
-import { AppServerOrchestratorMock } from './mocks/orchestrator.mock';
+import { MessagesMock } from '../../../../tests/unit/app/apps/server/mocks/models/Messages.mock';
+import { RoomsMock } from '../../../../tests/unit/app/apps/server/mocks/models/Rooms.mock';
+import { UsersMock } from '../../../../tests/unit/app/apps/server/mocks/models/Users.mock';
+import { AppServerOrchestratorMock } from '../../../../tests/unit/app/apps/server/mocks/orchestrator.mock';
 
-const { AppRoomsConverter } = proxyquire.noCallThru().load('../../../../../app/apps/server/converters/rooms', {
-	'@rocket.chat/random': {
-		Random: {
-			id: () => 1,
-		},
+jest.mock('@rocket.chat/random', () => ({
+	Random: {
+		id: () => 1,
 	},
-	'@rocket.chat/models': {
-		Rooms: new RoomsMock(),
-		Messages: new MessagesMock(),
-		Users: new UsersMock(),
-	},
-});
+}));
+
+jest.mock('@rocket.chat/models', () => ({
+	Rooms: new RoomsMock(),
+	Messages: new MessagesMock(),
+	Users: new UsersMock(),
+}));
 
 describe('The AppMessagesConverter instance', () => {
+	let AppRoomsConverter: any;
 	let roomConverter: IAppRoomsConverter;
 	let roomsMock: RoomsMock;
 
-	before(() => {
+	beforeAll(async () => {
+		const module = await import('./rooms');
+		AppRoomsConverter = module.AppRoomsConverter;
+	});
+
+	beforeEach(() => {
 		const orchestrator = new AppServerOrchestratorMock();
 
 		const usersConverter = orchestrator.getConverters().get('users');
@@ -60,19 +62,19 @@ describe('The AppMessagesConverter instance', () => {
 		it('should return `undefined` when `originalRoom` is falsy', async () => {
 			const appRoom = await roomConverter.convertRoom(undefined);
 
-			expect(appRoom).to.be.undefined;
+			expect(appRoom).toBeUndefined();
 		});
 
 		it('should return a proper schema', async () => {
 			const mockedRoom = roomsMock.findOneById('GENERAL') as RoomsMock['data']['GENERAL'];
 			const appRoom = await roomConverter.convertRoom(mockedRoom as unknown as IRoom);
 
-			expect(appRoom).to.have.property('id', mockedRoom._id);
-			expect(appRoom).to.have.property('type', mockedRoom.t);
-			expect(appRoom).to.have.property('slugifiedName', mockedRoom.name);
-			expect(appRoom).to.have.property('createdAt').which.equalTime(mockedRoom.ts);
-			expect(appRoom).to.have.property('updatedAt').which.equalTime(mockedRoom._updatedAt);
-			expect(appRoom).to.have.property('messageCount', mockedRoom.msgs);
+			expect(appRoom).toHaveProperty('id', mockedRoom._id);
+			expect(appRoom).toHaveProperty('type', mockedRoom.t);
+			expect(appRoom).toHaveProperty('slugifiedName', mockedRoom.name);
+			expect(appRoom?.createdAt).toEqual(mockedRoom.ts);
+			expect(appRoom?.updatedAt).toEqual(mockedRoom._updatedAt);
+			expect(appRoom).toHaveProperty('messageCount', mockedRoom.msgs);
 		});
 
 		it('should not mutate the original room object', async () => {
@@ -80,14 +82,16 @@ describe('The AppMessagesConverter instance', () => {
 
 			await roomConverter.convertRoom(rocketchatRoomMock);
 
-			expect(rocketchatRoomMock).to.deep.equal(roomsMock.findOneById('GENERAL'));
+			expect(rocketchatRoomMock).toEqual(roomsMock.findOneById('GENERAL'));
 		});
 
 		it('should add an `_unmappedProperties_` field to the converted room which contains the `lastMessage` property of the room', async () => {
 			const mockedRoom = roomsMock.findOneById('GENERAL') as RoomsMock['data']['GENERAL'];
 			const appMessage = await roomConverter.convertRoom(mockedRoom as unknown as IRoom);
 
-			expect(appMessage).to.have.property('_unmappedProperties_').which.has.property('lastMessage').to.deep.equal(mockedRoom.lastMessage);
+			expect(appMessage).toHaveProperty('_unmappedProperties_');
+			expect((appMessage as any)._unmappedProperties_).toHaveProperty('lastMessage');
+			expect((appMessage as any)._unmappedProperties_.lastMessage).toEqual(mockedRoom.lastMessage);
 		});
 	});
 
@@ -95,72 +99,72 @@ describe('The AppMessagesConverter instance', () => {
 		it('should return `undefined` when `room` is falsy', async () => {
 			const rocketchatMessage = await roomConverter.convertAppRoom(undefined);
 
-			expect(rocketchatMessage).to.be.undefined;
+			expect(rocketchatMessage).toBeUndefined();
 		});
 
 		it('should return a proper schema', async () => {
 			const appRoom = RoomsMock.convertedData.GENERAL as unknown as IAppsRoom;
 			const rocketchatRoom = await roomConverter.convertAppRoom(appRoom);
 
-			expect(rocketchatRoom).to.have.property('_id', appRoom.id);
-			expect(rocketchatRoom).to.have.property('ts', appRoom.createdAt);
-			expect(rocketchatRoom).to.have.property('lm', appRoom.lastModifiedAt);
-			expect(rocketchatRoom).to.have.property('_updatedAt', appRoom.updatedAt);
-			expect(rocketchatRoom).to.have.property('t', appRoom.type);
-			expect(rocketchatRoom).to.have.property('name', appRoom.slugifiedName);
+			expect(rocketchatRoom).toHaveProperty('_id', appRoom.id);
+			expect(rocketchatRoom).toHaveProperty('ts', appRoom.createdAt);
+			expect(rocketchatRoom).toHaveProperty('lm', appRoom.lastModifiedAt);
+			expect(rocketchatRoom).toHaveProperty('_updatedAt', appRoom.updatedAt);
+			expect(rocketchatRoom).toHaveProperty('t', appRoom.type);
+			expect(rocketchatRoom).toHaveProperty('name', appRoom.slugifiedName);
 		});
 
 		it('should return a proper schema when receiving a partial object', async () => {
 			const appRoom = RoomsMock.convertedData.GENERALPartial as unknown as IAppsRoom;
 			const rocketchatRoom = await roomConverter.convertAppRoom(appRoom, true);
 
-			expect(rocketchatRoom).to.have.property('_id', appRoom.id);
-			expect(rocketchatRoom).to.have.property('name', appRoom.slugifiedName);
-			expect(rocketchatRoom).to.have.property('sysMes', appRoom.displaySystemMessages);
-			expect(rocketchatRoom).to.have.property('_updatedAt', appRoom.updatedAt);
+			expect(rocketchatRoom).toHaveProperty('_id', appRoom.id);
+			expect(rocketchatRoom).toHaveProperty('name', appRoom.slugifiedName);
+			expect(rocketchatRoom).toHaveProperty('sysMes', appRoom.displaySystemMessages);
+			expect(rocketchatRoom).toHaveProperty('_updatedAt', appRoom.updatedAt);
 
-			expect(rocketchatRoom).to.not.have.property('msgs');
-			expect(rocketchatRoom).to.not.have.property('ro');
-			expect(rocketchatRoom).to.not.have.property('default');
-			expect(rocketchatRoom).to.not.have.property('t');
+			expect(rocketchatRoom).not.toHaveProperty('msgs');
+			expect(rocketchatRoom).not.toHaveProperty('ro');
+			expect(rocketchatRoom).not.toHaveProperty('default');
+			expect(rocketchatRoom).not.toHaveProperty('t');
 		});
 
 		it('should return a proper schema when receiving a partial object', async () => {
 			const appRoom = RoomsMock.convertedData.GENERALPartialWithOptionalProps as unknown as IAppsRoom;
 			const rocketchatRoom = await roomConverter.convertAppRoom(appRoom, true);
 
-			expect(rocketchatRoom).to.have.property('_id', appRoom.id);
-			expect(rocketchatRoom).to.have.property('name', appRoom.slugifiedName);
-			expect(rocketchatRoom).to.have.property('sysMes', appRoom.displaySystemMessages);
-			expect(rocketchatRoom).to.have.property('_updatedAt', appRoom.updatedAt);
-			expect(rocketchatRoom).to.have.property('msgs', appRoom.messageCount);
-			expect(rocketchatRoom).to.have.property('t', 'c');
+			expect(rocketchatRoom).toHaveProperty('_id', appRoom.id);
+			expect(rocketchatRoom).toHaveProperty('name', appRoom.slugifiedName);
+			expect(rocketchatRoom).toHaveProperty('sysMes', appRoom.displaySystemMessages);
+			expect(rocketchatRoom).toHaveProperty('_updatedAt', appRoom.updatedAt);
+			expect(rocketchatRoom).toHaveProperty('msgs', appRoom.messageCount);
+			expect(rocketchatRoom).toHaveProperty('t', 'c');
 
-			expect(rocketchatRoom).to.not.have.property('ro');
-			expect(rocketchatRoom).to.not.have.property('default');
+			expect(rocketchatRoom).not.toHaveProperty('ro');
+			expect(rocketchatRoom).not.toHaveProperty('default');
 		});
 
 		it('should not include properties that are not present in the app room', async () => {
 			const appRoom = RoomsMock.convertedData.UpdatedRoom as unknown as IAppsRoom;
 			const rocketchatRoom = await roomConverter.convertAppRoom(appRoom, true);
 
-			expect(rocketchatRoom).to.have.property('customFields');
-			expect(rocketchatRoom).to.not.have.property('_id');
-			expect(rocketchatRoom).to.not.have.property('t');
+			expect(rocketchatRoom).toHaveProperty('customFields');
+			expect(rocketchatRoom).not.toHaveProperty('_id');
+			expect(rocketchatRoom).not.toHaveProperty('t');
 		});
 
 		it('should not include name as undefined if the room doesnt have a name property', async () => {
 			const appRoom = RoomsMock.convertedData.UpdatedRoom as unknown as IAppsRoom;
 			const rocketchatRoom = await roomConverter.convertAppRoom(appRoom, true);
 
-			expect(rocketchatRoom.name).to.be.undefined;
+			expect(rocketchatRoom?.name).toBeUndefined();
 		});
 
 		it('should include a name if the source room has slugifiedName property', async () => {
 			const appRoom = RoomsMock.convertedData.GENERALPartialWithOptionalProps as unknown as IAppsRoom;
 			const rocketchatRoom = await roomConverter.convertAppRoom(appRoom, true);
 
-			expect(rocketchatRoom.name).to.equal(appRoom.slugifiedName);
+			expect(rocketchatRoom?.name).toBe(appRoom.slugifiedName);
 		});
 
 		it('should not use _unmappedProperties when the room is a partial object', async () => {
@@ -168,7 +172,7 @@ describe('The AppMessagesConverter instance', () => {
 			// @ts-expect-error - _unmappedProperties
 			const rocketchatRoom = await roomConverter.convertAppRoom({ ...appRoom, _unmappedProperties_: { unmapped: 'property' } }, true);
 
-			expect(rocketchatRoom).to.not.have.property('unmapped');
+			expect(rocketchatRoom).not.toHaveProperty('unmapped');
 		});
 
 		it('should use _unmappedProperties when the room is a partial object', async () => {
@@ -176,7 +180,7 @@ describe('The AppMessagesConverter instance', () => {
 			// @ts-expect-error - _unmappedProperties
 			const rocketchatRoom = await roomConverter.convertAppRoom({ ...appRoom, _unmappedProperties_: { unmapped: 'property' } }, false);
 
-			expect(rocketchatRoom).to.have.property('unmapped', 'property');
+			expect(rocketchatRoom).toHaveProperty('unmapped', 'property');
 		});
 	});
 });
