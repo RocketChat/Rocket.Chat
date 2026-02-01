@@ -4,7 +4,6 @@ import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms } from '@rocket.chat/models';
 
-import { metrics } from '../../../../app/metrics/server';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../server/lib/callbacks/afterRemoveFromRoomCallback';
@@ -26,13 +25,7 @@ callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, origi
 
 	const federatedRoomId = room?.federation?.mrid;
 	if (!federatedRoomId) {
-		const endTimer = metrics.federationRoomCreateDuration.startTimer({ room_type: room.t });
-		try {
-			await FederationMatrix.createRoom(room, owner);
-			metrics.federatedRoomsCreated.inc({ room_type: room.t });
-		} finally {
-			endTimer();
-		}
+		await FederationMatrix.createRoom(room, owner);
 	} else {
 		// TODO unify how to get server
 		// matrix room was already created and passed
@@ -50,16 +43,11 @@ callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, origi
 	}
 
 	// TODO this won't be neeeded once we receive all state events at ee/packages/federation-matrix/src/events/member.ts
-	const inviteEndTimer = metrics.federationUserInviteDuration.startTimer({ room_type: room.t });
-	try {
-		await FederationMatrix.inviteUsersToRoom(
-			federationRoom,
-			members.filter((member) => member !== owner.username),
-			owner,
-		);
-	} finally {
-		inviteEndTimer();
-	}
+	await FederationMatrix.inviteUsersToRoom(
+		federationRoom,
+		members.filter((member) => member !== owner.username),
+		owner,
+	);
 });
 
 callbacks.add(
@@ -74,33 +62,11 @@ callbacks.add(
 			// If message is federated, it will save external_message_id like into the message object
 			// if this prop exists here it should not be sent to the federation to avoid loops
 			if (!message.federation?.eventId) {
-				const messageType = message.files && message.files.length > 0 ? 'file' : 'text';
-				const endTimer = metrics.federationMessageSendDuration.startTimer({
-					message_type: messageType,
-					room_type: room.t,
-				});
-				try {
-					await FederationMatrix.sendMessage(message, room, user);
-					metrics.federatedMessagesSent.inc({
-						room_type: room.t,
-						message_type: messageType,
-					});
-					metrics.federationEventsProcessed.inc({
-						event_type: 'message',
-						direction: 'outgoing',
-					});
-				} finally {
-					endTimer();
-				}
+				await FederationMatrix.sendMessage(message, room, user);
 			}
 		} catch (error) {
 			// Log the error but don't prevent the message from being sent locally
 			console.error('[sendMessage] Failed to send message to Native Federation:', error);
-			metrics.federationEventsFailed.inc({
-				event_type: 'message',
-				direction: 'outgoing',
-				error_type: error instanceof Error ? error.constructor.name : 'Unknown',
-			});
 		}
 	},
 	callbacks.priority.HIGH,
@@ -156,12 +122,7 @@ beforeAddUserToRoom.add(
 			return;
 		}
 
-		const endTimer = metrics.federationUserInviteDuration.startTimer({ room_type: room.t });
-		try {
-			await FederationMatrix.inviteUsersToRoom(room, [user.username], inviter);
-		} finally {
-			endTimer();
-		}
+		await FederationMatrix.inviteUsersToRoom(room, [user.username], inviter);
 
 		// after invite is sent we create the invite subscriptions
 		// TODO this may be not needed if we receive the emit for the invite event from matrix
@@ -185,20 +146,7 @@ callbacks.add(
 			return;
 		}
 		if (FederationActions.shouldPerformFederationAction(params.room)) {
-			try {
-				await FederationMatrix.sendReaction(message._id, params.reaction, params.user);
-				metrics.federationEventsProcessed.inc({
-					event_type: 'reaction',
-					direction: 'outgoing',
-				});
-			} catch (error) {
-				metrics.federationEventsFailed.inc({
-					event_type: 'reaction',
-					direction: 'outgoing',
-					error_type: error instanceof Error ? error.constructor.name : 'Unknown',
-				});
-				throw error;
-			}
+			await FederationMatrix.sendReaction(message._id, params.reaction, params.user);
 		}
 	},
 	callbacks.priority.HIGH,
@@ -321,14 +269,8 @@ callbacks.add(
 
 		// as per federation.beforeCreateDirectMessage we create a DM without federation data because we still don't have it.
 		if (!room.federation.mrid) {
-			const endTimer = metrics.federationRoomCreateDuration.startTimer({ room_type: 'd' });
-			try {
-				// so after the DM is created we call the federation to create the DM on Matrix side and then updated the reference here
-				await FederationMatrix.createDirectMessageRoom(room, params.members, params.creatorId);
-				metrics.federatedRoomsCreated.inc({ room_type: 'd' });
-			} finally {
-				endTimer();
-			}
+			// so after the DM is created we call the federation to create the DM on Matrix side and then updated the reference here
+			await FederationMatrix.createDirectMessageRoom(room, params.members, params.creatorId);
 		}
 	},
 	callbacks.priority.HIGH,

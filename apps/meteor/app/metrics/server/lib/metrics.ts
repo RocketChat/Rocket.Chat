@@ -247,44 +247,7 @@ export const metrics = {
 		percentiles,
 	}),
 
-	// Federation metrics - Counters
-	federatedRoomsCreated: new client.Counter({
-		name: 'rocketchat_federation_rooms_created',
-		labelNames: ['room_type'], // 'c', 'p', 'd'
-		help: 'Total federated rooms created (locally created)',
-	}),
-
-	federatedRoomsJoined: new client.Counter({
-		name: 'rocketchat_federation_rooms_joined',
-		labelNames: ['room_type', 'origin'], // origin = remote server domain
-		help: 'Total federated rooms joined (users invited to rooms created elsewhere)',
-	}),
-
-	federatedMessagesSent: new client.Counter({
-		name: 'rocketchat_federation_messages_sent',
-		labelNames: ['room_type', 'message_type'], // message_type: 'text', 'file', 'encrypted'
-		help: 'Total federated messages sent',
-	}),
-
-	federatedMessagesReceived: new client.Counter({
-		name: 'rocketchat_federation_messages_received',
-		labelNames: ['room_type', 'message_type', 'origin'],
-		help: 'Total federated messages received',
-	}),
-
-	federationEventsProcessed: new client.Counter({
-		name: 'rocketchat_federation_events_processed',
-		labelNames: ['event_type', 'direction'], // 'message', 'membership', 'reaction', etc. | 'incoming', 'outgoing'
-		help: 'Total federation events processed',
-	}),
-
-	federationEventsFailed: new client.Counter({
-		name: 'rocketchat_federation_events_failed',
-		labelNames: ['event_type', 'direction', 'error_type'],
-		help: 'Total federation events that failed to process',
-	}),
-
-	// Federation metrics - Gauges
+	// Federation metrics - Gauges (used by collectFederationMetrics)
 	totalFederatedRooms: new client.Gauge({
 		name: 'rocketchat_federation_rooms_total',
 		labelNames: ['room_type', 'origin'], // origin = 'local' | remote domain
@@ -310,49 +273,6 @@ export const metrics = {
 		name: 'rocketchat_federation_users_total',
 		labelNames: ['origin'], // origin = remote server domain
 		help: 'Current count of federated users',
-	}),
-
-	// Federation metrics - Performance (Duration Summaries)
-	federationMessageSendDuration: new client.Summary({
-		name: 'rocketchat_federation_message_send_duration_seconds',
-		labelNames: ['message_type', 'room_type'],
-		help: 'Time to send a message to Matrix federation SDK (awaited operations only)',
-		percentiles,
-	}),
-
-	federationTransactionProcessDuration: new client.Summary({
-		name: 'rocketchat_federation_transaction_process_duration_seconds',
-		labelNames: ['pdu_count', 'edu_count', 'origin'],
-		help: 'Time to process incoming federation transaction',
-		percentiles,
-	}),
-
-	federationIncomingMessageProcessDuration: new client.Summary({
-		name: 'rocketchat_federation_incoming_message_process_duration_seconds',
-		labelNames: ['message_type'],
-		help: 'Time to process incoming federated message',
-		percentiles,
-	}),
-
-	federationRoomCreateDuration: new client.Summary({
-		name: 'rocketchat_federation_room_create_duration_seconds',
-		labelNames: ['room_type'],
-		help: 'Time to create a federated room',
-		percentiles,
-	}),
-
-	federationRoomJoinDuration: new client.Summary({
-		name: 'rocketchat_federation_room_join_duration_seconds',
-		labelNames: ['origin'],
-		help: 'Time to join a federated room (invite acceptance)',
-		percentiles,
-	}),
-
-	federationUserInviteDuration: new client.Summary({
-		name: 'rocketchat_federation_user_invite_duration_seconds',
-		labelNames: ['room_type'],
-		help: 'Time to invite a user to a federated room',
-		percentiles,
 	}),
 };
 
