@@ -237,6 +237,52 @@ describe('parseMessageSearchQuery', () => {
 			},
 			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
 		},
+		{
+			text: 'field:"urgent" field:"critical"',
+			query: {
+				$and: [
+					{
+						$or: [
+							{ 'attachments.fields.title': { $regex: 'urgent', $options: 'i' } },
+							{ 'attachments.fields.value': { $regex: 'urgent', $options: 'i' } },
+						],
+					},
+					{
+						$or: [
+							{ 'attachments.fields.title': { $regex: 'critical', $options: 'i' } },
+							{ 'attachments.fields.value': { $regex: 'critical', $options: 'i' } },
+						],
+					},
+				],
+			},
+			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
+		},
+		{
+			text: 'field:"urgent" field:"critical" field:"production"',
+			query: {
+				$and: [
+					{
+						$or: [
+							{ 'attachments.fields.title': { $regex: 'urgent', $options: 'i' } },
+							{ 'attachments.fields.value': { $regex: 'urgent', $options: 'i' } },
+						],
+					},
+					{
+						$or: [
+							{ 'attachments.fields.title': { $regex: 'critical', $options: 'i' } },
+							{ 'attachments.fields.value': { $regex: 'critical', $options: 'i' } },
+						],
+					},
+					{
+						$or: [
+							{ 'attachments.fields.title': { $regex: 'production', $options: 'i' } },
+							{ 'attachments.fields.value': { $regex: 'production', $options: 'i' } },
+						],
+					},
+				],
+			},
+			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
+		},
 	].forEach(({ text, query: expectedQuery, options: expectedOptions }) => {
 		it(`should parse ${JSON.stringify(text)}`, () => {
 			const { query, options } = parseMessageSearchQuery(text, params);

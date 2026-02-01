@@ -212,10 +212,23 @@ class MessageSearchQueryParser {
 				$options: 'i',
 			};
 
-			this.query.$or = [
-				{ 'attachments.fields.title': regex },
-				{ 'attachments.fields.value': regex },
-			];
+			const fieldOrCondition = {
+				$or: [
+					{ 'attachments.fields.title': regex },
+					{ 'attachments.fields.value': regex },
+				],
+			};
+
+			if (this.query.$or) {
+				this.query.$and = this.query.$and || [];
+				this.query.$and.push({ $or: this.query.$or });
+				this.query.$and.push(fieldOrCondition);
+				delete this.query.$or;
+			} else if (this.query.$and) {
+				this.query.$and.push(fieldOrCondition);
+			} else {
+				this.query.$or = fieldOrCondition.$or;
+			}
 
 			return '';
 		});
@@ -311,18 +324,30 @@ class MessageSearchQueryParser {
 				$options: r[2],
 			};
 		} else if (this.forceRegex) {
-			// When using regex, also search in attachment fields
 			const regex = {
 				$regex: text,
 				$options: 'i',
 			};
-			this.query.$or = [
-				{ msg: regex },
-				{ 'attachments.description': regex },
-				{ 'attachments.title': regex },
-				{ 'attachments.fields.title': regex },
-				{ 'attachments.fields.value': regex },
-			];
+			const fieldOrCondition = {
+				$or: [
+					{ msg: regex },
+					{ 'attachments.description': regex },
+					{ 'attachments.title': regex },
+					{ 'attachments.fields.title': regex },
+					{ 'attachments.fields.value': regex },
+				],
+			};
+
+			if (this.query.$or) {
+				this.query.$and = this.query.$and || [];
+				this.query.$and.push({ $or: this.query.$or });
+				this.query.$and.push(fieldOrCondition);
+				delete this.query.$or;
+			} else if (this.query.$and) {
+				this.query.$and.push(fieldOrCondition);
+			} else {
+				this.query.$or = fieldOrCondition.$or;
+			}
 		} else {
 			this.query.$text = {
 				$search: text,
