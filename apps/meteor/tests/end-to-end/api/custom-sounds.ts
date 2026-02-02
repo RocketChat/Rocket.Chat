@@ -127,7 +127,7 @@ describe('[CustomSounds]', () => {
 				})
 				.end(done);
 		});
-		it('should return the requestes custom sound when using the `_id` parameter', (done) => {
+		it('should return the requested custom sound when using the `_id` parameter', (done) => {
 			void request
 				.get(api('custom-sounds.list'))
 				.set(credentials)
