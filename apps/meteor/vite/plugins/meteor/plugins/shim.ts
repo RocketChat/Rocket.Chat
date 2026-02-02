@@ -7,13 +7,12 @@ import type { Plugin } from 'vite';
 
 import { analyze } from './shared/analyze';
 import type { ResolvedPluginOptions } from './shared/config';
-import { treeshake } from './shared/treeshake';
 import { printCode } from './shared/print';
+import { treeshake } from './shared/treeshake';
 
 export function shim(resolvedConfig: ResolvedPluginOptions): Plugin {
 	return {
 		name: 'meteor:shim',
-		// enforce: 'pre',
 		transform: {
 			filter: {
 				id: prefixRegex(path.resolve(resolvedConfig.programsDir)),
