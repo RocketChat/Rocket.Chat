@@ -1,4 +1,4 @@
-import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
+import type { SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettingsDispatch, useSettingStructure } from '@rocket.chat/ui-contexts';
