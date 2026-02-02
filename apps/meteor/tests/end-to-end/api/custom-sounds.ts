@@ -77,7 +77,7 @@ describe('[CustomSounds]', () => {
 			}),
 	);
 
-	describe('[/custom-sounds.list]', () => {
+	describe.only('[/custom-sounds.list]', () => {
 		it('should return custom sounds', (done) => {
 			void request
 				.get(api('custom-sounds.list'))
@@ -124,6 +124,23 @@ describe('[CustomSounds]', () => {
 					expect(res.body).to.have.property('offset').to.equal(0);
 					expect(res.body).to.have.property('count').to.equal(1);
 					expect(res.body.sounds[0]._id).to.be.equal(fileId2);
+				})
+				.end(done);
+		});
+    it('should return the requestes custom sound when using the `_id` parameter', (done) => {
+			void request
+				.get(api('custom-sounds.list'))
+				.set(credentials)
+				.expect(200)
+				.query({
+					_id: fileId,
+				})
+				.expect((res) => {
+					expect(res.body).to.have.property('sounds').and.to.be.an('array');
+					expect(res.body).to.have.property('total').to.equal(1);
+					expect(res.body).to.have.property('offset').to.equal(0);
+					expect(res.body).to.have.property('count').to.equal(1);
+					expect(res.body.sounds[0]._id).to.be.equal(fileId);
 				})
 				.end(done);
 		});
