@@ -1,1 +1,0 @@
-node --trace-warnings --enable-source-maps --experimental-transform-types --import ./shims/loader/register.ts ./server/main.ts
