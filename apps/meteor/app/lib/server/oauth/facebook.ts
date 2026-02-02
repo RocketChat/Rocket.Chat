@@ -56,7 +56,7 @@ registerAccessTokenService('facebook', async (options) => {
 
 	const fields: Record<string, any> = {};
 	for (const key of whitelisted) {
-		if (identity[key]) {
+		if (Object.prototype.hasOwnProperty.call(identity, key)) {
 			fields[key] = identity[key];
 		}
 	}
