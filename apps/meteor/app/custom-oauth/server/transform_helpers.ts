@@ -168,8 +168,8 @@ export const getRegexpMatch = (formula: string, data: any): any => {
 	return value;
 };
 
-const templateStringRegex = /{{((?:(?!}}).)+)}}/g;
 export const fromTemplate = (template: string, data: any): any => {
+	const templateStringRegex = /{{((?:(?!}}).)+)}}/g;
 	if (!templateStringRegex.test(template)) {
 		return getNestedValue(template, data);
 	}
