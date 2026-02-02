@@ -59,8 +59,8 @@ export class AppVisitorsConverter implements IAppVisitorsConverter {
 			return undefined;
 		}
 
-		const newVisitor: Partial<ILivechatVisitor> = {
-			_id: visitor.id!,
+		const newVisitor: ILivechatVisitor = {
+			_id: visitor.id!, // FIXME not sure why id is optional in the Apps model
 			username: visitor.username,
 			name: visitor.name,
 			token: visitor.token,
@@ -69,8 +69,10 @@ export class AppVisitorsConverter implements IAppVisitorsConverter {
 			status: (visitor.status as UserStatus | undefined) || UserStatus.ONLINE,
 			...(visitor.visitorEmails && { visitorEmails: visitor.visitorEmails }),
 			...(visitor.department && { department: visitor.department }),
+			ts: undefined!, // FIXME this field is required but has no equivalent in the Apps model
+			_updatedAt: visitor.updatedAt!, // FIXME might be fixed in ILivechatVisitor definition
 		};
 
-		return Object.assign(newVisitor, (visitor as { _unmappedProperties?: any })._unmappedProperties);
+		return Object.assign(newVisitor, (visitor as { _unmappedProperties?: Record<string, any> })._unmappedProperties);
 	}
 }
