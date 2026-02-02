@@ -82,7 +82,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 						}
 					};
 				}
-        close();
+				close();
 			}
 
 			validation.forEach((invalidFieldName) =>
