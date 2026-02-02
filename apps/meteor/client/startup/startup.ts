@@ -42,7 +42,10 @@ Meteor.startup(() => {
 				fireGlobalEvent('status-changed', status);
 			}
 		} catch (error) {
-			console.error('Error synchronizing user data:', error);
+			console.error(
+				'Failed to synchronize user data during startup. Clearing local auth state and logging out.',
+				{ userId: uid, error },
+			);
 			removeLocalUserData();
 			Meteor.logout();
 		}
