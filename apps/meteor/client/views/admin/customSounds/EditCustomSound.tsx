@@ -16,16 +16,16 @@ function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProp
 	const { t } = useTranslation();
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 
-	const { data, isPending, refetch } = useQuery({
+	const { data, isPending } = useQuery({
 		queryKey: ['custom-sounds', _id],
 
 		queryFn: async () => {
-			const { sounds } = await getSounds({ query: JSON.stringify({ _id }) });
+			const { sounds } = await getSounds({ _id });
 
 			if (sounds.length === 0) {
 				throw new Error(t('No_results_found'));
 			}
-			return sounds.find((sound) => sound._id === _id);
+			return sounds[0];
 		},
 		meta: { apiErrorToastMessage: true },
 	});
@@ -40,7 +40,6 @@ function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProp
 
 	const handleChange: () => void = () => {
 		onChange?.();
-		refetch?.();
 	};
 
 	return <EditSound data={data} close={close} onChange={handleChange} {...props} />;
