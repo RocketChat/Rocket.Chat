@@ -31,10 +31,11 @@ export const getRestPayload =
 					return { payload: '[multipart/form-data]' };
 				}
 
-				return {
-					payload: await request.raw
-						.clone()
-						.json()
-						.catch(() => null),
-				};
+				try {
+					return {
+						payload: await request.raw.clone().json(),
+					};
+				} catch {
+					return { payload: null };
+				}
 			};
