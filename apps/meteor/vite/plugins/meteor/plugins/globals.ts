@@ -23,6 +23,11 @@ export function globals(resolvedConfig: ResolvedPluginOptions): Plugin {
 							injectTo: 'head',
 							children: generateMeteorRuntimeConfigCode(await getMeteorRuntimeConfig(resolvedConfig)),
 						},
+						{
+							tag: 'base',
+							attrs: { href: '/' },
+							injectTo: 'head',
+						},
 					],
 					html,
 				};
