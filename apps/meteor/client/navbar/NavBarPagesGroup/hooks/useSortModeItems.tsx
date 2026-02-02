@@ -18,7 +18,7 @@ export const useSortModeItems = (): GenericMenuItemProps[] => {
 
     const useHandleChange = (value: 'alphabetical' | 'activity'): (() => void) =>
         useCallback(() => saveUserPreferences({ data: { sidebarSortby: value } }), [value]);
-
+	
     const setToAlphabetical = useHandleChange('alphabetical');
     const setToActivity = useHandleChange('activity');
 

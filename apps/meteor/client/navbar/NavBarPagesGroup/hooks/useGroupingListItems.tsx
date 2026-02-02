@@ -20,7 +20,7 @@ export const useGroupingListItems = (): GenericMenuItemProps[] => {
     const handleChangeGroupByType = useHandleChange('sidebarGroupByType', !sidebarGroupByType);
     const handleChangeShoFavorite = useHandleChange('sidebarShowFavorites', !sidebarShowFavorites);
     const handleChangeShowUnread = useHandleChange('sidebarShowUnread', !sidebarShowUnread);
-
+	
     return [
         {
             id: 'unread',
