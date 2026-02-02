@@ -6,7 +6,6 @@ import { Users, Rooms, Messages } from '@rocket.chat/models';
 
 import { fileTypes } from '../FederationMatrix';
 import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../helpers/message.parsers';
-import { federationMetrics, extractOriginFromMatrixUserId, determineMessageType } from '../helpers/metricsHelpers';
 import { MatrixMediaService } from '../services/MatrixMediaService';
 
 const logger = new Logger('federation-matrix:message');
@@ -113,11 +112,6 @@ async function handleMediaMessage(
 
 export function message() {
 	federationSDK.eventEmitterService.on('homeserver.matrix.message', async ({ event, event_id: eventId }) => {
-		const messageType = determineMessageType(event);
-		const endTimer = federationMetrics.federationIncomingMessageProcessDuration.startTimer({
-			message_type: messageType,
-		});
-
 		try {
 			const { msgtype, body } = event.content;
 			const messageBody = body.toString();
@@ -139,11 +133,10 @@ export function message() {
 			}
 
 			const serverName = federationSDK.getConfig('serverName');
-			const origin = extractOriginFromMatrixUserId(event.sender);
 
 			const relation = event.content['m.relates_to'];
 
-			// SPEC: For example, an m.thread relationship type denotes that the event is part of a “thread” of messages and should be rendered as such.
+			// SPEC: For example, an m.thread relationship type denotes that the event is part of a "thread" of messages and should be rendered as such.
 			const hasRelation = relation && 'rel_type' in relation;
 
 			const isThreadMessage = hasRelation && relation.rel_type === 'm.thread';
@@ -151,7 +144,7 @@ export function message() {
 			const threadRootEventId = isThreadMessage && relation.event_id;
 
 			// SPEC: Though rich replies form a relationship to another event, they do not use rel_type to create this relationship.
-			// Instead, a subkey named m.in_reply_to is used to describe the reply’s relationship,
+			// Instead, a subkey named m.in_reply_to is used to describe the reply's relationship,
 			const isRichReply = relation && !('rel_type' in relation) && 'm.in_reply_to' in relation;
 
 			const quoteMessageEventId = isRichReply && relation['m.in_reply_to']?.event_id;
@@ -234,17 +227,6 @@ export function message() {
 					thread,
 					ts: new Date(event.origin_server_ts),
 				});
-
-				// Track received message
-				federationMetrics.federatedMessagesReceived.inc({
-					room_type: room.t,
-					message_type: messageType,
-					origin,
-				});
-				federationMetrics.federationEventsProcessed.inc({
-					event_type: 'message',
-					direction: 'incoming',
-				});
 				return;
 			}
 
@@ -279,36 +261,12 @@ export function message() {
 					ts: new Date(event.origin_server_ts),
 				});
 			}
-
-			// Track received message
-			federationMetrics.federatedMessagesReceived.inc({
-				room_type: room.t,
-				message_type: messageType,
-				origin,
-			});
-			federationMetrics.federationEventsProcessed.inc({
-				event_type: 'message',
-				direction: 'incoming',
-			});
 		} catch (err) {
 			logger.error({ msg: 'Error processing Matrix message', err });
-			federationMetrics.federationEventsFailed.inc({
-				event_type: 'message',
-				direction: 'incoming',
-				error_type: err instanceof Error ? err.constructor.name : 'Unknown',
-			});
-		} finally {
-			endTimer();
 		}
 	});
 
 	federationSDK.eventEmitterService.on('homeserver.matrix.encrypted', async ({ event, event_id: eventId }) => {
-		const messageType = 'encrypted';
-		const endTimer = federationMetrics.federationIncomingMessageProcessDuration.startTimer({
-			message_type: messageType,
-		});
-		const origin = extractOriginFromMatrixUserId(event.sender);
-
 		try {
 			if (!event.content.ciphertext) {
 				logger.debug('No message content found in event');
@@ -328,7 +286,7 @@ export function message() {
 
 			const relation = event.content['m.relates_to'];
 
-			// SPEC: For example, an m.thread relationship type denotes that the event is part of a “thread” of messages and should be rendered as such.
+			// SPEC: For example, an m.thread relationship type denotes that the event is part of a "thread" of messages and should be rendered as such.
 			const hasRelation = relation && 'rel_type' in relation;
 
 			const isThreadMessage = hasRelation && relation.rel_type === 'm.thread';
@@ -336,7 +294,7 @@ export function message() {
 			const threadRootEventId = isThreadMessage && relation.event_id;
 
 			// SPEC: Though rich replies form a relationship to another event, they do not use rel_type to create this relationship.
-			// Instead, a subkey named m.in_reply_to is used to describe the reply’s relationship,
+			// Instead, a subkey named m.in_reply_to is used to describe the reply's relationship,
 			const isRichReply = relation && !('rel_type' in relation) && 'm.in_reply_to' in relation;
 
 			const quoteMessageEventId = isRichReply && relation['m.in_reply_to']?.event_id;
@@ -405,17 +363,6 @@ export function message() {
 					thread,
 					ts: new Date(event.origin_server_ts),
 				});
-
-				// Track received encrypted message
-				federationMetrics.federatedMessagesReceived.inc({
-					room_type: room.t,
-					message_type: messageType,
-					origin,
-				});
-				federationMetrics.federationEventsProcessed.inc({
-					event_type: 'message',
-					direction: 'incoming',
-				});
 				return;
 			}
 
@@ -430,26 +377,8 @@ export function message() {
 				thread,
 				ts: new Date(event.origin_server_ts),
 			});
-
-			// Track received encrypted message
-			federationMetrics.federatedMessagesReceived.inc({
-				room_type: room.t,
-				message_type: messageType,
-				origin,
-			});
-			federationMetrics.federationEventsProcessed.inc({
-				event_type: 'message',
-				direction: 'incoming',
-			});
 		} catch (err) {
 			logger.error({ msg: 'Error processing Matrix message', err });
-			federationMetrics.federationEventsFailed.inc({
-				event_type: 'message',
-				direction: 'incoming',
-				error_type: err instanceof Error ? err.constructor.name : 'Unknown',
-			});
-		} finally {
-			endTimer();
 		}
 	});
 
@@ -480,18 +409,8 @@ export function message() {
 			}
 
 			await Message.deleteMessage(user, rcMessage);
-
-			federationMetrics.federationEventsProcessed.inc({
-				event_type: 'redaction',
-				direction: 'incoming',
-			});
 		} catch (err) {
 			logger.error({ msg: 'Failed to process Matrix removal redaction', err });
-			federationMetrics.federationEventsFailed.inc({
-				event_type: 'redaction',
-				direction: 'incoming',
-				error_type: err instanceof Error ? err.constructor.name : 'Unknown',
-			});
 		}
 	});
 }
