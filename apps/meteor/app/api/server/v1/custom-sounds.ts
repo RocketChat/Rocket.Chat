@@ -55,10 +55,6 @@ const customSoundsEndpoints = API.v1.get(
 				additionalProperties: false,
 				type: 'object',
 				properties: {
-					_id: {
-						type: 'string',
-						description: 'The ID of the sound.',
-					},
 					count: {
 						type: 'number',
 						description: 'The number of sounds returned in this response.',
