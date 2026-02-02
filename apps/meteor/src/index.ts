@@ -10,4 +10,4 @@ import 'meteor/rocketchat:streamer';
 
 import '../app/theme/client/main.css';
 
-import '../client/main.ts';
+await import('../client/main.ts');

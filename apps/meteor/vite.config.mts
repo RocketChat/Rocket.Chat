@@ -28,10 +28,15 @@ export default defineConfig(async () => {
 		build: {
 			emptyOutDir: true,
 			assetsDir: 'build_assets',
-			manifest: true,			
+			manifest: true,
 			rolldownOptions: {
+				optimization: {
+					inlineConst: true,
+				},
 				output: {
-					format: 'iife',
+					format: 'esm',
+					minify: true,
+					cleanDir: true,
 				},
 			},
 		},
