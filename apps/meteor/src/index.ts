@@ -8,6 +8,6 @@ import 'meteor/accounts-password';
 import 'meteor/service-configuration';
 import 'meteor/rocketchat:streamer';
 
-import '../.meteor/local/build/programs/web.browser/merged-stylesheets.css';
+import '../app/theme/client/main.css';
 
 import '../client/main.ts';
