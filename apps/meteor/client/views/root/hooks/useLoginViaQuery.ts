@@ -1,4 +1,5 @@
 import { useRouter, useLoginWithToken } from '@rocket.chat/ui-contexts';
+import { Accounts } from 'meteor/accounts-base';
 import { useEffect } from 'react';
 
 export const useLoginViaQuery = () => {
@@ -33,9 +34,19 @@ export const useLoginViaQuery = () => {
 				);
 			} catch (error) {
 				console.error('Failed to login with token', error);
+				// Clear invalid tokens, this prevents getting stuck on registration page
+				Accounts._unstoreLoginToken();
+				const { resumeToken: _, userId: __, ...search } = router.getSearchParameters();
+				router.navigate(
+					{
+						pathname: router.getLocationPathname(),
+						search,
+					},
+					{ replace: true },
+				);
 			}
 		};
 
-		handleLogin();
+		void handleLogin();
 	}, [loginWithToken, router]);
 };

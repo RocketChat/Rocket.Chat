@@ -26,19 +26,25 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const user = await synchronizeUserData(uid);
-		if (!user) {
-			return;
-		}
+		try {
+			const user = await synchronizeUserData(uid);
+			if (!user) {
+				return;
+			}
 
-		const utcOffset = moment().utcOffset() / 60;
-		if (user.utcOffset !== utcOffset) {
-			sdk.call('userSetUtcOffset', utcOffset);
-		}
+			const utcOffset = moment().utcOffset() / 60;
+			if (user.utcOffset !== utcOffset) {
+				sdk.call('userSetUtcOffset', utcOffset);
+			}
 
-		if (user.status !== status) {
-			status = user.status;
-			fireGlobalEvent('status-changed', status);
+			if (user.status !== status) {
+				status = user.status;
+				fireGlobalEvent('status-changed', status);
+			}
+		} catch (error) {
+			console.error('Error synchronizing user data:', error);
+			removeLocalUserData();
+			Meteor.logout();
 		}
 	});
 });
