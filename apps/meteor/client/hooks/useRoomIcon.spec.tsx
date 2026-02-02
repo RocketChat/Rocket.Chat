@@ -6,38 +6,32 @@ const mockRooms = {
 		t: 'c',
 		name: 'public',
 		teamMain: false,
-		abacAttributes: undefined,
 	}),
 	private: createFakeRoom({
 		t: 'p',
 		name: 'private',
 		teamMain: false,
-		abacAttributes: undefined,
 	}),
 	team: createFakeRoom({
 		t: 'c',
 		name: 'team',
 		teamMain: true,
-		abacAttributes: undefined,
 	}),
 	direct: createFakeRoom({
 		t: 'd',
 		name: 'direct',
 		teamMain: false,
-		abacAttributes: undefined,
 	}),
 	directMultiple: createFakeRoom({
 		t: 'd',
 		name: 'direct-multiple',
 		teamMain: false,
-		abacAttributes: undefined,
 		uids: ['user1', 'user2', 'user3'],
 	}),
 	federated: createFakeRoom({
 		t: 'c',
 		name: 'federated',
 		teamMain: false,
-		abacAttributes: undefined,
 		federated: true,
 	}),
 	abacRoom: createFakeRoom({
