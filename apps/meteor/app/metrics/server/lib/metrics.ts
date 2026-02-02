@@ -246,34 +246,6 @@ export const metrics = {
 		help: 'Time taken in seconds for an item to be processed for the first time by Omni queues',
 		percentiles,
 	}),
-
-	// Federation metrics - Gauges (used by collectFederationMetrics)
-	totalFederatedRooms: new client.Gauge({
-		name: 'rocketchat_federation_rooms_total',
-		labelNames: ['room_type', 'origin'], // origin = 'local' | remote domain
-		help: 'Current count of federated rooms',
-	}),
-
-	totalFederatedChannels: new client.Gauge({
-		name: 'rocketchat_federation_channels_total',
-		help: 'Total federated public channels',
-	}),
-
-	totalFederatedPrivateGroups: new client.Gauge({
-		name: 'rocketchat_federation_private_groups_total',
-		help: 'Total federated private groups',
-	}),
-
-	totalFederatedDirectMessages: new client.Gauge({
-		name: 'rocketchat_federation_direct_total',
-		help: 'Total federated direct message rooms',
-	}),
-
-	totalFederatedUsers: new client.Gauge({
-		name: 'rocketchat_federation_users_total',
-		labelNames: ['origin'], // origin = remote server domain
-		help: 'Current count of federated users',
-	}),
 };
 
 // Metrics
