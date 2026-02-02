@@ -37,7 +37,7 @@ export const validateCustomFields = function (fields: Record<string, any>): void
 			throw new Meteor.Error('error-user-registration-custom-field', `Field ${fieldName} is required`, { method: 'registerUser' });
 		}
 
-		if (field.type === 'select' && field.options?.indexOf(fields[fieldName]) === -1) {
+		if (field.type === 'select' && (!field.options || field.options.indexOf(fields[fieldName]) === -1)) {
 			throw new Meteor.Error('error-user-registration-custom-field', `Value for field ${fieldName} is invalid`, { method: 'registerUser' });
 		}
 
