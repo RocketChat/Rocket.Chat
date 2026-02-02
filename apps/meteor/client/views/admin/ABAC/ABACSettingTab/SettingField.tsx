@@ -57,7 +57,6 @@ function SettingField({ className = undefined, settingId, sectionChanged }: Sett
 	const [value, setValue] = useState(setting.value);
 	const [editor, setEditor] = useState(isSettingColor(setting) ? setting.editor : undefined);
 
-	// Memoize editor value extraction to avoid type-cast in dependency array
 	const editorValue = useMemo(() => {
 		return isSettingColor(setting) ? setting.editor : undefined;
 	}, [setting]);
