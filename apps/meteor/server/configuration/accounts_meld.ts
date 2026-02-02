@@ -34,7 +34,7 @@ export async function configureAccounts(): Promise<void> {
 		if (serviceName === 'meteor-developer') {
 			if (Array.isArray(serviceData.emails)) {
 				const primaryEmail = serviceData.emails.sort((a) => (a.primary === true ? -1 : 1)).filter((item) => item.verified === true)[0];
-				serviceData.email = primaryEmail && primaryEmail.address;
+				serviceData.email = primaryEmail?.address;
 			}
 		}
 
@@ -44,7 +44,7 @@ export async function configureAccounts(): Promise<void> {
 
 		if (serviceData.email) {
 			const user = await Users.findOneByEmailAddress(serviceData.email);
-			if (user != null && (user.services as any)?.[serviceName]?.id !== serviceData.id) {
+			if (!!user && user.services?.[serviceName as keyof typeof user.services]?.id !== serviceData.id) {
 				const findQuery = {
 					address: serviceData.email,
 					verified: true,
