@@ -1,6 +1,6 @@
 import http from 'http';
 
-import { Rooms, Statistics, Users } from '@rocket.chat/models';
+import { Statistics } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
 import connect from 'connect';
 import { Facts } from 'meteor/facts-base';
