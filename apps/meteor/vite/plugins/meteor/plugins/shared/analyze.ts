@@ -2,7 +2,7 @@
 import type * as AST from '@oxc-project/types';
 import { walk } from 'oxc-walker';
 
-import { expect, check } from './check';
+import { expect, check, isIdentifierWithName, isStringLiteral } from './check';
 
 /**
  * Collects exported names from Meteor package modules.
@@ -30,7 +30,7 @@ export function analyze(ast: AST.Program): { name: string; imports: Map<string, 
 				isIdentifierWithName(callee.object.object, 'Package') &&
 				isLiteralWithValue(callee.object.property, 'core-runtime') &&
 				isIdentifierWithName(callee.property, 'queue') &&
-				isLiteralString(pkg) &&
+				isStringLiteral(pkg) &&
 				(check.isFunctionExpression(func) || check.isArrowFunctionExpression(func))
 			) {
 				name = pkg.value;
@@ -113,10 +113,6 @@ function isNonComputedMemberExpression(node: AST.Expression): node is Extract<AS
 	return check.isMemberExpression(node) && !node.computed;
 }
 
-function isIdentifierWithName<T extends string>(node: AST.Node, name: T): node is AST.IdentifierName & { name: T } {
-	return check.isIdentifier(node) && node.name === name;
-}
-
 type Primitive = string | number | bigint | boolean | RegExp | null;
 
 type ToPrimitive<T> = T extends string
@@ -178,17 +174,4 @@ function isReturnStatementWithObject(
  */
 function isFunctionWithBlock(node: AST.Expression): node is AST.Function & { body: AST.BlockStatement } {
 	return check.isFunctionExpression(node) && check.isBlockStatement(node.body);
-}
-
-/**
- * Type guard to check if a node is a StringLiteral.
- * @param node - The AST node to check.
- * @returns True if the node is a StringLiteral, false otherwise.
- * @example
- * ```ts
- * "string value"
- * ```
- */
-function isLiteralString(node: AST.Node): node is AST.StringLiteral {
-	return check.isLiteral(node) && typeof node.value === 'string';
 }
