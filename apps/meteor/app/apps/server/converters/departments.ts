@@ -58,15 +58,15 @@ export class AppDepartmentsConverter implements IAppDepartmentsConverter {
 
 		const newDepartment: ILivechatDepartment = {
 			_id: department.id,
-			name: department.name ?? '',
-			email: department.email ?? '',
+			name: department.name!,
+			email: department.email!,
 			_updatedAt: department.updatedAt,
 			enabled: department.enabled,
 			numAgents: department.numberOfAgents,
 			showOnOfflineForm: department.showOnOfflineForm,
 			showOnRegistration: department.showOnRegistration,
 			description: department.description,
-			offlineMessageChannelName: department.offlineMessageChannelName ?? '',
+			offlineMessageChannelName: department.offlineMessageChannelName!,
 			requestTagBeforeClosingChat: department.requestTagBeforeClosingChat,
 			chatClosingTags: department.chatClosingTags,
 			abandonedRoomsCloseCustomMessage: department.abandonedRoomsCloseCustomMessage,
