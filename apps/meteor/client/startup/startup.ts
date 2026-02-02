@@ -9,6 +9,26 @@ import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 import { watchUserId } from '../meteor/user';
 
+function isAuthError(error: unknown): boolean {
+	if (!error || typeof error !== 'object') {
+		return false;
+	}
+
+	if ('error' in error && error.error === 'unauthorized') {
+		return true;
+	}
+
+	if ('code' in error && (error.code === 401 || error.code === 403)) {
+		return true;
+	}
+
+	if ('message' in error && typeof error.message === 'string' && error.message.toLowerCase().includes('unauthorized')) {
+		return true;
+	}
+
+	return false;
+}
+
 Meteor.startup(() => {
 	let status: UserStatus | undefined = undefined;
 	Tracker.autorun(async () => {
@@ -42,12 +62,13 @@ Meteor.startup(() => {
 				fireGlobalEvent('status-changed', status);
 			}
 		} catch (error) {
-			console.error(
-				'Failed to synchronize user data during startup. Clearing local auth state and logging out.',
-				{ userId: uid, error },
-			);
-			removeLocalUserData();
-			Meteor.logout();
+			console.error('Error synchronizing user data:', error);
+
+			if (isAuthError(error)) {
+				console.error('Authentication error detected. Clearing local auth state and logging out.', { userId: uid, error });
+				removeLocalUserData();
+				Meteor.logout();
+			}
 		}
 	});
 });
