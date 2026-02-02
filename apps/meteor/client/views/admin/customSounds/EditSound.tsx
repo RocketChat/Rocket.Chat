@@ -82,6 +82,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 						}
 					};
 				}
+        close();
 			}
 
 			validation.forEach((invalidFieldName) =>
@@ -90,8 +91,6 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					message: t('Required_field', { field: t(invalidFieldName) }),
 				}),
 			);
-
-			close();
 		},
 		[_id, dispatchToastMessage, insertOrUpdateSound, name, previousName, previousSound, t, uploadCustomSound],
 	);
