@@ -28,6 +28,7 @@ export default defineConfig(async () => {
 		build: {
 			emptyOutDir: true,
 			assetsDir: 'build_assets',
+			manifest: true,			
 			rolldownOptions: {
 				output: {
 					format: 'iife',
