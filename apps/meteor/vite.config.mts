@@ -1,10 +1,39 @@
 import path from 'node:path';
 
 import react from '@vitejs/plugin-react';
-import { defineConfig, esmExternalRequirePlugin } from 'vite';
+import { defineConfig, esmExternalRequirePlugin, type BuildEnvironmentOptions } from 'vite';
 
 import info from './vite/plugins/info';
 import meteor from './vite/plugins/meteor';
+
+const build = {
+	emptyOutDir: true,
+	assetsDir: 'static',
+	manifest: true,
+	target: 'esnext',
+	rolldownOptions: {
+		optimization: {
+			inlineConst: true,
+			pifeForModuleWrappers: false,
+		},
+		context: 'globalThis',
+		checks: {
+			circularDependency: true,
+		},
+		output: {
+			format: 'esm',
+			minify: true,
+			cleanDir: true,
+			externalLiveBindings: false,
+			
+			generatedCode: {
+				preset: 'es2015',
+			},
+
+
+		},
+	},
+} as const satisfies BuildEnvironmentOptions;
 
 export default defineConfig(async () => {
 	const ROOT_URL = await getDefaultHostUrl();
@@ -25,21 +54,7 @@ export default defineConfig(async () => {
 				exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
 			}),
 		],
-		build: {
-			emptyOutDir: true,
-			assetsDir: 'build_assets',
-			manifest: true,
-			rolldownOptions: {
-				optimization: {
-					inlineConst: true,
-				},
-				output: {
-					format: 'esm',
-					minify: true,
-					cleanDir: true,
-				},
-			},
-		},
+		build,
 		resolve: {
 			dedupe: ['react', 'react-dom', 'react-i18next', '@tanstack/react-query'],
 			alias: {

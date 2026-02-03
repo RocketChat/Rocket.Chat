@@ -1,8 +1,13 @@
 import type * as AST from '@oxc-project/types';
+import { exactRegex } from '@rolldown/pluginutils';
+import { parse } from 'oxc-parser';
 import { walk } from 'oxc-walker';
+import type { Plugin } from 'vite';
 
-import * as b from './builders';
-import { check } from './check';
+import * as b from './shared/builders';
+import { check } from './shared/check';
+import type { ResolvedPluginOptions } from './shared/config';
+import { printCode } from './shared/print';
 
 const packages = [
 	'@babel',
@@ -59,7 +64,7 @@ const packages = [
 	'zustand',
 ];
 
-export function treeshake(ast: AST.Program): AST.Program {
+function treeshakeMeteorModules(ast: AST.Program): AST.Program {
 	const extraImports: AST.ImportDeclaration[] = [];
 
 	walk(ast, {
@@ -126,52 +131,14 @@ function processNodeModules(
 				// module.exports = varName; OR module.exports = varName.default || varName;
 				const assignmentRight: AST.Expression =
 					fullPath.includes('@babel/runtime') || fullPath.includes('react/')
-						? {
-								type: 'LogicalExpression',
-								operator: '||',
-								left: {
-									type: 'MemberExpression',
-									object: b.identifier(varName),
-									property: b.identifier('default'),
-									computed: false,
-									optional: false,
-									start: 0,
-									end: 0,
-								},
-								right: b.identifier(varName),
-								start: 0,
-								end: 0,
-							}
+						? b.logicalExpression(b.memberExpression(b.identifier(varName), b.identifier('default')), '||', b.identifier(varName))
 						: b.identifier(varName);
 				// m.exports = ...
-				const assignment: AST.ExpressionStatement = {
-					type: 'ExpressionStatement',
-					expression: {
-						type: 'AssignmentExpression',
-						operator: '=',
-						left: {
-							type: 'MemberExpression',
-							object: b.identifier('module'), // 'm' is the 3rd arg in meteorInstall closure
-							property: b.identifier('exports'),
-							computed: false,
-							optional: false,
-							start: 0,
-							end: 0,
-						},
-						right: assignmentRight,
-						start: 0,
-						end: 0,
-					},
-					start: 0,
-					end: 0,
-				};
+				const assignment = b.expressionStatement(
+					b.assignmentExpression('=', b.memberExpression(b.identifier('module'), b.identifier('exports')), assignmentRight),
+				);
 
-				prop.value.body = {
-					type: 'BlockStatement',
-					body: [assignment],
-					start: 0,
-					end: 0,
-				};
+				prop.value.body = b.blockStatement([assignment]);
 
 				found = true;
 			} else if (check.isObjectExpression(prop.value)) {
@@ -296,4 +263,26 @@ function resolveImportPath(path: string) {
 		.replace(/\/build\/legacy\/.*$/, '')
 		.replace(/\/dist\/esm\/.*$/, '')
 		.replace(/\/index$/, '');
+}
+
+export function treeshake(resolvedConfig: ResolvedPluginOptions): Plugin {
+	return {
+		name: 'meteor:treeshake',
+		apply: 'build',
+		transform: {
+			filter: {
+				id: exactRegex(`${resolvedConfig.programsDir}/web.browser/packages/modules.js`),
+			},
+			async handler(code, id) {
+				const startLength = code.length;
+				this.info(`modules.js ${startLength} bytes`);
+				const ast = await parse(id, code, { astType: 'js', lang: 'js', preserveParens: false });
+				treeshakeMeteorModules(ast.program);
+				code = printCode(ast.program);
+				const endLength = code.length;
+				this.info(`modules.js treeshaked to ${endLength} bytes (${startLength - endLength} bytes removed)`);
+				return code;
+			},
+		},
+	};
 }
