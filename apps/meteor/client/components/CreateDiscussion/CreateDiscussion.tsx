@@ -92,15 +92,18 @@ const CreateDiscussion = ({
 	});
 
 	const handleCreate = async ({ name, parentRoom, encrypted, usernames, firstMessage, topic }: CreateDiscussionFormValues) => {
+		const trimmedName = name.trim();
+
 		createDiscussionMutation.mutate({
 			prid: defaultParentRoom || parentRoom,
-			t_name: name,
+			t_name: trimmedName,
 			users: usernames,
 			reply: encrypted ? undefined : firstMessage,
 			topic,
 			...(parentMessageId && { pmid: parentMessageId }),
 		});
 	};
+
 
 	const getEncryptedHint = useEncryptedRoomDescription('discussion');
 
@@ -132,8 +135,13 @@ const CreateDiscussion = ({
 						{defaultParentRoom && (
 							<Controller
 								control={control}
-								name='parentRoom'
-								render={() => <DefaultParentRoomField defaultParentRoom={defaultParentRoom} id={parentRoomId} />}
+								name="parentRoom"
+								render={() => (
+									<DefaultParentRoomField
+										defaultParentRoom={defaultParentRoom}
+										id={parentRoomId}
+									/>
+								)}
 							/>
 						)}
 						{!defaultParentRoom && (
