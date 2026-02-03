@@ -11,9 +11,10 @@ export class AppImplementsTestFixture {
 		const impls = new AppImplements();
 
 		Expect(impls.getValues()).toBeDefined();
-		Expect(() => impls.doesImplement(AppInterface.IPreMessageSentPrevent)).not.toThrow();
+		Expect(() => impls.setImplements(AppInterface.IPreMessageSentPrevent)).not.toThrow();
+		Expect(impls.doesImplement(AppInterface.IPreMessageSentPrevent)).toBe(true);
+		Expect(impls.doesImplement(AppInterface.IPostMessageDeleted)).toBe(false);
 		Expect(impls.getValues()[AppInterface.IPreMessageSentPrevent]).toBe(true);
-		Expect(() => impls.doesImplement('Something')).not.toThrow();
-		Expect(impls.getValues().Something).not.toBeDefined();
+		Expect(impls.getValues()[AppInterface.IPostMessageDeleted]).toBe(false);
 	}
 }

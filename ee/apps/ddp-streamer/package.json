@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ddp-streamer",
-	"version": "0.3.47-rc.1",
+	"version": "0.3.47",
 	"private": true,
 	"description": "Rocket.Chat DDP-Streamer service",
 	"keywords": [
@@ -32,7 +32,7 @@
 		"@rocket.chat/tracing": "workspace:^",
 		"colorette": "^1.4.0",
 		"ejson": "^2.2.3",
-		"eventemitter3": "^5.0.1",
+		"eventemitter3": "^5.0.4",
 		"jaeger-client": "^3.19.0",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.35",

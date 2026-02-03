@@ -80,12 +80,12 @@ export class IMAPInterceptor extends EventEmitter {
 		// On successfully connected.
 		this.imap.on('ready', async () => {
 			if (this.isActive()) {
-				logger.info(`IMAP connected to ${this.config.user}`);
+				logger.info({ msg: 'IMAP connected', user: this.config.user });
 				clearTimeout(this.backoff);
 				this.retries = 0;
 				this.backoffDurationMS = 3000;
 				await this.openInbox();
-				this.imap.on('mail', () => this.getEmails().catch((err: Error) => logger.debug('Error on getEmails: ', err.message)));
+				this.imap.on('mail', () => this.getEmails().catch((err: Error) => logger.debug({ msg: 'Error on getEmails', err })));
 			} else {
 				logger.error("Can't connect to IMAP server");
 			}
@@ -130,7 +130,7 @@ export class IMAPInterceptor extends EventEmitter {
 
 	async reconnect(): Promise<void> {
 		if (!this.isActive() && !this.canRetry()) {
-			logger.info(`Max retries reached for ${this.config.user}`);
+			logger.info({ msg: 'Max retries reached', user: this.config.user });
 			this.stop();
 			return this.selfDisable();
 		}
@@ -183,14 +183,14 @@ export class IMAPInterceptor extends EventEmitter {
 				const bodycb = (stream: NodeJS.ReadableStream, _info: ImapMessageBodyInfo): void => {
 					simpleParser(new Readable().wrap(stream), (_err, email) => {
 						if (this.options.rejectBeforeTS && email.date && email.date < this.options.rejectBeforeTS) {
-							logger.error({ msg: `Rejecting email on inbox ${this.config.user}`, subject: email.subject });
+							logger.error({ msg: 'Rejecting email on inbox', user: this.config.user, subject: email.subject });
 							return;
 						}
 						this.emit('email', email);
 						if (this.options.deleteAfterRead) {
 							this.imap.seq.addFlags(email, 'Deleted', (err) => {
 								if (err) {
-									logger.warn(`Mark deleted error: ${err}`);
+									logger.warn({ msg: 'Mark deleted error', err });
 								}
 							});
 						}
@@ -199,7 +199,7 @@ export class IMAPInterceptor extends EventEmitter {
 				msg.once('body', bodycb);
 			};
 			const errorcb = (err: Error): void => {
-				logger.warn(`Fetch error: ${err}`);
+				logger.warn({ msg: 'Fetch error', err });
 				reject(err);
 			};
 			const endcb = (): void => {
@@ -228,7 +228,7 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	async selfDisable(): Promise<void> {
-		logger.info(`Disabling inbox ${this.inboxId}`);
+		logger.info({ msg: 'Disabling inbox', inboxId: this.inboxId });
 
 		// Again, if there's 2 inboxes with the same email, this will prevent looping over the already disabled one
 		// Active filter is just in case :)
@@ -238,6 +238,6 @@ export class IMAPInterceptor extends EventEmitter {
 			void notifyOnEmailInboxChanged(value, 'updated');
 		}
 
-		logger.info(`IMAP inbox ${this.inboxId} automatically disabled`);
+		logger.info({ msg: 'IMAP inbox automatically disabled', inboxId: this.inboxId });
 	}
 }

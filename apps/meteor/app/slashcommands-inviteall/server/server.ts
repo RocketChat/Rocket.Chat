@@ -6,9 +6,9 @@
 import { api } from '@rocket.chat/core-services';
 import type { ISubscription, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { isTruthy } from '../../../lib/isTruthy';
 import { i18n } from '../../../server/lib/i18n';
 import { canAccessRoomAsync } from '../../authorization/server';
 import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';

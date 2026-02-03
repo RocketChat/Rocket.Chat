@@ -15,7 +15,7 @@ export async function loginViaUsername(
 		return false;
 	}
 
-	const valid = user.services?.password?.bcrypt && validatePassword(password, user.services.password.bcrypt);
+	const valid = user.services?.password?.bcrypt && (await validatePassword(password, user.services.password.bcrypt));
 	if (!valid) {
 		return false;
 	}

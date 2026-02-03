@@ -2,14 +2,7 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import type {
-	IMessage,
-	IDeepLTranslation,
-	MessageAttachment,
-	IProviderMetadata,
-	ITranslationResult,
-	ISupportedLanguage,
-} from '@rocket.chat/core-typings';
+import type { IMessage, MessageAttachment, IProviderMetadata, ITranslationResult, ISupportedLanguage } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import _ from 'underscore';
 
@@ -20,6 +13,11 @@ import { settings } from '../../settings/server';
 
 const proApiEndpoint = 'https://api.deepl.com/v2/translate';
 const freeApiEndpoint = 'https://api-free.deepl.com/v2/translate';
+
+interface IDeepLTranslation {
+	detected_source_language: string;
+	text: string;
+}
 
 /**
  * DeepL translation service provider class representation.

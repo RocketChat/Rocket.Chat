@@ -151,7 +151,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 				},
 			});
 		} catch (e) {
-			livechatLogger.error(e);
+			livechatLogger.error({ msg: 'Error removing visitor', err: e });
 			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
 	},

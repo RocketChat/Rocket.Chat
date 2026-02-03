@@ -81,7 +81,6 @@ const ModalBackdrop = ({ children, onDismiss }: ModalBackdropProps) => {
 	return (
 		<Box
 			ref={ref}
-			children={children}
 			className='rcx-modal__backdrop'
 			position='fixed'
 			zIndex={9999}
@@ -90,7 +89,9 @@ const ModalBackdrop = ({ children, onDismiss }: ModalBackdropProps) => {
 			flexDirection='column'
 			onMouseDown={onMouseDown}
 			onMouseUp={onMouseUp}
-		/>
+		>
+			{children}
+		</Box>
 	);
 };
 
