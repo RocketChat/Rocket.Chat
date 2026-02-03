@@ -85,7 +85,7 @@
 		"@opentelemetry/api": "^1.9.0",
 		"@opentelemetry/exporter-trace-otlp-grpc": "^0.54.2",
 		"@opentelemetry/sdk-node": "^0.54.2",
-		"@oxc-project/types": "^0.111.0",
+		"@oxc-project/types": "^0.112.0",
 		"@parse/node-apn": "^7.0.1",
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
 		"@react-pdf/renderer": "^3.4.5",
@@ -455,7 +455,7 @@
 		"ts-node": "^10.9.2",
 		"tsx": "~4.20.6",
 		"typescript": "~5.9.3",
-		"vite": "^8.0.0-beta.11",
+		"vite": "^8.0.0-beta.12",
 		"vite-plugin-inspect": "^11.3.3",
 		"webpack": "~5.99.9"
 	},
