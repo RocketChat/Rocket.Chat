@@ -5300,7 +5300,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opentelemetry/api@npm:^1.3.0, @opentelemetry/api@npm:^1.9.0":
+"@opentelemetry/api@npm:^1.3.0, @opentelemetry/api@npm:^1.4.0, @opentelemetry/api@npm:^1.9.0":
   version: 1.9.0
   resolution: "@opentelemetry/api@npm:1.9.0"
   checksum: 10/a607f0eef971893c4f2ee2a4c2069aade6ec3e84e2a1f5c2aac19f65c5d9eeea41aa72db917c1029faafdd71789a1a040bdc18f40d63690e22ccae5d7070f194
@@ -8345,6 +8345,7 @@ __metadata:
     mongodb: "npm:6.16.0"
     pino: "npm:^8.21.0"
     pino-pretty: "npm:^7.6.1"
+    prom-client: "npm:^15.1.3"
     reflect-metadata: "npm:^0.2.2"
     sanitize-html: "npm:~2.17.0"
     tsyringe: "npm:^4.10.0"
@@ -30500,6 +30501,16 @@ __metadata:
   dependencies:
     tdigest: "npm:^0.1.1"
   checksum: 10/892eb83eb860945f3ee55bc19bb73e4a64cb63d95e28336141f49fb90a05354765b4ac4a8ba046fd895690f0bf231de1289caf180647cefdfd0d767f34725d97
+  languageName: node
+  linkType: hard
+
+"prom-client@npm:^15.1.3":
+  version: 15.1.3
+  resolution: "prom-client@npm:15.1.3"
+  dependencies:
+    "@opentelemetry/api": "npm:^1.4.0"
+    tdigest: "npm:^0.1.1"
+  checksum: 10/eba75e15ab896845d39359e3a4d6f7913ea05339b3122d8dde8c8c374669ad1a1d1ab2694ab2101c420bd98086a564e4f2a18aa29018fc14a4732e57c1c19aec
   languageName: node
   linkType: hard
 

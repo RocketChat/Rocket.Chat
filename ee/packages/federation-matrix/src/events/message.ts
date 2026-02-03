@@ -1,6 +1,13 @@
 import { FederationMatrix, Message, MeteorService } from '@rocket.chat/core-services';
 import type { IUser, IRoom, FileAttachmentProps } from '@rocket.chat/core-typings';
-import { type FileMessageType, type MessageType, type FileMessageContent, type EventID, federationSDK } from '@rocket.chat/federation-sdk';
+import {
+	type FileMessageType,
+	type MessageType,
+	type FileMessageContent,
+	type EventID,
+	federationSDK,
+	type HomeserverEventSignatures,
+} from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Rooms, Messages } from '@rocket.chat/models';
 
@@ -111,8 +118,9 @@ async function handleMediaMessage(
 }
 
 export function message() {
-	federationSDK.eventEmitterService.on('homeserver.matrix.message', async ({ event, event_id: eventId }) => {
-		try {
+	federationSDK.eventEmitterService.on(
+		'homeserver.matrix.message',
+		async ({ event, event_id: eventId }: HomeserverEventSignatures['homeserver.matrix.message']) => {
 			const { msgtype, body } = event.content;
 			const messageBody = body.toString();
 
@@ -136,7 +144,7 @@ export function message() {
 
 			const relation = event.content['m.relates_to'];
 
-			// SPEC: For example, an m.thread relationship type denotes that the event is part of a “thread” of messages and should be rendered as such.
+			// SPEC: For example, an m.thread relationship type denotes that the event is part of a "thread" of messages and should be rendered as such.
 			const hasRelation = relation && 'rel_type' in relation;
 
 			const isThreadMessage = hasRelation && relation.rel_type === 'm.thread';
@@ -144,7 +152,7 @@ export function message() {
 			const threadRootEventId = isThreadMessage && relation.event_id;
 
 			// SPEC: Though rich replies form a relationship to another event, they do not use rel_type to create this relationship.
-			// Instead, a subkey named m.in_reply_to is used to describe the reply’s relationship,
+			// Instead, a subkey named m.in_reply_to is used to describe the reply's relationship,
 			const isRichReply = relation && !('rel_type' in relation) && 'm.in_reply_to' in relation;
 
 			const quoteMessageEventId = isRichReply && relation['m.in_reply_to']?.event_id;
@@ -261,13 +269,13 @@ export function message() {
 					ts: new Date(event.origin_server_ts),
 				});
 			}
-		} catch (err) {
-			logger.error({ msg: 'Error processing Matrix message', err });
-		}
-	});
+		},
+		(err: Error) => logger.error({ msg: 'Error processing Matrix message', err }),
+	);
 
-	federationSDK.eventEmitterService.on('homeserver.matrix.encrypted', async ({ event, event_id: eventId }) => {
-		try {
+	federationSDK.eventEmitterService.on(
+		'homeserver.matrix.encrypted',
+		async ({ event, event_id: eventId }: HomeserverEventSignatures['homeserver.matrix.encrypted']) => {
 			if (!event.content.ciphertext) {
 				logger.debug('No message content found in event');
 				return;
@@ -286,7 +294,7 @@ export function message() {
 
 			const relation = event.content['m.relates_to'];
 
-			// SPEC: For example, an m.thread relationship type denotes that the event is part of a “thread” of messages and should be rendered as such.
+			// SPEC: For example, an m.thread relationship type denotes that the event is part of a "thread" of messages and should be rendered as such.
 			const hasRelation = relation && 'rel_type' in relation;
 
 			const isThreadMessage = hasRelation && relation.rel_type === 'm.thread';
@@ -294,7 +302,7 @@ export function message() {
 			const threadRootEventId = isThreadMessage && relation.event_id;
 
 			// SPEC: Though rich replies form a relationship to another event, they do not use rel_type to create this relationship.
-			// Instead, a subkey named m.in_reply_to is used to describe the reply’s relationship,
+			// Instead, a subkey named m.in_reply_to is used to describe the reply's relationship,
 			const isRichReply = relation && !('rel_type' in relation) && 'm.in_reply_to' in relation;
 
 			const quoteMessageEventId = isRichReply && relation['m.in_reply_to']?.event_id;
@@ -377,13 +385,13 @@ export function message() {
 				thread,
 				ts: new Date(event.origin_server_ts),
 			});
-		} catch (err) {
-			logger.error({ msg: 'Error processing Matrix message', err });
-		}
-	});
+		},
+		(err: Error) => logger.error({ msg: 'Error processing Matrix message', err }),
+	);
 
-	federationSDK.eventEmitterService.on('homeserver.matrix.redaction', async ({ event }) => {
-		try {
+	federationSDK.eventEmitterService.on(
+		'homeserver.matrix.redaction',
+		async ({ event }: HomeserverEventSignatures['homeserver.matrix.redaction']) => {
 			const redactedEventId = event.redacts;
 			if (!redactedEventId) {
 				logger.debug('No redacts field in redaction event');
@@ -409,8 +417,7 @@ export function message() {
 			}
 
 			await Message.deleteMessage(user, rcMessage);
-		} catch (err) {
-			logger.error({ msg: 'Failed to process Matrix removal redaction', err });
-		}
-	});
+		},
+		(err: Error) => logger.error({ msg: 'Failed to process Matrix removal redaction', err }),
+	);
 }

@@ -94,7 +94,7 @@ async function getOrCreateFederatedRoom({
 function getJoinRuleType(strippedState: PduForType<'m.room.join_rules'>[]): 'p' | 'c' | 'd' {
 	const joinRulesState = strippedState?.find((state: PduForType<'m.room.join_rules'>) => state.type === 'm.room.join_rules');
 
-	// as per the spec, users need to be invited to join a room, unless the room’s join rules state otherwise.
+	// as per the spec, users need to be invited to join a room, unless the room's join rules state otherwise.
 	if (!joinRulesState) {
 		return 'p';
 	}
@@ -255,8 +255,9 @@ async function handleLeave({
 }
 
 export function member() {
-	federationSDK.eventEmitterService.on('homeserver.matrix.membership', async ({ event }) => {
-		try {
+	federationSDK.eventEmitterService.on(
+		'homeserver.matrix.membership',
+		async ({ event }: HomeserverEventSignatures['homeserver.matrix.membership']) => {
 			switch (event.content.membership) {
 				case 'invite':
 					await handleInvite(event);
@@ -273,8 +274,7 @@ export function member() {
 				default:
 					logger.warn({ msg: 'Unknown membership type', membership: event.content.membership });
 			}
-		} catch (err) {
-			logger.error({ msg: 'Failed to process Matrix membership event', err });
-		}
-	});
+		},
+		(err: Error) => logger.error({ msg: 'Failed to process Matrix membership event', err }),
+	);
 }
