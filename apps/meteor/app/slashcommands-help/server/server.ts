@@ -65,7 +65,9 @@ slashCommands.add({
 		});
 		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 			msg,
+			...(message.tmid && { tmid: message.tmid }),
 		});
+		console.log(message)
 	},
 	options: {
 		description: 'Show_the_keyboard_shortcut_list',
