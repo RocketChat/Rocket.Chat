@@ -1,5 +1,5 @@
 import { Message, FederationMatrix } from '@rocket.chat/core-services';
-import { federationSDK } from '@rocket.chat/federation-sdk';
+import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Messages } from '@rocket.chat/models'; // Rooms
 import emojione from 'emojione';
@@ -7,8 +7,9 @@ import emojione from 'emojione';
 const logger = new Logger('federation-matrix:reaction');
 
 export function reaction() {
-	federationSDK.eventEmitterService.on('homeserver.matrix.reaction', async ({ event, event_id: eventId }) => {
-		try {
+	federationSDK.eventEmitterService.on(
+		'homeserver.matrix.reaction',
+		async ({ event, event_id: eventId }: HomeserverEventSignatures['homeserver.matrix.reaction']) => {
 			const isSetReaction = event.content?.['m.relates_to'];
 
 			const reactionTargetEventId = isSetReaction?.event_id;
@@ -41,13 +42,13 @@ export function reaction() {
 			const reactionEmoji = emojione.toShort(reactionKey);
 			await Message.reactToMessage(user._id, reactionEmoji, rcMessage._id, true);
 			await Messages.setFederationReactionEventId(internalUsername, rcMessage._id, reactionEmoji, eventId);
-		} catch (err) {
-			logger.error({ msg: 'Failed to process Matrix reaction', err });
-		}
-	});
+		},
+		(err: Error) => logger.error({ msg: 'Failed to process Matrix reaction', err }),
+	);
 
-	federationSDK.eventEmitterService.on('homeserver.matrix.redaction', async ({ event }) => {
-		try {
+	federationSDK.eventEmitterService.on(
+		'homeserver.matrix.redaction',
+		async ({ event }: HomeserverEventSignatures['homeserver.matrix.redaction']) => {
 			const redactedEventId = event.redacts;
 			if (!redactedEventId) {
 				logger.debug('No redacts field in redaction event');
@@ -85,8 +86,7 @@ export function reaction() {
 			const reactionEmoji = emojione.toShort(reactionKey);
 			await Message.reactToMessage(user._id, reactionEmoji, rcMessage._id, false);
 			await Messages.unsetFederationReactionEventId(redactedEventId, rcMessage._id, reactionEmoji);
-		} catch (err) {
-			logger.error({ msg: 'Failed to process Matrix reaction redaction', err });
-		}
-	});
+		},
+		(err: Error) => logger.error({ msg: 'Failed to process Matrix reaction redaction', err }),
+	);
 }

@@ -1,14 +1,15 @@
 import { api } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { federationSDK } from '@rocket.chat/federation-sdk';
+import { federationSDK, type HomeserverEventSignatures } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Users } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:edu');
 
 export const edus = async () => {
-	federationSDK.eventEmitterService.on('homeserver.matrix.typing', async (data) => {
-		try {
+	federationSDK.eventEmitterService.on(
+		'homeserver.matrix.typing',
+		async (data: HomeserverEventSignatures['homeserver.matrix.typing']) => {
 			const matrixRoom = await Rooms.findOne({ 'federation.mrid': data.room_id }, { projection: { _id: 1 } });
 			if (!matrixRoom) {
 				logger.debug({ msg: 'No bridged room found for Matrix room_id', roomId: data.room_id });
@@ -20,13 +21,13 @@ export const edus = async () => {
 				isTyping: data.typing,
 				roomId: matrixRoom._id,
 			});
-		} catch (err) {
-			logger.error({ msg: 'Error handling Matrix typing event', err });
-		}
-	});
+		},
+		(err: Error) => logger.error({ msg: 'Error handling Matrix typing event', err }),
+	);
 
-	federationSDK.eventEmitterService.on('homeserver.matrix.presence', async (data) => {
-		try {
+	federationSDK.eventEmitterService.on(
+		'homeserver.matrix.presence',
+		async (data: HomeserverEventSignatures['homeserver.matrix.presence']) => {
 			const matrixUser = await Users.findOneByUsername(data.user_id);
 			if (!matrixUser) {
 				logger.debug({ msg: 'No federated user found for Matrix user_id', userId: data.user_id });
@@ -67,8 +68,7 @@ export const edus = async () => {
 				previousStatus: undefined,
 			});
 			logger.debug({ msg: 'Updated presence for user from Matrix federation', userId: matrixUser._id, status });
-		} catch (err) {
-			logger.error({ msg: 'Error handling Matrix presence event', err });
-		}
-	});
+		},
+		(err: Error) => logger.error({ msg: 'Error handling Matrix presence event', err }),
+	);
 };
