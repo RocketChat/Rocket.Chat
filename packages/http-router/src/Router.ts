@@ -179,7 +179,7 @@ export class Router<
 			}
 
 			return { ...parsedBody };
-			// eslint-disable-next-line no-empty
+			
 		} catch {}
 
 		return {};
@@ -198,7 +198,11 @@ export class Router<
 		const [middlewares, action] = splitArray<MiddlewareHandler, TActionCallback>(actions);
 		const convertedAction = this.convertActionToHandler(action);
 
-		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
+	const honoMiddlewares = middlewares as unknown as MiddlewareHandler[];
+
+(this.innerRouter as unknown as any)[method.toLowerCase() as Lowercase<Method>](
+  `/${subpath}`.replaceAll('//', '/'),
+  ...honoMiddlewares, async (c: Context) => {
 			const { req, res } = c;
 
 			let queryParams: Record<string, any>;
