@@ -1,8 +1,7 @@
 import type * as AST from '@oxc-project/types';
 import { exactRegex } from '@rolldown/pluginutils';
-import { parse } from 'oxc-parser';
 import { walk } from 'oxc-walker';
-import type { Plugin } from 'vite';
+import type { MinimalPluginContextWithoutEnvironment, Plugin } from 'vite';
 
 import * as b from './shared/builders';
 import { check } from './shared/check';
@@ -64,7 +63,7 @@ const packages = [
 	'zustand',
 ];
 
-function treeshakeMeteorModules(ast: AST.Program): AST.Program {
+function treeshakeMeteorModules(ctx: MinimalPluginContextWithoutEnvironment, ast: AST.Program): AST.Program {
 	const extraImports: AST.ImportDeclaration[] = [];
 
 	walk(ast, {
@@ -84,7 +83,7 @@ function treeshakeMeteorModules(ast: AST.Program): AST.Program {
 						prop.key.value === 'node_modules' &&
 						check.isObjectExpression(prop.value)
 					) {
-						processNodeModules(prop.value, '', packages, extraImports);
+						processNodeModules(ctx, prop.value, '', packages, extraImports);
 					}
 				}
 			}
@@ -99,6 +98,7 @@ function treeshakeMeteorModules(ast: AST.Program): AST.Program {
 }
 
 function processNodeModules(
+	ctx: MinimalPluginContextWithoutEnvironment,
 	node: AST.ObjectExpression,
 	currentPath: string,
 	packages: string[],
@@ -129,32 +129,35 @@ function processNodeModules(
 
 				// Replace function body with stub
 				// module.exports = varName; OR module.exports = varName.default || varName;
-				const assignmentRight: AST.Expression =
-					fullPath.includes('@babel/runtime') || fullPath.includes('react/')
-						? b.logicalExpression(b.memberExpression(b.identifier(varName), b.identifier('default')), '||', b.identifier(varName))
-						: b.identifier(varName);
 				// m.exports = ...
-				const assignment = b.expressionStatement(
-					b.assignmentExpression('=', b.memberExpression(b.identifier('module'), b.identifier('exports')), assignmentRight),
-				);
 
-				prop.value.body = b.blockStatement([assignment]);
+				prop.value.body = b.blockStatement([
+					b.expressionStatement(
+						b.assignmentExpression(
+							'=',
+							b.memberExpression(b.identifier('module'), b.identifier('exports')),
+							fullPath.includes('@babel/runtime') || fullPath.includes('react/')
+								? b.logicalExpression(b.memberExpression(b.identifier(varName), b.identifier('default')), '||', b.identifier(varName))
+								: b.identifier(varName),
+						),
+					),
+				]);
 
 				found = true;
 			} else if (check.isObjectExpression(prop.value)) {
-				if (processNodeModules(prop.value, fullPath, packages, imports)) {
+				if (processNodeModules(ctx, prop.value, fullPath, packages, imports)) {
 					found = true;
 				}
 			}
 		} else if (check.isObjectExpression(prop.value)) {
 			// Continue traversing even if the current path doesn't match a target package
 			// This handles cases like 'some-package/node_modules/react' where 'some-package' isn't in our list
-			if (processNodeModules(prop.value, fullPath, packages, imports)) {
+			if (processNodeModules(ctx, prop.value, fullPath, packages, imports)) {
 				found = true;
 			}
 		} else if (check.isFunctionExpression(prop.value)) {
 			const size = prop.value.end - prop.value.start;
-			console.warn(`Skipping non-matching package path: ${fullPath} - Size: ${size} bytes`);
+			ctx.warn(`Skipping non-matching package path: ${fullPath} - Size: ${size} bytes`);
 		}
 	}
 	return found;
@@ -273,12 +276,12 @@ export function treeshake(resolvedConfig: ResolvedPluginOptions): Plugin {
 			filter: {
 				id: exactRegex(`${resolvedConfig.programsDir}/web.browser/packages/modules.js`),
 			},
-			async handler(code, id) {
+			handler(code) {
 				const startLength = code.length;
 				this.info(`modules.js ${startLength} bytes`);
-				const ast = await parse(id, code, { astType: 'js', lang: 'js', preserveParens: false });
-				treeshakeMeteorModules(ast.program);
-				code = printCode(ast.program);
+				const ast = this.parse(code, { astType: 'js', lang: 'js', preserveParens: false });
+				treeshakeMeteorModules(this, ast);
+				code = printCode(ast);
 				const endLength = code.length;
 				this.info(`modules.js treeshaked to ${endLength} bytes (${startLength - endLength} bytes removed)`);
 				return code;

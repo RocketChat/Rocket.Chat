@@ -1,5 +1,4 @@
 import { prefixRegex } from '@rolldown/pluginutils';
-import { parse } from 'oxc-parser';
 import type { Plugin } from 'vite';
 
 import { analyze } from './shared/analyze';
@@ -12,11 +11,9 @@ export function shim(resolvedConfig: ResolvedPluginOptions): Plugin {
 			filter: {
 				id: prefixRegex(resolvedConfig.programsDir),
 			},
-			async handler(code, id) {
-				this.debug(id);
-				const ast = await parse(id, code);
-
-				const module = analyze(ast.program);
+			handler(code) {
+				const ast = this.parse(code);
+				const module = analyze(ast);
 
 				const imports = Array.from(module.imports.keys()).map((imp) => {
 					return `import '${resolvedConfig.prefix}${imp}';`;
@@ -25,7 +22,6 @@ export function shim(resolvedConfig: ResolvedPluginOptions): Plugin {
 				if (imports.length > 0) {
 					code = `${imports.join('\n')}\n${code}`;
 				}
-
 				code = code.replaceAll('global = this;', 'global = globalThis;');
 
 				if (!module.name) {
