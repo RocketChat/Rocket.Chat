@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useRef } from 'react';
 
 import ModalProvider from './ModalProvider';
 import ModalRegion from '../../components/Modal/ModalRegion';
 
 const ModalProviderWithRegion = ({ children }: { children?: ReactNode }) => {
-	const [region] = useState(() => Symbol());
+	const region = useRef(Symbol()).current;
 
 	return (
 		<ModalProvider region={region}>
