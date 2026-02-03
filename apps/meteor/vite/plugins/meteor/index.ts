@@ -6,11 +6,11 @@ import { globals } from './plugins/globals.ts';
 import { resolve } from './plugins/resolve.ts';
 import type { PluginOptions, ResolvedPluginOptions } from './plugins/shared/config.ts';
 import { shim } from './plugins/shim.ts';
-
+import { treeshake } from './plugins/treeshake.ts';
 
 export default function meteorPlugin(options: PluginOptions = {}): PluginOption {
 	const resolvedConfig = resolveConfig(options);
-	return [shim, resolve, globals].map((plugin) => plugin(resolvedConfig));
+	return [shim, resolve, treeshake, globals].map((plugin) => plugin(resolvedConfig));
 }
 
 function resolveConfig(options: PluginOptions): ResolvedPluginOptions {
