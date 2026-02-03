@@ -25,12 +25,10 @@ const build = {
 			minify: true,
 			cleanDir: true,
 			externalLiveBindings: false,
-			
+
 			generatedCode: {
 				preset: 'es2015',
 			},
-
-
 		},
 	},
 } as const satisfies BuildEnvironmentOptions;
@@ -104,6 +102,7 @@ export default defineConfig(async () => {
 				'/avatar': { target: ROOT_URL.origin, changeOrigin: true },
 				'/assets': { target: ROOT_URL.origin, changeOrigin: true },
 				'/images': { target: ROOT_URL.origin, changeOrigin: true },
+				'/emoji-custom': { target: ROOT_URL.origin, changeOrigin: true },
 				'/sockjs': { target: ROOT_URL.origin, ws: true, rewriteWsOrigin: true, changeOrigin: true, autoRewrite: true },
 				'/websocket': { target: ROOT_URL.origin, ws: true, rewriteWsOrigin: true, changeOrigin: true, autoRewrite: true },
 				'/file-upload': {
