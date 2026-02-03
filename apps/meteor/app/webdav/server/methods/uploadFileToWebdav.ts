@@ -38,17 +38,17 @@ Meteor.methods<ServerMethods>({
 		try {
 			await uploadFileToWebdav(accountId, fileData instanceof ArrayBuffer ? Buffer.from(fileData) : fileData, name);
 			return { success: true };
-		} catch (error: any) {
-			if (typeof error === 'object' && error instanceof Error && error.name === 'error-invalid-account') {
-				throw new MeteorError(error.name, 'Invalid WebDAV Account', {
+		} catch (err: any) {
+			if (typeof err === 'object' && err instanceof Error && err.name === 'error-invalid-account') {
+				throw new MeteorError(err.name, 'Invalid WebDAV Account', {
 					method: 'uploadFileToWebdav',
 				});
 			}
 
-			logger.error(error);
+			logger.error({ err });
 
-			if (error.response) {
-				const { status } = error.response;
+			if (err.response) {
+				const { status } = err.response;
 				if (status === 404) {
 					return { success: false, message: 'webdav-server-not-found' };
 				}

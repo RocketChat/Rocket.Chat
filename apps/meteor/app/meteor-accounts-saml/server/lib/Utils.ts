@@ -51,7 +51,7 @@ export class SAMLUtils {
 	}
 
 	public static getServiceProviderOptions(providerName: string): IServiceProviderOptions | undefined {
-		this.log(providerName, providerList);
+		this.log({ providerName, providerList });
 
 		return providerList.find((providerOptions) => providerOptions.provider === providerName);
 	}
@@ -133,15 +133,15 @@ export class SAMLUtils {
 		return `saml/${credentialToken}?saml_idp_credentialToken=${credentialToken}`;
 	}
 
-	public static log(obj: any, ...args: Array<any>): void {
+	public static log(obj: object | string): void {
 		if (debug && logger) {
-			logger.debug(obj, ...args);
+			logger.debug(obj);
 		}
 	}
 
-	public static error(obj: any, ...args: Array<any>): void {
+	public static error(obj: object | string): void {
 		if (logger) {
-			logger.error(obj, ...args);
+			logger.error(obj);
 		}
 	}
 
@@ -219,9 +219,8 @@ export class SAMLUtils {
 
 		try {
 			map = JSON.parse(userDataFieldMap);
-		} catch (e) {
-			SAMLUtils.log(userDataFieldMap);
-			SAMLUtils.log(e);
+		} catch (err) {
+			SAMLUtils.log({ userDataFieldMap, err });
 			throw new Error('Failed to parse custom user field map');
 		}
 
@@ -412,7 +411,7 @@ export class SAMLUtils {
 
 	public static mapProfileToUserObject(profile: Record<string, any>): ISAMLUser {
 		const userDataMap = this.getUserDataMapping();
-		SAMLUtils.log('parsed userDataMap', userDataMap);
+		SAMLUtils.log({ msg: 'Mapping SAML Profile to User Object', userDataMap });
 
 		if (userDataMap.identifier.type === 'custom') {
 			if (!userDataMap.identifier.attribute) {
