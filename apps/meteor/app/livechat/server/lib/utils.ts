@@ -15,10 +15,9 @@ export function showConnecting() {
 
 export async function setUserStatusLivechat(userId: string, status: ILivechatAgentStatus) {
 	const user = await Users.setLivechatStatus(userId, status);
-	// TODO: shouldnt this callback run if the modified count is > 0 too?
-	callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 
 	if (user.modifiedCount > 0) {
+		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 		void notifyOnUserChange({
 			id: userId,
 			clientAction: 'updated',
@@ -41,6 +40,7 @@ export async function setUserStatusLivechatIf(
 	const result = await Users.setLivechatStatusIf(userId, status, condition, fields);
 
 	if (result.modifiedCount > 0) {
+		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 		void notifyOnUserChange({
 			id: userId,
 			clientAction: 'updated',
@@ -48,8 +48,6 @@ export async function setUserStatusLivechatIf(
 		});
 	}
 
-	// TODO: shouldnt this callback run if the modified count is > 0 too?
-	callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 	return result;
 }
 
