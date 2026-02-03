@@ -32,7 +32,7 @@
 		"@rocket.chat/tracing": "workspace:^",
 		"colorette": "^1.4.0",
 		"ejson": "^2.2.3",
-		"eventemitter3": "^5.0.1",
+		"eventemitter3": "^5.0.4",
 		"jaeger-client": "^3.19.0",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.35",

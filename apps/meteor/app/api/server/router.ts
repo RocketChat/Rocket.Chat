@@ -38,10 +38,7 @@ export class RocketChatAPIRouter<
 		return async (c: HonoContext): Promise<ResponseSchema<TypedOptions>> => {
 			const { req, res } = c;
 			const queryParams = this.parseQueryParams(req);
-			const bodyParams = await this.parseBodyParams<{ bodyParamsOverride: Record<string, any> }>({
-				request: req,
-				extra: { bodyParamsOverride: c.var['bodyParams-override'] || {} },
-			});
+			const bodyParams = c.get('bodyParams-override') ?? (await this.parseBodyParams({ request: req }));
 
 			const request = req.raw.clone();
 
