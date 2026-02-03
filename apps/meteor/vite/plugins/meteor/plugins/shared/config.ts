@@ -23,13 +23,12 @@ export type PluginOptions = {
 	 * The path to the Meteor programs directory relative to the project root.
 	 * @default '.meteor/local/build/programs/'
 	 */
-	programsDir?: string
+	programsDir?: string;
 	/**
 	 * Port where the Meteor server runtime should listen for HTTP/SockJS traffic.
 	 * @default process.env.VITE_METEOR_SERVER_PORT || process.env.METEOR_SERVER_PORT || 33335
 	 */
 	meteorServerPort?: number;
-
 	/**
 	 * Use the native WebSocket implementation instead of SockJS on the client side.
 	 * @default true
