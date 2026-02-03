@@ -1,21 +1,26 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
-import { isTruthy } from '@rocket.chat/tools';
 import { useLicense } from '@rocket.chat/ui-client';
 
-const developmentTag = process.env.NODE_ENV === 'development' ? 'Development' : null;
+type PlanTag = {
+	name: string;
+	color?: string;
+};
+
+const developmentTag: PlanTag | null = process.env.NODE_ENV === 'development' ? { name: 'Development' } : null;
+
 function PlanTag() {
 	const license = useLicense();
 
-	const tags = [
-		developmentTag && { name: developmentTag },
-		...(license.data?.tags ?? []),
-		!license.isLoading && !license.isError && !license.data?.license && { name: 'Community' },
-	].filter(isTruthy);
+	const tags: PlanTag[] = [
+		...(developmentTag ? [developmentTag] : []),
+		...(license.data?.tags ? license.data.tags.map(({ name, color }) => ({ name, color })) : []),
+		...(!license.isLoading && !license.isError && !license.data?.license ? [{ name: 'Community' }] : []),
+	];
 
 	return (
 		<>
 			{tags.map(({ name }) => (
-				<Box marginInline={4} display='inline-block' verticalAlign='middle' key={name}>
+				<Box key={name} marginInline={4} display='inline-block' verticalAlign='middle'>
 					<Tag variant='primary'>{name}</Tag>
 				</Box>
 			))}
