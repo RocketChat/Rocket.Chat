@@ -1,6 +1,5 @@
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { StreamNames } from '@rocket.chat/ddp-client';
-import { isTruthy } from '@rocket.chat/tools';
 import localforage from 'localforage';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -92,7 +91,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			return false;
 		}
 
-		if (data.records.length <= 0) {
+		if (!Array.isArray(data.records) || data.records.length === 0) {
 			return false;
 		}
 
@@ -107,7 +106,9 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 		this.log(`${data.records.length} records loaded from cache`);
 
-		const deserializedRecords = data.records.map((record) => this.deserializeFromCache(record)).filter(isTruthy);
+		const deserializedRecords = data.records
+			.map((record) => this.deserializeFromCache(record))
+			.filter((record): record is T => Boolean(record));
 
 		const updatedAt = Math.max(...deserializedRecords.filter(hasUpdatedAt).map((record) => record?._updatedAt.getTime() ?? 0));
 
