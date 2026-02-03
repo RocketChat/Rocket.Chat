@@ -1,7 +1,7 @@
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 
 import { RequestContext } from './requestContext.ts';
-import { isApp, isRecord } from '../handlers/lib/assertions.ts';
+import { isApp, isPlainObject } from '../handlers/lib/assertions.ts';
 
 export function wrapAppForRequest(app: App, req: RequestContext): App {
 	return new Proxy(app, {
@@ -26,7 +26,7 @@ function findAppProperty(v: NonNullable<unknown>): [string, App] | undefined {
 		return cachedEntry;
 	}
 
-	if (!isRecord(v)) {
+	if (!isPlainObject(v)) {
 		// Enables us to avoid having to determine whether the value is a record again
 		composedCache.set(v, undefined);
 		return undefined;

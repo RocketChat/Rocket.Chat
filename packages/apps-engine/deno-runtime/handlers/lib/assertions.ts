@@ -11,7 +11,7 @@ export const Errors = {
 	DRT_EVENT_HANDLER_FUNCTION_MISSING: 'DRT_EVENT_HANDLER_FUNCTION_MISSING',
 }
 
-export function isRecord(v: unknown): v is Record<string, unknown> {
+export function isPlainObject(v: unknown): v is Record<string, unknown> {
 	if (!v || typeof v !== 'object') {
 		return false;
 	}
