@@ -67,7 +67,6 @@ slashCommands.add({
 			msg,
 			...(message.tmid && { tmid: message.tmid }),
 		});
-		console.log(message)
 	},
 	options: {
 		description: 'Show_the_keyboard_shortcut_list',
