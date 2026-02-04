@@ -269,7 +269,7 @@ export const FileUpload = {
 		try {
 			await writeFile(tempFilePath, data);
 		} catch (err: any) {
-			SystemLogger.error(err);
+			SystemLogger.error({ err });
 		}
 
 		await this.getCollection().updateOne(

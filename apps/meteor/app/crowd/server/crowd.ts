@@ -9,7 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { logger } from './logger';
 import { crowdIntervalValuesToCronMap } from '../../../server/settings/crowd';
 import { deleteUser } from '../../lib/server/functions/deleteUser';
-import { _setRealName } from '../../lib/server/functions/setRealName';
+import { setRealName } from '../../lib/server/functions/setRealName';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 import { notifyOnUserChange, notifyOnUserChangeById, notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
@@ -206,7 +206,7 @@ export class CROWD {
 		}
 
 		if (crowdUser.displayname) {
-			await _setRealName(id, crowdUser.displayname);
+			await setRealName(id, crowdUser.displayname);
 		}
 
 		await Users.updateOne(
@@ -392,8 +392,8 @@ Accounts.registerLoginHandler('crowd', async function (this: typeof Accounts, lo
 
 		return result;
 	} catch (err: any) {
-		logger.debug({ err });
-		logger.error('Crowd user not authenticated due to an error');
+		logger.error({ msg: 'Crowd user not authenticated due to an error', err });
+
 		throw new Meteor.Error('user-not-found', err.message);
 	}
 });

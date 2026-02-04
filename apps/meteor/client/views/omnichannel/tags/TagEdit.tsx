@@ -95,11 +95,13 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 									name='name'
 									control={control}
 									rules={{ required: t('Required_field', { field: t('Name') }) }}
-									render={({ field }) => <TextInput {...field} error={errors?.name?.message} aria-describedby={`${nameField}-error`} />}
+									render={({ field }) => (
+										<TextInput id={nameField} {...field} error={errors?.name?.message} aria-describedby={`${nameField}-error`} />
+									)}
 								/>
 							</FieldRow>
 							{errors?.name && (
-								<FieldError aria-live='assertive' id={`${nameField}-error`}>
+								<FieldError role='alert' id={`${nameField}-error`}>
 									{errors?.name?.message}
 								</FieldError>
 							)}
@@ -111,12 +113,14 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 							</FieldRow>
 						</Field>
 						<Field>
-							<FieldLabel htmlFor={departmentsField}>{t('Departments')}</FieldLabel>
+							<FieldLabel id={departmentsField}>{t('Departments')}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name='departments'
 									control={control}
-									render={({ field }) => <AutoCompleteDepartmentMultiple withCheckbox id={departmentsField} showArchived {...field} />}
+									render={({ field }) => (
+										<AutoCompleteDepartmentMultiple withCheckbox aria-labelledby={departmentsField} showArchived {...field} />
+									)}
 								/>
 							</FieldRow>
 						</Field>
