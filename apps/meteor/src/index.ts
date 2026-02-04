@@ -6,7 +6,6 @@ import 'meteor/localstorage';
 import 'meteor/accounts-oauth';
 import 'meteor/accounts-password';
 import 'meteor/service-configuration';
-import 'meteor/rocketchat:streamer';
 
 import '../app/theme/client/main.css';
 
