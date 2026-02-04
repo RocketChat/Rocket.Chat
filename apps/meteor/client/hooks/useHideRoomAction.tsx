@@ -50,7 +50,7 @@ export const useHideRoomAction = ({ rid: roomId, type, name }: HideRoomProps, { 
 		},
 		onSuccess: () => {
 			if(currentRoomId===roomId){
-				redirect=true: 
+				redirect=true;
 			}
 			if (redirect) {
 				router.navigate('/home');
