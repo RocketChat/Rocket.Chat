@@ -19,6 +19,7 @@ test.describe('User - Password change required', () => {
 
 	test.beforeAll(async ({ api }) => {
 		settingDefaultValue = await getSettingValueById(api, 'Accounts_RequirePasswordConfirmation');
+		await setSettingValueById(api, 'Accounts_Password_Policy_Enabled', false);
 		await setSettingValueById(api, 'Accounts_RequirePasswordConfirmation', true);
 		userRequiringPasswordChange = await createTestUser(api, { data: { requirePasswordChange: true } });
 		userNotRequiringPasswordChange = await createTestUser(api, { data: { requirePasswordChange: false } });
@@ -38,6 +39,7 @@ test.describe('User - Password change required', () => {
 			userRequiringPasswordChange.delete(),
 			userNotRequiringPasswordChange.delete(),
 			userNotAbleToLogin.delete(),
+			setSettingValueById(api, 'Accounts_Password_Policy_Enabled', true),
 		]);
 	});
 

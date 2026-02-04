@@ -1,4 +1,4 @@
-import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
+import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -11,9 +11,7 @@ import GenericError from '../../../../../components/GenericError';
 import CannedResponseForm from '../../components/CannedResponseForm';
 import type { CannedResponseEditFormData } from '../CannedResponseEdit';
 
-const getInitialData = (
-	cannedResponseData: (IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] }) | undefined,
-) => ({
+const getInitialData = (cannedResponseData: IOmnichannelCannedResponse | undefined) => ({
 	_id: cannedResponseData?._id || '',
 	shortcut: cannedResponseData?.shortcut || '',
 	text: cannedResponseData?.text || '',
@@ -23,7 +21,7 @@ const getInitialData = (
 });
 
 type CreateCannedResponseModalProps = {
-	cannedResponseData?: IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] };
+	cannedResponseData?: IOmnichannelCannedResponse;
 	onClose: () => void;
 	reloadCannedList: () => void;
 };

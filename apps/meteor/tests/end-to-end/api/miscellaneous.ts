@@ -1,6 +1,6 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IInstanceStatus, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { AssertionError, expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -228,7 +228,7 @@ describe('miscellaneous', () => {
 			[testChannel, testGroup, teamCreated] = await Promise.all([
 				createRoom({ name: `channel.test.${Date.now()}`, type: 'c' }).then((res) => res.body.channel),
 				createRoom({ name: `group.test.${Date.now()}`, type: 'p' }).then((res) => res.body.group),
-				createTeam(normalUserCredentials, teamName, TEAM_TYPE.PUBLIC),
+				createTeam(normalUserCredentials, teamName, TeamType.PUBLIC),
 			]);
 		});
 
@@ -448,7 +448,7 @@ describe('miscellaneous', () => {
 			await updateSetting('UI_Allow_room_names_with_special_chars', true);
 			testChannelSpecialChars = (await createRoom({ type: 'c', name: fnameSpecialCharsRoom, credentials: userCredentials })).body.channel;
 			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}`, credentials: userCredentials })).body.channel;
-			testTeam = await createTeam(userCredentials, teamName, TEAM_TYPE.PUBLIC);
+			testTeam = await createTeam(userCredentials, teamName, TeamType.PUBLIC);
 		});
 
 		after(async () => {

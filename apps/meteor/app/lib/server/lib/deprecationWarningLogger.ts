@@ -41,7 +41,7 @@ export const apiDeprecationLogger = ((logger) => {
 
 			metrics.deprecations.inc({ type: 'deprecation', kind: 'endpoint', name: endpoint });
 
-			logger.warn(message);
+			logger.warn({ msg: message, endpoint, version, info });
 		},
 		parameter: (
 			endpoint: string,
@@ -66,7 +66,7 @@ export const apiDeprecationLogger = ((logger) => {
 
 			writeDeprecationHeader(res, 'parameter-deprecation', message, version);
 
-			logger.warn(message);
+			logger.warn({ msg: message, endpoint, parameter, version });
 		},
 
 		deprecatedParameterUsage: (
@@ -95,7 +95,7 @@ export const apiDeprecationLogger = ((logger) => {
 
 			writeDeprecationHeader(res, 'invalid-usage', message, version);
 
-			logger.warn(message);
+			logger.warn({ msg: message, endpoint, parameter, version });
 		},
 	};
 })(deprecationLogger.section('API'));
@@ -114,7 +114,7 @@ export const methodDeprecationLogger = ((logger) => {
 			}
 			compareVersions(version, message);
 			metrics.deprecations.inc({ type: 'deprecation', name: method, kind: 'method' });
-			logger.warn(message);
+			logger.warn({ msg: message, method, version, replacement });
 		},
 		parameter: (method: string, parameter: string, version: DeprecationLoggerNextPlannedVersion) => {
 			const message = `The parameter "${parameter}" in the method "${method}" is deprecated and will be removed on version ${version}`;
@@ -125,7 +125,7 @@ export const methodDeprecationLogger = ((logger) => {
 			metrics.deprecations.inc({ type: 'parameter-deprecation', name: method, params: parameter });
 
 			compareVersions(version, message);
-			logger.warn(message);
+			logger.warn({ msg: message, method, parameter, version });
 		},
 		deprecatedParameterUsage: (
 			method: string,
@@ -150,7 +150,7 @@ export const methodDeprecationLogger = ((logger) => {
 
 			metrics.deprecations.inc({ type: 'invalid-usage', name: method, params: parameter, kind: 'method' });
 
-			logger.warn(message);
+			logger.warn({ msg: message, method, parameter, version });
 		},
 		/** @deprecated */
 		warn: (message: string) => {
@@ -159,7 +159,7 @@ export const methodDeprecationLogger = ((logger) => {
 			}
 
 			compareVersions('0.0.0', message);
-			logger.warn(message);
+			logger.warn({ msg: message });
 		},
 	};
 })(deprecationLogger.section('METHOD'));

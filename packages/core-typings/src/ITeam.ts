@@ -4,7 +4,7 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
 import type { IUser } from './IUser';
 
-export enum TEAM_TYPE {
+export enum TeamType {
 	PUBLIC = 0,
 	PRIVATE = 1,
 }
@@ -13,7 +13,7 @@ export type SortType = -1 | 1;
 
 export interface ITeam extends IRocketChatRecord {
 	name: string;
-	type: TEAM_TYPE;
+	type: TeamType;
 	roomId: string;
 	createdBy: Pick<IUser, '_id' | 'username'>;
 	createdAt: Date;

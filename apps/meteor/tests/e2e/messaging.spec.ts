@@ -87,7 +87,7 @@ test.describe('Messaging', () => {
 					.waitFor();
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
-				await expect(poHomeChannel.composer).toBeFocused();
+				await expect(poHomeChannel.composer.inputMessage).toBeFocused();
 			});
 		});
 
@@ -124,7 +124,7 @@ test.describe('Messaging', () => {
 		test('should not restore focus on the last focused if it was triggered by click', async ({ page }) => {
 			await poHomeChannel.navbar.openChat(targetChannel);
 			await page.locator('[data-qa-type="message"]:has-text("msg1")').click();
-			await poHomeChannel.composer.click();
+			await poHomeChannel.composer.inputMessage.click();
 			await page.keyboard.press('Shift+Tab');
 
 			await expect(page.locator('[data-qa-type="message"]:has-text("msg2")')).toBeFocused();
@@ -165,7 +165,7 @@ test.describe('Messaging', () => {
 			await test.step('focus on the second message', async () => {
 				await page.keyboard.press('ArrowUp');
 
-				expect(await poHomeChannel.composer.inputValue()).toBe('msg2');
+				expect(await poHomeChannel.composer.inputMessage.inputValue()).toBe('msg2');
 			});
 
 			await test.step('send edited message', async () => {

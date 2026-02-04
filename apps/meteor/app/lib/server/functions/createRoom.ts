@@ -2,7 +2,7 @@ import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { FederationMatrix, Message, Room, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
-import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
+import { type ICreatedRoom, type IUser, type IRoom, type RoomType, isUserNativeFederated } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -184,7 +184,12 @@ export const createRoom = async <T extends RoomType>(
 
 	const shouldBeHandledByFederation = extraData.federated === true;
 
-	if (shouldBeHandledByFederation && owner && !(await hasPermissionAsync(owner._id, 'access-federation'))) {
+	if (
+		shouldBeHandledByFederation &&
+		owner &&
+		!isUserNativeFederated(owner) &&
+		!(await hasPermissionAsync(owner._id, 'access-federation'))
+	) {
 		throw new Meteor.Error('error-not-authorized-federation', 'Not authorized to access federation', {
 			method: 'createRoom',
 		});

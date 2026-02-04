@@ -1,5 +1,6 @@
-import { Box, InputBox, Menu, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Box, InputBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import type { ComponentProps, FormEvent } from 'react';
@@ -63,50 +64,56 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 	}, [handleRange]);
 
 	const options = useMemo(
-		() => ({
-			today: {
-				icon: 'history',
-				label: t('Today'),
-				action: () => {
+		() => [
+			{
+				id: 'today',
+				icon: 'history' as const,
+				content: t('Today'),
+				onClick: () => {
 					handleRange(getWeekRange(0, 0));
 				},
 			},
-			yesterday: {
-				icon: 'history',
-				label: t('Yesterday'),
-				action: () => {
+			{
+				id: 'yesterday',
+				icon: 'history' as const,
+				content: t('Yesterday'),
+				onClick: () => {
 					handleRange(getWeekRange(1, 1));
 				},
 			},
-			thisWeek: {
-				icon: 'history',
-				label: t('This_week'),
-				action: () => {
+			{
+				id: 'thisWeek',
+				icon: 'history' as const,
+				content: t('This_week'),
+				onClick: () => {
 					handleRange(getWeekRange(7, 0));
 				},
 			},
-			previousWeek: {
-				icon: 'history',
-				label: t('Previous_week'),
-				action: () => {
+			{
+				id: 'previousWeek',
+				icon: 'history' as const,
+				content: t('Previous_week'),
+				onClick: () => {
 					handleRange(getWeekRange(14, 7));
 				},
 			},
-			thisMonth: {
-				icon: 'history',
-				label: t('This_month'),
-				action: () => {
+			{
+				id: 'thisMonth',
+				icon: 'history' as const,
+				content: t('This_month'),
+				onClick: () => {
 					handleRange(getMonthRange(0));
 				},
 			},
-			lastMonth: {
-				icon: 'history',
-				label: t('Previous_month'),
-				action: () => {
+			{
+				id: 'lastMonth',
+				icon: 'history' as const,
+				content: t('Previous_month'),
+				onClick: () => {
 					handleRange(getMonthRange(1));
 				},
 			},
-		}),
+		],
 		[handleRange, t],
 	);
 
@@ -127,7 +134,9 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 						<Box height='x40' display='flex' width='full'>
 							<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end} />
 						</Box>
-						<Menu mis={8} options={options} />
+						<Box mis={8}>
+							<GenericMenu title={t('Date_range_presets')} items={options} small />
+						</Box>
 					</FieldRow>
 				</Field>
 			</Box>

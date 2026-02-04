@@ -259,7 +259,7 @@ test.describe.serial('feature preview', () => {
 
 			const discussionName = faker.string.uuid();
 
-			await poHomeChannel.content.btnMenuMoreActions.click();
+			await poHomeChannel.composer.btnMenuMoreActions.click();
 			await page.getByRole('menuitem', { name: 'Discussion' }).click();
 			await poHomeChannel.content.inputDiscussionName.fill(discussionName);
 			await poHomeChannel.content.btnCreateDiscussionModal.click();
@@ -585,7 +585,7 @@ test.describe.serial('feature preview', () => {
 			});
 
 			await test.step('create discussion in DM', async () => {
-				await poHomeChannel.content.btnMenuMoreActions.click();
+				await poHomeChannel.composer.btnMenuMoreActions.click();
 				await page.getByRole('menuitem', { name: 'Discussion' }).click();
 				await poHomeChannel.content.inputDiscussionName.fill(discussionName);
 				await poHomeChannel.content.btnCreateDiscussionModal.click();

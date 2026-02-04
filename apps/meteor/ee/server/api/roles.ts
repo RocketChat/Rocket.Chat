@@ -104,7 +104,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
 			}
 
-			const userId = Meteor.userId();
+			const { userId } = this;
 
 			if (!userId || !(await hasPermissionAsync(userId, 'access-permissions'))) {
 				throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');

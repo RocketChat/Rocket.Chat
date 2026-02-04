@@ -676,6 +676,7 @@
   "CROWD_Reject_Unauthorized": "رفض غير المُصرّح به",
   "Call": "مكالمة",
   "Call_Already_Ended": "سبق انهاء المكالمة",
+  "Call_Information": "معلومات المكالمة",
   "Call_declined": "تم رفض المكالمة!",
   "Call_provider": "مزود المكالمة",
   "Caller": "المتصل",
