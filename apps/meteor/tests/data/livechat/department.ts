@@ -202,7 +202,7 @@ export const archiveDepartment = async (departmentId: string): Promise<void> => 
 		.expect(200);
 };
 
-export const disableDepartment = async (department: ILivechatDepartment): Promise<void> => {
+export const disableDepartment = async (department: Omit<ILivechatDepartment, '_updatedAt'>): Promise<void> => {
 	department.enabled = false;
 	delete department._updatedAt;
 	const updatedDepartment = await updateDepartment(department._id, department);
