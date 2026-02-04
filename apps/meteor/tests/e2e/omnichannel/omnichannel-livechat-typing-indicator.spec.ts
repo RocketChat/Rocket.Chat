@@ -29,7 +29,7 @@ test.describe.serial('OC - Livechat - Typing indicator', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeOmnichannel = new HomeOmnichannel(page);
 		await page.goto('/');
-		await page.locator('#main-content').waitFor();
+		await poHomeOmnichannel.waitForHome();
 	});
 
 	test.afterAll(async ({ api }) => {
