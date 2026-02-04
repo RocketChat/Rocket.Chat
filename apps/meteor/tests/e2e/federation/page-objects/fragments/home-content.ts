@@ -20,7 +20,7 @@ export class FederationHomeContent {
 	}
 
 	get lastUserMessageBody(): Locator {
-		return this.lastUserMessage.locator('[data-qa-type="message-body"]');
+		return this.lastUserMessage.locator('[role="document"][aria-roledescription="message body"]');
 	}
 
 	async sendMessage(text: string): Promise<void> {

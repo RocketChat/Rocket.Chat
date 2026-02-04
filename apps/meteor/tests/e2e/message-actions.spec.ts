@@ -120,9 +120,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage('Message to delete');
 		await poHomeChannel.content.deleteLastMessage();
 
-		await expect(poHomeChannel.content.lastUserMessage.locator('[data-qa-type="message-body"]:has-text("Message to delete")')).toHaveCount(
-			0,
-		);
+		await expect(poHomeChannel.content.lastUserMessageBody).not.toHaveText('Message to delete');
 	});
 
 	test('expect quote the message', async ({ page }) => {

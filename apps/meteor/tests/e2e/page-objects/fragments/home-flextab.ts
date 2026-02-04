@@ -73,7 +73,7 @@ export class HomeFlextab {
 	}
 
 	get flexTabViewThreadMessage(): Locator {
-		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="message-body"]');
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[role="document"][aria-roledescription="message body"]');
 	}
 
 	get userInfoUsername(): Locator {

@@ -54,7 +54,7 @@ export class HomeContent {
 	}
 
 	get lastUserMessageBody(): Locator {
-		return this.lastUserMessage.locator('[data-qa-type="message-body"]');
+		return this.lastUserMessage.locator('[role="document"][aria-roledescription="message body"]');
 	}
 
 	get lastUserMessageAttachment(): Locator {
@@ -173,7 +173,7 @@ export class HomeContent {
 	}
 
 	get getFileDescription(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-body"]');
+		return this.lastUserMessage.locator('[role="document"][aria-roledescription="message body"]');
 	}
 
 	get fileNameInput(): Locator {
@@ -255,7 +255,10 @@ export class HomeContent {
 	}
 
 	get lastThreadMessageFileDescription(): Locator {
-		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="message-body"]');
+		return this.page
+			.locator('div.thread-list ul.thread [data-qa-type="message"]')
+			.last()
+			.locator('[role="document"][aria-roledescription="message body"]');
 	}
 
 	get lastThreadMessageFileName(): Locator {

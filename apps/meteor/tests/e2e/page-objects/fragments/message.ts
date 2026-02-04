@@ -4,7 +4,7 @@ export class Message {
 	constructor(public readonly root: Locator) {}
 
 	get body() {
-		return this.root.locator('[data-qa-type="message-body"]');
+		return this.root.locator('[role="document"][aria-roledescription="message body"]');
 	}
 
 	get fileUploadName() {
