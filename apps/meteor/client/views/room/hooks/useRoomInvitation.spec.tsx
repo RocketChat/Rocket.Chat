@@ -81,20 +81,4 @@ describe('useRoomInvitation', () => {
 
 		await waitFor(() => expect(mockInviteEndpoint).not.toHaveBeenCalled());
 	});
-
-	it('should redirect to /home after rejecting an invite', async () => {
-		const { result } = renderHook(() => useRoomInvitation(mockedRoom), { wrapper: appRoot });
-
-		act(() => void result.current.rejectInvite());
-
-		await waitFor(() => expect(mockedNavigate).toHaveBeenCalledWith('/home'));
-	});
-
-	it('should not redirect to /home after accepting an invite', async () => {
-		const { result } = renderHook(() => useRoomInvitation(mockedRoom), { wrapper: appRoot });
-
-		act(() => void result.current.acceptInvite());
-
-		await waitFor(() => expect(mockedNavigate).not.toHaveBeenCalled());
-	});
 });

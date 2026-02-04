@@ -1,4 +1,4 @@
-import { isPublicRoom, isInviteSubscription, type IRoom, type RoomType } from '@rocket.chat/core-typings';
+import { isPublicRoom, type IRoom, type RoomType } from '@rocket.chat/core-typings';
 import { getObjectKeys } from '@rocket.chat/tools';
 import { useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -42,14 +42,6 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new RoomNotFoundError(undefined, { type, reference });
 			}
 
-			const { Rooms, Subscriptions } = await import('../../../stores');
-
-			const sub = Subscriptions.state.find((record) => record.rid === reference || record.name === reference);
-
-			if (sub && isInviteSubscription(sub)) {
-				return { rid: sub.rid };
-			}
-
 			let roomData: IRoom;
 			try {
 				roomData = await getRoomByTypeAndName(type, reference);
@@ -73,6 +65,8 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new RoomNotFoundError(undefined, { type, reference });
 			}
 
+			const { Rooms, Subscriptions } = await import('../../../stores');
+
 			const unsetKeys = getObjectKeys(roomData).filter((key) => !(key in roomFields));
 			unsetKeys.forEach((key) => {
 				delete roomData[key];
@@ -86,6 +80,8 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			}
 
 			const { LegacyRoomManager } = await import('../../../../app/ui-utils/client');
+
+			const sub = Subscriptions.state.find((record) => record.rid === reference || record.name === reference);
 
 			if (reference !== undefined && room._id !== reference && type === 'd') {
 				// Redirect old url using username to rid

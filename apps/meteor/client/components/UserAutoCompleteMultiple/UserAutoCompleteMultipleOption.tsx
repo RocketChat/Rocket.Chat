@@ -17,7 +17,6 @@ const UserAutoCompleteMultipleOption = ({ label, ...props }: UserAutoCompleteMul
 	return (
 		<Option
 			{...props}
-			data-qa-type='autocomplete-user-option'
 			avatar={_federated ? undefined : <UserAvatar username={username || ''} size='x20' />}
 			icon={_federated ? 'globe' : undefined}
 			key={username}

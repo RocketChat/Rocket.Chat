@@ -71,4 +71,8 @@ export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
 
 		return this.updateOne({ _id: bannerId }, { $set: { active: true, ...doc } }, { upsert: true });
 	}
+
+	findByIds(bannerIds: string[]): FindCursor<IBanner> {
+		return this.find({ _id: { $in: bannerIds } });
+	}
 }

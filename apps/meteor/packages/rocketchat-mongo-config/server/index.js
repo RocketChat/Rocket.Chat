@@ -27,8 +27,12 @@ const mongoConnectionOptions = {
 
 const mongoOptionStr = process.env.MONGO_OPTIONS;
 if (typeof mongoOptionStr !== 'undefined') {
-	const mongoOptions = JSON.parse(mongoOptionStr);
-	Object.assign(mongoConnectionOptions, mongoOptions);
+	try {
+		const mongoOptions = JSON.parse(mongoOptionStr);
+		Object.assign(mongoConnectionOptions, mongoOptions);
+	} catch (error) {
+		throw new Error('Invalid MONGO_OPTIONS environment variable: must be valid JSON.', { cause: error });
+	}
 }
 
 if (Object.keys(mongoConnectionOptions).length > 0) {

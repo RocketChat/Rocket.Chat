@@ -88,6 +88,7 @@ export { useUserRoom } from './hooks/useUserRoom';
 export { useUserSubscription } from './hooks/useUserSubscription';
 export { useUserSubscriptionByName } from './hooks/useUserSubscriptionByName';
 export { useUserSubscriptions } from './hooks/useUserSubscriptions';
+export { usePasswordPolicyOptions } from './hooks/usePasswordPolicyOptions';
 export { usePasswordPolicy, type PasswordPolicyValidation } from './hooks/usePasswordPolicy';
 export { useVerifyPassword } from './hooks/useVerifyPassword';
 export { useSelectedDevices } from './hooks/useSelectedDevices';

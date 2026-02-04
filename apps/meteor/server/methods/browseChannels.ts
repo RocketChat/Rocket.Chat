@@ -3,6 +3,7 @@ import type { IUser, AtLeast } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { isTruthy } from '@rocket.chat/tools';
 import mem from 'mem';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
@@ -10,7 +11,6 @@ import type { FindOptions, SortDirection } from 'mongodb';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
-import { isTruthy } from '../../lib/isTruthy';
 import { trim } from '../../lib/utils/stringUtils';
 
 const sortChannels = (field: string, direction: 'asc' | 'desc'): Record<string, 1 | -1> => {

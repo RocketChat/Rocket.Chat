@@ -8,6 +8,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { createClient, type MatrixClient, KnownMembership, type Room, type RoomMember, Visibility } from 'matrix-js-sdk';
+import { logger } from 'matrix-js-sdk/lib/logger';
+
+logger.debug = () => void 0;
+logger.info = () => void 0;
+logger.warn = () => void 0;
+logger.error = () => void 0;
 
 /**
  * Creates a promise that resolves after the specified delay.

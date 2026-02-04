@@ -18,6 +18,10 @@ export class Negotiation {
 		return !this.remoteOffer;
 	}
 
+	public get finished(): boolean {
+		return this._finished;
+	}
+
 	public readonly negotiationId: string;
 
 	public readonly sequence: number;
@@ -34,6 +38,8 @@ export class Negotiation {
 
 	protected _failed: boolean;
 
+	protected _finished: boolean;
+
 	constructor(
 		negotiation: NegotiationData,
 		protected readonly logger?: IMediaSignalLogger | null,
@@ -42,6 +48,7 @@ export class Negotiation {
 		this._startedProcessing = false;
 		this._ended = false;
 		this._failed = false;
+		this._finished = false;
 		this.negotiationId = negotiation.negotiationId;
 		this.sequence = negotiation.sequence;
 		this.isPolite = negotiation.isPolite;
@@ -50,13 +57,16 @@ export class Negotiation {
 		this.emitter = new Emitter();
 	}
 
-	public end(): void {
+	public end(finished = false): void {
 		if (this._ended) {
 			return;
 		}
 
 		this.logger?.debug('Negotiation.end', this.negotiationId);
 		this._ended = true;
+		if (finished && this._startedProcessing && !this._failed) {
+			this._finished = true;
+		}
 		this.emitter.emit('ended');
 	}
 
@@ -79,7 +89,7 @@ export class Negotiation {
 	}
 
 	public async setRemoteAnswer(sdp: RTCSessionDescriptionInit): Promise<void> {
-		if (!this.webrtcProcessor) {
+		if (!this.isWebRTCNegotiation()) {
 			return;
 		}
 
@@ -90,37 +100,37 @@ export class Negotiation {
 			return;
 		}
 
-		await this.webrtcProcessor.setRemoteDescription(sdp);
+		await this.setPeerRemoteDescription(sdp);
 		// Local negotiations end when the remote description is available
-		this.end();
+		this.end(true);
 	}
 
 	protected async setLocalDescription(this: WebRTCNegotiation, sdp: RTCSessionDescriptionInit): Promise<void> {
 		this.logger?.debug('Negotiation.setLocalDescription', this.negotiationId);
 
 		this.assertNegotiationIsActive();
-		await this.webrtcProcessor.setLocalDescription(sdp);
+		await this.setPeerLocalDescription(sdp);
 
 		this.assertNegotiationIsActive();
 		await this.webrtcProcessor.waitForIceGathering();
 
 		this.assertNegotiationIsActive();
-		const localDescription = this.webrtcProcessor.getLocalDescription();
-		if (!localDescription) {
-			this.fail('implementation-error');
-			return;
-		}
+		const localDescription = this.getPeerLocalDescription();
 
 		this.emitter.emit('local-sdp', { sdp: localDescription });
 
 		// Remote negotiations end when the local description is available
 		if (!this.isLocal) {
-			this.end();
+			this.end(true);
 		}
 	}
 
 	protected setWebRTCProcessor(webrtcProcessor: IWebRTCProcessor): asserts this is WebRTCNegotiation {
 		this.webrtcProcessor = webrtcProcessor;
+	}
+
+	protected isWebRTCNegotiation(): this is WebRTCNegotiation {
+		return !!this.webrtcProcessor;
 	}
 
 	protected assertNegotiationIsActive(): void {
@@ -142,10 +152,10 @@ export class Negotiation {
 	protected async createLocalAnswer(this: WebRTCNegotiation, remoteOffer: RTCSessionDescriptionInit): Promise<void> {
 		this.logger?.debug('Negotiation.createLocalAnswer', this.negotiationId);
 		this.assertNegotiationIsActive();
-		await this.webrtcProcessor.setRemoteDescription(remoteOffer);
+		await this.setPeerRemoteDescription(remoteOffer);
 
 		this.assertNegotiationIsActive();
-		const earlyAnswer = await this.webrtcProcessor.createAnswer();
+		const earlyAnswer = await this.createEarlyAnswer();
 
 		this.assertNegotiationIsActive();
 		await this.setLocalDescription(earlyAnswer);
@@ -159,6 +169,49 @@ export class Negotiation {
 		this.emitter.emit('error', { errorCode });
 
 		this._failed = true;
+	}
+
+	protected async setPeerRemoteDescription(this: WebRTCNegotiation, remoteDescription: RTCSessionDescriptionInit): Promise<void> {
+		try {
+			await this.webrtcProcessor.setRemoteDescription(remoteDescription);
+		} catch (err) {
+			this.logger?.error(err);
+			this.fail('failed-to-set-remote-description');
+		}
+	}
+
+	protected async createEarlyAnswer(this: WebRTCNegotiation): Promise<RTCSessionDescriptionInit> {
+		try {
+			const earlyAnswer = await this.webrtcProcessor.createAnswer();
+			return earlyAnswer;
+		} catch (err) {
+			this.logger?.error(err);
+			this.fail('failed-to-create-local-answer');
+			throw err;
+		}
+	}
+
+	protected async setPeerLocalDescription(this: WebRTCNegotiation, localDescription: RTCSessionDescriptionInit): Promise<void> {
+		try {
+			await this.webrtcProcessor.setLocalDescription(localDescription);
+		} catch (err) {
+			this.logger?.error(err);
+			this.fail('failed-to-set-local-description');
+		}
+	}
+
+	protected getPeerLocalDescription(this: WebRTCNegotiation): RTCSessionDescriptionInit {
+		try {
+			const sdp = this.webrtcProcessor.getLocalDescription();
+			if (!sdp) {
+				throw new Error('No local description');
+			}
+			return sdp;
+		} catch (err) {
+			this.logger?.error(err);
+			this.fail('failed-to-get-local-description');
+			throw err;
+		}
 	}
 }
 

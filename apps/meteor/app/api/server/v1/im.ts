@@ -155,7 +155,7 @@ const dmDeleteAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
-		await eraseRoom(room._id, this.userId);
+		await eraseRoom(room._id, this.user);
 
 		return API.v1.success();
 	};
@@ -279,7 +279,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { typeGroup, name, roomId, username } = this.queryParams;
+			const { typeGroup, name, roomId, username, onlyConfirmed } = this.queryParams;
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
@@ -296,6 +296,7 @@ API.v1.addRoute(
 				rid: room._id,
 				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
+				...(onlyConfirmed && { expiresAt: { $exists: false } }),
 			};
 
 			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(filter, {
