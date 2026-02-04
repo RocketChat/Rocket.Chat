@@ -36,7 +36,7 @@ export type CustomSoundContextValue = {
 		stopNewMessage: () => void;
 		playNewMessageCustom: (soundId: ICustomSound['_id']) => void;
 	};
-	list: ICustomSound[];
+	list: Omit<ICustomSound, '_updatedAt'>[];
 };
 
 export const CustomSoundContext = createContext<CustomSoundContextValue>({

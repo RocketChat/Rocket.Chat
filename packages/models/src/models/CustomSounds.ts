@@ -43,7 +43,7 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 	}
 
 	// INSERT
-	create(data: Omit<ICustomSound, '_id'>): Promise<InsertOneResult<WithId<ICustomSound>>> {
+	create(data: Omit<ICustomSound, '_id' | '_updatedAt'>): Promise<InsertOneResult<WithId<ICustomSound>>> {
 		return this.insertOne(data);
 	}
 }

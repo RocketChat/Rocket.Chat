@@ -93,6 +93,7 @@ Meteor.methods<ServerMethods>({
 					_id: soundData._id,
 					name: soundData.name,
 					extension: soundData.extension,
+					_updatedAt: undefined!, // FIXME,
 				},
 			});
 		}

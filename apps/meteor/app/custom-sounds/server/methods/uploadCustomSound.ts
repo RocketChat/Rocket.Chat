@@ -29,7 +29,18 @@ Meteor.methods<ServerMethods>({
 		return new Promise((resolve) => {
 			const ws = RocketChatFileCustomSoundsInstance.createWriteStream(`${soundData._id}.${soundData.extension}`, contentType);
 			ws.on('end', () => {
-				setTimeout(() => api.broadcast('notify.updateCustomSound', { soundData }), 500);
+				setTimeout(
+					() =>
+						api.broadcast('notify.updateCustomSound', {
+							soundData: {
+								_id: soundData._id,
+								name: soundData.name,
+								extension: soundData.extension,
+								_updatedAt: undefined!, // FIXME
+							},
+						}),
+					500,
+				);
 				resolve();
 			});
 
