@@ -58,7 +58,8 @@ export class SlackUsersImporter extends Importer {
 		try {
 			parsed = this.csvParser(fileContent);
 		} catch (error) {
-			this.logger.error('Failed to parse CSV file:', error);
+			const message = error instanceof Error ? String(error) : error.message ? String(error.message) : 'Unknown error';
+			this.logger.error(`Failed to parse CSV file: ${message}`);
 			await super.updateProgress(ProgressStep.ERROR);
 			throw new Error('Invalid CSV file format. Please upload a valid Slack Users export CSV file.');
 		}
