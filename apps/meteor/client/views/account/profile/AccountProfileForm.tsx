@@ -71,6 +71,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	const previousEmail = user ? getUserEmailAddress(user) : '';
 	const previousUsername = user?.username || '';
 	const isUserVerified = user?.emails?.[0]?.verified ?? false;
+	const hasCustomAvatarOrigin = !!user?.avatarOrigin && ['upload', 'url', 'rest'].includes(user.avatarOrigin);
+	const isDefaultAvatar = avatar === 'reset' || (avatar === '' && !hasCustomAvatarOrigin);
 
 	const mutateConfirmationEmail = useMutation({
 		mutationFn: sendConfirmationEmail,
@@ -124,12 +126,14 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 				customFields,
 			});
 
-			await updateAvatar();
+			if (avatar !== '') {
+				await updateAvatar();
+			}
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
-			reset({ email, name, username, statusType, statusText, nickname, bio, customFields });
+			reset({ email, name, username, statusType, statusText, nickname, bio, customFields, avatar: '' });
 		}
 	};
 
@@ -157,6 +161,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 								name={userFullName}
 								username={username}
 								setAvatarObj={onChange}
+								isDefaultAvatar={isDefaultAvatar}
 								disabled={!allowUserAvatarChange}
 							/>
 						)}
