@@ -18,7 +18,6 @@ type RoomMenuActionsProps = {
 	cl?: boolean;
 	roomOpen?: boolean;
 	hideDefaultOptions: boolean;
-	currentRoomId: string;
 };
 
 export const useRoomMenuActions = ({
@@ -29,10 +28,10 @@ export const useRoomMenuActions = ({
 	cl,
 	roomOpen,
 	hideDefaultOptions,
-	currentRoomId,
 }: RoomMenuActionsProps): { title: string; items: GenericMenuItemProps[] }[] => {
 	const { t } = useTranslation();
 	const subscription = useUserSubscription(rid);
+	let currentRoomId = '';
 
 	const isFavorite = Boolean(subscription?.f);
 	const canLeaveChannel = usePermission('leave-c');
@@ -48,10 +47,10 @@ export const useRoomMenuActions = ({
 		}
 		return !((cl != null && !cl) || ['d', 'l'].includes(type));
 	})();
-	if(roomOpen===true ){
-		currentRoomId=rid;
+	if (roomOpen === true) {
+		currentRoomId = rid;
 	}
-	const handleHide = useHideRoomAction({ rid, type, name }, { redirect: false,currentRoomId:currentRoomId });
+	const handleHide = useHideRoomAction({ rid, type, name }, { redirect: false, currentRoomId: currentRoomId });
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });

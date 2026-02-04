@@ -19,7 +19,7 @@
 			width: 100%;
 			height: 4px;
 
-			content: "";
+			content: '';
 			transition: all 0.3s;
 
 			border-radius: 50%;
@@ -42,7 +42,7 @@
 
 			margin: variables.$default-padding auto;
 
-			content: "";
+			content: '';
 			animation: loader-rotate 1s linear infinite;
 
 			border: 4px solid colors.$color-dark-blue;

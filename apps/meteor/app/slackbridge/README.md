@@ -2,8 +2,8 @@
 
 This package creates a bi-directional bridge between a single Slack installation and your Rocket.Chat installation.
 
-* Configure Rocket.Chat with your Slack API token
-* Invite 'rocketbot' to your Slack channel
+- Configure Rocket.Chat with your Slack API token
+- Invite 'rocketbot' to your Slack channel
 
 ### Settings
 
@@ -26,15 +26,17 @@ The following can be configured in your Rocket.Chat Administration SlackBridge p
 ### Features
 
 #### Group Chat Messages
-* Send and receive basic messages
-* Delete messages (Can't delete slack message from rocket)
-* Edit messages (Slack doesn't allow editing of BOT messages, so can't edit a Rocket msg in Slack)
-* React to messages (as BOT in Slack)
+
+- Send and receive basic messages
+- Delete messages (Can't delete slack message from rocket)
+- Edit messages (Slack doesn't allow editing of BOT messages, so can't edit a Rocket msg in Slack)
+- React to messages (as BOT in Slack)
 
 #### Files
 
 #### Imports
 
 ### TODO
-* Support multiple slack installations
-* Private IM's
+
+- Support multiple slack installations
+- Private IM's

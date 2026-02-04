@@ -12,8 +12,7 @@ interface BaseQuery<T extends { _id: string }, TOptions extends Options<T> = Opt
 }
 
 export interface UnorderedQuery<T extends { _id: string }, TOptions extends Options<T> = Options<T>>
-	extends BaseQuery<T, TOptions>,
-		UnorderedObserver<T> {
+	extends BaseQuery<T, TOptions>, UnorderedObserver<T> {
 	readonly ordered: false;
 	readonly comparator: null;
 	results: IdMap<T['_id'], T>;
@@ -21,8 +20,7 @@ export interface UnorderedQuery<T extends { _id: string }, TOptions extends Opti
 }
 
 export interface OrderedQuery<T extends { _id: string }, TOptions extends Options<T> = Options<T>>
-	extends BaseQuery<T, TOptions>,
-		OrderedObserver<T> {
+	extends BaseQuery<T, TOptions>, OrderedObserver<T> {
 	readonly ordered: true;
 	readonly comparator: ((a: T, b: T) => number) | null;
 	results: T[];

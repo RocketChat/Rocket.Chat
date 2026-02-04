@@ -29,7 +29,6 @@
 - ([#37635](https://github.com/RocketChat/Rocket.Chat/pull/37635)) Adds invitation badge to sidebar
 
 - <details><summary>Updated dependencies [9e03ed5c5ea829c62c2da2de9413a27a4696f8a3]:</summary>
-
   - @rocket.chat/tools@0.2.4
   </details>
 
@@ -62,7 +61,6 @@
 - ([#37635](https://github.com/RocketChat/Rocket.Chat/pull/37635)) Adds invitation badge to sidebar
 
 - <details><summary>Updated dependencies [9e03ed5c5ea829c62c2da2de9413a27a4696f8a3]:</summary>
-
   - @rocket.chat/tools@0.2.4-rc.0
   </details>
 
@@ -195,7 +193,6 @@
 - ([#36259](https://github.com/RocketChat/Rocket.Chat/pull/36259)) Introduces PDF file as an export type for room messages
 
 - <details><summary>Updated dependencies [fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
-
   - @rocket.chat/tools@0.2.3
   </details>
 
@@ -218,7 +215,6 @@
 - ([#36259](https://github.com/RocketChat/Rocket.Chat/pull/36259)) Introduces PDF file as an export type for room messages
 
 - <details><summary>Updated dependencies [fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
-
   - @rocket.chat/tools@0.2.3-rc.0
   </details>
 
@@ -443,7 +439,6 @@
 - ([#34197](https://github.com/RocketChat/Rocket.Chat/pull/34197)) fixes "Change to language" button in login page not displaying the target language
 
 - ([#34169](https://github.com/RocketChat/Rocket.Chat/pull/34169)) Changes the wording for voice call permissions, improving consistency and clarity.
-
   - `Manage Voip Extension` -> `Manage Voice Calls`
     > Permission to manage voice calls and assign extensions to users
   - `View VoIP extension details` -> `View Voice Call Extensions`
@@ -470,7 +465,6 @@
 - ([#34197](https://github.com/RocketChat/Rocket.Chat/pull/34197)) fixes "Change to language" button in login page not displaying the target language
 
 - ([#34169](https://github.com/RocketChat/Rocket.Chat/pull/34169)) Changes the wording for voice call permissions, improving consistency and clarity.
-
   - `Manage Voip Extension` -> `Manage Voice Calls`
     > Permission to manage voice calls and assign extensions to users
   - `View VoIP extension details` -> `View Voice Call Extensions`

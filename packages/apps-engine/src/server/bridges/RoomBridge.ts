@@ -24,8 +24,8 @@ export type GetRoomsFilters = {
 	 */
 	types?: Array<RoomType>;
 	/**
-	 * Filter to include or exclude discussion rooms. 
-	 * 
+	 * Filter to include or exclude discussion rooms.
+	 *
 	 * When undefined (default), discussions are included in the result set.
 	 *
 	 * When true, ONLY discussions are included in the result set (remove non-discussions).
@@ -36,7 +36,7 @@ export type GetRoomsFilters = {
 	 * Filter to include or exclude team main rooms.
 	 *
 	 * When undefined (default), team main rooms are included in the result set.
-	 * 
+	 *
 	 * When true, ONLY team main rooms are included in the result set (remove non-teams).
 	 * When false, team main rooms are excluded from the result set.
 	 */
@@ -91,7 +91,11 @@ export abstract class RoomBridge extends BaseBridge {
 		}
 	}
 
-	public async doGetAllRooms(filters: GetRoomsFilters = {}, options: GetRoomsOptions = {}, appId: string): Promise<Array<IRoomRaw> | undefined> {
+	public async doGetAllRooms(
+		filters: GetRoomsFilters = {},
+		options: GetRoomsOptions = {},
+		appId: string,
+	): Promise<Array<IRoomRaw> | undefined> {
 		if (this.hasViewAllRoomsPermission(appId)) {
 			return this.getAllRooms(filters, options, appId);
 		}

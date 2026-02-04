@@ -19,7 +19,6 @@
 - ([#37612](https://github.com/RocketChat/Rocket.Chat/pull/37612)) Adds invitation request support to rooms
 
 - <details><summary>Updated dependencies [d3538e7045c41f91b8c561d44e5485ff93b93745]:</summary>
-
   - @rocket.chat/ui-kit@0.39.0
   </details>
 
@@ -52,7 +51,6 @@
 - ([#37612](https://github.com/RocketChat/Rocket.Chat/pull/37612)) Adds invitation request support to rooms
 
 - <details><summary>Updated dependencies [d3538e7045c41f91b8c561d44e5485ff93b93745]:</summary>
-
   - @rocket.chat/ui-kit@0.39.0-rc.0
   </details>
 
@@ -73,7 +71,6 @@
 - ([#37270](https://github.com/RocketChat/Rocket.Chat/pull/37270)) Fixes editing of encrypted message attachment description.
 
 - <details><summary>Updated dependencies [44ca3b111f13ac1816a82ab0e4720e9886769c34]:</summary>
-
   - @rocket.chat/ui-kit@0.38.0
   </details>
 
@@ -94,7 +91,6 @@
 - ([#37270](https://github.com/RocketChat/Rocket.Chat/pull/37270)) Fixes editing of encrypted message attachment description.
 
 - <details><summary>Updated dependencies [44ca3b111f13ac1816a82ab0e4720e9886769c34]:</summary>
-
   - @rocket.chat/ui-kit@0.38.0-rc.0
   </details>
 
@@ -349,7 +345,6 @@
 - ([#35369](https://github.com/RocketChat/Rocket.Chat/pull/35369)) Fixes an issue where recursively quoting messages multiple times (up to the configured chained quote limit) caused the inner attachment to appear empty.
 
 - <details><summary>Updated dependencies [335f19f5d08b7348263b574e4133ecf93145a79c]:</summary>
-
   - @rocket.chat/message-parser@0.31.32
   </details>
 
@@ -374,7 +369,6 @@
 - ([#35369](https://github.com/RocketChat/Rocket.Chat/pull/35369)) Fixes an issue where recursively quoting messages multiple times (up to the configured chained quote limit) caused the inner attachment to appear empty.
 
 - <details><summary>Updated dependencies [335f19f5d08b7348263b574e4133ecf93145a79c]:</summary>
-
   - @rocket.chat/message-parser@0.31.32-rc.0
   </details>
 
@@ -583,7 +577,6 @@
 - ([#33328](https://github.com/RocketChat/Rocket.Chat/pull/33328)) Allows authorized users to reset the encryption key for end-to-end encrypted rooms. This aims to prevent situations where all users of a room have lost the encryption key, and as such, the access to the room.
 
 - <details><summary>Updated dependencies [687f1efd5f, debd3ffa22]:</summary>
-
   - @rocket.chat/ui-kit@0.37.0
   </details>
 
@@ -624,7 +617,6 @@
 - ([#33328](https://github.com/RocketChat/Rocket.Chat/pull/33328)) Allows authorized users to reset the encryption key for end-to-end encrypted rooms. This aims to prevent situations where all users of a room have lost the encryption key, and as such, the access to the room.
 
 - <details><summary>Updated dependencies [687f1efd5f, debd3ffa22]:</summary>
-
   - @rocket.chat/ui-kit@0.37.0-rc.0
   </details>
 
@@ -641,7 +633,6 @@
 - ([#32510](https://github.com/RocketChat/Rocket.Chat/pull/32510)) Added a new setting to enable mentions in end to end encrypted channels
 
 - <details><summary>Updated dependencies [79c16d315a]:</summary>
-
   - @rocket.chat/message-parser@0.31.31
   </details>
 
@@ -670,7 +661,6 @@
 - ([#32510](https://github.com/RocketChat/Rocket.Chat/pull/32510)) Added a new setting to enable mentions in end to end encrypted channels
 
 - <details><summary>Updated dependencies [79c16d315a]:</summary>
-
   - @rocket.chat/message-parser@0.31.30-rc.0
   </details>
 
@@ -679,7 +669,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [3cbb9f6252]:</summary>
-
   - @rocket.chat/message-parser@0.31.30
   </details>
 
@@ -706,7 +695,6 @@
 - ([#32846](https://github.com/RocketChat/Rocket.Chat/pull/32846)) Fixed issue with system messages being counted as agents' first responses in livechat rooms (which caused the "best first response time" and "average first response time" metrics to be unreliable for all agents)
 
 - <details><summary>Updated dependencies [c11f3722df]:</summary>
-
   - @rocket.chat/ui-kit@0.36.1
   </details>
 
@@ -745,7 +733,6 @@
 - ([#32846](https://github.com/RocketChat/Rocket.Chat/pull/32846)) Fixed issue with system messages being counted as agents' first responses in livechat rooms (which caused the "best first response time" and "average first response time" metrics to be unreliable for all agents)
 
 - <details><summary>Updated dependencies [c11f3722df]:</summary>
-
   - @rocket.chat/ui-kit@0.36.1-rc.0
   </details>
 
@@ -767,7 +754,6 @@
 - ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
 
 - <details><summary>Updated dependencies [2d89a0c448]:</summary>
-
   - @rocket.chat/ui-kit@0.36.0
   </details>
 
@@ -797,7 +783,6 @@
 - ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
 
 - <details><summary>Updated dependencies [2d89a0c448]:</summary>
-
   - @rocket.chat/ui-kit@0.36.0-rc.0
   </details>
 
@@ -833,7 +818,6 @@
   Additionally, added a "Pending Action" column to aid administrators in identifying necessary actions for each user. Incorporated a "Reason for Joining" field
   into the user info contextual bar, along with a callout for exceeding the seats cap in the users page header. Finally, introduced a new logic to disable user creation buttons upon surpassing the seats cap.
 - <details><summary>Updated dependencies [a565999ae0, 4f72d62aa7]:</summary>
-
   - @rocket.chat/ui-kit@0.35.0
   </details>
 
@@ -869,7 +853,6 @@
   Additionally, added a "Pending Action" column to aid administrators in identifying necessary actions for each user. Incorporated a "Reason for Joining" field
   into the user info contextual bar, along with a callout for exceeding the seats cap in the users page header. Finally, introduced a new logic to disable user creation buttons upon surpassing the seats cap.
 - <details><summary>Updated dependencies [a565999ae0, 4f72d62aa7]:</summary>
-
   - @rocket.chat/ui-kit@0.35.0-rc.0
   </details>
 
@@ -890,7 +873,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [ee5cdfc367]:</summary>
-
   - @rocket.chat/ui-kit@0.34.0
   </details>
 
@@ -909,7 +891,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [ee5cdfc367]:</summary>
-
   - @rocket.chat/ui-kit@0.34.0-rc.0
   </details>
 
@@ -929,7 +910,6 @@
   This returned an empty response to the UI, which ignored the response and continued to show the view.
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/message-parser@0.31.29
   - @rocket.chat/ui-kit@0.33.0
   </details>
@@ -956,7 +936,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/message-parser@0.31.29
   - @rocket.chat/ui-kit@0.33.0
   </details>
@@ -972,7 +951,6 @@
 - ([#31820](https://github.com/RocketChat/Rocket.Chat/pull/31820)) **Added the ability for premium workspaces to hide Rocket.Chat's watermark as well as change the Livechat widget's logo**
 
   The new settings (named below) can be found in the Omnichannel workspace settings within the livechat section.
-
   - Hide "powered by Rocket.Chat"
   - Livechat widget logo (svg, png, jpg)
 
@@ -983,7 +961,6 @@
 - ([#31663](https://github.com/RocketChat/Rocket.Chat/pull/31663)) Fixes issue causing the setDepartment Livechat API overriding some triggers conditions
 
 - <details><summary>Updated dependencies [5ad65ff3da]:</summary>
-
   - @rocket.chat/message-parser@0.31.29
   - @rocket.chat/ui-kit@0.33.0
   </details>
@@ -1003,7 +980,6 @@
 - ([#31820](https://github.com/RocketChat/Rocket.Chat/pull/31820)) **Added the ability for premium workspaces to hide Rocket.Chat's watermark as well as change the Livechat widget's logo**
 
   The new settings (named below) can be found in the Omnichannel workspace settings within the livechat section.
-
   - Hide "powered by Rocket.Chat"
   - Livechat widget logo (svg, png, jpg)
 
@@ -1014,7 +990,6 @@
 - ([#31663](https://github.com/RocketChat/Rocket.Chat/pull/31663)) Fixes issue causing the setDepartment Livechat API overriding some triggers conditions
 
 - <details><summary>Updated dependencies [5ad65ff3da]:</summary>
-
   - @rocket.chat/message-parser@0.31.29-rc.0
   - @rocket.chat/ui-kit@0.33.0
   </details>
@@ -1044,7 +1019,6 @@
 - ([#31328](https://github.com/RocketChat/Rocket.Chat/pull/31328)) Fixed an issue caused by the `Fallback Forward Department` feature. Feature could be configured by admins in a way that mimis a loop, causing a chat to be forwarded "infinitely" between those departments. System will now prevent Self & 1-level deep circular references from being saved, and a new setting is added to control the maximum number of hops that the system will do between fallback departments before considering a transfer failure.
 
 - <details><summary>Updated dependencies [b223cbde14]:</summary>
-
   - @rocket.chat/ui-kit@0.33.0
   </details>
 

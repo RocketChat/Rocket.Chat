@@ -55,11 +55,7 @@ export class RoomRead implements IRoomRead {
 			throw new Error(`Invalid skip provided. Expected number >= 0, got ${skip}`);
 		}
 
-		return this.roomBridge.doGetAllRooms(
-			filters,
-			{ limit, skip },
-			this.appId,
-		);
+		return this.roomBridge.doGetAllRooms(filters, { limit, skip }, this.appId);
 	}
 
 	public getDirectByUsernames(usernames: Array<string>): Promise<IRoom> {

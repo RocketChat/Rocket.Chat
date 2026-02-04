@@ -75,7 +75,7 @@ const NabBar: FC = () => {
                   small
                   onClick={() => {
                     navigator.clipboard.writeText(
-                      JSON.stringify(screens[activeScreen]?.payload)
+                      JSON.stringify(screens[activeScreen]?.payload),
                     );
                     toast({
                       type: 'success',
@@ -93,7 +93,7 @@ const NabBar: FC = () => {
                       updatePayloadAction({
                         blocks: [],
                         changedByEditor: false,
-                      })
+                      }),
                     );
                     toast({
                       type: 'success',

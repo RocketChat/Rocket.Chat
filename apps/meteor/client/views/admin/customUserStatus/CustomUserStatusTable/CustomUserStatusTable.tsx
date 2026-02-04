@@ -90,7 +90,9 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 						</GenericTableHeader>
 						<GenericTableBody>
 							{isLoading && <GenericTableLoadingTable headerCells={2} />}
-							{data?.map((status) => <CustomUserStatusRow key={status._id} status={status} onClick={onClick} />)}
+							{data?.map((status) => (
+								<CustomUserStatusRow key={status._id} status={status} onClick={onClick} />
+							))}
 						</GenericTableBody>
 					</GenericTable>
 					{isFetched && (

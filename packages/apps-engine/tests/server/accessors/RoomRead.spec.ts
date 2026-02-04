@@ -162,7 +162,7 @@ export class RoomReadAccessorTestFixture {
 		await Expect(async () => rr.getAllRooms({}, { skip: -Infinity })).toThrowAsync();
 
 		// Test valid calls to ensure validation doesn't break normal behavior
- 		await Expect(async () => rr.getAllRooms({}, { limit: 1 })).not.toThrowAsync();
+		await Expect(async () => rr.getAllRooms({}, { limit: 1 })).not.toThrowAsync();
 		await Expect(async () => rr.getAllRooms({}, { limit: 50 })).not.toThrowAsync();
 		await Expect(async () => rr.getAllRooms({}, { limit: 100 })).not.toThrowAsync();
 		await Expect(async () => rr.getAllRooms({}, { skip: 0 })).not.toThrowAsync();

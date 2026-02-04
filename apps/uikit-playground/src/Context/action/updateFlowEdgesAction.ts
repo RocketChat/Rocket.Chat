@@ -7,7 +7,7 @@ export type UpdateFlowEdgesAction = {
 };
 
 export const updateFlowEdgesAction = (
-  payload: Edge[]
+  payload: Edge[],
 ): UpdateFlowEdgesAction => ({
   type: ActionTypes.UpdateFlowEdges,
   payload,

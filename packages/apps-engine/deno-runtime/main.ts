@@ -60,8 +60,8 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 	AppObjectRegistry.set('logger', logger);
 
 	const context: RequestContext = Object.assign(payload, {
-		context: { logger }
-	})
+		context: { logger },
+	});
 
 	const app = AppObjectRegistry.get<App>('app');
 

@@ -8,7 +8,7 @@ const Display: FC = () => (
     <Box
       height={'100%'}
       width={'100%'}
-      borderInlineStart='var(--default-border)'
+      borderInlineStart="var(--default-border)"
     >
       <Surface />
     </Box>

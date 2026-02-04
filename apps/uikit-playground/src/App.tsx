@@ -22,7 +22,7 @@ function App() {
 
   const [isMobile, isTablet] = useMediaQueries(
     '(max-width: 630px)',
-    '(max-width: 1050px)'
+    '(max-width: 1050px)',
   );
 
   useEffect(() => {

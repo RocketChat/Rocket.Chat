@@ -1,6 +1,6 @@
 export type Maybe<T> = T | null | undefined;
 
-export const AppObjectRegistry = new class {
+export const AppObjectRegistry = new (class {
 	registry: Record<string, unknown> = {};
 
 	public get<T>(key: string): Maybe<T> {
@@ -22,4 +22,4 @@ export const AppObjectRegistry = new class {
 	public clear(): void {
 		this.registry = {};
 	}
-}();
+})();

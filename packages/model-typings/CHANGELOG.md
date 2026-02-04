@@ -19,7 +19,6 @@
 - ([#37846](https://github.com/RocketChat/Rocket.Chat/pull/37846)) Fixes /v1/users.logout not marking user sessions as logged out, leaving stale sessions active.
 
 - <details><summary>Updated dependencies [176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ddc935727e9a7275813006d9dcaa7fe866610844, 73d9eb2783176954f42aa2cbeda8abf1d49ac260]:</summary>
-
   - @rocket.chat/core-typings@8.0.0
   </details>
 
@@ -28,7 +27,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.5
   </details>
 
@@ -37,7 +35,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.4
   </details>
 
@@ -46,7 +43,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.3
   </details>
 
@@ -55,7 +51,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.2
   </details>
 
@@ -64,7 +59,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.1
   </details>
 
@@ -87,7 +81,6 @@
 - ([#37846](https://github.com/RocketChat/Rocket.Chat/pull/37846)) Fixes /v1/users.logout not marking user sessions as logged out, leaving stale sessions active.
 
 - <details><summary>Updated dependencies [176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ddc935727e9a7275813006d9dcaa7fe866610844, 73d9eb2783176954f42aa2cbeda8abf1d49ac260]:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.0
   </details>
 
@@ -96,7 +89,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.13.2
   </details>
 
@@ -105,7 +97,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.13.1
   </details>
 
@@ -118,7 +109,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 65fbcbed9f64004b953dd9d4182b3fccb8147339]:</summary>
-
   - @rocket.chat/core-typings@7.13.0
   </details>
 
@@ -127,7 +117,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.13.0-rc.2
   </details>
 
@@ -148,7 +137,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 65fbcbed9f64004b953dd9d4182b3fccb8147339]:</summary>
-
   - @rocket.chat/core-typings@7.13.0-rc.0
   </details>
 
@@ -165,7 +153,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.1
   </details>
 
@@ -174,7 +161,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [d166e2a1ffba4e59361d5f79e8c376fca5cbf12f]:</summary>
-
   - @rocket.chat/core-typings@7.12.0
   </details>
 
@@ -183,7 +169,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.0-rc.4
   </details>
 
@@ -192,7 +177,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.0-rc.3
   </details>
 
@@ -201,7 +185,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.0-rc.2
   </details>
 
@@ -210,7 +193,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.0-rc.1
   </details>
 
@@ -219,7 +201,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [d166e2a1ffba4e59361d5f79e8c376fca5cbf12f]:</summary>
-
   - @rocket.chat/core-typings@7.12.0-rc.0
   </details>
 
@@ -232,7 +213,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [b0a4602a4461200b9872b2b073ec56fa55ecb466]:</summary>
-
   - @rocket.chat/core-typings@7.11.0
   </details>
 
@@ -241,7 +221,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.7
   </details>
 
@@ -250,7 +229,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.6
   </details>
 
@@ -259,7 +237,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.5
   </details>
 
@@ -268,7 +245,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.4
   </details>
 
@@ -277,7 +253,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.3
   </details>
 
@@ -294,7 +269,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.1
   </details>
 
@@ -307,7 +281,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [b0a4602a4461200b9872b2b073ec56fa55ecb466]:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.0
 
   </details>
@@ -317,7 +290,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.2
   </details>
 
@@ -344,7 +316,6 @@
 - ([#36749](https://github.com/RocketChat/Rocket.Chat/pull/36749)) Fixes an issue with Omnichannel inquiries where multiple instances could take the same inquiry from the queue resulting in the same room being assined to multiple agents.
 
 - <details><summary>Updated dependencies [17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
-
   - @rocket.chat/core-typings@7.10.0
   </details>
 
@@ -353,7 +324,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.6
   </details>
 
@@ -386,7 +356,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.2
   </details>
 
@@ -395,7 +364,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.1
   </details>
 
@@ -413,7 +381,6 @@
 - ([#36749](https://github.com/RocketChat/Rocket.Chat/pull/36749)) Fixes an issue with Omnichannel inquiries where multiple instances could take the same inquiry from the queue resulting in the same room being assined to multiple agents.
 
 - <details><summary>Updated dependencies [17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.0
     </details>
 
@@ -456,7 +423,6 @@
 - ([#36235](https://github.com/RocketChat/Rocket.Chat/pull/36235)) Fixes the issue of deactivation emails being sent to users that were removed from AD even if they were not active in the workspace
 
 - <details><summary>Updated dependencies [2cec8acd5beddf5ad0c67c29fe632487cb82b026, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
-
   - @rocket.chat/core-typings@7.9.0
   </details>
 
@@ -465,7 +431,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.9.0-rc.2
   </details>
 
@@ -474,7 +439,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.9.0-rc.1
   </details>
 
@@ -493,7 +457,6 @@
 - ([#36235](https://github.com/RocketChat/Rocket.Chat/pull/36235)) Fixes the issue of deactivation emails being sent to users that were removed from AD even if they were not active in the workspace
 
 - <details><summary>Updated dependencies [2cec8acd5beddf5ad0c67c29fe632487cb82b026, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
-
   - @rocket.chat/core-typings@7.9.0-rc.0
   </details>
 
@@ -512,7 +475,6 @@
 - ([#36474](https://github.com/RocketChat/Rocket.Chat/pull/36474) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes priorities, sla changes & inquiries not being propagated when change streams were not being used
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.2
   </details>
 
@@ -521,7 +483,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.1
   </details>
 
@@ -534,7 +495,6 @@
 - ([#36236](https://github.com/RocketChat/Rocket.Chat/pull/36236)) Fixes the `channels.counters`, `groups.counters` and `im.counters` endpoint to include only active users in members count.
 
 - <details><summary>Updated dependencies [3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
-
   - @rocket.chat/core-typings@7.8.0
   </details>
 
@@ -543,7 +503,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.9
   </details>
 
@@ -552,7 +511,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.8
   </details>
 
@@ -561,7 +519,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.7
   </details>
 
@@ -570,7 +527,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.6
   </details>
 
@@ -579,7 +535,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.5
   </details>
 
@@ -588,7 +543,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.4
   </details>
 
@@ -597,7 +551,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.3
   </details>
 
@@ -606,7 +559,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.2
   </details>
 
@@ -629,7 +581,6 @@
 - ([#36236](https://github.com/RocketChat/Rocket.Chat/pull/36236)) Fixes the `channels.counters`, `groups.counters` and `im.counters` endpoint to include only active users in members count.
 
 - <details><summary>Updated dependencies [3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.0
   </details>
 
@@ -646,7 +597,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.3
   </details>
 
@@ -655,7 +605,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.2
   </details>
 
@@ -666,7 +615,6 @@
 - ([#36200](https://github.com/RocketChat/Rocket.Chat/pull/36200) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixed contacts being marked as `known` after editing a custom field, or resolving conflicts by adding a new model function that only updates the `customFields` or `conflictingFields` prop.
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.1
   </details>
 
@@ -677,7 +625,6 @@
 - ([#35797](https://github.com/RocketChat/Rocket.Chat/pull/35797)) Fixes the room history pruning behavior when filesOnly is true to ensure only file-type attachments are removed, preserving quotes and non-file attachments.
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0
   </details>
 
@@ -686,7 +633,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.6
   </details>
 
@@ -695,7 +641,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.5
   </details>
 
@@ -704,7 +649,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.1-rc.4
   </details>
 
@@ -729,7 +673,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.1
   </details>
 
@@ -740,7 +683,6 @@
 - ([#35797](https://github.com/RocketChat/Rocket.Chat/pull/35797)) Fixes the room history pruning behavior when filesOnly is true to ensure only file-type attachments are removed, preserving quotes and non-file attachments.
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.0
   </details>
 
@@ -775,14 +717,12 @@
 - ([#35722](https://github.com/RocketChat/Rocket.Chat/pull/35722)) Fixes the behavior of "Maximum number of simultaneous chats" settings, making them more predictable. Previously, we applied a single limit per operation, being the order: `Department > Agent > Global`. This caused the department limit to take prescedence over agent's specific limit, causing some unwanted side effects.
 
   The new way of applying the filter is as follows:
-
   - An agent can accept chats from multiple departments, respecting each department’s limit individually.
   - The total number of active chats (across all departments) must not exceed the configured Agent-Level or Global limit.
   - If neither the Agent-Level nor Global Limit is set, only department-specific limits apply.
   - If no limits are set at any level, there is no restriction on the number of chats an agent can handle.
 
 - <details><summary>Updated dependencies [aec9eaa941fe9dad81f38d8d18d1b58edd700eb1, 2c190740d0ff166a4cefe8e833b0b2682a41fab1, d8eb824d242cbbeafb11b1c4a806860e4541ba79, bbd0b0d9ed181a156430e2a446d3b56092e3f645, 47ae69912cd90743e7bf836fdee4be481a01bbba, 4b28126ac94cf1d3312b30ad9863ca02673f49d4]:</summary>
-
   - @rocket.chat/core-typings@7.6.0
   </details>
 
@@ -791,7 +731,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.8
   </details>
 
@@ -800,7 +739,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.7
   </details>
 
@@ -809,7 +747,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.6
   </details>
 
@@ -818,7 +755,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.5
   </details>
 
@@ -827,7 +763,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.4
   </details>
 
@@ -836,7 +771,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.3
   </details>
 
@@ -845,7 +779,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.2
   </details>
 
@@ -854,7 +787,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.1
   </details>
 
@@ -873,14 +805,12 @@
 - ([#35722](https://github.com/RocketChat/Rocket.Chat/pull/35722)) Fixes the behavior of "Maximum number of simultaneous chats" settings, making them more predictable. Previously, we applied a single limit per operation, being the order: `Department > Agent > Global`. This caused the department limit to take prescedence over agent's specific limit, causing some unwanted side effects.
 
   The new way of applying the filter is as follows:
-
   - An agent can accept chats from multiple departments, respecting each department’s limit individually.
   - The total number of active chats (across all departments) must not exceed the configured Agent-Level or Global limit.
   - If neither the Agent-Level nor Global Limit is set, only department-specific limits apply.
   - If no limits are set at any level, there is no restriction on the number of chats an agent can handle.
 
 - <details><summary>Updated dependencies [aec9eaa941fe9dad81f38d8d18d1b58edd700eb1, 2c190740d0ff166a4cefe8e833b0b2682a41fab1, d8eb824d242cbbeafb11b1c4a806860e4541ba79, bbd0b0d9ed181a156430e2a446d3b56092e3f645, 47ae69912cd90743e7bf836fdee4be481a01bbba, 4b28126ac94cf1d3312b30ad9863ca02673f49d4]:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.0
   </details>
 
@@ -889,7 +819,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.1
   </details>
 
@@ -904,7 +833,6 @@
 - ([#35374](https://github.com/RocketChat/Rocket.Chat/pull/35374)) Enforces app limitations on license downgrade by disabling premium marketplace apps, limiting marketplace apps to the oldest 5, and disabling private apps unless grandfathered based on historical statistics.
 
 - <details><summary>Updated dependencies [25592391b04a5a9c5e4be57a3878bca7c7db66b2, c904862b1496cab943e97d28b36d3a24deac21c1]:</summary>
-
   - @rocket.chat/core-typings@7.5.0
   </details>
 
@@ -913,7 +841,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.5
   </details>
 
@@ -922,7 +849,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.4
   </details>
 
@@ -931,7 +857,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.3
   </details>
 
@@ -940,7 +865,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.2
   </details>
 
@@ -949,7 +873,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.1
   </details>
 
@@ -964,7 +887,6 @@
 - ([#35374](https://github.com/RocketChat/Rocket.Chat/pull/35374)) Enforces app limitations on license downgrade by disabling premium marketplace apps, limiting marketplace apps to the oldest 5, and disabling private apps unless grandfathered based on historical statistics.
 
 - <details><summary>Updated dependencies [25592391b04a5a9c5e4be57a3878bca7c7db66b2, c904862b1496cab943e97d28b36d3a24deac21c1]:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.0
   </details>
 
@@ -973,7 +895,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.1
   </details>
 
@@ -994,7 +915,6 @@
 - ([#35029](https://github.com/RocketChat/Rocket.Chat/pull/35029)) Fixes a bug that caused routing algorithms to ignore the `Livechat_enabled_when_agent_idle` setting, effectively ignoring idle users from being assigned to inquiries.
 
 - <details><summary>Updated dependencies [89964144e042c8d9282b51efd89e1e684077fdd7, f85da08765a9d3f8c5aabd9291fd08be6dfdeb85, be5031a21bdcda31270d53d319f7d183e77d84d7]:</summary>
-
   - @rocket.chat/core-typings@7.4.0
   </details>
 
@@ -1003,7 +923,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.5
   </details>
 
@@ -1012,7 +931,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.4
   </details>
 
@@ -1029,7 +947,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.2
   </details>
 
@@ -1038,7 +955,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.1
   </details>
 
@@ -1059,7 +975,6 @@
 - ([#35029](https://github.com/RocketChat/Rocket.Chat/pull/35029)) Fixes a bug that caused routing algorithms to ignore the `Livechat_enabled_when_agent_idle` setting, effectively ignoring idle users from being assigned to inquiries.
 
 - <details><summary>Updated dependencies [89964144e042c8d9282b51efd89e1e684077fdd7, f85da08765a9d3f8c5aabd9291fd08be6dfdeb85, be5031a21bdcda31270d53d319f7d183e77d84d7]:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.0
   </details>
 
@@ -1068,7 +983,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.3
   </details>
 
@@ -1077,7 +991,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.2
   </details>
 
@@ -1090,7 +1003,6 @@
   - Changes how the queue executes: previously, it was executed in a kind of chain: We fetched a list of "queues", then we took one, processed it, and after that we scheduled the next run, which could take some time. Now, every TIMEOUT, server will try to process all the queues, 1 by 1, and then schedule the next run for all queues after TIMEOUT. This should speed up chat assignment and reduce waiting time when waiting queue is enabled.
   - Removes the unlockAndRequeue and replcaes it with just unlock. This change shouldn't be noticeable. The original idea of the requeueing was to iterate over the inquiries when 1 wasn't being able to be taken. Idea was to avoid blocking the queue by rotating them instead of fetching the same until it gets routed, however this never worked cause we never modified the global sorting for the inquiries and it kept using the ts as the sorting, which returned always the oldest and ignored the requeing. So we're removing those extra steps as well.
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.1
   </details>
 
@@ -1109,7 +1021,6 @@
 - ([#34210](https://github.com/RocketChat/Rocket.Chat/pull/34210)) Fixes livechat conversations not being assigned to the contact manager even when the "Assign new conversations to the contact manager" setting is enabled
 
 - <details><summary>Updated dependencies [8942b0032af976738a7c602fa389803dda30c0dc, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944]:</summary>
-
   - @rocket.chat/core-typings@7.3.0
   </details>
 
@@ -1118,7 +1029,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.5
   </details>
 
@@ -1127,7 +1037,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.4
   </details>
 
@@ -1136,7 +1045,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.3
   </details>
 
@@ -1145,7 +1053,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.2
   </details>
 
@@ -1154,7 +1061,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.1
   </details>
 
@@ -1171,7 +1077,6 @@
 - ([#34210](https://github.com/RocketChat/Rocket.Chat/pull/34210)) Fixes livechat conversations not being assigned to the contact manager even when the "Assign new conversations to the contact manager" setting is enabled
 
 - <details><summary>Updated dependencies [8942b0032af976738a7c602fa389803dda30c0dc, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944]:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.0
   </details>
 
@@ -1180,7 +1085,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.2.1
   </details>
 
@@ -1219,7 +1123,6 @@
 - ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
 
 - <details><summary>Updated dependencies [76f6239ff1a9f34f163c03c140c4ceba62563b4e, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8]:</summary>
-
   - @rocket.chat/core-typings@7.2.0
   </details>
 
@@ -1228,7 +1131,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.2.0-rc.3
   </details>
 
@@ -1237,7 +1139,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.2.0-rc.2
   </details>
 
@@ -1246,7 +1147,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.2.0-rc.1
   </details>
 
@@ -1285,7 +1185,6 @@
 - ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
 
 - <details><summary>Updated dependencies [76f6239ff1a9f34f163c03c140c4ceba62563b4e, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8]:</summary>
-
   - @rocket.chat/core-typings@7.2.0-rc.0
   </details>
 
@@ -1307,7 +1206,6 @@
 - ([#32991](https://github.com/RocketChat/Rocket.Chat/pull/32991)) Fixes an issue where updating custom emojis didn’t work as expected, ensuring that uploaded emojis now update correctly and display without any caching problems.
 
 - <details><summary>Updated dependencies [80e36bfc3938775eb26aa5576f1b9b98896e1cc4, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0]:</summary>
-
   - @rocket.chat/core-typings@7.1.0
   </details>
 
@@ -1316,7 +1214,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.1.0-rc.3
   </details>
 
@@ -1325,7 +1222,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.1.0-rc.2
   </details>
 
@@ -1334,7 +1230,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.1.0-rc.1
   </details>
 
@@ -1356,7 +1251,6 @@
 - ([#32991](https://github.com/RocketChat/Rocket.Chat/pull/32991)) Fixes an issue where updating custom emojis didn’t work as expected, ensuring that uploaded emojis now update correctly and display without any caching problems.
 
 - <details><summary>Updated dependencies [80e36bfc3938775eb26aa5576f1b9b98896e1cc4, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0]:</summary>
-
   - @rocket.chat/core-typings@7.1.0-rc.0
   </details>
 
@@ -1376,7 +1270,6 @@
 - ([#33328](https://github.com/RocketChat/Rocket.Chat/pull/33328)) Allows authorized users to reset the encryption key for end-to-end encrypted rooms. This aims to prevent situations where all users of a room have lost the encryption key, and as such, the access to the room.
 
 - <details><summary>Updated dependencies [bcacbb1cee, b338807d76, 3ea02d3cc1, e3629e065b, 03d148524b, 81998f3450, 509143d6dd]:</summary>
-
   - @rocket.chat/core-typings@7.0.0
   </details>
 
@@ -1385,7 +1278,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.6
   </details>
 
@@ -1394,7 +1286,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.5
   </details>
 
@@ -1403,7 +1294,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.4
   </details>
 
@@ -1412,7 +1302,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.3
   </details>
 
@@ -1421,7 +1310,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.2
   </details>
 
@@ -1430,7 +1318,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.1
   </details>
 
@@ -1455,7 +1342,6 @@
 - ([#33328](https://github.com/RocketChat/Rocket.Chat/pull/33328)) Allows authorized users to reset the encryption key for end-to-end encrypted rooms. This aims to prevent situations where all users of a room have lost the encryption key, and as such, the access to the room.
 
 - <details><summary>Updated dependencies [7726d68374, bcacbb1cee, b338807d76, 3ea02d3cc1, e3629e065b, 03d148524b, 81998f3450, 509143d6dd]:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.0
   </details>
 
@@ -1474,7 +1360,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [274f4f5881, 927710d778, 12d6307998]:</summary>
-
   - @rocket.chat/core-typings@6.13.0
   </details>
 
@@ -1483,7 +1368,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.6
   </details>
 
@@ -1492,7 +1376,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.5
   </details>
 
@@ -1501,7 +1384,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.4
   </details>
 
@@ -1510,7 +1392,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.3
   </details>
 
@@ -1519,7 +1400,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.2
   </details>
 
@@ -1528,7 +1408,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.1
   </details>
 
@@ -1547,7 +1426,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [274f4f5881, 927710d778, 12d6307998]:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.0
   </details>
 
@@ -1556,7 +1434,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.1
   </details>
 
@@ -1573,7 +1450,6 @@
 - ([#33054](https://github.com/RocketChat/Rocket.Chat/pull/33054)) Fixed issue with livechat analytics in a given date range considering conversation data from the following day
 
 - <details><summary>Updated dependencies [7937ff741a, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
-
   - @rocket.chat/core-typings@6.12.0
   </details>
 
@@ -1582,7 +1458,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.6
   </details>
 
@@ -1591,7 +1466,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.5
   </details>
 
@@ -1600,7 +1474,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.4
   </details>
 
@@ -1609,7 +1482,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.2
   </details>
 
@@ -1618,7 +1490,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.3
   </details>
 
@@ -1627,7 +1498,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.2
   </details>
 
@@ -1636,7 +1506,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.1
   </details>
 
@@ -1653,7 +1522,6 @@
 - ([#33054](https://github.com/RocketChat/Rocket.Chat/pull/33054)) Fixed issue with livechat analytics in a given date range considering conversation data from the following day
 
 - <details><summary>Updated dependencies [7937ff741a, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.0
   </details>
   </details>
@@ -1677,7 +1545,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [2d89a0c448, 24f7df4894, b8e5887fb9]:</summary>
-
   - @rocket.chat/core-typings@6.11.0
   </details>
 
@@ -1686,7 +1553,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.6
   </details>
 
@@ -1695,7 +1561,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.5
   </details>
 
@@ -1704,7 +1569,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.4
   </details>
 
@@ -1713,7 +1577,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.3
   </details>
 
@@ -1722,7 +1585,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.2
   </details>
 
@@ -1731,7 +1593,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.1
   </details>
 
@@ -1754,7 +1615,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [2d89a0c448, 24f7df4894, b8e5887fb9]:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.0
   </details>
 
@@ -1763,7 +1623,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [ca6a9d8de8, ca6a9d8de8, ca6a9d8de8, ca6a9d8de8]:</summary>
-
   - @rocket.chat/core-typings@6.10.2
   </details>
 
@@ -1772,7 +1631,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.1
   </details>
 
@@ -1789,7 +1647,6 @@
 - ([#32431](https://github.com/RocketChat/Rocket.Chat/pull/32431)) Fixed last message preview in Sidebar for E2E Ecrypted channels
 
 - <details><summary>Updated dependencies [1240c874a5, 5f95c4ec6b, f75a2cb4bb, 4f72d62aa7, dfa49bdbb2]:</summary>
-
   - @rocket.chat/core-typings@6.10.0
   </details>
 
@@ -1798,7 +1655,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.7
   </details>
 
@@ -1807,7 +1663,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.6
   </details>
 
@@ -1816,7 +1671,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.5
   </details>
 
@@ -1825,7 +1679,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.4
   </details>
 
@@ -1834,7 +1687,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.3
   </details>
 
@@ -1843,7 +1695,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.2
   </details>
 
@@ -1852,7 +1703,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.1
   </details>
 
@@ -1869,7 +1719,6 @@
 - ([#32431](https://github.com/RocketChat/Rocket.Chat/pull/32431)) Fixed last message preview in Sidebar for E2E Ecrypted channels
 
 - <details><summary>Updated dependencies [1240c874a5, 5f95c4ec6b, f75a2cb4bb, 4f72d62aa7, dfa49bdbb2]:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.0
 
 ## 0.4.4
@@ -1877,7 +1726,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.3
   </details>
 
@@ -1886,7 +1734,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.2
   </details>
 
@@ -1895,7 +1742,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.1
   </details>
 
@@ -1904,7 +1750,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [ff4e396416, 70ab2a7b7b]:</summary>
-
   - @rocket.chat/core-typings@6.9.0
   </details>
 
@@ -1913,7 +1758,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.0-rc.2
   </details>
 
@@ -1922,7 +1766,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.0-rc.1
   </details>
 
@@ -1931,7 +1774,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [ff4e396416, 70ab2a7b7b]:</summary>
-
   - @rocket.chat/core-typings@6.9.0-rc.0
   </details>
 
@@ -1944,7 +1786,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [c47a8e3514, b94ca7c30b, 4aba7c8a26]:</summary>
-
   - @rocket.chat/core-typings@6.8.0
   </details>
 
@@ -1953,7 +1794,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [b94ca7c30b]:</summary>
-
   - @rocket.chat/core-typings@6.8.0-rc.2
   </details>
 
@@ -1962,7 +1802,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.8.0-rc.1
   </details>
 
@@ -1975,7 +1814,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [c47a8e3514, 4aba7c8a26]:</summary>
-
   - @rocket.chat/core-typings@6.8.0-rc.0
 
 ## 0.3.9
@@ -1983,7 +1821,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.2
   </details>
 
@@ -1992,7 +1829,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.1
   </details>
 
@@ -2003,7 +1839,6 @@
 - ([#31890](https://github.com/RocketChat/Rocket.Chat/pull/31890)) Changed logic that process custom fields from visitors when updating its data, making the process more reliable and faster.
 
 - <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5]:</summary>
-
   - @rocket.chat/core-typings@6.7.0
   </details>
 
@@ -2012,7 +1847,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.4
   </details>
 
@@ -2021,7 +1855,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.3
   </details>
 
@@ -2030,7 +1863,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.2
   </details>
 
@@ -2039,7 +1871,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.1
   </details>
 
@@ -2050,7 +1881,6 @@
 - ([#31890](https://github.com/RocketChat/Rocket.Chat/pull/31890)) Changed logic that process custom fields from visitors when updating its data, making the process more reliable and faster.
 
 - <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5]:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.0
   </details>
 
@@ -2059,7 +1889,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.6
   </details>
 
@@ -2068,7 +1897,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.5
   </details>
 
@@ -2077,7 +1905,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.4
   </details>
 
@@ -2086,7 +1913,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.3
   </details>
 
@@ -2095,7 +1921,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.2
   </details>
 
@@ -2104,7 +1929,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.1
   </details>
 
@@ -2127,7 +1951,6 @@
 - ([#31328](https://github.com/RocketChat/Rocket.Chat/pull/31328)) Fixed an issue caused by the `Fallback Forward Department` feature. Feature could be configured by admins in a way that mimis a loop, causing a chat to be forwarded "infinitely" between those departments. System will now prevent Self & 1-level deep circular references from being saved, and a new setting is added to control the maximum number of hops that the system will do between fallback departments before considering a transfer failure.
 
 - <details><summary>Updated dependencies [b223cbde14, dbb08ef948, fdd9852079, b4b2cd20a8]:</summary>
-
   - @rocket.chat/core-typings@6.6.0
   </details>
 
@@ -2136,7 +1959,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.0-rc.7
   </details>
 
@@ -2145,7 +1967,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.0-rc.6
   </details>
 
@@ -2154,7 +1975,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.0-rc.5
   </details>
 
@@ -2541,7 +2361,6 @@
 - 92d25b9c7a: Change SAU aggregation to consider only sessions from few days ago instead of the whole past.
 
   This is particularly important for large workspaces in case the cron job did not run for some time, in that case the amount of sessions would accumulate and the aggregation would take a long time to run.
-
   - @rocket.chat/core-typings@6.3.5
 
 ## 0.0.10

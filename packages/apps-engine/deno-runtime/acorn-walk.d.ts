@@ -1,17 +1,8 @@
 import type acorn from './acorn.d.ts';
 
-export type FullWalkerCallback<TState> = (
-	node: acorn.AnyNode,
-	state: TState,
-	type: string,
-) => void;
+export type FullWalkerCallback<TState> = (node: acorn.AnyNode, state: TState, type: string) => void;
 
-export type FullAncestorWalkerCallback<TState> = (
-	node: acorn.AnyNode,
-	state: TState,
-	ancestors: acorn.AnyNode[],
-	type: string,
-) => void;
+export type FullAncestorWalkerCallback<TState> = (node: acorn.AnyNode, state: TState, ancestors: acorn.AnyNode[], type: string) => void;
 
 type AggregateType = {
 	Expression: acorn.Expression;
@@ -20,31 +11,25 @@ type AggregateType = {
 	ForInit: acorn.VariableDeclaration | acorn.Expression;
 };
 
-export type SimpleVisitors<TState> =
-	& {
-		[type in acorn.AnyNode['type']]?: (node: Extract<acorn.AnyNode, { type: type }>, state: TState) => void;
-	}
-	& {
-		[type in keyof AggregateType]?: (node: AggregateType[type], state: TState) => void;
-	};
+export type SimpleVisitors<TState> = {
+	[type in acorn.AnyNode['type']]?: (node: Extract<acorn.AnyNode, { type: type }>, state: TState) => void;
+} & {
+	[type in keyof AggregateType]?: (node: AggregateType[type], state: TState) => void;
+};
 
-export type AncestorVisitors<TState> =
-	& {
-		[type in acorn.AnyNode['type']]?: (node: Extract<acorn.AnyNode, { type: type }>, state: TState, ancestors: acorn.Node[]) => void;
-	}
-	& {
-		[type in keyof AggregateType]?: (node: AggregateType[type], state: TState, ancestors: acorn.Node[]) => void;
-	};
+export type AncestorVisitors<TState> = {
+	[type in acorn.AnyNode['type']]?: (node: Extract<acorn.AnyNode, { type: type }>, state: TState, ancestors: acorn.Node[]) => void;
+} & {
+	[type in keyof AggregateType]?: (node: AggregateType[type], state: TState, ancestors: acorn.Node[]) => void;
+};
 
 export type WalkerCallback<TState> = (node: acorn.Node, state: TState) => void;
 
-export type RecursiveVisitors<TState> =
-	& {
-		[type in acorn.AnyNode['type']]?: (node: Extract<acorn.AnyNode, { type: type }>, state: TState, callback: WalkerCallback<TState>) => void;
-	}
-	& {
-		[type in keyof AggregateType]?: (node: AggregateType[type], state: TState, callback: WalkerCallback<TState>) => void;
-	};
+export type RecursiveVisitors<TState> = {
+	[type in acorn.AnyNode['type']]?: (node: Extract<acorn.AnyNode, { type: type }>, state: TState, callback: WalkerCallback<TState>) => void;
+} & {
+	[type in keyof AggregateType]?: (node: AggregateType[type], state: TState, callback: WalkerCallback<TState>) => void;
+};
 
 export type FindPredicate = (type: string, node: acorn.Node) => boolean;
 
@@ -60,12 +45,7 @@ export interface Found<TState> {
  * @param base a walker algorithm
  * @param state a start state. The default walker will simply visit all statements and expressions and not produce a meaningful state. (An example of a use of state is to track scope at each point in the tree.)
  */
-export function simple<TState>(
-	node: acorn.Node,
-	visitors: SimpleVisitors<TState>,
-	base?: RecursiveVisitors<TState>,
-	state?: TState,
-): void;
+export function simple<TState>(node: acorn.Node, visitors: SimpleVisitors<TState>, base?: RecursiveVisitors<TState>, state?: TState): void;
 
 /**
  * does a 'simple' walk over a tree, building up an array of ancestor nodes (including the current node) and passing the array to the callbacks as a third parameter.
@@ -128,10 +108,7 @@ export function fullAncestor<TState>(
  * @param functions
  * @param base
  */
-export function make<TState>(
-	functions: RecursiveVisitors<TState>,
-	base?: RecursiveVisitors<TState>,
-): RecursiveVisitors<TState>;
+export function make<TState>(functions: RecursiveVisitors<TState>, base?: RecursiveVisitors<TState>): RecursiveVisitors<TState>;
 
 /**
  * tries to locate a node in a tree at the given start and/or end offsets, which satisfies the predicate test. {@link start} and {@link end} can be either `null` (as wildcard) or a `number`. {@link test} may be a string (indicating a node type) or a function that takes (nodeType, node) arguments and returns a boolean indicating whether this node is interesting. {@link base} and {@link state} are optional, and can be used to specify a custom walker. Nodes are tested from inner to outer, so if two nodes match the boundaries, the inner one will be preferred.

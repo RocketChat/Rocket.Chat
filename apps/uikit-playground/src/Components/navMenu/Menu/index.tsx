@@ -60,7 +60,7 @@ const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
               updatePayloadAction({
                 blocks: [],
                 changedByEditor: false,
-              })
+              }),
             );
             toast({
               type: 'success',
@@ -72,7 +72,7 @@ const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
           name={'Copy Payload'}
           onClick={() => {
             navigator.clipboard.writeText(
-              JSON.stringify(screens[activeScreen]?.payload)
+              JSON.stringify(screens[activeScreen]?.payload),
             );
             toast({
               type: 'success',

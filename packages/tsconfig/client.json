@@ -9,7 +9,7 @@
 		"declarationMap": true,
 		"sourceMap": true,
 		"jsx": "react-jsx",
-		"preserveSymlinks": true,
+		"preserveSymlinks": true
 	},
 	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"]
 }

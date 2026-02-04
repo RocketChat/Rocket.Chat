@@ -13,7 +13,7 @@ describe('handlers > scheduler', () => {
 			result: {},
 			jsonrpc: '2.0',
 			serialize: () => '',
-		})
+		}),
 	);
 
 	const mockApp = {

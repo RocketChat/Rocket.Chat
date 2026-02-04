@@ -169,8 +169,8 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					const predicate = (record: SubscriptionWithRoom): boolean =>
 						Boolean(
 							(record.fname?.match(filterRegex) || record.name?.match(filterRegex)) &&
-								!record.federated &&
-								(record.t === 'c' || record.t === 'p'),
+							!record.federated &&
+							(record.t === 'c' || record.t === 'p'),
 						);
 
 					const records = transform(Subscriptions.state.filter(predicate));

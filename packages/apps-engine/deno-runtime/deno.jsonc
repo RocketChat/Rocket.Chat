@@ -10,15 +10,15 @@
 		"astring": "npm:astring@1.8.6",
 		"jsonrpc-lite": "npm:jsonrpc-lite@2.2.0",
 		"stack-trace": "npm:stack-trace@0.0.10",
-		"uuid": "npm:uuid@8.3.2"
+		"uuid": "npm:uuid@8.3.2",
 	},
 	"tasks": {
-		"test": "deno test --no-check --allow-read=../../../,/tmp --allow-write=/tmp"
+		"test": "deno test --no-check --allow-read=../../../,/tmp --allow-write=/tmp",
 	},
 	"fmt": {
 		"lineWidth": 160,
 		"useTabs": true,
 		"indentWidth": 4,
-		"singleQuote": true
-	}
+		"singleQuote": true,
+	},
 }

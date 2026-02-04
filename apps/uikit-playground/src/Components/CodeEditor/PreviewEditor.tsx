@@ -16,7 +16,7 @@ const PreviewEditor = ({ extensions }: CodeMirrorProps) => {
   } = useContext(context);
   const { editor, setValue } = useCodeMirror(
     extensions,
-    intendCode(screens[activeScreen]?.actionPreview)
+    intendCode(screens[activeScreen]?.actionPreview),
   );
 
   useEffect(() => {

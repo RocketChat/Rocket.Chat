@@ -1,18 +1,18 @@
 ---
 name: Release
 about: Internal release checklist template
-
 ---
 
 # Release {version}
+
 We are releasing a new version, this issue will keep track of the progress between the first release candidate (20th of each month) to the final release (27th of each month).
 
 Beginning on the 20th of each month, we will start the release process which ends 7 days later (the 27th). During this period of time, we will enter a "Feature Freeze". This Feature Freeze means that we will only be merging pull requests which fix bugs and not ones that add new features.
 
 When you find a bug that is a regression, please open a new issue and link it to this one.
 
-
 ## Before Release - Preparation - 1 business day before the day 20th
+
 - [x] Create the issue to track the release progress
 - [ ] Define the highlights from release PRs as a suggestion to be included on Blog Post <!-- link to the website's issue -->
 - [ ] Talk to the Marketing Team about starting the release Blog Post
@@ -20,6 +20,7 @@ When you find a bug that is a regression, please open a new issue and link it to
 - [ ] Sync translations from [LingoHub](https://translate.lingohub.com/rocketchat/rocket-dot-chat/dashboard)
 
 ## Release Candidate 1 - On the 20th
+
 - [ ] Execute action `Release Candidate` via [Houston CLI](https://github.com/RocketChat/Rocket.Chat.Houston) (`houston release`)
 - [ ] Check if `release-candidate` branch was published
 - [ ] Check if the tag was published and contains the history
@@ -36,6 +37,7 @@ When you find a bug that is a regression, please open a new issue and link it to
 -->
 
 ## Final Release - On the 27th
+
 - [ ] Execute action `Final Release` via [Houston CLI](https://github.com/RocketChat/Rocket.Chat.Houston) (`houston release`)
 - [ ] Check if `release-{version}` branch was published
 - [ ] Check if the release was created as **draft** and contains the history
@@ -48,6 +50,7 @@ When you find a bug that is a regression, please open a new issue and link it to
 - [ ] After all edit the release/tag and publish it
 
 ## After Release - Conclusion - 1 business day after the 27th
+
 - [ ] Ensure all of the related issues were closed
 - [ ] Determine if all of the related issues were correctly assigned to this version's milestone
 - [ ] Get an update from Marketing Team about the release of Blog Post

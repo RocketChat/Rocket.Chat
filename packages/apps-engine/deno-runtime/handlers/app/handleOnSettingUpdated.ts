@@ -20,7 +20,12 @@ export default async function handleOnSettingUpdated(request: RequestContext): P
 
 	const [setting] = params as [Record<string, unknown>];
 
-	await app.onSettingUpdated(setting, AppAccessorsInstance.getConfigurationModify(), AppAccessorsInstance.getReader(), AppAccessorsInstance.getHttp());
+	await app.onSettingUpdated(
+		setting,
+		AppAccessorsInstance.getConfigurationModify(),
+		AppAccessorsInstance.getReader(),
+		AppAccessorsInstance.getHttp(),
+	);
 
 	return true;
 }

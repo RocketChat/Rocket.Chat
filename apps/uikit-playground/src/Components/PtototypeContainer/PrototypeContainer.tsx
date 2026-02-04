@@ -9,7 +9,7 @@ const PrototypeContainer = () => {
   } = useContext(context);
 
   const [currentScreenID, setCurrentScreenID] = useState<string>(
-    projects[activeProject].screens[0]
+    projects[activeProject].screens[0],
   );
 
   const activeActions = useMemo(() => {

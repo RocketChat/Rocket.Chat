@@ -1,8 +1,8 @@
-import { ActionTypes } from "../reducer";
+import { ActionTypes } from '../reducer';
 
 export type ActiveProjectAction = {
-  type: ActionTypes.ActiveProject,
-  payload: string,
+  type: ActionTypes.ActiveProject;
+  payload: string;
 };
 
 export const activeProjectAction = (payload: string): ActiveProjectAction => ({

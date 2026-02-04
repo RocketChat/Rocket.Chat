@@ -29,25 +29,26 @@ An app that handles the `IPreFileUpload` event. If the file name starts with `"t
 <summary>App source code</summary>
 
 ```typescript
-import {
-    IHttp,
-    IModify,
-    IPersistence,
-    IRead,
-} from '@rocket.chat/apps-engine/definition/accessors';
+import { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 import { FileUploadNotAllowedException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { IPreFileUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext';
 
 export class TestIPreFileUpload extends App implements IPreFileUpload {
-    public async executePreFileUpload(context: IFileUploadContext, read: IRead, http: IHttp, persis: IPersistence, modify: IModify): Promise<void> {
-        if (context.file.name.startsWith('test-should-reject')) {
-            console.log('[executePreFileUpload] Rejecting file which name starts with "test-should-reject"');
-            throw new FileUploadNotAllowedException(`Test file rejected ${context.content.toString()}`);
-        }
-        console.log('[executePreFileUpload] Did not reject file');
-    }
+	public async executePreFileUpload(
+		context: IFileUploadContext,
+		read: IRead,
+		http: IHttp,
+		persis: IPersistence,
+		modify: IModify,
+	): Promise<void> {
+		if (context.file.name.startsWith('test-should-reject')) {
+			console.log('[executePreFileUpload] Rejecting file which name starts with "test-should-reject"');
+			throw new FileUploadNotAllowedException(`Test file rejected ${context.content.toString()}`);
+		}
+		console.log('[executePreFileUpload] Did not reject file');
+	}
 }
 ```
 

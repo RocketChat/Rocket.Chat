@@ -5,7 +5,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [ac11ea05ffadeca978c794ff38d5199d9acb2c29, 1baa03cced8f94584da1224ad59cad86f219707a, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, 4aa3634186d97f4144c39f6b42a65107d3d30df0]:</summary>
-
   - @rocket.chat/core-services@0.12.0
   </details>
 
@@ -14,7 +13,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.12.0-rc.5
   </details>
 
@@ -23,7 +21,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.12.0-rc.4
   </details>
 
@@ -32,7 +29,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.12.0-rc.3
   </details>
 
@@ -41,7 +37,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.12.0-rc.2
   </details>
 
@@ -50,7 +45,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.12.0-rc.1
   </details>
 
@@ -59,7 +53,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [ac11ea05ffadeca978c794ff38d5199d9acb2c29, 1baa03cced8f94584da1224ad59cad86f219707a, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, 4aa3634186d97f4144c39f6b42a65107d3d30df0]:</summary>
-
   - @rocket.chat/core-services@0.12.0-rc.0
   </details>
 
@@ -68,7 +61,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [eef2b390a8e4664ad4b974e7ea579982245efce5]:</summary>
-
   - @rocket.chat/core-services@0.11.2
   </details>
 
@@ -77,7 +69,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.11.1
   </details>
 
@@ -86,7 +77,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [8596daf01ac84864caa63dd937971e557933d401]:</summary>
-
   - @rocket.chat/core-services@0.11.0
   </details>
 
@@ -95,7 +85,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.11.0-rc.2
   </details>
 
@@ -112,7 +101,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [8596daf01ac84864caa63dd937971e557933d401]:</summary>
-
   - @rocket.chat/core-services@0.11.0-rc.0
 
 ## 0.2.22
@@ -120,7 +108,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.6
   </details>
 
@@ -129,7 +116,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.5
   </details>
 
@@ -138,7 +124,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.4
   </details>
 
@@ -147,7 +132,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.4-rc.4
   </details>
 
@@ -156,7 +140,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.4-rc.3
   </details>
 
@@ -165,7 +148,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.4-rc.2
   </details>
 
@@ -174,7 +156,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.4-rc.1
   </details>
 
@@ -183,7 +164,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.4-rc.0
   </details>
 
@@ -192,7 +172,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [3dfb557f723a395bc1e00f2647675968c46656bc]:</summary>
-
   - @rocket.chat/core-services@0.10.3
   </details>
 
@@ -201,7 +180,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.3-rc.7
   </details>
 
@@ -210,7 +188,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.2-rc.6
   </details>
 
@@ -219,7 +196,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.2-rc.5
   </details>
 
@@ -228,7 +204,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.2-rc.4
   </details>
 
@@ -237,7 +212,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.2-rc.3
   </details>
 
@@ -254,7 +228,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.1-rc.1
   </details>
 
@@ -263,7 +236,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [3dfb557f723a395bc1e00f2647675968c46656bc]:</summary>
-
   - @rocket.chat/core-services@0.10.1-rc.0
   </details>
 
@@ -272,7 +244,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.2
   </details>
 
@@ -289,7 +260,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
-
   - @rocket.chat/core-services@0.10.0
   </details>
 
@@ -298,7 +268,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.0-rc.6
   </details>
 
@@ -331,7 +300,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.0-rc.2
   </details>
 
@@ -340,7 +308,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.0-rc.1
   </details>
 
@@ -349,7 +316,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
-
   - @rocket.chat/core-services@0.10.0-rc.0
   </details>
 
@@ -358,7 +324,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.15
   </details>
 
@@ -383,7 +348,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [6f4429f1ac0e8a6aaed3b1fb378711388cafc325]:</summary>
-
   - @rocket.chat/core-services@0.9.12
   </details>
 
@@ -400,7 +364,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.11-rc.1
   </details>
 
@@ -409,7 +372,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [6f4429f1ac0e8a6aaed3b1fb378711388cafc325]:</summary>
-
   - @rocket.chat/core-services@0.9.11-rc.0
 
 ## 0.2.11
@@ -417,7 +379,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.11
   </details>
 
@@ -426,7 +387,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.10
   </details>
 
@@ -435,7 +395,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.9
   </details>
 
@@ -444,7 +403,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.8
   </details>
 
@@ -453,7 +411,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.8-rc.9
   </details>
 
@@ -462,7 +419,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.5-rc.8
   </details>
 
@@ -471,7 +427,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.5-rc.7
   </details>
 
@@ -480,7 +435,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.5-rc.6
   </details>
 
@@ -489,7 +443,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.5-rc.5
   </details>
 
@@ -498,7 +451,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.5-rc.4
   </details>
 
@@ -507,7 +459,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.5-rc.3
   </details>
 
@@ -516,7 +467,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.5-rc.2
   </details>
 
@@ -559,7 +509,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.5
   </details>
 
@@ -568,7 +517,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.4
   </details>
 
@@ -577,7 +525,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.3
   </details>
 
@@ -586,7 +533,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.3-rc.6
   </details>
 
@@ -595,7 +541,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.3-rc.5
   </details>
 
@@ -604,7 +549,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.3-rc.4
   </details>
 
@@ -629,7 +573,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.1-rc.1
     </detai3s>
 
@@ -638,7 +581,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.1-rc.0
   </details>
 
@@ -667,7 +609,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [d8eb824d242cbbeafb11b1c4a806860e4541ba79, e868a6f6598b7eb2843ef79126d18abd1f604b4f]:</summary>
-
   - @rocket.chat/core-services@0.9.0
   </details>
 
@@ -676,7 +617,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.0-rc.8
   </details>
 
@@ -685,7 +625,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.0-rc.7
   </details>
 
@@ -694,7 +633,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.0-rc.6
   </details>
 
@@ -703,7 +641,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.0-rc.5
   </details>
 
@@ -712,7 +649,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.0-rc.4
   </details>
 
@@ -721,7 +657,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.0-rc.3
   </details>
 
@@ -730,7 +665,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.0-rc.2
   </details>
 
@@ -739,7 +673,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.9.0-rc.1
   </details>
 
@@ -752,7 +685,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [d8eb824d242cbbeafb11b1c4a806860e4541ba79, e868a6f6598b7eb2843ef79126d18abd1f604b4f]:</summary>
-
   - @rocket.chat/core-services@0.9.0-rc.0
   </details>
 
@@ -761,7 +693,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.8.1
   </details>
 
@@ -770,7 +701,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [cc4111cf0b1458dd97369baf8969734f337650dc]:</summary>
-
   - @rocket.chat/core-services@0.8.0
   </details>
 
@@ -779,7 +709,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.8.0-rc.5
   </details>
 
@@ -788,7 +717,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.8.0-rc.4
   </details>
 
@@ -797,7 +725,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.8.0-rc.3
   </details>
 
@@ -806,7 +733,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [cc4111cf0b1458dd97369baf8969734f337650dc]:</summary>
-
   - @rocket.chat/core-services@0.8.0-rc.2
   </details>
 
@@ -815,7 +741,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.11-rc.1
   </details>
 
@@ -832,7 +757,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.10
   </details>
 
@@ -843,7 +767,6 @@
 - ([#35120](https://github.com/RocketChat/Rocket.Chat/pull/35120)) Fixes behavior of app updates that would save undesired field changes to documents
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.9
   </details>
 
@@ -852,7 +775,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.9-rc.5
   </details>
 
@@ -861,7 +783,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.9-rc.4
   </details>
 
@@ -878,7 +799,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.8-rc.2
   </details>
 
@@ -887,7 +807,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.8-rc.1
   </details>
 
@@ -898,7 +817,6 @@
 - ([#35120](https://github.com/RocketChat/Rocket.Chat/pull/35120)) Fixes behavior of app updates that would save undesired field changes to documents
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.6-rc.0
   </details>
 
@@ -915,7 +833,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.7
   </details>
 
@@ -924,7 +841,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.6
   </details>
 
@@ -933,7 +849,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.5
   </details>
 
@@ -942,7 +857,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.5-rc.5
   </details>
 
@@ -951,7 +865,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.5-rc.4
   </details>
 
@@ -960,7 +873,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.5-rc.3
   </details>
 
@@ -969,7 +881,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.5-rc.2
   </details>
 
@@ -978,7 +889,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.5-rc.1
   </details>
 
@@ -987,7 +897,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.5-rc.0
   </details>
 
@@ -996,7 +905,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.4
   </details>
 
@@ -1005,7 +913,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.3
   </details>
 
@@ -1014,7 +921,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.3-rc.3
   </details>
 
@@ -1023,7 +929,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.3-rc.2
   </details>
 
@@ -1032,7 +937,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.3-rc.1
   </details>
 
@@ -1041,7 +945,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.3-rc.0
   </details>
 
@@ -1050,7 +953,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [63ccadc012499e004445ad6bc6cd2ff777aecbd1]:</summary>
-
   - @rocket.chat/core-services@0.7.2
   </details>
 
@@ -1059,7 +961,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.2-rc.3
   </details>
 
@@ -1068,7 +969,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.2-rc.2
   </details>
 
@@ -1077,7 +977,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.2-rc.1
   </details>
 
@@ -1086,7 +985,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [63ccadc012499e004445ad6bc6cd2ff777aecbd1]:</summary>
-
   - @rocket.chat/core-services@0.7.2-rc.0
   </details>
 
@@ -1095,7 +993,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [bcacbb1cee, 03d148524b]:</summary>
-
   - @rocket.chat/core-services@0.7.1
   </details>
 
@@ -1104,7 +1001,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.1-rc.6
   </details>
 
@@ -1113,7 +1009,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.1-rc.5
   </details>
 
@@ -1122,7 +1017,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.1-rc.4
   </details>
 
@@ -1131,7 +1025,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.1-rc.3
   </details>
 
@@ -1140,7 +1033,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.1-rc.2
   </details>
 
@@ -1149,7 +1041,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.1-rc.1
   </details>
 
@@ -1158,6 +1049,5 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [bcacbb1cee, 03d148524b]:</summary>
-
   - @rocket.chat/core-services@0.7.1-rc.0
   </details>

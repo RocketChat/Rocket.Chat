@@ -46,12 +46,7 @@ self.addEventListener('fetch', (event) => {
 					const clonedResponse = response.clone();
 					const contentType = clonedResponse.headers.get('content-type');
 
-					if (
-						!clonedResponse ||
-						clonedResponse.status !== 200 ||
-						clonedResponse.type !== 'basic' ||
-						/\/sockjs\//.test(event.request.url)
-					) {
+					if (!clonedResponse || clonedResponse.status !== 200 || clonedResponse.type !== 'basic' || /\/sockjs\//.test(event.request.url)) {
 						return response;
 					}
 

@@ -1,16 +1,18 @@
-import { ActionTypes } from "../reducer";
+import { ActionTypes } from '../reducer';
 
 type payloadType = {
-    id: string,
-    name: string,
+  id: string;
+  name: string;
 };
 
 export type RenameProjectAction = {
-  type: ActionTypes.RenameProject,
-  payload:payloadType,
+  type: ActionTypes.RenameProject;
+  payload: payloadType;
 };
 
-export const renameProjectAction = (payload: payloadType): RenameProjectAction => ({
+export const renameProjectAction = (
+  payload: payloadType,
+): RenameProjectAction => ({
   type: ActionTypes.RenameProject,
   payload,
 });

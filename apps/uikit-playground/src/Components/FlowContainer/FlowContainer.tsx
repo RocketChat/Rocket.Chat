@@ -34,7 +34,7 @@ const FlowContainer = () => {
     }),
     // used to rerender edge lines on reorder payload
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [edges]
+    [edges],
   );
 
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance>();
@@ -51,7 +51,7 @@ const FlowContainer = () => {
       };
       setEdges((eds) => addEdge(newEdge, eds));
     },
-    [setEdges]
+    [setEdges],
   );
 
   const onEdgeUpdateStart = useCallback(() => {
@@ -63,7 +63,7 @@ const FlowContainer = () => {
       edgeUpdateSuccessful.current = true;
       setEdges((els) => updateEdge(oldEdge, newConnection, els));
     },
-    [setEdges]
+    [setEdges],
   );
 
   const onEdgeUpdateEnd = useCallback(
@@ -75,7 +75,7 @@ const FlowContainer = () => {
       }
       edgeUpdateSuccessful.current = true;
     },
-    [setEdges]
+    [setEdges],
   );
 
   const onNodeDragStop = () => {

@@ -7,10 +7,7 @@ interface ThumbnailProps extends ComponentProps<typeof Box> {
   of: ReactNode;
 }
 
-const Thumbnail = ({
-  of,
-  ...props
-}: ThumbnailProps) => {
+const Thumbnail = ({ of, ...props }: ThumbnailProps) => {
   const parentRef = useRef<HTMLDivElement | null>(null);
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [scale, setScale] = useState(1);

@@ -14,7 +14,7 @@ export type UpdatePayloadAction = {
 };
 
 export const updatePayloadAction = (
-  payload: PayloadType
+  payload: PayloadType,
 ): UpdatePayloadAction => ({
   type: ActionTypes.UpdatePayload,
   payload,

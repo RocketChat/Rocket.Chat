@@ -1,8 +1,8 @@
-import { ActionTypes } from "../reducer";
+import { ActionTypes } from '../reducer';
 
 export type SidebarToggleAction = {
-  type: ActionTypes.SidebarToggle,
-  payload: boolean,
+  type: ActionTypes.SidebarToggle;
+  payload: boolean;
 };
 
 export const sidebarToggleAction = (payload: boolean): SidebarToggleAction => ({

@@ -27,7 +27,9 @@
 	--component-color: #f2f3f5;
 
 	/* Fonts */
-	--body-font-family: -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, oxygen, ubuntu, cantarell, 'Helvetica Neue', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Meiryo UI', arial, sans-serif;
+	--body-font-family:
+		-apple-system, blinkmacsystemfont, 'Segoe UI', roboto, oxygen, ubuntu, cantarell, 'Helvetica Neue', 'Apple Color Emoji',
+		'Segoe UI Emoji', 'Segoe UI Symbol', 'Meiryo UI', arial, sans-serif;
 
 	/*
 	* General
@@ -75,7 +77,7 @@
 	/*
 	* Scrollbar
 	*/
-	--custom-scrollbar-color: var(--rcx-color-stroke-dark, #6C737A);
+	--custom-scrollbar-color: var(--rcx-color-stroke-dark, #6c737a);
 }
 
 .rcx-sidebar {
