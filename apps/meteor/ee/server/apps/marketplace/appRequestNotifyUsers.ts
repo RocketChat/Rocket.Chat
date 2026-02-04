@@ -1,4 +1,4 @@
-import type { AppRequest, IUser, Pagination } from '@rocket.chat/core-typings';
+import type { AppRequest, IUser } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
@@ -49,7 +49,7 @@ export const appRequestNotififyForUsers = async (
 		};
 
 		// First request
-		const pagination: Pagination = { limit: DEFAULT_LIMIT, offset: 0 };
+		const pagination = { limit: DEFAULT_LIMIT, offset: 0 };
 
 		// First request to get the total and the first batch
 		const response = await fetch(`${marketplaceBaseUrl}/v1/app-request`, {

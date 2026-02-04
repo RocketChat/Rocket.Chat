@@ -27,8 +27,6 @@ export type OEmbedUrlContentResult = {
 	attachments?: MessageAttachment[];
 };
 
-export const isOEmbedUrlContentResult = (value: any): value is OEmbedUrlContentResult => 'attachments' in value;
-
 export type OEmbedUrlWithMetadata = {
 	url: string;
 	meta: OEmbedMeta;

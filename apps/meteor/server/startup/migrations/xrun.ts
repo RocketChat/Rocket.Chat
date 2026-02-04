@@ -3,6 +3,7 @@ import type { UpdateResult } from 'mongodb';
 
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
 import { settings } from '../../../app/settings/server';
+import { statistics } from '../../../app/statistics/server/lib/statistics';
 import { migrateDatabase, onServerVersionChange } from '../../lib/migrations';
 import { ensureCloudWorkspaceRegistered } from '../cloudRegistration';
 
@@ -62,5 +63,6 @@ export const performMigrationProcedure = async (): Promise<void> => {
 		await upsertPermissions();
 		await ensureCloudWorkspaceRegistered();
 		await moveRetentionSetting();
+		await statistics.updateDeploymentData();
 	});
 };

@@ -55,7 +55,11 @@ API.v1.addRoute(
 				visitor,
 				block: true,
 			});
-			logger.info(`Visitor with id ${visitor.visitorId} blocked by user with id ${user._id}`);
+			logger.info({
+				msg: 'Visitor blocked',
+				visitorId: visitor.visitorId,
+				userId: user._id,
+			});
 
 			await closeBlockedRoom(visitor, user);
 
@@ -82,7 +86,11 @@ API.v1.addRoute(
 				visitor,
 				block: false,
 			});
-			logger.info(`Visitor with id ${visitor.visitorId} unblocked by user with id ${user._id}`);
+			logger.info({
+				msg: 'Visitor unblocked',
+				visitorId: visitor.visitorId,
+				userId: user._id,
+			});
 
 			return API.v1.success();
 		},

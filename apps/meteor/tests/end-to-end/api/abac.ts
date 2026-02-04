@@ -408,7 +408,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
 					const result = JSON.parse(res.body.message);
 					expect(result).to.have.property('error');

@@ -676,6 +676,7 @@
   "CROWD_Reject_Unauthorized": "Rejeter non autorisé(s)",
   "Call": "Appeler",
   "Call_Already_Ended": "Appel déjà terminé",
+  "Call_Information": "Informations sur l'appel",
   "Call_declined": "Appel refusé !",
   "Call_ended": "Appel terminé",
   "Call_ongoing": "Appel en cours",

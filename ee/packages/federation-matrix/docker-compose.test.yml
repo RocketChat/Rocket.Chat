@@ -6,12 +6,9 @@ networks:
 services:
   traefik:
     image: traefik:v2.9
-    container_name: traefik
     profiles:
-      - test-local
-      - test-prebuilt
-      - element-local
-      - element-prebuilt
+      - test
+      - element
     command:
       - "--api.insecure=true"
       # - "--log.level=DEBUG"
@@ -32,7 +29,7 @@ services:
     networks:
       # Defines and isolate one network per service to prevent inter service communication which
       # would not happen in real life. The name clashing between the host and service in the same
-      # network (like rc1 service provided as rc1 host) is causing a bug on home server address 
+      # network (like rc1 service provided as rc1 host) is causing a bug on home server address
       # resolution which tries to communicate with the container directly some times and which does
       # not provide SSL neither the correct exposed ports.
       hs1-net:
@@ -45,17 +42,14 @@ services:
 # HomeServer 1 (synapse)
   hs1:
     image: matrixdotorg/synapse:latest
-    container_name: hs1
     profiles:
-      - test-local
-      - test-prebuilt
-      - element-local
-      - element-prebuilt
+      - test
+      - element
     entrypoint: |
       sh -c
-      "update-ca-certificates && 
-      mkdir -p /data/media_store && 
-      chown -R 991:991 /data && 
+      "update-ca-certificates &&
+      mkdir -p /data/media_store &&
+      chown -R 991:991 /data &&
       /start.py &
       until curl -sf http://localhost:8008/_matrix/client/versions; do
         echo '=====> Waiting for Synapse...';
@@ -83,56 +77,15 @@ services:
       - "traefik.http.routers.hs1.tls=true"
       - "traefik.http.services.hs1.loadbalancer.server.port=8008"
 
-# Rocket.Chat rc1 (local build)
-  rc1-local:
+# Rocket.Chat rc1
+  rc1:
     build:
       context: ${ROCKETCHAT_BUILD_CONTEXT:-./test/dist}
       dockerfile: ${ROCKETCHAT_DOCKERFILE:-../../../apps/meteor/.docker/Dockerfile.alpine}
-    image: rocket.chat:local-test
-    container_name: rc1
-    profiles:
-      - test-local
-      - element-local
-    environment:
-      ROOT_URL: https://rc1
-      PORT: 3000
-      MONGO_URL: mongodb://mongo:27017/rc1?replicaSet=rs0
-      NODE_EXTRA_CA_CERTS: /usr/local/share/ca-certificates/rootCA.pem
-      LOG_LEVEL: debug
-      ROCKETCHAT_LICENSE: ${ENTERPRISE_LICENSE_RC1}
-      OVERWRITE_SETTING_Show_Setup_Wizard: completed
-      OVERWRITE_SETTING_Federation_Service_Enabled: true
-      OVERWRITE_SETTING_Federation_Service_Domain: rc1
-      OVERWRITE_SETTING_Cloud_Workspace_Client_Id: temp_id
-      OVERWRITE_SETTING_Cloud_Workspace_Client_Secret: temp_secret
-      ADMIN_USERNAME: admin
-      ADMIN_PASS: admin
-      ADMIN_EMAIL: admin@admin.com
-      TEST_MODE: true
-    volumes:
-      - ./docker-compose/traefik/certs/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.pem
-    networks:
-      - rc1-net
-    depends_on:
-      - mongo
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.rc1.rule=Host(`rc1`)"
-      - "traefik.http.routers.rc1.entrypoints=websecure"
-      - "traefik.http.routers.rc1.tls=true"
-      - "traefik.http.services.rc1.loadbalancer.server.port=3000"
-      # HTTPS Redirect
-      - "traefik.http.middlewares.rc1.redirectscheme.scheme=https"
-      - "traefik.http.routers.rc1-http.rule=Host(`rc1`)"
-      - "traefik.http.routers.rc1-http.middlewares=rc1"
-
-# Rocket.Chat rc1 (pre-built image)
-  rc1-prebuilt:
     image: ${ROCKETCHAT_IMAGE:-rocketchat/rocket.chat:latest}
-    container_name: rc1
     profiles:
-      - test-prebuilt
-      - element-prebuilt
+      - test
+      - element
     environment:
       ROOT_URL: https://rc1
       PORT: 3000
@@ -168,12 +121,9 @@ services:
 
   mongo:
     image: mongo:8.0
-    container_name: mongo
     profiles:
-      - test-local
-      - test-prebuilt
-      - element-local
-      - element-prebuilt
+      - test
+      - element
     restart: on-failure
     ports:
       - "27017:27017"
@@ -181,7 +131,7 @@ services:
       bash -c
         "mongod --replSet rs0 --bind_ip_all &
           sleep 2;
-          until mongosh --eval \"db.adminCommand('ping')\"; do 
+          until mongosh --eval \"db.adminCommand('ping')\"; do
             echo '=====> Waiting for Mongo...';
             sleep 1;
           done;
@@ -191,13 +141,11 @@ services:
         wait"
     networks:
       - rc1-net
-  
+
   element:
     image: vectorim/element-web
-    container_name: element
     profiles:
-      - element-local
-      - element-prebuilt
+      - element
     # ports:
     #   - "8080:80"
     volumes:

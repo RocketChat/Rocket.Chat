@@ -32,7 +32,7 @@ const AttachmentProvider = ({ children, width = 360, height = 360 }: AttachmentP
 		[collapsedByDefault, reducedData, autoLoadEmbedMedias, saveMobileBandwidth, isMobile, width, height],
 	);
 
-	return <AttachmentContext.Provider children={children} value={contextValue} />;
+	return <AttachmentContext.Provider value={contextValue}>{children}</AttachmentContext.Provider>;
 };
 
 export default AttachmentProvider;
