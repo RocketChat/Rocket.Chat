@@ -180,7 +180,7 @@ exports[`renders Default without crashing 1`] = `
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
               disabled=""
               type="button"
             >
