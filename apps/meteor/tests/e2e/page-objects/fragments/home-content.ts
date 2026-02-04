@@ -74,7 +74,7 @@ export class HomeContent {
 	}
 
 	get typingIndicator(): Locator {
-		return this.page.locator('footer').getByText(/typing/i);
+		return this.page.getByText(/typing/i, { exact: true });
 	}
 
 	async joinRoomIfNeeded(): Promise<void> {
