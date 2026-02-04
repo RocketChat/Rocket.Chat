@@ -166,6 +166,10 @@ export class OmnichannelLiveChat {
 		return this.page.getByRole('link', { name: fileName });
 	}
 
+	get typingIndicatorForVisitor(): Locator {
+		return this.page.getByRole('status', { name: /typing/i });
+	}
+
 	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true, department?: string): Promise<void> {
 		const buttonLabel = isOffline ? 'Send' : 'Start chat';
 		await this.inputName.fill(liveChatUser.name);
@@ -230,9 +234,5 @@ export class OmnichannelLiveChat {
 
 	queuePosition(position: number): Locator {
 		return this.page.locator(`div[role='alert'] >> text=Your spot is #${position}`);
-	}
-
-	get typingIndicatorForVisitor(): Locator {
-		return this.page.getByRole('listitem').filter({ has: this.page.locator('[class*="typing-dots"]') });
 	}
 }
