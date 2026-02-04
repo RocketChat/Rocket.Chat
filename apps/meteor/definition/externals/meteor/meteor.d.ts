@@ -84,7 +84,10 @@ declare module 'meteor/meteor' {
 					send: (data: string) => void;
 				};
 				_launchConnectionAsync: () => void;
-				on: (key: 'message', callback: (data: string) => void) => void;
+				on: {
+					(key: 'message', callback: (data: string) => void): void;
+					(key: 'reset', callback: () => void): void;
+				};
 			};
 
 			_outstandingMethodBlocks: unknown[];
@@ -115,6 +118,8 @@ declare module 'meteor/meteor' {
 					},
 				]
 			): SubscriptionHandle;
+
+			call(methodName: string, ...args: [...unknown, callback?: (error: Error | null, result: unknown) => void]): void;
 		}
 
 		const connection: IMeteorConnection;
