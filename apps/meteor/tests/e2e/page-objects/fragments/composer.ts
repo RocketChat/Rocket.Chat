@@ -64,6 +64,10 @@ export abstract class Composer {
 	get readOnlyFooter(): Locator {
 		return this.root.getByText('This room is read only');
 	}
+
+	get typingIndicator(): Locator {
+		return this.root.getByText(/typing/i);
+	}
 }
 
 export class RoomComposer extends Composer {

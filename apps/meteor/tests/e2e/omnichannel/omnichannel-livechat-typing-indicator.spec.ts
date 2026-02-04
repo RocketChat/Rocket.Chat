@@ -52,11 +52,11 @@ test.describe.serial('OC - Livechat - Typing indicator', () => {
 			await poLiveChat.onlineAgentMessage.fill(' ');
 			await poLiveChat.onlineAgentMessage.fill('');
 			await poLiveChat.onlineAgentMessage.pressSequentially('a', { delay: 20 });
-			await expect(poHomeOmnichannel.content.typingIndicator).toBeVisible();
+			await expect(poHomeOmnichannel.composer.typingIndicator).toBeVisible();
 		});
 
 		await test.step('expect visitor to see typing indicator when agent types', async () => {
-			await poHomeOmnichannel.composer.inputMessage.pressSequentially('xyz', { delay: 30 });
+			await poHomeOmnichannel.composer.inputMessage.pressSequentially('xyz', { delay: 20 });
 			await expect(poLiveChat.typingIndicatorForVisitor).toBeVisible();
 		});
 	});
