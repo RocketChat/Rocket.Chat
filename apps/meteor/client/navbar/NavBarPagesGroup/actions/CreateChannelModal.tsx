@@ -207,7 +207,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 
 	return (
 		<Modal
-			data-qa='create-channel-modal'
 			aria-labelledby={`${createChannelFormId}-title`}
 			wrapperFunction={(props: ComponentProps<typeof Box>) => (
 				<Box is='form' id={createChannelFormId} onSubmit={handleSubmit(handleCreateChannel)} {...props} />
@@ -226,7 +225,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 						<FieldRow>
 							<TextInput
 								id={nameId}
-								data-qa-type='channel-name-input'
 								{...register('name', {
 									required: t('Required_field', { field: t('Name') }),
 									validate: (value) => validateChannelName(value),
@@ -248,7 +246,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 					<Field>
 						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
 						<FieldRow>
-							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} data-qa-type='channel-topic-input' />
+							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} />
 						</FieldRow>
 						<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
 					</Field>
@@ -407,7 +405,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' primary data-qa-type='create-channel-confirm-button'>
+					<Button type='submit' primary>
 						{t('Create')}
 					</Button>
 				</ModalFooterControllers>

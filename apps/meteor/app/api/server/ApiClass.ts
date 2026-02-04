@@ -37,6 +37,7 @@ import type {
 	RedirectResult,
 	UnavailableResult,
 	GenericRouteExecutionContext,
+	TooManyRequestsResult,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
@@ -383,7 +384,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		};
 	}
 
-	public tooManyRequests(msg?: string): { statusCode: number; body: Record<string, any> & { success?: boolean } } {
+	public tooManyRequests<T>(msg?: T): TooManyRequestsResult<T> {
 		return {
 			statusCode: 429,
 			body: {
@@ -495,18 +496,16 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 	public async processTwoFactor({
 		userId,
 		request,
-		invocation,
 		options,
 		connection,
 	}: {
 		userId: string;
 		request: Request;
-		invocation: { twoFactorChecked?: boolean };
 		options?: Options;
 		connection: IMethodConnection;
-	}): Promise<void> {
+	}): Promise<boolean> {
 		if (options && (!('twoFactorRequired' in options) || !options.twoFactorRequired)) {
-			return;
+			return false;
 		}
 		const code = request.headers.get('x-2fa-code') ? String(request.headers.get('x-2fa-code')) : undefined;
 		const method = request.headers.get('x-2fa-method') ? String(request.headers.get('x-2fa-method')) : undefined;
@@ -519,7 +518,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			connection,
 		});
 
-		invocation.twoFactorChecked = true;
+		return true;
 	}
 
 	public getFullRouteName(route: string, method: string): string {
@@ -901,30 +900,28 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 								}
 							}
 
-							const invocation = new DDPCommon.MethodInvocation({
-								connection,
-								isSimulation: false,
-								userId: this.userId,
-							});
-
-							Accounts._accountData[connection.id] = {
-								connection,
-							};
-
-							Accounts._setAccountData(connection.id, 'loginToken', this.token!);
-
-							this.userId &&
+							if (
+								this.userId &&
 								(await api.processTwoFactor({
 									userId: this.userId,
 									request: this.request,
-									invocation: invocation as unknown as Record<string, any>,
 									options: _options,
 									connection: connection as unknown as IMethodConnection,
-								}));
+								}))
+							) {
+								this.twoFactorChecked = true;
+							}
 
 							this.parseJsonQuery = () => api.parseJsonQuery(this);
 
-							result = (await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || api.success();
+							if (options.applyMeteorContext) {
+								const invocation = APIClass.createMeteorInvocation(connection, this.userId, this.token);
+								result = await invocation
+									.applyInvocation(() => originalAction.apply(this))
+									.finally(() => invocation[Symbol.asyncDispose]());
+							} else {
+								result = await originalAction.apply(this);
+							}
 						} catch (e: any) {
 							result = ((e: any) => {
 								switch (e.error) {
@@ -1207,5 +1204,39 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				},
 			},
 		);
+	}
+
+	static createMeteorInvocation(
+		connection: {
+			id: string;
+			close: () => void;
+			clientAddress: string;
+			httpHeaders: Record<string, any>;
+		},
+		userId?: string,
+		token?: string,
+	) {
+		const invocation = new DDPCommon.MethodInvocation({
+			connection,
+			isSimulation: false,
+			userId,
+		});
+
+		Accounts._accountData[connection.id] = {
+			connection,
+		};
+		if (token) {
+			Accounts._setAccountData(connection.id, 'loginToken', token);
+		}
+
+		return {
+			invocation,
+			applyInvocation: <F extends () => Promise<any>>(action: F): ReturnType<F> => {
+				return DDP._CurrentInvocation.withValue(invocation as any, async () => action()) as ReturnType<F>;
+			},
+			[Symbol.asyncDispose]() {
+				return Promise.resolve();
+			},
+		};
 	}
 }

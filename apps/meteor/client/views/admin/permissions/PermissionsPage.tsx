@@ -59,19 +59,13 @@ const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }): ReactElem
 				<Margins blockEnd={16}>
 					<Tabs>
 						<Tabs.Item
-							data-qa='PermissionTable-Permissions'
 							selected={type === 'permissions'}
 							onClick={canViewPermission ? handlePermissionsTab : undefined}
 							disabled={!canViewPermission}
 						>
 							{t('Permissions')}
 						</Tabs.Item>
-						<Tabs.Item
-							data-qa='PermissionTable-Settings'
-							selected={type === 'settings'}
-							onClick={handleSettingsTab}
-							disabled={!canViewSettingPermission}
-						>
+						<Tabs.Item selected={type === 'settings'} onClick={handleSettingsTab} disabled={!canViewSettingPermission}>
 							{t('Settings')}
 						</Tabs.Item>
 					</Tabs>

@@ -1,3 +1,4 @@
+import type { Optional } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
 import { useContext, createContext } from 'react';
 
@@ -29,7 +30,7 @@ export type ComposerPopupContextValue = ComposerPopupOption[];
 export const ComposerPopupContext = createContext<ComposerPopupContextValue | undefined>(undefined);
 
 export const createMessageBoxPopupConfig = <T extends { _id: string; sort?: number }>(
-	partial: Omit<ComposerPopupOption<T>, 'getValue'> & Partial<Pick<ComposerPopupOption<T>, 'getValue'>>,
+	partial: Optional<ComposerPopupOption<T>, 'getValue'>,
 ): ComposerPopupOption<T> => {
 	return {
 		blurOnSelectItem: true,

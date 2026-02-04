@@ -114,7 +114,11 @@ export async function setUserAvatar(
 			try {
 				response = await fetch(dataURI, { redirect: 'error' });
 			} catch (e) {
-				SystemLogger.info(`Not a valid response, from the avatar url: ${encodeURI(dataURI)}`);
+				SystemLogger.info({
+					msg: 'Not a valid response from the avatar url',
+					url: encodeURI(dataURI),
+					err: e,
+				});
 				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${encodeURI(dataURI)}`, {
 					function: 'setUserAvatar',
 					url: dataURI,
@@ -123,7 +127,12 @@ export async function setUserAvatar(
 
 			if (response.status !== 200) {
 				if (response.status !== 404) {
-					SystemLogger.info(`Error while handling the setting of the avatar from a url (${encodeURI(dataURI)}) for ${user.username}`);
+					SystemLogger.info({
+						msg: 'Error while handling the setting of the avatar from a url',
+						url: encodeURI(dataURI),
+						username: user.username,
+						status: response.status,
+					});
 					throw new Meteor.Error(
 						'error-avatar-url-handling',
 						`Error while handling avatar setting from a URL (${encodeURI(dataURI)}) for ${user.username}`,
@@ -131,7 +140,11 @@ export async function setUserAvatar(
 					);
 				}
 
-				SystemLogger.info(`Not a valid response, ${response.status}, from the avatar url: ${dataURI}`);
+				SystemLogger.info({
+					msg: 'Not a valid response from the avatar url',
+					status: response.status,
+					url: dataURI,
+				});
 				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
 					function: 'setUserAvatar',
 					url: dataURI,
@@ -139,9 +152,11 @@ export async function setUserAvatar(
 			}
 
 			if (!/image\/.+/.test(response.headers.get('content-type') || '')) {
-				SystemLogger.info(
-					`Not a valid content-type from the provided url, ${response.headers.get('content-type')}, from the avatar url: ${dataURI}`,
-				);
+				SystemLogger.info({
+					msg: 'Not a valid content-type from the provided avatar url',
+					contentType: response.headers.get('content-type'),
+					url: dataURI,
+				});
 				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
 					function: 'setUserAvatar',
 					url: dataURI,

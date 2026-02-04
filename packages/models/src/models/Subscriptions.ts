@@ -157,11 +157,11 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	}
 
-	countByRoomIdAndUserId(rid: string, uid: string | undefined): Promise<number> {
+	countByRoomIdAndUserId(rid: string, uid: string | undefined, includeInvitations = false): Promise<number> {
 		const query = {
 			rid,
 			'u._id': uid,
-			'status': { $exists: false },
+			...(includeInvitations ? { $or: [{ status: { $exists: false } }, { status: 'INVITED' as const }] } : { status: { $exists: false } }),
 		};
 
 		return this.countDocuments(query);
@@ -1172,8 +1172,11 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.countDocuments(query);
 	}
 
-	countByUserId(userId: string): Promise<number> {
-		const query = { 'u._id': userId };
+	countByUserIdExceptType(userId: string, typeException: ISubscription['t']): Promise<number> {
+		const query: Filter<ISubscription> = {
+			'u._id': userId,
+			't': { $ne: typeException },
+		};
 
 		return this.countDocuments(query);
 	}

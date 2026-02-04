@@ -1,4 +1,4 @@
-import type { RoomID } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
@@ -6,7 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import { e2e } from '../../../lib/e2ee';
 
 type UseE2EEResetRoomKeyVariables = {
-	roomId: RoomID;
+	roomId: IRoom['_id'];
 };
 
 export const useE2EEResetRoomKey = (

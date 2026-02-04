@@ -64,7 +64,7 @@ env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
   LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
-  DOCKER_TAG: ${{ inputs.gh-docker-tag }}
+  DOCKER_TAG: ${{ inputs.gh-docker-tag }}-amd64
 
 jobs:
   test:
@@ -135,17 +135,33 @@ jobs:
         run: |
           tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
-      # if we are testing a PR from a fork, we need to build the docker image at this point
-      - uses: ./.github/actions/build-docker
-        if: github.event_name == 'pull_request' && (github.event.pull_request.head.repo.full_name != github.repository || github.actor == 'dependabot[bot]')
+      # Download Docker images from build artifacts
+      - name: Download Docker images
+        uses: actions/download-artifact@v7
+        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         with:
-          CR_USER: ${{ secrets.CR_USER }}
-          CR_PAT: ${{ secrets.CR_PAT }}
-          # the same reason we need to rebuild the docker image at this point is the reason we dont want to publish it
-          publish-image: false
-          arch: amd64
-          service: 'rocketchat'
-          type: 'coverage'
+          pattern: ${{ inputs.release == 'ce' &&  'docker-image-rocketchat-amd64-coverage' || 'docker-image-*-amd64-coverage' }}
+          path: /tmp/docker-images
+          merge-multiple: true
+
+      # Load Docker images
+      - name: Load Docker images
+        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
+        shell: bash
+        run: |
+          set -o xtrace
+
+          # Load all downloaded images
+          for image_file in /tmp/docker-images/*.tar; do
+            if [ -f "$image_file" ]; then
+              echo "Loading image from $image_file"
+              docker load -i "$image_file"
+              rm "$image_file"
+            fi
+          done
+
+          # List loaded images
+          docker images
 
       - name: Set DEBUG_LOG_LEVEL (debug enabled)
         if: runner.debug == '1'

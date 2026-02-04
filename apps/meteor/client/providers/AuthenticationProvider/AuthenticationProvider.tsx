@@ -130,7 +130,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 		[isLoggingIn, loginMethod],
 	);
 
-	return <AuthenticationContext.Provider children={children} value={contextValue} />;
+	return <AuthenticationContext.Provider value={contextValue}>{children}</AuthenticationContext.Provider>;
 };
 
 export default AuthenticationProvider;

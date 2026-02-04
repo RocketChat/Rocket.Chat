@@ -122,11 +122,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 							<Field>
 								<FieldLabel htmlFor={nameField}>{t('Name')}</FieldLabel>
 								<FieldRow>
-									<Controller
-										name='name'
-										control={control}
-										render={({ field }) => <TextInput id={nameField} data-qa-id='agent-edit-name' {...field} readOnly />}
-									/>
+									<Controller name='name' control={control} render={({ field }) => <TextInput id={nameField} {...field} readOnly />} />
 								</FieldRow>
 							</Field>
 							<Field>
@@ -168,13 +164,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 										name='status'
 										control={control}
 										render={({ field }) => (
-											<Select
-												id={statusField}
-												data-qa-id='agent-edit-status'
-												{...field}
-												options={statusOptions}
-												placeholder={t('Select_an_option')}
-											/>
+											<Select id={statusField} {...field} options={statusOptions} placeholder={t('Select_an_option')} />
 										)}
 									/>
 								</FieldRow>
@@ -189,7 +179,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 					<Button type='reset' disabled={!isDirty} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button form={formId} primary type='submit' data-qa-id='agent-edit-save' disabled={!isDirty}>
+					<Button form={formId} primary type='submit' disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

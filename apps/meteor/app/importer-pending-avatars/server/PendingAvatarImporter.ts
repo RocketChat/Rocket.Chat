@@ -7,7 +7,7 @@ import { setAvatarFromServiceWithValidation } from '../../lib/server/functions/s
 
 export class PendingAvatarImporter extends Importer {
 	async prepareFileCount() {
-		this.logger.debug('start preparing import operation');
+		this.logger.debug({ msg: 'start preparing import operation' });
 		await super.updateProgress(ProgressStep.PREPARING_STARTED);
 
 		const fileCount = await Users.countAllUsersWithPendingAvatar();
@@ -49,13 +49,13 @@ export class PendingAvatarImporter extends Importer {
 							await setAvatarFromServiceWithValidation(_id, url, undefined, 'url');
 							await Users.updateOne({ _id }, { $unset: { _pendingAvatarUrl: '' } });
 						} catch (error) {
-							this.logger.warn(`Failed to set ${name}'s avatar from url ${url}`);
+							this.logger.warn({ msg: 'Failed to set user avatar from pending URL', name, url });
 						}
 					} finally {
 						await this.addCountCompleted(1);
 					}
 				} catch (error) {
-					this.logger.error(error);
+					this.logger.error({ msg: 'Failed to process pending avatar for user', err: error });
 				}
 			}
 		} catch (error) {

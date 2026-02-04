@@ -145,7 +145,7 @@ test.describe.serial('channel-management', () => {
 	test('should create a discussion using the message composer', async ({ page }) => {
 		discussionName = faker.string.uuid();
 		await poHomeChannel.navbar.openChat(targetChannel);
-		await poHomeChannel.content.btnMenuMoreActions.click();
+		await poHomeChannel.composer.btnMenuMoreActions.click();
 		await page.getByRole('menuitem', { name: 'Discussion' }).click();
 		await poHomeChannel.content.inputDiscussionName.fill(discussionName);
 		await poHomeChannel.content.btnCreateDiscussionModal.click();
@@ -196,7 +196,7 @@ test.describe.serial('channel-management', () => {
 			const user1Channel = new HomeChannel(user1Page);
 			await user1Page.goto(`/channel/${targetChannel}`);
 			await user1Channel.content.waitForChannel();
-			await expect(user1Channel.readOnlyFooter).toBeVisible();
+			await expect(user1Channel.composer.readOnlyFooter).toBeVisible();
 		});
 
 		test('should unmuteUser user1', async () => {
@@ -210,7 +210,7 @@ test.describe.serial('channel-management', () => {
 			const user1Channel = new HomeChannel(user1Page);
 			await user1Page.goto(`/channel/${targetChannel}`);
 			await user1Channel.content.waitForChannel();
-			await expect(user1Channel.composer).toBeVisible();
+			await expect(user1Channel.composer.inputMessage).toBeVisible();
 		});
 
 		test('should set user1 as moderator', async () => {

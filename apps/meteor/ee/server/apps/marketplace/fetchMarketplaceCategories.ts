@@ -1,10 +1,10 @@
 import type { AppCategory } from '@rocket.chat/core-typings';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
+import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { Apps } from '../orchestrator';
-import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
 
 const fetchMarketplaceCategoriesSchema = z.array(
 	z.object({
@@ -47,7 +47,7 @@ export async function fetchMarketplaceCategories(): Promise<AppCategory[]> {
 
 	const response = await request.json();
 
-	Apps.getRocketChatLogger().error('Failed to fetch marketplace categories', response);
+	Apps.getRocketChatLogger().error({ msg: 'Error fetching marketplace categories', status: request.status, response });
 
 	// TODO: Refactor cloud to return a proper error code on unsupported version
 	if (request.status === 426 && 'errorMsg' in response && response.errorMsg === 'unsupported version') {

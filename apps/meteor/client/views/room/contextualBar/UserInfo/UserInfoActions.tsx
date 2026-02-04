@@ -51,11 +51,9 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 				button={<IconButton icon='kebab' secondary />}
 				title={t('More')}
 				key='menu'
-				data-qa-id='UserUserInfo-menu'
 				sections={menuOptions}
 				placement='bottom-end'
 				small={false}
-				data-qa='UserUserInfo-menu'
 			/>
 		);
 	}, [menuOptions, t]);

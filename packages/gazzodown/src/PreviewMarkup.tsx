@@ -28,7 +28,7 @@ const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
 
 	switch (firstBlock.type) {
 		case 'PARAGRAPH':
-			return <PreviewInlineElements children={firstBlock.value} />;
+			return <PreviewInlineElements>{firstBlock.value}</PreviewInlineElements>;
 
 		case 'HEADING':
 			return <>{firstBlock.value.map((plain) => plain.value).join('')}</>;
@@ -39,7 +39,7 @@ const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
 
 			return (
 				<>
-					{firstItem.number ? `${firstItem.number}.` : '-'} <PreviewInlineElements children={firstItem.value} />
+					{firstItem.number ? `${firstItem.number}.` : '-'} <PreviewInlineElements>{firstItem.value}</PreviewInlineElements>
 				</>
 			);
 		}
@@ -49,7 +49,7 @@ const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
 
 			return (
 				<>
-					{firstTask.status ? '\u2611' : '\u2610'} <PreviewInlineElements children={firstTask.value} />
+					{firstTask.status ? '\u2611' : '\u2610'} <PreviewInlineElements>{firstTask.value}</PreviewInlineElements>
 				</>
 			);
 		}
@@ -59,7 +59,7 @@ const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
 
 			return (
 				<>
-					&gt; <PreviewInlineElements children={firstParagraph.value} />
+					&gt; <PreviewInlineElements>{firstParagraph.value}</PreviewInlineElements>
 				</>
 			);
 		}
