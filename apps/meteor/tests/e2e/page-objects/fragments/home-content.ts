@@ -41,16 +41,28 @@ export class HomeContent {
 		return this.page.locator('role=menu[name="People"]');
 	}
 
+	get mainMessageList(): Locator {
+		return this.page.getByRole('list', { name: 'Message list', exact: true });
+	}
+
+	get threadMessageList(): Locator {
+		return this.page.getByRole('list', { name: 'Thread message list', exact: true });
+	}
+
+	get messageListItems(): Locator {
+		return this.mainMessageList.locator('[role="listitem"][aria-roledescription="message"]');
+	}
+
+	get threadMessageListItems(): Locator {
+		return this.threadMessageList.locator('[role="listitem"][aria-roledescription="message"]');
+	}
+
 	get lastUserMessage(): Locator {
-		return this.page.locator('[data-qa-type="message"]').last();
+		return this.messageListItems.last();
 	}
 
 	nthMessage(index: number): Locator {
-		return this.page.locator('[data-qa-type="message"]').nth(index);
-	}
-
-	get lastUserMessageNotThread(): Locator {
-		return this.page.locator('div.messages-box [data-qa-type="message"]').last();
+		return this.messageListItems.nth(index);
 	}
 
 	get lastUserMessageBody(): Locator {
@@ -62,7 +74,7 @@ export class HomeContent {
 	}
 
 	get lastUserMessageNotSequential(): Locator {
-		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
+		return this.messageListItems.filter({ has: this.page.locator('[data-sequential="false"]') }).last();
 	}
 
 	get encryptedRoomHeaderIcon(): Locator {
@@ -119,7 +131,7 @@ export class HomeContent {
 	}
 
 	async forwardMessage(chatName: string) {
-		await this.page.locator('[data-qa-type="message"]').last().hover();
+		await this.messageListItems.last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
 		await this.page.getByRole('textbox', { name: 'Person or Channel', exact: true }).click();
@@ -183,15 +195,15 @@ export class HomeContent {
 	// -----------------------------------------
 
 	get lastMessageFileName(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
+		return this.messageListItems.last().locator('[data-qa-type="attachment-title-link"]');
 	}
 
 	get lastMessageTextAttachment(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-attachment"]');
+		return this.messageListItems.last().locator('[data-qa-type="message-attachment"]');
 	}
 
 	get lastMessageTextAttachmentEqualsText(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-message-body');
+		return this.messageListItems.last().locator('.rcx-attachment__details .rcx-message-body');
 	}
 
 	get btnQuoteMessage(): Locator {
@@ -239,15 +251,15 @@ export class HomeContent {
 	}
 
 	get lastThreadMessageTextAttachmentEqualsText(): Locator {
-		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
+		return this.threadMessageListItems.last().locator('.rcx-attachment__details');
 	}
 
 	get mainThreadMessageText(): Locator {
-		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').first();
+		return this.threadMessageListItems.first();
 	}
 
 	get lastThreadMessageText(): Locator {
-		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last();
+		return this.threadMessageListItems.last();
 	}
 
 	get lastThreadMessagePreviewText(): Locator {
@@ -255,14 +267,11 @@ export class HomeContent {
 	}
 
 	get lastThreadMessageFileDescription(): Locator {
-		return this.page
-			.locator('div.thread-list ul.thread [data-qa-type="message"]')
-			.last()
-			.locator('[role="document"][aria-roledescription="message body"]');
+		return this.threadMessageListItems.last().locator('[role="document"][aria-roledescription="message body"]');
 	}
 
 	get lastThreadMessageFileName(): Locator {
-		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="attachment-title-link"]');
+		return this.threadMessageListItems.last().locator('[data-qa-type="attachment-title-link"]');
 	}
 
 	// TODO: improve locator specificity
@@ -271,7 +280,7 @@ export class HomeContent {
 	}
 
 	get lastThreadMessageTextAttachment(): Locator {
-		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="message-attachment"]');
+		return this.threadMessageListItems.last().locator('[data-qa-type="message-attachment"]');
 	}
 
 	get btnOptionEditMessage(): Locator {
@@ -396,10 +405,6 @@ export class HomeContent {
 		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).click();
 	}
 
-	get threadMessageList(): Locator {
-		return this.page.getByRole('list', { name: 'Thread message list' });
-	}
-
 	async openLastThreadMessageMenu(): Promise<void> {
 		await this.threadMessageList.last().hover();
 		await this.threadMessageList.last().getByRole('button', { name: 'More', exact: true }).waitFor();
@@ -495,7 +500,7 @@ export class HomeContent {
 	}
 
 	getMessageById(id: string): Locator {
-		return this.page.locator(`[data-qa-type="message"][id="${id}"]`);
+		return this.messageListItems.filter({ has: this.page.locator(`[id="${id}"]`) });
 	}
 
 	async waitForChannel(): Promise<void> {
@@ -508,9 +513,9 @@ export class HomeContent {
 	}
 
 	async openReplyInThread(): Promise<void> {
-		await this.page.locator('[data-qa-type="message"]').last().hover();
-		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="Reply in thread"]').waitFor();
-		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="Reply in thread"]').click();
+		await this.lastUserMessage.hover();
+		await this.lastUserMessage.getByRole('button', { name: 'Reply in thread' }).waitFor();
+		await this.lastUserMessage.getByRole('button', { name: 'Reply in thread' }).click();
 	}
 
 	async sendMessageInThread(text: string): Promise<void> {

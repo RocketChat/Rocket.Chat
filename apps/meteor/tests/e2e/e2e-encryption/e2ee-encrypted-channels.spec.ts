@@ -92,9 +92,7 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is the thread main message.');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
-
-		await page.locator('[data-qa-type="message"]').last().hover();
-		await page.locator('role=button[name="Reply in thread"]').click();
+		await poHomeChannel.content.openReplyInThread();
 
 		await expect(page).toHaveURL(/.*thread/);
 
@@ -125,7 +123,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
-		await page.locator('[data-qa-type="message"]').last().hover();
+		await poHomeChannel.content.lastUserMessage.hover();
 		await expect(page.locator('role=button[name="Forward message not available on encrypted content"]')).toBeDisabled();
 
 		await poHomeChannel.content.openLastMessageMenu();
@@ -308,7 +306,10 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		await expect(page.getByRole('dialog', { name: 'Pinned Messages' })).toBeVisible();
 
-		const lastPinnedMessage = page.getByRole('dialog', { name: 'Pinned Messages' }).locator('[data-qa-type="message"]').last();
+		const lastPinnedMessage = page
+			.getByRole('dialog', { name: 'Pinned Messages' })
+			.locator('[role="listitem"][aria-roledescription="message"]')
+			.last();
 		await expect(lastPinnedMessage).toContainText('This message should be pinned and stared.');
 		await lastPinnedMessage.hover();
 		await lastPinnedMessage.locator('role=button[name="More"]').waitFor();
@@ -320,7 +321,10 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.tabs.kebab.click();
 		await poHomeChannel.tabs.btnStarredMessageList.click();
 
-		const lastStarredMessage = page.getByRole('dialog', { name: 'Starred Messages' }).locator('[data-qa-type="message"]').last();
+		const lastStarredMessage = page
+			.getByRole('dialog', { name: 'Starred Messages' })
+			.locator('[role="listitem"][aria-roledescription="message"]')
+			.last();
 		await expect(page.getByRole('dialog', { name: 'Starred Messages' })).toBeVisible();
 		await expect(lastStarredMessage).toContainText('This message should be pinned and stared.');
 		await lastStarredMessage.hover();

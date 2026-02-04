@@ -51,7 +51,6 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 			data-unread={unread}
 			data-sequential={sequential}
 			data-own={message.u._id === uid}
-			data-qa-type='message'
 		>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && showUserAvatar && (

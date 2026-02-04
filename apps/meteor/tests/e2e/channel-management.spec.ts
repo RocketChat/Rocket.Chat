@@ -155,7 +155,7 @@ test.describe.serial('channel-management', () => {
 
 	test('should access targetTeam through discussion header', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
-		await page.locator('[data-qa-type="message"]', { hasText: discussionName }).locator('button').first().click();
+		await page.getByRole('listitem', { name: discussionName }).getByRole('button', { name: 'Reply' }).click();
 
 		await page.getByRole('button', { name: `Back to ${targetChannel} channel`, exact: true }).focus();
 		await page.keyboard.press('Space');

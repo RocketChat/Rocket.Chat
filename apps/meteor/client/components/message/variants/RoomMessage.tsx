@@ -81,7 +81,6 @@ const RoomMessage = ({
 			data-unread={unread}
 			data-sequential={sequential}
 			data-own={message.u._id === uid}
-			data-qa-type='message'
 			aria-busy={message.temp}
 			{...props}
 		>

@@ -36,7 +36,7 @@ test.describe('Messaging', () => {
 
 			await test.step('move focus to the second message', async () => {
 				await page.keyboard.press('Shift+Tab');
-				await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+				await expect(poHomeChannel.content.lastUserMessage).toBeFocused();
 			});
 
 			await test.step('move focus to the first system message', async () => {
@@ -47,7 +47,7 @@ test.describe('Messaging', () => {
 
 			await test.step('move focus to the first typed message', async () => {
 				await page.keyboard.press('ArrowDown');
-				await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
+				await expect(poHomeChannel.content.getMessageByText('msg1')).toBeFocused();
 			});
 
 			await test.step('move focus to the room title', async () => {
@@ -59,20 +59,21 @@ test.describe('Messaging', () => {
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
-				await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
+				await expect(poHomeChannel.content.getMessageByText('msg1')).toBeFocused();
 			});
 
 			await test.step('move focus to the message toolbar', async () => {
-				await page
-					.locator('[data-qa-type="message"]:has-text("msg1")')
+				await poHomeChannel.content
+					.getMessageByText('msg1')
 					.locator('[role=toolbar][aria-label="Message actions"]')
 					.getByRole('button', { name: 'Add reaction' })
 					.waitFor();
+
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
 				await expect(
-					page
-						.locator('[data-qa-type="message"]:has-text("msg1")')
+					poHomeChannel.content
+						.getMessageByText('msg1')
 						.locator('[role=toolbar][aria-label="Message actions"]')
 						.getByRole('button', { name: 'Add reaction' }),
 				).toBeFocused();
@@ -80,8 +81,8 @@ test.describe('Messaging', () => {
 
 			await test.step('move focus to the composer', async () => {
 				await page.keyboard.press('Tab');
-				await page
-					.locator('[data-qa-type="message"]:has-text("msg2")')
+				await poHomeChannel.content
+					.getMessageByText('msg2')
 					.locator('[role=toolbar][aria-label="Message actions"]')
 					.getByRole('button', { name: 'Add reaction' })
 					.waitFor();
@@ -123,18 +124,19 @@ test.describe('Messaging', () => {
 
 		test('should not restore focus on the last focused if it was triggered by click', async ({ page }) => {
 			await poHomeChannel.navbar.openChat(targetChannel);
-			await page.locator('[data-qa-type="message"]:has-text("msg1")').click();
+			await poHomeChannel.content.getMessageByText('msg1').click();
+
 			await poHomeChannel.composer.inputMessage.click();
 			await page.keyboard.press('Shift+Tab');
 
-			await expect(page.locator('[data-qa-type="message"]:has-text("msg2")')).toBeFocused();
+			await expect(poHomeChannel.content.getMessageByText('msg2')).toBeFocused();
 		});
 
-		test('should not focus on the last message when focusing by click', async ({ page }) => {
+		test('should not focus on the last message when focusing by click', async () => {
 			await poHomeChannel.navbar.openChat(targetChannel);
-			await page.locator('[data-qa-type="message"]:has-text("msg1")').click();
+			await poHomeChannel.content.getMessageByText('msg1').click();
 
-			await expect(page.locator('[data-qa-type="message"]').last()).not.toBeFocused();
+			await expect(poHomeChannel.content.lastUserMessage).not.toBeFocused();
 		});
 
 		test('should focus the latest message when moving the focus on the list and theres no previous focus', async ({ page }) => {
@@ -145,7 +147,7 @@ test.describe('Messaging', () => {
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
-				await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+				await expect(poHomeChannel.content.lastUserMessage).toBeFocused();
 			});
 
 			await test.step('move focus to the list again', async () => {
@@ -153,7 +155,7 @@ test.describe('Messaging', () => {
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
-				await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+				await expect(poHomeChannel.content.lastUserMessage).toBeFocused();
 			});
 		});
 	});

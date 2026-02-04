@@ -149,8 +149,7 @@ test.describe('prune-messages', () => {
 			await content.btnModalConfirm.click();
 			await expect(content.lastMessageFileName).toHaveText('any_file.txt');
 
-			await content.lastUserMessage.hover();
-			await content.lastUserMessage.getByTitle('Reply in thread').click();
+			await content.openReplyInThread();
 			expect(
 				(
 					await api.post('/rooms.cleanHistory', {

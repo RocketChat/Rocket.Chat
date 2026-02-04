@@ -12,11 +12,11 @@ export class EncryptedRoomPage extends HomeContent {
 	}
 
 	get lastMessage() {
-		return new Message(this.page.locator('[data-qa-type="message"]').last());
+		return new Message(this.lastUserMessage);
 	}
 
 	lastNthMessage(index: number) {
-		return new Message(this.page.locator(`[data-qa-type="message"]`).nth(-index - 1));
+		return new Message(this.nthMessage(index - 1));
 	}
 
 	async enableEncryption() {
