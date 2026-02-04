@@ -73,6 +73,10 @@ export class HomeContent {
 		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
 	}
 
+	get typingIndicator(): Locator {
+		return this.page.locator('footer').getByText(/typing/i);
+	}
+
 	async joinRoomIfNeeded(): Promise<void> {
 		if (await this.composer.inputMessage.isEnabled()) {
 			return;

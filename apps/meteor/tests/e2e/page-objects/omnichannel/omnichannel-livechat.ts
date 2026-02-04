@@ -231,4 +231,8 @@ export class OmnichannelLiveChat {
 	queuePosition(position: number): Locator {
 		return this.page.locator(`div[role='alert'] >> text=Your spot is #${position}`);
 	}
+
+	get typingIndicatorForVisitor(): Locator {
+		return this.page.getByRole('listitem').filter({ has: this.page.locator('[class*="typing-dots"]') });
+	}
 }
