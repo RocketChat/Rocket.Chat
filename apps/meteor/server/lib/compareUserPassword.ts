@@ -8,7 +8,7 @@ import { Accounts } from 'meteor/accounts-base';
  */
 export async function compareUserPassword(user: IUser, pass: IPassword): Promise<boolean> {
 	if (!user?.services?.password?.bcrypt?.trim()) {
-		return false;
+		return true;
 	}
 
 	if (!pass || (!pass.plain && !pass.sha256)) {
