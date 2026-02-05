@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+=======
+import { Authorization, MediaCall, VideoConf } from '@rocket.chat/core-services';
+import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent } from '@rocket.chat/core-typings';
+import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
+import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
+>>>>>>> 9f8924bc10 (chore: remove meteor/rocketchat:streamer ambient declaration)
 
 import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
