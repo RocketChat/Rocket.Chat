@@ -1,32 +1,31 @@
 import fc from 'fast-check';
 import { parse } from '../src';
 
+// Helper: Distinguishes between expected syntax errors and unexpected crashes
+const isSafeError = (error: unknown): boolean => {
+    if (error instanceof Error && error.name === 'SyntaxError') {
+        return true;
+    }
+    // Log real crashes so we can see them in CI
+    console.error('Unexpected Crash Found:', error);
+    return false;
+};
+
 describe('Fuzz Testing (Property-Based)', () => {
-    // 1. The "Crash Test"
     it('should not throw runtime exceptions on random string input', () => {
         fc.assert(
             fc.property(fc.string(), (inputString: string) => {
                 try {
-                    parse(inputString); 
-                    return true; // Success is good
-                } catch (error: any) {
-                    // CRITICAL FIX:
-                    // If the parser just says "Invalid syntax", that is SAFE.
-                    // We only fail if it's a real crash (like "TypeError").
-                    if (error.name === 'SyntaxError') {
-                        return true; 
-                    }
-                    
-                    // If we get here, it was a BAD crash.
-                    console.error('Real Crash Found:', error);
-                    return false;
+                    parse(inputString);
+                    return true;
+                } catch (error) {
+                    return isSafeError(error);
                 }
             }),
             { verbose: true }
         );
     });
 
-    // 2. The "Markdown Soup"
     it('should handle nested markdown characters without hanging', () => {
         const markdownChars = fc.stringOf(
             fc.constantFrom('*', '_', '~', '`', '[', ']', '(', ')', '@', '#', ' ', 'a')
@@ -37,11 +36,8 @@ describe('Fuzz Testing (Property-Based)', () => {
                 try {
                     parse(soup);
                     return true;
-                } catch (error: any) {
-                    if (error.name === 'SyntaxError') {
-                        return true;
-                    }
-                    return false;
+                } catch (error) {
+                    return isSafeError(error);
                 }
             })
         );
