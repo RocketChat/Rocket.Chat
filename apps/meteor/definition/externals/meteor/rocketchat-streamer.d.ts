@@ -1,5 +1,5 @@
 declare module 'meteor/rocketchat:streamer' {
-	import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ui-contexts';
+	import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ddp-client';
 	import type { Subscription } from 'meteor/meteor';
 
 	type Connection = any;
