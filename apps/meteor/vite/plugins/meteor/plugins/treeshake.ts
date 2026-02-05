@@ -1,7 +1,7 @@
 import type * as AST from '@oxc-project/types';
-import { exactRegex } from '@rolldown/pluginutils';
-import { walk } from 'oxc-walker';
-import type { MinimalPluginContextWithoutEnvironment, Plugin } from 'vite';
+import { prefixRegex } from '@rolldown/pluginutils';
+import { walk, type WalkerThisContextEnter } from 'oxc-walker';
+import type { PluginOption } from 'vite';
 
 import * as b from './shared/builders';
 import { check } from './shared/check';
@@ -61,9 +61,10 @@ const packages = [
 	'void-elements',
 	'zod',
 	'zustand',
+	'meteor/socket-stream-client/sockjs-1.6.1-min-.js',
 ];
 
-function treeshakeMeteorModules(ctx: MinimalPluginContextWithoutEnvironment, ast: AST.Program): AST.Program {
+function treeshakeMeteorModules(ast: AST.Program): AST.Program {
 	const extraImports: AST.ImportDeclaration[] = [];
 
 	walk(ast, {
@@ -83,7 +84,7 @@ function treeshakeMeteorModules(ctx: MinimalPluginContextWithoutEnvironment, ast
 						prop.key.value === 'node_modules' &&
 						check.isObjectExpression(prop.value)
 					) {
-						processNodeModules(ctx, prop.value, '', packages, extraImports);
+						processNodeModules(this, prop.value, '', packages, extraImports);
 					}
 				}
 			}
@@ -98,7 +99,7 @@ function treeshakeMeteorModules(ctx: MinimalPluginContextWithoutEnvironment, ast
 }
 
 function processNodeModules(
-	ctx: MinimalPluginContextWithoutEnvironment,
+	ctx: WalkerThisContextEnter,
 	node: AST.ObjectExpression,
 	currentPath: string,
 	packages: string[],
@@ -125,23 +126,26 @@ function processNodeModules(
 				const varName = `__dedup_${fullPath.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
 				// Create import declaration: import * as varName from 'importPath';
-				imports.push(b.importDeclaration([b.importNamespaceSpecifier(b.identifier(varName))], b.stringLiteral(importPath)));
+				if (!importPath.startsWith('meteor/')) {
+					imports.push(b.importDeclaration([b.importNamespaceSpecifier(b.identifier(varName))], b.stringLiteral(importPath)));
 
-				// Replace function body with stub
-				// module.exports = varName; OR module.exports = varName.default || varName;
-				// m.exports = ...
-
-				prop.value.body = b.blockStatement([
-					b.expressionStatement(
-						b.assignmentExpression(
-							'=',
-							b.memberExpression(b.identifier('module'), b.identifier('exports')),
-							fullPath.includes('@babel/runtime') || fullPath.includes('react/')
-								? b.logicalExpression(b.memberExpression(b.identifier(varName), b.identifier('default')), '||', b.identifier(varName))
-								: b.identifier(varName),
+					// Replace function body with stub
+					// module.exports = varName; OR module.exports = varName.default || varName;
+					// m.exports = ...
+					prop.value.body = b.blockStatement([
+						b.expressionStatement(
+							b.assignmentExpression(
+								'=',
+								b.memberExpression(b.identifier('module'), b.identifier('exports')),
+								fullPath.includes('@babel/runtime') || fullPath.includes('react/')
+									? b.logicalExpression(b.memberExpression(b.identifier(varName), b.identifier('default')), '||', b.identifier(varName))
+									: b.identifier(varName),
+							),
 						),
-					),
-				]);
+					]);
+				} else {
+					prop.value.body = b.blockStatement([]);
+				}
 
 				found = true;
 			} else if (check.isObjectExpression(prop.value)) {
@@ -155,9 +159,6 @@ function processNodeModules(
 			if (processNodeModules(ctx, prop.value, fullPath, packages, imports)) {
 				found = true;
 			}
-		} else if (check.isFunctionExpression(prop.value)) {
-			const size = prop.value.end - prop.value.start;
-			ctx.warn(`Skipping non-matching package path: ${fullPath} - Size: ${size} bytes`);
 		}
 	}
 	return found;
@@ -268,23 +269,44 @@ function resolveImportPath(path: string) {
 		.replace(/\/index$/, '');
 }
 
-export function treeshake(resolvedConfig: ResolvedPluginOptions): Plugin {
+export function treeshake(resolvedConfig: ResolvedPluginOptions): PluginOption {
+	let totalOriginalSize = 0;
+	let totalFinalSize = 0;
 	return {
 		name: 'meteor:treeshake',
 		apply: 'build',
 		transform: {
 			filter: {
-				id: exactRegex(`${resolvedConfig.programsDir}/web.browser/packages/modules.js`),
+				id: prefixRegex(`${resolvedConfig.programsDir}/web.browser/packages/`),
 			},
-			handler(code) {
+			handler(code, id) {
+				const name = id.replace(`${resolvedConfig.programsDir}/web.browser/packages/`, '');
 				const startLength = code.length;
-				this.info(`modules.js ${startLength} bytes`);
+				totalOriginalSize += startLength;
 				const ast = this.parse(code, { astType: 'js', lang: 'js', preserveParens: false });
-				treeshakeMeteorModules(this, ast);
-				code = printCode(ast);
-				const endLength = code.length;
-				this.info(`modules.js treeshaked to ${endLength} bytes (${startLength - endLength} bytes removed)`);
-				return code;
+				treeshakeMeteorModules(ast);
+				const transformedCode = printCode(ast);
+				const endLength = transformedCode.length;
+
+				const percentRemoved = (((startLength - endLength) / startLength) * 100).toFixed(2);
+				const bytesRemoved = startLength - endLength;
+				this.info(`${name}: ${startLength} -> ${endLength} (diff: ${bytesRemoved} bytes, ${percentRemoved}%)`);
+				if (endLength > startLength) {
+					this.warn(`${name} increased in size after treeshaking!`);
+					totalFinalSize += startLength;
+					return code;
+				}
+				totalFinalSize += endLength;
+				return transformedCode;
+			},
+		},
+		buildEnd: {
+			handler() {
+				const totalBytesRemoved = totalOriginalSize - totalFinalSize;
+				const totalPercentRemoved = ((totalBytesRemoved / totalOriginalSize) * 100).toFixed(2);
+				this.info(
+					`Total size reduction: ${totalOriginalSize} -> ${totalFinalSize} (diff: ${totalBytesRemoved} bytes, ${totalPercentRemoved}%)`,
+				);
 			},
 		},
 	};

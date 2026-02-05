@@ -9,6 +9,16 @@ export function identifier(name: AST.IdentifierName['name']): AST.IdentifierName
 	};
 }
 
+export function booleanLiteral(value: AST.BooleanLiteral['value']): AST.BooleanLiteral {
+	return {
+		type: 'Literal',
+		value,
+		raw: value ? 'true' : 'false',
+		start: 0,
+		end: 0,
+	};
+}
+
 export function stringLiteral(value: AST.StringLiteral['value']): AST.StringLiteral {
 	return {
 		type: 'Literal',
