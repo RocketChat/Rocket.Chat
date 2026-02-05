@@ -1850,7 +1850,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			'$or': [
 				{ 'email.thread': { $elemMatch: { $in: emailThread } } },
 				// Escape email thread IDs to prevent query failures and ReDoS
-				{ 'email.thread': new RegExp(emailThread.map((t) => `"${escapeRegExp(t)}"`).join('|')) },
+				{ 'email.thread': new RegExp(emailThread.map((t) => escapeRegExp(t)).join('|')) },
 			],
 			...(departmentId && { departmentId }),
 		};

@@ -28,6 +28,8 @@ import type {
 	FindOptions,
 } from 'mongodb';
 
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { getCollectionName } from '../index';
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
@@ -755,7 +757,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		offset?: number;
 		count?: number;
 	}): Promise<PaginatedResult<{ sessions: DeviceManagementSession[] }>> {
-		const searchQuery = search ? [{ searchTerm: { $regex: search, $options: 'i' } }] : [];
+		const searchQuery = search ? [{ searchTerm: { $regex: escapeRegExp(search), $options: 'i' } }] : [];
 
 		const matchOperator = {
 			$match: {
@@ -861,7 +863,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		offset?: number;
 		count?: number;
 	}): Promise<PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>> {
-		const searchQuery = search ? [{ searchTerm: { $regex: search, $options: 'i' } }] : [];
+		const searchQuery = search ? [{ searchTerm: { $regex: escapeRegExp(search), $options: 'i' } }] : [];
 
 		const matchOperator = {
 			$match: {
