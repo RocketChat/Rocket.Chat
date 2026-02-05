@@ -1,4 +1,16 @@
 {
 	"extends": ["@rocket.chat/eslint-config", "@rocket.chat/eslint-config/react", "plugin:storybook/recommended"],
-	"ignorePatterns": ["dist", "storybook-static", "!.storybook"]
+	"ignorePatterns": ["dist", "storybook-static", "!.storybook"],
+	"overrides": [
+		{
+			"files": ["**/*.ts", "**/*.tsx", "**/*.cts", "**/*.mts"],
+			"parserOptions": {
+				"project": null
+			},
+			"rules": {
+				"@typescript-eslint/no-misused-promises": "off",
+				"@typescript-eslint/no-floating-promises": "off"
+			}
+		}
+	]
 }

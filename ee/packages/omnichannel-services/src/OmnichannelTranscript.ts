@@ -375,7 +375,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			});
 			await this.pdfComplete({ details, transcriptFile, rocketCatFile, i18n });
 		} catch (error) {
-			this.pdfFailed({ details, e: error as Error, i18n });
+			void this.pdfFailed({ details, e: error as Error, i18n });
 		}
 	}
 

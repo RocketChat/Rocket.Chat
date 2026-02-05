@@ -266,7 +266,7 @@ export class UserActorSignalProcessor {
 	private async processDTMF(dtmf: string, duration?: number): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.processDTMF', dtmf, duration });
 
-		this.agent.oppositeAgent?.onDTMF(this.call._id, dtmf, duration || 2000);
+		void this.agent.oppositeAgent?.onDTMF(this.call._id, dtmf, duration || 2000);
 	}
 
 	protected async clientIsReachable(): Promise<void> {
