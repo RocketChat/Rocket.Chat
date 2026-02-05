@@ -2,18 +2,31 @@
 	"name": "@rocket.chat/cas-validate",
 	"version": "0.0.3",
 	"private": true,
+	"type": "module",
 	"description": "Fork of https://github.com/kcbanner/node-cas",
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.js",
+	"types": "./dist/esm/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.js",
+			"require": "./dist/cjs/index.js"
+		}
+	},
 	"files": [
 		"/dist"
 	],
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+		"build": "rm -rf dist && yarn build:esm && yarn build:cjs",
+		"build:esm": "tsc -p tsconfig.esm.json",
+		"build:cjs": "tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+		"dev": "tsc -p tsconfig.esm.json --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"testunit": "jest"
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"cheerio": "1.0.0"
