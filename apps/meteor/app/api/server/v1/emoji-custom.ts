@@ -135,8 +135,8 @@ API.v1.addRoute(
 				});
 
 				await uploadEmojiCustomWithBuffer(this.userId, fileBuffer, mimetype, emojiData);
-			} catch (e) {
-				SystemLogger.error(e);
+			} catch (err) {
+				SystemLogger.error({ err });
 				return API.v1.failure();
 			}
 

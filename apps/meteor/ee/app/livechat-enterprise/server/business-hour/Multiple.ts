@@ -225,7 +225,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id' | 'businessHourId'>): Promise<void> {
-		bhLogger.debug('Processing department archived event on multiple business hours', department);
+		bhLogger.debug({ msg: 'Processing department archived event on multiple business hours', department });
 		return this.onDepartmentDisabled(department);
 	}
 

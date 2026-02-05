@@ -1,3 +1,3 @@
 import type { IUpload } from './IUpload';
 
-export type IAvatar = IUpload;
+export interface IAvatar extends IUpload {}

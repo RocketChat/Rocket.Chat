@@ -41,9 +41,8 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		for await (const rid of this.rids) {
 			try {
 				await Rooms.resetLastMessageById(rid, null);
-			} catch (e) {
-				this._logger.warn({ msg: 'Failed to update last message of room', roomId: rid });
-				this._logger.error(e);
+			} catch (err) {
+				this._logger.error({ msg: 'Failed to update last message of room', roomId: rid, err });
 			}
 		}
 	}
@@ -70,9 +69,8 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 
 		try {
 			await insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
-		} catch (e) {
-			this._logger.warn({ msg: 'Failed to import message', timestamp: msgObj.ts, roomId: rid });
-			this._logger.error(e);
+		} catch (err) {
+			this._logger.error({ msg: 'Failed to import message', timestamp: msgObj.ts, roomId: rid, err });
 		}
 	}
 
@@ -167,7 +165,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 			}
 
 			if (!data.username) {
-				this._logger.debug(importId);
+				this._logger.debug({ msg: 'Mentioned user has no username', importId });
 				throw new Error('importer-message-mentioned-username-not-found');
 			}
 

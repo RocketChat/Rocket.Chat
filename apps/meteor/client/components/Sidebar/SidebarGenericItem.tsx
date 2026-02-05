@@ -1,5 +1,4 @@
 import { Box, SidebarItem } from '@rocket.chat/fuselage';
-import type colors from '@rocket.chat/fuselage-tokens/colors';
 import type { ReactElement, ReactNode } from 'react';
 import { memo } from 'react';
 
@@ -8,11 +7,6 @@ type SidebarGenericItemProps = {
 	active?: boolean;
 	featured?: boolean;
 	children: ReactNode;
-	customColors?: {
-		default: (typeof colors)[string];
-		hover: (typeof colors)[string];
-		active: (typeof colors)[string];
-	};
 	externalUrl?: boolean;
 };
 
