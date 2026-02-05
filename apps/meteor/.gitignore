@@ -89,3 +89,4 @@ matrix-federation-config/*
 .eslintcache
 tsconfig.typecheck.tsbuildinfo
 .vite-inspect
+.build
