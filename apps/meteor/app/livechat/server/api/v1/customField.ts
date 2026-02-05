@@ -116,10 +116,6 @@ const livechatCustomFieldsEndpoints = API.v1
 				if (!customField) {
 					return API.v1.failure('Custom Field Not found');
 				}
-
-				if (!/^[0-9a-zA-Z-_]+$/.test(customFieldId)) {
-					return API.v1.failure('Invalid custom field name. Use only letters, numbers, hyphens and underscores.');
-				}
 			}
 
 			if (!customFieldId) {
