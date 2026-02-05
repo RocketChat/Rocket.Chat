@@ -5,6 +5,11 @@ export type PluginOptions = {
 	 */
 	prefix?: string;
 	/**
+	 * Whether to treeshake the Meteor runtime and packages.
+	 * @default process.env.NODE_ENV === 'production'.
+	 */
+	treeshake?: boolean;
+	/**
 	 * Whether the build is targeting the client.
 	 * @default true.
 	 */
@@ -51,6 +56,10 @@ export type ResolvedPluginOptions = {
 	 * The prefix used to identify Meteor package imports.
 	 */
 	readonly prefix: string;
+	/**
+	 * Whether to treeshake the Meteor runtime and packages.
+	 */
+	readonly treeshake: boolean;
 	/**
 	 * Whether the build is targeting the client.
 	 */
