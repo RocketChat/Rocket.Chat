@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  rocketchat:
+
+    build:
+      dockerfile: ../.docker/Dockerfile.backend
+      context: apps/meteor/.build
+    image: rocketchat:experiment
+    environment:
+      - TEST_MODE=true
+      - EXIT_UNHANDLEDPROMISEREJECTION=true
+      - MONGO_URL=mongodb://mongo:27017/rocketchat
+      - MONGO_OPLOG_URL=mongodb://mongo:27017/local
+      - MOLECULER_LOG_LEVEL=info
+      - OVERWRITE_SETTING_Log_Level=2
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - mongo
+
+  frontend:
+    platform: linux/arm64
+    build:
+      context: apps/meteor
+      dockerfile: .docker/Dockerfile.frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - rocketchat
+
+  mongo:
+    image: mongodb/mongodb-community-server:8.2-ubi8
+    restart: on-failure
+    ports:
+      - 27017:27017
+    environment:
+      MONGODB_REPLICA_SET_NAME: ${MONGODB_REPLICA_SET_NAME:-rs0}
+      MONGODB_PORT_NUMBER: ${MONGODB_PORT_NUMBER:-27017}
+      MONGODB_INITIAL_PRIMARY_HOST: ${MONGODB_INITIAL_PRIMARY_HOST:-mongo}
+    entrypoint: |
+      bash -c
+        "mongod --replSet $$MONGODB_REPLICA_SET_NAME --bind_ip_all &
+          sleep 2;
+          until mongosh --eval \"db.adminCommand('ping')\"; do 
+            echo '=====> Waiting for Mongo...';
+            sleep 1;
+          done;
+          echo \"=====> Initiating ReplSet $$MONGODB_REPLICA_SET_NAME at $$MONGODB_INITIAL_PRIMARY_HOST:$$MONGODB_PORT_NUMBER...\";
+          mongosh --eval \"rs.initiate({_id: '$$MONGODB_REPLICA_SET_NAME', members: [{ _id: 0, host: '$$MONGODB_INITIAL_PRIMARY_HOST:$$MONGODB_PORT_NUMBER' }]})\";
+          echo '=====> Initiating ReplSet done...';
+        wait"
