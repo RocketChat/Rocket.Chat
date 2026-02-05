@@ -7,7 +7,7 @@ import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLe
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 import type { RoomType } from './RoomType';
-import type { Branded } from './utils';
+import type { Brand } from './utils';
 
 export interface IRoom extends IRocketChatRecord {
 	t: RoomType;
@@ -93,7 +93,7 @@ export interface IRoomWithJoinCode extends IRoom {
 }
 
 export interface IRoomFederated extends IRoom {
-	_id: Branded<string, 'IRoomFederated'>;
+	_id: string & Brand<'room-federated-id'>;
 	federated: true;
 }
 
