@@ -1,4 +1,4 @@
-import type { Job } from '../Job';
+import type { Job } from '../Job.js';
 
 export type JobOptions = {
 	concurrency: number;
