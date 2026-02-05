@@ -95,10 +95,12 @@ const roomAccessValidators: RoomAccessValidator[] = [
 ];
 
 export const canAccessRoom: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {
-	// TODO livechat can send both as null, so they we need to validate nevertheless
-	// if (!room || !user) {
-	// 	return false;
-	// }
+	// Defensive validation: livechat can send null/undefined room.
+	// If we have neither a room id nor a rid in extraData context, we cannot
+	// identify which room to check access for, so fail fast.
+	if (!room?._id && !extraData?.rid) {
+		return false;
+	}
 
 	for await (const roomAccessValidator of roomAccessValidators) {
 		if (await roomAccessValidator(room, user, extraData)) {
@@ -108,3 +110,4 @@ export const canAccessRoom: RoomAccessValidator = async (room, user, extraData):
 
 	return false;
 };
+
