@@ -98,7 +98,7 @@ export class HomeChannel {
 	}
 
 	get statusUploadIndicator(): Locator {
-		return this.page.getByRole('main').getByRole('status');
+		return this.page.getByRole('main').getByRole('status').getByText('Error');
 	}
 
 	get homepageHeader(): Locator {
