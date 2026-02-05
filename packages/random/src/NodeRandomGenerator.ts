@@ -1,8 +1,8 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
-import { AleaRandomGenerator } from './AleaRandomGenerator';
-import { RandomGenerator } from './RandomGenerator';
-import { createAleaGeneratorWithGeneratedSeed } from './createAleaGenerator';
+import { AleaRandomGenerator } from './AleaRandomGenerator.js';
+import { RandomGenerator } from './RandomGenerator.js';
+import { createAleaGeneratorWithGeneratedSeed } from './createAleaGenerator.js';
 
 export class NodeRandomGenerator extends RandomGenerator {
 	/**

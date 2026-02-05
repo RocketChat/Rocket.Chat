@@ -2,13 +2,32 @@
 	"name": "@rocket.chat/random",
 	"version": "1.2.2",
 	"private": true,
+	"type": "module",
 	"description": "Random number generator and utilities; Fork of Meteor's Random package",
-	"main": "./dist/main.server.js",
-	"browser": "./dist/main.client.js",
-	"types": "./dist/main.server.d.ts",
+	"main": "./dist/cjs/main.server.js",
+	"module": "./dist/esm/main.server.js",
+	"browser": {
+		"./dist/cjs/main.server.js": "./dist/cjs/main.client.js",
+		"./dist/esm/main.server.js": "./dist/esm/main.client.js"
+	},
+	"types": "./dist/esm/main.server.d.ts",
+	"exports": {
+		".": {
+			"browser": {
+				"types": "./dist/esm/main.client.d.ts",
+				"import": "./dist/esm/main.client.js",
+				"require": "./dist/cjs/main.client.js"
+			},
+			"types": "./dist/esm/main.server.d.ts",
+			"import": "./dist/esm/main.server.js",
+			"require": "./dist/cjs/main.server.js"
+		}
+	},
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.build.json",
-		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"build": "rm -rf dist && yarn build:esm && yarn build:cjs",
+		"build:esm": "tsc -p tsconfig.esm.json",
+		"build:cjs": "tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+		"dev": "tsc -p tsconfig.esm.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"test": "jest",
