@@ -30,10 +30,10 @@ const CLOSE_ENDPOINTS_BY_ROOM_TYPE: Record<
 	RoomType,
 	'/v1/groups.close' | '/v1/channels.close' | '/v1/im.close'
 > = {
-	p: '/v1/groups.close',   // private room / team
-	c: '/v1/channels.close', // channel
-	d: '/v1/im.close',       // direct message
-	l: '/v1/channels.close', // livechat
+	p: '/v1/groups.close',
+	c: '/v1/channels.close',
+	d: '/v1/im.close',
+	l: '/v1/channels.close',
 };
 
 export const useHideRoomAction = (
@@ -65,13 +65,11 @@ export const useHideRoomAction = (
 		},
 
 		onSuccess: () => {
-			// Default behaviour (used outside the sidebar)
 			if (redirect) {
 				router.navigate('/home');
 				return;
 			}
 
-			// Sidebar usage: close the active room if it was hidden
 			const routeName = router.getRouteName();
 			const routeParams = router.getRouteParameters();
 
@@ -87,7 +85,7 @@ export const useHideRoomAction = (
 					routeParams?.rid === roomId) ||
 				(type === 'l' &&
 					routeName === 'live' &&
-					routeParams?.id === roomId);
+					routeParams?.rid === roomId);
 
 			if (isCurrentRoom) {
 				router.navigate('/home');
