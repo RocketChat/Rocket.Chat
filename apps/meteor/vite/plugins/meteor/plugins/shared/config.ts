@@ -5,6 +5,11 @@ export type PluginOptions = {
 	 */
 	prefix?: string;
 	/**
+	 * Whether the build is targeting the client.
+	 * @default true.
+	 */
+	isClient?: boolean;
+	/**
 	 * The module id used to import the Meteor runtime shim.
 	 * @default 'virtual:meteor-runtime'.
 	 */
@@ -43,13 +48,17 @@ export type PluginOptions = {
 
 export type ResolvedPluginOptions = {
 	/**
-	 * The module id used to import the Meteor runtime shim.
-	 */
-	readonly runtimeImportId: string;
-	/**
 	 * The prefix used to identify Meteor package imports.
 	 */
 	readonly prefix: string;
+	/**
+	 * Whether the build is targeting the client.
+	 */
+	readonly isClient: boolean;
+	/**
+	 * The module id used to import the Meteor runtime shim.
+	 */
+	readonly runtimeImportId: string;
 	/**
 	 * The root URL of the Meteor application.
 	 */

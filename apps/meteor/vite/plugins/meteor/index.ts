@@ -3,6 +3,7 @@ import path from 'node:path';
 import type { PluginOption } from 'vite';
 
 import { globals } from './plugins/globals.ts';
+import { replace } from './plugins/replace.ts';
 import { resolve } from './plugins/resolve.ts';
 import type { PluginOptions, ResolvedPluginOptions } from './plugins/shared/config.ts';
 import { shim } from './plugins/shim.ts';
@@ -10,7 +11,7 @@ import { treeshake } from './plugins/treeshake.ts';
 
 export default function meteorPlugin(options: PluginOptions = {}): PluginOption {
 	const resolvedConfig = resolveConfig(options);
-	return [shim, resolve, treeshake, globals].map((plugin) => plugin(resolvedConfig));
+	return [replace, shim, resolve, treeshake, globals].map((plugin) => plugin(resolvedConfig));
 }
 
 function resolveConfig(options: PluginOptions): ResolvedPluginOptions {
@@ -34,6 +35,7 @@ function resolveConfig(options: PluginOptions): ResolvedPluginOptions {
 
 	return {
 		prefix: options.prefix || 'meteor/',
+		isClient: options.isClient ?? true,
 		projectRoot,
 		programsDir,
 		runtimeImportId: options.runtimeImportId || 'virtual:meteor-runtime',

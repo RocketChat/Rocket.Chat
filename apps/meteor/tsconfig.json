@@ -5,38 +5,46 @@
 		"module": "esnext",
 		"moduleResolution": "bundler",
 		"moduleDetection": "force",
-		"lib": ["esnext", "dom"],
-
+		"lib": [
+			"esnext",
+			"dom"
+		],
 		"allowJs": true,
 		"checkJs": false,
 		"jsx": "react-jsx",
 		"noEmit": true,
-
 		/* Strict Type-Checking Options */
 		"strictPropertyInitialization": false,
-
 		/* Additional Checks */
 		"noImplicitReturns": false,
 		"noFallthroughCasesInSwitch": false,
-
 		/* Module Resolution Options */
-		"baseUrl": ".",
+		// "baseUrl": ".",
 		"paths": {
 			/* Support absolute /imports/* with a leading '/' */
-			"/*": ["*"],
-			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"],
+			"/*": [
+				"./*"
+			],
+			"meteor/*": [
+				"./node_modules/@types/meteor/*",
+				"./.meteor/local/types/packages.d.ts"
+			],
 		},
 		"preserveSymlinks": true,
 		"allowImportingTsExtensions": true,
 		"types": []
-
 		// "sourceMap": true,
 		// "declaration": true,
 		// "removeComments": false,
 		// "emitDecoratorMetadata": true,
 		// "experimentalDecorators": true,
 	},
-	"include": ["./**/*", "./.storybook/**/*", "./jest.config.ts", "./.scripts/**/*"],
+	"include": [
+		"./**/*",
+		"./.storybook/**/*",
+		"./jest.config.ts",
+		"./.scripts/**/*"
+	],
 	"exclude": [
 		"**/node_modules/**",
 		"./.meteor/**",
