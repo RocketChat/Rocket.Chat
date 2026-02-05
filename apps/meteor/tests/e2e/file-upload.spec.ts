@@ -12,7 +12,6 @@ test.describe.serial('file-upload', () => {
 
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
-		await setSettingValueById(api, 'FileUpload_MaxFilesPerMessage', 10);
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
 	});
 
@@ -25,7 +24,6 @@ test.describe.serial('file-upload', () => {
 
 	test.afterAll(async ({ api }) => {
 		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
-		await setSettingValueById(api, 'FileUpload_MaxFilesPerMessage', 1);
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
@@ -90,6 +88,14 @@ test.describe.serial('file-upload', () => {
 	});
 
 	test.describe.serial('multiple file upload', () => {
+		test.beforeAll(async ({ api }) => {
+			await setSettingValueById(api, 'FileUpload_EnableMultipleFilesPerMessage', true);
+		});
+
+		test.afterAll(async ({ api }) => {
+			await setSettingValueById(api, 'FileUpload_EnableMultipleFilesPerMessage', false);
+		});
+
 		test('should send multiple files successfully', async () => {
 			const file1 = 'any_file.txt';
 			const file2 = 'lst-test.lst';
@@ -148,33 +154,33 @@ test.describe.serial('file-upload', () => {
 			await expect(poHomeChannel.composer.getFilesInComposer()).toHaveCount(10);
 			await expect(poHomeChannel.composer.getFileByName(file11)).not.toBeVisible();
 		});
-	});
 
-	test.describe.serial('thread multifile upload', () => {
-		test('should be able to remove file from thread composer before sending', async () => {
-			await poHomeChannel.content.sendMessage('this is a message for thread reply');
-			await poHomeChannel.content.openReplyInThread();
-			await poHomeChannel.content.sendFileMessageToThread('any_file.txt');
-			await poHomeChannel.content.sendFileMessageToThread('another_file.txt');
+		test.describe.serial('thread multiple file upload', () => {
+			test('should be able to remove file from thread composer before sending', async () => {
+				await poHomeChannel.content.sendMessage('this is a message for thread reply');
+				await poHomeChannel.content.openReplyInThread();
+				await poHomeChannel.content.sendFileMessageToThread('any_file.txt');
+				await poHomeChannel.content.sendFileMessageToThread('another_file.txt');
 
-			await poHomeChannel.threadComposer.removeFileByName('another_file.txt');
+				await poHomeChannel.threadComposer.removeFileByName('another_file.txt');
 
-			await expect(poHomeChannel.threadComposer.getFileByName('any_file.txt')).toBeVisible();
-			await expect(poHomeChannel.threadComposer.getFileByName('another_file.txt')).not.toBeVisible();
-		});
+				await expect(poHomeChannel.threadComposer.getFileByName('any_file.txt')).toBeVisible();
+				await expect(poHomeChannel.threadComposer.getFileByName('another_file.txt')).not.toBeVisible();
+			});
 
-		test('should send multiple files in a thread successfully', async () => {
-			const message = 'Here are two files in thread';
-			await poHomeChannel.content.openReplyInThread();
-			await poHomeChannel.content.sendFileMessageToThread('any_file.txt');
-			await poHomeChannel.content.sendFileMessageToThread('another_file.txt');
+			test('should send multiple files in a thread successfully', async () => {
+				const message = 'Here are two files in thread';
+				await poHomeChannel.content.openReplyInThread();
+				await poHomeChannel.content.sendFileMessageToThread('any_file.txt');
+				await poHomeChannel.content.sendFileMessageToThread('another_file.txt');
 
-			await poHomeChannel.threadComposer.inputMessage.fill(message);
-			await poHomeChannel.threadComposer.btnSend.click();
+				await poHomeChannel.threadComposer.inputMessage.fill(message);
+				await poHomeChannel.threadComposer.btnSend.click();
 
-			await expect(poHomeChannel.content.lastThreadMessageText).toContainText(message);
-			await expect(poHomeChannel.content.lastThreadMessageText.getByRole('link').getByText('another_file.txt')).toBeVisible();
-			await expect(poHomeChannel.content.lastThreadMessageText.getByRole('link').getByText('any_file.txt')).toBeVisible();
+				await expect(poHomeChannel.content.lastThreadMessageText).toContainText(message);
+				await expect(poHomeChannel.content.lastThreadMessageText.getByRole('link').getByText('another_file.txt')).toBeVisible();
+				await expect(poHomeChannel.content.lastThreadMessageText.getByRole('link').getByText('any_file.txt')).toBeVisible();
+			});
 		});
 	});
 

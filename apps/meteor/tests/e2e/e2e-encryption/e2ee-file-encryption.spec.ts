@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
-import { setSettingValueById } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -22,7 +21,6 @@ test.describe('E2EE File Encryption', () => {
 	test.use({ storageState: Users.userE2EE.state });
 
 	test.beforeAll(async ({ api }) => {
-		await setSettingValueById(api, 'FileUpload_MaxFilesPerMessage', 10);
 		await api.post('/settings/E2E_Enable', { value: true });
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
 		await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: false });
@@ -33,7 +31,6 @@ test.describe('E2EE File Encryption', () => {
 	test.afterAll(async ({ api }) => {
 		await api.post('/settings/FileUpload_MediaTypeWhiteList', { value: '' });
 		await api.post('/settings/FileUpload_MediaTypeBlackList', { value: 'image/svg+xml' });
-		await setSettingValueById(api, 'FileUpload_MaxFilesPerMessage', 1);
 	});
 
 	test.beforeEach(async ({ page }) => {
