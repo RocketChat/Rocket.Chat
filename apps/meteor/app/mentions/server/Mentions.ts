@@ -69,6 +69,28 @@ export class MentionsServer extends MentionsParser {
 			});
 		}
 
+		if (message.attachments) {
+			for await (const attachment of message.attachments) {
+				if (attachment.description) {
+					for await (const m of this.getUserMentions(attachment.description)) {
+						const mention = m.includes(':') ? m.trim() : m.trim().substring(1);
+						if (mention !== 'all' && mention !== 'here') {
+							userMentions.push(mention);
+							continue;
+						}
+						if (this.messageMaxAll() > 0 && (await this.getTotalChannelMembers(rid)) > this.messageMaxAll()) {
+							await this.onMaxRoomMembersExceeded({ sender, rid });
+							continue;
+						}
+						mentionsAll.push({
+							_id: mention,
+							username: mention,
+						});
+					}
+				}
+			}
+		}
+
 		return [...mentionsAll, ...(userMentions.length ? await this.getUsers(userMentions) : [])];
 	}
 
