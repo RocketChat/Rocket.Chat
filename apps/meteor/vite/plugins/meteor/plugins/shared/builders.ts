@@ -9,6 +9,16 @@ export function identifier(name: AST.IdentifierName['name']): AST.IdentifierName
 	};
 }
 
+export function nullLiteral(): AST.NullLiteral {
+	return {
+		type: 'Literal',
+		value: null,
+		raw: 'null',
+		start: 0,
+		end: 0,
+	};
+}
+
 export function booleanLiteral(value: AST.BooleanLiteral['value']): AST.BooleanLiteral {
 	return {
 		type: 'Literal',
@@ -117,6 +127,15 @@ export function logicalExpression(
 		left,
 		operator,
 		right,
+		start: 0,
+		end: 0,
+	};
+}
+
+export function objectExpression(properties: AST.ObjectExpression['properties']): AST.ObjectExpression {
+	return {
+		type: 'ObjectExpression',
+		properties,
 		start: 0,
 		end: 0,
 	};

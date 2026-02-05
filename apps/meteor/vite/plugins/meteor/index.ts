@@ -11,7 +11,12 @@ import { treeshake } from './plugins/treeshake.ts';
 
 export default function meteorPlugin(options: PluginOptions = {}): PluginOption {
 	const resolvedConfig = resolveConfig(options);
-	return [replace, shim, resolve, treeshake, globals].map((plugin) => plugin(resolvedConfig));
+	// This order is important
+	// replace must come first to replace constants used in other plugins
+	// treeshake must come after replace to remove code based on replaced constants
+	// shim must come after treeshake to add imports to the final code
+	// resolve and globals can come last to handle any remaining imports
+	return [replace, treeshake, shim, resolve, globals].map((plugin) => plugin(resolvedConfig));
 }
 
 function resolveConfig(options: PluginOptions): ResolvedPluginOptions {
@@ -35,6 +40,7 @@ function resolveConfig(options: PluginOptions): ResolvedPluginOptions {
 
 	return {
 		prefix: options.prefix || 'meteor/',
+		treeshake: options.treeshake ?? process.env.NODE_ENV === 'production',
 		isClient: options.isClient ?? true,
 		projectRoot,
 		programsDir,
