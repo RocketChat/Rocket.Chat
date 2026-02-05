@@ -18,14 +18,15 @@ const AudioAttachment = ({
 	title_link: link,
 	title_link_download: hasDownload,
 	collapsed,
-}: AudioAttachmentProps) => {
+	mentions,
+}: AudioAttachmentProps & { mentions?: any }) => {
 	const getURL = useMediaUrl();
 	const src = useMemo(() => getURL(url), [getURL, url]);
 	const { mediaRef } = useReloadOnError(src, 'audio');
 
 	return (
 		<>
-			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
+			{descriptionMd ? <MessageContentBody md={descriptionMd} mentions={mentions} /> : <MarkdownText parseEmoji content={description} />}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<AudioPlayer src={src} type={type} ref={mediaRef} />
 			</MessageCollapsible>

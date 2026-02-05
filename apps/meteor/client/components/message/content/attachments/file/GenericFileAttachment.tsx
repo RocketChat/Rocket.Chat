@@ -31,7 +31,8 @@ const GenericFileAttachment = ({
 	size,
 	format,
 	collapsed,
-}: GenericFileAttachmentProps) => {
+	mentions,
+}: GenericFileAttachmentProps & { mentions?: any }) => {
 	const getURL = useMediaUrl();
 	const uid = useId();
 	const { t } = useTranslation();
@@ -72,7 +73,7 @@ const GenericFileAttachment = ({
 
 	return (
 		<>
-			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
+			{descriptionMd ? <MessageContentBody md={descriptionMd} mentions={mentions} /> : <MarkdownText parseEmoji content={description} />}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={link} isCollapsed={collapsed}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
 					<MessageGenericPreviewContent

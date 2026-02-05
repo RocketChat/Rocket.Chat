@@ -19,14 +19,15 @@ const VideoAttachment = ({
 	title_link: link,
 	title_link_download: hasDownload,
 	collapsed,
-}: VideoAttachmentProps) => {
+	mentions,
+}: VideoAttachmentProps & { mentions?: any }) => {
 	const getURL = useMediaUrl();
 	const src = useMemo(() => getURL(url), [getURL, url]);
 	const { mediaRef } = useReloadOnError(src, 'video');
 
 	return (
 		<>
-			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
+			{descriptionMd ? <MessageContentBody md={descriptionMd} mentions={mentions} /> : <MarkdownText parseEmoji content={description} />}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
 					<Box is='video' controls preload='metadata' ref={mediaRef}>

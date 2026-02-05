@@ -22,13 +22,14 @@ const ImageAttachment = ({
 	title_link: link,
 	title_link_download: hasDownload,
 	collapsed,
-}: ImageAttachmentProps) => {
+	mentions,
+}: ImageAttachmentProps & { mentions?: any }) => {
 	const [loadImage, setLoadImage] = useLoadImage();
 	const getURL = useMediaUrl();
 
 	return (
 		<>
-			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
+			{descriptionMd ? <MessageContentBody md={descriptionMd} mentions={mentions} /> : <MarkdownText parseEmoji content={description} />}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<AttachmentImage
 					{...imageDimensions}
