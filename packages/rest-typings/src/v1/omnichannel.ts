@@ -4445,6 +4445,7 @@ const POSTLivechatSaveCustomFieldsSchema = {
 	properties: {
 		customFieldId: {
 			type: 'string',
+			nullable: true,
 		},
 		customFieldData: {
 			type: 'object',
@@ -4492,6 +4493,7 @@ const POSTLivechatSaveCustomFieldsSchema = {
 					nullable: true,
 				},
 			},
+			required: ['field', 'label', 'scope', 'visibility'],
 		},
 	},
 	additionalProperties: false,
