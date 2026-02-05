@@ -1330,8 +1330,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			query.tags = { $in: tags };
 		}
 		if (customFields && Object.keys(customFields).length) {
+			// Escape custom field values to prevent query failures and ReDoS
 			query.$and = Object.keys(customFields).map((key) => ({
-				[`livechatData.${key}`]: new RegExp(customFields[key], 'i'),
+				[`livechatData.${key}`]: new RegExp(escapeRegExp(customFields[key]), 'i'),
 			}));
 		}
 
@@ -1827,7 +1828,11 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v.token': visitorToken,
-			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
+			'$or': [
+				{ 'email.thread': { $elemMatch: { $in: emailThread } } },
+				// Escape email thread IDs to prevent query failures and ReDoS
+				{ 'email.thread': new RegExp(emailThread.map((t) => escapeRegExp(t)).join('|')) },
+			],
 		};
 
 		return this.findOne(query, options);
@@ -1844,7 +1849,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			'v.token': visitorToken,
 			'$or': [
 				{ 'email.thread': { $elemMatch: { $in: emailThread } } },
-				{ 'email.thread': new RegExp(emailThread.map((t) => `"${t}"`).join('|')) },
+				// Escape email thread IDs to prevent query failures and ReDoS
+				{ 'email.thread': new RegExp(emailThread.map((t) => `"${escapeRegExp(t)}"`).join('|')) },
 			],
 			...(departmentId && { departmentId }),
 		};
@@ -1857,7 +1863,11 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
-			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
+			'$or': [
+				{ 'email.thread': { $elemMatch: { $in: emailThread } } },
+				// Escape email thread IDs to prevent query failures and ReDoS
+				{ 'email.thread': new RegExp(emailThread.map((t) => escapeRegExp(t)).join('|')) },
+			],
 		};
 
 		return this.findOne(query, options);
