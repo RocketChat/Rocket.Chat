@@ -4,20 +4,13 @@ import styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 
 type TypingDotsProps = {
-	text?: string;
+	text: string;
 	className?: string;
 	style?: CSSProperties;
 };
 
-const DEFAULT_TYPING_LABEL = 'Agent is typing';
-
 export const TypingDots = ({ text, className, style = {} }: TypingDotsProps) => (
-	<div
-		role='status'
-		aria-label={text || DEFAULT_TYPING_LABEL}
-		className={createClassName(styles, 'typing-dots', {}, [className])}
-		style={style}
-	>
+	<div role='status' aria-label={text} className={createClassName(styles, 'typing-dots', {}, [className])} style={style}>
 		<span class={createClassName(styles, 'typing-dots__dot')} />
 		<span class={createClassName(styles, 'typing-dots__dot')} />
 		<span class={createClassName(styles, 'typing-dots__dot')} />

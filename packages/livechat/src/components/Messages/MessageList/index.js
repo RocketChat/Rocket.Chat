@@ -1,5 +1,6 @@
 import { parseISO, isSameDay } from 'date-fns';
 import { Suspense } from 'preact/compat';
+import i18next from 'i18next';
 
 import { MemoizedComponent } from '../../../helpers/MemoizedComponent';
 import { getAttachmentUrl } from '../../../helpers/baseUrl';
@@ -176,7 +177,10 @@ export class MessageList extends MemoizedComponent {
 		}
 
 		if (typingUsernames && typingUsernames.length) {
-			items.push(<TypingIndicator key='typing' use='li' avatarResolver={avatarResolver} usernames={typingUsernames} />);
+			const indicatorLabel = `${typingUsernames.join(', ')} ${typingUsernames.length > 1 ? i18next.t('are_typing') : i18next.t('is_typing')}`;
+			items.push(
+				<TypingIndicator key='typing' use='li' avatarResolver={avatarResolver} usernames={typingUsernames} text={indicatorLabel} />,
+			);
 		}
 
 		return items;

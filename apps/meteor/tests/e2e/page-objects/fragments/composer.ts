@@ -66,7 +66,7 @@ export abstract class Composer {
 	}
 
 	get typingIndicator(): Locator {
-		return this.root.getByText(/typing/i);
+		return this.root.getByRole('status').getByText(/typing/i);
 	}
 }
 
