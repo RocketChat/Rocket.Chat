@@ -3,6 +3,7 @@
 	"version": "0.0.2",
 	"private": true,
 	"type": "module",
+	"description": "Server-side utilities for Meteor accounts token hashing",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.js",
 	"types": "./dist/esm/index.d.ts",
