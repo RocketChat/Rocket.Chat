@@ -14,6 +14,7 @@ export function replace(resolvedConfig: ResolvedPluginOptions): PluginOption {
 			'Meteor.isSimulation': 'false',
 			'TEST_METADATA.driverPackage': 'false',
 			'Package.promise.Promise': 'globalThis.Promise',
+			'Package.meteor.global': 'globalThis',
 		}),
 		replacePlugin(
 			{

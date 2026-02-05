@@ -46,11 +46,12 @@ export default defineConfig(async () => {
 				external: ['react', 'react-dom'],
 			}),
 			meteor({
-				rootUrl: ROOT_URL.toString(),
+				rootUrl: ROOT_URL.toString()
 			}),
 			react({
 				exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
 			}),
+			process.env.VITE_INSPECT === 'true' ? await import('vite-plugin-inspect').then(({ default: inspect }) => inspect()) : null,
 		],
 		build,
 		resolve: {
