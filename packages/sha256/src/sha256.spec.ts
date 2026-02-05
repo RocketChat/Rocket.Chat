@@ -1,4 +1,4 @@
-import { SHA256 } from './sha256';
+import { SHA256 } from './sha256.js';
 
 it.each([
 	['meteor', '647d177cca8601046a3cb39e12f55bec5790bfcbc42199dd5fcf063200fac1d0'],
