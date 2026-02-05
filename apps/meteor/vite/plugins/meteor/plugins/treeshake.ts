@@ -17,7 +17,7 @@ function treeshakeMeteorInstall(ast: AST.Program): AST.Program {
 						b.objectExpression(
 							node.properties.filter((prop) => {
 								if (check.isProperty(prop) && check.isLiteral(prop.key) && typeof prop.key.value === 'string') {
-									return ['meteor', '@meteorjs', '@babel'].includes(prop.key.value);
+									return ['meteor', '@meteorjs', '@babel', 'meteor-node-stubs'].includes(prop.key.value);
 								}
 								return false;
 							}),

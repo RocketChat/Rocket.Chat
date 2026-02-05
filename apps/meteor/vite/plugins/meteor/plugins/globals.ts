@@ -37,7 +37,9 @@ export function globals(resolvedConfig: ResolvedPluginOptions): Plugin {
 }
 
 function generateMeteorRuntimeConfigCode(config: MeteorRuntimeConfig): string {
-	return `globalThis.__meteor_runtime_config__ = ${JSON.stringify(config, null, 2)};`;
+	return `const config = ${JSON.stringify(config, null, 2)};
+	config.ROOT_URL = window.location.origin;
+	globalThis.__meteor_runtime_config__ = config;`;
 }
 
 type MeteorRuntimeConfig = {
