@@ -118,11 +118,11 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		contactId: string,
 		changes: {
 			set?: Partial<ILivechatContact>;
-			unset?: Array<keyof ILivechatContact>;
+			unset?: Partial<Record<keyof ILivechatContact, '' | 1>>;
 		},
 		options?: FindOneAndUpdateOptions,
 	) {
-		const { set = {}, unset = [] } = changes;
+		const { set = {}, unset = {} } = changes;
 
 		const $set = {
 			...set,
@@ -130,13 +130,11 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			...(set.channels && { preRegistration: !set.channels.length }),
 		};
 
-		const $unset = unset.reduce((acc, key) => ({ ...acc, [key]: '' }), {});
-
 		return this.findOneAndUpdate(
 			{ _id: contactId, enabled: { $ne: false } },
 			{
 				$set,
-				...(unset.length > 0 && { $unset }),
+				...(Object.keys(unset).length > 0 && { $unset: unset }),
 			},
 			{ returnDocument: 'after', ...options },
 		);

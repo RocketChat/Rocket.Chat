@@ -27,7 +27,7 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 		contactId: string,
 		data: {
 			set?: Partial<ILivechatContact>;
-			unset?: Array<keyof ILivechatContact>;
+			unset?: Partial<Record<keyof ILivechatContact, '' | 1>>;
 		},
 		options?: FindOneAndUpdateOptions,
 	): Promise<ILivechatContact | null>;

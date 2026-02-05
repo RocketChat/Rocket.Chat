@@ -81,7 +81,8 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		...(customFieldsToUpdate && { customFields: customFieldsToUpdate }),
 		...(wipeConflicts && { conflictingFields: [] }),
 	};
-	const unset: (keyof ILivechatContact)[] = 'contactManager' in params && !contactManager ? ['contactManager'] : [];
+	const unset: Partial<Record<keyof ILivechatContact, '' | 1>> =
+		'contactManager' in params && !contactManager ? { contactManager: '' } : {};
 
 	const updatedContact = await patchContact(contactId, { set, unset });
 

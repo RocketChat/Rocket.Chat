@@ -65,7 +65,7 @@ describe('updateContact', () => {
 		const updatedContact = await updateContact({ contactId: 'contactId', contactManager: '' });
 
 		expect(modelsMock.LivechatContacts.patchContact.getCall(0).args[0]).to.be.equal('contactId');
-		expect(modelsMock.LivechatContacts.patchContact.getCall(0).args[1]).to.be.deep.contain({ unset: ['contactManager'] });
+		expect(modelsMock.LivechatContacts.patchContact.getCall(0).args[1]).to.be.deep.contain({ unset: { contactManager: '' } });
 		expect(updatedContact).to.be.deep.equal({ _id: 'contactId' });
 	});
 
@@ -75,7 +75,7 @@ describe('updateContact', () => {
 
 		const updatedContact = await updateContact({ contactId: 'contactId', contactManager: undefined });
 		expect(modelsMock.LivechatContacts.patchContact.getCall(0).args[0]).to.be.equal('contactId');
-		expect(modelsMock.LivechatContacts.patchContact.getCall(0).args[1]).to.be.deep.contain({ unset: ['contactManager'] });
+		expect(modelsMock.LivechatContacts.patchContact.getCall(0).args[1]).to.be.deep.contain({ unset: { contactManager: '' } });
 		expect(updatedContact).to.be.deep.equal({ _id: 'contactId' });
 	});
 });

@@ -245,7 +245,7 @@ describe('resolveContactConflicts', () => {
 			set: {
 				conflictingFields: [],
 			},
-			unset: ['contactManager'],
+			unset: { contactManager: '' },
 		});
 		expect(validateContactManagerMock.called).to.be.false;
 	});
@@ -271,7 +271,7 @@ describe('resolveContactConflicts', () => {
 			set: {
 				conflictingFields: [],
 			},
-			unset: ['contactManager'],
+			unset: { contactManager: '' },
 		});
 		expect(validateContactManagerMock.called).to.be.false;
 	});
