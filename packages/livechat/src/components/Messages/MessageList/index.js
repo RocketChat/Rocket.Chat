@@ -1,6 +1,6 @@
 import { parseISO, isSameDay } from 'date-fns';
-import { Suspense } from 'preact/compat';
 import i18next from 'i18next';
+import { Suspense } from 'preact/compat';
 
 import { MemoizedComponent } from '../../../helpers/MemoizedComponent';
 import { getAttachmentUrl } from '../../../helpers/baseUrl';
