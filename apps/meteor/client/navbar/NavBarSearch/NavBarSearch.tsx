@@ -86,7 +86,7 @@ const NavBarSearch = () => {
 					ref={mergedRefs}
 					role='combobox'
 					small
-					addon={<Icon name={isDirty ? 'cross' : 'magnifier'} size='x20' onClick={handleClearText} />}
+					addon={<Icon name={isDirty ? 'cross' : 'magnifier'} size='x20' onClick={handleClearText} title={t('Search_rooms')} />}
 				/>
 				{state.isOpen && <NavBarSearchListBox state={state} overlayProps={overlayProps} />}
 			</Box>
