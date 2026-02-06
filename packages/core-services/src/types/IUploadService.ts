@@ -6,7 +6,7 @@ import type { IMessage, IUpload, IUser, FilesAndAttachments } from '@rocket.chat
 export interface IUploadFileParams {
 	userId: string;
 	buffer: Buffer;
-	details: Partial<IUploadDetails>;
+	details: IUploadDetails;
 }
 export interface ISendFileMessageParams {
 	roomId: string;
@@ -38,5 +38,5 @@ export interface IUploadService {
 		file: IUpload;
 		imageResizeOpts?: { width: number; height: number };
 	}): Promise<Stream.Readable>;
-	uploadFileFromStream({ streamParam, details }: { streamParam: Stream.Readable; details: any }): Promise<IUpload>;
+	uploadFileFromStream({ streamParam, details }: { streamParam: Stream.Readable; details: Omit<IUploadDetails, 'size'> }): Promise<IUpload>;
 }
