@@ -1,4 +1,5 @@
-import { Component, type ComponentChildren } from 'preact';
+import { type ComponentChildren } from 'preact';
+import { useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { HTMLAttributes, TargetedEvent } from 'preact/compat';
 
 import { createClassName } from '../../helpers/createClassName';
@@ -37,7 +38,11 @@ type ItemProps = {
 } & HTMLAttributes<HTMLButtonElement>;
 
 export const Item = ({ children, primary = false, danger = false, disabled = false, icon = undefined, ...props }: ItemProps) => (
-	<button className={createClassName(styles, 'menu__item', { primary, danger, disabled })} disabled={disabled} {...props}>
+	<button
+		className={createClassName(styles, 'menu__item', { primary, danger, disabled })}
+		disabled={disabled}
+		{...props}
+	>
 		{icon && <div className={createClassName(styles, 'menu__item__icon')}>{icon()}</div>}
 		{children}
 	</button>
@@ -50,37 +55,38 @@ type PopoverMenuWrapperProps = {
 	overlayBounds: DOMRect;
 };
 
-type PopoverMenuWrapperState = {
-	position?: {
-		left?: number;
-		right?: number;
-		top?: number;
-		bottom?: number;
-	};
-	placement?: string;
+type Position = {
+	left?: number;
+	right?: number;
+	top?: number;
+	bottom?: number;
 };
 
-class PopoverMenuWrapper extends Component<PopoverMenuWrapperProps, PopoverMenuWrapperState> {
-	override state: PopoverMenuWrapperState = {};
+const PopoverMenuWrapper = ({
+	children,
+	dismiss,
+	triggerBounds,
+	overlayBounds,
+}: PopoverMenuWrapperProps) => {
+	const menuRef = useRef<HTMLDivElement | null>(null);
 
-	menuRef: (Component & { base: Element }) | null = null;
+	const [position, setPosition] = useState<Position>();
+	const [placement, setPlacement] = useState<string>();
 
-	handleRef = (ref: (Component & { base: Element }) | null) => {
-		this.menuRef = ref;
-	};
-
-	handleClick = ({ target }: TargetedEvent<HTMLElement, MouseEvent>) => {
+	const handleClick = ({ target }: TargetedEvent<HTMLElement, MouseEvent>) => {
 		if (!(target as HTMLElement)?.closest(`.${styles.menu__item}`)) {
 			return;
 		}
 
-		const { dismiss } = this.props;
 		dismiss();
 	};
 
-	override componentDidMount() {
-		const { triggerBounds, overlayBounds } = this.props;
-		const menuBounds = normalizeDOMRect(this.menuRef?.base?.getBoundingClientRect());
+	useLayoutEffect(() => {
+		if (!menuRef.current) {
+			return;
+		}
+
+		const menuBounds = normalizeDOMRect(menuRef.current.getBoundingClientRect());
 
 		const menuWidth = menuBounds.right - menuBounds.left;
 		const menuHeight = menuBounds.bottom - menuBounds.top;
@@ -94,26 +100,23 @@ class PopoverMenuWrapper extends Component<PopoverMenuWrapperProps, PopoverMenuW
 		const top = menuHeight < bottomSpace ? triggerBounds.bottom : undefined;
 		const bottom = menuHeight < bottomSpace ? undefined : overlayBounds.bottom - triggerBounds.top;
 
-		const placement = `${menuWidth < rightSpace ? 'right' : 'left'}-${menuHeight < bottomSpace ? 'bottom' : 'top'}`;
+		const computedPlacement = `${menuWidth < rightSpace ? 'right' : 'left'}-${menuHeight < bottomSpace ? 'bottom' : 'top'}`;
 
-		// eslint-disable-next-line react/no-did-mount-set-state
-		this.setState({
-			position: { left, right, top, bottom },
-			placement,
-		});
-	}
+		setPosition({ left, right, top, bottom });
+		setPlacement(computedPlacement);
+	}, [triggerBounds, overlayBounds]);
 
-	render = ({ children }: PopoverMenuWrapperProps) => (
+	return (
 		<Menu
-			ref={this.handleRef}
-			style={{ position: 'absolute', ...this.state.position }}
-			placement={this.state.placement}
-			onClickCapture={this.handleClick}
+			ref={menuRef}
+			style={{ position: 'absolute', ...position }}
+			placement={placement}
+			onClickCapture={handleClick}
 		>
 			{children}
 		</Menu>
 	);
-}
+};
 
 type PopoverMenuProps = {
 	children?: ComponentChildren;
@@ -129,7 +132,11 @@ export const PopoverMenu = ({ children = null, trigger, overlayed }: PopoverMenu
 	>
 		{trigger}
 		{({ dismiss, triggerBounds, overlayBounds }) => (
-			<PopoverMenuWrapper dismiss={dismiss} triggerBounds={triggerBounds} overlayBounds={overlayBounds}>
+			<PopoverMenuWrapper
+				dismiss={dismiss}
+				triggerBounds={triggerBounds}
+				overlayBounds={overlayBounds}
+			>
 				{children}
 			</PopoverMenuWrapper>
 		)}
