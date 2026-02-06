@@ -1,6 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { usePermission, useSetting, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetting, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +9,7 @@ import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
 import { useHideRoomAction } from './useHideRoomAction';
 import { useOmnichannelPrioritiesMenu } from '../views/omnichannel/hooks/useOmnichannelPrioritiesMenu';
-import { useUserRoom } from '@rocket.chat/ui-contexts';
+
 
 type RoomMenuActionsProps = {
 	rid: string;
