@@ -20,10 +20,25 @@
 	align-items: stretch;
 	justify-content: space-between;
 
+	// Mobile responsive styles
+	@media (max-width: 480px) {
+		padding: 8px 12px;
+		align-items: center;
+	}
+
 	&__content {
 		display: flex;
 
 		padding: 4px 8px;
+
+		// Mobile responsive styles
+		@media (max-width: 480px) {
+			flex-direction: column;
+			align-items: center;
+			text-align: center;
+			gap: 8px;
+			padding: 8px;
+		}
 	}
 
 	&__options {
@@ -49,6 +64,12 @@
 		}
 
 		@include helpers.pressable-button(2px);
+
+		// Mobile responsive styles
+		@media (max-width: 480px) {
+			text-align: center;
+			width: 100%;
+		}
 	}
 
 	&__remainder {
@@ -61,6 +82,13 @@
 			transition: color 0.2s;
 
 			color: colors.$color-red;
+		}
+
+		// Mobile responsive styles
+		@media (max-width: 480px) {
+			margin-left: 0;
+			margin-top: 4px;
+			text-align: center;
 		}
 	}
 }
@@ -75,6 +103,12 @@
 	font-size: 10px;
 	font-weight: 500;
 	align-self: flex-end;
+
+	// Mobile responsive styles
+	@media (max-width: 480px) {
+		text-align: center;
+		align-self: center;
+	}
 
 	.powered-by__logo {
 		display: inline-flex;

@@ -1,4 +1,5 @@
-import { Button } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Button } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
 import { normalizeLanguage } from '@rocket.chat/tools';
@@ -6,6 +7,17 @@ import { type TranslationLanguage, useSetting, useLoadLanguage, useLanguage, use
 import { useMemo, useEffect } from 'react';
 import type { ReactElement, UIEvent } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+
+const responsiveLanguageButtonsStyles = css`
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+
+	@media (max-width: 768px) {
+		justify-content: center;
+		width: 100%;
+	}
+`;
 
 const useSuggestedLanguages = ({
 	browserLanguage = normalizeLanguage(window.navigator.language ?? 'en'),
@@ -60,20 +72,22 @@ const LoginSwitchLanguageFooter = ({
 
 	return (
 		<HorizontalWizardLayoutCaption>
-			{suggestions.map((suggestion) => {
-				// If suggestion is "Default", skip it
-				if (!suggestion.key) {
-					return;
-				}
+			<Box className={responsiveLanguageButtonsStyles}>
+				{suggestions.map((suggestion) => {
+					// If suggestion is "Default", skip it
+					if (!suggestion.key) {
+						return;
+					}
 
-				return (
-					<Button secondary small mie={8} key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
-						<Trans i18nKey='registration.component.switchLanguage' tOptions={{ lng: suggestion.key }} values={{ name: suggestion.ogName }}>
-							Change to <strong>{suggestion.ogName}</strong>
-						</Trans>
-					</Button>
-				);
-			})}
+					return (
+						<Button secondary small key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
+							<Trans i18nKey='registration.component.switchLanguage' tOptions={{ lng: suggestion.key }} values={{ name: suggestion.ogName }}>
+								Change to <strong>{suggestion.ogName}</strong>
+							</Trans>
+						</Button>
+					);
+				})}
+			</Box>
 		</HorizontalWizardLayoutCaption>
 	);
 };
