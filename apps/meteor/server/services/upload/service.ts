@@ -180,6 +180,11 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		const writeStream = fs.createWriteStream(tempFilePath);
 		streamParam.pipe(writeStream);
 
+		const cleanup = (err: unknown) => {
+			fs.promises.unlink(tempFilePath).catch(() => undefined);
+			resolver.reject(err);
+		};
+
 		writeStream.on('finish', async () => {
 			FileUpload.getStore('Uploads')
 				.insert(
@@ -190,16 +195,15 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 					tempFilePath,
 				)
 				.then(resolver.resolve)
-				.catch((err) => {
-					fs.promises.unlink(tempFilePath).catch(() => undefined);
-					resolver.reject(err);
-				});
+				.catch(cleanup);
 		});
 
-		writeStream.on('error', async (err) => {
-			await fs.promises.unlink(tempFilePath).catch(() => undefined);
-			resolver.reject(err);
+		streamParam.on('error', async (err) => {
+			writeStream.destroy();
+			cleanup(err);
 		});
+
+		writeStream.on('error', cleanup);
 
 		return resolver.promise;
 	}
