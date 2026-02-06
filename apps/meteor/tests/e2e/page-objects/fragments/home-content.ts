@@ -500,7 +500,7 @@ export class HomeContent {
 	}
 
 	getMessageById(id: string): Locator {
-		return this.messageListItems.filter({ has: this.page.locator(`[id="${id}"]`) });
+		return this.page.locator(`[role="listitem"][aria-roledescription="message"][id="${id}"]`);
 	}
 
 	async waitForChannel(): Promise<void> {
