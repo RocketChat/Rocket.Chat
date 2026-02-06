@@ -24,7 +24,7 @@ const handleExternalProvider = async (externalProviderUrl: string, username: str
 			return;
 		}
 
-		const unsafeHeaders = ['host', 'content-length', 'connection', 'set-cookie', 'transfer-encoding'];
+		const unsafeHeaders = ['host', 'content-length', 'connection', 'set-cookie', 'transfer-encoding', 'content-encoding'];
 		response.headers.forEach((value, key) => {
 			if (!unsafeHeaders.includes(key.toLowerCase())) {
 				res.setHeader(key, value);
