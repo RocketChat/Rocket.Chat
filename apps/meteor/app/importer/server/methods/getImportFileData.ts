@@ -34,9 +34,9 @@ export const executeGetImportFileData = async (): Promise<IImporterSelection | {
 		ProgressStep.PREPARING_CONTACTS,
 		ProgressStep.PREPARING_STARTED,
 	];
-
 	if (waitingSteps.indexOf(instance.progress.step) >= 0) {
-		const isInvalidCSV = operation.importerKey === 'csv' && operation.contentType !== 'text/csv';
+		const validCsvContentTypes = ['text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel'];
+		const isInvalidCSV = operation.importerKey === 'csv' && !validCsvContentTypes.includes(operation.contentType ?? '');
 
 		if (instance.importRecord?.valid && !isInvalidCSV) {
 			return { waiting: true };

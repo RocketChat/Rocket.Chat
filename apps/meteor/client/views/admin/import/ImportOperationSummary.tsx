@@ -103,10 +103,9 @@ function ImportOperationSummary({
 			{!small && (
 				<>
 					<TableCell>
-						{status && (
-							(valid === false || (type === 'CSV' && contentType !== 'text/csv'))
-								? t('importer_status_import_failed' as TranslationKey)
-								: t(status.replace('importer_', 'importer_status_') as TranslationKey)
+						{status && (valid === false
+							? t('importer_status_import_failed' as TranslationKey)
+							: t(status.replace('importer_', 'importer_status_') as TranslationKey)
 						)}
 					</TableCell>
 					<TableCell>{fileName}</TableCell>
