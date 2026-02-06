@@ -10,14 +10,14 @@ import { serveSvgAvatarInRequestedFormat, wasFallbackModified, setCacheAndDispos
 import { settings } from '../../../app/settings/server';
 
 const handleExternalProvider = async (externalProviderUrl: string, username: string, res: ServerResponse): Promise<void> => {
-	const url = externalProviderUrl.replace('{username}', username);
+	const url = externalProviderUrl.replace('{username}', encodeURIComponent(username));
 
 	try {
 		const response = await fetch(url);
 		const ok = typeof (response as any).ok === 'boolean' ? (response as any).ok : true;
 		const body = (response as any).body as unknown;
 
-		if (!ok || !body || typeof (body as any).pipe !== 'function'
+		if (!ok || !body || typeof (body as any).pipe !== 'function') {
 			if (!res.headersSent) {
 				res.writeHead(502);
 			}
