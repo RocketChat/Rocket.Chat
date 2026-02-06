@@ -291,14 +291,6 @@ export class HomeContent {
 		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Voice call' });
 	}
 
-	get userCard(): Locator {
-		return this.page.getByRole('dialog', { name: 'User card', exact: true });
-	}
-
-	get linkUserCard(): Locator {
-		return this.userCard.locator('a');
-	}
-
 	get btnContactInformation(): Locator {
 		return this.page.getByRole('button', { name: 'User Info' });
 	}

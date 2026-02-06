@@ -17,13 +17,12 @@ test.describe.serial('settings-account-profile', () => {
 		poAccountProfile = new AccountProfile(page);
 	});
 
-	// FIXME: solve test intermitencies
 	test.describe('Profile', () => {
 		test.beforeEach(async ({ page }) => {
 			await page.goto('/account/profile');
 		});
 
-		test.skip('expect update profile with new name/username', async () => {
+		test('expect update profile with new name/username', async () => {
 			const newName = faker.person.fullName();
 			const newUsername = faker.internet.userName({ firstName: newName });
 
@@ -37,9 +36,9 @@ test.describe.serial('settings-account-profile', () => {
 			await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText(newUsername);
 
 			await poHomeChannel.content.lastUserMessageNotSequential.locator('figure').click();
-			await poHomeChannel.content.linkUserCard.click();
+			await poHomeChannel.userCard.openUserInfo();
 
-			await expect(poHomeChannel.tabs.userInfoUsername).toHaveText(newUsername);
+			await expect(poHomeChannel.tabs.userInfo.userName).toHaveText(newUsername);
 		});
 
 		test.describe('Avatar', () => {

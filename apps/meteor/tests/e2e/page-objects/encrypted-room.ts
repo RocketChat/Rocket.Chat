@@ -1,8 +1,17 @@
-import { HomeContent, HomeFlextab } from './fragments';
+import type { Page } from '@playwright/test';
+
+import { EncryptedRoomToolbar, HomeContent } from './fragments';
 import { Message } from './fragments/message';
 import { DisableRoomEncryptionModal, EnableRoomEncryptionModal } from './fragments/modals';
 
 export class EncryptedRoomPage extends HomeContent {
+	readonly toolbar: EncryptedRoomToolbar;
+
+	constructor(page: Page) {
+		super(page);
+		this.toolbar = new EncryptedRoomToolbar(page);
+	}
+
 	get encryptedTitle() {
 		return this.page.getByRole('button', { name: '- encrypted' });
 	}
@@ -20,28 +29,23 @@ export class EncryptedRoomPage extends HomeContent {
 	}
 
 	async enableEncryption() {
-		const tabs = new HomeFlextab(this.page);
-
 		const enableRoomEncryptionModal = new EnableRoomEncryptionModal(this.page);
 
-		await tabs.kebab.click();
-		await tabs.btnEnableE2E.click();
+		await this.toolbar.openMoreOptions();
+		await this.toolbar.btnEnableE2EEncryption.click();
 		await enableRoomEncryptionModal.enable();
 	}
 
 	async disableEncryption() {
-		const tabs = new HomeFlextab(this.page);
 		const disableRoomEncryptionModal = new DisableRoomEncryptionModal(this.page);
 
-		await tabs.kebab.click();
-		await tabs.btnDisableE2E.click();
+		await this.toolbar.openMoreOptions();
+		await this.toolbar.btnDisableE2EEncryption.click();
 		await disableRoomEncryptionModal.disable();
 	}
 
 	async showExportMessagesTab() {
-		const tabs = new HomeFlextab(this.page);
-
-		await tabs.kebab.click();
-		await tabs.btnExportMessages.click();
+		await this.toolbar.openMoreOptions();
+		await this.toolbar.menuItemExportMessages.click();
 	}
 }

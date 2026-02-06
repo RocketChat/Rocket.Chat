@@ -51,10 +51,10 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 		await toastMessages.dismissToast();
 
-		await poHomeChannel.tabs.kebab.click({ force: true });
+		await poHomeChannel.roomToolbar.openMoreOptions();
 
-		await expect(poHomeChannel.tabs.btnDisableE2E).toBeVisible();
-		await poHomeChannel.tabs.btnDisableE2E.click({ force: true });
+		await expect(poHomeChannel.roomToolbar.btnDisableE2EEncryption).toBeVisible();
+		await poHomeChannel.roomToolbar.btnDisableE2EEncryption.click({ force: true });
 		await expect(page.getByRole('dialog', { name: 'Disable encryption' })).toBeVisible();
 		await page.getByRole('button', { name: 'Disable encryption' }).click();
 		await poHomeChannel.toastMessage.dismissToast();
@@ -65,9 +65,9 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world not encrypted');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
 
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
-		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await expect(poHomeChannel.roomToolbar.menuItemEnableE2EEncryption).toBeVisible();
+		await poHomeChannel.roomToolbar.menuItemEnableE2EEncryption.click();
 		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
 		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await poHomeChannel.toastMessage.dismissToast();
@@ -144,12 +144,12 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.toastMessage.waitForDisplay();
 		await poHomeChannel.toastMessage.dismissToast();
 
-		await poHomeChannel.tabs.kebab.click();
+		await poHomeChannel.roomToolbar.openMoreOptions();
 		// TODO(@jessicaschelly/@dougfabris): fix this flaky behavior
-		if (!(await poHomeChannel.tabs.btnEnableE2E.isVisible())) {
-			await poHomeChannel.tabs.kebab.click();
+		if (!(await poHomeChannel.roomToolbar.menuItemEnableE2EEncryption.isVisible())) {
+			await poHomeChannel.roomToolbar.openMoreOptions();
 		}
-		await poHomeChannel.tabs.btnEnableE2E.click();
+		await poHomeChannel.roomToolbar.menuItemEnableE2EEncryption.click();
 		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
 		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await page.waitForTimeout(1000);
@@ -245,9 +245,9 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.content.sendMessage('second unencrypted message');
 
 		// Encrypt channel
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
-		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await expect(poHomeChannel.roomToolbar.menuItemEnableE2EEncryption).toBeVisible();
+		await poHomeChannel.roomToolbar.menuItemEnableE2EEncryption.click();
 		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
 		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await page.waitForTimeout(1000);
@@ -303,8 +303,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.toastMessage.waitForDisplay();
 		await poHomeChannel.toastMessage.dismissToast();
 
-		await poHomeChannel.tabs.kebab.click();
-		await poHomeChannel.tabs.btnPinnedMessagesList.click();
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemPinnedMessages.click();
 
 		await expect(page.getByRole('dialog', { name: 'Pinned Messages' })).toBeVisible();
 
@@ -316,9 +316,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(page.locator('role=menuitem[name="Copy link"]')).toHaveClass(/disabled/);
 
 		await poHomeChannel.btnContextualbarClose.click();
-
-		await poHomeChannel.tabs.kebab.click();
-		await poHomeChannel.tabs.btnStarredMessageList.click();
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemStarredMessages.click();
 
 		const lastStarredMessage = page.getByRole('dialog', { name: 'Starred Messages' }).locator('[data-qa-type="message"]').last();
 		await expect(page.getByRole('dialog', { name: 'Starred Messages' })).toBeVisible();
