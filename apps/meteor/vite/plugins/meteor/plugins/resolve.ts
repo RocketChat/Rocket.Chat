@@ -10,8 +10,14 @@ export function resolve(resolvedConfig: ResolvedPluginOptions): Plugin {
 			filter: {
 				id: prefixRegex(resolvedConfig.prefix),
 			},
-			handler(source) {
+			async handler(source) {
 				const meteorModule = source.slice(resolvedConfig.prefix.length).replaceAll(':', '_');
+
+				const localResolved = await this.resolve(`./src/meteor/${meteorModule}`);
+				if (localResolved) {
+					return localResolved;
+				}
+
 				return {
 					id: getId(meteorModule),
 				};
