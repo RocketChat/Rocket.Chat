@@ -1,6 +1,6 @@
 import type { IStats } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
+import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
 type SlashCommand = { command: string };
@@ -19,10 +19,6 @@ type Param = {
 type TelemetryPayload = {
 	params: Param[];
 };
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type StatisticsProps = { refresh?: 'true' | 'false' };
 
