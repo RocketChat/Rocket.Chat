@@ -92,6 +92,7 @@ const NavBarSearch = () => {
 							size='x20'
 							onClick={handleClearText}
 							title={isDirty ? t('Clear_search') : t('Search_rooms')}
+							aria-label={isDirty ? t('Clear_search') : t('Search_rooms')}
 						/>
 					}
 				/>
