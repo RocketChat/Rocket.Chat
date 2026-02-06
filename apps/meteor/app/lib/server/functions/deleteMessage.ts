@@ -21,7 +21,7 @@ export const deleteMessageValidatingPermission = async (message: AtLeast<IMessag
 	const user = await Users.findOneById(userId);
 	const originalMessage = await Messages.findOneById(message._id);
 
-	if (!originalMessage || !user || !(await canDeleteMessageAsync(userId, originalMessage))) {
+	if (!originalMessage || !user || !(await canDeleteMessageAsync(user, originalMessage))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Not allowed');
 	}
 
