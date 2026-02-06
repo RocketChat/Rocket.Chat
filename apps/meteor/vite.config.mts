@@ -46,7 +46,8 @@ export default defineConfig(async () => {
 				external: ['react', 'react-dom'],
 			}),
 			meteor({
-				rootUrl: ROOT_URL.toString()
+				rootUrl: ROOT_URL.toString(),
+				treeshake: true,
 			}),
 			react({
 				exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
