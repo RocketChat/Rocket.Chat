@@ -49,9 +49,7 @@ test.describe.serial('OC - Livechat - Typing indicator', () => {
 		});
 
 		await test.step('expect agent to see typing indicator when visitor types', async () => {
-			await poLiveChat.onlineAgentMessage.fill(' ');
-			await poLiveChat.onlineAgentMessage.fill('');
-			await poLiveChat.onlineAgentMessage.pressSequentially('a', { delay: 20 });
+			await poLiveChat.onlineAgentMessage.pressSequentially('abc', { delay: 20 });
 			await expect(poHomeOmnichannel.composer.typingIndicator).toBeVisible();
 		});
 
