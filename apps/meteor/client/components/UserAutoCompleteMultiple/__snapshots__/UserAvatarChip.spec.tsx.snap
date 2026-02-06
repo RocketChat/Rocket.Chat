@@ -25,7 +25,7 @@ exports[`UserAvatarChip renders Default without crashing 1`] = `
         <span
           class="rcx-box rcx-box--full rcx-css-1wsppvb"
         >
-          John Doe
+          johndoe
         </span>
       </span>
       <i
@@ -58,7 +58,7 @@ exports[`UserAvatarChip renders Federated without crashing 1`] = `
         <span
           class="rcx-box rcx-box--full rcx-css-1wsppvb"
         >
-          John Doe
+          johndoe
         </span>
       </span>
       <i
