@@ -118,6 +118,49 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 const keys: (keyof RoomListRowProps)[] = ['id', 'style', 't', 'videoConfActions'];
 
 // eslint-disable-next-line react/no-multi-comp
+// export default memo(SidebarItemWithData, (prevProps, nextProps) => {
+// 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
+// 		return false;
+// 	}
+
+// 	if (prevProps.room === nextProps.room) {
+// 		return true;
+// 	}
+
+// 	if (prevProps.room._id !== nextProps.room._id) {
+// 		return false;
+// 	}
+// 	if (prevProps.room._updatedAt?.toISOString() !== nextProps.room._updatedAt?.toISOString()) {
+// 		return false;
+// 	}
+// 	if (safeDateNotEqualCheck(prevProps.room.lastMessage?._updatedAt, nextProps.room.lastMessage?._updatedAt)) {
+// 		return false;
+// 	}
+// 	if (prevProps.room.alert !== nextProps.room.alert) {
+// 		return false;
+// 	}
+// 	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room?.v?.status !== nextProps.room?.v?.status) {
+// 		return false;
+// 	}
+// 	if (prevProps.room.teamMain !== nextProps.room.teamMain) {
+// 		return false;
+// 	}
+
+// 	if (
+// 		isOmnichannelRoom(prevProps.room) &&
+// 		isOmnichannelRoom(nextProps.room) &&
+// 		prevProps.room.priorityWeight !== nextProps.room.priorityWeight
+// 	) {
+// 		return false;
+// 	}
+
+// 	return true;
+// });
+
+
+const keys: (keyof RoomListRowProps)[] = ['id', 'style', 't', 'videoConfActions'];
+
+// eslint-disable-next-line react/no-multi-comp
 export default memo(SidebarItemWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
 		return false;
@@ -130,18 +173,27 @@ export default memo(SidebarItemWithData, (prevProps, nextProps) => {
 	if (prevProps.room._id !== nextProps.room._id) {
 		return false;
 	}
+
+	if (prevProps.room.avatarETag !== nextProps.room.avatarETag) {
+		return false;
+	}
+
 	if (prevProps.room._updatedAt?.toISOString() !== nextProps.room._updatedAt?.toISOString()) {
 		return false;
 	}
+
 	if (safeDateNotEqualCheck(prevProps.room.lastMessage?._updatedAt, nextProps.room.lastMessage?._updatedAt)) {
 		return false;
 	}
+
 	if (prevProps.room.alert !== nextProps.room.alert) {
 		return false;
 	}
+
 	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room?.v?.status !== nextProps.room?.v?.status) {
 		return false;
 	}
+
 	if (prevProps.room.teamMain !== nextProps.room.teamMain) {
 		return false;
 	}

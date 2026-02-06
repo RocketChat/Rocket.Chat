@@ -13,7 +13,7 @@ export const RoomIcon = ({
 	isIncomingCall,
 	placement = 'default',
 }: {
-	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u'>;
+	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u' | 'avatarETag'>;
 	size?: ComponentProps<typeof Icon>['size'];
 	isIncomingCall?: boolean;
 	placement?: 'sidebar' | 'default';
