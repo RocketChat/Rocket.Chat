@@ -145,22 +145,25 @@ export const createLayoutSettings = () =>
 			});
 		});
 		await this.section('Custom_Scripts', async function () {
-			await this.add('Custom_Script_On_Logout', '//Add your script', {
-				type: 'code',
-				multiline: true,
-				public: true,
-			});
-			await this.add('Custom_Script_Logged_Out', '//Add your script', {
-				type: 'code',
-				multiline: true,
-				public: true,
-			});
-			return this.add('Custom_Script_Logged_In', '//Add your script', {
-				type: 'code',
-				multiline: true,
-				public: true,
-			});
-		});
+    await this.add('Custom_Script_On_Logout', '//Add your script', {
+        type: 'code',
+        multiline: true,
+        public: true,
+        i18nDescription: 'Custom_Script_On_Logout_Description',
+    });
+    await this.add('Custom_Script_Logged_Out', '//Add your script', {
+        type: 'code',
+        multiline: true,
+        public: true,
+        i18nDescription: 'Custom_Script_Logged_Out_Description',
+    });
+    return this.add('Custom_Script_Logged_In', '//Add your script', {
+        type: 'code',
+        multiline: true,
+        public: true,
+        i18nDescription: 'Custom_Script_Logged_In_Description',
+    });
+});
 		await this.section('User_Interface', async function () {
 			await this.add('UI_DisplayRoles', true, {
 				type: 'boolean',
