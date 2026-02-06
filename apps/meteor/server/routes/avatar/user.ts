@@ -14,10 +14,9 @@ const handleExternalProvider = async (externalProviderUrl: string, username: str
 
 	try {
 		const response = await fetch(url);
-		const ok = typeof (response as any).ok === 'boolean' ? (response as any).ok : true;
-		const body = (response as any).body as unknown;
+		const { ok, body } = response;
 
-		if (!ok || !body || typeof (body as any).pipe !== 'function') {
+		if (!ok || !body || typeof body.pipe !== 'function') {
 			if (!res.headersSent) {
 				res.writeHead(502);
 			}
@@ -32,7 +31,7 @@ const handleExternalProvider = async (externalProviderUrl: string, username: str
 			}
 		});
 
-		if (typeof (body as any).on === 'function') {
+		if ('on' in body && typeof (body as any).on === 'function') {
 			(body as any).on('error', () => {
 				if (!res.headersSent) {
 					res.writeHead(502);
@@ -41,7 +40,7 @@ const handleExternalProvider = async (externalProviderUrl: string, username: str
 			});
 		}
 
-		(body as any).pipe(res);
+		body.pipe(res);
 	} catch {
 		if (!res.headersSent) {
 			res.writeHead(502);
