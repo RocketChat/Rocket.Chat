@@ -1,4 +1,5 @@
 import { Component, type ComponentChildren } from 'preact';
+import { forwardRef } from 'preact/compat';
 import type { HTMLAttributes, TargetedEvent } from 'preact/compat';
 
 import { createClassName } from '../../helpers/createClassName';
@@ -6,17 +7,32 @@ import { normalizeDOMRect } from '../../helpers/normalizeDOMRect';
 import { PopoverTrigger } from '../Popover';
 import styles from './styles.scss';
 
+/* ------------------------------------------------------------------ */
+/* Menu */
+/* ------------------------------------------------------------------ */
+
 type MenuProps = {
 	hidden?: boolean;
 	placement?: string;
-	ref?: any; // FIXME: remove this
-} & Omit<HTMLAttributes<HTMLDivElement>, 'ref'>;
+} & HTMLAttributes<HTMLDivElement>;
 
-export const Menu = ({ children, hidden, placement = '', ...props }: MenuProps) => (
-	<div className={createClassName(styles, 'menu', { hidden, placement })} {...props}>
-		{children}
-	</div>
+export const Menu = forwardRef<HTMLDivElement, MenuProps>(
+	({ children, hidden, placement = '', ...props }, ref) => (
+		<div
+			ref={ref}
+			className={createClassName(styles, 'menu', { hidden, placement })}
+			{...props}
+		>
+			{children}
+		</div>
+	)
 );
+
+Menu.displayName = 'Menu';
+
+/* ------------------------------------------------------------------ */
+/* Group */
+/* ------------------------------------------------------------------ */
 
 type GroupProps = {
 	title?: string;
@@ -29,6 +45,10 @@ export const Group = ({ children, title = '', ...props }: GroupProps) => (
 	</div>
 );
 
+/* ------------------------------------------------------------------ */
+/* Item */
+/* ------------------------------------------------------------------ */
+
 type ItemProps = {
 	primary?: boolean;
 	danger?: boolean;
@@ -36,12 +56,27 @@ type ItemProps = {
 	icon?: () => ComponentChildren;
 } & HTMLAttributes<HTMLButtonElement>;
 
-export const Item = ({ children, primary = false, danger = false, disabled = false, icon = undefined, ...props }: ItemProps) => (
-	<button className={createClassName(styles, 'menu__item', { primary, danger, disabled })} disabled={disabled} {...props}>
+export const Item = ({
+	children,
+	primary = false,
+	danger = false,
+	disabled = false,
+	icon,
+	...props
+}: ItemProps) => (
+	<button
+		className={createClassName(styles, 'menu__item', { primary, danger, disabled })}
+		disabled={disabled}
+		{...props}
+	>
 		{icon && <div className={createClassName(styles, 'menu__item__icon')}>{icon()}</div>}
 		{children}
 	</button>
 );
+
+/* ------------------------------------------------------------------ */
+/* PopoverMenuWrapper */
+/* ------------------------------------------------------------------ */
 
 type PopoverMenuWrapperProps = {
 	children?: ComponentChildren;
@@ -60,27 +95,31 @@ type PopoverMenuWrapperState = {
 	placement?: string;
 };
 
-class PopoverMenuWrapper extends Component<PopoverMenuWrapperProps, PopoverMenuWrapperState> {
+class PopoverMenuWrapper extends Component<
+	PopoverMenuWrapperProps,
+	PopoverMenuWrapperState
+> {
 	override state: PopoverMenuWrapperState = {};
 
-	menuRef: (Component & { base: Element }) | null = null;
+	menuRef: HTMLDivElement | null = null;
 
-	handleRef = (ref: (Component & { base: Element }) | null) => {
-		this.menuRef = ref;
+	handleRef = (el: HTMLDivElement | null) => {
+		this.menuRef = el;
 	};
 
 	handleClick = ({ target }: TargetedEvent<HTMLElement, MouseEvent>) => {
 		if (!(target as HTMLElement)?.closest(`.${styles.menu__item}`)) {
 			return;
 		}
-
-		const { dismiss } = this.props;
-		dismiss();
+		this.props.dismiss();
 	};
 
 	override componentDidMount() {
 		const { triggerBounds, overlayBounds } = this.props;
-		const menuBounds = normalizeDOMRect(this.menuRef?.base?.getBoundingClientRect());
+
+		const menuBounds = normalizeDOMRect(
+			this.menuRef?.getBoundingClientRect()
+		);
 
 		const menuWidth = menuBounds.right - menuBounds.left;
 		const menuHeight = menuBounds.bottom - menuBounds.top;
@@ -96,7 +135,6 @@ class PopoverMenuWrapper extends Component<PopoverMenuWrapperProps, PopoverMenuW
 
 		const placement = `${menuWidth < rightSpace ? 'right' : 'left'}-${menuHeight < bottomSpace ? 'bottom' : 'top'}`;
 
-		// eslint-disable-next-line react/no-did-mount-set-state
 		this.setState({
 			position: { left, right, top, bottom },
 			placement,
@@ -115,6 +153,10 @@ class PopoverMenuWrapper extends Component<PopoverMenuWrapperProps, PopoverMenuW
 	);
 }
 
+/* ------------------------------------------------------------------ */
+/* PopoverMenu */
+/* ------------------------------------------------------------------ */
+
 type PopoverMenuProps = {
 	children?: ComponentChildren;
 	trigger: (contextValue: { pop: () => void }) => void;
@@ -129,12 +171,20 @@ export const PopoverMenu = ({ children = null, trigger, overlayed }: PopoverMenu
 	>
 		{trigger}
 		{({ dismiss, triggerBounds, overlayBounds }) => (
-			<PopoverMenuWrapper dismiss={dismiss} triggerBounds={triggerBounds} overlayBounds={overlayBounds}>
+			<PopoverMenuWrapper
+				dismiss={dismiss}
+				triggerBounds={triggerBounds}
+				overlayBounds={overlayBounds}
+			>
 				{children}
 			</PopoverMenuWrapper>
 		)}
 	</PopoverTrigger>
 );
+
+/* ------------------------------------------------------------------ */
+/* Static bindings */
+/* ------------------------------------------------------------------ */
 
 Menu.Group = Group;
 Menu.Item = Item;
