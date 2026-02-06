@@ -97,7 +97,7 @@ export class HomeChannel {
 		return this.page.getByRole('group', { name: 'Audio recorder', exact: true });
 	}
 
-	get statusUploadIndicator(): Locator {
+	get statusUploadError(): Locator {
 		return this.page.getByRole('main').getByRole('status').getByText('Error');
 	}
 
