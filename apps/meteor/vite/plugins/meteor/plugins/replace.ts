@@ -12,9 +12,14 @@ export function replace(resolvedConfig: ResolvedPluginOptions): PluginOption {
 			'Meteor.isProduction': `${process.env.NODE_ENV === 'production'}`,
 			'Meteor.isCordova': 'false',
 			'Meteor.isSimulation': 'false',
+			'process.env.TEST_MODE': 'false',
+			'process.env.NODE_DEBUG': 'false',
+			'process.env.DEBUG_MIME': 'false',
+			'process.platform': JSON.stringify('browser'),
 			'TEST_METADATA.driverPackage': 'false',
 			'Package.promise.Promise': 'globalThis.Promise',
 			'Package.meteor.global': 'globalThis',
+			'process': 'undefined',
 		}),
 		replacePlugin(
 			{
