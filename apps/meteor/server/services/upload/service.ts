@@ -155,13 +155,12 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 
 		if (file?.type?.includes('image') && imageResizeOpts) {
 			const { width, height } = imageResizeOpts;
-			return stream.pipe(
-				sharp()
-					.resize({ width, height, fit: 'contain' })
-					.on('error', (error) => {
-						throw new Error(`Error resizing image: ${error.message}`);
-					}),
-			);
+
+			const transformer = sharp().resize({ width, height, fit: 'contain' });
+
+			stream.on('error', (err) => transformer.destroy(err));
+
+			return stream.pipe(transformer);
 		}
 
 		return stream;
@@ -182,15 +181,19 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		streamParam.pipe(writeStream);
 
 		writeStream.on('finish', async () => {
-			resolver.resolve(
-				await FileUpload.getStore('Uploads').insert(
+			FileUpload.getStore('Uploads')
+				.insert(
 					{
 						...details,
 						size: writeStream.bytesWritten,
 					},
 					tempFilePath,
-				),
-			);
+				)
+				.then(resolver.resolve)
+				.catch((err) => {
+					fs.promises.unlink(tempFilePath).catch(() => undefined);
+					resolver.reject(err);
+				});
 		});
 
 		writeStream.on('error', async (err) => {
