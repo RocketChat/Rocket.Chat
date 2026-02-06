@@ -285,6 +285,9 @@ export const FileUpload = {
 	},
 
 	async resizeImagePreview(fileParam: IUpload) {
+		if (isE2EEUpload(fileParam)) {
+			return;
+		}
 		let file = await Uploads.findOneById(fileParam._id);
 		if (!file) {
 			return;
@@ -303,6 +306,9 @@ export const FileUpload = {
 	},
 
 	async createImageThumbnail(fileParam: IUpload) {
+		if (isE2EEUpload(fileParam)) {
+			return;
+		}
 		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) {
 			return;
 		}
@@ -364,6 +370,9 @@ export const FileUpload = {
 	},
 
 	async uploadsOnValidate(this: Store, file: IUpload, options?: { session?: ClientSession }) {
+		if (isE2EEUpload(file)) {
+			return;
+		}
 		if (!file.type || !/^image\/((x-windows-)?bmp|p?jpeg|png|gif|webp)$/.test(file.type)) {
 			return;
 		}
@@ -382,9 +391,9 @@ export const FileUpload = {
 			size:
 				width != null && height != null
 					? {
-							width,
-							height,
-						}
+						width,
+						height,
+					}
 					: undefined,
 		};
 
