@@ -11,7 +11,7 @@ import { useToggleNotificationAction } from '../../../../hooks/menuActions/useTo
 import { useToggleReadAction } from '../../../../hooks/menuActions/useToggleReadAction';
 import { useHideRoomAction } from '../../../../hooks/useHideRoomAction';
 import { useOmnichannelPrioritiesMenu } from '../../../omnichannel/hooks/useOmnichannelPrioritiesMenu';
-import { Rooms } from '../../../../stores';
+import { useUserRoom } from '@rocket.chat/ui-contexts';
 
 type RoomMenuActionsProps = {
 	rid: string;
@@ -37,7 +37,7 @@ export const useRoomMenuActions = ({
 	const { t } = useTranslation();
 	const subscription = useUserSubscription(rid);
 	const router = useRouter();
-	const room = Rooms.use((state) => state.get(rid));
+	const room = useUserRoom(rid);
 
 	const isFavorite = Boolean(subscription?.f);
 	const canLeaveChannel = usePermission('leave-c');

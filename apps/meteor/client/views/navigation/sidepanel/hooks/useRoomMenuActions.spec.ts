@@ -2,9 +2,10 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
 import { useRoomMenuActions } from './useRoomMenuActions';
-import { createFakeSubscription } from '../../../../../tests/mocks/data';
+import { createFakeSubscription, createFakeRoom } from '../../../../../tests/mocks/data';
 
 const mockSubscription = createFakeSubscription({ name: 'room1', fname: 'Room 1', t: 'c', disableNotifications: false, rid: 'room1' });
+const mockRoom = createFakeRoom({ t: 'c', name: 'room1', _id: 'room1' });
 
 jest.mock('../../../../../client/lib/rooms/roomCoordinator', () => ({
 	roomCoordinator: {
@@ -41,6 +42,7 @@ describe('useRoomMenuActions', () => {
 		const { result } = renderHook(() => useRoomMenuActions(mockHookProps), {
 			wrapper: mockAppRoot()
 				.withSubscription({ ...mockSubscription, rid: 'room1' })
+				.withRoom(mockRoom)
 				.withPermission('leave-c')
 				.withPermission('leave-p')
 				.withSetting('Favorite_Rooms', true)
@@ -58,6 +60,7 @@ describe('useRoomMenuActions', () => {
 		const { result } = renderHook(() => useRoomMenuActions({ ...mockHookProps, type: 'l' }), {
 			wrapper: mockAppRoot()
 				.withSubscription({ ...mockSubscription, t: 'l' })
+				.withRoom({ ...mockRoom, t: 'l' })
 				.withPermission('leave-c')
 				.withPermission('leave-p')
 				.withSetting('Favorite_Rooms', true)
@@ -75,6 +78,7 @@ describe('useRoomMenuActions', () => {
 		const { result } = renderHook(() => useRoomMenuActions({ ...mockHookProps, hideDefaultOptions: true }), {
 			wrapper: mockAppRoot()
 				.withSubscription(mockSubscription)
+				.withRoom(mockRoom)
 				.withPermission('leave-c')
 				.withPermission('leave-p')
 				.withSetting('Favorite_Rooms', true)
@@ -88,6 +92,7 @@ describe('useRoomMenuActions', () => {
 		const { result } = renderHook(() => useRoomMenuActions(mockHookProps), {
 			wrapper: mockAppRoot()
 				.withSubscription(mockSubscription)
+				.withRoom(mockRoom)
 				.withPermission('leave-c')
 				.withPermission('leave-p')
 				.withSetting('Favorite_Rooms', false)

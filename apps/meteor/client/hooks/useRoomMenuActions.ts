@@ -9,7 +9,7 @@ import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
 import { useHideRoomAction } from './useHideRoomAction';
 import { useOmnichannelPrioritiesMenu } from '../views/omnichannel/hooks/useOmnichannelPrioritiesMenu';
-import { Rooms } from '../stores';
+import { useUserRoom } from '@rocket.chat/ui-contexts';
 
 type RoomMenuActionsProps = {
 	rid: string;
@@ -32,7 +32,7 @@ export const useRoomMenuActions = ({
 }: RoomMenuActionsProps): { title: string; items: GenericMenuItemProps[] }[] => {
 	const { t } = useTranslation();
 	const subscription = useUserSubscription(rid);
-	const room = Rooms.use((state) => state.get(rid));
+	const room = useUserRoom(rid);
 
 	const isFavorite = Boolean(subscription?.f);
 	const canLeaveChannel = usePermission('leave-c');
