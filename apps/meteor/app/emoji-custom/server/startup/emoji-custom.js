@@ -1,6 +1,6 @@
+import { Media } from '@rocket.chat/core-services';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import _ from 'underscore';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { RocketChatFile } from '../../../file/server';
@@ -41,7 +41,9 @@ Meteor.startup(() => {
 	return WebApp.connectHandlers.use('/emoji-custom/', async (req, res /* , next*/) => {
 		const params = { emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
 
-		if (_.isEmpty(params.emoji)) {
+		const extension = params.emoji?.split('.').pop()?.toLowerCase() ?? '';
+
+		if (!extension || !(await Media.isImageExtension(extension))) {
 			res.writeHead(403);
 			res.write('Forbidden');
 			res.end();
@@ -97,9 +99,9 @@ Meteor.startup(() => {
 		res.setHeader('Last-Modified', fileUploadDate || new Date().toUTCString());
 		res.setHeader('Content-Length', file.length);
 
-		if (/^svg$/i.test(params.emoji.split('.').pop())) {
+		if (/^svg$/i.test(extension)) {
 			res.setHeader('Content-Type', 'image/svg+xml');
-		} else if (/^png$/i.test(params.emoji.split('.').pop())) {
+		} else if (/^png$/i.test(extension)) {
 			res.setHeader('Content-Type', 'image/png');
 		} else {
 			res.setHeader('Content-Type', 'image/jpeg');

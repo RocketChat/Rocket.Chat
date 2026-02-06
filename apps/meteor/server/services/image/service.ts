@@ -104,4 +104,8 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		bufferStream.end(buffer);
 		return bufferStream;
 	}
+
+	isImageExtension(extension: string): boolean {
+		return this.imageExts.has(extension);
+	}
 }

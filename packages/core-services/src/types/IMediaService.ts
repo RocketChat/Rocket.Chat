@@ -30,4 +30,5 @@ export interface IMediaService {
 	isImage(buff: Buffer): Promise<boolean>;
 	stripExifFromImageStream(stream: Stream): Readable;
 	stripExifFromBuffer(buffer: Buffer): Promise<Buffer>;
+	isImageExtension(extension: string): boolean;
 }
