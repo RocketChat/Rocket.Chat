@@ -16,14 +16,14 @@ export type AccountProfileFormValues = {
 };
 
 export const getProfileInitialValues = (user: IUser | null): AccountProfileFormValues => ({
-	email: user ? getUserEmailAddress(user) || '' : '',
-	name: user?.name ?? '',
-	username: user?.username ?? '',
+	email: user ? getUserEmailAddress(user)?.trim() || '' : '',
+	name: user?.name?.trim() ?? '',
+	username: user?.username?.trim() ?? '',
 	avatar: '' as AvatarObject,
 	url: '',
-	statusText: user?.statusText ?? '',
+	statusText: user?.statusText?.trim() ?? '',
 	statusType: user?.status ?? '',
-	bio: user?.bio ?? '',
+	bio: user?.bio?.trim() ?? '',
 	customFields: user?.customFields ?? {},
-	nickname: user?.nickname ?? '',
+	nickname: user?.nickname?.trim() ?? '',
 });
