@@ -1,6 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { RequiredField } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { CustomSounds } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import type { ICustomSoundData } from './insertOrUpdateSound';
@@ -28,19 +29,13 @@ Meteor.methods<ServerMethods>({
 
 		return new Promise((resolve) => {
 			const ws = RocketChatFileCustomSoundsInstance.createWriteStream(`${soundData._id}.${soundData.extension}`, contentType);
-			ws.on('end', () => {
-				setTimeout(
-					() =>
-						api.broadcast('notify.updateCustomSound', {
-							soundData: {
-								_id: soundData._id,
-								name: soundData.name,
-								extension: soundData.extension,
-								_updatedAt: undefined!, // FIXME
-							},
-						}),
-					500,
-				);
+			ws.on('end', async () => {
+				setTimeout(async () => {
+					const sound = await CustomSounds.findOneById(soundData._id);
+					if (sound) {
+						void api.broadcast('notify.updateCustomSound', { soundData: sound });
+					}
+				}, 500);
 				resolve();
 			});
 

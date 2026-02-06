@@ -1,6 +1,6 @@
 import type { ICustomSound, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ICustomSoundsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
+import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -32,14 +32,14 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 	}
 
 	// update
-	setName(_id: string, name: string): Promise<UpdateResult> {
+	setName(_id: string, name: string): Promise<ICustomSound | null> {
 		const update = {
 			$set: {
 				name,
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.findOneAndUpdate({ _id }, update, { returnDocument: 'after' });
 	}
 
 	// INSERT

@@ -87,15 +87,12 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (soundData.name !== soundData.previousName) {
-			await CustomSounds.setName(soundData._id, soundData.name);
-			void api.broadcast('notify.updateCustomSound', {
-				soundData: {
-					_id: soundData._id,
-					name: soundData.name,
-					extension: soundData.extension,
-					_updatedAt: undefined!, // FIXME,
-				},
-			});
+			const updatedSound = await CustomSounds.setName(soundData._id, soundData.name);
+			if (updatedSound) {
+				void api.broadcast('notify.updateCustomSound', {
+					soundData: updatedSound,
+				});
+			}
 		}
 
 		return soundData._id;
