@@ -10,9 +10,44 @@ import { serveSvgAvatarInRequestedFormat, wasFallbackModified, setCacheAndDispos
 import { settings } from '../../../app/settings/server';
 
 const handleExternalProvider = async (externalProviderUrl: string, username: string, res: ServerResponse): Promise<void> => {
-	const response = await fetch(externalProviderUrl.replace('{username}', username));
-	response.headers.forEach((value, key) => res.setHeader(key, value));
-	response.body.pipe(res);
+	const url = externalProviderUrl.replace('{username}', username);
+
+	try {
+		const response = await fetch(url);
+		const ok = typeof (response as any).ok === 'boolean' ? (response as any).ok : true;
+		const body = (response as any).body as unknown;
+
+		if (!ok || !body || typeof (body as any).pipe !== 'function'
+			if (!res.headersSent) {
+				res.writeHead(502);
+			}
+			res.end();
+			return;
+		}
+
+		const unsafeHeaders = ['host', 'content-length', 'connection', 'set-cookie', 'transfer-encoding'];
+		response.headers.forEach((value, key) => {
+			if (!unsafeHeaders.includes(key.toLowerCase())) {
+				res.setHeader(key, value);
+			}
+		});
+
+		if (typeof (body as any).on === 'function') {
+			(body as any).on('error', () => {
+				if (!res.headersSent) {
+					res.writeHead(502);
+				}
+				res.end();
+			});
+		}
+
+		(body as any).pipe(res);
+	} catch {
+		if (!res.headersSent) {
+			res.writeHead(502);
+		}
+		res.end();
+	}
 };
 // request /avatar/@name forces returning the svg
 export const userAvatarByUsername = async function (request: IncomingMessage, res: ServerResponse, next: NextFunction) {
