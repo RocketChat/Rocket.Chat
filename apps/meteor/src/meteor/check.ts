@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable complexity */
-import { EJSON } from 'meteor/ejson';
-import { Meteor } from 'meteor/meteor';
-
+import { EJSON } from './ejson.ts';
+import { Meteor } from './meteor.ts';
 import { Package } from './package-registry';
+import { hasOwn } from './utils/hasOwn.ts';
 
 const class2type: Record<string, string> = {};
 const { toString } = class2type;
-const hasOwn = Object.prototype.hasOwnProperty;
 const fnToString = hasOwn.toString;
 const ObjectFunctionString = fnToString.call(Object);
 const getProto = Object.getPrototypeOf;
@@ -23,7 +22,7 @@ const isPlainObject = (obj: any): boolean => {
 		return true;
 	}
 
-	const Ctor = hasOwn.call(proto, 'constructor') && proto.constructor;
+	const Ctor = hasOwn(proto, 'constructor') && proto.constructor;
 
 	return typeof Ctor === 'function' && fnToString.call(Ctor) === ObjectFunctionString;
 };
@@ -384,13 +383,13 @@ const testSubtree = function (
 	});
 
 	for (const key in Object(value)) {
-		if (!hasOwn.call(value, key)) {
+		if (!hasOwn(value, key)) {
 			continue;
 		}
 		const subValue = value[key];
 		const objPath = path ? `${path}.${key}` : key;
 
-		if (hasOwn.call(requiredPatterns, key)) {
+		if (hasOwn(requiredPatterns, key)) {
 			const result = testSubtree(subValue, requiredPatterns[key], collectErrors, errors, objPath);
 
 			if (result) {
@@ -401,7 +400,7 @@ const testSubtree = function (
 			}
 
 			delete requiredPatterns[key];
-		} else if (hasOwn.call(optionalPatterns, key)) {
+		} else if (hasOwn(optionalPatterns, key)) {
 			const result = testSubtree(subValue, optionalPatterns[key], collectErrors, errors, objPath);
 
 			if (result) {

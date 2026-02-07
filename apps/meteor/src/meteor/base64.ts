@@ -1,4 +1,4 @@
-import * as Base64 from '@rocket.chat/base64';
+import { Base64 } from '@rocket.chat/base64';
 
 import { Package } from './package-registry.ts';
 
