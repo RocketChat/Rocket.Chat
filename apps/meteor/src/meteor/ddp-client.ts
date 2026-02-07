@@ -1,35 +1,17 @@
-import { DDPCommon } from 'meteor/ddp-common';
-
-import { Hook } from './callback-hook';
-import { DiffSequence } from './diff-sequence';
-import { EJSON } from './ejson';
-import { IdMap } from './id-map';
-import { Meteor } from './meteor';
-import { MongoID } from './mongo-id';
-import { Package } from './package-registry';
-import { Random } from './random';
-import { Retry } from './retry';
-import { ClientStream } from './socket-stream-client';
-import { Tracker } from './tracker/index';
-import { hasOwn } from './utils/hasOwn';
-
-const isEmpty = (obj: any) => {
-	if (obj == null) {
-		return true;
-	}
-
-	if (Array.isArray(obj) || typeof obj === 'string') {
-		return obj.length === 0;
-	}
-
-	for (const key in obj) {
-		if (hasOwn(obj, key)) {
-			return false;
-		}
-	}
-
-	return true;
-};
+import { Hook } from './callback-hook.ts';
+import { DDPCommon } from './ddp-common.ts';
+import { DiffSequence } from './diff-sequence.ts';
+import { EJSON } from './ejson.ts';
+import { IdMap } from './id-map.ts';
+import { Meteor } from './meteor.ts';
+import { MongoID } from './mongo-id.ts';
+import { Package } from './package-registry.ts';
+import { Random } from './random.ts';
+import { Retry } from './retry.ts';
+import { ClientStream } from './socket-stream-client.ts';
+import { Tracker } from './tracker/index.ts';
+import { hasOwn } from './utils/hasOwn.ts';
+import { isEmpty } from './utils/isEmpty.ts';
 
 const last = (arr: any[]) => (arr.length ? arr[arr.length - 1] : undefined);
 const { keys } = Object;
