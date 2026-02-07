@@ -1,3 +1,5 @@
+import { hasOwn } from './utils/hasOwn';
+
 interface IPackageRegistry {
 	_define(name: string, pkg: any, ...args: any[]): any;
 	[name: string]: any;
@@ -34,7 +36,7 @@ class PackageRegistry implements IPackageRegistry {
 	}
 
 	_has(name: string): boolean {
-		return Object.hasOwn(this, name);
+		return hasOwn(this, name);
 	}
 
 	get(name: string) {

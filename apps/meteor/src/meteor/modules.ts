@@ -3,16 +3,10 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nochecka
 
-import { Meteor } from 'meteor/meteor';
-
 import { queue } from './core-runtime.ts';
 import { meteorInstall, Module, type Leaf } from './modules-runtime.ts';
 import { Package } from './package-registry.ts';
-
-// hasOwn
-const hasOwn = <T extends object>(object: T, property: PropertyKey): property is keyof T => {
-	return Object.hasOwn(object, property);
-};
+import { hasOwn } from './utils/hasOwn.ts';
 
 // css.js
 
@@ -693,11 +687,11 @@ function moduleMakeNsSetter(this: Module, includeDefault: any) {
 }
 
 function wrapAsync(
+	this: Module,
 	body: { call: (arg0: any, arg1: any, arg2: () => any, arg3: (error: any) => void) => void },
 	options: { async: any; self: any },
 ) {
-	const module = this;
-	const entry = Entry.getOrCreate(module.id, module);
+	const entry = Entry.getOrCreate(this.id, this);
 
 	entry.hasTLA = options.async;
 
