@@ -1,5 +1,5 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, Flex } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import type { KeyboardEvent, MouseEvent } from 'react';
@@ -26,25 +26,23 @@ const UsersTableRow = ({
 
 	return (
 		<GenericTableRow key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
-			<GenericTableCell>
-				<Flex.Container>
-					<Box>
-						<Flex.Item>{username && <UserAvatar size='x40' title={username} username={username} etag={avatarETag} />}</Flex.Item>
-						<Box withTruncatedText mi={8}>
-							<Box display='flex'>
-								<Box fontScale='p2m' withTruncatedText>
-									{name || username}
-									{nickname && ` (${nickname})`}
-								</Box>{' '}
-								<Box mi={4} />{' '}
-								<Box fontScale='p2' color='hint' withTruncatedText>
-									{username}
-								</Box>
+			<GenericTableCell withTruncatedText>
+				<Box display='flex' alignItems='center'>
+					{username && <UserAvatar size='x40' title={username} username={username} etag={avatarETag} />}
+					<Box mi={8} flexGrow={1} flexShrink={1} flexBasis='0%' withTruncatedText>
+						<Box display='flex' alignItems='center'>
+							<Box fontScale='p2m' withTruncatedText>
+								{name || username}
+								{nickname && ` (${nickname})`}
+							</Box>{' '}
+							<Box mi={4} />{' '}
+							<Box fontScale='p2' color='hint' withTruncatedText>
+								{username}
 							</Box>
-							<MarkdownText variant='inline' fontScale='p2' color='hint' content={bio} />
 						</Box>
+						<MarkdownText variant='inline' fontScale='p2' color='hint' content={bio} />
 					</Box>
-				</Flex.Container>
+				</Box>
 			</GenericTableCell>
 			{mediaQuery && canViewFullOtherUserInfo && (
 				<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
