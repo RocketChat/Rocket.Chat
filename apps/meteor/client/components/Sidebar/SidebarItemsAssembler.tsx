@@ -9,9 +9,10 @@ import { isSidebarItem } from '../../lib/createSidebarItems';
 type SidebarItemsAssemblerProps = {
 	items: SidebarItem[];
 	currentPath?: string;
+	onClick?: () => void;
 };
 
-const SidebarItemsAssembler = ({ items, currentPath }: SidebarItemsAssemblerProps) => {
+const SidebarItemsAssembler = ({ items, currentPath,onClick }: SidebarItemsAssemblerProps) => {
 	const { t, i18n } = useTranslation();
 
 	return (
@@ -28,6 +29,7 @@ const SidebarItemsAssembler = ({ items, currentPath }: SidebarItemsAssemblerProp
 							tag={props.tag && i18n.exists(props.tag) ? t(props.tag) : props.tag}
 							externalUrl={props.externalUrl}
 							badge={props.badge}
+							onClick={onClick}
 						/>
 					) : (
 						<Divider />

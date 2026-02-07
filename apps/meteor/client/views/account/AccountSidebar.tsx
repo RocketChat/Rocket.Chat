@@ -20,7 +20,7 @@ const AccountSidebar = () => {
 			<Sidebar aria-label={t('Account')}>
 				<Sidebar.Header onClose={sidebar.close} title={t('Account')} />
 				<Sidebar.Content>
-					<Sidebar.ItemsAssembler items={items} currentPath={currentPath} />
+					<Sidebar.ItemsAssembler items={items} currentPath={currentPath} onClick={sidebar.toggle} />
 				</Sidebar.Content>
 			</Sidebar>
 		</SettingsProvider>

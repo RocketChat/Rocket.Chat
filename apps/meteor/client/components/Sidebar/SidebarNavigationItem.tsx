@@ -13,6 +13,7 @@ type SidebarNavigationItemProps = {
 	tag?: string;
 	currentPath?: string;
 	externalUrl?: boolean;
+	onClick?: () => void;
 	badge?: () => ReactElement;
 };
 
@@ -22,6 +23,7 @@ const SidebarNavigationItem = ({
 	icon,
 	label,
 	currentPath,
+	onClick,
 	tag,
 	externalUrl,
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -35,7 +37,7 @@ const SidebarNavigationItem = ({
 	}
 
 	return (
-		<SidebarGenericItem active={isActive} href={path} externalUrl={externalUrl}>
+		<SidebarGenericItem active={isActive} href={path} externalUrl={externalUrl} onClick={onClick}>
 			{icon && <Icon name={icon} size='x20' mi={4} />}
 			<Box
 				withTruncatedText
