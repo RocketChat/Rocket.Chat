@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Package } from './package-registry.ts';
 import { Retry } from './retry.ts';
-import type * as Tracker from './tracker.ts';
+import type * as Tracker from './tracker/index.ts';
 
 const forcedReconnectError = new Error('forced reconnect');
 

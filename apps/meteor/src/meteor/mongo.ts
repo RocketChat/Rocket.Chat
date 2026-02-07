@@ -1,5 +1,5 @@
 import { Random } from '@rocket.chat/random';
-import EJSON from 'ejson';
+import {EJSON} from './ejson.ts';
 import { AllowDeny } from 'meteor/allow-deny';
 import { Meteor } from 'meteor/meteor';
 import { LocalCollection } from 'meteor/minimongo';
