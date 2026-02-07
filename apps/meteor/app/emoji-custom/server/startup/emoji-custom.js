@@ -1,4 +1,3 @@
-import { Media } from '@rocket.chat/core-services';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
@@ -43,7 +42,7 @@ Meteor.startup(() => {
 
 		const extension = params.emoji?.split('.').pop()?.toLowerCase() ?? '';
 
-		if (!extension || !(await Media.isImageExtension(extension))) {
+		if (!extension) {
 			res.writeHead(403);
 			res.write('Forbidden');
 			res.end();
@@ -54,7 +53,7 @@ Meteor.startup(() => {
 
 		res.setHeader('Content-Disposition', 'inline');
 
-		if (!file) {
+		if (!file || !file.contentType?.startsWith('image/')) {
 			// use code from username initials renderer until file upload is complete
 			res.setHeader('Content-Type', 'image/svg+xml');
 			res.setHeader('Cache-Control', 'public, max-age=0');

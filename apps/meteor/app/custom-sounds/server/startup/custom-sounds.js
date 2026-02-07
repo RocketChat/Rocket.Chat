@@ -48,7 +48,8 @@ Meteor.startup(() => {
 		}
 
 		const file = await RocketChatFileCustomSoundsInstance.getFileWithReadStream(fileId);
-		if (!file) {
+
+		if (!file || !file.contentType?.startsWith('audio/')) {
 			res.writeHead(404);
 			res.write('Not found');
 			res.end();
