@@ -147,7 +147,6 @@ export class OrderedDict<K = string, V = unknown> {
 		return Object.prototype.hasOwnProperty.call(this._dict, this._k(key));
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	forEach(iter: (value: V, key: K, index: number) => any, context: any = null) {
 		let i = 0;
 		let elt = this._first;
@@ -162,7 +161,6 @@ export class OrderedDict<K = string, V = unknown> {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async forEachAsync(asyncIter: (value: V, key: K, index: number) => Promise<any>, context: any = null) {
 		let i = 0;
 		let elt = this._first;
