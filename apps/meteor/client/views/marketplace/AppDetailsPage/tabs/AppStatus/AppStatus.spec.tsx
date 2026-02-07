@@ -6,8 +6,8 @@ import userEvent from '@testing-library/user-event';
 import AppStatus from './AppStatus';
 import { mockedAppsContext } from '../../../../../../tests/mocks/client/marketplace';
 import { createFakeApp, createFakeLicenseInfo } from '../../../../../../tests/mocks/data';
-import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
+import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
 
 jest.mock('../../../hooks/useMarketplaceActions');
 jest.mock('../../../hooks/useAppInstallationHandler');
