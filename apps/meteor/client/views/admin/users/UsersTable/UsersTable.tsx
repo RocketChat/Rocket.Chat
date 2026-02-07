@@ -24,7 +24,7 @@ import { useShowVoipExtension } from '../useShowVoipExtension';
 
 type UsersTableProps = {
 	tab: AdminUsersTab;
-	roleData: { roles: IRole[] } | undefined;
+	roleData: { roles: Serialized<IRole>[] } | undefined;
 	users: Serialized<DefaultUserInfo>[];
 	total: number;
 	isLoading: boolean;

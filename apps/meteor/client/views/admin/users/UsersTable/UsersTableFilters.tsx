@@ -1,4 +1,4 @@
-import type { IRole } from '@rocket.chat/core-typings';
+import type { IRole, Serialized } from '@rocket.chat/core-typings';
 import { Box, Icon, Margins, TextInput } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
@@ -11,7 +11,7 @@ import type { UsersFilters } from '../AdminUsersPage';
 
 type UsersTableFiltersProps = {
 	setUsersFilters: Dispatch<SetStateAction<UsersFilters>>;
-	roleData: { roles: IRole[] } | undefined;
+	roleData: { roles: Serialized<IRole>[] } | undefined;
 };
 
 const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps) => {

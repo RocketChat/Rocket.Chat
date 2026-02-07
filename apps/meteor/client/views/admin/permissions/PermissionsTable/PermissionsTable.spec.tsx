@@ -42,6 +42,7 @@ const roles: IRole[] = [
 		protected: true,
 		scope: 'Users',
 		_id: 'owner',
+		_updatedAt: new Date(),
 	},
 	{
 		description: 'Administrator',
@@ -49,6 +50,7 @@ const roles: IRole[] = [
 		protected: true,
 		scope: 'Users',
 		_id: 'admin',
+		_updatedAt: new Date(),
 	},
 ];
 

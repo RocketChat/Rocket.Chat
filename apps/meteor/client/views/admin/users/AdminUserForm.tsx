@@ -50,7 +50,7 @@ type AdminUserFormProps = {
 	onReload: () => void;
 	context: string;
 	refetchUserFormData?: () => void;
-	roleData: { roles: IRole[] } | undefined;
+	roleData: { roles: Serialized<IRole>[] } | undefined;
 	roleError: Error | null;
 };
 
