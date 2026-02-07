@@ -158,7 +158,13 @@ export const sendNoWrap = async ({
 	if (!checkAddressFormat(to)) {
 		throw new Meteor.Error('invalid email');
 	}
-
+    const smtpHost = settings.get<string>('SMTP_Host');
+    if (!smtpHost) {
+        throw new Meteor.Error(
+            'smtp-not-configured',
+            'SMTP is not configured. Please configure it in Administration -> Settings -> Email -> SMTP before sending emails.',
+        );
+    }
 	if (!text) {
 		text = html ? stripHtml(html).result : undefined;
 	}
@@ -175,14 +181,6 @@ export const sendNoWrap = async ({
 	const email = { to, from, replyTo, subject, html, text, headers };
 
 	const eventResult = await Apps.self?.triggerEvent(AppEvents.IPreEmailSent, { email });
-
-	const smtpHost=settings.get<string>('SMTP_Host');
-	if(!smtpHost){
-		throw new Meteor.Error(
-			'smtp not configured',
-			'SMTP is not configured. PLease configure it in Administration -> Settings -> Email -> SMTP before sending emails.'
-		)
-	}
 	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
 };
 
