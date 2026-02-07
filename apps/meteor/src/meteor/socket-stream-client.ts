@@ -1,12 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-
-import { Package } from './package-registry.ts';
+import { Meteor } from './meteor.ts';
 import { Retry } from './retry.ts';
 import type * as Tracker from './tracker/index.ts';
+import { Dependency } from './tracker/index.ts';
 
 const forcedReconnectError = new Error('forced reconnect');
 
-class StreamClientCommon {
+abstract class StreamClientCommon {
 	currentStatus: { status: string; connected: boolean; retryCount: number; retryTime?: number; reason?: unknown };
 
 	statusListeners: Tracker.Dependency | null;
@@ -36,16 +35,8 @@ class StreamClientCommon {
 		this.eventCallbacks[name].push(callback);
 	}
 
-	forEachCallback(
-		name: string,
-		cb: {
-			(callback: any): void;
-			(callback: any): void;
-			(callback: any): void;
-			(value: (...args: any[]) => void, index: number, array: ((...args: any[]) => void)[]): void;
-		},
-	) {
-		if (!this.eventCallbacks[name] || !this.eventCallbacks[name].length) {
+	forEachCallback(name: string, cb: (...args: any[]) => void) {
+		if (!this.eventCallbacks[name]?.length) {
 			return;
 		}
 
@@ -59,9 +50,7 @@ class StreamClientCommon {
 		this._forcedToDisconnect = false;
 		this.currentStatus = { status: 'connecting', connected: false, retryCount: 0 };
 
-		if (Package.tracker) {
-			this.statusListeners = new Package.tracker.Tracker.Dependency();
-		}
+		this.statusListeners = new Dependency();
 
 		this.statusChanged = () => {
 			if (this.statusListeners) {
@@ -73,19 +62,15 @@ class StreamClientCommon {
 		this.connectionTimer = null;
 	}
 
-	reconnect(options: { url: any; _sockjsOptions: Record<string, unknown> | undefined; _force: any } | undefined) {
-		options = options || Object.create(null);
+	abstract _changeUrl(url: string): void;
 
+	reconnect(options?: { url?: string; _force?: boolean }) {
 		if (options?.url) {
 			this._changeUrl(options.url);
 		}
 
-		if (options._sockjsOptions) {
-			this.options._sockjsOptions = options._sockjsOptions;
-		}
-
 		if (this.currentStatus.connected) {
-			if (options._force || options.url) {
+			if (options?._force || options?.url) {
 				this._lostConnection(forcedReconnectError);
 			}
 
@@ -124,16 +109,18 @@ class StreamClientCommon {
 		this.statusChanged();
 	}
 
-	_lostConnection(maybeError: Error | undefined) {
+	abstract _cleanup(maybeError?: unknown): void;
+
+	_lostConnection(maybeError?: unknown) {
 		this._cleanup(maybeError);
 		this._retryLater(maybeError);
 	}
 
 	_online() {
-		if (this.currentStatus.status != 'offline') this.reconnect();
+		if (this.currentStatus.status !== 'offline') this.reconnect();
 	}
 
-	_retryLater(maybeError: Error) {
+	_retryLater(maybeError?: unknown) {
 		let timeout = 0;
 
 		if (this.options.retry || maybeError === forcedReconnectError) {
@@ -148,6 +135,8 @@ class StreamClientCommon {
 		this.currentStatus.connected = false;
 		this.statusChanged();
 	}
+
+	abstract _launchConnection(): void;
 
 	_retryNow() {
 		if (this._forcedToDisconnect) return;
@@ -191,7 +180,7 @@ function translateUrl(url: string, newSchemeBase: string, subPath: string) {
 		let host = slashPos === -1 ? urlAfterDDP : urlAfterDDP.substr(0, slashPos);
 		const rest = slashPos === -1 ? '' : urlAfterDDP.substr(slashPos);
 
-		host = host.replace(/\*/g, () => Math.floor(Math.random() * 10));
+		host = host.replace(/\*/g, () => `${Math.floor(Math.random() * 10)}`);
 
 		return `${newScheme}://${host}${rest}`;
 	}
@@ -213,10 +202,6 @@ function translateUrl(url: string, newSchemeBase: string, subPath: string) {
 	return `${url}/${subPath}`;
 }
 
-function toSockjsUrl(url: string) {
-	return translateUrl(url, 'http', 'sockjs');
-}
-
 function toWebsocketUrl(url: string) {
 	return translateUrl(url, 'ws', 'websocket');
 }
@@ -230,7 +215,7 @@ class ClientStream extends StreamClientCommon {
 
 	heartbeatTimer: ReturnType<typeof setTimeout> | null;
 
-	lastError: Error | null;
+	lastError: unknown;
 
 	HEARTBEAT_TIMEOUT: number;
 
@@ -248,7 +233,7 @@ class ClientStream extends StreamClientCommon {
 
 	send(data: string | ArrayBufferLike | Blob | ArrayBufferView<ArrayBufferLike>) {
 		if (this.currentStatus.connected) {
-			this.socket.send(data);
+			this.socket?.send(data);
 		}
 	}
 
@@ -280,10 +265,10 @@ class ClientStream extends StreamClientCommon {
 		this._clearConnectionAndHeartbeatTimers();
 
 		if (this.socket) {
-			this.socket.onheartbeat = () => {};
-			this.socket.onerror = () => {};
-			this.socket.onclose = () => {};
-			this.socket.onmessage = () => {};
+			this.socket.removeEventListener('open', this._connected);
+			this.socket.removeEventListener('message', this._heartbeat_received);
+			this.socket.removeEventListener('close', this._lostConnection);
+			this.socket.removeEventListener('error', this._lostConnection);
 			this.socket.close();
 			this.socket = null;
 		}
@@ -327,45 +312,41 @@ class ClientStream extends StreamClientCommon {
 		return protocolsWhitelist;
 	}
 
+	_onError(error: unknown) {
+		const { lastError } = this;
+
+		this.lastError = error;
+
+		if (lastError) return;
+
+		console.error('stream error', error, new Date().toDateString());
+	}
+
+	_onMessage(data: MessageEvent) {
+		this.lastError = null;
+		this._heartbeat_received();
+
+		if (this.currentStatus.connected) {
+			this.forEachCallback('message', (callback) => {
+				callback(data.data);
+			});
+		}
+	}
+
+	_onOpen() {
+		this.lastError = null;
+		this._connected();
+	}
+
 	_launchConnection() {
 		this._cleanup();
 
 		this.socket = new WebSocket(toWebsocketUrl(this.rawUrl));
 
-		this.socket.onopen = (data) => {
-			this.lastError = null;
-			this._connected();
-		};
-
-		this.socket.onmessage = (data) => {
-			this.lastError = null;
-			this._heartbeat_received();
-
-			if (this.currentStatus.connected) {
-				this.forEachCallback('message', (callback: (arg0: any) => void) => {
-					callback(data.data);
-				});
-			}
-		};
-
-		this.socket.onclose = () => {
-			this._lostConnection();
-		};
-
-		this.socket.onerror = (error) => {
-			const { lastError } = this;
-
-			this.lastError = error;
-
-			if (lastError) return;
-
-			console.error('stream error', error, new Date().toDateString());
-		};
-
-		this.socket.onheartbeat = () => {
-			this.lastError = null;
-			this._heartbeat_received();
-		};
+		this.socket.addEventListener('open', this._onOpen.bind(this));
+		this.socket.addEventListener('message', this._onMessage.bind(this));
+		this.socket.addEventListener('close', this._lostConnection.bind(this));
+		this.socket.addEventListener('error', this._onError.bind(this));
 
 		if (this.connectionTimer) clearTimeout(this.connectionTimer);
 
