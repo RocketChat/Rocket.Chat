@@ -1,17 +1,16 @@
-
-import "/src/meteor/ejson.ts";
-import "/.meteor/local/build/programs/web.browser/packages/geojson-utils.js";
-import "/src/meteor/id-map.ts";
-import "/src/meteor/mongo-id.ts";
-import "/src/meteor/ordered-dict.ts";
-import "/src/meteor/random.ts";
-import "/src/meteor/modules.ts";
+import '/src/meteor/ejson.ts';
+import '/src/meteor/geojson-utils.ts';
+import '/src/meteor/id-map.ts';
+import '/src/meteor/mongo-id.ts';
+import '/src/meteor/ordered-dict.ts';
+import '/src/meteor/random.ts';
+import '/src/meteor/modules.ts';
 
 import { Tracker } from './tracker/index.ts';
-import { Meteor } from "./meteor.ts";
-import { DiffSequence } from "./diff-sequence.ts";
+import { Meteor } from './meteor.ts';
+import { DiffSequence } from './diff-sequence.ts';
 
-Package["core-runtime"].queue("minimongo", function () {
+Package['core-runtime'].queue('minimongo', function () {
 	var global = globalThis;
 	var meteorEnv = Package.meteor.meteorEnv;
 	var EJSON = Package.ejson.EJSON;
@@ -25,21 +24,18 @@ Package["core-runtime"].queue("minimongo", function () {
 	var meteorInstall = Package.modules.meteorInstall;
 	var Promise = globalThis.Promise;
 
-	var MinimongoTest,
-		MinimongoError,
-		LocalCollection,
-		Minimongo;
+	var MinimongoTest, MinimongoError, LocalCollection, Minimongo;
 
 	var require = meteorInstall(
 		{
-			"node_modules": {
-				"meteor": {
-					"minimongo": {
-						"minimongo_client.js"(require, exports, module) {
-							module.link("./minimongo_common.js");
+			node_modules: {
+				meteor: {
+					minimongo: {
+						'minimongo_client.js'(require, exports, module) {
+							module.link('./minimongo_common.js');
 						},
 
-						"common.js"(require, exports, module) {
+						'common.js'(require, exports, module) {
 							module.export({
 								hasOwn: () => hasOwn,
 								MiniMongoQueryError: () => MiniMongoQueryError,
@@ -55,19 +51,19 @@ Package["core-runtime"].queue("minimongo", function () {
 								pathsToTree: () => pathsToTree,
 								populateDocumentWithQueryFields: () => populateDocumentWithQueryFields,
 								projectionDetails: () => projectionDetails,
-								regexpElementMatcher: () => regexpElementMatcher
+								regexpElementMatcher: () => regexpElementMatcher,
 							});
 
 							let LocalCollection;
 
 							module.link(
-								"./local_collection.js",
+								'./local_collection.js',
 								{
 									default(v) {
 										LocalCollection = v;
-									}
+									},
 								},
-								0
+								0,
 							);
 
 							const hasOwn = Object.prototype.hasOwnProperty;
@@ -81,7 +77,9 @@ Package["core-runtime"].queue("minimongo", function () {
 								$gte: makeInequality((cmpValue) => cmpValue >= 0),
 								$mod: {
 									compileElementSelector(operand) {
-										if (!(Array.isArray(operand) && operand.length === 2 && typeof operand[0] === 'number' && typeof operand[1] === 'number')) {
+										if (
+											!(Array.isArray(operand) && operand.length === 2 && typeof operand[0] === 'number' && typeof operand[1] === 'number')
+										) {
 											throw new MiniMongoQueryError('argument to $mod must be an array of two numbers');
 										}
 
@@ -89,7 +87,7 @@ Package["core-runtime"].queue("minimongo", function () {
 										const remainder = operand[1];
 
 										return (value) => typeof value === 'number' && value % divisor === remainder;
-									}
+									},
 								},
 								$in: {
 									compileElementSelector(operand) {
@@ -116,7 +114,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 											return elementMatchers.some((matcher) => matcher(value));
 										};
-									}
+									},
 								},
 								$size: {
 									dontExpandLeafArrays: true,
@@ -128,51 +126,51 @@ Package["core-runtime"].queue("minimongo", function () {
 										}
 
 										return (value) => Array.isArray(value) && value.length === operand;
-									}
+									},
 								},
 								$type: {
 									dontIncludeLeafArrays: true,
 									compileElementSelector(operand) {
 										if (typeof operand === 'string') {
 											const operandAliasMap = {
-												'double': 1,
-												'string': 2,
-												'object': 3,
-												'array': 4,
-												'binData': 5,
-												'undefined': 6,
-												'objectId': 7,
-												'bool': 8,
-												'date': 9,
-												'null': 10,
-												'regex': 11,
-												'dbPointer': 12,
-												'javascript': 13,
-												'symbol': 14,
-												'javascriptWithScope': 15,
-												'int': 16,
-												'timestamp': 17,
-												'long': 18,
-												'decimal': 19,
-												'minKey': -1,
-												'maxKey': 127
+												double: 1,
+												string: 2,
+												object: 3,
+												array: 4,
+												binData: 5,
+												undefined: 6,
+												objectId: 7,
+												bool: 8,
+												date: 9,
+												null: 10,
+												regex: 11,
+												dbPointer: 12,
+												javascript: 13,
+												symbol: 14,
+												javascriptWithScope: 15,
+												int: 16,
+												timestamp: 17,
+												long: 18,
+												decimal: 19,
+												minKey: -1,
+												maxKey: 127,
 											};
 
 											if (!hasOwn.call(operandAliasMap, operand)) {
-												throw new MiniMongoQueryError(("unknown string alias for $type: ").concat(operand));
+												throw new MiniMongoQueryError('unknown string alias for $type: '.concat(operand));
 											}
 
 											operand = operandAliasMap[operand];
 										} else if (typeof operand === 'number') {
-											if (operand === 0 || operand < -1 || operand > 19 && operand !== 127) {
-												throw new MiniMongoQueryError(("Invalid numerical $type code: ").concat(operand));
+											if (operand === 0 || operand < -1 || (operand > 19 && operand !== 127)) {
+												throw new MiniMongoQueryError('Invalid numerical $type code: '.concat(operand));
 											}
 										} else {
 											throw new MiniMongoQueryError('argument to $type is not a number or a string');
 										}
 
 										return (value) => value !== undefined && LocalCollection._f._type(value) === operand;
-									}
+									},
 								},
 								$bitsAllSet: {
 									compileElementSelector(operand) {
@@ -183,7 +181,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 											return bitmask && mask.every((byte, i) => (bitmask[i] & byte) === byte);
 										};
-									}
+									},
 								},
 								$bitsAnySet: {
 									compileElementSelector(operand) {
@@ -194,7 +192,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 											return bitmask && mask.some((byte, i) => (~bitmask[i] & byte) !== byte);
 										};
-									}
+									},
 								},
 								$bitsAllClear: {
 									compileElementSelector(operand) {
@@ -205,7 +203,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 											return bitmask && mask.every((byte, i) => !(bitmask[i] & byte));
 										};
-									}
+									},
 								},
 								$bitsAnyClear: {
 									compileElementSelector(operand) {
@@ -216,7 +214,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 											return bitmask && mask.some((byte, i) => (bitmask[i] & byte) !== byte);
 										};
-									}
+									},
 								},
 								$regex: {
 									compileElementSelector(operand, valueSelector) {
@@ -227,7 +225,7 @@ Package["core-runtime"].queue("minimongo", function () {
 										let regexp;
 
 										if (valueSelector.$options !== undefined) {
-											if ((/[^gim]/).test(valueSelector.$options)) {
+											if (/[^gim]/.test(valueSelector.$options)) {
 												throw new MiniMongoQueryError('Only the i, m, and g regexp options are supported');
 											}
 
@@ -241,7 +239,7 @@ Package["core-runtime"].queue("minimongo", function () {
 										}
 
 										return regexpElementMatcher(regexp);
-									}
+									},
 								},
 								$elemMatch: {
 									dontExpandLeafArrays: true,
@@ -250,7 +248,12 @@ Package["core-runtime"].queue("minimongo", function () {
 											throw new MiniMongoQueryError('$elemMatch need an object');
 										}
 
-										const isDocMatcher = !isOperatorObject(Object.keys(operand).filter((key) => !hasOwn.call(LOGICAL_OPERATORS, key)).reduce((a, b) => Object.assign(a, { [b]: operand[b] }), {}), true);
+										const isDocMatcher = !isOperatorObject(
+											Object.keys(operand)
+												.filter((key) => !hasOwn.call(LOGICAL_OPERATORS, key))
+												.reduce((a, b) => Object.assign(a, { [b]: operand[b] }), {}),
+											true,
+										);
 										let subMatcher;
 
 										if (isDocMatcher) {
@@ -285,8 +288,8 @@ Package["core-runtime"].queue("minimongo", function () {
 
 											return false;
 										};
-									}
-								}
+									},
+								},
 							};
 
 							const LOGICAL_OPERATORS = {
@@ -323,7 +326,7 @@ Package["core-runtime"].queue("minimongo", function () {
 									matcher._hasWhere = true;
 
 									if (!(selectorValue instanceof Function)) {
-										selectorValue = Function('obj', ("return ").concat(selectorValue));
+										selectorValue = Function('obj', 'return '.concat(selectorValue));
 									}
 
 									return (doc) => ({ result: selectorValue.call(doc, doc) });
@@ -331,7 +334,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 								$comment() {
 									return () => ({ result: true });
-								}
+								},
 							};
 
 							const VALUE_OPERATORS = {
@@ -348,7 +351,9 @@ Package["core-runtime"].queue("minimongo", function () {
 								},
 
 								$nin(operand) {
-									return invertBranchedMatcher(convertElementMatcherToBranchedMatcher(ELEMENT_OPERATORS.$in.compileElementSelector(operand)));
+									return invertBranchedMatcher(
+										convertElementMatcherToBranchedMatcher(ELEMENT_OPERATORS.$in.compileElementSelector(operand)),
+									);
 								},
 
 								$exists(operand) {
@@ -395,7 +400,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 								$near(operand, valueSelector, matcher, isRoot) {
 									if (!isRoot) {
-										throw new MiniMongoQueryError('$near can\'t be inside another $ operator');
+										throw new MiniMongoQueryError("$near can't be inside another $ operator");
 									}
 
 									matcher._hasGeoQuery = true;
@@ -475,7 +480,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 										return result;
 									};
-								}
+								},
 							};
 
 							function andSomeMatchers(subMatchers) {
@@ -533,32 +538,34 @@ Package["core-runtime"].queue("minimongo", function () {
 							function compileDocumentSelector(docSelector, matcher) {
 								let options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-								const docMatchers = Object.keys(docSelector).map((key) => {
-									const subSelector = docSelector[key];
+								const docMatchers = Object.keys(docSelector)
+									.map((key) => {
+										const subSelector = docSelector[key];
 
-									if (key.substr(0, 1) === '$') {
-										if (!hasOwn.call(LOGICAL_OPERATORS, key)) {
-											throw new MiniMongoQueryError(("Unrecognized logical operator: ").concat(key));
+										if (key.substr(0, 1) === '$') {
+											if (!hasOwn.call(LOGICAL_OPERATORS, key)) {
+												throw new MiniMongoQueryError('Unrecognized logical operator: '.concat(key));
+											}
+
+											matcher._isSimple = false;
+
+											return LOGICAL_OPERATORS[key](subSelector, matcher, options.inElemMatch);
 										}
 
-										matcher._isSimple = false;
+										if (!options.inElemMatch) {
+											matcher._recordPathUsed(key);
+										}
 
-										return LOGICAL_OPERATORS[key](subSelector, matcher, options.inElemMatch);
-									}
+										if (typeof subSelector === 'function') {
+											return undefined;
+										}
 
-									if (!options.inElemMatch) {
-										matcher._recordPathUsed(key);
-									}
+										const lookUpByIndex = makeLookupFunction(key);
+										const valueMatcher = compileValueSelector(subSelector, matcher, options.isRoot);
 
-									if (typeof subSelector === 'function') {
-										return undefined;
-									}
-
-									const lookUpByIndex = makeLookupFunction(key);
-									const valueMatcher = compileValueSelector(subSelector, matcher, options.isRoot);
-
-									return (doc) => valueMatcher(lookUpByIndex(doc));
-								}).filter(Boolean);
+										return (doc) => valueMatcher(lookUpByIndex(doc));
+									})
+									.filter(Boolean);
 
 								return andDocumentMatchers(docMatchers);
 							}
@@ -618,7 +625,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 							function equalityElementMatcher(elementSelector) {
 								if (isOperatorObject(elementSelector)) {
-									throw new MiniMongoQueryError('Can\'t create equalityValueSelector for operator object');
+									throw new MiniMongoQueryError("Can't create equalityValueSelector for operator object");
 								}
 
 								if (elementSelector == null) {
@@ -672,7 +679,11 @@ Package["core-runtime"].queue("minimongo", function () {
 									return view;
 								}
 
-								throw new MiniMongoQueryError(("operand to ").concat(selector, " must be a numeric bitmask (representable as a ") + 'non-negative 32-bit signed integer), a bindata bitmask or an array with ' + 'bit positions (non-negative integers)');
+								throw new MiniMongoQueryError(
+									'operand to '.concat(selector, ' must be a numeric bitmask (representable as a ') +
+										'non-negative 32-bit signed integer), a bindata bitmask or an array with ' +
+										'bit positions (non-negative integers)',
+								);
 							}
 
 							function getValueBitmask(value, length) {
@@ -681,7 +692,7 @@ Package["core-runtime"].queue("minimongo", function () {
 									let view = new Uint32Array(buffer, 0, 2);
 
 									view[0] = value % ((1 << 16) * (1 << 16)) | 0;
-									view[1] = value / ((1 << 16) * (1 << 16)) | 0;
+									view[1] = (value / ((1 << 16) * (1 << 16))) | 0;
 
 									if (value < 0) {
 										view = new Uint8Array(buffer, 2);
@@ -703,10 +714,15 @@ Package["core-runtime"].queue("minimongo", function () {
 
 							function insertIntoDocument(document, key, value) {
 								Object.keys(document).forEach((existingKey) => {
-									if (existingKey.length > key.length && existingKey.indexOf(("").concat(key, ".")) === 0 || key.length > existingKey.length && key.indexOf(("").concat(existingKey, ".")) === 0) {
-										throw new MiniMongoQueryError(("cannot infer query fields to set, both paths '").concat(existingKey, "' and '").concat(key, "' are matched"));
+									if (
+										(existingKey.length > key.length && existingKey.indexOf(''.concat(key, '.')) === 0) ||
+										(key.length > existingKey.length && key.indexOf(''.concat(existingKey, '.')) === 0)
+									) {
+										throw new MiniMongoQueryError(
+											"cannot infer query fields to set, both paths '".concat(existingKey, "' and '").concat(key, "' are matched"),
+										);
 									} else if (existingKey === key) {
-										throw new MiniMongoQueryError(("cannot infer query fields to set, path '").concat(key, "' is matched twice"));
+										throw new MiniMongoQueryError("cannot infer query fields to set, path '".concat(key, "' is matched twice"));
 									}
 								});
 
@@ -724,7 +740,7 @@ Package["core-runtime"].queue("minimongo", function () {
 							}
 
 							function isNumericKey(s) {
-								return (/^[0-9]+$/).test(s);
+								return /^[0-9]+$/.test(s);
 							}
 
 							function isOperatorObject(valueSelector, inconsistentOK) {
@@ -741,7 +757,7 @@ Package["core-runtime"].queue("minimongo", function () {
 										theseAreOperators = thisIsOperator;
 									} else if (theseAreOperators !== thisIsOperator) {
 										if (!inconsistentOK) {
-											throw new MiniMongoQueryError(("Inconsistent operator: ").concat(JSON.stringify(valueSelector)));
+											throw new MiniMongoQueryError('Inconsistent operator: '.concat(JSON.stringify(valueSelector)));
 										}
 
 										theseAreOperators = false;
@@ -775,7 +791,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 											return cmpValueComparator(LocalCollection._f._cmp(value, operand));
 										};
-									}
+									},
 								};
 							}
 
@@ -790,7 +806,9 @@ Package["core-runtime"].queue("minimongo", function () {
 										? dontIterate
 											? [{ arrayIndices, dontIterate, value }]
 											: [{ arrayIndices, value }]
-										: dontIterate ? [{ dontIterate, value }] : [{ value }];
+										: dontIterate
+											? [{ dontIterate, value }]
+											: [{ value }];
 								}
 
 								return (doc, arrayIndices) => {
@@ -799,9 +817,7 @@ Package["core-runtime"].queue("minimongo", function () {
 											return [];
 										}
 
-										arrayIndices = arrayIndices
-											? arrayIndices.concat(+firstPart, 'x')
-											: [+firstPart, 'x'];
+										arrayIndices = arrayIndices ? arrayIndices.concat(+firstPart, 'x') : [+firstPart, 'x'];
 									}
 
 									const firstLevel = doc[firstPart];
@@ -844,7 +860,7 @@ Package["core-runtime"].queue("minimongo", function () {
 								let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 								if (typeof message === 'string' && options.field) {
-									message += (" for field '").concat(options.field, "'");
+									message += " for field '".concat(options.field, "'");
 								}
 
 								const error = new Error(message);
@@ -863,7 +879,8 @@ Package["core-runtime"].queue("minimongo", function () {
 									const operand = valueSelector[operator];
 									const simpleRange = ['$lt', '$lte', '$gt', '$gte'].includes(operator) && typeof operand === 'number';
 									const simpleEquality = ['$ne', '$eq'].includes(operator) && operand !== Object(operand);
-									const simpleInclusion = ['$in', '$nin'].includes(operator) && Array.isArray(operand) && !operand.some((x) => x === Object(x));
+									const simpleInclusion =
+										['$in', '$nin'].includes(operator) && Array.isArray(operand) && !operand.some((x) => x === Object(x));
 
 									if (!(simpleRange || simpleInclusion || simpleEquality)) {
 										matcher._isSimple = false;
@@ -879,7 +896,7 @@ Package["core-runtime"].queue("minimongo", function () {
 										return convertElementMatcherToBranchedMatcher(options.compileElementSelector(operand, valueSelector, matcher), options);
 									}
 
-									throw new MiniMongoQueryError(("Unrecognized operator: ").concat(operator));
+									throw new MiniMongoQueryError('Unrecognized operator: '.concat(operator));
 								});
 
 								return andBranchedMatchers(operatorMatchers);
@@ -940,7 +957,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 								if (unprefixedKeys.length > 0 || !keys.length) {
 									if (keys.length !== unprefixedKeys.length) {
-										throw new MiniMongoQueryError(("unknown operator: ").concat(unprefixedKeys[0]));
+										throw new MiniMongoQueryError('unknown operator: '.concat(unprefixedKeys[0]));
 									}
 
 									validateObject(value, key);
@@ -1005,12 +1022,20 @@ Package["core-runtime"].queue("minimongo", function () {
 									}
 								});
 
-								const projectionRulesTree = pathsToTree(fieldsKeys, (path) => including, (node, path, fullPath) => {
-									const currentPath = fullPath;
-									const anotherPath = path;
+								const projectionRulesTree = pathsToTree(
+									fieldsKeys,
+									(path) => including,
+									(node, path, fullPath) => {
+										const currentPath = fullPath;
+										const anotherPath = path;
 
-									throw MinimongoError(("both ").concat(currentPath, " and ").concat(anotherPath, " found in fields option, ") + 'using both of them may trigger unexpected behavior. Did you mean to ' + 'use only one of them?');
-								});
+										throw MinimongoError(
+											'both '.concat(currentPath, ' and ').concat(anotherPath, ' found in fields option, ') +
+												'using both of them may trigger unexpected behavior. Did you mean to ' +
+												'use only one of them?',
+										);
+									},
+								);
 
 								return { including, tree: projectionRulesTree };
 							}
@@ -1033,11 +1058,11 @@ Package["core-runtime"].queue("minimongo", function () {
 
 							function validateKeyInPath(key, path) {
 								if (key.includes('.')) {
-									throw new Error(("The dotted field '").concat(key, "' in '").concat(path, ".").concat(key, " is not valid for storage."));
+									throw new Error("The dotted field '".concat(key, "' in '").concat(path, '.').concat(key, ' is not valid for storage.'));
 								}
 
 								if (key[0] === '$') {
-									throw new Error(("The dollar ($) prefixed field  '").concat(path, ".").concat(key, " is not valid for storage."));
+									throw new Error("The dollar ($) prefixed field  '".concat(path, '.').concat(key, ' is not valid for storage.'));
 								}
 							}
 
@@ -1051,16 +1076,16 @@ Package["core-runtime"].queue("minimongo", function () {
 							}
 						},
 
-						"constants.js"(require, exports, module) {
+						'constants.js'(require, exports, module) {
 							module.export({
 								getAsyncMethodName: () => getAsyncMethodName,
 								ASYNC_COLLECTION_METHODS: () => ASYNC_COLLECTION_METHODS,
 								ASYNC_CURSOR_METHODS: () => ASYNC_CURSOR_METHODS,
-								CLIENT_ONLY_METHODS: () => CLIENT_ONLY_METHODS
+								CLIENT_ONLY_METHODS: () => CLIENT_ONLY_METHODS,
 							});
 
 							function getAsyncMethodName(method) {
-								return ("").concat(method.replace('_', ''), "Async");
+								return ''.concat(method.replace('_', ''), 'Async');
 							}
 
 							const ASYNC_COLLECTION_METHODS = [
@@ -1072,44 +1097,44 @@ Package["core-runtime"].queue("minimongo", function () {
 								'insert',
 								'remove',
 								'update',
-								'upsert'
+								'upsert',
 							];
 
 							const ASYNC_CURSOR_METHODS = ['count', 'fetch', 'forEach', 'map'];
-							const CLIENT_ONLY_METHODS = ["findOne", "insert", "remove", "update", "upsert"];
+							const CLIENT_ONLY_METHODS = ['findOne', 'insert', 'remove', 'update', 'upsert'];
 						},
 
-						"cursor.js"(require, exports, module) {
+						'cursor.js'(require, exports, module) {
 							module.export({ default: () => Cursor });
 
 							let LocalCollection;
 
 							module.link(
-								"./local_collection.js",
+								'./local_collection.js',
 								{
 									default(v) {
 										LocalCollection = v;
-									}
+									},
 								},
-								0
+								0,
 							);
 
 							let hasOwn;
 
 							module.link(
-								"./common.js",
+								'./common.js',
 								{
 									hasOwn(v) {
 										hasOwn = v;
-									}
+									},
 								},
-								1
+								1,
 							);
 
 							let ASYNC_CURSOR_METHODS, getAsyncMethodName;
 
 							module.link(
-								"./constants",
+								'./constants',
 								{
 									ASYNC_CURSOR_METHODS(v) {
 										ASYNC_CURSOR_METHODS = v;
@@ -1117,9 +1142,9 @@ Package["core-runtime"].queue("minimongo", function () {
 
 									getAsyncMethodName(v) {
 										getAsyncMethodName = v;
-									}
+									},
 								},
-								2
+								2,
 							);
 
 							class Cursor {
@@ -1175,7 +1200,7 @@ Package["core-runtime"].queue("minimongo", function () {
 											addedBefore: true,
 											removed: true,
 											changed: true,
-											movedBefore: true
+											movedBefore: true,
 										});
 									}
 
@@ -1193,7 +1218,7 @@ Package["core-runtime"].queue("minimongo", function () {
 											}
 
 											return { done: true };
-										}
+										},
 									};
 								}
 
@@ -1203,7 +1228,7 @@ Package["core-runtime"].queue("minimongo", function () {
 									return {
 										async next() {
 											return Promise.resolve(syncResult.next());
-										}
+										},
 									};
 								}
 
@@ -1213,7 +1238,7 @@ Package["core-runtime"].queue("minimongo", function () {
 											addedBefore: true,
 											removed: true,
 											changed: true,
-											movedBefore: true
+											movedBefore: true,
 										});
 									}
 
@@ -1254,11 +1279,14 @@ Package["core-runtime"].queue("minimongo", function () {
 									const ordered = LocalCollection._observeChangesCallbacksAreOrdered(options);
 
 									if (!options._allow_unordered && !ordered && (this.skip || this.limit)) {
-										throw new Error("Must use an ordered observe with skip or limit (i.e. 'addedBefore' " + "for observeChanges or 'addedAt' for observe, instead of 'added').");
+										throw new Error(
+											"Must use an ordered observe with skip or limit (i.e. 'addedBefore' " +
+												"for observeChanges or 'addedAt' for observe, instead of 'added').",
+										);
 									}
 
 									if (this.fields && (this.fields._id === 0 || this.fields._id === false)) {
-										throw Error("You may not observe a cursor with {fields: {_id: 0}}");
+										throw Error('You may not observe a cursor with {fields: {_id: 0}}');
 									}
 
 									const distances = this.matcher.hasGeoQuery() && ordered && new LocalCollection._IdMap();
@@ -1271,7 +1299,7 @@ Package["core-runtime"].queue("minimongo", function () {
 										ordered,
 										projectionFn: this._projectionFn,
 										resultsSnapshot: null,
-										sorter: ordered && this.sorter
+										sorter: ordered && this.sorter,
 									};
 
 									let qid;
@@ -1337,7 +1365,13 @@ Package["core-runtime"].queue("minimongo", function () {
 											}
 										}
 
-										if ((_query$results = query.results) !== null && _query$results !== void 0 && (_query$results$size = _query$results.size) !== null && _query$results$size !== void 0 && _query$results$size.call(_query$results)) {
+										if (
+											(_query$results = query.results) !== null &&
+											_query$results !== void 0 &&
+											(_query$results$size = _query$results.size) !== null &&
+											_query$results$size !== void 0 &&
+											_query$results$size.call(_query$results)
+										) {
 											query.results.forEach(handler);
 										}
 									}
@@ -1350,7 +1384,7 @@ Package["core-runtime"].queue("minimongo", function () {
 											}
 										},
 										isReady: false,
-										isReadyPromise: null
+										isReadyPromise: null,
 									});
 
 									if (this.reactive && Tracker.active) {
@@ -1363,7 +1397,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 									if (drainResult instanceof Promise) {
 										handle.isReadyPromise = drainResult;
-										drainResult.then(() => handle.isReady = true);
+										drainResult.then(() => (handle.isReady = true));
 									} else {
 										handle.isReady = true;
 										handle.isReadyPromise = Promise.resolve();
@@ -1469,7 +1503,7 @@ Package["core-runtime"].queue("minimongo", function () {
 										results.sort(this.sorter.getComparator({ distances }));
 									}
 
-									if (!applySkipLimit || !this.limit && !this.skip) {
+									if (!applySkipLimit || (!this.limit && !this.skip)) {
 										return results;
 									}
 
@@ -1494,31 +1528,29 @@ Package["core-runtime"].queue("minimongo", function () {
 
 								Cursor.prototype[asyncName] = function () {
 									try {
-										for (var _len = arguments.length,
-											args = new Array(_len),
-											_key = 0; _key < _len; _key++) {
+										for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
 											args[_key] = arguments[_key];
 										}
 
 										return Promise.resolve(this[method].apply(this, args));
-									} catch(error) {
+									} catch (error) {
 										return Promise.reject(error);
 									}
 								};
 							});
 						},
 
-						"local_collection.js"(require, exports, module) {
+						'local_collection.js'(require, exports, module) {
 							let _objectSpread;
 
 							module.link(
-								"@babel/runtime/helpers/objectSpread2",
+								'@babel/runtime/helpers/objectSpread2',
 								{
 									default(v) {
 										_objectSpread = v;
-									}
+									},
 								},
-								0
+								0,
 							);
 
 							module.export({ default: () => LocalCollection });
@@ -1526,36 +1558,31 @@ Package["core-runtime"].queue("minimongo", function () {
 							let Cursor;
 
 							module.link(
-								"./cursor.js",
+								'./cursor.js',
 								{
 									default(v) {
 										Cursor = v;
-									}
+									},
 								},
-								0
+								0,
 							);
 
 							let ObserveHandle;
 
 							module.link(
-								"./observe_handle.js",
+								'./observe_handle.js',
 								{
 									default(v) {
 										ObserveHandle = v;
-									}
+									},
 								},
-								1
+								1,
 							);
 
-							let hasOwn,
-								isIndexable,
-								isNumericKey,
-								isOperatorObject,
-								populateDocumentWithQueryFields,
-								projectionDetails;
+							let hasOwn, isIndexable, isNumericKey, isOperatorObject, populateDocumentWithQueryFields, projectionDetails;
 
 							module.link(
-								"./common.js",
+								'./common.js',
 								{
 									hasOwn(v) {
 										hasOwn = v;
@@ -1579,21 +1606,21 @@ Package["core-runtime"].queue("minimongo", function () {
 
 									projectionDetails(v) {
 										projectionDetails = v;
-									}
+									},
 								},
-								2
+								2,
 							);
 
 							let getAsyncMethodName;
 
 							module.link(
-								"./constants",
+								'./constants',
 								{
 									getAsyncMethodName(v) {
 										getAsyncMethodName = v;
-									}
+									},
 								},
-								3
+								3,
 							);
 
 							class LocalCollection {
@@ -1601,9 +1628,7 @@ Package["core-runtime"].queue("minimongo", function () {
 									this.name = name;
 									this._docs = new LocalCollection._IdMap();
 
-									this._observeQueue = true
-										? new Meteor._SynchronousQueue()
-										: new Meteor._AsynchronousQueue();
+									this._observeQueue = true ? new Meteor._SynchronousQueue() : new Meteor._AsynchronousQueue();
 
 									this.next_qid = 1;
 									this.queries = Object.create(null);
@@ -1661,7 +1686,7 @@ Package["core-runtime"].queue("minimongo", function () {
 									const id = doc._id;
 
 									if (this._docs.has(id)) {
-										throw MinimongoError(("Duplicate _id '").concat(id, "'"));
+										throw MinimongoError("Duplicate _id '".concat(id, "'"));
 									}
 
 									this._saveOriginal(id, undefined);
@@ -1926,7 +1951,9 @@ Package["core-runtime"].queue("minimongo", function () {
 											query.dirty = false;
 											this._recomputeResults(query, query.resultsSnapshot);
 										} else {
-											LocalCollection._diffQueryChanges(query.ordered, query.resultsSnapshot, query.results, query, { projectionFn: query.projectionFn });
+											LocalCollection._diffQueryChanges(query.ordered, query.resultsSnapshot, query.results, query, {
+												projectionFn: query.projectionFn,
+											});
 										}
 
 										query.resultsSnapshot = null;
@@ -2163,7 +2190,7 @@ Package["core-runtime"].queue("minimongo", function () {
 										for (const id of specificIds) {
 											const doc = this._docs.get(id);
 
-											if (doc && !await fn(doc, id)) {
+											if (doc && !(await fn(doc, id))) {
 												break;
 											}
 										}
@@ -2304,7 +2331,9 @@ Package["core-runtime"].queue("minimongo", function () {
 									query.results = query.cursor._getRawObjects({ distances: query.distances, ordered: query.ordered });
 
 									if (!this.paused) {
-										LocalCollection._diffQueryChanges(query.ordered, oldResults, query.results, query, { projectionFn: query.projectionFn });
+										LocalCollection._diffQueryChanges(query.ordered, oldResults, query.results, query, {
+											projectionFn: query.projectionFn,
+										});
 									}
 								}
 
@@ -2333,7 +2362,7 @@ Package["core-runtime"].queue("minimongo", function () {
 										this.ordered = options.ordered;
 
 										if (options.callbacks && options.ordered !== orderedFromCallbacks) {
-											throw Error('ordered option doesn\'t match callbacks');
+											throw Error("ordered option doesn't match callbacks");
 										}
 									} else if (options.callbacks) {
 										this.ordered = orderedFromCallbacks;
@@ -2369,7 +2398,7 @@ Package["core-runtime"].queue("minimongo", function () {
 												}
 
 												this.docs.moveBefore(id, before || null);
-											}
+											},
 										};
 									} else {
 										this.docs = new LocalCollection._IdMap();
@@ -2384,7 +2413,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 												doc._id = id;
 												this.docs.set(id, doc);
-											}
+											},
 										};
 									}
 
@@ -2392,7 +2421,7 @@ Package["core-runtime"].queue("minimongo", function () {
 										const doc = this.docs.get(id);
 
 										if (!doc) {
-											throw new Error(("Unknown id for changed: ").concat(id));
+											throw new Error('Unknown id for changed: '.concat(id));
 										}
 
 										if (callbacks.changed) {
@@ -2441,7 +2470,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 									if (hasOwn.call(transformed, '_id')) {
 										if (!EJSON.equals(transformed._id, id)) {
-											throw new Error('transformed document can\'t have different _id');
+											throw new Error("transformed document can't have different _id");
 										}
 									} else {
 										transformed._id = id;
@@ -2480,13 +2509,13 @@ Package["core-runtime"].queue("minimongo", function () {
 
 								Object.keys(fields).forEach((keyPath) => {
 									if (keyPath.split('.').includes('$')) {
-										throw MinimongoError('Minimongo doesn\'t support $ operator in projections yet.');
+										throw MinimongoError("Minimongo doesn't support $ operator in projections yet.");
 									}
 
 									const value = fields[keyPath];
 
 									if (typeof value === 'object' && ['$elemMatch', '$meta', '$slice'].some((key) => hasOwn.call(value, key))) {
-										throw MinimongoError('Minimongo doesn\'t support operators in projections yet.');
+										throw MinimongoError("Minimongo doesn't support operators in projections yet.");
 									}
 
 									if (![1, 0, true, false].includes(value)) {
@@ -2574,13 +2603,16 @@ Package["core-runtime"].queue("minimongo", function () {
 								return DiffSequence.diffObjects(left, right, callbacks);
 							};
 
-							LocalCollection._diffQueryChanges = (ordered, oldResults, newResults, observer, options) => DiffSequence.diffQueryChanges(ordered, oldResults, newResults, observer, options);
-							LocalCollection._diffQueryOrderedChanges = (oldResults, newResults, observer, options) => DiffSequence.diffQueryOrderedChanges(oldResults, newResults, observer, options);
-							LocalCollection._diffQueryUnorderedChanges = (oldResults, newResults, observer, options) => DiffSequence.diffQueryUnorderedChanges(oldResults, newResults, observer, options);
+							LocalCollection._diffQueryChanges = (ordered, oldResults, newResults, observer, options) =>
+								DiffSequence.diffQueryChanges(ordered, oldResults, newResults, observer, options);
+							LocalCollection._diffQueryOrderedChanges = (oldResults, newResults, observer, options) =>
+								DiffSequence.diffQueryOrderedChanges(oldResults, newResults, observer, options);
+							LocalCollection._diffQueryUnorderedChanges = (oldResults, newResults, observer, options) =>
+								DiffSequence.diffQueryUnorderedChanges(oldResults, newResults, observer, options);
 
 							LocalCollection._findInOrderedResults = (query, doc) => {
 								if (!query.ordered) {
-									throw new Error('Can\'t call _findInOrderedResults on unordered query');
+									throw new Error("Can't call _findInOrderedResults on unordered query");
 								}
 
 								for (let i = 0; i < query.results.length; i++) {
@@ -2606,7 +2638,12 @@ Package["core-runtime"].queue("minimongo", function () {
 										return [selector._id];
 									}
 
-									if (selector._id && Array.isArray(selector._id.$in) && selector._id.$in.length && selector._id.$in.every(LocalCollection._selectorIsId)) {
+									if (
+										selector._id &&
+										Array.isArray(selector._id.$in) &&
+										selector._id.$in.length &&
+										selector._id.$in.every(LocalCollection._selectorIsId)
+									) {
 										return selector._id.$in;
 									}
 
@@ -2636,7 +2673,11 @@ Package["core-runtime"].queue("minimongo", function () {
 										query.addedBefore(doc._id, query.projectionFn(fields), null);
 										query.results.push(doc);
 									} else {
-										const i = LocalCollection._insertInSortedList(query.sorter.getComparator({ distances: query.distances }), query.results, doc);
+										const i = LocalCollection._insertInSortedList(
+											query.sorter.getComparator({ distances: query.distances }),
+											query.results,
+											doc,
+										);
 										let next = query.results[i + 1];
 
 										if (next) {
@@ -2665,7 +2706,11 @@ Package["core-runtime"].queue("minimongo", function () {
 										await query.addedBefore(doc._id, query.projectionFn(fields), null);
 										query.results.push(doc);
 									} else {
-										const i = LocalCollection._insertInSortedList(query.sorter.getComparator({ distances: query.distances }), query.results, doc);
+										const i = LocalCollection._insertInSortedList(
+											query.sorter.getComparator({ distances: query.distances }),
+											query.results,
+											doc,
+										);
 										let next = query.results[i + 1];
 
 										if (next) {
@@ -2740,7 +2785,7 @@ Package["core-runtime"].queue("minimongo", function () {
 										const operand = modifier[operator];
 
 										if (!modFunc) {
-											throw MinimongoError(("Invalid modifier specified ").concat(operator));
+											throw MinimongoError('Invalid modifier specified '.concat(operator));
 										}
 
 										Object.keys(operand).forEach((keypath) => {
@@ -2753,13 +2798,15 @@ Package["core-runtime"].queue("minimongo", function () {
 											const keyparts = keypath.split('.');
 
 											if (!keyparts.every(Boolean)) {
-												throw MinimongoError(("The update path '").concat(keypath, "' contains an empty field name, ") + 'which is not allowed.');
+												throw MinimongoError(
+													"The update path '".concat(keypath, "' contains an empty field name, ") + 'which is not allowed.',
+												);
 											}
 
 											const target = findModTarget(newDoc, keyparts, {
 												arrayIndices: options.arrayIndices,
 												forbidArray: operator === '$rename',
-												noCreate: NO_CREATE_MODIFIERS[operator]
+												noCreate: NO_CREATE_MODIFIERS[operator],
 											});
 
 											modFunc(target, keyparts.pop(), arg, keypath, newDoc);
@@ -2767,11 +2814,17 @@ Package["core-runtime"].queue("minimongo", function () {
 									});
 
 									if (doc._id && !EJSON.equals(doc._id, newDoc._id)) {
-										throw MinimongoError(("After applying the update to the document {_id: \"").concat(doc._id, "\", ...},") + ' the (immutable) field \'_id\' was found to have been altered to ' + ("_id: \"").concat(newDoc._id, "\""));
+										throw MinimongoError(
+											'After applying the update to the document {_id: "'.concat(doc._id, '", ...},') +
+												" the (immutable) field '_id' was found to have been altered to " +
+												'_id: "'.concat(newDoc._id, '"'),
+										);
 									}
 								} else {
 									if (doc._id && modifier._id && !EJSON.equals(doc._id, modifier._id)) {
-										throw MinimongoError(("The _id field cannot be changed from {_id: \"").concat(doc._id, "\"} to ") + ("{_id: \"").concat(modifier._id, "\"}"));
+										throw MinimongoError(
+											'The _id field cannot be changed from {_id: "'.concat(doc._id, '"} to ') + '{_id: "'.concat(modifier._id, '"}'),
+										);
 									}
 
 									assertHasValidFieldNames(modifier);
@@ -2807,13 +2860,7 @@ Package["core-runtime"].queue("minimongo", function () {
 											const doc = transform(Object.assign(fields, { _id: id }));
 
 											if (observeCallbacks.addedAt) {
-												observeCallbacks.addedAt(
-													doc,
-													indices
-														? before ? this.docs.indexOf(before) : this.docs.size()
-														: -1,
-													before
-												);
+												observeCallbacks.addedAt(doc, indices ? (before ? this.docs.indexOf(before) : this.docs.size()) : -1, before);
 											} else {
 												observeCallbacks.added(doc);
 											}
@@ -2827,7 +2874,7 @@ Package["core-runtime"].queue("minimongo", function () {
 											let doc = EJSON.clone(this.docs.get(id));
 
 											if (!doc) {
-												throw new Error(("Unknown id for changed: ").concat(id));
+												throw new Error('Unknown id for changed: '.concat(id));
 											}
 
 											const oldDoc = transform(EJSON.clone(doc));
@@ -2848,9 +2895,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 											const from = indices ? this.docs.indexOf(id) : -1;
 
-											let to = indices
-												? before ? this.docs.indexOf(before) : this.docs.size()
-												: -1;
+											let to = indices ? (before ? this.docs.indexOf(before) : this.docs.size()) : -1;
 
 											if (to > from) {
 												--to;
@@ -2871,7 +2916,7 @@ Package["core-runtime"].queue("minimongo", function () {
 											} else {
 												observeCallbacks.removed(doc);
 											}
-										}
+										},
 									};
 								} else {
 									observeChangesCallbacks = {
@@ -2895,7 +2940,7 @@ Package["core-runtime"].queue("minimongo", function () {
 											if (observeCallbacks.removed) {
 												observeCallbacks.removed(transform(this.docs.get(id)));
 											}
-										}
+										},
 									};
 								}
 
@@ -2908,9 +2953,11 @@ Package["core-runtime"].queue("minimongo", function () {
 								const setSuppressed = (h) => {
 									var _h$isReadyPromise;
 
-									if (h.isReady) suppressed = false; else (_h$isReadyPromise = h.isReadyPromise) === null || _h$isReadyPromise === void 0
-										? void 0
-										: _h$isReadyPromise.then(() => suppressed = false);
+									if (h.isReady) suppressed = false;
+									else
+										(_h$isReadyPromise = h.isReadyPromise) === null || _h$isReadyPromise === void 0
+											? void 0
+											: _h$isReadyPromise.then(() => (suppressed = false));
 								};
 
 								if (Meteor._isPromise(handle)) {
@@ -2974,12 +3021,15 @@ Package["core-runtime"].queue("minimongo", function () {
 								}
 							};
 
-							LocalCollection._selectorIsId = (selector) => typeof selector === 'number' || typeof selector === 'string' || selector instanceof MongoID.ObjectID;
-							LocalCollection._selectorIsIdPerhapsAsObject = (selector) => LocalCollection._selectorIsId(selector) || LocalCollection._selectorIsId(selector && selector._id) && Object.keys(selector).length === 1;
+							LocalCollection._selectorIsId = (selector) =>
+								typeof selector === 'number' || typeof selector === 'string' || selector instanceof MongoID.ObjectID;
+							LocalCollection._selectorIsIdPerhapsAsObject = (selector) =>
+								LocalCollection._selectorIsId(selector) ||
+								(LocalCollection._selectorIsId(selector && selector._id) && Object.keys(selector).length === 1);
 
 							LocalCollection._updateInResultsSync = (query, doc, old_doc) => {
 								if (!EJSON.equals(doc._id, old_doc._id)) {
-									throw new Error('Can\'t change a doc\'s _id while updating');
+									throw new Error("Can't change a doc's _id while updating");
 								}
 
 								const projectionFn = query.projectionFn;
@@ -3006,7 +3056,11 @@ Package["core-runtime"].queue("minimongo", function () {
 
 								query.results.splice(old_idx, 1);
 
-								const new_idx = LocalCollection._insertInSortedList(query.sorter.getComparator({ distances: query.distances }), query.results, doc);
+								const new_idx = LocalCollection._insertInSortedList(
+									query.sorter.getComparator({ distances: query.distances }),
+									query.results,
+									doc,
+								);
 
 								if (old_idx !== new_idx) {
 									let next = query.results[new_idx + 1];
@@ -3023,7 +3077,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 							LocalCollection._updateInResultsAsync = async (query, doc, old_doc) => {
 								if (!EJSON.equals(doc._id, old_doc._id)) {
-									throw new Error('Can\'t change a doc\'s _id while updating');
+									throw new Error("Can't change a doc's _id while updating");
 								}
 
 								const projectionFn = query.projectionFn;
@@ -3050,7 +3104,11 @@ Package["core-runtime"].queue("minimongo", function () {
 
 								query.results.splice(old_idx, 1);
 
-								const new_idx = LocalCollection._insertInSortedList(query.sorter.getComparator({ distances: query.distances }), query.results, doc);
+								const new_idx = LocalCollection._insertInSortedList(
+									query.sorter.getComparator({ distances: query.distances }),
+									query.results,
+									doc,
+								);
 
 								if (old_idx !== new_idx) {
 									let next = query.results[new_idx + 1];
@@ -3061,7 +3119,7 @@ Package["core-runtime"].queue("minimongo", function () {
 										next = null;
 									}
 
-									query.movedBefore && await query.movedBefore(doc._id, next);
+									query.movedBefore && (await query.movedBefore(doc._id, next));
 								}
 							};
 
@@ -3160,7 +3218,7 @@ Package["core-runtime"].queue("minimongo", function () {
 									}
 
 									if (arg.includes('\0')) {
-										throw MinimongoError('The \'to\' field for $rename cannot contain an embedded null byte', { field });
+										throw MinimongoError("The 'to' field for $rename cannot contain an embedded null byte", { field });
 									}
 
 									if (target === undefined) {
@@ -3432,7 +3490,7 @@ Package["core-runtime"].queue("minimongo", function () {
 								$bit(target, field, arg) {
 									throw MinimongoError('$bit is not supported', { field });
 								},
-								$v() {}
+								$v() {},
 							};
 
 							const NO_CREATE_MODIFIERS = {
@@ -3440,13 +3498,13 @@ Package["core-runtime"].queue("minimongo", function () {
 								$pull: true,
 								$pullAll: true,
 								$rename: true,
-								$unset: true
+								$unset: true,
 							};
 
 							const invalidCharMsg = {
-								$: 'start with \'$\'',
-								'.': 'contain \'.\'',
-								'\0': 'contain null bytes'
+								'$': "start with '$'",
+								'.': "contain '.'",
+								'\0': 'contain null bytes',
 							};
 
 							function assertHasValidFieldNames(doc) {
@@ -3463,7 +3521,7 @@ Package["core-runtime"].queue("minimongo", function () {
 								let match;
 
 								if (typeof key === 'string' && (match = key.match(/^\$|\.|\0/))) {
-									throw MinimongoError(("Key ").concat(key, " must not ").concat(invalidCharMsg[match[0]]));
+									throw MinimongoError('Key '.concat(key, ' must not ').concat(invalidCharMsg[match[0]]));
 								}
 							}
 
@@ -3480,7 +3538,7 @@ Package["core-runtime"].queue("minimongo", function () {
 											return undefined;
 										}
 
-										const error = MinimongoError(("cannot use the part '").concat(keypart, "' to traverse ").concat(doc));
+										const error = MinimongoError("cannot use the part '".concat(keypart, "' to traverse ").concat(doc));
 
 										error.setPropertyError = true;
 
@@ -3494,7 +3552,7 @@ Package["core-runtime"].queue("minimongo", function () {
 
 										if (keypart === '$') {
 											if (usedArrayIndex) {
-												throw MinimongoError('Too many positional (i.e. \'$\') elements');
+												throw MinimongoError("Too many positional (i.e. '$') elements");
 											}
 
 											if (!options.arrayIndices || !options.arrayIndices.length) {
@@ -3510,7 +3568,7 @@ Package["core-runtime"].queue("minimongo", function () {
 												return undefined;
 											}
 
-											throw MinimongoError(("can't append to array using string field name [").concat(keypart, "]"));
+											throw MinimongoError("can't append to array using string field name [".concat(keypart, ']'));
 										}
 
 										if (last) {
@@ -3529,7 +3587,9 @@ Package["core-runtime"].queue("minimongo", function () {
 											if (doc.length === keypart) {
 												doc.push({});
 											} else if (typeof doc[keypart] !== 'object') {
-												throw MinimongoError(("can't modify field '").concat(keyparts[i + 1], "' of list value ") + JSON.stringify(doc[keypart]));
+												throw MinimongoError(
+													"can't modify field '".concat(keyparts[i + 1], "' of list value ") + JSON.stringify(doc[keypart]),
+												);
 											}
 										}
 									} else {
@@ -3555,7 +3615,7 @@ Package["core-runtime"].queue("minimongo", function () {
 							}
 						},
 
-						"matcher.js"(require, exports, module) {
+						'matcher.js'(require, exports, module) {
 							var _Package$mongoDecima;
 
 							module.export({ default: () => Matcher });
@@ -3563,21 +3623,19 @@ Package["core-runtime"].queue("minimongo", function () {
 							let LocalCollection;
 
 							module.link(
-								"./local_collection.js",
+								'./local_collection.js',
 								{
 									default(v) {
 										LocalCollection = v;
-									}
+									},
 								},
-								0
+								0,
 							);
 
-							let compileDocumentSelector,
-								hasOwn,
-								nothingMatcher;
+							let compileDocumentSelector, hasOwn, nothingMatcher;
 
 							module.link(
-								"./common.js",
+								'./common.js',
 								{
 									compileDocumentSelector(v) {
 										compileDocumentSelector = v;
@@ -3589,12 +3647,15 @@ Package["core-runtime"].queue("minimongo", function () {
 
 									nothingMatcher(v) {
 										nothingMatcher = v;
-									}
+									},
 								},
-								1
+								1,
 							);
 
-							const Decimal = ((_Package$mongoDecima = Package['mongo-decimal']) === null || _Package$mongoDecima === void 0 ? void 0 : _Package$mongoDecima.Decimal) || class DecimalStub {};
+							const Decimal =
+								((_Package$mongoDecima = Package['mongo-decimal']) === null || _Package$mongoDecima === void 0
+									? void 0
+									: _Package$mongoDecima.Decimal) || class DecimalStub {};
 
 							class Matcher {
 								constructor(selector, isUpdate) {
@@ -3644,14 +3705,14 @@ Package["core-runtime"].queue("minimongo", function () {
 										return (doc) => ({ result: EJSON.equals(doc._id, selector) });
 									}
 
-									if (!selector || hasOwn.call(selector, '_id') && !selector._id) {
+									if (!selector || (hasOwn.call(selector, '_id') && !selector._id)) {
 										this._isSimple = false;
 
 										return nothingMatcher;
 									}
 
 									if (Array.isArray(selector) || EJSON.isBinary(selector) || typeof selector === 'boolean') {
-										throw new Error(("Invalid selector: ").concat(selector));
+										throw new Error('Invalid selector: '.concat(selector));
 									}
 
 									this._selector = EJSON.clone(selector);
@@ -3722,27 +3783,7 @@ Package["core-runtime"].queue("minimongo", function () {
 								},
 
 								_typeorder(t) {
-									return [
-										-1,
-										1,
-										2,
-										3,
-										4,
-										5,
-										-1,
-										6,
-										7,
-										8,
-										0,
-										9,
-										-1,
-										100,
-										2,
-										100,
-										1,
-										8,
-										1
-									][t];
+									return [-1, 1, 2, 3, 4, 5, -1, 6, 7, 8, 0, 9, -1, 100, 2, 100, 1, 8, 1][t];
 								},
 
 								_cmp(a, b) {
@@ -3852,58 +3893,58 @@ Package["core-runtime"].queue("minimongo", function () {
 									if (ta === 13) throw Error('Sorting not supported on Javascript code');
 
 									throw Error('Unknown type to sort');
-								}
+								},
 							};
 						},
 
-						"minimongo_common.js"(require, exports, module) {
+						'minimongo_common.js'(require, exports, module) {
 							let LocalCollection_;
 
 							module.link(
-								"./local_collection.js",
+								'./local_collection.js',
 								{
 									default(v) {
 										LocalCollection_ = v;
-									}
+									},
 								},
-								0
+								0,
 							);
 
 							let Matcher;
 
 							module.link(
-								"./matcher.js",
+								'./matcher.js',
 								{
 									default(v) {
 										Matcher = v;
-									}
+									},
 								},
-								1
+								1,
 							);
 
 							let Sorter;
 
 							module.link(
-								"./sorter.js",
+								'./sorter.js',
 								{
 									default(v) {
 										Sorter = v;
-									}
+									},
 								},
-								2
+								2,
 							);
 
 							LocalCollection = LocalCollection_;
 							Minimongo = { LocalCollection: LocalCollection_, Matcher, Sorter };
 						},
 
-						"observe_handle.js"(require, exports, module) {
+						'observe_handle.js'(require, exports, module) {
 							module.export({ default: () => ObserveHandle });
 
 							class ObserveHandle {}
 						},
 
-						"sorter.js"(require, exports, module) {
+						'sorter.js'(require, exports, module) {
 							module.export({ default: () => Sorter });
 
 							let ELEMENT_OPERATORS,
@@ -3915,7 +3956,7 @@ Package["core-runtime"].queue("minimongo", function () {
 								regexpElementMatcher;
 
 							module.link(
-								"./common.js",
+								'./common.js',
 								{
 									ELEMENT_OPERATORS(v) {
 										ELEMENT_OPERATORS = v;
@@ -3943,9 +3984,9 @@ Package["core-runtime"].queue("minimongo", function () {
 
 									regexpElementMatcher(v) {
 										regexpElementMatcher = v;
-									}
+									},
 								},
-								0
+								0,
 							);
 
 							class Sorter {
@@ -3959,13 +4000,13 @@ Package["core-runtime"].queue("minimongo", function () {
 										}
 
 										if (path.charAt(0) === '$') {
-											throw Error(("unsupported sort key: ").concat(path));
+											throw Error('unsupported sort key: '.concat(path));
 										}
 
 										this._sortSpecParts.push({
 											ascending,
 											lookup: makeLookupFunction(path, { forSort: true }),
-											path
+											path,
 										});
 									};
 
@@ -3984,7 +4025,7 @@ Package["core-runtime"].queue("minimongo", function () {
 									} else if (typeof spec === 'function') {
 										this._sortFunction = spec;
 									} else {
-										throw Error(("Bad sort specification: ").concat(JSON.stringify(spec)));
+										throw Error('Bad sort specification: '.concat(JSON.stringify(spec)));
 									}
 
 									if (this._sortFunction) {
@@ -4013,11 +4054,11 @@ Package["core-runtime"].queue("minimongo", function () {
 
 									return (a, b) => {
 										if (!distances.has(a._id)) {
-											throw Error(("Missing distance for ").concat(a._id));
+											throw Error('Missing distance for '.concat(a._id));
 										}
 
 										if (!distances.has(b._id)) {
-											throw Error(("Missing distance for ").concat(b._id));
+											throw Error('Missing distance for '.concat(b._id));
 										}
 
 										return distances.get(a._id) - distances.get(b._id);
@@ -4034,10 +4075,10 @@ Package["core-runtime"].queue("minimongo", function () {
 
 								_generateKeysFromDoc(doc, cb) {
 									if (this._sortSpecParts.length === 0) {
-										throw new Error('can\'t generate keys without a spec');
+										throw new Error("can't generate keys without a spec");
 									}
 
-									const pathFromIndices = (indices) => ("").concat(indices.join(','), ",");
+									const pathFromIndices = (indices) => ''.concat(indices.join(','), ',');
 									let knownPaths = null;
 
 									const valuesByIndexAndPath = this._sortSpecParts.map((spec) => {
@@ -4066,7 +4107,7 @@ Package["core-runtime"].queue("minimongo", function () {
 											const path = pathFromIndices(branch.arrayIndices);
 
 											if (hasOwn.call(element, path)) {
-												throw Error(("duplicate path: ").concat(path));
+												throw Error('duplicate path: '.concat(path));
 											}
 
 											element[path] = branch.value;
@@ -4185,12 +4226,12 @@ Package["core-runtime"].queue("minimongo", function () {
 									return 0;
 								};
 							}
-						}
-					}
-				}
-			}
+						},
+					},
+				},
+			},
 		},
-		{ "extensions": [".js", ".json"] }
+		{ extensions: ['.js', '.json'] },
 	);
 
 	return {
@@ -4198,8 +4239,8 @@ Package["core-runtime"].queue("minimongo", function () {
 			return { LocalCollection, Minimongo, MinimongoTest, MinimongoError };
 		},
 		require,
-		eagerModulePaths: ["/node_modules/meteor/minimongo/minimongo_client.js"],
-		mainModulePath: "/node_modules/meteor/minimongo/minimongo_client.js"
+		eagerModulePaths: ['/node_modules/meteor/minimongo/minimongo_client.js'],
+		mainModulePath: '/node_modules/meteor/minimongo/minimongo_client.js',
 	};
 });
 export const { LocalCollection, Minimongo, MinimongoTest, MinimongoError } = Package['minimongo'];
