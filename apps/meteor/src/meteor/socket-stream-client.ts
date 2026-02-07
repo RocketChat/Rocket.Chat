@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 
-import { meteorInstall } from './modules.ts';
 import { Package } from './package-registry.ts';
 import { Retry } from './retry.ts';
 import type * as Tracker from './tracker.ts';
@@ -376,14 +375,4 @@ class ClientStream extends StreamClientCommon {
 	}
 }
 
-meteorInstall({
-	node_modules: {
-		meteor: {
-			'socket-stream-client': {
-				'browser.js'(_require, _exports, module) {
-					module.export({ ClientStream: () => ClientStream });
-				},
-			},
-		},
-	},
-});
+export { ClientStream };
