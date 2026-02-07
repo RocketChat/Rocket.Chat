@@ -1,21 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import '/src/meteor/random.ts';
-import '/.meteor/local/build/programs/web.browser/packages/ejson.js';
-import '/src/meteor/tracker.ts';
 import '/src/meteor/retry.ts';
 import '/src/meteor/callback-hook.ts';
-import '/.meteor/local/build/programs/web.browser/packages/ddp-common.js';
-import '/.meteor/local/build/programs/web.browser/packages/reload.js';
-import '/.meteor/local/build/programs/web.browser/packages/diff-sequence.js';
 import '/src/meteor/modules.ts';
 import { Package } from './package-registry';
 
 import { MongoID } from './mongo-id.ts';
 import { Retry } from './retry.ts';
-import { meteorInstall } from './modules.ts';
+import { Tracker } from './tracker/index.ts';
 
 import { DDPCommon } from 'meteor/ddp-common';
-import { Tracker } from 'meteor/tracker';
 import { EJSON } from 'meteor/ejson';
 import { Random } from './random.ts';
 import { Hook } from './callback-hook.ts';
