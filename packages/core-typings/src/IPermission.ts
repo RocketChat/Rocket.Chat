@@ -1,6 +1,6 @@
-export interface IPermission {
-	_id: string;
-	_updatedAt: Date;
+import type { IRocketChatRecord } from './IRocketChatRecord';
+
+export interface IPermission extends IRocketChatRecord {
 	roles: string[];
 	group?: string;
 	groupPermissionId?: string;
