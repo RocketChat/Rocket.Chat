@@ -73,6 +73,7 @@ describe('AppStatus', () => {
 	});
 
 	it('should reset loading state when install action throws an error', async () => {
+		expect.assertions(3);
 		const app = createFakeApp({
 			installed: false,
 			isPurchased: false,
@@ -109,6 +110,7 @@ describe('AppStatus', () => {
 	});
 
 	it('should reset loading state when update action throws an error', async () => {
+		expect.assertions(3);
 		const app = createFakeApp({
 			installed: true,
 			version: '1.0.0',
@@ -143,6 +145,7 @@ describe('AppStatus', () => {
 	});
 
 	it('should reset loading state when purchase action throws an error', async () => {
+		expect.assertions(3);
 		const app = createFakeApp({
 			installed: false,
 			isPurchased: false,
