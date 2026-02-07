@@ -1,6 +1,5 @@
-import { EJSON } from 'meteor/ejson';
-
-import { Package } from './package-registry';
+import { EJSON } from './ejson.ts';
+import { Package } from './package-registry.ts';
 import { Random } from './random';
 
 const _looksLikeObjectID = (str: string) => str.length === 24 && /^[0-9a-f]*$/.test(str);

@@ -1,5 +1,5 @@
 import { Package } from './package-registry.ts';
-import * as Tracker from './tracker.ts';
+import * as Tracker from './tracker/index.ts';
 
 type EqualsFunc<T> = (oldValue: T, newValue: T) => boolean;
 
