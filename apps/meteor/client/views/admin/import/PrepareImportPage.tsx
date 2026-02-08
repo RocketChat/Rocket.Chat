@@ -26,20 +26,13 @@ const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => ar
 	new Promise<U>((resolve, reject) => {
 		let retryCount = 0;
 		const maxRetries = 60; 
-		let lastProgressTime = Date.now();
-		let sameResponseCount = 0;
-		let lastResponse: T | null = null;
-
+		
 		const callPromise = () => {
 			if (retryCount >= maxRetries) {
 				reject(new Error('Failed to process import file - maximum retries exceeded'));
 				return;
 			}
 
-			if (Date.now() - lastProgressTime > 120000 && sameResponseCount > 120) {
-				reject(new Error('Import processing stalled - please check file format'));
-				return;
-			}
 
 			fn().then((result) => {
 				if (predicate(result)) {
@@ -47,15 +40,7 @@ const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => ar
 					return;
 				}
 
-				// Track if we're making progress or stuck in loop
-				if (lastResponse && JSON.stringify(result) === JSON.stringify(lastResponse)) {
-					sameResponseCount++;
-				} else {
-					sameResponseCount = 0;
-					lastProgressTime = Date.now();
-				}
-
-				lastResponse = result;
+				
 				retryCount++;
 				setTimeout(callPromise, 1000);
 			}, reject);

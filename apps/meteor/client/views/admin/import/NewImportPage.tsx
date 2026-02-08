@@ -144,7 +144,7 @@ function NewImportPage() {
 		
 		if (invalidFiles.length > 0) {
 			const allowedTypes = getAllowedFileTypes(importerKey);
-			setFileValidationError(t('Invalid_Import_File_Type') + ': Expected ' + allowedTypes.join(', '));
+			setFileValidationError(t('Invalid_Import_File_Type_Expected', { types: allowedTypes.join(', ') }));
 			setFiles([]);
 			return;
 		}
@@ -254,8 +254,7 @@ function NewImportPage() {
 		(fileType === 'path' && handleFilePathImportButtonClick) ||
 		undefined;
 
-	const isImportDisabled = isLoading || !importer || (fileType === 'upload' && fileValidationError) || (fileType === 'upload' && files.length === 0);
-
+	const isImportDisabled = isLoading || !importer || (fileType === 'upload' && !!fileValidationError) || (fileType === 'upload' && files.length === 0);
 	return (
 		<Page>
 			<PageHeader title={t('Import_New_File')} onClickBack={() => router.navigate('/admin/import')}>
