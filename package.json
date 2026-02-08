@@ -59,13 +59,15 @@
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
-		"node-gyp": "^10.2.0"
+		"node-gyp": "^10.2.0",
+		"pdfjs-dist": "3.11.174"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.27.11",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
 		"@types/node": "~22.16.5",
+		"@types/pdfjs-dist": "^2.10.378",
 		"ts-node": "^10.9.2",
 		"turbo": "~2.7.6",
 		"typescript": "~5.9.3"
