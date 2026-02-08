@@ -87,6 +87,11 @@ function NewImportPage() {
 	const [files, setFiles] = useState<File[]>([]);
 	const [fileValidationError, setFileValidationError] = useState<string>('');
 
+	useEffect(() => {
+		setFileValidationError('');
+		setFiles([]);
+	}, [importerKey]);
+
 	// Get allowed file types based on importer
 	const getAllowedFileTypes = (importerKeyParam: string | undefined): string[] => {
 		if (!importerKeyParam) {
