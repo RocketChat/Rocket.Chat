@@ -1,4 +1,4 @@
-import * as SHA256 from '@rocket.chat/sha256';
+import { SHA256 } from '@rocket.chat/sha256';
 
 import { Package } from './package-registry.ts';
 

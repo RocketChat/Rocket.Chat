@@ -1,7 +1,7 @@
 /* eslint-disable import/no-duplicates */
 import './meteor/core-runtime.ts';
 import './meteor/localstorage.ts';
-import 'meteor/accounts-oauth';
+import './meteor/accounts-oauth.ts';
 import 'meteor/accounts-password';
 import './meteor/service-configuration.ts';
 
