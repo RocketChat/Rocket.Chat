@@ -1,8 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import type { Extension } from '@codemirror/state';
 import { Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEffect, useContext } from 'react';
+import { useEffect, useContext, useCallback } from 'react';
 
 import { updatePayloadAction, context } from '../../Context';
 import useCodeMirror from '../../hooks/useCodeMirror';
@@ -26,7 +25,7 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
   );
   const debounceValue = useDebouncedValue(changes, 1500);
 
-  useFormatCodeMirrorValue(
+  const handleFormatCode = useCallback(
     (
       parsedCode: IPayload,
       prettifiedCode: { formatted: string; cursorOffset: number }
@@ -41,8 +40,10 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
         cursor: prettifiedCode.cursorOffset,
       });
     },
-    debounceValue
+    [dispatch, setValue]
   );
+
+  useFormatCodeMirrorValue(handleFormatCode, debounceValue);
 
   useEffect(() => {
     if (!screens[activeScreen]?.changedByEditor) {
@@ -51,12 +52,14 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
   }, [
     screens[activeScreen]?.payload.blocks,
     screens[activeScreen]?.payload.surface,
+    screens[activeScreen]?.changedByEditor,
     activeScreen,
+    setValue,
   ]);
 
   useEffect(() => {
     setValue(intendCode(screens[activeScreen]?.payload), {});
-  }, [activeScreen]);
+  }, [activeScreen, screens[activeScreen]?.payload.blocks, screens[activeScreen]?.payload.surface, setValue]);
 
   return (
     <>
