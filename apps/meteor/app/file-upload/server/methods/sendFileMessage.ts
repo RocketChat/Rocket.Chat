@@ -64,6 +64,7 @@ export const parseFileIntoMessageAttachments = async (
 			image_url: fileUrl,
 			image_type: file.type as string,
 			image_size: file.size,
+			fileId: file._id,
 		};
 
 		if (file.identify?.size) {
@@ -101,8 +102,8 @@ export const parseFileIntoMessageAttachments = async (
 					typeGroup: thumbnail.typeGroup || '',
 				});
 			}
-		} catch (e) {
-			SystemLogger.error(e);
+		} catch (err) {
+			SystemLogger.error({ err });
 		}
 		attachments.push(attachment);
 	} else if (/^audio\/.+/.test(file.type as string)) {
@@ -115,6 +116,7 @@ export const parseFileIntoMessageAttachments = async (
 			audio_url: fileUrl,
 			audio_type: file.type as string,
 			audio_size: file.size,
+			fileId: file._id,
 		};
 		attachments.push(attachment);
 	} else if (/^video\/.+/.test(file.type as string)) {
@@ -127,6 +129,7 @@ export const parseFileIntoMessageAttachments = async (
 			video_url: fileUrl,
 			video_type: file.type as string,
 			video_size: file.size as number,
+			fileId: file._id,
 		};
 		attachments.push(attachment);
 	} else {
@@ -138,6 +141,7 @@ export const parseFileIntoMessageAttachments = async (
 			title_link: fileUrl,
 			title_link_download: true,
 			size: file.size as number,
+			fileId: file._id,
 		};
 		attachments.push(attachment);
 	}

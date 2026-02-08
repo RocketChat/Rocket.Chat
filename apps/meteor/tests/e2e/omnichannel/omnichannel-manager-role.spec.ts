@@ -4,6 +4,7 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelAgents, OmnichannelManager, OmnichannelMonitors } from '../page-objects/omnichannel';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { createManager } from '../utils/omnichannel/managers';
@@ -114,9 +115,9 @@ test.describe('OC - Manager Role', () => {
 
 	test('OC - Manager Role - Contact Center', async ({ page }) => {
 		await test.step('expect to be able to view all chats', async () => {
-			await expect(poOmnichannel.chats.findRowByName(ROOM_A)).toBeVisible();
-			await expect(poOmnichannel.chats.findRowByName(ROOM_B)).toBeVisible();
-			await expect(poOmnichannel.chats.findRowByName(ROOM_C)).toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_A)).toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_B)).toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_C)).toBeVisible();
 		});
 
 		await test.step('expect to be able to join chats', async () => {
@@ -153,76 +154,74 @@ test.describe('OC - Manager Role', () => {
 
 		await test.step('expect to be able to remove closed rooms', async () => {
 			await poOmnichannel.chats.removeChatByName(ROOM_A);
-			await expect(poOmnichannel.chats.findRowByName(ROOM_A)).not.toBeVisible();
+			await expect(poOmnichannel.chats.table.findRowByName(ROOM_A)).not.toBeVisible();
 		});
 	});
 
-	test('OC - Manager Role - Add/remove agents', async () => {
-		await poOmnichannel.agents.sidenav.linkAgents.click();
+	test('OC - Manager Role - Add/remove agents', async ({ page }) => {
+		const poOmnichannelAgents = new OmnichannelAgents(page);
+		await poOmnichannelAgents.sidebar.linkAgents.click();
 
 		await test.step('expect add "user1" as agent', async () => {
-			await poOmnichannel.agents.selectUsername('user1');
-			await poOmnichannel.agents.btnAdd.click();
+			await poOmnichannelAgents.selectUsername('user1');
+			await poOmnichannelAgents.btnAddAgent.click();
 
-			await poOmnichannel.agents.inputSearch.fill('user1');
-			await expect(poOmnichannel.agents.findRowByName('user1')).toBeVisible();
+			await poOmnichannelAgents.inputSearch.fill('user1');
+			await expect(poOmnichannelAgents.table.findRowByName('user1')).toBeVisible();
 		});
 
 		await test.step('expect remove "user1" as agent', async () => {
-			await poOmnichannel.agents.inputSearch.fill('user1');
-			await poOmnichannel.agents.btnDeleteFirstRowInTable.click();
-			await poOmnichannel.agents.btnModalRemove.click();
+			await poOmnichannelAgents.inputSearch.fill('user1');
+			await poOmnichannelAgents.deleteAgent('user1');
 
-			await poOmnichannel.agents.inputSearch.fill('');
-			await poOmnichannel.agents.inputSearch.fill('user1');
-			await expect(poOmnichannel.agents.findRowByName('user1')).toBeHidden();
+			await poOmnichannelAgents.inputSearch.fill('');
+			await poOmnichannelAgents.inputSearch.fill('user1');
+			await expect(poOmnichannelAgents.table.findRowByName('user1')).toBeHidden();
 		});
 	});
 
-	test('OC - Manager Role - Add/remove managers', async () => {
-		await poOmnichannel.omnisidenav.linkManagers.click();
+	test('OC - Manager Role - Add/remove managers', async ({ page }) => {
+		const poOmnichannelManagers = new OmnichannelManager(page);
+		await poOmnichannelManagers.sidebar.linkManagers.click();
 
 		await test.step('expect add "user1" as manager', async () => {
-			await poOmnichannel.managers.selectUsername('user1');
-			await poOmnichannel.managers.btnAdd.click();
+			await poOmnichannelManagers.selectUsername('user1');
+			await poOmnichannelManagers.btnAddManager.click();
 
-			await expect(poOmnichannel.managers.findRowByName('user1')).toBeVisible();
+			await expect(poOmnichannelManagers.table.findRowByName('user1')).toBeVisible();
 		});
 
 		await test.step('expect search for manager', async () => {
-			await poOmnichannel.managers.search('user1');
-			await expect(poOmnichannel.managers.findRowByName('user1')).toBeVisible();
+			await poOmnichannelManagers.search('user1');
+			await expect(poOmnichannelManagers.table.findRowByName('user1')).toBeVisible();
 
-			await poOmnichannel.managers.search('NonExistingUser');
-			await expect(poOmnichannel.managers.findRowByName('user1')).toBeHidden();
-
-			await poOmnichannel.managers.clearSearch();
+			await poOmnichannelManagers.search('NonExistingUser');
+			await expect(poOmnichannelManagers.table.findRowByName('user1')).toBeHidden();
+			await poOmnichannelManagers.clearSearch();
 		});
 
 		await test.step('expect remove "user1" as manager', async () => {
-			await poOmnichannel.managers.search('user1');
-			await poOmnichannel.managers.btnDeleteSelectedAgent('user1').click();
-			await poOmnichannel.managers.btnModalRemove.click();
+			await poOmnichannelManagers.search('user1');
+			await poOmnichannelManagers.removeManager('user1');
 
-			await expect(poOmnichannel.managers.findRowByName('user1')).toBeHidden();
+			await expect(poOmnichannelManagers.table.findRowByName('user1')).toBeHidden();
 		});
 	});
 
-	test('OC - Manager Role - Add/remove monitors', async () => {
-		await poOmnichannel.omnisidenav.linkMonitors.click();
+	test('OC - Manager Role - Add/remove monitors', async ({ page }) => {
+		const poOmnichannelMonitors = new OmnichannelMonitors(page);
+		await poOmnichannelMonitors.sidebar.linkMonitors.click();
 
 		await test.step('expect to add agent as monitor', async () => {
-			await expect(poOmnichannel.monitors.findRowByName('user1')).not.toBeVisible();
-			await poOmnichannel.monitors.selectMonitor('user1');
-			await poOmnichannel.monitors.btnAddMonitor.click();
-			await expect(poOmnichannel.monitors.findRowByName('user1')).toBeVisible();
+			await expect(poOmnichannelMonitors.table.findRowByName('user1')).not.toBeVisible();
+			await poOmnichannelMonitors.addMonitor('user1');
+			await expect(poOmnichannelMonitors.table.findRowByName('user1')).toBeVisible();
 		});
 
 		await test.step('expect to remove agent from monitor', async () => {
-			await poOmnichannel.monitors.btnRemoveByName('user1').click();
-			await expect(poOmnichannel.monitors.modalConfirmRemove).toBeVisible();
-			await poOmnichannel.monitors.btnConfirmRemove.click();
-			await expect(poOmnichannel.monitors.findRowByName('user1')).not.toBeVisible();
+			await poOmnichannelMonitors.removeMonitor('user1');
+
+			await expect(poOmnichannelMonitors.table.findRowByName('user1')).not.toBeVisible();
 		});
 	});
 });

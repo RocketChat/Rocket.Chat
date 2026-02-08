@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -37,7 +37,7 @@ const ParentTeam = ({ room }: ParentTeamProps) => {
 	const { data: userTeams, isLoading: userTeamsLoading } = useUserTeamsQuery(userId);
 
 	const userBelongsToTeam = Boolean(userTeams?.find((team) => team._id === teamId)) || false;
-	const isPublicTeam = teamInfo?.type === TEAM_TYPE.PUBLIC;
+	const isPublicTeam = teamInfo?.type === TeamType.PUBLIC;
 	const shouldDisplayTeam = isPublicTeam || userBelongsToTeam;
 
 	const redirectToMainRoom = (): void => {

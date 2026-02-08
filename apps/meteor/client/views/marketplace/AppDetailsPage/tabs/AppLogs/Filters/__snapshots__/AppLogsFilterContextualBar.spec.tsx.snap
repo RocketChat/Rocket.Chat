@@ -24,7 +24,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-142wtci"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
+              class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
             >
               <i
                 aria-hidden="true"
@@ -32,12 +32,12 @@ exports[`renders AppLogsItem without crashing 1`] = `
               >
                 
               </i>
-              <div
+              <h5
                 class="rcx-box rcx-box--full rcx-css-1spko5i"
                 id="contextualbarTitle"
               >
                 Filters
-              </div>
+              </h5>
               <button
                 aria-label="Close"
                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"

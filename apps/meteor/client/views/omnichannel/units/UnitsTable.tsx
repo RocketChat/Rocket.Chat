@@ -96,7 +96,7 @@ const UnitsTable = () => {
 			)}
 			{isSuccess && data?.units.length > 0 && (
 				<>
-					<GenericTable aria-busy={isLoading}>
+					<GenericTable aria-label={t('Units')} aria-busy={isLoading}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.units.map(({ _id, name, visibility }) => (

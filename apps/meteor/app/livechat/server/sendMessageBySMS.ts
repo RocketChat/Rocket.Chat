@@ -68,8 +68,8 @@ callbacks.add(
 				phoneNumber: visitor.phone[0].phoneNumber,
 				service,
 			});
-		} catch (e) {
-			callbackLogger.error(e);
+		} catch (err) {
+			callbackLogger.error({ msg: 'Error sending SMS message', err });
 		}
 
 		return message;

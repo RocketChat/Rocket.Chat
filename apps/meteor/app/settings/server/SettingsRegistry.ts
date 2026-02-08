@@ -132,7 +132,7 @@ export class SettingsRegistry {
 		);
 
 		if (isSettingEnterprise(settingFromCode) && !('invalidValue' in settingFromCode)) {
-			SystemLogger.error(`Enterprise setting ${_id} is missing the invalidValue option`);
+			SystemLogger.error({ msg: 'Enterprise setting is missing the invalidValue option', _id });
 			throw new Error(`Enterprise setting ${_id} is missing the invalidValue option`);
 		}
 
@@ -145,7 +145,7 @@ export class SettingsRegistry {
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
 		} catch (e) {
-			IS_DEVELOPMENT && SystemLogger.error(`Invalid setting code ${_id}: ${(e as Error).message}`);
+			IS_DEVELOPMENT && SystemLogger.error({ msg: 'Invalid setting code', _id, err: e as Error });
 		}
 
 		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
@@ -189,7 +189,7 @@ export class SettingsRegistry {
 			try {
 				validateSetting(settingFromCode._id, settingFromCode.type, settingStored?.value);
 			} catch (e) {
-				IS_DEVELOPMENT && SystemLogger.error(`Invalid setting stored ${_id}: ${(e as Error).message}`);
+				IS_DEVELOPMENT && SystemLogger.error({ msg: 'Invalid setting stored', _id, err: e as Error });
 			}
 			return;
 		}

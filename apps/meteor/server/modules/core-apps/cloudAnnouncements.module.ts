@@ -1,8 +1,9 @@
 import { Banner } from '@rocket.chat/core-services';
 import type { IUiKitCoreApp, UiKitCoreAppPayload } from '@rocket.chat/core-services';
-import type { Cloud, IBanner, IUser } from '@rocket.chat/core-typings';
+import type { Cloud, IUser } from '@rocket.chat/core-typings';
 import { Banners } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { isTruthy } from '@rocket.chat/tools';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
@@ -44,7 +45,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 
 	async viewClosed(payload: UiKitCoreAppPayload): Promise<UiKit.ServerInteraction> {
 		const {
-			payload: { view: { viewId } = {} },
+			payload: { view: { viewId, id } = {} },
 			user: { _id: userId } = {},
 		} = payload;
 
@@ -52,7 +53,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			throw new Error('invalid user');
 		}
 
-		if (!viewId) {
+		if (!id && !viewId) {
 			throw new Error('invalid view');
 		}
 
@@ -60,11 +61,18 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			throw new Error('invalid triggerId');
 		}
 
-		await Banner.dismiss(userId, viewId);
+		// For backwards compatibility: we prefer to use viewId, but some legacy banners
+		// may only have id. We fetch all matching banners and prioritize viewId match.
+		const bannerIds = [viewId, id].filter((bannerId) => isTruthy(bannerId));
+		const banners = await Banners.findByIds(bannerIds).toArray();
+		const announcement = banners.find((b) => b._id === viewId) || banners.find((b) => b._id === id);
+		if (!announcement) {
+			throw new Error('Banner not found');
+		}
 
-		const announcement = await Banners.findOneById<Pick<IBanner, 'surface'>>(viewId, { projection: { surface: 1 } });
+		await Banner.dismiss(userId, announcement._id);
 
-		const type = announcement?.surface === 'banner' ? 'banner.close' : 'modal.close';
+		const type = announcement.surface === 'banner' ? 'banner.close' : 'modal.close';
 
 		// for viewClosed we just need to let Cloud know that the banner was closed, no need to wait for the response
 
@@ -74,7 +82,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			type,
 			triggerId: payload.triggerId,
 			appId: payload.appId,
-			viewId,
+			viewId: announcement._id,
 		};
 	}
 
@@ -94,8 +102,8 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			}
 
 			return serverInteraction;
-		} catch (error) {
-			SystemLogger.error(error);
+		} catch (err) {
+			SystemLogger.error({ err });
 		}
 	}
 

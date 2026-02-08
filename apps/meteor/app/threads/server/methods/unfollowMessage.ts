@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages } from '@rocket.chat/models';
 import { check } from 'meteor/check';
@@ -18,7 +18,7 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export const unfollowMessage = async (userId: string, { mid }: { mid: IMessage['_id'] }): Promise<false | undefined> => {
+export const unfollowMessage = async (user: IUser, { mid }: { mid: IMessage['_id'] }): Promise<false | undefined> => {
 	if (mid && !settings.get('Threads_enabled')) {
 		throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'unfollowMessage' });
 	}
@@ -30,20 +30,20 @@ export const unfollowMessage = async (userId: string, { mid }: { mid: IMessage['
 		});
 	}
 
-	if (!(await canAccessRoomIdAsync(message.rid, userId))) {
+	if (!(await canAccessRoomIdAsync(message.rid, user._id))) {
 		throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'unfollowMessage' });
 	}
 
 	const id = message.tmid || message._id;
 
-	const unfollowResult = await unfollow({ rid: message.rid, tmid: id, uid: userId });
+	const unfollowResult = await unfollow({ rid: message.rid, tmid: id, uid: user._id });
 
 	void notifyOnMessageChange({
 		id,
 	});
 
 	const isFollowed = false;
-	await Apps.self?.triggerEvent(AppEvents.IPostMessageFollowed, message, await Meteor.userAsync(), isFollowed);
+	await Apps.self?.triggerEvent(AppEvents.IPostMessageFollowed, message, user, isFollowed);
 
 	return unfollowResult;
 };
@@ -52,12 +52,12 @@ Meteor.methods<ServerMethods>({
 	async unfollowMessage({ mid }) {
 		check(mid, String);
 
-		const uid = Meteor.userId();
-		if (!uid) {
+		const user = (await Meteor.userAsync()) as IUser;
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'unfollowMessage' });
 		}
 
-		return unfollowMessage(uid, { mid });
+		return unfollowMessage(user, { mid });
 	},
 });
 
