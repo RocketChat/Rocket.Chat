@@ -22,9 +22,15 @@ import {
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 
-const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>
+const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U, timeoutMs = 30000) =>
 	new Promise<U>((resolve, reject) => {
+		const startTime = Date.now();
 		const callPromise = () => {
+			if (Date.now() - startTime > timeoutMs) {
+				reject(new Error('Timeout waiting for condition'));
+				return;
+			}
+
 			fn().then((result) => {
 				if (predicate(result)) {
 					resolve(result);
