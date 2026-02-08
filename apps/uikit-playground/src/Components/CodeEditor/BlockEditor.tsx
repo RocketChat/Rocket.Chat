@@ -25,6 +25,11 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
   );
   const debounceValue = useDebouncedValue(changes, 1500);
 
+  const activeScreenData = screens[activeScreen];
+  const payloadBlocks = activeScreenData?.payload.blocks;
+  const payloadSurface = activeScreenData?.payload.surface;
+  const changedByEditor = activeScreenData?.changedByEditor;
+
   const handleFormatCode = useCallback(
     (
       parsedCode: IPayload,
@@ -46,20 +51,14 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
   useFormatCodeMirrorValue(handleFormatCode, debounceValue);
 
   useEffect(() => {
-    if (!screens[activeScreen]?.changedByEditor) {
-      setValue(intendCode(screens[activeScreen]?.payload), {});
+    if (!changedByEditor) {
+      setValue(intendCode(activeScreenData?.payload), {});
     }
-  }, [
-    screens[activeScreen]?.payload.blocks,
-    screens[activeScreen]?.payload.surface,
-    screens[activeScreen]?.changedByEditor,
-    activeScreen,
-    setValue,
-  ]);
+  }, [payloadBlocks, payloadSurface, changedByEditor, activeScreen, setValue]);
 
   useEffect(() => {
-    setValue(intendCode(screens[activeScreen]?.payload), {});
-  }, [activeScreen, screens[activeScreen]?.payload.blocks, screens[activeScreen]?.payload.surface, setValue]);
+    setValue(intendCode(activeScreenData?.payload), {});
+  }, [activeScreen, payloadBlocks, payloadSurface, setValue]);
 
   return (
     <>
