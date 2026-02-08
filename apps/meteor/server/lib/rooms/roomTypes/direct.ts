@@ -1,7 +1,6 @@
 import type { AtLeast } from '@rocket.chat/core-typings';
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
@@ -11,14 +10,6 @@ import { isFederationEnabled } from '../../../services/federation/utils';
 import { roomCoordinator } from '../roomCoordinator';
 
 const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
-
-const getCurrentUserId = (): string | undefined => {
-	try {
-		return Meteor.userId() || undefined;
-	} catch (_e) {
-		//
-	}
-};
 
 roomCoordinator.add(DirectMessageRoomType, {
 	allowRoomSettingChange(_room, setting) {
@@ -60,7 +51,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	async roomName(room, userId?) {
+	async roomName(room, uid) {
 		const subscription = await (async (): Promise<{ fname?: string; name?: string } | null> => {
 			if (room.fname || room.name) {
 				return {
@@ -73,7 +64,6 @@ roomCoordinator.add(DirectMessageRoomType, {
 				return null;
 			}
 
-			const uid = userId || getCurrentUserId();
 			if (uid) {
 				return Subscriptions.findOneByRoomIdAndUserId(room._id, uid, { projection: { name: 1, fname: 1 } });
 			}

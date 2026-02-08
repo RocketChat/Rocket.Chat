@@ -111,10 +111,6 @@ const livechatCustomFieldsEndpoints = API.v1
 		async function action() {
 			const { customFieldId, customFieldData } = this.bodyParams;
 
-			if (!/^[0-9a-zA-Z-_]+$/.test(customFieldId)) {
-				return API.v1.failure('Invalid custom field name. Use only letters, numbers, hyphens and underscores.');
-			}
-
 			if (customFieldId) {
 				const customField = await LivechatCustomField.findOneById(customFieldId);
 				if (!customField) {
