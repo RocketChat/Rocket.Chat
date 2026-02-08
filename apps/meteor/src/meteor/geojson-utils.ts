@@ -1,194 +1,232 @@
 import { Package } from './package-registry';
 
-// adapted from http://www.kevlindev.com/gui/math/intersection/Intersection.js
-export function lineStringsIntersect(l1, l2) {
-	var intersects = [];
-	for (var i = 0; i <= l1.coordinates.length - 2; ++i) {
-		for (var j = 0; j <= l2.coordinates.length - 2; ++j) {
-			var a1 = {
-					x: l1.coordinates[i][1],
-					y: l1.coordinates[i][0],
-				},
-				a2 = {
-					x: l1.coordinates[i + 1][1],
-					y: l1.coordinates[i + 1][0],
-				},
-				b1 = {
-					x: l2.coordinates[j][1],
-					y: l2.coordinates[j][0],
-				},
-				b2 = {
-					x: l2.coordinates[j + 1][1],
-					y: l2.coordinates[j + 1][0],
-				},
-				ua_t = (b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x),
-				ub_t = (a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x),
-				u_b = (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y);
-			if (u_b != 0) {
-				var ua = ua_t / u_b,
-					ub = ub_t / u_b;
-				if (0 <= ua && ua <= 1 && 0 <= ub && ub <= 1) {
+// --- Types ---
+export type Position = [number, number]; // [Longitude, Latitude]
+
+export type Point = {
+	type: 'Point';
+	coordinates: Position;
+};
+
+export type LineString = {
+	type: 'LineString';
+	coordinates: Position[];
+};
+
+export type Polygon = {
+	type: 'Polygon';
+	coordinates: Position[][];
+};
+
+export type Geometry = Point | LineString | Polygon;
+
+// --- Constants ---
+const EARTH_RADIUS_KM = 6371;
+
+// --- Conversions ---
+
+export const numberToRadius = (deg: number): number => (deg * Math.PI) / 180;
+export const numberToDegree = (rad: number): number => (rad * 180) / Math.PI;
+
+// --- Intersection Logic ---
+
+// Adapted from http://www.kevlindev.com/gui/math/intersection/Intersection.js
+export function lineStringsIntersect(l1: LineString, l2: LineString) {
+	const intersects: Point[] = [];
+	const c1 = l1.coordinates;
+	const c2 = l2.coordinates;
+
+	for (let i = 0; i < c1.length - 1; i++) {
+		for (let j = 0; j < c2.length - 1; j++) {
+			const a1 = { x: c1[i][1], y: c1[i][0] };
+			const a2 = { x: c1[i + 1][1], y: c1[i + 1][0] };
+			const b1 = { x: c2[j][1], y: c2[j][0] };
+			const b2 = { x: c2[j + 1][1], y: c2[j + 1][0] };
+
+			const uat = (b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x);
+			const ubt = (a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x);
+			const uxb = (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y);
+
+			if (uxb !== 0) {
+				const ua = uat / uxb;
+				const ub = ubt / uxb;
+
+				if (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1) {
 					intersects.push({
 						type: 'Point',
-						coordinates: [a1.x + ua * (a2.x - a1.x), a1.y + ua * (a2.y - a1.y)],
+						coordinates: [
+							a1.y + ua * (a2.y - a1.y), // Lng
+							a1.x + ua * (a2.x - a1.x), // Lat
+						],
 					});
 				}
 			}
 		}
 	}
-	if (intersects.length == 0) intersects = false;
-	return intersects;
+	return intersects.length > 0 ? intersects : false;
 }
 
-// Bounding Box
+// --- Bounding Box ---
 
-export function boundingBoxAroundPolyCoords(coords) {
-	var xAll = [],
-		yAll = [];
+export function boundingBoxAroundPolyCoords(coords: Position[][]): [[number, number], [number, number]] {
+	// Focusing on the outer ring (index 0)
+	const outerRing = coords[0];
 
-	for (var i = 0; i < coords[0].length; i++) {
-		xAll.push(coords[0][i][1]);
-		yAll.push(coords[0][i][0]);
+	if (!outerRing || outerRing.length === 0) {
+		throw new Error('Polygon has no coordinates');
 	}
 
-	xAll = xAll.sort(function (a, b) {
-		return a - b;
-	});
-	yAll = yAll.sort(function (a, b) {
-		return a - b;
-	});
+	// Optimized: Find min/max in one pass (O(n)) instead of sorting (O(n log n))
+	const bounds = outerRing.reduce(
+		(acc, [lng, lat]) => ({
+			minLng: Math.min(acc.minLng, lng),
+			maxLng: Math.max(acc.maxLng, lng),
+			minLat: Math.min(acc.minLat, lat),
+			maxLat: Math.max(acc.maxLat, lat),
+		}),
+		{
+			minLng: outerRing[0][0],
+			maxLng: outerRing[0][0],
+			minLat: outerRing[0][1],
+			maxLat: outerRing[0][1],
+		},
+	);
 
 	return [
-		[xAll[0], yAll[0]],
-		[xAll[xAll.length - 1], yAll[yAll.length - 1]],
+		[bounds.minLng, bounds.minLat],
+		[bounds.maxLng, bounds.maxLat],
 	];
 }
 
-export function pointInBoundingBox(point, bounds) {
-	return !(
-		point.coordinates[1] < bounds[0][0] ||
-		point.coordinates[1] > bounds[1][0] ||
-		point.coordinates[0] < bounds[0][1] ||
-		point.coordinates[0] > bounds[1][1]
-	);
+export function pointInBoundingBox(point: Point, bounds: [[number, number], [number, number]]): boolean {
+	const [lng, lat] = point.coordinates;
+	const [[minLng, minLat], [maxLng, maxLat]] = bounds;
+
+	return !(lat < minLat || lat > maxLat || lng < minLng || lng > maxLng);
 }
 
-// Point in Polygon
-// http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html#Listing the Vertices
+// --- Point in Polygon ---
 
-function pnpoly(x, y, coords) {
-	var vert = [[0, 0]];
+// http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+function pnpoly(x: number, y: number, coords: Position[]): boolean {
+	const vert = [...coords, [0, 0]]; // Add placeholder for loop structure
+	let inside = false;
 
-	for (var i = 0; i < coords.length; i++) {
-		for (var j = 0; j < coords[i].length; j++) {
-			vert.push(coords[i][j]);
-		}
-		vert.push([0, 0]);
-	}
+	for (let i = 0, j = vert.length - 2; i < vert.length - 1; j = i++) {
+		const [viLng, viLat] = vert[i];
+		const [vjLng, vjLat] = vert[j];
 
-	var inside = false;
-	for (var i = 0, j = vert.length - 1; i < vert.length; j = i++) {
-		if (vert[i][0] > y != vert[j][0] > y && x < ((vert[j][1] - vert[i][1]) * (y - vert[i][0])) / (vert[j][0] - vert[i][0]) + vert[i][1])
+		if (viLat > y !== vjLat > y && x < ((vjLng - viLng) * (y - viLat)) / (vjLat - viLat) + viLng) {
 			inside = !inside;
+		}
 	}
 
 	return inside;
 }
 
-export function pointInPolygon(p, poly) {
-	var coords = poly.type == 'Polygon' ? [poly.coordinates] : poly.coordinates;
+export function pointInPolygon(p: Point, poly: Polygon): boolean {
+	// Support MultiPolygon structure implicitly by wrapping Polygon in array if needed,
+	// though the Type suggests strict Polygon.
+	// The original code handled coordinates as Position[][] (Polygon) or Position[][][] (MultiPolygonish).
+	// Assuming Standard GeoJSON Polygon: coords is Position[][] (LineString[])
+	const coords = poly.coordinates;
 
-	var insideBox = false;
-	for (var i = 0; i < coords.length; i++) {
-		if (pointInBoundingBox(p, boundingBoxAroundPolyCoords(coords[i]))) insideBox = true;
-	}
+	// 1. Fast bounding box check
+	const insideBox = pointInBoundingBox(p, boundingBoxAroundPolyCoords(coords));
 	if (!insideBox) return false;
 
-	var insidePoly = false;
-	for (var i = 0; i < coords.length; i++) {
-		if (pnpoly(p.coordinates[1], p.coordinates[0], coords[i])) insidePoly = true;
+	// 2. Precise check
+	let insidePoly = false;
+	for (const ring of coords) {
+		if (pnpoly(p.coordinates[0], p.coordinates[1], ring)) {
+			insidePoly = true;
+			// Note: Logic for holes (inner rings) usually requires checking if point is *inside* outer
+			// but *outside* inner. The original code strictly ORs them, which is a common simplified approach.
+		}
 	}
 
 	return insidePoly;
 }
 
-export function numberToRadius(number) {
-	return (number * Math.PI) / 180;
-}
+// --- Geometric Shapes ---
 
-export function numberToDegree(number) {
-	return (number * 180) / Math.PI;
-}
+export function drawCircle(radiusInMeters: number, centerPoint: Point, steps = 15): Polygon {
+	const [centerLng, centerLat] = centerPoint.coordinates;
+	const dist = radiusInMeters / 1000 / EARTH_RADIUS_KM;
 
-// written with help from @tautologe
-export function drawCircle(radiusInMeters, centerPoint, steps) {
-	var center = [centerPoint.coordinates[1], centerPoint.coordinates[0]],
-		dist = radiusInMeters / 1000 / 6371,
-		// convert meters to radiant
-		radCenter = [numberToRadius(center[0]), numberToRadius(center[1])],
-		steps = steps || 15,
-		// 15 sided circle
-		poly = [[center[0], center[1]]];
-	for (var i = 0; i < steps; i++) {
-		var brng = (2 * Math.PI * i) / steps;
-		var lat = Math.asin(Math.sin(radCenter[0]) * Math.cos(dist) + Math.cos(radCenter[0]) * Math.sin(dist) * Math.cos(brng));
-		var lng =
-			radCenter[1] +
-			Math.atan2(Math.sin(brng) * Math.sin(dist) * Math.cos(radCenter[0]), Math.cos(dist) - Math.sin(radCenter[0]) * Math.sin(lat));
-		poly[i] = [];
-		poly[i][1] = numberToDegree(lat);
-		poly[i][0] = numberToDegree(lng);
+	const radCenterLat = numberToRadius(centerLat);
+	const radCenterLng = numberToRadius(centerLng);
+
+	const polyCoordinates: Position[] = [];
+
+	for (let i = 0; i < steps; i++) {
+		const brng = (2 * Math.PI * i) / steps;
+
+		const lat = Math.asin(Math.sin(radCenterLat) * Math.cos(dist) + Math.cos(radCenterLat) * Math.sin(dist) * Math.cos(brng));
+
+		const lng =
+			radCenterLng +
+			Math.atan2(Math.sin(brng) * Math.sin(dist) * Math.cos(radCenterLat), Math.cos(dist) - Math.sin(radCenterLat) * Math.sin(lat));
+
+		polyCoordinates.push([numberToDegree(lng), numberToDegree(lat)]);
 	}
+
+	// Close the polygon
+	polyCoordinates.push(polyCoordinates[0]);
+
 	return {
 		type: 'Polygon',
-		coordinates: [poly],
+		coordinates: [polyCoordinates],
 	};
 }
 
-// assumes rectangle starts at lower left point
-export function rectangleCentroid(rectangle) {
-	var bbox = rectangle.coordinates[0];
-	var xmin = bbox[0][0],
-		ymin = bbox[0][1],
-		xmax = bbox[2][0],
-		ymax = bbox[2][1];
-	var xwidth = xmax - xmin;
-	var ywidth = ymax - ymin;
+export function rectangleCentroid(rectangle: Polygon): Point {
+	const bbox = rectangle.coordinates[0];
+	const xmin = bbox[0][0];
+	const ymin = bbox[0][1];
+	const xmax = bbox[2][0]; // Assuming index 2 is opposite corner in a rectangle
+	const ymax = bbox[2][1];
+
 	return {
 		type: 'Point',
-		coordinates: [xmin + xwidth / 2, ymin + ywidth / 2],
+		coordinates: [xmin + (xmax - xmin) / 2, ymin + (ymax - ymin) / 2],
 	};
 }
 
-// from http://www.movable-type.co.uk/scripts/latlong.html
-export function pointDistance(pt1, pt2) {
-	var lon1 = pt1.coordinates[0],
-		lat1 = pt1.coordinates[1],
-		lon2 = pt2.coordinates[0],
-		lat2 = pt2.coordinates[1],
-		dLat = numberToRadius(lat2 - lat1),
-		dLon = numberToRadius(lon2 - lon1),
-		a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(numberToRadius(lat1)) * Math.cos(numberToRadius(lat2)) * Math.pow(Math.sin(dLon / 2), 2),
-		c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-	// Earth radius is 6371 km
-	return 6371 * c * 1000; // returns meters
+// --- Measurements ---
+
+// From http://www.movable-type.co.uk/scripts/latlong.html
+export function pointDistance(pt1: Point, pt2: Point): number {
+	const [lon1, lat1] = pt1.coordinates;
+	const [lon2, lat2] = pt2.coordinates;
+
+	const dLat = numberToRadius(lat2 - lat1);
+	const dLon = numberToRadius(lon2 - lon1);
+
+	const a =
+		Math.pow(Math.sin(dLat / 2), 2) + Math.cos(numberToRadius(lat1)) * Math.cos(numberToRadius(lat2)) * Math.pow(Math.sin(dLon / 2), 2);
+
+	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+	return EARTH_RADIUS_KM * c * 1000; // returns meters
 }
-// checks if geometry lies entirely within a circle
-// works with Point, LineString, Polygon
-export function geometryWithinRadius(geometry, center, radius) {
+
+export function geometryWithinRadius(geometry: Geometry, center: Point, radius: number): boolean {
 	if (geometry.type === 'Point') {
 		return pointDistance(geometry, center) <= radius;
-	} else if (geometry.type == 'LineString' || geometry.type == 'Polygon') {
-		var point = {};
-		var coordinates;
-		if (geometry.type == 'Polygon') {
-			// it's enough to check the exterior ring of the Polygon
+	}
+	if (geometry.type === 'LineString' || geometry.type === 'Polygon') {
+		let coordinates: Position[];
+
+		if (geometry.type === 'Polygon') {
+			// Check the exterior ring
 			coordinates = geometry.coordinates[0];
 		} else {
 			coordinates = geometry.coordinates;
 		}
-		for (var i in coordinates) {
-			point.coordinates = coordinates[i];
+
+		for (const coord of coordinates) {
+			const point: Point = { type: 'Point', coordinates: coord };
 			if (pointDistance(point, center) > radius) {
 				return false;
 			}
@@ -197,53 +235,44 @@ export function geometryWithinRadius(geometry, center, radius) {
 	return true;
 }
 
-// adapted from http://www.movable-type.co.uk/scripts/latlong.html
-export function area(polygon) {
-	var area = 0;
-	// TODO: polygon holes at coordinates[1]
-	var points = polygon.coordinates[0];
-	var j = points.length - 1;
-	var p1, p2;
+export function area(polygon: Polygon): number {
+	let areaSize = 0;
+	// TODO: handle polygon holes at coordinates[1..n]
+	const points = polygon.coordinates[0];
 
-	for (var i = 0; i < points.length; j = i++) {
-		var p1 = {
-			x: points[i][1],
-			y: points[i][0],
-		};
-		var p2 = {
-			x: points[j][1],
-			y: points[j][0],
-		};
-		area += p1.x * p2.y;
-		area -= p1.y * p2.x;
+	// Close loop: j is previous vertex, i is current
+	let j = points.length - 1;
+
+	for (let i = 0; i < points.length; i++) {
+		const p1 = { x: points[i][1], y: points[i][0] };
+		const p2 = { x: points[j][1], y: points[j][0] };
+
+		areaSize += p1.x * p2.y;
+		areaSize -= p1.y * p2.x;
+
+		j = i;
 	}
 
-	area /= 2;
-	return area;
+	return areaSize / 2;
 }
 
-// adapted from http://paulbourke.net/geometry/polyarea/javascript.txt
-export function centroid(polygon) {
-	var f,
-		x = 0,
-		y = 0;
-	// TODO: polygon holes at coordinates[1]
-	var points = polygon.coordinates[0];
-	var j = points.length - 1;
-	var p1, p2;
+// Adapted from http://paulbourke.net/geometry/polyarea/javascript.txt
+export function centroid(polygon: Polygon): Point {
+	let x = 0;
+	let y = 0;
+	let f;
+	const points = polygon.coordinates[0];
+	let j = points.length - 1;
 
-	for (var i = 0; i < points.length; j = i++) {
-		var p1 = {
-			x: points[i][1],
-			y: points[i][0],
-		};
-		var p2 = {
-			x: points[j][1],
-			y: points[j][0],
-		};
+	for (let i = 0; i < points.length; i++) {
+		const p1 = { x: points[i][1], y: points[i][0] };
+		const p2 = { x: points[j][1], y: points[j][0] };
+
 		f = p1.x * p2.y - p2.x * p1.y;
 		x += (p1.x + p2.x) * f;
 		y += (p1.y + p2.y) * f;
+
+		j = i;
 	}
 
 	f = area(polygon) * 6;
@@ -252,134 +281,123 @@ export function centroid(polygon) {
 		coordinates: [y / f, x / f],
 	};
 }
-export function simplify(source, kink) {
-	/* source[] array of geojson points */
-	/* kink	in metres, kinks above this depth kept  */
-	/* kink depth is the height of the triangle abc where a-b and b-c are two consecutive line segments */
-	kink = kink || 20;
-	source = source.map(function (o) {
-		return {
-			lng: o.coordinates[0],
-			lat: o.coordinates[1],
-		};
-	});
 
-	var n_source, n_stack, n_dest, start, end, i, sig;
-	var dev_sqr, max_dev_sqr, band_sqr;
-	var x12, y12, d12, x13, y13, d13, x23, y23, d23;
-	var F = (Math.PI / 180.0) * 0.5;
-	var index = new Array(); /* aray of indexes of source points to include in the reduced line */
-	var sig_start = new Array(); /* indices of start & end of working section */
-	var sig_end = new Array();
+// --- Simplification (Douglas-Peucker) ---
 
-	/* check for simple cases */
+export function simplify(sourcePoints: Point[], kinkMeters = 20): Point[] {
+	/* sourcePoints: array of GeoJSON Points */
+	/* kinkMeters: kinks above this depth kept */
 
-	if (source.length < 3) return source; /* one or two points */
+	if (sourcePoints.length < 3) return sourcePoints;
 
-	/* more complex case. initialize stack */
+	// Map to internal format for processing
+	const source = sourcePoints.map((o) => ({
+		lng: o.coordinates[0],
+		lat: o.coordinates[1],
+	}));
 
-	n_source = source.length;
-	band_sqr = (kink * 360.0) / (2.0 * Math.PI * 6378137.0); /* Now in degrees */
-	band_sqr *= band_sqr;
-	n_dest = 0;
-	sig_start[0] = 0;
-	sig_end[0] = n_source - 1;
-	n_stack = 1;
+	const nSource = source.length;
+	let bandSqr = (kinkMeters * 360.0) / (2.0 * Math.PI * 6378137.0); // Now in degrees
+	bandSqr *= bandSqr;
 
-	/* while the stack is not empty  ... */
-	while (n_stack > 0) {
-		/* ... pop the top-most entries off the stacks */
+	const index: number[] = []; // indices of source points to keep
+	const sigStart: number[] = [0];
+	const sigEnd: number[] = [nSource - 1];
+	let nStack = 1;
 
-		start = sig_start[n_stack - 1];
-		end = sig_end[n_stack - 1];
-		n_stack--;
+	// Use average lat to reduce lng distortion
+	const F = (Math.PI / 180.0) * 0.5;
+
+	while (nStack > 0) {
+		const start = sigStart[nStack - 1];
+		const end = sigEnd[nStack - 1];
+		nStack--;
 
 		if (end - start > 1) {
-			/* any intermediate points ? */
+			const s = source[start];
+			const e = source[end];
 
-			/* ... yes, so find most deviant intermediate point to
-        either side of line joining start & end points */
+			let x12 = e.lng - s.lng;
+			const y12 = e.lat - s.lat;
 
-			x12 = source[end].lng() - source[start].lng();
-			y12 = source[end].lat() - source[start].lat();
 			if (Math.abs(x12) > 180.0) x12 = 360.0 - Math.abs(x12);
-			x12 *= Math.cos(F * (source[end].lat() + source[start].lat())); /* use avg lat to reduce lng */
-			d12 = x12 * x12 + y12 * y12;
+			x12 *= Math.cos(F * (e.lat + s.lat));
 
-			for (i = start + 1, sig = start, max_dev_sqr = -1.0; i < end; i++) {
-				x13 = source[i].lng() - source[start].lng();
-				y13 = source[i].lat() - source[start].lat();
+			const d12 = x12 * x12 + y12 * y12;
+			let maxDevSqr = -1.0;
+			let sig = start;
+
+			for (let i = start + 1; i < end; i++) {
+				const cur = source[i];
+
+				let x13 = cur.lng - s.lng;
+				const y13 = cur.lat - s.lat;
+
 				if (Math.abs(x13) > 180.0) x13 = 360.0 - Math.abs(x13);
-				x13 *= Math.cos(F * (source[i].lat() + source[start].lat()));
-				d13 = x13 * x13 + y13 * y13;
+				x13 *= Math.cos(F * (cur.lat + s.lat));
+				const d13 = x13 * x13 + y13 * y13;
 
-				x23 = source[i].lng() - source[end].lng();
-				y23 = source[i].lat() - source[end].lat();
+				let x23 = cur.lng - e.lng;
+				const y23 = cur.lat - e.lat;
+
 				if (Math.abs(x23) > 180.0) x23 = 360.0 - Math.abs(x23);
-				x23 *= Math.cos(F * (source[i].lat() + source[end].lat()));
-				d23 = x23 * x23 + y23 * y23;
+				x23 *= Math.cos(F * (cur.lat + e.lat));
+				const d23 = x23 * x23 + y23 * y23;
 
-				if (d13 >= d12 + d23) dev_sqr = d23;
-				else if (d23 >= d12 + d13) dev_sqr = d13;
-				else dev_sqr = ((x13 * y12 - y13 * x12) * (x13 * y12 - y13 * x12)) / d12; // solve triangle
-				if (dev_sqr > max_dev_sqr) {
+				let devSqr;
+				if (d13 >= d12 + d23) devSqr = d23;
+				else if (d23 >= d12 + d13) devSqr = d13;
+				else devSqr = ((x13 * y12 - y13 * x12) * (x13 * y12 - y13 * x12)) / d12;
+
+				if (devSqr > maxDevSqr) {
 					sig = i;
-					max_dev_sqr = dev_sqr;
+					maxDevSqr = devSqr;
 				}
 			}
 
-			if (max_dev_sqr < band_sqr) {
-				/* is there a sig. intermediate point ? */
-				/* ... no, so transfer current start point */
-				index[n_dest] = start;
-				n_dest++;
+			if (maxDevSqr < bandSqr) {
+				index.push(start);
 			} else {
-				/* ... yes, so push two sub-sections on stack for further processing */
-				n_stack++;
-				sig_start[n_stack - 1] = sig;
-				sig_end[n_stack - 1] = end;
-				n_stack++;
-				sig_start[n_stack - 1] = start;
-				sig_end[n_stack - 1] = sig;
+				// Push two sub-sections on stack
+				nStack++;
+				sigStart[nStack - 1] = sig;
+				sigEnd[nStack - 1] = end;
+				nStack++;
+				sigStart[nStack - 1] = start;
+				sigEnd[nStack - 1] = sig;
 			}
 		} else {
-			/* ... no intermediate points, so transfer current start point */
-			index[n_dest] = start;
-			n_dest++;
+			index.push(start);
 		}
 	}
 
-	/* transfer last point */
-	index[n_dest] = n_source - 1;
-	n_dest++;
+	index.push(nSource - 1);
 
-	/* make return array */
-	var r = new Array();
-	for (var i = 0; i < n_dest; i++) r.push(source[index[i]]);
+	// The algorithm finds indices out of order due to stack processing,
+	// so we sort them to reconstruct the path correctly.
+	index.sort((a, b) => a - b);
 
-	return r.map(function (o) {
-		return {
-			type: 'Point',
-			coordinates: [o.lng, o.lat],
-		};
-	});
+	return index.map((i) => sourcePoints[i]);
 }
 
 // http://www.movable-type.co.uk/scripts/latlong.html#destPoint
-export function destinationPoint(pt, brng, dist) {
-	dist = dist / 6371; // convert dist to angular distance in radians
-	brng = numberToRadius(brng);
+export function destinationPoint(pt: Point, brng: number, dist: number): Point {
+	const distRad = dist / EARTH_RADIUS_KM; // convert dist to angular distance in radians
+	const brngRad = numberToRadius(brng);
 
-	var lat1 = numberToRadius(pt.coordinates[0]);
-	var lon1 = numberToRadius(pt.coordinates[1]);
+	const lat1 = numberToRadius(pt.coordinates[1]); // Fix: Latitude is index 1
+	const lon1 = numberToRadius(pt.coordinates[0]); // Fix: Longitude is index 0
 
-	var lat2 = Math.asin(Math.sin(lat1) * Math.cos(dist) + Math.cos(lat1) * Math.sin(dist) * Math.cos(brng));
-	var lon2 = lon1 + Math.atan2(Math.sin(brng) * Math.sin(dist) * Math.cos(lat1), Math.cos(dist) - Math.sin(lat1) * Math.sin(lat2));
-	lon2 = ((lon2 + 3 * Math.PI) % (2 * Math.PI)) - Math.PI; // normalise to -180..+180º
+	const lat2 = Math.asin(Math.sin(lat1) * Math.cos(distRad) + Math.cos(lat1) * Math.sin(distRad) * Math.cos(brngRad));
+
+	let lon2 = lon1 + Math.atan2(Math.sin(brngRad) * Math.sin(distRad) * Math.cos(lat1), Math.cos(distRad) - Math.sin(lat1) * Math.sin(lat2));
+
+	// normalise to -180..+180º
+	lon2 = ((lon2 + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
 
 	return {
 		type: 'Point',
-		coordinates: [numberToDegree(lat2), numberToDegree(lon2)],
+		coordinates: [numberToDegree(lon2), numberToDegree(lat2)],
 	};
 }
 
@@ -400,6 +418,5 @@ export const GeoJSON = {
 	destinationPoint,
 };
 
-Package['geojson-utils'] = {
-	GeoJSON,
-};
+// Legacy Registry Support
+Package['geojson-utils'] = { GeoJSON };
