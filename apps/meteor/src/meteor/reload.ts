@@ -32,8 +32,7 @@
 // https://github.com/meteor/meteor/pull/657
 import { Meteor } from './meteor.ts';
 import { Package } from './package-registry.ts';
-
-// export const Reload: any = {};
+import type { UnknownFunction } from './utils/isFunction.ts';
 
 const reloadSettings = Meteor?.settings?.public?.packages?.reload || {};
 
@@ -152,7 +151,7 @@ export function _migrationData(name: string) {
 }
 
 // Options are the same as for `Reload._migrate`.
-const pollProviders = function (tryReload: (...args: any[]) => any, options: any) {
+const pollProviders = function (tryReload: UnknownFunction | null, options: any) {
 	debug('pollProviders', { options });
 	tryReload =
 		tryReload ||
@@ -195,7 +194,7 @@ const pollProviders = function (tryReload: (...args: any[]) => any, options: any
 // Options are:
 //  - immediateMigration: true if the page will be reloaded immediately
 //    regardless of whether packages report that they are ready or not.
-export function _migrate(tryReload: (...args: any[]) => any, options: any) {
+export function _migrate(tryReload: UnknownFunction | null, options: any) {
 	debug('_migrate', { options });
 	// Make sure each package is ready to go, and collect their
 	// migration data
