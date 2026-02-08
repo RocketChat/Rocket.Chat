@@ -149,7 +149,7 @@ function ImportHistoryPage() {
 									<TableCell is='th' rowSpan={2}>
 										{t('File')}
 									</TableCell>
-									<TableCell is='th' align='center' colSpan={4} width='x320'>
+									<TableCell is='th' align='center' colSpan={5} width='x320'>
 										{t('Counters')}
 									</TableCell>
 								</>
