@@ -144,7 +144,7 @@ function NewImportPage() {
 		
 		if (invalidFiles.length > 0) {
 			const allowedTypes = getAllowedFileTypes(importerKey);
-			setFileValidationError(t('Invalid_Import_File_Type_Expected', { types: allowedTypes.join(', ') }));
+			setFileValidationError(t('Invalid_Import_File_Type') + ': Expected ' + allowedTypes.join(', '));
 			setFiles([]);
 			return;
 		}
