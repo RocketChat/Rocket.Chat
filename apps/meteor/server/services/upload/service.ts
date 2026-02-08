@@ -49,9 +49,9 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		return parseFileIntoMessageAttachments(file, roomId, user);
 	}
 
-	async canDeleteFile(userId: IUser['_id'], file: IUpload, msg: IMessage | null): Promise<boolean> {
+	async canDeleteFile(user: IUser, file: IUpload, msg: IMessage | null): Promise<boolean> {
 		if (msg) {
-			return canDeleteMessageAsync(userId, msg);
+			return canDeleteMessageAsync(user, msg);
 		}
 
 		if (!file.userId || !file.rid) {
@@ -59,13 +59,13 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		}
 
 		// If file is not confirmed and was sent by the same user
-		if (file.expiresAt && file.userId === userId) {
-			return canAccessRoomIdAsync(file.rid, userId);
+		if (file.expiresAt && file.userId === user._id) {
+			return canAccessRoomIdAsync(file.rid, user._id);
 		}
 
 		// It's a confirmed file but it has no message, so use data from the file to run message delete permission checks
 		const msgForValidation = { u: { _id: file.userId }, ts: file.uploadedAt, rid: file.rid };
-		return canDeleteMessageAsync(userId, msgForValidation);
+		return canDeleteMessageAsync(user, msgForValidation);
 	}
 
 	async deleteFile(user: IUser, fileId: IUpload['_id'], msg: IMessage | null): Promise<{ deletedFiles: IUpload['_id'][] }> {
