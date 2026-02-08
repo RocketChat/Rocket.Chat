@@ -1,22 +1,23 @@
-Package["core-runtime"].queue("meteor", function () {
-	var global, meteorEnv, Meteor;
+import { Package } from './package-registry.ts';
+
+const global = globalThis;
+
+Package['core-runtime'].queue('meteor', function () {
+	let meteorEnv;
+	let Meteor;
 
 	(function () {
-		global = globalThis;
-	}).call(this);
-
-	(function () {
-		var config = __meteor_runtime_config__;
+		const config = __meteor_runtime_config__;
 
 		meteorEnv = config.meteorEnv;
 
 		Meteor = {
-			isProduction: meteorEnv.NODE_ENV === "production",
-			isDevelopment: meteorEnv.NODE_ENV !== "production",
+			isProduction: meteorEnv.NODE_ENV === 'production',
+			isDevelopment: meteorEnv.NODE_ENV !== 'production',
 			isClient: true,
 			isServer: false,
 			isCordova: false,
-			isModern: config.isModern
+			isModern: config.isModern,
 		};
 
 		if (config.gitCommitHash) {
@@ -24,7 +25,7 @@ Package["core-runtime"].queue("meteor", function () {
 		}
 
 		if (config.PUBLIC_SETTINGS) {
-			Meteor.settings = { "public": config.PUBLIC_SETTINGS };
+			Meteor.settings = { public: config.PUBLIC_SETTINGS };
 		}
 	}).call(this);
 
@@ -34,7 +35,7 @@ Package["core-runtime"].queue("meteor", function () {
 		}
 
 		Meteor._get = function (obj) {
-			for (var i = 1; i < arguments.length; i++) {
+			for (let i = 1; i < arguments.length; i++) {
 				if (!(arguments[i] in obj)) return undefined;
 
 				obj = obj[arguments[i]];
@@ -44,8 +45,8 @@ Package["core-runtime"].queue("meteor", function () {
 		};
 
 		Meteor._ensure = function (obj) {
-			for (var i = 1; i < arguments.length; i++) {
-				var key = arguments[i];
+			for (let i = 1; i < arguments.length; i++) {
+				const key = arguments[i];
 
 				if (!(key in obj)) obj[key] = {};
 
@@ -56,8 +57,8 @@ Package["core-runtime"].queue("meteor", function () {
 		};
 
 		Meteor._delete = function (obj) {
-			var stack = [obj];
-			var leaf = true;
+			const stack = [obj];
+			let leaf = true;
 
 			for (var i = 1; i < arguments.length - 1; i++) {
 				var key = arguments[i];
@@ -70,7 +71,7 @@ Package["core-runtime"].queue("meteor", function () {
 
 				obj = obj[key];
 
-				if (typeof obj !== "object") break;
+				if (typeof obj !== 'object') break;
 
 				stack.push(obj);
 			}
@@ -78,7 +79,8 @@ Package["core-runtime"].queue("meteor", function () {
 			for (var i = stack.length - 1; i >= 0; i--) {
 				var key = arguments[i + 1];
 
-				if (leaf) leaf = false; else for (var other in stack[i][key]) return;
+				if (leaf) leaf = false;
+				else for (const other in stack[i][key]) return;
 
 				delete stack[i][key];
 			}
@@ -90,15 +92,16 @@ Package["core-runtime"].queue("meteor", function () {
 			}
 
 			return function () {
-				var self = this;
+				const self = this;
 
-				var filteredArgs = Array.prototype.slice.call(arguments).filter(function (i) {
+				const filteredArgs = Array.prototype.slice.call(arguments).filter((i) => {
 					return i !== undefined;
 				});
 
-				return new Promise(function (resolve, reject) {
-					var callback = Meteor.bindEnvironment(function (error, result) {
-						var _error = error, _result = result;
+				return new Promise((resolve, reject) => {
+					const callback = Meteor.bindEnvironment((error, result) => {
+						let _error = error;
+						let _result = result;
 
 						if (!errorFirst) {
 							_error = result;
@@ -121,16 +124,16 @@ Package["core-runtime"].queue("meteor", function () {
 
 		Meteor.wrapAsync = function (fn, context) {
 			return function () {
-				var self = context || this;
-				var newArgs = Array.prototype.slice.call(arguments);
-				var callback;
+				const self = context || this;
+				const newArgs = Array.prototype.slice.call(arguments);
+				let callback;
 
 				for (var i = newArgs.length - 1; i >= 0; --i) {
-					var arg = newArgs[i];
-					var type = typeof arg;
+					const arg = newArgs[i];
+					const type = typeof arg;
 
-					if (type !== "undefined") {
-						if (type === "function") {
+					if (type !== 'undefined') {
+						if (type === 'function') {
 							callback = arg;
 						}
 
@@ -153,16 +156,16 @@ Package["core-runtime"].queue("meteor", function () {
 			return fn;
 		};
 
-		var hasOwn = Object.prototype.hasOwnProperty;
+		const hasOwn = Object.prototype.hasOwnProperty;
 
 		Meteor._inherits = function (Child, Parent) {
-			for (var key in Parent) {
+			for (const key in Parent) {
 				if (hasOwn.call(Parent, key)) {
 					Child[key] = Parent[key];
 				}
 			}
 
-			var Middle = function () {
+			const Middle = function () {
 				this.constructor = Child;
 			};
 
@@ -173,11 +176,11 @@ Package["core-runtime"].queue("meteor", function () {
 			return Child;
 		};
 
-		var warnedAboutWrapAsync = false;
+		let warnedAboutWrapAsync = false;
 
 		Meteor._wrapAsync = function (fn, context) {
 			if (!warnedAboutWrapAsync) {
-				Meteor._debug("Meteor._wrapAsync has been renamed to Meteor.wrapAsync");
+				Meteor._debug('Meteor._wrapAsync has been renamed to Meteor.wrapAsync');
 				warnedAboutWrapAsync = true;
 			}
 
@@ -186,26 +189,24 @@ Package["core-runtime"].queue("meteor", function () {
 
 		function logErr(err) {
 			if (err) {
-				return Meteor._debug("Exception in callback of async function", err);
+				return Meteor._debug('Exception in callback of async function', err);
 			}
 		}
 	}).call(this);
 
 	(function () {
-		"use strict";
-
-		var global = globalThis;
+		'use strict';
 
 		function useSetImmediate() {
-			if (!global.setImmediate) return null; else {
-				var setImmediate = function (fn) {
-					global.setImmediate(fn);
-				};
+			if (!global.setImmediate) return null;
 
-				setImmediate.implementation = 'setImmediate';
+			const setImmediate = function (fn) {
+				global.setImmediate(fn);
+			};
 
-				return setImmediate;
-			}
+			setImmediate.implementation = 'setImmediate';
+
+			return setImmediate;
 		}
 
 		function usePostMessage() {
@@ -213,29 +214,29 @@ Package["core-runtime"].queue("meteor", function () {
 				return null;
 			}
 
-			var postMessageIsAsynchronous = true;
-			var oldOnMessage = global.onmessage;
+			let postMessageIsAsynchronous = true;
+			const oldOnMessage = global.onmessage;
 
 			global.onmessage = function () {
 				postMessageIsAsynchronous = false;
 			};
 
-			global.postMessage("", "*");
+			global.postMessage('', '*');
 			global.onmessage = oldOnMessage;
 
 			if (!postMessageIsAsynchronous) return null;
 
-			var funcIndex = 0;
-			var funcs = {};
-			var MESSAGE_PREFIX = "Meteor._setImmediate." + Math.random() + '.';
+			let funcIndex = 0;
+			const funcs = {};
+			const MESSAGE_PREFIX = `Meteor._setImmediate.${Math.random()}.`;
 
 			function isStringAndStartsWith(string, putativeStart) {
-				return typeof string === "string" && string.substring(0, putativeStart.length) === putativeStart;
+				return typeof string === 'string' && string.substring(0, putativeStart.length) === putativeStart;
 			}
 
 			function onGlobalMessage(event) {
 				if (event.source === global && isStringAndStartsWith(event.data, MESSAGE_PREFIX)) {
-					var index = event.data.substring(MESSAGE_PREFIX.length);
+					const index = event.data.substring(MESSAGE_PREFIX.length);
 
 					try {
 						if (funcs[index]) funcs[index]();
@@ -246,15 +247,15 @@ Package["core-runtime"].queue("meteor", function () {
 			}
 
 			if (global.addEventListener) {
-				global.addEventListener("message", onGlobalMessage, false);
+				global.addEventListener('message', onGlobalMessage, false);
 			} else {
-				global.attachEvent("onmessage", onGlobalMessage);
+				global.attachEvent('onmessage', onGlobalMessage);
 			}
 
-			var setImmediate = function (fn) {
+			const setImmediate = function (fn) {
 				++funcIndex;
 				funcs[funcIndex] = fn;
-				global.postMessage(MESSAGE_PREFIX + funcIndex, "*");
+				global.postMessage(MESSAGE_PREFIX + funcIndex, '*');
 			};
 
 			setImmediate.implementation = 'postMessage';
@@ -263,7 +264,7 @@ Package["core-runtime"].queue("meteor", function () {
 		}
 
 		function useTimeout() {
-			var setImmediate = function (fn) {
+			const setImmediate = function (fn) {
 				global.setTimeout(fn, 0);
 			};
 
@@ -278,9 +279,9 @@ Package["core-runtime"].queue("meteor", function () {
 	(function () {
 		function withoutInvocation(f) {
 			if (Package.ddp) {
-				var DDP = Package.ddp.DDP;
-				var CurrentInvocation = DDP._CurrentMethodInvocation || DDP._CurrentInvocation;
-				var invocation = CurrentInvocation.get();
+				const { DDP } = Package.ddp;
+				const CurrentInvocation = DDP._CurrentMethodInvocation || DDP._CurrentInvocation;
+				const invocation = CurrentInvocation.get();
 
 				if (invocation && invocation.isSimulation) {
 					throw new Error("Can't set timers inside simulations");
@@ -289,9 +290,8 @@ Package["core-runtime"].queue("meteor", function () {
 				return function () {
 					CurrentInvocation.withValue(null, f);
 				};
-			} else {
-				return f;
 			}
+			return f;
 		}
 
 		function bindAndCatch(context, f) {
@@ -299,11 +299,11 @@ Package["core-runtime"].queue("meteor", function () {
 		}
 
 		Meteor.setTimeout = function (f, duration) {
-			return setTimeout(bindAndCatch("setTimeout callback", f), duration);
+			return setTimeout(bindAndCatch('setTimeout callback', f), duration);
 		};
 
 		Meteor.setInterval = function (f, duration) {
-			return setInterval(bindAndCatch("setInterval callback", f), duration);
+			return setInterval(bindAndCatch('setInterval callback', f), duration);
 		};
 
 		Meteor.clearInterval = function (x) {
@@ -315,13 +315,13 @@ Package["core-runtime"].queue("meteor", function () {
 		};
 
 		Meteor.defer = function (f) {
-			Meteor._setImmediate(bindAndCatch("defer callback", f));
+			Meteor._setImmediate(bindAndCatch('defer callback', f));
 		};
 	}).call(this);
 
 	(function () {
 		Meteor.makeErrorType = function (name, constructor) {
-			var errorClass = function () {
+			const errorClass = function () {
 				if (Error.captureStackTrace) {
 					Error.captureStackTrace(this, errorClass);
 				} else {
@@ -337,19 +337,20 @@ Package["core-runtime"].queue("meteor", function () {
 			return errorClass;
 		};
 
-		Meteor.Error = Meteor.makeErrorType("Meteor.Error", function (error, reason, details) {
-			var self = this;
+		Meteor.Error = Meteor.makeErrorType('Meteor.Error', function (error, reason, details) {
+			const self = this;
 
 			self.isClientSafe = true;
 			self.error = error;
 			self.reason = reason;
 			self.details = details;
 
-			if (self.reason) self.message = self.reason + ' [' + self.error + ']'; else self.message = '[' + self.error + ']';
+			if (self.reason) self.message = `${self.reason} [${self.error}]`;
+			else self.message = `[${self.error}]`;
 		});
 
 		Meteor.Error.prototype.clone = function () {
-			var self = this;
+			const self = this;
 
 			return new Meteor.Error(self.error, self.reason, self.details);
 		};
@@ -357,10 +358,10 @@ Package["core-runtime"].queue("meteor", function () {
 
 	(function () {
 		Meteor._noYieldsAllowed = function (f) {
-			var result = f();
+			const result = f();
 
 			if (Meteor._isPromise(result)) {
-				throw new Error("function is a promise when calling Meteor._noYieldsAllowed");
+				throw new Error('function is a promise when calling Meteor._noYieldsAllowed');
 			}
 
 			return result;
@@ -399,23 +400,23 @@ Package["core-runtime"].queue("meteor", function () {
 		};
 
 		Meteor._SynchronousQueue = function () {
-			var self = this;
+			const self = this;
 
 			self._tasks = [];
 			self._running = false;
 			self._runTimeout = null;
 		};
 
-		var SQp = Meteor._SynchronousQueue.prototype;
+		const SQp = Meteor._SynchronousQueue.prototype;
 
 		SQp.runTask = function (task) {
-			var self = this;
+			const self = this;
 
-			if (!self.safeToRunTask()) throw new Error("Could not synchronously run a task from a running task");
+			if (!self.safeToRunTask()) throw new Error('Could not synchronously run a task from a running task');
 
 			self._tasks.push(task);
 
-			var tasks = self._tasks;
+			const tasks = self._tasks;
 
 			self._tasks = [];
 			self._running = true;
@@ -427,16 +428,16 @@ Package["core-runtime"].queue("meteor", function () {
 
 			try {
 				while (tasks.length > 0) {
-					var t = tasks.shift();
+					const t = tasks.shift();
 
 					try {
 						t();
-					} catch(e) {
+					} catch (e) {
 						if (tasks.length === 0) {
 							throw e;
 						}
 
-						Meteor._debug("Exception in queued task", e);
+						Meteor._debug('Exception in queued task', e);
 					}
 				}
 			} finally {
@@ -445,28 +446,25 @@ Package["core-runtime"].queue("meteor", function () {
 		};
 
 		SQp.queueTask = function (task) {
-			var self = this;
+			const self = this;
 
 			self._tasks.push(task);
 
 			if (!self._runTimeout) {
-				self._runTimeout = setTimeout(
-					function () {
-						return self.flush.apply(self, arguments);
-					},
-					0
-				);
+				self._runTimeout = setTimeout(function () {
+					return self.flush.apply(self, arguments);
+				}, 0);
 			}
 		};
 
 		SQp.flush = function () {
-			var self = this;
+			const self = this;
 
-			self.runTask(function () {});
+			self.runTask(() => {});
 		};
 
 		SQp.drain = function () {
-			var self = this;
+			const self = this;
 
 			if (!self.safeToRunTask()) {
 				return;
@@ -478,7 +476,7 @@ Package["core-runtime"].queue("meteor", function () {
 		};
 
 		SQp.safeToRunTask = function () {
-			var self = this;
+			const self = this;
 
 			return !self._running;
 		};
@@ -488,7 +486,7 @@ Package["core-runtime"].queue("meteor", function () {
 		Meteor.isFibersDisabled = true;
 
 		Meteor._isPromise = function (r) {
-			return r && typeof r.then === "function";
+			return r && typeof r.then === 'function';
 		};
 
 		Meteor._runFresh = function (fn) {
@@ -497,17 +495,17 @@ Package["core-runtime"].queue("meteor", function () {
 	}).call(this);
 
 	(function () {
-		var callbackQueue = [];
-		var isLoadingCompleted = false;
-		var eagerCodeRan = false;
-		var isReady = false;
-		var readyHoldsCount = 0;
+		const callbackQueue = [];
+		let isLoadingCompleted = false;
+		let eagerCodeRan = false;
+		let isReady = false;
+		let readyHoldsCount = 0;
 
-		var holdReady = function () {
+		const holdReady = function () {
 			readyHoldsCount++;
 		};
 
-		var releaseReadyHold = function () {
+		const releaseReadyHold = function () {
 			readyHoldsCount--;
 			maybeReady();
 		};
@@ -530,18 +528,18 @@ Package["core-runtime"].queue("meteor", function () {
 				maybeReady();
 			}
 
-			var potentialPromise = Package['core-runtime'].waitUntilAllLoaded();
+			const potentialPromise = Package['core-runtime'].waitUntilAllLoaded();
 
 			if (potentialPromise === null) {
 				finish();
 			} else {
-				potentialPromise.then(function () {
+				potentialPromise.then(() => {
 					finish();
 				});
 			}
 		}
 
-		var loadingCompleted = function () {
+		const loadingCompleted = function () {
 			if (isLoadingCompleted) {
 				return;
 			}
@@ -557,36 +555,32 @@ Package["core-runtime"].queue("meteor", function () {
 
 		if (document.readyState === 'complete' || document.readyState === 'loaded') {
 			window.setTimeout(loadingCompleted);
+		} else if (document.addEventListener) {
+			document.addEventListener('DOMContentLoaded', loadingCompleted, false);
+			window.addEventListener('load', loadingCompleted, false);
 		} else {
-			if (document.addEventListener) {
-				document.addEventListener('DOMContentLoaded', loadingCompleted, false);
-				window.addEventListener('load', loadingCompleted, false);
-			} else {
-				document.attachEvent('onreadystatechange', function () {
-					if (document.readyState === "complete") {
-						loadingCompleted();
-					}
-				});
+			document.attachEvent('onreadystatechange', () => {
+				if (document.readyState === 'complete') {
+					loadingCompleted();
+				}
+			});
 
-				window.attachEvent('load', loadingCompleted);
-			}
+			window.attachEvent('load', loadingCompleted);
 		}
 
 		Meteor.startup = function (callback) {
-			var doScroll = !document.addEventListener && document.documentElement.doScroll;
+			const doScroll = !document.addEventListener && document.documentElement.doScroll;
 
 			if (!doScroll || window !== top) {
-				if (isReady) callback(); else callbackQueue.push(callback);
+				if (isReady) callback();
+				else callbackQueue.push(callback);
 			} else {
 				try {
 					doScroll('left');
-				} catch(error) {
-					setTimeout(
-						function () {
-							Meteor.startup(callback);
-						},
-						50
-					);
+				} catch (error) {
+					setTimeout(() => {
+						Meteor.startup(callback);
+					}, 50);
 
 					return;
 				}
@@ -599,9 +593,12 @@ Package["core-runtime"].queue("meteor", function () {
 	(function () {
 		if (false) {
 			if (typeof __meteor_runtime_config__ === 'object') {
-				__meteor_runtime_config__.debug = !!process.env.NODE_INSPECTOR_IPC || !!process.env.VSCODE_INSPECTOR_OPTIONS || process.execArgv.some(function (_arg) {
-					return (/^--(inspect|debug)(-brk)?(=\d+)?$/i).test(_arg);
-				});
+				__meteor_runtime_config__.debug =
+					!!process.env.NODE_INSPECTOR_IPC ||
+					!!process.env.VSCODE_INSPECTOR_OPTIONS ||
+					process.execArgv.some((_arg) => {
+						return /^--(inspect|debug)(-brk)?(=\d+)?$/i.test(_arg);
+					});
 			}
 		}
 
@@ -609,7 +606,7 @@ Package["core-runtime"].queue("meteor", function () {
 			? typeof window === 'object' && !!window.__meteor_runtime_config__.debug
 			: typeof __meteor_runtime_config__ === 'object' && !!__meteor_runtime_config__.debug;
 
-		var suppress = 0;
+		let suppress = 0;
 
 		Meteor._debug = function () {
 			if (suppress) {
@@ -621,18 +618,17 @@ Package["core-runtime"].queue("meteor", function () {
 			if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
 				if (arguments.length == 0) {
 					console.log('');
-				} else {
-					if (typeof console.log.apply === "function") {
-						var allArgumentsOfTypeString = true;
+				} else if (typeof console.log.apply === 'function') {
+					let allArgumentsOfTypeString = true;
 
-						for (var i = 0; i < arguments.length; i++) if (typeof arguments[i] !== "string") allArgumentsOfTypeString = false;
+					for (let i = 0; i < arguments.length; i++) if (typeof arguments[i] !== 'string') allArgumentsOfTypeString = false;
 
-						if (allArgumentsOfTypeString) console.log.apply(console, [Array.prototype.join.call(arguments, " ")]); else console.log.apply(console, arguments);
-					} else if (typeof Function.prototype.bind === "function") {
-						var log = Function.prototype.bind.call(console.log, console);
+					if (allArgumentsOfTypeString) console.log.apply(console, [Array.prototype.join.call(arguments, ' ')]);
+					else console.log.apply(console, arguments);
+				} else if (typeof Function.prototype.bind === 'function') {
+					const log = Function.prototype.bind.call(console.log, console);
 
-						log.apply(console, arguments);
-					}
+					log.apply(console, arguments);
 				}
 			}
 		};
@@ -647,26 +643,14 @@ Package["core-runtime"].queue("meteor", function () {
 	}).call(this);
 
 	(function () {
-		if (false && true) {
-			if (typeof __meteor_runtime_config__ === 'object') {
-				var noDeprecation = process.env.METEOR_NO_DEPRECATION || process.noDeprecation;
-
-				if (noDeprecation === 'true' || noDeprecation === 'false') {
-					noDeprecation = noDeprecation === 'true';
-				}
-
-				__meteor_runtime_config__.noDeprecation = noDeprecation;
-			}
-		}
-
 		function oncePerArgument(func) {
-			var cache = new Map();
+			const cache = new Map();
 
 			return function _oncePerArgument() {
-				var key = JSON.stringify(arguments);
+				const key = JSON.stringify(arguments);
 
 				if (!cache.has(key)) {
-					var result = func.apply(this, arguments);
+					const result = func.apply(this, arguments);
 
 					cache.set(key, result);
 				}
@@ -678,12 +662,12 @@ Package["core-runtime"].queue("meteor", function () {
 		function cleanStackTrace(stackTrace) {
 			if (!stackTrace || typeof stackTrace !== 'string') return [];
 
-			var lines = stackTrace.split('\n');
-			var trace = [];
+			const lines = stackTrace.split('\n');
+			const trace = [];
 
 			try {
-				for (var i = 0; i < lines.length; i++) {
-					var _line = lines[i].trim();
+				for (let i = 0; i < lines.length; i++) {
+					const _line = lines[i].trim();
 
 					if (_line.indexOf('Meteor.deprecate') !== -1) continue;
 
@@ -695,14 +679,14 @@ Package["core-runtime"].queue("meteor", function () {
 						break;
 					}
 				}
-			} catch(e) {
+			} catch (e) {
 				console.error('Error cleaning stack trace: ', e);
 			}
 
 			return trace.join('\n');
 		}
 
-		var onceWarning = oncePerArgument(function _onceWarning(message) {
+		const onceWarning = oncePerArgument(function _onceWarning(message) {
 			console.warn.apply(console, message);
 		});
 
@@ -710,7 +694,7 @@ Package["core-runtime"].queue("meteor", function () {
 			onceWarning([
 				'Deprecation warnings are hidden but crucial to address for future Meteor updates.',
 				'\n',
-				'Remove the `METEOR_NO_DEPRECATION` env var to reveal them, then report or fix the issues.'
+				'Remove the `METEOR_NO_DEPRECATION` env var to reveal them, then report or fix the issues.',
 			]);
 		}
 
@@ -720,11 +704,11 @@ Package["core-runtime"].queue("meteor", function () {
 			}
 
 			if (typeof console !== 'undefined' && typeof console.warn !== 'undefined') {
-				var stackStrace = cleanStackTrace(new Error().stack || '');
-				var messages = Array.prototype.slice.call(arguments);
+				const stackStrace = cleanStackTrace(new Error().stack || '');
+				const messages = Array.prototype.slice.call(arguments);
 
 				if (typeof __meteor_runtime_config__.noDeprecation === 'string') {
-					var noDeprecationPattern = new RegExp(__meteor_runtime_config__.noDeprecation);
+					const noDeprecationPattern = new RegExp(__meteor_runtime_config__.noDeprecation);
 
 					if (noDeprecationPattern.test(stackStrace)) {
 						onceFixDeprecation();
@@ -749,12 +733,12 @@ Package["core-runtime"].queue("meteor", function () {
 
 	(function () {
 		Meteor._escapeRegExp = function (string) {
-			return String(string).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+			return String(string).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 		};
 	}).call(this);
 
 	(function () {
-		var TEST_METADATA_STR;
+		let TEST_METADATA_STR;
 
 		if (true) {
 			TEST_METADATA_STR = meteorEnv.TEST_METADATA;
@@ -762,46 +746,36 @@ Package["core-runtime"].queue("meteor", function () {
 			TEST_METADATA_STR = process.env.TEST_METADATA;
 		}
 
-		var TEST_METADATA = JSON.parse(TEST_METADATA_STR || "{}");
-		var testDriverPackageName = false;
+		const TEST_METADATA = JSON.parse(TEST_METADATA_STR || '{}');
+		const testDriverPackageName = false;
 
 		Meteor.isTest = !!TEST_METADATA.isTest;
 		Meteor.isAppTest = !!TEST_METADATA.isAppTest;
 		Meteor.isPackageTest = !!testDriverPackageName && !false && !false;
 
-		if (typeof testDriverPackageName === "string") {
-			Meteor.startup(function () {
-				var testDriverPackage = Package[testDriverPackageName];
+		if (typeof testDriverPackageName === 'string') {
+			Meteor.startup(() => {
+				const testDriverPackage = Package[testDriverPackageName];
 
 				if (!testDriverPackage) {
-					throw new Error("Can't find test driver package: " + testDriverPackageName);
+					throw new Error(`Can't find test driver package: ${testDriverPackageName}`);
 				}
 
-				if (true) {
-					if (typeof testDriverPackage.runTests !== "function") {
-						throw new Error("Test driver package " + testDriverPackageName + " missing `runTests` export");
-					}
-
-					testDriverPackage.runTests();
-				} else {
-					if (typeof testDriverPackage.start === "function") {
-						testDriverPackage.start();
-					}
-				}
+				testDriverPackage.runTests();
 			});
 		}
 	}).call(this);
 
 	(function () {
-		var nextSlot = 0;
-		var currentValues = [];
-		var callAsyncMethodRunning = false;
+		let nextSlot = 0;
+		let currentValues = [];
+		let callAsyncMethodRunning = false;
 
 		Meteor.EnvironmentVariable = function () {
 			this.slot = nextSlot++;
 		};
 
-		var EVp = Meteor.EnvironmentVariable.prototype;
+		const EVp = Meteor.EnvironmentVariable.prototype;
 
 		EVp.getCurrentValues = function () {
 			return currentValues;
@@ -816,7 +790,7 @@ Package["core-runtime"].queue("meteor", function () {
 		};
 
 		EVp.withValue = function (value, func) {
-			var saved = currentValues[this.slot];
+			const saved = currentValues[this.slot];
 
 			try {
 				currentValues[this.slot] = value;
@@ -832,7 +806,7 @@ Package["core-runtime"].queue("meteor", function () {
 		};
 
 		EVp._setNewContextAndGetCurrent = function (value) {
-			var saved = currentValues[this.slot];
+			const saved = currentValues[this.slot];
 
 			this._set(value);
 
@@ -848,24 +822,24 @@ Package["core-runtime"].queue("meteor", function () {
 		};
 
 		Meteor.bindEnvironment = function (func, onException, _this) {
-			var boundValues = currentValues.slice();
+			const boundValues = currentValues.slice();
 
 			if (!onException || typeof onException === 'string') {
-				var description = onException || "callback of async function";
+				const description = onException || 'callback of async function';
 
 				onException = function (error) {
-					Meteor._debug("Exception in " + description + ":", error);
+					Meteor._debug(`Exception in ${description}:`, error);
 				};
 			}
 
 			return function () {
-				var savedValues = currentValues;
+				const savedValues = currentValues;
 
 				try {
 					currentValues = boundValues;
 
 					var ret = func.apply(_this, arguments);
-				} catch(e) {
+				} catch (e) {
 					onException(e);
 				} finally {
 					currentValues = savedValues;
@@ -885,24 +859,25 @@ Package["core-runtime"].queue("meteor", function () {
 
 			options = Object.assign({}, Meteor.absoluteUrl.defaultOptions, options || {});
 
-			var url = options.rootUrl;
+			let url = options.rootUrl;
 
-			if (!url) throw new Error("Must pass options.rootUrl or set ROOT_URL in the server environment");
-			if (!(/^http[s]?:\/\//i).test(url)) url = 'http://' + url;
+			if (!url) throw new Error('Must pass options.rootUrl or set ROOT_URL in the server environment');
+			if (!/^http[s]?:\/\//i.test(url)) url = `http://${url}`;
 
-			if (!url.endsWith("/")) {
-				url += "/";
+			if (!url.endsWith('/')) {
+				url += '/';
 			}
 
 			if (path) {
-				while (path.startsWith("/")) {
+				while (path.startsWith('/')) {
 					path = path.slice(1);
 				}
 
 				url += path;
 			}
 
-			if (options.secure && (/^http:/).test(url) && !(/http:\/\/localhost[:\/]/).test(url) && !(/http:\/\/127\.0\.0\.1[:\/]/).test(url)) url = url.replace(/^http:/, 'https:');
+			if (options.secure && /^http:/.test(url) && !/http:\/\/localhost[:\/]/.test(url) && !/http:\/\/127\.0\.0\.1[:\/]/.test(url))
+				url = url.replace(/^http:/, 'https:');
 
 			if (options.replaceLocalhost) {
 				url = url.replace(/^http:\/\/localhost([:\/].*)/, 'http://127.0.0.1$1');
@@ -911,21 +886,22 @@ Package["core-runtime"].queue("meteor", function () {
 			return url;
 		};
 
-		var defaultOptions = Meteor.absoluteUrl.defaultOptions = {};
-		var location = typeof window === "object" && window.location;
+		const defaultOptions = (Meteor.absoluteUrl.defaultOptions = {});
+		const location = typeof window === 'object' && window.location;
 
-		if (typeof __meteor_runtime_config__ === "object" && __meteor_runtime_config__.ROOT_URL) {
+		if (typeof __meteor_runtime_config__ === 'object' && __meteor_runtime_config__.ROOT_URL) {
 			defaultOptions.rootUrl = __meteor_runtime_config__.ROOT_URL;
 		} else if (location && location.protocol && location.host) {
-			defaultOptions.rootUrl = location.protocol + "//" + location.host;
+			defaultOptions.rootUrl = `${location.protocol}//${location.host}`;
 		}
 
-		if (location && location.protocol === "https:") {
+		if (location && location.protocol === 'https:') {
 			defaultOptions.secure = true;
 		}
 
 		Meteor._relativeToSiteRootUrl = function (link) {
-			if (typeof __meteor_runtime_config__ === "object" && link.substr(0, 1) === "/") link = (__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || "") + link;
+			if (typeof __meteor_runtime_config__ === 'object' && link.substr(0, 1) === '/')
+				link = (__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '') + link;
 
 			return link;
 		};
@@ -934,7 +910,10 @@ Package["core-runtime"].queue("meteor", function () {
 	return {
 		export() {
 			return { Meteor, global, meteorEnv };
-		}
+		},
 	};
 });
-export const { Meteor, global, meteorEnv } = Package['meteor'];
+
+export { global };
+
+export const { Meteor, meteorEnv } = Package.meteor;

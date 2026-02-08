@@ -1,14 +1,13 @@
 import { Meteor } from './meteor.ts';
 import { Retry } from './retry.ts';
-import type * as Tracker from './tracker/index.ts';
-import { Dependency } from './tracker/index.ts';
+import { Dependency } from './tracker.ts';
 
 const forcedReconnectError = new Error('forced reconnect');
 
 abstract class StreamClientCommon {
 	currentStatus: { status: string; connected: boolean; retryCount: number; retryTime?: number; reason?: unknown };
 
-	statusListeners: Tracker.Dependency | null;
+	statusListeners: Dependency | null;
 
 	CONNECT_TIMEOUT: number;
 
