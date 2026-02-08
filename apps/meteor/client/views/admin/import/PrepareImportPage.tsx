@@ -25,9 +25,16 @@ import { numberFormat } from '../../../../lib/utils/stringUtils';
 const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U, timeoutMs = 30000) =>
 	new Promise<U>((resolve, reject) => {
 		const startTime = Date.now();
+		let retryCount = 0;
+		const maxRetries = 60; // Max 60 retries * 1000ms = 60 seconds
 		const callPromise = () => {
 			if (Date.now() - startTime > timeoutMs) {
-				reject(new Error('Timeout waiting for condition'));
+				reject(new Error('Timeout waiting for import data'));
+				return;
+			}
+
+			if (retryCount >= maxRetries) {
+				reject(new Error('Failed to process import file - maximum retries exceeded'));
 				return;
 			}
 
@@ -37,6 +44,7 @@ const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => ar
 					return;
 				}
 
+				retryCount++;
 				setTimeout(callPromise, 1000);
 			}, reject);
 		};
