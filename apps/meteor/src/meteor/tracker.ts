@@ -1,4 +1,4 @@
-import { Package } from '../package-registry.ts';
+import { Package } from './package-registry.ts';
 
 let nextId = 1;
 // computations whose callbacks we should call at flush time

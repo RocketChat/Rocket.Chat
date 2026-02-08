@@ -11,7 +11,10 @@ declare global {
 		ROOT_URL_PATH_PREFIX: string;
 		ROOT_URL: string;
 		accountsConfigCalled?: boolean;
+		meteorEnv: Record<string, unknown>;
 		ACCOUNTS_CONNECTION_URL?: string;
+		isModern?: boolean;
+		gitCommitHash?: string;
 	};
 
 	interface Window {
