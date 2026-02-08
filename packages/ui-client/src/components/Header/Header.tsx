@@ -17,16 +17,15 @@ const Header = (props: HeaderProps) => (
 		flexShrink={0}
 	>
 		<Box
+		    {...props}
 			pi='x16'
 			height='x44'
 			display='flex'
-			flexGrow={1}
 			justifyContent='center'
 			alignItems='center'
 			overflow='hidden'
 			flexDirection='row'
 			bg='room'
-			{...props}
 		/>
 		<HeaderDivider />
 	</Box>
