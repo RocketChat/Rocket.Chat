@@ -7,10 +7,10 @@ import { isObject } from './utils/isObject.ts';
 
 // --- Types ---
 
-interface ValidationError {
+type ValidationError = {
 	message: string;
 	path: string;
-}
+};
 
 // Success is false (no error), failure is an error object or array of objects
 type ValidationResult = false | ValidationError | ValidationError[];
@@ -61,6 +61,7 @@ const isPlainObject = (obj: unknown): obj is Record<string, unknown> => {
 
 class ArgumentChecker {
 	public args: unknown[];
+
 	public description: string;
 
 	constructor(args: unknown[], description: string) {
@@ -229,9 +230,7 @@ const checkLiteral = (value: unknown, pattern: unknown): ValidationResult => {
 	}
 
 	if (typeof pattern === 'string' || typeof pattern === 'number' || typeof pattern === 'boolean') {
-		return value === pattern
-			? false
-			: { message: `Expected ${pattern}, got ${stringForErrorMessage(value)}`, path: '' };
+		return value === pattern ? false : { message: `Expected ${pattern}, got ${stringForErrorMessage(value)}`, path: '' };
 	}
 
 	return null; // Not a literal check
@@ -275,11 +274,7 @@ const validateArray = (
 	return errors.length === 0 ? false : errors;
 };
 
-const validateObjectWithValues = (
-	value: unknown,
-	valuePattern: Pattern,
-	validateFn: typeof testSubtree,
-): ValidationResult => {
+const validateObjectWithValues = (value: unknown, valuePattern: Pattern, validateFn: typeof testSubtree): ValidationResult => {
 	if (typeof value !== 'object' || value === null) {
 		return { message: `Expected object, got ${value === null ? 'null' : typeof value}`, path: '' };
 	}
@@ -431,11 +426,7 @@ const testSubtree = (
 
 // --- Public API ---
 
-function check(
-	value: unknown,
-	pattern: Pattern,
-	options: { throwAllErrors?: boolean } = { throwAllErrors: false },
-): void {
+function check(value: unknown, pattern: Pattern, options: { throwAllErrors?: boolean } = { throwAllErrors: false }): void {
 	const argChecker = currentArgumentChecker.getOrNullIfOutsideFiber();
 	if (argChecker) {
 		argChecker.checking(value);
@@ -489,12 +480,7 @@ const Match = {
 		return !testSubtree(value, pattern);
 	},
 
-	_failIfArgumentsAreNotAllChecked(
-		f: (...args: unknown[]) => unknown,
-		context: unknown,
-		args: unknown[],
-		description: string,
-	): unknown {
+	_failIfArgumentsAreNotAllChecked(f: (...args: unknown[]) => unknown, context: unknown, args: unknown[], description: string): unknown {
 		const argChecker = new ArgumentChecker(args, description);
 		const result = currentArgumentChecker.withValue(argChecker, () => f.apply(context, args));
 		argChecker.throwUnlessAllArgumentsHaveBeenChecked();
@@ -505,12 +491,53 @@ const Match = {
 // --- Internal Helper Constants ---
 
 const _jsKeywords = new Set([
-	'do', 'if', 'in', 'for', 'let', 'new', 'try', 'var', 'case', 'else', 'enum', 'eval',
-	'false', 'null', 'this', 'true', 'void', 'with', 'break', 'catch', 'class', 'const',
-	'super', 'throw', 'while', 'yield', 'delete', 'export', 'import', 'public', 'return',
-	'static', 'switch', 'typeof', 'default', 'extends', 'finally', 'package', 'private',
-	'continue', 'debugger', 'function', 'arguments', 'interface', 'protected',
-	'implements', 'instanceof',
+	'do',
+	'if',
+	'in',
+	'for',
+	'let',
+	'new',
+	'try',
+	'var',
+	'case',
+	'else',
+	'enum',
+	'eval',
+	'false',
+	'null',
+	'this',
+	'true',
+	'void',
+	'with',
+	'break',
+	'catch',
+	'class',
+	'const',
+	'super',
+	'throw',
+	'while',
+	'yield',
+	'delete',
+	'export',
+	'import',
+	'public',
+	'return',
+	'static',
+	'switch',
+	'typeof',
+	'default',
+	'extends',
+	'finally',
+	'package',
+	'private',
+	'continue',
+	'debugger',
+	'function',
+	'arguments',
+	'interface',
+	'protected',
+	'implements',
+	'instanceof',
 ]);
 
 const _prependPath = (key: string | number, base: string): string => {
@@ -537,8 +564,7 @@ const isArguments = baseIsArguments(
 	})(),
 )
 	? baseIsArguments
-	: (value: unknown): value is IArguments =>
-			isObject(value) && hasOwn(value, 'callee') && isFunction((value as any).callee);
+	: (value: unknown): value is IArguments => isObject(value) && hasOwn(value, 'callee') && isFunction((value as any).callee);
 
 export { Match, check };
 

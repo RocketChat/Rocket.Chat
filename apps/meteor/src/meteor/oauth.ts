@@ -1,21 +1,15 @@
-import './meteor.ts';
-import './check.ts';
-import './url.ts';
-import './reload.ts';
-import './base64.ts';
-import './modules.ts';
+import { Base64 } from './base64.ts';
+import { check } from './check.ts';
+import { Meteor } from './meteor.ts';
+import { meteorInstall } from './modules.ts';
 import { Package } from './package-registry.ts';
+import { Reload } from './reload.ts';
+import { URL } from './url.ts';
 
-Package['core-runtime'].queue('oauth', function () {
-	var Meteor = Package.meteor.Meteor;
-	var check = Package.check.check;
-	var URL = Package.url.URL;
-	var Reload = Package.reload.Reload;
-	var Base64 = Package.base64.Base64;
-	var meteorInstall = Package.modules.meteorInstall;
-	var OAuth;
+Package['core-runtime'].queue('oauth', () => {
+	let OAuth;
 
-	var require = meteorInstall(
+	const require = meteorInstall(
 		{
 			node_modules: {
 				meteor: {
@@ -30,10 +24,6 @@ Package['core-runtime'].queue('oauth', function () {
 							};
 
 							OAuth._loginStyle = (service, config, options) => {
-								if (false) {
-									return 'popup';
-								}
-
 								let loginStyle = (options && options.loginStyle) || config.loginStyle || 'popup';
 
 								if (!['popup', 'redirect'].includes(loginStyle)) throw new Error('Invalid login style: '.concat(loginStyle));
@@ -51,7 +41,10 @@ Package['core-runtime'].queue('oauth', function () {
 							};
 
 							OAuth._stateParam = (loginStyle, credentialToken, redirectUrl) => {
-								var _Meteor$settings, _Meteor$settings$publ, _Meteor$settings$publ2, _Meteor$settings$publ3;
+								let _Meteor$settings;
+								let _Meteor$settings$publ;
+								let _Meteor$settings$publ2;
+								let _Meteor$settings$publ3;
 
 								const state = {
 									loginStyle,
@@ -72,7 +65,7 @@ Package['core-runtime'].queue('oauth', function () {
 										_Meteor$settings$publ3.setRedirectUrlWhenLoginStyleIsPopup &&
 										loginStyle === 'popup')
 								) {
-									state.redirectUrl = redirectUrl || '' + window.location;
+									state.redirectUrl = redirectUrl || `${window.location}`;
 								}
 
 								return Base64.encode(JSON.stringify(state));
@@ -284,4 +277,4 @@ Package['core-runtime'].queue('oauth', function () {
 		],
 	};
 });
-export const { OAuth } = Package['oauth'];
+export const { OAuth } = Package.oauth;

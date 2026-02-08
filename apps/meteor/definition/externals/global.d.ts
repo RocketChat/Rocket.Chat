@@ -10,11 +10,17 @@ declare global {
 	const __meteor_runtime_config__: {
 		ROOT_URL_PATH_PREFIX: string;
 		ROOT_URL: string;
+		PUBLIC_SETTINGS?: Record<string, unknown>;
 		accountsConfigCalled?: boolean;
-		meteorEnv: Record<string, unknown>;
+		meteorEnv: {
+			TEST_METADATA?: string;
+			NODE_ENV?: string;
+		};
 		ACCOUNTS_CONNECTION_URL?: string;
 		isModern?: boolean;
 		gitCommitHash?: string;
+		meteorRelease?: string;
+		debug?: boolean;
 	};
 
 	interface Window {
