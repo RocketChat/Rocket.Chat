@@ -25,7 +25,7 @@ import { numberFormat } from '../../../../lib/utils/stringUtils';
 const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>
 	new Promise<U>((resolve, reject) => {
 		let retryCount = 0;
-		const maxRetries = 300; // Max ~5 minutes of retries (300 * 1000ms)
+		const maxRetries = 60; 
 		let lastProgressTime = Date.now();
 		let sameResponseCount = 0;
 		let lastResponse: T | null = null;
@@ -36,7 +36,6 @@ const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => ar
 				return;
 			}
 
-			// If stuck with same response for more than 2 minutes, likely an error
 			if (Date.now() - lastProgressTime > 120000 && sameResponseCount > 120) {
 				reject(new Error('Import processing stalled - please check file format'));
 				return;
