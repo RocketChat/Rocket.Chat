@@ -36,7 +36,7 @@ exports[`ReviewStep renders Default without crashing 1`] = `
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button"
               type="button"
             >
               <span
@@ -46,7 +46,7 @@ exports[`ReviewStep renders Default without crashing 1`] = `
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
               type="button"
             >
               <span

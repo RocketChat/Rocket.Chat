@@ -2,7 +2,6 @@ import type {
 	IMessage,
 	IRoom,
 	MessageAttachment,
-	ISupportedLanguages,
 	IProviderMetadata,
 	ISupportedLanguage,
 	ITranslationResult,
@@ -134,7 +133,9 @@ export abstract class AutoTranslate {
 
 	languages: string[];
 
-	supportedLanguages: ISupportedLanguages;
+	supportedLanguages: {
+		[language: string]: ISupportedLanguage[];
+	};
 
 	/**
 	 * Encapsulate the api key and provider settings.

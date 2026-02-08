@@ -355,10 +355,8 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 			this.emit('installed');
 
 			return true;
-		} catch (e) {
-			logger.error('Invalid license');
-
-			logger.error({ msg: 'Invalid raw license', encryptedLicense, e });
+		} catch (err) {
+			logger.error({ msg: 'Invalid raw license', encryptedLicense, err });
 
 			throw new InvalidLicenseError();
 		}
