@@ -31,29 +31,27 @@
 // useful for apps using `window.onbeforeunload`. See
 // https://github.com/meteor/meteor/pull/657
 import { Meteor } from './meteor.ts';
-import { Package } from './package-registry';
+import { Package } from './package-registry.ts';
 
-const Reload = {};
+// export const Reload: any = {};
 
-const reloadSettings =
-	(Meteor.settings && Meteor.settings.public && Meteor.settings.public.packages && Meteor.settings.public.packages.reload) || {};
+const reloadSettings = Meteor?.settings?.public?.packages?.reload || {};
 
-function debug(message, context) {
+function debug(message: string, context?: any) {
 	if (!reloadSettings.debug) {
 		return;
 	}
-	// eslint-disable-next-line no-console
 	console.log(`[reload] ${message}`, JSON.stringify(context));
 }
 
 const KEY_NAME = 'Meteor_Reload';
 
-let old_data = {};
+let oldData: any = {};
 // read in old data at startup.
-let old_json;
+let oldJson: string | null = null;
 
 // This logic for sessionStorage detection is based on browserstate/history.js
-let safeSessionStorage = null;
+let safeSessionStorage: any = null;
 try {
 	// This throws a SecurityError on Chrome if cookies & localStorage are
 	// explicitly disabled
@@ -79,12 +77,12 @@ try {
 }
 
 // Exported for test.
-Reload._getData = function () {
-	return safeSessionStorage && safeSessionStorage.getItem(KEY_NAME);
-};
+export function _getData() {
+	return safeSessionStorage?.getItem(KEY_NAME);
+}
 
 if (safeSessionStorage) {
-	old_json = Reload._getData();
+	oldJson = _getData();
 	safeSessionStorage.removeItem(KEY_NAME);
 } else {
 	// Unsupported browser (IE 6,7) or locked down security settings.
@@ -92,26 +90,28 @@ if (safeSessionStorage) {
 	// Meteor._debug("XXX UNSUPPORTED BROWSER/SETTINGS");
 }
 
-if (!old_json) old_json = '{}';
-let old_parsed = {};
+if (!oldJson) {
+	oldJson = '{}';
+}
+let oldParsed: any = {};
 try {
-	old_parsed = JSON.parse(old_json);
-	if (typeof old_parsed !== 'object') {
+	oldParsed = JSON.parse(oldJson);
+	if (typeof oldParsed !== 'object') {
 		Meteor._debug('Got bad data on reload. Ignoring.');
-		old_parsed = {};
+		oldParsed = {};
 	}
 } catch (err) {
 	Meteor._debug('Got invalid JSON on reload. Ignoring.');
 }
 
-if (old_parsed.reload && typeof old_parsed.data === 'object') {
+if (oldParsed.reload && typeof oldParsed.data === 'object') {
 	// Meteor._debug("Restoring reload data.");
-	old_data = old_parsed.data;
+	oldData = oldParsed.data;
 }
 
-let providers = [];
+let providers: any[] = [];
 
-////////// External API //////////
+// //////// External API //////////
 
 // Packages that support migration should register themselves by calling
 // this function. When it's time to migrate, callback will be called
@@ -131,35 +131,39 @@ let providers = [];
 // migrate or not; the reload will happen immediately without waiting
 // (used for OAuth redirect login).
 //
-Reload._onMigrate = function (name, callback) {
+export function _onMigrate(name: string, callback: (...args: any[]) => any) {
 	debug('_onMigrate', { name });
 	if (!callback) {
 		// name not provided, so first arg is callback.
-		callback = name;
-		name = undefined;
+		callback = name as unknown as (...args: any[]) => any;
+		name = undefined as unknown as string;
 		debug('_onMigrate no callback');
 	}
 
-	providers.push({ name: name, callback: callback });
-};
+	providers.push({ name, callback });
+}
 
 // Called by packages when they start up.
 // Returns the object that was saved, or undefined if none saved.
 //
-Reload._migrationData = function (name) {
+export function _migrationData(name: string) {
 	debug('_migrationData', { name });
-	return old_data[name];
-};
+	return oldData[name];
+}
 
 // Options are the same as for `Reload._migrate`.
-const pollProviders = function (tryReload, options) {
+const pollProviders = function (tryReload: (...args: any[]) => any, options: any) {
 	debug('pollProviders', { options });
-	tryReload = tryReload || function () {};
+	tryReload =
+		tryReload ||
+		function () {
+			// empty
+		};
 	options = options || {};
 
 	const { immediateMigration } = options;
 	debug(`pollProviders is ${immediateMigration ? '' : 'NOT '}immediateMigration`, { options });
-	const migrationData = {};
+	const migrationData: any = {};
 	let allReady = true;
 	providers.forEach((p) => {
 		const { callback, name } = p || {};
@@ -191,7 +195,7 @@ const pollProviders = function (tryReload, options) {
 // Options are:
 //  - immediateMigration: true if the page will be reloaded immediately
 //    regardless of whether packages report that they are ready or not.
-Reload._migrate = function (tryReload, options) {
+export function _migrate(tryReload: (...args: any[]) => any, options: any) {
 	debug('_migrate', { options });
 	// Make sure each package is ready to go, and collect their
 	// migration data
@@ -224,10 +228,10 @@ Reload._migrate = function (tryReload, options) {
 	}
 
 	return true;
-};
+}
 
 // Allows tests to isolate the list of providers.
-Reload._withFreshProvidersForTest = function (f) {
+export function _withFreshProvidersForTest(f: () => void) {
 	const originalProviders = providers.slice(0);
 	providers = [];
 	try {
@@ -235,7 +239,7 @@ Reload._withFreshProvidersForTest = function (f) {
 	} finally {
 		providers = originalProviders;
 	}
-};
+}
 
 // Migrating reload: reload this page (presumably to pick up a new
 // version of the code or assets), but save the program state and
@@ -244,7 +248,7 @@ Reload._withFreshProvidersForTest = function (f) {
 // are ready to migrate.
 //
 let reloading = false;
-Reload._reload = function (options) {
+export function _reload(options: any) {
 	debug('_reload', { options });
 	options = options || {};
 
@@ -276,7 +280,7 @@ Reload._reload = function (options) {
 
 	function reload() {
 		debug('reload');
-		if (!Reload._migrate(tryReload, options)) {
+		if (!_migrate(tryReload, options)) {
 			return;
 		}
 
@@ -284,8 +288,8 @@ Reload._reload = function (options) {
 	}
 
 	tryReload();
-};
+}
 
-export { Reload };
+export const Reload = { _getData, _onMigrate, _migrationData, _migrate, _withFreshProvidersForTest, _reload };
 
 Package.reload = { Reload };
