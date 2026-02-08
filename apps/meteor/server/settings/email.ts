@@ -359,10 +359,10 @@ export const createEmailSettings = () =>
 				i18nLabel: 'Host',
 			});
 			await this.add('SMTP_Client_Name', '', {
-			type: 'string',
-			env: true,
-			i18nLabel: 'Client Name (EHLO)',
-			i18nDescription: 'Hostname used in SMTP HELO/EHLO (use a valid FQDN, recommended for Docker)',
+				type: 'string',
+				env: true,
+				i18nLabel: 'SMTP_Client_Name',
+				i18nDescription: 'SMTP_Client_Name_Description',
 			});
 
 			await this.add('SMTP_Port', '', {
