@@ -1,4 +1,8 @@
-import type { ILivechatVisitor, ILivechatVisitorDTO, Serialized } from '@rocket.chat/core-typings';
+import type {
+	ILivechatVisitor,
+	ILivechatVisitorDTO,
+	Serialized,
+} from '@rocket.chat/core-typings';
 import type { ComponentChildren } from 'preact';
 import { Component, createContext } from 'preact';
 import { useContext } from 'preact/hooks';
@@ -11,18 +15,29 @@ import type { TriggerMessage } from '../definitions/triggerMessage';
 import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
 
+import type {
+	LivechatAlert,
+	LivechatQueueInfo,
+	LivechatModalState,
+} from './types';
+
+/* ---------------- Hidden system messages ---------------- */
+
 export type LivechatHiddenSytemMessageType =
-	| 'uj' // User joined
-	| 'ul' // User left
-	| 'livechat-close' // Chat closed
-	| 'livechat-started' // Chat started
-	| 'livechat_transfer_history'; // Chat transfered
+	| 'uj'
+	| 'ul'
+	| 'livechat-close'
+	| 'livechat-started'
+	| 'livechat_transfer_history';
+
+/* ---------------- Store State ---------------- */
 
 export type StoreState = {
 	token: string;
 	typing: string[];
+
 	config: {
-		messages: any;
+		messages: Record<string, unknown>;
 		theme: {
 			title?: string;
 			color?: string;
@@ -38,17 +53,17 @@ export type StoreState = {
 				}[];
 			};
 		};
-		triggers: any[];
-		resources: any;
+		triggers: unknown[];
+		resources: Record<string, unknown>;
 		settings: {
 			registrationForm?: boolean;
 			nameFieldRegistrationForm?: boolean;
 			emailFieldRegistrationForm?: boolean;
 			forceAcceptDataProcessingConsent?: boolean;
-			fileUpload?: any;
-			allowSwitchingDepartments?: any;
-			showConnecting?: any;
-			limitTextLength?: any;
+			fileUpload?: boolean;
+			allowSwitchingDepartments?: boolean;
+			showConnecting?: boolean;
+			limitTextLength?: number;
 			displayOfflineForm?: boolean;
 			hiddenSystemMessages?: LivechatHiddenSytemMessageType[];
 			hideWatermark?: boolean;
@@ -61,14 +76,18 @@ export type StoreState = {
 		customFields?: CustomField[];
 		enabled?: boolean;
 	};
-	messages: any[];
+
+	messages: unknown[];
+
 	user?: Serialized<ILivechatVisitor>;
 	guest?: Serialized<ILivechatVisitorDTO>;
+
 	sound: {
 		src?: string;
 		play?: boolean;
 		enabled: boolean;
 	};
+
 	iframe: {
 		guest: Partial<Serialized<ILivechatVisitorDTO>>;
 		guestMetadata?: Record<string, string>;
@@ -92,34 +111,48 @@ export type StoreState = {
 		defaultDepartment?: string;
 		hiddenSystemMessages?: LivechatHiddenSytemMessageType[];
 	};
+
 	gdpr: {
 		accepted: boolean;
 	};
-	alerts: any[];
+
+	alerts: LivechatAlert[];
+
 	visible: boolean;
 	minimized: boolean;
-	unread: any;
-	incomingCallAlert: any;
-	businessUnit: any;
+
+	unread: number | null;
+	incomingCallAlert: boolean | null;
+	businessUnit: string | null;
+
 	openSessionIds?: string[];
 	triggered?: boolean;
 	undocked?: boolean;
 	expanded?: boolean;
-	modal?: any;
-	agent?: any;
+
+	modal?: LivechatModalState;
+
+	agent?: Agent;
 	room?: { _id: string };
+
 	noMoreMessages?: boolean;
 	loading?: boolean;
-	lastReadMessageId?: any;
-	triggerAgent?: any;
-	queueInfo?: any;
+
+	lastReadMessageId?: string;
+	triggerAgent?: Agent;
+	queueInfo?: LivechatQueueInfo;
+
 	defaultAgent?: Agent;
 	parentUrl?: string;
 	connecting?: boolean;
+
 	messageListPosition?: 'top' | 'bottom' | 'free';
+
 	renderedTriggers: TriggerMessage[];
 	customFieldsQueue: Record<string, { value: string; overwrite: boolean }>;
 };
+
+/* ---------------- Initial State ---------------- */
 
 export const initialState = (): StoreState => ({
 	token: createToken(),
@@ -162,6 +195,8 @@ export const initialState = (): StoreState => ({
 	customFieldsQueue: {},
 });
 
+/* ---------------- Store ---------------- */
+
 const dontPersist = [
 	'messages',
 	'typing',
@@ -176,35 +211,7 @@ const dontPersist = [
 
 export const store = new Store(initialState(), { dontPersist });
 
-const { sessionStorage } = window;
-
-window.addEventListener('load', () => {
-	const sessionId = createToken();
-	sessionStorage.setItem('sessionId', sessionId);
-	const { openSessionIds = [] } = store.state;
-	store.setState({ openSessionIds: [sessionId, ...openSessionIds] });
-});
-
-window.addEventListener('visibilitychange', () => {
-	if (store.state.undocked) {
-		return;
-	}
-
-	!store.state.minimized && !store.state.triggered && parentCall('openWidget');
-	store.state.iframe.visible ? parentCall('showWidget') : parentCall('hideWidget');
-});
-
-window.addEventListener('beforeunload', () => {
-	const sessionId = sessionStorage.getItem('sessionId');
-	const { openSessionIds = [] } = store.state;
-	store.setState({ openSessionIds: openSessionIds.filter((session) => session !== sessionId) });
-});
-
-if (process.env.NODE_ENV === 'development') {
-	store.on('change', ([, , partialState]) => {
-		console.log('%cstore.setState %c%o', 'color: blue', 'color: initial', partialState);
-	});
-}
+/* ---------------- Context / Provider ---------------- */
 
 export type Dispatch = typeof store.setState;
 
@@ -243,17 +250,12 @@ export class Provider extends Component {
 		store.off('change', this.handleStoreChange);
 	}
 
-	render = ({ children }: { children: ComponentChildren }) => {
-		return <StoreContext.Provider value={this.state}>{children}</StoreContext.Provider>;
-	};
+	render = ({ children }: { children: ComponentChildren }) => (
+		<StoreContext.Provider value={this.state}>{children}</StoreContext.Provider>
+	);
 }
 
 export const { Consumer } = StoreContext;
-
 export default store;
 
-export const useStore = (): StoreContextValue => {
-	const store = useContext(StoreContext);
-
-	return store;
-};
+export const useStore = (): StoreContextValue => useContext(StoreContext);

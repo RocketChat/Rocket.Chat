@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import {
 	FieldGroup,
 	TextInput,
@@ -13,8 +12,8 @@ import {
 	Callout,
 } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
-import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { CustomFieldsForm, PasswordVerifier } from '@rocket.chat/ui-client';
+import { useAccountsCustomFields, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -23,6 +22,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import EmailConfirmationForm from './EmailConfirmationForm';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
+import { useRegisterValidation } from './hooks/useRegisterValidation';
+import { useRegisterErrorHandling } from './hooks/useRegisterErrorHandling';
 
 type LoginRegisterPayload = {
 	name: string;
@@ -36,6 +37,7 @@ type LoginRegisterPayload = {
 export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const { t } = useTranslation();
 
+	// Settings
 	const requireNameForRegister = useSetting('Accounts_RequireNameForSignUp', true);
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation', true);
 	const manuallyApproveNewUsersRequired = useSetting('Accounts_ManuallyApproveNewUsers', false);
@@ -44,6 +46,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const passwordPlaceholder = useSetting('Accounts_PasswordPlaceholder', '');
 	const passwordConfirmationPlaceholder = useSetting('Accounts_ConfirmPasswordPlaceholder', '');
 
+	// IDs
 	const formLabelId = useId();
 	const passwordVerifierId = useId();
 	const nameId = useId();
@@ -58,8 +61,6 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const [serverError, setServerError] = useState<string | undefined>(undefined);
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
 	const {
 		register,
 		handleSubmit,
@@ -72,53 +73,32 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	} = useForm<LoginRegisterPayload>({ mode: 'onBlur' });
 
 	const { password } = watch();
-	const passwordIsValid = useValidatePassword(password);
+
+	
+	const validation = useRegisterValidation({
+		requireNameForRegister,
+		requiresPasswordConfirmation,
+		password,
+	});
+
+	
+	const handleRegisterError = useRegisterErrorHandling({
+		setError,
+		setLoginRoute,
+		setServerError,
+	});
 
 	const registerFormRef = useRef<HTMLElement>(null);
 
 	useEffect(() => {
-		if (registerFormRef.current) {
-			registerFormRef.current.focus();
-		}
+		registerFormRef.current?.focus();
 	}, []);
 
 	const handleRegister = async ({ password, passwordConfirmation: _, ...formData }: LoginRegisterPayload) => {
 		registerUser.mutate(
 			{ pass: password, ...formData },
 			{
-				onError: (error: any) => {
-					if ([error.error, error.errorType].includes('error-invalid-email')) {
-						setError('email', { type: 'invalid-email', message: t('registration.component.form.invalidEmail') });
-					}
-					if (error.errorType === 'error-user-already-exists') {
-						setError('username', { type: 'user-already-exists', message: t('registration.component.form.usernameAlreadyExists') });
-					}
-					if (/Email already exists/.test(error.error)) {
-						setError('email', { type: 'email-already-exists', message: t('registration.component.form.emailAlreadyExists') });
-					}
-					if (/Username is already in use/.test(error.error)) {
-						setError('username', { type: 'username-already-exists', message: t('registration.component.form.userAlreadyExist') });
-					}
-					if (/The username provided is not valid/.test(error.error)) {
-						setError('username', {
-							type: 'username-contains-invalid-chars',
-							message: t('registration.component.form.usernameContainsInvalidChars'),
-						});
-					}
-					if (/Name contains invalid characters/.test(error.error)) {
-						setError('name', { type: 'name-contains-invalid-chars', message: t('registration.component.form.nameContainsInvalidChars') });
-					}
-					if (/error-too-many-requests/.test(error.error)) {
-						dispatchToastMessage({ type: 'error', message: error.error });
-					}
-					if (/error-user-is-not-activated/.test(error.error)) {
-						dispatchToastMessage({ type: 'info', message: t('registration.page.registration.waitActivationWarning') });
-						setLoginRoute('login');
-					}
-					if (error.error === 'error-user-registration-custom-field') {
-						setServerError(error.message);
-					}
-				},
+				onError: handleRegisterError,
 			},
 		);
 	};
@@ -138,17 +118,17 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			<Form.Header>
 				<Form.Title id={formLabelId}>{t('registration.component.form.createAnAccount')}</Form.Title>
 			</Form.Header>
+
 			<Form.Container>
 				<FieldGroup>
+					{/* Name */}
 					<Field>
 						<FieldLabel required={requireNameForRegister} htmlFor={nameId}>
 							{t('registration.component.form.name')}
 						</FieldLabel>
 						<FieldRow>
 							<TextInput
-								{...register('name', {
-									required: requireNameForRegister ? t('Required_field', { field: t('registration.component.form.name') }) : false,
-								})}
+								{...register('name', validation.name)}
 								error={errors?.name?.message}
 								aria-required={requireNameForRegister}
 								aria-invalid={errors.name ? 'true' : 'false'}
@@ -163,19 +143,15 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							</FieldError>
 						)}
 					</Field>
+
+					{/* Email */}
 					<Field>
 						<FieldLabel required htmlFor={emailId}>
 							{t('registration.component.form.email')}
 						</FieldLabel>
 						<FieldRow>
 							<TextInput
-								{...register('email', {
-									required: t('Required_field', { field: t('registration.component.form.email') }),
-									pattern: {
-										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-										message: t('registration.component.form.invalidEmail'),
-									},
-								})}
+								{...register('email', validation.email)}
 								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 								error={errors?.email?.message}
 								aria-required='true'
@@ -190,15 +166,15 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							</FieldError>
 						)}
 					</Field>
+
+					{/* Username */}
 					<Field>
 						<FieldLabel required htmlFor={usernameId}>
 							{t('registration.component.form.username')}
 						</FieldLabel>
 						<FieldRow>
 							<TextInput
-								{...register('username', {
-									required: t('Required_field', { field: t('registration.component.form.username') }),
-								})}
+								{...register('username', validation.username)}
 								error={errors?.username?.message}
 								aria-required='true'
 								aria-invalid={errors.username ? 'true' : 'false'}
@@ -213,16 +189,15 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							</FieldError>
 						)}
 					</Field>
+
+					{/* Password */}
 					<Field>
 						<FieldLabel required htmlFor={passwordId}>
 							{t('registration.component.form.password')}
 						</FieldLabel>
 						<FieldRow>
 							<PasswordInput
-								{...register('password', {
-									required: t('Required_field', { field: t('registration.component.form.password') }),
-									validate: () => (!passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
-								})}
+								{...register('password', validation.password)}
 								error={errors.password?.message}
 								aria-required='true'
 								aria-invalid={errors.password ? 'true' : undefined}
@@ -231,13 +206,15 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								aria-describedby={`${passwordVerifierId} ${passwordId}-error`}
 							/>
 						</FieldRow>
-						{errors?.password && (
+						{errors.password && (
 							<FieldError role='alert' id={`${passwordId}-error`}>
 								{errors.password.message}
 							</FieldError>
 						)}
 						<PasswordVerifier password={password} id={passwordVerifierId} />
 					</Field>
+
+					{/* Confirm Password */}
 					{requiresPasswordConfirmation && (
 						<Field>
 							<FieldLabel required htmlFor={passwordConfirmationId}>
@@ -245,18 +222,13 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							</FieldLabel>
 							<FieldRow>
 								<PasswordInput
-									{...register('passwordConfirmation', {
-										required: t('Required_field', { field: t('registration.component.form.confirmPassword') }),
-										deps: ['password'],
-										validate: (val: string) => (watch('password') === val ? true : t('registration.component.form.invalidConfirmPass')),
-									})}
+									{...register('passwordConfirmation', validation.passwordConfirmation)}
 									error={errors.passwordConfirmation?.message}
 									aria-required='true'
 									aria-invalid={errors.passwordConfirmation ? 'true' : 'false'}
 									id={passwordConfirmationId}
 									aria-describedby={`${passwordConfirmationId}-error`}
 									placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
-									disabled={!passwordIsValid}
 								/>
 							</FieldRow>
 							{errors.passwordConfirmation && (
@@ -266,6 +238,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							)}
 						</Field>
 					)}
+
+					{/* Reason */}
 					{manuallyApproveNewUsersRequired && (
 						<Field>
 							<FieldLabel required htmlFor={reasonId}>
@@ -273,9 +247,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							</FieldLabel>
 							<FieldRow>
 								<TextAreaInput
-									{...register('reason', {
-										required: t('Required_field', { field: t('registration.component.form.reasonToJoin') }),
-									})}
+									{...register('reason', validation.reason)}
 									error={errors?.reason?.message}
 									aria-required='true'
 									aria-invalid={errors.reason ? 'true' : 'false'}
@@ -290,21 +262,19 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							)}
 						</Field>
 					)}
+
 					<CustomFieldsForm formName='customFields' formControl={control} metadata={customFields} />
 					{serverError && <Callout type='danger'>{serverError}</Callout>}
 				</FieldGroup>
 			</Form.Container>
+
 			<Form.Footer>
 				<ButtonGroup>
 					<Button type='submit' loading={registerUser.isPending} primary>
 						{t('registration.component.form.joinYourTeam')}
 					</Button>
 				</ButtonGroup>
-				<ActionLink
-					onClick={(): void => {
-						setLoginRoute('login');
-					}}
-				>
+				<ActionLink onClick={() => setLoginRoute('login')}>
 					<Trans i18nKey='registration.page.register.back'>Back to Login</Trans>
 				</ActionLink>
 			</Form.Footer>

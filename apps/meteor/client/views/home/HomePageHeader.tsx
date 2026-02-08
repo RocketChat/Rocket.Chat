@@ -12,13 +12,21 @@ const HomepageHeader = (): ReactElement => {
 	const settingsRoute = useRoute('admin-settings');
 
 	return (
-		<PageHeader title={title}>
-			{canEditLayout && (
-				<Button icon='pencil' onClick={() => settingsRoute.push({ group: 'Layout' })}>
-					{t('Customize')}
-				</Button>
-			)}
-		</PageHeader>
+		<div
+			style={{
+				width: '100%',
+				maxWidth: '100%',
+				overflowX: 'hidden',
+			}}
+		>
+			<PageHeader title={title}>
+				{canEditLayout && (
+					<Button icon='pencil' onClick={() => settingsRoute.push({ group: 'Layout' })}>
+						{t('Customize')}
+					</Button>
+				)}
+			</PageHeader>
+		</div>
 	);
 };
 
