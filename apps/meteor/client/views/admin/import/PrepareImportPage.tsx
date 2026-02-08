@@ -22,19 +22,23 @@ import {
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 
-const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U, timeoutMs = 30000) =>
+const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>
 	new Promise<U>((resolve, reject) => {
-		const startTime = Date.now();
 		let retryCount = 0;
-		const maxRetries = 60; // Max 60 retries * 1000ms = 60 seconds
+		const maxRetries = 300; // Max ~5 minutes of retries (300 * 1000ms)
+		let lastProgressTime = Date.now();
+		let sameResponseCount = 0;
+		let lastResponse: T | null = null;
+
 		const callPromise = () => {
-			if (Date.now() - startTime > timeoutMs) {
-				reject(new Error('Timeout waiting for import data'));
+			if (retryCount >= maxRetries) {
+				reject(new Error('Failed to process import file - maximum retries exceeded'));
 				return;
 			}
 
-			if (retryCount >= maxRetries) {
-				reject(new Error('Failed to process import file - maximum retries exceeded'));
+			// If stuck with same response for more than 2 minutes, likely an error
+			if (Date.now() - lastProgressTime > 120000 && sameResponseCount > 120) {
+				reject(new Error('Import processing stalled - please check file format'));
 				return;
 			}
 
@@ -44,6 +48,15 @@ const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => ar
 					return;
 				}
 
+				// Track if we're making progress or stuck in loop
+				if (lastResponse && JSON.stringify(result) === JSON.stringify(lastResponse)) {
+					sameResponseCount++;
+				} else {
+					sameResponseCount = 0;
+					lastProgressTime = Date.now();
+				}
+
+				lastResponse = result;
 				retryCount++;
 				setTimeout(callPromise, 1000);
 			}, reject);
@@ -133,13 +146,6 @@ function PrepareImportPage() {
 					return;
 				}
 
-				// Check if import already failed - don't retry
-				if (ImportingErrorStates.includes(operation.status)) {
-					handleError(t('Import_Operation_Failed'));
-					router.navigate('/admin/import');
-					return;
-				}
-
 				if (
 					operation.status === ProgressStep.USER_SELECTION ||
 					ImportPreparingStartedStates.includes(operation.status) ||
@@ -147,6 +153,12 @@ function PrepareImportPage() {
 				) {
 					setStatus(operation.status);
 					loadImportFileData();
+					return;
+				}
+
+				if (ImportingErrorStates.includes(operation.status)) {
+					handleError(t('Import_Operation_Failed'));
+					router.navigate('/admin/import');
 					return;
 				}
 
