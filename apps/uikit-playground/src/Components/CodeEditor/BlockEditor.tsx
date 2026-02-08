@@ -1,8 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import type { Extension } from '@codemirror/state';
 import { Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEffect, useContext } from 'react';
+import { useEffect, useContext, useCallback, useMemo } from 'react';
 
 import { updatePayloadAction, context } from '../../Context';
 import useCodeMirror from '../../hooks/useCodeMirror';
@@ -11,58 +10,72 @@ import { IPayload } from '../../Context/initialState';
 import useFormatCodeMirrorValue from '../../hooks/useFormatCodeMirrorValue';
 
 type CodeMirrorProps = {
-  extensions?: Extension[];
+	extensions?: Extension[];
 };
 
 const BlockEditor = ({ extensions }: CodeMirrorProps) => {
-  const {
-    state: { screens, activeScreen },
-    dispatch,
-  } = useContext(context);
+	const {
+		state: { screens, activeScreen },
+		dispatch,
+	} = useContext(context);
 
-  const { editor, changes, setValue } = useCodeMirror(
-    extensions,
-    intendCode(screens[activeScreen]?.payload)
-  );
-  const debounceValue = useDebouncedValue(changes, 1500);
+	// extract active screen data (granular dependency pattern)
+	const activeScreenData = screens[activeScreen];
+	const payload = activeScreenData?.payload;
 
-  useFormatCodeMirrorValue(
-    (
-      parsedCode: IPayload,
-      prettifiedCode: { formatted: string; cursorOffset: number }
-    ) => {
-      dispatch(
-        updatePayloadAction({
-          blocks: parsedCode.blocks,
-          surface: parsedCode.surface,
-        })
-      );
-      setValue(prettifiedCode.formatted, {
-        cursor: prettifiedCode.cursorOffset,
-      });
-    },
-    debounceValue
-  );
+	const intendedPayload = useMemo(
+		() => intendCode(payload),
+		[payload?.blocks, payload?.surface],
+	);
 
-  useEffect(() => {
-    if (!screens[activeScreen]?.changedByEditor) {
-      setValue(intendCode(screens[activeScreen]?.payload), {});
-    }
-  }, [
-    screens[activeScreen]?.payload.blocks,
-    screens[activeScreen]?.payload.surface,
-    activeScreen,
-  ]);
+	const { editor, changes, setValue } = useCodeMirror(
+		extensions,
+		intendedPayload,
+	);
 
-  useEffect(() => {
-    setValue(intendCode(screens[activeScreen]?.payload), {});
-  }, [activeScreen]);
+	const debounceValue = useDebouncedValue(changes, 1500);
 
-  return (
-    <>
-      <Box display="grid" height="100%" width={'100%'} ref={editor} />
-    </>
-  );
+	// memoized callback (fixes recreated callback issue)
+	const handleFormatValue = useCallback(
+		(
+			parsedCode: IPayload,
+			prettifiedCode: { formatted: string; cursorOffset: number },
+		) => {
+			dispatch(
+				updatePayloadAction({
+					blocks: parsedCode.blocks,
+					surface: parsedCode.surface,
+				}),
+			);
+
+			setValue(prettifiedCode.formatted, {
+				cursor: prettifiedCode.cursorOffset,
+			});
+		},
+		[dispatch, setValue],
+	);
+
+	useFormatCodeMirrorValue(handleFormatValue, debounceValue);
+
+	// sync editor when payload changes externally
+	useEffect(() => {
+		if (!activeScreenData?.changedByEditor) {
+			setValue(intendedPayload, {});
+		}
+	}, [
+		activeScreenData?.changedByEditor,
+		payload?.blocks,
+		payload?.surface,
+		setValue,
+		intendedPayload,
+	]);
+
+	// sync editor on screen change
+	useEffect(() => {
+		setValue(intendedPayload, {});
+	}, [activeScreen, intendedPayload, setValue]);
+
+	return <Box display="grid" height="100%" width="100%" ref={editor} />;
 };
 
 export default BlockEditor;
