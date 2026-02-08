@@ -1,22 +1,18 @@
-import '/src/meteor/meteor.ts';
-import '/src/meteor/check.ts';
-import '/src/meteor/url.ts';
-import '/src/meteor/reload.ts';
-import '/src/meteor/base64.ts';
-import '/src/meteor/modules.ts';
-import { Package } from './package-registry';
+import './meteor.ts';
+import './check.ts';
+import './url.ts';
+import './reload.ts';
+import './base64.ts';
+import './modules.ts';
+import { Package } from './package-registry.ts';
+
 Package['core-runtime'].queue('oauth', function () {
 	var Meteor = Package.meteor.Meteor;
-	var global = globalThis;
-	var meteorEnv = Package.meteor.meteorEnv;
 	var check = Package.check.check;
-	var Match = Package.check.Match;
 	var URL = Package.url.URL;
-	var URLSearchParams = Package.url.URLSearchParams;
 	var Reload = Package.reload.Reload;
 	var Base64 = Package.base64.Base64;
 	var meteorInstall = Package.modules.meteorInstall;
-	var Promise = globalThis.Promise;
 	var OAuth;
 
 	var require = meteorInstall(
