@@ -1,7 +1,7 @@
 import { Hook } from './callback-hook.ts';
 import { DDPCommon } from './ddp-common.ts';
 import { DiffSequence } from './diff-sequence.ts';
-import { EJSON } from './ejson.ts';
+import { EJSON, type EJSONable } from './ejson.ts';
 import { IdMap } from './id-map.ts';
 import { Meteor } from './meteor.ts';
 import { MongoID } from './mongo-id.ts';
@@ -9,13 +9,14 @@ import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 import { Retry } from './retry.ts';
 import { ClientStream } from './socket-stream-client.ts';
-import { Tracker } from './tracker/index.ts';
+import { Tracker } from './tracker.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 import { isEmpty } from './utils/isEmpty.ts';
+import type { UnknownFunction } from './utils/isFunction.ts';
+import { last } from './utils/last.ts';
+import { slice } from './utils/slice.ts';
 
-const last = (arr: any[]) => (arr.length ? arr[arr.length - 1] : undefined);
 const { keys } = Object;
-const { slice } = Array.prototype;
 
 class MongoIDMap extends IdMap {
 	constructor() {
@@ -1282,7 +1283,7 @@ export class Connection {
 	subscribe(name: string /* .. [arguments] .. (callback|callbacks) */) {
 		const self = this;
 
-		const params = slice.call(arguments, 1);
+		const params = slice(arguments, 1);
 		let callbacks: any = Object.create(null);
 		if (params.length) {
 			const lastParam = params[params.length - 1];
@@ -1468,14 +1469,13 @@ export class Connection {
 	 * @alias Meteor.call
 	 * @summary Invokes a method with a sync stub, passing any number of arguments.
 	 * @locus Anywhere
-	 * @param {String} name Name of method to invoke
-	 * @param {EJSONable} [arg1,arg2...] Optional method arguments
+	 * @param name Name of method to invoke
+	 * @param args Optional method arguments
 	 * @param {Function} [asyncCallback] Optional callback, which is called asynchronously with the error or result after the method is complete. If not provided, the method runs synchronously if possible (see below).
 	 */
-	call(name: string /* .. [arguments] .. callback */) {
+	call(name: string, ...args: [...EJSONable[], UnknownFunction]): any {
 		// if it's a function, the last argument is the result callback,
 		// not a parameter to the remote method.
-		const args = slice.call(arguments, 1);
 		let callback;
 		if (args.length && typeof args[args.length - 1] === 'function') {
 			callback = args.pop();
@@ -1484,17 +1484,11 @@ export class Connection {
 	}
 
 	/**
-	 * @memberOf Meteor
-	 * @importFromPackage meteor
-	 * @alias Meteor.callAsync
 	 * @summary Invokes a method with an async stub, passing any number of arguments.
-	 * @locus Anywhere
-	 * @param {String} name Name of method to invoke
-	 * @param {EJSONable} [arg1,arg2...] Optional method arguments
-	 * @returns {Promise}
+	 * @param name Name of method to invoke
+	 * @param args Optional method arguments
 	 */
-	callAsync(name: string /* .. [arguments] .. */) {
-		const args = slice.call(arguments, 1);
+	callAsync(name: string, ...args: EJSONable[]): Promise<any> {
 		if (args.length && typeof args[args.length - 1] === 'function') {
 			throw new Error("Meteor.callAsync() does not accept a callback. You should 'await' the result, or use .then().");
 		}

@@ -1,4 +1,5 @@
 import { Package } from './package-registry.ts';
+import { isFunction } from './utils/isFunction.ts';
 
 const mainFields = ['browser', 'main'];
 
@@ -316,9 +317,7 @@ function getOwn<T>(obj: T, key: PropertyKey): unknown {
 	return undefined;
 }
 
-function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
-	return typeof value === 'function';
-}
+
 
 function isString(value: unknown): value is string {
 	return typeof value === 'string';

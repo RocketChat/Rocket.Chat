@@ -17,6 +17,35 @@ interface IEJSONConverter {
 	fromJSONValue(obj: any): any;
 }
 
+type JSONable = {
+	[key: string]: number | string | boolean | object | number[] | string[] | object[] | undefined | null;
+};
+
+export type EJSONableCustomType = {
+	clone?(): EJSONableCustomType;
+	equals?(other: object): boolean;
+	toJSONValue(): JSONable;
+	typeName(): string;
+};
+
+export type EJSONableProperty =
+	| number
+	| string
+	| boolean
+	| object
+	| number[]
+	| string[]
+	| object[]
+	| Date
+	| Uint8Array
+	| EJSONableCustomType
+	| undefined
+	| null;
+
+export type EJSONable = {
+	[key: string]: EJSONableProperty;
+};
+
 const customTypes = new Map<string, (jsonValue: any) => any>();
 
 const isFunction = (fn: unknown): fn is (...args: unknown[]) => unknown => typeof fn === 'function';

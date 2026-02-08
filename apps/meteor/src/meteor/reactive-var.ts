@@ -1,5 +1,5 @@
 import { Package } from './package-registry.ts';
-import * as Tracker from './tracker/index.ts';
+import { Dependency, Tracker } from './tracker.ts';
 
 type EqualsFunc<T> = (oldValue: T, newValue: T) => boolean;
 
@@ -16,12 +16,12 @@ export class ReactiveVar<T> {
 
 	private equalsFunc?: EqualsFunc<T>;
 
-	private dep: Tracker.Dependency;
+	private dep: Dependency;
 
 	constructor(initialValue: T, equalsFunc?: EqualsFunc<T>) {
 		this.curValue = initialValue;
 		this.equalsFunc = equalsFunc;
-		this.dep = new Tracker.Dependency();
+		this.dep = new Dependency();
 	}
 
 	/**

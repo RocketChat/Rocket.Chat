@@ -1,1 +1,1 @@
-export const hasOwn = <T extends object>(object: T, property: PropertyKey): property is keyof T => Object.hasOwn(object, property);
+export const hasOwn = <T extends Record<PropertyKey, unknown>>(object: T, property: PropertyKey): property is keyof T => Object.hasOwn(object, property);

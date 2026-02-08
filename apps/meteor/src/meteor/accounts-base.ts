@@ -5,7 +5,7 @@ import { Mongo } from './mongo.ts';
 import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 import { ReactiveVar } from './reactive-var.ts';
-import { Tracker } from './tracker/index.ts';
+import { Tracker } from './tracker.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 
 // config option keys
