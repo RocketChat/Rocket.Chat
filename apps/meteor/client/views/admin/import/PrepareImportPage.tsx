@@ -133,6 +133,13 @@ function PrepareImportPage() {
 					return;
 				}
 
+				// Check if import already failed - don't retry
+				if (ImportingErrorStates.includes(operation.status)) {
+					handleError(t('Import_Operation_Failed'));
+					router.navigate('/admin/import');
+					return;
+				}
+
 				if (
 					operation.status === ProgressStep.USER_SELECTION ||
 					ImportPreparingStartedStates.includes(operation.status) ||
@@ -140,12 +147,6 @@ function PrepareImportPage() {
 				) {
 					setStatus(operation.status);
 					loadImportFileData();
-					return;
-				}
-
-				if (ImportingErrorStates.includes(operation.status)) {
-					handleError(t('Import_Operation_Failed'));
-					router.navigate('/admin/import');
 					return;
 				}
 
