@@ -10,6 +10,8 @@ declare global {
 	const __meteor_runtime_config__: {
 		ROOT_URL_PATH_PREFIX: string;
 		ROOT_URL: string;
+		accountsConfigCalled?: boolean;
+		ACCOUNTS_CONNECTION_URL?: string;
 	};
 
 	interface Window {
