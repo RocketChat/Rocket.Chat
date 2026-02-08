@@ -52,12 +52,14 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
 
   useEffect(() => {
     if (!changedByEditor) {
-      setValue(intendCode(activeScreenData?.payload), {});
+      const payload = { blocks: payloadBlocks, surface: payloadSurface };
+      setValue(intendCode(payload), {});
     }
   }, [payloadBlocks, payloadSurface, changedByEditor, activeScreen, setValue]);
 
   useEffect(() => {
-    setValue(intendCode(activeScreenData?.payload), {});
+    const payload = { blocks: payloadBlocks, surface: payloadSurface };
+    setValue(intendCode(payload), {});
   }, [activeScreen, payloadBlocks, payloadSurface, setValue]);
 
   return (
