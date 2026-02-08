@@ -2412,19 +2412,21 @@ describe('[Rooms]', () => {
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
 		});
 
-		it('should throw an error when roomId is not provided', (done) => {
-			void request
-				.post(api('rooms.delete'))
-				.set(credentials)
-				.send({})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', "The 'roomId' param is required");
-				})
-				.end(done);
-		});
+        it('should throw an error when roomId is not provided', (done) => {
+            void request
+                .post(api('rooms.delete'))
+                .set(credentials)
+                .send({})
+                .expect('Content-Type', 'application/json')
+                .expect(400)
+                .expect((res) => {
+                    expect(res.body).to.have.property('success', false);
+                    expect(res.body).to.have.property('errorType', 'invalid-params');
+                    expect(res.body).to.have.property('error').include("must have required property 'roomId'");
+                })
+                .end(done);
+        });
+
 		it('should delete a room when the request is correct', (done) => {
 			void request
 				.post(api('rooms.delete'))
