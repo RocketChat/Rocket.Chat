@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import type { AppPermission } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -6,11 +7,10 @@ import userEvent from '@testing-library/user-event';
 import AppStatus from './AppStatus';
 import { mockedAppsContext } from '../../../../../../tests/mocks/client/marketplace';
 import { createFakeApp, createFakeLicenseInfo } from '../../../../../../tests/mocks/data';
+import type { Actions } from '../../../helpers';
+import { handleAPIError } from '../../../helpers/handleAPIError';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
 import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
-import { handleAPIError } from '../../../helpers/handleAPIError';
-import { Actions } from '../../../helpers';
-import type { AppPermission } from '@rocket.chat/core-typings';
 
 jest.mock('../../../hooks/useMarketplaceActions');
 jest.mock('../../../hooks/useAppInstallationHandler');
@@ -105,7 +105,7 @@ describe('AppStatus', () => {
 		const button = screen.getByRole('button', { name: 'Install' });
 		await userEvent.click(button);
 		await act(async () => {
-			onSuccessCallback!('install');
+			onSuccessCallback('install');
 		});
 		await waitFor(() => {
 			expect(button).not.toBeDisabled();
@@ -137,7 +137,7 @@ describe('AppStatus', () => {
 		const button = screen.getByRole('button', { name: 'Update' });
 		await userEvent.click(button);
 		await act(async () => {
-			onSuccessCallback!('update');
+			onSuccessCallback('update');
 		});
 		await waitFor(() => {
 			expect(button).not.toBeDisabled();
@@ -170,7 +170,7 @@ describe('AppStatus', () => {
 		const button = screen.getByRole('button', { name: 'Buy' });
 		await userEvent.click(button);
 		await act(async () => {
-			onSuccessCallback!('purchase');
+			onSuccessCallback('purchase');
 		});
 		await waitFor(() => {
 			expect(button).not.toBeDisabled();
