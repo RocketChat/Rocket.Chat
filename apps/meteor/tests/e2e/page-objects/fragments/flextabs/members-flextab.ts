@@ -4,6 +4,7 @@ import { FlexTab } from './flextab';
 import { Listbox } from '../listbox';
 import { MenuMore } from '../menu';
 import { ConfirmRemoveModal } from '../modals';
+import { UserInfoFlexTab } from './user-info-flextab';
 import { Modal } from '../modals/modal';
 
 export class ConfirmMuteModal extends Modal {
@@ -21,6 +22,26 @@ export class ConfirmMuteModal extends Modal {
 	}
 }
 
+class AddUsersFlexTab extends FlexTab {
+	readonly listbox: Listbox;
+
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Add users' }));
+		this.listbox = new Listbox(page);
+	}
+
+	private btnAddUsers() {
+		return this.root.getByRole('button', { name: 'Add users' });
+	}
+
+	async addUser(username: string) {
+		await this.root.getByRole('textbox', { name: 'Choose users' }).pressSequentially(username);
+		await this.listbox.selectOption(username);
+		await this.btnAddUsers().click();
+		await this.waitForDismissal();
+	}
+}
+
 export class MembersFlexTab extends FlexTab {
 	readonly listbox: Listbox;
 
@@ -30,12 +51,18 @@ export class MembersFlexTab extends FlexTab {
 
 	readonly confirmMuteModal: ConfirmMuteModal;
 
+	readonly addUsersFlexTab: AddUsersFlexTab;
+
+	readonly userInfo: UserInfoFlexTab;
+
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Members' }));
 		this.removeModal = new ConfirmRemoveModal(page.getByRole('dialog', { name: 'Confirmation', exact: true }));
 		this.listbox = new Listbox(page);
 		this.menu = new MenuMore(page);
 		this.confirmMuteModal = new ConfirmMuteModal(page);
+		this.addUsersFlexTab = new AddUsersFlexTab(page);
+		this.userInfo = new UserInfoFlexTab(page);
 	}
 
 	memberOption(username: string) {
@@ -43,7 +70,7 @@ export class MembersFlexTab extends FlexTab {
 	}
 
 	getMenuItemAction(action: string) {
-		return this.listbox.getOption(action);
+		return this.menu.getMenuItem(action);
 	}
 
 	async openMemberInfo(username: string) {
@@ -61,9 +88,7 @@ export class MembersFlexTab extends FlexTab {
 
 	async addUser(username: string) {
 		await this.root.getByRole('button', { name: 'Add' }).click();
-		await this.root.getByRole('textbox', { name: 'Choose users' }).pressSequentially(username);
-		await this.root.getByRole('option', { name: username }).click();
-		await this.root.getByRole('button', { name: 'Add users' }).click();
+		await this.addUsersFlexTab.addUser(username);
 	}
 
 	private get btnInviteLink() {
@@ -102,8 +127,8 @@ export class MembersFlexTab extends FlexTab {
 
 	private async ignoreUserAction(action: string, username: string) {
 		await this.openMemberInfo(username);
-		await this.openMoreActions();
-		await this.menu.selectMenuItem(action);
+		await this.userInfo.openMoreActions();
+		await this.userInfo.menu.selectMenuItem(action);
 	}
 
 	async ignoreUser(username: string) {

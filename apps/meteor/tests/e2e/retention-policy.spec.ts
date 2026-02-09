@@ -110,7 +110,7 @@ test.describe.serial('retention-policy', () => {
 			test('users without permission should be able to edit the channel', async () => {
 				await auxContext.poHomeChannel.tabs.editRoom.advancedSettingsAccordion.click();
 				await auxContext.poHomeChannel.tabs.editRoom.checkboxReadOnly.check();
-				await auxContext.poHomeChannel.tabs.room.btnSave.click();
+				await auxContext.poHomeChannel.tabs.editRoom.btnSave.click();
 
 				await expect(auxContext.poHomeChannel.content.getSystemMessageByText('set room to read only')).toBeVisible();
 			});

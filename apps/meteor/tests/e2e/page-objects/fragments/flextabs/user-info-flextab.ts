@@ -26,4 +26,8 @@ export class UserInfoFlexTab extends FlexTab {
 	get userName(): Locator {
 		return this.root.getByLabel('Username');
 	}
+
+	async openMoreActions() {
+		await this.btnMoreActions.click();
+	}
 }
