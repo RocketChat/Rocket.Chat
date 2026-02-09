@@ -3,7 +3,6 @@ export * from './user-info-flextab';
 export * from './home-content';
 export * from './home-omnichannel-content';
 export * from './home-flextab';
-export * from './omnichannel-sidenav';
 export * from './navbar';
 export * from './sidebar';
 export * from './sidepanel';
