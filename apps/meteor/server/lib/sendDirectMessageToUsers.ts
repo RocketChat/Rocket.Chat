@@ -25,8 +25,8 @@ export async function sendDirectMessageToUsers(
 
 			await executeSendMessage(fromId, { rid, msg });
 			success.push(user._id);
-		} catch (error) {
-			SystemLogger.error(error);
+		} catch (err) {
+			SystemLogger.error({ err });
 		}
 	}
 

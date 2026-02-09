@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import {
 	isTeamsConvertToChannelProps,
@@ -73,7 +73,7 @@ API.v1.addRoute(
 				this.bodyParams,
 				Match.ObjectIncluding({
 					name: String,
-					type: Match.OneOf(TEAM_TYPE.PRIVATE, TEAM_TYPE.PUBLIC),
+					type: Match.OneOf(TeamType.PRIVATE, TeamType.PUBLIC),
 					members: Match.Maybe([String]),
 					room: Match.Maybe(Match.Any),
 					owner: Match.Maybe(String),
@@ -133,7 +133,7 @@ API.v1.addRoute(
 
 			if (rooms.length) {
 				for await (const room of rooms) {
-					await eraseRoom(room, this.userId);
+					await eraseRoom(room, this.user);
 				}
 			}
 

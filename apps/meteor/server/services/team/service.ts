@@ -9,7 +9,7 @@ import type {
 	ITeamService,
 	ITeamUpdateData,
 } from '@rocket.chat/core-services';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import type {
 	IRoom,
 	IUser,
@@ -81,7 +81,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				(
 					await Room.create(owner || uid, {
 						...room,
-						type: team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c',
+						type: team.type === TeamType.PRIVATE ? 'p' : 'c',
 						name: team.name,
 						members: memberUsernames as string[],
 						extraData: {
@@ -158,7 +158,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		if (updateRoom && typeof type !== 'undefined') {
-			await saveRoomType(team.roomId, type === TEAM_TYPE.PRIVATE ? 'p' : 'c', user);
+			await saveRoomType(team.roomId, type === TeamType.PRIVATE ? 'p' : 'c', user);
 		}
 
 		await Team.updateNameAndType(teamId, updateData);
@@ -173,7 +173,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		let teamIds = unfilteredTeamIds;
 
 		if (callerId) {
-			const publicTeams = await Team.findByIdsAndType<Pick<ITeam, '_id'>>(unfilteredTeamIds, TEAM_TYPE.PUBLIC, {
+			const publicTeams = await Team.findByIdsAndType<Pick<ITeam, '_id'>>(unfilteredTeamIds, TeamType.PUBLIC, {
 				projection: { _id: 1 },
 			}).toArray();
 			const publicTeamIds = publicTeams.map(({ _id }) => _id);
@@ -524,7 +524,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const { getAllRooms, allowPrivateTeam, name, isDefault } = filter;
 
 		const isMember = await TeamMember.findOneByUserIdAndTeamId(uid, teamId);
-		if (team.type === TEAM_TYPE.PRIVATE && !allowPrivateTeam && !isMember) {
+		if (team.type === TeamType.PRIVATE && !allowPrivateTeam && !isMember) {
 			throw new Error('user-not-on-private-team');
 		}
 
@@ -571,7 +571,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('invalid-team');
 		}
 		const isMember = await TeamMember.findOneByUserIdAndTeamId(uid, teamId);
-		if (team.type === TEAM_TYPE.PRIVATE && !allowPrivateTeam && !isMember) {
+		if (team.type === TeamType.PRIVATE && !allowPrivateTeam && !isMember) {
 			throw new Error('user-not-on-private-team');
 		}
 
@@ -894,7 +894,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	getAllPublicTeams(options: FindOptions<ITeam>): Promise<ITeam[]>;
 
 	async getAllPublicTeams(options?: undefined | FindOptions<ITeam>): Promise<ITeam[]> {
-		return options ? Team.findByType(TEAM_TYPE.PUBLIC, options).toArray() : Team.findByType(TEAM_TYPE.PUBLIC).toArray();
+		return options ? Team.findByType(TeamType.PUBLIC, options).toArray() : Team.findByType(TeamType.PUBLIC).toArray();
 	}
 
 	async getOneById(teamId: string, options?: FindOptions<ITeam>): Promise<ITeam | null> {

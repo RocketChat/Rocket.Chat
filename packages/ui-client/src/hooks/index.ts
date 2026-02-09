@@ -8,3 +8,4 @@ export * from './useLicense';
 export * from './usePreferenceFeaturePreviewList';
 export * from './useUserDisplayName';
 export * from './useValidatePassword';
+export * from './useGoToDirectMessage';

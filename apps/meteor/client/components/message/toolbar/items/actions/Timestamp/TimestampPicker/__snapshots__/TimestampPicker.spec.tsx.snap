@@ -77,6 +77,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
             <button
               aria-label="Close"
               class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              tabindex="-1"
               type="button"
             >
               <i
@@ -477,7 +478,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
               type="button"
             >
               <span
@@ -487,7 +488,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
               disabled=""
               type="button"
             >

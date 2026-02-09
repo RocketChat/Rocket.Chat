@@ -30,20 +30,13 @@ const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTa
 		<>
 			<FieldRow>
 				<TextInput
-					data-qa='DepartmentEditTextInput-ConversationClosingTags'
 					error={error}
 					placeholder={t('Enter_a_tag')}
 					value={tagText}
 					onChange={(e: FormEvent<HTMLInputElement>) => setTagText(e.currentTarget.value)}
 					{...props}
 				/>
-				<Button
-					disabled={Boolean(!tagText.trim()) || tags.includes(tagText)}
-					data-qa='DepartmentEditAddButton-ConversationClosingTags'
-					mis={8}
-					title={t('Add')}
-					onClick={handleAddTag}
-				>
+				<Button disabled={Boolean(!tagText.trim()) || tags.includes(tagText)} mis={8} title={t('Add')} onClick={handleAddTag}>
 					{t('Add')}
 				</Button>
 			</FieldRow>

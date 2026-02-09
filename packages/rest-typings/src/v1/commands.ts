@@ -15,6 +15,7 @@ export type CommandsEndpoints = {
 				fields?: string;
 			}>,
 		) => PaginatedResult<{
+			appsLoaded: boolean;
 			commands: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview' | 'appId'>[];
 		}>;
 	};
