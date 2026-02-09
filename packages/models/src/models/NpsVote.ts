@@ -59,14 +59,14 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 				_updatedAt: new Date(),
 			},
 			$setOnInsert: {
-				_id: new ObjectId().toHexString(), // TODO this should be done by BaseRaw
+				_id: new ObjectId().toHexString() as INpsVote['_id'], // TODO this should be done by BaseRaw
 			},
 		};
 
 		return this.updateOne(query, update, { upsert: true });
 	}
 
-	updateVotesToSent(voteIds: string[]): Promise<UpdateResult | Document> {
+	updateVotesToSent(voteIds: INpsVote['_id'][]): Promise<UpdateResult | Document> {
 		const query = {
 			_id: { $in: voteIds },
 		};
