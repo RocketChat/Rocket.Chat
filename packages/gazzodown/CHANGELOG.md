@@ -1,6 +1,19 @@
 # @rocket.chat/gazzodown
 
+## 27.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [bed615ef323d4018f779cda013255ac9147e4cde]:</summary>
+
+  - @rocket.chat/message-parser@0.31.33-rc.0
+  - @rocket.chat/core-typings@8.1.0-rc.2
+  - @rocket.chat/ui-client@27.0.0-rc.2
+  - @rocket.chat/ui-contexts@27.0.0-rc.2
+  </details>
+
 ## 27.0.0-rc.1
+
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
@@ -19,7 +32,9 @@
   - @rocket.chat/core-typings@8.1.0-rc.0
   - @rocket.chat/ui-contexts@27.0.0-rc.0
   </details>
+
 ## 26.0.1
+
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
@@ -27,8 +42,6 @@
   - @rocket.chat/ui-client@26.0.1
   - @rocket.chat/ui-contexts@26.0.1
   </details>
-
-
 
 ## 26.0.0
 
