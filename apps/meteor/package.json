@@ -423,7 +423,7 @@
 		"nyc": "^17.1.0",
 		"outdent": "~0.8.0",
 		"oxc-parser": "^0.112.0",
-		"oxc-resolver": "^11.17.0",
+		"oxc-resolver": "^11.17.1",
 		"oxc-transform": "^0.112.0",
 		"oxc-walker": "^0.7.0",
 		"pino-pretty": "^7.6.1",

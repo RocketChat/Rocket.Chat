@@ -128,6 +128,12 @@ const validateUpdateMutator = (mutator: MongoDoc): string[] => {
 
 // --- Main Class Definition ---
 
+type Collection = {
+	insertAsync: (doc: MongoDoc) => Promise<string>;
+	updateAsync: (selector: unknown, mutator: MongoDoc, options?: any) => Promise<number>;
+	removeAsync: (selector: unknown) => Promise<number>;
+};
+
 /**
  * A class containing the logic for Allow/Deny security.
  * NOTE: Methods here are copied to CollectionPrototype below to ensure enumerability.
@@ -136,9 +142,13 @@ class RestrictedCollectionMixin {
 	// These properties are expected to exist on the instance mixing this class in.
 	// We declare them for TypeScript, but they are initialized by the host Collection.
 	public _name?: string;
+
 	public _connection?: any;
+
 	public _collection: any;
-	public _prefix: string = '';
+
+	public _prefix = '';
+
 	public _validators: CollectionValidators = {
 		insert: { allow: [], deny: [] },
 		update: { allow: [], deny: [] },
@@ -146,8 +156,11 @@ class RestrictedCollectionMixin {
 		fetch: [],
 		fetchAllFields: false,
 	};
-	public _restricted: boolean = false;
+
+	public _restricted = false;
+
 	public _insecure?: boolean;
+
 	public _transform?: (doc: MongoDoc) => unknown;
 
 	// Stub for TS: Implemented by Mongo.Collection
@@ -204,7 +217,7 @@ class RestrictedCollectionMixin {
 
 		// Setup mutation methods on the connection (Server or Simulation)
 		if (this._connection && (this._connection === Meteor.server || Meteor.isClient)) {
-			const methods: Record<string, Function> = {};
+			const methods: Record<string, (...args: any[]) => any> = {};
 			const methodNames = ['insertAsync', 'updateAsync', 'removeAsync', 'insert', 'update', 'remove'];
 
 			for (const method of methodNames) {
@@ -393,7 +406,7 @@ class RestrictedCollectionMixin {
 		// 2. Simulation Handling
 		if (methodContext.isSimulation) {
 			if (generatedId !== null && typeof firstArg === 'object' && firstArg !== null) {
-				(firstArg as MongoDoc)._id = generatedId;
+				firstArg._id = generatedId;
 			}
 			return this._collection[methodName].apply(this._collection, args);
 		}
@@ -424,13 +437,13 @@ class RestrictedCollectionMixin {
 			if (generatedId !== null && typeof firstArg === 'object' && firstArg !== null) {
 				(firstArg as MongoDoc)._id = generatedId;
 			}
-			const syncMethodsMapper: Record<string, string> = {
+			const syncMethodsMapper = {
 				insert: 'insertAsync',
 				update: 'updateAsync',
 				remove: 'removeAsync',
-			};
-			const targetMethod = syncMethodsMapper[methodName] || methodName;
-			return this._collection[targetMethod].apply(this._collection, args);
+			} as const;
+			const targetMethod = syncMethodsMapper[methodName as keyof typeof syncMethodsMapper] || methodName;
+			return this._collection[targetMethod](...args);
 		}
 
 		// 6. Default Deny

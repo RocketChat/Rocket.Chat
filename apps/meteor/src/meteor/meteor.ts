@@ -1,12 +1,27 @@
 import { Package } from './package-registry.ts';
-import { hasOwn } from './utils/hasOwn.ts';
+import { noop } from './utils/noop.ts';
 
 // --- Types & Interfaces ---
+
+type Callback = (...args: any[]) => void;
+
+type PackagesSettings = Partial<{
+	['facebook-oauth']: Partial<{
+		apiVersion: string;
+	}>;
+	reload: Partial<{
+		debug: boolean;
+	}>;
+}>;
+
+type PublicSettings = Partial<{
+	packages: PackagesSettings;
+}>;
 
 type MeteorRuntimeConfig = {
 	meteorRelease?: string;
 	NODE_ENV?: string;
-	PUBLIC_SETTINGS?: Record<string, unknown>;
+	PUBLIC_SETTINGS?: PublicSettings;
 	ROOT_URL?: string;
 	ROOT_URL_PATH_PREFIX?: string;
 	gitCommitHash?: string;
@@ -14,21 +29,27 @@ type MeteorRuntimeConfig = {
 	debug?: boolean;
 	noDeprecation?: boolean | string;
 	meteorEnv: {
-		NODE_ENV: string;
+		NODE_ENV?: string;
 		[key: string]: unknown;
 	};
+	accountsConfigCalled?: boolean;
 };
 
 declare global {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, no-var
-	var __meteor_runtime_config__: MeteorRuntimeConfig;
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	const __meteor_runtime_config__: MeteorRuntimeConfig;
 	// eslint-disable-next-line no-var
-	var meteorEnv: MeteorRuntimeConfig['meteorEnv'];
+	const meteorEnv: MeteorRuntimeConfig['meteorEnv'];
 }
 
 // Ensure global environment existence
 const globalScope = globalThis;
-const config = typeof __meteor_runtime_config__ === 'object' ? __meteor_runtime_config__ : ({} as MeteorRuntimeConfig);
+const config: MeteorRuntimeConfig =
+	typeof __meteor_runtime_config__ === 'object'
+		? __meteor_runtime_config__
+		: {
+				meteorEnv: {},
+			};
 const { meteorEnv } = config;
 
 // --- Meteor Error Class ---
@@ -180,7 +201,7 @@ class SynchronousQueue {
 	}
 
 	public flush(): void {
-		this.runTask(() => {});
+		this.runTask(noop);
 	}
 
 	public drain(): void {
@@ -218,8 +239,8 @@ const _setImmediate = ((): ((fn: () => void) => void) => {
 
 	globalScope.addEventListener(
 		'message',
-		(event: MessageEvent) => {
-			if (event.source === globalScope && typeof event.data === 'string' && event.data.startsWith(MESSAGE_PREFIX)) {
+		(event) => {
+			if (event.source === window && typeof event.data === 'string' && event.data.startsWith(MESSAGE_PREFIX)) {
 				const index = parseInt(event.data.substring(MESSAGE_PREFIX.length), 10);
 				try {
 					if (funcs[index]) funcs[index]();
@@ -236,9 +257,55 @@ const _setImmediate = ((): ((fn: () => void) => void) => {
 		funcs[funcIndex] = fn;
 		globalScope.postMessage(MESSAGE_PREFIX + funcIndex, '*');
 	};
-	// @ts-expect-error - legacy implementation flag
 	usePostMessage.implementation = 'postMessage';
 	return usePostMessage;
+})();
+
+const _localStorage = localStorage;
+
+type AbsoluteUrlOptions = { rootUrl?: string; secure?: boolean; replaceLocalhost?: boolean };
+
+const defaultAbsoluteUrlOptions: AbsoluteUrlOptions = {
+	rootUrl:
+		config.ROOT_URL ||
+		(typeof location !== 'undefined' && location.protocol && location.host ? `${location.protocol}//${location.host}` : undefined),
+	secure: typeof location !== 'undefined' && location.protocol === 'https:',
+};
+
+const absoluteUrl = (() => {
+	function absoluteUrl(path?: string | Record<string, any>, options?: AbsoluteUrlOptions): string {
+		if (typeof path === 'object' && !options) {
+			options = path;
+			path = undefined;
+		}
+
+		const opts = { ...absoluteUrl.defaultOptions, ...options };
+		let url = opts.rootUrl;
+
+		if (!url) throw new Error('Must pass options.rootUrl or set ROOT_URL in the server environment');
+		if (!/^http[s]?:\/\//i.test(url)) url = `http://${url}`;
+		if (!url.endsWith('/')) url += '/';
+
+		if (path) {
+			if (typeof path === 'string') {
+				url += path.replace(/^\/+/, '');
+			}
+		}
+
+		if (opts.secure && /^http:/.test(url) && !/http:\/\/localhost[:\/]/.test(url) && !/http:\/\/127\.0\.0\.1[:\/]/.test(url)) {
+			url = url.replace(/^http:/, 'https:');
+		}
+
+		if (opts.replaceLocalhost) {
+			url = url.replace(/^http:\/\/localhost([:\/].*)/, 'http://127.0.0.1$1');
+		}
+
+		return url;
+	}
+
+	absoluteUrl.defaultOptions = defaultAbsoluteUrlOptions;
+
+	return absoluteUrl;
 })();
 
 // --- Main Meteor Object ---
@@ -259,17 +326,17 @@ const Meteor = {
 	isTest: false,
 	isAppTest: false,
 	isPackageTest: false,
-	isDebug: true ? typeof window === 'object' && !!config.debug : !!config.debug,
+	isDebug: false,
 
 	// Classes
 	Error: MeteorError,
 	EnvironmentVariable,
 	_SynchronousQueue: SynchronousQueue,
-	// @ts-expect-error - Conditionally loaded
-	_DoubleEndedQueue: false ? Npm.require('denque') : FakeDoubleEndedQueue,
+	_DoubleEndedQueue: FakeDoubleEndedQueue,
 
 	// Internal methods
 	_setImmediate,
+	_localStorage,
 
 	_get(obj: any, ...keys: (string | number)[]): any {
 		let current = obj;
@@ -289,55 +356,13 @@ const Meteor = {
 		return current;
 	},
 
-	_delete(obj: any, ...keys: (string | number)[]): void {
-		const stack: any[] = [obj];
-		let leaf = true;
-		for (let i = 0; i < keys.length - 1; i++) {
-			const key = keys[i];
-			if (!(key in stack[stack.length - 1])) {
-				leaf = false;
-				break;
-			}
-			const next = stack[stack.length - 1][key];
-			if (typeof next !== 'object' || next === null) break;
-			stack.push(next);
-		}
-		for (let i = stack.length - 1; i >= 0; i--) {
-			const key = keys[i];
-			if (leaf) {
-				leaf = false;
-			} else {
-				for (const _other in stack[i][key]) return;
-			}
-			delete stack[i][key];
-		}
-	},
-
-	_inherits(Child: any, Parent: any): any {
-		for (const key in Parent) {
-			if (hasOwn(Parent, key)) {
-				Child[key] = Parent[key];
-			}
-		}
-		// FIX: Use a standard function instead of a class for the Middle constructor.
-		// ES6 Classes have read-only prototypes, which causes the TypeError.
-		const Middle = function (this: any) {
-			this.constructor = Child;
-		} as unknown as { new (): any };
-
-		Middle.prototype = Parent.prototype;
-		Child.prototype = new Middle();
-		Child.__super__ = Parent.prototype;
-		return Child;
-	},
-
-	makeErrorType(name: string, constructor: Function) {
+	makeErrorType<TCtor extends (this: Error, ...args: any[]) => void>(name: string, constructor: TCtor) {
 		// FIX: Use 'class extends' natively. Do NOT call _inherits on this class,
 		// as it would try to overwrite the read-only class prototype.
 		class ErrorClass extends Error {
 			public errorType: string;
 
-			public name: string;
+			public override name: string;
 
 			[key: string]: any;
 
@@ -364,7 +389,7 @@ const Meteor = {
 
 	// Async / Promises
 
-	promisify(fn: Function, context?: any, errorFirst = true) {
+	promisify(fn: Callback, context?: any, errorFirst = true) {
 		return function (this: any, ...args: any[]) {
 			// eslint-disable-next-line @typescript-eslint/no-this-alias
 			const self = this;
@@ -390,10 +415,10 @@ const Meteor = {
 		};
 	},
 
-	wrapAsync(fn: Function, context?: any) {
+	wrapAsync(fn: Callback, context?: any) {
 		return function (this: any, ...args: any[]) {
 			const self = context || this;
-			let callback: Function | undefined;
+			let callback: Callback | undefined;
 
 			for (let i = args.length - 1; i >= 0; --i) {
 				const arg = args[i];
@@ -411,7 +436,7 @@ const Meteor = {
 			}
 
 			const callbackIndex = args.indexOf(callback);
-			const boundCallback = Meteor.bindEnvironment(callback!);
+			const boundCallback = Meteor.bindEnvironment(callback);
 
 			if (callbackIndex !== -1) {
 				args[callbackIndex] = boundCallback;
@@ -423,7 +448,7 @@ const Meteor = {
 		};
 	},
 
-	_wrapAsync(fn: Function, context?: any) {
+	_wrapAsync(fn: Callback, context?: any) {
 		if (!warnedAboutWrapAsync) {
 			Meteor._debug('Meteor._wrapAsync has been renamed to Meteor.wrapAsync');
 			warnedAboutWrapAsync = true;
@@ -431,7 +456,7 @@ const Meteor = {
 		return Meteor.wrapAsync(fn, context);
 	},
 
-	wrapFn(fn: Function) {
+	wrapFn<F>(fn: F): F {
 		return fn;
 	},
 
@@ -461,7 +486,7 @@ const Meteor = {
 
 	// Environment & Binding
 
-	bindEnvironment<T extends Function>(func: T, onException?: ((e: any) => void) | string, _this?: any): T {
+	bindEnvironment<T extends (...args: any[]) => any>(func: T, onException?: ((e: any) => void) | string, _this?: any): T {
 		const boundValues = currentValues.slice();
 
 		if (!onException || typeof onException === 'string') {
@@ -489,11 +514,11 @@ const Meteor = {
 
 	// Timers
 
-	setTimeout(f: Function, duration: number) {
+	setTimeout(f: VoidFunction, duration: number) {
 		return setTimeout(bindAndCatch('setTimeout callback', f), duration);
 	},
 
-	setInterval(f: Function, duration: number) {
+	setInterval(f: VoidFunction, duration: number) {
 		return setInterval(bindAndCatch('setInterval callback', f), duration);
 	},
 
@@ -505,7 +530,7 @@ const Meteor = {
 		return clearTimeout(x);
 	},
 
-	defer(f: Function) {
+	defer(f: VoidFunction) {
 		Meteor._setImmediate(bindAndCatch('defer callback', f));
 	},
 
@@ -574,55 +599,13 @@ const Meteor = {
 	// Startup
 
 	startup(callback: () => void) {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const docEl = document.documentElement as any;
-		const doScroll = !document.addEventListener && docEl.doScroll;
-
-		if (!doScroll || window !== top) {
-			if (isReady) callback();
-			else callbackQueue.push(callback);
-		} else {
-			try {
-				doScroll('left');
-			} catch (error) {
-				setTimeout(() => Meteor.startup(callback), 50);
-				return;
-			}
-			callback();
-		}
+		if (isReady) callback();
+		else callbackQueue.push(callback);
 	},
 
 	// URL generation
 
-	absoluteUrl(path?: string | Record<string, any>, options?: { rootUrl?: string; secure?: boolean; replaceLocalhost?: boolean }) {
-		if (typeof path === 'object' && !options) {
-			options = path;
-			path = undefined;
-		}
-
-		const opts = { ...Meteor.absoluteUrl.defaultOptions, ...options };
-		let url = opts.rootUrl;
-
-		if (!url) throw new Error('Must pass options.rootUrl or set ROOT_URL in the server environment');
-		if (!/^http[s]?:\/\//i.test(url)) url = `http://${url}`;
-		if (!url.endsWith('/')) url += '/';
-
-		if (path) {
-			if (typeof path === 'string') {
-				url += path.replace(/^\/+/, '');
-			}
-		}
-
-		if (opts.secure && /^http:/.test(url) && !/http:\/\/localhost[:\/]/.test(url) && !/http:\/\/127\.0\.0\.1[:\/]/.test(url)) {
-			url = url.replace(/^http:/, 'https:');
-		}
-
-		if (opts.replaceLocalhost) {
-			url = url.replace(/^http:\/\/localhost([:\/].*)/, 'http://127.0.0.1$1');
-		}
-
-		return url;
-	},
+	absoluteUrl,
 
 	_relativeToSiteRootUrl(link: string) {
 		if (config.ROOT_URL_PATH_PREFIX && link.startsWith('/')) {
@@ -633,15 +616,6 @@ const Meteor = {
 };
 
 // Initialize default options for absoluteUrl
-Meteor.absoluteUrl.defaultOptions = {} as { rootUrl?: string; secure?: boolean; replaceLocalhost?: boolean };
-if (config.ROOT_URL) {
-	Meteor.absoluteUrl.defaultOptions.rootUrl = config.ROOT_URL;
-} else if (typeof location !== 'undefined' && location.protocol && location.host) {
-	Meteor.absoluteUrl.defaultOptions.rootUrl = `${location.protocol}//${location.host}`;
-}
-if (typeof location !== 'undefined' && location.protocol === 'https:') {
-	Meteor.absoluteUrl.defaultOptions.secure = true;
-}
 
 // --- Internal Helpers ---
 
@@ -662,7 +636,7 @@ function bindAndCatch(context: string, f: () => void): () => void {
 	return Meteor.bindEnvironment(withoutInvocation(f), context);
 }
 
-function oncePerArgument(func: Function) {
+function oncePerArgument(func: Callback) {
 	const cache = new Map();
 	return function (this: any, ...args: any[]) {
 		const key = JSON.stringify(args);
@@ -675,7 +649,7 @@ function oncePerArgument(func: Function) {
 }
 
 const onceWarning = oncePerArgument((messages: any[]) => {
-	if (console && console.warn) console.warn(...messages);
+	console.warn(...messages);
 });
 
 function onceFixDeprecation() {

@@ -1,10 +1,16 @@
+import { EJSON } from './ejson.ts';
 import { Package } from './package-registry.ts';
 
 export class IdMap {
-	constructor(idStringify, idParse) {
-		this._map = new Map();
-		this._idStringify = idStringify || JSON.stringify;
-		this._idParse = idParse || JSON.parse;
+	_map = new Map();
+
+	_idStringify: (id: unknown) => string;
+
+	_idParse: (id: string) => unknown = JSON.parse;
+
+	constructor(idStringify: (id: unknown) => string = JSON.stringify, idParse: (id: string) => unknown = JSON.parse) {
+		this._idStringify = idStringify;
+		this._idParse = idParse;
 	}
 
 	// Some of these methods are designed to match methods on OrderedDict, since
@@ -12,22 +18,22 @@ export class IdMap {
 	// (Conceivably, this should be replaced with "UnorderedDict" with a specific
 	// set of methods that overlap between the two.)
 
-	get(id) {
+	get(id: unknown) {
 		const key = this._idStringify(id);
 		return this._map.get(key);
 	}
 
-	set(id, value) {
+	set(id: unknown, value: unknown) {
 		const key = this._idStringify(id);
 		this._map.set(key, value);
 	}
 
-	remove(id) {
+	remove(id: unknown) {
 		const key = this._idStringify(id);
 		this._map.delete(key);
 	}
 
-	has(id) {
+	has(id: unknown) {
 		const key = this._idStringify(id);
 		return this._map.has(key);
 	}
@@ -41,9 +47,9 @@ export class IdMap {
 	}
 
 	// Iterates over the items in the map. Return `false` to break the loop.
-	forEach(iterator) {
+	forEach(iterator: (value: unknown, id: unknown) => unknown) {
 		// don't use _.each, because we can't break out of it.
-		for (let [key, value] of this._map) {
+		for (const [key, value] of this._map) {
 			const breakIfFalse = iterator.call(null, value, this._idParse(key));
 			if (breakIfFalse === false) {
 				return;
@@ -51,10 +57,10 @@ export class IdMap {
 		}
 	}
 
-	async forEachAsync(iterator) {
-		for (let [key, value] of this._map) {
-			const breakIfFalse = await iterator.call(null, value, this._idParse(key));
-			if (breakIfFalse === false) {
+	async forEachAsync(iterator: (this: null, value: unknown, id: unknown) => unknown) {
+		for (const [key, value] of this._map) {
+			// eslint-disable-next-line no-await-in-loop
+			if ((await iterator.call(null, value, this._idParse(key))) === false) {
 				return;
 			}
 		}
@@ -64,7 +70,7 @@ export class IdMap {
 		return this._map.size;
 	}
 
-	setDefault(id, def) {
+	setDefault(id: unknown, def: unknown) {
 		const key = this._idStringify(id);
 		if (this._map.has(key)) {
 			return this._map.get(key);
@@ -78,7 +84,7 @@ export class IdMap {
 	clone() {
 		const clone = new IdMap(this._idStringify, this._idParse);
 		// copy directly to avoid stringify/parse overhead
-		this._map.forEach(function (value, key) {
+		this._map.forEach((value, key) => {
 			clone._map.set(key, EJSON.clone(value));
 		});
 		return clone;
