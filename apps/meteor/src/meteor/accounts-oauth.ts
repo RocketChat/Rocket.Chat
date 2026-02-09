@@ -1,12 +1,12 @@
 import { Accounts } from './accounts-base.ts';
-import { hasOwn } from './utils/hasOwn.ts';
+import { isKey } from './utils/isKey.ts';
 
-const services: Record<string, boolean> = {};
+const services = Object.create(null);
 
 // Helper for registering OAuth based accounts packages.
 // On the server, adds an index to the user collection.
-const registerService = (name: string) => {
-	if (hasOwn(services, name)) throw new Error(`Duplicate service: ${name}`);
+const registerService = <T extends string>(name: T) => {
+	if (isKey(services, name)) throw new Error(`Duplicate service: ${name}`);
 	services[name] = true;
 };
 
@@ -15,8 +15,8 @@ const registerService = (name: string) => {
 // contain it.
 // It's worth noting that already logged in users will remain logged in unless
 // you manually expire their sessions.
-const unregisterService = (name: string) => {
-	if (!hasOwn(services, name)) throw new Error(`Service not found: ${name}`);
+const unregisterService = <T extends string>(name: T) => {
+	if (!isKey(services, name)) throw new Error(`Service not found: ${name}`);
 	delete services[name];
 };
 

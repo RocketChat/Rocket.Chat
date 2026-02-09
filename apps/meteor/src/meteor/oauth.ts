@@ -227,30 +227,6 @@ Package['core-runtime'].queue('oauth', () => {
 									}
 								}
 
-								if (false && isCordova) {
-									const url = Npm.require('url');
-									let rootUrl = process.env.MOBILE_ROOT_URL || __meteor_runtime_config__.ROOT_URL;
-
-									if (isAndroid) {
-										const parsedRootUrl = url.parse(rootUrl);
-
-										if (parsedRootUrl.hostname === 'localhost') {
-											parsedRootUrl.hostname = '10.0.2.2';
-											delete parsedRootUrl.host;
-										}
-
-										rootUrl = url.format(parsedRootUrl);
-									}
-
-									absoluteUrlOptions = _objectSpread(
-										_objectSpread({}, absoluteUrlOptions),
-										{},
-										{
-											rootUrl,
-										},
-									);
-								}
-
 								return URL._constructUrl(Meteor.absoluteUrl('_oauth/'.concat(serviceName), absoluteUrlOptions), null, params);
 							};
 						},

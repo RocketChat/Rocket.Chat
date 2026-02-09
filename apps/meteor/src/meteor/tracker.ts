@@ -55,7 +55,7 @@ export class Computation {
 
 	_recomputing: boolean;
 
-	firstRunPromise: Promise<unknown>;
+	firstRunPromise: Promise<unknown> | null = null;
 
 	constructor(f: (computation: Computation) => void, parent: Computation | null, onError?: (error: Error) => void) {
 		this.stopped = false;
@@ -85,12 +85,12 @@ export class Computation {
 	then<TResult1 = unknown, TResult2 = never>(
 		onResolved?: ((value: unknown) => TResult1 | PromiseLike<TResult1>) | undefined | null,
 		onRejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null,
-	): Promise<TResult1 | TResult2> {
-		return this.firstRunPromise.then(onResolved, onRejected);
+	): Promise<TResult1 | TResult2> | undefined {
+		return this.firstRunPromise?.then(onResolved, onRejected);
 	}
 
 	catch(onRejected: ((reason: any) => any | PromiseLike<any>) | undefined | null) {
-		return this.firstRunPromise.catch(onRejected);
+		return this.firstRunPromise?.catch(onRejected) as Promise<unknown>;
 	}
 
 	onInvalidate(f: (c: Computation) => void) {
