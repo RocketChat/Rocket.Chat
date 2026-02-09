@@ -122,8 +122,6 @@ function CodeMirror({
 				matchBrackets,
 				matchTags,
 				mode,
-				codeMirrorTheme,
-				ensureThemeStyle,
 				handleChange,
 				readOnly,
 				showTrailingSpace,
