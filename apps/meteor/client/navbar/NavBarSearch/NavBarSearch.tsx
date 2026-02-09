@@ -86,7 +86,7 @@ const NavBarSearch = () => {
 					ref={mergedRefs}
 					role='combobox'
 					small
-					addon={<Icon title={isDirty ? t('Clear_search') : t('Search')} aria-label={isDirty ? t('Clear_search') : t('Search')} name={isDirty ? 'cross' : 'magnifier'} size='x20' onClick={handleClearText} />}
+					addon={<Icon title={isDirty ? t('clear') : t('Search')} aria-label={isDirty ? t('clear') : t('Search')} name={isDirty ? 'cross' : 'magnifier'} size='x20' onClick={handleClearText} />}
 				/>
 				{state.isOpen && <NavBarSearchListBox state={state} overlayProps={overlayProps} />}
 			</Box>
