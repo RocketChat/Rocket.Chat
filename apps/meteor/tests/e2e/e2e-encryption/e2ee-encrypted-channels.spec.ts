@@ -52,9 +52,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		await toastMessages.dismissToast();
 
 		await poHomeChannel.roomToolbar.openMoreOptions();
-
-		await expect(poHomeChannel.roomToolbar.btnDisableE2EEncryption).toBeVisible();
-		await poHomeChannel.roomToolbar.btnDisableE2EEncryption.click({ force: true });
+		await poHomeChannel.roomToolbar.menuItemDisabledE2EEncryption.click();
 		await expect(page.getByRole('dialog', { name: 'Disable encryption' })).toBeVisible();
 		await page.getByRole('button', { name: 'Disable encryption' }).click();
 		await poHomeChannel.toastMessage.dismissToast();
