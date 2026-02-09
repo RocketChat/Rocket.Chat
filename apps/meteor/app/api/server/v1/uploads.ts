@@ -74,13 +74,14 @@ const uploadsDeleteEndpoint = API.v1.post(
 		}
 
 		const msg = await Messages.getMessageByFileId(fileId);
-		if (!(await Upload.canDeleteFile(this.userId, file, msg))) {
-			return API.v1.forbidden('forbidden');
-		}
 
 		const user = await Users.findOneById(this.userId);
 		// Safeguard, can't really happen
 		if (!user) {
+			return API.v1.forbidden('forbidden');
+		}
+
+		if (!(await Upload.canDeleteFile(user, file, msg))) {
 			return API.v1.forbidden('forbidden');
 		}
 
