@@ -23,6 +23,14 @@
 
   - @rocket.chat/core-typings@8.1.0-rc.0
   </details>
+## 8.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.1
+  </details>
 
 ## 8.0.0
 
