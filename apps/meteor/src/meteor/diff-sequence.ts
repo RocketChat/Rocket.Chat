@@ -2,26 +2,19 @@ import { EJSON } from './ejson.ts';
 import { Meteor } from './meteor.ts';
 import { Package } from './package-registry.ts';
 import { hasOwn } from './utils/hasOwn.ts';
+import { isObjEmpty } from './utils/isObjEmpty.ts';
+import { keys } from './utils/keys.ts';
 
-const isObjEmpty = (obj: any) => {
-	for (const key in Object(obj)) {
-		if (hasOwn(obj, key)) {
-			return false;
-		}
-	}
-	return true;
-};
-
-const diffObjects = (
-	left: any,
-	right: any,
+const diffObjects = <TLeft extends Record<PropertyKey, any>, TRight extends Record<PropertyKey, any>>(
+	left: TLeft,
+	right: TRight,
 	callbacks: {
-		leftOnly?: (key: string, value: any) => void;
-		rightOnly?: (key: string, value: any) => void;
-		both?: (key: string, leftValue: any, rightValue: any) => void;
+		both?: (key: keyof TLeft & keyof TRight, leftValue: TLeft[keyof TLeft], rightValue: TRight[keyof TRight]) => void;
+		leftOnly?: (key: keyof TLeft, value: TLeft[keyof TLeft]) => void;
+		rightOnly?: (key: keyof TRight, value: TRight[keyof TRight]) => void;
 	},
 ) => {
-	Object.keys(left).forEach((key) => {
+	keys(left).forEach((key) => {
 		const leftValue = left[key];
 
 		if (hasOwn(right, key)) {
@@ -35,7 +28,7 @@ const diffObjects = (
 
 	if (callbacks.rightOnly) {
 		const { rightOnly } = callbacks;
-		Object.keys(right).forEach((key) => {
+		keys(right).forEach((key) => {
 			const rightValue = right[key];
 
 			if (!hasOwn(left, key)) {
@@ -45,48 +38,48 @@ const diffObjects = (
 	}
 };
 
-const diffMaps = (
-	left: Map<any, any>,
-	right: Map<any, any>,
-	callbacks: {
-		leftOnly?: (key: string, value: any) => void;
-		rightOnly?: (key: string, value: any) => void;
-		both?: (key: string, leftValue: any, rightValue: any) => void;
-	},
-) => {
-	left.forEach((leftValue, key) => {
-		if (right.has(key)) {
-			if (callbacks.both) {
-				callbacks.both(key, leftValue, right.get(key));
-			}
-		} else if (callbacks.leftOnly) {
-			callbacks.leftOnly(key, leftValue);
-		}
-	});
+// const diffMaps = (
+// 	left: Map<any, any>,
+// 	right: Map<any, any>,
+// 	callbacks: {
+// 		leftOnly?: (key: string, value: any) => void;
+// 		rightOnly?: (key: string, value: any) => void;
+// 		both?: (key: string, leftValue: any, rightValue: any) => void;
+// 	},
+// ) => {
+// 	left.forEach((leftValue, key) => {
+// 		if (right.has(key)) {
+// 			if (callbacks.both) {
+// 				callbacks.both(key, leftValue, right.get(key));
+// 			}
+// 		} else if (callbacks.leftOnly) {
+// 			callbacks.leftOnly(key, leftValue);
+// 		}
+// 	});
 
-	if (callbacks.rightOnly) {
-		const { rightOnly } = callbacks;
-		right.forEach((rightValue, key) => {
-			if (!left.has(key)) {
-				rightOnly(key, rightValue);
-			}
-		});
-	}
-};
+// 	if (callbacks.rightOnly) {
+// 		const { rightOnly } = callbacks;
+// 		right.forEach((rightValue, key) => {
+// 			if (!left.has(key)) {
+// 				rightOnly(key, rightValue);
+// 			}
+// 		});
+// 	}
+// };
 
-const makeChangedFields = (newDoc: any, oldDoc: any) => {
-	const fields: Record<string, any> = {};
+const makeChangedFields = <T extends Record<PropertyKey, any>>(newDoc: T, oldDoc: T) => {
+	const fields = Object.create(null);
 
 	diffObjects(oldDoc, newDoc, {
-		leftOnly(key: string) {
+		leftOnly(key) {
 			fields[key] = undefined;
 		},
 
-		rightOnly(key: string, value: any) {
+		rightOnly(key, value) {
 			fields[key] = value;
 		},
 
-		both(key: string, leftValue: any, rightValue: any) {
+		both(key, leftValue, rightValue) {
 			if (!EJSON.equals(leftValue, rightValue)) {
 				fields[key] = rightValue;
 			}
@@ -293,7 +286,7 @@ const DiffSequence = {
 	diffQueryUnorderedChanges,
 	diffQueryOrderedChanges,
 	diffObjects,
-	diffMaps,
+	// diffMaps,
 	makeChangedFields,
 	applyChanges,
 };

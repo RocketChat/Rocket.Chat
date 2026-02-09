@@ -89,7 +89,7 @@ function quote(string: string) {
 	return JSON.stringify(string);
 }
 
-const str = (key: string, holder: any, singleIndent: string, outerIndent: string, canonical: boolean): string | undefined => {
+const str = (key: string, holder: any, singleIndent: string | false, outerIndent: string, canonical: boolean): string => {
 	const value = holder[key];
 
 	switch (typeof value) {
@@ -153,13 +153,12 @@ const str = (key: string, holder: any, singleIndent: string, outerIndent: string
 
 			return v;
 		}
-
 		default:
-			return undefined;
+			return 'null';
 	}
 };
 
-const canonicalStringify = (value: any, options: EJSONOptions) => {
+const canonicalStringify = (value: any, options: EJSONOptions): string => {
 	const allOptions = { indent: '', canonical: false, ...options };
 
 	if (allOptions.indent === true) {
@@ -172,7 +171,7 @@ const canonicalStringify = (value: any, options: EJSONOptions) => {
 		allOptions.indent = newIndent;
 	}
 
-	return str('', { '': value }, allOptions.indent as string, '', allOptions.canonical);
+	return str('', { '': value }, allOptions.indent, '', allOptions.canonical);
 };
 
 // Forward declarations
@@ -468,8 +467,8 @@ const adjustTypesFromJSONValue = (obj: any): any => {
 	return obj;
 };
 
-const stringify = handleError((item: any, options?: EJSONOptions) => {
-	let serialized;
+const stringify = handleError((item: any, options?: EJSONOptions): string => {
+	let serialized: string;
 	const json = toJSONValue(item);
 
 	if (options && (options.canonical || options.indent)) {

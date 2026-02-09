@@ -13,7 +13,7 @@ type ValidationError = {
 };
 
 // Success is false (no error), failure is an error object or array of objects
-type ValidationResult = false | ValidationError | ValidationError[];
+type ValidationResult = null | false | ValidationError | ValidationError[];
 
 type Pattern =
 	| StringConstructor
@@ -29,11 +29,11 @@ type Pattern =
 	| Pattern[]
 	| { [key: string]: Pattern }
 	| Matcher
-	| Function; // For custom class constructors
+	| (new (...args: any[]) => any); // For custom class constructors
 
-interface Matcher {
+type Matcher = {
 	validate(value: unknown, validateFn: typeof testSubtree): ValidationResult;
-}
+};
 
 // --- Utils ---
 
@@ -203,17 +203,18 @@ class ObjectWithValues implements Matcher {
 
 // --- Validation Logic ---
 
-const typeofChecks: [any, string][] = [
+const typeofChecks = [
 	[String, 'string'],
 	[Number, 'number'],
 	[Boolean, 'boolean'],
 	[Function, 'function'],
 	[undefined, 'undefined'],
-];
+] as const;
 
 const checkPrimitive = (value: unknown, pattern: unknown): ValidationResult => {
 	for (const [typeConstructor, typeName] of typeofChecks) {
 		if (pattern === typeConstructor) {
+			// eslint-disable-next-line valid-typeof
 			if (typeof value === typeName) return false;
 			return {
 				message: `Expected ${typeName}, got ${stringForErrorMessage(value, { onlyShowType: true })}`,
@@ -442,10 +443,10 @@ function check(value: unknown, pattern: Pattern, options: { throwAllErrors?: boo
 	}
 }
 
-interface MatchError extends Error {
+type MatchError = Error & {
 	path?: string;
-	sanitizedError?: Meteor.Error;
-}
+	sanitizedError?: Error;
+};
 
 const Match = {
 	Optional(pattern: Pattern) {

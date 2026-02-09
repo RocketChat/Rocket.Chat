@@ -21,47 +21,47 @@ class ObjectID {
 		}
 	}
 
-	equals(other: any) {
+	equals(other: unknown): boolean {
 		return other instanceof ObjectID && this.valueOf() === other.valueOf();
 	}
 
-	toString() {
+	toString(): string {
 		return `ObjectID("${this._str}")`;
 	}
 
-	clone() {
+	clone(): ObjectID {
 		return new ObjectID(this._str);
 	}
 
-	typeName() {
+	typeName(): 'oid' {
 		return 'oid';
 	}
 
-	getTimestamp() {
+	getTimestamp(): number {
 		return Number.parseInt(this._str.substr(0, 8), 16);
 	}
 
-	valueOf() {
+	valueOf(): string {
 		return this._str;
 	}
 
-	toJSONValue(): any {
+	toJSONValue(): string {
 		return this.valueOf();
 	}
 
-	toHexString() {
+	toHexString(): string {
 		return this.valueOf();
 	}
 }
 
-EJSON.addType('oid', (str: any) => new ObjectID(str as string));
+EJSON.addType('oid', (str) => new ObjectID(str));
 
 const MongoID = {
 	ObjectID,
 
 	_looksLikeObjectID,
 
-	idStringify: (id: any) => {
+	idStringify: (id: unknown) => {
 		if (id instanceof ObjectID) {
 			return id.valueOf();
 		}
