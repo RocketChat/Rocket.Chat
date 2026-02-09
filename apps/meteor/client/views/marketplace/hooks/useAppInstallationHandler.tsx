@@ -82,7 +82,6 @@ export function useAppInstallationHandler({
 				);
 			} catch (error) {
 				handleAPIError(error);
-				onDismiss();
 			}
 			return;
 		}
@@ -116,7 +115,6 @@ export function useAppInstallationHandler({
 				setModal(<IframeModal url={data.url} wrapperHeight='x460' cancel={onDismiss} confirm={requestConfirmAction} />);
 			} catch (error) {
 				handleAPIError(error);
-				onDismiss();
 			}
 			return;
 		}

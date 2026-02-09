@@ -8,15 +8,22 @@ import { mockedAppsContext } from '../../../../../../tests/mocks/client/marketpl
 import { createFakeApp, createFakeLicenseInfo } from '../../../../../../tests/mocks/data';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
 import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
+import { handleAPIError } from '../../../helpers/handleAPIError';
+import { Actions } from '../../../helpers';
+import type { AppPermission } from '@rocket.chat/core-typings';
 
 jest.mock('../../../hooks/useMarketplaceActions');
 jest.mock('../../../hooks/useAppInstallationHandler');
+jest.mock('../../../helpers/handleAPIError');
 
 describe('AppStatus', () => {
 	const mockInstall = jest.fn();
 	const mockUpdate = jest.fn();
 	const mockPurchase = jest.fn();
 	const mockAppInstallationHandler = jest.fn();
+	const mockedUseAppInstallationHandler = jest.mocked(useAppInstallationHandler);
+	const mockedUseMarketplaceActions = jest.mocked(useMarketplaceActions);
+	const mockedHandleAPIError = jest.mocked(handleAPIError);
 
 	const defaultAppCountResponse = {
 		maxMarketplaceApps: 10,
@@ -45,12 +52,13 @@ describe('AppStatus', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
-		(useMarketplaceActions as jest.Mock).mockReturnValue({
+		mockedUseMarketplaceActions.mockReturnValue({
 			install: mockInstall,
 			update: mockUpdate,
 			purchase: mockPurchase,
 		});
-		(useAppInstallationHandler as jest.Mock).mockReturnValue(mockAppInstallationHandler);
+		mockedUseAppInstallationHandler.mockReturnValue(mockAppInstallationHandler);
+		mockedHandleAPIError.mockClear();
 	});
 
 	it('should look good', async () => {
@@ -69,7 +77,7 @@ describe('AppStatus', () => {
 			),
 		});
 
-		await userEvent.click(screen.getByRole('button', { name: 'Request' }));
+		expect(screen.getByRole('button', { name: 'Request' })).toBeInTheDocument();
 	});
 
 	it('should reset loading state when install action throws an error', async () => {
@@ -84,8 +92,8 @@ describe('AppStatus', () => {
 		const installError = new Error('install failed');
 		mockInstall.mockRejectedValue(installError);
 
-		let onSuccessCallback: (action: string, appPermissions?: unknown) => Promise<void>;
-		(useAppInstallationHandler as jest.Mock).mockImplementation(({ onSuccess }) => {
+		let onSuccessCallback: (action: Actions | '', appPermissions?: AppPermission[]) => void;
+		mockedUseAppInstallationHandler.mockImplementation(({ onSuccess }) => {
 			onSuccessCallback = onSuccess;
 			return mockAppInstallationHandler;
 		});
@@ -97,16 +105,13 @@ describe('AppStatus', () => {
 		const button = screen.getByRole('button', { name: 'Install' });
 		await userEvent.click(button);
 		await act(async () => {
-			try {
-				await onSuccessCallback!('install');
-			} catch (err) {
-				expect(err).toBe(installError);
-			}
+			onSuccessCallback!('install');
 		});
 		await waitFor(() => {
 			expect(button).not.toBeDisabled();
 		});
 		expect(mockInstall).toHaveBeenCalled();
+		expect(handleAPIError).toHaveBeenCalledWith(installError);
 	});
 
 	it('should reset loading state when update action throws an error', async () => {
@@ -119,8 +124,8 @@ describe('AppStatus', () => {
 		const updateError = new Error('update failed');
 		mockUpdate.mockRejectedValue(updateError);
 
-		let onSuccessCallback: (action: string, appPermissions?: unknown) => Promise<void>;
-		(useAppInstallationHandler as jest.Mock).mockImplementation(({ onSuccess }) => {
+		let onSuccessCallback: (action: Actions | '', appPermissions?: AppPermission[]) => void;
+		mockedUseAppInstallationHandler.mockImplementation(({ onSuccess }) => {
 			onSuccessCallback = onSuccess;
 			return mockAppInstallationHandler;
 		});
@@ -132,16 +137,13 @@ describe('AppStatus', () => {
 		const button = screen.getByRole('button', { name: 'Update' });
 		await userEvent.click(button);
 		await act(async () => {
-			try {
-				await onSuccessCallback!('update');
-			} catch (err) {
-				expect(err).toBe(updateError);
-			}
+			onSuccessCallback!('update');
 		});
 		await waitFor(() => {
 			expect(button).not.toBeDisabled();
 		});
 		expect(mockUpdate).toHaveBeenCalled();
+		expect(handleAPIError).toHaveBeenCalledWith(updateError);
 	});
 
 	it('should reset loading state when purchase action throws an error', async () => {
@@ -155,8 +157,8 @@ describe('AppStatus', () => {
 		const purchaseError = new Error('purchase failed');
 		mockPurchase.mockRejectedValue(purchaseError);
 
-		let onSuccessCallback: (action: string, appPermissions?: unknown) => Promise<void>;
-		(useAppInstallationHandler as jest.Mock).mockImplementation(({ onSuccess }) => {
+		let onSuccessCallback: (action: Actions | '', appPermissions?: AppPermission[]) => void;
+		mockedUseAppInstallationHandler.mockImplementation(({ onSuccess }) => {
 			onSuccessCallback = onSuccess;
 			return mockAppInstallationHandler;
 		});
@@ -168,15 +170,12 @@ describe('AppStatus', () => {
 		const button = screen.getByRole('button', { name: 'Buy' });
 		await userEvent.click(button);
 		await act(async () => {
-			try {
-				await onSuccessCallback!('purchase');
-			} catch (err) {
-				expect(err).toBe(purchaseError);
-			}
+			onSuccessCallback!('purchase');
 		});
 		await waitFor(() => {
 			expect(button).not.toBeDisabled();
 		});
 		expect(mockPurchase).toHaveBeenCalled();
+		expect(handleAPIError).toHaveBeenCalledWith(purchaseError);
 	});
 });

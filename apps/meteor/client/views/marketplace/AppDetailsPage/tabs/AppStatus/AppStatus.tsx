@@ -16,6 +16,7 @@ import { appButtonProps, appMultiStatusProps } from '../../../helpers';
 import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
 import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
+import { handleAPIError } from '../../../helpers/handleAPIError';
 
 type AppStatusProps = {
 	app: App;
@@ -64,6 +65,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						setEndUserRequested(true);
 					}
 				}
+			} catch (error) {
+				handleAPIError(error);
 			} finally {
 				setLoading(false);
 			}
