@@ -1,25 +1,37 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { FlexTab } from './flextab';
+import { Modal } from '../modals/modal';
+
+class ConfirmPruneMessageModal extends Modal {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Are you sure?' }));
+	}
+
+	async pruneConfirm(): Promise<void> {
+		await this.root.getByRole('button', { name: 'Yes, prune them!' }).click();
+		await this.waitForDismissal();
+	}
+}
 
 export class PruneMessagesFlexTab extends FlexTab {
+	readonly confirmPruneModal: ConfirmPruneMessageModal;
+
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Prune Messages' }));
+		this.confirmPruneModal = new ConfirmPruneMessageModal(page);
 	}
 
-	get doNotPrunePinned(): Locator {
-		return this.root.getByRole('checkbox', { name: 'Do not prune pinned messages', exact: true });
+	get labelDoNotPrunePinned(): Locator {
+		return this.root.locator('label', { hasText: 'Do not prune pinned messages' });
 	}
 
-	get filesOnly(): Locator {
-		return this.root.getByRole('checkbox', { name: 'Only remove the attached files, keep messages', exact: true });
+	get labelFilesOnly(): Locator {
+		return this.root.locator('label', { hasText: 'Only remove the attached files, keep messages' });
 	}
 
 	async prune(): Promise<void> {
 		await this.root.getByRole('button', { name: 'Prune' }).click();
-		return this.root
-			.getByRole('dialog', { name: 'Are you sure?', exact: true })
-			.getByRole('button', { name: 'Yes, prune them!', exact: true })
-			.click();
+		await this.confirmPruneModal.pruneConfirm();
 	}
 }
