@@ -1,6 +1,8 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { Brand } from './utils';
 
 export interface IWebdavAccount extends IRocketChatRecord {
+	_id: string & Brand<'webdav-account-id'>;
 	userId: string;
 	serverURL: string;
 	username: string;

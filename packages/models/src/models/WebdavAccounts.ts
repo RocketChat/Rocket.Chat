@@ -13,7 +13,7 @@ export class WebdavAccountsRaw extends BaseRaw<IWebdavAccount> implements IWebda
 		return [{ key: { userId: 1 } }];
 	}
 
-	findOneByIdAndUserId(_id: string, userId: string, options: FindOptions<IWebdavAccount>): Promise<IWebdavAccount | null> {
+	findOneByIdAndUserId(_id: IWebdavAccount['_id'], userId: string, options: FindOptions<IWebdavAccount>): Promise<IWebdavAccount | null> {
 		return this.findOne({ _id, userId }, options);
 	}
 
@@ -37,7 +37,7 @@ export class WebdavAccountsRaw extends BaseRaw<IWebdavAccount> implements IWebda
 		return this.find(query, options);
 	}
 
-	removeByUserAndId(_id: string, userId: string): Promise<DeleteResult> {
+	removeByUserAndId(_id: IWebdavAccount['_id'], userId: string): Promise<DeleteResult> {
 		return this.deleteOne({ _id, userId });
 	}
 }
