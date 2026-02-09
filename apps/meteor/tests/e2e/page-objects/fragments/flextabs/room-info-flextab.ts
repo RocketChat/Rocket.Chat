@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { FlexTab } from './flextab';
-import { Listbox } from '../listbox';
+import { MenuMore } from '../menu';
 import { ConfirmDeleteTeamModal } from '../modals';
 import { Modal } from '../modals/modal';
 
@@ -36,7 +36,7 @@ class ConfirmDeleteRoomModal extends Modal {
 }
 
 export class RoomInfoFlexTab extends FlexTab {
-	readonly listbox: Listbox;
+	readonly menu: MenuMore;
 
 	readonly confirmLeaveModal: ConfirmLeaveRoomModal;
 
@@ -44,7 +44,7 @@ export class RoomInfoFlexTab extends FlexTab {
 
 	constructor(root: Locator, page: Page) {
 		super(root);
-		this.listbox = new Listbox(page);
+		this.menu = new MenuMore(page);
 		this.confirmLeaveModal = new ConfirmLeaveRoomModal(page);
 		this.confirmDeleteModal = new ConfirmDeleteRoomModal(page);
 	}
@@ -54,19 +54,15 @@ export class RoomInfoFlexTab extends FlexTab {
 	}
 
 	get btnLeave(): Locator {
-		return this.root.locator('role=button[name="Leave"]');
+		return this.root.getByRole('button', { name: 'Leave' });
 	}
 
 	get btnMore(): Locator {
-		return this.root.locator('role=button[name="More"]');
+		return this.root.getByRole('button', { name: 'More' });
 	}
 
 	get optionDelete(): Locator {
-		return this.listbox.getOption('Delete');
-	}
-
-	getMoreOption(option: string) {
-		return this.root.locator(`role=menuitem[name="${option}"]`);
+		return this.menu.getMenuItem('Delete');
 	}
 
 	async leaveRoom() {
@@ -76,7 +72,7 @@ export class RoomInfoFlexTab extends FlexTab {
 
 	async deleteRoom() {
 		await this.btnMore.click();
-		await this.optionDelete.click();
+		await this.menu.selectMenuItem('Delete');
 		await this.confirmDeleteModal.confirmDelete();
 	}
 }
@@ -101,25 +97,21 @@ export class TeamInfoFlexTab extends RoomInfoFlexTab {
 
 	readonly confirmConvertIntoChannelModal: ConfirmConvertIntoChannelModal;
 
-	constructor(locator: Locator, page: Page) {
-		super(locator, page);
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Team info' }), page);
 		this.confirmDeleteTeamModal = new ConfirmDeleteTeamModal(page);
 		this.confirmConvertIntoChannelModal = new ConfirmConvertIntoChannelModal(page);
 	}
 
-	// get optionDelete(): Locator {
-	// 	return this.listbox.getOption('Delete team');
-	// }
-
 	async deleteTeam() {
 		await this.btnMore.click();
-		await this.getMoreOption('Delete').click();
+		await this.menu.selectMenuItem('Delete');
 		return this.confirmDeleteTeamModal.confirmDelete();
 	}
 
 	async convertIntoChannel() {
 		await this.btnMore.click();
-		await this.getMoreOption('Convert to Channel').click();
+		await this.menu.selectMenuItem('Convert to Channel');
 		await this.confirmConvertIntoChannelModal.confirmConvert();
 	}
 }
