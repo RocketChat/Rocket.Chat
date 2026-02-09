@@ -70,7 +70,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 						setOverlayed,
 						isCollapsed,
 						shouldToggle,
-						toggle: shouldToggle ? () => setIsCollapsed((isCollapsed) => !isCollapsed) : () => undefined,
+						toggle: () => setIsCollapsed((isCollapsed) => !isCollapsed),
 						collapse: () => setIsCollapsed(true),
 						expand: () => setIsCollapsed(false),
 						close: () => (isEmbedded ? setIsCollapsed(true) : router.navigate('/home')),

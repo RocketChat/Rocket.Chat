@@ -9,7 +9,7 @@ import AccessibilityShortcut from './AccessibilityShortcut';
 import MainContent from './MainContent';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 import NavBar from '../../../navbar';
-import Sidebar from '../../../sidebar';
+import SidebarRegion from '../../../sidebar/SidebarRegion';
 import NavigationRegion from '../../navigation';
 import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationProvider';
 
@@ -69,7 +69,7 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 							</RoomsNavigationProvider>
 						</FeaturePreviewOn>
 						<FeaturePreviewOff>
-							<Sidebar />
+							<SidebarRegion />
 						</FeaturePreviewOff>
 					</FeaturePreview>
 				)}

@@ -109,9 +109,6 @@ const SidebarItemTemplateWithData = ({
 			unread={highlighted}
 			selected={selected}
 			href={href}
-			onClick={(): void => {
-				!selected && sidebar.toggle();
-			}}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			time={lastMessage?.ts}

@@ -43,6 +43,11 @@ const SidebarRegion = () => {
 			visibility: hidden;
 		}
 
+		&.collapsed {
+			transform: translateX(calc(var(--sidebar-width) * -1));
+			margin-right: calc(var(--sidebar-width) * -1);
+		}
+
 		&.opened {
 			box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
 			transform: translate3d(0px, 0px, 0px);
@@ -60,6 +65,11 @@ const SidebarRegion = () => {
 		@media (min-width: 100em) {
 			width: var(--sidebar-md-width);
 			min-width: var(--sidebar-md-width);
+
+			&.collapsed {
+				transform: translateX(calc(var(--sidebar-md-width) * -1));
+				margin-right: calc(var(--sidebar-md-width) * -1);
+			}
 		}
 
 		// 1920px and up
@@ -67,6 +77,11 @@ const SidebarRegion = () => {
 		@media (min-width: 120em) {
 			width: var(--sidebar-lg-width);
 			min-width: var(--sidebar-lg-width);
+
+			&.collapsed {
+				transform: translateX(calc(var(--sidebar-lg-width) * -1));
+				margin-right: calc(var(--sidebar-lg-width) * -1);
+			}
 		}
 	`;
 
@@ -95,6 +110,7 @@ const SidebarRegion = () => {
 				id='sidebar-region'
 				className={[
 					'rcx-sidebar',
+					sidebar.isCollapsed && 'collapsed',
 					!sidebar.isCollapsed && sidebar.shouldToggle && 'opened',
 					sideBarStyle,
 					sidebar.shouldToggle && sidebarMobileClass,

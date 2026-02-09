@@ -8,6 +8,7 @@ import NavBarItemHomePage from './NavBarItemHomePage';
 import NavBarItemMarketPlaceMenu from './NavBarItemMarketPlaceMenu';
 import NavBarItemSort from './NavBarItemSort';
 import NavBarPagesStackMenu from './NavBarPagesStackMenu';
+import SidebarToggler from '../../components/SidebarToggler';
 
 const NavBarPagesGroup = () => {
 	const { t } = useTranslation();
@@ -19,6 +20,7 @@ const NavBarPagesGroup = () => {
 
 	return (
 		<NavBarGroup aria-label={t('Pages_and_actions')}>
+			<SidebarToggler />
 			{isTablet && <NavBarPagesStackMenu />}
 			{!isTablet && (
 				<>

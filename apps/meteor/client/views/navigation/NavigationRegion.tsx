@@ -91,7 +91,13 @@ const NavigationRegion = () => {
 		<>
 			<Box id={NAVIGATION_REGION_ID} className={[navRegionStyle, isSidebarOpen && 'opened', isTablet && navMobileStyle].filter(Boolean)}>
 				{showSideBar && (
-					<Box className={[sidebarWrapStyle, sidebar.overlayed && !isSidebarOpen && 'collapsed hidden-visibility']}>
+					<Box
+						className={[
+							sidebarWrapStyle,
+							sidebar.isCollapsed && 'collapsed',
+							sidebar.overlayed && !isSidebarOpen && 'collapsed hidden-visibility',
+						].filter(Boolean)}
+					>
 						<FocusScope>
 							<Sidebar />
 						</FocusScope>
