@@ -64,23 +64,35 @@ export class RoomToolbar extends Toolbar {
 	}
 
 	get menuItemExportMessages(): Locator {
-		return this.root.getByRole('menuitem', { name: 'Export messages' });
+		return this.menu.getMenuItem('Export messages');
 	}
 
 	get menuItemMentions(): Locator {
-		return this.root.getByRole('menuitem', { name: 'Mentions' });
+		return this.menu.getMenuItem('Mentions');
 	}
 
 	get menuItemStarredMessages(): Locator {
-		return this.root.getByRole('menuitem', { name: 'Starred Messages' });
+		return this.menu.getMenuItem('Starred Messages');
 	}
 
 	get menuItemPinnedMessages(): Locator {
-		return this.root.getByRole('menuitem', { name: 'Pinned Messages' });
+		return this.menu.getMenuItem('Pinned Messages');
 	}
 
 	get menuItemPruneMessages(): Locator {
-		return this.root.getByRole('menuitem', { name: 'Prune Messages' });
+		return this.menu.getMenuItem('Prune Messages');
+	}
+
+	get menuItemNotificationsPreferences(): Locator {
+		return this.menu.getMenuItem('Notifications Preferences');
+	}
+
+	get menuItemDisabledE2EEncryption(): Locator {
+		return this.menu.getMenuItem('Disable E2E encryption');
+	}
+
+	get menuItemEnableE2EEncryption(): Locator {
+		return this.menu.getMenuItem('Enable E2E encryption');
 	}
 
 	get menuItemFiles(): Locator {
@@ -110,23 +122,11 @@ export class RoomToolbar extends Toolbar {
 	async openTeamChannels() {
 		await this.btnTeamChannels.click();
 	}
-
-	get menuItemNotificationsPreferences(): Locator {
-		return this.root.getByRole('menuitem', { name: 'Notifications Preferences' });
-	}
-
-	get menuItemDisabledE2EEncryption(): Locator {
-		return this.root.locator('role=menuitem[name="Disable E2E encryption"]');
-	}
-
-	get menuItemEnableE2EEncryption(): Locator {
-		return this.root.locator('role=menuitem[name="Enable E2E encryption"]');
-	}
 }
 
 export class TeamToolbar extends RoomToolbar {
-	private get menuItemTeamMembers(): Locator {
-		return this.root.getByRole('menuitem', { name: 'Teams Members' });
+	private get menuItemTeamMembers() {
+		return this.menu.getMenuItem('Teams Members');
 	}
 
 	private get btnTeamInfo() {
