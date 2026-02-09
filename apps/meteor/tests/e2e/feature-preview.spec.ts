@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
-import { AdminInfo, HomeChannel, HomeTeam } from './page-objects';
+import { AdminInfo, HomeChannel, HomeDiscussion, HomeTeam } from './page-objects';
 import { CreateNewChannelModal } from './page-objects/fragments/modals';
 import {
 	createTargetChannel,
@@ -238,6 +238,7 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('should show discussion in discussions and all sidepanel filter, should remove after deleting discussion', async ({ page }) => {
+			const poHomeDiscussion = new HomeDiscussion(page);
 			await page.goto(`/group/${sidepanelTeam}`);
 			await poHomeChannel.content.waitForChannel();
 
@@ -249,20 +250,20 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.content.btnCreateDiscussionModal.click();
 			await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();
 
-			await poHomeChannel.sidebar.discussionsTeamCollabFilter.click();
-			await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toBeVisible();
+			await poHomeDiscussion.sidebar.discussionsTeamCollabFilter.click();
+			await expect(poHomeDiscussion.sidepanel.getItemByName(discussionName)).toBeVisible();
 
-			await poHomeChannel.sidebar.allTeamCollabFilter.click();
-			await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toBeVisible();
+			await poHomeDiscussion.sidebar.allTeamCollabFilter.click();
+			await expect(poHomeDiscussion.sidepanel.getItemByName(discussionName)).toBeVisible();
 
-			await poHomeChannel.roomToolbar.openRoomInfo();
-			await poHomeChannel.tabs.room.deleteRoom();
+			await poHomeDiscussion.roomToolbar.openRoomInfo();
+			await poHomeDiscussion.tabs.room.deleteRoom();
 
-			await poHomeChannel.sidebar.discussionsTeamCollabFilter.click();
-			await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).not.toBeVisible();
+			await poHomeDiscussion.sidebar.discussionsTeamCollabFilter.click();
+			await expect(poHomeDiscussion.sidepanel.getItemByName(discussionName)).not.toBeVisible();
 
-			await poHomeChannel.sidebar.allTeamCollabFilter.click();
-			await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).not.toBeVisible();
+			await poHomeDiscussion.sidebar.allTeamCollabFilter.click();
+			await expect(poHomeDiscussion.sidepanel.getItemByName(discussionName)).not.toBeVisible();
 		});
 
 		test('should persist sidepanel state after page reload', async ({ page }) => {
