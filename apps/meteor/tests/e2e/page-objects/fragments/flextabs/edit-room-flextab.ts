@@ -21,7 +21,7 @@ export class EditRoomFlexTab extends FlexTab {
 	}
 
 	get checkboxReadOnly(): Locator {
-		return this.root.locator('label', { has: this.root.getByRole('checkbox', { name: 'Read-only' }) });
+		return this.root.locator('label', { hasText: 'Read-only' });
 	}
 
 	get calloutRetentionPolicy(): Locator {
@@ -45,28 +45,34 @@ export class EditRoomFlexTab extends FlexTab {
 	}
 
 	get checkboxPruneMessages(): Locator {
-		return this.root.locator('label', { has: this.root.getByRole('checkbox', { name: 'Automatically prune old messages' }) });
+		return this.root.locator('label', { hasText: 'Automatically prune old messages' });
 	}
 
 	get checkboxOverrideGlobalRetention(): Locator {
-		return this.root.locator('label', { has: this.root.getByRole('checkbox', { name: 'Override global retention policy' }) });
+		return this.root.locator('label', { hasText: 'Override global retention policy' });
 	}
 
 	get checkboxIgnoreThreads(): Locator {
-		return this.root.locator('label', { has: this.root.getByRole('checkbox', { name: 'Do not prune Threads' }) });
+		return this.root.locator('label', { hasText: 'Do not prune Threads' });
 	}
 
 	get checkboxChannels(): Locator {
-		return this.root.locator('label', { has: this.root.getByRole('checkbox', { name: 'Channels' }) });
+		return this.root.locator('label', { hasText: 'Channels' });
 	}
 
 	get checkboxDiscussions(): Locator {
-		return this.root.locator('label', { has: this.root.getByRole('checkbox', { name: 'Discussions' }) });
+		return this.root.locator('label', { hasText: 'Discussions' });
 	}
 
 	async toggleSidepanelItems() {
 		await this.checkboxChannels.click();
 		await this.checkboxDiscussions.click();
+	}
+}
+
+export class EditTeamFlexTab extends EditRoomFlexTab {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Edit team' }));
 	}
 }
 
