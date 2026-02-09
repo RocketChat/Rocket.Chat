@@ -1,7 +1,8 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useThemeMode } from '@rocket.chat/ui-theming';
 import type { Editor, EditorFromTextArea } from 'codemirror';
 import type { ReactElement } from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 const defaultGutters = ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'];
 
@@ -43,10 +44,27 @@ function CodeMirror({
 	onChange,
 	...props
 }: CodeMirrorProps): ReactElement {
+	const [, , resolvedTheme] = useThemeMode();
+
+	const codeMirrorTheme = useMemo(() => {
+		if (resolvedTheme === 'dark' || resolvedTheme === 'high-contrast') {
+			return 'base16-dark';
+		}
+
+		return 'default';
+	}, [resolvedTheme]);
 	const [value, setValue] = useState(valueProp || defaultValue);
 	const handleChange = useEffectEvent(onChange);
 
 	const editorRef = useRef<EditorFromTextArea | null>(null);
+
+	const ensureThemeStyle = useCallback((theme: string) => {
+		if (theme === 'base16-dark') {
+			return import('codemirror/theme/base16-dark.css');
+		}
+
+		return Promise.resolve();
+	}, []);
 	const textAreaRef = useCallback(
 		async (node: HTMLTextAreaElement | null) => {
 			if (!node) return;
@@ -61,6 +79,7 @@ function CodeMirror({
 					import('codemirror/addon/edit/trailingspace'),
 					import('codemirror/addon/search/match-highlighter'),
 					import('codemirror/lib/codemirror.css'),
+					ensureThemeStyle(codeMirrorTheme),
 				]);
 
 				editorRef.current = CodeMirror.fromTextArea(node, {
@@ -75,6 +94,7 @@ function CodeMirror({
 					showTrailingSpace,
 					highlightSelectionMatches,
 					readOnly,
+					theme: codeMirrorTheme,
 				});
 
 				editorRef.current.on('change', (doc: Editor) => {
@@ -92,21 +112,23 @@ function CodeMirror({
 				console.error('CodeMirror initialization failed:', error);
 			}
 		},
-		[
-			autoCloseBrackets,
-			foldGutter,
-			gutters,
-			highlightSelectionMatches,
-			lineNumbers,
-			lineWrapping,
-			matchBrackets,
-			matchTags,
-			mode,
-			handleChange,
-			readOnly,
-			showTrailingSpace,
-		],
-	);
+			[
+				autoCloseBrackets,
+				foldGutter,
+				gutters,
+				highlightSelectionMatches,
+				lineNumbers,
+				lineWrapping,
+				matchBrackets,
+				matchTags,
+				mode,
+				codeMirrorTheme,
+				ensureThemeStyle,
+				handleChange,
+				readOnly,
+				showTrailingSpace,
+			],
+		);
 
 	useEffect(() => {
 		setValue(valueProp);
@@ -121,6 +143,19 @@ function CodeMirror({
 			editorRef.current.setValue(value ?? '');
 		}
 	}, [textAreaRef, value]);
+
+	useEffect(() => {
+		if (!editorRef.current) {
+			return;
+		}
+
+		const applyTheme = async (): Promise<void> => {
+			await ensureThemeStyle(codeMirrorTheme);
+			editorRef.current?.setOption('theme', codeMirrorTheme);
+		};
+
+		void applyTheme();
+	}, [codeMirrorTheme, ensureThemeStyle]);
 
 	return <textarea readOnly ref={textAreaRef} style={{ display: 'none' }} value={value} {...props} />;
 }
