@@ -12,6 +12,9 @@ type PackagesSettings = Partial<{
 	reload: Partial<{
 		debug: boolean;
 	}>;
+	oauth: Partial<{
+		setRedirectUrlWhenLoginStyleIsPopup: boolean;
+	}>;
 }>;
 
 type PublicSettings = Partial<{

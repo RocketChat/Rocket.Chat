@@ -19,7 +19,7 @@ type FacebookOptions = {
 	loginStyle?: string;
 };
 
-type CredentialRequestCompleteCallback = (error?: Error) => void;
+type CredentialRequestCompleteCallback = (token?: string | Error) => void;
 
 // -----------------------------------------------------------------------------
 // Facebook OAuth Implementation
