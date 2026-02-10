@@ -60,6 +60,18 @@ jest.mock('../user/lib/getNewUserRoles', () => ({
 // eslint-disable-next-line import/first
 import { ImportService } from './service';
 
+const createMockOperation = (overrides?: Partial<IImport>): IImport => ({
+	_id: new ObjectId().toHexString(),
+	type: 'csv',
+	importerKey: 'csv',
+	ts: new Date(),
+	status: 'importer_new',
+	valid: true,
+	user: 'user123',
+	_updatedAt: new Date(),
+	...overrides,
+});
+
 describe('ImportService', () => {
 	let service: ImportService;
 
@@ -81,19 +93,9 @@ describe('ImportService', () => {
 
 	describe('newOperation', () => {
 		it('should clear previous operations and create a new import', async () => {
-			const operationId = new ObjectId();
-			const mockOperation: IImport = {
-				_id: operationId.toHexString(),
-				type: 'csv',
-				importerKey: 'csv',
-				ts: new Date(),
-				status: 'importer_new',
-				valid: true,
-				user: 'user123',
-				_updatedAt: new Date(),
-			};
+			const mockOperation = createMockOperation();
 
-			mockImportsInsertOne.mockResolvedValue({ insertedId: operationId });
+			mockImportsInsertOne.mockResolvedValue({ insertedId: mockOperation._id });
 			mockImportsFindOneById.mockResolvedValue(mockOperation);
 
 			const result = await service.newOperation('user123', 'csv', 'csv');
@@ -112,8 +114,7 @@ describe('ImportService', () => {
 		});
 
 		it('should throw an error if operation creation fails', async () => {
-			const operationId = new ObjectId();
-			mockImportsInsertOne.mockResolvedValue({ insertedId: operationId });
+			mockImportsInsertOne.mockResolvedValue({ insertedId: new ObjectId().toHexString() });
 			mockImportsFindOneById.mockResolvedValue(null);
 
 			await expect(service.newOperation('user123', 'csv', 'csv')).rejects.toThrow('failed to create import operation');
@@ -130,16 +131,7 @@ describe('ImportService', () => {
 		});
 
 		it('should return "new" state for importer_new status', async () => {
-			const mockOperation: IImport = {
-				_id: 'op1',
-				type: 'csv',
-				importerKey: 'csv',
-				ts: new Date(),
-				status: 'importer_new',
-				valid: true,
-				user: 'user123',
-				_updatedAt: new Date(),
-			};
+			const mockOperation = createMockOperation();
 			mockImportsFindLastImport.mockResolvedValue(mockOperation);
 
 			const result = await service.status();
@@ -148,16 +140,7 @@ describe('ImportService', () => {
 		});
 
 		it('should return "loading" state for uploading status', async () => {
-			const mockOperation: IImport = {
-				_id: 'op1',
-				type: 'csv',
-				importerKey: 'csv',
-				ts: new Date(),
-				status: 'importer_uploading',
-				valid: true,
-				user: 'user123',
-				_updatedAt: new Date(),
-			};
+			const mockOperation = createMockOperation({ status: 'importer_uploading' });
 			mockImportsFindLastImport.mockResolvedValue(mockOperation);
 
 			const result = await service.status();
@@ -166,16 +149,7 @@ describe('ImportService', () => {
 		});
 
 		it('should return "ready" state for user_selection status', async () => {
-			const mockOperation: IImport = {
-				_id: 'op1',
-				type: 'csv',
-				importerKey: 'csv',
-				ts: new Date(),
-				status: 'importer_user_selection',
-				valid: true,
-				user: 'user123',
-				_updatedAt: new Date(),
-			};
+			const mockOperation = createMockOperation({ status: 'importer_user_selection' });
 			mockImportsFindLastImport.mockResolvedValue(mockOperation);
 
 			const result = await service.status();
@@ -184,16 +158,7 @@ describe('ImportService', () => {
 		});
 
 		it('should return "importing" state for importing statuses', async () => {
-			const mockOperation: IImport = {
-				_id: 'op1',
-				type: 'csv',
-				importerKey: 'csv',
-				ts: new Date(),
-				status: 'importer_importing_users',
-				valid: true,
-				user: 'user123',
-				_updatedAt: new Date(),
-			};
+			const mockOperation = createMockOperation({ status: 'importer_importing_users' });
 			mockImportsFindLastImport.mockResolvedValue(mockOperation);
 
 			const result = await service.status();
@@ -202,16 +167,7 @@ describe('ImportService', () => {
 		});
 
 		it('should return "done" state for importer_done status', async () => {
-			const mockOperation: IImport = {
-				_id: 'op1',
-				type: 'csv',
-				importerKey: 'csv',
-				ts: new Date(),
-				status: 'importer_done',
-				valid: true,
-				user: 'user123',
-				_updatedAt: new Date(),
-			};
+			const mockOperation = createMockOperation({ status: 'importer_done' });
 			mockImportsFindLastImport.mockResolvedValue(mockOperation);
 
 			const result = await service.status();
@@ -220,16 +176,7 @@ describe('ImportService', () => {
 		});
 
 		it('should return "error" state for invalid operation', async () => {
-			const mockOperation: IImport = {
-				_id: 'op1',
-				type: 'csv',
-				importerKey: 'csv',
-				ts: new Date(),
-				status: 'importer_new',
-				valid: false,
-				user: 'user123',
-				_updatedAt: new Date(),
-			};
+			const mockOperation = createMockOperation({ valid: false });
 			mockImportsFindLastImport.mockResolvedValue(mockOperation);
 
 			const result = await service.status();
@@ -238,16 +185,7 @@ describe('ImportService', () => {
 		});
 
 		it('should return "canceled" state for cancelled import', async () => {
-			const mockOperation: IImport = {
-				_id: 'op1',
-				type: 'csv',
-				importerKey: 'csv',
-				ts: new Date(),
-				status: 'importer_import_cancelled',
-				valid: true,
-				user: 'user123',
-				_updatedAt: new Date(),
-			};
+			const mockOperation = createMockOperation({ status: 'importer_import_cancelled' });
 			mockImportsFindLastImport.mockResolvedValue(mockOperation);
 
 			const result = await service.status();
@@ -257,16 +195,9 @@ describe('ImportService', () => {
 	});
 
 	describe('addUsers', () => {
-		const mockOperation: IImport = {
+		const mockOperation = createMockOperation({
 			_id: 'op1',
-			type: 'csv',
-			importerKey: 'csv',
-			ts: new Date(),
-			status: 'importer_new',
-			valid: true,
-			user: 'user123',
-			_updatedAt: new Date(),
-		};
+		});
 
 		beforeEach(() => {
 			mockImportsFindLastImport.mockResolvedValue(mockOperation);
@@ -436,16 +367,7 @@ describe('ImportService', () => {
 	});
 
 	describe('run', () => {
-		const mockOperation: IImport = {
-			_id: 'op1',
-			type: 'csv',
-			importerKey: 'csv',
-			ts: new Date(),
-			status: 'importer_user_selection',
-			valid: true,
-			user: 'user123',
-			_updatedAt: new Date(),
-		};
+		const mockOperation = createMockOperation({ status: 'importer_user_selection' });
 
 		it('should throw error if operation not found', async () => {
 			mockImportsFindLastImport.mockResolvedValue(null);
