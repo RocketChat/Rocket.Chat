@@ -1,0 +1,270 @@
+name: k6 Performance Baseline
+description: Run k6 tests, compare metrics, manage baselines and PR feedback
+inputs:
+  tests:
+    description: >
+      JSON array of tests:
+      [{ "name": "send-message", "file": "path", "profile": "normal" }]
+    required: true
+
+  threshold:
+    description: Max allowed regression percentage
+    default: "10"
+
+runs:
+  using: composite
+  steps:
+    - uses: grafana/setup-k6-action@v1
+
+    - name: Detect baseline branch
+      id: baseline
+      shell: bash
+      run: |
+        if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
+          echo "branch=${GITHUB_BASE_REF}" >> $GITHUB_OUTPUT
+        else
+          echo "branch=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Fetch perf-baseline
+      shell: bash
+      run: |
+        if git ls-remote --exit-code --heads origin perf-baseline >/dev/null 2>&1; then
+          git fetch origin perf-baseline
+        else
+          echo "ℹ️ Remote branch 'perf-baseline' not found; this is likely the first run."
+        fi
+
+    - name: Run tests
+      shell: bash
+      run: |
+        get_profile_config() {
+          case "$1" in
+            "normal")
+              echo "10 30s"
+              ;;
+            "stress")
+              echo "50 60s"
+              ;;
+            "load")
+              echo "100 120s"
+              ;;
+            *)
+              echo "10 30s"
+              ;;
+          esac
+        }
+
+        echo '${{ inputs.tests }}' | jq -c '.[]' | while read test; do
+          name=$(jq -r '.name' <<< $test)
+          file=$(jq -r '.file' <<< $test)
+          profile=$(jq -r '.profile' <<< $test)
+
+          config=$(get_profile_config "$profile")
+          vus=$(echo $config | cut -d' ' -f1)
+          duration=$(echo $config | cut -d' ' -f2)
+
+          echo "▶ Running $name ($profile) - vUs: $vus, duration: $duration"
+          k6 run \
+            --summary-export=result-$name.json \
+            -e K6_PROFILE=$profile \
+            -e K6_VUS=$vus \
+            -e K6_DURATION=$duration \
+            --quiet \
+            "$file"
+        done
+
+    - name: Compare results
+      if: github.event_name == 'pull_request'
+      shell: bash
+      env:
+        THRESHOLD: ${{ inputs.threshold }}
+      run: |
+        rm -f report.json
+        echo '[]' > report.json
+        
+        # Process all tests and collect results
+        echo '${{ inputs.tests }}' | jq -c '.[]' | while IFS= read -r test; do
+          name=$(jq -r '.name' <<< "$test")
+          profile=$(jq -r '.profile' <<< "$test")
+
+          if [ ! -f "result-$name.json" ]; then
+            echo "⚠️ Warning: result-$name.json not found, skipping comparison"
+            continue
+          fi
+
+          baseline_path="baselines/${{ steps.baseline.outputs.branch }}/$profile/$name.json"
+          if git show "origin/perf-baseline:${baseline_path}" > baseline.json 2>/dev/null; then
+            echo "✅ Found baseline: ${baseline_path}"
+          else
+            echo "ℹ️ Baseline not found (${baseline_path}); assuming first run for this test/profile."
+            echo '{"metrics":{}}' > baseline.json
+          fi
+
+          # Process this test result directly using the result file path
+          node ${{ github.action_path }}/compare-k6.js "$name" "$profile" "result-$name.json" || {
+            echo "⚠️ Warning: Failed to process result-$name.json"
+            continue
+          }
+        done
+
+        # Verify report.json was created and has content
+        if [ -f "report.json" ]; then
+          echo "📊 Report summary:"
+          jq 'length' report.json | xargs echo "  Total test results:"
+          jq -r '.[] | "  - \(.name) (\(.profile)): \(.metrics | length) metrics"' report.json
+        else
+          echo "⚠️ Warning: report.json was not created"
+        fi
+
+    - name: PR comment + labels
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          
+          if (!fs.existsSync('report.json')) {
+            core.setFailed('report.json not found. Performance tests may have failed.');
+            return;
+          }
+
+          
+          const reports = JSON.parse(fs.readFileSync('report.json', 'utf8'));
+
+          console.log('reports', reports);
+          
+          if (!Array.isArray(reports) || reports.length === 0) {
+            core.warning('report.json is empty or invalid. No performance data to report.');
+            return;
+          }
+
+          const marker = '<!-- k6-perf-report -->';
+          const formatNumber = (n) => (typeof n === 'number' ? n.toFixed(2) : '—');
+          const formatDelta = (n) => (typeof n === 'number' ? `${n.toFixed(1)}%` : '—');
+
+          const sections = reports.map((r) => {
+            console.log('r.metrics', r.metrics);
+            const rows = (r.metrics || [])
+              .map((m) => `| ${m.name} | ${formatNumber(m.base)} | ${formatNumber(m.curr)} | ${formatDelta(m.delta)} |`)
+              .join('\n');
+
+            return [
+              `**${r.name}** (${r.profile})`,
+              '',
+              '| Métrica | Baseline | PR | Δ |',
+              '|-------|---------|----|----|',
+              rows || '| — | — | — | — |',
+              '',
+              r.regression ? '❌ Regression detected' : '✅ OK',
+            ].join('\n');
+          });
+
+          const body = [
+            marker,
+            '### ⚙️ k6 Performance Report',
+            '',
+            sections.join('\n---\n'),
+            '',
+          ].join('\n');
+
+          const issue_number = context?.issue?.number;
+          if (!issue_number) {
+            throw new Error('Missing PR issue number in context');
+          }
+
+          const comments = await github.paginate(github.rest.issues.listComments, {
+            ...context.repo,
+            issue_number,
+            per_page: 100,
+          });
+
+          const markerComments = comments
+            .filter((c) => (c.body || '').includes(marker))
+            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+          const primary = markerComments.at(-1);
+
+          if (primary) {
+            await github.rest.issues.updateComment({
+              ...context.repo,
+              comment_id: primary.id,
+              body
+            });
+          } else {
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number,
+              body
+            });
+          }
+
+          // Best-effort: remove duplicates (can happen due to race between concurrent workflow runs)
+          if (markerComments.length > 1) {
+            const duplicates = markerComments.slice(0, -1);
+            for (const c of duplicates) {
+              try {
+                await github.rest.issues.deleteComment({
+                  ...context.repo,
+                  comment_id: c.id,
+                });
+              } catch (e) {
+                // Ignore if we can't delete (permissions) or it was already removed
+                if (e?.status !== 404) {
+                  core?.warning?.(`Failed to delete duplicate comment ${c.id}: ${e.message || e}`);
+                }
+              }
+            }
+          }
+
+          const hasRegression = reports.some(r => r.regression);
+
+          if (hasRegression) {
+            await github.rest.issues.addLabels({
+              ...context.repo,
+              issue_number,
+              labels: ['perf-regression']
+            });
+          } else {
+            try {
+              await github.rest.issues.removeLabel({
+                ...context.repo,
+                issue_number,
+                name: 'perf-regression',
+              });
+            } catch (e) {
+              if (e?.status !== 404) {
+                throw e;
+              }
+            }
+          }
+
+    - name: Update baseline
+      if: >
+        github.event_name == 'push' &&
+        (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+      shell: bash
+      run: |
+        if git show-ref --verify --quiet refs/remotes/origin/perf-baseline; then
+          git checkout -B perf-baseline origin/perf-baseline
+        else
+          echo "ℹ️ Creating 'perf-baseline' branch (first run)."
+          git checkout --orphan perf-baseline
+          git rm -rf . >/dev/null 2>&1 || true
+        fi
+
+        echo '${{ inputs.tests }}' | jq -c '.[]' | while read test; do
+          name=$(jq -r '.name' <<< $test)
+          profile=$(jq -r '.profile' <<< $test)
+
+          mkdir -p baselines/${{ steps.baseline.outputs.branch }}/$profile
+          cp result-$name.json baselines/${{ steps.baseline.outputs.branch }}/$profile/$name.json
+        done
+
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add baselines
+        git commit -m "perf(${{
+          steps.baseline.outputs.branch
+        }}): update baselines"
+        git push --set-upstream origin perf-baseline
