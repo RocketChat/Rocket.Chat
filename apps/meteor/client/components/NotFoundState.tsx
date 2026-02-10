@@ -1,4 +1,12 @@
-import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import {
+	Box,
+	States,
+	StatesAction,
+	StatesActions,
+	StatesIcon,
+	StatesSubtitle,
+	StatesTitle,
+} from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,15 +24,31 @@ const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
 		router.navigate('/home');
 	};
 
+	const handleGoBackClick = () => {
+		
+		if (window.history.length > 1) {
+			window.history.back();
+		} else {
+			router.navigate('/home');
+		}
+	};
+
 	return (
 		<Box display='flex' justifyContent='center' height='full'>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{title}</StatesTitle>
 				<StatesSubtitle>{subtitle}</StatesSubtitle>
+
 				<Box mbs={16}>
 					<StatesActions>
-						<StatesAction onClick={handleGoHomeClick}>{t('Homepage')}</StatesAction>
+						<StatesAction onClick={handleGoHomeClick}>
+							{t('Homepage')}
+						</StatesAction>
+
+						<StatesAction onClick={handleGoBackClick}>
+							{t('Go_back')}
+						</StatesAction>
 					</StatesActions>
 				</Box>
 			</States>
