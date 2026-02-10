@@ -1,5 +1,5 @@
 import { Meteor } from './meteor.ts';
-import { OAuth } from './oauth.ts';
+import { OAuth, type OAuthConfiguration } from './oauth.ts';
 import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 import { ServiceConfiguration } from './service-configuration.ts';
@@ -8,8 +8,8 @@ import { hasOwn } from './utils/hasOwn.ts';
 export const validParamsAuthenticate = ['force_login', 'screen_name'];
 
 export const requestCredential = (
-	options: { [x: string]: string | number | boolean; redirectUrl?: any },
-	credentialRequestCompleteCallback?: (error?: Error) => void,
+	options: OAuthConfiguration,
+	credentialRequestCompleteCallback?: (token?: string | Error) => void,
 ): void => {
 	if (!credentialRequestCompleteCallback && typeof options === 'function') {
 		credentialRequestCompleteCallback = options;

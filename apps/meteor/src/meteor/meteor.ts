@@ -1,3 +1,4 @@
+import type { Connection } from './ddp-client.ts';
 import { Package } from './package-registry.ts';
 import { noop } from './utils/noop.ts';
 
@@ -14,6 +15,10 @@ type PackagesSettings = Partial<{
 	}>;
 	oauth: Partial<{
 		setRedirectUrlWhenLoginStyleIsPopup: boolean;
+	}>;
+	accounts: Partial<{
+		loginExpirationInDays: number;
+		clientStorage: 'local' | 'session';
 	}>;
 }>;
 
@@ -57,10 +62,10 @@ const { meteorEnv } = config;
 
 // --- Meteor Error Class ---
 
-class MeteorError extends Error {
+export class MeteorError extends Error {
 	public error: string | number;
 
-	public reason?: string;
+	public reason?: string | undefined;
 
 	public details?: string | undefined;
 
@@ -68,7 +73,7 @@ class MeteorError extends Error {
 
 	public errorType = 'Meteor.Error';
 
-	constructor(error: string | number, reason?: string, details?: string | undefined) {
+	constructor(error: string | number, reason?: string | undefined, details?: string | undefined) {
 		super();
 		this.error = error;
 		this.reason = reason;
@@ -122,17 +127,17 @@ class EnvironmentVariable<T> {
 		currentValues[this.slot] = value;
 	}
 
-	public _setNewContextAndGetCurrent(value: T): unknown {
+	public _setNewContextAndGetCurrent(value: T): T {
 		const saved = currentValues[this.slot];
 		this._set(value);
-		return saved;
+		return saved as T;
 	}
 
-	public static _isCallAsyncMethodRunning(): boolean {
+	public _isCallAsyncMethodRunning(): boolean {
 		return callAsyncMethodRunning;
 	}
 
-	public static _setCallAsyncMethodRunning(value: boolean): void {
+	public _setCallAsyncMethodRunning(value: boolean): void {
 		callAsyncMethodRunning = value;
 	}
 
@@ -269,9 +274,7 @@ const _localStorage = localStorage;
 type AbsoluteUrlOptions = { rootUrl?: string; secure?: boolean; replaceLocalhost?: boolean };
 
 const defaultAbsoluteUrlOptions: AbsoluteUrlOptions = {
-	rootUrl:
-		config.ROOT_URL ||
-		(typeof location !== 'undefined' && location.protocol && location.host ? `${location.protocol}//${location.host}` : undefined),
+	rootUrl: config.ROOT_URL || `${location.protocol}//${location.host}`,
 	secure: typeof location !== 'undefined' && location.protocol === 'https:',
 };
 
@@ -323,6 +326,8 @@ const Meteor = {
 	gitCommitHash: config.gitCommitHash,
 	settings: config.PUBLIC_SETTINGS ? { public: config.PUBLIC_SETTINGS } : {},
 	release: config.meteorRelease,
+	connection: null as Connection | null,
+	refresh: noop,
 
 	// Flags
 	isFibersDisabled: true,
@@ -359,13 +364,15 @@ const Meteor = {
 		return current;
 	},
 
-	makeErrorType<TCtor extends (this: Error, ...args: any[]) => void>(name: string, constructor: TCtor) {
+	makeErrorType<TCtor extends (this: Error, ...args: any[]) => void>(name: string, constructor?: TCtor) {
 		// FIX: Use 'class extends' natively. Do NOT call _inherits on this class,
 		// as it would try to overwrite the read-only class prototype.
 		class ErrorClass extends Error {
 			public errorType: string;
 
 			public override name: string;
+
+			public override stack?: string;
 
 			[key: string]: any;
 
@@ -375,14 +382,14 @@ const Meteor = {
 				if (Error.captureStackTrace) {
 					Error.captureStackTrace(this, ErrorClass);
 				} else {
-					this.stack = new Error().stack;
+					this.stack = new Error().stack || '';
 				}
 
 				this.errorType = name;
 				this.name = name;
 
 				// Apply the user-supplied constructor function
-				constructor.apply(this, args);
+				constructor?.apply(this, args);
 			}
 		}
 

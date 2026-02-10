@@ -32,6 +32,7 @@
 		},
 		"preserveSymlinks": true,
 		"allowImportingTsExtensions": true,
+		"exactOptionalPropertyTypes": true,
 		"types": []
 		// "sourceMap": true,
 		// "declaration": true,

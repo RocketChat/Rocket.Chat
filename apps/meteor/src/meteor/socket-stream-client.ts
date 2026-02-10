@@ -4,10 +4,15 @@ import { Dependency } from './tracker.ts';
 
 const forcedReconnectError = new Error('forced reconnect');
 
-type ClientStreamOptions = {
+export type ClientStreamOptions = {
+	bufferedWritesInterval?: number;
+	bufferedWrritesMaxAge?: number;
+	heartbeatInterval: number;
+	heartbeatTimeout: number;
 	retry?: boolean;
-	_sockjsOptions?: Record<string, unknown>;
 	connectTimeoutMs?: number;
+	ConnectionError?: new (...args: any[]) => any;
+	onDDPVersionNegotiationFailure?: (description: string) => void;
 };
 
 type StreamStatus = {
@@ -47,11 +52,20 @@ class ClientStream {
 
 	HEARTBEAT_TIMEOUT: number;
 
-	constructor(url: string, options: ClientStreamOptions = {}) {
+	constructor(
+		url: string,
+		{
+			connectTimeoutMs = 10000,
+			retry = true,
+			heartbeatInterval = 10000,
+			heartbeatTimeout = 100 * 1000,
+			...options
+		}: Partial<ClientStreamOptions> = {},
+	) {
 		// Initialization logic merged from _initCommon
-		this.options = { retry: true, ...options };
-		this.CONNECT_TIMEOUT = this.options.connectTimeoutMs || 10000;
-		this.HEARTBEAT_TIMEOUT = 100 * 1000;
+		this.options = { retry, connectTimeoutMs, heartbeatInterval, heartbeatTimeout, ...options };
+		this.CONNECT_TIMEOUT = connectTimeoutMs;
+		this.HEARTBEAT_TIMEOUT = heartbeatTimeout;
 
 		this.rawUrl = url;
 		this.socket = null;

@@ -107,6 +107,9 @@ export default defineConfig(async () => {
 				'/emoji-custom': { target: ROOT_URL.origin, changeOrigin: true },
 				'/sockjs': { target: ROOT_URL.origin, ws: true, rewriteWsOrigin: true, changeOrigin: true, autoRewrite: true },
 				'/websocket': { target: ROOT_URL.origin, ws: true, rewriteWsOrigin: true, changeOrigin: true, autoRewrite: true },
+				'/packages': { target: ROOT_URL.origin, changeOrigin: true },
+				'/_oauth': { target: ROOT_URL.origin, changeOrigin: true, followRedirects: true },
+				'/custom-sounds': { target: ROOT_URL.origin, changeOrigin: true },
 				'/file-upload': {
 					target: ROOT_URL.origin,
 					changeOrigin: true,
