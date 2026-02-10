@@ -42,7 +42,7 @@ export class Store {
 		callback?: (err?: Error, copyId?: string, copy?: OptionalId<IUpload>, store?: Store) => void,
 	) => Promise<void>;
 
-	public create: (file: OptionalId<IUpload>, options?: { session?: ClientSession }) => Promise<string>;
+	public create: (file: Omit<OptionalId<IUpload>, '_updatedAt'>, options?: { session?: ClientSession }) => Promise<string>;
 
 	public write: (
 		rs: stream.Readable,
