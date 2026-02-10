@@ -93,6 +93,15 @@ type MessageBoxProps = {
 	isEmbedded?: boolean;
 };
 
+
+
+const isOnlyBackticksMessage = (text: string): boolean => {
+	const withoutBackticks = text.replace(/`/g, '').trim();
+	return withoutBackticks.length === 0 && text.includes('`');
+};
+
+
+
 const MessageBox = ({
 	tmid,
 	onSend,
@@ -158,18 +167,24 @@ const MessageBox = ({
 		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
-	const handleSendMessage = useEffectEvent(() => {
-		const text = chat.composer?.text ?? '';
-		chat.composer?.clear();
-		popup.clear();
+const handleSendMessage = useEffectEvent(() => {
+	const text = chat.composer?.text ?? '';
 
-		onSend?.({
-			value: text,
-			tshow,
-			previewUrls,
-			isSlashCommandAllowed,
-		});
+	if (!text.trim() || isOnlyBackticksMessage(text)) {
+		return;
+	}
+
+	chat.composer?.clear();
+	popup.clear();
+
+	onSend?.({
+		value: text,
+		tshow,
+		previewUrls,
+		isSlashCommandAllowed,
 	});
+});
+
 
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
 		const mid = chat.currentEditingMessage.getMID();
