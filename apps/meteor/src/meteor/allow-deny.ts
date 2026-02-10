@@ -4,6 +4,7 @@ import { Meteor } from './meteor.ts';
 import { LocalCollection } from './minimongo.ts';
 import { Package } from './package-registry.ts';
 import { hasOwn } from './utils/hasOwn.ts';
+import { isKey } from './utils/isKey.ts';
 
 // --- Types ---
 
@@ -28,7 +29,7 @@ type AllowDenyOptions = {
 	update?: ValidatorFn;
 	remove?: ValidatorFn;
 	fetch?: string[];
-	transform?: ((doc: MongoDoc) => unknown) | null;
+	transform?: ((doc: MongoDoc) => unknown) | undefined;
 	[key: string]: unknown;
 };
 
@@ -71,12 +72,16 @@ const asyncEvery = async <T>(array: T[], predicate: (item: T) => boolean | Promi
 	return true;
 };
 
-const transformDoc = (validator: { transform?: Function }, doc: MongoDoc): unknown => {
+const transformDoc = (validator: { transform?: ((doc: MongoDoc) => unknown) | null }, doc: MongoDoc): unknown => {
 	if (validator.transform) return validator.transform(doc);
 	return doc;
 };
 
-const docToValidate = (validator: { transform?: Function }, doc: MongoDoc, generatedId: string | null): unknown => {
+const docToValidate = (
+	validator: { transform?: ((doc: MongoDoc) => unknown) | null },
+	doc: MongoDoc,
+	generatedId: string | null,
+): unknown => {
 	let ret = doc;
 	if (validator.transform) {
 		ret = EJSON.clone(doc);
@@ -128,12 +133,6 @@ const validateUpdateMutator = (mutator: MongoDoc): string[] => {
 
 // --- Main Class Definition ---
 
-type Collection = {
-	insertAsync: (doc: MongoDoc) => Promise<string>;
-	updateAsync: (selector: unknown, mutator: MongoDoc, options?: any) => Promise<number>;
-	removeAsync: (selector: unknown) => Promise<number>;
-};
-
 /**
  * A class containing the logic for Allow/Deny security.
  * NOTE: Methods here are copied to CollectionPrototype below to ensure enumerability.
@@ -159,7 +158,7 @@ class RestrictedCollectionMixin {
 
 	public _restricted = false;
 
-	public _insecure?: boolean;
+	public _insecure?: boolean | undefined;
 
 	public _transform?: (doc: MongoDoc) => unknown;
 
@@ -216,7 +215,7 @@ class RestrictedCollectionMixin {
 		this._prefix = `/${this._name}/`;
 
 		// Setup mutation methods on the connection (Server or Simulation)
-		if (this._connection && (this._connection === Meteor.server || Meteor.isClient)) {
+		if (this._connection) {
 			const methods: Record<string, (...args: any[]) => any> = {};
 			const methodNames = ['insertAsync', 'updateAsync', 'removeAsync', 'insert', 'update', 'remove'];
 
@@ -322,11 +321,11 @@ class RestrictedCollectionMixin {
 	}
 
 	private _getFindOptions() {
-		const findOptions: { transform: null; fields?: Record<string, number> } = { transform: null };
+		const findOptions: Record<string, any> = { transform: null };
 		if (!this._validators.fetchAllFields) {
 			findOptions.fields = {};
 			this._validators.fetch.forEach((fieldName) => {
-				findOptions.fields![fieldName] = 1;
+				findOptions.fields[fieldName] = 1;
 			});
 		}
 		return findOptions;
@@ -393,13 +392,13 @@ class RestrictedCollectionMixin {
 		};
 	}
 
-	private async _executeMutation(methodContext: MethodContext, methodName: string, args: unknown[]): Promise<unknown> {
+	private async _executeMutation(methodContext: MethodContext, methodName: string, args: any[]): Promise<unknown> {
 		const isInsert = methodName.includes('insert');
 		const [firstArg] = args;
 
 		// 1. ID Generation for Insert
 		let generatedId: string | null = null;
-		if (isInsert && !hasOwn(firstArg, '_id')) {
+		if (isInsert && !isKey(firstArg, '_id')) {
 			generatedId = this._makeNewID();
 		}
 
@@ -408,7 +407,7 @@ class RestrictedCollectionMixin {
 			if (generatedId !== null && typeof firstArg === 'object' && firstArg !== null) {
 				firstArg._id = generatedId;
 			}
-			return this._collection[methodName].apply(this._collection, args);
+			return this._collection[methodName](...args);
 		}
 
 		// 3. Server Validation
@@ -429,7 +428,7 @@ class RestrictedCollectionMixin {
 			const methodArgs = [methodContext.userId, ...args];
 			if (isInsert) methodArgs.push(generatedId);
 
-			return this[validatedMethodName].apply(this, methodArgs);
+			return this[validatedMethodName](...methodArgs);
 		}
 
 		// 5. Insecure Mode

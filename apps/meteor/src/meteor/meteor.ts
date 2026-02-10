@@ -32,6 +32,7 @@ type MeteorRuntimeConfig = {
 	PUBLIC_SETTINGS?: PublicSettings;
 	ROOT_URL?: string;
 	ROOT_URL_PATH_PREFIX?: string;
+	ACCOUNTS_CONNECTION_URL?: string;
 	gitCommitHash?: string;
 	isModern?: boolean;
 	debug?: boolean;
@@ -164,7 +165,7 @@ class FakeDoubleEndedQueue {
 	}
 }
 
-class SynchronousQueue {
+export class SynchronousQueue {
 	private _tasks: Array<() => void> = [];
 
 	private _running = false;

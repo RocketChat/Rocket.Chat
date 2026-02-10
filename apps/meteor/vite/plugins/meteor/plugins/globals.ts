@@ -43,8 +43,8 @@ function generateMeteorRuntimeConfigCode(config: MeteorRuntimeConfig): string {
 }
 
 type MeteorRuntimeConfig = {
-	meteorRelease?: string;
-	gitCommitHash?: string;
+	meteorRelease?: string | undefined;
+	gitCommitHash?: string | undefined;
 	meteorEnv: {
 		NODE_ENV: 'production' | 'development';
 		TEST_METADATA: '{}';

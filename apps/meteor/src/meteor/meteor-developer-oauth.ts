@@ -1,90 +1,102 @@
-import { meteorInstall } from './modules.ts';
 import { OAuth } from './oauth.ts';
 import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 import { ServiceConfiguration } from './service-configuration.ts';
 
-Package['core-runtime'].queue('meteor-developer-oauth', () => {
-	let MeteorDeveloperAccounts;
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
 
-	const require = meteorInstall(
-		{
-			node_modules: {
-				meteor: {
-					'meteor-developer-oauth': {
-						'meteor_developer_common.js'() {
-							MeteorDeveloperAccounts = {};
-							MeteorDeveloperAccounts._server = 'https://www.meteor.com';
+type MeteorDeveloperOptions = {
+	developerAccountsServer?: string;
+	redirectUrl?: string;
+	details?: string;
+	userEmail?: string;
+	loginHint?: string;
+	loginStyle?: 'popup' | 'redirect';
+	[key: string]: any;
+};
 
-							MeteorDeveloperAccounts._config = (options) => {
-								if (options.developerAccountsServer) {
-									MeteorDeveloperAccounts._server = options.developerAccountsServer;
-								}
-							};
-						},
+type CredentialRequestCompleteCallback = (error?: Error | unknown) => void;
 
-						'meteor_developer_client.js'() {
-							const requestCredential = (options, credentialRequestCompleteCallback) => {
-								if (!credentialRequestCompleteCallback && typeof options === 'function') {
-									credentialRequestCompleteCallback = options;
-									options = null;
-								}
+// -----------------------------------------------------------------------------
+// Meteor Developer Accounts Implementation
+// -----------------------------------------------------------------------------
 
-								const config = ServiceConfiguration.configurations.findOne({ service: 'meteor-developer' });
+export const MeteorDeveloperAccounts = {
+	_server: 'https://www.meteor.com',
 
-								if (!config) {
-									credentialRequestCompleteCallback && credentialRequestCompleteCallback(new ServiceConfiguration.ConfigError());
+	/**
+	 * Sets the server configuration (e.g. for testing against a local server).
+	 */
+	_config(options: MeteorDeveloperOptions) {
+		if (options.developerAccountsServer) {
+			this._server = options.developerAccountsServer;
+		}
+	},
 
-									return;
-								}
+	/**
+	 * Request credentials from Meteor Developer Accounts.
+	 */
+	requestCredential(
+		options?: MeteorDeveloperOptions | CredentialRequestCompleteCallback,
+		credentialRequestCompleteCallback?: CredentialRequestCompleteCallback,
+	) {
+		// Support (callback) signature without options
+		if (!credentialRequestCompleteCallback && typeof options === 'function') {
+			credentialRequestCompleteCallback = options;
+			options = {};
+		}
 
-								const credentialToken = Random.secret();
-								const loginStyle = OAuth._loginStyle('meteor-developer', config, options);
-								let loginUrl = `${MeteorDeveloperAccounts._server}/oauth2/authorize?${'state='.concat(
-									OAuth._stateParam(loginStyle, credentialToken, options && options.redirectUrl),
-								)}&response_type=code&${'client_id='
-									.concat(config.clientId)
-									.concat(options && options.details ? '&details='.concat(options && options.details) : '')}`;
+		const config = ServiceConfiguration.configurations.findOne({ service: 'meteor-developer' }) as MeteorDeveloperOptions | undefined;
 
-								if (options && options.userEmail && !options.loginHint) {
-									options.loginHint = options.userEmail;
-									delete options.userEmail;
-								}
+		if (!config) {
+			if (credentialRequestCompleteCallback) {
+				credentialRequestCompleteCallback(new ServiceConfiguration.ConfigError());
+			}
+			return;
+		}
 
-								if (options && options.loginHint) {
-									loginUrl += '&user_email='.concat(encodeURIComponent(options.loginHint));
-								}
+		const opts = (options as MeteorDeveloperOptions) || {};
+		const credentialToken = Random.secret();
+		const loginStyle = OAuth._loginStyle('meteor-developer', config, opts);
 
-								loginUrl += '&redirect_uri='.concat(OAuth._redirectUri('meteor-developer', config));
+		// Handle login hint logic (userEmail is legacy alias for loginHint)
+		let { loginHint } = opts;
+		if (opts.userEmail && !loginHint) {
+			loginHint = opts.userEmail;
+		}
 
-								OAuth.launchLogin({
-									loginService: 'meteor-developer',
-									loginStyle,
-									loginUrl,
-									credentialRequestCompleteCallback,
-									credentialToken,
-									popupOptions: { width: 497, height: 749 },
-								});
-							};
+		// Construct Login URL
+		let loginUrl =
+			`${MeteorDeveloperAccounts._server}/oauth2/authorize` +
+			`?state=${OAuth._stateParam(loginStyle, credentialToken, opts.redirectUrl)}` +
+			`&response_type=code` +
+			`&client_id=${config.clientId}`;
 
-							MeteorDeveloperAccounts.requestCredential = requestCredential;
-						},
-					},
-				},
-			},
-		},
-		{ extensions: ['.js', '.json'] },
-	);
+		if (opts.details) {
+			loginUrl += `&details=${opts.details}`;
+		}
 
-	return {
-		export() {
-			return { MeteorDeveloperAccounts };
-		},
-		require,
-		eagerModulePaths: [
-			'/node_modules/meteor/meteor-developer-oauth/meteor_developer_common.js',
-			'/node_modules/meteor/meteor-developer-oauth/meteor_developer_client.js',
-		],
-	};
-});
-export const { MeteorDeveloperAccounts } = Package['meteor-developer-oauth'];
+		if (loginHint) {
+			loginUrl += `&user_email=${encodeURIComponent(loginHint)}`;
+		}
+
+		loginUrl += `&redirect_uri=${OAuth._redirectUri('meteor-developer', config)}`;
+
+		OAuth.launchLogin({
+			loginService: 'meteor-developer',
+			loginStyle,
+			loginUrl,
+			credentialRequestCompleteCallback,
+			credentialToken,
+			popupOptions: { width: 497, height: 749 },
+		});
+	},
+};
+
+// -----------------------------------------------------------------------------
+// Legacy Registration
+// -----------------------------------------------------------------------------
+
+Package['meteor-developer-oauth'] = { MeteorDeveloperAccounts };

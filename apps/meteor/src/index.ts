@@ -1,7 +1,10 @@
+import './meteor/core-runtime.ts';
+import './meteor/modules-runtime.ts';
+import './meteor/modules.ts';
 import { Accounts } from './meteor/accounts-base.ts';
 import { loginWithPassword, _hashPassword } from './meteor/accounts-password.ts';
 import { Meteor } from './meteor/meteor.ts';
-import './meteor/core-runtime.ts';
+
 import './meteor/accounts-oauth.ts';
 
 import './meteor/service-configuration.ts';
