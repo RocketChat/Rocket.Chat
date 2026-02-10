@@ -38,6 +38,14 @@ on:
         default: 0
         required: false
         type: number
+      perf-vus:
+        default: 10
+        required: false
+        type: number
+      perf-duration:
+        default: '30s'
+        required: false
+        type: string
       type:
         required: true
         type: string
@@ -210,6 +218,25 @@ jobs:
 
       - name: Remove unused Docker images
         run: docker system prune -af
+
+      - name: Performance Test (k6)
+        if: inputs.type == 'perf'
+        uses: ./.github/actions/k6-perf
+        with:
+          tests: |
+            [
+              {
+                "name": "send-message",
+                "file": "apps/meteor/tests/performance/send-message.k6.js",
+                "profile": "normal"
+              },
+              {
+                "name": "send-message-stress",
+                "file": "apps/meteor/tests/performance/send-message.k6.js",
+                "profile": "stress"
+              }
+            ]
+          threshold: "8"
 
       - name: E2E Test API
         if: inputs.type == 'api'

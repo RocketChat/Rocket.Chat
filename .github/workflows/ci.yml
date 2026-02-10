@@ -507,6 +507,24 @@ jobs:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
 
+  test-perf:
+    name: ⚡ Performance (k6 SendMessage)
+    needs: [checks, build-gh-docker-publish, release-versions]
+
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: perf
+      release: ce
+      perf-vus: 1
+      perf-duration: 30s
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+
   test-ui:
     name: 🔨 Test UI (CE)
     needs: [checks, build-gh-docker-publish, release-versions]
@@ -674,6 +692,24 @@ jobs:
         if: failure()
         working-directory: ./ee/packages/federation-matrix
         run: docker compose -f docker-compose.test.yml logs mongo
+
+  perf-test:
+    name: ⚡ Performance (k6 SendMessage)
+    needs: [checks, build-gh-docker-publish, release-versions]
+
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: perf
+      release: ce
+      perf-vus: ${{ fromJSON(github.event.inputs.perf-vus) }}
+      perf-duration: ${{ github.event.inputs.perf-duration }}
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
 
   report-coverage:
     name: 📊 Report Coverage
