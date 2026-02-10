@@ -67,7 +67,7 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.content.lastUserMessageDownloadLink).toHaveCount(1);
 	});
 
-	test.fixme('should not be able to attach files when editing a message', async () => {
+	test('should not be able to attach files when editing a message', async () => {
 		await poHomeChannel.content.sendMessage('message to be edited');
 		await poHomeChannel.content.openLastMessageMenu();
 		await poHomeChannel.content.btnOptionEditMessage.click();

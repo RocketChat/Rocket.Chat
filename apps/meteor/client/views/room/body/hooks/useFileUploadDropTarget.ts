@@ -1,7 +1,7 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { DragEvent, ReactNode } from 'react';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import { useDropTarget } from './useDropTarget';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
@@ -40,6 +40,11 @@ export const useFileUploadDropTarget = (
 	const chat = useChat();
 	const subscription = useRoomSubscription();
 
+	const isEditing = useSyncExternalStore(
+		chat?.composer?.editing.subscribe ?? (() => () => undefined),
+		chat?.composer?.editing.get ?? (() => false),
+	);
+
 	const onFileDrop = useEffectEvent(async (files: File[]) => {
 		const { getMimeType } = await import('../../../../../app/utils/lib/mimeTypes');
 		const getUniqueFiles = () => {
@@ -73,7 +78,7 @@ export const useFileUploadDropTarget = (
 			} as const;
 		}
 
-		if (!fileUploadAllowedForUser || !subscription) {
+		if (!fileUploadAllowedForUser || !subscription || isEditing) {
 			return {
 				enabled: false,
 				reason: t('error-not-allowed'),
@@ -86,7 +91,7 @@ export const useFileUploadDropTarget = (
 			onFileDrop,
 			...overlayProps,
 		} as const;
-	}, [fileUploadAllowedForUser, fileUploadEnabled, isRoomOverMacLimit, onFileDrop, overlayProps, subscription, t]);
+	}, [isEditing, fileUploadAllowedForUser, fileUploadEnabled, isRoomOverMacLimit, onFileDrop, overlayProps, subscription, t]);
 
 	return [triggerProps, allOverlayProps] as const;
 };
