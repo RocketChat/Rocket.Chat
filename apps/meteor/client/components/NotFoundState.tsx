@@ -24,14 +24,18 @@ const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
 		router.navigate('/home');
 	};
 
-	const handleGoBackClick = () => {
-		
-		if (window.history.length > 1) {
-			window.history.back();
-		} else {
-			router.navigate('/home');
-		}
-	};
+const handleGoBackClick = () => {
+  const isInternalReferrer =
+    document.referrer &&
+    document.referrer.startsWith(window.location.origin);
+
+  if (isInternalReferrer) {
+    window.history.back();
+  } else {
+    router.navigate('/home');
+  }
+};
+
 
 	return (
 		<Box display='flex' justifyContent='center' height='full'>
