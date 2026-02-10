@@ -786,7 +786,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					).rejects.toThrow();
 
 					const subscriptions = await getSubscriptions(userWithNonMatchingEmailRequestConfig);
-					const invitedSub = subscriptions.update.find((sub) => sub.name === userWithNonMatchingEmail.username);
+					const invitedSub = subscriptions.update.find((sub) => sub.fname === `${channelName}:${federationConfig.hs1.domain}`);
 					expect(invitedSub).toBeUndefined();
 				});
 			});
