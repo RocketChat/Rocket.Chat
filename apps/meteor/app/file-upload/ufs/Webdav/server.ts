@@ -3,7 +3,6 @@ import stream from 'stream';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { check } from 'meteor/check';
-import type { OptionalId } from 'mongodb';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { UploadFS } from '../../../../server/ufs';
@@ -19,11 +18,11 @@ type WebdavOptions = StoreOptions & {
 		};
 	};
 	uploadFolderPath: string;
-	getPath: (file: OptionalId<IUpload>) => string;
+	getPath: (file: Omit<IUpload, '_updatedAt'>) => string;
 };
 
 class WebdavStore extends UploadFS.Store {
-	protected getPath: (file: IUpload) => string;
+	protected getPath: (file: Omit<IUpload, '_updatedAt'>) => string;
 
 	constructor(options: WebdavOptions) {
 		super(options);
@@ -72,7 +71,7 @@ class WebdavStore extends UploadFS.Store {
 			}
 
 			file.Webdav = {
-				path: options.getPath(file),
+				path: options.getPath(file as Omit<IUpload, '_updatedAt'>),
 			};
 
 			file.store = this.options.name;

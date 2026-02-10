@@ -23,5 +23,6 @@ Default.args = {
 			_id: 'rocket.cat',
 			username: 'rocket.cat',
 		},
+		_updatedAt: new Date(),
 	},
 };
