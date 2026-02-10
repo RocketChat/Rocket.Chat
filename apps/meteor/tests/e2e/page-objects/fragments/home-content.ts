@@ -70,7 +70,7 @@ export class HomeContent {
 	}
 
 	get lastUserMessageAttachment(): Locator {
-		return this.page.locator('[data-qa-type="message-attachment"]').last();
+		return this.page.locator('[role="document"][aria-roledescription="message attachment"]').last();
 	}
 
 	get lastUserMessageNotSequential(): Locator {
@@ -199,7 +199,7 @@ export class HomeContent {
 	}
 
 	get lastMessageTextAttachment(): Locator {
-		return this.messageListItems.last().locator('[data-qa-type="message-attachment"]');
+		return this.messageListItems.last().locator('[role="document"][aria-roledescription="message attachment"]');
 	}
 
 	get lastMessageTextAttachmentEqualsText(): Locator {
@@ -280,7 +280,7 @@ export class HomeContent {
 	}
 
 	get lastThreadMessageTextAttachment(): Locator {
-		return this.threadMessageListItems.last().locator('[data-qa-type="message-attachment"]');
+		return this.threadMessageListItems.last().locator('[role="document"][aria-roledescription="message attachment"]');
 	}
 
 	get btnOptionEditMessage(): Locator {

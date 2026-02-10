@@ -4,7 +4,7 @@ import type { ComponentPropsWithoutRef } from 'react';
 type AttachmentTextProps = ComponentPropsWithoutRef<typeof Box>;
 
 const AttachmentText = (props: AttachmentTextProps) => (
-	<Box data-qa-type='message-attachment' mbe={4} mi={2} fontScale='p2' color='default' {...props} />
+	<Box role='document' aria-roledescription='message attachment' mbe={4} mi={2} fontScale='p2' color='default' {...props} />
 );
 
 export default AttachmentText;
