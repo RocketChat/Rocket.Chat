@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Palette, Box } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import type { ResizeCallback } from 're-resizable';
 import { Resizable } from 're-resizable';
 import type { ComponentProps } from 'react';
 
@@ -17,12 +18,14 @@ const ContextualbarResizable = ({ defaultWidth, children, ...props }: Contextual
 		}
 	`;
 
+	const handleResize: ResizeCallback = (_e, _dir, elRef) => {
+		setContextualbarWidth(elRef.style.width);
+	};
+
 	return (
 		<Resizable
 			{...props}
-			onResize={(_e: any, _dir: any, elRef: HTMLElement) => {
-				setContextualbarWidth(elRef.style.width);
-			}}
+			onResize={handleResize}
 			defaultSize={{
 				width: contextualbarWidth,
 				height: '100%',
