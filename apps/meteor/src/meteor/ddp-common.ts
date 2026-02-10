@@ -235,7 +235,7 @@ function randomToken() {
 	return Random.hexString(20);
 }
 
-class RandomStream {
+export class RandomStream {
 	seed: (string | (() => string))[];
 
 	sequences: any;
@@ -258,7 +258,7 @@ class RandomStream {
 		return sequence;
 	}
 
-	static get(scope: { randomStream?: RandomStream; randomSeed?: any }, name: string): (typeof Random)['insecure'] {
+	static get(scope?: { randomStream?: RandomStream; randomSeed?: any } | undefined, name?: string): (typeof Random)['insecure'] {
 		if (!name) {
 			name = 'default';
 		}

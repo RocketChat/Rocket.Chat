@@ -1,14 +1,14 @@
 import { EJSON } from './ejson.ts';
 import { Package } from './package-registry.ts';
 
-export class IdMap {
-	_map = new Map();
+export class IdMap<TId = unknown, TValue = unknown> {
+	_map = new Map<string, TValue>();
 
-	_idStringify: (id: unknown) => string;
+	_idStringify: (id: TId) => string;
 
-	_idParse: (id: string) => unknown = JSON.parse;
+	_idParse: (id: string) => TId;
 
-	constructor(idStringify: (id: unknown) => string = JSON.stringify, idParse: (id: string) => unknown = JSON.parse) {
+	constructor(idStringify: (id: TId) => string = JSON.stringify, idParse: (id: string) => TId = JSON.parse) {
 		this._idStringify = idStringify;
 		this._idParse = idParse;
 	}
@@ -18,22 +18,22 @@ export class IdMap {
 	// (Conceivably, this should be replaced with "UnorderedDict" with a specific
 	// set of methods that overlap between the two.)
 
-	get(id: unknown) {
+	get(id: TId) {
 		const key = this._idStringify(id);
 		return this._map.get(key);
 	}
 
-	set(id: unknown, value: unknown) {
+	set(id: TId, value: TValue) {
 		const key = this._idStringify(id);
 		this._map.set(key, value);
 	}
 
-	remove(id: unknown) {
+	remove(id: TId) {
 		const key = this._idStringify(id);
 		this._map.delete(key);
 	}
 
-	has(id: unknown) {
+	has(id: TId) {
 		const key = this._idStringify(id);
 		return this._map.has(key);
 	}
@@ -47,7 +47,7 @@ export class IdMap {
 	}
 
 	// Iterates over the items in the map. Return `false` to break the loop.
-	forEach(iterator: (value: unknown, id: unknown) => unknown) {
+	forEach(iterator: (value: TValue, id: TId) => unknown) {
 		// don't use _.each, because we can't break out of it.
 		for (const [key, value] of this._map) {
 			const breakIfFalse = iterator.call(null, value, this._idParse(key));
@@ -57,7 +57,7 @@ export class IdMap {
 		}
 	}
 
-	async forEachAsync(iterator: (this: null, value: unknown, id: unknown) => unknown) {
+	async forEachAsync(iterator: (this: null, value: TValue, id: TId) => unknown) {
 		for (const [key, value] of this._map) {
 			// eslint-disable-next-line no-await-in-loop
 			if ((await iterator.call(null, value, this._idParse(key))) === false) {
@@ -70,7 +70,7 @@ export class IdMap {
 		return this._map.size;
 	}
 
-	setDefault(id: unknown, def: unknown) {
+	setDefault(id: TId, def: TValue) {
 		const key = this._idStringify(id);
 		if (this._map.has(key)) {
 			return this._map.get(key);
