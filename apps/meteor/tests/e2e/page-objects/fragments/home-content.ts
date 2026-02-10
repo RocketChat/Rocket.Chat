@@ -54,7 +54,7 @@ export class HomeContent {
 	}
 
 	get threadMessageListItems(): Locator {
-		return this.threadMessageList.locator('[role="listitem"][aria-roledescription="message"]');
+		return this.threadMessageList.locator('[role="listitem"][aria-roledescription="thread message"]');
 	}
 
 	get lastUserMessage(): Locator {
