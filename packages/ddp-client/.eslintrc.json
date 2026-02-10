@@ -25,7 +25,7 @@
 	},
 	"overrides": [
 		{
-			"files": ["**/*.ts", "**/*.tsx", "**/*.cts", "**/*.mts"],
+			"files": ["**/*.ts", "**/*.tsx"],
 			"parserOptions": {
 				"project": null
 			},
