@@ -61,6 +61,10 @@ export class HomeContent {
 		return this.messageListItems.last();
 	}
 
+	get lastThreadMessagePreview(): Locator {
+		return this.page.getByRole('listitem').locator('[role="link"][aria-roledescription="thread message preview"]').last();
+	}
+
 	nthMessage(index: number): Locator {
 		return this.messageListItems.nth(index);
 	}

@@ -263,7 +263,7 @@ test.describe.serial('channel-management', () => {
 			await user1Channel.content.waitForChannel();
 			await user1Channel.content.sendMessage('message to check ignore');
 
-			await expect(poHomeChannel.content.lastUserMessageBody).toContainText('This message was ignored');
+			await expect(poHomeChannel.content.lastUserMessageBody.getByRole('button', { name: 'This message was ignored' })).toBeVisible();
 		});
 
 		test('should unignore single user1 message', async () => {

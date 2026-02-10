@@ -50,6 +50,7 @@ export const MessageListItem = ({
 					ref={ref}
 					data-id={message.ts}
 					role='listitem'
+					aria-roledescription='message'
 					{...(newDay && {
 						'data-time': new Date(message.ts)
 							.toISOString()
