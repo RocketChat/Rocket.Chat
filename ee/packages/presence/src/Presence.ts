@@ -298,7 +298,7 @@ export class Presence extends ServiceClass implements IPresence {
 		if (!this.broadcastEnabled) {
 			return;
 		}
-		void    this.api?.broadcast('presence.status', {
+		void this.api?.broadcast('presence.status', {
 			user,
 			previousStatus,
 		});
