@@ -1,4 +1,4 @@
-import type { IMessage, MessageTypesValues, IUser, IRoom, AtLeast } from '@rocket.chat/core-typings';
+import type { IMessage, MessageTypesValues, IUser, IRoom, AtLeast, MessageUrl } from '@rocket.chat/core-typings';
 
 export interface IMessageService {
 	sendMessage({ fromId, rid, msg }: { fromId: string; rid: string; msg: string }): Promise<IMessage>;
@@ -19,6 +19,7 @@ export interface IMessageService {
 		files,
 		attachments,
 		thread,
+		ts,
 	}: {
 		fromId: string;
 		rid: string;
@@ -32,6 +33,7 @@ export interface IMessageService {
 		files?: IMessage['files'];
 		attachments?: IMessage['attachments'];
 		thread?: { tmid: string; tshow: boolean };
+		ts: Date;
 	}): Promise<IMessage>;
 	saveSystemMessageAndNotifyUser<T = IMessage>(
 		type: MessageTypesValues,
@@ -47,4 +49,9 @@ export interface IMessageService {
 	reactToMessage(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean): Promise<void>;
 	beforeReacted(message: IMessage, room: AtLeast<IRoom, 'federated'>): Promise<void>;
 	beforeDelete(message: IMessage, room: IRoom): Promise<void>;
+	afterSave(param: { message: IMessage }): Promise<void>;
+	parseOEmbedUrl(url: string): Promise<{
+		urlPreview: MessageUrl;
+		foundMeta: boolean;
+	}>;
 }

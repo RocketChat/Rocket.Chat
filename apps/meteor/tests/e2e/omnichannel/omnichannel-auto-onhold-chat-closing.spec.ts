@@ -4,7 +4,8 @@ import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-auto-onhold-chat-closing', () => {
@@ -64,7 +65,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
 			`Chat On Hold: The chat was manually placed On Hold by user1`,
 		);
-		await expect(agent.poHomeChannel.content.inputMessage).not.toBeVisible();
+		await expect(agent.poHomeChannel.composer.inputMessage).not.toBeVisible();
 		await expect(agent.poHomeChannel.content.resumeOnHoldOmnichannelChatButton).toBeVisible();
 
 		// current url

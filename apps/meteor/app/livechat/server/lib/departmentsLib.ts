@@ -139,10 +139,7 @@ export async function saveDepartment(
 	// Disable event
 	if (department?.enabled && !departmentDB?.enabled) {
 		await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
-		void Apps.self
-			?.getBridges()
-			?.getListenerBridge()
-			.livechatEvent(AppEvents.IPostLivechatDepartmentDisabled, { department: departmentDB });
+		void Apps.self?.triggerEvent(AppEvents.IPostLivechatDepartmentDisabled, { department: departmentDB });
 	}
 
 	if (departmentUnit) {
@@ -215,7 +212,7 @@ export async function setDepartmentForGuest({ visitorId, department }: { visitor
 }
 
 export async function removeDepartment(departmentId: string) {
-	livechatLogger.debug(`Removing department: ${departmentId}`);
+	livechatLogger.debug({ msg: 'Removing department', departmentId });
 
 	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'businessHourId' | 'parentId'>>(departmentId, {
 		projection: { _id: 1, businessHourId: 1, parentId: 1 },
@@ -272,7 +269,7 @@ export async function removeDepartment(departmentId: string) {
 	}
 
 	await callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds: removedAgents.map(({ agentId }) => agentId) });
-	void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatDepartmentRemoved, { department });
+	void Apps.self?.triggerEvent(AppEvents.IPostLivechatDepartmentRemoved, { department });
 
 	return ret;
 }

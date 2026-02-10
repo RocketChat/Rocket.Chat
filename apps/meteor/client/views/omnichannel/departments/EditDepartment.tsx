@@ -20,10 +20,11 @@ import {
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter, usePermission } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useRouter, usePermission } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { useId, useMemo, useState } from 'react';
+import { useId, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import DepartmentsAgentsTable from './DepartmentAgentsTable/DepartmentAgentsTable';
 import DepartmentTags from './DepartmentTags';
@@ -31,10 +32,8 @@ import type { EditDepartmentFormData } from './definitions';
 import { formatAgentListPayload } from './utils/formatAgentListPayload';
 import { formatEditDepartmentPayload } from './utils/formatEditDepartmentPayload';
 import { getFormInitialValues } from './utils/getFormInititalValues';
-import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useRoomsList } from '../../../hooks/useRoomsList';
-import { AsyncStatePhase } from '../../../lib/asyncState';
 import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentBusinessHours } from '../additionalForms';
 import AutoCompleteUnit from '../additionalForms/AutoCompleteUnit';
 import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
@@ -54,7 +53,7 @@ export type EditDepartmentProps = {
 
 function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmentProps) {
 	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
@@ -77,11 +76,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 	const debouncedFallbackFilter = useDebouncedValue(fallbackFilter, 500);
 
-	const { itemsList: RoomsList, loadMoreItems: loadMoreRooms } = useRoomsList(
-		useMemo(() => ({ text: debouncedFallbackFilter }), [debouncedFallbackFilter]),
-	);
-
-	const { phase: roomsPhase, items: roomsItems, itemCount: roomsTotal } = useRecordList(RoomsList);
+	const { data: roomItems = [], fetchNextPage } = useRoomsList({ text: debouncedFallbackFilter });
 
 	const createDepartment = useEndpoint('POST', '/v1/livechat/department');
 	const updateDepartmentInfo = useEndpoint('PUT', '/v1/livechat/department/:_id', { _id: id || '' });
@@ -166,7 +161,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								<ToggleSwitch id={enabledField} {...register('enabled')} />
 							</FieldRow>
 						</Field>
-
 						<Field>
 							<FieldLabel htmlFor={nameField} required>
 								{t('Name')}
@@ -174,7 +168,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							<FieldRow>
 								<TextInput
 									id={nameField}
-									data-qa='DepartmentEditTextInput-Name'
 									flexGrow={1}
 									error={errors.name?.message as string}
 									placeholder={t('Name')}
@@ -182,31 +175,23 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								/>
 							</FieldRow>
 							{errors.name && (
-								<FieldError aria-live='assertive' id={`${nameField}-error`}>
+								<FieldError role='alert' id={`${nameField}-error`}>
 									{errors.name?.message}
 								</FieldError>
 							)}
 						</Field>
-
 						<Field>
 							<FieldLabel htmlFor={descriptionField}>{t('Description')}</FieldLabel>
 							<FieldRow>
-								<TextAreaInput
-									id={descriptionField}
-									data-qa='DepartmentEditTextInput-Description'
-									placeholder={t('Description')}
-									{...register('description')}
-								/>
+								<TextAreaInput id={descriptionField} placeholder={t('Description')} {...register('description')} />
 							</FieldRow>
 						</Field>
-
-						<Field data-qa='DepartmentEditToggle-ShowOnRegistrationPage'>
+						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={showOnRegistrationField}>{t('Show_on_registration_page')}</FieldLabel>
 								<ToggleSwitch id={showOnRegistrationField} {...register('showOnRegistration')} />
 							</FieldRow>
 						</Field>
-
 						<Field>
 							<FieldLabel htmlFor={emailField} required>
 								{t('Email')}
@@ -214,7 +199,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							<FieldRow>
 								<TextInput
 									id={emailField}
-									data-qa='DepartmentEditTextInput-Email'
 									error={errors.email?.message as string}
 									addon={<Icon name='mail' size='x20' />}
 									placeholder={t('Email')}
@@ -226,19 +210,17 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								/>
 							</FieldRow>
 							{errors.email && (
-								<FieldError aria-live='assertive' id={`${emailField}-error`}>
+								<FieldError role='alert' id={`${emailField}-error`}>
 									{errors.email?.message}
 								</FieldError>
 							)}
 						</Field>
-
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={showOnOfflineFormField}>{t('Show_on_offline_page')}</FieldLabel>
 								<ToggleSwitch id={showOnOfflineFormField} {...register('showOnOfflineForm')} />
 							</FieldRow>
 						</Field>
-
 						<Field>
 							<FieldLabel htmlFor={offlineMessageChannelNameField}>{t('Livechat_DepartmentOfflineMessageToChannel')}</FieldLabel>
 							<FieldRow>
@@ -248,24 +230,20 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 									render={({ field: { value, onChange } }) => (
 										<PaginatedSelectFiltered
 											id={offlineMessageChannelNameField}
-											data-qa='DepartmentSelect-LivechatDepartmentOfflineMessageToChannel'
 											value={value}
 											onChange={onChange}
 											flexShrink={0}
 											filter={fallbackFilter}
 											setFilter={setFallbackFilter as (value?: string | number) => void}
-											options={roomsItems}
+											options={roomItems}
 											placeholder={t('Channel_name')}
-											endReached={
-												roomsPhase === AsyncStatePhase.LOADING ? () => undefined : (start) => loadMoreRooms(start, Math.min(50, roomsTotal))
-											}
+											endReached={() => fetchNextPage()}
 											aria-busy={fallbackFilter !== debouncedFallbackFilter}
 										/>
 									)}
 								/>
 							</FieldRow>
 						</Field>
-
 						{hasLicense && (
 							<>
 								<Field>
@@ -281,7 +259,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
-
 								<Field>
 									<Controller
 										control={control}
@@ -295,7 +272,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
-
 								<Field>
 									<Controller
 										control={control}
@@ -309,7 +285,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
-
 								<Field>
 									<Controller
 										control={control}
@@ -319,7 +294,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
-
 								<Field>
 									<FieldLabel htmlFor={departmentsAllowedToForwardFieldId}>{t('List_of_departments_for_forward')}</FieldLabel>
 									<FieldRow>
@@ -345,7 +319,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 									</FieldRow>
 									<FieldHint>{t('List_of_departments_for_forward_description')}</FieldHint>
 								</Field>
-
 								<Field>
 									<FieldLabel htmlFor={fallbackForwardDepartmentField}>{t('Fallback_forward_department')}</FieldLabel>
 									<Controller
@@ -368,7 +341,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
-
 								<Field>
 									<FieldLabel htmlFor={unitFieldId} required={isUnitRequired}>
 										{t('Unit')}
@@ -396,21 +368,19 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										/>
 									</FieldRow>
 									{errors.unit && (
-										<FieldError aria-live='assertive' id={`${unitFieldId}-error`}>
+										<FieldError role='alert' id={`${unitFieldId}-error`}>
 											{errors.unit?.message}
 										</FieldError>
 									)}
 								</Field>
 							</>
 						)}
-
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={requestTagBeforeClosingChatField}>{t('Request_tag_before_closing_chat')}</FieldLabel>
 								<ToggleSwitch id={requestTagBeforeClosingChatField} {...register('requestTagBeforeClosingChat')} />
 							</FieldRow>
 						</Field>
-
 						<Field>
 							<FieldLabel htmlFor={chatClosingTagsField}>{t('Conversation_closing_tags')}</FieldLabel>
 							<Controller
@@ -433,7 +403,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								</FieldError>
 							)}
 						</Field>
-
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={allowReceiveForwardOffline}>{t('Accept_receive_inquiry_no_online_agents')}</FieldLabel>
@@ -446,9 +415,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 						<Field>
 							<DepartmentBusinessHours bhId={department?.businessHourId} />
 						</Field>
-
 						<Divider mb={16} />
-
 						<Field>
 							<FieldLabel id={agentsLabelId} mb={4}>
 								{t('Agents')}
