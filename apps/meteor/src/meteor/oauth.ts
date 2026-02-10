@@ -15,10 +15,10 @@ type PopupDimensions = {
 };
 
 type OAuthLoginOptions = {
-	loginService: string;
-	loginStyle?: 'popup' | 'redirect';
+	loginService?: string;
+	loginStyle?: 'popup' | 'redirect' | undefined;
 	loginUrl: string;
-	credentialRequestCompleteCallback?: (token?: string | Error) => void;
+	credentialRequestCompleteCallback?: ((token?: string | Error) => void) | undefined;
 	credentialToken: string;
 	popupOptions?: PopupDimensions;
 	redirectUrl?: string;
@@ -31,7 +31,7 @@ type OAuthState = {
 	redirectUrl?: string;
 };
 
-type OAuthConfiguration = {
+export type OAuthConfiguration = {
 	loginStyle?: 'popup' | 'redirect';
 	[key: string]: any;
 };

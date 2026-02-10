@@ -1,1 +1,1 @@
-export const isKey = <T extends object>(x: T, k: PropertyKey): k is keyof T => k in x;
+export const isKey = <T extends object>(object: T, key: PropertyKey): key is keyof T => key in object;

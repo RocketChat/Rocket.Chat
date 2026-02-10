@@ -1,4 +1,5 @@
 import { Package } from './package-registry.ts';
+import { hasOwn } from './utils/hasOwn.ts';
 
 export const { URL } = globalThis;
 
@@ -23,7 +24,7 @@ const _encodeParams = (params: any, prefix?: string): string => {
 	const isParamsArray = Array.isArray(params);
 
 	for (const p in params) {
-		if (Object.prototype.hasOwnProperty.call(params, p)) {
+		if (hasOwn(params, p)) {
 			const v = params[p];
 			// If we have a prefix (we are inside an object/array), append the key in brackets.
 			// If it's an array, the key is empty brackets "[]".

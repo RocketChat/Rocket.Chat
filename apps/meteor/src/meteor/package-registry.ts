@@ -1,7 +1,6 @@
-import { hasOwn } from './utils/hasOwn';
+import { isKey } from './utils/isKey.ts';
 
 interface IPackageRegistry {
-	_define(name: string, pkg: any, ...args: any[]): any;
 	[name: string]: any;
 }
 
@@ -36,7 +35,7 @@ class PackageRegistry implements IPackageRegistry {
 	}
 
 	_has(name: string): boolean {
-		return hasOwn(this, name);
+		return isKey(this, name);
 	}
 
 	get(name: string) {
