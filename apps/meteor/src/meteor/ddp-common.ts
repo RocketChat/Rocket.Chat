@@ -4,6 +4,8 @@ import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 import { isEmpty } from './utils/isEmpty.ts';
+import { isKey } from './utils/isKey.ts';
+import { noop } from './utils/noop.ts';
 
 class Heartbeat {
 	heartbeatInterval: number;
@@ -93,7 +95,7 @@ class Heartbeat {
 const SUPPORTED_DDP_VERSIONS = ['1', 'pre2', 'pre1'];
 
 function parseDDP(stringMessage: string) {
-	let msg;
+	let msg: Record<string, any>;
 	try {
 		msg = JSON.parse(stringMessage);
 	} catch (e) {
@@ -109,7 +111,7 @@ function parseDDP(stringMessage: string) {
 	}
 
 	if (hasOwn(msg, 'cleared')) {
-		if (!hasOwn(msg, 'fields')) {
+		if (!isKey(msg, 'fields')) {
 			msg.fields = {};
 		}
 
@@ -166,6 +168,17 @@ function stringifyDDP(msg: any) {
 	return JSON.stringify(copy);
 }
 
+type MethodInvocationOptions = {
+	name: string;
+	isSimulation: boolean;
+	unblock?: (...args: unknown[]) => void;
+	isFromCallAsync?: boolean;
+	userId: string | null;
+	setUserId?: (id: string | null) => void;
+	connection?: any;
+	randomSeed: string | (() => string);
+	fence?: any;
+};
 export class MethodInvocation {
 	name: string;
 
@@ -179,42 +192,24 @@ export class MethodInvocation {
 
 	userId: string | null;
 
-	_setUserId: (...args: unknown[]) => void;
+	_setUserId: (id: string | null) => void;
 
 	connection: any;
 
-	randomSeed: string;
+	randomSeed: string | (() => string);
 
 	randomStream: any;
 
 	fence: any;
 
-	constructor(options: {
-		name: string;
-		isSimulation: boolean;
-		unblock?: (...args: unknown[]) => void;
-		isFromCallAsync?: boolean;
-		userId: string | null;
-		setUserId?: (...args: unknown[]) => void;
-		connection?: any;
-		randomSeed: string;
-		fence?: any;
-	}) {
+	constructor(options: MethodInvocationOptions) {
 		this.name = options.name;
 		this.isSimulation = options.isSimulation;
-		this._unblock =
-			options.unblock ||
-			function () {
-				// noop
-			};
+		this._unblock = options.unblock || noop;
 		this._calledUnblock = false;
 		this._isFromCallAsync = !!options.isFromCallAsync;
 		this.userId = options.userId;
-		this._setUserId =
-			options.setUserId ||
-			function () {
-				// noop
-			};
+		this._setUserId = options.setUserId || noop;
 		this.connection = options.connection;
 		this.randomSeed = options.randomSeed;
 		this.randomStream = null;
@@ -241,7 +236,7 @@ function randomToken() {
 }
 
 class RandomStream {
-	seed: any[];
+	seed: (string | (() => string))[];
 
 	sequences: any;
 
@@ -254,13 +249,7 @@ class RandomStream {
 		let sequence = this.sequences[name] || null;
 
 		if (sequence === null) {
-			const sequenceSeed = this.seed.concat(name);
-
-			for (let i = 0; i < sequenceSeed.length; i++) {
-				if (typeof sequenceSeed[i] === 'function') {
-					sequenceSeed[i] = sequenceSeed[i]();
-				}
-			}
+			const sequenceSeed = this.seed.concat(name).map((s) => (typeof s === 'function' ? s() : s));
 
 			sequence = Random.createWithSeeds.apply(null, sequenceSeed);
 			this.sequences[name] = sequence;
@@ -269,7 +258,7 @@ class RandomStream {
 		return sequence;
 	}
 
-	static get(scope: { randomStream?: RandomStream; randomSeed?: any }, name: string) {
+	static get(scope: { randomStream?: RandomStream; randomSeed?: any }, name: string): (typeof Random)['insecure'] {
 		if (!name) {
 			name = 'default';
 		}

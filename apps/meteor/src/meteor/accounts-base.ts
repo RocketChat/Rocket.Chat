@@ -6,7 +6,8 @@ import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 import { ReactiveVar } from './reactive-var.ts';
 import { Tracker } from './tracker.ts';
-import { hasOwn } from './utils/hasOwn.ts';
+import { isKey } from './utils/isKey.ts';
+import { keys } from './utils/keys.ts';
 
 // config option keys
 const VALID_CONFIG_KEYS = [
@@ -34,34 +35,34 @@ const VALID_CONFIG_KEYS = [
 	'clientStorage',
 	'ddpUrl',
 	'connection',
-];
+] as const;
 
-type AccountsCommonOptions = Partial<{
-	sendVerificationEmail: {};
-	forbidClientAccountCreation: {};
-	restrictCreationByEmailDomain: {};
-	loginExpiration: {};
-	loginExpirationInDays: {};
-	oauthSecretKey: {};
-	passwordResetTokenExpirationInDays: {};
-	passwordResetTokenExpiration: {};
-	passwordEnrollTokenExpirationInDays: {};
-	passwordEnrollTokenExpiration: {};
-	ambiguousErrorMessages: {};
-	bcryptRounds: {};
-	argon2Enabled: {};
-	argon2Type: {};
-	argon2TimeCost: {};
-	argon2MemoryCost: {};
-	argon2Parallelism: {};
-	defaultFieldSelector: {};
-	collection: {};
-	loginTokenExpirationHours: {};
-	tokenSequenceLength: {};
-	clientStorage: {};
-	ddpUrl: {};
-	connection: Connection;
-}>;
+type AccountsClientOptions = {
+	sendVerificationEmail?: boolean;
+	forbidClientAccountCreation?: boolean;
+	restrictCreationByEmailDomain?: boolean;
+	loginExpiration?: number;
+	loginExpirationInDays?: number;
+	oauthSecretKey?: string;
+	passwordResetTokenExpirationInDays?: number;
+	passwordResetTokenExpiration?: number;
+	passwordEnrollTokenExpirationInDays?: number;
+	passwordEnrollTokenExpiration?: number;
+	ambiguousErrorMessages?: boolean;
+	bcryptRounds?: number;
+	argon2Enabled?: boolean;
+	argon2Type?: number;
+	argon2TimeCost?: number;
+	argon2MemoryCost?: number;
+	argon2Parallelism?: number;
+	defaultFieldSelector?: Record<string, any>;
+	collection?: string;
+	loginTokenExpirationHours?: number;
+	tokenSequenceLength?: number;
+	clientStorage?: 'local' | 'session';
+	ddpUrl?: string;
+	connection?: Connection;
+};
 
 // how long (in days) until a login token expires
 const DEFAULT_LOGIN_EXPIRATION_DAYS = 90;
@@ -87,7 +88,7 @@ const LOGIN_UNEXPIRING_TOKEN_DAYS = 365 * 100;
  */
 export class AccountsClient {
 	// Properties from AccountsCommon
-	public _options: AccountsCommonOptions;
+	public _options: AccountsClientOptions;
 
 	public connection: Connection;
 
@@ -146,11 +147,11 @@ export class AccountsClient {
 
 	public _enrollAccountToken: string;
 
-	constructor(options: any) {
+	constructor(options: AccountsClientOptions) {
 		// --- Initialization Logic from AccountsCommon ---
 
 		// Validate config options keys
-		for (const key of Object.keys(options)) {
+		for (const key of keys(options)) {
 			if (!VALID_CONFIG_KEYS.includes(key)) {
 				console.error(`Accounts.config: Invalid key: ${key}`);
 			}
@@ -192,7 +193,6 @@ export class AccountsClient {
 		// popup, declines retina scan, etc)
 		const lceName = 'Accounts.LoginCancelledError';
 		this.LoginCancelledError = Meteor.makeErrorType(lceName, function (description: string) {
-			// @ts-ignore
 			this.message = description;
 		});
 		this.LoginCancelledError.prototype.name = lceName;
@@ -295,16 +295,6 @@ export class AccountsClient {
 	 * @summary Get the current user record, or `null` if no user is logged in.
 	 */
 	user(options?: any) {
-		if (Meteor.isServer) {
-			console.warn(
-				[
-					'`Meteor.user()` is deprecated on the server side.',
-					'    To fetch the current user record on the server,',
-					'    use `Meteor.userAsync()` instead.',
-				].join('\n'),
-			);
-		}
-
 		const userId = this.userId();
 		const findOne = (...args: any[]) => (Meteor.isClient ? this.users.findOne(...args) : this.users.findOneAsync(...args));
 		return userId ? findOne(userId, this._addDefaultFieldSelector(options)) : null;
@@ -342,7 +332,7 @@ export class AccountsClient {
 		return this._onLogoutHook.register(func);
 	}
 
-	_initConnection(options: AccountsCommonOptions) {
+	_initConnection(options: AccountsClientOptions) {
 		if (options.connection) {
 			this.connection = options.connection;
 		}
@@ -353,14 +343,14 @@ export class AccountsClient {
 
 		if (typeof __meteor_runtime_config__ !== 'undefined' && __meteor_runtime_config__.ACCOUNTS_CONNECTION_URL) {
 			this.connection = DDP.connect(__meteor_runtime_config__.ACCOUNTS_CONNECTION_URL);
-		} else {
+		} else if (Meteor.connection) {
 			this.connection = Meteor.connection;
 		}
 
 		return this.connection;
 	}
 
-	_getTokenLifetimeMs() {
+	_getTokenLifetimeMs(): number {
 		const loginExpirationInDays =
 			this._options.loginExpirationInDays === null ? LOGIN_UNEXPIRING_TOKEN_DAYS : this._options.loginExpirationInDays;
 		return this._options.loginExpiration || (loginExpirationInDays || DEFAULT_LOGIN_EXPIRATION_DAYS) * 86400000;
@@ -406,32 +396,20 @@ export class AccountsClient {
 	/**
 	 * @summary Set global accounts options.
 	 */
-	config(options: any) {
+	config(options: AccountsClientOptions) {
 		// --- Merged Logic from AccountsCommon.config ---
 		if (!__meteor_runtime_config__.accountsConfigCalled) {
 			Meteor._debug('Accounts.config was called on the client but not on the server; some configuration options may not take effect.');
 		}
 
-		if (hasOwn(options, 'oauthSecretKey')) {
+		if (isKey(options, 'oauthSecretKey')) {
 			throw new Error('The oauthSecretKey option may only be specified on the server');
 		}
 
 		// Validate config options keys
-		for (const key of Object.keys(options)) {
+		for (const key of keys(options)) {
 			if (!VALID_CONFIG_KEYS.includes(key)) {
 				console.error(`Accounts.config: Invalid key: ${key}`);
-			}
-		}
-
-		// set values in Accounts._options
-		for (const key of VALID_CONFIG_KEYS) {
-			if (key in options) {
-				if (key in this._options) {
-					if (key !== 'collection' && Meteor.isTest && key !== 'clientStorage') {
-						throw new Meteor.Error(`Can't set \`${key}\` more than once`);
-					}
-				}
-				this._options[key] = options[key];
 			}
 		}
 
@@ -625,7 +603,7 @@ export class AccountsClient {
 			this.makeClientLoggedIn(result.id, result.token, result.tokenExpires);
 
 			void Tracker.autorun(async (computation) => {
-				const user = await Tracker.withComputation(computation, () => Meteor.userAsync());
+				const user = await Tracker.withComputation(computation, () => this.userAsync());
 
 				if (user) {
 					loginCallbacks({ loginDetails: result });
@@ -903,16 +881,9 @@ const attemptToMatchHash = (accounts: any, hash: string, success: (...args: any[
 	});
 };
 
-export const AccountsTest = {
-	attemptToMatchHash: (hash: string, success: (...args: any[]) => any) => attemptToMatchHash(Accounts, hash, success),
-};
-
 export const Accounts = new AccountsClient(Meteor.settings?.public?.packages?.accounts || {});
-
-Meteor.users = Accounts.users;
 
 Package['accounts-base'] = {
 	Accounts,
 	AccountsClient,
-	AccountsTest,
 };

@@ -1,5 +1,5 @@
 import { Accounts } from './accounts-base.ts';
-import { Meteor } from './meteor.ts';
+import { MeteorError } from './meteor.ts';
 import { SHA256 } from './sha.ts';
 
 type MeteorCallback<T = any> = (error?: Error, result?: T) => void;
@@ -20,8 +20,8 @@ type PasswordDigest = {
 type InternalLoginOptions = {
 	selector: UserSelector;
 	password: string;
-	code?: string; // 2FA code
-	callback?: MeteorCallback;
+	code?: string | undefined; // 2FA code
+	callback?: MeteorCallback | undefined;
 };
 
 type CreateUserOptions = {
@@ -63,11 +63,11 @@ const internalLoginWithPassword = ({ selector, password, code, callback }: Inter
 		methodArguments: [
 			{
 				user: normalizedSelector,
-				password: Accounts._hashPassword(password),
+				password: _hashPassword(password),
 				code,
 			},
 		],
-		userCallback: (error, result) => {
+		userCallback: (error: Error | undefined, result?: any) => {
 			if (error) {
 				reportError(error, callback);
 			} else if (callback) {
@@ -81,7 +81,7 @@ const internalLoginWithPassword = ({ selector, password, code, callback }: Inter
 
 // --- Hashing ---
 
-Accounts._hashPassword = (password: string): PasswordDigest => ({
+export const _hashPassword = (password: string): PasswordDigest => ({
 	digest: SHA256(password),
 	algorithm: 'sha-256',
 });
@@ -92,7 +92,7 @@ Accounts._hashPassword = (password: string): PasswordDigest => ({
  * @summary Log the user in with a password.
  * @locus Client
  */
-Meteor.loginWithPassword = (selector: UserSelector, password: string, callback?: MeteorCallback): UserSelector => {
+export const loginWithPassword = (selector: UserSelector, password: string, callback?: MeteorCallback): UserSelector => {
 	return internalLoginWithPassword({ selector, password, callback });
 };
 
@@ -100,7 +100,7 @@ Meteor.loginWithPassword = (selector: UserSelector, password: string, callback?:
  * @summary Log the user in with a password (Async).
  * @locus Client
  */
-Meteor.loginWithPasswordAsync = (selector: UserSelector, password: string): Promise<any> => {
+export const loginWithPasswordAsync = (selector: UserSelector, password: string): Promise<any> => {
 	return new Promise((resolve, reject) => {
 		internalLoginWithPassword({
 			selector,
@@ -114,9 +114,14 @@ Meteor.loginWithPasswordAsync = (selector: UserSelector, password: string): Prom
  * @summary Log the user in with a password and 2FA token.
  * @locus Client
  */
-Meteor.loginWithPasswordAnd2faCode = (selector: UserSelector, password: string, code: string, callback?: MeteorCallback): UserSelector => {
+export const loginWithPasswordAnd2faCode = (
+	selector: UserSelector,
+	password: string,
+	code: string,
+	callback?: MeteorCallback,
+): UserSelector => {
 	if (!code || typeof code !== 'string') {
-		throw new Meteor.Error(400, 'Token is required to use loginWithPasswordAnd2faCode and must be a string');
+		throw new MeteorError(400, 'Token is required to use loginWithPasswordAnd2faCode and must be a string');
 	}
 	return internalLoginWithPassword({ selector, password, code, callback });
 };
@@ -125,9 +130,9 @@ Meteor.loginWithPasswordAnd2faCode = (selector: UserSelector, password: string, 
  * @summary Log the user in with a password and 2FA token (Async).
  * @locus Client
  */
-Meteor.loginWithPasswordAnd2faCodeAsync = (selector: UserSelector, password: string, code: string): Promise<any> => {
+export const loginWithPasswordAnd2faCodeAsync = (selector: UserSelector, password: string, code: string): Promise<any> => {
 	return new Promise((resolve, reject) => {
-		Meteor.loginWithPasswordAnd2faCode(selector, password, code, (err, res) => (err ? reject(err) : resolve(res)));
+		loginWithPasswordAnd2faCode(selector, password, code, (err, res) => (err ? reject(err) : resolve(res)));
 	});
 };
 
@@ -137,7 +142,7 @@ Meteor.loginWithPasswordAnd2faCodeAsync = (selector: UserSelector, password: str
  * @summary Create a new user.
  * @locus Anywhere
  */
-Accounts.createUser = (options: CreateUserOptions, callback?: MeteorCallback): void => {
+export const createUser = (options: CreateUserOptions, callback?: MeteorCallback): void => {
 	// Create a shallow copy to avoid mutating the passed object
 	const safeOptions = { ...options };
 
@@ -146,11 +151,11 @@ Accounts.createUser = (options: CreateUserOptions, callback?: MeteorCallback): v
 	}
 
 	if (!safeOptions.password) {
-		return reportError(new Meteor.Error(400, 'Password may not be empty'), callback);
+		return reportError(new MeteorError(400, 'Password may not be empty'), callback);
 	}
 
 	// Replace password with the hashed password.
-	safeOptions.password = Accounts._hashPassword(safeOptions.password);
+	safeOptions.password = _hashPassword(safeOptions.password);
 
 	Accounts.callLoginMethod({
 		methodName: 'createUser',
@@ -163,9 +168,9 @@ Accounts.createUser = (options: CreateUserOptions, callback?: MeteorCallback): v
  * @summary Create a new user and return a promise.
  * @locus Anywhere
  */
-Accounts.createUserAsync = (options: CreateUserOptions): Promise<any> => {
+export const createUserAsync = (options: CreateUserOptions): Promise<any> => {
 	return new Promise((resolve, reject) =>
-		Accounts.createUser(options, (error, result) => {
+		createUser(options, (error, result) => {
 			if (error) {
 				reject(error);
 			} else {
@@ -181,19 +186,20 @@ Accounts.createUserAsync = (options: CreateUserOptions): Promise<any> => {
  * @summary Change the current user's password. Must be logged in.
  * @locus Client
  */
-Accounts.changePassword = (oldPassword: string | null, newPassword: string, callback?: MeteorCallback): void => {
-	if (!Meteor.user()) {
+export const changePassword = (oldPassword: string | null, newPassword: string, callback?: MeteorCallback): void => {
+	if (!Accounts.user()) {
 		return reportError(new Error('Must be logged in to change password.'), callback);
 	}
 
 	if (typeof newPassword !== 'string' || !newPassword) {
-		return reportError(new Meteor.Error(400, 'Password must be a non-empty string'), callback);
+		return reportError(new MeteorError(400, 'Password must be a non-empty string'), callback);
 	}
 
 	Accounts.connection.apply(
 		'changePassword',
-		[oldPassword ? Accounts._hashPassword(oldPassword) : null, Accounts._hashPassword(newPassword)],
-		(error: Error, result: any) => {
+		[oldPassword ? _hashPassword(oldPassword) : null, _hashPassword(newPassword)],
+		undefined,
+		(error, result) => {
 			if (error || !result) {
 				reportError(error || new Error('No result from changePassword.'), callback);
 			} else if (callback) {
@@ -207,9 +213,9 @@ Accounts.changePassword = (oldPassword: string | null, newPassword: string, call
  * @summary Change the current user's password (Async).
  * @locus Client
  */
-Accounts.changePasswordAsync = (oldPassword: string | null, newPassword: string): Promise<void> => {
+export const changePasswordAsync = (oldPassword: string | null, newPassword: string): Promise<void> => {
 	return new Promise((resolve, reject) => {
-		Accounts.changePassword(oldPassword, newPassword, (err) => (err ? reject(err) : resolve()));
+		changePassword(oldPassword, newPassword, (err) => (err ? reject(err) : resolve()));
 	});
 };
 
@@ -217,24 +223,21 @@ Accounts.changePasswordAsync = (oldPassword: string | null, newPassword: string)
  * @summary Request a forgot password email.
  * @locus Client
  */
-Accounts.forgotPassword = (options: ForgotPasswordOptions, callback?: MeteorCallback): void => {
+export const forgotPassword = (options: ForgotPasswordOptions, callback: MeteorCallback): void => {
 	if (!options.email) {
-		return reportError(new Meteor.Error(400, 'Must pass options.email'), callback);
+		return reportError(new MeteorError(400, 'Must pass options.email'), callback);
 	}
 
-	const args = [options];
-	if (callback) args.push(callback);
-
-	Accounts.connection.call('forgotPassword', ...args);
+	Accounts.connection.call('forgotPassword', options, callback);
 };
 
 /**
  * @summary Request a forgot password email (Async).
  * @locus Client
  */
-Accounts.forgotPasswordAsync = (options: ForgotPasswordOptions): Promise<any> => {
+export const forgotPasswordAsync = (options: ForgotPasswordOptions): Promise<any> => {
 	return new Promise((resolve, reject) => {
-		Accounts.forgotPassword(options, (err, res) => (err ? reject(err) : resolve(res)));
+		forgotPassword(options, (err, res) => (err ? reject(err) : resolve(res)));
 	});
 };
 
@@ -242,18 +245,18 @@ Accounts.forgotPasswordAsync = (options: ForgotPasswordOptions): Promise<any> =>
  * @summary Reset the password for a user using a token received in email.
  * @locus Client
  */
-Accounts.resetPassword = (token: string, newPassword: string, callback?: MeteorCallback): void => {
+export const resetPassword = (token: string, newPassword: string, callback?: MeteorCallback): void => {
 	if (typeof token !== 'string') {
-		return reportError(new Meteor.Error(400, 'Token must be a string'), callback);
+		return reportError(new MeteorError(400, 'Token must be a string'), callback);
 	}
 
 	if (typeof newPassword !== 'string' || !newPassword) {
-		return reportError(new Meteor.Error(400, 'Password must be a non-empty string'), callback);
+		return reportError(new MeteorError(400, 'Password must be a non-empty string'), callback);
 	}
 
 	Accounts.callLoginMethod({
 		methodName: 'resetPassword',
-		methodArguments: [token, Accounts._hashPassword(newPassword)],
+		methodArguments: [token, _hashPassword(newPassword)],
 		userCallback: callback,
 	});
 };
@@ -262,9 +265,9 @@ Accounts.resetPassword = (token: string, newPassword: string, callback?: MeteorC
  * @summary Reset the password for a user using a token received in email (Async).
  * @locus Client
  */
-Accounts.resetPasswordAsync = (token: string, newPassword: string): Promise<any> => {
+export const resetPasswordAsync = (token: string, newPassword: string): Promise<any> => {
 	return new Promise((resolve, reject) => {
-		Accounts.resetPassword(token, newPassword, (err, res) => (err ? reject(err) : resolve(res)));
+		resetPassword(token, newPassword, (err, res) => (err ? reject(err) : resolve(res)));
 	});
 };
 
@@ -272,9 +275,9 @@ Accounts.resetPasswordAsync = (token: string, newPassword: string): Promise<any>
  * @summary Marks the user's email address as verified.
  * @locus Client
  */
-Accounts.verifyEmail = (token: string, callback?: MeteorCallback): void => {
+export const verifyEmail = (token: string, callback?: MeteorCallback): void => {
 	if (!token) {
-		return reportError(new Meteor.Error(400, 'Need to pass token'), callback);
+		return reportError(new MeteorError(400, 'Need to pass token'), callback);
 	}
 
 	Accounts.callLoginMethod({
@@ -288,8 +291,8 @@ Accounts.verifyEmail = (token: string, callback?: MeteorCallback): void => {
  * @summary Marks the user's email address as verified (Async).
  * @locus Client
  */
-Accounts.verifyEmailAsync = (token: string): Promise<any> => {
+export const verifyEmailAsync = (token: string): Promise<any> => {
 	return new Promise((resolve, reject) => {
-		Accounts.verifyEmail(token, (err, res) => (err ? reject(err) : resolve(res)));
+		verifyEmail(token, (err, res) => (err ? reject(err) : resolve(res)));
 	});
 };
