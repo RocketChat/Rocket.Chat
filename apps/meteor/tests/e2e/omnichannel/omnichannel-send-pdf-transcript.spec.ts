@@ -63,7 +63,8 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 		await test.step('Expect to have exported PDF in rocket.cat', async () => {
 			await page.waitForTimeout(3000);
 			await agent.poHomeChannel.navbar.openChat('rocket.cat');
-			await expect(agent.poHomeChannel.transcript.DownloadedPDF).toBeVisible();
+			await expect(agent.poHomeChannel.content.lastUserMessage).toHaveText('PDF Transcript successfully generated');
+			await expect(agent.poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Transcript_Rocket.Chat' })).toBeVisible();
 		});
 
 		// PDF can be exported from Omnichannel Contact Center

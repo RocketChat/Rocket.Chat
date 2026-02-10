@@ -7,8 +7,8 @@ export class Message {
 		return this.root.locator('[role="document"][aria-roledescription="message body"]');
 	}
 
-	get fileUploadName() {
-		return this.root.locator('[data-qa-type="attachment-title-link"]');
+	getFileUploadByName(filename: string) {
+		return this.root.getByRole('link', { name: filename });
 	}
 
 	get encryptedIcon() {

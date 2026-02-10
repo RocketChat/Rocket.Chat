@@ -194,8 +194,8 @@ export class HomeContent {
 
 	// -----------------------------------------
 
-	get lastMessageFileName(): Locator {
-		return this.messageListItems.last().locator('[data-qa-type="attachment-title-link"]');
+	getLastMessageByFileName(filename: string): Locator {
+		return this.messageListItems.last().getByRole('link', { name: filename });
 	}
 
 	get lastMessageTextAttachment(): Locator {
@@ -270,8 +270,8 @@ export class HomeContent {
 		return this.threadMessageListItems.last().locator('[role="document"][aria-roledescription="message body"]');
 	}
 
-	get lastThreadMessageFileName(): Locator {
-		return this.threadMessageListItems.last().locator('[data-qa-type="attachment-title-link"]');
+	getLastThreadMessageByFileName(filename: string): Locator {
+		return this.threadMessageListItems.last().getByRole('link', { name: filename });
 	}
 
 	// TODO: improve locator specificity

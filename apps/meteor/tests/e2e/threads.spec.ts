@@ -89,7 +89,7 @@ test.describe.serial('Threads', () => {
 		await poHomeChannel.content.btnModalConfirm.click();
 
 		await expect(poHomeChannel.content.lastThreadMessageFileDescription).toHaveText('any_description');
-		await expect(poHomeChannel.content.lastThreadMessageFileName).toContainText('any_file1.txt');
+		await expect(poHomeChannel.content.getLastThreadMessageByFileName('any_file1.txt')).toBeVisible();
 	});
 
 	test.describe('thread message actions', () => {
