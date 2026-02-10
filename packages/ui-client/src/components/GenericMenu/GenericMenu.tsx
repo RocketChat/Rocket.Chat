@@ -1,5 +1,5 @@
 import { IconButton, MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
-import { cloneElement, type ComponentProps, type ReactNode } from 'react';
+import { cloneElement, type ComponentProps, type ReactElement, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { GenericMenuItemProps } from './GenericMenuItem';
@@ -12,6 +12,7 @@ type GenericMenuCommonProps = {
 	disabled?: boolean;
 	callbackAction?: () => void;
 	isOpen?: boolean;
+	button?: ReactElement;
 };
 
 type GenericMenuConditionalProps =
@@ -51,7 +52,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 		if (button) {
 			// FIXME: deprecate prop `button` as there's no way to ensure it is actually a button
 			// (e.g cloneElement could be passing props to a fragment)
-			return cloneElement(button, { small: true, icon, disabled, title, className } as any);
+			return cloneElement(button, { small: true, icon, disabled, title, className });
 		}
 
 		return <IconButton small icon={icon} className={className} title={title} disabled />;
