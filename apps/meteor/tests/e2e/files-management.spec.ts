@@ -46,7 +46,6 @@ test.describe.serial('files-management', () => {
 		});
 
 		await test.step('should delete the file from the list', async () => {
-			await poHomeChannel.tabs.files.getFileByName(TEST_FILE_TXT).click();
 			await poHomeChannel.tabs.files.deleteFile(TEST_FILE_TXT);
 
 			await expect(poHomeChannel.tabs.files.getFileByName(TEST_FILE_TXT)).toHaveCount(0);
