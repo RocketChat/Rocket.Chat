@@ -1,17 +1,16 @@
-import { Random } from '@rocket.chat/random';
-import {EJSON} from './ejson.ts';
-import { AllowDeny } from 'meteor/allow-deny';
-import { Meteor } from 'meteor/meteor';
-import { LocalCollection } from 'meteor/minimongo';
-
+import { AllowDeny } from './allow-deny.ts';
 import { check, Match } from './check.ts';
+import { DDP } from './ddp-client.ts';
+import { EJSON } from './ejson.ts';
 import { Log } from './logging.ts';
+import { Meteor } from './meteor.ts';
+import { LocalCollection } from './minimongo.ts';
 import { meteorInstall } from './modules-runtime.ts';
+import { MongoID } from './mongo-id.ts';
 import { Package } from './package-registry.ts';
+import { Random } from './random.ts';
 
 Package['core-runtime'].queue('mongo', () => {
-	const { DDP } = Package['ddp-client'];
-	const { MongoID } = Package['mongo-id'];
 	let Mongo;
 
 	const require = meteorInstall(

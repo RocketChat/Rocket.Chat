@@ -1,138 +1,132 @@
-import { meteorInstall } from './modules.ts';
 import { OAuth } from './oauth.ts';
+import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 import { ServiceConfiguration } from './service-configuration.ts';
-import { Package } from './package-registry.ts';
 
-Package['core-runtime'].queue('google-oauth', () => {
-	let Google;
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
 
-	const require = meteorInstall(
-		{
-			node_modules: {
-				meteor: {
-					'google-oauth': {
-						'google_client.js'(require, exports, module) {
-							let Google;
+type GoogleOptions = {
+	requestPermissions?: string[];
+	loginUrlParameters?: Record<string, string>;
+	requestOfflineToken?: boolean;
+	forceApprovalPrompt?: boolean;
+	prompt?: string;
+	loginHint?: string;
+	loginStyle?: 'popup' | 'redirect';
+	redirectUrl?: string;
+	[key: string]: any;
+};
 
-							module.link(
-								'./namespace.js',
-								{
-									default(v) {
-										Google = v;
-									},
-								},
-								0,
-							);
+type CredentialRequestCompleteCallback = (error?: Error | unknown) => void;
 
-							const hasOwn = Object.prototype.hasOwnProperty;
+// -----------------------------------------------------------------------------
+// Constants
+// -----------------------------------------------------------------------------
 
-							const ILLEGAL_PARAMETERS = {
-								response_type: 1,
-								client_id: 1,
-								scope: 1,
-								redirect_uri: 1,
-								state: 1,
-							};
+const ILLEGAL_PARAMETERS: Record<string, boolean> = {
+	response_type: true,
+	client_id: true,
+	scope: true,
+	redirect_uri: true,
+	state: true,
+};
 
-							Google.requestCredential = (options, credentialRequestCompleteCallback) => {
-								if (!credentialRequestCompleteCallback && typeof options === 'function') {
-									credentialRequestCompleteCallback = options;
-									options = {};
-								} else if (!options) {
-									options = {};
-								}
+// -----------------------------------------------------------------------------
+// Google OAuth Implementation
+// -----------------------------------------------------------------------------
 
-								const config = ServiceConfiguration.configurations.findOne({ service: 'google' });
+export const Google = {
+	requestCredential(
+		options?: GoogleOptions | CredentialRequestCompleteCallback,
+		credentialRequestCompleteCallback?: CredentialRequestCompleteCallback,
+	) {
+		// Support (callback) signature without options
+		if (!credentialRequestCompleteCallback && typeof options === 'function') {
+			credentialRequestCompleteCallback = options;
+			options = {};
+		} else if (!options) {
+			options = {};
+		}
 
-								if (!config) {
-									credentialRequestCompleteCallback && credentialRequestCompleteCallback(new ServiceConfiguration.ConfigError());
+		const opts = options as GoogleOptions;
 
-									return;
-								}
+		const config = ServiceConfiguration.configurations.findOne({ service: 'google' }) as GoogleOptions | undefined;
 
-								const credentialToken = Random.secret();
-								const requiredScopes = { email: 1 };
-								let scopes = options.requestPermissions || ['profile'];
+		if (!config) {
+			if (credentialRequestCompleteCallback) {
+				credentialRequestCompleteCallback(new ServiceConfiguration.ConfigError());
+			}
+			return;
+		}
 
-								scopes.forEach((scope) => (requiredScopes[scope] = 1));
-								scopes = Object.keys(requiredScopes);
+		const credentialToken = Random.secret();
 
-								const loginUrlParameters = {};
+		// Manage Scopes: Ensure 'email' is always present and remove duplicates
+		const scopeSet = new Set<string>(opts.requestPermissions || ['profile']);
+		scopeSet.add('email');
+		const scopes = Array.from(scopeSet);
 
-								if (config.loginUrlParameters) {
-									Object.assign(loginUrlParameters, config.loginUrlParameters);
-								}
+		// Merge Login URL Parameters (Config > Options)
+		const loginUrlParameters: Record<string, string> = {
+			...(config.loginUrlParameters || {}),
+			...(opts.loginUrlParameters || {}),
+		};
 
-								if (options.loginUrlParameters) {
-									Object.assign(loginUrlParameters, options.loginUrlParameters);
-								}
+		// Validate Parameters
+		Object.keys(loginUrlParameters).forEach((key) => {
+			if (ILLEGAL_PARAMETERS[key]) {
+				throw new Error(`Google.requestCredential: Invalid loginUrlParameter: ${key}`);
+			}
+		});
 
-								Object.keys(loginUrlParameters).forEach((key) => {
-									if (hasOwn.call(ILLEGAL_PARAMETERS, key)) {
-										throw new Error('Google.requestCredential: Invalid loginUrlParameter: '.concat(key));
-									}
-								});
+		// Handle specific Google OAuth flags
+		if (opts.requestOfflineToken != null) {
+			loginUrlParameters.access_type = opts.requestOfflineToken ? 'offline' : 'online';
+		}
 
-								if (options.requestOfflineToken != null) {
-									loginUrlParameters.access_type = options.requestOfflineToken ? 'offline' : 'online';
-								}
+		if (opts.prompt != null) {
+			loginUrlParameters.prompt = opts.prompt;
+		} else if (opts.forceApprovalPrompt) {
+			loginUrlParameters.prompt = 'consent';
+		}
 
-								if (options.prompt != null) {
-									loginUrlParameters.prompt = options.prompt;
-								} else if (options.forceApprovalPrompt) {
-									loginUrlParameters.prompt = 'consent';
-								}
+		if (opts.loginHint) {
+			loginUrlParameters.login_hint = opts.loginHint;
+		}
 
-								if (options.loginHint) {
-									loginUrlParameters.login_hint = options.loginHint;
-								}
+		const loginStyle = OAuth._loginStyle('google', config, opts);
 
-								const loginStyle = OAuth._loginStyle('google', config, options);
+		// Add mandatory protocol parameters
+		Object.assign(loginUrlParameters, {
+			response_type: 'code',
+			client_id: config.clientId,
+			scope: scopes.join(' '),
+			redirect_uri: OAuth._redirectUri('google', config),
+			state: OAuth._stateParam(loginStyle, credentialToken, opts.redirectUrl),
+		});
 
-								Object.assign(loginUrlParameters, {
-									response_type: 'code',
-									client_id: config.clientId,
-									scope: scopes.join(' '),
-									redirect_uri: OAuth._redirectUri('google', config),
-									state: OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl),
-								});
+		// Construct Query String
+		const queryString = Object.keys(loginUrlParameters)
+			.map((param) => `${encodeURIComponent(param)}=${encodeURIComponent(loginUrlParameters[param])}`)
+			.join('&');
 
-								const loginUrl = `https://accounts.google.com/o/oauth2/auth?${Object.keys(loginUrlParameters)
-									.map((param) => ''.concat(encodeURIComponent(param), '=').concat(encodeURIComponent(loginUrlParameters[param])))
-									.join('&')}`;
+		const loginUrl = `https://accounts.google.com/o/oauth2/auth?${queryString}`;
 
-								OAuth.launchLogin({
-									loginService: 'google',
-									loginStyle,
-									loginUrl,
-									credentialRequestCompleteCallback,
-									credentialToken,
-									popupOptions: { height: 600 },
-								});
-							};
-						},
+		OAuth.launchLogin({
+			loginService: 'google',
+			loginStyle,
+			loginUrl,
+			credentialRequestCompleteCallback,
+			credentialToken,
+			popupOptions: { height: 600 },
+		});
+	},
+};
 
-						'namespace.js'(require, exports, module) {
-							!function (module1) {
-								Google = module.exports;
-								Google.Google = Google;
-							}.call(this, module);
-						},
-					},
-				},
-			},
-		},
-		{ extensions: ['.js', '.json'] },
-	);
+// -----------------------------------------------------------------------------
+// Legacy Registration
+// -----------------------------------------------------------------------------
 
-	return {
-		export() {
-			return { Google };
-		},
-		require,
-		eagerModulePaths: ['/node_modules/meteor/google-oauth/google_client.js', '/node_modules/meteor/google-oauth/namespace.js'],
-		mainModulePath: '/node_modules/meteor/google-oauth/namespace.js',
-	};
-});
-export const { Google } = Package['google-oauth'];
+Package['google-oauth'] = { Google };
