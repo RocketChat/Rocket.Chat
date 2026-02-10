@@ -72,18 +72,18 @@ API.v1.addRoute(
 			}
 
 			try {
-				logger.debug(`Testing webhook ${webhookUrl}`);
+				logger.debug({ msg: 'Testing webhook', webhookUrl });
 				const request = await fetch(webhookUrl, options);
 				const response = await request.text();
 
-				logger.debug({ response });
+				logger.debug({ msg: 'Webhook response', response });
 				if (request.status === 200) {
 					return API.v1.success();
 				}
 
 				throw new Error('Invalid status code');
 			} catch (error) {
-				logger.error(`Error testing webhook: ${error}`);
+				logger.error({ msg: 'Error testing webhook', err: error });
 				throw new Error('error-invalid-webhook-response');
 			}
 		},

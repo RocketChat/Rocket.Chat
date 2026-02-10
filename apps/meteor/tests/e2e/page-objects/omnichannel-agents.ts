@@ -19,7 +19,7 @@ export class OmnichannelAgents {
 	}
 
 	get inputUsername(): Locator {
-		return this.page.locator('[data-qa-id="UserAutoComplete"]');
+		return this.page.getByRole('textbox', { name: 'Username' });
 	}
 
 	get inputSearch(): Locator {

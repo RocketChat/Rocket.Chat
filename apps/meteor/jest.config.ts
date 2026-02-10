@@ -40,6 +40,7 @@ export default {
 				'<rootDir>/app/cloud/server/functions/supportedVersionsToken/**.spec.ts',
 				'<rootDir>/app/utils/lib/**.spec.ts',
 				'<rootDir>/server/lib/auditServerEvents/**.spec.ts',
+				'<rootDir>/server/settings/lib/**.spec.ts',
 				'<rootDir>/server/cron/**.spec.ts',
 				'<rootDir>/app/api/server/**.spec.ts',
 				'<rootDir>/app/api/server/helpers/**.spec.ts',

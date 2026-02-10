@@ -1,3 +1,5 @@
+import type { IncomingMessage } from 'http';
+
 import type { IUser, LicenseModule } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
@@ -184,6 +186,7 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 				: // TODO remove the extra (optionals) params when all the endpoints that use these are typed correctly
 					Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
+	readonly incoming: IncomingMessage;
 
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
 	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;

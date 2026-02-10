@@ -69,7 +69,7 @@ class RocketChatIntegrationHandler {
 	}
 
 	addIntegration(record: IOutgoingIntegration): void {
-		outgoingLogger.debug(`Adding the integration ${record.name} of the event ${record.event}!`);
+		outgoingLogger.debug({ msg: 'Adding integration', integrationName: record.name, event: record.event });
 		let channels = [];
 		if (record.event && !outgoingEvents[record.event].use.channel) {
 			outgoingLogger.debug('The integration doesnt rely on channels.');
@@ -79,7 +79,7 @@ class RocketChatIntegrationHandler {
 			outgoingLogger.debug('The integration had an empty channel property, so it is going on all the public channels.');
 			channels = ['all_public_channels'];
 		} else {
-			outgoingLogger.debug('The integration is going on these channels:', record.channel);
+			outgoingLogger.debug({ msg: 'The integration is going on these channels', channels: record.channel });
 			channels = ([] as string[]).concat(record.channel);
 		}
 
@@ -140,7 +140,7 @@ class RocketChatIntegrationHandler {
 		}
 
 		if (!user) {
-			outgoingLogger.error(`The user "${trigger.username}" doesn't exist, so we can't send the message.`);
+			outgoingLogger.error({ msg: 'Integration user not found', username: trigger.username });
 			return;
 		}
 
@@ -164,7 +164,7 @@ class RocketChatIntegrationHandler {
 			return;
 		}
 
-		outgoingLogger.debug(`Found a room for ${trigger.name} which is: ${tmpRoom.name} with a type of ${tmpRoom.t}`);
+		outgoingLogger.debug({ msg: 'Found room for integration', integrationName: trigger.name, roomName: tmpRoom.name, roomType: tmpRoom.t });
 
 		message.bot = { i: trigger._id };
 
@@ -233,13 +233,14 @@ class RocketChatIntegrationHandler {
 				}
 				break;
 			default:
-				outgoingLogger.warn(`An Unhandled Trigger Event was called: ${argObject.event}`);
+				outgoingLogger.warn({ msg: 'Unhandled trigger event', event: argObject.event });
 				argObject.event = undefined;
 				break;
 		}
 
 		outgoingLogger.debug({
-			msg: `Got the event arguments for the event: ${argObject.event}`,
+			msg: 'Got the event arguments for the event',
+			event: argObject.event,
 			messageId: argObject.message?._id,
 			roomId: argObject.room?._id,
 			userId: argObject.user?._id || argObject.owner?._id,
@@ -264,7 +265,7 @@ class RocketChatIntegrationHandler {
 		const ownerWithoutServicesField = owner?.services ? omitServicesField(owner) : owner;
 
 		if (!room || !message) {
-			outgoingLogger.warn(`The integration ${event} was called but the room or message was not defined.`);
+			outgoingLogger.warn({ msg: 'Integration called without room or message', event });
 			return;
 		}
 
@@ -317,7 +318,7 @@ class RocketChatIntegrationHandler {
 				break;
 			case 'roomCreated':
 				if (!owner) {
-					outgoingLogger.warn(`The integration ${event} was called but the owner was not defined.`);
+					outgoingLogger.warn({ msg: 'Integration called without owner data', event });
 					return;
 				}
 				data.channel_id = room._id;
@@ -332,7 +333,7 @@ class RocketChatIntegrationHandler {
 			case 'roomJoined':
 			case 'roomLeft':
 				if (!user) {
-					outgoingLogger.warn(`The integration ${event} was called but the owner was not defined.`);
+					outgoingLogger.warn({ msg: 'Integration called without owner data', event });
 					return;
 				}
 				data.timestamp = new Date();
@@ -349,7 +350,7 @@ class RocketChatIntegrationHandler {
 				break;
 			case 'userCreated':
 				if (!user) {
-					outgoingLogger.warn(`The integration ${event} was called but the owner was not defined.`);
+					outgoingLogger.warn({ msg: 'Integration called without owner data', event });
 					return;
 				}
 				data.timestamp = user.createdAt;
@@ -450,7 +451,7 @@ class RocketChatIntegrationHandler {
 			return;
 		}
 
-		outgoingLogger.debug(`Starting search for triggers for the room: ${room ? room._id : '__any'}`);
+		outgoingLogger.debug({ msg: 'Starting search for triggers for room', roomId: room ? room._id : '__any' });
 
 		const triggersToExecute = this.getTriggersToExecute(room, message);
 
@@ -461,12 +462,15 @@ class RocketChatIntegrationHandler {
 			}
 		}
 
-		outgoingLogger.debug(`Found ${triggersToExecute.length} to iterate over and see if the match the event.`);
+		outgoingLogger.debug({ msg: 'Found triggers to iterate over', triggerCount: triggersToExecute.length, event });
 
 		for await (const triggerToExecute of triggersToExecute) {
-			outgoingLogger.debug(
-				`Is "${triggerToExecute.name}" enabled, ${triggerToExecute.enabled}, and what is the event? ${triggerToExecute.event}`,
-			);
+			outgoingLogger.debug({
+				msg: 'Checking trigger execution eligibility',
+				triggerName: triggerToExecute.name,
+				isEnabled: triggerToExecute.enabled,
+				triggerEvent: triggerToExecute.event,
+			});
 			if (triggerToExecute.enabled === true && triggerToExecute.event === event) {
 				await this.executeTrigger(triggerToExecute, argObject);
 			}
@@ -495,11 +499,11 @@ class RocketChatIntegrationHandler {
 
 	async executeTriggerUrl(url: string, trigger: IOutgoingIntegration, { event, message, room, owner, user }: ArgumentsObject, tries = 0) {
 		if (!this.isTriggerEnabled(trigger)) {
-			outgoingLogger.warn(`The trigger "${trigger.name}" is no longer enabled, stopping execution of it at try: ${tries}`);
+			outgoingLogger.warn({ msg: 'Trigger is not enabled', triggerName: trigger.name, tries });
 			return;
 		}
 
-		outgoingLogger.debug(`Starting to execute trigger: ${trigger.name} (${trigger._id})`);
+		outgoingLogger.debug({ msg: 'Starting to execute trigger', triggerName: trigger.name, triggerId: trigger._id });
 
 		let word;
 		// Not all triggers/events support triggerWords
@@ -517,14 +521,14 @@ class RocketChatIntegrationHandler {
 
 				// Stop if there are triggerWords but none match
 				if (!word) {
-					outgoingLogger.debug(`The trigger word which "${trigger.name}" was expecting could not be found, not executing.`);
+					outgoingLogger.debug({ msg: 'Trigger word not found', triggerName: trigger.name });
 					return;
 				}
 			}
 		}
 
 		if (message && message.editedAt && !trigger.runOnEdits) {
-			outgoingLogger.debug(`The trigger "${trigger.name}"'s run on edits is disabled and the message was edited.`);
+			outgoingLogger.debug({ msg: 'Trigger run on edits disabled and message was edited', triggerName: trigger.name });
 			return;
 		}
 
@@ -547,7 +551,7 @@ class RocketChatIntegrationHandler {
 		this.mapEventArgsToData(data, { event, message, room, owner, user });
 		await updateHistory({ historyId, step: 'mapped-args-to-data', data, triggerWord: word });
 
-		outgoingLogger.info(`Will be executing the Integration "${trigger.name}" to the url: ${url}`);
+		outgoingLogger.info({ msg: 'Will be executing integration', integrationName: trigger.name, url });
 		outgoingLogger.debug({ data });
 
 		const scriptEngine = this.getEngine(trigger);
@@ -620,9 +624,9 @@ class RocketChatIntegrationHandler {
 			.then(async (res) => {
 				const content = await res.text();
 				if (!content) {
-					outgoingLogger.warn(`Result for the Integration ${trigger.name} to ${url} is empty`);
+					outgoingLogger.warn({ msg: 'Integration result is empty', integrationName: trigger.name, url });
 				} else {
-					outgoingLogger.info(`Status code for the Integration ${trigger.name} to ${url} is ${res.status}`);
+					outgoingLogger.info({ msg: 'Integration HTTP status', integrationName: trigger.name, url, status: res.status });
 				}
 
 				const data = (() => {
@@ -686,13 +690,15 @@ class RocketChatIntegrationHandler {
 				if (!content || !this.successResults.includes(res.status)) {
 					if (content) {
 						outgoingLogger.error({
-							msg: `Error for the Integration "${trigger.name}" to ${url}`,
+							msg: 'Error for integration request',
+							integrationName: trigger.name,
+							url,
 							result: content,
 						});
 
 						if (res.status === 410) {
 							await updateHistory({ historyId, step: 'after-process-http-status-410', error: true });
-							outgoingLogger.error(`Disabling the Integration "${trigger.name}" because the status code was 401 (Gone).`);
+							outgoingLogger.error({ msg: 'Disabling integration due to 410 (Gone) status', integrationName: trigger.name });
 							await Integrations.updateOne({ _id: trigger._id }, { $set: { enabled: false } });
 							void notifyOnIntegrationChangedById(trigger._id);
 							return;
@@ -701,7 +707,9 @@ class RocketChatIntegrationHandler {
 						if (res.status === 500) {
 							await updateHistory({ historyId, step: 'after-process-http-status-500', error: true });
 							outgoingLogger.error({
-								msg: `Error "500" for the Integration "${trigger.name}" to ${url}.`,
+								msg: 'Error 500 for integration request',
+								integrationName: trigger.name,
+								url,
 								content,
 							});
 							return;
@@ -738,7 +746,7 @@ class RocketChatIntegrationHandler {
 									return;
 							}
 
-							outgoingLogger.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);
+							outgoingLogger.info({ msg: 'Retrying integration', integrationName: trigger.name, url, waitTime });
 							setTimeout(() => {
 								void this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, tries + 1);
 							}, waitTime);

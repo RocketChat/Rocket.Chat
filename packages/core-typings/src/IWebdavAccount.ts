@@ -12,7 +12,7 @@ export type IWebdavAccountIntegration = Pick<IWebdavAccount, '_id' | 'username' 
 
 export type IWebdavAccountPayload = Pick<IWebdavAccount, 'serverURL' | 'password' | 'name'> & Partial<Pick<IWebdavAccount, 'username'>>;
 
-export type IWebdavNode = {
+export interface IWebdavNode {
 	basename: string;
 	etag: string | null;
 	filename: string;
@@ -20,4 +20,4 @@ export type IWebdavNode = {
 	mime?: string;
 	size: number;
 	type: 'file' | 'directory';
-};
+}

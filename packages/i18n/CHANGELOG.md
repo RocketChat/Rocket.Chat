@@ -1,5 +1,13 @@
 # @rocket.chat/i18n
 
+## 2.0.1-rc.0
+
+### Patch Changes
+
+- ([#38151](https://github.com/RocketChat/Rocket.Chat/pull/38151)) Changes OEmbed URL processing. Now, the processing is done asynchronously and has a configurable timeout for each request. Additionally, the `API_EmbedIgnoredHosts` setting now accepts wildcard domains.
+
+- ([#38184](https://github.com/RocketChat/Rocket.Chat/pull/38184)) Fixes email notifications to display all files when a message contains multiple attachments
+
 ## 2.0.0
 
 ### Major Changes

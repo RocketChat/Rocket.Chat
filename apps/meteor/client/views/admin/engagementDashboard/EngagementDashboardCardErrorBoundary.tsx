@@ -24,7 +24,6 @@ const EngagementDashboardCardErrorBoundary = ({ children }: EngagementDashboardC
 		<QueryErrorResetBoundary>
 			{({ reset }): ReactElement => (
 				<ErrorBoundary
-					children={children}
 					onError={errorHandler}
 					onReset={reset}
 					fallbackRender={({ resetErrorBoundary }): ReactElement => (
@@ -32,12 +31,14 @@ const EngagementDashboardCardErrorBoundary = ({ children }: EngagementDashboardC
 							<StatesIcon name='circle-exclamation' />
 							<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 							<StatesSubtitle>{isError(error) && error?.message}</StatesSubtitle>
-							<StatesActions data-qa='EngagementDashboardCardErrorBoundary'>
+							<StatesActions>
 								<StatesAction onClick={(): void => resetErrorBoundary()}>{t('Retry')}</StatesAction>
 							</StatesActions>
 						</States>
 					)}
-				/>
+				>
+					{children}
+				</ErrorBoundary>
 			)}
 		</QueryErrorResetBoundary>
 	);

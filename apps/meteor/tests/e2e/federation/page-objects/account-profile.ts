@@ -12,6 +12,6 @@ export class FederationAccountProfile {
 	}
 
 	get btnSubmit(): Locator {
-		return this.page.locator('[data-qa="AccountProfilePageSaveButton"]');
+		return this.page.getByRole('button', { name: 'Save changes', exact: true });
 	}
 }

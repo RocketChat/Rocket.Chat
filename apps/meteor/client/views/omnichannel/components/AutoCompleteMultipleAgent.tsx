@@ -53,7 +53,6 @@ const AutoCompleteMultipleAgent = ({
 			filter={agentsFilter}
 			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
 			options={agentsItems}
-			data-qa='autocomplete-multiple-agent'
 			endReached={() => fetchNextPage()}
 		/>
 	);

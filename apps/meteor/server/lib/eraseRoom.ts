@@ -41,7 +41,7 @@ export async function eraseRoom(roomOrId: string | IRoom, uid: string): Promise<
 	}
 
 	if (Apps.self?.isLoaded()) {
-		const prevent = await Apps.getBridges()?.getListenerBridge().roomEvent(AppEvents.IPreRoomDeletePrevent, room);
+		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreRoomDeletePrevent, room);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the room erasing.');
 		}
@@ -57,6 +57,6 @@ export async function eraseRoom(roomOrId: string | IRoom, uid: string): Promise<
 	}
 
 	if (Apps.self?.isLoaded()) {
-		void Apps.getBridges()?.getListenerBridge().roomEvent(AppEvents.IPostRoomDeleted, room);
+		void Apps.self?.triggerEvent(AppEvents.IPostRoomDeleted, room);
 	}
 }

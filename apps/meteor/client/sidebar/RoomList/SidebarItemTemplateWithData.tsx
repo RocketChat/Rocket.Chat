@@ -125,7 +125,6 @@ const SidebarItemTemplateWithData = ({
 		<SidebarItemTemplate
 			is='a'
 			id={id}
-			data-qa='sidebar-item'
 			data-unread={highlighted}
 			unread={highlighted}
 			selected={selected}

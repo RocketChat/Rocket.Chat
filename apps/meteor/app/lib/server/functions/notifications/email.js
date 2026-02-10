@@ -29,23 +29,43 @@ export async function getEmailContent({ message, user, room }) {
 
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
-	const header = i18n.t(!roomDirectives.isGroupChat(room) ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
-		username: userName,
-		channel: roomName,
-		lng,
-	});
+	const files = (message.files || [message.file]).filter((file) => file && file.typeGroup !== 'thumb');
+	const hasFiles = files.length > 0;
+	const hasText = typeof message.msg === 'string' && message.msg.trim() !== '';
+	const isGroupChat = roomDirectives.isGroupChat(room);
 
-	if (message.t === 'e2e' && !message.file) {
+	let header;
+	if (hasFiles && !hasText) {
+		// file-only message
+		const isMultipleFiles = files.length > 1;
+		let headerKey;
+		if (isGroupChat) {
+			headerKey = isMultipleFiles ? 'User_uploaded_files_on_channel' : 'User_uploaded_a_file_on_channel';
+		} else {
+			headerKey = isMultipleFiles ? 'User_uploaded_files_to_you' : 'User_uploaded_a_file_to_you';
+		}
+		header = i18n.t(headerKey, { username: userName, channel: roomName, count: files.length, lng });
+	} else {
+		// text message (with or without files)
+		header = i18n.t(!isGroupChat ? 'User_sent_a_message_to_you' : 'User_sent_a_message_on_channel', {
+			username: userName,
+			channel: roomName,
+			lng,
+		});
+	}
+
+	if (message.t === 'e2e' && !message.file && !message.files?.length) {
 		return settings.get('Email_notification_show_message') ? i18n.t('Encrypted_message_preview_unavailable', { lng }) : header;
 	}
 
-	if (message.msg !== '') {
-		if (!settings.get('Email_notification_show_message')) {
-			return header;
-		}
+	if (!settings.get('Email_notification_show_message')) {
+		return header;
+	}
 
+	const contentParts = [];
+
+	if (hasText) {
 		let messageContent = escapeHTML(message.msg);
-
 		message = await callbacks.run('renderMessage', message);
 		if (message.tokens && message.tokens.length > 0) {
 			message.tokens.forEach((token) => {
@@ -53,31 +73,23 @@ export async function getEmailContent({ message, user, room }) {
 				messageContent = messageContent.replace(token.token, token.text);
 			});
 		}
-		return `${header}:<br/><br/>${messageContent.replace(/\n/gm, '<br/>')}`;
+		contentParts.push(messageContent.replace(/\n/gm, '<br/>'));
 	}
 
-	if (message.file) {
-		const fileHeader = i18n.t(!roomDirectives.isGroupChat(room) ? 'User_uploaded_a_file_to_you' : 'User_uploaded_a_file_on_channel', {
-			username: userName,
-			channel: roomName,
-			lng,
+	if (hasFiles) {
+		const attachments = message.attachments || [];
+		const fileParts = files.map((file, index) => {
+			let part = escapeHTML(file.name);
+			if (attachments[index]?.description) {
+				part += `<br/><br/>${escapeHTML(attachments[index].description)}`;
+			}
+			return part;
 		});
-
-		if (!settings.get('Email_notification_show_message')) {
-			return fileHeader;
-		}
-
-		let content = `${escapeHTML(message.file.name)}`;
-
-		if (message.attachments && message.attachments.length === 1 && message.attachments[0].description !== '') {
-			content += `<br/><br/>${escapeHTML(message.attachments[0].description)}`;
-		}
-
-		return `${fileHeader}:<br/><br/>${content}`;
+		contentParts.push(fileParts.join('<br/><br/>'));
 	}
 
-	if (!settings.get('Email_notification_show_message')) {
-		return header;
+	if (contentParts.length > 0) {
+		return `${header}:<br/><br/>${contentParts.join('<br/><br/>')}`;
 	}
 
 	if (Array.isArray(message.attachments) && message.attachments.length > 0) {

@@ -254,7 +254,12 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 
 		const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, roomFromDb);
 
-		if (room?.servedBy) {
+		if (!room) {
+			queueLogger.debug({ msg: 'RoutingManager failed to delegate inquiry', inquiry: inquiry._id, queue });
+			return false;
+		}
+
+		if (room.servedBy) {
 			const {
 				_id: rid,
 				servedBy: { _id: agentId },

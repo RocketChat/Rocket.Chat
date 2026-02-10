@@ -63,7 +63,7 @@ const ChatsTable = () => {
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='lm'>{t('Last_Message')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='status'>{t('Status')}</GenericTableHeaderCell>
-			{canRemoveClosedChats && <GenericTableHeaderCell key='remove' w='x60' data-qa='current-chats-header-remove' />}
+			{canRemoveClosedChats && <GenericTableHeaderCell key='remove' w='x60' />}
 		</>
 	);
 

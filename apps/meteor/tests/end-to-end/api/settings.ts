@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { updatePermission, updateSetting, getSettingValueById } from '../../data/permissions.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Settings]', () => {
@@ -422,6 +422,118 @@ describe('[Settings]', () => {
 						expect(new Date(event.ts).getTime()).to.be.lessThanOrEqual(endDate.getTime());
 					});
 				});
+		});
+
+		describe('Masking sensitive settings', () => {
+			let originalSmtpPassword: string | undefined;
+			let originalSmtpUsername: string | undefined;
+			let maskingStart: Date;
+			let maskingEnd: Date;
+			const testPassword = 'testpassword123';
+			const testUsername = 'testuser@example.com';
+
+			before(async () => {
+				maskingStart = new Date();
+				originalSmtpPassword = (await getSettingValueById('SMTP_Password')) as string | undefined;
+				originalSmtpUsername = (await getSettingValueById('SMTP_Username')) as string | undefined;
+
+				await updateSetting('SMTP_Password', testPassword);
+				await updateSetting('SMTP_Username', testUsername);
+				maskingEnd = new Date();
+			});
+
+			after(async () => {
+				await updateSetting('SMTP_Password', originalSmtpPassword || '');
+				await updateSetting('SMTP_Username', originalSmtpUsername || '');
+			});
+
+			it('should mask sensitive settings in audit logs', async () => {
+				await request
+					.get(api('audit.settings'))
+					.query({ settingId: 'SMTP_Password', start: formatDate(maskingStart), end: formatDate(maskingEnd) })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('events').and.to.be.an('array');
+						expect(res.body.events.length).to.be.greaterThanOrEqual(1);
+
+						const passwordEvents = res.body.events as IServerEvents['settings.changed'][];
+						const passwordEvent = passwordEvents.find((event) => {
+							const settingId = event.data.find((item) => item.key === 'id')?.value;
+							return settingId === 'SMTP_Password';
+						});
+
+						expect(passwordEvent).to.exist;
+
+						if (passwordEvent) {
+							const previous = passwordEvent.data.find((item) => item.key === 'previous')?.value;
+							const current = passwordEvent.data.find((item) => item.key === 'current')?.value;
+
+							if (previous && typeof previous === 'string' && previous.length > 0) {
+								expect(previous).to.include('*');
+								expect(previous).to.not.equal(testPassword);
+								if (previous.length > 8) {
+									expect(previous.substring(0, 3)).to.equal(originalSmtpPassword?.substring(0, 3));
+									expect(previous.substring(3)).to.match(/^\*+$/);
+								}
+							}
+
+							if (current && typeof current === 'string' && current.length > 0) {
+								expect(current).to.include('*');
+								expect(current).to.not.equal(testPassword);
+								if (testPassword.length > 8) {
+									expect(current.substring(0, 3)).to.equal(testPassword.substring(0, 3));
+									expect(current.substring(3)).to.match(/^\*+$/);
+								} else {
+									expect(current).to.match(/^\*+$/);
+								}
+							}
+						}
+					});
+
+				await request
+					.get(api('audit.settings'))
+					.query({ settingId: 'SMTP_Username', start: formatDate(maskingStart), end: formatDate(maskingEnd) })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('events').and.to.be.an('array');
+						expect(res.body.events.length).to.be.greaterThanOrEqual(1);
+
+						const usernameEvents = res.body.events as IServerEvents['settings.changed'][];
+						const usernameEvent = usernameEvents.find((event) => {
+							const settingId = event.data.find((item) => item.key === 'id')?.value;
+							return settingId === 'SMTP_Username';
+						});
+
+						expect(usernameEvent).to.exist;
+
+						if (usernameEvent) {
+							const previous = usernameEvent.data.find((item) => item.key === 'previous')?.value;
+							const current = usernameEvent.data.find((item) => item.key === 'current')?.value;
+
+							if (previous && typeof previous === 'string' && previous.length > 0) {
+								expect(previous).to.include('*');
+								expect(previous).to.not.equal(originalSmtpUsername);
+							}
+
+							if (current && typeof current === 'string' && current.length > 0) {
+								expect(current).to.include('*');
+								expect(current).to.not.equal(testUsername);
+								if (testUsername.length > 8) {
+									expect(current.substring(0, 3)).to.equal(testUsername.substring(0, 3));
+									expect(current.substring(3)).to.match(/^\*+$/);
+								} else {
+									expect(current).to.match(/^\*+$/);
+								}
+							}
+						}
+					});
+			});
 		});
 	});
 });

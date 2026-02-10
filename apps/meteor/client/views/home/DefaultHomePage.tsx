@@ -24,10 +24,10 @@ const DefaultHomePage = (): ReactElement => {
 	const isCustomContentVisible = useSetting('Layout_Home_Custom_Block_Visible', false);
 
 	return (
-		<Page color='default' data-qa='page-home' data-qa-type='default' background='tint'>
+		<Page color='default' background='tint'>
 			<HomePageHeader />
 			<PageScrollableContent>
-				<Box is='h2' fontScale='h1' mb={20} data-qa-id='homepage-welcome-text'>
+				<Box is='h2' fontScale='h1' mb={20}>
 					{t('Welcome_to_workspace', { Site_Name: workspaceName || 'Rocket.Chat' })}
 				</Box>
 				<Box is='h3' fontScale='h3' mb={16}>

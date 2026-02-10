@@ -2,24 +2,9 @@ import type { Locator, Page } from '@playwright/test';
 
 import { HomeOmnichannelContent } from './fragments';
 import { FlexTab } from './fragments/flextab';
-import { Modal } from './fragments/modal';
+import { OmnichannelConfirmRemoveChat } from './fragments/modals';
 import { OmnichannelAdministration } from './omnichannel-administration';
 import { OmnichannelChatsFilters } from './omnichannel-contact-center-chats-filters';
-
-class ConfirmRemoveChat extends Modal {
-	constructor(page: Page) {
-		super(page.getByRole('dialog'));
-	}
-
-	private get btnConfirmRemove(): Locator {
-		return this.root.getByRole('button', { name: 'Delete' });
-	}
-
-	async confirm() {
-		await this.btnConfirmRemove.click();
-		await this.waitForDismissal();
-	}
-}
 
 class ConversationFlexTab extends FlexTab {
 	constructor(page: Page) {
@@ -37,7 +22,7 @@ class ConversationFlexTab extends FlexTab {
 }
 
 export class OmnichannelChats extends OmnichannelAdministration {
-	private readonly confirmRemoveChatModal: ConfirmRemoveChat;
+	private readonly confirmRemoveChatModal: OmnichannelConfirmRemoveChat;
 
 	private readonly conversation: ConversationFlexTab;
 
@@ -48,7 +33,7 @@ export class OmnichannelChats extends OmnichannelAdministration {
 	constructor(page: Page) {
 		super(page);
 		this.filters = new OmnichannelChatsFilters(page);
-		this.confirmRemoveChatModal = new ConfirmRemoveChat(page);
+		this.confirmRemoveChatModal = new OmnichannelConfirmRemoveChat(page);
 		this.content = new HomeOmnichannelContent(page);
 		this.conversation = new ConversationFlexTab(page);
 	}
@@ -69,20 +54,8 @@ export class OmnichannelChats extends OmnichannelAdministration {
 		return this.contactCenterChatsTable.getByRole('link', { name: contactName });
 	}
 
-	get inputServedBy(): Locator {
-		return this.page.locator('[data-qa="autocomplete-agent"] input');
-	}
-
 	get inputStatus(): Locator {
 		return this.page.locator('[data-qa="current-chats-status"]');
-	}
-
-	get inputDepartment(): Locator {
-		return this.page.locator('[data-qa="autocomplete-department"] input');
-	}
-
-	get inputDepartmentValue(): Locator {
-		return this.page.locator('[data-qa="autocomplete-department"] span');
 	}
 
 	get inputTags(): Locator {
@@ -93,12 +66,6 @@ export class OmnichannelChats extends OmnichannelAdministration {
 		return this.page.locator('[data-qa-id="current-chats-modal-remove-all-closed"]');
 	}
 
-	async selectServedBy(option: string) {
-		await this.inputServedBy.click();
-		await this.inputServedBy.fill(option);
-		await this.page.locator(`[role='option'][value='${option}']`).click();
-	}
-
 	async addTag(option: string) {
 		await this.inputTags.click();
 		await this.page.locator(`[role='option'][value='${option}']`).click();
@@ -106,12 +73,6 @@ export class OmnichannelChats extends OmnichannelAdministration {
 	}
 
 	async removeTag(option: string) {
-		await this.page.locator(`role=option[name='${option}']`).click();
-	}
-
-	async selectDepartment(option: string) {
-		await this.inputDepartment.click();
-		await this.inputDepartment.fill(option);
 		await this.page.locator(`role=option[name='${option}']`).click();
 	}
 

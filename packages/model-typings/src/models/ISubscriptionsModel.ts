@@ -329,7 +329,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number>;
 	countByRoomId(roomId: string, options?: CountDocumentsOptions): Promise<number>;
-	countByUserId(userId: string): Promise<number>;
+	countByUserIdExceptType(userId: string, typeException: ISubscription['t']): Promise<number>;
 	openByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number>;

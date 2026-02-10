@@ -257,6 +257,7 @@ export const createFakeLicenseInfo = (partial: Partial<Omit<LicenseInfo, 'licens
 		color: faker.internet.color(),
 	})),
 	trial: faker.datatype.boolean(),
+	hasValidLicense: faker.datatype.boolean(),
 	...partial,
 });
 

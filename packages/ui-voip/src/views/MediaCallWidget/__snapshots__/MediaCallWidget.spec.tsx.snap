@@ -31,7 +31,7 @@ exports[`renders IncomingCall without crashing 1`] = `
           Incoming Call...
         </h3>
         <div
-          class="rcx-box rcx-box--full rcx-css-ws1yyr"
+          class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
             aria-label="customize"
@@ -188,7 +188,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
           Transferring_call_incoming...
         </h3>
         <div
-          class="rcx-box rcx-box--full rcx-css-ws1yyr"
+          class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
             aria-label="customize"
@@ -382,7 +382,7 @@ exports[`renders NewCall without crashing 1`] = `
           New_call
         </h3>
         <div
-          class="rcx-box rcx-box--full rcx-css-ws1yyr"
+          class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
             aria-label="Close"
@@ -584,7 +584,7 @@ exports[`renders OngoingCall without crashing 1`] = `
           </time>
         </h3>
         <div
-          class="rcx-box rcx-box--full rcx-css-ws1yyr"
+          class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
             aria-label="customize"
@@ -777,7 +777,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
           Calling...
         </h3>
         <div
-          class="rcx-box rcx-box--full rcx-css-ws1yyr"
+          class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
             aria-label="customize"
@@ -917,7 +917,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
           Transferring_call...
         </h3>
         <div
-          class="rcx-box rcx-box--full rcx-css-ws1yyr"
+          class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
             aria-label="customize"

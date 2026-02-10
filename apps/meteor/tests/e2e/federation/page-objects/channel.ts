@@ -3,8 +3,8 @@ import type { Locator, Page } from '@playwright/test';
 import { FederationHomeContent } from './fragments/home-content';
 import { FederationHomeFlextab } from './fragments/home-flextab';
 import { FederationSidenav } from './fragments/home-sidenav';
-import { CreateNewChannelModal, CreateNewDMModal } from '../../page-objects/create-new-modal';
 import { Navbar, RoomToolbar, ToastMessages } from '../../page-objects/fragments';
+import { CreateNewChannelModal, CreateNewDMModal } from '../../page-objects/fragments/modals';
 
 export class FederationChannel {
 	private readonly page: Page;
@@ -78,9 +78,6 @@ export class FederationChannel {
 		for await (const username of usernamesToInvite) {
 			await this.newDMModal.inviteUserToDM(username);
 		}
-		await this.page
-			.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-modal__title") and contains(text(), "Direct messages")]')
-			.click();
 		await this.newDMModal.btnCreate.click();
 	}
 

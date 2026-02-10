@@ -125,7 +125,7 @@ export class SlackImporter extends Importer {
 			(channel): channel is SlackChannel & { creator: string } => 'creator' in channel && channel.creator != null,
 		);
 
-		this.logger.debug(`loaded ${data.length} channels.`);
+		this.logger.debug({ msg: 'loaded channels', count: data.length });
 
 		await this.addCountToTotal(data.length);
 
@@ -155,7 +155,7 @@ export class SlackImporter extends Importer {
 			(channel): channel is SlackChannel & { creator: string } => 'creator' in channel && channel.creator != null,
 		);
 
-		this.logger.debug(`loaded ${data.length} groups.`);
+		this.logger.debug({ msg: 'loaded groups', count: data.length });
 
 		await this.addCountToTotal(data.length);
 
@@ -184,7 +184,7 @@ export class SlackImporter extends Importer {
 			(channel): channel is SlackChannel & { creator: string } => 'creator' in channel && channel.creator != null,
 		);
 
-		this.logger.debug(`loaded ${data.length} mpims.`);
+		this.logger.debug({ msg: 'loaded mpims', count: data.length });
 
 		await this.addCountToTotal(data.length);
 
@@ -213,7 +213,7 @@ export class SlackImporter extends Importer {
 		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 		const data = JSON.parse(entry.getData().toString()) as SlackChannel[];
 
-		this.logger.debug(`loaded ${data.length} dms.`);
+		this.logger.debug({ msg: 'loaded dms', count: data.length });
 
 		await this.addCountToTotal(data.length);
 		for await (const channel of data) {
@@ -232,7 +232,7 @@ export class SlackImporter extends Importer {
 		await super.updateProgress(ProgressStep.PREPARING_USERS);
 		const data = JSON.parse(entry.getData().toString()) as SlackUser[];
 
-		this.logger.debug(`loaded ${data.length} users.`);
+		this.logger.debug({ msg: 'loaded users', count: data.length });
 
 		// Insert the users record
 		await this.updateRecord({ 'count.users': data.length });
@@ -352,7 +352,7 @@ export class SlackImporter extends Importer {
 				try {
 					if (entry.entryName.includes('__MACOSX') || entry.entryName.includes('.DS_Store')) {
 						count++;
-						this.logger.debug(`Ignoring the file: ${entry.entryName}`);
+						this.logger.debug({ msg: 'Ignoring the file', entryName: entry.entryName });
 						continue;
 					}
 
@@ -385,7 +385,7 @@ export class SlackImporter extends Importer {
 								}
 							}
 						} catch (error) {
-							this.logger.warn(`${entry.entryName} is not a valid JSON file! Unable to import it.`);
+							this.logger.warn({ msg: 'Entry is not a valid JSON file; unable to import', entryName: entry.entryName, err: error });
 						}
 					}
 				} catch (e) {
@@ -626,7 +626,10 @@ export class SlackImporter extends Importer {
 								newMessage.replies = Array.from(replies);
 							}
 						} else {
-							this.logger.warn(`Failed to import the parent comment, message: ${newMessage._id}. Missing replies/reply_users field`);
+							this.logger.warn({
+								msg: 'Failed to import the parent comment; missing replies/reply_users field',
+								messageId: newMessage._id,
+							});
 						}
 
 						newMessage.tcount = message.reply_count;

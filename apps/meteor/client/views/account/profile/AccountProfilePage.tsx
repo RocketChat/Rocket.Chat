@@ -139,14 +139,7 @@ const AccountProfilePage = (): ReactElement => {
 					<Button disabled={!isDirty} onClick={() => reset(getProfileInitialValues(user))}>
 						{t('Cancel')}
 					</Button>
-					<Button
-						form={profileFormId}
-						data-qa='AccountProfilePageSaveButton'
-						primary
-						disabled={!isDirty || loggingOut}
-						loading={isSubmitting}
-						type='submit'
-					>
+					<Button form={profileFormId} primary disabled={!isDirty || loggingOut} loading={isSubmitting} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

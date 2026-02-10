@@ -25,7 +25,7 @@ function DepartmentAgentsTable({ control, register, 'aria-labelledby': ariaLabel
 
 	return (
 		<>
-			<AddAgent aria-labelledby={ariaLabelledBy} agentList={agentList} data-qa='DepartmentSelect-AgentsTable' onAdd={append} />
+			<AddAgent aria-labelledby={ariaLabelledBy} agentList={agentList} onAdd={append} />
 
 			<GenericTable>
 				<GenericTableHeader>

@@ -45,7 +45,7 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 
 	const showRoles = useMessageListShowRoles();
 	const roles = useMessageRoles(message.u._id, message.rid, showRoles);
-	const shouldShowRolesList = roles.length > 0;
+	const shouldShowRolesList = showRoles && roles.length > 0;
 
 	return (
 		<FuselageMessageHeader>

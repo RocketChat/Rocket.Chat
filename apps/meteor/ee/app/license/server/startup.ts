@@ -107,7 +107,9 @@ export const startLicense = async () => {
 
 	License.setLicenseLimitCounter('activeUsers', () => Users.getActiveLocalUserCount());
 	License.setLicenseLimitCounter('guestUsers', () => Users.getActiveLocalGuestCount());
-	License.setLicenseLimitCounter('roomsPerGuest', async (context) => (context?.userId ? Subscriptions.countByUserId(context.userId) : 0));
+	License.setLicenseLimitCounter('roomsPerGuest', async (context) =>
+		context?.userId ? Subscriptions.countByUserIdExceptType(context.userId, 'd') : 0,
+	);
 	License.setLicenseLimitCounter('privateApps', () => getAppCount('private'));
 	License.setLicenseLimitCounter('marketplaceApps', () => getAppCount('marketplace'));
 	License.setLicenseLimitCounter('monthlyActiveContacts', () => LivechatContacts.countContactsOnPeriod(moment.utc().format('YYYY-MM')));
