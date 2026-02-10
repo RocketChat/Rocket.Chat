@@ -56,12 +56,6 @@ export const useHasNewMessages = (
 					return;
 				}
 
-				if (msg.u._id === uid) {
-					sendToBottom();
-					setHasNewMessages(false);
-					return;
-				}
-
 				if (!isAtBottom()) {
 					setHasNewMessages(true);
 				}
@@ -70,8 +64,21 @@ export const useHasNewMessages = (
 			rid,
 		);
 
+		clientCallbacks.add(
+			'afterSaveMessage',
+			(msg: IMessage) => {
+				if (msg.u._id === uid) {
+					sendToBottom();
+					setHasNewMessages(false);
+				}
+			},
+			clientCallbacks.priority.MEDIUM,
+			rid,
+		);
+
 		return () => {
 			clientCallbacks.remove('streamNewMessage', rid);
+			clientCallbacks.remove('afterSaveMessage', rid);
 		};
 	}, [isAtBottom, rid, sendToBottom, uid]);
 
