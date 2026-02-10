@@ -42,7 +42,7 @@ test.describe('Messaging', () => {
 			await test.step('move focus to the first system message', async () => {
 				await page.keyboard.press('ArrowUp');
 				await page.keyboard.press('ArrowUp');
-				await expect(page.locator('[data-qa="system-message"]').first()).toBeFocused();
+				await expect(page.locator('[role="listitem"][aria-roledescription="system message"]').first()).toBeFocused();
 			});
 
 			await test.step('move focus to the first typed message', async () => {

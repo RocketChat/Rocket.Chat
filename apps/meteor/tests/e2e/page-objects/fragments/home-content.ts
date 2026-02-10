@@ -419,7 +419,7 @@ export class HomeContent {
 	}
 
 	get lastSystemMessageBody(): Locator {
-		return this.page.locator('[data-qa-type="system-message-body"]').last();
+		return this.page.locator('[role=document][aria-roledescription="system message body"]').last();
 	}
 
 	get resumeOnHoldOmnichannelChatButton(): Locator {
@@ -488,7 +488,7 @@ export class HomeContent {
 
 	// TODO: use getSystemMessageByText instead
 	findSystemMessage(text: string): Locator {
-		return this.page.locator(`[data-qa-type="system-message-body"] >> text="${text}"`);
+		return this.page.locator(`[role="document"][aria-roledescription="system message body"]`, { hasText: text });
 	}
 
 	getSystemMessageByText(text: string): Locator {

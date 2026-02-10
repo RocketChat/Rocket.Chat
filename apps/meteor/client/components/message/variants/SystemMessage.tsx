@@ -69,7 +69,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			onClick={isSelecting ? toggleSelected : undefined}
 			isSelected={isSelected}
 			data-qa-selected={isSelected}
-			data-qa='system-message'
 			data-system-message-type={message.t}
 			{...props}
 		>
@@ -88,7 +87,11 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 							</>
 						)}
 					</MessageNameContainer>
-					{messageType && <MessageSystemBody data-qa-type='system-message-body'>{messageType.text(t, message)}</MessageSystemBody>}
+					{messageType && (
+						<MessageSystemBody role='document' aria-roledescription='system message body'>
+							{messageType.text(t, message)}
+						</MessageSystemBody>
+					)}
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
 				{message.attachments && (
