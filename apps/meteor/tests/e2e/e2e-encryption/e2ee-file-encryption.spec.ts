@@ -40,7 +40,7 @@ test.describe('E2EE File Encryption', () => {
 		await page.goto('/home');
 	});
 
-	test.fixme('should edit encrypted message with file', async ({ page }) => {
+	test('should edit encrypted message with file', async ({ page }) => {
 		const updatedFileName = `edited_${TEST_FILE_TXT}`;
 
 		await test.step('create an encrypted channel', async () => {

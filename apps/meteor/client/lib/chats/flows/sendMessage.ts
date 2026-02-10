@@ -81,18 +81,15 @@ export const sendMessage = async (
 			originalMessage: mid ? await chat.data.findMessageByID(mid) : null,
 		});
 
+		// When editing an encrypted message with files, preserve the original attachments/files
+		// This ensures they're included in the re-encryption process
 		if (mid) {
 			const originalMessage = await chat.data.findMessageByID(mid);
 
-			if (
-				originalMessage?.t === 'e2e' &&
-				originalMessage.attachments &&
-				originalMessage.attachments.length > 0 &&
-				originalMessage.attachments[0].description !== undefined
-			) {
-				originalMessage.attachments[0].description = message.msg;
+			if (originalMessage?.t === 'e2e' && originalMessage.attachments && originalMessage.attachments.length > 0) {
 				message.attachments = originalMessage.attachments;
-				message.msg = originalMessage.msg;
+				message.files = originalMessage.files;
+				message.file = originalMessage.file;
 			}
 		}
 
