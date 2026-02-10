@@ -12,7 +12,7 @@ export type UpdateNodesAndViewPortAction = {
 };
 
 export const updateNodesAndViewPortAction = (
-  payload: PayloadType
+  payload: PayloadType,
 ): UpdateNodesAndViewPortAction => ({
   type: ActionTypes.UpdateNodesAndViewPort,
   payload,

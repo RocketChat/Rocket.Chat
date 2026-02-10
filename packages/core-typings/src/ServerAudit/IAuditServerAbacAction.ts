@@ -19,53 +19,48 @@ export type AbacAttributeDefinitionChangeType =
 	| 'key-updated';
 
 // Since user attributes can grow without limits, we're only logging the diffs
-export interface IServerEventAbacSubjectAttributeChanged
-	extends IAuditServerEventType<
-		{ key: 'subject'; value: MinimalUser } | { key: 'reason'; value: AbacAuditReason } | { key: 'diff'; value: IAbacAttributeDefinition[] }
-	> {
+export interface IServerEventAbacSubjectAttributeChanged extends IAuditServerEventType<
+	{ key: 'subject'; value: MinimalUser } | { key: 'reason'; value: AbacAuditReason } | { key: 'diff'; value: IAbacAttributeDefinition[] }
+> {
 	t: 'abac.subject.attribute.changed';
 }
 
-export interface IServerEventAbacObjectAttributeChanged
-	extends IAuditServerEventType<
-		| { key: 'room'; value: MinimalRoom }
-		| { key: 'reason'; value: AbacAuditReason }
-		| { key: 'previous'; value: IAbacAttributeDefinition[] }
-		| { key: 'current'; value: IAbacAttributeDefinition[] | null }
-		| { key: 'change'; value: AbacAttributeDefinitionChangeType }
-	> {
+export interface IServerEventAbacObjectAttributeChanged extends IAuditServerEventType<
+	| { key: 'room'; value: MinimalRoom }
+	| { key: 'reason'; value: AbacAuditReason }
+	| { key: 'previous'; value: IAbacAttributeDefinition[] }
+	| { key: 'current'; value: IAbacAttributeDefinition[] | null }
+	| { key: 'change'; value: AbacAttributeDefinitionChangeType }
+> {
 	t: 'abac.object.attribute.changed';
 }
 
-export interface IServerEventAbacAttributeChanged
-	extends IAuditServerEventType<
-		| { key: 'attributeKey'; value: string }
-		| { key: 'reason'; value: AbacAuditReason }
-		| { key: 'change'; value: AbacAttributeDefinitionChangeType }
-		| { key: 'current'; value: IAbacAttributeDefinition | null | undefined }
-		| { key: 'diff'; value: IAbacAttributeDefinition | undefined }
-	> {
+export interface IServerEventAbacAttributeChanged extends IAuditServerEventType<
+	| { key: 'attributeKey'; value: string }
+	| { key: 'reason'; value: AbacAuditReason }
+	| { key: 'change'; value: AbacAttributeDefinitionChangeType }
+	| { key: 'current'; value: IAbacAttributeDefinition | null | undefined }
+	| { key: 'diff'; value: IAbacAttributeDefinition | undefined }
+> {
 	t: 'abac.attribute.changed';
 }
 
-export interface IServerEventAbacActionPerformed
-	extends IAuditServerEventType<
-		| { key: 'action'; value: AbacActionPerformed }
-		| { key: 'reason'; value: AbacAuditReason }
-		| { key: 'subject'; value: MinimalUser | undefined }
-		| { key: 'object'; value: MinimalRoom | undefined }
-	> {
+export interface IServerEventAbacActionPerformed extends IAuditServerEventType<
+	| { key: 'action'; value: AbacActionPerformed }
+	| { key: 'reason'; value: AbacAuditReason }
+	| { key: 'subject'; value: MinimalUser | undefined }
+	| { key: 'object'; value: MinimalRoom | undefined }
+> {
 	t: 'abac.action.performed';
 }
 
-export interface IServerEventAbacObjectAttributesRemoved
-	extends IAuditServerEventType<
-		| { key: 'room'; value: MinimalRoom }
-		| { key: 'reason'; value: AbacAuditReason }
-		| { key: 'previous'; value: IAbacAttributeDefinition[] }
-		| { key: 'current'; value: IAbacAttributeDefinition[] | null }
-		| { key: 'change'; value: AbacAttributeDefinitionChangeType }
-	> {
+export interface IServerEventAbacObjectAttributesRemoved extends IAuditServerEventType<
+	| { key: 'room'; value: MinimalRoom }
+	| { key: 'reason'; value: AbacAuditReason }
+	| { key: 'previous'; value: IAbacAttributeDefinition[] }
+	| { key: 'current'; value: IAbacAttributeDefinition[] | null }
+	| { key: 'change'; value: AbacAttributeDefinitionChangeType }
+> {
 	t: 'abac.object.attributes.removed';
 }
 

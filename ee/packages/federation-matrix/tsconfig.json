@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"rootDir": "./src",
 		"strictPropertyInitialization": false,
-		"experimentalDecorators": true,
+		"experimentalDecorators": true
 	},
 	"files": ["./src/index.ts"]
 }

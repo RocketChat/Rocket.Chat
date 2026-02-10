@@ -24,15 +24,14 @@ type RetryOptions = {
 
 type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected' | 'reconnecting';
 
-export interface Connection
-	extends Emitter<{
-		connection: ConnectionStatus;
-		connecting: void;
-		connected: string;
-		disconnected: void;
-		reconnecting: void;
-		close: void;
-	}> {
+export interface Connection extends Emitter<{
+	connection: ConnectionStatus;
+	connecting: void;
+	connected: string;
+	disconnected: void;
+	reconnecting: void;
+	close: void;
+}> {
 	url: string;
 	ssl: boolean;
 

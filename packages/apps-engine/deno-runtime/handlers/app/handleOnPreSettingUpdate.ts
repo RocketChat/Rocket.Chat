@@ -20,5 +20,10 @@ export default function handleOnPreSettingUpdate(request: RequestContext): Promi
 
 	const [setting] = params as [Record<string, unknown>];
 
-	return app.onPreSettingUpdate(setting, AppAccessorsInstance.getConfigurationModify(), AppAccessorsInstance.getReader(), AppAccessorsInstance.getHttp());
+	return app.onPreSettingUpdate(
+		setting,
+		AppAccessorsInstance.getConfigurationModify(),
+		AppAccessorsInstance.getReader(),
+		AppAccessorsInstance.getHttp(),
+	);
 }

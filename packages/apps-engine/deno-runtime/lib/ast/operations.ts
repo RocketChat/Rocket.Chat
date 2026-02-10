@@ -110,7 +110,8 @@ export function buildFixModifiedFunctionsOperation(functionIdentifiers: Set<stri
 		isWrappable = node.callee.type === 'Identifier' && functionIdentifiers.has(node.callee.name);
 
 		// This node is a call to an object property or instance method, like `obj.fn()`, but not computed like `obj[fn]()`
-		isWrappable ||= node.callee.type === 'MemberExpression' &&
+		isWrappable ||=
+			node.callee.type === 'MemberExpression' &&
 			!node.callee.computed &&
 			node.callee.property?.type === 'Identifier' &&
 			functionIdentifiers.has(node.callee.property.name);
@@ -120,7 +121,8 @@ export function buildFixModifiedFunctionsOperation(functionIdentifiers: Set<stri
 		if (!isWrappable && node.callee.type === 'SequenceExpression') {
 			const [, secondExpression] = node.callee.expressions;
 			isWrappable = secondExpression?.type === 'Identifier' && functionIdentifiers.has(secondExpression.name);
-			isWrappable ||= secondExpression?.type === 'MemberExpression' &&
+			isWrappable ||=
+				secondExpression?.type === 'MemberExpression' &&
 				!secondExpression.computed &&
 				secondExpression.property.type === 'Identifier' &&
 				functionIdentifiers.has(secondExpression.property.name);
@@ -139,7 +141,11 @@ export function buildFixModifiedFunctionsOperation(functionIdentifiers: Set<stri
 	};
 }
 
-export const checkReassignmentOfModifiedIdentifiers: FullAncestorWalkerCallback<WalkerState> = (node, { functionIdentifiers }, _ancestors) => {
+export const checkReassignmentOfModifiedIdentifiers: FullAncestorWalkerCallback<WalkerState> = (
+	node,
+	{ functionIdentifiers },
+	_ancestors,
+) => {
 	if (node.type === 'AssignmentExpression') {
 		if (node.operator !== '=') return;
 

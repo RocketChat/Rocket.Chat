@@ -117,7 +117,7 @@ const reducer = (state: initialStateType, action: IAction) => {
       state.projects[activeProject].flowEdges = filterEdges(
         state.projects[activeProject].flowEdges,
         action?.payload?.blocks.map((node) => node.actionId),
-        activeScreen
+        activeScreen,
       );
       return { ...state };
     }
@@ -199,7 +199,7 @@ const reducer = (state: initialStateType, action: IAction) => {
       delete state.screens[action.payload];
       state.projects[activeProject].screens = [
         ...state.projects[activeProject].screens.filter(
-          (id) => id !== action.payload
+          (id) => id !== action.payload,
         ),
       ];
       if (state.projects[activeProject].screens.length > 0) {
@@ -216,7 +216,7 @@ const reducer = (state: initialStateType, action: IAction) => {
         activeProject
       ].flowEdges.filter(
         (edge) =>
-          edge.source !== action.payload && edge.target !== action.payload
+          edge.source !== action.payload && edge.target !== action.payload,
       );
 
       state.projects[activeProject].flowNodes = state.projects[

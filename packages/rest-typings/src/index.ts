@@ -46,7 +46,8 @@ import type { VideoConferenceEndpoints } from './v1/videoConference';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
-	extends ChannelsEndpoints,
+	extends
+		ChannelsEndpoints,
 		MeEndpoints,
 		ModerationEndpoints,
 		BannersEndpoints,

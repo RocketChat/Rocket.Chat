@@ -6,7 +6,7 @@
 		"declaration": true,
 		"target": "ES2024",
 		"module": "nodenext",
-		"moduleResolution": "nodenext",
+		"moduleResolution": "nodenext"
 	},
 	"include": ["./src"]
 }

@@ -21,7 +21,9 @@ export const {
 	UIKitActionButtonInteractionContext,
 } = require('@rocket.chat/apps-engine/definition/uikit/UIKitInteractionContext.js');
 
-export const { UIKitLivechatBlockInteractionContext } = require('@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext.js');
+export const {
+	UIKitLivechatBlockInteractionContext,
+} = require('@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext.js');
 
 export default async function handleUIKitInteraction(request: RequestContext): Promise<Defined | JsonRpcError> {
 	const { method: reqMethod, params } = request;

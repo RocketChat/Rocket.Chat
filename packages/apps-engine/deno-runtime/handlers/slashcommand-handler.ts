@@ -58,7 +58,12 @@ export default async function slashCommandHandler(request: RequestContext): Prom
  * @param method The method that is being executed
  * @param params The parameters that are being passed to the method
  */
-export function handleExecutor(deps: { AppAccessorsInstance: AppAccessors }, command: ISlashCommand, method: 'executor' | 'previewer', params: unknown) {
+export function handleExecutor(
+	deps: { AppAccessorsInstance: AppAccessors },
+	command: ISlashCommand,
+	method: 'executor' | 'previewer',
+	params: unknown,
+) {
 	const executor = command[method];
 
 	if (typeof executor !== 'function') {

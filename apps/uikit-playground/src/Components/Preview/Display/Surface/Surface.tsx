@@ -55,7 +55,7 @@ const Surface: FC = () => {
         updatePayloadAction({
           blocks: uniqueBlocks.block.map((block) => block.payload),
           changedByEditor: false,
-        })
+        }),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -67,7 +67,7 @@ const Surface: FC = () => {
     const newBlocks = reorder(
       uniqueBlocks.block,
       source.index,
-      destination.index
+      destination.index,
     );
 
     setUniqueBlocks({ block: newBlocks, isChangeByDnd: true });
@@ -91,7 +91,9 @@ const Surface: FC = () => {
       >
         <SurfaceRender type={screens[activeScreen]?.payload.surface}>
           <DraggableList
-            surface={screens[activeScreen]?.payload.surface || SurfaceOptions.Message}
+            surface={
+              screens[activeScreen]?.payload.surface || SurfaceOptions.Message
+            }
             blocks={uniqueBlocks.block || []}
             onDragEnd={onDragEnd}
           />

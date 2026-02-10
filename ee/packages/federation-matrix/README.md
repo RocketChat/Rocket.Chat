@@ -29,41 +29,49 @@ The integration test script builds Rocket.Chat locally, starts federation servic
 ### Usage Examples
 
 **Basic local testing:**
+
 ```bash
 yarn test:integration
 ```
 
 **Test with pre-built image:**
+
 ```bash
 yarn test:integration --image
 ```
 
 **Test with specific pre-built image:**
+
 ```bash
 yarn test:integration --image rocketchat/rocket.chat:latest
 ```
 
 **Keep services running for manual inspection:**
+
 ```bash
 yarn test:integration --keep-running
 ```
 
 **Run with Element client:**
+
 ```bash
 yarn test:integration --element
 ```
 
 **Start containers only (skip tests):**
+
 ```bash
 yarn test:integration --no-test
 ```
 
 **Start containers with Element and keep them running (skip tests):**
+
 ```bash
 yarn test:integration --keep-running --element --no-test
 ```
 
 **Combine flags:**
+
 ```bash
 yarn test:integration --image rocketchat/rocket.chat:latest --keep-running --element
 ```
@@ -71,6 +79,6 @@ yarn test:integration --image rocketchat/rocket.chat:latest --keep-running --ele
 ### Service URLs (when using --keep-running or --no-test)
 
 - **Rocket.Chat**: https://rc1
-- **Synapse**: https://hs1  
+- **Synapse**: https://hs1
 - **MongoDB**: localhost:27017
 - **Element**: https://element (when using --element flag)

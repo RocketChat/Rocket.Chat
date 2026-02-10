@@ -14,7 +14,8 @@ describe('handlers > videoconference', () => {
 	// deno-lint-ignore no-unused-vars
 	const mockMethodWithOneParam = (call: any, read: any, modify: any, http: any, persis: any): Promise<string> => Promise.resolve('ok one');
 	// deno-lint-ignore no-unused-vars
-	const mockMethodWithTwoParam = (call: any, user: any, read: any, modify: any, http: any, persis: any): Promise<string> => Promise.resolve('ok two');
+	const mockMethodWithTwoParam = (call: any, user: any, read: any, modify: any, http: any, persis: any): Promise<string> =>
+		Promise.resolve('ok two');
 	// deno-lint-ignore no-unused-vars
 	const mockMethodWithThreeParam = (call: any, user: any, options: any, read: any, modify: any, http: any, persis: any): Promise<string> =>
 		Promise.resolve('ok three');

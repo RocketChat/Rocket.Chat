@@ -22,26 +22,26 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
 
   const { editor, changes, setValue } = useCodeMirror(
     extensions,
-    intendCode(screens[activeScreen]?.payload)
+    intendCode(screens[activeScreen]?.payload),
   );
   const debounceValue = useDebouncedValue(changes, 1500);
 
   useFormatCodeMirrorValue(
     (
       parsedCode: IPayload,
-      prettifiedCode: { formatted: string; cursorOffset: number }
+      prettifiedCode: { formatted: string; cursorOffset: number },
     ) => {
       dispatch(
         updatePayloadAction({
           blocks: parsedCode.blocks,
           surface: parsedCode.surface,
-        })
+        }),
       );
       setValue(prettifiedCode.formatted, {
         cursor: prettifiedCode.cursorOffset,
       });
     },
-    debounceValue
+    debounceValue,
   );
 
   useEffect(() => {

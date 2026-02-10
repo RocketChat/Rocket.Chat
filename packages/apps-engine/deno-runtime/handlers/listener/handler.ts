@@ -69,7 +69,10 @@ export function parseArgs(deps: { AppAccessorsInstance: AppAccessors }, evtMetho
 	if (evtMethod.includes('Message')) {
 		context = hydrateMessageObjects(context) as Record<string, unknown>;
 	} else if (evtMethod.endsWith('RoomUserJoined') || evtMethod.endsWith('RoomUserLeave')) {
-		(context as Record<string, unknown>).room = createRoom((context as Record<string, unknown>).room as IRoom, AppAccessorsInstance.getSenderFn());
+		(context as Record<string, unknown>).room = createRoom(
+			(context as Record<string, unknown>).room as IRoom,
+			AppAccessorsInstance.getSenderFn(),
+		);
 	} else if (evtMethod.includes('PreRoom')) {
 		context = createRoom(context as IRoom, AppAccessorsInstance.getSenderFn());
 	}

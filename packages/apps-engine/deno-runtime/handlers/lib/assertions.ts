@@ -9,7 +9,7 @@ import { JsonRpcError } from 'jsonrpc-lite';
 export const Errors = {
 	DRT_APP_NOT_AVAILABLE: 'DRT_APP_NOT_AVAILABLE',
 	DRT_EVENT_HANDLER_FUNCTION_MISSING: 'DRT_EVENT_HANDLER_FUNCTION_MISSING',
-}
+};
 
 export function isRecord(v: unknown): v is Record<string, unknown> {
 	if (!v || typeof v !== 'object') {

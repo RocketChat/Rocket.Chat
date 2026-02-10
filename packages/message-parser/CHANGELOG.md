@@ -39,7 +39,6 @@
   ### Usage
 
   Pattern: <t:{timestamp}:?{format}>
-
   - {timestamp} is a Unix timestamp
   - {format} is an optional parameter that can be used to customize the date and time format.
 
@@ -64,7 +63,6 @@
   ### Usage
 
   Pattern: <t:{timestamp}:?{format}>
-
   - {timestamp} is a Unix timestamp
   - {format} is an optional parameter that can be used to customize the date and time format.
 

@@ -23,7 +23,7 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
             { actionId: getUniqueId(), ...payload[0] },
           ],
           changedByEditor: false,
-        })
+        }),
       );
   };
 

@@ -30,11 +30,16 @@ import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
 import { require } from '../../../lib/require.ts';
 
 const { BlockType } = require('@rocket.chat/apps-engine/definition/uikit/blocks/Blocks.js') as { BlockType: typeof _BlockType };
-const { BlockElementType } = require('@rocket.chat/apps-engine/definition/uikit/blocks/Elements.js') as { BlockElementType: typeof _BlockElementType };
-const { TextObjectType } = require('@rocket.chat/apps-engine/definition/uikit/blocks/Objects.js') as { TextObjectType: typeof _TextObjectType };
+const { BlockElementType } = require('@rocket.chat/apps-engine/definition/uikit/blocks/Elements.js') as {
+	BlockElementType: typeof _BlockElementType;
+};
+const { TextObjectType } = require('@rocket.chat/apps-engine/definition/uikit/blocks/Objects.js') as {
+	TextObjectType: typeof _TextObjectType;
+};
 
 type BlockFunctionParameter<T extends IBlock> = Omit<T, 'type'>;
-type ElementFunctionParameter<T extends IBlockElement> = T extends IInteractiveElement ? Omit<T, 'type' | 'actionId'> | Partial<Pick<T, 'actionId'>>
+type ElementFunctionParameter<T extends IBlockElement> = T extends IInteractiveElement
+	? Omit<T, 'type' | 'actionId'> | Partial<Pick<T, 'actionId'>>
 	: Omit<T, 'type'>;
 
 type SectionBlockParam = BlockFunctionParameter<ISectionBlock>;

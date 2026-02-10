@@ -21,7 +21,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const t = useTranslation();
 
 	const isUnread = alert || unread || threadUnread;
-	const sections = useRoomMenuActions({ rid, type, name, isUnread, cl, roomOpen, hideDefaultOptions });
+	const sections = useRoomMenuActions({ rid: rid, type, name, isUnread, cl, roomOpen, hideDefaultOptions });
 
 	return <GenericMenu detached title={t('Options')} mini aria-keyshortcuts='alt' sections={sections} />;
 };

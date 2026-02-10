@@ -45,7 +45,7 @@ export default function useCodeMirror(extensions?: Extension[], doc?: string) {
       from?: number;
       to?: number;
       cursor?: number;
-    }
+    },
   ) => {
     try {
       view.current?.dispatch({

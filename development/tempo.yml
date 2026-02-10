@@ -11,11 +11,11 @@ query_frontend:
     duration_slo: 5s
 
 distributor:
-  receivers:                           # this configuration will listen on all ports and protocols that tempo is capable of.
-    jaeger:                            # the receives all come from the OpenTelemetry collector.  more configuration information can
-      protocols:                       # be found there: https://github.com/open-telemetry/opentelemetry-collector/tree/main/receiver
-        thrift_http:                   #
-        grpc:                          # for a production deployment you should only enable the receivers you need!
+  receivers: # this configuration will listen on all ports and protocols that tempo is capable of.
+    jaeger: # the receives all come from the OpenTelemetry collector.  more configuration information can
+      protocols: # be found there: https://github.com/open-telemetry/opentelemetry-collector/tree/main/receiver
+        thrift_http: #
+        grpc: # for a production deployment you should only enable the receivers you need!
         thrift_binary:
         thrift_compact:
     zipkin:
@@ -26,11 +26,11 @@ distributor:
     opencensus:
 
 ingester:
-  max_block_duration: 5m               # cut the headblock when this much time passes. this is being set for demo purposes and should probably be left alone normally
+  max_block_duration: 5m # cut the headblock when this much time passes. this is being set for demo purposes and should probably be left alone normally
 
 compactor:
   compaction:
-    block_retention: 1h                # overall Tempo trace retention. set for demo purposes
+    block_retention: 1h # overall Tempo trace retention. set for demo purposes
 
 metrics_generator:
   registry:
@@ -47,9 +47,9 @@ metrics_generator:
 
 storage:
   trace:
-    backend: local                     # backend configuration to use
+    backend: local # backend configuration to use
     wal:
-      path: /var/tempo/wal             # where to store the wal locally
+      path: /var/tempo/wal # where to store the wal locally
     local:
       path: /var/tempo/blocks
 

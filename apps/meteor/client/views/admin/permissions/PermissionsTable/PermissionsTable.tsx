@@ -69,7 +69,9 @@ const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationD
 					<GenericTable className={[tableCustomStyle]} fixed={false}>
 						<GenericTableHeader>
 							<GenericTableHeaderCell width='x120'>{t('Name')}</GenericTableHeaderCell>
-							{roleList?.map(({ _id, name, description }) => <RoleHeader key={_id} _id={_id} name={name} description={description} />)}
+							{roleList?.map(({ _id, name, description }) => (
+								<RoleHeader key={_id} _id={_id} name={name} description={description} />
+							))}
 						</GenericTableHeader>
 						<GenericTableBody>
 							{permissions.map((permission) => (

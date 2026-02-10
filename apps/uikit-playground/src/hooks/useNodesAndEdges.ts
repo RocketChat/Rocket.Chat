@@ -21,7 +21,7 @@ export function useNodesAndEdges() {
     const prevNodes = projects[activeProject].flowNodes;
     const center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     const activeScreens = projects[activeProject].screens.map(
-      (id) => screens[id]
+      (id) => screens[id],
     );
     activeScreens.map((screen, i) => {
       if (prevNodes.map((node) => node.id).includes(screen.id)) return;

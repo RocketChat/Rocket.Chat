@@ -27,7 +27,7 @@ const Payload = ({
       blocks.map((block) => {
         return { ...block, actionId: getUniqueId() };
       }),
-    [blocks]
+    [blocks],
   );
   const clickHandler = () => {
     dispatch(templatesToggleAction(false));
@@ -35,7 +35,7 @@ const Payload = ({
       updatePayloadAction({
         blocks: blocksWithUniqueIds,
         changedByEditor: false,
-      })
+      }),
     );
   };
   return (

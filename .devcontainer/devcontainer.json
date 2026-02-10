@@ -1,18 +1,16 @@
 {
 	"name": "Rocket.Chat Gitpod",
 	"build": {
-        "context": "..",
-        "dockerfile": "./Dockerfile"
-    },
+		"context": "..",
+		"dockerfile": "./Dockerfile"
+	},
 	"features": {
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
-    },
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
+	},
 	"forwardPorts": [3000],
 	"customizations": {
 		"vscode": {
-			"extensions": [
-				"esbenp.prettier-vscode"
-			]
+			"extensions": ["esbenp.prettier-vscode"]
 		}
 	}
 }

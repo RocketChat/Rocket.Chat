@@ -26,8 +26,7 @@ export class BaseDummy<
 	T extends { _id: string },
 	C extends DefaultFields<T> = undefined,
 	TDeleted extends RocketChatRecordDeleted<T> = RocketChatRecordDeleted<T>,
-> implements IBaseModel<T, C, TDeleted>
-{
+> implements IBaseModel<T, C, TDeleted> {
 	public readonly col: Collection<T>;
 
 	private collectionName: string;

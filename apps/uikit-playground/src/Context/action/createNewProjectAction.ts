@@ -6,7 +6,7 @@ export type CreateNewProjectAction = {
 };
 
 export const createNewProjectAction = (
-  payload?: string
+  payload?: string,
 ): CreateNewProjectAction => ({
   type: ActionTypes.CreateNewProject,
   payload,

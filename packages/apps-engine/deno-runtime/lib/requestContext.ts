@@ -6,5 +6,5 @@ export type RequestContext = RequestObject & {
 	context: {
 		logger: Logger;
 		[key: string]: unknown;
-	}
+	};
 };

@@ -62,7 +62,7 @@ export class DenuRuntimeSubprocessControllerTestFixture {
 		const spy = SpyOn(this.manager.getBridges().getHttpBridge(), 'doCall');
 
 		// eslint-disable-next-line
-        const r = await this.controller['handleAccessorMessage']({
+		const r = await this.controller['handleAccessorMessage']({
 			type: 'request' as any,
 			payload: {
 				jsonrpc: '2.0',
@@ -116,7 +116,7 @@ export class DenuRuntimeSubprocessControllerTestFixture {
 		);
 
 		// eslint-disable-next-line
-        const { id, result } = await this.controller['handleAccessorMessage']({
+		const { id, result } = await this.controller['handleAccessorMessage']({
 			type: 'request' as any,
 			payload: {
 				jsonrpc: '2.0',
@@ -139,7 +139,7 @@ export class DenuRuntimeSubprocessControllerTestFixture {
 	@AsyncTest('correctly identifies a call to the IEnvironmentReader accessor via IRead')
 	public async testIEnvironmentReaderAccessor() {
 		// eslint-disable-next-line
-        const { id, result } = await this.controller['handleAccessorMessage']({
+		const { id, result } = await this.controller['handleAccessorMessage']({
 			type: 'request' as any,
 			payload: {
 				jsonrpc: '2.0',
@@ -161,7 +161,7 @@ export class DenuRuntimeSubprocessControllerTestFixture {
 		spy.andReturn(Promise.resolve('random id'));
 
 		// eslint-disable-next-line
-        const { id, result } = await this.controller['handleAccessorMessage']({
+		const { id, result } = await this.controller['handleAccessorMessage']({
 			type: 'request' as any,
 			payload: {
 				jsonrpc: '2.0',
@@ -212,7 +212,7 @@ export class DenuRuntimeSubprocessControllerTestFixture {
 		};
 
 		// eslint-disable-next-line
-        const response = await this.controller['handleBridgeMessage']({
+		const response = await this.controller['handleBridgeMessage']({
 			type: 'request' as any,
 			payload: {
 				jsonrpc: '2.0',

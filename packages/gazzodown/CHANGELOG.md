@@ -9,7 +9,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 0c0258604632342f42fc36cabac2d6cfe0e477c4, ac11ea05ffadeca978c794ff38d5199d9acb2c29, bd5edfc2993c93bd77f42dcd30d38b57eeb50481, ddc935727e9a7275813006d9dcaa7fe866610844, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, 611e4cdfa04849416a58071646b853b95e9b817b, 55dc368f3f679e93bffb9f04efe3944832cf3336]:</summary>
-
   - @rocket.chat/core-typings@8.0.0
   - @rocket.chat/ui-contexts@26.0.0
   - @rocket.chat/ui-client@26.0.0
@@ -20,7 +19,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.5
   - @rocket.chat/ui-client@26.0.0-rc.5
   - @rocket.chat/ui-contexts@26.0.0-rc.5
@@ -31,7 +29,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.4
   - @rocket.chat/ui-client@26.0.0-rc.4
   - @rocket.chat/ui-contexts@26.0.0-rc.4
@@ -42,7 +39,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@26.0.0-rc.3
   - @rocket.chat/ui-client@26.0.0-rc.3
   - @rocket.chat/core-typings@8.0.0-rc.3
@@ -53,7 +49,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.2
   - @rocket.chat/ui-client@26.0.0-rc.2
   - @rocket.chat/ui-contexts@26.0.0-rc.2
@@ -64,7 +59,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.1
   - @rocket.chat/ui-client@26.0.0-rc.1
   - @rocket.chat/ui-contexts@26.0.0-rc.1
@@ -79,7 +73,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 0c0258604632342f42fc36cabac2d6cfe0e477c4, ac11ea05ffadeca978c794ff38d5199d9acb2c29, bd5edfc2993c93bd77f42dcd30d38b57eeb50481, ddc935727e9a7275813006d9dcaa7fe866610844, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, 611e4cdfa04849416a58071646b853b95e9b817b, 55dc368f3f679e93bffb9f04efe3944832cf3336]:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.0
   - @rocket.chat/ui-contexts@26.0.0-rc.0
   - @rocket.chat/ui-client@26.0.0-rc.0
@@ -90,7 +83,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.13.2
   - @rocket.chat/ui-client@25.0.2
   - @rocket.chat/ui-contexts@25.0.2
@@ -101,7 +93,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.13.1
   - @rocket.chat/ui-client@25.0.1
   - @rocket.chat/ui-contexts@25.0.1
@@ -112,7 +103,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 150efb9d3c1a72a16bb9fe5fc4fc97fc441172d0, 7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 99255057f27b9d854a89da815681a03d0776f846, 65fbcbed9f64004b953dd9d4182b3fccb8147339]:</summary>
-
   - @rocket.chat/ui-client@25.0.0
   - @rocket.chat/ui-contexts@25.0.0
   - @rocket.chat/core-typings@7.13.0
@@ -123,7 +113,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.13.0-rc.2
   - @rocket.chat/ui-client@25.0.0-rc.2
   - @rocket.chat/ui-contexts@25.0.0-rc.2
@@ -144,7 +133,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [31ab78f0d4648b2ba99513ffce737d52ee34fe7f, 150efb9d3c1a72a16bb9fe5fc4fc97fc441172d0, 7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 99255057f27b9d854a89da815681a03d0776f846, 65fbcbed9f64004b953dd9d4182b3fccb8147339]:</summary>
-
   - @rocket.chat/ui-client@25.0.0-rc.0
   - @rocket.chat/ui-contexts@25.0.0-rc.0
   - @rocket.chat/core-typings@7.13.0-rc.0
@@ -165,7 +153,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.1
   - @rocket.chat/ui-client@24.0.1
   - @rocket.chat/ui-contexts@24.0.1
@@ -176,7 +163,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [085d6536d23fe5cc293fec2f1454eb7442e8c7f4, a25e88c06cafdbe3baf7a40e3bffe3aed5a81cf6, d166e2a1ffba4e59361d5f79e8c376fca5cbf12f]:</summary>
-
   - @rocket.chat/ui-client@24.0.0
   - @rocket.chat/ui-contexts@24.0.0
   - @rocket.chat/core-typings@7.12.0
@@ -187,7 +173,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.0-rc.4
   - @rocket.chat/ui-client@24.0.0-rc.4
   - @rocket.chat/ui-contexts@24.0.0-rc.4
@@ -198,7 +183,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.0-rc.3
   - @rocket.chat/ui-client@24.0.0-rc.3
   - @rocket.chat/ui-contexts@24.0.0-rc.3
@@ -209,7 +193,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.0-rc.2
   - @rocket.chat/ui-client@24.0.0-rc.2
   - @rocket.chat/ui-contexts@24.0.0-rc.2
@@ -220,7 +203,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.0-rc.1
   - @rocket.chat/ui-client@24.0.0-rc.1
   - @rocket.chat/ui-contexts@24.0.0-rc.1
@@ -231,7 +213,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [085d6536d23fe5cc293fec2f1454eb7442e8c7f4, a25e88c06cafdbe3baf7a40e3bffe3aed5a81cf6, d166e2a1ffba4e59361d5f79e8c376fca5cbf12f]:</summary>
-
   - @rocket.chat/ui-client@24.0.0-rc.0
   - @rocket.chat/ui-contexts@24.0.0-rc.0
   - @rocket.chat/core-typings@7.12.0-rc.0
@@ -248,7 +229,6 @@
 - ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
 
 - <details><summary>Updated dependencies [feba290fc403de27efb6bb9a571bec43413e976a, b0a4602a4461200b9872b2b073ec56fa55ecb466, c6ef437d9071dbd8c08152984dc39542b1ae7306, 399ab0233c9cd5d7f25ce955b452feecdc378744]:</summary>
-
   - @rocket.chat/ui-contexts@23.0.0
   - @rocket.chat/ui-client@23.0.0
   - @rocket.chat/core-typings@7.11.0
@@ -259,7 +239,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.7
   - @rocket.chat/ui-client@23.0.0-rc.7
   - @rocket.chat/ui-contexts@23.0.0-rc.7
@@ -270,7 +249,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.6
   - @rocket.chat/ui-client@23.0.0-rc.6
   - @rocket.chat/ui-contexts@23.0.0-rc.6
@@ -281,7 +259,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.5
   - @rocket.chat/ui-client@23.0.0-rc.5
   - @rocket.chat/ui-contexts@23.0.0-rc.5
@@ -292,7 +269,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.4
   - @rocket.chat/ui-client@23.0.0-rc.4
   - @rocket.chat/ui-contexts@23.0.0-rc.4
@@ -303,7 +279,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.3
   - @rocket.chat/ui-client@23.0.0-rc.3
   - @rocket.chat/ui-contexts@23.0.0-rc.3
@@ -324,7 +299,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.1
   - @rocket.chat/ui-client@23.0.0-rc.1
   - @rocket.chat/ui-contexts@23.0.0-rc.1
@@ -341,7 +315,6 @@
 - ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
 
 - <details><summary>Updated dependencies [feba290fc403de27efb6bb9a571bec43413e976a, b0a4602a4461200b9872b2b073ec56fa55ecb466, c6ef437d9071dbd8c08152984dc39542b1ae7306, 399ab0233c9cd5d7f25ce955b452feecdc378744]:</summary>
-
   - @rocket.chat/ui-contexts@23.0.0-rc.0
   - @rocket.chat/ui-client@23.0.0-rc.0
   - @rocket.chat/core-typings@7.11.0-rc.0
@@ -352,7 +325,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.2
   - @rocket.chat/ui-client@22.0.2
   - @rocket.chat/ui-contexts@22.0.2
@@ -373,7 +345,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [759b178946951f10dfcf0c9daf0f45aceb422998, 17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, a1c99dfe7bdee81e85164155e61b94b55dcbb752, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
-
   - @rocket.chat/ui-client@22.0.0
   - @rocket.chat/core-typings@7.10.0
   - @rocket.chat/ui-contexts@22.0.0
@@ -384,7 +355,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.6
   - @rocket.chat/ui-client@22.0.0-rc.6
   - @rocket.chat/ui-contexts@22.0.0-rc.6
@@ -425,7 +395,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.2
   - @rocket.chat/ui-client@22.0.0-rc.2
   - @rocket.chat/ui-contexts@22.0.0-rc.2
@@ -436,7 +405,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.1
   - @rocket.chat/ui-client@22.0.0-rc.1
   - @rocket.chat/ui-contexts@22.0.0-rc.1
@@ -447,7 +415,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [759b178946951f10dfcf0c9daf0f45aceb422998, 17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, a1c99dfe7bdee81e85164155e61b94b55dcbb752, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
-
   - @rocket.chat/ui-client@22.0.0-rc.0
   - @rocket.chat/core-typings@7.10.0-rc.0
   - @rocket.chat/ui-contexts@22.0.0-rc.0
@@ -490,7 +457,6 @@
 - ([#36317](https://github.com/RocketChat/Rocket.Chat/pull/36317)) Fixes an issue that causes legitimate URLs to return '#' in links
 
 - <details><summary>Updated dependencies [2cec8acd5beddf5ad0c67c29fe632487cb82b026, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
-
   - @rocket.chat/core-typings@7.9.0
   - @rocket.chat/ui-contexts@21.0.0
   - @rocket.chat/ui-client@21.0.0
@@ -511,7 +477,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.9.0-rc.1
   - @rocket.chat/ui-client@21.0.0-rc.1
   - @rocket.chat/ui-contexts@21.0.0-rc.1
@@ -524,7 +489,6 @@
 - ([#36317](https://github.com/RocketChat/Rocket.Chat/pull/36317)) Fixes an issue that causes legitimate URLs to return '#' in links
 
 - <details><summary>Updated dependencies [2cec8acd5beddf5ad0c67c29fe632487cb82b026, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
-
   - @rocket.chat/core-typings@7.9.0-rc.0
   - @rocket.chat/ui-contexts@21.0.0-rc.0
   - @rocket.chat/ui-client@21.0.0-rc.0
@@ -535,7 +499,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.3
   - @rocket.chat/ui-contexts@20.0.3
   - @rocket.chat/ui-client@20.0.3
@@ -546,7 +509,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.2
   - @rocket.chat/ui-contexts@20.0.2
   - @rocket.chat/ui-client@20.0.2
@@ -557,7 +519,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.1
   - @rocket.chat/ui-contexts@20.0.1
   - @rocket.chat/ui-client@20.0.1
@@ -568,7 +529,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
-
   - @rocket.chat/core-typings@7.8.0
   - @rocket.chat/ui-contexts@20.0.0
   - @rocket.chat/ui-client@20.0.0
@@ -579,7 +539,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.9
   - @rocket.chat/ui-contexts@20.0.0-rc.9
   - @rocket.chat/ui-client@20.0.0-rc.9
@@ -590,7 +549,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.8
   - @rocket.chat/ui-contexts@20.0.0-rc.8
   - @rocket.chat/ui-client@20.0.0-rc.8
@@ -601,7 +559,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.7
   - @rocket.chat/ui-contexts@20.0.0-rc.7
   - @rocket.chat/ui-client@20.0.0-rc.7
@@ -612,7 +569,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.6
   - @rocket.chat/ui-contexts@20.0.0-rc.6
   - @rocket.chat/ui-client@20.0.0-rc.6
@@ -623,7 +579,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.5
   - @rocket.chat/ui-contexts@20.0.0-rc.5
   - @rocket.chat/ui-client@20.0.0-rc.5
@@ -634,7 +589,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.4
   - @rocket.chat/ui-contexts@20.0.0-rc.4
   - @rocket.chat/ui-client@20.0.0-rc.4
@@ -645,7 +599,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@20.0.0-rc.3
   - @rocket.chat/ui-client@20.0.0-rc.3
   - @rocket.chat/core-typings@7.8.0-rc.3
@@ -656,7 +609,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.2
   - @rocket.chat/ui-contexts@20.0.0-rc.2
   - @rocket.chat/ui-client@20.0.0-rc.2
@@ -677,7 +629,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.0
   - @rocket.chat/ui-contexts@20.0.0-rc.0
   - @rocket.chat/ui-client@20.0.0-rc.0
@@ -698,7 +649,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.3
   - @rocket.chat/ui-contexts@19.0.3
   - @rocket.chat/ui-client@19.0.3
@@ -709,7 +659,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@19.0.2
   - @rocket.chat/ui-client@19.0.2
   - @rocket.chat/core-typings@7.7.2
@@ -720,7 +669,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@19.0.1
   - @rocket.chat/ui-client@19.0.1
   - @rocket.chat/core-typings@7.7.1
@@ -733,7 +681,6 @@
 - ([#36016](https://github.com/RocketChat/Rocket.Chat/pull/36016)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
 
 - <details><summary>Updated dependencies [aadc7956bdeb281007ef06f158088640a44171df]:</summary>
-
   - @rocket.chat/ui-client@19.0.0
   - @rocket.chat/ui-contexts@19.0.0
   - @rocket.chat/core-typings@7.7.0
@@ -744,7 +691,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.6
   - @rocket.chat/ui-contexts@19.0.0-rc.6
   - @rocket.chat/ui-client@19.0.0-rc.6
@@ -755,7 +701,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.5
   - @rocket.chat/ui-contexts@19.0.0-rc.5
   - @rocket.chat/ui-client@19.0.0-rc.5
@@ -766,7 +711,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.1-rc.4
   - @rocket.chat/ui-contexts@19.0.0-rc.4
   - @rocket.chat/ui-client@19.0.0-rc.4
@@ -797,7 +741,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.1
   - @rocket.chat/ui-contexts@19.0.0-rc.1
   - @rocket.chat/ui-client@19.0.0-rc.1
@@ -810,7 +753,6 @@
 - ([#36016](https://github.com/RocketChat/Rocket.Chat/pull/36016)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
 
 - <details><summary>Updated dependencies [aadc7956bdeb281007ef06f158088640a44171df]:</summary>
-
   - @rocket.chat/ui-client@19.0.0-rc.0
   - @rocket.chat/ui-contexts@19.0.0-rc.0
   - @rocket.chat/core-typings@7.7.0-rc.0
@@ -841,7 +783,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [aec9eaa941fe9dad81f38d8d18d1b58edd700eb1, 2c190740d0ff166a4cefe8e833b0b2682a41fab1, f545617c2ac3d67af533e64c2670d8d564a56d15, 6bf386dcc2a560963cf719fbc2d96569ce23a2de, 1eeb139158fcd621a2b8d3a7de5bb512e659261d, d8eb824d242cbbeafb11b1c4a806860e4541ba79, bbd0b0d9ed181a156430e2a446d3b56092e3f645, 5e3ab1a07163cd22ad4c41502ef232845d26bdc2, 47ae69912cd90743e7bf836fdee4be481a01bbba, 72725d391e79b44e7380ee2fe640e2e4426c77ca, 4b28126ac94cf1d3312b30ad9863ca02673f49d4, 4690c55d8e379d0bd5dfa444f3e0a4175e88d8de]:</summary>
-
   - @rocket.chat/core-typings@7.6.0
   - @rocket.chat/ui-client@18.0.0
   - @rocket.chat/ui-contexts@18.0.0
@@ -852,7 +793,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.8
   - @rocket.chat/ui-contexts@18.0.0-rc.8
   - @rocket.chat/ui-client@18.0.0-rc.8
@@ -863,7 +803,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.7
   - @rocket.chat/ui-contexts@18.0.0-rc.7
   - @rocket.chat/ui-client@18.0.0-rc.7
@@ -874,7 +813,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.6
   - @rocket.chat/ui-contexts@18.0.0-rc.6
   - @rocket.chat/ui-client@18.0.0-rc.6
@@ -885,7 +823,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.5
   - @rocket.chat/ui-contexts@18.0.0-rc.5
   - @rocket.chat/ui-client@18.0.0-rc.5
@@ -896,7 +833,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.4
   - @rocket.chat/ui-contexts@18.0.0-rc.4
   - @rocket.chat/ui-client@18.0.0-rc.4
@@ -907,7 +843,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.3
   - @rocket.chat/ui-contexts@18.0.0-rc.3
   - @rocket.chat/ui-client@18.0.0-rc.3
@@ -918,7 +853,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.2
   - @rocket.chat/ui-contexts@18.0.0-rc.2
   - @rocket.chat/ui-client@18.0.0-rc.2
@@ -929,7 +863,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.1
   - @rocket.chat/ui-contexts@18.0.0-rc.1
   - @rocket.chat/ui-client@18.0.0-rc.1
@@ -940,7 +873,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [aec9eaa941fe9dad81f38d8d18d1b58edd700eb1, 2c190740d0ff166a4cefe8e833b0b2682a41fab1, f545617c2ac3d67af533e64c2670d8d564a56d15, 6bf386dcc2a560963cf719fbc2d96569ce23a2de, 1eeb139158fcd621a2b8d3a7de5bb512e659261d, d8eb824d242cbbeafb11b1c4a806860e4541ba79, bbd0b0d9ed181a156430e2a446d3b56092e3f645, 5e3ab1a07163cd22ad4c41502ef232845d26bdc2, 47ae69912cd90743e7bf836fdee4be481a01bbba, 72725d391e79b44e7380ee2fe640e2e4426c77ca, 4b28126ac94cf1d3312b30ad9863ca02673f49d4, 4690c55d8e379d0bd5dfa444f3e0a4175e88d8de]:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.0
   - @rocket.chat/ui-client@18.0.0-rc.0
   - @rocket.chat/ui-contexts@18.0.0-rc.0
@@ -951,7 +883,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.1
   - @rocket.chat/ui-contexts@17.0.1
   - @rocket.chat/ui-client@17.0.1
@@ -964,7 +895,6 @@
 - ([#35286](https://github.com/RocketChat/Rocket.Chat/pull/35286)) Bumps fuselage and related packages versions to use the most recent releases of each package, especially the fix for the missing track of the fuselage slider component
 
 - <details><summary>Updated dependencies [c7b21f1c1e479533a208771f3e15f064f2c7e3ff, 25592391b04a5a9c5e4be57a3878bca7c7db66b2, c904862b1496cab943e97d28b36d3a24deac21c1, 335f19f5d08b7348263b574e4133ecf93145a79c]:</summary>
-
   - @rocket.chat/ui-client@17.0.0
   - @rocket.chat/ui-contexts@17.0.0
   - @rocket.chat/core-typings@7.5.0
@@ -976,7 +906,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.5
   - @rocket.chat/ui-contexts@17.0.0-rc.5
   - @rocket.chat/ui-client@17.0.0-rc.5
@@ -987,7 +916,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.4
   - @rocket.chat/ui-contexts@17.0.0-rc.4
   - @rocket.chat/ui-client@17.0.0-rc.4
@@ -998,7 +926,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.3
   - @rocket.chat/ui-contexts@17.0.0-rc.3
   - @rocket.chat/ui-client@17.0.0-rc.3
@@ -1009,7 +936,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@17.0.0-rc.2
   - @rocket.chat/ui-client@17.0.0-rc.2
   - @rocket.chat/core-typings@7.5.0-rc.2
@@ -1020,7 +946,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.1
   - @rocket.chat/ui-contexts@17.0.0-rc.1
   - @rocket.chat/ui-client@17.0.0-rc.1
@@ -1033,7 +958,6 @@
 - ([#35286](https://github.com/RocketChat/Rocket.Chat/pull/35286)) Bumps fuselage and related packages versions to use the most recent releases of each package, especially the fix for the missing track of the fuselage slider component
 
 - <details><summary>Updated dependencies [c7b21f1c1e479533a208771f3e15f064f2c7e3ff, 25592391b04a5a9c5e4be57a3878bca7c7db66b2, c904862b1496cab943e97d28b36d3a24deac21c1, 335f19f5d08b7348263b574e4133ecf93145a79c]:</summary>
-
   - @rocket.chat/ui-client@17.0.0-rc.0
   - @rocket.chat/ui-contexts@17.0.0-rc.0
   - @rocket.chat/core-typings@7.5.0-rc.0
@@ -1045,7 +969,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.1
   - @rocket.chat/ui-contexts@16.0.1
   - @rocket.chat/ui-client@16.0.1
@@ -1056,7 +979,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [89964144e042c8d9282b51efd89e1e684077fdd7, f85da08765a9d3f8c5aabd9291fd08be6dfdeb85, be5031a21bdcda31270d53d319f7d183e77d84d7]:</summary>
-
   - @rocket.chat/core-typings@7.4.0
   - @rocket.chat/ui-client@16.0.0
   - @rocket.chat/ui-contexts@16.0.0
@@ -1067,7 +989,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.5
   - @rocket.chat/ui-contexts@16.0.0-rc.5
   - @rocket.chat/ui-client@16.0.0-rc.5
@@ -1078,7 +999,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.4
   - @rocket.chat/ui-contexts@16.0.0-rc.4
   - @rocket.chat/ui-client@16.0.0-rc.4
@@ -1099,7 +1019,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.2
   - @rocket.chat/ui-contexts@16.0.0-rc.2
   - @rocket.chat/ui-client@16.0.0-rc.2
@@ -1110,7 +1029,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.1
   - @rocket.chat/ui-contexts@16.0.0-rc.1
   - @rocket.chat/ui-client@16.0.0-rc.1
@@ -1121,7 +1039,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [89964144e042c8d9282b51efd89e1e684077fdd7, f85da08765a9d3f8c5aabd9291fd08be6dfdeb85, be5031a21bdcda31270d53d319f7d183e77d84d7]:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.0
   - @rocket.chat/ui-client@16.0.0-rc.0
   - @rocket.chat/ui-contexts@16.0.0-rc.0
@@ -1132,7 +1049,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.3
   - @rocket.chat/ui-contexts@15.0.3
   - @rocket.chat/ui-client@15.0.3
@@ -1143,7 +1059,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.2
   - @rocket.chat/ui-contexts@15.0.2
   - @rocket.chat/ui-client@15.0.2
@@ -1154,7 +1069,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.1
   - @rocket.chat/ui-contexts@15.0.1
   - @rocket.chat/ui-client@15.0.1
@@ -1165,7 +1079,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [5506c406f4a22145ece065ad2b797225e94423ca, 8942b0032af976738a7c602fa389803dda30c0dc, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944]:</summary>
-
   - @rocket.chat/ui-contexts@15.0.0
   - @rocket.chat/ui-client@15.0.0
   - @rocket.chat/core-typings@7.3.0
@@ -1176,7 +1089,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.5
   - @rocket.chat/ui-contexts@15.0.0-rc.5
   - @rocket.chat/ui-client@15.0.0-rc.5
@@ -1187,7 +1099,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.4
   - @rocket.chat/ui-contexts@15.0.0-rc.4
   - @rocket.chat/ui-client@15.0.0-rc.4
@@ -1198,7 +1109,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.3
   - @rocket.chat/ui-contexts@15.0.0-rc.3
   - @rocket.chat/ui-client@15.0.0-rc.3
@@ -1209,7 +1119,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.2
   - @rocket.chat/ui-contexts@15.0.0-rc.2
   - @rocket.chat/ui-client@15.0.0-rc.2
@@ -1220,7 +1129,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.1
   - @rocket.chat/ui-contexts@15.0.0-rc.1
   - @rocket.chat/ui-client@15.0.0-rc.1
@@ -1231,7 +1139,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [5506c406f4a22145ece065ad2b797225e94423ca, 8942b0032af976738a7c602fa389803dda30c0dc, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944]:</summary>
-
   - @rocket.chat/ui-contexts@15.0.0-rc.0
   - @rocket.chat/ui-client@15.0.0-rc.0
   - @rocket.chat/core-typings@7.3.0-rc.0
@@ -1242,7 +1149,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.2.1
   - @rocket.chat/ui-contexts@14.0.1
   - @rocket.chat/ui-client@14.0.1
@@ -1259,7 +1165,6 @@
 - ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
 
 - <details><summary>Updated dependencies [76f6239ff1a9f34f163c03c140c4ceba62563b4e, c43220dcd8c1df86a6143d6553964ad2173903b3, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, be2ede48ba7774a43189a729b385f441d088b68e, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8]:</summary>
-
   - @rocket.chat/core-typings@7.2.0
   - @rocket.chat/ui-contexts@14.0.0
   - @rocket.chat/ui-client@14.0.0
@@ -1270,7 +1175,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.2.0-rc.3
   - @rocket.chat/ui-contexts@14.0.0-rc.3
   - @rocket.chat/ui-client@14.0.0-rc.3
@@ -1281,7 +1185,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [c43220dcd8c1df86a6143d6553964ad2173903b3]:</summary>
-
   - @rocket.chat/ui-contexts@14.0.0-rc.2
   - @rocket.chat/ui-client@14.0.0-rc.2
   - @rocket.chat/core-typings@7.2.0-rc.2
@@ -1292,7 +1195,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.2.0-rc.1
   - @rocket.chat/ui-contexts@14.0.0-rc.1
   - @rocket.chat/ui-client@14.0.0-rc.1
@@ -1309,7 +1211,6 @@
 - ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
 
 - <details><summary>Updated dependencies [76f6239ff1a9f34f163c03c140c4ceba62563b4e, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, be2ede48ba7774a43189a729b385f441d088b68e, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8]:</summary>
-
   - @rocket.chat/core-typings@7.2.0-rc.0
   - @rocket.chat/ui-contexts@14.0.0-rc.0
   - @rocket.chat/ui-client@14.0.0-rc.0
@@ -1320,7 +1221,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [80e36bfc3938775eb26aa5576f1b9b98896e1cc4, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0]:</summary>
-
   - @rocket.chat/core-typings@7.1.0
   - @rocket.chat/ui-contexts@13.0.0
   - @rocket.chat/ui-client@13.0.0
@@ -1331,7 +1231,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.1.0-rc.3
   - @rocket.chat/ui-contexts@13.0.0-rc.3
   - @rocket.chat/ui-client@13.0.0-rc.3
@@ -1342,7 +1241,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.1.0-rc.2
   - @rocket.chat/ui-contexts@13.0.0-rc.2
   - @rocket.chat/ui-client@13.0.0-rc.2
@@ -1353,7 +1251,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.1.0-rc.1
   - @rocket.chat/ui-contexts@13.0.0-rc.1
   - @rocket.chat/ui-client@13.0.0-rc.1
@@ -1364,7 +1261,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [80e36bfc3938775eb26aa5576f1b9b98896e1cc4, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0]:</summary>
-
   - @rocket.chat/core-typings@7.1.0-rc.0
   - @rocket.chat/ui-contexts@13.0.0-rc.0
   - @rocket.chat/ui-client@13.0.0-rc.0
@@ -1379,7 +1275,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [bcacbb1cee, 9274cf4586, b338807d76, 3ea02d3cc1, e3629e065b, 03d148524b, 760ae5c01a, 81998f3450, 509143d6dd]:</summary>
-
   - @rocket.chat/core-typings@7.0.0
   - @rocket.chat/ui-client@12.0.0
   - @rocket.chat/ui-contexts@12.0.0
@@ -1390,7 +1285,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.6
   - @rocket.chat/ui-contexts@12.0.0-rc.6
   - @rocket.chat/ui-client@12.0.0-rc.6
@@ -1401,7 +1295,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@12.0.0-rc.5
   - @rocket.chat/ui-client@12.0.0-rc.5
   - @rocket.chat/core-typings@7.0.0-rc.5
@@ -1412,7 +1305,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.4
   - @rocket.chat/ui-contexts@12.0.0-rc.4
   - @rocket.chat/ui-client@12.0.0-rc.4
@@ -1423,7 +1315,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.3
   - @rocket.chat/ui-contexts@12.0.0-rc.3
   - @rocket.chat/ui-client@12.0.0-rc.3
@@ -1434,7 +1325,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.2
   - @rocket.chat/ui-contexts@12.0.0-rc.2
   - @rocket.chat/ui-client@12.0.0-rc.2
@@ -1445,7 +1335,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.1
   - @rocket.chat/ui-contexts@12.0.0-rc.1
   - @rocket.chat/ui-client@12.0.0-rc.1
@@ -1460,7 +1349,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [7726d68374, bcacbb1cee, 9274cf4586, b338807d76, 3ea02d3cc1, e3629e065b, 03d148524b, 760ae5c01a, 81998f3450, 509143d6dd]:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.0
   - @rocket.chat/ui-client@12.0.0-rc.0
   - @rocket.chat/ui-contexts@12.0.0-rc.0
@@ -1475,7 +1363,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [bb94c9c67a, 274f4f5881, cd0d50016e, 2f9eea03d2, 79c16d315a, 927710d778, 12d6307998]:</summary>
-
   - @rocket.chat/ui-client@11.0.0
   - @rocket.chat/core-typings@6.13.0
   - @rocket.chat/message-parser@0.31.31
@@ -1487,7 +1374,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.6
   - @rocket.chat/ui-contexts@11.0.0-rc.6
   </details>
@@ -1497,7 +1383,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.5
   - @rocket.chat/ui-contexts@11.0.0-rc.5
   - @rocket.chat/ui-client@11.0.0-rc.5
@@ -1508,7 +1393,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.4
   - @rocket.chat/ui-contexts@11.0.0-rc.4
   - @rocket.chat/ui-client@11.0.0-rc.4
@@ -1519,7 +1403,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.3
   - @rocket.chat/ui-contexts@11.0.0-rc.3
   - @rocket.chat/ui-client@11.0.0-rc.3
@@ -1530,7 +1413,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.2
   - @rocket.chat/ui-contexts@11.0.0-rc.2
   - @rocket.chat/ui-client@11.0.0-rc.2
@@ -1541,7 +1423,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [2f9eea03d2]:</summary>
-
   - @rocket.chat/ui-client@11.0.0-rc.1
   - @rocket.chat/ui-contexts@11.0.0-rc.1
   - @rocket.chat/core-typings@6.13.0-rc.1
@@ -1556,7 +1437,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [bb94c9c67a, 274f4f5881, cd0d50016e, 79c16d315a, 927710d778, 12d6307998]:</summary>
-
   - @rocket.chat/ui-client@11.0.0-rc.0
   - @rocket.chat/core-typings@6.13.0-rc.0
   - @rocket.chat/message-parser@0.31.30-rc.0
@@ -1568,7 +1448,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [3cbb9f6252]:</summary>
-
   - @rocket.chat/message-parser@0.31.30
   - @rocket.chat/core-typings@6.12.1
   - @rocket.chat/ui-contexts@10.0.1
@@ -1582,7 +1461,6 @@
 - ([#32968](https://github.com/RocketChat/Rocket.Chat/pull/32968)) Bumped @rocket.chat/fuselage that fixes the Menu onPointerUp event behavior
 
 - <details><summary>Updated dependencies [8ea6517c4e, 7937ff741a, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
-
   - @rocket.chat/ui-client@10.0.0
   - @rocket.chat/core-typings@6.12.0
   - @rocket.chat/ui-contexts@10.0.0
@@ -1593,7 +1471,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.6
   - @rocket.chat/ui-contexts@10.0.0-rc.6
   - @rocket.chat/ui-client@10.0.0-rc.6
@@ -1604,7 +1481,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.5
   - @rocket.chat/ui-contexts@10.0.0-rc.5
   - @rocket.chat/ui-client@10.0.0-rc.5
@@ -1615,7 +1491,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.4
   - @rocket.chat/ui-contexts@10.0.0-rc.4
   - @rocket.chat/ui-client@10.0.0-rc.4
@@ -1626,7 +1501,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.3
   - @rocket.chat/ui-contexts@10.0.0-rc.3
   - @rocket.chat/ui-client@10.0.0-rc.3
@@ -1637,7 +1511,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.2
   - @rocket.chat/ui-contexts@10.0.0-rc.2
   - @rocket.chat/ui-client@10.0.0-rc.2
@@ -1648,7 +1521,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.1
   - @rocket.chat/ui-contexts@10.0.0-rc.1
   - @rocket.chat/ui-client@10.0.0-rc.1
@@ -1661,7 +1533,6 @@
 - ([#32968](https://github.com/RocketChat/Rocket.Chat/pull/32968)) Bumped @rocket.chat/fuselage that fixes the Menu onPointerUp event behavior
 
 - <details><summary>Updated dependencies [8ea6517c4e, 7937ff741a, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
-
   - @rocket.chat/ui-client@10.0.0-rc.0
   - @rocket.chat/core-typings@6.12.0-rc.0
   - @rocket.chat/ui-contexts@10.0.0-rc.0
@@ -1682,7 +1553,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.1
   - @rocket.chat/ui-contexts@9.0.1
   - @rocket.chat/ui-client@9.0.1
@@ -1693,7 +1563,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [1b7b1161cf, 2d89a0c448, 24f7df4894, 3ffe4a2944, 4e8aa575a6, b8e5887fb9]:</summary>
-
   - @rocket.chat/ui-client@9.0.0
   - @rocket.chat/core-typings@6.11.0
   - @rocket.chat/ui-contexts@9.0.0
@@ -1704,7 +1573,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.6
   - @rocket.chat/ui-contexts@9.0.0-rc.6
   - @rocket.chat/ui-client@9.0.0-rc.6
@@ -1715,7 +1583,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.5
   - @rocket.chat/ui-contexts@9.0.0-rc.5
   - @rocket.chat/ui-client@9.0.0-rc.5
@@ -1726,7 +1593,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.4
   - @rocket.chat/ui-contexts@9.0.0-rc.4
   - @rocket.chat/ui-client@9.0.0-rc.4
@@ -1737,7 +1603,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.3
   - @rocket.chat/ui-contexts@9.0.0-rc.3
   - @rocket.chat/ui-client@9.0.0-rc.3
@@ -1748,7 +1613,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.2
   - @rocket.chat/ui-contexts@9.0.0-rc.2
   - @rocket.chat/ui-client@9.0.0-rc.2
@@ -1759,7 +1623,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.1
   - @rocket.chat/ui-contexts@9.0.0-rc.1
   - @rocket.chat/ui-client@9.0.0-rc.1
@@ -1770,7 +1633,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [1b7b1161cf, 2d89a0c448, 24f7df4894, 3ffe4a2944, 4e8aa575a6, b8e5887fb9]:</summary>
-
   - @rocket.chat/ui-client@9.0.0-rc.0
   - @rocket.chat/core-typings@6.11.0-rc.0
   - @rocket.chat/ui-contexts@9.0.0-rc.0
@@ -1781,7 +1643,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [ca6a9d8de8, ca6a9d8de8, ca6a9d8de8, ca6a9d8de8]:</summary>
-
   - @rocket.chat/core-typings@6.10.2
   - @rocket.chat/ui-contexts@8.0.2
   - @rocket.chat/ui-client@8.0.2
@@ -1792,7 +1653,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.1
   - @rocket.chat/ui-contexts@8.0.1
   - @rocket.chat/ui-client@8.0.1
@@ -1809,7 +1669,6 @@
 - ([#32609](https://github.com/RocketChat/Rocket.Chat/pull/32609)) Fixes long katex lines overflowing the message component
 
 - <details><summary>Updated dependencies [1240c874a5, 5f95c4ec6b, f75a2cb4bb, 4f72d62aa7, dfa49bdbb2]:</summary>
-
   - @rocket.chat/core-typings@6.10.0
   - @rocket.chat/ui-contexts@8.0.0
   - @rocket.chat/ui-client@8.0.0
@@ -1820,7 +1679,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.7
   - @rocket.chat/ui-contexts@8.0.0-rc.7
   - @rocket.chat/ui-client@8.0.0-rc.7
@@ -1831,7 +1689,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.6
   - @rocket.chat/ui-contexts@8.0.0-rc.6
   - @rocket.chat/ui-client@8.0.0-rc.6
@@ -1842,7 +1699,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.5
   - @rocket.chat/ui-contexts@8.0.0-rc.5
   - @rocket.chat/ui-client@8.0.0-rc.5
@@ -1853,7 +1709,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.4
   - @rocket.chat/ui-contexts@8.0.0-rc.4
   - @rocket.chat/ui-client@8.0.0-rc.4
@@ -1864,7 +1719,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.3
   - @rocket.chat/ui-contexts@8.0.0-rc.3
   - @rocket.chat/ui-client@8.0.0-rc.3
@@ -1875,7 +1729,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.2
   - @rocket.chat/ui-contexts@8.0.0-rc.2
   - @rocket.chat/ui-client@8.0.0-rc.2
@@ -1886,7 +1739,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.1
   - @rocket.chat/ui-contexts@8.0.0-rc.1
   - @rocket.chat/ui-client@8.0.0-rc.1
@@ -1903,7 +1755,6 @@
 - ([#32609](https://github.com/RocketChat/Rocket.Chat/pull/32609)) Fixes long katex lines overflowing the message component
 
 - <details><summary>Updated dependencies [1240c874a5, 5f95c4ec6b, f75a2cb4bb, 4f72d62aa7, dfa49bdbb2]:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.0
   - @rocket.chat/ui-contexts@8.0.0-rc.0
   - @rocket.chat/ui-client@8.0.0-rc.0
@@ -1913,7 +1764,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.3
   - @rocket.chat/ui-contexts@7.0.3
   - @rocket.chat/ui-client@7.0.3
@@ -1924,7 +1774,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.2
   - @rocket.chat/ui-contexts@7.0.2
   - @rocket.chat/ui-client@7.0.2
@@ -1935,7 +1784,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.1
   - @rocket.chat/ui-contexts@7.0.1
   - @rocket.chat/ui-client@7.0.1
@@ -1946,7 +1794,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [ff4e396416, 70ab2a7b7b]:</summary>
-
   - @rocket.chat/core-typings@6.9.0
   - @rocket.chat/ui-contexts@7.0.0
   - @rocket.chat/ui-client@7.0.0
@@ -1957,7 +1804,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.0-rc.2
   - @rocket.chat/ui-contexts@7.0.0-rc.2
   - @rocket.chat/ui-client@7.0.0-rc.2
@@ -1968,7 +1814,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.0-rc.1
   - @rocket.chat/ui-contexts@7.0.0-rc.1
   - @rocket.chat/ui-client@7.0.0-rc.1
@@ -1979,7 +1824,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [ff4e396416, 70ab2a7b7b]:</summary>
-
   - @rocket.chat/core-typings@6.9.0-rc.0
   - @rocket.chat/ui-contexts@7.0.0-rc.0
   - @rocket.chat/ui-client@7.0.0-rc.0
@@ -1990,7 +1834,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [c47a8e3514, b94ca7c30b, 4aba7c8a26, c0d54d742a]:</summary>
-
   - @rocket.chat/core-typings@6.8.0
   - @rocket.chat/ui-contexts@6.0.0
   - @rocket.chat/message-parser@0.31.29
@@ -2002,7 +1845,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [b94ca7c30b]:</summary>
-
   - @rocket.chat/core-typings@6.8.0-rc.2
   - @rocket.chat/ui-contexts@6.0.0-rc.2
   - @rocket.chat/ui-client@6.0.0-rc.2
@@ -2013,7 +1855,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.8.0-rc.1
   - @rocket.chat/ui-contexts@6.0.0-rc.1
   - @rocket.chat/ui-client@6.0.0-rc.1
@@ -2024,7 +1865,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [c47a8e3514, 4aba7c8a26, c0d54d742a]:</summary>
-
   - @rocket.chat/core-typings@6.8.0-rc.0
   - @rocket.chat/ui-contexts@6.0.0-rc.0
   - @rocket.chat/message-parser@0.31.29
@@ -2035,7 +1875,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.2
   - @rocket.chat/ui-contexts@5.0.2
   - @rocket.chat/ui-client@5.0.2
@@ -2046,7 +1885,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.1
   - @rocket.chat/ui-contexts@5.0.1
   - @rocket.chat/ui-client@5.0.1
@@ -2057,7 +1895,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5, 5ad65ff3da]:</summary>
-
   - @rocket.chat/core-typings@6.7.0
   - @rocket.chat/message-parser@0.31.29
   - @rocket.chat/ui-contexts@5.0.0
@@ -2069,7 +1906,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.4
   - @rocket.chat/ui-contexts@5.0.0-rc.4
   - @rocket.chat/ui-client@5.0.0-rc.4
@@ -2080,7 +1916,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.3
   - @rocket.chat/ui-contexts@5.0.0-rc.3
   - @rocket.chat/ui-client@5.0.0-rc.3
@@ -2091,7 +1926,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.2
   - @rocket.chat/ui-contexts@5.0.0-rc.2
   - @rocket.chat/ui-client@5.0.0-rc.2
@@ -2102,7 +1936,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.1
   - @rocket.chat/ui-contexts@5.0.0-rc.1
   - @rocket.chat/ui-client@5.0.0-rc.1
@@ -2113,7 +1946,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5, 5ad65ff3da]:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.0
   - @rocket.chat/message-parser@0.31.29-rc.0
   - @rocket.chat/ui-contexts@5.0.0-rc.0
@@ -2125,7 +1957,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.6
   - @rocket.chat/ui-contexts@4.0.6
   - @rocket.chat/ui-client@4.0.6
@@ -2136,7 +1967,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@4.0.5
   - @rocket.chat/ui-client@4.0.5
   - @rocket.chat/core-typings@6.6.5
@@ -2147,7 +1977,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.4
   - @rocket.chat/ui-contexts@4.0.4
   - @rocket.chat/ui-client@4.0.4
@@ -2158,7 +1987,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.3
   - @rocket.chat/ui-contexts@4.0.3
   - @rocket.chat/ui-client@4.0.3
@@ -2169,7 +1997,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@4.0.2
   - @rocket.chat/ui-client@4.0.2
   - @rocket.chat/core-typings@6.6.2
@@ -2180,7 +2007,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.1
   - @rocket.chat/ui-contexts@4.0.1
   - @rocket.chat/ui-client@4.0.1
@@ -2195,7 +2021,6 @@
 - ([#31349](https://github.com/RocketChat/Rocket.Chat/pull/31349) by [@Subhojit-Dey1234](https://github.com/Subhojit-Dey1234)) feat: Implemented InlineCode handling in Bold, Italic and Strike
 
 - <details><summary>Updated dependencies [b223cbde14, b2b0035162, 9cb97965ba, dbb08ef948, dd5fd6d2c8, fdd9852079, b4b2cd20a8]:</summary>
-
   - @rocket.chat/core-typings@6.6.0
   - @rocket.chat/ui-contexts@4.0.0
   - @rocket.chat/ui-client@4.0.0
@@ -2206,7 +2031,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.0-rc.7
   - @rocket.chat/ui-contexts@4.0.0-rc.7
   - @rocket.chat/ui-client@4.0.0-rc.7
@@ -2217,7 +2041,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.0-rc.6
   - @rocket.chat/ui-contexts@4.0.0-rc.6
   - @rocket.chat/ui-client@4.0.0-rc.6
@@ -2228,7 +2051,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.0-rc.5
   - @rocket.chat/ui-contexts@4.0.0-rc.5
   - @rocket.chat/ui-client@4.0.0-rc.5

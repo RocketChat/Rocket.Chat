@@ -1,4 +1,5 @@
 # Rocket.Chat.Livechat
+
 [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/RocketChat/Rocket.Chat.Livechat.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/RocketChat/Rocket.Chat.Livechat/context:javascript)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/RocketChat/Rocket.Chat.Livechat.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/RocketChat/Rocket.Chat.Livechat/alerts/)
 [![Storybook](https://cdn.jsdelivr.net/gh/storybooks/brand@master/badge/badge-storybook.svg)](https://rocketchat.github.io/Rocket.Chat.Livechat)
@@ -15,48 +16,54 @@ With your **Rocket.chat** running locally at http://localhost:3000
 <br />
 
 1. Install all node dependencies.
-``` bash
+
+```bash
 yarn
 ```
 
 2. Build preact application to `/build` folder
-``` bash
+
+```bash
 yarn dev
 ```
 
 3. In another terminal, run webpack with hot reload at http://localhost:8080
-``` bash
+
+```bash
 yarn start
 ```
 
 4. Open this file below in your browser
-``` bash
+
+```bash
 widget-demo.html
 ```
 
-*OBS: For a better performance, you can run this `widget-demo.html` on a [http server](https://github.com/http-party/http-server).*
+_OBS: For a better performance, you can run this `widget-demo.html` on a [http server](https://github.com/http-party/http-server)._
 
 ## Different host
 
 To select a different host on your local widget, check this configuration at `/src/api.js` file.
 
-``` javascript
-const host = window.SERVER_URL
-	|| queryString.parse(window.location.search).serverUrl
-	|| (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null);
+```javascript
+const host =
+	window.SERVER_URL ||
+	queryString.parse(window.location.search).serverUrl ||
+	(process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null);
 ```
 
 Here, you can change to your new configuration.
 
-``` javascript
-const host = window.SERVER_URL
-	|| queryString.parse(window.location.search).serverUrl
-	|| (process.env.NODE_ENV === 'development' ? 'https://your.rocketserver.com' : null);
+```javascript
+const host =
+	window.SERVER_URL ||
+	queryString.parse(window.location.search).serverUrl ||
+	(process.env.NODE_ENV === 'development' ? 'https://your.rocketserver.com' : null);
 ```
 
 ## Available CLI Commands
 
-``` bash
+```bash
 # install dependencies
 yarn
 
@@ -80,6 +87,7 @@ yarn storybook
 ```
 
 ## Screens:
+
 ![image](https://user-images.githubusercontent.com/5263975/44279585-497b2980-a228-11e8-81a2-36bc3389549e.png)
 ![image](https://user-images.githubusercontent.com/5263975/44279599-5730af00-a228-11e8-8873-553ef53ee25a.png)
 ![image](https://user-images.githubusercontent.com/5263975/44279626-6f083300-a228-11e8-8886-c430b28a8e75.png)

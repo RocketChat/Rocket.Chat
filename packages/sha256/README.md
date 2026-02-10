@@ -1,5 +1,6 @@
 # sha
-***
+
+---
 
 An implementation of the [SHA256](https://en.wikipedia.org/wiki/SHA-2) secure hash function, available in all environments.
 

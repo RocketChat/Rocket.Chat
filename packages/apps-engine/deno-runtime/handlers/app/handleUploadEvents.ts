@@ -2,8 +2,8 @@ import { Buffer } from 'node:buffer';
 
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException.ts';
-import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext.ts'
-import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails.ts'
+import type { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext.ts';
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails.ts';
 import { toArrayBuffer } from '@std/streams';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
@@ -27,8 +27,11 @@ function assertString(v: unknown): asserts v is string {
 }
 
 export default async function handleUploadEvents(request: RequestContext): Promise<Defined | JsonRpcError> {
-	const { method: rawMethod, params } = request as { method: `app:${typeof uploadEvents[number]}`; params: [{ file?: IUploadDetails, path?: string }]};
-	const [, method] = rawMethod.split(':') as ['app', typeof uploadEvents[number]];
+	const { method: rawMethod, params } = request as {
+		method: `app:${(typeof uploadEvents)[number]}`;
+		params: [{ file?: IUploadDetails; path?: string }];
+	};
+	const [, method] = rawMethod.split(':') as ['app', (typeof uploadEvents)[number]];
 
 	try {
 		const [{ file, path }] = params;
@@ -60,7 +63,7 @@ export default async function handleUploadEvents(request: RequestContext): Promi
 			AppAccessorsInstance.getPersistence(),
 			AppAccessorsInstance.getModifier(),
 		);
-	} catch(e) {
+	} catch (e) {
 		if (e?.name === AppsEngineException.name) {
 			return new JsonRpcError(e.message, AppsEngineException.JSONRPC_ERROR_CODE, { name: e.name });
 		}

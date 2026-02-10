@@ -170,7 +170,7 @@ blockquote {
 
 	&:last-child::before {
 		border-radius: 0 0 2px 2px;
-	}	
+	}
 }
 
 .new-room-highlight a {
@@ -209,19 +209,22 @@ blockquote {
 }
 
 .code-mirror-box {
-	& .CodeMirror { /* stylelint-disable-line */
+	& .CodeMirror {
+		/* stylelint-disable-line */
 		border-width: var(--input-border-width);
 		border-color: var(--input-border-color);
 		border-radius: var(--input-border-radius);
 	}
 
 	&.code-mirror-box-fullscreen {
-		& .CodeMirror { /* stylelint-disable-line */
+		& .CodeMirror {
+			/* stylelint-disable-line */
 			display: flex;
 			flex-direction: column;
 			flex-grow: 1;
 
-			& .CodeMirror-scroll { /* stylelint-disable-line */
+			& .CodeMirror-scroll {
+				/* stylelint-disable-line */
 				flex-grow: 1;
 			}
 		}

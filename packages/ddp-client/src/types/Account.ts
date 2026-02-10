@@ -9,11 +9,10 @@ type User = {
 	tokenExpires?: Date;
 } & Record<string, unknown>;
 
-export interface Account
-	extends Emitter<{
-		uid: string | undefined;
-		user?: User;
-	}> {
+export interface Account extends Emitter<{
+	uid: string | undefined;
+	user?: User;
+}> {
 	uid?: string;
 	user?: User;
 	loginWithPassword(username: string, password: string): Promise<void>;

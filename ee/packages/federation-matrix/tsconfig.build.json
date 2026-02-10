@@ -3,16 +3,8 @@
 	"compilerOptions": {
 		"outDir": "./dist",
 		"isolatedModules": true,
-		"declaration": true,
+		"declaration": true
 	},
-	"include": [
-		"src/**/*.ts"
-	],
-	"exclude": [
-		"node_modules",
-		"dist",
-		"**/*.spec.ts",
-		"**/*.test.ts",
-		"../../../../**/*",
-	]
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts", "../../../../**/*"]
 }

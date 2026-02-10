@@ -1,10 +1,9 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-
 ---
 
-<!-- 
+<!--
 
 Please see our guide for opening issues: https://developer.rocket.chat/rocket.chat/contribute-to-rocket.chat/ways-to-contribute/report-bugs
 
@@ -34,14 +33,14 @@ If you are experiencing a bug please search our issues to be sure it is not alre
 
 ### Server Setup Information:
 
-- Version of Rocket.Chat Server: 
+- Version of Rocket.Chat Server:
 - License Type:
-- Number of Users: 
-- Operating System: 
+- Number of Users:
+- Operating System:
 - Deployment Method: <!-- snap/docker/tar/etc -->
-- Number of Running Instances: 
-- DB Replicaset Oplog: 
-- NodeJS Version: 
+- Number of Running Instances:
+- DB Replicaset Oplog:
+- NodeJS Version:
 - MongoDB Version:
 
 ### Client Setup Information

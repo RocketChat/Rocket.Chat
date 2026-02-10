@@ -62,7 +62,9 @@ const ContactInfoDetails = ({ contact, emails, phones, createdAt, customFieldEnt
 				{customFieldEntries.length > 0 && (
 					<>
 						<Divider mi={-24} />
-						{customFieldEntries?.map(([key, value]) => <CustomField key={key} id={key} value={value as string} />)}
+						{customFieldEntries?.map(([key, value]) => (
+							<CustomField key={key} id={key} value={value as string} />
+						))}
 					</>
 				)}
 			</Margins>

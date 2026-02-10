@@ -5,7 +5,7 @@ import type { initialStateType } from './initialState';
 
 export default function createCtx<ActionType>(
   reducer: Reducer<initialStateType, ActionType>,
-  initialState: initialStateType
+  initialState: initialStateType,
 ) {
   const defaultDispatch: Dispatch<ActionType> = () => initialState;
   const context = createContext({
@@ -13,10 +13,7 @@ export default function createCtx<ActionType>(
     dispatch: defaultDispatch,
   });
   const Provider = (props: { children: ReactElement }) => {
-    const [state, dispatch] = useReducer(
-      reducer,
-      initialState
-    );
+    const [state, dispatch] = useReducer(reducer, initialState);
     return <context.Provider value={{ state, dispatch }} {...props} />;
   };
   return [context, Provider] as const;

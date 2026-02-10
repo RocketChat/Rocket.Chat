@@ -12,7 +12,7 @@ const Display = ({ elementIndex }: { elementIndex: number }) => {
     const blocks = [...screens[activeScreen].payload.blocks];
     blocks.splice(elementIndex, 1);
     dispatch(
-      updatePayloadAction({ blocks: [...blocks], changedByEditor: false })
+      updatePayloadAction({ blocks: [...blocks], changedByEditor: false }),
     );
   };
   return (

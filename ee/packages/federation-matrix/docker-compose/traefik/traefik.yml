@@ -1,14 +1,14 @@
 entryPoints:
   web:
-    address: ":80"
+    address: ':80'
   websecure:
-    address: ":443"
+    address: ':443'
 
 providers:
   docker:
     exposedByDefault: false
   file:
-    filename: "/etc/traefik/dynamic_conf.yml"
+    filename: '/etc/traefik/dynamic_conf.yml'
 
 api:
   dashboard: false

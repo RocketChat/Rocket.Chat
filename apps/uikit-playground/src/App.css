@@ -2,7 +2,7 @@
   text-align: center;
 }
 
-#toastBarRoot{
+#toastBarRoot {
   position: fixed;
   z-index: 9999;
 }

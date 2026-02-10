@@ -22,7 +22,7 @@ $drop-overlay-text-font-size: 1.375rem;
 			position: absolute;
 			z-index: 10;
 
-			content: "";
+			content: '';
 			animation: fadein $drop-overlay-animation-time;
 			pointer-events: none;
 
@@ -39,7 +39,7 @@ $drop-overlay-text-font-size: 1.375rem;
 			box-sizing: border-box;
 			padding: $drop-overlay-gap;
 
-			content: attr(data-overlay-text) "";
+			content: attr(data-overlay-text) '';
 			animation: fadein $drop-overlay-animation-time;
 			text-align: center;
 			pointer-events: none;

@@ -10,7 +10,7 @@
 		/* Additional Checks */
 		"noFallthroughCasesInSwitch": false,
 
-		"outDir": "./dist/ee/apps/account-service/src",
+		"outDir": "./dist/ee/apps/account-service/src"
 	},
 	"files": ["./src/service.ts"],
 	"include": ["../../../apps/meteor/definition/externals/meteor"],
