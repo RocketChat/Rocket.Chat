@@ -128,7 +128,7 @@ function getBodyParams(bodyParams: unknown, request: Request): Record<string, un
 	}
 
 	if (
-		request.headers.get('content-type') === 'application/x-www-form-urlencoded' &&
+		request.headers.get('content-type')?.startsWith('application/x-www-form-urlencoded') &&
 		Object.keys(bodyParams).length === 1 &&
 		typeof bodyParams.payload === 'string'
 	) {
