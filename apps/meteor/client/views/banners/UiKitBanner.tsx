@@ -6,6 +6,7 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
+import * as banners from '../../lib/banners';
 import MarkdownText from '../../components/MarkdownText';
 import { useBannerContextValue } from '../../uikit/hooks/useBannerContextValue';
 import { useUiKitActionManager } from '../../uikit/hooks/useUiKitActionManager';
@@ -34,6 +35,7 @@ const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const handleClose = useEffectEvent(() => {
+		banners.closeById(view.viewId);
 		void actionManager
 			.emitInteraction(view.appId, {
 				type: 'viewClosed',
