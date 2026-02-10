@@ -127,7 +127,7 @@ module.exports = {
 			},
 		},
 		{
-			files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
+			files: ['**/*.ts', '**/*.tsx'],
 			excludedFiles: [
 				'**/*.d.ts',
 				'**/__tests__/**',
