@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/authorization-service",
-	"version": "0.5.0",
+	"version": "0.5.2",
 	"private": true,
 	"description": "Rocket.Chat Authorization service",
 	"keywords": [
@@ -22,7 +22,7 @@
 		"@rocket.chat/abac": "workspace:^",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/emitter": "~0.31.25",
+		"@rocket.chat/emitter": "^0.32.0",
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
@@ -32,7 +32,7 @@
 		"@rocket.chat/tracing": "workspace:^",
 		"@types/node": "~22.16.5",
 		"ejson": "^2.2.3",
-		"eventemitter3": "^5.0.1",
+		"eventemitter3": "^5.0.4",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.35",
 		"mongodb": "6.16.0",

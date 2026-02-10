@@ -38,6 +38,7 @@ test.describe('image-upload', () => {
 			await poHomeChannel.content.sendFileMessage('bad-orientation.jpeg');
 
 			await expect(poHomeChannel.composer.getFileByName('bad-orientation')).toHaveAttribute('readonly');
+			await expect(poHomeChannel.statusUploadError).toBeVisible();
 		});
 	});
 
