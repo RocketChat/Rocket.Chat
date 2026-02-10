@@ -88,6 +88,8 @@ export interface ISettingBase extends IRocketChatRecord {
 	readonly?: boolean; // todo: remove
 	alert?: string; // todo: check if this is still used
 	private?: boolean; // todo: remove
+	validationPattern?: string;
+	i18nValidation?: string;
 }
 
 export interface ISettingGroup {
