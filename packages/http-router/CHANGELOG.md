@@ -1,5 +1,17 @@
 # @rocket.chat/http-router
 
+## 7.9.16
+
+### Patch Changes
+
+- ([#38071](https://github.com/RocketChat/Rocket.Chat/pull/38071)) Improves file upload flow to prevent buffering of contents in memory
+
+- <details><summary>Updated dependencies [fd319d58a621d66c20029fd962ddb24a1a24ecc3, 5c3c52b1fc8b0bd52d4744614ad4d2b8e2e03937, 6654c5b481f91bdcb03d68ee0f3a12d58201137e]:</summary>
+
+  - @rocket.chat/rest-typings@8.1.0
+  - @rocket.chat/core-typings@8.1.0
+  </details>
+
 ## 7.9.16-rc.2
 
 ### Patch Changes
