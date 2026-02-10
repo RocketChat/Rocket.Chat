@@ -1,18 +1,26 @@
+import { DiffSequence } from './diff-sequence.ts';
+import { EJSON } from './ejson.ts';
 import { GeoJSON } from './geojson-utils.ts';
 import { IdMap } from './id-map.ts';
-import { MongoID } from './mongo-id.ts';
-import { EJSON } from './ejson.ts';
-import { Package } from './package-registry.ts';
 import { Meteor, SynchronousQueue } from './meteor.ts';
-
+import { MongoID } from './mongo-id.ts';
+import { Package } from './package-registry.ts';
 import { Tracker } from './tracker.ts';
-import { DiffSequence } from './diff-sequence.ts';
-
 import { hasOwn } from './utils/hasOwn.ts';
+import { isKey } from './utils/isKey.ts';
+import { isObject } from './utils/isObject.ts';
+import { keys } from './utils/keys.ts';
 
 class ObserveHandle {}
 
-const LocalCollection_f = {
+interface TypeCheckerInterface {
+	_type(v: unknown): number;
+	_equal(a: unknown, b: unknown): boolean;
+	_typeorder(t: number): number;
+	_cmp(a: unknown, b: unknown): number;
+}
+
+const TypeChecker: TypeCheckerInterface = {
 	_type(v: unknown): number {
 		if (typeof v === 'number') {
 			return 1;
@@ -61,15 +69,15 @@ const LocalCollection_f = {
 		return 3;
 	},
 
-	_equal(a, b): boolean {
+	_equal(a: unknown, b: unknown): boolean {
 		return EJSON.equals(a, b, { keyOrderSensitive: true });
 	},
 
-	_typeorder(t): number {
+	_typeorder(t: number): number {
 		return [-1, 1, 2, 3, 4, 5, -1, 6, 7, 8, 0, 9, -1, 100, 2, 100, 1, 8, 1][t];
 	},
 
-	_cmp(a, b): number {
+	_cmp(a: unknown, b: unknown): number {
 		if (a === undefined) {
 			return b === undefined ? 0 : -1;
 		}
@@ -78,10 +86,10 @@ const LocalCollection_f = {
 			return 1;
 		}
 
-		let ta = LocalCollection_f._type(a);
-		let tb = LocalCollection_f._type(b);
-		const oa = LocalCollection_f._typeorder(ta);
-		const ob = LocalCollection_f._typeorder(tb);
+		let ta = TypeChecker._type(a);
+		let tb = TypeChecker._type(b);
+		const oa = TypeChecker._typeorder(ta);
+		const ob = TypeChecker._typeorder(tb);
 
 		if (oa !== ob) {
 			return oa < ob ? -1 : 1;
@@ -106,9 +114,8 @@ const LocalCollection_f = {
 		if (ta === 1) {
 			if (a instanceof Decimal) {
 				return a.minus(b).toNumber();
-			} else {
-				return a - b;
 			}
+			return a - b;
 		}
 
 		if (tb === 2) return a < b ? -1 : a === b ? 0 : 1;
@@ -124,7 +131,7 @@ const LocalCollection_f = {
 				return result;
 			};
 
-			return LocalCollection_f._cmp(toArray(a), toArray(b));
+			return TypeChecker._cmp(toArray(a), toArray(b));
 		}
 
 		if (ta === 4) {
@@ -137,7 +144,7 @@ const LocalCollection_f = {
 					return 1;
 				}
 
-				const s = LocalCollection_f._cmp(a[i], b[i]);
+				const s = TypeChecker._cmp(a[i], b[i]);
 
 				if (s !== 0) {
 					return s;
@@ -179,29 +186,32 @@ const LocalCollection_f = {
 	},
 };
 
-function makeInequality(cmpValueComparator) {
+interface ElementSelector {
+	compileElementSelector(
+		operand: unknown,
+		valueSelector?: Record<string, unknown>,
+		matcher?: Matcher,
+	): (value: unknown) => boolean | number;
+}
+
+function makeInequality(cmpValueComparator: (cmpValue: number) => boolean): ElementSelector {
 	return {
-		compileElementSelector(operand) {
+		compileElementSelector(operand: unknown): (value: unknown) => boolean {
 			if (Array.isArray(operand)) {
-				return () => false;
+				return (): boolean => false;
 			}
 
-			if (operand === undefined) {
-				operand = null;
-			}
+			let normalizedOperand = operand === undefined ? null : operand;
+			const operandType = TypeChecker._type(normalizedOperand);
 
-			const operandType = LocalCollection_f._type(operand);
+			return (value: unknown): boolean => {
+				let normalizedValue = value === undefined ? null : value;
 
-			return (value) => {
-				if (value === undefined) {
-					value = null;
-				}
-
-				if (LocalCollection_f._type(value) !== operandType) {
+				if (TypeChecker._type(normalizedValue) !== operandType) {
 					return false;
 				}
 
-				return cmpValueComparator(LocalCollection_f._cmp(value, operand));
+				return cmpValueComparator(TypeChecker._cmp(normalizedValue, normalizedOperand));
 			};
 		},
 	};
@@ -209,30 +219,34 @@ function makeInequality(cmpValueComparator) {
 
 class MiniMongoQueryError extends Error {}
 
-const ELEMENT_OPERATORS = {
+interface ElementOperators {
+	[key: string]: ElementSelector;
+}
+
+const ELEMENT_OPERATORS: ElementOperators = {
 	$lt: makeInequality((cmpValue) => cmpValue < 0),
 	$gt: makeInequality((cmpValue) => cmpValue > 0),
 	$lte: makeInequality((cmpValue) => cmpValue <= 0),
 	$gte: makeInequality((cmpValue) => cmpValue >= 0),
 	$mod: {
-		compileElementSelector(operand) {
+		compileElementSelector(operand: unknown): (value: unknown) => boolean {
 			if (!(Array.isArray(operand) && operand.length === 2 && typeof operand[0] === 'number' && typeof operand[1] === 'number')) {
 				throw new MiniMongoQueryError('argument to $mod must be an array of two numbers');
 			}
 
-			const divisor = operand[0];
-			const remainder = operand[1];
+			const divisor = (operand as number[])[0];
+			const remainder = (operand as number[])[1];
 
-			return (value) => typeof value === 'number' && value % divisor === remainder;
+			return (value: unknown): boolean => typeof value === 'number' && value % divisor === remainder;
 		},
 	},
 	$in: {
-		compileElementSelector(operand) {
+		compileElementSelector(operand: unknown): (value: unknown) => boolean {
 			if (!Array.isArray(operand)) {
 				throw new MiniMongoQueryError('$in needs an array');
 			}
 
-			const elementMatchers = operand.map((option) => {
+			const elementMatchers = (operand as unknown[]).map((option: unknown): ((value: unknown) => boolean) => {
 				if (option instanceof RegExp) {
 					return regexpElementMatcher(option);
 				}
@@ -244,32 +258,33 @@ const ELEMENT_OPERATORS = {
 				return equalityElementMatcher(option);
 			});
 
-			return (value) => {
-				if (value === undefined) {
-					value = null;
-				}
-
-				return elementMatchers.some((matcher) => matcher(value));
+			return (value: unknown): boolean => {
+				let normalizedValue = value === undefined ? null : value;
+				return elementMatchers.some((matcher): boolean => matcher(normalizedValue));
 			};
 		},
 	},
 	$size: {
 		dontExpandLeafArrays: true,
-		compileElementSelector(operand) {
-			if (typeof operand === 'string') {
-				operand = 0;
-			} else if (typeof operand !== 'number') {
-				throw new MiniMongoQueryError('$size needs a number');
-			}
+		compileElementSelector(operand: unknown): (value: unknown) => boolean {
+			let normalizedOperand: number =
+				typeof operand === 'string'
+					? 0
+					: typeof operand === 'number'
+						? operand
+						: (() => {
+								throw new MiniMongoQueryError('$size needs a number');
+							})();
 
-			return (value) => Array.isArray(value) && value.length === operand;
+			return (value: unknown): boolean => Array.isArray(value) && value.length === normalizedOperand;
 		},
 	},
 	$type: {
 		dontIncludeLeafArrays: true,
-		compileElementSelector(operand) {
+		compileElementSelector(operand: unknown): (value: unknown) => boolean {
+			let normalizedOperand: number = 0;
 			if (typeof operand === 'string') {
-				const operandAliasMap = {
+				const operandAliasMap: Record<string, number> = {
 					double: 1,
 					string: 2,
 					object: 3,
@@ -297,82 +312,82 @@ const ELEMENT_OPERATORS = {
 					throw new MiniMongoQueryError('unknown string alias for $type: '.concat(operand));
 				}
 
-				operand = operandAliasMap[operand];
+				normalizedOperand = operandAliasMap[operand];
 			} else if (typeof operand === 'number') {
 				if (operand === 0 || operand < -1 || (operand > 19 && operand !== 127)) {
 					throw new MiniMongoQueryError('Invalid numerical $type code: '.concat(operand));
 				}
+				normalizedOperand = operand;
 			} else {
 				throw new MiniMongoQueryError('argument to $type is not a number or a string');
 			}
 
-			return (value) => value !== undefined && LocalCollection_f._type(value) === operand;
+			return (value: unknown): boolean => value !== undefined && TypeChecker._type(value) === normalizedOperand;
 		},
 	},
 	$bitsAllSet: {
-		compileElementSelector(operand) {
+		compileElementSelector(operand: unknown): (value: unknown) => boolean {
 			const mask = getOperandBitmask(operand, '$bitsAllSet');
 
-			return (value) => {
+			return (value: unknown): boolean => {
 				const bitmask = getValueBitmask(value, mask.length);
 
-				return bitmask && mask.every((byte, i) => (bitmask[i] & byte) === byte);
+				return !!(bitmask && mask.every((byte: number, i: number) => (bitmask[i] & byte) === byte));
 			};
 		},
 	},
 	$bitsAnySet: {
-		compileElementSelector(operand) {
+		compileElementSelector(operand: unknown): (value: unknown) => boolean {
 			const mask = getOperandBitmask(operand, '$bitsAnySet');
 
-			return (value) => {
+			return (value: unknown): boolean => {
 				const bitmask = getValueBitmask(value, mask.length);
 
-				return bitmask && mask.some((byte, i) => (~bitmask[i] & byte) !== byte);
+				return !!(bitmask && mask.some((byte: number, i: number) => (~bitmask[i] & byte) !== byte));
 			};
 		},
 	},
 	$bitsAllClear: {
-		compileElementSelector(operand) {
+		compileElementSelector(operand: unknown): (value: unknown) => boolean {
 			const mask = getOperandBitmask(operand, '$bitsAllClear');
 
-			return (value) => {
+			return (value: unknown): boolean => {
 				const bitmask = getValueBitmask(value, mask.length);
 
-				return bitmask && mask.every((byte, i) => !(bitmask[i] & byte));
+				return !!(bitmask && mask.every((byte: number, i: number) => !(bitmask[i] & byte)));
 			};
 		},
 	},
 	$bitsAnyClear: {
-		compileElementSelector(operand) {
+		compileElementSelector(operand: unknown): (value: unknown) => boolean {
 			const mask = getOperandBitmask(operand, '$bitsAnyClear');
 
-			return (value) => {
+			return (value: unknown): boolean => {
 				const bitmask = getValueBitmask(value, mask.length);
 
-				return bitmask && mask.some((byte, i) => (bitmask[i] & byte) !== byte);
+				return !!(bitmask && mask.some((byte: number, i: number) => (bitmask[i] & byte) !== byte));
 			};
 		},
 	},
 	$regex: {
-		compileElementSelector(operand, valueSelector) {
+		compileElementSelector(operand: unknown, valueSelector?: Record<string, unknown>): (value: unknown) => boolean {
 			if (!(typeof operand === 'string' || operand instanceof RegExp)) {
 				throw new MiniMongoQueryError('$regex has to be a string or RegExp');
 			}
 
-			let regexp;
+			let regexp: RegExp;
 
-			if (valueSelector.$options !== undefined) {
-				if (/[^gim]/.test(valueSelector.$options)) {
+			if (valueSelector?.$options !== undefined) {
+				if (!/[gim]*$/.test(String(valueSelector.$options))) {
 					throw new MiniMongoQueryError('Only the i, m, and g regexp options are supported');
 				}
 
-				const source = operand instanceof RegExp ? operand.source : operand;
-
-				regexp = new RegExp(source, valueSelector.$options);
+				const source = operand instanceof RegExp ? operand.source : String(operand);
+				regexp = new RegExp(source, String(valueSelector.$options));
 			} else if (operand instanceof RegExp) {
 				regexp = operand;
 			} else {
-				regexp = new RegExp(operand);
+				regexp = new RegExp(String(operand));
 			}
 
 			return regexpElementMatcher(regexp);
@@ -380,33 +395,38 @@ const ELEMENT_OPERATORS = {
 	},
 	$elemMatch: {
 		dontExpandLeafArrays: true,
-		compileElementSelector(operand, valueSelector, matcher) {
+		compileElementSelector(
+			operand: unknown,
+			valueSelector?: Record<string, unknown>,
+			matcher?: Matcher,
+		): (value: unknown) => boolean | number {
 			if (!_isPlainObject(operand)) {
 				throw new MiniMongoQueryError('$elemMatch need an object');
 			}
 
+			const operandObj = operand as Record<string, unknown>;
 			const isDocMatcher = !isOperatorObject(
-				Object.keys(operand)
-					.filter((key) => !hasOwn(LOGICAL_OPERATORS, key))
-					.reduce((a, b) => Object.assign(a, { [b]: operand[b] }), {}),
+				Object.keys(operandObj)
+					.filter((key: string) => !hasOwn(LOGICAL_OPERATORS, key))
+					.reduce((a: Record<string, unknown>, b: string) => Object.assign(a, { [b]: operandObj[b] }), {}),
 				true,
 			);
-			let subMatcher;
+			let subMatcher: (arg: unknown) => { result: boolean; arrayIndices?: number[] };
 
 			if (isDocMatcher) {
-				subMatcher = compileDocumentSelector(operand, matcher, { inElemMatch: true });
+				subMatcher = compileDocumentSelector(operandObj, matcher, { inElemMatch: true });
 			} else {
-				subMatcher = compileValueSelector(operand, matcher);
+				subMatcher = compileValueSelector(operandObj, matcher);
 			}
 
-			return (value) => {
+			return (value: unknown): boolean | number => {
 				if (!Array.isArray(value)) {
 					return false;
 				}
 
 				for (let i = 0; i < value.length; ++i) {
 					const arrayElement = value[i];
-					let arg;
+					let arg: unknown;
 
 					if (isDocMatcher) {
 						if (!isIndexable(arrayElement)) {
@@ -418,7 +438,8 @@ const ELEMENT_OPERATORS = {
 						arg = [{ value: arrayElement, dontIterate: true }];
 					}
 
-					if (subMatcher(arg).result) {
+					const matchResult = subMatcher(arg);
+					if (matchResult.result) {
 						return i;
 					}
 				}
@@ -429,75 +450,84 @@ const ELEMENT_OPERATORS = {
 	},
 };
 
-const LOGICAL_OPERATORS = {
-	$and(subSelector, matcher, inElemMatch) {
+interface LogicalOperator {
+	(subSelector: unknown, matcher: Matcher, inElemMatch?: boolean): (doc: unknown) => { result: boolean };
+}
+
+interface LogicalOperators {
+	$and: LogicalOperator;
+	$or: LogicalOperator;
+	$nor: LogicalOperator;
+	$where: (selectorValue: unknown, matcher: Matcher) => (doc: unknown) => { result: boolean };
+	$comment: () => (doc: unknown) => { result: boolean };
+}
+
+const LOGICAL_OPERATORS: LogicalOperators = {
+	$and(subSelector: unknown, matcher: Matcher, inElemMatch?: boolean): (doc: unknown) => { result: boolean } {
 		return andDocumentMatchers(compileArrayOfDocumentSelectors(subSelector, matcher, inElemMatch));
 	},
 
-	$or(subSelector, matcher, inElemMatch) {
+	$or(subSelector: unknown, matcher: Matcher, inElemMatch?: boolean): (doc: unknown) => { result: boolean } {
 		const matchers = compileArrayOfDocumentSelectors(subSelector, matcher, inElemMatch);
 
 		if (matchers.length === 1) {
 			return matchers[0];
 		}
 
-		return (doc) => {
-			const result = matchers.some((fn) => fn(doc).result);
+		return (doc: unknown): { result: boolean } => {
+			const result = matchers.some((fn): boolean => fn(doc).result);
 
 			return { result };
 		};
 	},
 
-	$nor(subSelector, matcher, inElemMatch) {
+	$nor(subSelector: unknown, matcher: Matcher, inElemMatch?: boolean): (doc: unknown) => { result: boolean } {
 		const matchers = compileArrayOfDocumentSelectors(subSelector, matcher, inElemMatch);
 
-		return (doc) => {
-			const result = matchers.every((fn) => !fn(doc).result);
+		return (doc: unknown): { result: boolean } => {
+			const result = matchers.every((fn): boolean => !fn(doc).result);
 
 			return { result };
 		};
 	},
 
-	$where(selectorValue, matcher) {
-		matcher._recordPathUsed('');
-		matcher._hasWhere = true;
-
-		if (!(selectorValue instanceof Function)) {
-			selectorValue = Function('obj', 'return '.concat(selectorValue));
-		}
-
-		return (doc) => ({ result: selectorValue.call(doc, doc) });
-	},
-
-	$comment() {
-		return () => ({ result: true });
+	$comment(): (doc: unknown) => { result: boolean } {
+		return (): { result: boolean } => ({ result: true });
 	},
 };
 
-const VALUE_OPERATORS = {
-	$eq(operand) {
+interface ValueOperator {
+	(operand: unknown, valueSelector?: Record<string, unknown>, matcher?: Matcher, isRoot?: boolean): BranchedMatcher;
+}
+
+interface ValueOperators {
+	[key: string]: ValueOperator;
+}
+
+const VALUE_OPERATORS: ValueOperators = {
+	$eq(operand: unknown): BranchedMatcher {
 		return convertElementMatcherToBranchedMatcher(equalityElementMatcher(operand));
 	},
 
-	$not(operand, valueSelector, matcher) {
+	$not(operand: unknown, valueSelector?: Record<string, unknown>, matcher?: Matcher): BranchedMatcher {
 		return invertBranchedMatcher(compileValueSelector(operand, matcher));
 	},
 
-	$ne(operand) {
+	$ne(operand: unknown): BranchedMatcher {
 		return invertBranchedMatcher(convertElementMatcherToBranchedMatcher(equalityElementMatcher(operand)));
 	},
 
-	$nin(operand) {
+	$nin(operand: unknown): BranchedMatcher {
 		return invertBranchedMatcher(convertElementMatcherToBranchedMatcher(ELEMENT_OPERATORS.$in.compileElementSelector(operand)));
 	},
 
-	$exists(operand) {
+	$exists(operand: unknown): BranchedMatcher {
 		const exists = convertElementMatcherToBranchedMatcher((value) => value !== undefined);
 
 		return operand ? exists : invertBranchedMatcher(exists);
 	},
 
-	$options(operand, valueSelector) {
+	$options(operand: unknown, valueSelector?: Record<string, unknown>): BranchedMatcher {
 		if (!hasOwn(valueSelector, '$regex')) {
 			throw new MiniMongoQueryError('$options needs a $regex');
 		}
@@ -505,7 +535,7 @@ const VALUE_OPERATORS = {
 		return everythingMatcher;
 	},
 
-	$maxDistance(operand, valueSelector) {
+	$maxDistance(operand: unknown, valueSelector?: Record<string, unknown>): BranchedMatcher {
 		if (!valueSelector.$near) {
 			throw new MiniMongoQueryError('$maxDistance needs a $near');
 		}
@@ -513,7 +543,7 @@ const VALUE_OPERATORS = {
 		return everythingMatcher;
 	},
 
-	$all(operand, valueSelector, matcher) {
+	$all(operand: unknown, valueSelector?: Record<string, unknown>, matcher?: Matcher): BranchedMatcher {
 		if (!Array.isArray(operand)) {
 			throw new MiniMongoQueryError('$all requires array');
 		}
@@ -522,7 +552,7 @@ const VALUE_OPERATORS = {
 			return nothingMatcher;
 		}
 
-		const branchedMatchers = operand.map((criterion) => {
+		const branchedMatchers = (operand as unknown[]).map((criterion: unknown): BranchedMatcher => {
 			if (isOperatorObject(criterion)) {
 				throw new MiniMongoQueryError('no $ expressions in $all');
 			}
@@ -533,20 +563,23 @@ const VALUE_OPERATORS = {
 		return andBranchedMatchers(branchedMatchers);
 	},
 
-	$near(operand, valueSelector, matcher, isRoot) {
+	$near(operand: unknown, valueSelector?: Record<string, unknown>, matcher?: Matcher, isRoot?: boolean): BranchedMatcher {
 		if (!isRoot) {
 			throw new MiniMongoQueryError("$near can't be inside another $ operator");
 		}
 
 		matcher._hasGeoQuery = true;
 
-		let maxDistance, point, distance;
+		let maxDistance: number | undefined;
+		let point: number[] | undefined;
+		let distance: ((value: unknown) => number | null) | undefined;
 
-		if (_isPlainObject(operand) && hasOwn(operand, '$geometry')) {
-			maxDistance = operand.$maxDistance;
-			point = operand.$geometry;
+		if (_isPlainObject(operand) && hasOwn(operand as Record<string, unknown>, '$geometry')) {
+			const operandObj = operand as Record<string, unknown>;
+			maxDistance = operandObj.$maxDistance as number | undefined;
+			point = operandObj.$geometry as unknown;
 
-			distance = (value) => {
+			distance = (value: unknown): number | null => {
 				if (!value) {
 					return null;
 				}
@@ -562,7 +595,7 @@ const VALUE_OPERATORS = {
 				return GeoJSON.geometryWithinRadius(value, point, maxDistance) ? 0 : maxDistance + 1;
 			};
 		} else {
-			maxDistance = valueSelector.$maxDistance;
+			maxDistance = (valueSelector as Record<string, unknown>)?.$maxDistance as number | undefined;
 
 			if (!isIndexable(operand)) {
 				throw new MiniMongoQueryError('$near argument must be coordinate pair or GeoJSON');
@@ -570,20 +603,20 @@ const VALUE_OPERATORS = {
 
 			point = pointToArray(operand);
 
-			distance = (value) => {
+			distance = (value: unknown): number | null => {
 				if (!isIndexable(value)) {
 					return null;
 				}
 
-				return distanceCoordinatePairs(point, value);
+				return distanceCoordinatePairs(point as number[], value);
 			};
 		}
 
-		return (branchedValues) => {
-			const result = { result: false };
+		return (branchedValues: unknown): { result: boolean; distance?: number; arrayIndices?: number[] } => {
+			const result: { result: boolean; distance?: number; arrayIndices?: number[] } = { result: false };
 
-			expandArraysInBranches(branchedValues).every((branch) => {
-				let curDistance;
+			expandArraysInBranches(branchedValues as BranchValue[]).every((branch: BranchValue): boolean => {
+				let curDistance: number | null | undefined;
 
 				if (!matcher._isUpdate) {
 					if (!(typeof branch.value === 'object')) {
@@ -618,11 +651,25 @@ const VALUE_OPERATORS = {
 	},
 };
 
-function everythingMatcher(docOrBranchedValues) {
+interface BranchValue {
+	arrayIndices?: number[];
+	value?: unknown;
+	dontIterate?: boolean;
+}
+
+interface MatchResult {
+	result: boolean;
+	distance?: number;
+	arrayIndices?: number[];
+}
+
+type BranchedMatcher = (docOrBranches: unknown) => MatchResult;
+
+function everythingMatcher(docOrBranchedValues: unknown): MatchResult {
 	return { result: true };
 }
 
-function andSomeMatchers(subMatchers) {
+function andSomeMatchers(subMatchers: BranchedMatcher[]): BranchedMatcher {
 	if (subMatchers.length === 0) {
 		return everythingMatcher;
 	}
@@ -631,10 +678,10 @@ function andSomeMatchers(subMatchers) {
 		return subMatchers[0];
 	}
 
-	return (docOrBranches) => {
-		const match = {};
+	return (docOrBranches: unknown): MatchResult => {
+		const match: MatchResult = { result: false };
 
-		match.result = subMatchers.every((fn) => {
+		match.result = subMatchers.every((fn: BranchedMatcher): boolean => {
 			const subResult = fn(docOrBranches);
 
 			if (subResult.result && subResult.distance !== undefined && match.distance === undefined) {
@@ -660,12 +707,12 @@ function andSomeMatchers(subMatchers) {
 const andDocumentMatchers = andSomeMatchers;
 const andBranchedMatchers = andSomeMatchers;
 
-function compileArrayOfDocumentSelectors(selectors, matcher, inElemMatch) {
+function compileArrayOfDocumentSelectors(selectors: unknown, matcher: Matcher, inElemMatch?: boolean): ((doc: unknown) => MatchResult)[] {
 	if (!Array.isArray(selectors) || selectors.length === 0) {
 		throw new MiniMongoQueryError('$and/$or/$nor must be nonempty array');
 	}
 
-	return selectors.map((subSelector) => {
+	return (selectors as unknown[]).map((subSelector: unknown): ((doc: unknown) => MatchResult) => {
 		if (!_isPlainObject(subSelector)) {
 			throw new MiniMongoQueryError('$or/$and/$nor entries need to be full objects');
 		}
@@ -674,11 +721,16 @@ function compileArrayOfDocumentSelectors(selectors, matcher, inElemMatch) {
 	});
 }
 
-function compileDocumentSelector(docSelector, matcher) {
-	let options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+interface CompileOptions {
+	inElemMatch?: boolean;
+	isRoot?: boolean;
+}
 
-	const docMatchers = Object.keys(docSelector)
-		.map((key) => {
+function compileDocumentSelector(docSelector: unknown, matcher: Matcher, options?: CompileOptions): (doc: unknown) => MatchResult {
+	const opts = options || {};
+
+	const docMatchers = Object.keys(docSelector as Record<string, unknown>)
+		.map((key: string): ((doc: unknown) => MatchResult) | undefined => {
 			const subSelector = docSelector[key];
 
 			if (key.substr(0, 1) === '$') {
@@ -709,30 +761,40 @@ function compileDocumentSelector(docSelector, matcher) {
 	return andDocumentMatchers(docMatchers);
 }
 
-function compileValueSelector(valueSelector, matcher, isRoot) {
+function compileValueSelector(valueSelector: unknown, matcher: Matcher, isRoot?: boolean): BranchedMatcher {
 	if (valueSelector instanceof RegExp) {
 		matcher._isSimple = false;
 
-		return convertElementMatcherToBranchedMatcher(regexpElementMatcher(valueSelector));
+		return convertElementMatcherToBranchedMatcher((value: unknown): boolean => regexpElementMatcher(valueSelector)(value));
 	}
 
 	if (isOperatorObject(valueSelector)) {
 		return operatorBranchedMatcher(valueSelector, matcher, isRoot);
 	}
 
-	return convertElementMatcherToBranchedMatcher(equalityElementMatcher(valueSelector));
+	return convertElementMatcherToBranchedMatcher((value: unknown): boolean => equalityElementMatcher(valueSelector)(value));
 }
 
-function convertElementMatcherToBranchedMatcher(elementMatcher) {
-	let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+interface ElementMatcherOptions {
+	dontExpandLeafArrays?: boolean;
+	dontIncludeLeafArrays?: boolean;
+}
 
-	return (branches) => {
-		const expanded = options.dontExpandLeafArrays ? branches : expandArraysInBranches(branches, options.dontIncludeLeafArrays);
+function convertElementMatcherToBranchedMatcher(
+	elementMatcher: (value: unknown) => boolean | number,
+	options?: ElementMatcherOptions,
+): BranchedMatcher {
+	const opts = options || {};
 
-		const match = {};
+	return (branches: unknown): MatchResult => {
+		const expanded = opts.dontExpandLeafArrays
+			? (branches as BranchValue[])
+			: expandArraysInBranches(branches as BranchValue[], opts.dontIncludeLeafArrays);
 
-		match.result = expanded.some((element) => {
-			let matched = elementMatcher(element.value);
+		const match: MatchResult = { result: false };
+
+		match.result = expanded.some((element: BranchValue): boolean => {
+			let matched: boolean | number = elementMatcher(element.value);
 
 			if (typeof matched === 'number') {
 				if (!element.arrayIndices) {
@@ -746,35 +808,83 @@ function convertElementMatcherToBranchedMatcher(elementMatcher) {
 				match.arrayIndices = element.arrayIndices;
 			}
 
-			return matched;
+			return !!matched;
 		});
 
 		return match;
 	};
 }
 
-function distanceCoordinatePairs(a, b) {
+function distanceCoordinatePairs(a: unknown, b: unknown): number {
 	const pointA = pointToArray(a);
 	const pointB = pointToArray(b);
 
 	return Math.hypot(pointA[0] - pointB[0], pointA[1] - pointB[1]);
 }
 
-function nothingMatcher(docOrBranchedValues) {
+function nothingMatcher(docOrBranchedValues: unknown): MatchResult {
 	return { result: false };
 }
 
-function projectionDetails(fields) {
-	let fieldsKeys = Object.keys(fields).sort();
+interface ProjectionRuleTree {
+	[key: string]: boolean | ProjectionRuleTree;
+}
+
+interface ProjectionDetailsResult {
+	including: boolean | null;
+	tree: ProjectionRuleTree;
+}
+
+interface ObserveCallbacks {
+	added?: (doc: Document) => void;
+	addedAt?: (doc: Document, atIndex: number, before: string | null) => void;
+	changed?: (newDoc: Document, oldDoc: Document) => void;
+	changedAt?: (newDoc: Document, oldDoc: Document, atIndex: number) => void;
+	removed?: (oldDoc: Document) => void;
+	removedAt?: (oldDoc: Document, atIndex: number) => void;
+	movedTo?: (doc: Document, fromIndex: number, toIndex: number, before: string | null) => void;
+	_suppress_initial?: boolean;
+	_no_indices?: boolean;
+}
+
+interface ObserveChangesCallbacks {
+	added?: (id: unknown, fields: Record<string, unknown>) => void | Promise<void>;
+	addedBefore?: (id: unknown, fields: Record<string, unknown>, before: unknown) => void | Promise<void>;
+	changed?: (id: unknown, fields: Record<string, unknown>) => void | Promise<void>;
+	removed?: (id: unknown) => void | Promise<void>;
+	movedBefore?: (id: unknown, before: unknown) => void | Promise<void>;
+	_fromObserve?: boolean;
+}
+
+interface Document {
+	_id?: unknown;
+	[key: string]: unknown;
+}
+
+interface Query {
+	ordered: boolean;
+	results: Document[] | IdMap<unknown, Document>;
+	sorter?: Sorter | null;
+	distances?: IdMap<unknown, number>;
+	projectionFn: (doc: Document) => Document;
+	added: (id: unknown, fields: Document) => void | Promise<void>;
+	addedBefore?: (id: unknown, fields: Document, before: unknown) => void | Promise<void>;
+	changed: (id: unknown, fields: Record<string, unknown>) => void | Promise<void>;
+	removed: (id: unknown) => void | Promise<void>;
+	movedBefore?: (id: unknown, before: unknown) => void | Promise<void>;
+}
+
+function projectionDetails(fields: unknown): ProjectionDetailsResult {
+	let fieldsKeys = Object.keys(fields as Record<string, unknown>).sort();
 
 	if (!(fieldsKeys.length === 1 && fieldsKeys[0] === '_id') && !(fieldsKeys.includes('_id') && fields._id)) {
 		fieldsKeys = fieldsKeys.filter((key) => key !== '_id');
 	}
 
-	let including = null;
+	let including: boolean | null = null;
 
-	fieldsKeys.forEach((keyPath) => {
-		const rule = !!fields[keyPath];
+	fieldsKeys.forEach((keyPath: string): void => {
+		const rule = !!(fields as Record<string, unknown>)[keyPath];
 
 		if (including === null) {
 			including = rule;
@@ -787,15 +897,16 @@ function projectionDetails(fields) {
 
 	const projectionRulesTree = pathsToTree(
 		fieldsKeys,
-		(path) => including,
-		(node, path, fullPath) => {
+		(_path: string): boolean | null => including,
+		(_node: unknown, path: string, fullPath: string): ProjectionRuleTree => {
 			const currentPath = fullPath;
 			const anotherPath = path;
 
 			throw MinimongoError(
-				'both '.concat(currentPath, ' and ').concat(anotherPath, ' found in fields option, ') +
-					'using both of them may trigger unexpected behavior. Did you mean to ' +
-					'use only one of them?',
+				`${'both '
+					.concat(currentPath, ' and ')
+					.concat(anotherPath, ' found in fields option, ')}using both of them may trigger unexpected behavior. Did you mean to ` +
+					`use only one of them?`,
 			);
 		},
 	);
@@ -803,67 +914,78 @@ function projectionDetails(fields) {
 	return { including, tree: projectionRulesTree };
 }
 
-function pathsToTree(paths, newLeafFn, conflictFn) {
-	let root = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+function pathsToTree(
+	paths: string[],
+	newLeafFn: (path: string) => boolean | null,
+	conflictFn: (node: unknown, path: string, fullPath: string) => ProjectionRuleTree,
+	root?: ProjectionRuleTree,
+): ProjectionRuleTree {
+	const finalRoot: ProjectionRuleTree = root || {};
 
-	paths.forEach((path) => {
+	paths.forEach((path: string): void => {
 		const pathArray = path.split('.');
-		let tree = root;
+		let tree: ProjectionRuleTree | unknown = finalRoot;
 
-		const success = pathArray.slice(0, -1).every((key, i) => {
-			if (!hasOwn(tree, key)) {
-				tree[key] = {};
-			} else if (tree[key] !== Object(tree[key])) {
-				tree[key] = conflictFn(tree[key], pathArray.slice(0, i + 1).join('.'), path);
+		const success = pathArray.slice(0, -1).every((key: string, i: number): boolean => {
+			const treeObj = tree as Record<string, unknown>;
+			if (!isKey(treeObj, key)) {
+				treeObj[key] = {};
+			} else if (treeObj[key] !== Object(treeObj[key])) {
+				treeObj[key] = conflictFn(treeObj[key], pathArray.slice(0, i + 1).join('.'), path);
 
-				if (tree[key] !== Object(tree[key])) {
+				if (treeObj[key] !== Object(treeObj[key])) {
 					return false;
 				}
 			}
 
-			tree = tree[key];
+			tree = treeObj[key];
 
 			return true;
 		});
 
 		if (success) {
 			const lastKey = pathArray[pathArray.length - 1];
+			const treeObj = tree as Record<string, unknown>;
 
-			if (hasOwn(tree, lastKey)) {
-				tree[lastKey] = conflictFn(tree[lastKey], path, path);
+			if (isKey(treeObj, lastKey)) {
+				treeObj[lastKey] = conflictFn(treeObj[lastKey], path, path);
 			} else {
-				tree[lastKey] = newLeafFn(path);
+				treeObj[lastKey] = newLeafFn(path);
 			}
 		}
 	});
 
-	return root;
+	return finalRoot;
 }
 
-function equalityElementMatcher(elementSelector) {
+function equalityElementMatcher(elementSelector: unknown): (value: unknown) => boolean {
 	if (isOperatorObject(elementSelector)) {
 		throw new MiniMongoQueryError("Can't create equalityValueSelector for operator object");
 	}
 
 	if (elementSelector == null) {
-		return (value) => value == null;
+		return (value: unknown): boolean => value == null;
 	}
 
-	return (value) => LocalCollection_f._equal(elementSelector, value);
+	return (value: unknown): boolean => TypeChecker._equal(elementSelector, value);
 }
 
-const _isPlainObject = (x) => {
-	return x && LocalCollection_f._type(x) === 3;
+const _isPlainObject = (x: unknown): x is Record<string, unknown> => {
+	return x && TypeChecker._type(x) === 3;
 };
 
-const _selectorIsId = (selector) => typeof selector === 'number' || typeof selector === 'string' || selector instanceof MongoID.ObjectID;
+const _selectorIsId = (selector: unknown): selector is string | number =>
+	typeof selector === 'number' || typeof selector === 'string' || selector instanceof MongoID.ObjectID;
 
-const _selectorIsIdPerhapsAsObject = (selector) =>
-	_selectorIsId(selector) || (_selectorIsId(selector && selector._id) && Object.keys(selector).length === 1);
+const _selectorIsIdPerhapsAsObject = (selector: unknown): boolean =>
+	_selectorIsId(selector) ||
+	(_selectorIsId((selector as Record<string, unknown>)?._id) && Object.keys(selector as Record<string, unknown>).length === 1);
 
-const MinimongoError = function (message) {
-	let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+interface MinimongoErrorOptions {
+	field?: string;
+}
 
+const MinimongoError = function (message: string, options?: MinimongoErrorOptions): Error {
 	if (typeof message === 'string' && options.field) {
 		message += " for field '".concat(options.field, "'");
 	}
@@ -875,9 +997,9 @@ const MinimongoError = function (message) {
 	return error;
 };
 
-function assertHasValidFieldNames(doc) {
+function assertHasValidFieldNames(doc: unknown): void {
 	if (doc && typeof doc === 'object') {
-		JSON.stringify(doc, (key, value) => {
+		JSON.stringify(doc, (key: string, value: unknown): unknown => {
 			assertIsValidFieldName(key);
 
 			return value;
@@ -885,11 +1007,12 @@ function assertHasValidFieldNames(doc) {
 	}
 }
 
-function assertIsValidFieldName(key) {
-	let match;
-
-	if (typeof key === 'string' && (match = key.match(/^\$|\.|\0/))) {
-		throw MinimongoError('Key '.concat(key, ' must not ').concat(invalidCharMsg[match[0]]));
+function assertIsValidFieldName(key: unknown): void {
+	if (typeof key === 'string') {
+		const match = key.match(/^\$|\.|\0/);
+		if (match) {
+			throw MinimongoError('Key '.concat(key, ' must not ').concat(invalidCharMsg[match[0] as '$' | '.' | '\0']));
+		}
 	}
 }
 
@@ -900,14 +1023,21 @@ class MongoIdMap extends IdMap {
 }
 
 class LocalCollection {
-	name: string;
+	name?: string;
+
 	_docs: MongoIdMap;
+
 	_observeQueue: SynchronousQueue;
+
 	next_qid: number;
+
 	queries: Record<string, any>;
+
 	_savedOriginals: any;
+
 	paused: boolean;
-	constructor(name: string) {
+
+	constructor(name?: string) {
 		this.name = name;
 		this._docs = new MongoIdMap();
 
@@ -936,7 +1066,7 @@ class LocalCollection {
 	}
 
 	findOne(selector) {
-		let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+		const options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 		if (arguments.length === 0) {
 			selector = {};
@@ -948,7 +1078,7 @@ class LocalCollection {
 	}
 
 	async findOneAsync(selector) {
-		let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+		const options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 		if (arguments.length === 0) {
 			selector = {};
@@ -1270,19 +1400,19 @@ class LocalCollection {
 			throw new Error('Called saveOriginals twice without retrieveOriginals');
 		}
 
-		this._savedOriginals = new LocalCollection._IdMap();
+		this._savedOriginals = new MongoIdMap();
 	}
 
 	prepareUpdate(selector) {
 		const qidToOriginalResults = {};
-		const docMap = new LocalCollection._IdMap();
+		const docMap = new MongoIdMap();
 		const idsMatched = LocalCollection._idsMatchedBySelector(selector);
 
 		Object.keys(this.queries).forEach((qid) => {
 			const query = this.queries[qid];
 
 			if ((query.cursor.skip || query.cursor.limit) && !this.paused) {
-				if (query.results instanceof LocalCollection._IdMap) {
+				if (query.results instanceof MongoIdMap) {
 					qidToOriginalResults[qid] = query.results.clone();
 
 					return;
@@ -1312,7 +1442,7 @@ class LocalCollection {
 	}
 
 	finishUpdate(_ref) {
-		let { options, updateCount, callback, insertedId } = _ref;
+		const { options, updateCount, callback, insertedId } = _ref;
 		let result;
 
 		if (options._returnObject) {
@@ -1334,62 +1464,62 @@ class LocalCollection {
 		return result;
 	}
 
-	async updateAsync(selector, mod, options, callback) {
-		if (!callback && options instanceof Function) {
-			callback = options;
-			options = null;
-		}
+	// async updateAsync(selector, mod, options, callback) {
+	// 	if (!callback && options instanceof Function) {
+	// 		callback = options;
+	// 		options = null;
+	// 	}
 
-		if (!options) {
-			options = {};
-		}
+	// 	if (!options) {
+	// 		options = {};
+	// 	}
 
-		const matcher = new Matcher(selector, true);
-		const qidToOriginalResults = this.prepareUpdate(selector);
-		let recomputeQids = {};
-		let updateCount = 0;
+	// 	const matcher = new Matcher(selector, true);
+	// 	const qidToOriginalResults = this.prepareUpdate(selector);
+	// 	let recomputeQids = {};
+	// 	let updateCount = 0;
 
-		await this._eachPossiblyMatchingDocAsync(selector, async (doc, id) => {
-			const queryResult = matcher.documentMatches(doc);
+	// 	await this._eachPossiblyMatchingDocAsync(selector, async (doc, id) => {
+	// 		const queryResult = matcher.documentMatches(doc);
 
-			if (queryResult.result) {
-				this._saveOriginal(id, doc);
-				recomputeQids = await this._modifyAndNotifyAsync(doc, mod, queryResult.arrayIndices);
-				++updateCount;
+	// 		if (queryResult.result) {
+	// 			this._saveOriginal(id, doc);
+	// 			recomputeQids = await this._modifyAndNotifyAsync(doc, mod, queryResult.arrayIndices);
+	// 			++updateCount;
 
-				if (!options.multi) {
-					return false;
-				}
-			}
+	// 			if (!options.multi) {
+	// 				return false;
+	// 			}
+	// 		}
 
-			return true;
-		});
+	// 		return true;
+	// 	});
 
-		Object.keys(recomputeQids).forEach((qid) => {
-			const query = this.queries[qid];
+	// 	Object.keys(recomputeQids).forEach((qid) => {
+	// 		const query = this.queries[qid];
 
-			if (query) {
-				this._recomputeResults(query, qidToOriginalResults[qid]);
-			}
-		});
+	// 		if (query) {
+	// 			this._recomputeResults(query, qidToOriginalResults[qid]);
+	// 		}
+	// 	});
 
-		await this._observeQueue.drain();
+	// 	await this._observeQueue.drain();
 
-		let insertedId;
+	// 	let insertedId;
 
-		if (updateCount === 0 && options.upsert) {
-			const doc = LocalCollection._createUpsertDocument(selector, mod);
+	// 	if (updateCount === 0 && options.upsert) {
+	// 		const doc = LocalCollection._createUpsertDocument(selector, mod);
 
-			if (!doc._id && options.insertedId) {
-				doc._id = options.insertedId;
-			}
+	// 		if (!doc._id && options.insertedId) {
+	// 			doc._id = options.insertedId;
+	// 		}
 
-			insertedId = await this.insertAsync(doc);
-			updateCount = 1;
-		}
+	// 		insertedId = await this.insertAsync(doc);
+	// 		updateCount = 1;
+	// 	}
 
-		return this.finishUpdate({ options, insertedId, updateCount, callback });
-	}
+	// 	return this.finishUpdate({ options, insertedId, updateCount, callback });
+	// }
 
 	update(selector, mod, options, callback) {
 		if (!callback && options instanceof Function) {
@@ -1694,7 +1824,7 @@ class Sorter {
 			return this._getBaseComparator();
 		}
 
-		const distances = options.distances;
+		const { distances } = options;
 
 		return (a, b) => {
 			if (!distances.has(a._id)) {
@@ -1850,7 +1980,7 @@ class Sorter {
 		const invert = !this._sortSpecParts[i].ascending;
 
 		return (key1, key2) => {
-			const compare = LocalCollection_f._cmp(key1[i], key2[i]);
+			const compare = TypeChecker._cmp(key1[i], key2[i]);
 
 			return invert ? -compare : compare;
 		};
@@ -1872,7 +2002,15 @@ function composeComparators(comparatorArray) {
 }
 
 class Matcher {
-	constructor(selector, isUpdate) {
+	_paths: Record<string, boolean>;
+	_hasGeoQuery: boolean;
+	_hasWhere: boolean;
+	_isSimple: boolean;
+	_matchingDocument: Record<string, unknown> | undefined;
+	_selector: unknown;
+	_docMatcher: (doc: Record<string, unknown>) => { result: boolean; distance?: number };
+	_isUpdate: boolean;
+	constructor(selector, isUpdate: boolean = false) {
 		this._paths = {};
 		this._hasGeoQuery = false;
 		this._hasWhere = false;
@@ -1947,24 +2085,69 @@ function getAsyncMethodName(method) {
 	return ''.concat(method.replace('_', ''), 'Async');
 }
 
-const ASYNC_COLLECTION_METHODS = [
-	'_createCappedCollection',
-	'dropCollection',
-	'dropIndex',
-	'createIndex',
-	'findOne',
-	'insert',
-	'remove',
-	'update',
-	'upsert',
-];
+// const ASYNC_COLLECTION_METHODS = [
+// 	'_createCappedCollection',
+// 	'dropCollection',
+// 	'dropIndex',
+// 	'createIndex',
+// 	'findOne',
+// 	'insert',
+// 	'remove',
+// 	'update',
+// 	'upsert',
+// ];
 
 const ASYNC_CURSOR_METHODS = ['count', 'fetch', 'forEach', 'map'];
-const CLIENT_ONLY_METHODS = ['findOne', 'insert', 'remove', 'update', 'upsert'];
+// const CLIENT_ONLY_METHODS = ['findOne', 'insert', 'remove', 'update', 'upsert'];
+const wrapTransform = (transform) => {
+	if (!transform) {
+		return null;
+	}
 
+	if (transform.__wrappedTransform__) {
+		return transform;
+	}
+
+	const wrapped = (doc) => {
+		if (!hasOwn(doc, '_id')) {
+			throw new Error('can only transform documents with _id');
+		}
+
+		const id = doc._id;
+		const transformed = Tracker.nonreactive(() => transform(doc));
+
+		if (!_isPlainObject(transformed)) {
+			throw new Error('transform must return object');
+		}
+
+		if (hasOwn(transformed, '_id')) {
+			if (!EJSON.equals(transformed._id, id)) {
+				throw new Error("transformed document can't have different _id");
+			}
+		} else {
+			transformed._id = id;
+		}
+
+		return transformed;
+	};
+
+	wrapped.__wrappedTransform__ = true;
+
+	return wrapped;
+};
 class Cursor {
-	constructor(collection, selector) {
-		let options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	matcher: Matcher;
+	collection: LocalCollection;
+	sorter: Sorter | null;
+	skip: number;
+	limit: number | undefined;
+	fields: Record<string, unknown> | undefined;
+	_projectionFn: (doc: Record<string, unknown>) => Record<string, unknown>;
+	_transform: ((doc: Record<string, unknown>) => unknown) | null;
+	_selectorId: unknown;
+	reactive: boolean;
+	constructor(collection: LocalCollection, selector) {
+		const options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 		this.collection = collection;
 		this.sorter = null;
@@ -1983,8 +2166,8 @@ class Cursor {
 		this.skip = options.skip || 0;
 		this.limit = options.limit;
 		this.fields = options.projection || options.fields;
-		this._projectionFn = LocalCollection._compileProjection(this.fields || {});
-		this._transform = LocalCollection.wrapTransform(options.transform);
+		this._projectionFn = _compileProjection(this.fields || {});
+		this._transform = wrapTransform(options.transform);
 
 		if (typeof Tracker !== 'undefined') {
 			this.reactive = options.reactive === undefined ? true : options.reactive;
@@ -2090,8 +2273,8 @@ class Cursor {
 		return new Promise((resolve) => resolve(this.observe(options)));
 	}
 
-	observeChanges(options) {
-		const ordered = LocalCollection._observeChangesCallbacksAreOrdered(options);
+	observeChanges(options: ObserveChangesCallbacks & { _allow_unordered?: boolean; _suppress_initial?: boolean }) {
+		const ordered = _observeChangesCallbacksAreOrdered(options);
 
 		if (!options._allow_unordered && !ordered && (this.skip || this.limit)) {
 			throw new Error(
@@ -2104,7 +2287,7 @@ class Cursor {
 			throw Error('You may not observe a cursor with {fields: {_id: 0}}');
 		}
 
-		const distances = this.matcher.hasGeoQuery() && ordered && new LocalCollection._IdMap();
+		const distances = this.matcher.hasGeoQuery() && ordered && new MongoIdMap();
 
 		const query = {
 			cursor: this,
@@ -2127,7 +2310,7 @@ class Cursor {
 		query.results = this._getRawObjects({ ordered, distances: query.distances });
 
 		if (this.collection.paused) {
-			query.resultsSnapshot = ordered ? [] : new LocalCollection._IdMap();
+			query.resultsSnapshot = ordered ? [] : new MongoIdMap();
 		}
 
 		const wrapCallback = (fn) => {
@@ -2160,7 +2343,8 @@ class Cursor {
 		}
 
 		if (!options._suppress_initial && !this.collection.paused) {
-			var _query$results, _query$results$size;
+			let _query$results;
+			let _query$results$size;
 
 			const handler = (doc) => {
 				const fields = EJSON.clone(doc);
@@ -2253,9 +2437,9 @@ class Cursor {
 	}
 
 	_getRawObjects() {
-		let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+		const options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 		const applySkipLimit = options.applySkipLimit !== false;
-		const results = options.ordered ? [] : new LocalCollection._IdMap();
+		const results = options.ordered ? [] : new MongoIdMap();
 
 		if (this._selectorId !== undefined) {
 			if (applySkipLimit && this.skip) {
@@ -2282,7 +2466,7 @@ class Cursor {
 				distances = options.distances;
 				distances.clear();
 			} else {
-				distances = new LocalCollection._IdMap();
+				distances = new MongoIdMap();
 			}
 		}
 
@@ -2343,8 +2527,8 @@ LocalCollection.ObserveHandle = ObserveHandle;
 
 LocalCollection._CachingChangeObserver = class _CachingChangeObserver {
 	constructor() {
-		let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-		const orderedFromCallbacks = options.callbacks && LocalCollection._observeChangesCallbacksAreOrdered(options.callbacks);
+		const options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+		const orderedFromCallbacks = options.callbacks && _observeChangesCallbacksAreOrdered(options.callbacks);
 
 		if (hasOwn(options, 'ordered')) {
 			this.ordered = options.ordered;
@@ -2389,7 +2573,7 @@ LocalCollection._CachingChangeObserver = class _CachingChangeObserver {
 				},
 			};
 		} else {
-			this.docs = new LocalCollection._IdMap();
+			this.docs = new MongoIdMap();
 
 			this.applyChange = {
 				added: (id, fields) => {
@@ -2429,44 +2613,9 @@ LocalCollection._CachingChangeObserver = class _CachingChangeObserver {
 	}
 };
 
-LocalCollection.wrapTransform = (transform) => {
-	if (!transform) {
-		return null;
-	}
+type Comparator<T> = (a: T, b: T) => number;
 
-	if (transform.__wrappedTransform__) {
-		return transform;
-	}
-
-	const wrapped = (doc) => {
-		if (!hasOwn(doc, '_id')) {
-			throw new Error('can only transform documents with _id');
-		}
-
-		const id = doc._id;
-		const transformed = Tracker.nonreactive(() => transform(doc));
-
-		if (!_isPlainObject(transformed)) {
-			throw new Error('transform must return object');
-		}
-
-		if (hasOwn(transformed, '_id')) {
-			if (!EJSON.equals(transformed._id, id)) {
-				throw new Error("transformed document can't have different _id");
-			}
-		} else {
-			transformed._id = id;
-		}
-
-		return transformed;
-	};
-
-	wrapped.__wrappedTransform__ = true;
-
-	return wrapped;
-};
-
-LocalCollection._binarySearch = (cmp, array, value) => {
+const _binarySearch = <T>(cmp: Comparator<T>, array: T[], value: T): number => {
 	let first = 0;
 	let range = array.length;
 
@@ -2484,7 +2633,9 @@ LocalCollection._binarySearch = (cmp, array, value) => {
 	return first;
 };
 
-LocalCollection._checkSupportedProjection = (fields) => {
+LocalCollection._binarySearch = _binarySearch;
+
+const _checkSupportedProjection = (fields) => {
 	if (fields !== Object(fields) || Array.isArray(fields)) {
 		throw MinimongoError('fields option must be an object');
 	}
@@ -2506,8 +2657,8 @@ LocalCollection._checkSupportedProjection = (fields) => {
 	});
 };
 
-LocalCollection._compileProjection = (fields) => {
-	LocalCollection._checkSupportedProjection(fields);
+const _compileProjection = (fields) => {
+	_checkSupportedProjection(fields);
 
 	const _idProjection = fields._id === undefined ? true : fields._id;
 	const details = projectionDetails(fields);
@@ -2555,31 +2706,31 @@ LocalCollection._compileProjection = (fields) => {
 	};
 };
 
-LocalCollection._createUpsertDocument = (selector, modifier) => {
-	const selectorDocument = populateDocumentWithQueryFields(selector);
-	const isModify = LocalCollection._isModificationMod(modifier);
-	const newDoc = {};
+// LocalCollection._createUpsertDocument = (selector, modifier) => {
+// 	const selectorDocument = populateDocumentWithQueryFields(selector);
+// 	const isModify = _isModificationMod(modifier);
+// 	const newDoc = {};
 
-	if (selectorDocument._id) {
-		newDoc._id = selectorDocument._id;
-		delete selectorDocument._id;
-	}
+// 	if (selectorDocument._id) {
+// 		newDoc._id = selectorDocument._id;
+// 		delete selectorDocument._id;
+// 	}
 
-	LocalCollection._modify(newDoc, { $set: selectorDocument });
-	LocalCollection._modify(newDoc, modifier, { isInsert: true });
+// 	LocalCollection._modify(newDoc, { $set: selectorDocument });
+// 	LocalCollection._modify(newDoc, modifier, { isInsert: true });
 
-	if (isModify) {
-		return newDoc;
-	}
+// 	if (isModify) {
+// 		return newDoc;
+// 	}
 
-	const replacement = Object.assign({}, modifier);
+// 	const replacement = Object.assign({}, modifier);
 
-	if (newDoc._id) {
-		replacement._id = newDoc._id;
-	}
+// 	if (newDoc._id) {
+// 		replacement._id = newDoc._id;
+// 	}
 
-	return replacement;
-};
+// 	return replacement;
+// };
 
 LocalCollection._diffObjects = (left, right, callbacks) => {
 	return DiffSequence.diffObjects(left, right, callbacks);
@@ -2592,18 +2743,19 @@ LocalCollection._diffQueryOrderedChanges = (oldResults, newResults, observer, op
 LocalCollection._diffQueryUnorderedChanges = (oldResults, newResults, observer, options) =>
 	DiffSequence.diffQueryUnorderedChanges(oldResults, newResults, observer, options);
 
-LocalCollection._findInOrderedResults = (query, doc) => {
+const _findInOrderedResults = (query: Query, doc: Document): number => {
 	if (!query.ordered) {
 		throw new Error("Can't call _findInOrderedResults on unordered query");
 	}
 
-	for (let i = 0; i < query.results.length; i++) {
-		if (query.results[i] === doc) {
+	const results = query.results as Document[];
+	for (let i = 0; i < results.length; i++) {
+		if (results[i] === doc) {
 			return i;
 		}
 	}
 
-	throw Error('object missing from query');
+	throw new Error('object missing from query');
 };
 
 LocalCollection._idsMatchedBySelector = (selector) => {
@@ -2645,79 +2797,85 @@ LocalCollection._idsMatchedBySelector = (selector) => {
 	return null;
 };
 
-LocalCollection._insertInResultsSync = (query, doc) => {
+const _insertInResultsSync = (query: Query, doc: Document): void => {
 	const fields = EJSON.clone(doc);
 
 	delete fields._id;
 
 	if (query.ordered) {
 		if (!query.sorter) {
-			query.addedBefore(doc._id, query.projectionFn(fields), null);
-			query.results.push(doc);
+			query.addedBefore?.(doc._id, query.projectionFn(fields), null);
+			(query.results as Document[]).push(doc);
 		} else {
-			const i = LocalCollection._insertInSortedList(query.sorter.getComparator({ distances: query.distances }), query.results, doc);
-			let next = query.results[i + 1];
+			const i = _insertInSortedList(query.sorter.getComparator({ distances: query.distances }), query.results as Document[], doc);
+			let next: unknown = (query.results as Document[])[i + 1];
 
 			if (next) {
-				next = next._id;
+				next = (next as Document)._id;
 			} else {
 				next = null;
 			}
 
-			query.addedBefore(doc._id, query.projectionFn(fields), next);
+			query.addedBefore?.(doc._id, query.projectionFn(fields), next);
 		}
 
 		query.added(doc._id, query.projectionFn(fields));
 	} else {
 		query.added(doc._id, query.projectionFn(fields));
-		query.results.set(doc._id, doc);
+		(query.results as IdMap<unknown, Document>).set(doc._id, doc);
 	}
 };
 
-LocalCollection._insertInResultsAsync = async (query, doc) => {
+LocalCollection._insertInResultsSync = _insertInResultsSync;
+
+const _insertInResultsAsync = async (query: Query, doc: Document): Promise<void> => {
 	const fields = EJSON.clone(doc);
 
 	delete fields._id;
 
 	if (query.ordered) {
 		if (!query.sorter) {
-			await query.addedBefore(doc._id, query.projectionFn(fields), null);
-			query.results.push(doc);
+			await query.addedBefore?.(doc._id, query.projectionFn(fields), null);
+			(query.results as Document[]).push(doc);
 		} else {
-			const i = LocalCollection._insertInSortedList(query.sorter.getComparator({ distances: query.distances }), query.results, doc);
-			let next = query.results[i + 1];
+			const i = _insertInSortedList(query.sorter.getComparator({ distances: query.distances }), query.results as Document[], doc);
+			let next: unknown = (query.results as Document[])[i + 1];
 
 			if (next) {
-				next = next._id;
+				next = (next as Document)._id;
 			} else {
 				next = null;
 			}
 
-			await query.addedBefore(doc._id, query.projectionFn(fields), next);
+			await query.addedBefore?.(doc._id, query.projectionFn(fields), next);
 		}
 
 		await query.added(doc._id, query.projectionFn(fields));
 	} else {
 		await query.added(doc._id, query.projectionFn(fields));
-		query.results.set(doc._id, doc);
+		(query.results as IdMap<unknown, Document>).set(doc._id, doc);
 	}
 };
 
-LocalCollection._insertInSortedList = (cmp, array, value) => {
+LocalCollection._insertInResultsAsync = _insertInResultsAsync;
+
+const _insertInSortedList = <T>(cmp: Comparator<T>, array: T[], value: T): number => {
 	if (array.length === 0) {
 		array.push(value);
 
 		return 0;
 	}
 
-	const i = LocalCollection._binarySearch(cmp, array, value);
+	const i = _binarySearch(cmp, array, value);
 
 	array.splice(i, 0, value);
 
 	return i;
 };
 
-LocalCollection._isModificationMod = (mod) => {
+LocalCollection._insertInSortedList = _insertInSortedList;
+
+const _isModificationMod = (mod) => {
 	let isModify = false;
 	let isReplace = false;
 
@@ -2737,7 +2895,7 @@ LocalCollection._isModificationMod = (mod) => {
 };
 
 LocalCollection._modify = function (doc, modifier) {
-	let options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	const options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 	if (!_isPlainObject(modifier)) {
 		throw MinimongoError('Modifier must be an object');
@@ -2749,7 +2907,7 @@ LocalCollection._modify = function (doc, modifier) {
 	const newDoc = isModifier ? EJSON.clone(doc) : modifier;
 
 	if (isModifier) {
-		Object.keys(modifier).forEach((operator) => {
+		keys(modifier).forEach((operator) => {
 			const setOnInsert = options.isInsert && operator === '$setOnInsert';
 			const modFunc = MODIFIERS[setOnInsert ? '$set' : operator];
 			const operand = modifier[operator];
@@ -2768,7 +2926,7 @@ LocalCollection._modify = function (doc, modifier) {
 				const keyparts = keypath.split('.');
 
 				if (!keyparts.every(Boolean)) {
-					throw MinimongoError("The update path '".concat(keypath, "' contains an empty field name, ") + 'which is not allowed.');
+					throw MinimongoError(`${"The update path '".concat(keypath, "' contains an empty field name, ")}which is not allowed.`);
 				}
 
 				const target = findModTarget(newDoc, keyparts, {
@@ -2783,9 +2941,10 @@ LocalCollection._modify = function (doc, modifier) {
 
 		if (doc._id && !EJSON.equals(doc._id, newDoc._id)) {
 			throw MinimongoError(
-				'After applying the update to the document {_id: "'.concat(doc._id, '", ...},') +
-					" the (immutable) field '_id' was found to have been altered to " +
-					'_id: "'.concat(newDoc._id, '"'),
+				`${'After applying the update to the document {_id: "'.concat(
+					doc._id,
+					'", ...},',
+				)} the (immutable) field '_id' was found to have been altered to ${'_id: "'.concat(newDoc._id, '"')}`,
 			);
 		}
 	} else {
@@ -2812,7 +2971,7 @@ LocalCollection._observeFromObserveChanges = (cursor, observeCallbacks) => {
 	let suppressed = !!observeCallbacks._suppress_initial;
 	let observeChangesCallbacks;
 
-	if (LocalCollection._observeCallbacksAreOrdered(observeCallbacks)) {
+	if (_observeCallbacksAreOrdered(observeCallbacks)) {
 		const indices = !observeCallbacks._no_indices;
 
 		observeChangesCallbacks = {
@@ -2837,7 +2996,7 @@ LocalCollection._observeFromObserveChanges = (cursor, observeCallbacks) => {
 					return;
 				}
 
-				let doc = EJSON.clone(this.docs.get(id));
+				const doc = EJSON.clone(this.docs.get(id));
 
 				if (!doc) {
 					throw new Error('Unknown id for changed: '.concat(id));
@@ -2917,7 +3076,7 @@ LocalCollection._observeFromObserveChanges = (cursor, observeCallbacks) => {
 	const handle = cursor.observeChanges(changeObserver.applyChange, { nonMutatingCallbacks: true });
 
 	const setSuppressed = (h) => {
-		var _h$isReadyPromise;
+		let _h$isReadyPromise;
 
 		if (h.isReady) suppressed = false;
 		else
@@ -2935,7 +3094,7 @@ LocalCollection._observeFromObserveChanges = (cursor, observeCallbacks) => {
 	return handle;
 };
 
-LocalCollection._observeCallbacksAreOrdered = (callbacks) => {
+const _observeCallbacksAreOrdered = (callbacks: ObserveCallbacks): boolean => {
 	if (callbacks.added && callbacks.addedAt) {
 		throw new Error('Please specify only one of added() and addedAt()');
 	}
@@ -2951,7 +3110,7 @@ LocalCollection._observeCallbacksAreOrdered = (callbacks) => {
 	return !!(callbacks.addedAt || callbacks.changedAt || callbacks.movedTo || callbacks.removedAt);
 };
 
-LocalCollection._observeChangesCallbacksAreOrdered = (callbacks) => {
+const _observeChangesCallbacksAreOrdered = (callbacks: ObserveChangesCallbacks): boolean => {
 	if (callbacks.added && callbacks.addedBefore) {
 		throw new Error('Please specify only one of added() and addedBefore()');
 	}
@@ -2959,52 +3118,59 @@ LocalCollection._observeChangesCallbacksAreOrdered = (callbacks) => {
 	return !!(callbacks.addedBefore || callbacks.movedBefore);
 };
 
-LocalCollection._removeFromResultsSync = (query, doc) => {
+LocalCollection._observeCallbacksAreOrdered = _observeCallbacksAreOrdered;
+LocalCollection._observeChangesCallbacksAreOrdered = _observeChangesCallbacksAreOrdered;
+
+const _removeFromResultsSync = (query: Query, doc: Document): void => {
 	if (query.ordered) {
-		const i = LocalCollection_findInOrderedResults(query, doc);
+		const i = _findInOrderedResults(query, doc);
 
 		query.removed(doc._id);
-		query.results.splice(i, 1);
+		(query.results as Document[]).splice(i, 1);
 	} else {
 		const id = doc._id;
 
 		query.removed(doc._id);
-		query.results.remove(id);
+		(query.results as IdMap<unknown, Document>).remove(id);
 	}
 };
 
-LocalCollection._removeFromResultsAsync = async (query, doc) => {
+LocalCollection._removeFromResultsSync = _removeFromResultsSync;
+
+const _removeFromResultsAsync = async (query: Query, doc: Document): Promise<void> => {
 	if (query.ordered) {
-		const i = LocalCollection_findInOrderedResults(query, doc);
+		const i = _findInOrderedResults(query, doc);
 
 		await query.removed(doc._id);
-		query.results.splice(i, 1);
+		(query.results as Document[]).splice(i, 1);
 	} else {
 		const id = doc._id;
 
 		await query.removed(doc._id);
-		query.results.remove(id);
+		(query.results as IdMap<unknown, Document>).remove(id);
 	}
 };
 
-LocalCollection._updateInResultsSync = (query, doc, old_doc) => {
+LocalCollection._removeFromResultsAsync = _removeFromResultsAsync;
+
+const _updateInResultsSync = (query: Query, doc: Document, old_doc: Document): void => {
 	if (!EJSON.equals(doc._id, old_doc._id)) {
 		throw new Error("Can't change a doc's _id while updating");
 	}
 
-	const projectionFn = query.projectionFn;
+	const { projectionFn } = query;
 	const changedFields = DiffSequence.makeChangedFields(projectionFn(doc), projectionFn(old_doc));
 
 	if (!query.ordered) {
 		if (Object.keys(changedFields).length) {
 			query.changed(doc._id, changedFields);
-			query.results.set(doc._id, doc);
+			(query.results as IdMap<unknown, Document>).set(doc._id, doc);
 		}
 
 		return;
 	}
 
-	const old_idx = LocalCollection_findInOrderedResults(query, doc);
+	const old_idx = _findInOrderedResults(query, doc);
 
 	if (Object.keys(changedFields).length) {
 		query.changed(doc._id, changedFields);
@@ -3014,41 +3180,43 @@ LocalCollection._updateInResultsSync = (query, doc, old_doc) => {
 		return;
 	}
 
-	query.results.splice(old_idx, 1);
+	(query.results as Document[]).splice(old_idx, 1);
 
-	const new_idx = LocalCollection._insertInSortedList(query.sorter.getComparator({ distances: query.distances }), query.results, doc);
+	const new_idx = _insertInSortedList(query.sorter.getComparator({ distances: query.distances }), query.results as Document[], doc);
 
 	if (old_idx !== new_idx) {
-		let next = query.results[new_idx + 1];
+		let next: unknown = (query.results as Document[])[new_idx + 1];
 
 		if (next) {
-			next = next._id;
+			next = (next as Document)._id;
 		} else {
 			next = null;
 		}
 
-		query.movedBefore && query.movedBefore(doc._id, next);
+		query.movedBefore?.(doc._id, next);
 	}
 };
 
-LocalCollection._updateInResultsAsync = async (query, doc, old_doc) => {
+// LocalCollection._updateInResultsSync = _updateInResultsSync;
+
+const _updateInResultsAsync = async (query: Query, doc: Document, old_doc: Document): Promise<void> => {
 	if (!EJSON.equals(doc._id, old_doc._id)) {
 		throw new Error("Can't change a doc's _id while updating");
 	}
 
-	const projectionFn = query.projectionFn;
+	const { projectionFn } = query;
 	const changedFields = DiffSequence.makeChangedFields(projectionFn(doc), projectionFn(old_doc));
 
 	if (!query.ordered) {
 		if (Object.keys(changedFields).length) {
 			await query.changed(doc._id, changedFields);
-			query.results.set(doc._id, doc);
+			(query.results as IdMap<unknown, Document>).set(doc._id, doc);
 		}
 
 		return;
 	}
 
-	const old_idx = LocalCollection_findInOrderedResults(query, doc);
+	const old_idx = _findInOrderedResults(query, doc);
 
 	if (Object.keys(changedFields).length) {
 		await query.changed(doc._id, changedFields);
@@ -3058,26 +3226,28 @@ LocalCollection._updateInResultsAsync = async (query, doc, old_doc) => {
 		return;
 	}
 
-	query.results.splice(old_idx, 1);
+	(query.results as Document[]).splice(old_idx, 1);
 
-	const new_idx = LocalCollection._insertInSortedList(query.sorter.getComparator({ distances: query.distances }), query.results, doc);
+	const new_idx = _insertInSortedList(query.sorter.getComparator({ distances: query.distances }), query.results as Document[], doc);
 
 	if (old_idx !== new_idx) {
-		let next = query.results[new_idx + 1];
+		let next: unknown = (query.results as Document[])[new_idx + 1];
 
 		if (next) {
-			next = next._id;
+			next = (next as Document)._id;
 		} else {
 			next = null;
 		}
 
-		query.movedBefore && (await query.movedBefore(doc._id, next));
+		await query.movedBefore?.(doc._id, next);
 	}
 };
 
+LocalCollection._updateInResultsAsync = _updateInResultsAsync;
+
 const MODIFIERS = {
-	$currentDate(target, field, arg) {
-		if (typeof arg === 'object' && hasOwn(arg, '$type')) {
+	$currentDate(target, field, arg: unknown) {
+		if (typeof arg === 'object' && arg && hasOwn(arg, '$type')) {
 			if (arg.$type !== 'date') {
 				throw MinimongoError('Minimongo does currently only support the date type in ' + '$currentDate modifiers', { field });
 			}
@@ -3211,7 +3381,7 @@ const MODIFIERS = {
 		assertHasValidFieldNames(arg);
 		target[field] = arg;
 	},
-	$setOnInsert(target, field, arg) {},
+	$setOnInsert(_target, _field, _arg) {},
 	$unset(target, field, arg) {
 		if (target !== undefined) {
 			if (target instanceof Array) {
@@ -3282,7 +3452,7 @@ const MODIFIERS = {
 			sortFunction = new Minimongo.Sorter(arg.$sort).getComparator();
 
 			toPush.forEach((element) => {
-				if (LocalCollection_f._type(element) !== 3) {
+				if (TypeChecker._type(element) !== 3) {
 					throw MinimongoError('$push like modifiers using $sort require all elements to be ' + 'objects', { field });
 				}
 			});
@@ -3358,7 +3528,7 @@ const MODIFIERS = {
 			throw MinimongoError('Cannot apply $addToSet modifier to non-array', { field });
 		} else {
 			values.forEach((value) => {
-				if (toAdd.some((element) => LocalCollection_f._equal(value, element))) {
+				if (toAdd.some((element) => TypeChecker._equal(value, element))) {
 					return;
 				}
 
@@ -3411,7 +3581,7 @@ const MODIFIERS = {
 
 			out = toPull.filter((element) => !matcher.documentMatches(element).result);
 		} else {
-			out = toPull.filter((element) => !LocalCollection_f._equal(element, arg));
+			out = toPull.filter((element) => !TypeChecker._equal(element, arg));
 		}
 
 		target[field] = out;
@@ -3436,7 +3606,7 @@ const MODIFIERS = {
 			throw MinimongoError('Cannot apply $pull/pullAll modifier to non-array', { field });
 		}
 
-		target[field] = toPull.filter((object) => !arg.some((element) => LocalCollection_f._equal(object, element)));
+		target[field] = toPull.filter((object) => !arg.some((element) => TypeChecker._equal(object, element)));
 	},
 
 	$bit(target, field, arg) {
@@ -3460,7 +3630,7 @@ const invalidCharMsg = {
 };
 
 function findModTarget(doc, keyparts) {
-	let options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	const options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 	let usedArrayIndex = false;
 
 	for (let i = 0; i < keyparts.length; i++) {
@@ -3603,9 +3773,10 @@ function getOperandBitmask(operand, selector) {
 	}
 
 	throw new MiniMongoQueryError(
-		'operand to '.concat(selector, ' must be a numeric bitmask (representable as a ') +
-			'non-negative 32-bit signed integer), a bindata bitmask or an array with ' +
-			'bit positions (non-negative integers)',
+		`${'operand to '.concat(
+			selector,
+			' must be a numeric bitmask (representable as a ',
+		)}non-negative 32-bit signed integer), a bindata bitmask or an array with ` + `bit positions (non-negative integers)`,
 	);
 }
 
@@ -3666,7 +3837,7 @@ function isNumericKey(s) {
 	return /^[0-9]+$/.test(s);
 }
 
-function isOperatorObject(valueSelector, inconsistentOK) {
+function isOperatorObject(valueSelector, inconsistentOK?: boolean) {
 	if (!_isPlainObject(valueSelector)) {
 		return false;
 	}
@@ -3691,7 +3862,7 @@ function isOperatorObject(valueSelector, inconsistentOK) {
 }
 
 function makeLookupFunction(key) {
-	let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	const options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	const parts = key.split('.');
 	const firstPart = parts.length ? parts[0] : '';
 	const lookupRest = parts.length > 1 && makeLookupFunction(parts.slice(1).join('.'), options);
@@ -3780,63 +3951,61 @@ function pointToArray(point) {
 	return Array.isArray(point) ? point.slice() : [point.x, point.y];
 }
 
-function populateDocumentWithKeyValue(document, key, value) {
-	if (value && Object.getPrototypeOf(value) === Object.prototype) {
-		populateDocumentWithObject(document, key, value);
-	} else if (!(value instanceof RegExp)) {
-		insertIntoDocument(document, key, value);
-	}
-}
+// function populateDocumentWithKeyValue(document, key, value) {
+// 	if (value && Object.getPrototypeOf(value) === Object.prototype) {
+// 		populateDocumentWithObject(document, key, value);
+// 	} else if (!(value instanceof RegExp)) {
+// 		insertIntoDocument(document, key, value);
+// 	}
+// }
 
-function populateDocumentWithObject(document, key, value) {
-	const keys = Object.keys(value);
-	const unprefixedKeys = keys.filter((op) => op[0] !== '$');
+// function populateDocumentWithObject(document, key, value) {
+// 	const keys = Object.keys(value);
+// 	const unprefixedKeys = keys.filter((op) => op[0] !== '$');
 
-	if (unprefixedKeys.length > 0 || !keys.length) {
-		if (keys.length !== unprefixedKeys.length) {
-			throw new MiniMongoQueryError('unknown operator: '.concat(unprefixedKeys[0]));
-		}
+// 	if (unprefixedKeys.length > 0 || !keys.length) {
+// 		if (keys.length !== unprefixedKeys.length) {
+// 			throw new MiniMongoQueryError('unknown operator: '.concat(unprefixedKeys[0]));
+// 		}
 
-		validateObject(value, key);
-		insertIntoDocument(document, key, value);
-	} else {
-		Object.keys(value).forEach((op) => {
-			const object = value[op];
+// 		validateObject(value, key);
+// 		insertIntoDocument(document, key, value);
+// 	} else {
+// 		Object.keys(value).forEach((op) => {
+// 			const object = value[op];
 
-			if (op === '$eq') {
-				populateDocumentWithKeyValue(document, key, object);
-			} else if (op === '$all') {
-				object.forEach((element) => populateDocumentWithKeyValue(document, key, element));
-			}
-		});
-	}
-}
+// 			if (op === '$eq') {
+// 				populateDocumentWithKeyValue(document, key, object);
+// 			} else if (op === '$all') {
+// 				object.forEach((element) => populateDocumentWithKeyValue(document, key, element));
+// 			}
+// 		});
+// 	}
+// }
 
-function populateDocumentWithQueryFields(query) {
-	let document = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+// function populateDocumentWithQueryFields(query) {
+// 	const document = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-	if (Object.getPrototypeOf(query) === Object.prototype) {
-		Object.keys(query).forEach((key) => {
-			const value = query[key];
+// 	if (Object.getPrototypeOf(query) === Object.prototype) {
+// 		Object.keys(query).forEach((key) => {
+// 			const value = query[key];
 
-			if (key === '$and') {
-				value.forEach((element) => populateDocumentWithQueryFields(element, document));
-			} else if (key === '$or') {
-				if (value.length === 1) {
-					populateDocumentWithQueryFields(value[0], document);
-				}
-			} else if (key[0] !== '$') {
-				populateDocumentWithKeyValue(document, key, value);
-			}
-		});
-	} else {
-		if (_selectorIsId(query)) {
-			insertIntoDocument(document, '_id', query);
-		}
-	}
+// 			if (key === '$and') {
+// 				value.forEach((element) => populateDocumentWithQueryFields(element, document));
+// 			} else if (key === '$or') {
+// 				if (value.length === 1) {
+// 					populateDocumentWithQueryFields(value[0], document);
+// 				}
+// 			} else if (key[0] !== '$') {
+// 				populateDocumentWithKeyValue(document, key, value);
+// 			}
+// 		});
+// 	} else if (_selectorIsId(query)) {
+// 		insertIntoDocument(document, '_id', query);
+// 	}
 
-	return document;
-}
+// 	return document;
+// }
 
 function regexpElementMatcher(regexp) {
 	return (value) => {
@@ -3864,11 +4033,12 @@ function validateKeyInPath(key, path) {
 	}
 }
 
-function validateObject(object, path) {
-	if (object && Object.getPrototypeOf(object) === Object.prototype) {
-		Object.keys(object).forEach((key) => {
+function validateObject(object: unknown, path: string): void {
+	throw new Error('The object at path "'.concat(path, '" is not valid for storage.'));
+	if (isObject(object)) {
+		keys(object).forEach((key) => {
 			validateKeyInPath(key, path);
-			validateObject(object[key], path + '.' + key);
+			validateObject(object[key], `${path}.${key}`);
 		});
 	}
 }

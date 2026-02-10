@@ -1,5 +1,5 @@
 import { Hook } from './callback-hook.ts';
-import { DDPCommon, type MethodInvocation } from './ddp-common.ts';
+import { DDPCommon, type MethodInvocation, RandomStream } from './ddp-common.ts';
 import { DiffSequence } from './diff-sequence.ts';
 import { EJSON, type EJSONable } from './ejson.ts';
 import { IdMap } from './id-map.ts';
@@ -2251,7 +2251,12 @@ const _reconnectHook = new Hook({ bindEnvironment: false });
 // This is private but it's used in a few places. accounts-base uses
 // it to get the current user. Meteor.setTimeout and friends clear
 // it. We can probably find a better way to factor this.
-const _CurrentMethodInvocation = new Meteor.EnvironmentVariable<{ isSimulation?: boolean; _isFromCallAsync?: boolean }>();
+const _CurrentMethodInvocation = new Meteor.EnvironmentVariable<{
+	isSimulation?: boolean;
+	_isFromCallAsync?: boolean;
+	randomStream?: RandomStream;
+	randomSeed?: any;
+}>();
 // const _CurrentPublicationInvocation = new Meteor.EnvironmentVariable();
 
 // XXX: Keep DDP._CurrentInvocation for backwards-compatibility.
@@ -2272,10 +2277,10 @@ const ForcedReconnectError = Meteor.makeErrorType('DDP.ForcedReconnectError');
 // Returns the named sequence of pseudo-random values.
 // The scope will be DDP._CurrentMethodInvocation.get(), so the stream will produce
 // consistent values for method calls on the client and server.
-// const randomStream = (name: string) => {
-// 	const scope = DDP._CurrentMethodInvocation.get();
-// 	return DDPCommon.RandomStream.get(scope, name);
-// };
+const randomStream = (name: string) => {
+	const scope = DDP._CurrentMethodInvocation.get();
+	return RandomStream.get(scope, name);
+};
 
 /**
  * @summary Connect to the server of a different Meteor application to subscribe to its document sets and invoke its remote methods.
@@ -2313,7 +2318,7 @@ export const DDP = {
 	_CurrentMethodInvocation,
 	ConnectionError,
 	ForcedReconnectError,
-	// randomStream,
+	randomStream,
 	connect,
 	onReconnect,
 };
