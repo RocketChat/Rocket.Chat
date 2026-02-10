@@ -10,6 +10,143 @@ import { MongoID } from './mongo-id.ts';
 import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 
+const LocalCollectionDriver = new (class LocalCollectionDriver {
+	noConnCollections: Record<string, LocalCollection> = Object.create(null);
+
+	open(name?: string, conn?: { _mongo_livedata_collections: Record<string, LocalCollection> }): LocalCollection {
+		if (!name) {
+			return new LocalCollection();
+		}
+
+		if (!conn) {
+			return ensureCollection(name, this.noConnCollections);
+		}
+
+		if (!conn._mongo_livedata_collections) {
+			conn._mongo_livedata_collections = Object.create(null);
+		}
+
+		return ensureCollection(name, conn._mongo_livedata_collections);
+	}
+})();
+
+function ensureCollection(name: string, collections: Record<string, LocalCollection>): LocalCollection {
+	if (name in collections) {
+		return collections[name];
+	}
+
+	collections[name] = new LocalCollection(name);
+
+	return collections[name];
+}
+
+// -----------------------------------------------------------------------------
+// mongo/collection/collection_utils.js
+// -----------------------------------------------------------------------------
+export const ID_GENERATORS = {
+	MONGO(name) {
+		return function () {
+			const src = name ? DDP.randomStream('/collection/' + name) : Random.insecure;
+			return new Mongo.ObjectID(src.hexString(24));
+		};
+	},
+	STRING(name) {
+		return function () {
+			const src = name ? DDP.randomStream('/collection/' + name) : Random.insecure;
+			return src.id();
+		};
+	},
+};
+
+export function setupConnection(name, options) {
+	if (!name || options.connection === null) return null;
+	if (options.connection) return options.connection;
+	return Meteor.isClient ? Meteor.connection : Meteor.server;
+}
+
+export function setupDriver(name, connection, options) {
+	if (options._driver) return options._driver;
+	return LocalCollectionDriver;
+}
+
+export function setupAutopublish(collection, name, options) {
+	if (Package.autopublish && !options._preventAutopublish && collection._connection && collection._connection.publish) {
+		collection._connection.publish(null, () => collection.find(), {
+			is_auto: true,
+		});
+	}
+}
+
+export function setupMutationMethods(collection, name, options) {
+	if (options.defineMutationMethods === false) return;
+
+	try {
+		collection._defineMutationMethods({
+			useExisting: options._suppressSameNameError === true,
+		});
+	} catch (error) {
+		if (error.message === `A method named '/${name}/insertAsync' is already defined`) {
+			throw new Error(`There is already a collection named "${name}"`);
+		}
+		throw error;
+	}
+}
+
+export function validateCollectionName(name) {
+	if (!name && name !== null) {
+		Meteor._debug(
+			'Warning: creating anonymous collection. It will not be ' +
+				'saved or synchronized over the network. (Pass null for ' +
+				'the collection name to turn off this warning.)',
+		);
+		name = null;
+	}
+
+	if (name !== null && typeof name !== 'string') {
+		throw new Error('First argument to new Mongo.Collection must be a string or null');
+	}
+
+	return name;
+}
+
+export function normalizeOptions(options) {
+	if (options && options.methods) {
+		// Backwards compatibility hack with original signature
+		options = { connection: options };
+	}
+	// Backwards compatibility: "connection" used to be called "manager".
+	if (options && options.manager && !options.connection) {
+		options.connection = options.manager;
+	}
+
+	const cleanedOptions = Object.fromEntries(Object.entries(options || {}).filter(([_, v]) => v !== undefined));
+
+	// 2) Spread defaults first, then only the defined overrides
+	return {
+		connection: undefined,
+		idGeneration: 'STRING',
+		transform: null,
+		_driver: undefined,
+		_preventAutopublish: false,
+		...cleanedOptions,
+	};
+}
+
+// -----------------------------------------------------------------------------
+// mongo/mongo_utils.js
+// -----------------------------------------------------------------------------
+export const normalizeProjection = (options) => {
+	// transform fields key in projection
+	const { fields, projection, ...otherOptions } = options || {};
+	// TODO: enable this comment when deprecating the fields option
+	// Log.debug(`fields option has been deprecated, please use the new 'projection' instead`)
+
+	return {
+		...otherOptions,
+		...(projection || fields ? { projection: fields || projection } : {}),
+	};
+};
+
 Package['core-runtime'].queue('mongo', () => {
 	let Mongo;
 
@@ -18,37 +155,7 @@ Package['core-runtime'].queue('mongo', () => {
 			node_modules: {
 				meteor: {
 					mongo: {
-						'local_collection_driver.js'(require, exports, module) {
-							module.export({ LocalCollectionDriver: () => LocalCollectionDriver });
-
-							const LocalCollectionDriver = new (class LocalCollectionDriver {
-								constructor() {
-									this.noConnCollections = Object.create(null);
-								}
-
-								open(name, conn) {
-									if (!name) {
-										return new LocalCollection();
-									}
-
-									if (!conn) {
-										return ensureCollection(name, this.noConnCollections);
-									}
-
-									if (!conn._mongo_livedata_collections) {
-										conn._mongo_livedata_collections = Object.create(null);
-									}
-
-									return ensureCollection(name, conn._mongo_livedata_collections);
-								}
-							})();
-
-							function ensureCollection(name, collections) {
-								return name in collections ? collections[name] : (collections[name] = new LocalCollection(name));
-							}
-						},
-
-						'collection': {
+						collection: {
 							'collection.js'(require, exports, module) {
 								!function (module1) {
 									let _objectSpread;
@@ -58,18 +165,6 @@ Package['core-runtime'].queue('mongo', () => {
 										{
 											default(v) {
 												_objectSpread = v;
-											},
-										},
-										0,
-									);
-
-									let normalizeProjection;
-
-									module1.link(
-										'../mongo_utils',
-										{
-											normalizeProjection(v) {
-												normalizeProjection = v;
 											},
 										},
 										0,
@@ -109,48 +204,6 @@ Package['core-runtime'].queue('mongo', () => {
 											},
 										},
 										3,
-									);
-
-									let ID_GENERATORS;
-									let normalizeOptions;
-									let setupAutopublish;
-									let setupConnection;
-									let setupDriver;
-									let setupMutationMethods;
-									let validateCollectionName;
-
-									module1.link(
-										'./collection_utils',
-										{
-											ID_GENERATORS(v) {
-												ID_GENERATORS = v;
-											},
-
-											normalizeOptions(v) {
-												normalizeOptions = v;
-											},
-
-											setupAutopublish(v) {
-												setupAutopublish = v;
-											},
-
-											setupConnection(v) {
-												setupConnection = v;
-											},
-
-											setupDriver(v) {
-												setupDriver = v;
-											},
-
-											setupMutationMethods(v) {
-												setupMutationMethods = v;
-											},
-
-											validateCollectionName(v) {
-												validateCollectionName = v;
-											},
-										},
-										4,
 									);
 
 									let ReplicationMethods;
@@ -327,138 +380,6 @@ Package['core-runtime'].queue('mongo', () => {
 									Meteor.Collection = Mongo.Collection;
 									Object.assign(Mongo.Collection.prototype, AllowDeny.CollectionPrototype);
 								}.call(this, module);
-							},
-
-							'collection_utils.js'(require, exports, module) {
-								let _objectSpread;
-
-								module.link(
-									'@babel/runtime/helpers/objectSpread2',
-									{
-										default(v) {
-											_objectSpread = v;
-										},
-									},
-									0,
-								);
-
-								module.export({
-									ID_GENERATORS: () => ID_GENERATORS,
-									setupConnection: () => setupConnection,
-									setupDriver: () => setupDriver,
-									setupAutopublish: () => setupAutopublish,
-									setupMutationMethods: () => setupMutationMethods,
-									validateCollectionName: () => validateCollectionName,
-									normalizeOptions: () => normalizeOptions,
-								});
-
-								const ID_GENERATORS = {
-									MONGO(name) {
-										return function () {
-											const src = name ? DDP.randomStream(`/collection/${name}`) : Random.insecure;
-
-											return new Mongo.ObjectID(src.hexString(24));
-										};
-									},
-
-									STRING(name) {
-										return function () {
-											const src = name ? DDP.randomStream(`/collection/${name}`) : Random.insecure;
-
-											return src.id();
-										};
-									},
-								};
-
-								function setupConnection(name, options) {
-									if (!name || options.connection === null) return null;
-									if (options.connection) return options.connection;
-
-									return true ? Meteor.connection : Meteor.server;
-								}
-
-								function setupDriver(name, connection, options) {
-									if (options._driver) return options._driver;
-
-									if (
-										name &&
-										connection === Meteor.server &&
-										typeof MongoInternals !== 'undefined' &&
-										MongoInternals.defaultRemoteCollectionDriver
-									) {
-										return MongoInternals.defaultRemoteCollectionDriver();
-									}
-
-									const { LocalCollectionDriver } = require('../local_collection_driver.js');
-
-									return LocalCollectionDriver;
-								}
-
-								function setupAutopublish(collection, name, options) {
-									if (Package.autopublish && !options._preventAutopublish && collection._connection && collection._connection.publish) {
-										collection._connection.publish(null, () => collection.find(), { is_auto: true });
-									}
-								}
-
-								function setupMutationMethods(collection, name, options) {
-									if (options.defineMutationMethods === false) return;
-
-									try {
-										collection._defineMutationMethods({ useExisting: options._suppressSameNameError === true });
-									} catch (error) {
-										if (error.message === "A method named '/".concat(name, "/insertAsync' is already defined")) {
-											throw new Error('There is already a collection named "'.concat(name, '"'));
-										}
-
-										throw error;
-									}
-								}
-
-								function validateCollectionName(name) {
-									if (!name && name !== null) {
-										Meteor._debug(
-											'Warning: creating anonymous collection. It will not be ' +
-												'saved or synchronized over the network. (Pass null for ' +
-												'the collection name to turn off this warning.)',
-										);
-										name = null;
-									}
-
-									if (name !== null && typeof name !== 'string') {
-										throw new Error('First argument to new Mongo.Collection must be a string or null');
-									}
-
-									return name;
-								}
-
-								function normalizeOptions(options) {
-									if (options && options.methods) {
-										options = { connection: options };
-									}
-
-									if (options && options.manager && !options.connection) {
-										options.connection = options.manager;
-									}
-
-									const cleanedOptions = Object.fromEntries(
-										Object.entries(options || {}).filter((_ref) => {
-											const [_, v] = _ref;
-
-											return v !== undefined;
-										}),
-									);
-
-									return _objectSpread(
-										{
-											connection: undefined,
-											idGeneration: 'STRING',
-											transform: null,
-											_driver: undefined,
-											_preventAutopublish: false,
-										},
-										cleanedOptions,
-									);
-								}
 							},
 
 							'methods_async.js'(require, exports, module) {
@@ -725,22 +646,20 @@ Package['core-runtime'].queue('mongo', () => {
 													const mongoId = MongoID.idParse(msg.id);
 													const doc = self._collection._docs.get(mongoId);
 
-													if (true) {
-														if (msg.msg === 'added' && doc) {
-															msg.msg = 'changed';
-														} else if (msg.msg === 'removed' && !doc) {
-															return;
-														} else if (msg.msg === 'changed' && !doc) {
-															msg.msg = 'added';
+													if (msg.msg === 'added' && doc) {
+														msg.msg = 'changed';
+													} else if (msg.msg === 'removed' && !doc) {
+														return;
+													} else if (msg.msg === 'changed' && !doc) {
+														msg.msg = 'added';
 
-															const _ref = msg.fields;
+														const _ref = msg.fields;
 
-															for (const field in _ref) {
-																const value = _ref[field];
+														for (const field in _ref) {
+															const value = _ref[field];
 
-																if (value === void 0) {
-																	delete msg.fields[field];
-																}
+															if (value === void 0) {
+																delete msg.fields[field];
 															}
 														}
 													}
@@ -896,13 +815,7 @@ Package['core-runtime'].queue('mongo', () => {
 											wrappedStoreCommon,
 										);
 
-										let registerStoreResult;
-
-										if (true) {
-											registerStoreResult = self._connection.registerStoreClient(name, wrappedStoreClient);
-										} else {
-											registerStoreResult = self._connection.registerStoreServer(name, wrappedStoreServer);
-										}
+										const registerStoreResult = self._connection.registerStoreClient(name, wrappedStoreClient);
 
 										const message = 'There is already a collection named "'.concat(name, '"');
 
@@ -1126,43 +1039,6 @@ Package['core-runtime'].queue('mongo', () => {
 								}
 							},
 						},
-
-						'mongo_utils.js'(require, exports, module) {
-							const _excluded = ['fields', 'projection'];
-							let _objectSpread;
-
-							module.link(
-								'@babel/runtime/helpers/objectSpread2',
-								{
-									default(v) {
-										_objectSpread = v;
-									},
-								},
-								0,
-							);
-
-							let _objectWithoutProperties;
-
-							module.link(
-								'@babel/runtime/helpers/objectWithoutProperties',
-								{
-									default(v) {
-										_objectWithoutProperties = v;
-									},
-								},
-								1,
-							);
-
-							module.export({ normalizeProjection: () => normalizeProjection });
-
-							const normalizeProjection = (options) => {
-								const _ref = options || {};
-								const { fields, projection } = _ref;
-								const otherOptions = _objectWithoutProperties(_ref, _excluded);
-
-								return _objectSpread(_objectSpread({}, otherOptions), projection || fields ? { projection: fields || projection } : {});
-							};
-						},
 					},
 				},
 			},
@@ -1175,7 +1051,7 @@ Package['core-runtime'].queue('mongo', () => {
 			return { Mongo };
 		},
 		require,
-		eagerModulePaths: ['/node_modules/meteor/mongo/local_collection_driver.js', '/node_modules/meteor/mongo/collection/collection.js'],
+		eagerModulePaths: ['/node_modules/meteor/mongo/collection/collection.js'],
 	};
 });
 export const { Mongo } = Package.mongo;
