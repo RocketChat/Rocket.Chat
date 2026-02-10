@@ -24,13 +24,11 @@ const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
 		router.navigate('/home');
 	};
 
-const handleGoBackClick = () => {
-  if (router.canGoBack?.()) {
-    router.back();
-  } else {
-    router.navigate('/home');
-  }
-};
+	
+    const handleGoBackClick = () => {
+       router.navigate(-1);
+    };
+
 
 
 
