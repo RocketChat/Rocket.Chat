@@ -109,27 +109,48 @@ const AccessibilityPage = () => {
 					</Box>
 					<Accordion>
 						<AccordionItem defaultExpanded={true} title={t('Theme')}>
-							{themes.map(({ id, title, description }, index) => {
-								return (
-									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} pbs={index === 0 ? undefined : 'x28'}>
-										<FieldRow>
-											<FieldLabel display='flex' alignItems='center' htmlFor={id}>
-												{t(title)}
-											</FieldLabel>
-											<Controller
-												control={control}
-												name='themeAppearence'
-												render={({ field: { onChange, value, ref } }) => (
-													<RadioButton id={id} ref={ref} onChange={() => onChange(id)} checked={value === id} />
-												)}
-											/>
-										</FieldRow>
-										<FieldHint mbs={12} style={{ whiteSpace: 'break-spaces' }}>
-											{t(description)}
-										</FieldHint>
-									</Field>
-								);
-							})}
+							<Controller
+								control={control}
+								name='themeAppearence'
+								render={({ field: { onChange, value, ref } }) => (
+									<>
+										{themes.map(({ id, title, description }, index) => (
+											<Field
+												key={id}
+												className={css`
+													cursor: pointer;
+												`}
+												onClick={() => onChange(id)}
+												pbe={index === themes.length - 1 ? undefined : 'x28'}
+												pbs={index === 0 ? undefined : 'x28'}
+											>
+												<FieldRow>
+													<FieldLabel display='flex' alignItems='center' htmlFor={id}>
+														{t(title)}
+													</FieldLabel>
+
+													<RadioButton
+														id={id}
+														ref={ref}
+														onChange={() => onChange(id)}
+														checked={value === id}
+														onClick={(e) => e.stopPropagation()}
+													/>
+												</FieldRow>
+
+												<FieldHint
+													mbs={12}
+													className={css`
+														white-space: break-spaces;
+													`}
+												>
+													{t(description)}
+												</FieldHint>
+											</Field>
+										))}
+									</>
+								)}
+							/>
 						</AccordionItem>
 						<AccordionItem title={t('Adjustable_layout')}>
 							<FieldGroup>
