@@ -51,7 +51,7 @@ export class Computation {
 
 	_func: (computation: Computation) => void;
 
-	_onError?: (error: Error) => void;
+	_onError?: ((error: Error) => void) | undefined;
 
 	_recomputing: boolean;
 
@@ -242,19 +242,17 @@ export class Dependency {
 	}
 }
 
-export function flush(options?: { _throwFirstError?: boolean }) {
+export function flush(options: { _throwFirstError?: boolean } = {}) {
 	_runFlush({
 		finishSynchronously: true,
-		throwFirstError: options?._throwFirstError,
+		throwFirstError: options._throwFirstError,
 	});
 }
 
-export function _runFlush(options: { finishSynchronously?: boolean; throwFirstError?: boolean }) {
+export function _runFlush(options: { finishSynchronously?: boolean | undefined; throwFirstError?: boolean | undefined } = {}) {
 	if (inFlush()) throw new Error("Can't call Tracker.flush while flushing");
 
 	if (inCompute) throw new Error("Can't flush inside Tracker.autorun");
-
-	options = options || {};
 
 	isFlushing = true;
 	willFlush = true;

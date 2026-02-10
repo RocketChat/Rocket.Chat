@@ -1,6 +1,5 @@
-import { Accounts } from 'meteor/accounts-base';
-import { Mongo } from 'meteor/mongo';
-
+import { Accounts } from './accounts-base.ts';
+import { Mongo } from './mongo.ts';
 import { Package } from './package-registry.ts';
 
 class ConfigError extends Error {

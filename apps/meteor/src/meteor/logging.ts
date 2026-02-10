@@ -1,15 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { EJSON } from 'meteor/ejson';
-import { Meteor } from 'meteor/meteor';
-
-import { Package } from './package-registry';
-
-const hasOwn = Object.prototype.hasOwnProperty;
+import { EJSON } from './ejson.ts';
+import { Meteor } from './meteor.ts';
+import { Package } from './package-registry.ts';
+import { hasOwn } from './utils/hasOwn.ts';
 
 const Formatter = {
 	prettify(line: string, _color?: string | undefined) {
 		return line;
-	}
+	},
 };
 
 interface ILogMessage {
@@ -208,7 +205,7 @@ Log._getCallerDetails = () => {
 			}
 		});
 
-		if (hasOwn.call(obj, 'message') && typeof obj.message !== 'string') {
+		if (hasOwn(obj, 'message') && typeof obj.message !== 'string') {
 			throw new Error("The 'message' field in log objects must be a string");
 		}
 
