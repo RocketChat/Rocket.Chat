@@ -20,7 +20,7 @@ on:
       transporter:
         type: string
       mongodb-version:
-        default: "['8.2']"
+        default: "['8.0']"
         required: false
         type: string
       release:
