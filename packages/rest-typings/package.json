@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/rest-typings",
-	"version": "8.1.0",
+	"version": "8.2.0-develop",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
