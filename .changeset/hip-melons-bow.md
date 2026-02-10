@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes Custom Sounds sidebar state and refresh behavior
+Fixes Custom Sounds Contextualbar state and refresh behavior
