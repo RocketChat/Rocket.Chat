@@ -76,9 +76,6 @@
 	"overrides": [
 		{
 			"files": ["*.ts", "*.tsx"],
-			"parserOptions": {
-				"project": null
-			},
 			"rules": {
 				"@typescript-eslint/naming-convention": [
 					"error",
@@ -100,8 +97,7 @@
 						"leadingUnderscore": "require"
 					}
 				],
-				"@typescript-eslint/no-misused-promises": "off",
-				"@typescript-eslint/no-floating-promises": "off"
+				"@typescript-eslint/no-misused-promises": "off"
 			}
 		}
 	]
