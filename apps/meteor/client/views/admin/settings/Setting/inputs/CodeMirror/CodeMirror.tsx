@@ -74,6 +74,7 @@ function CodeMirror({
 	const textAreaRef = useCallback(
 		async (node: HTMLTextAreaElement | null) => {
 			if (!node) return;
+			setEditorReady(false);
 
 			try {
 				const { default: CodeMirror } = await import('codemirror');
@@ -88,7 +89,13 @@ function CodeMirror({
 				]);
 
 				const latestTheme = themeRef.current;
-				await ensureThemeStyle(latestTheme);
+				let themeLoaded = false;
+				try {
+					await ensureThemeStyle(latestTheme);
+					themeLoaded = true;
+				} catch (error) {
+					console.error('Failed to load CodeMirror theme CSS during init:', error);
+				}
 
 				editorRef.current = CodeMirror.fromTextArea(node, {
 					lineNumbers,
@@ -102,7 +109,7 @@ function CodeMirror({
 					showTrailingSpace,
 					highlightSelectionMatches,
 					readOnly,
-					theme: latestTheme,
+					theme: themeLoaded ? latestTheme : undefined,
 				});
 				setEditorReady(true);
 
@@ -157,8 +164,12 @@ function CodeMirror({
 		}
 
 		const applyTheme = async (): Promise<void> => {
-			await ensureThemeStyle(codeMirrorTheme);
-			editorRef.current?.setOption('theme', codeMirrorTheme);
+			try {
+				await ensureThemeStyle(codeMirrorTheme);
+				editorRef.current?.setOption('theme', codeMirrorTheme);
+			} catch (error) {
+				console.error('Failed to load CodeMirror theme CSS:', error);
+			}
 		};
 
 		void applyTheme();
