@@ -190,7 +190,6 @@ export interface IUser extends IRocketChatRecord {
 	oauth?: {
 		authorizedClients: string[];
 	};
-	_updatedAt: Date;
 	e2e?: {
 		private_key: string;
 		public_key: string;
