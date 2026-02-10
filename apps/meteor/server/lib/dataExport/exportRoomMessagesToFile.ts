@@ -163,7 +163,7 @@ export const getMessageData = (
 	return messageObject;
 };
 
-export const exportMessageObject = (type: 'json' | 'html', messageObject: MessageData, messageFile?: FileProp): string => {
+export const exportMessageObject = (type: 'json' | 'html', messageObject: MessageData, messageFiles: FileProp[] = []): string => {
 	if (type === 'json') {
 		return JSON.stringify(messageObject);
 	}
@@ -180,14 +180,16 @@ export const exportMessageObject = (type: 'json' | 'html', messageObject: Messag
 	file.push(`<p><strong>${messageObject.username}</strong> (${timestamp}):<br/>`);
 	file.push(message);
 
-	if (messageFile?._id) {
-		const attachment = messageObject.attachments?.find((att) => att.type === 'file' && att.title_link?.includes(messageFile._id));
+	for (const messageFile of messageFiles) {
+		if (messageFile?._id) {
+			const attachment = messageObject.attachments?.find((att) => att.type === 'file' && att.title_link?.includes(messageFile._id));
 
-		const description = attachment?.title || i18n.t('Message_Attachments');
+			const description = attachment?.title || i18n.t('Message_Attachments');
 
-		const assetUrl = `./assets/${messageFile._id}-${messageFile.name}`;
-		const link = `<br/><a href="${assetUrl}">${description}</a>`;
-		file.push(link);
+			const assetUrl = `./assets/${messageFile._id}-${messageFile.name}`;
+			const link = `<br/><a href="${assetUrl}">${description}</a>`;
+			file.push(link);
+		}
 	}
 
 	file.push('</p>');
@@ -229,11 +231,12 @@ export const exportRoomMessages = async (
 	results.forEach((msg) => {
 		const messageObject = getMessageData(msg, hideUsers, userData, usersMap);
 
-		if (msg.file) {
-			result.uploads.push(msg.file);
-		}
+		// handle both new format (msg.files array) and old format (msg.file) for backward compatibility
+		// and filter out thumbnails (typeGroup === 'thumb') to only include actual files
+		const files = (msg.files || (msg.file ? [msg.file] : [])).filter((file) => file && file.typeGroup !== 'thumb');
 
-		result.messages.push(exportMessageObject(exportType, messageObject, msg.file));
+		result.uploads.push(...files);
+		result.messages.push(exportMessageObject(exportType, messageObject, files));
 	});
 
 	return result;

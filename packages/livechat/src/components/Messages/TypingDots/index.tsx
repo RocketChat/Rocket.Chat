@@ -10,7 +10,7 @@ type TypingDotsProps = {
 };
 
 export const TypingDots = ({ text, className, style = {} }: TypingDotsProps) => (
-	<div aria-label={text} className={createClassName(styles, 'typing-dots', {}, [className])} style={style}>
+	<div role='status' aria-label={text} className={createClassName(styles, 'typing-dots', {}, [className])} style={style}>
 		<span class={createClassName(styles, 'typing-dots__dot')} />
 		<span class={createClassName(styles, 'typing-dots__dot')} />
 		<span class={createClassName(styles, 'typing-dots__dot')} />
