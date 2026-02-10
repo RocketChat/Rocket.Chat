@@ -57,6 +57,7 @@ function CodeMirror({
 	const handleChange = useEffectEvent(onChange);
 
 	const editorRef = useRef<EditorFromTextArea | null>(null);
+	const themeRef = useRef(codeMirrorTheme);
 
 	const ensureThemeStyle = useCallback((theme: string) => {
 		if (theme === 'base16-dark') {
@@ -65,12 +66,17 @@ function CodeMirror({
 
 		return Promise.resolve();
 	}, []);
+
+	useEffect(() => {
+		themeRef.current = codeMirrorTheme;
+	}, [codeMirrorTheme]);
 	const textAreaRef = useCallback(
 		async (node: HTMLTextAreaElement | null) => {
 			if (!node) return;
 
 			try {
 				const { default: CodeMirror } = await import('codemirror');
+				const theme = themeRef.current;
 				await Promise.all([
 					import('../../../../../../../app/ui/client/lib/codeMirror/codeMirror'),
 					import('codemirror/addon/edit/matchbrackets'),
@@ -79,7 +85,7 @@ function CodeMirror({
 					import('codemirror/addon/edit/trailingspace'),
 					import('codemirror/addon/search/match-highlighter'),
 					import('codemirror/lib/codemirror.css'),
-					ensureThemeStyle(codeMirrorTheme),
+					ensureThemeStyle(theme),
 				]);
 
 				editorRef.current = CodeMirror.fromTextArea(node, {
@@ -94,7 +100,7 @@ function CodeMirror({
 					showTrailingSpace,
 					highlightSelectionMatches,
 					readOnly,
-					theme: codeMirrorTheme,
+					theme,
 				});
 
 				editorRef.current.on('change', (doc: Editor) => {
