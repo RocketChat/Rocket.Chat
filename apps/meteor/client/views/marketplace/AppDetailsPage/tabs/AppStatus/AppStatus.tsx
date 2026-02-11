@@ -13,7 +13,6 @@ import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
 import AddonRequiredModal from '../../../AppsList/AddonRequiredModal';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
-import { handleAPIError } from '../../../helpers/handleAPIError';
 import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
 import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
@@ -65,8 +64,6 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						setEndUserRequested(true);
 					}
 				}
-			} catch (error) {
-				handleAPIError(error);
 			} finally {
 				setLoading(false);
 			}
