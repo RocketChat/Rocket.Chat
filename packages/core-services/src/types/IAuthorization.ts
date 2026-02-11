@@ -2,7 +2,7 @@ import type { IRoom, IUser, IRole } from '@rocket.chat/core-typings';
 
 export type RoomAccessValidator = (
 	room?: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
-	user?: Pick<IUser, '_id'>,
+	user?: IUser | Pick<IUser, '_id'>,
 	extraData?: Record<string, any>,
 ) => Promise<boolean>;
 
