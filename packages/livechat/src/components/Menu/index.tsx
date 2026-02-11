@@ -1,4 +1,5 @@
 import type { ComponentChildren } from 'preact';
+import { forwardRef } from 'preact/compat';
 import type { HTMLAttributes, TargetedEvent } from 'preact/compat';
 import { useState, useRef, useLayoutEffect, useCallback } from 'preact/hooks';
 
@@ -10,14 +11,13 @@ import styles from './styles.scss';
 type MenuProps = {
 	hidden?: boolean;
 	placement?: string;
-	ref?: any; // FIXME: remove this
-} & Omit<HTMLAttributes<HTMLDivElement>, 'ref'>;
+} & HTMLAttributes<HTMLDivElement>;
 
-export const Menu = ({ children, hidden, placement = '', ...props }: MenuProps) => (
-	<div className={createClassName(styles, 'menu', { hidden, placement })} {...props}>
+const MenuBase = forwardRef<HTMLDivElement, MenuProps>(({ children, hidden, placement = '', ...props }, ref) => (
+	<div ref={ref} className={createClassName(styles, 'menu', { hidden, placement })} {...props}>
 		{children}
 	</div>
-);
+));
 
 type GroupProps = {
 	title?: string;
@@ -98,9 +98,9 @@ const PopoverMenuWrapper = ({ children, dismiss, triggerBounds, overlayBounds }:
 	}, [triggerBounds, overlayBounds]);
 
 	return (
-		<Menu ref={menuRef} style={{ position: 'absolute', ...position }} placement={placement} onClickCapture={handleClick}>
+		<MenuBase ref={menuRef} style={{ position: 'absolute', ...position }} placement={placement} onClickCapture={handleClick}>
 			{children}
-		</Menu>
+		</MenuBase>
 	);
 };
 
@@ -125,8 +125,10 @@ export const PopoverMenu = ({ children = null, trigger, overlayed }: PopoverMenu
 	</PopoverTrigger>
 );
 
-Menu.Group = Group;
-Menu.Item = Item;
-Menu.Popover = PopoverMenu;
+export const Menu = Object.assign(MenuBase, {
+	Group,
+	Item,
+	Popover: PopoverMenu,
+});
 
 export default Menu;
