@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fix managers table loading skeleton column mismatch.
+Fixes an issue where managers table loading skeleton column mismatch with headers
