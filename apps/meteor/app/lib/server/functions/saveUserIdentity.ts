@@ -3,7 +3,7 @@ import type { Updater } from '@rocket.chat/models';
 import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users, CallHistory } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
-import { _setRealName } from './setRealName';
+import { setRealName } from './setRealName';
 import { _setUsername } from './setUsername';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
@@ -65,7 +65,7 @@ export async function saveUserIdentity({
 	}
 
 	if (typeof rawName !== 'undefined' && nameChanged) {
-		if (!(await _setRealName(_id, name, user, updater, session))) {
+		if (!(await setRealName(_id, name, user, updater, session))) {
 			return false;
 		}
 	}

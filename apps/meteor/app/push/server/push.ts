@@ -1,8 +1,8 @@
 import type { IAppsTokens, RequiredField, Optional, IPushNotificationConfig } from '@rocket.chat/core-typings';
 import { AppsTokens } from '@rocket.chat/models';
+import { ajv } from '@rocket.chat/rest-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { pick, truncateString } from '@rocket.chat/tools';
-import Ajv from 'ajv';
 import { JWT } from 'google-auth-library';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -17,10 +17,6 @@ export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
 const PUSH_TITLE_LIMIT = 65;
 const PUSH_MESSAGE_BODY_LIMIT = 240;
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type FCMCredentials = {
 	type: string;
