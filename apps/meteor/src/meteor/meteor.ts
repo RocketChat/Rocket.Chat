@@ -76,6 +76,7 @@ export class MeteorError extends Error {
 
 	constructor(error: string | number, reason?: string | undefined, details?: string | undefined) {
 		super();
+		this.name = 'Meteor.Error';
 		this.error = error;
 		this.reason = reason;
 		this.details = details;
