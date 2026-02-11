@@ -69,7 +69,7 @@ export async function sendOfflineMessage(data: OfflineMessageData) {
 	if (department && department !== '') {
 		const dep = await LivechatDepartment.findOneByIdOrName(department, { projection: { email: 1 } });
 		if (dep) {
-			emailTo = dep.email || emailTo;
+			emailTo = dep.email?.trim() || emailTo;
 		}
 	}
 
