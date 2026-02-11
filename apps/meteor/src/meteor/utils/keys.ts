@@ -1,1 +1,1 @@
-export const keys = <T>(value: T): (keyof T)[] => Object.keys(Object(value)) as (keyof T)[];
+export const keys = <T>(value: T): Extract<keyof T, string>[] => Object.keys(Object(value)) as Extract<keyof T, string>[];
