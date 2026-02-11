@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.31.33
+
+### Patch Changes
+
+- ([#38509](https://github.com/RocketChat/Rocket.Chat/pull/38509)) Added support for parsing ISO-format timestamps in timestamp markdown
+
+## 0.31.33-rc.0
+
+### Patch Changes
+
+- ([#38509](https://github.com/RocketChat/Rocket.Chat/pull/38509)) Added support for parsing ISO-format timestamps in timestamp markdown
+
 ## 0.31.32
 
 ### Patch Changes
