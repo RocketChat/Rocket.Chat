@@ -1,5 +1,4 @@
 import { useEffectEvent, useDarkMode } from '@rocket.chat/fuselage-hooks';
-
 import type { Editor, EditorFromTextArea } from 'codemirror';
 import type { ReactElement } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -48,14 +47,16 @@ function CodeMirror({
 	const handleChange = useEffectEvent(onChange);
 	const isDark = useDarkMode();
 
-
 	const editorRef = useRef<EditorFromTextArea | null>(null);
+
+	// Capture initial theme once
+	const initialThemeRef = useRef(
+		isDark ? 'material-darker' : 'default',
+	);
 
 	const textAreaRef = useCallback(
 		async (node: HTMLTextAreaElement | null) => {
-			if (!node) {
-				return;
-			}
+			if (!node) return;
 
 			try {
 				const { default: CodeMirror } = await import('codemirror');
@@ -68,7 +69,7 @@ function CodeMirror({
 					import('codemirror/addon/edit/trailingspace'),
 					import('codemirror/addon/search/match-highlighter'),
 					import('codemirror/lib/codemirror.css'),
-					import('codemirror/theme/material-darker.css'),
+					import('codemirror/theme/material-darker.css'), // added
 				]);
 
 				editorRef.current = CodeMirror.fromTextArea(node, {
@@ -83,7 +84,7 @@ function CodeMirror({
 					showTrailingSpace,
 					highlightSelectionMatches,
 					readOnly,
-					theme: isDark ? 'material-darker' : 'default',
+					theme: initialThemeRef.current, // added
 				});
 
 				editorRef.current.on('change', (doc: Editor) => {
@@ -108,36 +109,42 @@ function CodeMirror({
 			handleChange,
 			readOnly,
 			showTrailingSpace,
-			isDark,
 		],
 	);
 
-	// Sync external value → editor
+	// Sync external value → state
 	useEffect(() => {
 		setValue(valueProp);
 	}, [valueProp]);
 
+	// Sync state → editor
 	useEffect(() => {
-		if (!editorRef.current) {
-			return;
-		}
+		if (!editorRef.current) return;
 
 		if (value !== editorRef.current.getValue()) {
 			editorRef.current.setValue(value ?? '');
 		}
 	}, [value]);
 
-	// React to dark mode changes
+	// Update theme dynamically (no re-init)
 	useEffect(() => {
-		if (!editorRef.current) {
-			return;
-		}
+		if (!editorRef.current) return;
 
 		editorRef.current.setOption(
 			'theme',
 			isDark ? 'material-darker' : 'default',
 		);
 	}, [isDark]);
+
+	
+	useEffect(() => {
+		return () => {
+			if (editorRef.current) {
+				editorRef.current.toTextArea();
+				editorRef.current = null;
+			}
+		};
+	}, []);
 
 	return (
 		<textarea
