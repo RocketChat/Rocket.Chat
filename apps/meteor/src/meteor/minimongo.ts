@@ -2136,7 +2136,7 @@ export const wrapTransform = (transform: ((doc: any) => any) | null) => {
 
 	return wrapped;
 };
-class Cursor {
+export class Cursor {
 	matcher: Matcher;
 	collection: LocalCollection;
 	sorter: Sorter | null;
