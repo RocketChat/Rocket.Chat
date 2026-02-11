@@ -7,7 +7,7 @@ import { createContext } from 'react';
  * Generic parameter allows type-safe handling of different event data types
  * Returns void since listeners are event handlers, not transformers
  */
-type ActionEventListener<T = unknown> = (data: T) => void;
+export type ActionEventListener<T = unknown> = (data: T) => void;
 
 /**
  * An action manager is responsible for handling interactions with the UiKit.
