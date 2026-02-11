@@ -122,9 +122,10 @@ export async function settings({ businessUnit = '', userId }: { businessUnit?: s
 			allowSwitchingDepartments: initSettings.Livechat_allow_switching_departments,
 			nameFieldRegistrationForm: initSettings.Livechat_name_field_registration_form,
 			emailFieldRegistrationForm: initSettings.Livechat_email_field_registration_form,
-			displayOfflineForm:
+			displayOfflineForm: !!(
 				initSettings.Livechat_display_offline_form &&
-				(initSettings.Livechat_offline_email || departments.some((d) => d.showOnOfflineForm && d.email)),
+				(initSettings.Livechat_offline_email || departments.some((d) => d.showOnOfflineForm && d.email))
+			),
 			videoCall: initSettings.Omnichannel_call_provider === 'default-provider',
 			fileUpload: initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled,
 			language: initSettings.Language,
