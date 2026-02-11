@@ -3,8 +3,13 @@ import { createContext } from 'react';
 const dummy = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg==';
 
 /**
- * Type for room avatar path getter function
- * Supports legacy overloads and the room object form used by providers.
+ * Type for room avatar path getter function.
+ *
+ * Includes legacy overloads for backward compatibility with older callers.
+ * Current providers (such as AvatarUrlProvider) use the object-parameter and
+ * room-object overloads; the simple `(roomId: string, etag?: string)` overload
+ * is kept for theoretical backward compatibility and may not be implemented
+ * by all providers.
  */
 export type GetRoomPathAvatar = {
 	(roomId: string, etag?: string): string;
