@@ -3,17 +3,19 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { createContext } from 'react';
 
 /**
- * Type for generic action manager event listener
+ * Generic listener type for action events
+ * Generic parameter allows type-safe handling of different event data types
+ * Returns void since listeners are event handlers, not transformers
  */
-type ActionEventListener = (data: unknown) => unknown;
+type ActionEventListener<T = unknown> = (data: T) => void;
 
 /**
  * An action manager is responsible for handling interactions with the UiKit.
  */
 export interface IActionManager {
-	on(viewId: string, listener: ActionEventListener): void;
+	on(viewId: string, listener: ActionEventListener<UiKit.ServerInteraction>): void;
 	on(eventName: 'busy', listener: ({ busy }: { busy: boolean }) => void): void;
-	off(viewId: string, listener: ActionEventListener): void;
+	off(viewId: string, listener: ActionEventListener<UiKit.ServerInteraction>): void;
 	off(eventName: 'busy', listener: ({ busy }: { busy: boolean }) => void): void;
 	notifyBusy(): void;
 	notifyIdle(): void;
