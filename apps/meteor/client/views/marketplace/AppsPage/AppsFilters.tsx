@@ -45,6 +45,7 @@ const AppsFilters = ({
 
 	const isPrivateAppsPage = context === 'private';
 	const breakpoints = useBreakpoints();
+	const currentBreakpoint = breakpoints[breakpoints.length - 1];
 
 	const appsSearchPlaceholders: { [key: string]: string } = {
 		explore: t('Search_Apps'),
@@ -54,7 +55,7 @@ const AppsFilters = ({
 		private: t('Search_Private_apps'),
 	};
 
-	const isDesktop = breakpoints.includes('lg');
+	const isDesktop = !['xs', 'sm', 'md'].includes(currentBreakpoint);
 	const fixFiltersSize = isDesktop ? { maxWidth: 'x200', minWidth: 'x200' } : null;
 	const filterLayoutProps = isDesktop ? { flexGrow: 1, ...fixFiltersSize } : { w: 'full', mbe: 8 };
 
