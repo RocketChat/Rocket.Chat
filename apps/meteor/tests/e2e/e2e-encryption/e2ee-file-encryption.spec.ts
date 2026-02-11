@@ -1,7 +1,6 @@
-import { faker } from '@faker-js/faker';
-
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { createTargetGroupAndReturnFullRoom } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -17,10 +16,11 @@ const originalSettings = preserveSettings(settingsList);
 
 const TEST_FILE_TXT = 'any_file.txt';
 
+test.use({ storageState: Users.userE2EE.state });
+
 test.describe('E2EE File Encryption', () => {
 	let poHomeChannel: HomeChannel;
-
-	test.use({ storageState: Users.userE2EE.state });
+	let encryptedRoomId: string;
 
 	test.beforeAll(async ({ api }) => {
 		await api.post('/settings/E2E_Enable', { value: true });
@@ -35,21 +35,29 @@ test.describe('E2EE File Encryption', () => {
 		await api.post('/settings/FileUpload_MediaTypeBlackList', { value: 'image/svg+xml' });
 	});
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ api, page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
+		const { group } = await createTargetGroupAndReturnFullRoom(api, {
+			extraData: {
+				broadcast: false,
+				encrypted: true,
+			},
+			members: [Users.userE2EE.data._id],
+		});
+
+		encryptedRoomId = group._id;
+
+		await page.goto(`/group/${group.name}`);
+		await page.locator('#main-content').waitFor();
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+	});
+
+	test.afterEach(async ({ api }) => {
+		expect((await api.post('/groups.delete', { roomId: encryptedRoomId })).status()).toBe(200);
 	});
 
 	test('should edit encrypted message with file', async ({ page }) => {
 		const updatedFileName = `edited_${TEST_FILE_TXT}`;
-
-		await test.step('create an encrypted channel', async () => {
-			const channelName = faker.string.uuid();
-			await poHomeChannel.navbar.createEncryptedChannel(channelName);
-
-			await expect(page).toHaveURL(`/group/${channelName}`);
-			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
-		});
 
 		await test.step('send a file in channel and edit it', async () => {
 			await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT);
@@ -74,19 +82,18 @@ test.describe('E2EE File Encryption', () => {
 			await expect(poHomeChannel.content.getFileDescription).toHaveText('edited any_description');
 			await expect(poHomeChannel.content.lastUserMessage.getByRole('link').getByText(updatedFileName)).toBeVisible();
 		});
+
+		await test.step('delete the file from files list', async () => {
+			await poHomeChannel.roomToolbar.openMoreOptions();
+			await poHomeChannel.roomToolbar.menuItemFiles.click();
+			await poHomeChannel.tabs.files.deleteFile('any_file1.txt');
+
+			await expect(poHomeChannel.tabs.files.getFileByName('any_file1.txt')).toHaveCount(0);
+			await expect(poHomeChannel.content.lastUserMessage).not.toBeVisible();
+		});
 	});
 
-	test('File encryption with whitelisted and blacklisted media types', async ({ page, api }) => {
-		await test.step('create an encrypted room', async () => {
-			const channelName = faker.string.uuid();
-
-			await poHomeChannel.navbar.createEncryptedChannel(channelName);
-
-			await expect(page).toHaveURL(`/group/${channelName}`);
-
-			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
-		});
-
+	test('File encryption with whitelisted and blacklisted media types', async ({ api }) => {
 		await test.step('send a text file in channel', async () => {
 			const updatedFileName = `edited_${TEST_FILE_TXT}`;
 			await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT);
@@ -136,17 +143,7 @@ test.describe('E2EE File Encryption', () => {
 			await api.post('/settings/FileUpload_MediaTypeBlackList', { value: 'image/svg+xml' });
 		});
 
-		test('Upload file without encryption in e2ee room', async ({ page }) => {
-			await test.step('create an encrypted channel', async () => {
-				const channelName = faker.string.uuid();
-
-				await poHomeChannel.navbar.createEncryptedChannel(channelName);
-
-				await expect(page).toHaveURL(`/group/${channelName}`);
-
-				await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
-			});
-
+		test('Upload file without encryption in e2ee room', async () => {
 			await test.step('send a test encrypted message to check e2ee is working', async () => {
 				await poHomeChannel.content.sendMessage('This is an encrypted message.');
 

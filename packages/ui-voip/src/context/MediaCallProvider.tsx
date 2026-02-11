@@ -70,7 +70,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 
 	useEffect(() => {
 		if (audioInput?.id && !session.hidden) {
-			changeDevice(audioInput.id);
+			void changeDevice(audioInput.id);
 		}
 	}, [audioInput?.id, changeDevice, session.hidden]);
 
@@ -116,12 +116,12 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 		}
 
 		if ('userId' in peerInfo) {
-			session.startCall(peerInfo.userId, 'user');
+			void session.startCall(peerInfo.userId, 'user');
 			return;
 		}
 
 		if ('number' in peerInfo) {
-			session.startCall(peerInfo.number, 'sip');
+			void session.startCall(peerInfo.number, 'sip');
 			return;
 		}
 
@@ -144,7 +144,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 			return;
 		}
 
-		session.acceptCall();
+		void session.acceptCall();
 	};
 
 	const onDeviceChange = (device: Device) => {

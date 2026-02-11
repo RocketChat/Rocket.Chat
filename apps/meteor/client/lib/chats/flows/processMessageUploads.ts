@@ -39,6 +39,7 @@ const getAttachmentForFile = async (fileToUpload: EncryptedUpload): Promise<File
 		hashes: {
 			sha256: fileToUpload.encryptedFile.hash,
 		},
+		fileId: fileToUpload.id,
 	};
 
 	const fileType = fileToUpload.file.type.match(/^(image|audio|video)\/.+/)?.[1] as 'image' | 'audio' | 'video' | undefined;

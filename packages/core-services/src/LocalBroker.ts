@@ -94,7 +94,7 @@ export class LocalBroker implements IBroker {
 			(dependency) => dependency !== serviceName,
 		);
 
-		instance.created();
+		void instance.created();
 
 		instance.getEvents().forEach((event) => event.listeners.forEach((listener) => this.events.on(event.eventName, listener)));
 
@@ -124,7 +124,7 @@ export class LocalBroker implements IBroker {
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		this.broadcastLocal(event, ...args);
+		void this.broadcastLocal(event, ...args);
 
 		this.events.emit('broadcast', event, args);
 	}
