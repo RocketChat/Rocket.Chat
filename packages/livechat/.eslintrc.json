@@ -96,7 +96,8 @@
 						"modifiers": ["unused"],
 						"leadingUnderscore": "require"
 					}
-				]
+				],
+				"@typescript-eslint/no-misused-promises": "off"
 			}
 		}
 	]
