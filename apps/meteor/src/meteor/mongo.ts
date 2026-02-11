@@ -205,7 +205,7 @@ class Collection {
 	_rewriteSelector(selector) {
 		const { fallbackId } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-		if (LocalCollection._selectorIsId(selector)) selector = { _id: selector };
+		if (_selectorIsId(selector)) selector = { _id: selector };
 
 		if (Array.isArray(selector)) {
 			throw new Error("Mongo selector can't be an array.");
@@ -250,9 +250,9 @@ class Collection {
 		return { transform: self._transform, ...newOptions };
 	}
 
-	//-----------------------------------------------------------------------------
-	// Replication
-	//-----------------------------------------------------------------------------
+	// -----------------------------------------------------------------------------
+	//Replication
+	// -----------------------------------------------------------------------------
 	async _maybeSetUpReplication(name) {
 		let _registerStoreResult;
 		let _registerStoreResult$;

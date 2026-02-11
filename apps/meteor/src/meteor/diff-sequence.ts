@@ -2,7 +2,7 @@ import { EJSON } from './ejson.ts';
 import { Meteor } from './meteor.ts';
 import { Package } from './package-registry.ts';
 import { hasOwn } from './utils/hasOwn.ts';
-import { isEmptyObject } from './utils/isObjEmpty.ts';
+import { isEmptyObject } from './utils/isEmptyObject.ts';
 import { keys } from './utils/keys.ts';
 
 const diffObjects = <TLeft extends Record<PropertyKey, any>, TRight extends Record<PropertyKey, any>>(
