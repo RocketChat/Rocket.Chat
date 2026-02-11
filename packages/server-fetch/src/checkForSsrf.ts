@@ -12,14 +12,38 @@ import {
 
 let ssrfAllowlist: string[] = [];
 
+let ssrfAllowlistGetter: (() => string | undefined) | undefined;
+
+export const parseSsrfAllowlist = (value: string | undefined): string[] => {
+	if (typeof value !== 'string' || !value.trim()) return [];
+	return value
+		.split(/[\n,]/)
+		.map((entry) => entry.trim())
+		.filter((entry) => entry.length > 0);
+};
+
 export const setSsrfAllowlist = (allowlist: string[]): void => {
 	ssrfAllowlist = allowlist.map(normalizeAllowlistEntry).filter((entry) => entry.length > 0);
+};
+
+export const setSsrfAllowlistGetter = (getter: (() => string | undefined) | undefined): void => {
+	ssrfAllowlistGetter = getter;
+};
+
+const getEffectiveAllowlist = (): string[] => {
+	if (ssrfAllowlistGetter) {
+		const raw = ssrfAllowlistGetter();
+		return parseSsrfAllowlist(raw)
+			.map(normalizeAllowlistEntry)
+			.filter((entry) => entry.length > 0);
+	}
+	return ssrfAllowlist;
 };
 
 const isInAllowlist = (hostOrIp: string, port: string | undefined): boolean => {
 	const normalized = normalizeHostForAllowlistMatch(hostOrIp);
 	const withPort = port ? `${normalized}:${port}` : normalized;
-	return ssrfAllowlist.some((entry) => entry === normalized || entry === withPort);
+	return getEffectiveAllowlist().some((entry) => entry === normalized || entry === withPort);
 };
 
 export const nslookup = (hostname: string): Promise<string> => {

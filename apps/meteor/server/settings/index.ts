@@ -1,3 +1,6 @@
+import { setSsrfAllowlistGetter } from '@rocket.chat/server-fetch';
+
+import { settings } from '../../app/settings/server';
 import { createAccountSettings } from './accounts';
 import { createAnalyticsSettings } from './analytics';
 import { createAssetsSettings } from './assets';
@@ -73,6 +76,9 @@ await Promise.all([
 	createUserDataSettings(),
 	createWebDavSettings(),
 ]);
+
+// SSRF allowlist is read and parsed in server-fetch when needed for each request
+setSsrfAllowlistGetter(() => settings.get<string>('SSRF_Allowlist'));
 
 // Run after all the other settings are created since it depends on some of them
 await Promise.all([

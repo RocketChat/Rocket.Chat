@@ -1,5 +1,15 @@
 import * as ssrfModule from '../src/checkForSsrf';
-import { isIpInCidrRange } from '../src/checkForSsrfHelpers';
+import {
+	allowlistedIpResolved,
+	isIpInCidrRange,
+	isIpInAnyRange,
+	isIpValid,
+	isValidDomain,
+	normalizeAllowlistEntry,
+	normalizeHostForAllowlistMatch,
+	parseIpv4WithPort,
+	unwrapBrackets,
+} from '../src/checkForSsrfHelpers';
 
 describe('checkForSsrf', () => {
 	let nslookupSpy: jest.SpyInstance;
@@ -7,6 +17,7 @@ describe('checkForSsrf', () => {
 	afterEach(() => {
 		nslookupSpy?.mockRestore();
 		ssrfModule.setSsrfAllowlist([]);
+		ssrfModule.setSsrfAllowlistGetter(undefined);
 	});
 
 	it('returns false if URL does not start with http:// or https://', async () => {
@@ -117,6 +128,203 @@ describe('checkForSsrf', () => {
 			expect(await ssrfModule.checkForSsrf('http://127.0.0.1')).toBe(true);
 			ssrfModule.setSsrfAllowlist([]);
 			expect(await ssrfModule.checkForSsrf('http://127.0.0.1')).toBe(false);
+		});
+
+		it('uses getter when set: allows private IP from getter value', async () => {
+			ssrfModule.setSsrfAllowlistGetter(() => '127.0.0.1');
+			expect(await ssrfModule.checkForSsrf('http://127.0.0.1')).toBe(true);
+		});
+
+		it('uses getter when set: parses newline- and comma-separated entries', async () => {
+			ssrfModule.setSsrfAllowlistGetter(() => '127.0.0.1\n192.168.1.1, 10.0.0.1');
+			expect(await ssrfModule.checkForSsrf('http://127.0.0.1')).toBe(true);
+			expect(await ssrfModule.checkForSsrf('http://192.168.1.1')).toBe(true);
+			expect(await ssrfModule.checkForSsrf('http://10.0.0.1')).toBe(true);
+		});
+
+		it('getter takes precedence over setSsrfAllowlist', async () => {
+			ssrfModule.setSsrfAllowlist(['127.0.0.1']);
+			ssrfModule.setSsrfAllowlistGetter(() => '');
+			expect(await ssrfModule.checkForSsrf('http://127.0.0.1')).toBe(false);
+		});
+	});
+});
+
+describe('parseSsrfAllowlist', () => {
+	it('returns empty array for undefined', () => {
+		expect(ssrfModule.parseSsrfAllowlist(undefined)).toEqual([]);
+	});
+
+	it('returns empty array for empty string', () => {
+		expect(ssrfModule.parseSsrfAllowlist('')).toEqual([]);
+	});
+
+	it('returns empty array for whitespace-only string', () => {
+		expect(ssrfModule.parseSsrfAllowlist('   \n\t  ')).toEqual([]);
+	});
+
+	it('splits by newlines', () => {
+		expect(ssrfModule.parseSsrfAllowlist('a\nb\nc')).toEqual(['a', 'b', 'c']);
+	});
+
+	it('splits by commas', () => {
+		expect(ssrfModule.parseSsrfAllowlist('a,b,c')).toEqual(['a', 'b', 'c']);
+	});
+
+	it('splits by mixed newlines and commas', () => {
+		expect(ssrfModule.parseSsrfAllowlist('a\nb,c\nd')).toEqual(['a', 'b', 'c', 'd']);
+	});
+
+	it('trims each entry', () => {
+		expect(ssrfModule.parseSsrfAllowlist('  a  ,  b  \n  c  ')).toEqual(['a', 'b', 'c']);
+	});
+
+	it('filters out empty entries', () => {
+		expect(ssrfModule.parseSsrfAllowlist('a,,b\n\nc')).toEqual(['a', 'b', 'c']);
+	});
+
+	it('returns single entry for non-empty string without separators', () => {
+		expect(ssrfModule.parseSsrfAllowlist('127.0.0.1')).toEqual(['127.0.0.1']);
+	});
+});
+
+describe('checkForSsrfWithIp', () => {
+	it('returns allowed: false and no resolvedIp when URL is blocked', async () => {
+		const result = await ssrfModule.checkForSsrfWithIp('http://127.0.0.1');
+		expect(result).toEqual({ allowed: false });
+	});
+
+	it('returns allowed: true with resolvedIp for public URL', async () => {
+		const result = await ssrfModule.checkForSsrfWithIp('http://216.58.214.174');
+		expect(result).toEqual({ allowed: true, resolvedIp: '216.58.214.174' });
+	});
+
+	it('returns allowed: true with resolvedIp for allowlisted private IP', async () => {
+		ssrfModule.setSsrfAllowlist(['127.0.0.1']);
+		const result = await ssrfModule.checkForSsrfWithIp('http://127.0.0.1');
+		expect(result).toEqual({ allowed: true, resolvedIp: '127.0.0.1' });
+	});
+});
+
+describe('checkForSsrfHelpers', () => {
+	describe('isValidDomain', () => {
+		it('returns true for valid domain', () => {
+			expect(isValidDomain('example.com')).toBe(true);
+			expect(isValidDomain('sub.example.com')).toBe(true);
+		});
+		it('returns false for invalid domain', () => {
+			expect(isValidDomain('')).toBe(false);
+			expect(isValidDomain('invalid_domain')).toBe(false);
+			expect(isValidDomain('a')).toBe(false);
+		});
+	});
+
+	describe('unwrapBrackets', () => {
+		it('removes brackets from IPv6 address', () => {
+			expect(unwrapBrackets('[::1]')).toBe('::1');
+		});
+		it('returns unchanged string when no brackets', () => {
+			expect(unwrapBrackets('::1')).toBe('::1');
+			expect(unwrapBrackets('example.com')).toBe('example.com');
+		});
+	});
+
+	describe('isIpValid', () => {
+		it('returns true for valid IPv4 and IPv6', () => {
+			expect(isIpValid('127.0.0.1')).toBe(true);
+			expect(isIpValid('::1')).toBe(true);
+			expect(isIpValid('[::1]')).toBe(true);
+		});
+		it('returns false for invalid IP', () => {
+			expect(isIpValid('')).toBe(false);
+			expect(isIpValid('256.1.1.1')).toBe(false);
+			expect(isIpValid('not-an-ip')).toBe(false);
+		});
+	});
+
+	describe('isIpInCidrRange', () => {
+		it('returns true when IPv4 is in CIDR range', () => {
+			expect(isIpInCidrRange('192.168.1.1', '192.168.0.0/16')).toBe(true);
+			expect(isIpInCidrRange('10.0.0.1', '10.0.0.0/8')).toBe(true);
+		});
+		it('returns false when IPv4 is not in CIDR range', () => {
+			expect(isIpInCidrRange('192.168.1.1', '10.0.0.0/8')).toBe(false);
+			expect(isIpInCidrRange('8.8.8.8', '127.0.0.0/8')).toBe(false);
+		});
+		it('returns true when IPv6 is in CIDR range', () => {
+			expect(isIpInCidrRange('::1', '::1/128')).toBe(true);
+			expect(isIpInCidrRange('fe80::1', 'fe80::/10')).toBe(true);
+		});
+	});
+
+	describe('isIpInAnyRange', () => {
+		it('returns true for blocked IPv4 ranges', () => {
+			expect(isIpInAnyRange('127.0.0.1')).toBe(true);
+			expect(isIpInAnyRange('10.0.0.1')).toBe(true);
+			expect(isIpInAnyRange('192.168.1.1')).toBe(true);
+		});
+		it('returns true for blocked IPv6 ranges', () => {
+			expect(isIpInAnyRange('::1')).toBe(true);
+			expect(isIpInAnyRange('fe80::1')).toBe(true);
+		});
+		it('returns false for public IPs', () => {
+			expect(isIpInAnyRange('216.58.214.174')).toBe(false);
+			expect(isIpInAnyRange('2a00:1450:4007:806::200e')).toBe(false);
+		});
+	});
+
+	describe('normalizeAllowlistEntry', () => {
+		it('lowercases domain', () => {
+			expect(normalizeAllowlistEntry('Example.COM')).toBe('example.com');
+		});
+		it('keeps IPv6 with brackets as-is', () => {
+			expect(normalizeAllowlistEntry('[::1]')).toBe('[::1]');
+		});
+		it('wraps IPv6 without brackets', () => {
+			expect(normalizeAllowlistEntry('::1')).toBe('[::1]');
+		});
+		it('returns empty string for empty input', () => {
+			expect(normalizeAllowlistEntry('')).toBe('');
+			expect(normalizeAllowlistEntry('   ')).toBe('');
+		});
+	});
+
+	describe('normalizeHostForAllowlistMatch', () => {
+		it('keeps bracketed IPv6 as-is', () => {
+			expect(normalizeHostForAllowlistMatch('[::1]')).toBe('[::1]');
+		});
+		it('wraps IPv6 without brackets', () => {
+			expect(normalizeHostForAllowlistMatch('::1')).toBe('[::1]');
+		});
+		it('lowercases hostname', () => {
+			expect(normalizeHostForAllowlistMatch('Example.COM')).toBe('example.com');
+		});
+	});
+
+	describe('parseIpv4WithPort', () => {
+		it('parses IPv4 with port', () => {
+			expect(parseIpv4WithPort('192.168.1.1:8080')).toEqual({ ip: '192.168.1.1', port: '8080' });
+		});
+		it('parses IPv4 without port', () => {
+			expect(parseIpv4WithPort('192.168.1.1')).toEqual({ ip: '192.168.1.1' });
+		});
+		it('returns null for invalid input', () => {
+			expect(parseIpv4WithPort('not-an-ip')).toBeNull();
+			expect(parseIpv4WithPort('')).toBeNull();
+			expect(parseIpv4WithPort('1.2.3')).toBeNull();
+		});
+	});
+
+	describe('allowlistedIpResolved', () => {
+		it('returns ipOrDomain when wasUrlParsed or no port', () => {
+			expect(allowlistedIpResolved('127.0.0.1', undefined, true)).toBe('127.0.0.1');
+			expect(allowlistedIpResolved('127.0.0.1', undefined, false)).toBe('127.0.0.1');
+		});
+		it('appends port for IPv4 when not URL parsed and port present', () => {
+			expect(allowlistedIpResolved('127.0.0.1', '8080', false)).toBe('127.0.0.1:8080');
+		});
+		it('formats IPv6 with port in brackets', () => {
+			expect(allowlistedIpResolved('::1', '443', false)).toBe('[::1]:443');
 		});
 	});
 });

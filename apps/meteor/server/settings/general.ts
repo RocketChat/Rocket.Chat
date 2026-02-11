@@ -1,14 +1,4 @@
-import { setSsrfAllowlist } from '@rocket.chat/server-fetch';
-
-import { settingsRegistry, settings } from '../../app/settings/server';
-
-const parseSsrfAllowlist = (value: string | undefined): string[] => {
-	if (typeof value !== 'string' || !value.trim()) return [];
-	return value
-		.split(/[\n,]/)
-		.map((entry) => entry.trim())
-		.filter((entry) => entry.length > 0);
-};
+import { settingsRegistry } from '../../app/settings/server';
 
 export const createGeneralSettings = async () => {
 	await settingsRegistry.addGroup('General', async function () {
@@ -400,10 +390,5 @@ export const createGeneralSettings = async () => {
 				i18nDescription: 'SSRF_Allowlist_Description',
 			});
 		});
-	});
-
-	setSsrfAllowlist(parseSsrfAllowlist(settings.get<string>('SSRF_Allowlist')));
-	settings.watch<string>('SSRF_Allowlist', (value) => {
-		setSsrfAllowlist(parseSsrfAllowlist(value));
 	});
 };
