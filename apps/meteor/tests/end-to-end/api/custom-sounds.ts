@@ -6,6 +6,7 @@ import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { imgURL } from '../../data/interactions';
 
 async function insertOrUpdateSound(fileName: string, fileId?: string): Promise<string> {
 	fileId = fileId ?? '';
@@ -182,6 +183,56 @@ describe('[CustomSounds]', () => {
 					expect(res.headers).not.to.have.property('expires');
 				})
 				.end(done);
+		});
+
+		it.only('should return not found if the requested file is an emoji in the same directory using FileSystem storage mode', async () => {
+      const customEmojiName = 'emoji-name';
+      await request
+				.post(api('emoji-custom.create'))
+				.set(credentials)
+				.attach('emoji', imgURL)
+				.field({
+					name: customEmojiName,
+					aliases: `${customEmojiName}-alias`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+      await request
+				.get(api('emoji-custom.all'))
+				.set(credentials)
+				.query({
+					name: customEmojiName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+        console.log(res.body)
+					expect(res.body).to.have.property('success', true);
+				})
+      await request
+				.post(api('emoji-custom.delete'))
+				.set(credentials)
+				.send({
+					emojiId: customEmojiName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+			// await request
+			// 	.get(`/custom-sounds/${fileId}`)
+			// 	.set(credentials)
+			// 	.expect(304)
+			// 	.expect((res) => {
+			// 		expect(res.headers).to.have.property('last-modified', uploadDate);
+			// 		expect(res.headers).not.to.have.property('content-type');
+			// 		expect(res.headers).not.to.have.property('cache-control');
+			// 		expect(res.headers).not.to.have.property('expires');
+			// 	})
 		});
 	});
 });
