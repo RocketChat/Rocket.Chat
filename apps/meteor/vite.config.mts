@@ -98,7 +98,7 @@ export default defineConfig(async () => {
 		server: {
 			cors: true,
 			origin: ROOT_URL.origin,
-			allowedHosts: true,
+			allowedHosts: [ROOT_URL.hostname, 's3.amazonaws.com'],
 			proxy: {
 				'/api': { target: ROOT_URL.origin, changeOrigin: true },
 				'/avatar': { target: ROOT_URL.origin, changeOrigin: true },
@@ -110,6 +110,16 @@ export default defineConfig(async () => {
 				'/packages': { target: ROOT_URL.origin, changeOrigin: true },
 				'/_oauth': { target: ROOT_URL.origin, changeOrigin: true, followRedirects: true },
 				'/custom-sounds': { target: ROOT_URL.origin, changeOrigin: true },
+				'/i18n': { target: ROOT_URL.origin, changeOrigin: true },
+				'/file-decrypt': { target: ROOT_URL.origin, changeOrigin: true },
+				'/robots.txt': { target: ROOT_URL.origin, changeOrigin: true },
+				'/livechat': { target: ROOT_URL.origin, changeOrigin: true },
+				'/health': { target: ROOT_URL.origin, changeOrigin: true },
+				'/livez': { target: ROOT_URL.origin, changeOrigin: true },
+				'/readyz': { target: ROOT_URL.origin, changeOrigin: true },
+				'/requestSeats': { target: ROOT_URL.origin, changeOrigin: true },
+				'/data-export': { target: ROOT_URL.origin, changeOrigin: true },
+
 				'/file-upload': {
 					target: ROOT_URL.origin,
 					changeOrigin: true,
