@@ -1,8 +1,10 @@
 import { EventEmitter } from 'events';
 
+import type { ISetting } from '@rocket.chat/core-typings';
+
 import type { IApiService } from './IApiService';
 import type { IBroker, IBrokerNode } from './IBroker';
-import type { EventSignatures } from '../events/Events';
+import type { ClientAction, EventSignatures } from '../events/Events';
 import { asyncLocalStorage } from '../lib/asyncLocalStorage';
 
 export interface IServiceContext {
@@ -37,6 +39,7 @@ export interface IServiceClass {
 
 	onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void;
 	emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void;
+	onSettingChanged(settingId: ISetting['_id'], cb: EventSignatures['watch.settings'], ignoreActions?: ClientAction[]): void;
 
 	isInternal(): boolean;
 
@@ -53,6 +56,8 @@ export abstract class ServiceClass implements IServiceClass {
 	protected internal = false;
 
 	protected api?: IApiService;
+
+	protected settingEvents: Map<string, { cb: EventSignatures['watch.settings']; ignoreActions?: ClientAction[] }> = new Map();
 
 	constructor() {
 		this.emit = this.emit.bind(this);
@@ -91,6 +96,34 @@ export abstract class ServiceClass implements IServiceClass {
 
 	public emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void {
 		this.events.emit(event, ...args);
+	}
+
+	private registerEventListener() {
+		if (this.settingEvents.size !== 0) {
+			return;
+		}
+
+		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
+			const { _id } = setting;
+
+			const settingHandler = this.settingEvents.get(_id);
+
+			if (!settingHandler || settingHandler.ignoreActions?.includes(clientAction)) {
+				return;
+			}
+
+			try {
+				settingHandler.cb({ clientAction, setting });
+			} catch {
+				// noop
+			}
+		});
+	}
+
+	public onSettingChanged(settingId: ISetting['_id'], cb: EventSignatures['watch.settings'], ignoreActions?: ClientAction[]): void {
+		this.registerEventListener();
+
+		this.settingEvents.set(settingId, { cb, ignoreActions });
 	}
 
 	async created(): Promise<void> {
