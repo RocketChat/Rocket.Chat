@@ -51,8 +51,6 @@ type PopoverMenuWrapperProps = {
 	overlayBounds: DOMRect;
 };
 
-
-
 const PopoverMenuWrapper = ({ children, dismiss, triggerBounds, overlayBounds }: PopoverMenuWrapperProps) => {
 	const [position, setPosition] = useState<{
 		left?: number;
@@ -97,7 +95,7 @@ const PopoverMenuWrapper = ({ children, dismiss, triggerBounds, overlayBounds }:
 
 		setPosition({ left, right, top, bottom });
 		setPlacement(placementValue);
-	}, [triggerBounds, overlayBounds],);
+	}, [triggerBounds, overlayBounds]);
 
 	return (
 		<Menu ref={menuRef} style={{ position: 'absolute', ...position }} placement={placement} onClickCapture={handleClick}>
