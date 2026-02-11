@@ -75,4 +75,8 @@ export class ReadReceiptsRaw extends BaseRaw<IReadReceipt> implements IReadRecei
 	setAsThreadById(messageId: string): Promise<Document | UpdateResult> {
 		return this.updateMany({ messageId }, { $set: { tmid: messageId } });
 	}
+
+	findOlderThan(date: Date): FindCursor<IReadReceipt> {
+		return this.find({ ts: { $lt: date } });
+	}
 }

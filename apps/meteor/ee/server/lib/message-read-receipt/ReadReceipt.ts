@@ -1,6 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IReadReceipt, IReadReceiptWithUser } from '@rocket.chat/core-typings';
-import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { LivechatVisitors, ReadReceipts, ReadReceiptsArchive, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../../app/lib/server/lib/notifyListener';
@@ -147,8 +147,17 @@ class ReadReceiptClass {
 		}
 	}
 
-	async getReceipts(message: Pick<IMessage, '_id'>): Promise<IReadReceiptWithUser[]> {
-		const receipts = await ReadReceipts.findByMessageId(message._id).toArray();
+	async getReceipts(message: Pick<IMessage, '_id' | 'receiptsArchived'>): Promise<IReadReceiptWithUser[]> {
+		// Query hot storage (always)
+		const hotReceipts = await ReadReceipts.findByMessageId(message._id).toArray();
+
+		// Query cold storage only if message has archived receipts
+		const coldReceipts = message.receiptsArchived 
+			? await ReadReceiptsArchive.findByMessageId(message._id).toArray()
+			: [];
+
+		// Combine receipts from both storages
+		const receipts = [...hotReceipts, ...coldReceipts];
 
 		return Promise.all(
 			receipts.map(async (receipt) => ({
