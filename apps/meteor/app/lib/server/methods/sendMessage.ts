@@ -30,7 +30,7 @@ import { RateLimiter } from '../lib';
  * @returns
  */
 export async function executeSendMessage(
-	uid: IUser['_id'],
+	uid: IUser['_id'] | IUser,
 	message: AtLeast<IMessage, 'rid'>,
 	extraInfo?: { ts?: Date; previewUrls?: string[] },
 ) {
@@ -71,7 +71,7 @@ export async function executeSendMessage(
 		}
 	}
 
-	const user = await Users.findOneById(uid);
+	const user = typeof uid === 'string' ? await Users.findOneById(uid) : uid;
 	if (!user?.username) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user');
 	}
@@ -95,7 +95,7 @@ export async function executeSendMessage(
 	check(rid, String);
 
 	try {
-		const room = await canSendMessageAsync(rid, { uid, username: user.username, type: user.type });
+		const room = await canSendMessageAsync(rid, user);
 
 		if (room.encrypted && settings.get<boolean>('E2E_Enable') && !settings.get<boolean>('E2E_Allow_Unencrypted_Messages')) {
 			if (message.t !== 'e2e') {
@@ -151,8 +151,8 @@ Meteor.methods<ServerMethods>({
 			sentByEmail: Match.Maybe(Boolean),
 		});
 
-		const uid = Meteor.userId();
-		if (!uid) {
+		const user = (await Meteor.userAsync()) as IUser;
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendMessage',
 			});
@@ -163,7 +163,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
-			return await applyAirGappedRestrictionsValidation(() => executeSendMessage(uid, message, { previewUrls }));
+			return await applyAirGappedRestrictionsValidation(() => executeSendMessage(user, message, { previewUrls }));
 		} catch (error: any) {
 			if (['error-not-allowed', 'restricted-workspace'].includes(error.error || error.message)) {
 				throw new Meteor.Error(error.error || error.message, error.reason, {
