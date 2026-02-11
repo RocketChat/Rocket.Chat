@@ -39,7 +39,11 @@ export interface IServiceClass {
 
 	onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void;
 	emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void;
-	onSettingChanged(settingId: ISetting['_id'], cb: EventSignatures['watch.settings'], ignoreActions?: ClientAction[]): void;
+	onSettingChanged(
+		settingId: ISetting['_id'],
+		cb: (data: { clientAction: ClientAction; setting: ISetting }) => Promise<void>,
+		ignoreActions?: ClientAction[],
+	): void;
 
 	isInternal(): boolean;
 
@@ -57,7 +61,10 @@ export abstract class ServiceClass implements IServiceClass {
 
 	protected api?: IApiService;
 
-	protected settingEvents: Map<string, { cb: EventSignatures['watch.settings']; ignoreActions?: ClientAction[] }> = new Map();
+	protected settingEvents: Map<
+		string,
+		{ cb: (data: { clientAction: ClientAction; setting: ISetting }) => Promise<void>; ignoreActions?: ClientAction[] }
+	> = new Map();
 
 	constructor() {
 		this.emit = this.emit.bind(this);
@@ -113,14 +120,18 @@ export abstract class ServiceClass implements IServiceClass {
 			}
 
 			try {
-				settingHandler.cb({ clientAction, setting });
+				await settingHandler.cb({ clientAction, setting });
 			} catch {
 				// noop
 			}
 		});
 	}
 
-	public onSettingChanged(settingId: ISetting['_id'], cb: EventSignatures['watch.settings'], ignoreActions?: ClientAction[]): void {
+	public onSettingChanged(
+		settingId: ISetting['_id'],
+		cb: (data: { clientAction: ClientAction; setting: ISetting }) => Promise<void>,
+		ignoreActions?: ClientAction[],
+	): void {
 		this.registerEventListener();
 
 		this.settingEvents.set(settingId, { cb, ignoreActions });
