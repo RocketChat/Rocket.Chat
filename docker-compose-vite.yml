@@ -1,11 +1,10 @@
-version: '3.8'
+version: "3.8"
 
 services:
   rocketchat:
-
     build:
-      dockerfile: ../.docker/Dockerfile.backend
-      context: apps/meteor/.build
+      dockerfile: ../apps/meteor/.docker/Dockerfile.backend
+      context: build
     image: rocketchat:experiment
     environment:
       - TEST_MODE=true
@@ -15,7 +14,7 @@ services:
       - MOLECULER_LOG_LEVEL=info
       - OVERWRITE_SETTING_Log_Level=2
     extra_hosts:
-      - 'host.docker.internal:host-gateway'
+      - "host.docker.internal:host-gateway"
     depends_on:
       - mongo
 

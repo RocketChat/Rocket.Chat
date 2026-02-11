@@ -1365,7 +1365,7 @@ class LocalCollection {
 				query.dirty = false;
 				this._recomputeResults(query, query.resultsSnapshot);
 			} else {
-				LocalCollection._diffQueryChanges(query.ordered, query.resultsSnapshot, query.results, query, {
+				DiffSequence.diffQueryChanges(query.ordered, query.resultsSnapshot, query.results, query, {
 					projectionFn: query.projectionFn,
 				});
 			}
@@ -1745,7 +1745,7 @@ class LocalCollection {
 		query.results = query.cursor._getRawObjects({ distances: query.distances, ordered: query.ordered });
 
 		if (!this.paused) {
-			LocalCollection._diffQueryChanges(query.ordered, oldResults, query.results, query, {
+			DiffSequence.diffQueryChanges(query.ordered, oldResults, query.results, query, {
 				projectionFn: query.projectionFn,
 			});
 		}
@@ -2082,9 +2082,9 @@ class Matcher {
 	}
 }
 
-function getAsyncMethodName(method: string): string {
-	return ''.concat(method.replace('_', ''), 'Async');
-}
+// function getAsyncMethodName(method: string): string {
+// 	return ''.concat(method.replace('_', ''), 'Async');
+// }
 
 // const ASYNC_COLLECTION_METHODS = [
 // 	'_createCappedCollection',
@@ -2101,40 +2101,7 @@ function getAsyncMethodName(method: string): string {
 // const ASYNC_CURSOR_METHODS = ['count', 'fetch', 'forEach', 'map'];
 // const CLIENT_ONLY_METHODS = ['findOne', 'insert', 'remove', 'update', 'upsert'];
 export const wrapTransform = (transform: ((doc: any) => any) | null) => {
-	if (!transform) {
-		return null;
-	}
-
-	if (transform.__wrappedTransform__) {
-		return transform;
-	}
-
-	const wrapped = (doc) => {
-		if (!hasOwn(doc, '_id')) {
-			throw new Error('can only transform documents with _id');
-		}
-
-		const id = doc._id;
-		const transformed = Tracker.nonreactive(() => transform(doc));
-
-		if (!_isPlainObject(transformed)) {
-			throw new Error('transform must return object');
-		}
-
-		if (hasOwn(transformed, '_id')) {
-			if (!EJSON.equals(transformed._id, id)) {
-				throw new Error("transformed document can't have different _id");
-			}
-		} else {
-			transformed._id = id;
-		}
-
-		return transformed;
-	};
-
-	wrapped.__wrappedTransform__ = true;
-
-	return wrapped;
+	return transform;
 };
 export class Cursor {
 	matcher: Matcher;
@@ -2447,8 +2414,7 @@ export class Cursor {
 		return this.collection.name;
 	}
 
-	_getRawObjects() {
-		const options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	_getRawObjects(options: { ordered?: boolean; distances?: MongoIdMap; applySkipLimit?: boolean } = {}) {
 		const applySkipLimit = options.applySkipLimit !== false;
 		const results = options.ordered ? [] : new MongoIdMap();
 
@@ -2743,16 +2709,16 @@ const _compileProjection = (fields) => {
 // 	return replacement;
 // };
 
-LocalCollection._diffObjects = (left, right, callbacks) => {
-	return DiffSequence.diffObjects(left, right, callbacks);
-};
+// LocalCollection._diffObjects = (left, right, callbacks) => {
+// 	return DiffSequence.diffObjects(left, right, callbacks);
+// };
 
-LocalCollection._diffQueryChanges = (ordered, oldResults, newResults, observer, options) =>
-	DiffSequence.diffQueryChanges(ordered, oldResults, newResults, observer, options);
-LocalCollection._diffQueryOrderedChanges = (oldResults, newResults, observer, options) =>
-	DiffSequence.diffQueryOrderedChanges(oldResults, newResults, observer, options);
-LocalCollection._diffQueryUnorderedChanges = (oldResults, newResults, observer, options) =>
-	DiffSequence.diffQueryUnorderedChanges(oldResults, newResults, observer, options);
+// LocalCollection._diffQueryChanges = (ordered, oldResults, newResults, observer, options) =>
+// 	DiffSequence.diffQueryChanges(ordered, oldResults, newResults, observer, options);
+// LocalCollection._diffQueryOrderedChanges = (oldResults, newResults, observer, options) =>
+// 	DiffSequence.diffQueryOrderedChanges(oldResults, newResults, observer, options);
+// LocalCollection._diffQueryUnorderedChanges = (oldResults, newResults, observer, options) =>
+// 	DiffSequence.diffQueryUnorderedChanges(oldResults, newResults, observer, options);
 
 const _findInOrderedResults = (query: Query, doc: Document): number => {
 	if (!query.ordered) {
@@ -2769,44 +2735,44 @@ const _findInOrderedResults = (query: Query, doc: Document): number => {
 	throw new Error('object missing from query');
 };
 
-LocalCollection._idsMatchedBySelector = (selector) => {
-	if (_selectorIsId(selector)) {
-		return [selector];
-	}
+// LocalCollection._idsMatchedBySelector = (selector) => {
+// 	if (_selectorIsId(selector)) {
+// 		return [selector];
+// 	}
 
-	if (!selector) {
-		return null;
-	}
+// 	if (!selector) {
+// 		return null;
+// 	}
 
-	if (hasOwn(selector, '_id')) {
-		if (_selectorIsId(selector._id)) {
-			return [selector._id];
-		}
+// 	if (hasOwn(selector, '_id')) {
+// 		if (_selectorIsId(selector._id)) {
+// 			return [selector._id];
+// 		}
 
-		if (
-			selector._id &&
-			Array.isArray(selector._id.$in) &&
-			selector._id.$in.length &&
-			selector._id.$in.every(LocalCollection._selectorIsId)
-		) {
-			return selector._id.$in;
-		}
+// 		if (
+// 			selector._id &&
+// 			Array.isArray(selector._id.$in) &&
+// 			selector._id.$in.length &&
+// 			selector._id.$in.every(LocalCollection._selectorIsId)
+// 		) {
+// 			return selector._id.$in;
+// 		}
 
-		return null;
-	}
+// 		return null;
+// 	}
 
-	if (Array.isArray(selector.$and)) {
-		for (let i = 0; i < selector.$and.length; ++i) {
-			const subIds = LocalCollection._idsMatchedBySelector(selector.$and[i]);
+// 	if (Array.isArray(selector.$and)) {
+// 		for (let i = 0; i < selector.$and.length; ++i) {
+// 			const subIds = LocalCollection._idsMatchedBySelector(selector.$and[i]);
 
-			if (subIds) {
-				return subIds;
-			}
-		}
-	}
+// 			if (subIds) {
+// 				return subIds;
+// 			}
+// 		}
+// 	}
 
-	return null;
-};
+// 	return null;
+// };
 
 const _insertInResultsSync = (query: Query, doc: Document): void => {
 	const fields = EJSON.clone(doc);
@@ -2837,7 +2803,7 @@ const _insertInResultsSync = (query: Query, doc: Document): void => {
 	}
 };
 
-LocalCollection._insertInResultsSync = _insertInResultsSync;
+// LocalCollection._insertInResultsSync = _insertInResultsSync;
 
 const _insertInResultsAsync = async (query: Query, doc: Document): Promise<void> => {
 	const fields = EJSON.clone(doc);
@@ -2868,7 +2834,7 @@ const _insertInResultsAsync = async (query: Query, doc: Document): Promise<void>
 	}
 };
 
-LocalCollection._insertInResultsAsync = _insertInResultsAsync;
+// LocalCollection._insertInResultsAsync = _insertInResultsAsync;
 
 const _insertInSortedList = <T>(cmp: Comparator<T>, array: T[], value: T): number => {
 	if (array.length === 0) {
@@ -2884,98 +2850,98 @@ const _insertInSortedList = <T>(cmp: Comparator<T>, array: T[], value: T): numbe
 	return i;
 };
 
-LocalCollection._insertInSortedList = _insertInSortedList;
+// LocalCollection._insertInSortedList = _insertInSortedList;
 
-const _isModificationMod = (mod) => {
-	let isModify = false;
-	let isReplace = false;
+// const _isModificationMod = (mod) => {
+// 	let isModify = false;
+// 	let isReplace = false;
 
-	Object.keys(mod).forEach((key) => {
-		if (key.substr(0, 1) === '$') {
-			isModify = true;
-		} else {
-			isReplace = true;
-		}
-	});
+// 	Object.keys(mod).forEach((key) => {
+// 		if (key.substr(0, 1) === '$') {
+// 			isModify = true;
+// 		} else {
+// 			isReplace = true;
+// 		}
+// 	});
 
-	if (isModify && isReplace) {
-		throw new Error('Update parameter cannot have both modifier and non-modifier fields.');
-	}
+// 	if (isModify && isReplace) {
+// 		throw new Error('Update parameter cannot have both modifier and non-modifier fields.');
+// 	}
 
-	return isModify;
-};
+// 	return isModify;
+// };
 
-LocalCollection._modify = function (doc, modifier) {
-	const options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+// LocalCollection._modify = function (doc, modifier) {
+// 	const options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-	if (!_isPlainObject(modifier)) {
-		throw MinimongoError('Modifier must be an object');
-	}
+// 	if (!_isPlainObject(modifier)) {
+// 		throw MinimongoError('Modifier must be an object');
+// 	}
 
-	modifier = EJSON.clone(modifier);
+// 	modifier = EJSON.clone(modifier);
 
-	const isModifier = isOperatorObject(modifier);
-	const newDoc = isModifier ? EJSON.clone(doc) : modifier;
+// 	const isModifier = isOperatorObject(modifier);
+// 	const newDoc = isModifier ? EJSON.clone(doc) : modifier;
 
-	if (isModifier) {
-		keys(modifier).forEach((operator) => {
-			const setOnInsert = options.isInsert && operator === '$setOnInsert';
-			const modFunc = MODIFIERS[setOnInsert ? '$set' : operator];
-			const operand = modifier[operator];
+// 	if (isModifier) {
+// 		keys(modifier).forEach((operator) => {
+// 			const setOnInsert = options.isInsert && operator === '$setOnInsert';
+// 			const modFunc = MODIFIERS[setOnInsert ? '$set' : operator];
+// 			const operand = modifier[operator];
 
-			if (!modFunc) {
-				throw MinimongoError('Invalid modifier specified '.concat(operator));
-			}
+// 			if (!modFunc) {
+// 				throw MinimongoError('Invalid modifier specified '.concat(operator));
+// 			}
 
-			Object.keys(operand).forEach((keypath) => {
-				const arg = operand[keypath];
+// 			Object.keys(operand).forEach((keypath) => {
+// 				const arg = operand[keypath];
 
-				if (keypath === '') {
-					throw MinimongoError('An empty update path is not valid.');
-				}
+// 				if (keypath === '') {
+// 					throw MinimongoError('An empty update path is not valid.');
+// 				}
 
-				const keyparts = keypath.split('.');
+// 				const keyparts = keypath.split('.');
 
-				if (!keyparts.every(Boolean)) {
-					throw MinimongoError(`${"The update path '".concat(keypath, "' contains an empty field name, ")}which is not allowed.`);
-				}
+// 				if (!keyparts.every(Boolean)) {
+// 					throw MinimongoError(`${"The update path '".concat(keypath, "' contains an empty field name, ")}which is not allowed.`);
+// 				}
 
-				const target = findModTarget(newDoc, keyparts, {
-					arrayIndices: options.arrayIndices,
-					forbidArray: operator === '$rename',
-					noCreate: NO_CREATE_MODIFIERS[operator],
-				});
+// 				const target = findModTarget(newDoc, keyparts, {
+// 					arrayIndices: options.arrayIndices,
+// 					forbidArray: operator === '$rename',
+// 					noCreate: NO_CREATE_MODIFIERS[operator],
+// 				});
 
-				modFunc(target, keyparts.pop(), arg, keypath, newDoc);
-			});
-		});
+// 				modFunc(target, keyparts.pop(), arg, keypath, newDoc);
+// 			});
+// 		});
 
-		if (doc._id && !EJSON.equals(doc._id, newDoc._id)) {
-			throw MinimongoError(
-				`${'After applying the update to the document {_id: "'.concat(
-					doc._id,
-					'", ...},',
-				)} the (immutable) field '_id' was found to have been altered to ${'_id: "'.concat(newDoc._id, '"')}`,
-			);
-		}
-	} else {
-		if (doc._id && modifier._id && !EJSON.equals(doc._id, modifier._id)) {
-			throw MinimongoError('The _id field cannot be changed from {_id: "'.concat(doc._id, '"} to ') + '{_id: "'.concat(modifier._id, '"}'));
-		}
+// 		if (doc._id && !EJSON.equals(doc._id, newDoc._id)) {
+// 			throw MinimongoError(
+// 				`${'After applying the update to the document {_id: "'.concat(
+// 					doc._id,
+// 					'", ...},',
+// 				)} the (immutable) field '_id' was found to have been altered to ${'_id: "'.concat(newDoc._id, '"')}`,
+// 			);
+// 		}
+// 	} else {
+// 		if (doc._id && modifier._id && !EJSON.equals(doc._id, modifier._id)) {
+// 			throw MinimongoError('The _id field cannot be changed from {_id: "'.concat(doc._id, '"} to ') + '{_id: "'.concat(modifier._id, '"}'));
+// 		}
 
-		assertHasValidFieldNames(modifier);
-	}
+// 		assertHasValidFieldNames(modifier);
+// 	}
 
-	Object.keys(doc).forEach((key) => {
-		if (key !== '_id') {
-			delete doc[key];
-		}
-	});
+// 	Object.keys(doc).forEach((key) => {
+// 		if (key !== '_id') {
+// 			delete doc[key];
+// 		}
+// 	});
 
-	Object.keys(newDoc).forEach((key) => {
-		doc[key] = newDoc[key];
-	});
-};
+// 	Object.keys(newDoc).forEach((key) => {
+// 		doc[key] = newDoc[key];
+// 	});
+// };
 
 LocalCollection._observeFromObserveChanges = (cursor, observeCallbacks) => {
 	const transform = cursor.getTransform() || ((doc) => doc);
@@ -4034,25 +4000,25 @@ function regexpElementMatcher(regexp) {
 	};
 }
 
-function validateKeyInPath(key, path) {
-	if (key.includes('.')) {
-		throw new Error("The dotted field '".concat(key, "' in '").concat(path, '.').concat(key, ' is not valid for storage.'));
-	}
+// function validateKeyInPath(key, path) {
+// 	if (key.includes('.')) {
+// 		throw new Error("The dotted field '".concat(key, "' in '").concat(path, '.').concat(key, ' is not valid for storage.'));
+// 	}
 
-	if (key[0] === '$') {
-		throw new Error("The dollar ($) prefixed field  '".concat(path, '.').concat(key, ' is not valid for storage.'));
-	}
-}
+// 	if (key[0] === '$') {
+// 		throw new Error("The dollar ($) prefixed field  '".concat(path, '.').concat(key, ' is not valid for storage.'));
+// 	}
+// }
 
-function validateObject(object: unknown, path: string): void {
-	throw new Error('The object at path "'.concat(path, '" is not valid for storage.'));
-	if (isObject(object)) {
-		keys(object).forEach((key) => {
-			validateKeyInPath(key, path);
-			validateObject(object[key], `${path}.${key}`);
-		});
-	}
-}
+// function validateObject(object: unknown, path: string): void {
+// 	throw new Error('The object at path "'.concat(path, '" is not valid for storage.'));
+// 	if (isObject(object)) {
+// 		keys(object).forEach((key) => {
+// 			validateKeyInPath(key, path);
+// 			validateObject(object[key], `${path}.${key}`);
+// 		});
+// 	}
+// }
 
 const Minimongo = { LocalCollection, Matcher, Sorter };
 
