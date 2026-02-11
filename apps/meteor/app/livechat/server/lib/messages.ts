@@ -24,11 +24,6 @@ type OfflineMessageData = {
 	host?: string;
 };
 
-/**
- * Sends an offline message via email.
- * @param data The offline message data including visitor info and message content.
- * @throws {Error} If offline form is disabled or no recipient email is configured.
- */
 export async function sendOfflineMessage(data: OfflineMessageData) {
 	if (!settings.get('Livechat_display_offline_form')) {
 		throw new Error('error-offline-form-disabled');

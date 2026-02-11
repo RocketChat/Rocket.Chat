@@ -30,12 +30,6 @@ export type CheckUnitsFromUser = {
 
 export const checkUnitsFromUser = makeFunction(async (_params: CheckUnitsFromUser): Promise<void> => undefined);
 
-/**
- * Finds departments based on business unit and user ID.
- * @param businessUnit The business unit ID.
- * @param userId The user ID.
- * @returns A list of departments with required fields.
- */
 async function findDepartments(
 	businessUnit?: string,
 	userId?: string,
