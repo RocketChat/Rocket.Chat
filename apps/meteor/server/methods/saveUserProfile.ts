@@ -122,20 +122,22 @@ async function saveUserProfile(
 	}
 
 	const canChangePasswordForOAuth = rcSettings.get<boolean>('Accounts_AllowPasswordChangeForOAuthUsers');
-	if (canChangePasswordForOAuth || user?.services?.password) {
+	if (canChangePasswordForOAuth || user?.services?.password || user?.requirePasswordChange) {
 		// Should be the last check to prevent error when trying to check password for users without password
-		if (settings.newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true && user?.services?.password?.bcrypt) {
-			// don't let user change to same password
-			if (user && (await compareUserPassword(user, { plain: settings.newPassword }))) {
-				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
-					method: 'saveUserProfile',
-				});
-			}
+		if (settings.newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true) {
+			if (user?.services?.password?.bcrypt) {
+				// don't let user change to same password
+				if (await compareUserPassword(user, { plain: settings.newPassword })) {
+					throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
+						method: 'saveUserProfile',
+					});
+				}
 
-			if (user?.services?.passwordHistory && !(await compareUserPasswordHistory(user, { plain: settings.newPassword }))) {
-				throw new Meteor.Error('error-password-in-history', 'Entered password has been previously used', {
-					method: 'saveUserProfile',
-				});
+				if (user?.services?.passwordHistory && !(await compareUserPasswordHistory(user, { plain: settings.newPassword }))) {
+					throw new Meteor.Error('error-password-in-history', 'Entered password has been previously used', {
+						method: 'saveUserProfile',
+					});
+				}
 			}
 
 			passwordPolicy.validate(settings.newPassword);
@@ -150,11 +152,13 @@ async function saveUserProfile(
 				unset.requirePasswordChangeReason = true;
 			}
 
-			await Users.addPasswordToHistory(
-				this.userId,
-				user.services?.password.bcrypt,
-				rcSettings.get<number>('Accounts_Password_History_Amount'),
-			);
+			if (user?.services?.password?.bcrypt) {
+				await Users.addPasswordToHistory(
+					this.userId,
+					user.services?.password.bcrypt,
+					rcSettings.get<number>('Accounts_Password_History_Amount'),
+				);
+			}
 
 			try {
 				await Users.removeNonLoginTokensExcept(this.userId, this.token);
