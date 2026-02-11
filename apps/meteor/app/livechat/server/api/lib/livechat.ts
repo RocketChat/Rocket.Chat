@@ -33,18 +33,21 @@ export const checkUnitsFromUser = makeFunction(async (_params: CheckUnitsFromUse
 async function findDepartments(
 	businessUnit?: string,
 	userId?: string,
-): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>[]> {
+): Promise<
+	Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward' | 'email'>[]
+> {
 	// TODO: check this function usage
 	await checkUnitsFromUser({ userId, businessUnit });
 
 	return LivechatDepartment.findEnabledWithAgentsAndBusinessUnit<
-		Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>
+		Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward' | 'email'>
 	>(businessUnit, {
 		_id: 1,
 		name: 1,
 		showOnRegistration: 1,
 		showOnOfflineForm: 1,
 		departmentsAllowedToForward: 1,
+		email: 1,
 	}).toArray();
 }
 
@@ -119,7 +122,9 @@ export async function settings({ businessUnit = '', userId }: { businessUnit?: s
 			allowSwitchingDepartments: initSettings.Livechat_allow_switching_departments,
 			nameFieldRegistrationForm: initSettings.Livechat_name_field_registration_form,
 			emailFieldRegistrationForm: initSettings.Livechat_email_field_registration_form,
-			displayOfflineForm: initSettings.Livechat_display_offline_form,
+			displayOfflineForm:
+				initSettings.Livechat_display_offline_form &&
+				(initSettings.Livechat_offline_email || departments.some((d) => d.showOnOfflineForm && d.email)),
 			videoCall: initSettings.Omnichannel_call_provider === 'default-provider',
 			fileUpload: initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled,
 			language: initSettings.Language,
