@@ -23,6 +23,16 @@ type StreamStatus = {
 	reason?: unknown;
 };
 
+type StreamEvents = {
+	message: (data: string) => void;
+	reset: () => void;
+	disconnect: () => void;
+};
+
+type EventCallbacks = {
+	[K in keyof StreamEvents]?: Array<StreamEvents[K]>;
+};
+
 class ClientStream {
 	// Properties merged from StreamClientCommon
 	currentStatus: StreamStatus;
@@ -37,7 +47,7 @@ class ClientStream {
 
 	_forcedToDisconnect: boolean;
 
-	eventCallbacks: Record<string, Array<(...args: any[]) => void>>;
+	eventCallbacks: EventCallbacks;
 
 	options: ClientStreamOptions;
 
@@ -94,7 +104,7 @@ class ClientStream {
 	// Public API
 	// -------------------------------------------------------------------------
 
-	on(name: string, callback: (...args: any[]) => void) {
+	on<K extends keyof StreamEvents>(name: K, callback: StreamEvents[K]) {
 		if (name !== 'message' && name !== 'reset' && name !== 'disconnect') {
 			throw new Error(`unknown event type: ${name}`);
 		}
@@ -163,11 +173,13 @@ class ClientStream {
 	// Internal Logic
 	// -------------------------------------------------------------------------
 
-	protected forEachCallback(name: string, cb: (...args: any[]) => void) {
+	protected forEachCallback<K extends keyof StreamEvents>(name: K, cb: (callback: StreamEvents[K]) => void) {
 		if (!this.eventCallbacks[name]?.length) {
 			return;
 		}
-		this.eventCallbacks[name].forEach(cb);
+		for (const callback of this.eventCallbacks[name]) {
+			cb(callback);
+		}
 	}
 
 	private _statusChanged() {
@@ -239,7 +251,7 @@ class ClientStream {
 		});
 	}
 
-	private _lostConnection(maybeError?: unknown) {
+	public _lostConnection(maybeError?: unknown) {
 		// In the original code, `_lostConnection` was bound to the 'close' event.
 		// If it's a CloseEvent, we don't treat it as an error object for the callback.
 		const errorToPass = maybeError instanceof Event ? undefined : maybeError;

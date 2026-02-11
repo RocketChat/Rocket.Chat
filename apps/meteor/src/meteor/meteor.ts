@@ -315,15 +315,19 @@ const absoluteUrl = (() => {
 	return absoluteUrl;
 })();
 
+export const defer = (fn: VoidFunction) => {
+	_setImmediate(fn);
+};
+
 // --- Main Meteor Object ---
 
 const Meteor = {
-	isProduction: meteorEnv.NODE_ENV === 'production',
-	isDevelopment: meteorEnv.NODE_ENV !== 'production',
+	isProduction: true,
+	isDevelopment: false,
 	isClient: true,
 	isServer: false,
 	isCordova: false,
-	isModern: config.isModern,
+	isModern: true,
 	gitCommitHash: config.gitCommitHash,
 	settings: config.PUBLIC_SETTINGS ? { public: config.PUBLIC_SETTINGS } : {},
 	release: config.meteorRelease,
@@ -346,57 +350,6 @@ const Meteor = {
 	// Internal methods
 	_setImmediate,
 	_localStorage,
-
-	_get(obj: any, ...keys: (string | number)[]): any {
-		let current = obj;
-		for (const key of keys) {
-			if (current == null || !(key in current)) return undefined;
-			current = current[key];
-		}
-		return current;
-	},
-
-	_ensure(obj: any, ...keys: (string | number)[]): any {
-		let current = obj;
-		for (const key of keys) {
-			if (!(key in current)) current[key] = {};
-			current = current[key];
-		}
-		return current;
-	},
-
-	makeErrorType<TCtor extends (this: Error, ...args: any[]) => void>(name: string, constructor?: TCtor) {
-		// FIX: Use 'class extends' natively. Do NOT call _inherits on this class,
-		// as it would try to overwrite the read-only class prototype.
-		class ErrorClass extends Error {
-			public errorType: string;
-
-			public override name: string;
-
-			public override stack?: string;
-
-			[key: string]: any;
-
-			constructor(...args: any[]) {
-				super();
-				// Mimic legacy captureStackTrace behavior
-				if (Error.captureStackTrace) {
-					Error.captureStackTrace(this, ErrorClass);
-				} else {
-					this.stack = new Error().stack || '';
-				}
-
-				this.errorType = name;
-				this.name = name;
-
-				// Apply the user-supplied constructor function
-				constructor?.apply(this, args);
-			}
-		}
-
-		// Don't call _inherits(ErrorClass, Error) here; extends handles it.
-		return ErrorClass;
-	},
 
 	// Async / Promises
 
@@ -525,9 +478,9 @@ const Meteor = {
 
 	// Timers
 
-	setTimeout(f: VoidFunction, duration: number) {
-		return setTimeout(bindAndCatch('setTimeout callback', f), duration);
-	},
+	// setTimeout(f: VoidFunction, duration: number) {
+	// 	return setTimeout(bindAndCatch('setTimeout callback', f), duration);
+	// },
 
 	setInterval(f: VoidFunction, duration: number) {
 		return setInterval(bindAndCatch('setInterval callback', f), duration);
@@ -541,9 +494,7 @@ const Meteor = {
 		return clearTimeout(x);
 	},
 
-	defer(f: VoidFunction) {
-		Meteor._setImmediate(bindAndCatch('defer callback', f));
-	},
+	defer,
 
 	// Logging
 

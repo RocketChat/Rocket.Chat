@@ -1,12 +1,11 @@
 import { AllowDeny } from './allow-deny.ts';
 import { check, Match } from './check.ts';
-import { DDP } from './ddp-client.ts';
+import { DDP, type Connection } from './ddp-client.ts';
 import { EJSON } from './ejson.ts';
-import { Log } from './logging.ts';
 import { Meteor } from './meteor.ts';
 import { LocalCollection } from './minimongo.ts';
 import { meteorInstall } from './modules-runtime.ts';
-import { MongoID } from './mongo-id.ts';
+import { ObjectID } from './mongo-id.ts';
 import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 
@@ -44,27 +43,27 @@ function ensureCollection(name: string, collections: Record<string, LocalCollect
 // mongo/collection/collection_utils.js
 // -----------------------------------------------------------------------------
 export const ID_GENERATORS = {
-	MONGO(name) {
+	MONGO(name: string) {
 		return function () {
-			const src = name ? DDP.randomStream('/collection/' + name) : Random.insecure;
+			const src = name ? DDP.randomStream(`/collection/${name}`) : Random.insecure;
 			return new Mongo.ObjectID(src.hexString(24));
 		};
 	},
-	STRING(name) {
+	STRING(name: string) {
 		return function () {
-			const src = name ? DDP.randomStream('/collection/' + name) : Random.insecure;
+			const src = name ? DDP.randomStream(`/collection/${name}`) : Random.insecure;
 			return src.id();
 		};
 	},
 };
 
-export function setupConnection(name, options) {
+export function setupConnection(name: string, options: { connection?: Connection | null }): Connection | null {
 	if (!name || options.connection === null) return null;
 	if (options.connection) return options.connection;
-	return Meteor.isClient ? Meteor.connection : Meteor.server;
+	return Meteor.connection;
 }
 
-export function setupDriver(name, connection, options) {
+export function setupDriver(_name: string, _connection: Connection | null, options: { _driver?: any }): any {
 	if (options._driver) return options._driver;
 	return LocalCollectionDriver;
 }
@@ -84,7 +83,7 @@ export function setupMutationMethods(collection, name, options) {
 		collection._defineMutationMethods({
 			useExisting: options._suppressSameNameError === true,
 		});
-	} catch (error) {
+	} catch (error: any) {
 		if (error.message === `A method named '/${name}/insertAsync' is already defined`) {
 			throw new Error(`There is already a collection named "${name}"`);
 		}
@@ -192,18 +191,6 @@ Package['core-runtime'].queue('mongo', () => {
 											},
 										},
 										2,
-									);
-
-									let IndexMethods;
-
-									module1.link(
-										'./methods_index',
-										{
-											IndexMethods(v) {
-												IndexMethods = v;
-											},
-										},
-										3,
 									);
 
 									let ReplicationMethods;
@@ -321,48 +308,11 @@ Package['core-runtime'].queue('mongo', () => {
 										},
 									});
 
-									Object.assign(Mongo.Collection.prototype, ReplicationMethods, SyncMethods, AsyncMethods, IndexMethods);
+									Object.assign(Mongo.Collection.prototype, ReplicationMethods, SyncMethods, AsyncMethods);
 
 									Object.assign(Mongo.Collection.prototype, {
 										_isRemoteCollection() {
 											return this._connection && this._connection !== Meteor.server;
-										},
-
-										async dropCollectionAsync() {
-											const self = this;
-
-											if (!self._collection.dropCollectionAsync) throw new Error('Can only call dropCollectionAsync on server collections');
-
-											await self._collection.dropCollectionAsync();
-										},
-
-										async createCappedCollectionAsync(byteSize, maxDocuments) {
-											const self = this;
-
-											if (!(await self._collection.createCappedCollectionAsync))
-												throw new Error('Can only call createCappedCollectionAsync on server collections');
-
-											await self._collection.createCappedCollectionAsync(byteSize, maxDocuments);
-										},
-
-										rawCollection() {
-											const self = this;
-
-											if (!self._collection.rawCollection) {
-												throw new Error('Can only call rawCollection on server collections');
-											}
-
-											return self._collection.rawCollection();
-										},
-
-										rawDatabase() {
-											const self = this;
-
-											if (!(self._driver.mongo && self._driver.mongo.db)) {
-												throw new Error('Can only call rawDatabase on server collections');
-											}
-
-											return self._driver.mongo.db;
 										},
 									});
 
@@ -373,7 +323,7 @@ Package['core-runtime'].queue('mongo', () => {
 										_collections: new Map(),
 									});
 
-									Mongo.ObjectID = MongoID.ObjectID;
+									Mongo.ObjectID = ObjectID;
 									Mongo.Cursor = LocalCollection.Cursor;
 									Mongo.Collection.Cursor = Mongo.Cursor;
 									Mongo.Collection.ObjectID = Mongo.ObjectID;
@@ -522,80 +472,6 @@ Package['core-runtime'].queue('mongo', () => {
 								};
 							},
 
-							'methods_index.js'(require, exports, module) {
-								module.export({ IndexMethods: () => IndexMethods });
-
-								const IndexMethods = {
-									async ensureIndexAsync(index, options) {
-										const self = this;
-
-										if (!self._collection.ensureIndexAsync || !self._collection.createIndexAsync)
-											throw new Error('Can only call createIndexAsync on server collections');
-
-										if (self._collection.createIndexAsync) {
-											await self._collection.createIndexAsync(index, options);
-										} else {
-											Log.debug(
-												"ensureIndexAsync has been deprecated, please use the new 'createIndexAsync' instead".concat(
-													options !== null && options !== void 0 && options.name
-														? ', index name: '.concat(options.name)
-														: ', index: '.concat(JSON.stringify(index)),
-												),
-											);
-
-											await self._collection.ensureIndexAsync(index, options);
-										}
-									},
-
-									async createIndexAsync(index, options) {
-										const self = this;
-
-										if (!self._collection.createIndexAsync) throw new Error('Can only call createIndexAsync on server collections');
-
-										try {
-											await self._collection.createIndexAsync(index, options);
-										} catch (e) {
-											let _Meteor$settings;
-											let _Meteor$settings$pack;
-											let _Meteor$settings$pack2;
-
-											if (
-												e.message.includes('An equivalent index already exists with the same name but different options.') &&
-												(_Meteor$settings = Meteor.settings) !== null &&
-												_Meteor$settings !== void 0 &&
-												(_Meteor$settings$pack = _Meteor$settings.packages) !== null &&
-												_Meteor$settings$pack !== void 0 &&
-												(_Meteor$settings$pack2 = _Meteor$settings$pack.mongo) !== null &&
-												_Meteor$settings$pack2 !== void 0 &&
-												_Meteor$settings$pack2.reCreateIndexOnOptionMismatch
-											) {
-												Log.info('Re-creating index '.concat(index, ' for ').concat(self._name, ' due to options mismatch.'));
-												await self._collection.dropIndexAsync(index);
-												await self._collection.createIndexAsync(index, options);
-											} else {
-												console.error(e);
-
-												throw new Meteor.Error(
-													'An error occurred when creating an index for collection "'.concat(self._name, ': ').concat(e.message),
-												);
-											}
-										}
-									},
-
-									createIndex(index, options) {
-										return this.createIndexAsync(index, options);
-									},
-
-									async dropIndexAsync(index) {
-										const self = this;
-
-										if (!self._collection.dropIndexAsync) throw new Error('Can only call dropIndexAsync on server collections');
-
-										await self._collection.dropIndexAsync(index);
-									},
-								};
-							},
-
 							'methods_replication.js'(require, exports, module) {
 								let _objectSpread;
 
@@ -643,7 +519,7 @@ Package['core-runtime'].queue('mongo', () => {
 												},
 
 												update(msg) {
-													const mongoId = MongoID.idParse(msg.id);
+													const mongoId = ObjectID.parse(msg.id);
 													const doc = self._collection._docs.get(mongoId);
 
 													if (msg.msg === 'added' && doc) {
@@ -729,87 +605,6 @@ Package['core-runtime'].queue('mongo', () => {
 
 												getDoc(id) {
 													return self.findOne(id);
-												},
-											},
-											wrappedStoreCommon,
-										);
-
-										const wrappedStoreServer = _objectSpread(
-											{
-												async beginUpdate(batchSize, reset) {
-													if (batchSize > 1 || reset) self._collection.pauseObservers();
-													if (reset) await self._collection.removeAsync({});
-												},
-
-												async update(msg) {
-													const mongoId = MongoID.idParse(msg.id);
-													const doc = self._collection._docs.get(mongoId);
-
-													if (msg.msg === 'replace') {
-														const { replace } = msg;
-
-														if (!replace) {
-															if (doc) await self._collection.removeAsync(mongoId);
-														} else if (!doc) {
-															await self._collection.insertAsync(replace);
-														} else {
-															await self._collection.updateAsync(mongoId, replace);
-														}
-													} else if (msg.msg === 'added') {
-														if (doc) {
-															throw new Error('Expected not to find a document already present for an add');
-														}
-
-														await self._collection.insertAsync(_objectSpread({ _id: mongoId }, msg.fields));
-													} else if (msg.msg === 'removed') {
-														if (!doc) throw new Error('Expected to find a document already present for removed');
-
-														await self._collection.removeAsync(mongoId);
-													} else if (msg.msg === 'changed') {
-														if (!doc) throw new Error('Expected to find a document to change');
-
-														const keys = Object.keys(msg.fields);
-
-														if (keys.length > 0) {
-															const modifier = {};
-
-															keys.forEach((key) => {
-																const value = msg.fields[key];
-
-																if (EJSON.equals(doc[key], value)) {
-																	return;
-																}
-
-																if (typeof value === 'undefined') {
-																	if (!modifier.$unset) {
-																		modifier.$unset = {};
-																	}
-
-																	modifier.$unset[key] = 1;
-																} else {
-																	if (!modifier.$set) {
-																		modifier.$set = {};
-																	}
-
-																	modifier.$set[key] = value;
-																}
-															});
-
-															if (Object.keys(modifier).length > 0) {
-																await self._collection.updateAsync(mongoId, modifier);
-															}
-														}
-													} else {
-														throw new Error("I don't know how to deal with this message");
-													}
-												},
-
-												async endUpdate() {
-													await self._collection.resumeObserversServer();
-												},
-
-												async getDoc(id) {
-													return self.findOneAsync(id);
 												},
 											},
 											wrappedStoreCommon,

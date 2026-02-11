@@ -48,11 +48,11 @@ class Heartbeat {
 	}
 
 	_startHeartbeatIntervalTimer() {
-		this._heartbeatIntervalHandle = Meteor.setInterval(() => this._heartbeatIntervalFired(), this.heartbeatInterval);
+		this._heartbeatIntervalHandle = setInterval(() => this._heartbeatIntervalFired(), this.heartbeatInterval);
 	}
 
 	_startHeartbeatTimeoutTimer() {
-		this._heartbeatTimeoutHandle = Meteor.setTimeout(() => this._heartbeatTimeoutFired(), this.heartbeatTimeout);
+		this._heartbeatTimeoutHandle = setTimeout(() => this._heartbeatTimeoutFired(), this.heartbeatTimeout);
 	}
 
 	_clearHeartbeatIntervalTimer() {
@@ -240,8 +240,8 @@ export class RandomStream {
 
 	sequences: any;
 
-	constructor(options: { seed?: any }) {
-		this.seed = [].concat(options.seed || randomToken());
+	constructor(options: { seed?: string }) {
+		this.seed = [options.seed || randomToken()];
 		this.sequences = Object.create(null);
 	}
 
