@@ -20,4 +20,5 @@ export interface IReadReceiptsModel extends IBaseModel<IReadReceipt> {
 	): Promise<DeleteResult>;
 	setPinnedByMessageId(messageId: string, pinned?: boolean): Promise<Document | UpdateResult>;
 	setAsThreadById(messageId: string): Promise<Document | UpdateResult>;
+	findOlderThan(date: Date): FindCursor<IReadReceipt>;
 }
