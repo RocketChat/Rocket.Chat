@@ -1,6 +1,6 @@
 import { Hook } from './callback-hook.ts';
 import { DDP, type Connection } from './ddp-client.ts';
-import { Meteor } from './meteor.ts';
+import { Meteor, MeteorError } from './meteor.ts';
 import { Mongo } from './mongo.ts';
 import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
@@ -169,7 +169,7 @@ export class AccountsClient {
 		// this collection.
 		this.users = this._initializeCollection(options || {});
 
-		// Callback exceptions are printed with Meteor._debug and ignored.
+		// Callback exceptions are printed with console.debug and ignored.
 		this._onLoginHook = new Hook({
 			bindEnvironment: false,
 			debugPrintExceptions: 'onLogin callback',
@@ -192,9 +192,15 @@ export class AccountsClient {
 		// Thrown when the user cancels the login process (eg, closes an oauth
 		// popup, declines retina scan, etc)
 		const lceName = 'Accounts.LoginCancelledError';
-		this.LoginCancelledError = Meteor.makeErrorType(lceName, function (description: string) {
-			this.message = description;
-		});
+		// this.LoginCancelledError = Meteor.makeErrorType(lceName, function (description: string) {
+		// 	this.message = description;
+		// });
+		this.LoginCancelledError = class LoginCancelledError extends Error {
+			constructor(description: string) {
+				super(description);
+				this.name = lceName;
+			}
+		};
 		this.LoginCancelledError.prototype.name = lceName;
 
 		// This is used to transmit specific subclass errors over the wire.
@@ -230,7 +236,7 @@ export class AccountsClient {
 
 	_initializeCollection(options: any) {
 		if (options.collection && typeof options.collection !== 'string' && !(options.collection instanceof Mongo.Collection)) {
-			throw new Meteor.Error('Collection parameter can be only of type string or "Mongo.Collection"');
+			throw new MeteorError('Collection parameter can be only of type string or "Mongo.Collection"');
 		}
 
 		let collectionName = 'users';
@@ -296,7 +302,7 @@ export class AccountsClient {
 	 */
 	user(options?: any) {
 		const userId = this.userId();
-		const findOne = (...args: any[]) => (Meteor.isClient ? this.users.findOne(...args) : this.users.findOneAsync(...args));
+		const findOne = (...args: any[]) => this.users.findOne(...args);
 		return userId ? findOne(userId, this._addDefaultFieldSelector(options)) : null;
 	}
 
@@ -399,7 +405,7 @@ export class AccountsClient {
 	config(options: AccountsClientOptions) {
 		// --- Merged Logic from AccountsCommon.config ---
 		if (!__meteor_runtime_config__.accountsConfigCalled) {
-			Meteor._debug('Accounts.config was called on the client but not on the server; some configuration options may not take effect.');
+			console.debug('Accounts.config was called on the client but not on the server; some configuration options may not take effect.');
 		}
 
 		if (isKey(options, 'oauthSecretKey')) {
@@ -616,7 +622,12 @@ export class AccountsClient {
 		if (!options._suppressLoggingIn) {
 			this._setLoggingIn(true);
 		}
-		this.connection.applyAsync(options.methodName, options.methodArguments, { wait: true, onResultReceived }, loggedInAndDataReadyCallback);
+		void this.connection.applyAsync(
+			options.methodName,
+			options.methodArguments,
+			{ wait: true, onResultReceived },
+			loggedInAndDataReadyCallback,
+		);
 	}
 
 	makeClientLoggedOut() {
@@ -650,7 +661,7 @@ export class AccountsClient {
 
 	_pageLoadLogin(attemptInfo: any) {
 		if (this._pageLoadLoginAttemptInfo) {
-			Meteor._debug('Ignoring unexpected duplicate page load login attempt info');
+			console.debug('Ignoring unexpected duplicate page load login attempt info');
 			return;
 		}
 
@@ -661,7 +672,7 @@ export class AccountsClient {
 
 	_startupCallback(callback: (...args: any[]) => any) {
 		if (this._loginCallbacksCalled) {
-			Meteor.setTimeout(() => callback({ type: 'resume' }), 0);
+			setTimeout(() => callback({ type: 'resume' }), 0);
 		}
 	}
 
@@ -746,7 +757,7 @@ export class AccountsClient {
 				userId && this.connection.setUserId(userId);
 				this.loginWithToken(token, (err) => {
 					if (err) {
-						Meteor._debug(`Error logging in with token: ${err}`);
+						console.debug(`Error logging in with token: ${err}`);
 						this.makeClientLoggedOut();
 					}
 
@@ -806,7 +817,7 @@ export class AccountsClient {
 
 	onResetPasswordLink(callback: (...args: any[]) => any) {
 		if (this._accountsCallbacks['reset-password']) {
-			Meteor._debug('Accounts.onResetPasswordLink was called more than once. Only one callback added will be executed.');
+			console.debug('Accounts.onResetPasswordLink was called more than once. Only one callback added will be executed.');
 		}
 
 		this._accountsCallbacks['reset-password'] = callback;
@@ -814,7 +825,7 @@ export class AccountsClient {
 
 	onEmailVerificationLink(callback: (...args: any[]) => any) {
 		if (this._accountsCallbacks['verify-email']) {
-			Meteor._debug('Accounts.onEmailVerificationLink was called more than once. Only one callback added will be executed.');
+			console.debug('Accounts.onEmailVerificationLink was called more than once. Only one callback added will be executed.');
 		}
 
 		this._accountsCallbacks['verify-email'] = callback;
@@ -822,7 +833,7 @@ export class AccountsClient {
 
 	onEnrollmentLink(callback: (...args: any[]) => any) {
 		if (this._accountsCallbacks['enroll-account']) {
-			Meteor._debug('Accounts.onEnrollmentLink was called more than once. Only one callback added will be executed.');
+			console.debug('Accounts.onEnrollmentLink was called more than once. Only one callback added will be executed.');
 		}
 
 		this._accountsCallbacks['enroll-account'] = callback;
@@ -830,23 +841,6 @@ export class AccountsClient {
 }
 
 // Global Meteor Extensions
-Object.assign(Meteor, {
-	userId() {
-		return Accounts.userId();
-	},
-	user(options: any) {
-		return Accounts.user(options);
-	},
-	async userAsync(options: any) {
-		return Accounts.userAsync(options);
-	},
-	loggingIn: () => Accounts.loggingIn(),
-	loggingOut: () => Accounts.loggingOut(),
-	logout: (callback?: (error?: any) => void) => Accounts.logout(callback),
-	logoutAllClients: (callback?: (error?: any) => void) => Accounts.logoutAllClients(callback),
-	logoutOtherClients: (callback?: (error?: any) => void) => Accounts.logoutOtherClients(callback),
-	loginWithToken: (token: any, callback: (error?: any) => void) => Accounts.loginWithToken(token, callback),
-});
 
 const defaultSuccessHandler = function (this: any, token: string, urlPart: string) {
 	this._autoLoginEnabled = false;

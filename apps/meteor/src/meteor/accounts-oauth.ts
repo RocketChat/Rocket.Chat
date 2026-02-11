@@ -1,31 +1,43 @@
-import { Accounts } from './accounts-base.ts';
-import { isKey } from './utils/isKey.ts';
+class ServiceSet extends Set<string> {
+	includes(service: string): boolean {
+		return this.has(service);
+	}
 
-const services = Object.create(null);
+	override add(service: string): this {
+		if (this.has(service)) {
+			throw new Error(`Duplicate service: ${service}`);
+		}
 
-// Helper for registering OAuth based accounts packages.
-// On the server, adds an index to the user collection.
-const registerService = <T extends string>(name: T) => {
-	if (isKey(services, name)) throw new Error(`Duplicate service: ${name}`);
-	services[name] = true;
+		return super.add(service);
+	}
+
+	override delete(service: string): boolean {
+		if (!this.has(service)) {
+			throw new Error(`Service not found: ${service}`);
+		}
+
+		return super.delete(service);
+	}
+}
+
+const services = new ServiceSet();
+
+/**
+ * Helper for registering OAuth based accounts packages.
+ */
+export const registerService = <T extends string>(name: T) => {
+	services.add(name);
 };
 
-// Removes a previously registered service.
-// This will disable logging in with this service, and serviceNames() will not
-// contain it.
-// It's worth noting that already logged in users will remain logged in unless
-// you manually expire their sessions.
-const unregisterService = <T extends string>(name: T) => {
-	if (!isKey(services, name)) throw new Error(`Service not found: ${name}`);
-	delete services[name];
+/**
+ * Removes a previously registered service.
+ * This will disable logging in with this service, and serviceNames() will not
+ * contain it.
+ * It's worth noting that already logged in users will remain logged in unless
+ * you manually expire their sessions.
+ */
+export const unregisterService = <T extends string>(name: T) => {
+	services.delete(name);
 };
 
-const serviceNames = () => Object.keys(services);
-
-Object.defineProperty(Accounts, 'oauth', {
-	value: {
-		registerService,
-		unregisterService,
-		serviceNames,
-	},
-});
+export const serviceNames = () => services;

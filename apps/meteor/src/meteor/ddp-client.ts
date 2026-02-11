@@ -4,7 +4,7 @@ import { DiffSequence } from './diff-sequence.ts';
 import { EJSON, type EJSONable } from './ejson.ts';
 import { IdMap } from './id-map.ts';
 import { Meteor } from './meteor.ts';
-import { MongoID } from './mongo-id.ts';
+import { ObjectID } from './mongo-id.ts';
 import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 import { Retry } from './retry.ts';
@@ -21,7 +21,7 @@ const { keys } = Object;
 
 class MongoIDMap extends IdMap {
 	constructor() {
-		super(MongoID.idStringify, MongoID.idParse);
+		super(ObjectID.stringify, ObjectID.parse);
 	}
 }
 
@@ -153,17 +153,15 @@ export class ConnectionStreamHandlers {
 	/**
 	 * Builds the initial connect message
 	 * @private
-	 * @returns {Object} The connect message object
+	 * @returns The connect message object
 	 */
 	_buildConnectMessage() {
-		const msg: any = { msg: 'connect' };
-		if (this._connection._lastSessionId) {
-			msg.session = this._connection._lastSessionId;
-		}
-		msg.version = this._connection._versionSuggestion || this._connection._supportedDDPVersions[0];
-		this._connection._versionSuggestion = msg.version;
-		msg.support = this._connection._supportedDDPVersions;
-		return msg;
+		return {
+			msg: 'connect',
+			version: this._connection._versionSuggestion || this._connection._supportedDDPVersions[0],
+			support: this._connection._supportedDDPVersions,
+			session: this._connection._lastSessionId,
+		} as const;
 	}
 
 	/**
@@ -546,7 +544,7 @@ export class DocumentProcessors {
 	 */
 	async _process_added(msg: any, updates: any) {
 		const self = this._connection;
-		const id = MongoID.idParse(msg.id);
+		const id = ObjectID.parse(msg.id);
 		const serverDoc = self._getServerDoc(msg.collection, id);
 
 		if (serverDoc) {
@@ -580,7 +578,7 @@ export class DocumentProcessors {
 	 */
 	_process_changed(msg: any, updates: any) {
 		const self = this._connection;
-		const serverDoc = self._getServerDoc(msg.collection, MongoID.idParse(msg.id));
+		const serverDoc = self._getServerDoc(msg.collection, ObjectID.parse(msg.id));
 
 		if (serverDoc) {
 			if (serverDoc.document === undefined) {
@@ -599,7 +597,7 @@ export class DocumentProcessors {
 	 */
 	_process_removed(msg: any, updates: any) {
 		const self = this._connection;
-		const serverDoc = self._getServerDoc(msg.collection, MongoID.idParse(msg.id));
+		const serverDoc = self._getServerDoc(msg.collection, ObjectID.parse(msg.id));
 
 		if (serverDoc) {
 			// Some outstanding stub wrote here.
@@ -671,7 +669,7 @@ export class DocumentProcessors {
 					// the ID because it's supposed to look like a wire message.)
 					self._pushUpdate(updates, written.collection, {
 						msg: 'replace',
-						id: MongoID.idStringify(written.id),
+						id: ObjectID.stringify(written.id),
 						replace: serverDoc.document,
 					});
 					// Call all flush callbacks.
@@ -900,7 +898,7 @@ export class Connection {
 
 	onReconnect: VoidFunction | null;
 
-	_stream: any;
+	_stream: ClientStream;
 
 	_lastSessionId: string | null;
 
@@ -992,13 +990,13 @@ export class Connection {
 
 	_liveDataWritesPromise: Promise<void> | undefined;
 
-	constructor(url: string | any, _options: Partial<ConnectionOptions>) {
+	constructor(url: string | any, options: Partial<ConnectionOptions>) {
 		// const self = this;
 
-		const options: ConnectionOptions = {
+		this.options = {
 			onConnected: noop,
-			onDDPVersionNegotiationFailure(description: string) {
-				Meteor._debug(description);
+			onDDPVersionNegotiationFailure(description) {
+				console.debug(description);
 			},
 			heartbeatInterval: 17500,
 			heartbeatTimeout: 15000,
@@ -1013,10 +1011,8 @@ export class Connection {
 			// Flush buffers immediately if writes are happening continuously for more than this many ms.
 			bufferedWritesMaxAge: 500,
 
-			..._options,
+			...options,
 		};
-
-		this.options = options;
 
 		// If set, called when we reconnect, queuing method calls _before_ the
 		// existing outstanding ones.
@@ -1044,10 +1040,10 @@ export class Connection {
 		this._stores = Object.create(null); // name -> object with methods
 		this._methodHandlers = Object.create(null); // name -> func
 		this._nextMethodId = 1;
-		this._supportedDDPVersions = options.supportedDDPVersions ?? [];
+		this._supportedDDPVersions = this.options.supportedDDPVersions ?? [];
 
-		this._heartbeatInterval = options.heartbeatInterval;
-		this._heartbeatTimeout = options.heartbeatTimeout;
+		this._heartbeatInterval = this.options.heartbeatInterval;
+		this._heartbeatTimeout = this.options.heartbeatTimeout;
 
 		// Tracks methods which the user has tried to call but which have not yet
 		// called their user callback (ie, they are waiting on their result or for all
@@ -1153,8 +1149,8 @@ export class Connection {
 		// Timeout handle for the next processing of all pending writes
 		this._bufferedWritesFlushHandle = null;
 
-		this._bufferedWritesInterval = options.bufferedWritesInterval;
-		this._bufferedWritesMaxAge = options.bufferedWritesMaxAge;
+		this._bufferedWritesInterval = this.options.bufferedWritesInterval;
+		this._bufferedWritesMaxAge = this.options.bufferedWritesMaxAge;
 
 		// metadata for subscriptions.  Map from sub ID to object with keys:
 		//   - id
@@ -1193,7 +1189,7 @@ export class Connection {
 			}
 		};
 
-		this._stream.on('message', (msg: any) => this._streamHandlers.onMessage(msg));
+		this._stream.on('message', (msg) => this._streamHandlers.onMessage(msg));
 		this._stream.on('reset', () => this._streamHandlers.onReset());
 		this._stream.on('disconnect', onDisconnect);
 
@@ -1579,27 +1575,25 @@ export class Connection {
 	 * @param {Boolean} options.returnStubValue (Client only) If true then in cases where we would have otherwise discarded the stub's return value and returned undefined, instead we go ahead and return it. Specifically, this is any time other than when (a) we are already inside a stub or (b) we are in Node and no callback was provided. Currently we require this flag to be explicitly passed to reduce the likelihood that stub return values will be confused with server return values; we may improve this in future.
 	 * @param {Boolean} options.returnServerResultPromise (Client only) If true, the promise returned by applyAsync will resolve to the server's return value, rather than the stub's return value. This is useful when you want to ensure that the server's return value is used, even if the stub returns a promise. The same behavior as `callAsync`.
 	 */
-	applyAsync(name: string, args: any[], options: any, callback: ((...args: any[]) => void) | null | undefined = null) {
+	applyAsync(name: string, args: any[], options: any, callback?: ((...args: any[]) => void) | undefined) {
 		const stubPromise = this._applyAsyncStubInvocation(name, args, options);
 
-		const promise: any = this._applyAsync({
+		const promise = this._applyAsync({
 			name,
 			args,
 			options,
 			callback,
 			stubPromise,
 		});
-		if (Meteor.isClient) {
-			// only return the stubReturnValue
-			promise.stubPromise = stubPromise.then((o: any) => {
-				if (o.exception) {
-					throw o.exception;
-				}
-				return o.stubReturnValue;
-			});
-			// this avoids attribute recursion
-			promise.serverPromise = new Promise((resolve, reject) => promise.then(resolve).catch(reject));
-		}
+		// only return the stubReturnValue
+		promise.stubPromise = stubPromise.then((o: any) => {
+			if (o.exception) {
+				throw o.exception;
+			}
+			return o.stubReturnValue;
+		});
+		// this avoids attribute recursion
+		promise.serverPromise = new Promise((resolve, reject) => promise.then(resolve).catch(reject));
 		return promise;
 	}
 
@@ -1638,12 +1632,25 @@ export class Connection {
 		return stubOptions;
 	}
 
-	async _applyAsync({ name, args, options, callback, stubPromise }: any) {
-		const stubOptions = await stubPromise;
-		return this._apply(name, stubOptions, args, options, callback);
+	_applyAsync({
+		name,
+		args,
+		options,
+		callback,
+		stubPromise,
+	}: {
+		name: string;
+		args: any[];
+		options: any;
+		callback?: ((...args: any[]) => any) | null | undefined;
+		stubPromise: Promise<StubOptions>;
+	}): Promise<any> & { stubPromise?: Promise<any>; serverPromise?: Promise<any> } {
+		return stubPromise.then((stubOptions: StubOptions) => {
+			return this._apply(name, stubOptions, args, options, callback);
+		});
 	}
 
-	_apply(name: string, stubCallValue: StubOptions, args: any[], options: any, callback?: (...args: any[]) => any | null | undefined) {
+	_apply(name: string, stubCallValue: StubOptions, args: any[], options: any, callback?: ((...args: any[]) => any) | null | undefined) {
 		// const self = this;
 
 		// We were passed 3 arguments. They may be either (name, args, options)
@@ -1928,8 +1935,8 @@ export class Connection {
 	// We detected via DDP-level heartbeats that we've lost the
 	// connection.  Unlike `disconnect` or `close`, a lost connection
 	// will be automatically retried.
-	_lostConnection(error: any) {
-		this._stream._lostConnection(error);
+	_lostConnection(maybeError?: unknown) {
+		this._stream._lostConnection(maybeError);
 	}
 
 	/**
@@ -1939,8 +1946,8 @@ export class Connection {
 	 * @summary Get the current connection status. A reactive data source.
 	 * @locus Client
 	 */
-	status(...args: any[]) {
-		return this._stream.status(...args);
+	status() {
+		return this._stream.status();
 	}
 
 	/**
@@ -2266,13 +2273,25 @@ const _CurrentMethodInvocation = new Meteor.EnvironmentVariable<{
 
 // This is passed into a weird `makeErrorType` function that expects its thing
 // to be a constructor
-function connectionErrorConstructor(this: any, message: string) {
-	this.message = message;
+// function connectionErrorConstructor(this: any, message: string) {
+// 	this.message = message;
+// }
+
+// const ConnectionError = Meteor.makeErrorType('DDP.ConnectionError', connectionErrorConstructor);
+class ConnectionError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = 'DDP.ConnectionError';
+	}
 }
 
-const ConnectionError = Meteor.makeErrorType('DDP.ConnectionError', connectionErrorConstructor);
-
-const ForcedReconnectError = Meteor.makeErrorType('DDP.ForcedReconnectError');
+// const ForcedReconnectError = Meteor.makeErrorType('DDP.ForcedReconnectError');
+class ForcedReconnectError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = 'DDP.ForcedReconnectError';
+	}
+}
 
 // Returns the named sequence of pseudo-random values.
 // The scope will be DDP._CurrentMethodInvocation.get(), so the stream will produce
