@@ -13,6 +13,18 @@ export enum CallbackPriority {
 	LOW = 1000,
 }
 
+/**
+ * Represents a callback function signature that returns void or is ignored (event-like)
+ * Used for callbacks that are triggered for side effects, not for value transformation
+ */
+type EventLikeCallbackSignature = (item: unknown, constant?: unknown) => void | unknown;
+
+/**
+ * Represents a callback function signature that returns a value (chained)
+ * Used for callbacks that transform or forward values through the chain
+ */
+type ChainedCallbackSignature = (item: unknown, constant?: unknown) => unknown;
+
 type Callback<H> = {
 	(item: unknown, constant?: unknown): Promise<unknown>;
 	hook: H;
@@ -26,12 +38,8 @@ type CallbackTracker<H> = (callback: Callback<H>) => () => void;
 type HookTracker<H> = (params: { hook: H; length: number }) => () => void;
 
 export class Callbacks<
-	TChainedCallbackSignatures extends {
-		[key: string]: (item: any, constant?: any) => any;
-	},
-	TEventLikeCallbackSignatures extends {
-		[key: string]: (item: any, constant?: any) => any;
-	},
+	TChainedCallbackSignatures extends Record<string, ChainedCallbackSignature>,
+	TEventLikeCallbackSignatures extends Record<string, EventLikeCallbackSignature>,
 	THook extends string = keyof TChainedCallbackSignatures & keyof TEventLikeCallbackSignatures & string,
 > {
 	private logger: Logger | undefined = undefined;
@@ -222,17 +230,15 @@ export class Callbacks<
 		return runner(item, constant);
 	}
 
-	static create<F extends (item: any, constant?: any) => any | Promise<any>>(
-		hook: string,
-	): Cb<Parameters<F>[0], ReturnType<F>, Parameters<F>[1]>;
-
 	static create<I, R, C = undefined>(hook: string): Cb<I, R, C> {
-		const callbacks = new Callbacks();
+		const callbacks = new Callbacks<Record<string, ChainedCallbackSignature>, Record<string, EventLikeCallbackSignature>, string>();
+
+		const typedHook = hook as string;
 
 		return {
-			add: (callback, priority, id) => callbacks.add(hook as any, callback, priority, id),
-			remove: (id) => callbacks.remove(hook as any, id),
-			run: (item, constant) => callbacks.run(hook as any, item, constant) as any,
+			add: (callback, priority, id) => callbacks.add(typedHook, callback, priority, id),
+			remove: (id) => callbacks.remove(typedHook, id),
+			run: (item, constant) => callbacks.run(typedHook, item, constant) as Promise<R>,
 		};
 	}
 }
@@ -243,7 +249,7 @@ export class Callbacks<
  */
 type Cb<I, R, C = undefined> = {
 	add: (
-		callback: (item: I, constant: C) => Promise<R | undefined | void> | R | undefined | void,
+		callback: (item: I, constant?: C) => Promise<R | undefined | void> | R | undefined | void,
 		priority?: CallbackPriority,
 		id?: string,
 	) => void;
