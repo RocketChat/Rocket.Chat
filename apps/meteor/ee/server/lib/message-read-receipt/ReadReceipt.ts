@@ -152,9 +152,10 @@ class ReadReceiptClass {
 		const hotReceipts = await ReadReceipts.findByMessageId(message._id).toArray();
 
 		// Query cold storage only if message has archived receipts
-		const coldReceipts = message.receiptsArchived 
-			? await ReadReceiptsArchive.findByMessageId(message._id).toArray()
-			: [];
+		let coldReceipts: IReadReceipt[] = [];
+		if (message.receiptsArchived) {
+			coldReceipts = await ReadReceiptsArchive.findByMessageId(message._id).toArray();
+		}
 
 		// Combine receipts from both storages
 		const receipts = [...hotReceipts, ...coldReceipts];

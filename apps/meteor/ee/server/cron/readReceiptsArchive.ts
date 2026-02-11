@@ -6,9 +6,10 @@ const logger = new Logger('ReadReceiptsArchive');
 
 // 30 days in milliseconds
 const RETENTION_DAYS = 30;
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 async function archiveOldReadReceipts(): Promise<void> {
-	const cutoffDate = new Date(Date.now() - RETENTION_DAYS * 24 * 60 * 60 * 1000);
+	const cutoffDate = new Date(Date.now() - RETENTION_DAYS * MILLISECONDS_PER_DAY);
 	
 	logger.info(`Starting to archive read receipts older than ${cutoffDate.toISOString()}`);
 
@@ -26,10 +27,26 @@ async function archiveOldReadReceipts(): Promise<void> {
 	const messageIds = [...new Set(oldReceipts.map((receipt) => receipt.messageId))];
 
 	try {
-		// Insert receipts into archive collection
+		// Insert receipts into archive collection (using insertMany with ordered: false to continue on duplicate key errors)
 		if (oldReceipts.length > 0) {
-			await ReadReceiptsArchive.insertMany(oldReceipts);
-			logger.info(`Successfully archived ${oldReceipts.length} read receipts`);
+			try {
+				await ReadReceiptsArchive.insertMany(oldReceipts, { ordered: false });
+				logger.info(`Successfully archived ${oldReceipts.length} read receipts`);
+			} catch (error: unknown) {
+				// If we get duplicate key errors, some receipts were already archived, which is fine
+				// We'll continue to mark messages and delete from hot storage
+				if (error && typeof error === 'object' && ('code' in error || 'name' in error)) {
+					const mongoError = error as { code?: number; name?: string; result?: { insertedCount?: number } };
+					if (mongoError.code === 11000 || mongoError.name === 'MongoBulkWriteError') {
+						const insertedCount = mongoError.result?.insertedCount || 0;
+						logger.info(`Archived ${insertedCount} read receipts (some were already archived)`);
+					} else {
+						throw error;
+					}
+				} else {
+					throw error;
+				}
+			}
 		}
 
 		// Mark messages as having archived receipts
