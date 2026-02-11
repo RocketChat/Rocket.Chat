@@ -65,6 +65,22 @@ export const createMessageSettings = () =>
 				public: true,
 				enableQuery: { _id: 'Message_Read_Receipt_Enabled', value: true },
 			});
+			await this.add('Message_Read_Receipt_Archive_Retention_Days', 30, {
+				type: 'int',
+				enterprise: true,
+				invalidValue: 30,
+				modules: ['message-read-receipt'],
+				i18nDescription: 'Message_Read_Receipt_Archive_Retention_Days_Description',
+				enableQuery: { _id: 'Message_Read_Receipt_Store_Users', value: true },
+			});
+			await this.add('Message_Read_Receipt_Archive_Cron', '0 2 * * *', {
+				type: 'string',
+				enterprise: true,
+				invalidValue: '0 2 * * *',
+				modules: ['message-read-receipt'],
+				i18nDescription: 'Message_Read_Receipt_Archive_Cron_Description',
+				enableQuery: { _id: 'Message_Read_Receipt_Store_Users', value: true },
+			});
 		});
 		await this.add('Message_CustomDomain_AutoLink', '', {
 			type: 'string',
