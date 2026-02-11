@@ -112,7 +112,7 @@ export async function executeSendMessage(
 
 		const errorMessage: RocketchatI18nKeys = typeof err === 'string' ? err : err.error || err.message;
 		const errorContext: TOptions = err.details ?? {};
-		void api.broadcast('notify.ephemeralMessage', uid, message.rid, {
+		void api.broadcast('notify.ephemeralMessage', user._id, message.rid, {
 			msg: i18n.t(errorMessage, { ...errorContext, lng: user.language }),
 		});
 
