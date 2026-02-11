@@ -7,25 +7,23 @@ import EditSound from './EditSound';
 import { FormSkeleton } from '../../../components/Skeleton';
 
 type EditCustomSoundProps = {
-	_id: string | undefined;
+	_id: string;
 	onChange?: () => void;
 	close: () => void;
 };
 
 function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProps): ReactElement | null {
 	const { t } = useTranslation();
-	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
+	const getSound = useEndpoint('GET', '/v1/custom-sounds.getOne');
 
 	const { data, isPending } = useQuery({
-		queryKey: ['custom-sounds', _id],
-
+		queryKey: ['custom-sound', _id],
 		queryFn: async () => {
-			const { sounds } = await getSounds({ _id });
-
-			if (sounds.length === 0) {
+			const sound = await getSound({ _id });
+			if (!sound) {
 				throw new Error(t('No_results_found'));
 			}
-			return sounds[0];
+			return sound;
 		},
 		meta: { apiErrorToastMessage: true },
 	});
