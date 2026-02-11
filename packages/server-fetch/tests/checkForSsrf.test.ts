@@ -5,6 +5,7 @@ describe('checkForSsrf', () => {
 
 	afterEach(() => {
 		nslookupSpy?.mockRestore();
+		ssrfModule.setSsrfAllowlist([]);
 	});
 
 	it('returns false if URL does not start with http:// or https://', async () => {
@@ -85,6 +86,36 @@ describe('checkForSsrf', () => {
 		test.each(['::1', 'fe80::1', 'fc00::1234', 'ff02::1'])('returns false for restricted IPv6 address %s', async (ip) => {
 			expect(await ssrfModule.checkForSsrf(`[${ip}]`)).toBe(false);
 			expect(await ssrfModule.checkForSsrf(ip)).toBe(false);
+		});
+	});
+
+	describe('allowlist', () => {
+		it('allows allowlisted private IPv4', async () => {
+			ssrfModule.setSsrfAllowlist(['127.0.0.1']);
+			expect(await ssrfModule.checkForSsrf('http://127.0.0.1')).toBe(true);
+		});
+
+		it('allows allowlisted private IPv4 with port', async () => {
+			ssrfModule.setSsrfAllowlist(['192.168.1.1:8080']);
+			expect(await ssrfModule.checkForSsrf('http://192.168.1.1:8080')).toBe(true);
+		});
+
+		it('allows allowlisted private IPv6', async () => {
+			ssrfModule.setSsrfAllowlist(['[::1]']);
+			expect(await ssrfModule.checkForSsrf('http://[::1]')).toBe(true);
+		});
+
+		it('allows allowlisted domain that resolves to private IP', async () => {
+			nslookupSpy = jest.spyOn(ssrfModule, 'nslookup').mockResolvedValue('10.0.0.1');
+			ssrfModule.setSsrfAllowlist(['internal.corp']);
+			expect(await ssrfModule.checkForSsrf('http://internal.corp')).toBe(true);
+		});
+
+		it('denies same host when allowlist is cleared', async () => {
+			ssrfModule.setSsrfAllowlist(['127.0.0.1']);
+			expect(await ssrfModule.checkForSsrf('http://127.0.0.1')).toBe(true);
+			ssrfModule.setSsrfAllowlist([]);
+			expect(await ssrfModule.checkForSsrf('http://127.0.0.1')).toBe(false);
 		});
 	});
 });

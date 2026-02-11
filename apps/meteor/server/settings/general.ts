@@ -1,7 +1,17 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { setSsrfAllowlist } from '@rocket.chat/server-fetch';
 
-export const createGeneralSettings = () =>
-	settingsRegistry.addGroup('General', async function () {
+import { settingsRegistry, settings } from '../../app/settings/server';
+
+const parseSsrfAllowlist = (value: string | undefined): string[] => {
+	if (typeof value !== 'string' || !value.trim()) return [];
+	return value
+		.split(/[\n,]/)
+		.map((entry) => entry.trim())
+		.filter((entry) => entry.length > 0);
+};
+
+export const createGeneralSettings = async () => {
+	await settingsRegistry.addGroup('General', async function () {
 		await this.section('REST API', async function () {
 			await this.add('API_Upper_Count_Limit', 100, { type: 'int', public: false });
 			await this.add('API_Default_Count', 50, { type: 'int', public: false });
@@ -380,4 +390,20 @@ export const createGeneralSettings = () =>
 				i18nDescription: 'Update_EnableChecker_Description',
 			});
 		});
+
+		await this.section('SSRF_Protection', async function () {
+			await this.add('SSRF_Allowlist', '', {
+				type: 'string',
+				multiline: true,
+				public: false,
+				i18nLabel: 'SSRF_Allowlist',
+				i18nDescription: 'SSRF_Allowlist_Description',
+			});
+		});
 	});
+
+	setSsrfAllowlist(parseSsrfAllowlist(settings.get<string>('SSRF_Allowlist')));
+	settings.watch<string>('SSRF_Allowlist', (value) => {
+		setSsrfAllowlist(parseSsrfAllowlist(value));
+	});
+};

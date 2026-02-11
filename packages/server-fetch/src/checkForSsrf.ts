@@ -2,6 +2,43 @@ import { lookup } from 'dns';
 
 import { Address4, Address6 } from 'ip-address';
 
+/** Administrator-configured allowlist: domains, IPs, or IP:port that bypass SSRF blocklist. */
+let ssrfAllowlist: string[] = [];
+
+const domainPattern = /^(?=.{1,253}$)(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[A-Za-z]{2,63}$/;
+const isValidDomain = (domain: string) => domainPattern.test(domain);
+
+const normalizeAllowlistEntry = (entry: string): string => {
+	const trimmed = entry.trim();
+	if (!trimmed) return '';
+	// Domains: lowercase for case-insensitive match
+	if (isValidDomain(trimmed)) return trimmed.toLowerCase();
+	// IPv6 with brackets: keep as-is for consistency (hostname form)
+	if (trimmed.startsWith('[')) return trimmed;
+	// IPv6 without brackets: normalize to bracketed for host comparison
+	if (trimmed.includes(':') && Address6.isValid(trimmed)) return `[${trimmed}]`;
+	// domain:port or other: normalize to lowercase for consistent matching
+	return trimmed.toLowerCase();
+};
+
+export const setSsrfAllowlist = (allowlist: string[]): void => {
+	ssrfAllowlist = allowlist
+		.map(normalizeAllowlistEntry)
+		.filter((e) => e.length > 0);
+};
+
+const normalizeHostForAllowlistMatch = (hostOrIp: string): string => {
+	if (hostOrIp.startsWith('[')) return hostOrIp;
+	if (hostOrIp.includes(':') && Address6.isValid(hostOrIp)) return `[${hostOrIp}]`;
+	return hostOrIp.toLowerCase();
+};
+
+const isInAllowlist = (hostOrIp: string, port: string | undefined): boolean => {
+	const normalized = normalizeHostForAllowlistMatch(hostOrIp);
+	const withPort = port ? `${normalized}:${port}` : normalized;
+	return ssrfAllowlist.some((entry) => entry === normalized || entry === withPort);
+};
+
 const ipv4Ranges = [
 	'0.0.0.0/8',
 	'10.0.0.0/8',
@@ -68,9 +105,6 @@ const isIpInAnyRange = (ip: string) => {
 	});
 };
 
-const domainPattern = /^(?=.{1,253}$)(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[A-Za-z]{2,63}$/;
-const isValidDomain = (domain: string) => domainPattern.test(domain);
-
 const parseIpv4WithPort = (input: string): { ip: string; port?: string } | null => {
 	const ipv4WithPortPattern = /^(\d+\.\d+\.\d+\.\d+)(?::(\d+))?$/;
 	const match = input.match(ipv4WithPortPattern);
@@ -125,6 +159,28 @@ export const checkForSsrfWithIp = async (input: string): Promise<{ allowed: fals
 	const domainValid = isValidDomain(ipOrDomain);
 
 	if (!ipValid && !domainValid) return { allowed: false };
+
+	if (isInAllowlist(ipOrDomain, port)) {
+		if (ipValid) {
+			const resolvedIp =
+				!wasUrlParsed && port
+					? ipOrDomain.includes(':')
+						? `[${ipOrDomain}]:${port}`
+						: `${ipOrDomain}:${port}`
+					: ipOrDomain;
+			return { allowed: true, resolvedIp };
+		}
+		if (domainValid) {
+			try {
+				const resolvedIp = await nslookup(ipOrDomain);
+				const resolvedIpWithPort = !wasUrlParsed && port ? `${resolvedIp}:${port}` : resolvedIp;
+				return { allowed: true, resolvedIp: resolvedIpWithPort };
+			} catch {
+				return { allowed: false };
+			}
+		}
+	}
+
 	if (ipValid && isIpInAnyRange(ipOrDomain)) return { allowed: false };
 	if (domainValid && /metadata\.google\.internal/i.test(ipOrDomain)) return { allowed: false };
 
