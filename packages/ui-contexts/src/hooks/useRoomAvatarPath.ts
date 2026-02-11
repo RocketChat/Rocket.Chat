@@ -1,5 +1,5 @@
 import { useContext } from 'react';
 
-import { AvatarUrlContext } from '../AvatarUrlContext';
+import { AvatarUrlContext, type AvatarUrlContextValue } from '../AvatarUrlContext';
 
-export const useRoomAvatarPath = (): ((...args: any) => string) => useContext(AvatarUrlContext).getRoomPathAvatar;
+export const useRoomAvatarPath = (): AvatarUrlContextValue['getRoomPathAvatar'] => useContext(AvatarUrlContext).getRoomPathAvatar;

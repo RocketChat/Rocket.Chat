@@ -1,7 +1,7 @@
 export { AttachmentContext, AttachmentContextValue } from './AttachmentContext';
 export { AuthenticationContextValue, AuthenticationContext, LoginService } from './AuthenticationContext';
 export { AuthorizationContext, AuthorizationContextValue } from './AuthorizationContext';
-export { AvatarUrlContext, AvatarUrlContextValue } from './AvatarUrlContext';
+export { AvatarUrlContext, AvatarUrlContextValue, GetRoomPathAvatar } from './AvatarUrlContext';
 export { CustomSoundContext, CustomSoundContextValue } from './CustomSoundContext';
 export { LayoutContext, LayoutContextValue } from './LayoutContext';
 export { ModalContext, ModalContextValue } from './ModalContext';
