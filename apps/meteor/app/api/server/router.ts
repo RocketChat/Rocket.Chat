@@ -10,15 +10,17 @@ type HonoContext = Context<{
 	Bindings: { incoming: IncomingMessage };
 	Variables: {
 		'remoteAddress': string;
-		'bodyParams-override'?: Record<string, any>;
+		'bodyParams': Record<string, unknown>;
+		'bodyParams-override': Record<string, unknown> | undefined;
+		'queryParams': Record<string, unknown>;
 	};
 }>;
 
 export type APIActionContext = {
 	requestIp: string;
 	urlParams: Record<string, string>;
-	queryParams: Record<string, any>;
-	bodyParams: Record<string, any>;
+	queryParams: Record<string, unknown>;
+	bodyParams: Record<string, unknown>;
 	request: Request;
 	path: string;
 	response: any;
@@ -37,19 +39,14 @@ export class RocketChatAPIRouter<
 	protected override convertActionToHandler(action: APIActionHandler): (c: HonoContext) => Promise<ResponseSchema<TypedOptions>> {
 		return async (c: HonoContext): Promise<ResponseSchema<TypedOptions>> => {
 			const { req, res } = c;
-			const queryParams = this.parseQueryParams(req);
-			const bodyParams = await this.parseBodyParams<{ bodyParamsOverride: Record<string, any> }>({
-				request: req,
-				extra: { bodyParamsOverride: c.var['bodyParams-override'] || {} },
-			});
 
 			const request = req.raw.clone();
 
 			const context: APIActionContext = {
 				requestIp: c.get('remoteAddress'),
 				urlParams: req.param(),
-				queryParams,
-				bodyParams,
+				queryParams: c.get('queryParams'),
+				bodyParams: c.get('bodyParams-override') || c.get('bodyParams'),
 				request,
 				path: req.path,
 				response: res,
