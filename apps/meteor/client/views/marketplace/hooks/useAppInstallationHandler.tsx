@@ -18,7 +18,7 @@ export type AppInstallationHandlerParams = {
 	action: Actions | '';
 	isAppPurchased?: boolean;
 	onDismiss: () => void;
-	onSuccess: (action: Actions | '', appPermissions?: App['permissions']) => void;
+	onSuccess: (action: Actions | '', appPermissions?: App['permissions']) => Promise<void>;
 	setIsPurchased: (purchased: boolean) => void;
 };
 
