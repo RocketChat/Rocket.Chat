@@ -22,9 +22,7 @@ const normalizeAllowlistEntry = (entry: string): string => {
 };
 
 export const setSsrfAllowlist = (allowlist: string[]): void => {
-	ssrfAllowlist = allowlist
-		.map(normalizeAllowlistEntry)
-		.filter((e) => e.length > 0);
+	ssrfAllowlist = allowlist.map(normalizeAllowlistEntry).filter((e) => e.length > 0);
 };
 
 const normalizeHostForAllowlistMatch = (hostOrIp: string): string => {
@@ -117,6 +115,12 @@ const parseIpv4WithPort = (input: string): { ip: string; port?: string } | null 
 	return null;
 };
 
+const allowlistedIpResolved = (ipOrDomain: string, port: string | undefined, wasUrlParsed: boolean): string => {
+	if (wasUrlParsed || !port) return ipOrDomain;
+	if (ipOrDomain.includes(':')) return `[${ipOrDomain}]:${port}`;
+	return `${ipOrDomain}:${port}`;
+};
+
 export const checkForSsrf = async (input: string): Promise<boolean> => {
 	const result = await checkForSsrfWithIp(input);
 	return result.allowed;
@@ -162,13 +166,7 @@ export const checkForSsrfWithIp = async (input: string): Promise<{ allowed: fals
 
 	if (isInAllowlist(ipOrDomain, port)) {
 		if (ipValid) {
-			const resolvedIp =
-				!wasUrlParsed && port
-					? ipOrDomain.includes(':')
-						? `[${ipOrDomain}]:${port}`
-						: `${ipOrDomain}:${port}`
-					: ipOrDomain;
-			return { allowed: true, resolvedIp };
+			return { allowed: true, resolvedIp: allowlistedIpResolved(ipOrDomain, port, wasUrlParsed) };
 		}
 		if (domainValid) {
 			try {
