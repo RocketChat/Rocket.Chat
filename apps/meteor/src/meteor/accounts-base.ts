@@ -632,7 +632,7 @@ export class AccountsClient {
 
 	makeClientLoggedOut() {
 		if (this.connection._userId) {
-			this._onLogoutHook.each((callback) => {
+			this._onLogoutHook.forEach((callback) => {
 				callback();
 				return true;
 			});

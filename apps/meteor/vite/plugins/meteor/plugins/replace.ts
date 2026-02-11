@@ -19,7 +19,6 @@ export function replace(resolvedConfig: ResolvedPluginOptions): PluginOption {
 			'TEST_METADATA.driverPackage': 'false',
 			'Package.promise.Promise': 'globalThis.Promise',
 			'Package.meteor.global': 'globalThis',
-			'process': 'undefined',
 		}),
 		replacePlugin(
 			{

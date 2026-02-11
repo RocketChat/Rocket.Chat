@@ -14,7 +14,7 @@ const build = {
 	rolldownOptions: {
 		optimization: {
 			inlineConst: true,
-			pifeForModuleWrappers: false,
+			pifeForModuleWrappers: true,
 		},
 		context: 'globalThis',
 		checks: {

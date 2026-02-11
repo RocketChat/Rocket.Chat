@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { DiffSequence } from './diff-sequence.ts';
 import { EJSON } from './ejson.ts';
 import { GeoJSON } from './geojson-utils.ts';
@@ -8,7 +9,6 @@ import { Package } from './package-registry.ts';
 import { Tracker } from './tracker.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 import { isKey } from './utils/isKey.ts';
-import { isObject } from './utils/isObject.ts';
 import { isSafeInteger } from './utils/isSafeInteger.ts';
 import { keys } from './utils/keys.ts';
 
@@ -59,7 +59,7 @@ const TypeChecker: TypeCheckerInterface = {
 			return 5;
 		}
 
-		if (v instanceof MongoID.ObjectID) {
+		if (v instanceof ObjectID) {
 			return 7;
 		}
 
@@ -1177,7 +1177,7 @@ class LocalCollection {
 				if (query.cursor.skip || query.cursor.limit) {
 					queriesToRecompute.push(qid);
 				} else {
-					await LocalCollection._insertInResultsAsync(query, doc);
+					await _insertInResultsAsync(query, doc);
 				}
 			}
 		}
@@ -1407,7 +1407,7 @@ class LocalCollection {
 	prepareUpdate(selector) {
 		const qidToOriginalResults = {};
 		const docMap = new MongoIdMap();
-		const idsMatched = LocalCollection._idsMatchedBySelector(selector);
+		const idsMatched = _idsMatchedBySelector(selector);
 
 		Object.keys(this.queries).forEach((qid) => {
 			const query = this.queries[qid];
@@ -1598,7 +1598,7 @@ class LocalCollection {
 	}
 
 	async _eachPossiblyMatchingDocAsync(selector, fn) {
-		const specificIds = LocalCollection._idsMatchedBySelector(selector);
+		const specificIds = _idsMatchedBySelector(selector);
 
 		if (specificIds) {
 			for (const id of specificIds) {
@@ -1614,7 +1614,7 @@ class LocalCollection {
 	}
 
 	_eachPossiblyMatchingDocSync(selector, fn) {
-		const specificIds = LocalCollection._idsMatchedBySelector(selector);
+		const specificIds = _idsMatchedBySelector(selector);
 
 		if (specificIds) {
 			for (const id of specificIds) {
@@ -2502,7 +2502,7 @@ export class Cursor {
 LocalCollection.Cursor = Cursor;
 LocalCollection.ObserveHandle = ObserveHandle;
 
-LocalCollection._CachingChangeObserver = class _CachingChangeObserver {
+class CachingChangeObserver {
 	constructor() {
 		const options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 		const orderedFromCallbacks = options.callbacks && _observeChangesCallbacksAreOrdered(options.callbacks);
@@ -2588,7 +2588,7 @@ LocalCollection._CachingChangeObserver = class _CachingChangeObserver {
 			this.docs.remove(id);
 		};
 	}
-};
+}
 
 type Comparator<T> = (a: T, b: T) => number;
 
@@ -2735,44 +2735,39 @@ const _findInOrderedResults = (query: Query, doc: Document): number => {
 	throw new Error('object missing from query');
 };
 
-// LocalCollection._idsMatchedBySelector = (selector) => {
-// 	if (_selectorIsId(selector)) {
-// 		return [selector];
-// 	}
+const _idsMatchedBySelector = (selector): (string | number)[] | null => {
+	if (_selectorIsId(selector)) {
+		return [selector];
+	}
 
-// 	if (!selector) {
-// 		return null;
-// 	}
+	if (!selector) {
+		return null;
+	}
 
-// 	if (hasOwn(selector, '_id')) {
-// 		if (_selectorIsId(selector._id)) {
-// 			return [selector._id];
-// 		}
+	if (hasOwn(selector, '_id')) {
+		if (_selectorIsId(selector._id)) {
+			return [selector._id];
+		}
 
-// 		if (
-// 			selector._id &&
-// 			Array.isArray(selector._id.$in) &&
-// 			selector._id.$in.length &&
-// 			selector._id.$in.every(LocalCollection._selectorIsId)
-// 		) {
-// 			return selector._id.$in;
-// 		}
+		if (selector._id && Array.isArray(selector._id.$in) && selector._id.$in.length && selector._id.$in.every(_selectorIsId)) {
+			return selector._id.$in;
+		}
 
-// 		return null;
-// 	}
+		return null;
+	}
 
-// 	if (Array.isArray(selector.$and)) {
-// 		for (let i = 0; i < selector.$and.length; ++i) {
-// 			const subIds = LocalCollection._idsMatchedBySelector(selector.$and[i]);
+	if (Array.isArray(selector.$and)) {
+		for (let i = 0; i < selector.$and.length; ++i) {
+			const subIds = _idsMatchedBySelector(selector.$and[i]);
 
-// 			if (subIds) {
-// 				return subIds;
-// 			}
-// 		}
-// 	}
+			if (subIds) {
+				return subIds;
+			}
+		}
+	}
 
-// 	return null;
-// };
+	return null;
+};
 
 const _insertInResultsSync = (query: Query, doc: Document): void => {
 	const fields = EJSON.clone(doc);
@@ -3046,7 +3041,7 @@ LocalCollection._observeFromObserveChanges = (cursor, observeCallbacks) => {
 		};
 	}
 
-	const changeObserver = new LocalCollection._CachingChangeObserver({ callbacks: observeChangesCallbacks });
+	const changeObserver = new CachingChangeObserver({ callbacks: observeChangesCallbacks });
 
 	changeObserver.applyChange._fromObserve = true;
 

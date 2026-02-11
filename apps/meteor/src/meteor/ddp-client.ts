@@ -14,10 +14,9 @@ import { hasOwn } from './utils/hasOwn.ts';
 import { isEmpty } from './utils/isEmpty.ts';
 import { isFunction, type UnknownFunction } from './utils/isFunction.ts';
 import { isKey } from './utils/isKey.ts';
+import { keys } from './utils/keys.ts';
 import { last } from './utils/last.ts';
 import { noop } from './utils/noop.ts';
-
-const { keys } = Object;
 
 class MongoIDMap extends IdMap {
 	constructor() {
@@ -28,7 +27,7 @@ class MongoIDMap extends IdMap {
 export class ConnectionStreamHandlers {
 	_connection: Connection;
 
-	constructor(connection: any) {
+	constructor(connection: Connection) {
 		this._connection = connection;
 	}
 
@@ -218,9 +217,9 @@ export class ConnectionStreamHandlers {
 }
 
 export class MessageProcessors {
-	_connection: any;
+	_connection: Connection;
 
-	constructor(connection: any) {
+	constructor(connection: Connection) {
 		this._connection = connection;
 	}
 
@@ -293,14 +292,14 @@ export class MessageProcessors {
 		self._methodsBlockingQuiescence = Object.create(null);
 		if (self._resetStores) {
 			const invokers = self._methodInvokers;
-			keys(invokers).forEach((id: string) => {
+			keys(invokers).forEach((id) => {
 				const invoker = invokers[id];
 				if (invoker.gotResult()) {
 					// This method already got its result, but it didn't call its callback
 					// because its data didn't become visible. We did not resend the
 					// method RPC. We'll call its callback when we get a full quiesce,
 					// since that's as close as we'll get to "data must be visible".
-					self._afterUpdateCallbacks.push((...args: any[]) => invoker.dataVisible(...args));
+					self._afterUpdateCallbacks.push(() => invoker.dataVisible());
 				} else if (invoker.sentMessage) {
 					// This method has been sent on this connection (maybe as a resend
 					// from the last connection, maybe from onReconnect, maybe just very
@@ -918,7 +917,7 @@ export class Connection {
 
 	_heartbeatTimeout: number;
 
-	_methodInvokers: Record<string, any>;
+	_methodInvokers: Record<string, MethodInvoker>;
 
 	_outstandingMethodBlocks: any[];
 
@@ -1170,7 +1169,7 @@ export class Connection {
 		this._userIdDeps = new Tracker.Dependency();
 
 		// Block auto-reload while we're waiting for method responses.
-		if (Meteor.isClient && Package.reload && !options.reloadWithOutstanding) {
+		if (Package.reload && !options.reloadWithOutstanding) {
 			Package.reload.Reload._onMigrate((retry: any) => {
 				if (!this._readyToMigrate()) {
 					this._retryMigrate = retry;
@@ -1732,7 +1731,7 @@ export class Connection {
 		// If the caller didn't give a callback, decide what to do.
 		let promise;
 		if (!callback) {
-			if (Meteor.isClient && !options.returnServerResultPromise && (!options.isFromCallAsync || options.returnStubValue)) {
+			if (!options.returnServerResultPromise && (!options.isFromCallAsync || options.returnStubValue)) {
 				callback = (err: any) => {
 					err && Meteor._debug(`Error invoking Method '${name}'`, err);
 				};
@@ -2254,7 +2253,7 @@ export class Connection {
 // is used by the `spiderable` package, to keep track of whether all
 // data is ready.
 const allConnections: Connection[] = [];
-const _reconnectHook = new Hook({ bindEnvironment: false });
+const _reconnectHook = new Hook<(connection: Connection) => void>({ bindEnvironment: false });
 // This is private but it's used in a few places. accounts-base uses
 // it to get the current user. Meteor.setTimeout and friends clear
 // it. We can probably find a better way to factor this.
@@ -2326,7 +2325,7 @@ const connect = (url: string, options: Partial<ClientStreamOptions> = {}) => {
  * @param {Function} callback The function to call. It will be called with a
  * single argument, the [connection object](#ddp_connect) that is reconnecting.
  */
-const onReconnect = (callback: (connection: Connection) => void) => DDP._reconnectHook.register(callback);
+const onReconnect = (callback: (connection: Connection) => void) => _reconnectHook.register(callback);
 
 /**
  * @namespace DDP

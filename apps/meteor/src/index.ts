@@ -10,6 +10,8 @@ import './meteor/service-configuration.ts';
 
 import '../app/theme/client/main.css';
 
+Object.assign(globalThis, { process: {} });
+
 Object.assign(Accounts, { _hashPassword }, { oauth: { registerService, serviceNames, unregisterService } });
 Object.assign(Meteor, {
 	loginWithPassword,

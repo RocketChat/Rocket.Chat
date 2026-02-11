@@ -1,5 +1,4 @@
 import { Base64 } from './base64.ts';
-import { Meteor } from './meteor.ts';
 import { Package } from './package-registry.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 
@@ -46,7 +45,19 @@ export type EJSONable = {
 	[key: string]: EJSONableProperty;
 };
 
-const customTypes = new Map<string, (jsonValue: any) => any>();
+class CustomTypesMap extends Map<string, (jsonValue: any) => any> {
+	override get(name: string): (jsonValue: any) => any {
+		const factory = super.get(name);
+
+		if (!factory) {
+			throw new Error(`Custom EJSON type ${name} is not defined`);
+		}
+
+		return factory;
+	}
+}
+
+const customTypes = new CustomTypesMap();
 
 const isFunction = (fn: unknown): fn is (...args: unknown[]) => unknown => typeof fn === 'function';
 const isObject = (fn: any): fn is Record<string, any> => typeof fn === 'object' && fn !== null;
@@ -284,11 +295,11 @@ const builtinConverters: IEJSONConverter[] = [
 		},
 
 		toJSONValue(obj) {
-			return { $binary: (Base64 as any).encode(obj) };
+			return { $binary: Base64.encode(obj) };
 		},
 
 		fromJSONValue(obj) {
-			return (Base64 as any).decode(obj.$binary);
+			return Base64.decode(obj.$binary);
 		},
 	},
 
@@ -342,12 +353,12 @@ const builtinConverters: IEJSONConverter[] = [
 		},
 
 		toJSONValue(obj) {
-			const jsonValue = Meteor._noYieldsAllowed(() => obj.toJSONValue());
+			const jsonValue = obj.toJSONValue();
 
 			return { $type: obj.typeName(), $value: jsonValue };
 		},
 
-		fromJSONValue(obj) {
+		fromJSONValue(obj: { $type: string; $value: any }) {
 			const typeName = obj.$type;
 
 			if (!customTypes.has(typeName)) {
@@ -355,8 +366,7 @@ const builtinConverters: IEJSONConverter[] = [
 			}
 
 			const converter = customTypes.get(typeName);
-
-			return Meteor._noYieldsAllowed(() => (converter as (v: any) => any)(obj.$value));
+			return converter(obj.$value);
 		},
 	},
 ];
@@ -379,7 +389,7 @@ const toJSONValueHelper = (item: any) => {
 	return undefined;
 };
 
-const adjustTypesToJSONValue = (obj: any): any => {
+const adjustTypesToJSONValue = (obj: unknown): any => {
 	if (obj === null) {
 		return null;
 	}

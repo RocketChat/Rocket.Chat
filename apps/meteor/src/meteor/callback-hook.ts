@@ -1,5 +1,3 @@
-import { Package } from './package-registry.ts';
-
 interface IHookOptions {
 	bindEnvironment?: boolean;
 	wrapAsync?: boolean;
@@ -10,7 +8,9 @@ interface IHookOptions {
 export class Hook<T extends (...args: any[]) => any = (...args: any[]) => any> {
 	nextCallbackId = 0;
 
-	callbacks: Record<number, T> = Object.create(null);
+	// Optimization: Use Map instead of Object.
+	// Maps allow O(1) addition/deletion without de-optimizing the object's hidden class.
+	callbacks = new Map<number, T>();
 
 	bindEnvironment = true;
 
@@ -19,39 +19,36 @@ export class Hook<T extends (...args: any[]) => any = (...args: any[]) => any> {
 	exceptionHandler: ((exception: unknown) => void) | string | undefined;
 
 	constructor(options: IHookOptions = {}) {
-		if (options.bindEnvironment === false) {
-			this.bindEnvironment = false;
-		}
+		const { bindEnvironment = true, wrapAsync = true, exceptionHandler, debugPrintExceptions } = options;
 
-		if (options.wrapAsync === false) {
-			this.wrapAsync = false;
-		}
+		this.bindEnvironment = bindEnvironment;
+		this.wrapAsync = wrapAsync;
 
-		if (options.exceptionHandler) {
-			this.exceptionHandler = options.exceptionHandler;
-		} else if (options.debugPrintExceptions) {
-			if (typeof options.debugPrintExceptions !== 'string') {
+		if (exceptionHandler) {
+			this.exceptionHandler = exceptionHandler;
+		} else if (debugPrintExceptions) {
+			if (typeof debugPrintExceptions !== 'string') {
 				throw new Error('Hook option debugPrintExceptions should be a string');
 			}
-			this.exceptionHandler = options.debugPrintExceptions;
+			this.exceptionHandler = debugPrintExceptions;
 		}
 	}
 
 	register(callback: T): { callback: T; stop: () => void } {
 		const id = this.nextCallbackId++;
-		this.callbacks[id] = callback;
+		this.callbacks.set(id, callback);
 
 		return {
 			callback,
 			stop: () => {
-				delete this.callbacks[id];
+				this.callbacks.delete(id);
 			},
 		};
 	}
 
 	clear() {
 		this.nextCallbackId = 0;
-		this.callbacks = Object.create(null);
+		this.callbacks.clear();
 	}
 
 	/**
@@ -66,30 +63,21 @@ export class Hook<T extends (...args: any[]) => any = (...args: any[]) => any> {
 	 * @param iterator
 	 */
 	forEach(iterator: (callback: T) => boolean | void | undefined) {
-		const ids = Object.keys(this.callbacks);
-		for (let i = 0; i < ids.length; ++i) {
-			const id = Number(ids[i]);
-			// check to see if the callback was removed during iteration
-			if (Object.hasOwn(this.callbacks, id)) {
-				const callback = this.callbacks[id];
-				if (!iterator(callback)) {
-					break;
-				}
+		// Optimization: Iterate directly over Map values.
+		// Map iterators are live and handle deletions during iteration safely (the removed item is skipped).
+		// This removes the need for `Object.keys` allocation and `Object.hasOwn` checks.
+		for (const callback of this.callbacks.values()) {
+			if (!iterator(callback)) {
+				break;
 			}
 		}
 	}
 
 	async forEachAsync(iterator: (callback: T) => Promise<boolean | void | undefined>): Promise<void> {
-		const ids = Object.keys(this.callbacks);
-		for (let i = 0; i < ids.length; ++i) {
-			const id = Number(ids[i]);
-			// check to see if the callback was removed during iteration
-			if (Object.hasOwn(this.callbacks, id)) {
-				const callback = this.callbacks[id];
-				// eslint-disable-next-line no-await-in-loop
-				if (!(await iterator(callback))) {
-					break;
-				}
+		for (const callback of this.callbacks.values()) {
+			// eslint-disable-next-line no-await-in-loop
+			if (!(await iterator(callback))) {
+				break;
 			}
 		}
 	}
@@ -102,7 +90,3 @@ export class Hook<T extends (...args: any[]) => any = (...args: any[]) => any> {
 		return this.forEach(iterator);
 	}
 }
-
-Package['callback-hook'] = {
-	Hook,
-};
