@@ -76,10 +76,3 @@ export async function readReceiptsArchiveCron(): Promise<void> {
 	
 	return cronJobs.add('ReadReceiptsArchive', cronSchedule, async () => archiveOldReadReceipts());
 }
-
-// Watch for settings changes and update the cron schedule
-settings.watch<string>('Message_Read_Receipt_Archive_Cron', async (value) => {
-	if (value) {
-		await readReceiptsArchiveCron();
-	}
-});
