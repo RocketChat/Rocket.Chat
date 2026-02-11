@@ -8,11 +8,14 @@ import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
-type CustomSoundsList = PaginatedRequest<{ name?: string }>;
+type CustomSoundsList = PaginatedRequest<{ name?: string; _id?: string }>;
 
 const CustomSoundsListSchema = {
 	type: 'object',
 	properties: {
+		_id: {
+			type: 'string',
+		},
 		count: {
 			type: 'number',
 			nullable: true,
@@ -85,10 +88,11 @@ const customSoundsEndpoints = API.v1.get(
 		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
 		const { sort, query } = await this.parseJsonQuery();
 
-		const { name } = this.queryParams;
+		const { name, _id } = this.queryParams;
 
 		const filter = {
 			...query,
+			...(_id ? { _id } : {}),
 			...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
 		};
 

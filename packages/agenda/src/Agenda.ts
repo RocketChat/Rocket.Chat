@@ -185,6 +185,7 @@ export class Agenda extends EventEmitter {
 			this.dbInit(collection);
 		} catch (error) {
 			debug('error connecting to MongoDB using collection: [%s]', collection);
+			this.emit('error:database', error);
 		}
 	}
 
@@ -280,16 +281,28 @@ export class Agenda extends EventEmitter {
 	}
 
 	public async jobs(query = {}, sort = {}, limit = 0, skip = 0): Promise<Job[]> {
-		const result = await this.getCollection().find<IJob>(query).sort(sort).limit(limit).skip(skip).toArray();
+		try {
+			const result = await this.getCollection().find<IJob>(query).sort(sort).limit(limit).skip(skip).toArray();
 
-		return result.map((job) => createJob(this, job));
+			return result.map((job) => createJob(this, job));
+		} catch (error) {
+			debug('error querying jobs from database');
+			this.emit('error:database', error);
+			throw error;
+		}
 	}
 
 	public async purge(): Promise<unknown> {
 		// @NOTE: Only use after defining your jobs
 		const definedNames = Object.keys(this._definitions);
 		debug('Agenda.purge(%o)', definedNames);
-		return this.cancel({ name: { $not: { $in: definedNames } } });
+		try {
+			return await this.cancel({ name: { $not: { $in: definedNames } } });
+		} catch (error) {
+			debug('error purging jobs from database');
+			this.emit('error:database', error);
+			throw error;
+		}
 	}
 
 	public define(name: string, processor: JobDefinition['fn']): void;
@@ -413,11 +426,12 @@ export class Agenda extends EventEmitter {
 	public async cancel(query: Record<string, any>): Promise<number> {
 		debug('attempting to cancel all Agenda jobs', query);
 		try {
-			const { deletedCount } = await this.getCollection().deleteMany(query);
-			debug('%s jobs cancelled', deletedCount || 0);
-			return deletedCount || 0;
+			const { deletedCount = 0 } = await this.getCollection().deleteMany(query);
+			debug('%s jobs cancelled', deletedCount);
+			return deletedCount;
 		} catch (error) {
 			debug('error trying to delete jobs from MongoDB');
+			this.emit('error:database', error);
 			throw error;
 		}
 	}
@@ -468,9 +482,13 @@ export class Agenda extends EventEmitter {
 
 		// Update the job and process the resulting data'
 		debug('job already has _id, calling findOneAndUpdate() using _id as query');
-		const result = await this.getCollection().findOneAndUpdate({ _id: id } as any, update, { returnDocument: 'after' });
-
-		result && this._processDbResult(job, result);
+		try {
+			const result = await this.getCollection().findOneAndUpdate({ _id: id } as any, update, { returnDocument: 'after' });
+			result && (await this._processDbResult(job, result));
+		} catch (error) {
+			this.emit('error:database', error);
+			throw error;
+		}
 	}
 
 	private async _saveSingleJob(job: Job, props: Record<string, any>, now: Date): Promise<void> {
@@ -494,19 +512,24 @@ export class Agenda extends EventEmitter {
 
 		// Try an upsert
 		debug('calling findOneAndUpdate() with job name and type of "single" as query');
-		const result = await this.getCollection().findOneAndUpdate(
-			{
-				name: props.name,
-				type: 'single',
-			},
-			update,
-			{
-				upsert: true,
-				returnDocument: 'after',
-			},
-		);
+		try {
+			const result = await this.getCollection().findOneAndUpdate(
+				{
+					name: props.name,
+					type: 'single',
+				},
+				update,
+				{
+					upsert: true,
+					returnDocument: 'after',
+				},
+			);
 
-		return this._processDbResult(job, result);
+			return await this._processDbResult(job, result);
+		} catch (error) {
+			this.emit('error:database', error);
+			throw error;
+		}
 	}
 
 	private async _saveUniqueJob(job: Job, props: Record<string, any>): Promise<void> {
@@ -521,15 +544,27 @@ export class Agenda extends EventEmitter {
 
 		// Use the 'unique' query object to find an existing job or create a new one
 		debug('calling findOneAndUpdate() with unique object as query: \n%O', query);
-		const result = await this.getCollection().findOneAndUpdate(query, update, { upsert: true, returnDocument: 'after' });
-		return this._processDbResult(job, result);
+		try {
+			const result = await this.getCollection().findOneAndUpdate(query, update, { upsert: true, returnDocument: 'after' });
+			return await this._processDbResult(job, result);
+		} catch (error) {
+			debug('error saving unique job to database');
+			this.emit('error:database', error);
+			throw error;
+		}
 	}
 
 	private async _saveNewJob(job: Job, props: Record<string, any>): Promise<void> {
 		// If all else fails, the job does not exist yet so we just insert it into MongoDB
 		debug('using default behavior, inserting new job via insertOne() with props that were set: \n%O', props);
-		const result = await this.getCollection().insertOne(props);
-		return this._processDbResult(job, result);
+		try {
+			const result = await this.getCollection().insertOne(props);
+			return await this._processDbResult(job, result);
+		} catch (error) {
+			debug('error inserting new job to database');
+			this.emit('error:database', error);
+			throw error;
+		}
 	}
 
 	public async saveJob(job: Job): Promise<void> {
@@ -595,8 +630,14 @@ export class Agenda extends EventEmitter {
 		}
 
 		debug('about to unlock jobs with ids: %O', jobIds);
-		await this.getCollection().updateMany({ _id: { $in: jobIds } } as any, { $set: { lockedAt: null } });
-		this._lockedJobs = [];
+		try {
+			await this.getCollection().updateMany({ _id: { $in: jobIds } } as any, { $set: { lockedAt: null } });
+			this._lockedJobs = [];
+		} catch (error) {
+			debug('error unlocking jobs in database');
+			this.emit('error:database', error);
+			throw error;
+		}
 	}
 
 	public stop(): Promise<void> {
@@ -656,18 +697,24 @@ export class Agenda extends EventEmitter {
 			const JOB_PROCESS_SET_QUERY = { $set: { lockedAt: now } };
 
 			// Find ONE and ONLY ONE job and set the 'lockedAt' time so that job begins to be processed
-			const result = await this.getCollection().findOneAndUpdate(JOB_PROCESS_WHERE_QUERY, JOB_PROCESS_SET_QUERY, {
-				returnDocument: 'after',
-				sort: this._sort,
-			});
+			try {
+				const result = await this.getCollection().findOneAndUpdate(JOB_PROCESS_WHERE_QUERY, JOB_PROCESS_SET_QUERY, {
+					returnDocument: 'after',
+					sort: this._sort,
+				});
 
-			let job;
-			if (result) {
-				debug('found a job available to lock, creating a new job on Agenda with id [%s]', result._id);
-				job = createJob(this, result as unknown as IJob);
+				let job;
+				if (result) {
+					debug('found a job available to lock, creating a new job on Agenda with id [%s]', result._id);
+					job = createJob(this, result as unknown as IJob);
+				}
+
+				return job;
+			} catch (error) {
+				debug('error finding and locking next job in database');
+				this.emit('error:database', error);
+				throw error;
 			}
-
-			return job;
 		}
 	}
 
@@ -748,15 +795,20 @@ export class Agenda extends EventEmitter {
 		const update = { $set: { lockedAt: now } };
 
 		// Lock the job in MongoDB!
-		const resp = await this.getCollection().findOneAndUpdate(criteria as any, update, { returnDocument: 'after' });
+		try {
+			const resp = await this.getCollection().findOneAndUpdate(criteria as any, update, { returnDocument: 'after' });
 
-		if (resp) {
-			const job = createJob(this, resp as unknown as IJob);
-			debug('found job [%s] that can be locked on the fly', job.attrs.name);
-			this._lockedJobs.push(job);
-			this._definitions[job.attrs.name].locked++;
-			this._enqueueJobs(job);
-			this._jobProcessing();
+			if (resp) {
+				const job = createJob(this, resp as unknown as IJob);
+				debug('found job [%s] that can be locked on the fly', job.attrs.name);
+				this._lockedJobs.push(job);
+				this._definitions[job.attrs.name].locked++;
+				this._enqueueJobs(job);
+				this._jobProcessing();
+			}
+		} catch (error) {
+			debug('error locking job on the fly in database');
+			this.emit('error:database', error);
 		}
 
 		// Mark lock on fly is done for now
