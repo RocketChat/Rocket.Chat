@@ -51,4 +51,8 @@ export class ReadReceiptsDummy extends BaseDummy<IReadReceipt> implements IReadR
 	setAsThreadById(_messageId: string): Promise<Document | UpdateResult> {
 		return this.updateMany({}, {});
 	}
+
+	findOlderThan(_date: Date): FindCursor<IReadReceipt> {
+		return this.find({});
+	}
 }

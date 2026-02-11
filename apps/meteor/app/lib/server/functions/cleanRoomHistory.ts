@@ -1,6 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, ReadReceipts, ReadReceiptsArchive, Users } from '@rocket.chat/models';
 
 import { deleteRoom } from './deleteRoom';
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../../lib/constants';
@@ -148,8 +148,10 @@ export async function cleanRoomHistory({
 			.map((user) => user._id)
 			.toArray();
 		await ReadReceipts.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, uids, ignoreThreads);
+		await ReadReceiptsArchive.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, uids, ignoreThreads);
 	} else if (selectedMessageIds) {
 		await ReadReceipts.removeByMessageIds(selectedMessageIds);
+		await ReadReceiptsArchive.removeByMessageIds(selectedMessageIds);
 	}
 
 	if (count) {
