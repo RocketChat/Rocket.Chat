@@ -2,14 +2,15 @@ import { cronJobs } from '@rocket.chat/cron';
 import { ReadReceipts, ReadReceiptsArchive, Messages } from '@rocket.chat/models';
 import { Logger } from '@rocket.chat/logger';
 
+import { settings } from '../../../app/settings/server';
+
 const logger = new Logger('ReadReceiptsArchive');
 
-// 30 days in milliseconds
-const RETENTION_DAYS = 30;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
-async function archiveOldReadReceipts(): Promise<void> {
-	const cutoffDate = new Date(Date.now() - RETENTION_DAYS * MILLISECONDS_PER_DAY);
+export async function archiveOldReadReceipts(): Promise<void> {
+	const retentionDays = settings.get<number>('Message_Read_Receipt_Archive_Retention_Days') || 30;
+	const cutoffDate = new Date(Date.now() - retentionDays * MILLISECONDS_PER_DAY);
 	
 	logger.info(`Starting to archive read receipts older than ${cutoffDate.toISOString()}`);
 
@@ -66,6 +67,19 @@ async function archiveOldReadReceipts(): Promise<void> {
 }
 
 export async function readReceiptsArchiveCron(): Promise<void> {
-	// Run daily at 2 AM
-	return cronJobs.add('ReadReceiptsArchive', '0 2 * * *', async () => archiveOldReadReceipts());
+	const cronSchedule = settings.get<string>('Message_Read_Receipt_Archive_Cron') || '0 2 * * *';
+	
+	// Remove existing job if it exists
+	if (await cronJobs.has('ReadReceiptsArchive')) {
+		await cronJobs.remove('ReadReceiptsArchive');
+	}
+	
+	return cronJobs.add('ReadReceiptsArchive', cronSchedule, async () => archiveOldReadReceipts());
 }
+
+// Watch for settings changes and update the cron schedule
+settings.watch<string>('Message_Read_Receipt_Archive_Cron', async (value) => {
+	if (value) {
+		await readReceiptsArchiveCron();
+	}
+});
