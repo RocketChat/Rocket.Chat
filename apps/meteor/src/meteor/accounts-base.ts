@@ -119,33 +119,33 @@ export class AccountsClient {
 
 	public savedHash: string;
 
-	public storageLocation: any;
+	public storageLocation: Storage;
 
 	public _loginFuncs: Record<string, (...args: any[]) => any>;
 
 	public _loginCallbacksCalled: boolean;
 
-	public _autoLoginEnabled: boolean;
+	public _autoLoginEnabled = false;
 
-	public _lastLoginTokenWhenPolled: string | null;
+	public _lastLoginTokenWhenPolled: string | null = null;
 
-	public LOGIN_TOKEN_KEY: string;
+	public LOGIN_TOKEN_KEY = 'Meteor.loginToken';
 
-	public LOGIN_TOKEN_EXPIRES_KEY: string;
+	public LOGIN_TOKEN_EXPIRES_KEY = 'Meteor.loginTokenExpires';
 
-	public USER_ID_KEY: string;
+	public USER_ID_KEY = 'Meteor.userId';
 
 	public _pollIntervalTimer: any;
 
-	public _accountsCallbacks: Record<string, (...args: any[]) => any>;
+	public _accountsCallbacks: Record<string, (...args: any[]) => any> = {};
 
 	public _reconnectStopper: any;
 
-	public _resetPasswordToken: string;
+	public _resetPasswordToken: string | undefined;
 
-	public _verifyEmailToken: string;
+	public _verifyEmailToken: string | undefined;
 
-	public _enrollAccountToken: string;
+	public _enrollAccountToken: string | undefined;
 
 	constructor(options: AccountsClientOptions) {
 		// --- Initialization Logic from AccountsCommon ---
@@ -191,20 +191,17 @@ export class AccountsClient {
 
 		// Thrown when the user cancels the login process (eg, closes an oauth
 		// popup, declines retina scan, etc)
-		const lceName = 'Accounts.LoginCancelledError';
 		// this.LoginCancelledError = Meteor.makeErrorType(lceName, function (description: string) {
 		// 	this.message = description;
 		// });
 		this.LoginCancelledError = class LoginCancelledError extends Error {
+			numericError = 0x8acdc2f;
+			
 			constructor(description: string) {
 				super(description);
-				this.name = lceName;
+				this.name = 'Accounts.LoginCancelledError';
 			}
 		};
-		this.LoginCancelledError.prototype.name = lceName;
-
-		// This is used to transmit specific subclass errors over the wire.
-		this.LoginCancelledError.numericError = 0x8acdc2f;
 
 		// --- Initialization Logic from AccountsClient ---
 
@@ -217,9 +214,11 @@ export class AccountsClient {
 		this._pageLoadLoginAttemptInfo = null;
 
 		this.savedHash = window.location.hash;
-		this._initUrlMatching();
+		this._autoLoginEnabled = true;
+		this._accountsCallbacks = {};
+		this._attemptToMatchHash();
 
-		this.initStorageLocation();
+		this.storageLocation = localStorage;
 
 		// Defined in localstorage_token.js.
 		this._initLocalStorage();
@@ -504,8 +503,9 @@ export class AccountsClient {
 
 	logoutOtherClients(callback?: (error?: any) => void) {
 		this.connection.apply('getNewToken', [], { wait: true }, (err: any, result: any) => {
-			if (!err) {
-				this._storeLoginToken(this.userId(), result.token, result.tokenExpires);
+			const userId = this.userId();
+			if (!err && userId) {
+				this._storeLoginToken(userId, result.token, result.tokenExpires);
 			}
 		});
 
@@ -697,7 +697,7 @@ export class AccountsClient {
 		this.USER_ID_KEY += Random.id();
 	}
 
-	_storeLoginToken(userId: string | null, token: string, tokenExpires: any) {
+	_storeLoginToken(userId: string, token: string, tokenExpires: any) {
 		this.storageLocation.setItem(this.USER_ID_KEY, userId);
 		this.storageLocation.setItem(this.LOGIN_TOKEN_KEY, token);
 		if (!tokenExpires) tokenExpires = this._tokenExpiration(new Date());
@@ -733,10 +733,6 @@ export class AccountsClient {
 	}
 
 	_initLocalStorage() {
-		this.LOGIN_TOKEN_KEY = 'Meteor.loginToken';
-		this.LOGIN_TOKEN_EXPIRES_KEY = 'Meteor.loginTokenExpires';
-		this.USER_ID_KEY = 'Meteor.userId';
-
 		const rootUrlPathPrefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 		if (rootUrlPathPrefix || this.connection !== Meteor.connection) {
 			let namespace = `:${this.connection._stream.rawUrl}`;
@@ -805,12 +801,6 @@ export class AccountsClient {
 		this._lastLoginTokenWhenPolled = currentLoginToken;
 	}
 
-	_initUrlMatching() {
-		this._autoLoginEnabled = true;
-		this._accountsCallbacks = {};
-		this._attemptToMatchHash();
-	}
-
 	_attemptToMatchHash() {
 		attemptToMatchHash(this, this.savedHash, defaultSuccessHandler);
 	}
@@ -851,7 +841,7 @@ const defaultSuccessHandler = function (this: any, token: string, urlPart: strin
 	});
 };
 
-const attemptToMatchHash = (accounts: any, hash: string, success: (...args: any[]) => any) => {
+const attemptToMatchHash = (accounts: AccountsClient, hash: string, success: (...args: any[]) => any) => {
 	['reset-password', 'verify-email', 'enroll-account'].forEach((urlPart) => {
 		let token;
 		const tokenRegex = new RegExp(`^\\#\\/${urlPart}\\/(.*)$`);
