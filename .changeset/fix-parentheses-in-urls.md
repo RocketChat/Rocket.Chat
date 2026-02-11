@@ -2,4 +2,4 @@
 "@rocket.chat/message-parser": patch
 ---
 
-fix: Links with parentheses in URLs not working correctly
+Fixes parsing of URLs that include parentheses
