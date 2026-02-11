@@ -3,12 +3,13 @@ import { EJSON } from './ejson.ts';
 import { GeoJSON } from './geojson-utils.ts';
 import { IdMap } from './id-map.ts';
 import { Meteor, SynchronousQueue } from './meteor.ts';
-import { MongoID } from './mongo-id.ts';
+import { ObjectID } from './mongo-id.ts';
 import { Package } from './package-registry.ts';
 import { Tracker } from './tracker.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 import { isKey } from './utils/isKey.ts';
 import { isObject } from './utils/isObject.ts';
+import { isSafeInteger } from './utils/isSafeInteger.ts';
 import { keys } from './utils/keys.ts';
 
 class ObserveHandle {}
@@ -187,6 +188,8 @@ const TypeChecker: TypeCheckerInterface = {
 };
 
 interface ElementSelector {
+	dontExpandLeafArrays?: boolean;
+	dontIncludeLeafArrays?: boolean;
 	compileElementSelector(
 		operand: unknown,
 		valueSelector?: Record<string, unknown>,
@@ -397,7 +400,7 @@ const ELEMENT_OPERATORS: ElementOperators = {
 		dontExpandLeafArrays: true,
 		compileElementSelector(
 			operand: unknown,
-			valueSelector?: Record<string, unknown>,
+			_valueSelector?: Record<string, unknown>,
 			matcher?: Matcher,
 		): (value: unknown) => boolean | number {
 			if (!_isPlainObject(operand)) {
@@ -406,8 +409,8 @@ const ELEMENT_OPERATORS: ElementOperators = {
 
 			const operandObj = operand as Record<string, unknown>;
 			const isDocMatcher = !isOperatorObject(
-				Object.keys(operandObj)
-					.filter((key: string) => !hasOwn(LOGICAL_OPERATORS, key))
+				keys(operandObj)
+					.filter((key) => !isKey(LOGICAL_OPERATORS, key))
 					.reduce((a: Record<string, unknown>, b: string) => Object.assign(a, { [b]: operandObj[b] }), {}),
 				true,
 			);
@@ -712,7 +715,7 @@ function compileArrayOfDocumentSelectors(selectors: unknown, matcher: Matcher, i
 		throw new MiniMongoQueryError('$and/$or/$nor must be nonempty array');
 	}
 
-	return (selectors as unknown[]).map((subSelector: unknown): ((doc: unknown) => MatchResult) => {
+	return selectors.map((subSelector) => {
 		if (!_isPlainObject(subSelector)) {
 			throw new MiniMongoQueryError('$or/$and/$nor entries need to be full objects');
 		}
@@ -722,13 +725,11 @@ function compileArrayOfDocumentSelectors(selectors: unknown, matcher: Matcher, i
 }
 
 interface CompileOptions {
-	inElemMatch?: boolean;
+	inElemMatch?: boolean | undefined;
 	isRoot?: boolean;
 }
 
-function compileDocumentSelector(docSelector: unknown, matcher: Matcher, options?: CompileOptions): (doc: unknown) => MatchResult {
-	const opts = options || {};
-
+function compileDocumentSelector(docSelector: unknown, matcher: Matcher, options: CompileOptions = {}): (doc: unknown) => MatchResult {
 	const docMatchers = Object.keys(docSelector as Record<string, unknown>)
 		.map((key: string): ((doc: unknown) => MatchResult) | undefined => {
 			const subSelector = docSelector[key];
@@ -971,13 +972,13 @@ function equalityElementMatcher(elementSelector: unknown): (value: unknown) => b
 }
 
 const _isPlainObject = (x: unknown): x is Record<string, unknown> => {
-	return x && TypeChecker._type(x) === 3;
+	return typeof x === 'object' && x !== null;
 };
 
 const _selectorIsId = (selector: unknown): selector is string | number =>
-	typeof selector === 'number' || typeof selector === 'string' || selector instanceof MongoID.ObjectID;
+	typeof selector === 'number' || typeof selector === 'string' || selector instanceof ObjectID;
 
-const _selectorIsIdPerhapsAsObject = (selector: unknown): boolean =>
+export const _selectorIsIdPerhapsAsObject = (selector: unknown): boolean =>
 	_selectorIsId(selector) ||
 	(_selectorIsId((selector as Record<string, unknown>)?._id) && Object.keys(selector as Record<string, unknown>).length === 1);
 
@@ -1016,9 +1017,9 @@ function assertIsValidFieldName(key: unknown): void {
 	}
 }
 
-class MongoIdMap extends IdMap {
+class MongoIdMap extends IdMap<ObjectID | string | undefined, Document> {
 	constructor() {
-		super(MongoID.idStringify, MongoID.idParse);
+		super(ObjectID.stringify, ObjectID.parse);
 	}
 }
 
@@ -2076,12 +2077,12 @@ class Matcher {
 		return Object.keys(this._paths);
 	}
 
-	_recordPathUsed(path) {
+	_recordPathUsed(path: string) {
 		this._paths[path] = true;
 	}
 }
 
-function getAsyncMethodName(method) {
+function getAsyncMethodName(method: string): string {
 	return ''.concat(method.replace('_', ''), 'Async');
 }
 
@@ -2097,9 +2098,9 @@ function getAsyncMethodName(method) {
 // 	'upsert',
 // ];
 
-const ASYNC_CURSOR_METHODS = ['count', 'fetch', 'forEach', 'map'];
+// const ASYNC_CURSOR_METHODS = ['count', 'fetch', 'forEach', 'map'];
 // const CLIENT_ONLY_METHODS = ['findOne', 'insert', 'remove', 'update', 'upsert'];
-const wrapTransform = (transform) => {
+export const wrapTransform = (transform: ((doc: any) => any) | null) => {
 	if (!transform) {
 		return null;
 	}
@@ -2172,6 +2173,16 @@ class Cursor {
 		if (typeof Tracker !== 'undefined') {
 			this.reactive = options.reactive === undefined ? true : options.reactive;
 		}
+	}
+
+	async fetchAsync() {
+		const result = [];
+
+		this.forEach((doc) => {
+			result.push(doc);
+		});
+
+		return result;
 	}
 
 	count() {
@@ -2413,7 +2424,7 @@ class Cursor {
 		});
 	}
 
-	_depend(changers, _allow_unordered) {
+	_depend(changers, _allow_unordered = false) {
 		if (Tracker.active) {
 			const dependency = new Tracker.Dependency();
 			const notify = dependency.changed.bind(dependency);
@@ -3577,7 +3588,7 @@ const MODIFIERS = {
 		let out;
 
 		if (arg != null && typeof arg === 'object' && !(arg instanceof Array)) {
-			const matcher = new Minimongo.Matcher(arg);
+			const matcher = new Matcher(arg);
 
 			out = toPull.filter((element) => !matcher.documentMatches(element).result);
 		} else {
@@ -3716,21 +3727,21 @@ function findModTarget(doc, keyparts) {
 	}
 }
 
-ASYNC_CURSOR_METHODS.forEach((method) => {
-	const asyncName = getAsyncMethodName(method);
+// ASYNC_CURSOR_METHODS.forEach((method) => {
+// 	const asyncName = getAsyncMethodName(method);
 
-	Cursor.prototype[asyncName] = function () {
-		try {
-			for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-				args[_key] = arguments[_key];
-			}
+// 	Cursor.prototype[asyncName] = function () {
+// 		try {
+// 			for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+// 				args[_key] = arguments[_key];
+// 			}
 
-			return Promise.resolve(this[method].apply(this, args));
-		} catch (error) {
-			return Promise.reject(error);
-		}
-	};
-});
+// 			return Promise.resolve(this[method].apply(this, args));
+// 		} catch (error) {
+// 			return Promise.reject(error);
+// 		}
+// 	};
+// });
 
 function expandArraysInBranches(branches, skipTheArrays) {
 	const branchesOut = [];
@@ -3780,10 +3791,10 @@ function getOperandBitmask(operand, selector) {
 	);
 }
 
-function getValueBitmask(value, length) {
-	if (Number.isSafeInteger(value)) {
+function getValueBitmask(value: unknown, length: number) {
+	if (isSafeInteger(value)) {
 		const buffer = new ArrayBuffer(Math.max(length, 2 * Uint32Array.BYTES_PER_ELEMENT));
-		let view = new Uint32Array(buffer, 0, 2);
+		let view: Uint32Array | Uint8Array = new Uint32Array(buffer, 0, 2);
 
 		view[0] = value % ((1 << 16) * (1 << 16)) | 0;
 		view[1] = (value / ((1 << 16) * (1 << 16))) | 0;
@@ -3791,7 +3802,7 @@ function getValueBitmask(value, length) {
 		if (value < 0) {
 			view = new Uint8Array(buffer, 2);
 
-			view.forEach((byte, i) => {
+			view.forEach((_byte, i) => {
 				view[i] = 0xff;
 			});
 		}
@@ -3806,45 +3817,45 @@ function getValueBitmask(value, length) {
 	return false;
 }
 
-function insertIntoDocument(document, key, value) {
-	Object.keys(document).forEach((existingKey) => {
-		if (
-			(existingKey.length > key.length && existingKey.indexOf(''.concat(key, '.')) === 0) ||
-			(key.length > existingKey.length && key.indexOf(''.concat(existingKey, '.')) === 0)
-		) {
-			throw new MiniMongoQueryError(
-				"cannot infer query fields to set, both paths '".concat(existingKey, "' and '").concat(key, "' are matched"),
-			);
-		} else if (existingKey === key) {
-			throw new MiniMongoQueryError("cannot infer query fields to set, path '".concat(key, "' is matched twice"));
-		}
-	});
+// function insertIntoDocument(document, key, value) {
+// 	Object.keys(document).forEach((existingKey) => {
+// 		if (
+// 			(existingKey.length > key.length && existingKey.indexOf(''.concat(key, '.')) === 0) ||
+// 			(key.length > existingKey.length && key.indexOf(''.concat(existingKey, '.')) === 0)
+// 		) {
+// 			throw new MiniMongoQueryError(
+// 				"cannot infer query fields to set, both paths '".concat(existingKey, "' and '").concat(key, "' are matched"),
+// 			);
+// 		} else if (existingKey === key) {
+// 			throw new MiniMongoQueryError("cannot infer query fields to set, path '".concat(key, "' is matched twice"));
+// 		}
+// 	});
 
-	document[key] = value;
-}
+// 	document[key] = value;
+// }
 
-function invertBranchedMatcher(branchedMatcher) {
-	return (branchValues) => {
+function invertBranchedMatcher(branchedMatcher: BranchedMatcher) {
+	return (branchValues: unknown) => {
 		return { result: !branchedMatcher(branchValues).result };
 	};
 }
 
-function isIndexable(obj) {
+function isIndexable(obj: unknown): obj is Record<string, unknown> | unknown[] {
 	return Array.isArray(obj) || _isPlainObject(obj);
 }
 
-function isNumericKey(s) {
+function isNumericKey(s: string): s is `${number}` {
 	return /^[0-9]+$/.test(s);
 }
 
-function isOperatorObject(valueSelector, inconsistentOK?: boolean) {
+function isOperatorObject(valueSelector: unknown, inconsistentOK?: boolean) {
 	if (!_isPlainObject(valueSelector)) {
 		return false;
 	}
 
-	let theseAreOperators = undefined;
+	let theseAreOperators: boolean | undefined = undefined;
 
-	Object.keys(valueSelector).forEach((selKey) => {
+	keys(valueSelector).forEach((selKey) => {
 		const thisIsOperator = selKey.substr(0, 1) === '$' || selKey === 'diff';
 
 		if (theseAreOperators === undefined) {

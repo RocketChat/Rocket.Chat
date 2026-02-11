@@ -488,8 +488,8 @@ const parse = (item: string) => {
 	return fromJSONValue(JSON.parse(item));
 };
 
-const isBinary = (obj: any): boolean => {
-	return !!((typeof Uint8Array !== 'undefined' && obj instanceof Uint8Array) || obj?.$Uint8ArrayPolyfill);
+const isBinary = (obj: unknown): obj is Uint8Array => {
+	return obj instanceof Uint8Array;
 };
 
 const equals = (a: any, b: any, options?: { keyOrderSensitive?: boolean }): boolean => {

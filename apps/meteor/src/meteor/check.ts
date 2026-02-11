@@ -443,10 +443,17 @@ function check(value: unknown, pattern: Pattern, options: { throwAllErrors?: boo
 	}
 }
 
-type MatchError = Error & {
+class MatchError extends Error {
 	path?: string;
-	sanitizedError?: Error;
-};
+
+	sanitizedError: Error;
+
+	constructor(msg: string) {
+		super(`Match error: ${msg}`);
+		this.path = '';
+		this.sanitizedError = new Meteor.Error(400, 'Match failed');
+	}
+}
 
 const Match = {
 	Optional(pattern: Pattern) {
@@ -469,14 +476,7 @@ const Match = {
 		return new ObjectWithValues(pattern);
 	},
 	Integer: ['__integer__'] as unknown as Pattern,
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	Error: Meteor.makeErrorType('Match.Error', function (this: any, msg: string) {
-		this.message = `Match error: ${msg}`;
-		this.path = '';
-		this.sanitizedError = new Meteor.Error(400, 'Match failed');
-	}),
-
+	Error: MatchError,
 	test(value: unknown, pattern: Pattern): boolean {
 		return !testSubtree(value, pattern);
 	},

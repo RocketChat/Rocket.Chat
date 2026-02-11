@@ -6,7 +6,10 @@
 import { queue } from './core-runtime.ts';
 import { meteorInstall, Module, type Leaf } from './modules-runtime.ts';
 import { Package } from './package-registry.ts';
+import { copyKey } from './utils/copyKey.ts';
 import { hasOwn } from './utils/hasOwn.ts';
+import { isKey } from './utils/isKey.ts';
+import { unreachable } from './utils/unreachable.ts';
 
 // css.js
 
@@ -47,18 +50,18 @@ install('logging', 'meteor/logging/logging.js');
 
 const esStrKey = '__esModule';
 const esSymKey = Symbol.for(esStrKey);
-function isObjectLike(value: unknown): value is object | Function {
+function isObjectLike(value: unknown): value is object | ((...args: any[]) => any) {
 	const type = typeof value;
 	return type === 'function' || (type === 'object' && value !== null);
 }
 
 function getESModule(exported: object) {
 	if (isObjectLike(exported)) {
-		if (hasOwn(exported, esSymKey)) {
+		if (isKey(exported, esSymKey)) {
 			return !!exported[esSymKey];
 		}
 
-		if (hasOwn(exported, esStrKey)) {
+		if (isKey(exported, esStrKey)) {
 			return !!exported[esStrKey];
 		}
 	}
@@ -79,24 +82,19 @@ function createNamespace() {
 	return namespace;
 }
 
-function copyKey(key: PropertyKey, target: any, source: any) {
-	const desc = Object.getOwnPropertyDescriptor(source, key);
-	Object.defineProperty(target, key, { ...desc, configurable: true });
-}
-
 function isObject(value: unknown): value is object {
 	return typeof value === 'object' && value !== null;
 }
 
 function ensureObjectProperty(object: Record<PropertyKey, any>, propertyName: PropertyKey) {
-	if (!hasOwn(object, propertyName)) {
+	if (!isKey(object, propertyName)) {
 		object[propertyName] = Object.create(null);
 	}
 
 	return object[propertyName];
 }
 
-function safeKeys(obj: {}) {
+function safeKeys(obj: object): string[] {
 	const keys = Object.keys(obj);
 	const esModuleIndex = keys.indexOf('__esModule');
 
@@ -114,7 +112,7 @@ let keySalt = 0;
 let nextEvaluationIndex = 0;
 
 class Entry extends Module {
-	module: any;
+	module: { id: string; exports: any } | null;
 
 	namespace: any;
 
@@ -167,8 +165,8 @@ class Entry extends Module {
 		this.evaluationError = null;
 	}
 
-	static getOrCreate(id: PropertyKey, mod: Module | null = null) {
-		const entry = hasOwn(entryMap, id) ? entryMap[id] : (entryMap[id] = new Entry(id));
+	static getOrCreate(id: string, mod: Module | null = null) {
+		const entry = isKey(entryMap, id) ? entryMap[id] : (entryMap[id] = new Entry(id));
 
 		if (isObject(mod) && mod.id === entry.id) {
 			entry.module = mod;
@@ -244,12 +242,36 @@ class Entry extends Module {
 
 			if (value !== GETTER_ERROR) {
 				this.namespace[name] = value;
-				this.module.exports[name] = value;
+				if (this.module) {
+					this.module.exports[name] = value;
+				}
 			}
 		}
 	}
 
-	override runSetters(names: string[] | undefined, runNsSetter?: any) {
+	addAsyncDep(childEntry: Entry) {
+		if (childEntry.status !== 'evaluated') {
+			this.pendingAsyncDeps += 1;
+			childEntry.allAsyncParents.push(this);
+			childEntry.pendingAsyncParents.push(this);
+		}
+
+		if (childEntry.evaluationError) {
+			this.setEvaluationError(childEntry.evaluationError);
+		}
+	}
+
+	setEvaluationError(error: any) {
+		if (!this.evaluationError) {
+			this.evaluationError = error;
+		}
+
+		this.allAsyncParents.forEach((parent: { setEvaluationError: (arg0: any) => void }) => {
+			parent.setEvaluationError(error);
+		});
+	}
+
+	override runSetters(names?: string[] | undefined, runNsSetter?: any) {
 		this.runGetters(names);
 
 		if (runNsSetter && names !== void 0) {
@@ -301,10 +323,73 @@ class Entry extends Module {
 			}
 		}
 	}
+
+	setAsyncEvaluation() {
+		if (this.asyncEvaluationIndex !== null) {
+			if (this.status === 'evaluated') {
+				return;
+			}
+
+			throw new Error('setAsyncEvaluation can only be called once');
+		}
+
+		this.asyncEvaluation = this.hasTLA || this.pendingAsyncDeps > 0;
+		this.asyncEvaluationIndex = nextEvaluationIndex++;
+	}
+
+	changeStatus(status: 'linking' | 'evaluating' | 'evaluated') {
+		switch (status) {
+			case 'linking':
+				this.status = 'linking';
+				break;
+
+			case 'evaluating':
+				this.status = 'evaluating';
+				this._onEvaluating.forEach((callback: () => void) => {
+					callback();
+				});
+				break;
+
+			case 'evaluated':
+				this.status = 'evaluated';
+				const toEvaluate: any[] = [];
+				this.gatherReadyAsyncParents(toEvaluate);
+				toEvaluate.sort((entryA, entryB) => {
+					return entryA.asyncEvaluationIndex - entryB.asyncEvaluationIndex;
+				});
+				toEvaluate.forEach((parent) => {
+					parent.changeStatus('evaluating');
+				});
+				const callbacks = this._onEvaluated;
+				this._onEvaluated = [];
+				callbacks.forEach((callback: () => void) => {
+					callback();
+				});
+				break;
+
+			default:
+				unreachable(status);
+		}
+	}
+
+	gatherReadyAsyncParents(readyList: any[]) {
+		this.pendingAsyncParents.forEach((parent: { pendingAsyncDeps: number; hasTLA: any; gatherReadyAsyncParents: (arg0: any) => void }) => {
+			parent.pendingAsyncDeps -= 1;
+
+			if (parent.pendingAsyncDeps === 0) {
+				readyList.push(parent);
+
+				if (!parent.hasTLA) {
+					parent.gatherReadyAsyncParents(readyList);
+				}
+			}
+		});
+
+		this.pendingAsyncParents = [];
+	}
 }
 
-const Ep = Object.setPrototypeOf(Entry.prototype, null);
-const entryMap = Object.create(null);
+const entryMap: Record<string, Entry> = Object.create(null);
 
 function normalizeSetterValue(module: { exportAs: (arg0: string) => any }, setter: any[]) {
 	if (typeof setter === 'function') {
@@ -338,10 +423,7 @@ function normalizeSetterValue(module: { exportAs: (arg0: string) => any }, sette
 	return null;
 }
 
-function syncExportsToNamespace(
-	entry: { module: { exports: any } | null; namespace: { default: any }; getters: object },
-	names: string[] | undefined,
-) {
+function syncExportsToNamespace(entry: Entry, names: string[] | undefined) {
 	let setDefault = false;
 
 	if (entry.module === null) return;
@@ -362,97 +444,11 @@ function syncExportsToNamespace(
 	}
 
 	names.forEach((key: PropertyKey) => {
-		if (!hasOwn(entry.getters, key) && !(setDefault && key === 'default') && hasOwn(exports, key)) {
+		if (!isKey(entry.getters, key) && !(setDefault && key === 'default') && isKey(exports, key)) {
 			copyKey(key, entry.namespace, exports);
 		}
 	});
 }
-
-Ep.addAsyncDep = function (childEntry: { status: string; allAsyncParents: any[]; pendingAsyncParents: any[]; evaluationError: any }) {
-	if (childEntry.status !== 'evaluated') {
-		this.pendingAsyncDeps += 1;
-		childEntry.allAsyncParents.push(this);
-		childEntry.pendingAsyncParents.push(this);
-	}
-
-	if (childEntry.evaluationError) {
-		this.setEvaluationError(childEntry.evaluationError);
-	}
-};
-
-Ep.changeStatus = function (status: any) {
-	switch (status) {
-		case 'linking':
-			this.status = 'linking';
-			break;
-
-		case 'evaluating':
-			this.status = 'evaluating';
-			this._onEvaluating.forEach((callback: () => void) => {
-				callback();
-			});
-			break;
-
-		case 'evaluated':
-			this.status = 'evaluated';
-			const toEvaluate: any[] = [];
-			this.gatherReadyAsyncParents(toEvaluate);
-			toEvaluate.sort((entryA, entryB) => {
-				return entryA.asyncEvaluationIndex - entryB.asyncEvaluationIndex;
-			});
-			toEvaluate.forEach((parent) => {
-				parent.changeStatus('evaluating');
-			});
-			const callbacks = this._onEvaluated;
-			this._onEvaluated = [];
-			callbacks.forEach((callback: () => void) => {
-				callback();
-			});
-			break;
-
-		default:
-			throw new Error(`Unrecognized module status: ${status}`);
-	}
-};
-
-Ep.gatherReadyAsyncParents = function (readyList: any[]) {
-	this.pendingAsyncParents.forEach((parent: { pendingAsyncDeps: number; hasTLA: any; gatherReadyAsyncParents: (arg0: any) => void }) => {
-		parent.pendingAsyncDeps -= 1;
-
-		if (parent.pendingAsyncDeps === 0) {
-			readyList.push(parent);
-
-			if (!parent.hasTLA) {
-				parent.gatherReadyAsyncParents(readyList);
-			}
-		}
-	});
-
-	this.pendingAsyncParents = [];
-};
-
-Ep.setAsyncEvaluation = function () {
-	if (this.asyncEvaluationIndex !== null) {
-		if (this.status === 'evaluated') {
-			return;
-		}
-
-		throw new Error('setAsyncEvaluation can only be called once');
-	}
-
-	this.asyncEvaluation = this.hasTLA || this.pendingAsyncDeps > 0;
-	this.asyncEvaluationIndex = nextEvaluationIndex++;
-};
-
-Ep.setEvaluationError = function (error: any) {
-	if (!this.evaluationError) {
-		this.evaluationError = error;
-	}
-
-	this.allAsyncParents.forEach((parent: { setEvaluationError: (arg0: any) => void }) => {
-		parent.setEvaluationError(error);
-	});
-};
 
 function createSnapshot(entry: { snapshots: { [x: string]: any } }, name: string, newValue: any) {
 	const newSnapshot = Object.create(null);
@@ -483,11 +479,7 @@ function normalizeSnapshotValue(value: number | undefined) {
 	return value;
 }
 
-function consumeKeysGivenSnapshot(
-	entry: { snapshots: { [x: string]: any }; newSetters: { [x: string]: any }; setters: { [x: string]: {} } },
-	name: string | number,
-	snapshot: any,
-) {
+function consumeKeysGivenSnapshot(entry: Entry, name: string | number, snapshot: any) {
 	if (entry.snapshots[name] !== snapshot) {
 		entry.snapshots[name] = snapshot;
 		delete entry.newSetters[name];
@@ -506,14 +498,7 @@ function consumeKeysGivenSnapshot(
 }
 
 function forEachSetter(
-	entry: {
-		setters: { [x: string]: any };
-		getters: { [x: string]: any };
-		namespace: object;
-		module: { exports: any } | null;
-		snapshots: { [x: string]: any };
-		newSetters: { [x: string]: any };
-	},
+	entry: Entry,
 	names: any[] | undefined,
 	callback: { (setter: any, name: any, value: any): void; (arg0: any, arg1: any, arg2: any): void },
 ) {
@@ -552,20 +537,12 @@ function forEachSetter(
 	});
 }
 
-function getExportByName(
-	entry: {
-		namespace: object;
-		module: { exports: any } | null;
-		setters: { [x: string]: any };
-		getters: { [x: string]: any };
-	},
-	name: PropertyKey,
-) {
+function getExportByName(entry: Entry, name: PropertyKey) {
 	if (name === '*') {
 		return entry.namespace;
 	}
 
-	if (hasOwn(entry.namespace, name)) {
+	if (isKey(entry.namespace, name)) {
 		return entry.namespace[name];
 	}
 
@@ -634,7 +611,7 @@ function moduleLink(this: Module, id: string, setters: any, key: any) {
 	}
 }
 
-function moduleExport(this: Module, getters: any, constant: any) {
+function moduleExport(this: Module, getters: any, constant: boolean) {
 	const entry = Entry.getOrCreate(this.id, this);
 
 	entry.addGetters(getters, constant);
@@ -682,14 +659,14 @@ function runSetters(this: Module, valueToPassThrough: any, names: any) {
 	return valueToPassThrough;
 }
 
-function moduleMakeNsSetter(this: Module, includeDefault: any) {
+function moduleMakeNsSetter(this: Module, includeDefault: boolean) {
 	return this.exportAs(includeDefault ? '*+' : '*');
 }
 
 function wrapAsync(
 	this: Module,
 	body: { call: (arg0: any, arg1: any, arg2: () => any, arg3: (error: any) => void) => void },
-	options: { async: any; self: any },
+	options: { async: boolean; self: any },
 ) {
 	const entry = Entry.getOrCreate(this.id, this);
 
@@ -758,7 +735,7 @@ function wrapAsync(
 		throw entry.evaluationError;
 	}
 }
-function enable(mod: Entry) {
+function enable(mod: Module) {
 	if (mod.link !== moduleLink) {
 		mod.link = moduleLink;
 		mod.export = moduleExport;
@@ -775,7 +752,7 @@ function enable(mod: Entry) {
 			const path = this.resolve(id);
 			const entry = Entry.getOrNull(path);
 
-			if (entry && entry.asyncEvaluation && !handleAsSync[path]) {
+			if (entry?.asyncEvaluation && !handleAsSync[path]) {
 				const promise = new Promise((resolve, reject) => {
 					if (entry.status === 'evaluated') {
 						if (entry.evaluationError) {

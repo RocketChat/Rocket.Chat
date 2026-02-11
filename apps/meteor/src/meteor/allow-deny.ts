@@ -1,9 +1,8 @@
 import { check, Match } from './check.ts';
 import { EJSON } from './ejson.ts';
-import { Meteor } from './meteor.ts';
-import { LocalCollection } from './minimongo.ts';
+import { MeteorError } from './meteor.ts';
+import { _selectorIsIdPerhapsAsObject } from './minimongo.ts';
 import { Package } from './package-registry.ts';
-import { hasOwn } from './utils/hasOwn.ts';
 import { isKey } from './utils/isKey.ts';
 
 // --- Types ---
@@ -93,16 +92,10 @@ const docToValidate = (
 	return ret;
 };
 
-const throwIfSelectorIsNotId = (selector: unknown, methodName: string): void => {
-	if (!LocalCollection._selectorIsIdPerhapsAsObject(selector)) {
-		throw new Meteor.Error(403, `Not permitted. Untrusted code may only ${methodName} documents by ID.`);
-	}
-};
-
 const validateUpdateMutator = (mutator: MongoDoc): string[] => {
 	const keys = Object.keys(mutator);
 	if (keys.length === 0) {
-		throw new Meteor.Error(
+		throw new MeteorError(
 			403,
 			"Access denied. In a restricted collection you can only update documents, not replace them. Use a Mongo update operator, such as '$set'.",
 		);
@@ -112,13 +105,13 @@ const validateUpdateMutator = (mutator: MongoDoc): string[] => {
 
 	for (const op of keys) {
 		if (op.charAt(0) !== '$') {
-			throw new Meteor.Error(
+			throw new MeteorError(
 				403,
 				"Access denied. In a restricted collection you can only update documents, not replace them. Use a Mongo update operator, such as '$set'.",
 			);
 		}
 		if (!ALLOWED_UPDATE_OPERATIONS.has(op)) {
-			throw new Meteor.Error(403, `Access denied. Operator ${op} not allowed in a restricted collection.`);
+			throw new MeteorError(403, `Access denied. Operator ${op} not allowed in a restricted collection.`);
 		}
 
 		const params = mutator[op] as Record<string, unknown>;
@@ -223,7 +216,7 @@ class RestrictedCollectionMixin {
 				const fullMethodName = this._prefix + method;
 
 				if (options.useExisting) {
-					const handlerProp = Meteor.isClient ? '_methodHandlers' : 'method_handlers';
+					const handlerProp = '_methodHandlers';
 					if (this._connection[handlerProp] && typeof this._connection[handlerProp][fullMethodName] === 'function') {
 						continue;
 					}
@@ -243,7 +236,7 @@ class RestrictedCollectionMixin {
 				validator(userId, docToValidate(validator as any, doc, generatedId) as MongoDoc),
 			)
 		) {
-			throw new Meteor.Error(403, 'Access denied');
+			throw new MeteorError(403, 'Access denied');
 		}
 
 		// Allow Checks
@@ -253,7 +246,7 @@ class RestrictedCollectionMixin {
 				(validator) => !validator(userId, docToValidate(validator as any, doc, generatedId) as MongoDoc),
 			)
 		) {
-			throw new Meteor.Error(403, 'Access denied');
+			throw new MeteorError(403, 'Access denied');
 		}
 
 		if (generatedId !== null) doc._id = generatedId;
@@ -264,11 +257,11 @@ class RestrictedCollectionMixin {
 		check(mutator, Object);
 		const safeOptions = Object.assign(Object.create(null), options);
 
-		if (!LocalCollection._selectorIsIdPerhapsAsObject(selector)) {
+		if (!_selectorIsIdPerhapsAsObject(selector)) {
 			throw new Error('validated update should be of a single ID');
 		}
 		if (safeOptions.upsert) {
-			throw new Meteor.Error(403, 'Access denied. Upserts not allowed in a restricted collection.');
+			throw new MeteorError(403, 'Access denied. Upserts not allowed in a restricted collection.');
 		}
 
 		const fields = validateUpdateMutator(mutator);
@@ -283,7 +276,7 @@ class RestrictedCollectionMixin {
 				validator(userId, transformDoc(validator as any, doc) as MongoDoc, fields, mutator),
 			)
 		) {
-			throw new Meteor.Error(403, 'Access denied');
+			throw new MeteorError(403, 'Access denied');
 		}
 
 		// Allow Checks
@@ -293,7 +286,7 @@ class RestrictedCollectionMixin {
 				(validator) => !validator(userId, transformDoc(validator as any, doc) as MongoDoc, fields, mutator),
 			)
 		) {
-			throw new Meteor.Error(403, 'Access denied');
+			throw new MeteorError(403, 'Access denied');
 		}
 
 		safeOptions._forbidReplace = true;
@@ -307,14 +300,14 @@ class RestrictedCollectionMixin {
 
 		// Deny Checks
 		if (await asyncSome(this._validators.remove.deny, (validator) => validator(userId, transformDoc(validator as any, doc) as MongoDoc))) {
-			throw new Meteor.Error(403, 'Access denied');
+			throw new MeteorError(403, 'Access denied');
 		}
 
 		// Allow Checks
 		if (
 			await asyncEvery(this._validators.remove.allow, (validator) => !validator(userId, transformDoc(validator as any, doc) as MongoDoc))
 		) {
-			throw new Meteor.Error(403, 'Access denied');
+			throw new MeteorError(403, 'Access denied');
 		}
 
 		return this._collection.removeAsync(selector);
@@ -338,34 +331,32 @@ class RestrictedCollectionMixin {
 			if (!validKeys.has(key)) throw new Error(`${allowOrDeny}: Invalid key: ${key}`);
 			if (key.includes('Async')) {
 				const syncKey = key.replace('Async', '');
-				Meteor.deprecate(`${allowOrDeny}: The "${key}" key is deprecated. Use "${syncKey}" instead.`);
+				console.warn(`${allowOrDeny}: The "${key}" key is deprecated. Use "${syncKey}" instead.`);
 			}
 		}
 
 		this._restricted = true;
 
-		const operations = ['insert', 'update', 'remove'] as const;
+		// const operations = ['insert', 'update', 'remove'] as const;
 
-		for (const name of operations) {
-			// eslint-disable-next-line no-nested-ternary
-			const providedName = hasOwn(options, `${name}Async`) ? `${name}Async` : hasOwn(options, name) ? name : null;
+		// // for (const name of operations) {
+		// // 	// eslint-disable-next-line no-nested-ternary
+		// // 	// const providedName = hasOwn(options, `${name}Async`) ? `${name}Async` : hasOwn(options, name) ? name : null;
 
-			if (providedName) {
-				const validator = options[providedName];
-				if (typeof validator !== 'function') {
-					throw new Error(`${allowOrDeny}: Value for \`${providedName}\` must be a function`);
-				}
+		// // 	// if (providedName) {
+		// // 	// 	const validator = options[providedName];
+		// // 	// 	if (typeof validator !== 'function') {
+		// // 	// 		throw new Error(`${allowOrDeny}: Value for \`${providedName}\` must be a function`);
+		// // 	// 	}
 
-				const validatorWithTransform: any = validator;
-				if (options.transform === undefined) {
-					validatorWithTransform.transform = this._transform;
-				} else {
-					validatorWithTransform.transform = LocalCollection.wrapTransform(options.transform);
-				}
+		// // 	// 	const validatorWithTransform = validator;
+		// // 	// 	if (options.transform === undefined) {
+		// // 	// 		validatorWithTransform.transform = this._transform;
+		// // 	// 	}
 
-				this._validators[name][allowOrDeny].push(validatorWithTransform);
-			}
-		}
+		// // 	// 	this._validators[name][allowOrDeny].push(validatorWithTransform);
+		// // 	// }
+		// // }
 
 		if (options.update || options.remove || options.updateAsync || options.removeAsync || options.fetch) {
 			if (options.fetch && !Array.isArray(options.fetch)) {
@@ -376,16 +367,15 @@ class RestrictedCollectionMixin {
 	}
 
 	private _createMutationMethod(methodName: string) {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		const self = this;
+		const _executeMutation = this._executeMutation.bind(this);
 		return function (this: MethodContext, ...args: unknown[]) {
 			check(args, [Match.Any]);
 			const argArray = Array.from(args);
 			try {
-				return self._executeMutation(this, methodName, argArray);
+				return _executeMutation(this, methodName, argArray);
 			} catch (e: any) {
 				if (e.name === 'MongoError' || e.name === 'BulkWriteError' || e.name === 'MongoBulkWriteError' || e.name === 'MinimongoError') {
-					throw new Meteor.Error(409, e.toString());
+					throw new MeteorError(409, e.toString());
 				}
 				throw e;
 			}
@@ -410,19 +400,14 @@ class RestrictedCollectionMixin {
 			return this._collection[methodName](...args);
 		}
 
-		// 3. Server Validation
-		if (!isInsert) {
-			throwIfSelectorIsNotId(firstArg, methodName);
-		}
-
 		const syncMethodName = methodName.replace('Async', '');
 		const validatedMethodName =
 			`_validated${syncMethodName.charAt(0).toUpperCase()}${syncMethodName.slice(1)}Async` as keyof RestrictedCollectionMixin;
 
-		// 4. Restricted Mode (Allow/Deny)
+		// 3. Restricted Mode (Allow/Deny)
 		if (this._restricted) {
 			if (this._validators[syncMethodName as 'insert' | 'update' | 'remove'].allow.length === 0) {
-				throw new Meteor.Error(403, `Access denied. No allow validators set on restricted collection for method '${methodName}'.`);
+				throw new MeteorError(403, `Access denied. No allow validators set on restricted collection for method '${methodName}'.`);
 			}
 
 			const methodArgs = [methodContext.userId, ...args];
@@ -431,7 +416,7 @@ class RestrictedCollectionMixin {
 			return this[validatedMethodName](...methodArgs);
 		}
 
-		// 5. Insecure Mode
+		// 4. Insecure Mode
 		if (this._isInsecure()) {
 			if (generatedId !== null && typeof firstArg === 'object' && firstArg !== null) {
 				(firstArg as MongoDoc)._id = generatedId;
@@ -445,8 +430,8 @@ class RestrictedCollectionMixin {
 			return this._collection[targetMethod](...args);
 		}
 
-		// 6. Default Deny
-		throw new Meteor.Error(403, 'Access denied');
+		// 5. Default Deny
+		throw new MeteorError(403, 'Access denied');
 	}
 }
 

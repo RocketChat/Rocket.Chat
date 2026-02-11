@@ -1,4 +1,5 @@
 import { Package } from './package-registry.ts';
+import { copyKey } from './utils/copyKey.ts';
 import { isFunction } from './utils/isFunction.ts';
 
 const mainFields = ['browser', 'main'];
@@ -20,10 +21,47 @@ export class Module {
 
 	runModuleSetters?(): void;
 
-	exports?: any;
+	exports: any;
 
 	constructor(id: string) {
 		this.id = id;
+	}
+
+	exportAs(name: string) {
+		const includeDefault = name === '*+';
+
+		const setter = (value: any) => {
+			if (name === '*' || name === '*+') {
+				Object.keys(value).forEach((key) => {
+					if (includeDefault || key !== 'default') {
+						copyKey(key, this.exports, value);
+					}
+				});
+			} else {
+				this.exports[name] = value;
+			}
+		};
+
+		if (name !== '*+' && name !== '*') {
+			setter.exportAs = name;
+		}
+
+		return setter;
+	}
+
+	exportDefault(value: any) {
+		return this.export(
+			{
+				default() {
+					return value;
+				},
+			},
+			// true,
+		);
+	}
+
+	makeNsSetter(includeDefault: boolean) {
+		return this.exportAs(includeDefault ? '*+' : '*');
 	}
 
 	require(id: string) {
@@ -44,12 +82,19 @@ export class Module {
 		throw error;
 	}
 
-	export(exports: Record<string, unknown>) {
+	export(exports: Record<string, unknown>, _constant = false) {
 		this.exports = exports;
 	}
 
-	link(id: string, module: Module) {
+	link(id: string, module: Module, _setter: any) {
 		this.childrenById[id] = module;
+	}
+
+	wrapAsync(
+		_body: { call: (arg0: any, arg1: any, arg2: () => any, arg3: (error: any) => void) => void },
+		_options: { async: boolean; self: any },
+	) {
+		//
 	}
 }
 
@@ -316,8 +361,6 @@ function getOwn<T>(obj: T, key: PropertyKey): unknown {
 
 	return undefined;
 }
-
-
 
 function isString(value: unknown): value is string {
 	return typeof value === 'string';

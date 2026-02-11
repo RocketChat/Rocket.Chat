@@ -2,7 +2,7 @@ import { EJSON } from './ejson.ts';
 import { Meteor } from './meteor.ts';
 import { Package } from './package-registry.ts';
 import { hasOwn } from './utils/hasOwn.ts';
-import { isObjEmpty } from './utils/isObjEmpty.ts';
+import { isEmptyObject } from './utils/isObjEmpty.ts';
 import { keys } from './utils/keys.ts';
 
 const diffObjects = <TLeft extends Record<PropertyKey, any>, TRight extends Record<PropertyKey, any>>(
@@ -110,7 +110,7 @@ const diffQueryUnorderedChanges = (
 				const projectedOld = projectionFn(oldDoc);
 				const changedFields = makeChangedFields(projectedNew, projectedOld);
 
-				if (!isObjEmpty(changedFields)) {
+				if (!isEmptyObject(changedFields)) {
 					observer.changed(id, changedFields);
 				}
 			}
@@ -229,7 +229,7 @@ const diffQueryOrderedChanges = (
 				projectedOld = projectionFn(oldDoc);
 				fields = makeChangedFields(projectedNew, projectedOld);
 
-				if (!isObjEmpty(fields) && observer.changed) {
+				if (!isEmptyObject(fields) && observer.changed) {
 					observer.changed(newDoc._id, fields);
 				}
 
@@ -246,7 +246,7 @@ const diffQueryOrderedChanges = (
 			projectedOld = projectionFn(oldDoc);
 			fields = makeChangedFields(projectedNew, projectedOld);
 
-			if (!isObjEmpty(fields) && observer.changed) {
+			if (!isEmptyObject(fields) && observer.changed) {
 				observer.changed(newDoc._id, fields);
 			}
 		}

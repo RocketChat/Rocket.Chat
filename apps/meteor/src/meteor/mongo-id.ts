@@ -4,7 +4,7 @@ import { Random } from './random';
 
 const _looksLikeObjectID = (str: string) => str.length === 24 && /^[0-9a-f]*$/.test(str);
 
-class ObjectID {
+export class ObjectID {
 	private _str: string;
 
 	constructor(hexString?: string) {
@@ -52,16 +52,8 @@ class ObjectID {
 	toHexString(): string {
 		return this.valueOf();
 	}
-}
 
-EJSON.addType('oid', (str) => new ObjectID(str));
-
-const MongoID = {
-	ObjectID,
-
-	_looksLikeObjectID,
-
-	idStringify: (id: unknown) => {
+	static stringify(id: unknown): string {
 		if (id instanceof ObjectID) {
 			return id.valueOf();
 		}
@@ -90,9 +82,9 @@ const MongoID = {
 
 		// Numbers, true, false, null
 		return `~${JSON.stringify(id)}`;
-	},
+	}
 
-	idParse: (id: string) => {
+	static parse(id: string): ObjectID | string | undefined {
 		const firstChar = id.charAt(0);
 		if (id === '') {
 			return id;
@@ -110,7 +102,14 @@ const MongoID = {
 			return new ObjectID(id);
 		}
 		return id;
-	},
+	}
+}
+
+EJSON.addType('oid', (str) => new ObjectID(str));
+
+const MongoID = {
+	ObjectID,
+	_looksLikeObjectID,
 };
 
 Package['mongo-id'] = {
