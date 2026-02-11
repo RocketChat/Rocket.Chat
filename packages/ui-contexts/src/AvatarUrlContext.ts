@@ -3,13 +3,10 @@ import { createContext } from 'react';
 const dummy = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg==';
 
 /**
- * Type for room avatar path getter function with multiple overloads
+ * Type for room avatar path getter function.
+ * The provider implementation expects a single parameter object.
  */
-type GetRoomPathAvatar = {
-	(roomId: string, etag?: string): string;
-	(params: { roomId: string; etag?: string }): string;
-	(params: { roomName: string; etag?: string }): string;
-};
+type GetRoomPathAvatar = (params: { roomId?: string; roomName?: string; etag?: string; type?: string }) => string;
 
 export type AvatarUrlContextValue = {
 	getUserPathAvatar: {
