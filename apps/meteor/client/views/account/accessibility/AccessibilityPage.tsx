@@ -114,7 +114,6 @@ const AccessibilityPage = () => {
 								name='themeAppearence'
 								render={({ field: { onChange, value, ref } }) => (
 									<>
-										// The below field is now clickable to select the radio button, so the onClick event is added to the field instead of the radio button. The onClick event on the radio button is only to stop the propagation of the click event to avoid double triggering of the onChange event.
 										{themes.map(({ id, title, description }, index) => (
 											<Field
 												key={id}
