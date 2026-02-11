@@ -30,6 +30,12 @@ export type CheckUnitsFromUser = {
 
 export const checkUnitsFromUser = makeFunction(async (_params: CheckUnitsFromUser): Promise<void> => undefined);
 
+/**
+ * Finds departments based on business unit and user ID.
+ * @param businessUnit The business unit ID.
+ * @param userId The user ID.
+ * @returns A list of departments with required fields.
+ */
 async function findDepartments(
 	businessUnit?: string,
 	userId?: string,
@@ -105,6 +111,11 @@ export function normalizeHttpHeaderData(headers: Headers = new Headers()): {
 	return { httpHeaders };
 }
 
+/**
+ * Retrieves Livechat initial settings, triggers, departments, and custom emojis.
+ * @param params Object containing businessUnit and userId.
+ * @returns An object containing Livechat configuration and settings.
+ */
 export async function settings({ businessUnit = '', userId }: { businessUnit?: string; userId?: string } = {}): Promise<
 	Record<string, string | number | any>
 > {
