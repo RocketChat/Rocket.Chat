@@ -1,5 +1,3 @@
-import { ReadReceipts, ReadReceiptsArchive, Messages } from '@rocket.chat/models';
-
 import { archiveOldReadReceipts } from './readReceiptsArchive';
 
 jest.mock('@rocket.chat/models', () => ({
@@ -29,7 +27,16 @@ jest.mock('../../../app/settings/server', () => ({
 	},
 }));
 
-const { settings } = require('../../../app/settings/server');
+jest.mock('@rocket.chat/cron', () => ({
+	cronJobs: {
+		add: jest.fn(),
+		has: jest.fn(),
+		remove: jest.fn(),
+	},
+}));
+
+import { ReadReceipts, ReadReceiptsArchive, Messages } from '@rocket.chat/models';
+import { settings } from '../../../app/settings/server';
 
 describe('Read Receipts Archive', () => {
 	beforeEach(() => {
