@@ -240,7 +240,7 @@ export class OutgoingSipCall extends BaseSipCall {
 					answer: null,
 				});
 
-				callerAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
+				void callerAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
 
 				logger.debug({ msg: 'modify', method: 'OutgoingSipCall.createDialog', req: this.session.stripDrachtioServerDetails(req) });
 			} catch (err) {
