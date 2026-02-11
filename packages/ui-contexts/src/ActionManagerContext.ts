@@ -13,10 +13,10 @@ type ActionEventListener<T = unknown> = (data: T) => void;
  * An action manager is responsible for handling interactions with the UiKit.
  */
 export interface IActionManager {
-	on(viewId: string, listener: ActionEventListener<UiKit.ServerInteraction>): void;
 	on(eventName: 'busy', listener: ({ busy }: { busy: boolean }) => void): void;
-	off(viewId: string, listener: ActionEventListener<UiKit.ServerInteraction>): void;
+	on(viewId: string, listener: ActionEventListener<UiKit.ServerInteraction>): void;
 	off(eventName: 'busy', listener: ({ busy }: { busy: boolean }) => void): void;
+	off(viewId: string, listener: ActionEventListener<UiKit.ServerInteraction>): void;
 	notifyBusy(): void;
 	notifyIdle(): void;
 	generateTriggerId(appId: string | undefined): string;
