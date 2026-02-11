@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fix marketplace app loading state display
+Fixes marketplace's app install button getting stuck in a loading state when installation fails
