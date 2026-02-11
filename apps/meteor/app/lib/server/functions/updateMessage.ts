@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
-import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 
 export const updateMessage = async function (
@@ -97,14 +97,7 @@ export const updateMessage = async function (
 			return;
 		}
 
-		// although this is an "afterSave" kind callback, we know they can extend message's properties
-		// so we wait for it to run before broadcasting
-		const data = await afterSaveMessage(msg, room, user);
-
-		void notifyOnMessageChange({
-			id: msg._id,
-			data,
-		});
+		await afterSaveMessage(msg, room, user);
 
 		if (room?.lastMessage?._id === msg._id) {
 			void notifyOnRoomChangedById(message.rid);

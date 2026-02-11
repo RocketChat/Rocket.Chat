@@ -11,7 +11,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
-import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
@@ -285,10 +285,7 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		void Apps.self?.triggerEvent(messageEvent, message);
 	}
 
-	// TODO: is there an opportunity to send returned data to notifyOnMessageChange?
 	await afterSaveMessage(message, room, user);
-
-	void notifyOnMessageChange({ id: message._id });
 
 	void notifyOnRoomChangedById(message.rid);
 

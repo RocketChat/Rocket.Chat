@@ -426,7 +426,20 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			return this.hangupCallsThatNeedInput();
 		}
 
-		return this.setInputTrack(tracks[0]);
+		const inputTrack = tracks[0];
+
+		// If we no longer have a call that can use this track, just release it
+		if (inputTrack && !this.mayNeedInputTrack()) {
+			try {
+				// Stop the track so the browser doesn't have to wait for GC to detect that the stream is not in use
+				inputTrack.stop();
+			} catch {
+				// we don't care if this failed
+			}
+			return;
+		}
+
+		return this.setInputTrack(inputTrack);
 	}
 
 	private hangupCallsThatNeedInput(): void {
@@ -445,12 +458,20 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 	}
 
-	private async maybeStopInputTrack(): Promise<void> {
-		this.config.logger?.debug('MediaSignalingSession.maybeStopInputTrack');
+	private mayNeedInputTrack(): boolean {
 		for (const call of this.knownCalls.values()) {
 			if (call.mayNeedInputTrack()) {
-				return;
+				return true;
 			}
+		}
+
+		return false;
+	}
+
+	private async maybeStopInputTrack(): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.maybeStopInputTrack');
+		if (this.mayNeedInputTrack()) {
+			return;
 		}
 
 		await this.setInputTrack(null);

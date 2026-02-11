@@ -1,3 +1,4 @@
+import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
@@ -48,7 +49,6 @@ import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage'
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { pinMessage, unpinMessage } from '../../../message-pin/server/pinMessage';
 import { starMessage } from '../../../message-star/server/starMessage';
-import { OEmbed } from '../../../oembed/server/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
 import { followMessage } from '../../../threads/server/methods/followMessage';
@@ -804,7 +804,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('The required "mid" body param is missing.');
 			}
 
-			await followMessage(this.userId, { mid });
+			await followMessage(this.user, { mid });
 
 			return API.v1.success();
 		},
@@ -822,7 +822,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('The required "mid" body param is missing.');
 			}
 
-			await unfollowMessage(this.userId, { mid });
+			await unfollowMessage(this.user, { mid });
 
 			return API.v1.success();
 		},
@@ -914,7 +914,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			const { urlPreview } = await OEmbed.parseUrl(url);
+			const { urlPreview } = await Message.parseOEmbedUrl(url);
 			urlPreview.ignoreParse = true;
 
 			return API.v1.success({ urlPreview });
