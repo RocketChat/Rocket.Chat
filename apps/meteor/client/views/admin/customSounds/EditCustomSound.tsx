@@ -1,7 +1,6 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import EditSound from './EditSound';
 import { FormSkeleton } from '../../../components/Skeleton';
@@ -13,16 +12,12 @@ type EditCustomSoundProps = {
 };
 
 function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProps): ReactElement | null {
-	const { t } = useTranslation();
 	const getSound = useEndpoint('GET', '/v1/custom-sounds.getOne');
 
 	const { data, isPending } = useQuery({
 		queryKey: ['custom-sound', _id],
 		queryFn: async () => {
 			const sound = await getSound({ _id });
-			if (!sound) {
-				throw new Error(t('No_results_found'));
-			}
 			return sound;
 		},
 		meta: { apiErrorToastMessage: true },
