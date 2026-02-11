@@ -1,4 +1,5 @@
 import * as ssrfModule from '../src/checkForSsrf';
+import { isIpInCidrRange } from '../src/checkForSsrfHelpers';
 
 describe('checkForSsrf', () => {
 	let nslookupSpy: jest.SpyInstance;
@@ -117,5 +118,13 @@ describe('checkForSsrf', () => {
 			ssrfModule.setSsrfAllowlist([]);
 			expect(await ssrfModule.checkForSsrf('http://127.0.0.1')).toBe(false);
 		});
+	});
+});
+
+describe('isIpInCidrRange (IPv4-mapped IPv6)', () => {
+	it('parses IPv4-mapped address correctly so prefix > 96 works', () => {
+		// ::ffff:192.168.1.1 should be in ::ffff:192.168.0.0/112 but not in ::ffff:10.0.0.0/112
+		expect(isIpInCidrRange('::ffff:192.168.1.1', '::ffff:192.168.0.0/112')).toBe(true);
+		expect(isIpInCidrRange('::ffff:192.168.1.1', '::ffff:10.0.0.0/112')).toBe(false);
 	});
 });

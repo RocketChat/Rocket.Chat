@@ -3,7 +3,7 @@ import net from 'net';
 const domainPattern = /^(?=.{1,253}$)(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[A-Za-z]{2,63}$/;
 export const isValidDomain = (domain: string) => domainPattern.test(domain);
 
-export const unwrapBrackets = (s: string) => (s.startsWith('[') && s.endsWith(']') ? s.slice(1, -1) : s);
+export const unwrapBrackets = (address: string) => (address.startsWith('[') && address.endsWith(']') ? address.slice(1, -1) : address);
 
 export const isIpValid = (ip: string): boolean => net.isIP(unwrapBrackets(ip)) !== 0;
 
@@ -51,27 +51,35 @@ export const isIpInCidrRange = (ip: string, cidr: string): boolean => {
 	if (net.isIP(ipUnwrapped) === 4) {
 		const prefix = prefixStr ? parseInt(prefixStr, 10) : 32;
 		if (!network || net.isIP(network) !== 4) return false;
-		const toNum = (s: string) => s.split('.').reduce((n, o) => (n << 8) + parseInt(o, 10), 0) >>> 0;
+		const toNum = (ipString: string) =>
+			ipString.split('.').reduce((accumulated, octet) => (accumulated << 8) + parseInt(octet, 10), 0) >>> 0;
 		const mask = prefix === 0 ? 0 : (0xffffffff << (32 - prefix)) >>> 0;
 		return (toNum(ipUnwrapped) & mask) === (toNum(network) & mask);
 	}
 	if (net.isIP(ipUnwrapped) === 6) {
 		const prefix = prefixStr ? parseInt(prefixStr, 10) : 128;
 		if (!network || net.isIP(unwrapBrackets(network)) !== 6) return false;
-		const toBigInt = (s: string): bigint => {
-			const parts = unwrapBrackets(s).split(':');
-			const fill = 8 - parts.filter((p) => p.length > 0).length;
+		const toBigInt = (address: string): bigint => {
+			const parts = unwrapBrackets(address).split(':');
+			const nonEmptyParts = parts.filter((part) => part.length > 0);
+			const fill = 8 - nonEmptyParts.reduce((count, part) => count + (part.includes('.') ? 2 : 1), 0);
 			const groups: string[] = [];
 			let filled = false;
-			for (const p of parts) {
-				if (p === '') {
+			for (const part of parts) {
+				if (part === '') {
 					if (!filled) {
-						for (let i = 0; i < fill; i++) groups.push('0');
+						for (let index = 0; index < fill; index++) groups.push('0');
 						filled = true;
 					}
-				} else groups.push(p);
+				} else if (part.includes('.')) {
+					if (net.isIP(part) !== 4) return 0n;
+					const num = part.split('.').reduce((accumulated, octet) => (accumulated << 8) + parseInt(octet, 10), 0) >>> 0;
+					groups.push((num >>> 16).toString(16), (num & 0xffff).toString(16));
+				} else {
+					groups.push(part);
+				}
 			}
-			return groups.reduce((v, g) => (v << 16n) + BigInt(parseInt(g, 16)), 0n);
+			return groups.reduce((value, hexGroup) => (value << 16n) + BigInt(parseInt(hexGroup, 16)), 0n);
 		};
 		const mask = prefix === 0 ? 0n : ((1n << BigInt(prefix)) - 1n) << (128n - BigInt(prefix));
 		return (toBigInt(ip) & mask) === (toBigInt(network) & mask);

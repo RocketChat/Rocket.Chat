@@ -13,7 +13,7 @@ import {
 let ssrfAllowlist: string[] = [];
 
 export const setSsrfAllowlist = (allowlist: string[]): void => {
-	ssrfAllowlist = allowlist.map(normalizeAllowlistEntry).filter((e) => e.length > 0);
+	ssrfAllowlist = allowlist.map(normalizeAllowlistEntry).filter((entry) => entry.length > 0);
 };
 
 const isInAllowlist = (hostOrIp: string, port: string | undefined): boolean => {
