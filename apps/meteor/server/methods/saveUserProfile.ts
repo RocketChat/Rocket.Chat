@@ -124,7 +124,7 @@ async function saveUserProfile(
 	const canChangePasswordForOAuth = rcSettings.get<boolean>('Accounts_AllowPasswordChangeForOAuthUsers');
 	if (canChangePasswordForOAuth || user?.services?.password || user?.requirePasswordChange) {
 		// Should be the last check to prevent error when trying to check password for users without password
-		if (settings.newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true) {
+		if (settings.newPassword && (rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true || user?.requirePasswordChange)) {
 			if (user?.services?.password?.bcrypt) {
 				// don't let user change to same password
 				if (await compareUserPassword(user, { plain: settings.newPassword })) {
