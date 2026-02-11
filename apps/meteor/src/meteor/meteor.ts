@@ -317,7 +317,8 @@ const absoluteUrl = (() => {
 })();
 
 export const defer = (fn: VoidFunction) => {
-	_setImmediate(fn);
+	console.warn('Meteor.defer is deprecated. Use setTimeout(fn, 0) instead.');
+	fn();
 };
 
 // --- Main Meteor Object ---
@@ -445,7 +446,7 @@ const Meteor = {
 		return !!r && typeof r.then === 'function';
 	},
 
-	_runFresh(fn: () => any) {
+	_runFresh<T>(fn: () => T): T {
 		return fn();
 	},
 
