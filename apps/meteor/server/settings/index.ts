@@ -1,6 +1,5 @@
 import { setSsrfAllowlistGetter } from '@rocket.chat/server-fetch';
 
-import { settings } from '../../app/settings/server';
 import { createAccountSettings } from './accounts';
 import { createAnalyticsSettings } from './analytics';
 import { createAssetsSettings } from './assets';
@@ -37,6 +36,7 @@ import { createTroubleshootSettings } from './troubleshoot';
 import { createUserDataSettings } from './userDataDownload';
 import { createVConfSettings } from './video-conference';
 import { createWebDavSettings } from './webdav';
+import { settings } from '../../app/settings/server';
 import { addMatrixBridgeFederationSettings } from '../services/federation/Settings';
 
 await Promise.all([
