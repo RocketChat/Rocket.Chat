@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useEffectEvent, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
@@ -13,17 +14,19 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
+import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent, RefObject } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
+import PresetReactionsBar from './PresetReactionsBar';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
+import { useEmojiPicker } from '../../../../contexts/EmojiPickerContext';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
@@ -44,7 +47,6 @@ import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedR
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
-import PresetReactionsModal from '../../modals/PresetReactionsModal';
 import { setPresetReactions as storePresetReactions } from '../../../../lib/chats/presetReactionsStore';
 
 type PresetReaction = {
@@ -122,7 +124,7 @@ const MessageBox = ({
 	const quoteChainLimit = useSetting('Message_QuoteChainLimit', 2);
 	const [typing, setTyping] = useReducer(reducer, false);
 	const [presetReactions, setPresetReactions] = useState<PresetReaction[]>([]);
-	const [isPresetReactionsModalOpen, setIsPresetReactionsModalOpen] = useState(false);
+	const { open: openEmojiPicker } = useEmojiPicker();
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
@@ -167,31 +169,49 @@ const MessageBox = ({
 		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
-	const handleOpenPresetReactionsModal = useEffectEvent(() => {
-		setIsPresetReactionsModalOpen(true);
+	const handleOpenPresetReactionsPicker = useEffectEvent((ref: RefObject<HTMLButtonElement>) => {
+		if (!ref.current) {
+			return;
+		}
+
+		openEmojiPicker(ref.current, (emoji: string) => {
+			const formattedEmoji = emoji.startsWith(':') ? emoji : `:${emoji}:`;
+
+			if (!presetReactions.some((r) => r.emoji === formattedEmoji)) {
+				const updatedReactions = [...presetReactions, { emoji: formattedEmoji }];
+				setPresetReactions(updatedReactions);
+				storePresetReactions(room._id, updatedReactions);
+			}
+		});
 	});
 
-	const handleClosePresetReactionsModal = useEffectEvent(() => {
-		setIsPresetReactionsModalOpen(false);
+	const handleRemovePresetReaction = useEffectEvent((emoji: string) => {
+		const updatedReactions = presetReactions.filter((r) => r.emoji !== emoji);
+		setPresetReactions(updatedReactions);
+		storePresetReactions(room._id, updatedReactions);
 	});
 
-	const handleConfirmPresetReactions = useEffectEvent((reactions: PresetReaction[]) => {
-		setPresetReactions(reactions);
-		storePresetReactions(room._id, reactions);
-		setIsPresetReactionsModalOpen(false);
-	});
-
-	const handleSendMessage = useEffectEvent(() => {
+	const handleSendMessage = useEffectEvent(async () => {
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
 		popup.clear();
 
-		onSend?.({
+		if (!onSend) {
+			return;
+		}
+
+		await onSend({
 			value: text,
 			tshow,
 			previewUrls,
 			isSlashCommandAllowed,
 		});
+
+		// Clear preset reactions after sending
+		if (presetReactions.length > 0) {
+			setPresetReactions([]);
+			storePresetReactions(room._id, []);
+		}
 	});
 
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
@@ -454,6 +474,11 @@ const MessageBox = ({
 					onPaste={handlePaste}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 				/>
+				<PresetReactionsBar
+					presetReactions={presetReactions}
+					onRemoveReaction={handleRemovePresetReaction}
+					onAddReaction={handleOpenPresetReactionsPicker}
+				/>
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
@@ -461,7 +486,7 @@ const MessageBox = ({
 							disabled={!useEmojis || isRecording || !canSend}
 							onClick={handleOpenEmojiPicker}
 							title={t('Emoji')}
-						/>
+						/>{' '}
 						<MessageComposerActionsDivider />
 						{chat.composer && formatters.length > 0 && (
 							<MessageBoxFormattingToolbar
@@ -479,7 +504,7 @@ const MessageBox = ({
 							tmid={tmid}
 							isRecording={isRecording}
 							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
-							onOpenPresetReactions={handleOpenPresetReactionsModal}
+							onOpenPresetReactions={handleOpenPresetReactionsPicker}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
@@ -505,13 +530,6 @@ const MessageBox = ({
 				</MessageComposerToolbar>
 			</MessageComposer>
 			<ComposerUserActionIndicator rid={room._id} tmid={tmid} />
-			{isPresetReactionsModalOpen && (
-				<PresetReactionsModal
-					initialPresetReactions={presetReactions}
-					onConfirm={handleConfirmPresetReactions}
-					onCancel={handleClosePresetReactionsModal}
-				/>
-			)}
 		</>
 	);
 };

@@ -431,6 +431,8 @@
   "Preset_Reactions": "Preset Reactions",
   "Select_Preset_Reactions": "Select Preset Reactions",
   "Preset_Reactions_Description": "Select reactions to show as suggestions on your message. They will appear with 0 count until someone reacts.",
+  "Remove_preset_reaction": "Remove preset reaction {{reaction}}",
+  "Click_to_remove": "Click to remove",
   "Add_custom_oauth": "Add custom OAuth",
   "Add_email": "Add email",
   "Add_emoji": "Add emoji",
