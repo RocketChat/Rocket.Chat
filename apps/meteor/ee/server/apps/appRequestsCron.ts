@@ -24,6 +24,9 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 		};
 
 		const pendingSentUrl = `v1/app-request/sent/pending`;
@@ -38,6 +41,7 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 			const usersNotified = await appRequestNotififyForUsers(Apps.getMarketplaceClient().getMarketplaceUrl(), workspaceUrl, appId, appName)
 				.then(async (response) => {
 					// Mark all app requests as sent
+					// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 					await Apps.getMarketplaceClient().fetch(`v1/app-request/markAsSent/${appId}`, { ...options, method: 'POST' });
 					return response;
 				})

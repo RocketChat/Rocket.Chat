@@ -11,5 +11,5 @@ export type ExtendedFetchOptions = FetchOptionsWithoutBody & {
 	params?: Record<string, any>;
 	body?: BodyInit | Record<string, any>;
 	ignoreSsrfValidation?: boolean;
-	allowList?: string | string[];
+	allowList: string | string[];
 };

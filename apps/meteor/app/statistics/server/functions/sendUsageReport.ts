@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { statistics } from '..';
 import { shouldReportStatistics } from '../../../../server/cron/usageReport';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
+import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
 
 async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string | undefined> {
@@ -22,6 +23,9 @@ async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string
 				host: Meteor.absoluteUrl(),
 			},
 			headers,
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 		});
 
 		const { statsToken } = await response.json();
