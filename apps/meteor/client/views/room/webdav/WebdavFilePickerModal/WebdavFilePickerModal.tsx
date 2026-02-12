@@ -144,7 +144,7 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 			const blob = new Blob([data]);
 			const file = new File([blob], webdavNode.basename, { type: webdavNode.mime });
 
-			uploadFile(file);
+			await uploadFile(file);
 		} catch (error) {
 			return dispatchToastMessage({ type: 'error', message: error });
 		}
