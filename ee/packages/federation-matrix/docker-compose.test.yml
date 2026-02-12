@@ -120,7 +120,7 @@ services:
       - "traefik.http.routers.rc1-http.middlewares=rc1"
 
   mongo:
-    image: mongo:8.0
+    image: mongo:${MONGODB_FEDERATION_VERSION:-8.0}
     profiles:
       - test
       - element
