@@ -180,10 +180,6 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 	return current;
 };
 
-// Deeply flatten nested arrays that can occur from emphasis patterns in LinkTitle
-// Using Infinity to handle all possible nesting levels (typically max 3-4 for bold/italic/strike combinations)
-export const flatten = <T>(value: T[]): T[] => value.flat(Infinity) as T[];
-
 export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value'] =>
 	values.flat().reduce(
 		(result, item, index, values) => {
