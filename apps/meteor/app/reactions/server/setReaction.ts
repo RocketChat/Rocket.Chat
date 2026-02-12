@@ -163,7 +163,7 @@ export async function initializePresetReactions(message: IMessage): Promise<void
 	// Update the message reactions in the database
 	if (Object.keys(message.reactions).length > 0) {
 		await Messages.setReactions(message._id, message.reactions);
-		
+
 		const room = await Rooms.findOneById(message.rid);
 		if (room && isTheLastMessage(room, message)) {
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);

@@ -23,4 +23,3 @@ export const usePresetReactionsAction = (disabled: boolean): GenericMenuItemProp
 			},
 		};
 	}, [disabled, t, chat]);
-};

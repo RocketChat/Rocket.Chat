@@ -126,5 +126,3 @@ const PresetReactionsModal = ({ initialPresetReactions = [], onConfirm, onCancel
 	);
 };
 
-export default PresetReactionsModal;
-
