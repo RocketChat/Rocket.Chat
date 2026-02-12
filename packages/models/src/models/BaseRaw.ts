@@ -153,7 +153,7 @@ export abstract class BaseRaw<
 
 	/**
 	 * Cache document with current timestamp
-	 * Implements simple LRU by removing oldest entry when max size reached
+	 * Implements simple FIFO by removing oldest entry when max size reached
 	 */
 	private setCached(id: string, data: T | null): void {
 		if (!this.cache) return;
