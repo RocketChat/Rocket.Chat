@@ -1,3 +1,6 @@
+import { ReadReceipts, ReadReceiptsArchive, Messages } from '@rocket.chat/models';
+
+import { settings } from '../../../app/settings/server';
 import { archiveOldReadReceipts } from './readReceiptsArchive';
 
 jest.mock('@rocket.chat/models', () => ({
@@ -34,9 +37,6 @@ jest.mock('@rocket.chat/cron', () => ({
 		remove: jest.fn(),
 	},
 }));
-
-import { ReadReceipts, ReadReceiptsArchive, Messages } from '@rocket.chat/models';
-import { settings } from '../../../app/settings/server';
 
 describe('Read Receipts Archive', () => {
 	beforeEach(() => {
@@ -105,10 +105,7 @@ describe('Read Receipts Archive', () => {
 		expect(ReadReceiptsArchive.insertMany).toHaveBeenCalledWith(oldReceipts, { ordered: false });
 
 		// Verify messages were marked
-		expect(Messages.updateMany).toHaveBeenCalledWith(
-			{ _id: { $in: ['msg1', 'msg2'] } },
-			{ $set: { receiptsArchived: true } }
-		);
+		expect(Messages.updateMany).toHaveBeenCalledWith({ _id: { $in: ['msg1', 'msg2'] } }, { $set: { receiptsArchived: true } });
 
 		// Verify old receipts were deleted
 		expect(ReadReceipts.deleteMany).toHaveBeenCalledWith(expect.objectContaining({ ts: expect.any(Object) }));
@@ -117,9 +114,7 @@ describe('Read Receipts Archive', () => {
 	it('should handle duplicate key errors gracefully', async () => {
 		(settings.get as jest.Mock).mockReturnValue(30);
 
-		const oldReceipts = [
-			{ _id: '1', messageId: 'msg1', userId: 'user1', ts: new Date('2020-01-01') },
-		];
+		const oldReceipts = [{ _id: '1', messageId: 'msg1', userId: 'user1', ts: new Date('2020-01-01') }];
 
 		const toArrayMock = jest.fn().mockResolvedValue(oldReceipts);
 		(ReadReceipts.findOlderThan as jest.Mock).mockReturnValue({ toArray: toArrayMock });
@@ -143,9 +138,7 @@ describe('Read Receipts Archive', () => {
 	it('should rethrow non-duplicate errors', async () => {
 		(settings.get as jest.Mock).mockReturnValue(30);
 
-		const oldReceipts = [
-			{ _id: '1', messageId: 'msg1', userId: 'user1', ts: new Date('2020-01-01') },
-		];
+		const oldReceipts = [{ _id: '1', messageId: 'msg1', userId: 'user1', ts: new Date('2020-01-01') }];
 
 		const toArrayMock = jest.fn().mockResolvedValue(oldReceipts);
 		(ReadReceipts.findOlderThan as jest.Mock).mockReturnValue({ toArray: toArrayMock });
@@ -157,4 +150,3 @@ describe('Read Receipts Archive', () => {
 		await expect(archiveOldReadReceipts()).rejects.toThrow('Connection failed');
 	});
 });
-

@@ -1,6 +1,6 @@
 import { cronJobs } from '@rocket.chat/cron';
-import { ReadReceipts, ReadReceiptsArchive, Messages } from '@rocket.chat/models';
 import { Logger } from '@rocket.chat/logger';
+import { ReadReceipts, ReadReceiptsArchive, Messages } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
 
@@ -11,7 +11,7 @@ const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 export async function archiveOldReadReceipts(): Promise<void> {
 	const retentionDays = settings.get<number>('Message_Read_Receipt_Archive_Retention_Days') || 30;
 	const cutoffDate = new Date(Date.now() - retentionDays * MILLISECONDS_PER_DAY);
-	
+
 	logger.info(`Starting to archive read receipts older than ${cutoffDate.toISOString()}`);
 
 	// Find all receipts older than the retention period
@@ -51,28 +51,25 @@ export async function archiveOldReadReceipts(): Promise<void> {
 		}
 
 		// Mark messages as having archived receipts
-		const updateResult = await Messages.updateMany(
-			{ _id: { $in: messageIds } },
-			{ $set: { receiptsArchived: true } }
-		);
+		const updateResult = await Messages.updateMany({ _id: { $in: messageIds } }, { $set: { receiptsArchived: true } });
 		logger.info(`Marked ${updateResult.modifiedCount} messages as having archived receipts`);
 
 		// Delete old receipts from hot storage
 		const deleteResult = await ReadReceipts.deleteMany({ ts: { $lt: cutoffDate } });
 		logger.info(`Deleted ${deleteResult.deletedCount} old receipts from hot storage`);
 	} catch (error) {
-		logger.error('Error during read receipts archiving:', error);
+		logger.error(`Error during read receipts archiving: ${error}`);
 		throw error;
 	}
 }
 
 export async function readReceiptsArchiveCron(): Promise<void> {
 	const cronSchedule = settings.get<string>('Message_Read_Receipt_Archive_Cron') || '0 2 * * *';
-	
+
 	// Remove existing job if it exists
 	if (await cronJobs.has('ReadReceiptsArchive')) {
 		await cronJobs.remove('ReadReceiptsArchive');
 	}
-	
+
 	return cronJobs.add('ReadReceiptsArchive', cronSchedule, async () => archiveOldReadReceipts());
 }
