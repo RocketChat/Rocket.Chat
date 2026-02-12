@@ -2,6 +2,7 @@ import type { ICustomSound } from '@rocket.chat/core-typings';
 import { CustomSounds } from '@rocket.chat/models';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import {
+	isCustomSoundsGetOneProps,
 	ajv,
 	validateBadRequestErrorResponse,
 	validateNotFoundErrorResponse,
@@ -44,21 +45,6 @@ const CustomSoundsListSchema = {
 };
 
 export const isCustomSoundsListProps = ajv.compile<CustomSoundsList>(CustomSoundsListSchema);
-
-type CustomSoundsGetOne = { _id: ICustomSound['_id'] };
-
-const CustomSoundsGetOneSchema = {
-	type: 'object',
-	properties: {
-		_id: {
-			type: 'string',
-		},
-	},
-	required: ['_id'],
-	additionalProperties: false,
-};
-
-export const isCustomSoundsGetOneProps = ajv.compile<CustomSoundsGetOne>(CustomSoundsGetOneSchema);
 
 const customSoundsEndpoints = API.v1
 	.get(

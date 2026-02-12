@@ -17,8 +17,7 @@ function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProp
 	const { data, isPending } = useQuery({
 		queryKey: ['custom-sound', _id],
 		queryFn: async () => {
-			const sound = await getSound({ _id });
-			return sound;
+			return getSound({ _id });
 		},
 		meta: { apiErrorToastMessage: true },
 	});
