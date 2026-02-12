@@ -127,6 +127,43 @@ module.exports = {
 			},
 		},
 		{
+			files: ['**/*.ts', '**/*.tsx'],
+			excludedFiles: [
+				'**/*.d.ts',
+				'**/__tests__/**',
+				'**/*.spec.ts',
+				'**/*.spec.tsx',
+				'**/*.test.ts',
+				'**/*.test.tsx',
+				'**/tests/**',
+				'**/.storybook/**',
+				'jest.config.ts',
+				'jest.config.js',
+				'jest.config.*.ts',
+				'jest.config.*.js',
+				'webpack.config.ts',
+				'webpack.config.js',
+				'vite.config.ts',
+				'vite.config.js',
+				'rollup.config.ts',
+				'rollup.config.js',
+			],
+			parserOptions: {
+				project: true,
+			},
+			rules: {
+				'@typescript-eslint/no-misused-promises': [
+					'error',
+					{
+						checksVoidReturn: {
+							arguments: false,
+						},
+					},
+				],
+				'@typescript-eslint/no-floating-promises': 'error',
+			},
+		},
+		{
 			files: ['**/*.d.ts'],
 			rules: {
 				'@typescript-eslint/naming-convention': 'off',

@@ -6,7 +6,6 @@
 	library files.
 */
 import './notifyUsersOnMessage';
-import './meteorFixes';
 
 export { sendNotification } from './sendNotificationsOnMessage';
 export { passwordPolicy } from './passwordPolicy';
