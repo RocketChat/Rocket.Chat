@@ -229,7 +229,7 @@ services:
     image: kong/httpbin
 
   traefik:
-    image: traefik:v3.1
+    image: traefik:v3.3
     command:
       - --providers.docker=true
       - '--serverstransport.maxidleconnsperhost=-1'
