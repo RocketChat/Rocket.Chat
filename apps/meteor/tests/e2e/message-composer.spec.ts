@@ -116,7 +116,7 @@ test.describe.serial('message-composer', () => {
 		});
 	});
 
-	test.fail('should close mention popup when canceling a message edit via "Cancel" button', async ({ page }) => {
+	test('should close mention popup when canceling a message edit via "Cancel" button', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 

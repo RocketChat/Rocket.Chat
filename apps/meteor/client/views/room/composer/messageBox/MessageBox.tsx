@@ -178,10 +178,15 @@ const MessageBox = ({
 			event.stopPropagation();
 
 			chat.currentEditingMessage.reset().then((reset) => {
-				if (!reset) {
-					chat.currentEditingMessage.cancel();
-					chat.currentEditingMessage.stop();
+				// NOTE: if the message was reset (i.e. content changed), we just update the popup (to re-apply/remove the preview)
+				if (reset) {
+					popup.update();
+					return;
 				}
+
+				chat.currentEditingMessage.cancel();
+				chat.currentEditingMessage.stop();
+				popup.clear();
 			});
 		}
 	};
@@ -378,7 +383,7 @@ const MessageBox = ({
 	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
-
+	console.log('COMPOSER', shouldPopupPreview, popup.option);
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
