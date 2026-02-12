@@ -65,10 +65,11 @@ export const sendMessage = async (
 	chat.readStateManager.clearUnreadMark();
 
 	const uploadsStore = tmid ? chat.threadUploads : chat.uploads;
-	const hasFiles = uploadsStore.get().length > 0;
 
 	text = text.trim();
 	const mid = chat.currentEditingMessage.getMID();
+
+	const hasFiles = uploadsStore.get().length > 0;
 	if (!text && !mid && !hasFiles) {
 		// Nothing to do
 		return false;
