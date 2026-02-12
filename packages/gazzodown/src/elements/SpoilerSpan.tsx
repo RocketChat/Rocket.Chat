@@ -19,29 +19,8 @@ import UserMentionElement from '../mentions/UserMentionElement';
 
 const KatexElement = lazy(() => import('../katex/KatexElement'));
 
-type SpoilerNode = {
-	type: 'SPOILER';
-	value: MessageBlock[];
-};
-
-type MessageBlock =
-	| MessageParser.Timestamp
-	| MessageParser.Emoji
-	| MessageParser.ChannelMention
-	| MessageParser.UserMention
-	| MessageParser.Link
-	| MessageParser.Plain
-	| MessageParser.Bold
-	| MessageParser.Italic
-	| MessageParser.Strike
-	| MessageParser.InlineCode
-	| MessageParser.Color
-	| MessageParser.Image
-	| MessageParser.InlineKaTeX
-	| SpoilerNode;
-
 type SpoilerSpanProps = {
-	children: MessageBlock[];
+	children: MessageParser.Spoiler['value'];
 };
 
 const SpoilerSpan = ({ children }: SpoilerSpanProps): ReactElement => {
@@ -110,7 +89,7 @@ const SpoilerSpan = ({ children }: SpoilerSpanProps): ReactElement => {
 	);
 };
 
-const renderBlockComponent = (block: MessageBlock, index: number): ReactElement | null => {
+const renderBlockComponent = (block: MessageParser.Inlines, index: number): ReactElement | null => {
 	switch (block.type) {
 		case 'EMOJI':
 			return <EmojiElement key={index} {...block} />;
