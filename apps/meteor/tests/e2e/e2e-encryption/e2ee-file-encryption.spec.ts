@@ -154,7 +154,7 @@ test.describe('E2EE File Encryption', () => {
 			await test.step('should not attach files to the composer', async () => {
 				await poHomeChannel.content.dragAndDropTxtFile();
 
-				await expect(poHomeChannel.composer.getFileByName('any_file.txt')).not.toBeVisible();
+				await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toBeVisible();
 				await expect(poHomeChannel.composer.btnSend).toBeDisabled();
 			});
 		});
