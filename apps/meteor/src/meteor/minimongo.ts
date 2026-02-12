@@ -860,7 +860,7 @@ interface ObserveChangesCallbacks {
 }
 
 interface Document {
-	_id?: unknown;
+	_id?: string;
 	[key: string]: unknown;
 }
 
@@ -894,7 +894,7 @@ function projectionDetails(fields: unknown): ProjectionDetailsResult {
 		}
 
 		if (including !== rule) {
-			throw MinimongoError('You cannot currently mix including and excluding fields.');
+			throw new MinimongoError('You cannot currently mix including and excluding fields.');
 		}
 	});
 
@@ -905,7 +905,7 @@ function projectionDetails(fields: unknown): ProjectionDetailsResult {
 			const currentPath = fullPath;
 			const anotherPath = path;
 
-			throw MinimongoError(
+			throw new MinimongoError(
 				`${'both '
 					.concat(currentPath, ' and ')
 					.concat(anotherPath, ' found in fields option, ')}using both of them may trigger unexpected behavior. Did you mean to ` +
@@ -988,17 +988,13 @@ interface MinimongoErrorOptions {
 	field?: string;
 }
 
-const MinimongoError = function (message: string, options?: MinimongoErrorOptions): Error {
-	if (typeof message === 'string' && options.field) {
-		message += " for field '".concat(options.field, "'");
+export class MinimongoError extends Error {
+	override name = 'MinimongoError';
+
+	constructor(message: string, options?: MinimongoErrorOptions) {
+		super(options?.field ? `${message} for field '${options.field}'` : message);
 	}
-
-	const error = new Error(message);
-
-	error.name = 'MinimongoError';
-
-	return error;
-};
+}
 
 function assertHasValidFieldNames(doc: unknown): void {
 	if (doc && typeof doc === 'object') {
@@ -1014,7 +1010,7 @@ function assertIsValidFieldName(key: unknown): void {
 	if (typeof key === 'string') {
 		const match = key.match(/^\$|\.|\0/);
 		if (match) {
-			throw MinimongoError('Key '.concat(key, ' must not ').concat(invalidCharMsg[match[0] as '$' | '.' | '\0']));
+			throw new MinimongoError('Key '.concat(key, ' must not ').concat(invalidCharMsg[match[0] as '$' | '.' | '\0']));
 		}
 	}
 }
@@ -1025,7 +1021,7 @@ class MongoIdMap extends IdMap<ObjectID | string | undefined, Document> {
 	}
 }
 
-class LocalCollection {
+export class LocalCollection {
 	name?: string | undefined;
 
 	_docs: MongoIdMap;
@@ -1102,7 +1098,7 @@ class LocalCollection {
 		const id = doc._id;
 
 		if (this._docs.has(id)) {
-			throw MinimongoError("Duplicate _id '".concat(id, "'"));
+			throw new MinimongoError("Duplicate _id '".concat(id, "'"));
 		}
 
 		this._saveOriginal(id, undefined);
@@ -1833,7 +1829,7 @@ class Sorter {
 		this._keyComparator = composeComparators(this._sortSpecParts.map((spec, i) => this._keyFieldComparator(i)));
 	}
 
-	getComparator(options) {
+	getComparator(options?: { distances?: IdMap<string, number> }): (doc1: Document, doc2: Document) => number {
 		if (this._sortSpecParts.length || !options || !options.distances) {
 			return this._getBaseComparator();
 		}
@@ -2645,22 +2641,22 @@ LocalCollection._binarySearch = _binarySearch;
 
 const _checkSupportedProjection = (fields) => {
 	if (fields !== Object(fields) || Array.isArray(fields)) {
-		throw MinimongoError('fields option must be an object');
+		throw new MinimongoError('fields option must be an object');
 	}
 
 	Object.keys(fields).forEach((keyPath) => {
 		if (keyPath.split('.').includes('$')) {
-			throw MinimongoError("Minimongo doesn't support $ operator in projections yet.");
+			throw new MinimongoError("Minimongo doesn't support $ operator in projections yet.");
 		}
 
 		const value = fields[keyPath];
 
 		if (typeof value === 'object' && ['$elemMatch', '$meta', '$slice'].some((key) => hasOwn(value, key))) {
-			throw MinimongoError("Minimongo doesn't support operators in projections yet.");
+			throw new MinimongoError("Minimongo doesn't support operators in projections yet.");
 		}
 
 		if (![1, 0, true, false].includes(value)) {
-			throw MinimongoError('Projection values should be one of 1, 0, true, or false');
+			throw new MinimongoError('Projection values should be one of 1, 0, true, or false');
 		}
 	});
 };
@@ -2901,7 +2897,7 @@ const _insertInSortedList = <T>(cmp: Comparator<T>, array: T[], value: T): numbe
 // 	const options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
 // 	if (!_isPlainObject(modifier)) {
-// 		throw MinimongoError('Modifier must be an object');
+// 		throw new MinimongoError('Modifier must be an object');
 // 	}
 
 // 	modifier = EJSON.clone(modifier);
@@ -2916,20 +2912,20 @@ const _insertInSortedList = <T>(cmp: Comparator<T>, array: T[], value: T): numbe
 // 			const operand = modifier[operator];
 
 // 			if (!modFunc) {
-// 				throw MinimongoError('Invalid modifier specified '.concat(operator));
+// 				throw new MinimongoError('Invalid modifier specified '.concat(operator));
 // 			}
 
 // 			Object.keys(operand).forEach((keypath) => {
 // 				const arg = operand[keypath];
 
 // 				if (keypath === '') {
-// 					throw MinimongoError('An empty update path is not valid.');
+// 					throw new MinimongoError('An empty update path is not valid.');
 // 				}
 
 // 				const keyparts = keypath.split('.');
 
 // 				if (!keyparts.every(Boolean)) {
-// 					throw MinimongoError(`${"The update path '".concat(keypath, "' contains an empty field name, ")}which is not allowed.`);
+// 					throw new MinimongoError(`${"The update path '".concat(keypath, "' contains an empty field name, ")}which is not allowed.`);
 // 				}
 
 // 				const target = findModTarget(newDoc, keyparts, {
@@ -2943,7 +2939,7 @@ const _insertInSortedList = <T>(cmp: Comparator<T>, array: T[], value: T): numbe
 // 		});
 
 // 		if (doc._id && !EJSON.equals(doc._id, newDoc._id)) {
-// 			throw MinimongoError(
+// 			throw new MinimongoError(
 // 				`${'After applying the update to the document {_id: "'.concat(
 // 					doc._id,
 // 					'", ...},',
@@ -2952,7 +2948,7 @@ const _insertInSortedList = <T>(cmp: Comparator<T>, array: T[], value: T): numbe
 // 		}
 // 	} else {
 // 		if (doc._id && modifier._id && !EJSON.equals(doc._id, modifier._id)) {
-// 			throw MinimongoError('The _id field cannot be changed from {_id: "'.concat(doc._id, '"} to ') + '{_id: "'.concat(modifier._id, '"}'));
+// 			throw new MinimongoError('The _id field cannot be changed from {_id: "'.concat(doc._id, '"} to ') + '{_id: "'.concat(modifier._id, '"}'));
 // 		}
 
 // 		assertHasValidFieldNames(modifier);
@@ -3252,10 +3248,10 @@ const MODIFIERS = {
 	$currentDate(target, field, arg: unknown) {
 		if (typeof arg === 'object' && arg && hasOwn(arg, '$type')) {
 			if (arg.$type !== 'date') {
-				throw MinimongoError('Minimongo does currently only support the date type in ' + '$currentDate modifiers', { field });
+				throw new MinimongoError('Minimongo does currently only support the date type in ' + '$currentDate modifiers', { field });
 			}
 		} else if (arg !== true) {
-			throw MinimongoError('Invalid $currentDate modifier', { field });
+			throw new MinimongoError('Invalid $currentDate modifier', { field });
 		}
 
 		target[field] = new Date();
@@ -3263,12 +3259,12 @@ const MODIFIERS = {
 
 	$inc(target, field, arg) {
 		if (typeof arg !== 'number') {
-			throw MinimongoError('Modifier $inc allowed for numbers only', { field });
+			throw new MinimongoError('Modifier $inc allowed for numbers only', { field });
 		}
 
 		if (field in target) {
 			if (typeof target[field] !== 'number') {
-				throw MinimongoError('Cannot apply $inc modifier to non-number', { field });
+				throw new MinimongoError('Cannot apply $inc modifier to non-number', { field });
 			}
 
 			target[field] += arg;
@@ -3279,12 +3275,12 @@ const MODIFIERS = {
 
 	$min(target, field, arg) {
 		if (typeof arg !== 'number') {
-			throw MinimongoError('Modifier $min allowed for numbers only', { field });
+			throw new MinimongoError('Modifier $min allowed for numbers only', { field });
 		}
 
 		if (field in target) {
 			if (typeof target[field] !== 'number') {
-				throw MinimongoError('Cannot apply $min modifier to non-number', { field });
+				throw new MinimongoError('Cannot apply $min modifier to non-number', { field });
 			}
 
 			if (target[field] > arg) {
@@ -3297,12 +3293,12 @@ const MODIFIERS = {
 
 	$max(target, field, arg) {
 		if (typeof arg !== 'number') {
-			throw MinimongoError('Modifier $max allowed for numbers only', { field });
+			throw new MinimongoError('Modifier $max allowed for numbers only', { field });
 		}
 
 		if (field in target) {
 			if (typeof target[field] !== 'number') {
-				throw MinimongoError('Cannot apply $max modifier to non-number', { field });
+				throw new MinimongoError('Cannot apply $max modifier to non-number', { field });
 			}
 
 			if (target[field] < arg) {
@@ -3315,12 +3311,12 @@ const MODIFIERS = {
 
 	$mul(target, field, arg) {
 		if (typeof arg !== 'number') {
-			throw MinimongoError('Modifier $mul allowed for numbers only', { field });
+			throw new MinimongoError('Modifier $mul allowed for numbers only', { field });
 		}
 
 		if (field in target) {
 			if (typeof target[field] !== 'number') {
-				throw MinimongoError('Cannot apply $mul modifier to non-number', { field });
+				throw new MinimongoError('Cannot apply $mul modifier to non-number', { field });
 			}
 
 			target[field] *= arg;
@@ -3331,19 +3327,19 @@ const MODIFIERS = {
 
 	$rename(target, field, arg, keypath, doc) {
 		if (keypath === arg) {
-			throw MinimongoError('$rename source must differ from target', { field });
+			throw new MinimongoError('$rename source must differ from target', { field });
 		}
 
 		if (target === null) {
-			throw MinimongoError('$rename source field invalid', { field });
+			throw new MinimongoError('$rename source field invalid', { field });
 		}
 
 		if (typeof arg !== 'string') {
-			throw MinimongoError('$rename target must be a string', { field });
+			throw new MinimongoError('$rename target must be a string', { field });
 		}
 
 		if (arg.includes('\0')) {
-			throw MinimongoError("The 'to' field for $rename cannot contain an embedded null byte", { field });
+			throw new MinimongoError("The 'to' field for $rename cannot contain an embedded null byte", { field });
 		}
 
 		if (target === undefined) {
@@ -3358,7 +3354,7 @@ const MODIFIERS = {
 		const target2 = findModTarget(doc, keyparts, { forbidArray: true });
 
 		if (target2 === null) {
-			throw MinimongoError('$rename target field invalid', { field });
+			throw new MinimongoError('$rename target field invalid', { field });
 		}
 
 		target2[keyparts.pop()] = object;
@@ -3366,7 +3362,7 @@ const MODIFIERS = {
 
 	$set(target, field, arg) {
 		if (target !== Object(target)) {
-			const error = MinimongoError('Cannot set property on non-object field', { field });
+			const error = new MinimongoError('Cannot set property on non-object field', { field });
 
 			error.setPropertyError = true;
 
@@ -3374,7 +3370,7 @@ const MODIFIERS = {
 		}
 
 		if (target === null) {
-			const error = MinimongoError('Cannot set property on null', { field });
+			const error = new MinimongoError('Cannot set property on null', { field });
 
 			error.setPropertyError = true;
 
@@ -3403,7 +3399,7 @@ const MODIFIERS = {
 		}
 
 		if (!(target[field] instanceof Array)) {
-			throw MinimongoError('Cannot apply $push modifier to non-array', { field });
+			throw new MinimongoError('Cannot apply $push modifier to non-array', { field });
 		}
 
 		if (!(arg && arg.$each)) {
@@ -3416,7 +3412,7 @@ const MODIFIERS = {
 		const toPush = arg.$each;
 
 		if (!(toPush instanceof Array)) {
-			throw MinimongoError('$each must be an array', { field });
+			throw new MinimongoError('$each must be an array', { field });
 		}
 
 		assertHasValidFieldNames(toPush);
@@ -3425,11 +3421,11 @@ const MODIFIERS = {
 
 		if ('$position' in arg) {
 			if (typeof arg.$position !== 'number') {
-				throw MinimongoError('$position must be a numeric value', { field });
+				throw new MinimongoError('$position must be a numeric value', { field });
 			}
 
 			if (arg.$position < 0) {
-				throw MinimongoError('$position in $push must be zero or positive', { field });
+				throw new MinimongoError('$position in $push must be zero or positive', { field });
 			}
 
 			position = arg.$position;
@@ -3439,7 +3435,7 @@ const MODIFIERS = {
 
 		if ('$slice' in arg) {
 			if (typeof arg.$slice !== 'number') {
-				throw MinimongoError('$slice must be a numeric value', { field });
+				throw new MinimongoError('$slice must be a numeric value', { field });
 			}
 
 			slice = arg.$slice;
@@ -3449,14 +3445,14 @@ const MODIFIERS = {
 
 		if (arg.$sort) {
 			if (slice === undefined) {
-				throw MinimongoError('$sort requires $slice to be present', { field });
+				throw new MinimongoError('$sort requires $slice to be present', { field });
 			}
 
 			sortFunction = new Minimongo.Sorter(arg.$sort).getComparator();
 
 			toPush.forEach((element) => {
 				if (TypeChecker._type(element) !== 3) {
-					throw MinimongoError('$push like modifiers using $sort require all elements to be ' + 'objects', { field });
+					throw new MinimongoError('$push like modifiers using $sort require all elements to be ' + 'objects', { field });
 				}
 			});
 		}
@@ -3492,7 +3488,7 @@ const MODIFIERS = {
 
 	$pushAll(target, field, arg) {
 		if (!(typeof arg === 'object' && arg instanceof Array)) {
-			throw MinimongoError('Modifier $pushAll/pullAll allowed for arrays only');
+			throw new MinimongoError('Modifier $pushAll/pullAll allowed for arrays only');
 		}
 
 		assertHasValidFieldNames(arg);
@@ -3502,7 +3498,7 @@ const MODIFIERS = {
 		if (toPush === undefined) {
 			target[field] = arg;
 		} else if (!(toPush instanceof Array)) {
-			throw MinimongoError('Cannot apply $pushAll modifier to non-array', { field });
+			throw new MinimongoError('Cannot apply $pushAll modifier to non-array', { field });
 		} else {
 			toPush.push(...arg);
 		}
@@ -3528,7 +3524,7 @@ const MODIFIERS = {
 		if (toAdd === undefined) {
 			target[field] = values;
 		} else if (!(toAdd instanceof Array)) {
-			throw MinimongoError('Cannot apply $addToSet modifier to non-array', { field });
+			throw new MinimongoError('Cannot apply $addToSet modifier to non-array', { field });
 		} else {
 			values.forEach((value) => {
 				if (toAdd.some((element) => TypeChecker._equal(value, element))) {
@@ -3552,7 +3548,7 @@ const MODIFIERS = {
 		}
 
 		if (!(toPop instanceof Array)) {
-			throw MinimongoError('Cannot apply $pop modifier to non-array', { field });
+			throw new MinimongoError('Cannot apply $pop modifier to non-array', { field });
 		}
 
 		if (typeof arg === 'number' && arg < 0) {
@@ -3574,7 +3570,7 @@ const MODIFIERS = {
 		}
 
 		if (!(toPull instanceof Array)) {
-			throw MinimongoError('Cannot apply $pull/pullAll modifier to non-array', { field });
+			throw new MinimongoError('Cannot apply $pull/pullAll modifier to non-array', { field });
 		}
 
 		let out;
@@ -3592,7 +3588,7 @@ const MODIFIERS = {
 
 	$pullAll(target, field, arg) {
 		if (!(typeof arg === 'object' && arg instanceof Array)) {
-			throw MinimongoError('Modifier $pushAll/pullAll allowed for arrays only', { field });
+			throw new MinimongoError('Modifier $pushAll/pullAll allowed for arrays only', { field });
 		}
 
 		if (target === undefined) {
@@ -3606,14 +3602,14 @@ const MODIFIERS = {
 		}
 
 		if (!(toPull instanceof Array)) {
-			throw MinimongoError('Cannot apply $pull/pullAll modifier to non-array', { field });
+			throw new MinimongoError('Cannot apply $pull/pullAll modifier to non-array', { field });
 		}
 
 		target[field] = toPull.filter((object) => !arg.some((element) => TypeChecker._equal(object, element)));
 	},
 
 	$bit(target, field, arg) {
-		throw MinimongoError('$bit is not supported', { field });
+		throw new MinimongoError('$bit is not supported', { field });
 	},
 	$v() {},
 };
@@ -3645,7 +3641,7 @@ function findModTarget(doc, keyparts) {
 				return undefined;
 			}
 
-			const error = MinimongoError("cannot use the part '".concat(keypart, "' to traverse ").concat(doc));
+			const error = new MinimongoError("cannot use the part '".concat(keypart, "' to traverse ").concat(doc));
 
 			error.setPropertyError = true;
 
@@ -3659,11 +3655,11 @@ function findModTarget(doc, keyparts) {
 
 			if (keypart === '$') {
 				if (usedArrayIndex) {
-					throw MinimongoError("Too many positional (i.e. '$') elements");
+					throw new MinimongoError("Too many positional (i.e. '$') elements");
 				}
 
 				if (!options.arrayIndices || !options.arrayIndices.length) {
-					throw MinimongoError('The positional operator did not find the match needed from the ' + 'query');
+					throw new MinimongoError('The positional operator did not find the match needed from the ' + 'query');
 				}
 
 				keypart = options.arrayIndices[0];
@@ -3675,7 +3671,7 @@ function findModTarget(doc, keyparts) {
 					return undefined;
 				}
 
-				throw MinimongoError("can't append to array using string field name [".concat(keypart, ']'));
+				throw new MinimongoError("can't append to array using string field name [".concat(keypart, ']'));
 			}
 
 			if (last) {
@@ -3694,7 +3690,7 @@ function findModTarget(doc, keyparts) {
 				if (doc.length === keypart) {
 					doc.push({});
 				} else if (typeof doc[keypart] !== 'object') {
-					throw MinimongoError("can't modify field '".concat(keyparts[i + 1], "' of list value ") + JSON.stringify(doc[keypart]));
+					throw new MinimongoError("can't modify field '".concat(keyparts[i + 1], "' of list value ") + JSON.stringify(doc[keypart]));
 				}
 			}
 		} else {
@@ -4045,8 +4041,6 @@ function regexpElementMatcher(regexp) {
 // 	}
 // }
 
-const Minimongo = { LocalCollection, Matcher, Sorter };
-
-export { Minimongo, MinimongoError, LocalCollection };
+export const Minimongo = { LocalCollection, Matcher, Sorter };
 
 Package.minimongo = { Minimongo, MinimongoError, LocalCollection };
