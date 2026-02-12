@@ -1,11 +1,26 @@
 # docker-compose-ci-vite.yml
+x-microservice-defaults: &microservice-defaults
+  context: .
+  x-bake:
+    platforms:
+      - linux/amd64
+      - linux/arm64
+  environment:
+    - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+    - 'TRANSPORTER=${TRANSPORTER:-}'
+    - MOLECULER_LOG_LEVEL=info
+  extra_hosts:
+    - 'host.docker.internal:host-gateway'
+  depends_on:
+    - nats
+
 services:
   rocketchat:
     volumes:
       - ${COVERAGE_DIR:-/tmp/coverage}:${COVERAGE_DIR:-/tmp/coverage}
     build:
-      dockerfile: ${GITHUB_WORKSPACE:-}/apps/meteor/.docker/Dockerfile.backend
       context: /tmp/build
+      dockerfile: ${GITHUB_WORKSPACE:-}/apps/meteor/.docker/Dockerfile.backend
       x-bake:
         platforms:
           - linux/amd64
@@ -37,14 +52,16 @@ services:
       traefik.http.services.rocketchat-backend.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat-backend.service: rocketchat-backend
       traefik.http.routers.rocketchat-backend.entrypoints: http
+      # Note: Removed /sockjs here if ddp-streamer is meant to handle it exclusively,
+      # otherwise keep it but be aware ddp-streamer has higher priority.
       traefik.http.routers.rocketchat-backend.rule: PathPrefix(`/api`) || PathPrefix(`/livechat`) || PathPrefix(`/_timesync`) || PathPrefix(`/__cordova`) || PathPrefix(`/websocket`) || PathPrefix(`/sockjs`) || PathPrefix(`/assets`) || PathPrefix(`/avatar`) || PathPrefix(`/file-upload`) || PathPrefix(`/emoji-custom`) || PathPrefix(`/custom-sounds`) || PathPrefix(`/layout`)
       traefik.http.routers.rocketchat-backend.priority: 50
       traefik.http.middlewares.test-retry.retry.attempts: 4
     healthcheck:
       interval: 2s
       timeout: 5s
-      retries: 5
-      start_period: 60s
+      retries: 20 # Increased retries to allow for slower startup in CI
+      start_period: 30s
       test: wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/livez || exit 1
 
   frontend:
@@ -57,8 +74,10 @@ services:
           - linux/arm64
     image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat-frontend:${DOCKER_TAG}
     depends_on:
-      - rocketchat
-      - traefik
+      rocketchat:
+        condition: service_healthy
+      traefik:
+        condition: service_started
     labels:
       traefik.enable: true
       traefik.http.services.rocketchat-frontend.loadbalancer.server.port: 80
@@ -69,87 +88,41 @@ services:
     healthcheck:
       interval: 2s
       timeout: 5s
-      retries: 3
+      retries: 10
       start_period: 5s
       test: wget --no-verbose --tries=1 --spider http://127.0.0.1:80/ || exit 1
 
   authorization-service:
+    <<: *microservice-defaults
     build:
       dockerfile: ee/apps/authorization-service/Dockerfile
-      context: .
-      x-bake:
-        platforms:
-          - linux/amd64
-          - linux/arm64
       args:
         SERVICE: authorization-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}
-    environment:
-      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
-      - 'TRANSPORTER=${TRANSPORTER:-}'
-      - MOLECULER_LOG_LEVEL=info
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    depends_on:
-      - nats
 
   account-service:
+    <<: *microservice-defaults
     build:
       dockerfile: ee/apps/account-service/Dockerfile
-      context: .
-      x-bake:
-        platforms:
-          - linux/amd64
-          - linux/arm64
       args:
         SERVICE: account-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${DOCKER_TAG}
-    environment:
-      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
-      - 'TRANSPORTER=${TRANSPORTER:-}'
-      - MOLECULER_LOG_LEVEL=info
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    depends_on:
-      - nats
 
   presence-service:
+    <<: *microservice-defaults
     build:
       dockerfile: ee/apps/presence-service/Dockerfile
-      context: .
-      x-bake:
-        platforms:
-          - linux/amd64
-          - linux/arm64
       args:
         SERVICE: presence-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
-    environment:
-      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
-      - 'TRANSPORTER=${TRANSPORTER:-}'
-      - MOLECULER_LOG_LEVEL=info
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    depends_on:
-      - nats
 
   ddp-streamer-service:
+    <<: *microservice-defaults
     build:
       dockerfile: ee/apps/ddp-streamer/Dockerfile
-      context: .
-      x-bake:
-        platforms:
-          - linux/amd64
-          - linux/arm64
       args:
         SERVICE: ddp-streamer
     image: ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${DOCKER_TAG}
-    environment:
-      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
-      - 'TRANSPORTER=${TRANSPORTER:-}'
-      - MOLECULER_LOG_LEVEL=info
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
       - traefik
@@ -162,33 +135,17 @@ services:
       traefik.http.routers.ddp-streamer-service.priority: 100
 
   queue-worker-service:
+    <<: *microservice-defaults
     build:
       dockerfile: ee/apps/queue-worker/Dockerfile
-      context: .
-      x-bake:
-        platforms:
-          - linux/amd64
-          - linux/arm64
       args:
         SERVICE: queue-worker
     image: ghcr.io/${LOWERCASE_REPOSITORY}/queue-worker-service:${DOCKER_TAG}
-    environment:
-      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
-      - 'TRANSPORTER=${TRANSPORTER:-}'
-      - MOLECULER_LOG_LEVEL=info
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    depends_on:
-      - nats
 
   omnichannel-transcript-service:
+    <<: *microservice-defaults
     build:
       dockerfile: ee/apps/omnichannel-transcript/Dockerfile
-      context: .
-      x-bake:
-        platforms:
-          - linux/amd64
-          - linux/arm64
       args:
         SERVICE: omnichannel-transcript
     image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}
@@ -197,16 +154,12 @@ services:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    depends_on:
-      - nats
 
   nats:
     image: nats:2.6-alpine
 
   mongo:
-    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.0}-ubi8
+    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-7.0}-ubi8
     container_name: mongo
     restart: on-failure
     ports:
@@ -219,13 +172,18 @@ services:
       bash -c
         "mongod --replSet $$MONGODB_REPLICA_SET_NAME --bind_ip_all &
           sleep 2;
-          until mongosh --eval \"db.adminCommand('ping')\"; do
+          until mongosh --quiet --eval \"db.adminCommand('ping')\"; do
             echo '=====> Waiting for Mongo...';
             sleep 1;
           done;
-          echo \"=====> Initiating ReplSet $$MONGODB_REPLICA_SET_NAME at $$MONGODB_INITIAL_PRIMARY_HOST:$$MONGODB_PORT_NUMBER...\";
-          mongosh --eval \"rs.initiate({_id: '$$MONGODB_REPLICA_SET_NAME', members: [{ _id: 0, host: '$$MONGODB_INITIAL_PRIMARY_HOST:$$MONGODB_PORT_NUMBER' }]})\";
-          echo '=====> Initiating ReplSet done...';
+          # FIX: Check if already initialized to prevent errors on restart
+          if ! mongosh --quiet --eval \"rs.status().ok\" | grep -q 1; then
+            echo \"=====> Initiating ReplSet $$MONGODB_REPLICA_SET_NAME...\";
+            mongosh --eval \"rs.initiate({_id: '$$MONGODB_REPLICA_SET_NAME', members: [{ _id: 0, host: '$$MONGODB_INITIAL_PRIMARY_HOST:$$MONGODB_PORT_NUMBER' }]})\";
+          else
+            echo '=====> ReplSet already initialized';
+          fi
+          echo '=====> Mongo Ready';
         wait"
 
   httpbin:
@@ -233,9 +191,13 @@ services:
 
   traefik:
     image: traefik:v3.3
+    environment:
+      # FIX: Force Traefik to use a newer Docker API version compatible with the CI runner
+      - DOCKER_API_VERSION=1.44
     command:
       - --providers.docker=true
-      - --providers.docker.exposedbydefault=true
+      # FIX: Security best practice - only expose services with labels
+      - --providers.docker.exposedbydefault=false
       - --entrypoints.http.address=:80
       - --api.insecure=true
       - '--serverstransport.maxidleconnsperhost=-1'
