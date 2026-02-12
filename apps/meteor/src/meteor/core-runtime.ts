@@ -140,10 +140,3 @@ export function waitUntilAllLoaded() {
 		});
 	});
 }
-
-// Since the package.js doesn't export load or waitUntilReady
-// these will never be globals in packages or apps that depend on core-runtime
-Package['core-runtime'] = {
-	queue,
-	waitUntilAllLoaded,
-};

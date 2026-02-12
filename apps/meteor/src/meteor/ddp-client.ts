@@ -235,7 +235,7 @@ export class MessageProcessors {
 				heartbeatInterval: self._heartbeatInterval,
 				heartbeatTimeout: self._heartbeatTimeout,
 				onTimeout() {
-					self._lostConnection(new DDP.ConnectionError('DDP heartbeat timed out'));
+					self._lostConnection(new ConnectionError('DDP heartbeat timed out'));
 				},
 				sendPing() {
 					self._send({ msg: 'ping' });
@@ -1021,7 +1021,7 @@ export class Connection {
 		this.onReconnect = null;
 
 		this._stream = new ClientStream(url, {
-			ConnectionError: DDP.ConnectionError,
+			ConnectionError,
 			// headers: options.headers,
 			// Used to keep some tests quiet, or for other cases in which
 			// the right thing to do with connection errors is to silently
@@ -2252,8 +2252,8 @@ export class Connection {
 // This array allows the `_allSubscriptionsReady` method below, which
 // is used by the `spiderable` package, to keep track of whether all
 // data is ready.
-const allConnections: Connection[] = [];
-const _reconnectHook = new Hook<(connection: Connection) => void>({ bindEnvironment: false });
+const allConnections: Map<string, Connection> = new Map();
+const _reconnectHook = new Hook<[connection: Connection]>({ bindEnvironment: false });
 // This is private but it's used in a few places. accounts-base uses
 // it to get the current user. Meteor.setTimeout and friends clear
 // it. We can probably find a better way to factor this.
@@ -2311,8 +2311,12 @@ const randomStream = (name: string) => {
  * @param {Function} options.onDDPNegotiationVersionFailure callback when version negotiation fails.
  */
 const connect = (url: string, options: Partial<ClientStreamOptions> = {}) => {
+	const connection = allConnections.get(url);
+	if (connection) {
+		return connection;
+	}
 	const ret = new Connection(url, options);
-	allConnections.push(ret); // hack. see below.
+	allConnections.set(url, ret); // hack. see below.
 	return ret;
 };
 
@@ -2327,6 +2331,10 @@ const connect = (url: string, options: Partial<ClientStreamOptions> = {}) => {
  */
 const onReconnect = (callback: (connection: Connection) => void) => _reconnectHook.register(callback);
 
+const runtimeConfig = typeof __meteor_runtime_config__ !== 'undefined' ? __meteor_runtime_config__ : Object.create(null);
+const ddpUrl = runtimeConfig.DDP_DEFAULT_CONNECTION_URL || '/';
+export const connection = connect(ddpUrl, { onDDPVersionNegotiationFailure });
+
 /**
  * @namespace DDP
  * @summary Namespace for DDP-related methods/classes.
@@ -2339,10 +2347,9 @@ export const DDP = {
 	randomStream,
 	connect,
 	onReconnect,
+	connection,
 };
 
-const runtimeConfig = typeof __meteor_runtime_config__ !== 'undefined' ? __meteor_runtime_config__ : Object.create(null);
-const ddpUrl = runtimeConfig.DDP_DEFAULT_CONNECTION_URL || '/';
 const retry = new Retry();
 
 function onDDPVersionNegotiationFailure(description: string) {
@@ -2361,7 +2368,7 @@ function onDDPVersionNegotiationFailure(description: string) {
 	}
 }
 
-Meteor.connection = DDP.connect(ddpUrl, { onDDPVersionNegotiationFailure });
+Meteor.connection = connection;
 
 ['subscribe', 'methods', 'isAsyncCall', 'call', 'callAsync', 'apply', 'applyAsync', 'status', 'reconnect', 'disconnect'].forEach((name) => {
 	(Meteor as any)[name] = (Meteor.connection as any)[name].bind(Meteor.connection);
