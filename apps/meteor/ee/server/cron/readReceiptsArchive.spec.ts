@@ -1,7 +1,7 @@
 import { ReadReceipts, ReadReceiptsArchive, Messages } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server';
 import { archiveOldReadReceipts } from './readReceiptsArchive';
+import { settings } from '../../../app/settings/server';
 
 jest.mock('@rocket.chat/models', () => ({
 	ReadReceipts: {
