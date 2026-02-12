@@ -11,6 +11,7 @@
     emojiUnicode,
     emoticon,
     extractFirstResult,
+    flatten,
     heading,
     image,
     inlineCode,
@@ -275,7 +276,7 @@ InlineItemPattern = Whitespace
  *
  */
 References
-  = "[" title:LinkTitle* "](" href:LinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
+  = "[" title:LinkTitle* "](" href:LinkRef ")" { return title.length ? link(href, reducePlainTexts(flatten(title))) : link(href); }
   / "<" href:LinkRef "|" title:LinkTitle2 ">" { return link(href, [plain(title)]); }
 
 LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) .) { return plain(anyTitle) }

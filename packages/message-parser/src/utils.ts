@@ -180,6 +180,8 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 	return current;
 };
 
+export const flatten = (value: any[]): any[] => value.flat(Infinity);
+
 export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value'] =>
 	values.flat().reduce(
 		(result, item, index, values) => {
