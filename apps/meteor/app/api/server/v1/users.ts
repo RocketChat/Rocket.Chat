@@ -990,7 +990,7 @@ API.v1.addRoute(
 		async post() {
 			const { email } = this.bodyParams;
 
-      if (await sendConfirmationEmail(email)) {
+			if (await sendConfirmationEmail(email)) {
 				return API.v1.success();
 			}
 			return API.v1.failure();
