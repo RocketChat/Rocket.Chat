@@ -1,7 +1,7 @@
-import type { IReadReceipt, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IReadReceipt, IUser, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
 import { BaseRaw } from '@rocket.chat/models';
-import type { Collection, FindCursor, Db, IndexDescription } from 'mongodb';
+import type { Collection, FindCursor, Db, IndexDescription, Filter, DeleteResult, UpdateResult, Document } from 'mongodb';
 
 export class ReadReceiptsArchiveRaw extends BaseRaw<IReadReceipt> implements IReadReceiptsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IReadReceipt>>) {
@@ -18,36 +18,43 @@ export class ReadReceiptsArchiveRaw extends BaseRaw<IReadReceipt> implements IRe
 
 	// Archive doesn't need all the delete methods from hot storage
 	// But we implement them to satisfy the interface
-	async removeByUserId(userId: string) {
+	removeByUserId(userId: string): Promise<DeleteResult> {
 		return this.deleteMany({ userId });
 	}
 
-	async removeByRoomId(roomId: string) {
+	removeByRoomId(roomId: string): Promise<DeleteResult> {
 		return this.deleteMany({ roomId });
 	}
 
-	async removeByRoomIds(roomIds: string[]) {
+	removeByRoomIds(roomIds: string[]): Promise<DeleteResult> {
 		return this.deleteMany({ roomId: { $in: roomIds } });
 	}
 
-	async removeByMessageId(messageId: string) {
+	removeByMessageId(messageId: string): Promise<DeleteResult> {
 		return this.deleteMany({ messageId });
 	}
 
-	async removeByMessageIds(messageIds: string[]) {
+	removeByMessageIds(messageIds: string[]): Promise<DeleteResult> {
 		return this.deleteMany({ messageId: { $in: messageIds } });
 	}
 
-	async removeByIdPinnedTimestampLimitAndUsers() {
+	async removeByIdPinnedTimestampLimitAndUsers(
+		_roomId: string,
+		_ignorePinned: boolean,
+		_ignoreDiscussion: boolean,
+		_ts: Filter<IMessage>['ts'],
+		_users: IUser['_id'][],
+		_ignoreThreads: boolean,
+	): Promise<DeleteResult> {
 		// Not needed for archive, but required by interface
 		return { acknowledged: true, deletedCount: 0 };
 	}
 
-	async setPinnedByMessageId(messageId: string, pinned = true) {
+	setPinnedByMessageId(messageId: string, pinned = true): Promise<Document | UpdateResult> {
 		return this.updateMany({ messageId }, { $set: { pinned } });
 	}
 
-	async setAsThreadById(messageId: string) {
+	setAsThreadById(messageId: string): Promise<Document | UpdateResult> {
 		return this.updateMany({ messageId }, { $set: { tmid: messageId } });
 	}
 
