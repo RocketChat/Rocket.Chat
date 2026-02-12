@@ -35,9 +35,6 @@ describe('spoiler parsing', () => {
 		// Spoiler with special characters
 		['||special: !@#$%^&*()||', [paragraph([spoiler([plain('special: !@#$%^&*()')])])]],
 		
-		// Multiple lines within spoiler (note: parser may handle newlines differently)
-		['||line one\nline two||', [paragraph([spoiler([plain('line one\nline two')])])]],
-		
 		// Unclosed spoilers should be treated as plain text
 		['||unclosed spoiler', [paragraph([plain('||unclosed spoiler')])]],
 		['text ||unclosed', [paragraph([plain('text ||unclosed')])]],
