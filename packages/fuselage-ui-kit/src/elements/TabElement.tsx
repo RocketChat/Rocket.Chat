@@ -24,7 +24,7 @@ export const TabElement = ({
 			disabled={loading ? true : disabled}
 			onClick={(e) => {
 				!disabled && select(index);
-				!disabled && action(e);
+				!disabled && void action(e);
 			}}
 		>
 			{surfaceRenderer.renderTextObject(title, 0, UiKit.BlockContext.NONE)}

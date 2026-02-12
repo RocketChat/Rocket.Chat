@@ -8,13 +8,14 @@ import type {
 import { isPendingState, isBusyState } from '@rocket.chat/media-signaling';
 import type {
 	ClientMediaSignalTransfer,
-	CallAnswer,
 	CallHangupReason,
 	CallRole,
 	ClientMediaSignal,
 	ClientMediaSignalError,
 	ClientMediaSignalLocalState,
 	ServerMediaSignal,
+	ClientMediaSignalAnswer,
+	CallFeature,
 } from '@rocket.chat/media-signaling';
 import { MediaCallChannels, MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
@@ -98,7 +99,7 @@ export class UserActorSignalProcessor {
 			case 'local-sdp':
 				return this.saveLocalDescription(signal.sdp, signal.negotiationId);
 			case 'answer':
-				return this.processAnswer(signal.answer);
+				return this.processAnswer(signal);
 			case 'hangup':
 				return this.hangup(signal.reason);
 			case 'local-state':
@@ -126,12 +127,12 @@ export class UserActorSignalProcessor {
 		await mediaCallDirector.saveWebrtcSession(this.call, this.agent, { sdp, negotiationId }, this.contractId);
 	}
 
-	private async processAnswer(answer: CallAnswer): Promise<void> {
-		switch (answer) {
+	private async processAnswer(signal: ClientMediaSignalAnswer): Promise<void> {
+		switch (signal.answer) {
 			case 'ack':
 				return this.clientIsReachable();
 			case 'accept':
-				return this.clientHasAccepted();
+				return this.clientHasAccepted(signal.supportedFeatures || ['audio']);
 			case 'unavailable':
 				return this.clientIsUnavailable();
 			case 'reject':
@@ -266,7 +267,7 @@ export class UserActorSignalProcessor {
 	private async processDTMF(dtmf: string, duration?: number): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.processDTMF', dtmf, duration });
 
-		this.agent.oppositeAgent?.onDTMF(this.call._id, dtmf, duration || 2000);
+		void this.agent.oppositeAgent?.onDTMF(this.call._id, dtmf, duration || 2000);
 	}
 
 	protected async clientIsReachable(): Promise<void> {
@@ -307,13 +308,13 @@ export class UserActorSignalProcessor {
 		await mediaCallDirector.hangup(this.call, this.agent, 'unavailable');
 	}
 
-	protected async clientHasAccepted(): Promise<void> {
+	protected async clientHasAccepted(supportedFeatures: CallFeature[]): Promise<void> {
 		if (!this.isCallPending()) {
 			return;
 		}
 
 		if (this.role === 'callee') {
-			await mediaCallDirector.acceptCall(this.call, this.agent, { calleeContractId: this.contractId });
+			await mediaCallDirector.acceptCall(this.call, this.agent, { calleeContractId: this.contractId, supportedFeatures });
 		}
 	}
 

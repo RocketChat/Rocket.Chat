@@ -278,7 +278,7 @@ References
   = "[" title:LinkTitle* "](" href:LinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
   / "<" href:LinkRef "|" title:LinkTitle2 ">" { return link(href, [plain(title)]); }
 
-LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) .) { return plain(anyTitle) }
+LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) !("] [" [^\]]* "](") .) { return plain(anyTitle) }
 
 LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
 
@@ -323,7 +323,7 @@ DomainName
 
 DomainNameLabel = $(DomainChar+ ("-" DomainChar+)*)
 
-DomainChar = !Extra ([\__-] / !Safe) !EndOfLine !Space ![\\/|><%`] .
+DomainChar = !Extra ([\__-] / !Safe) !EndOfLine !Space ![\\/|><%`\[\]] .
 
 /**
  *
