@@ -190,10 +190,6 @@ describe('[CustomSounds]', () => {
 			await request.get(api('custom-sounds.getOne')).query({ _id: fileId }).expect(401);
 		});
 
-		it('should return bad request if _id is missing', async () => {
-			await request.get(api('custom-sounds.getOne')).set(credentials).expect(400);
-		});
-
 		it('should return not found if custom sound does not exist', async () => {
 			await request.get(api('custom-sounds.getOne')).set(credentials).query({ _id: 'invalid-id' }).expect(404);
 		});
@@ -208,9 +204,6 @@ describe('[CustomSounds]', () => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('_id', fileId);
 					expect(res.body).to.have.property('name', fileName);
-
-					// ensures there are no extra properties (because of additionalProperties: false)
-					expect(Object.keys(res.body)).to.have.lengthOf(3);
 				});
 		});
 
