@@ -8,9 +8,9 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 
 	updateFileComplete(fileId: string, userId: string, file: object): Promise<Document | UpdateResult> | undefined;
 
-	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult> | undefined;
+	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult>;
 
-	confirmTemporaryFiles(fileIds: string[], userId: string): Promise<Document | UpdateResult> | undefined;
+	confirmTemporaryFiles(fileIds: string[], userId: string): Promise<Document | UpdateResult>;
 
 	findByIds(_ids: string[], options?: FindOptions<T>): FindCursor<T>;
 

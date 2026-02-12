@@ -73,7 +73,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
-	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult> | undefined {
+	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult> {
 		const filter = {
 			_id: fileId,
 			userId,
@@ -88,7 +88,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
-	confirmTemporaryFiles(fileIds: string[], userId: string): Promise<Document | UpdateResult> | undefined {
+	confirmTemporaryFiles(fileIds: string[], userId: string): Promise<Document | UpdateResult> {
 		const filter = {
 			_id: {
 				$in: fileIds,

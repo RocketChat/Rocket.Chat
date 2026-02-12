@@ -10,7 +10,7 @@ import { e2e } from '../../e2ee/rocketchat.e2e';
 import type { E2ERoom } from '../../e2ee/rocketchat.e2e.room';
 import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';
-import type { ChatAPI } from '../ChatAPI';
+import type { ChatAPI, UploadsAPI } from '../ChatAPI';
 import { isEncryptedUpload, type EncryptedUpload } from '../Upload';
 
 const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
@@ -93,14 +93,79 @@ const getEncryptedContent = async (filesToUpload: readonly EncryptedUpload[], e2
 	});
 };
 
-export const processMessageUploads = async (chat: ChatAPI, message: IMessage): Promise<boolean> => {
-	const { tmid, msg } = message;
+async function continueSendingMessage(chat: ChatAPI, store: UploadsAPI, message: IMessage) {
+	const { msg, tmid } = message;
 	const room = await chat.data.getRoom();
 	const e2eRoom = await e2e.getInstanceByRoomId(room._id);
+	const filesToUpload = store.get();
+
+	const multiFilePerMessageEnabled = settings.peek('FileUpload_EnableMultipleFilesPerMessage') as boolean;
+
+	const fileUrls: string[] = [];
+	const filesToConfirm: IUploadToConfirm[] = [];
+
+	for await (const upload of filesToUpload) {
+		if (!upload.url || !upload.id) {
+			continue;
+		}
+
+		let content;
+		if (e2eRoom && isEncryptedUpload(upload)) {
+			content = await e2eRoom.encryptMessageContent(upload.metadataForEncryption);
+		}
+
+		fileUrls.push(upload.url);
+		filesToConfirm.push({ _id: upload.id, name: upload.file.name, content });
+	}
+
+	const shouldConvertSentMessages = await e2eRoom?.shouldConvertSentMessages({ msg });
+
+	let content;
+	if (e2eRoom && shouldConvertSentMessages) {
+		content = await getEncryptedContent(filesToUpload as EncryptedUpload[], e2eRoom, msg);
+	}
+
+	const composedMessage: AtLeast<IMessage, 'msg' | '_id' | 'rid'> = {
+		...message,
+		tmid,
+		msg,
+		content,
+		...(e2eRoom && {
+			t: 'e2e',
+			msg: '',
+		}),
+	} as const;
+
+	try {
+		if ((!multiFilePerMessageEnabled || isOmnichannelRoom(room)) && filesToConfirm.length > 1) {
+			await Promise.all(
+				filesToConfirm.map((fileToConfirm, index) => {
+					/**
+					 * The first message will keep the composedMessage,
+					 * subsequent messages will have a new ID with empty text
+					 * */
+					const messageToSend = index === 0 ? composedMessage : { ...composedMessage, _id: Random.id(), msg: '' };
+					return sdk.call('sendMessage', messageToSend, [fileUrls[index]], [fileToConfirm]);
+				}),
+			);
+		} else {
+			await sdk.call('sendMessage', composedMessage, fileUrls, filesToConfirm);
+		}
+		store.clear();
+	} catch (error: unknown) {
+		dispatchToastMessage({ type: 'error', message: error });
+	} finally {
+		chat.action.stop('uploading');
+	}
+
+	return true;
+}
+
+export const processMessageUploads = async (chat: ChatAPI, message: IMessage): Promise<boolean> => {
+	const { tmid } = message;
 
 	const store = tmid ? chat.threadUploads : chat.uploads;
 	const filesToUpload = store.get();
-	const multiFilePerMessageEnabled = settings.peek('FileUpload_EnableMultipleFilesPerMessage') as boolean;
 
 	if (filesToUpload.length === 0) {
 		return false;
@@ -109,7 +174,7 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage): P
 	const failedUploads = filesToUpload.filter((upload) => upload.error);
 
 	if (!failedUploads.length) {
-		return continueSendingMessage();
+		return continueSendingMessage(chat, store, message);
 	}
 
 	if (failedUploads.length > 0) {
@@ -138,7 +203,7 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage): P
 						cancelText: t('Cancel'),
 						onConfirm: () => {
 							imperativeModal.close();
-							resolve(continueSendingMessage());
+							resolve(continueSendingMessage(chat, store, message));
 						},
 						onCancel: () => {
 							imperativeModal.close();
@@ -154,66 +219,5 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage): P
 		});
 	}
 
-	return continueSendingMessage();
-
-	async function continueSendingMessage() {
-		const fileUrls: string[] = [];
-		const filesToConfirm: IUploadToConfirm[] = [];
-
-		for await (const upload of filesToUpload) {
-			if (!upload.url || !upload.id) {
-				continue;
-			}
-
-			let content;
-			if (e2eRoom && isEncryptedUpload(upload)) {
-				content = await e2eRoom.encryptMessageContent(upload.metadataForEncryption);
-			}
-
-			fileUrls.push(upload.url);
-			filesToConfirm.push({ _id: upload.id, name: upload.file.name, content });
-		}
-
-		const shouldConvertSentMessages = await e2eRoom?.shouldConvertSentMessages({ msg });
-
-		let content;
-		if (e2eRoom && shouldConvertSentMessages) {
-			content = await getEncryptedContent(filesToUpload as EncryptedUpload[], e2eRoom, msg);
-		}
-
-		const composedMessage: AtLeast<IMessage, 'msg' | '_id' | 'rid'> = {
-			...message,
-			tmid,
-			msg,
-			content,
-			...(e2eRoom && {
-				t: 'e2e',
-				msg: '',
-			}),
-		} as const;
-
-		try {
-			if ((!multiFilePerMessageEnabled || isOmnichannelRoom(room)) && filesToConfirm.length > 1) {
-				await Promise.all(
-					filesToConfirm.map((fileToConfirm, index) => {
-						/**
-						 * The first message will keep the composedMessage,
-						 * subsequent messages will have a new ID with empty text
-						 * */
-						const messageToSend = index === 0 ? composedMessage : { ...composedMessage, _id: Random.id(), msg: '' };
-						return sdk.call('sendMessage', messageToSend, [fileUrls[index]], [fileToConfirm]);
-					}),
-				);
-			} else {
-				await sdk.call('sendMessage', composedMessage, fileUrls, filesToConfirm);
-			}
-			store.clear();
-		} catch (error: unknown) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			chat.action.stop('uploading');
-		}
-
-		return true;
-	}
+	return continueSendingMessage(chat, store, message);
 };
