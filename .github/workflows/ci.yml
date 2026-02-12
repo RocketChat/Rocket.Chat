@@ -450,7 +450,7 @@ jobs:
 
       - name: Track Docker image sizes
         uses: ./.github/actions/docker-image-size-tracker
-        if: github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
+        if: github.actor != 'dependabot[bot]' && (github.ref == 'refs/heads/develop' || github.event.pull_request.head.repo.full_name == github.repository)
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           ci-pat: ${{ secrets.CI_PAT }}
