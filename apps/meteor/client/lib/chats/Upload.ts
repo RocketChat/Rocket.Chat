@@ -16,11 +16,11 @@ export type EncryptedUpload = NonEncryptedUpload & {
 export type Upload = EncryptedUpload | NonEncryptedUpload;
 
 export type EncryptedFile = {
-	file: File;
-	key: JsonWebKey;
-	iv: string;
-	type: File['type'];
-	hash: string;
+	readonly file: File;
+	readonly key: JsonWebKey;
+	readonly iv: string;
+	readonly type: File['type'];
+	readonly hash: string;
 };
 
 export const isEncryptedUpload = (upload: Upload): upload is EncryptedUpload => 'encryptedFile' in upload;
