@@ -274,12 +274,16 @@ InlineItemPattern = Whitespace
  * e.g: ||spoiler||, ||spoiler **bold**||
  *
  */
-Spoiler = "||" text:SpoilerContentItems "||" { return spoiler(text); }
+Spoiler = "||" &{ skipInlineEmoji = false; return true; } text:SpoilerContentItems "||" { return spoiler(text); }
 
 SpoilerContentItems = text:SpoilerContentItem+ { return reducePlainTexts(text); }
 
 // Ensure we consume at least one character and do not accidentally match the closing "||"
-SpoilerContentItem = !"||" item:InlineItemPattern { return item; } / !"||" item:Any { return item; }
+SpoilerContentItem = !"||" item:SpoilerInlineItem { return item; } / !"||" item:SpoilerInlineItemFallback { return item; }
+
+SpoilerInlineItem = &{ skipInlineEmoji = false; return true; } item:InlineItemPattern { return item; }
+
+SpoilerInlineItemFallback = &{ skipInlineEmoji = true; return true; } item:Any { return item; }
 
 /**
  *

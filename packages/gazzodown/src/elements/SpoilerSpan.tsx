@@ -1,18 +1,23 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import type { KeyboardEvent, ReactElement } from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { lazy, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import BoldSpan from './BoldSpan';
+import ImageElement from './ImageElement';
 import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
 import Timestamp from './Timestamp';
 import CodeElement from '../code/CodeElement';
+import ColorElement from '../colors/ColorElement';
 import EmojiElement from '../emoji/EmojiElement';
+import KatexErrorBoundary from '../katex/KatexErrorBoundary';
 import ChannelMentionElement from '../mentions/ChannelMentionElement';
 import UserMentionElement from '../mentions/UserMentionElement';
+
+const KatexElement = lazy(() => import('../katex/KatexElement'));
 
 type SpoilerNode = {
 	type: 'SPOILER';
@@ -30,6 +35,9 @@ type MessageBlock =
 	| MessageParser.Italic
 	| MessageParser.Strike
 	| MessageParser.InlineCode
+	| MessageParser.Color
+	| MessageParser.Image
+	| MessageParser.InlineKaTeX
 	| SpoilerNode;
 
 type SpoilerSpanProps = {
@@ -136,6 +144,19 @@ const renderBlockComponent = (block: MessageBlock, index: number): ReactElement 
 
 		case 'TIMESTAMP':
 			return <Timestamp key={index}>{block}</Timestamp>;
+
+		case 'COLOR':
+			return <ColorElement key={index} {...block.value} />;
+
+		case 'IMAGE':
+			return <ImageElement key={index} src={block.value.src.value} alt={block.value.label} />;
+
+		case 'INLINE_KATEX':
+			return (
+				<KatexErrorBoundary key={index} code={block.value}>
+					<KatexElement code={block.value} />
+				</KatexErrorBoundary>
+			);
 
 		default:
 			return null;

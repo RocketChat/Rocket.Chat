@@ -32,7 +32,8 @@ const StrikeSpan = ({ children }: StrikeSpanProps): ReactElement => (
 				block.type === 'PLAIN_TEXT' ||
 				block.type === 'ITALIC' ||
 				block.type === 'BOLD' ||
-				block.type === 'INLINE_CODE'
+				block.type === 'INLINE_CODE' ||
+				block.type === 'SPOILER'
 			) {
 				return <del key={index}>{renderBlockComponent(block, index)}</del>;
 			}

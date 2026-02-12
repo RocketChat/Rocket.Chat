@@ -85,7 +85,7 @@ export type Quote = {
 
 export type Spoiler = {
 	type: 'SPOILER';
-	value: Array<MarkupExcluding<Spoiler> | Link | Emoji | UserMention | ChannelMention | InlineCode | Italic | Bold | Strike | Timestamp>;
+	value: Array<MarkupExcluding<Spoiler> | Link | Emoji | UserMention | ChannelMention | InlineCode | Italic | Bold | Strike | Timestamp | Color | Image | InlineKaTeX>;
 };
 
 export type Markup = Italic | Strike | Bold | Spoiler | Plain | ChannelMention;

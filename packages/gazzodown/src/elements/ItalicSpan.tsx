@@ -31,7 +31,8 @@ const ItalicSpan = ({ children }: ItalicSpanProps): ReactElement => (
 				block.type === 'PLAIN_TEXT' ||
 				block.type === 'STRIKE' ||
 				block.type === 'BOLD' ||
-				block.type === 'INLINE_CODE'
+				block.type === 'INLINE_CODE' ||
+				block.type === 'SPOILER'
 			) {
 				return <em key={index}>{renderBlockComponent(block, index)}</em>;
 			}
