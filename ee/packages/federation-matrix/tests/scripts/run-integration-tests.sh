@@ -36,7 +36,7 @@ NO_TEST=false
 CI=false
 LOGS=false
 START_CONTAINERS=true
-
+OBSERVABILITY_ENABLED=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -69,6 +69,12 @@ while [[ $# -gt 0 ]]; do
             NO_TEST=true
             shift
             ;;
+        --observability)
+            OBSERVABILITY_ENABLED=true
+            KEEP_RUNNING=true  # Automatically keep running when observability is enabled
+            INCLUDE_ELEMENT=true  # Automatically include Element when observability is enabled
+            shift
+            ;;
         --image)
             USE_PREBUILT_IMAGE=true
             # If no IMAGE value is provided (or next token is another flag), default to latest
@@ -89,6 +95,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --keep-running            Keep Docker containers running after tests complete"
             echo "  --element                 Include Element web client in the test environment"
             echo "  --no-test                 Start containers and skip running tests"
+            echo "  --observability           Enable observability services (Grafana, Prometheus, Tempo) and keep them running. Automatically includes Element web client."
             echo "  --image [IMAGE]           Use a pre-built Docker image instead of building locally"
             echo "  --help, -h                Show this help message"
             echo ""
@@ -97,6 +104,7 @@ while [[ $# -gt 0 ]]; do
             echo "If --image is provided without a value, defaults to rocketchat/rocket.chat:latest"
             echo "Use --element to run all services including Element web client"
             echo "Use --no-test to start containers and skip running tests"
+            echo "Use --observability to enable tracing/metrics (combines well with --start-containers-only)"
             exit 0
             ;;
         *)
@@ -106,6 +114,15 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+# Determine the compose profile to use
+if [ "$OBSERVABILITY_ENABLED" = true ]; then
+    COMPOSE_PROFILE="observability"
+elif [ "$INCLUDE_ELEMENT" = true ]; then
+    COMPOSE_PROFILE="element"
+else
+    COMPOSE_PROFILE="test"
+fi
 
 # Logging functions
 log_info() {
@@ -164,8 +181,13 @@ cleanup() {
         log_info "  - Rocket.Chat: https://rc1"
         log_info "  - Synapse: https://hs1"
         log_info "  - MongoDB: localhost:27017"
-        if [ "$INCLUDE_ELEMENT" = true ]; then
+        if [ "$INCLUDE_ELEMENT" = true ] || [ "$OBSERVABILITY_ENABLED" = true ]; then
             log_info "  - Element: https://element"
+        fi
+        if [ "$OBSERVABILITY_ENABLED" = true ]; then
+            log_info "  - Grafana: http://localhost:4001"
+            log_info "  - Prometheus: http://localhost:9090"
+            log_info "  - Tempo: http://localhost:3200"
         fi
         log_info "To stop containers manually, run: docker compose -f \"$DOCKER_COMPOSE_FILE\" --profile \"$COMPOSE_PROFILE\" down -v"
     else
@@ -179,6 +201,11 @@ cleanup() {
     # Remove temporary build directory if it exists
     if [ -n "${BUILD_DIR:-}" ] && [ -d "$BUILD_DIR" ]; then
         rm -rf "$BUILD_DIR" || true
+    fi
+
+    # Restore .yarnrc.yml from backup if it exists (in case of early exit)
+    if [ -n "${ROCKETCHAT_ROOT:-}" ] && [ -f "$ROCKETCHAT_ROOT/.yarnrc.yml.bak" ]; then
+        mv "$ROCKETCHAT_ROOT/.yarnrc.yml.bak" "$ROCKETCHAT_ROOT/.yarnrc.yml" || true
     fi
 
     # Exit with the test result code
@@ -199,12 +226,6 @@ if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
     exit 1
 fi
 
-if [ "$INCLUDE_ELEMENT" = true ]; then
-    COMPOSE_PROFILE="element"
-else
-    COMPOSE_PROFILE="test"
-fi
-
 if [ "$START_CONTAINERS" = true ]; then
     # Build Rocket.Chat locally if not using pre-built image
     if [ "$USE_PREBUILT_IMAGE" = false ]; then
@@ -215,15 +236,28 @@ if [ "$START_CONTAINERS" = true ]; then
         log_info "Cleaning up previous build..."
         rm -rf "$BUILD_DIR"
 
+        # Configure yarn for cross-platform builds (needed for sharp and other native modules)
+        # This adds support for linux and darwin (macOS) on arm64/x64 with glibc and musl
+        log_info "Configuring yarn for cross-platform builds..."
+        cd "$ROCKETCHAT_ROOT"
+        cp .yarnrc.yml .yarnrc.yml.bak
+        yarn config set supportedArchitectures --json '{"os": ["linux", "darwin"], "cpu": ["arm64", "x64"], "libc": ["glibc", "musl"]}'
+        yarn install
+
         # Build the project
         log_info "Building packages from project root..."
-        cd "$ROCKETCHAT_ROOT"
         yarn build
 
         # Build the Meteor bundle (must be run from the meteor directory)
         log_info "Building Meteor bundle..."
         cd "$ROCKETCHAT_ROOT/apps/meteor"
         METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --server-only --directory "$BUILD_DIR"
+
+        # Restore .yarnrc.yml after build completes
+        if [ -f "$ROCKETCHAT_ROOT/.yarnrc.yml.bak" ]; then
+            log_info "Restoring original yarn configuration..."
+            mv "$ROCKETCHAT_ROOT/.yarnrc.yml.bak" "$ROCKETCHAT_ROOT/.yarnrc.yml"
+        fi
 
         log_success "Build completed!"
     else
@@ -248,7 +282,9 @@ if [ "$START_CONTAINERS" = true ]; then
     fi
 
     # Start services
-    if [ "$INCLUDE_ELEMENT" = true ]; then
+    if [ "$OBSERVABILITY_ENABLED" = true ]; then
+        log_info "Starting federation services with observability (includes Element, Grafana, Prometheus, Tempo)..."
+    elif [ "$INCLUDE_ELEMENT" = true ]; then
         log_info "Starting all federation services including Element web client..."
     else
         log_info "Starting federation services (test profile only)..."
@@ -366,11 +402,16 @@ else
     log_info "  - Access Rocket.Chat at: https://rc1"
     log_info "  - Access Synapse at: https://hs1"
     log_info "  - Access MongoDB at: localhost:27017"
-    if [ "$INCLUDE_ELEMENT" = true ]; then
+    if [ "$INCLUDE_ELEMENT" = true ] || [ "$OBSERVABILITY_ENABLED" = true ]; then
         log_info "  - Access Element at: https://element"
     fi
+    if [ "$OBSERVABILITY_ENABLED" = true ]; then
+        log_info "  - Access Grafana at: http://localhost:4001"
+        log_info "  - Access Prometheus at: http://localhost:9090"
+        log_info "  - Access Tempo at: http://localhost:3200"
+    fi
     log_info ""
-    log_info "To run tests manually, execute: yarn testend-to-end"
+    log_info "To run tests manually, execute: yarn test:end-to-end"
     log_info "To stop containers, use: docker compose -f $DOCKER_COMPOSE_FILE down"
     TEST_EXIT_CODE=0
 fi

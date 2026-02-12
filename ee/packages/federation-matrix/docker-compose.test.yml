@@ -2,6 +2,12 @@ networks:
   hs1-net:
   rc1-net:
   element-net:
+  observability-net:
+
+
+volumes:
+  tempo-data:
+
 
 services:
   traefik:
@@ -9,6 +15,7 @@ services:
     profiles:
       - test
       - element
+      - observability
     command:
       - "--api.insecure=true"
       # - "--log.level=DEBUG"
@@ -33,18 +40,21 @@ services:
       # resolution which tries to communicate with the container directly some times and which does
       # not provide SSL neither the correct exposed ports.
       hs1-net:
-        aliases: [hs1, rc1, rc.host]
+        aliases: [ hs1, rc1, rc.host ]
       rc1-net:
-        aliases: [hs1, rc1, rc.host]
+        aliases: [ hs1, rc1, rc.host ]
       element-net:
-        aliases: [hs1, rc1, rc.host, element]
+        aliases: [ hs1, rc1, rc.host, element ]
+      observability-net:
+        aliases: [ hs1, rc1, rc.host ]
 
-# HomeServer 1 (synapse)
+  # HomeServer 1 (synapse)
   hs1:
     image: matrixdotorg/synapse:latest
     profiles:
       - test
       - element
+      - observability
     entrypoint: |
       sh -c
       "update-ca-certificates &&
@@ -77,7 +87,7 @@ services:
       - "traefik.http.routers.hs1.tls=true"
       - "traefik.http.services.hs1.loadbalancer.server.port=8008"
 
-# Rocket.Chat rc1
+  # Rocket.Chat rc1
   rc1:
     build:
       context: ${ROCKETCHAT_BUILD_CONTEXT:-./test/dist}
@@ -86,6 +96,7 @@ services:
     profiles:
       - test
       - element
+      - observability
     environment:
       ROOT_URL: https://rc1
       PORT: 3000
@@ -102,10 +113,15 @@ services:
       ADMIN_PASS: admin
       ADMIN_EMAIL: admin@admin.com
       TEST_MODE: true
+      TRACING_ENABLED: "true"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
+      OVERWRITE_SETTING_Prometheus_Enabled: "true"
+      OVERWRITE_SETTING_Prometheus_Port: "9458"
     volumes:
       - ./docker-compose/traefik/certs/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.pem
     networks:
       - rc1-net
+      - observability-net
     depends_on:
       - mongo
     labels:
@@ -124,6 +140,7 @@ services:
     profiles:
       - test
       - element
+      - observability
     restart: on-failure
     ports:
       - "27017:27017"
@@ -146,6 +163,7 @@ services:
     image: vectorim/element-web
     profiles:
       - element
+      - observability
     # ports:
     #   - "8080:80"
     volumes:
@@ -162,3 +180,98 @@ services:
       - "traefik.http.middlewares.element.redirectscheme.scheme=https"
       - "traefik.http.routers.element-http.rule=Host(`element`)"
       - "traefik.http.routers.element-http.middlewares=element"
+
+  # Observability services
+  # Tempo runs as user 10001, and docker compose creates the volume as root.
+  # As such, we need to chown the volume in order for Tempo to start correctly.
+  # Using a named volume (not external) so data is fresh on each run.
+  init:
+    image: &tempoImage grafana/tempo:2.6.1
+    user: root
+    entrypoint:
+      - 'chown'
+      - '10001:10001'
+      - '/var/tempo'
+    volumes:
+      - tempo-data:/var/tempo
+    profiles:
+      - observability
+    networks:
+      - observability-net
+
+  tempo:
+    image: *tempoImage
+    command: [ '-config.file=/etc/tempo.yaml' ]
+    volumes:
+      - ./docker-compose/observability/tempo.yml:/etc/tempo.yaml
+      - tempo-data:/var/tempo
+    ports:
+      - '14268' # jaeger ingest
+      - '3200:3200' # tempo
+      - '4317' # otlp grpc
+      - '4318' # otlp http
+      - '9411' # zipkin
+    depends_on:
+      - init
+    profiles:
+      - observability
+    networks:
+      - observability-net
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.100.0
+    command:
+      - '--config'
+      - '/otel-local-config.yaml'
+    volumes:
+      - ./docker-compose/observability/collector.config.yml:/otel-local-config.yaml
+    ports:
+      - '4317:4317'
+    profiles:
+      - observability
+    networks:
+      - observability-net
+
+  agent:
+    image: grafana/agent:v0.27.1
+    volumes:
+      - ./docker-compose/observability/agent.yml:/etc/agent.yaml
+    entrypoint:
+      - /bin/agent
+      - -config.file=/etc/agent.yaml
+    profiles:
+      - observability
+    networks:
+      - observability-net
+
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    command:
+      - --config.file=/etc/prometheus.yaml
+      - --web.enable-remote-write-receiver
+      - --enable-feature=exemplar-storage
+      - --enable-feature=native-histograms
+    volumes:
+      - ./docker-compose/observability/prometheus.yml:/etc/prometheus.yaml
+    ports:
+      - '9090:9090'
+    profiles:
+      - observability
+    networks:
+      - observability-net
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    volumes:
+      - ./docker-compose/observability/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+    ports:
+      - '4001:3000'
+    profiles:
+      - observability
+    networks:
+      - observability-net
