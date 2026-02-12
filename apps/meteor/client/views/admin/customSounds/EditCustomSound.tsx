@@ -1,6 +1,8 @@
+import { ContextualbarEmptyContent } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import EditSound from './EditSound';
 import { FormSkeleton } from '../../../components/Skeleton';
@@ -13,12 +15,12 @@ type EditCustomSoundProps = {
 
 function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProps): ReactElement | null {
 	const getSound = useEndpoint('GET', '/v1/custom-sounds.getOne');
+	const { t } = useTranslation();
 
 	const { data, isPending } = useQuery({
 		queryKey: ['custom-sound', _id],
 		queryFn: () => getSound({ _id: _id! }),
 		enabled: !!_id,
-		meta: { apiErrorToastMessage: true },
 	});
 
 	if (isPending) {
@@ -26,7 +28,7 @@ function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProp
 	}
 
 	if (!data) {
-		return null;
+		return <ContextualbarEmptyContent icon='warning' title={t('Call_info_could_not_be_loaded')} />;
 	}
 
 	const handleChange: () => void = () => {
