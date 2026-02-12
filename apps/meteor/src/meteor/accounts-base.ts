@@ -1,8 +1,7 @@
 import { Hook } from './callback-hook.ts';
 import { DDP, type Connection } from './ddp-client.ts';
-import { Meteor, MeteorError } from './meteor.ts';
-import { Mongo } from './mongo.ts';
-import { Package } from './package-registry.ts';
+import { MeteorError } from './meteor.ts';
+import { Collection } from './mongo.ts';
 import { Random } from './random.ts';
 import { ReactiveVar } from './reactive-var.ts';
 import { Tracker } from './tracker.ts';
@@ -56,7 +55,7 @@ type AccountsClientOptions = {
 	argon2MemoryCost?: number;
 	argon2Parallelism?: number;
 	defaultFieldSelector?: Record<string, any>;
-	collection?: string;
+	collection?: Collection | string;
 	loginTokenExpirationHours?: number;
 	tokenSequenceLength?: number;
 	clientStorage?: 'local' | 'session';
@@ -80,6 +79,18 @@ export const EXPIRE_TOKENS_INTERVAL_MS = 600 * 1000; // 10 minutes
 // used when creating unexpiring tokens.
 const LOGIN_UNEXPIRING_TOKEN_DAYS = 365 * 100;
 
+export class LoginCancelledError extends Error {
+	numericError = 0x8acdc2f;
+
+	override name = 'Accounts.LoginCancelledError';
+}
+
+const URL_PARTS = [
+	{ key: 'reset-password', regex: /^#\/reset-password\/(.*)$/, property: '_resetPasswordToken' },
+	{ key: 'verify-email', regex: /^#\/verify-email\/(.*)$/, property: '_verifyEmailToken' },
+	{ key: 'enroll-account', regex: /^#\/enroll-account\/(.*)$/, property: '_enrollAccountToken' },
+] as const;
+
 /**
  * @summary Constructor for the `Accounts` object on the client.
  * @locus Client
@@ -90,26 +101,26 @@ export class AccountsClient {
 	// Properties from AccountsCommon
 	public _options: AccountsClientOptions;
 
-	public connection: Connection;
+	public connection: Connection = DDP.connection;
 
 	public users: any;
 
-	public _onLoginHook: Hook;
+	public _onLoginHook: Hook<[{ type: 'resume' | 'normal'; allowed?: boolean; error?: any; methodName?: string; methodArguments?: any[] }]>;
 
-	public _onLoginFailureHook: Hook;
+	public _onLoginFailureHook: Hook<[{ error: any }]>;
 
 	public _onLogoutHook: Hook;
 
-	public DEFAULT_LOGIN_EXPIRATION_DAYS: number;
+	public DEFAULT_LOGIN_EXPIRATION_DAYS = DEFAULT_LOGIN_EXPIRATION_DAYS;
 
-	public LOGIN_UNEXPIRING_TOKEN_DAYS: number;
+	public LOGIN_UNEXPIRING_TOKEN_DAYS = LOGIN_UNEXPIRING_TOKEN_DAYS;
 
-	public LoginCancelledError: any;
+	public LoginCancelledError = LoginCancelledError;
 
 	// Properties from AccountsClient
-	public _loggingIn: ReactiveVar<boolean>;
+	public _loggingIn = new ReactiveVar(false);
 
-	public _loggingOut: ReactiveVar<boolean>;
+	public _loggingOut = new ReactiveVar(false);
 
 	public _loginServicesHandle: any;
 
@@ -137,7 +148,7 @@ export class AccountsClient {
 
 	public _pollIntervalTimer: any;
 
-	public _accountsCallbacks: Record<string, (...args: any[]) => any> = {};
+	public _accountsCallbacks: Partial<Record<(typeof URL_PARTS)[number]['key'], (...args: any[]) => any>> = {};
 
 	public _reconnectStopper: any;
 
@@ -147,7 +158,7 @@ export class AccountsClient {
 
 	public _enrollAccountToken: string | undefined;
 
-	constructor(options: AccountsClientOptions) {
+	constructor(options: AccountsClientOptions = {}) {
 		// --- Initialization Logic from AccountsCommon ---
 
 		// Validate config options keys
@@ -185,28 +196,7 @@ export class AccountsClient {
 			debugPrintExceptions: 'onLogout callback',
 		});
 
-		// Expose for testing.
-		this.DEFAULT_LOGIN_EXPIRATION_DAYS = DEFAULT_LOGIN_EXPIRATION_DAYS;
-		this.LOGIN_UNEXPIRING_TOKEN_DAYS = LOGIN_UNEXPIRING_TOKEN_DAYS;
-
-		// Thrown when the user cancels the login process (eg, closes an oauth
-		// popup, declines retina scan, etc)
-		// this.LoginCancelledError = Meteor.makeErrorType(lceName, function (description: string) {
-		// 	this.message = description;
-		// });
-		this.LoginCancelledError = class LoginCancelledError extends Error {
-			numericError = 0x8acdc2f;
-			
-			constructor(description: string) {
-				super(description);
-				this.name = 'Accounts.LoginCancelledError';
-			}
-		};
-
 		// --- Initialization Logic from AccountsClient ---
-
-		this._loggingIn = new ReactiveVar(false);
-		this._loggingOut = new ReactiveVar(false);
 
 		this._loginServicesHandle = this.connection.subscribe('meteor.loginServiceConfiguration');
 
@@ -215,7 +205,6 @@ export class AccountsClient {
 
 		this.savedHash = window.location.hash;
 		this._autoLoginEnabled = true;
-		this._accountsCallbacks = {};
 		this._attemptToMatchHash();
 
 		this.storageLocation = localStorage;
@@ -233,8 +222,8 @@ export class AccountsClient {
 
 	// --- Methods from AccountsCommon ---
 
-	_initializeCollection(options: any) {
-		if (options.collection && typeof options.collection !== 'string' && !(options.collection instanceof Mongo.Collection)) {
+	_initializeCollection(options: AccountsClientOptions) {
+		if (options.collection && typeof options.collection !== 'string' && !(options.collection instanceof Collection)) {
 			throw new MeteorError('Collection parameter can be only of type string or "Mongo.Collection"');
 		}
 
@@ -243,17 +232,12 @@ export class AccountsClient {
 			collectionName = options.collection;
 		}
 
-		let collection;
-		if (options.collection instanceof Mongo.Collection) {
-			collection = options.collection;
-		} else {
-			collection = new Mongo.Collection(collectionName, {
-				_preventAutopublish: true,
-				connection: this.connection,
-			});
-		}
-
-		return collection;
+		return options.collection instanceof Collection
+			? options.collection
+			: new Collection(collectionName, {
+					_preventAutopublish: true,
+					connection: this.connection,
+				});
 	}
 
 	// merge the defaultFieldSelector with an existing options object
@@ -346,12 +330,6 @@ export class AccountsClient {
 			this.connection = DDP.connect(options.ddpUrl);
 		}
 
-		if (typeof __meteor_runtime_config__ !== 'undefined' && __meteor_runtime_config__.ACCOUNTS_CONNECTION_URL) {
-			this.connection = DDP.connect(__meteor_runtime_config__.ACCOUNTS_CONNECTION_URL);
-		} else if (Meteor.connection) {
-			this.connection = Meteor.connection;
-		}
-
 		return this.connection;
 	}
 
@@ -392,10 +370,7 @@ export class AccountsClient {
 
 	initStorageLocation(options?: any) {
 		// Determine whether to use local or session storage to storage credentials and anything else.
-		this.storageLocation =
-			options?.clientStorage === 'session' || Meteor.settings?.public?.packages?.accounts?.clientStorage === 'session'
-				? window.sessionStorage
-				: Meteor._localStorage;
+		this.storageLocation = options && options.clientStorage === 'session' ? sessionStorage : localStorage;
 	}
 
 	/**
@@ -734,7 +709,7 @@ export class AccountsClient {
 
 	_initLocalStorage() {
 		const rootUrlPathPrefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
-		if (rootUrlPathPrefix || this.connection !== Meteor.connection) {
+		if (rootUrlPathPrefix || this.connection !== DDP.connection) {
 			let namespace = `:${this.connection._stream.rawUrl}`;
 			if (rootUrlPathPrefix) {
 				namespace += `:${rootUrlPathPrefix}`;
@@ -802,7 +777,22 @@ export class AccountsClient {
 	}
 
 	_attemptToMatchHash() {
-		attemptToMatchHash(this, this.savedHash, defaultSuccessHandler);
+		for (const urlPart of URL_PARTS) {
+			const match = this.savedHash.match(urlPart.regex);
+			if (!match) continue;
+
+			const token = match[1];
+			this[urlPart.property] = token;
+			window.location.hash = '';
+
+			this._autoLoginEnabled = false;
+
+			if (this._accountsCallbacks[urlPart.key]) {
+				this._accountsCallbacks[urlPart.key]?.(token, () => this._enableAutoLogin());
+			}
+
+			return;
+		}
 	}
 
 	onResetPasswordLink(callback: (...args: any[]) => any) {
@@ -830,44 +820,4 @@ export class AccountsClient {
 	}
 }
 
-// Global Meteor Extensions
-
-const defaultSuccessHandler = function (this: any, token: string, urlPart: string) {
-	this._autoLoginEnabled = false;
-	Meteor.startup(() => {
-		if (this._accountsCallbacks[urlPart]) {
-			this._accountsCallbacks[urlPart](token, () => this._enableAutoLogin());
-		}
-	});
-};
-
-const attemptToMatchHash = (accounts: AccountsClient, hash: string, success: (...args: any[]) => any) => {
-	['reset-password', 'verify-email', 'enroll-account'].forEach((urlPart) => {
-		let token;
-		const tokenRegex = new RegExp(`^\\#\\/${urlPart}\\/(.*)$`);
-		const match = hash.match(tokenRegex);
-
-		if (match) {
-			token = match[1];
-			if (urlPart === 'reset-password') {
-				accounts._resetPasswordToken = token;
-			} else if (urlPart === 'verify-email') {
-				accounts._verifyEmailToken = token;
-			} else if (urlPart === 'enroll-account') {
-				accounts._enrollAccountToken = token;
-			}
-		} else {
-			return;
-		}
-
-		window.location.hash = '';
-		success.call(accounts, token, urlPart);
-	});
-};
-
-export const Accounts = new AccountsClient(Meteor.settings?.public?.packages?.accounts || {});
-
-Package['accounts-base'] = {
-	Accounts,
-	AccountsClient,
-};
+export const Accounts = new AccountsClient();

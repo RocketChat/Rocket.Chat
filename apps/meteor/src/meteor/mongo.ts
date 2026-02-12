@@ -8,10 +8,10 @@ import { ObjectID } from './mongo-id.ts';
 import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 
-const LocalCollectionDriver = new (class LocalCollectionDriver {
-	noConnCollections: Record<string, LocalCollection> = Object.create(null);
+class LocalCollectionDriver {
+	noConnCollections: Map<string, LocalCollection> = new Map();
 
-	open(name?: string, conn?: { _mongo_livedata_collections: Record<string, LocalCollection> }): LocalCollection {
+	open(name?: string, conn?: { _mongo_livedata_collections?: Map<string, LocalCollection> }): LocalCollection {
 		if (!name) {
 			return new LocalCollection();
 		}
@@ -21,21 +21,25 @@ const LocalCollectionDriver = new (class LocalCollectionDriver {
 		}
 
 		if (!conn._mongo_livedata_collections) {
-			conn._mongo_livedata_collections = Object.create(null);
+			conn._mongo_livedata_collections = new Map();
 		}
 
 		return ensureCollection(name, conn._mongo_livedata_collections);
 	}
-})();
+}
 
-function ensureCollection(name: string, collections: Record<string, LocalCollection>): LocalCollection {
-	if (name in collections) {
-		return collections[name];
+const driver = new LocalCollectionDriver();
+
+function ensureCollection(name: string, collections: Map<string, LocalCollection>): LocalCollection {
+	const collection = collections.get(name);
+	if (collection) {
+		return collection;
 	}
 
-	collections[name] = new LocalCollection(name);
+	const newCollection = new LocalCollection(name);
+	collections.set(name, newCollection);
 
-	return collections[name];
+	return newCollection;
 }
 
 // -----------------------------------------------------------------------------
@@ -62,12 +66,12 @@ export function setupConnection(name: string, options: { connection?: Connection
 	return Meteor.connection;
 }
 
-export function setupDriver(_name: string, _connection: Connection | null, options: { _driver?: any }): any {
+export function setupDriver(_name: string, _connection: Connection | null, options: { _driver?: any }): LocalCollectionDriver {
 	if (options._driver) return options._driver;
-	return LocalCollectionDriver;
+	return driver;
 }
 
-export function setupAutopublish(collection, name, options) {
+export function setupAutopublish(collection: LocalCollection, _name: string, options: { _preventAutopublish?: boolean }): void {
 	if (Package.autopublish && !options._preventAutopublish && collection._connection && collection._connection.publish) {
 		collection._connection.publish(null, () => collection.find(), {
 			is_auto: true,
@@ -145,7 +149,7 @@ export const normalizeProjection = (options?: { fields?: any; projection?: any }
 	};
 };
 
-class Collection {
+export class Collection {
 	constructor(name, options) {
 		let _ID_GENERATORS$option;
 		let _ID_GENERATORS;
@@ -409,11 +413,7 @@ class Collection {
 		return this._collection.find(this._getFindSelector(args), this._getFindOptions(args));
 	}
 
-	findOne() {
-		for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-			args[_key2] = arguments[_key2];
-		}
-
+	findOne(...args) {
 		return this._collection.findOne(this._getFindSelector(args), this._getFindOptions(args));
 	}
 
@@ -425,7 +425,7 @@ class Collection {
 		doc = Object.create(Object.getPrototypeOf(doc), Object.getOwnPropertyDescriptors(doc));
 
 		if ('_id' in doc) {
-			if (!doc._id || !(typeof doc._id === 'string' || doc._id instanceof Mongo.ObjectID)) {
+			if (!doc._id || !(typeof doc._id === 'string' || doc._id instanceof ObjectID)) {
 				throw new Error('Meteor requires document _id fields to be non-empty strings or ObjectIDs');
 			}
 		} else {
@@ -688,7 +688,7 @@ export const Mongo = {
 	Collection,
 };
 
-function wrapCallback(callback, convertResult) {
+function wrapCallback(callback: Function | undefined, convertResult: Function | undefined = undefined): Function | undefined {
 	return (
 		callback &&
 		function (error, result) {
@@ -703,10 +703,21 @@ function wrapCallback(callback, convertResult) {
 	);
 }
 
-function popCallbackFromArgs(args) {
-	if (args.length && (args[args.length - 1] === undefined || args[args.length - 1] instanceof Function)) {
-		return args.pop();
+function popCallbackFromArgs(args: unknown[]): ((error: any, result?: any) => void) | undefined {
+	const last: unknown = args.at(-1);
+	if (typeof last === 'function') {
+		args.pop();
+		return function (error, result) {
+			last(error, result);
+		};
 	}
+
+	if (last !== undefined) {
+		return;
+	}
+
+	args.pop();
+	return undefined;
 }
 
 Object.assign(Mongo.Collection.prototype, AllowDeny.CollectionPrototype);

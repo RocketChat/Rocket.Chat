@@ -1,3 +1,5 @@
+import { unwrap } from './utils/unwrap.ts';
+
 let nextId = 1;
 
 // computations whose callbacks we should call at flush time
@@ -48,11 +50,11 @@ export class Computation {
 
 	_func: (computation: Computation) => void;
 
-	_onError?: ((error: Error) => void) | undefined;
+	_onError?: ((error: unknown) => void) | undefined;
 
 	firstRunPromise: Promise<unknown> | null = null;
 
-	constructor(f: (computation: Computation) => void, parent: Computation | null, onError?: (error: Error) => void) {
+	constructor(f: (computation: Computation) => void, parent: Computation | null, onError?: (error: unknown) => void) {
 		this._id = nextId++;
 		this._onInvalidateCallbacks = [];
 		this._onStopCallbacks = [];
@@ -72,13 +74,13 @@ export class Computation {
 
 	then<TResult1 = unknown, TResult2 = never>(
 		onResolved?: ((value: unknown) => TResult1 | PromiseLike<TResult1>) | undefined | null,
-		onRejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null,
+		onRejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | undefined | null,
 	): Promise<TResult1 | TResult2> | undefined {
 		return this.firstRunPromise?.then(onResolved, onRejected);
 	}
 
-	catch(onRejected: ((reason: any) => any | PromiseLike<any>) | undefined | null) {
-		return this.firstRunPromise?.catch(onRejected) as Promise<unknown>;
+	catch(onRejected: ((reason: unknown) => unknown | PromiseLike<unknown>) | undefined | null) {
+		return this.firstRunPromise?.catch(onRejected);
 	}
 
 	onInvalidate(f: (c: Computation) => void) {
@@ -123,7 +125,7 @@ export class Computation {
 	invalidate() {
 		if (!this.invalidated) {
 			// if we're currently in _recompute(), don't enqueue
-			// ourselves, since we'll rerun immediately anyway.
+			// ourselves, since we'll rerun immediately.
 			if (!this._recomputing && !this.stopped) {
 				requireFlush();
 				pendingComputations.push(this);
@@ -206,7 +208,7 @@ export class Computation {
 			if (this._needsRecompute()) {
 				try {
 					this._compute();
-				} catch (e: any) {
+				} catch (e) {
 					if (this._onError) {
 						this._onError(e);
 					} else {
@@ -241,7 +243,7 @@ export class Dependency {
 	depend(computation?: Computation): boolean {
 		if (!computation) {
 			if (!active) return false;
-			computation = currentComputation as Computation;
+			computation = unwrap(currentComputation);
 		}
 
 		if (!this._dependents.has(computation)) {
@@ -328,7 +330,7 @@ export function _runFlush(options: { finishSynchronously?: boolean | undefined; 
 				const func = afterFlushCallbacks.shift();
 				try {
 					if (func) func();
-				} catch (e: any) {
+				} catch (e) {
 					console.error('Exception in afterFlush callback', e);
 				}
 			}
@@ -356,7 +358,7 @@ export function _runFlush(options: { finishSynchronously?: boolean | undefined; 
 	}
 }
 
-export function autorun(f: (computation: Computation) => void, options: { onError?: (error: Error) => void } = {}): Computation {
+export function autorun(f: (computation: Computation) => void, options: { onError?: (error: unknown) => void } = {}): Computation {
 	const c = new Computation(f, currentComputation, options.onError);
 
 	if (active)

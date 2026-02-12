@@ -5,7 +5,9 @@ import { GeoJSON } from './geojson-utils.ts';
 import { IdMap } from './id-map.ts';
 import { Meteor, SynchronousQueue } from './meteor.ts';
 import { ObjectID } from './mongo-id.ts';
+import { OrderedDict } from './ordered-dict.ts';
 import { Package } from './package-registry.ts';
+import { Random } from './random.ts';
 import { Tracker } from './tracker.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 import { isKey } from './utils/isKey.ts';
@@ -204,11 +206,11 @@ function makeInequality(cmpValueComparator: (cmpValue: number) => boolean): Elem
 				return (): boolean => false;
 			}
 
-			let normalizedOperand = operand === undefined ? null : operand;
+			const normalizedOperand = operand === undefined ? null : operand;
 			const operandType = TypeChecker._type(normalizedOperand);
 
 			return (value: unknown): boolean => {
-				let normalizedValue = value === undefined ? null : value;
+				const normalizedValue = value === undefined ? null : value;
 
 				if (TypeChecker._type(normalizedValue) !== operandType) {
 					return false;
@@ -262,7 +264,7 @@ const ELEMENT_OPERATORS: ElementOperators = {
 			});
 
 			return (value: unknown): boolean => {
-				let normalizedValue = value === undefined ? null : value;
+				const normalizedValue = value === undefined ? null : value;
 				return elementMatchers.some((matcher): boolean => matcher(normalizedValue));
 			};
 		},
@@ -270,7 +272,7 @@ const ELEMENT_OPERATORS: ElementOperators = {
 	$size: {
 		dontExpandLeafArrays: true,
 		compileElementSelector(operand: unknown): (value: unknown) => boolean {
-			let normalizedOperand: number =
+			const normalizedOperand: number =
 				typeof operand === 'string'
 					? 0
 					: typeof operand === 'number'
@@ -285,7 +287,7 @@ const ELEMENT_OPERATORS: ElementOperators = {
 	$type: {
 		dontIncludeLeafArrays: true,
 		compileElementSelector(operand: unknown): (value: unknown) => boolean {
-			let normalizedOperand: number = 0;
+			let normalizedOperand = 0;
 			if (typeof operand === 'string') {
 				const operandAliasMap: Record<string, number> = {
 					double: 1,
@@ -1024,7 +1026,7 @@ class MongoIdMap extends IdMap<ObjectID | string | undefined, Document> {
 }
 
 class LocalCollection {
-	name?: string;
+	name?: string | undefined;
 
 	_docs: MongoIdMap;
 
@@ -1093,8 +1095,8 @@ class LocalCollection {
 	prepareInsert(doc) {
 		assertHasValidFieldNames(doc);
 
-		if (!hasOwn(doc, '_id')) {
-			doc._id = LocalCollection._useOID ? new MongoID.ObjectID() : Random.id();
+		if (!isKey(doc, '_id')) {
+			doc._id = _useOID ? new ObjectID() : Random.id();
 		}
 
 		const id = doc._id;
@@ -1132,7 +1134,7 @@ class LocalCollection {
 				if (query.cursor.skip || query.cursor.limit) {
 					queriesToRecompute.push(qid);
 				} else {
-					LocalCollection._insertInResultsSync(query, doc);
+					_insertInResultsSync(query, doc);
 				}
 			}
 		}
@@ -1727,7 +1729,10 @@ class LocalCollection {
 		return recomputeQids;
 	}
 
-	_recomputeResults(query, oldResults) {
+	_recomputeResults(
+		query: { dirty?: boolean; results?: any; distances?: Map<string, any>; cursor?: any; ordered?: boolean; projectionFn?: any },
+		oldResults?: any,
+	) {
 		if (this.paused) {
 			query.dirty = true;
 
@@ -1765,6 +1770,14 @@ class LocalCollection {
 }
 
 class Sorter {
+	_sortSpecParts: { ascending: boolean; lookup: (doc: Document) => unknown; path: string }[];
+
+	_sortFunction: ((doc1: Document, doc2: Document) => number) | null;
+
+	_selectorForAffectedByModifier?: Matcher;
+
+	_keyComparator?: (key1: unknown[], key2: unknown[]) => number;
+
 	constructor(spec) {
 		this._sortSpecParts = [];
 		this._sortFunction = null;
@@ -2004,14 +2017,22 @@ function composeComparators(comparatorArray) {
 
 class Matcher {
 	_paths: Record<string, boolean>;
+
 	_hasGeoQuery: boolean;
+
 	_hasWhere: boolean;
+
 	_isSimple: boolean;
+
 	_matchingDocument: Record<string, unknown> | undefined;
+
 	_selector: unknown;
+
 	_docMatcher: (doc: Record<string, unknown>) => { result: boolean; distance?: number };
+
 	_isUpdate: boolean;
-	constructor(selector, isUpdate: boolean = false) {
+
+	constructor(selector, isUpdate = false) {
 		this._paths = {};
 		this._hasGeoQuery = false;
 		this._hasWhere = false;
@@ -2105,15 +2126,25 @@ export const wrapTransform = (transform: ((doc: any) => any) | null) => {
 };
 export class Cursor {
 	matcher: Matcher;
+
 	collection: LocalCollection;
+
 	sorter: Sorter | null;
+
 	skip: number;
+
 	limit: number | undefined;
+
 	fields: Record<string, unknown> | undefined;
+
 	_projectionFn: (doc: Record<string, unknown>) => Record<string, unknown>;
+
 	_transform: ((doc: Record<string, unknown>) => unknown) | null;
+
 	_selectorId: unknown;
+
 	reactive: boolean;
+
 	constructor(collection: LocalCollection, selector) {
 		const options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
@@ -2526,7 +2557,7 @@ class CachingChangeObserver {
 
 			this.applyChange = {
 				addedBefore: (id, fields, before) => {
-					const doc = _objectSpread({}, fields);
+					const doc = { ...fields };
 
 					doc._id = id;
 
@@ -3833,8 +3864,7 @@ function isOperatorObject(valueSelector: unknown, inconsistentOK?: boolean) {
 	return !!theseAreOperators;
 }
 
-function makeLookupFunction(key) {
-	const options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+function makeLookupFunction(key: string, options = {}): BranchedMatcher {
 	const parts = key.split('.');
 	const firstPart = parts.length ? parts[0] : '';
 	const lookupRest = parts.length > 1 && makeLookupFunction(parts.slice(1).join('.'), options);
@@ -3851,7 +3881,7 @@ function makeLookupFunction(key) {
 
 	return (doc, arrayIndices) => {
 		if (Array.isArray(doc)) {
-			if (!(isNumericKey(firstPart) && firstPart < doc.length)) {
+			if (!(isNumericKey(firstPart) && Number.parseInt(firstPart, 10) < doc.length)) {
 				return [];
 			}
 

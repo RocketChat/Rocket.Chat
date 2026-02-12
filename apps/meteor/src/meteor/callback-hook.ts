@@ -5,12 +5,14 @@ interface IHookOptions {
 	debugPrintExceptions?: string;
 }
 
-export class Hook<T extends (...args: any[]) => any = (...args: any[]) => any> {
+type Callback<TArgs extends any[] = unknown[], TResult = unknown> = (...args: TArgs) => TResult;
+
+export class Hook<TArgs extends any[] = [], TResult = void, TCallback extends Callback<TArgs, TResult> = Callback<TArgs, TResult>> {
 	nextCallbackId = 0;
 
 	// Optimization: Use Map instead of Object.
 	// Maps allow O(1) addition/deletion without de-optimizing the object's hidden class.
-	callbacks = new Map<number, T>();
+	callbacks = new Map<number, TCallback>();
 
 	bindEnvironment = true;
 
@@ -34,7 +36,7 @@ export class Hook<T extends (...args: any[]) => any = (...args: any[]) => any> {
 		}
 	}
 
-	register(callback: T): { callback: T; stop: () => void } {
+	register(callback: TCallback): { callback: TCallback; stop: () => void } {
 		const id = this.nextCallbackId++;
 		this.callbacks.set(id, callback);
 
@@ -62,7 +64,7 @@ export class Hook<T extends (...args: any[]) => any = (...args: any[]) => any> {
 	 *
 	 * @param iterator
 	 */
-	forEach(iterator: (callback: T) => boolean | void | undefined) {
+	forEach(iterator: (callback: TCallback) => boolean | void | undefined) {
 		// Optimization: Iterate directly over Map values.
 		// Map iterators are live and handle deletions during iteration safely (the removed item is skipped).
 		// This removes the need for `Object.keys` allocation and `Object.hasOwn` checks.
@@ -73,7 +75,7 @@ export class Hook<T extends (...args: any[]) => any = (...args: any[]) => any> {
 		}
 	}
 
-	async forEachAsync(iterator: (callback: T) => Promise<boolean | void | undefined>): Promise<void> {
+	async forEachAsync(iterator: (callback: TCallback) => Promise<boolean | void | undefined>): Promise<void> {
 		for (const callback of this.callbacks.values()) {
 			// eslint-disable-next-line no-await-in-loop
 			if (!(await iterator(callback))) {
@@ -86,7 +88,7 @@ export class Hook<T extends (...args: any[]) => any = (...args: any[]) => any> {
 	 * @deprecated use forEach
 	 * @param iterator
 	 */
-	each(iterator: (callback: T) => boolean | void | undefined) {
+	each(iterator: (callback: TCallback) => boolean | void | undefined) {
 		return this.forEach(iterator);
 	}
 }
