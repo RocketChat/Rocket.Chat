@@ -88,7 +88,7 @@ const ManagersTable = () => {
 				<GenericTable aria-busy={isLoading} aria-label={t('Managers')}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingTable headerCells={2} />
+						<GenericTableLoadingTable headerCells={4} />
 					</GenericTableBody>
 				</GenericTable>
 			)}
