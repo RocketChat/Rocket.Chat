@@ -14,13 +14,16 @@ import type { ChatAPI } from '../ChatAPI';
 import { isEncryptedUpload, type EncryptedUpload } from '../Upload';
 
 const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
-	return new Promise((resolve) => {
+	return new Promise((resolve, reject) => {
 		const img = new Image();
 		img.onload = () => {
 			resolve({
 				height: img.height,
 				width: img.width,
 			});
+		};
+		img.onerror = () => {
+			reject(new Error('Failed to load image for dimensions'));
 		};
 		img.src = dataURL;
 	});
