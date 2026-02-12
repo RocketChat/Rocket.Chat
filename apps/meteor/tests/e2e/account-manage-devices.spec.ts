@@ -4,6 +4,7 @@ import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users } from './fixtures/userStates';
+import { Registration } from './page-objects';
 import { AccountManageDevices } from './page-objects/account.manage-devices';
 import { test, expect } from './utils/test';
 
@@ -37,26 +38,29 @@ test.describe('Account Manage Devices Page', () => {
 		await expect(page.getByRole('form', { name: 'Login' })).toBeVisible();
 	});
 
-	// TODO: Open different session in playwright
-	// test('should logout other device successfully', async ({ browser }) => {
-	// 	const user2Context = await browser.newContext({ storageState: Users.user1.state });
-	// 	const user2Page = await user2Context.newPage();
-	// 	await user2Page.goto('/');
-	// 	await expect(user2Page.getByRole('main')).toBeVisible();
+	test('should logout other device successfully', async ({ browser }) => {
+		const context2 = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+		const page2 = await context2.newPage();
+		const loginPage = new Registration(page2);
+		const accountDevices2 = new AccountManageDevices(page2);
 
-	// 	await accountDevices.table.orderByLastLogin();
-	// 	const user2DeviceId = await accountDevices.getNthDeviceId(2);
+		await test.step('should login same user in another session', async () => {
+			await page2.goto('/account/manage-devices');
+			await loginPage.username.type('user1');
+			await loginPage.inputPassword.type('password');
+			await loginPage.btnLogin.click();
 
-	// 	await test.step('should logout other session and redirect to login page', async () => {
-	// 		await accountDevices.logoutDeviceById(user2DeviceId);
-	// 		await user2Page.getByRole('form', { name: 'Login' }).waitFor();
-	// 		await expect(user2Page.getByRole('form', { name: 'Login' })).toBeVisible();
-	// 	});
+			await expect(accountDevices2.devicesPageContent).toBeVisible();
+		});
 
-	// 	await test.step('should no longer show other session device in account manage devices page', async () => {
-	// 		await expect(accountDevices.table.getDeviceRowById(user2DeviceId)).not.toBeVisible();
-	// 	});
+		await test.step('should logout device 1 from session 2', async () => {
+			await accountDevices2.table.orderByLastLogin();
+			const device1Id = await accountDevices2.getNthDeviceId(2);
+			await accountDevices2.logoutDeviceById(device1Id);
+			await expect(page.getByRole('form', { name: 'Login' })).toBeVisible();
+			await expect(accountDevices2.table.getDeviceRowById(device1Id)).not.toBeVisible();
+		});
 
-	// 	await user2Page.close();
-	// });
+		await page2.close();
+	});
 });
