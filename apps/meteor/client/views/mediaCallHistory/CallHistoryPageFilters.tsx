@@ -103,7 +103,7 @@ const CallHistoryPageFilters = ({ onChangeText, onChangeType, onChangeStates, se
 				<Box minWidth='x224' m='x4' flexGrow={1} flexShrink={1}>
 					<MultiSelectCustom
 						dropdownOptions={dropdownStatesOptions}
-						defaultTitle='All_status'
+						defaultTitle='All_statuses'
 						selectedOptionsTitle='Status'
 						selectedOptions={selectedOptions}
 						setSelectedOptions={handleChangeType}

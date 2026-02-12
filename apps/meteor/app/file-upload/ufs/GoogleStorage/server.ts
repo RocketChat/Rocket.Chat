@@ -103,7 +103,7 @@ class GoogleStorageStore extends UploadFS.Store {
 			try {
 				return bucket.file(this.getPath(file)).delete();
 			} catch (err: any) {
-				SystemLogger.error(err);
+				SystemLogger.error({ err });
 			}
 		};
 

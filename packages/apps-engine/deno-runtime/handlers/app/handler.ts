@@ -11,12 +11,16 @@ import handleOnDisable from './handleOnDisable.ts';
 import handleOnUninstall from './handleOnUninstall.ts';
 import handleOnPreSettingUpdate from './handleOnPreSettingUpdate.ts';
 import handleOnSettingUpdated from './handleOnSettingUpdated.ts';
+import handleOnUpdate from './handleOnUpdate.ts';
+import handleUploadEvents, { uploadEvents } from './handleUploadEvents.ts';
 import handleListener from '../listener/handler.ts';
 import handleUIKitInteraction, { uikitInteractions } from '../uikit/handler.ts';
+import { isOneOf } from '../lib/assertions.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import handleOnUpdate from './handleOnUpdate.ts';
+import { RequestContext } from '../../lib/requestContext.ts';
 
-export default async function handleApp(method: string, params: unknown): Promise<Defined | JsonRpcError> {
+export default async function handleApp(request: RequestContext): Promise<Defined | JsonRpcError> {
+	const { method } = request;
 	const [, appMethod] = method.split(':');
 
 	try {
@@ -30,80 +34,69 @@ export default async function handleApp(method: string, params: unknown): Promis
 
 		app?.getLogger().debug({ msg: `A method is being called...`, appMethod });
 
-		if (uikitInteractions.includes(appMethod)) {
-			return handleUIKitInteraction(appMethod, params).then((result) => {
-				if (result instanceof JsonRpcError) {
-					app?.getLogger().debug({
-						msg: `Method call was unsuccessful.`,
-						appMethod,
-						err: result,
-						errorMessage: result.message,
-					});
-				} else {
-					app?.getLogger().debug({
-						msg: `Method  was successfully called! The result is:`,
-						appMethod,
-						result,
-					});
-				}
+		const formatResult = (result: Defined | JsonRpcError): Defined | JsonRpcError => {
+			if (result instanceof JsonRpcError) {
+				app?.getLogger().debug({
+					msg: `'${appMethod}' was unsuccessful.`,
+					appMethod,
+					err: result,
+					errorMessage: result.message,
+				});
+			} else {
+				app?.getLogger().debug({
+					msg: `'${appMethod}' was successfully called! The result is:`,
+					appMethod,
+					result,
+				});
+			}
 
-				return result;
-			});
+			return result;
+		};
+
+		if (app && isOneOf(appMethod, uploadEvents)) {
+			return handleUploadEvents(request).then(formatResult);
 		}
 
-		if (appMethod.startsWith('check') || appMethod.startsWith('execute')) {
-			return handleListener(appMethod, params).then((result) => {
-				if (result instanceof JsonRpcError) {
-					app?.getLogger().debug({
-						msg: `'${appMethod}' was unsuccessful.`,
-						appMethod,
-						err: result,
-						errorMessage: result.message,
-					});
-				} else {
-					app?.getLogger().debug({
-						msg: `'${appMethod}' was successfully called! The result is:`,
-						appMethod,
-						result,
-					});
-				}
+		if (app && isOneOf(appMethod, uikitInteractions)) {
+			return handleUIKitInteraction(request).then(formatResult);
+		}
 
-				return result;
-			});
+		if (app && (appMethod.startsWith('check') || appMethod.startsWith('execute'))) {
+			return handleListener(request).then(formatResult);
 		}
 
 		let result: Defined | JsonRpcError;
 
 		switch (appMethod) {
 			case 'construct':
-				result = await handleConstructApp(params);
+				result = await handleConstructApp(request);
 				break;
 			case 'initialize':
-				result = await handleInitialize();
+				result = await handleInitialize(request);
 				break;
 			case 'setStatus':
-				result = await handleSetStatus(params);
+				result = await handleSetStatus(request);
 				break;
 			case 'onEnable':
-				result = await handleOnEnable();
+				result = await handleOnEnable(request);
 				break;
 			case 'onDisable':
-				result = await handleOnDisable();
+				result = await handleOnDisable(request);
 				break;
 			case 'onInstall':
-				result = await handleOnInstall(params);
+				result = await handleOnInstall(request);
 				break;
 			case 'onUninstall':
-				result = await handleOnUninstall(params);
+				result = await handleOnUninstall(request);
 				break;
 			case 'onPreSettingUpdate':
-				result = await handleOnPreSettingUpdate(params);
+				result = await handleOnPreSettingUpdate(request);
 				break;
 			case 'onSettingUpdated':
-				result = await handleOnSettingUpdated(params);
+				result = await handleOnSettingUpdated(request);
 				break;
 			case 'onUpdate':
-				result = await handleOnUpdate(params);
+				result = await handleOnUpdate(request);
 				break;
 			default:
 				throw new JsonRpcError('Method not found', -32601);

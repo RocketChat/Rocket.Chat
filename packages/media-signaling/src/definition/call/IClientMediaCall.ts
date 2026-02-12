@@ -18,6 +18,10 @@ export type CallRole = 'caller' | 'callee';
 
 export type CallService = 'webrtc';
 
+export const callFeatureList = ['audio'] as const;
+
+export type CallFeature = (typeof callFeatureList)[number];
+
 export type CallState =
 	| 'none' // trying to call with no idea if it'll reach anyone
 	| 'ringing' // call has been acknoledged by the callee's agent, but no response about them accepting it or not
@@ -33,6 +37,10 @@ export type CallHangupReason =
 	| 'rejected' // The callee rejected the call
 	| 'unavailable' // The actor is not available
 	| 'transfer' // one of the users requested the other be transferred to someone else
+	| 'not-answered' // max ringing duration was reached with no answer from the other user
+	| 'timeout-remote-sdp' // Timeout waiting for the remote SDP
+	| 'timeout-local-sdp' // Timeout while generating the local SDP + waiting for ICE Gathering
+	| 'timeout-activation' // Timeout connecting to the negotiated session
 	| 'timeout' // The call state hasn't progressed for too long
 	| 'signaling-error' // Hanging up because of an error during the signal processing
 	| 'service-error' // Hanging up because of an error setting up the service connection
@@ -109,4 +117,5 @@ export interface IClientMediaCall {
 	sendDTMF(dtmf: string, duration?: number): void;
 
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
+	isFeatureAvailable(feature: CallFeature): boolean;
 }

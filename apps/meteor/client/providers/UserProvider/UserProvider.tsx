@@ -187,7 +187,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 		previousUserId.current = userId;
 	}, [queryClient, userId]);
 
-	return <UserContext.Provider children={children} value={contextValue} />;
+	return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;
 };
 
 export default UserProvider;

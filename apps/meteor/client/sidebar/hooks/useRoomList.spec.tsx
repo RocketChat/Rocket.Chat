@@ -83,8 +83,9 @@ const getWrapperSettings = ({
 						queryIncomingCalls: () => [() => () => undefined, () => emptyArr],
 					} as any
 				}
-				children={children}
-			/>
+			>
+				{children}
+			</VideoConfContext.Provider>
 		))
 		.withUser(user)
 		.withSubscriptions([...fakeRooms, fakeRoom && fakeRoom].filter(Boolean) as unknown as SubscriptionWithRoom[])

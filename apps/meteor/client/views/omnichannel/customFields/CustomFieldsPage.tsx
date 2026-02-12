@@ -21,9 +21,7 @@ const CustomFieldsPage = () => {
 		<Page flexDirection='row'>
 			<Page>
 				<PageHeader title={t('Custom_Fields')}>
-					<Button data-qa-id='CustomFieldPageBtnNew' onClick={() => router.navigate('/omnichannel/customfields/new')}>
-						{t('Create_custom_field')}
-					</Button>
+					<Button onClick={() => router.navigate('/omnichannel/customfields/new')}>{t('Create_custom_field')}</Button>
 				</PageHeader>
 				<PageContent>
 					<CustomFieldsTable />
