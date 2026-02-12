@@ -4,7 +4,7 @@ import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { AppAccessors } from '../../lib/accessors/mod.ts';
 import handleScheduler from '../scheduler-handler.ts';
-import { createMockRequest } from './helpers/mod.ts';
+import { createMockApp, createMockRequest } from './helpers/mod.ts';
 
 describe('handlers > scheduler', () => {
 	const mockAppAccessors = new AppAccessors(() =>
@@ -16,13 +16,7 @@ describe('handlers > scheduler', () => {
 		})
 	);
 
-	const mockApp = {
-		getID: () => 'mockApp',
-		getLogger: () => ({
-			debug: () => {},
-			error: () => {},
-		}),
-	};
+	const mockApp = createMockApp();
 
 	beforeEach(() => {
 		AppObjectRegistry.clear();

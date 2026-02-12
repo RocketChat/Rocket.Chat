@@ -1,3 +1,5 @@
+import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
+
 import { Logger } from '../../../lib/logger.ts';
 import { RequestDescriptor } from '../../../lib/messenger.ts';
 import { RequestContext } from '../../../lib/requestContext.ts';
@@ -13,4 +15,15 @@ export function createMockRequest({ method, params }: RequestDescriptor): Reques
 		},
 		serialize: () => '',
 	}
+}
+
+export function createMockApp(): App {
+	return {
+		extendConfiguration: () => {},
+		getID: () => 'mockApp',
+		getLogger: () => ({
+			debug: () => {},
+			error: () => {},
+		}),
+	} as unknown as App;
 }

@@ -91,7 +91,7 @@ describe('handlers > api', () => {
 
 		const _spy = spy(mockDynamicEndpoint, 'post');
 
-		const result = await apiHandler(jsonrpc.request(1, 'api:webhook/:event:post', ['request', 'endpointInfo']));
+		const result = await apiHandler(createMockRequest({ method: 'api:webhook/:event:post', params: ['request', 'endpointInfo'] }));
 
 		assertEquals(result, 'webhook handled');
 		assertEquals(_spy.calls[0].args.length, 6);
@@ -110,7 +110,7 @@ describe('handlers > api', () => {
 
 		const _spy = spy(mockComplexEndpoint, 'get');
 
-		const result = await apiHandler(jsonrpc.request(1, 'api:api/v1/:resource/:id:get', ['request', 'endpointInfo']));
+		const result = await apiHandler(createMockRequest({ method: 'api:api/v1/:resource/:id:get', params: ['request', 'endpointInfo'] }));
 
 		assertEquals(result, 'complex path');
 		assertEquals(_spy.calls[0].args.length, 6);
