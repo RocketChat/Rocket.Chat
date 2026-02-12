@@ -41,49 +41,33 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	private readonly logger = new Logger(this.name);
 
 	override async created(): Promise<void> {
-		this.onSettingChanged(
-			'Federation_Service_Domain',
-			async ({ setting }): Promise<void> => {
-				const { value } = setting;
-				if (typeof value === 'string') {
-					this.serverName = value;
-				}
-			},
-			['removed'],
-		);
+		this.onSettingChanged('Federation_Service_Domain', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'string') {
+				this.serverName = value;
+			}
+		});
 
-		this.onSettingChanged(
-			'Federation_Service_EDU_Process_Typing',
-			async ({ setting }): Promise<void> => {
-				const { value } = setting;
-				if (typeof value === 'boolean') {
-					this.processEDUTyping = value;
-				}
-			},
-			['removed'],
-		);
+		this.onSettingChanged('Federation_Service_EDU_Process_Typing', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
+				this.processEDUTyping = value;
+			}
+		});
 
-		this.onSettingChanged(
-			'Federation_Service_EDU_Process_Presence',
-			async ({ setting }): Promise<void> => {
-				const { value } = setting;
-				if (typeof value === 'boolean') {
-					this.processEDUPresence = value;
-				}
-			},
-			['removed'],
-		);
+		this.onSettingChanged('Federation_Service_EDU_Process_Presence', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
+				this.processEDUPresence = value;
+			}
+		});
 
-		this.onSettingChanged(
-			'Federation_Service_Validate_User_Domain',
-			async ({ setting }): Promise<void> => {
-				const { value } = setting;
-				if (typeof value === 'boolean') {
-					this.validateUserDomain = value;
-				}
-			},
-			['removed'],
-		);
+		this.onSettingChanged('Federation_Service_Validate_User_Domain', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
+				this.validateUserDomain = value;
+			}
+		});
 
 		this.onEvent(
 			'presence.status',

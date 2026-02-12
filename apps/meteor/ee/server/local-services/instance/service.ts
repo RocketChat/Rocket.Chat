@@ -50,23 +50,19 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			}
 		});
 
-		this.onSettingChanged(
-			'Troubleshoot_Disable_Instance_Broadcast',
-			async ({ setting }): Promise<void> => {
-				const { value } = setting;
+		this.onSettingChanged('Troubleshoot_Disable_Instance_Broadcast', async ({ setting }): Promise<void> => {
+			const { value } = setting;
 
-				if (typeof value !== 'boolean') {
-					return;
-				}
+			if (typeof value !== 'boolean') {
+				return;
+			}
 
-				if (this.troubleshootDisableInstanceBroadcast === value) {
-					return;
-				}
+			if (this.troubleshootDisableInstanceBroadcast === value) {
+				return;
+			}
 
-				this.troubleshootDisableInstanceBroadcast = value;
-			},
-			['removed'],
-		);
+			this.troubleshootDisableInstanceBroadcast = value;
+		});
 	}
 
 	override async created() {

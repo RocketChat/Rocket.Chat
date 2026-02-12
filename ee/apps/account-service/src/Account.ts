@@ -15,15 +15,11 @@ export class Account extends ServiceClass implements IAccount {
 	constructor() {
 		super();
 
-		this.onSettingChanged(
-			'Accounts_LoginExpiration',
-			async ({ setting }): Promise<void> => {
-				const { value } = setting;
+		this.onSettingChanged('Accounts_LoginExpiration', async ({ setting }): Promise<void> => {
+			const { value } = setting;
 
-				this.loginExpiration = getLoginExpirationInDays(value as number);
-			},
-			['removed'],
-		);
+			this.loginExpiration = getLoginExpirationInDays(value as number);
+		});
 	}
 
 	async login({ resume, user, password }: { resume: string; user: { username: string }; password: string }): Promise<false | ILoginResult> {

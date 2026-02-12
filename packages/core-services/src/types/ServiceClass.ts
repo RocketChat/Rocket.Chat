@@ -122,7 +122,7 @@ export abstract class ServiceClass implements IServiceClass {
 	public onSettingChanged(
 		settingId: ISetting['_id'],
 		cb: (data: { clientAction: ClientAction; setting: ISetting }) => Promise<void>,
-		ignoreActions?: ClientAction[],
+		ignoreActions: ClientAction[] = ['removed'],
 	): void {
 		this.registerEventListener();
 
