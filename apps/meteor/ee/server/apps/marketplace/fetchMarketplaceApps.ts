@@ -150,6 +150,7 @@ export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsPa
 	try {
 		request = await Apps.getMarketplaceClient().fetch(`v1/apps`, {
 			headers,
+			ignoreSsrfValidation: false,
 			allowList: settings.get<string>('SSRF_Allowlist'),
 			params: {
 				...(endUserID && { endUserID }),

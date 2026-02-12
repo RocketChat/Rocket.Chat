@@ -11,6 +11,7 @@ import { settings } from '../../../app/settings/server';
 
 const handleExternalProvider = async (externalProviderUrl: string, username: string, res: ServerResponse): Promise<void> => {
 	const response = await fetch(externalProviderUrl.replace('{username}', username), {
+		ignoreSsrfValidation: false,
 		allowList: settings.get<string>('SSRF_Allowlist'),
 	});
 	response.headers.forEach((value, key) => res.setHeader(key, value));

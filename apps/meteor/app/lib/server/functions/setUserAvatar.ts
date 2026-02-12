@@ -104,6 +104,7 @@ export async function setUserAvatar(
 
 			try {
 				response = await fetch(dataURI, {
+					ignoreSsrfValidation: false,
 					allowList: settings.get<string>('SSRF_Allowlist'),
 				});
 			} catch (e) {

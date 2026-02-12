@@ -1,7 +1,5 @@
 import { serverFetch as fetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 
-import { settings } from '../../../../../../app/settings/server';
-
 export async function callTriggerExternalService({
 	url,
 	timeout,
@@ -23,7 +21,6 @@ export async function callTriggerExternalService({
 			method: 'POST',
 			// SECURITY: Integrations can only be configured by users with enough privileges. It's ok to disable this check here.
 			ignoreSsrfValidation: true,
-			allowList: settings.get<string>('SSRF_Allowlist'),
 		} as ExtendedFetchOptions);
 
 		if (!response.ok || response.status !== 200) {

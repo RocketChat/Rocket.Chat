@@ -5,7 +5,6 @@ import type { Response } from 'node-fetch';
 import type { PendingPushNotification } from './definition';
 import { logger } from './logger';
 import type { NativeNotificationParameters } from './push';
-import { settings } from '../../settings/server';
 
 type FCMDataField = Record<string, any>;
 
@@ -193,7 +192,6 @@ export const sendFCM = function ({ userTokens, notification, _removeToken, optio
 			method: 'POST',
 			headers,
 			body: JSON.stringify(fcmRequest),
-			allowList: settings.get<string>('SSRF_Allowlist'),
 			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 			ignoreSsrfValidation: true,
 		});

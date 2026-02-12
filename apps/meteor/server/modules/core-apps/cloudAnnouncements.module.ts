@@ -257,7 +257,6 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			},
 			body: JSON.stringify(request),
 			ignoreSsrfValidation: true,
-			allowList: settings.get<string>('SSRF_Allowlist'),
 		});
 
 		if (!response.ok) {

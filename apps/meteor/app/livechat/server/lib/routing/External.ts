@@ -53,7 +53,6 @@ class ExternalQueue implements IRoutingMethod {
 				},
 				// // SECURITY: The URL is a value that is only configurable by admins/users with the right permissions. It's ok to disable it here.
 				ignoreSsrfValidation: true,
-				allowList: settings.get<string>('SSRF_Allowlist'),
 			});
 			const result = (await request.json()) as { username?: string };
 

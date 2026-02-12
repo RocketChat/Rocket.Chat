@@ -5,7 +5,6 @@ import { Settings, Users } from '@rocket.chat/models';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
-import { settings } from '../../../app/settings/server';
 import { i18n } from '../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
 
@@ -89,7 +88,6 @@ const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 		params: {
 			seats: currentSeats,
 		},
-		allowList: settings.get<string>('SSRF_Allowlist'),
 		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		ignoreSsrfValidation: true,
 	};

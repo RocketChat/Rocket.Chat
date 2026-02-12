@@ -4,8 +4,6 @@ import type { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bri
 import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { settings } from '../../../settings/server';
-
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 
 // Previously, there was no timeout for HTTP requests.
@@ -82,7 +80,6 @@ export class AppHttpBridge extends HttpBridge {
 				headers,
 				timeout,
 				ignoreSsrfValidation: true,
-				allowList: settings.get<string>('SSRF_Allowlist'),
 			},
 			(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
 				(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized),

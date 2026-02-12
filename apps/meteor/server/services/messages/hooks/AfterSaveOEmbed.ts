@@ -149,6 +149,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 			},
 			timeout: settings.get<number>('API_EmbedTimeout') * 1000,
 			size: sizeLimit, // max size of the response body, this was not working as expected so I'm also manually verifying that on the iterator
+			ignoreSsrfValidation: false,
 			allowList: settings.get<string>('SSRF_Allowlist'),
 		},
 		settings.get('Allow_Invalid_SelfSigned_Certs'),

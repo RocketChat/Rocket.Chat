@@ -28,6 +28,7 @@ const logger = new Logger('SMS');
 
 const getUploadFile = async (details: Omit<IUpload, '_id'>, fileUrl: string) => {
 	const response = await fetch(fileUrl, {
+		ignoreSsrfValidation: false,
 		allowList: settings.get<string>('SSRF_Allowlist'),
 	});
 

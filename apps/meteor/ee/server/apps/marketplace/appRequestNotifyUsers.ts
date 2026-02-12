@@ -2,7 +2,6 @@ import type { AppRequest, IUser } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
-import { settings } from '../../../../app/settings/server';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendDirectMessageToUsers } from '../../../../server/lib/sendDirectMessageToUsers';
 
@@ -56,7 +55,6 @@ export const appRequestNotififyForUsers = async (
 		const response = await fetch(`${marketplaceBaseUrl}/v1/app-request`, {
 			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 			ignoreSsrfValidation: true,
-			allowList: settings.get<string>('SSRF_Allowlist'),
 			headers,
 			params: {
 				appId,
@@ -92,7 +90,6 @@ export const appRequestNotififyForUsers = async (
 				`${marketplaceBaseUrl}/v1/app-request?appId=${appId}&q=notification-not-sent&limit=${pagination.limit}&offset=${pagination.offset}`,
 				{
 					ignoreSsrfValidation: true,
-					allowList: settings.get<string>('SSRF_Allowlist'),
 					headers,
 				},
 			);

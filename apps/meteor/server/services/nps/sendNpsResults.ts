@@ -28,7 +28,6 @@ export const sendNpsResults = async function sendNpsResults(npsId: string, data:
 				body: data,
 				// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
 				ignoreSsrfValidation: true,
-				allowList: settings.get<string>('SSRF_Allowlist'),
 			})
 		).json();
 	} catch (err) {

@@ -259,7 +259,6 @@ class PushClass {
 		notification.uniqueId = this.options.uniqueId;
 
 		const options = {
-			allowList: settings.get<string>('SSRF_Allowlist'),
 			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 			ignoreSsrfValidation: true,
 			method: 'POST',

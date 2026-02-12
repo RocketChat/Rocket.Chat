@@ -35,7 +35,11 @@ export async function fetchMarketplaceCategories(): Promise<AppCategory[]> {
 
 	let request;
 	try {
-		request = await Apps.getMarketplaceClient().fetch(`v1/categories`, { headers, allowList: settings.get<string>('SSRF_Allowlist') });
+		request = await Apps.getMarketplaceClient().fetch(`v1/categories`, {
+			headers,
+			ignoreSsrfValidation: false,
+			allowList: settings.get<string>('SSRF_Allowlist'),
+		});
 	} catch (error) {
 		throw new MarketplaceConnectionError('Marketplace_Bad_Marketplace_Connection');
 	}

@@ -261,7 +261,6 @@ export class AppsRestApi {
 							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 							const response = await fetch(this.bodyParams.url, {
 								ignoreSsrfValidation: true,
-								allowList: settings.get<string>('SSRF_Allowlist'),
 							});
 
 							if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
@@ -287,7 +286,6 @@ export class AppsRestApi {
 										headers,
 										// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 										ignoreSsrfValidation: true,
-										allowList: settings.get<string>('SSRF_Allowlist'),
 									})
 									.catch((cause) => {
 										throw new Error('App package download failed', { cause });
@@ -300,7 +298,6 @@ export class AppsRestApi {
 										},
 										// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 										ignoreSsrfValidation: true,
-										allowList: settings.get<string>('SSRF_Allowlist'),
 									})
 									.catch((cause) => {
 										throw new Error('App metadata download failed', { cause });
@@ -551,7 +548,6 @@ export class AppsRestApi {
 							.fetch(`v1/bundles/${this.urlParams.id}/apps`, {
 								headers,
 								ignoreSsrfValidation: true,
-								allowList: settings.get<string>('SSRF_Allowlist'),
 							});
 						if (request.status !== 200) {
 							orchestrator.getRocketChatLogger().error({
@@ -588,7 +584,6 @@ export class AppsRestApi {
 						const request = await orchestrator.getMarketplaceClient().fetch(`v1/featured-apps`, {
 							headers,
 							ignoreSsrfValidation: true,
-							allowList: settings.get<string>('SSRF_Allowlist'),
 						});
 						if (request.status !== 200) {
 							orchestrator
@@ -626,7 +621,6 @@ export class AppsRestApi {
 								headers,
 								// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 								ignoreSsrfValidation: true,
-								allowList: settings.get<string>('SSRF_Allowlist'),
 							});
 						const result = await request.json();
 
@@ -662,7 +656,6 @@ export class AppsRestApi {
 							.fetch(`v1/app-request/stats`, {
 								headers,
 								ignoreSsrfValidation: true,
-								allowList: settings.get<string>('SSRF_Allowlist'),
 							});
 						const result = await request.json();
 						if (!request.ok) {
@@ -699,7 +692,6 @@ export class AppsRestApi {
 							body: { ids: unseenRequests },
 							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 							ignoreSsrfValidation: true,
-							allowList: settings.get<string>('SSRF_Allowlist'),
 						});
 						const result = await request.json();
 
@@ -774,7 +766,6 @@ export class AppsRestApi {
 								.fetch(`v1/apps/${this.urlParams.id}?appVersion=${this.queryParams.version}`, {
 									headers,
 									ignoreSsrfValidation: true,
-									allowList: settings.get<string>('SSRF_Allowlist'),
 								});
 							if (request.status !== 200) {
 								orchestrator
@@ -805,7 +796,6 @@ export class AppsRestApi {
 									headers,
 									// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 									ignoreSsrfValidation: true,
-									allowList: settings.get<string>('SSRF_Allowlist'),
 								});
 							if (request.status !== 200) {
 								orchestrator
@@ -838,7 +828,6 @@ export class AppsRestApi {
 						// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 						const response = await fetch(this.bodyParams.url, {
 							ignoreSsrfValidation: true,
-							allowList: settings.get<string>('SSRF_Allowlist'),
 						});
 
 						if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
@@ -859,7 +848,6 @@ export class AppsRestApi {
 									headers,
 									// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
 									ignoreSsrfValidation: true,
-									allowList: settings.get<string>('SSRF_Allowlist'),
 								});
 
 							if (response.status !== 200) {
@@ -998,7 +986,6 @@ export class AppsRestApi {
 							.fetch(`v1/apps/${this.urlParams.id}`, {
 								headers,
 								ignoreSsrfValidation: true,
-								allowList: settings.get<string>('SSRF_Allowlist'),
 							});
 						statusCode = request.status;
 						result = await request.json();
@@ -1045,7 +1032,6 @@ export class AppsRestApi {
 							.fetch(`v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, {
 								headers,
 								ignoreSsrfValidation: true,
-								allowList: settings.get<string>('SSRF_Allowlist'),
 							});
 
 						statusCode = request.status;
@@ -1117,7 +1103,6 @@ export class AppsRestApi {
 							.fetch(`v1/apps/${appId}/screenshots`, {
 								headers,
 								ignoreSsrfValidation: true,
-								allowList: settings.get<string>('SSRF_Allowlist'),
 							});
 						const data = await request.json();
 
