@@ -27,6 +27,7 @@ import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionF
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
+import { getComposerEmojiInsertionText } from '../../../../lib/utils/getComposerEmojiInsertionText';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
@@ -155,7 +156,7 @@ const MessageBox = ({
 		}
 
 		const ref = messageComposerRef.current as HTMLElement;
-		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
+		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` ${getComposerEmojiInsertionText(emoji)} `));
 	});
 
 	const handleSendMessage = useEffectEvent(() => {
