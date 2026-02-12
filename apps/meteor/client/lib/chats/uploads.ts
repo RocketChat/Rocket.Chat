@@ -20,7 +20,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		this.rid = rid;
 	}
 
-	uploads: readonly Upload[] = [];
+	private uploads: readonly Upload[] = [];
 
 	set = (uploads: Upload[]): void => {
 		this.uploads = uploads;
@@ -39,11 +39,15 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		this.set(this.uploads.filter((upload) => !upload.error));
 	};
 
+	private updateUpload(id: Upload['id'], patch: Partial<Upload>): void {
+		this.set(this.uploads.map((upload) => (upload.id !== id ? upload : { ...upload, ...patch })));
+	}
+
 	removeUpload = (id: Upload['id']): void => {
 		this.set(this.uploads.filter((upload) => upload.id !== id));
 	};
 
-	editUploadFileName = async (uploadId: Upload['id'], fileName: Upload['file']['name']): Promise<void> => {
+	editUploadFileName = (uploadId: Upload['id'], fileName: Upload['file']['name']) => {
 		try {
 			this.set(
 				this.uploads.map((upload) => {
@@ -127,73 +131,33 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 								return;
 							}
 							const progress = (event.loaded / event.total) * 100;
-							this.set(
-								this.uploads.map((upload) => {
-									if (upload.id !== id) {
-										return upload;
-									}
-
-									return {
-										...upload,
-										percentage: Math.round(progress) || 0,
-									};
-								}),
-							);
+							this.updateUpload(id, { percentage: Math.round(progress) || 0 });
 						},
 						error: (event) => {
-							this.set(
-								this.uploads.map((upload) => {
-									if (upload.id !== id) {
-										return upload;
-									}
-
-									return {
-										...upload,
-										percentage: 0,
-										error: new Error(xhr.responseText),
-									};
-								}),
-							);
+							this.updateUpload(id, { percentage: 0, error: new Error(xhr.responseText) });
 							reject(event);
 						},
 					},
 				);
 
 				xhr.onload = () => {
-					if (xhr.readyState === xhr.DONE) {
+					try {
+						if (xhr.readyState !== xhr.DONE) {
+							return;
+						}
+
 						if (xhr.status === 400) {
 							const error = JSON.parse(xhr.responseText);
-							this.set(
-								this.uploads.map((upload) => {
-									if (upload.id !== id) {
-										return upload;
-									}
-
-									return {
-										...upload,
-										error: new Error(error.error),
-									};
-								}),
-							);
+							this.updateUpload(id, { percentage: 0, error: new Error(error.error) });
 							return;
 						}
 
 						if (xhr.status === 200) {
 							const result = JSON.parse(xhr.responseText);
-							this.set(
-								this.uploads.map((upload) => {
-									if (upload.id !== id) {
-										return upload;
-									}
-
-									return {
-										...upload,
-										id: result.file._id,
-										url: result.file.url,
-									};
-								}),
-							);
+							this.updateUpload(id, { id: result.file._id, url: result.file.url });
 						}
+					} catch (error) {
+						this.updateUpload(id, { percentage: 0, error: new Error(getErrorMessage(error)) });
 					}
 				};
 
@@ -204,19 +168,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 				});
 			});
 		} catch (error: unknown) {
-			this.set(
-				this.uploads.map((upload) => {
-					if (upload.id !== id) {
-						return upload;
-					}
-
-					return {
-						...upload,
-						percentage: 0,
-						error: new Error(getErrorMessage(error)),
-					};
-				}),
-			);
+			this.updateUpload(id, { percentage: 0, error: new Error(getErrorMessage(error)) });
 		}
 	}
 }
