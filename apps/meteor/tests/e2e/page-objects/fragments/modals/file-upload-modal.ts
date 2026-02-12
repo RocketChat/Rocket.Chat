@@ -7,12 +7,8 @@ export class FileUploadModal extends Modal {
 		super(page.getByRole('dialog', { name: 'File Upload' }));
 	}
 
-	private get fileNameInput() {
+	private get inputFileName() {
 		return this.root.getByRole('textbox', { name: 'File name' });
-	}
-
-	private get fileDescriptionInput() {
-		return this.root.getByRole('textbox', { name: 'File description' });
 	}
 
 	private get updateButton() {
@@ -20,11 +16,7 @@ export class FileUploadModal extends Modal {
 	}
 
 	setName(fileName: string) {
-		return this.fileNameInput.fill(fileName);
-	}
-
-	setDescription(description: string) {
-		return this.fileDescriptionInput.fill(description);
+		return this.inputFileName.fill(fileName);
 	}
 
 	async update() {
