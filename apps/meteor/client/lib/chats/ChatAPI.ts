@@ -102,7 +102,7 @@ export type DataAPI = {
 
 export type EncryptedFileUploadContent = {
 	rawFile: File;
-	fileContent: { raw: Partial<IUpload>; encrypted?: IE2EEMessage['content'] | undefined };
+	fileContent: { raw: Partial<IUpload>; encrypted?: IE2EEMessage['content'] };
 	encryptedFile: EncryptedFile;
 };
 
