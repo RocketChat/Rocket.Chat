@@ -1,13 +1,13 @@
 import type { ISetting, Serialized } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import AppearanceForm from './AppearanceForm';
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 
 type LivechatAppearanceSettings = {
 	Livechat_title: string;

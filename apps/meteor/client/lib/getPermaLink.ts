@@ -1,5 +1,6 @@
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
+
+import { getUserId } from './user';
 
 const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {
 	try {
@@ -16,21 +17,19 @@ export const getPermaLink = async (msgId: string): Promise<string> => {
 		throw new Error('invalid-parameter');
 	}
 
-	const { Messages, Rooms, Subscriptions } = await import('../../app/models/client');
+	const { Messages, Rooms, Subscriptions } = await import('../stores');
 
 	const msg = Messages.state.get(msgId) || (await getMessage(msgId));
 	if (!msg) {
 		throw new Error('message-not-found');
 	}
-	const roomData = Rooms.findOne({
-		_id: msg.rid,
-	});
+	const roomData = Rooms.state.get(msg.rid);
 
 	if (!roomData) {
 		throw new Error('room-not-found');
 	}
 
-	const subData = Subscriptions.findOne({ 'rid': roomData._id, 'u._id': Meteor.userId() });
+	const subData = Subscriptions.state.find((record) => record.rid === roomData._id && record.u._id === getUserId());
 
 	const { roomCoordinator } = await import('./rooms/roomCoordinator');
 

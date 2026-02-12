@@ -1,11 +1,11 @@
 import { Tabs, Button } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRoute, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
 
-import DepartmentsTableV2 from './DepartmentsTable';
+import DepartmentsTable from './DepartmentsTable';
 import EditDepartmentWithData from './EditDepartmentWithData';
 import NewDepartment from './NewDepartment';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const DepartmentsPage = () => {
 	const t = useTranslation();
@@ -53,7 +53,7 @@ const DepartmentsPage = () => {
 					</Tabs.Item>
 				</Tabs>
 				<PageContent>
-					<DepartmentsTableV2 archived={context === 'archived'} />
+					<DepartmentsTable archived={context === 'archived'} />
 				</PageContent>
 			</Page>
 		</Page>

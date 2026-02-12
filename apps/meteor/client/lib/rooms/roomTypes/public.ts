@@ -1,17 +1,13 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
-import type { Filter } from 'mongodb';
 
-import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import { Rooms } from '../../../../app/models/client';
-import { settings } from '../../../../app/settings/client';
-import { getUserPreference } from '../../../../app/utils/client';
 import { getRoomAvatarURL } from '../../../../app/utils/client/getRoomAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
+import { Rooms } from '../../../stores';
 import * as Federation from '../../federation/Federation';
+import { settings } from '../../settings';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const PublicRoomType = getPublicRoomType(roomCoordinator);
@@ -57,7 +53,7 @@ roomCoordinator.add(
 			if (roomData.prid || isRoomFederated(roomData)) {
 				return roomData.fname;
 			}
-			if (settings.get('UI_Allow_room_names_with_special_chars')) {
+			if (settings.watch('UI_Allow_room_names_with_special_chars')) {
 				return roomData.fname || roomData.name;
 			}
 			return roomData.name;
@@ -76,14 +72,6 @@ roomCoordinator.add(
 				default:
 					return '';
 			}
-		},
-
-		condition() {
-			const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-			return (
-				groupByType &&
-				(hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || settings.get('Accounts_AllowAnonymousRead') === true)
-			);
 		},
 
 		getAvatarPath(room) {
@@ -109,16 +97,10 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			const query: Filter<IRoom> = {
-				t: 'c',
-				name: identifier,
+			const predicate = (record: IRoom): boolean => {
+				return record.t === 'c' && record.name === identifier;
 			};
-
-			return Rooms.findOne(query);
-		},
-
-		showJoinLink(roomId) {
-			return !!Rooms.findOne({ _id: roomId, t: 'c' });
+			return Rooms.state.find(predicate);
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'isGroupChat' | 'roomName'>,
 );

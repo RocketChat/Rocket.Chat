@@ -1,4 +1,4 @@
-import { isOmnichannelRoom, isRoomFederated, isVoipRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
@@ -14,7 +14,6 @@ import ComposerMessage from './ComposerMessage';
 import ComposerOmnichannel from './ComposerOmnichannel';
 import ComposerReadOnly from './ComposerReadOnly';
 import ComposerSelectMessages from './ComposerSelectMessages';
-import ComposerVoIP from './ComposerVoIP';
 import { useRoom } from '../contexts/RoomContext';
 import { useMessageComposerIsAnonymous } from './hooks/useMessageComposerIsAnonymous';
 import { useMessageComposerIsArchived } from './hooks/useMessageComposerIsArchived';
@@ -32,12 +31,13 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 	const isAnonymous = useMessageComposerIsAnonymous();
 	const isSelectingMessages = useIsSelecting();
 	const isBlockedOrBlocker = useMessageComposerIsBlocked({ subscription: props.subscription });
-	const isArchived = useMessageComposerIsArchived(room._id, props.subscription);
-	const isReadOnly = useMessageComposerIsReadOnly(room._id);
+	const isArchived = useMessageComposerIsArchived(room, props.subscription);
+	const isReadOnly = useMessageComposerIsReadOnly(room);
 
 	const isOmnichannel = isOmnichannelRoom(room);
 	const isFederation = isRoomFederated(room);
-	const isVoip = isVoipRoom(room);
+
+	const isFederationBlocked = !isRoomNativeFederated(room);
 
 	const [isAirGappedRestricted] = useAirGappedRestriction();
 
@@ -49,12 +49,8 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 		return <ComposerOmnichannel {...props} />;
 	}
 
-	if (isVoip) {
-		return <ComposerVoIP />;
-	}
-
 	if (isFederation) {
-		return <ComposerFederation {...props} />;
+		return <ComposerFederation blocked={isFederationBlocked} {...props} />;
 	}
 
 	if (isAnonymous) {

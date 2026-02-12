@@ -1,6 +1,7 @@
-import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
+import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
+import { useCustomFieldsQuery } from '../../hooks/useCustomFieldsQuery';
 import { formatCustomFieldsMetadata } from '../utils/formatCustomFieldsMetadata';
 
 type UseCustomFieldsMetadataOptions = {
@@ -9,15 +10,10 @@ type UseCustomFieldsMetadataOptions = {
 };
 
 export const useCustomFieldsMetadata = ({ enabled = true, scope }: UseCustomFieldsMetadataOptions) => {
-	const getCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
+	const { data, isSuccess } = useCustomFieldsQuery();
 	return useQuery({
-		queryKey: ['/v1/livechat/custom-fields', scope],
-
-		queryFn: async () => {
-			const { customFields } = (await getCustomFields()) ?? {};
-			return formatCustomFieldsMetadata(customFields, scope);
-		},
-
-		enabled,
+		queryKey: omnichannelQueryKeys.livechat.customFieldsMetadata(scope),
+		queryFn: async () => formatCustomFieldsMetadata(data?.customFields, scope),
+		enabled: enabled && isSuccess,
 	});
 };

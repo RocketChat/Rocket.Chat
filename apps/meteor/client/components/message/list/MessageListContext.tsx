@@ -45,7 +45,7 @@ export type MessageListContextValue = {
 	messageListRef?: RefCallback<HTMLElement | undefined>;
 };
 
-export const MessageListContext = createContext<MessageListContextValue>({
+export const messageListContextDefaultValue: MessageListContextValue = {
 	autoTranslate: {
 		showAutoTranslate: () => false,
 		autoTranslateLanguage: undefined,
@@ -74,7 +74,9 @@ export const MessageListContext = createContext<MessageListContextValue>({
 	formatTime: () => '',
 	formatDate: () => '',
 	messageListRef: undefined,
-});
+};
+
+export const MessageListContext = createContext<MessageListContextValue>(messageListContextDefaultValue);
 
 export const useShowTranslated: MessageListContextValue['autoTranslate']['showAutoTranslate'] = (...args) =>
 	useContext(MessageListContext).autoTranslate.showAutoTranslate(...args);

@@ -4,7 +4,7 @@ import { LivechatDepartment } from '@rocket.chat/models';
 
 import { forwardRoomToDepartment } from '../../../../../app/livechat/server/lib/Helper';
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
 const onTransferFailure = async (

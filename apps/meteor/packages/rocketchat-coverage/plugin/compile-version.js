@@ -7,6 +7,7 @@ import reports from 'istanbul-reports';
 import libCoverage from 'istanbul-lib-coverage';
 
 const dir = process.env.COVERAGE_DIR;
+const fileName = process.env.COVERAGE_FILE_NAME;
 const reporter = process.env.COVERAGE_REPORTER || 'lcov';
 
 console.log('Coverage plugin started');
@@ -45,7 +46,8 @@ process.on('exit', async () => {
 			coverageMap,
 		});
 
-		const report = reports.create(reporter);
+		console.log('Generating coverage report', { dir, reporter, fileName });
+		const report = reports.create(reporter, { file: fileName });
 
 		report.execute(context);
 	} catch (e) {

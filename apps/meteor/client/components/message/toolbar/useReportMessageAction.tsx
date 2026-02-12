@@ -34,7 +34,7 @@ export const useReportMessageAction = (
 		icon: 'report',
 		label: 'Report',
 		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
-		color: 'alert',
+		variant: 'danger',
 		type: 'management',
 		action() {
 			setModal(

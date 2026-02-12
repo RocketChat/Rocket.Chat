@@ -1,21 +1,23 @@
 import { States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import {
+	GenericModal,
+	GenericTable,
+	GenericTableBody,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+	GenericTableLoadingTable,
+	Page,
+	PageHeader,
+	PageContent,
+} from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import InviteRow from './InviteRow';
-import GenericModal from '../../../components/GenericModal';
 import GenericNoResults from '../../../components/GenericNoResults';
-import {
-	GenericTable,
-	GenericTableBody,
-	GenericTableHeader,
-	GenericTableHeaderCell,
-	GenericTableLoadingTable,
-} from '../../../components/GenericTable';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const InvitesPage = (): ReactElement => {
 	const t = useTranslation();
@@ -53,14 +55,15 @@ const InvitesPage = (): ReactElement => {
 		setModal(
 			<GenericModal
 				title={t('Are_you_sure')}
-				children={t('Are_you_sure_you_want_to_delete_this_record')}
 				variant='danger'
 				confirmText={t('Yes')}
 				cancelText={t('No')}
 				onClose={(): void => setModal()}
 				onCancel={(): void => setModal()}
 				onConfirm={confirmRemove}
-			/>,
+			>
+				{t('Are_you_sure_you_want_to_delete_this_record')}
+			</GenericModal>,
 		);
 	};
 

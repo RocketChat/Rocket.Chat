@@ -1,11 +1,10 @@
 import type { AppCategory } from '@rocket.chat/core-typings';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
+import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { Apps } from '../orchestrator';
-import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
 
 const fetchMarketplaceCategoriesSchema = z.array(
 	z.object({
@@ -18,8 +17,15 @@ const fetchMarketplaceCategoriesSchema = z.array(
 	}),
 );
 
+/**
+ * Fetches marketplace categories from the marketplace API.
+ *
+ * @returns An array of marketplace categories (`AppCategory[]`).
+ * @throws MarketplaceConnectionError when the HTTP request cannot be made.
+ * @throws MarketplaceUnsupportedVersionError when the marketplace responds with status 426 and `errorMsg` equals `"unsupported version"`.
+ * @throws MarketplaceAppsError when the marketplace returns an internal error (specific internal codes) or any other non-successful response.
+ */
 export async function fetchMarketplaceCategories(): Promise<AppCategory[]> {
-	const baseUrl = Apps.getMarketplaceUrl();
 	const headers = getMarketplaceHeaders();
 	const token = await getWorkspaceAccessToken();
 	if (token) {
@@ -28,7 +34,7 @@ export async function fetchMarketplaceCategories(): Promise<AppCategory[]> {
 
 	let request;
 	try {
-		request = await fetch(`${baseUrl}/v1/categories`, { headers });
+		request = await Apps.getMarketplaceClient().fetch(`v1/categories`, { headers });
 	} catch (error) {
 		throw new MarketplaceConnectionError('Marketplace_Bad_Marketplace_Connection');
 	}
@@ -41,7 +47,7 @@ export async function fetchMarketplaceCategories(): Promise<AppCategory[]> {
 
 	const response = await request.json();
 
-	Apps.getRocketChatLogger().error('Failed to fetch marketplace categories', response);
+	Apps.getRocketChatLogger().error({ msg: 'Error fetching marketplace categories', status: request.status, response });
 
 	// TODO: Refactor cloud to return a proper error code on unsupported version
 	if (request.status === 426 && 'errorMsg' in response && response.errorMsg === 'unsupported version') {

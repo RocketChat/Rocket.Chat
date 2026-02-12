@@ -1,12 +1,8 @@
 import type { ICustomEmojiDescriptor, IEmojiCustom } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
+import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type emojiCustomDeleteProps = {
 	emojiId: ICustomEmojiDescriptor['_id'];
@@ -52,7 +48,7 @@ export const isEmojiCustomList = ajv.compile<emojiCustomList>(emojiCustomListSch
 
 export type EmojiCustomEndpoints = {
 	'/v1/emoji-custom.all': {
-		GET: (params: PaginatedRequest<{ query: string }, 'name'>) => PaginatedResult<{
+		GET: (params: PaginatedRequest<{ name?: string }, 'name'>) => PaginatedResult<{
 			emojis: IEmojiCustom[];
 		}>;
 	};

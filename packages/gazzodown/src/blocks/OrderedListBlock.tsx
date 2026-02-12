@@ -11,7 +11,7 @@ const OrderedListBlock = ({ items }: OrderedListBlockProps): ReactElement => (
 	<ol>
 		{items.map(({ value, number }, index) => (
 			<li key={index} value={number}>
-				<InlineElements children={value} />
+				<InlineElements>{value}</InlineElements>
 			</li>
 		))}
 	</ol>

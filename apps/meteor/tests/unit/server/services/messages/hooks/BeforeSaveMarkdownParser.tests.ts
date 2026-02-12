@@ -27,23 +27,6 @@ describe('Markdown parser', () => {
 		expect(message).to.not.have.property('md');
 	});
 
-	it('should do nothing for OTR messages', async () => {
-		const markdownParser = new BeforeSaveMarkdownParser(true);
-
-		const message = await markdownParser.parseMarkdown({
-			message: createMessage('hey', { t: 'otr' }),
-			config: {},
-		});
-
-		const messageAck = await markdownParser.parseMarkdown({
-			message: createMessage('hey', { t: 'otr-ack' }),
-			config: {},
-		});
-
-		expect(message).to.not.have.property('md');
-		expect(messageAck).to.not.have.property('md');
-	});
-
 	it('should do nothing for E2E messages', async () => {
 		const markdownParser = new BeforeSaveMarkdownParser(true);
 

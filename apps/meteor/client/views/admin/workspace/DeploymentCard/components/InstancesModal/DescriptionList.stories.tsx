@@ -4,7 +4,6 @@ import DescriptionList from './DescriptionList';
 import DescriptionListEntry from './DescriptionListEntry';
 
 export default {
-	title: 'Admin/Info/DescriptionList',
 	component: DescriptionList,
 	parameters: {
 		layout: 'centered',

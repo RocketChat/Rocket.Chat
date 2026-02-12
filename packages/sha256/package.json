@@ -1,29 +1,26 @@
 {
 	"name": "@rocket.chat/sha256",
+	"version": "1.0.12",
 	"private": true,
 	"description": "SHA256 implementation; Fork of Meteor's SHA256 package",
-	"version": "1.0.12",
 	"main": "./dist/sha256.js",
 	"types": "./dist/sha256.d.ts",
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"typecheck": "tsc --noEmit",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
-		"test": "jest"
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.26.0",
-		"@babel/preset-env": "~7.26.0",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@typescript-eslint/eslint-plugin": "~5.60.1",
-		"@typescript-eslint/parser": "~5.60.1",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.0",
-		"typescript": "~5.8.3"
+		"jest": "~30.2.0",
+		"typescript": "~5.9.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

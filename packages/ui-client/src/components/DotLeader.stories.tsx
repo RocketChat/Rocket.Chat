@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 
-import { DotLeader } from './DotLeader';
+import DotLeader from './DotLeader';
 
 export default {
 	title: 'Components/DotLeader',

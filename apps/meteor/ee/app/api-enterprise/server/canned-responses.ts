@@ -1,5 +1,5 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse, IUser } from '@rocket.chat/core-typings';
-import { isPOSTCannedResponsesProps, isDELETECannedResponsesProps, isCannedResponsesProps } from '@rocket.chat/rest-typings';
+import { isPOSTCannedResponsesProps, isCannedResponsesProps, isDELETECannedResponsesProps } from '@rocket.chat/rest-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
 import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from './lib/canned-responses';
@@ -38,6 +38,7 @@ declare module '@rocket.chat/rest-typings' {
 			GET: () => {
 				cannedResponse: IOmnichannelCannedResponse;
 			};
+			DELETE: () => void;
 		};
 	}
 }
@@ -54,6 +55,53 @@ API.v1.addRoute(
 	},
 );
 
+/**
+ * @deprecated
+ * @openapi
+ * /api/v1/canned-responses:
+ *  delete:
+ *  	deprecated: true
+ *  	security:
+ *    	$ref: '#/security/authenticated'
+ *  	parameters:
+ *    	- in: body
+ *      	name: body
+ *      	description: |
+ *        	**_id** (required): Canned Response ID to be removed.
+ *      	schema:
+ *        	type: object
+ *        	required:
+ *          	- _id
+ *        	properties:
+ *          	_id:
+ *            	type: string
+ *  	tags:
+ *    	- Canned_Responses
+ *  	responses:
+ *    	200:
+ *      	description: Successful Response
+ *      	schema:
+ *        	type: object
+ *        	properties:
+ *          	status:
+ *            	type: string
+ *            	example: success
+ *          	data:
+ *            	type: object
+ *            	description: The response data
+ *            	properties:
+ *              	success:
+ *                	type: boolean
+ *                	example: true
+ *    	401:
+ *      	$ref: '#/responses/Unauthorized'
+ *    	403:
+ *      	$ref: '#/responses/Forbidden'
+ *    	404:
+ *      	$ref: '#/responses/NotFound'
+ *    	500:
+ *      	$ref: '#/responses/InternalServerError'
+ */
 API.v1.addRoute(
 	'canned-responses',
 	{
@@ -61,6 +109,7 @@ API.v1.addRoute(
 		permissionsRequired: { GET: ['view-canned-responses'], POST: ['save-canned-responses'], DELETE: ['remove-canned-responses'] },
 		validateParams: { POST: isPOSTCannedResponsesProps, DELETE: isDELETECannedResponsesProps, GET: isCannedResponsesProps },
 		license: ['canned-responses'],
+		deprecations: { DELETE: { version: '8.0.0', alternatives: ['/v1/canned-responses/:_id'] } },
 	},
 	{
 		async get() {
@@ -104,6 +153,7 @@ API.v1.addRoute(
 			);
 			return API.v1.success();
 		},
+		// deprecated
 		async delete() {
 			const { _id } = this.bodyParams;
 			await removeCannedResponse(this.userId, _id);
@@ -114,7 +164,11 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'canned-responses/:_id',
-	{ authRequired: true, permissionsRequired: ['view-canned-responses'], license: ['canned-responses'] },
+	{
+		authRequired: true,
+		permissionsRequired: { GET: ['view-canned-responses'], DELETE: ['remove-canned-responses'] },
+		license: ['canned-responses'],
+	},
 	{
 		async get() {
 			const { _id } = this.urlParams;
@@ -128,6 +182,11 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({ cannedResponse });
+		},
+		async delete() {
+			const { _id } = this.urlParams;
+			await removeCannedResponse(this.userId, _id);
+			return API.v1.success();
 		},
 	},
 );

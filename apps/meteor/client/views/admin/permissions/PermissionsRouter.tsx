@@ -1,7 +1,7 @@
 import { useRouteParameter, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
-import PermissionsTable from './PermissionsTable';
+import PermissionsPage from './PermissionsPage';
 import UsersInRole from './UsersInRole';
 import PageSkeleton from '../../../components/PageSkeleton';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
@@ -25,7 +25,7 @@ const PermissionsRouter = (): ReactElement => {
 		return <UsersInRole />;
 	}
 
-	return <PermissionsTable isEnterprise={!!data?.isEnterprise} />;
+	return <PermissionsPage isEnterprise={!!data?.isEnterprise} />;
 };
 
 export default PermissionsRouter;

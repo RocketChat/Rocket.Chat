@@ -57,7 +57,7 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/omnichannel/triggers${`/${string}` | ''}${`/${string}` | ''}`;
 		};
 		'omnichannel-current-chats': {
-			pattern: '/omnichannel/current/:id?/:tab?/:context?';
+			pattern: '/omnichannel/current/:tab?/:context?/:id?';
 			pathname: `/omnichannel/current${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
 		};
 		'omnichannel-departments': {
@@ -71,6 +71,30 @@ declare module '@rocket.chat/ui-contexts' {
 		'omnichannel-realTime': {
 			pattern: '/omnichannel/realtime-monitoring';
 			pathname: `/omnichannel/realtime-monitoring`;
+		};
+		'omnichannel-monitors': {
+			pattern: '/omnichannel/monitors';
+			pathname: '/omnichannel/monitors';
+		};
+		'omnichannel-sla-policies': {
+			pattern: '/omnichannel/sla-policies/:context?/:id?';
+			pathname: `/omnichannel/sla-policies${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-priorities': {
+			pattern: '/omnichannel/priorities/:context?/:id?';
+			pathname: `/omnichannel/priorities${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-canned-responses': {
+			pattern: '/omnichannel/canned-responses/:context?/:id?';
+			pathname: `/omnichannel/canned-responses${`/${string}` | ''}${`/${string}` | ''}`;
+		};
+		'omnichannel-reports': {
+			pattern: '/omnichannel/reports';
+			pathname: `/omnichannel/reports`;
+		};
+		'omnichannel-security-privacy': {
+			pattern: '/omnichannel/security-privacy';
+			pathname: `/omnichannel/security-privacy`;
 		};
 	}
 }
@@ -118,12 +142,12 @@ registerOmnichannelRoute('/businessHours/:context?/:type?/:id?', {
 
 registerOmnichannelRoute('/units/:context?/:id?', {
 	name: 'omnichannel-units',
-	component: lazy(() => import('../../omnichannel/units/UnitsRoute')),
+	component: lazy(() => import('./units/UnitsRoute')),
 });
 
 registerOmnichannelRoute('/tags/:context?/:id?', {
 	name: 'omnichannel-tags',
-	component: lazy(() => import('../../omnichannel/tags/TagsRoute')),
+	component: lazy(() => import('./tags/TagsRoute')),
 });
 
 registerOmnichannelRoute('/triggers/:context?/:id?', {
@@ -131,9 +155,9 @@ registerOmnichannelRoute('/triggers/:context?/:id?', {
 	component: lazy(() => import('./triggers/TriggersRoute')),
 });
 
-registerOmnichannelRoute('/current/:id?/:tab?/:context?', {
+registerOmnichannelRoute('/current/:tab?/:context?/:id?', {
 	name: 'omnichannel-current-chats',
-	component: lazy(() => import('./currentChats/CurrentChatsRoute')),
+	component: lazy(() => import('./directory/OmnichannelDirectoryRouter')),
 });
 
 registerOmnichannelRoute('/departments/:context?/:id?/:tab?', {
@@ -149,4 +173,34 @@ registerOmnichannelRoute('/realtime-monitoring', {
 registerOmnichannelRoute('/analytics', {
 	name: 'omnichannel-analytics',
 	component: lazy(() => import('./analytics/AnalyticsPage')),
+});
+
+registerOmnichannelRoute('/monitors', {
+	name: 'omnichannel-monitors',
+	component: lazy(() => import('./monitors/MonitorsPageContainer')),
+});
+
+registerOmnichannelRoute('/sla-policies/:context?/:id?', {
+	name: 'omnichannel-sla-policies',
+	component: lazy(() => import('./slaPolicies/SlaRoute')),
+});
+
+registerOmnichannelRoute('/priorities/:context?/:id?', {
+	name: 'omnichannel-priorities',
+	component: lazy(() => import('./priorities/PrioritiesRoute')),
+});
+
+registerOmnichannelRoute('/canned-responses/:context?/:id?', {
+	name: 'omnichannel-canned-responses',
+	component: lazy(() => import('./cannedResponses/modals/CannedResponsesRoute')),
+});
+
+registerOmnichannelRoute('/reports', {
+	name: 'omnichannel-reports',
+	component: lazy(() => import('./reports/ReportsPage')),
+});
+
+registerOmnichannelRoute('/security-privacy', {
+	name: 'omnichannel-security-privacy',
+	component: lazy(() => import('./securityPrivacy/SecurityPrivacyRoute')),
 });

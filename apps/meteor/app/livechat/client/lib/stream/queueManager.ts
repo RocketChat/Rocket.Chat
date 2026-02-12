@@ -3,9 +3,9 @@ import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent, Se
 import { useLivechatInquiryStore } from '../../../../../client/hooks/useLivechatInquiryStore';
 import { queryClient } from '../../../../../client/lib/queryClient';
 import { roomsQueryKeys } from '../../../../../client/lib/queryKeys';
-import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
+import { settings } from '../../../../../client/lib/settings';
+import { dispatchToastMessage } from '../../../../../client/lib/toast';
 import { mapMessageFromApi } from '../../../../../client/lib/utils/mapMessageFromApi';
-import { settings } from '../../../../settings/client';
 import { sdk } from '../../../../utils/client/lib/SDKClient';
 
 const departments = new Set();
@@ -45,9 +45,11 @@ const processInquiryEvent = async (args: unknown): Promise<void> => {
 };
 
 const invalidateRoomQueries = async (rid: string) => {
-	await queryClient.invalidateQueries({ queryKey: ['rooms', { reference: rid, type: 'l' }] });
-	queryClient.removeQueries({ queryKey: roomsQueryKeys.room(rid) });
-	queryClient.removeQueries({ queryKey: roomsQueryKeys.info(rid) });
+	await Promise.all([
+		queryClient.invalidateQueries({ queryKey: ['rooms', { reference: rid, type: 'l' }] }),
+		queryClient.invalidateQueries({ queryKey: roomsQueryKeys.room(rid) }),
+		queryClient.invalidateQueries({ queryKey: roomsQueryKeys.info(rid) }),
+	]);
 };
 
 const removeInquiry = async (inquiry: ILivechatInquiryRecord) => {
@@ -56,7 +58,7 @@ const removeInquiry = async (inquiry: ILivechatInquiryRecord) => {
 };
 
 const getInquiriesFromAPI = async () => {
-	const count = settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed') ?? 0;
+	const count = settings.peek('Livechat_guest_pool_max_number_incoming_livechats_displayed') ?? 0;
 	const { inquiries } = await sdk.rest.get('/v1/livechat/inquiries.queuedForUser', { count });
 	return inquiries;
 };
@@ -118,33 +120,38 @@ const addAgentListener = (userId: IOmnichannelAgent['_id']) => {
 };
 
 const subscribe = async (userId: IOmnichannelAgent['_id']) => {
-	const config = await callWithErrorHandling('livechat:getRoutingConfig');
-	if (config?.autoAssignAgent) {
-		return;
+	try {
+		const { config } = await sdk.rest.get('/v1/livechat/config/routing');
+		if (config?.autoAssignAgent) {
+			return;
+		}
+
+		const agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
+
+		// Register to agent-specific queue, all depts + public queue to match the inquiry list returned by backend
+		const cleanAgentListener = addAgentListener(userId);
+		const cleanDepartmentListeners = addListenerForeachDepartment(agentDepartments);
+		const globalCleanup = addGlobalListener();
+
+		const computation = Tracker.autorun(async () => {
+			const inquiriesFromAPI = await getInquiriesFromAPI();
+
+			await updateInquiries(inquiriesFromAPI);
+		});
+
+		return () => {
+			useLivechatInquiryStore.getState().discardAll();
+			removeGlobalListener();
+			cleanAgentListener?.();
+			cleanDepartmentListeners?.();
+			globalCleanup?.();
+			departments.clear();
+			computation.stop();
+		};
+	} catch (error) {
+		dispatchToastMessage({ type: 'error', message: error });
+		throw error;
 	}
-
-	const agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
-
-	// Register to agent-specific queue, all depts + public queue to match the inquiry list returned by backend
-	const cleanAgentListener = addAgentListener(userId);
-	const cleanDepartmentListeners = addListenerForeachDepartment(agentDepartments);
-	const globalCleanup = addGlobalListener();
-
-	const computation = Tracker.autorun(async () => {
-		const inquiriesFromAPI = await getInquiriesFromAPI();
-
-		await updateInquiries(inquiriesFromAPI);
-	});
-
-	return () => {
-		useLivechatInquiryStore.getState().discardAll();
-		removeGlobalListener();
-		cleanAgentListener?.();
-		cleanDepartmentListeners?.();
-		globalCleanup?.();
-		departments.clear();
-		computation.stop();
-	};
 };
 
 export const initializeLivechatInquiryStream = (() => {

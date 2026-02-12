@@ -1,40 +1,59 @@
-import { isEmptyArray } from './comparisons';
+import { isIndexable, isNumericKey, isPlainObject } from './common';
+import type { ArrayIndices, LookupBranch } from './types';
 
-const isNullDocument = (doc: unknown): doc is undefined | null => doc === undefined || doc === null;
+const buildResult = (arrayIndices: ArrayIndices | undefined, dontIterate: boolean, value: unknown): [LookupBranch] => {
+	if (arrayIndices?.length) {
+		if (dontIterate) {
+			return [{ arrayIndices, dontIterate, value }];
+		}
+		return [{ arrayIndices, value }];
+	}
+	if (dontIterate) {
+		return [{ dontIterate, value }];
+	}
+	return [{ value }];
+};
 
-const isRecordDocument = (doc: unknown): doc is Record<string, unknown> =>
-	doc !== undefined && doc !== null && (typeof doc === 'object' || typeof doc === 'function');
+export const createLookupFunction = (
+	key: string,
+	options: { forSort?: boolean } = {},
+): (<T>(doc: T, arrayIndices?: ArrayIndices) => LookupBranch[]) => {
+	const [firstPart = '', ...rest] = key.split('.');
+	const lookupRest = rest.length > 0 ? createLookupFunction(rest.join('.'), options) : undefined;
 
-const isIndexedByNumber = <T>(value: unknown, isIndexedByNumber: boolean): value is T[] => Array.isArray(value) || isIndexedByNumber;
-
-export const createLookupFunction = <T>(key: string): ((doc: T) => unknown[]) => {
-	const [first, rest] = key.split(/\.(.+)/);
-
-	if (!rest) {
-		return <T>(doc: T): unknown[] => {
-			if (isNullDocument(doc) || !isRecordDocument(doc)) {
-				return [undefined];
+	return <T>(doc: T, arrayIndices?: ArrayIndices): LookupBranch[] => {
+		if (Array.isArray(doc)) {
+			if (!(isNumericKey(firstPart) && +firstPart < doc.length)) {
+				return [];
 			}
 
-			return [doc[first]];
-		};
-	}
-
-	const lookupRest = createLookupFunction(rest);
-	const nextIsNumeric = /^\d+(\.|$)/.test(rest);
-
-	return <T>(doc: T): unknown[] => {
-		if (isNullDocument(doc) || !isRecordDocument(doc)) {
-			return [undefined];
+			arrayIndices = arrayIndices ? arrayIndices.concat(+firstPart, 'x') : [+firstPart, 'x'];
 		}
 
-		const firstLevel = doc[first];
+		const firstLevel = doc[firstPart as keyof typeof doc];
 
-		if (isEmptyArray(firstLevel)) {
-			return [undefined];
+		if (!lookupRest) {
+			return buildResult(arrayIndices, Array.isArray(doc) && Array.isArray(firstLevel), firstLevel);
 		}
 
-		const docs = isIndexedByNumber(firstLevel, nextIsNumeric) ? firstLevel : [firstLevel as T];
-		return Array.prototype.concat.apply([], docs.map(lookupRest));
+		if (!isIndexable(firstLevel)) {
+			if (Array.isArray(doc)) {
+				return [];
+			}
+
+			return buildResult(arrayIndices, false, undefined);
+		}
+
+		const result: LookupBranch[] = lookupRest(firstLevel, arrayIndices);
+
+		if (Array.isArray(firstLevel) && !(isNumericKey(rest[0]) && options.forSort)) {
+			firstLevel.forEach((branch, arrayIndex) => {
+				if (isPlainObject(branch)) {
+					result.push(...lookupRest(branch, arrayIndices ? [...arrayIndices, arrayIndex] : [arrayIndex]));
+				}
+			});
+		}
+
+		return result;
 	};
 };

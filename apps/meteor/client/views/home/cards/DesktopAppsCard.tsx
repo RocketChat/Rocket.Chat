@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import { useExternalLink } from '../../../hooks/useExternalLink';
+import { links } from '../../../lib/links';
 
-const WINDOWS_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-windows';
-const LINUX_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-linux';
-const MAC_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-mac';
+const WINDOWS_APP_URL = links.go.desktopAppWindows;
+const LINUX_APP_URL = links.go.desktopAppLinux;
+const MAC_APP_URL = links.go.desktopAppMac;
 
 const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
 	const { t } = useTranslation();
@@ -18,12 +19,17 @@ const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Reac
 			title={t('Desktop_apps')}
 			body={t('Install_rocket_chat_on_your_preferred_desktop_platform')}
 			buttons={[
-				<GenericCardButton key={1} onClick={() => handleOpenLink(WINDOWS_APP_URL)} children={t('Platform_Windows')} role='link' />,
-				<GenericCardButton key={2} onClick={() => handleOpenLink(LINUX_APP_URL)} children={t('Platform_Linux')} role='link' />,
-				<GenericCardButton key={3} onClick={() => handleOpenLink(MAC_APP_URL)} children={t('Platform_Mac')} role='link' />,
+				<GenericCardButton key={1} onClick={() => handleOpenLink(WINDOWS_APP_URL)} role='link'>
+					{t('Platform_Windows')}
+				</GenericCardButton>,
+				<GenericCardButton key={2} onClick={() => handleOpenLink(LINUX_APP_URL)} role='link'>
+					{t('Platform_Linux')}
+				</GenericCardButton>,
+				<GenericCardButton key={3} onClick={() => handleOpenLink(MAC_APP_URL)} role='link'>
+					{t('Platform_Mac')}
+				</GenericCardButton>,
 			]}
 			width='x340'
-			data-qa-id='homepage-desktop-apps-card'
 			{...props}
 		/>
 	);

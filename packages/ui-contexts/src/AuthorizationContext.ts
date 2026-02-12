@@ -21,7 +21,6 @@ export type AuthorizationContextValue = {
 	queryRole(
 		role: string | ObjectId,
 		scope?: IRoom['_id'],
-		ignoreSubscriptions?: boolean,
 	): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean];
 	getRoles(): ReadonlyMap<IRole['_id'], IRole>;
 	subscribeToRoles(callback: () => void): () => void;

@@ -30,7 +30,7 @@ addMigration({
 				installationSource: 'marketplaceInfo' in app ? 'marketplace' : 'private',
 			} as IAppStorageItem;
 
-			await appsStorage.update({
+			await appsStorage.updatePartialAndReturnDocument({
 				...updatedApp,
 				signature: await sigMan.signApp(updatedApp),
 			});

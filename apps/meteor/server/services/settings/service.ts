@@ -12,7 +12,7 @@ export class SettingsService extends ServiceClassInternal implements ISettingsSe
 		return settings.get<T>(settingId);
 	}
 
-	async started() {
+	override async started() {
 		settings.change('Site_Url', () => {
 			void verifyFingerPrint();
 		});

@@ -39,3 +39,23 @@ it('Should return the expected type', () => {
 	>;
 	true as test;
 });
+
+describe('ExtractRoutesFromAPI', () => {
+	it('Should extract correct function signature when query is not present', () => {
+		type APIWithNeverQuery = APIClass<
+			'/v1',
+			{
+				method: 'GET';
+				path: '/v1/endpoint.test';
+				response: {
+					200: ValidateFunction<unknown>;
+				};
+				authRequired: true;
+			}
+		>;
+		type ExpectedFunctionSignature = Expect<
+			ShallowEqual<ExtractRoutesFromAPI<APIWithNeverQuery>['/v1/endpoint.test']['GET'], () => unknown>
+		>;
+		true as ExpectedFunctionSignature;
+	});
+});

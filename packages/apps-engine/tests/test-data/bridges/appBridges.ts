@@ -7,12 +7,14 @@ import { TestsCommandBridge } from './commandBridge';
 import { TestContactBridge } from './contactBridge';
 import { TestsEmailBridge } from './emailBridge';
 import { TestsEnvironmentalVariableBridge } from './environmentalVariableBridge';
+import { TestExperimentalBridge } from './experimentalBridge';
 import { TestsHttpBridge } from './httpBridge';
 import { TestsInternalBridge } from './internalBridge';
 import { TestsInternalFederationBridge } from './internalFederationBridge';
 import { TestLivechatBridge } from './livechatBridge';
 import { TestsMessageBridge } from './messageBridge';
 import { TestsModerationBridge } from './moderationBridge';
+import { TestOutboundCommunicationBridge } from './outboundComms';
 import { TestsPersisBridge } from './persisBridge';
 import { TestsRoleBridge } from './roleBridge';
 import { TestsRoomBridge } from './roomBridge';
@@ -29,12 +31,14 @@ import type {
 	AppDetailChangesBridge,
 	ContactBridge,
 	EnvironmentalVariableBridge,
+	ExperimentalBridge,
 	HttpBridge,
 	IInternalBridge,
 	IListenerBridge,
 	LivechatBridge,
 	MessageBridge,
 	ModerationBridge,
+	OutboundMessageBridge,
 	PersistenceBridge,
 	RoleBridge,
 	RoomBridge,
@@ -102,6 +106,10 @@ export class TestsAppBridges extends AppBridges {
 
 	private readonly threadBridge: ThreadBridge;
 
+	private readonly outboundCommsBridge: TestOutboundCommunicationBridge;
+
+	private readonly experimentalBridge: TestExperimentalBridge;
+
 	constructor() {
 		super();
 		this.appDetails = new TestsAppDetailChangesBridge();
@@ -129,6 +137,8 @@ export class TestsAppBridges extends AppBridges {
 		this.threadBridge = new TestsThreadBridge();
 		this.emailBridge = new TestsEmailBridge();
 		this.contactBridge = new TestContactBridge();
+		this.outboundCommsBridge = new TestOutboundCommunicationBridge();
+		this.experimentalBridge = new TestExperimentalBridge();
 	}
 
 	public getCommandBridge(): TestsCommandBridge {
@@ -233,5 +243,13 @@ export class TestsAppBridges extends AppBridges {
 
 	public getContactBridge(): ContactBridge {
 		return this.contactBridge;
+	}
+
+	public getOutboundMessageBridge(): OutboundMessageBridge {
+		return this.outboundCommsBridge;
+	}
+
+	public getExperimentalBridge(): ExperimentalBridge {
+		return this.experimentalBridge;
 	}
 }

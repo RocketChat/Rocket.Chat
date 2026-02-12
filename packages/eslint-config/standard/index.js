@@ -7,7 +7,7 @@ module.exports = {
 	settings: {
 		'import/resolver': {
 			node: {
-				extensions: ['.js', '.ts', '.tsx'],
+				extensions: ['.js', '.ts', '.tsx', '.cts', '.mts'],
 			},
 		},
 	},
@@ -16,7 +16,7 @@ module.exports = {
 	},
 	overrides: [
 		{
-			files: ['**/*.ts', '**/*.tsx'],
+			files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
 			extends: [
 				'plugin:@typescript-eslint/recommended',
 				'plugin:@typescript-eslint/eslint-recommended',
@@ -62,6 +62,14 @@ module.exports = {
 						selector: ['function'],
 						format: ['camelCase', 'PascalCase'],
 						leadingUnderscore: 'allowSingleOrDouble',
+					},
+					{
+						selector: 'parameter',
+						format: null,
+						filter: {
+							regex: '^Story$',
+							match: true,
+						},
 					},
 					{
 						selector: 'parameter',
@@ -112,9 +120,47 @@ module.exports = {
 			settings: {
 				'import/resolver': {
 					node: {
-						extensions: ['.js', '.ts', '.tsx'],
+						extensions: ['.js', '.ts', '.tsx', '.cts', '.mts'],
 					},
+					typescript: {},
 				},
+			},
+		},
+		{
+			files: ['**/*.ts', '**/*.tsx'],
+			excludedFiles: [
+				'**/*.d.ts',
+				'**/__tests__/**',
+				'**/*.spec.ts',
+				'**/*.spec.tsx',
+				'**/*.test.ts',
+				'**/*.test.tsx',
+				'**/tests/**',
+				'**/.storybook/**',
+				'jest.config.ts',
+				'jest.config.js',
+				'jest.config.*.ts',
+				'jest.config.*.js',
+				'webpack.config.ts',
+				'webpack.config.js',
+				'vite.config.ts',
+				'vite.config.js',
+				'rollup.config.ts',
+				'rollup.config.js',
+			],
+			parserOptions: {
+				project: true,
+			},
+			rules: {
+				'@typescript-eslint/no-misused-promises': [
+					'error',
+					{
+						checksVoidReturn: {
+							arguments: false,
+						},
+					},
+				],
+				'@typescript-eslint/no-floating-promises': 'error',
 			},
 		},
 		{

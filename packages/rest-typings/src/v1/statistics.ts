@@ -1,30 +1,24 @@
 import type { IStats } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
+import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-
-type OTREnded = { rid: string };
 
 type SlashCommand = { command: string };
 
 type SettingsCounter = { settingsId: string };
 
-export type TelemetryMap = { otrStats: OTREnded; slashCommandsStats: SlashCommand; updateCounter: SettingsCounter };
+export type TelemetryMap = { slashCommandsStats: SlashCommand; updateCounter: SettingsCounter };
 
 export type TelemetryEvents = keyof TelemetryMap;
 
 type Param = {
 	eventName: TelemetryEvents;
 	timestamp?: number;
-} & (OTREnded | SlashCommand | SettingsCounter);
+} & (SlashCommand | SettingsCounter);
 
 type TelemetryPayload = {
 	params: Param[];
 };
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type StatisticsProps = { refresh?: 'true' | 'false' };
 

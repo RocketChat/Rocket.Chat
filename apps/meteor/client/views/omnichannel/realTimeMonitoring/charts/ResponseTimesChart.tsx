@@ -1,19 +1,21 @@
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { Box } from '@rocket.chat/fuselage';
-import type { OperationParams } from '@rocket.chat/rest-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type * as chartjs from 'chart.js';
 import type { TFunction } from 'i18next';
-import type { MutableRefObject, ComponentPropsWithoutRef } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Chart from './Chart';
 import { getMomentChartLabelsAndData } from './getMomentChartLabelsAndData';
 import { getMomentCurrentLabel } from './getMomentCurrentLabel';
+import { useChartContext } from './useChartContext';
 import { useUpdateChartData } from './useUpdateChartData';
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
 const [labels, initialData] = getMomentChartLabelsAndData();
 const tooltipCallbacks = {
@@ -40,58 +42,59 @@ const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'line'> | undefi
 	);
 
 type ResponseTimesChartProps = {
-	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/timings'>;
-	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
+	departmentId: ILivechatDepartment['_id'];
+	dateRange: { start: string; end: string };
 } & Omit<ComponentPropsWithoutRef<typeof Box>, 'data'>;
 
-const ResponseTimesChart = ({ params, reloadRef, ...props }: ResponseTimesChartProps) => {
+const ResponseTimesChart = ({ departmentId, dateRange, ...props }: ResponseTimesChartProps) => {
 	const { t } = useTranslation();
 
 	const canvas = useRef<HTMLCanvasElement | null>(null);
-	const context = useRef<chartjs.Chart<'line'>>();
+
+	const getTimings = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts/timings');
+	const {
+		isSuccess,
+		data: { reaction: { avg: reactionAvg, longest: reactionLongest }, response: { avg: responseAvg, longest: responseLongest } } = {
+			reaction: {
+				avg: 0,
+				longest: 0,
+			},
+			response: {
+				avg: 0,
+				longest: 0,
+			},
+		},
+	} = useQuery({
+		queryKey: omnichannelQueryKeys.analytics.timings(departmentId, dateRange),
+		queryFn: () => getTimings({ departmentId, ...dateRange }),
+		gcTime: 0,
+	});
+
+	const context = useChartContext({
+		canvas,
+		init,
+		t,
+	});
 
 	const updateChartData = useUpdateChartData({
 		context,
 		canvas,
-		t,
 		init,
+		t,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/charts/timings', { params });
-
-	reloadRef.current.responseTimesChart = reload;
-
-	const {
-		reaction: { avg: reactionAvg, longest: reactionLongest },
-		response: { avg: responseAvg, longest: responseLongest },
-	} = data ?? {
-		reaction: {
-			avg: 0,
-			longest: 0,
-		},
-		response: {
-			avg: 0,
-			longest: 0,
-		},
-	};
-
 	useEffect(() => {
-		const initChart = async () => {
-			if (!canvas.current) {
-				return;
-			}
-
-			context.current = await init(canvas.current, context.current, t);
-		};
-		initChart();
-	}, [t]);
-
-	useEffect(() => {
-		if (state === AsyncStatePhase.RESOLVED) {
-			const label = getMomentCurrentLabel();
-			updateChartData(label, [reactionAvg, reactionLongest, responseAvg, responseLongest]);
+		if (!context) {
+			return;
 		}
-	}, [reactionAvg, reactionLongest, responseAvg, responseLongest, state, t, updateChartData]);
+
+		if (!isSuccess) {
+			return;
+		}
+
+		const label = getMomentCurrentLabel();
+		updateChartData(label, [reactionAvg, reactionLongest, responseAvg, responseLongest]);
+	}, [context, reactionAvg, reactionLongest, responseAvg, responseLongest, isSuccess, t, updateChartData]);
 
 	return <Chart canvasRef={canvas} {...props} />;
 };

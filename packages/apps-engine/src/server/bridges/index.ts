@@ -7,6 +7,7 @@ import { CommandBridge } from './CommandBridge';
 import { ContactBridge } from './ContactBridge';
 import { EmailBridge } from './EmailBridge';
 import { EnvironmentalVariableBridge } from './EnvironmentalVariableBridge';
+import { ExperimentalBridge } from './ExperimentalBridge';
 import { HttpBridge, IHttpBridgeRequestInfo } from './HttpBridge';
 import { IInternalBridge } from './IInternalBridge';
 import { IInternalFederationBridge } from './IInternalFederationBridge';
@@ -14,6 +15,7 @@ import { IListenerBridge } from './IListenerBridge';
 import { LivechatBridge } from './LivechatBridge';
 import { MessageBridge } from './MessageBridge';
 import { ModerationBridge } from './ModerationBridge';
+import { OutboundMessageBridge } from './OutboundMessagesBridge';
 import { PersistenceBridge } from './PersistenceBridge';
 import { RoleBridge } from './RoleBridge';
 import { RoomBridge } from './RoomBridge';
@@ -44,6 +46,7 @@ export {
 	UserBridge,
 	UploadBridge,
 	EmailBridge,
+	ExperimentalBridge,
 	UiInteractionBridge,
 	SchedulerBridge,
 	AppBridges,
@@ -51,4 +54,5 @@ export {
 	IInternalFederationBridge,
 	ModerationBridge,
 	RoleBridge,
+	OutboundMessageBridge,
 };

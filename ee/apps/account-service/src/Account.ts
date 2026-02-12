@@ -44,7 +44,7 @@ export class Account extends ServiceClass implements IAccount {
 		return removeSession(userId, token);
 	}
 
-	async started(): Promise<void> {
+	override async started(): Promise<void> {
 		const expiry = await Settings.findOne({ _id: 'Accounts_LoginExpiration' }, { projection: { value: 1 } });
 
 		this.loginExpiration = getLoginExpirationInDays(expiry?.value as number);

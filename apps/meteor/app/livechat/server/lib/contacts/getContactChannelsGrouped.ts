@@ -2,7 +2,7 @@ import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/cor
 import { LivechatContacts } from '@rocket.chat/models';
 
 export async function getContactChannelsGrouped(contactId: string): Promise<ILivechatContactChannel[]> {
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, 'channels'>>(contactId, { projection: { channels: 1 } });
+	const contact = await LivechatContacts.findOneEnabledById<Pick<ILivechatContact, 'channels'>>(contactId, { projection: { channels: 1 } });
 
 	if (!contact?.channels) {
 		return [];

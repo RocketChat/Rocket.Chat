@@ -1,4 +1,4 @@
-import type { PDFMessage } from '..';
+import type { PDFMessage } from '../../../types/ChatTranscriptData';
 
 const MAX_MD_ELEMENTS_PER_VIEW = 10;
 const MAX_MSG_SIZE = 1200;

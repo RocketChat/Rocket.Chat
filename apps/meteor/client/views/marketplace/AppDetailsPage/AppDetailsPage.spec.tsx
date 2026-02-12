@@ -21,8 +21,8 @@ jest.mock('@rocket.chat/ui-contexts', () => {
 	};
 });
 
-jest.mock('../../../components/Page', () => {
-	const originalModule = jest.requireActual('../../../components/Page');
+jest.mock('@rocket.chat/ui-client', () => {
+	const originalModule = jest.requireActual('@rocket.chat/ui-client');
 	return {
 		...originalModule,
 		PageHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
@@ -62,7 +62,6 @@ describe('AppDetailsPage', () => {
 	it('should not display the Save button initially', async () => {
 		render(<AppDetailsPage id='app123' />, {
 			wrapper: wrapper.build(),
-			legacyRoot: true,
 		});
 
 		await waitFor(() => {
@@ -73,7 +72,6 @@ describe('AppDetailsPage', () => {
 	it('should display the Save button when a setting is changed', async () => {
 		render(<AppDetailsPage id='app123' />, {
 			wrapper: wrapper.build(),
-			legacyRoot: true,
 		});
 
 		const settingInput = screen.getByLabelText('setting1');
@@ -90,7 +88,6 @@ describe('AppDetailsPage', () => {
 
 		render(<AppDetailsPage id='app123' />, {
 			wrapper: wrapper.build(),
-			legacyRoot: true,
 		});
 
 		const settingInput = screen.getByLabelText('setting1');
@@ -111,7 +108,6 @@ describe('AppDetailsPage', () => {
 
 		render(<AppDetailsPage id='app123' />, {
 			wrapper: wrapper.build(),
-			legacyRoot: true,
 		});
 
 		const settingInput = screen.getByLabelText('setting1');
@@ -131,7 +127,6 @@ describe('AppDetailsPage', () => {
 
 		render(<AppDetailsPage id='app123' />, {
 			wrapper: wrapper.build(),
-			legacyRoot: true,
 		});
 
 		const settingInput = screen.getByLabelText('setting1');

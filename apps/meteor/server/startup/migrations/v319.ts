@@ -1,9 +1,15 @@
-import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
+import { LivechatRooms } from '@rocket.chat/models';
+
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 319,
+	name: 'Remove "pdfTranscriptRequested" index from LivechatRooms collection',
 	async up() {
-		await upsertPermissions();
+		try {
+			await LivechatRooms.col.dropIndex('pdfTranscriptRequested_1');
+		} catch {
+			console.error('Error dropping index');
+		}
 	},
 });

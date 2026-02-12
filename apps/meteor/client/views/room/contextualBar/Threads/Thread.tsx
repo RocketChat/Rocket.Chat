@@ -1,14 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Modal, Skeleton } from '@rocket.chat/fuselage';
+import { Box, ModalBackdrop, Skeleton } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useLayoutContextualBarExpanded, useToastMessageDispatch, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-
-import ThreadChat from './components/ThreadChat';
-import ThreadSkeleton from './components/ThreadSkeleton';
-import ThreadTitle from './components/ThreadTitle';
-import { useThreadMainMessageQuery } from './hooks/useThreadMainMessageQuery';
-import { useToggleFollowingThreadMutation } from './hooks/useToggleFollowingThreadMutation';
 import {
 	Contextualbar,
 	ContextualbarHeader,
@@ -18,8 +11,20 @@ import {
 	ContextualbarBack,
 	ContextualbarInnerContent,
 	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
+} from '@rocket.chat/ui-client';
+import {
+	useLayoutContextualBarExpanded,
+	useToastMessageDispatch,
+	useTranslation,
+	useUserId,
+	useRoomToolbox,
+} from '@rocket.chat/ui-contexts';
+
+import ThreadChat from './components/ThreadChat';
+import ThreadSkeleton from './components/ThreadSkeleton';
+import ThreadTitle from './components/ThreadTitle';
+import { useThreadMainMessageQuery } from './hooks/useThreadMainMessageQuery';
+import { useToggleFollowingThreadMutation } from './hooks/useToggleFollowingThreadMutation';
 import { useGoToThreadList } from '../../hooks/useGoToThreadList';
 import ChatProvider from '../../providers/ChatProvider';
 
@@ -80,7 +85,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 	return (
 		<ContextualbarDialog>
 			<ContextualbarInnerContent>
-				{canExpand && expanded && <Modal.Backdrop onClick={handleBackdropClick} />}
+				{canExpand && expanded && <ModalBackdrop onClick={handleBackdropClick} />}
 				<Box flexGrow={1} position={expanded ? 'static' : 'relative'}>
 					<Contextualbar
 						rcx-thread-view
@@ -103,7 +108,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 						insetBlock={0}
 						border='none'
 					>
-						<ContextualbarHeader expanded={expanded}>
+						<ContextualbarHeader>
 							<ContextualbarBack onClick={handleGoBack} />
 							{(mainMessageQueryResult.isLoading && <Skeleton width='100%' />) ||
 								(mainMessageQueryResult.isSuccess && <ThreadTitle mainMessage={mainMessageQueryResult.data} />) ||

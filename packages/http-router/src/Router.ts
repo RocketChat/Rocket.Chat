@@ -1,13 +1,16 @@
+import { Logger } from '@rocket.chat/logger';
 import type { Method } from '@rocket.chat/rest-typings';
 import type { AnySchema } from 'ajv';
 import express from 'express';
 import type { Context, HonoRequest, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
 import type { StatusCode } from 'hono/utils/http-status';
-import qs from 'qs'; // Using qs specifically to keep express compatibility
 
 import type { ResponseSchema, TypedOptions } from './definition';
 import { honoAdapterForExpress } from './middlewares/honoAdapterForExpress';
+import { parseQueryParams } from './parseQueryParams';
+
+const logger = new Logger('HttpRouter');
 
 type MiddlewareHandlerListAndActionHandler<TOptions extends TypedOptions, TContext = (c: Context) => Promise<ResponseSchema<TOptions>>> = [
 	...MiddlewareHandler[],
@@ -18,6 +21,24 @@ function splitArray<T, U>(arr: [...T[], U]): [T[], U] {
 	const last = arr[arr.length - 1];
 	const rest = arr.slice(0, -1) as T[];
 	return [rest, last as U];
+}
+
+function coerceDatesToStrings(obj: unknown): unknown {
+	if (Array.isArray(obj)) {
+		return obj.map(coerceDatesToStrings);
+	}
+	if (obj && typeof obj === 'object') {
+		const newObj: Record<string, unknown> = {};
+		for (const [key, value] of Object.entries(obj)) {
+			if (value instanceof Date) {
+				newObj[key] = value.toISOString();
+			} else {
+				newObj[key] = coerceDatesToStrings(value);
+			}
+		}
+		return newObj;
+	}
+	return obj;
 }
 
 export type Route = {
@@ -57,6 +78,14 @@ export abstract class AbstractRouter<TActionCallback = (c: Context) => Promise<R
 	protected abstract convertActionToHandler(action: TActionCallback): (c: Context) => Promise<ResponseSchema<TypedOptions>>;
 }
 
+type InnerRouter = Hono<{
+	Variables: {
+		remoteAddress: string;
+		bodyParams: Record<string, unknown>;
+		queryParams: Record<string, unknown>;
+	};
+}>;
+
 export class Router<
 	TBasePath extends string,
 	TOperations extends {
@@ -64,11 +93,7 @@ export class Router<
 	} = NonNullable<unknown>,
 	TActionCallback = (c: Context) => Promise<ResponseSchema<TypedOptions>>,
 > extends AbstractRouter<TActionCallback> {
-	protected innerRouter: Hono<{
-		Variables: {
-			remoteAddress: string;
-		};
-	}>;
+	protected innerRouter: InnerRouter;
 
 	constructor(readonly base: TBasePath) {
 		super();
@@ -129,39 +154,28 @@ export class Router<
 		};
 	}
 
-	protected async parseBodyParams<T extends Record<string, any>>({ request }: { request: HonoRequest; extra?: T }) {
+	protected async parseBodyParams({ request }: { request: HonoRequest }): Promise<NonNullable<unknown>> {
 		try {
-			let parsedBody = {};
-			const contentType = request.header('content-type');
+			const contentType = request.header('content-type') || '';
 
-			if (contentType?.includes('application/json')) {
-				parsedBody = await request.raw.clone().json();
-			} else if (contentType?.includes('multipart/form-data')) {
-				parsedBody = await request.raw.clone().formData();
-			} else if (contentType?.includes('application/x-www-form-urlencoded')) {
+			if (contentType.includes('application/json')) {
+				return await request.raw.clone().json();
+			}
+
+			if (contentType.includes('application/x-www-form-urlencoded')) {
 				const req = await request.raw.clone().formData();
-				parsedBody = Object.fromEntries(req.entries());
-			} else {
-				parsedBody = await request.raw.clone().text();
-			}
-			// This is necessary to keep the compatibility with the previous version, otherwise the bodyParams will be an empty string when no content-type is sent
-			if (parsedBody === '') {
-				return {};
+				return Object.fromEntries(req.entries());
 			}
 
-			if (Array.isArray(parsedBody)) {
-				return parsedBody;
-			}
-
-			return { ...parsedBody };
-			// eslint-disable-next-line no-empty
-		} catch {}
-
-		return {};
+			return {};
+		} catch {
+			// No problem if there is error, just means the endpoint is going to have to parse the body itself if necessary
+			return {};
+		}
 	}
 
 	protected parseQueryParams(request: HonoRequest) {
-		return qs.parse(request.raw.url.split('?')?.[1] || '');
+		return parseQueryParams(request.raw.url.split('?')?.[1] || '');
 	}
 
 	protected method<TSubPathPattern extends string, TOptions extends TypedOptions>(
@@ -176,11 +190,27 @@ export class Router<
 		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
 			const { req, res } = c;
 
-			const queryParams = this.parseQueryParams(req);
+			let queryParams: Record<string, any>;
+			try {
+				queryParams = this.parseQueryParams(req);
+				c.set('queryParams', queryParams);
+			} catch (e) {
+				logger.warn({ msg: 'Error parsing query params for request', path: req.path, err: e });
+
+				return c.json({ success: false, error: 'Invalid query parameters' }, 400);
+			}
 
 			if (options.query) {
 				const validatorFn = options.query;
 				if (typeof options.query === 'function' && !validatorFn(queryParams)) {
+					logger.warn({
+						msg: 'Query parameters validation failed - route spec does not match request payload',
+						method: req.method,
+						path: req.url,
+						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						bodyParams: undefined,
+						queryParams,
+					});
 					return c.json(
 						{
 							success: false,
@@ -193,14 +223,23 @@ export class Router<
 			}
 
 			const bodyParams = await this.parseBodyParams({ request: req });
+			c.set('bodyParams', bodyParams);
 
 			if (options.body) {
 				const validatorFn = options.body;
 				if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || bodyParams)) {
+					logger.warn({
+						msg: 'Request body validation failed - route spec does not match request payload',
+						method: req.method,
+						path: req.url,
+						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						bodyParams,
+						queryParams: undefined,
+					});
 					return c.json(
 						{
 							success: false,
-							errorType: 'error-invalid-params',
+							errorType: 'invalid-params',
 							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
 						},
 						400,
@@ -221,12 +260,31 @@ export class Router<
 				if (!responseValidatorFn && options.typed) {
 					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
 				}
-				if (responseValidatorFn && !responseValidatorFn(body)) {
+				if (responseValidatorFn && !responseValidatorFn(coerceDatesToStrings(body))) {
+					logger.warn({
+						msg: 'Response validation failed - response does not match route spec',
+						method: req.method,
+						path: req.url,
+						error: responseValidatorFn.errors?.map((error: any) => error.message).join('\n '),
+						originalResponse: body,
+					});
 					return c.json(
 						{
 							success: false,
 							errorType: 'error-invalid-body',
-							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => error.message).join('\n ')}`,
+							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors
+								?.map(
+									(error: any) =>
+										`${error.message} (${[
+											error.instancePath,
+											Object.entries(error.params)
+												.map(([key, value]) => `${key}: ${value}`)
+												.join(', '),
+										]
+											.filter(Boolean)
+											.join(' - ')})`,
+								)
+								.join('\n')}`,
 						},
 						400,
 					);
@@ -370,6 +428,10 @@ export class Router<
 			),
 		);
 		return router;
+	}
+
+	getHonoRouter(): InnerRouter {
+		return this.innerRouter;
 	}
 }
 

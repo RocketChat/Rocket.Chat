@@ -9,7 +9,7 @@ export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 		super(db, 'statistics');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { createdAt: -1 } }];
 	}
 

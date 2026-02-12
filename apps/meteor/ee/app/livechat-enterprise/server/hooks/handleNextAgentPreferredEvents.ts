@@ -6,7 +6,7 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 import { migrateVisitorIfMissingContact } from '../../../../../app/livechat/server/lib/contacts/migrateVisitorIfMissingContact';
 import { checkDefaultAgentOnNewRoom } from '../../../../../app/livechat/server/lib/hooks';
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 
 const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null): SelectedAgent | undefined => {
 	if (!agent) {
@@ -95,7 +95,7 @@ checkDefaultAgentOnNewRoom.patch(async (_next, defaultAgent, { visitorId, source
 	}
 
 	const contactId = await migrateVisitorIfMissingContact(visitorId, source);
-	const contact = contactId ? await LivechatContacts.findOneById(contactId, { projection: { contactManager: 1 } }) : undefined;
+	const contact = contactId ? await LivechatContacts.findOneEnabledById(contactId, { projection: { contactManager: 1 } }) : undefined;
 
 	const contactManagerPreferred = settings.get<boolean>('Omnichannel_contact_manager_routing');
 	const guestManager = contactManagerPreferred && (await getDefaultAgent({ id: contact?.contactManager }));

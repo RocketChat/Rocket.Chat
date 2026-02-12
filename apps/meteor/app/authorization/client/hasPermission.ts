@@ -1,55 +1,35 @@
-import type { IUser, IRole, IPermission } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
+import type { IUser, IPermission } from '@rocket.chat/core-typings';
 
-import * as Models from '../../models/client';
+import { hasRole } from './hasRole';
+import { PermissionsCachedStore } from '../../../client/cachedStores';
+import { watchUserId } from '../../../client/meteor/user';
+import { watch } from '../../../client/meteor/watch';
+import { Permissions, Users } from '../../../client/stores';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
-
-const isValidScope = (scope: unknown): scope is keyof typeof Models => typeof scope === 'string' && scope in Models;
-
-const hasIsUserInRole = (
-	model: unknown,
-): model is {
-	isUserInRole: (this: any, uid: IUser['_id'], roleId: IRole['_id'], scope: string | undefined) => boolean;
-} => typeof model === 'object' && model !== null && typeof (model as { isUserInRole?: unknown }).isUserInRole === 'function';
 
 const createPermissionValidator =
 	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
 	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id'], scopedRoles?: IPermission['_id'][]): boolean => {
-		const user = Models.Users.findOne({ _id: userId }, { fields: { roles: 1 } });
+		const userRoles = watch(Users.use, (state) => state.get(userId)?.roles);
 
 		const checkEachPermission = quantifier.bind(permissionIds);
 
 		return checkEachPermission((permissionId) => {
-			if (user?.roles) {
-				if (AuthorizationUtils.isPermissionRestrictedForRoleList(permissionId, user.roles)) {
+			if (userRoles) {
+				if (AuthorizationUtils.isPermissionRestrictedForRoleList(permissionId, userRoles)) {
 					return false;
 				}
 			}
 
-			const permission = Models.Permissions.findOne(permissionId, {
-				fields: { roles: 1 },
-			});
+			const permission = watch(Permissions.use, (state) => state.get(permissionId));
 			const roles = permission?.roles ?? [];
 
 			return roles.some((roleId) => {
-				const role = Models.Roles.findOne(roleId, { fields: { scope: 1 } });
-				const roleScope = role?.scope;
-
-				if (!isValidScope(roleScope)) {
-					return false;
-				}
-
-				const model = Models[roleScope];
-
 				if (scopedRoles?.includes(roleId)) {
 					return true;
 				}
 
-				if (hasIsUserInRole(model)) {
-					return model.isUserInRole(userId, roleId, scope);
-				}
-
-				return undefined;
+				return hasRole(userId, roleId, scope);
 			});
 		});
 	};
@@ -67,16 +47,16 @@ const validatePermissions = (
 		userId: IUser['_id'],
 		scopedRoles?: IPermission['_id'][],
 	) => boolean,
-	userId?: IUser['_id'] | null,
+	userId?: IUser['_id'],
 	scopedRoles?: IPermission['_id'][],
 ): boolean => {
-	userId = userId ?? Meteor.userId();
+	userId = userId ?? watchUserId() ?? undefined;
 
 	if (!userId) {
 		return false;
 	}
 
-	if (!Models.AuthzCachedCollection.ready.get()) {
+	if (!watch(PermissionsCachedStore.useReady, (state) => state)) {
 		return false;
 	}
 
@@ -95,7 +75,7 @@ export const hasAtLeastOnePermission = (permissions: IPermission['_id'] | IPermi
 export const userHasAllPermission = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
 	scope?: string,
-	userId?: IUser['_id'] | null,
+	userId?: IUser['_id'],
 ): boolean => validatePermissions(permissions, scope, all, userId);
 
 export const hasPermission = hasAllPermission;

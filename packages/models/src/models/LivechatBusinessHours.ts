@@ -72,7 +72,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> imp
 		).toArray();
 	}
 
-	async insertOne(data: Omit<ILivechatBusinessHour, '_id'>): Promise<any> {
+	override async insertOne(data: Omit<ILivechatBusinessHour, '_id'>): Promise<any> {
 		return super.insertOne({
 			...data,
 			ts: new Date(),

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`renders Default without crashing 1`] = `
 <body>
@@ -10,7 +10,7 @@ exports[`renders Default without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -40,12 +40,12 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Timestamp
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 March 20 2025, 5:17:46 PM
               </div>
@@ -54,7 +54,7 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Actor
               </div>
@@ -82,12 +82,12 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Setting
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 Show_message_in_email_notification
               </div>
@@ -96,12 +96,12 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Changed_from
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 false
               </div>
@@ -110,12 +110,12 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Changed_to
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 true
               </div>
@@ -146,7 +146,7 @@ exports[`renders app without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -176,12 +176,12 @@ exports[`renders app without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Timestamp
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 March 20 2025, 5:17:46 PM
               </div>
@@ -190,12 +190,12 @@ exports[`renders app without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Actor
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 App
               </div>
@@ -204,7 +204,7 @@ exports[`renders app without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 App_id
               </div>
@@ -212,7 +212,7 @@ exports[`renders app without crashing 1`] = `
                 class="rcx-skeleton rcx-skeleton--text"
               />
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 app-id
               </div>
@@ -221,12 +221,12 @@ exports[`renders app without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Setting
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 Show_message_in_email_notification
               </div>
@@ -235,12 +235,12 @@ exports[`renders app without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Changed_from
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 false
               </div>
@@ -249,12 +249,12 @@ exports[`renders app without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Changed_to
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 true
               </div>
@@ -285,7 +285,7 @@ exports[`renders system without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -315,12 +315,12 @@ exports[`renders system without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Timestamp
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 March 20 2025, 5:17:46 PM
               </div>
@@ -329,12 +329,12 @@ exports[`renders system without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Actor
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 System
               </div>
@@ -343,12 +343,12 @@ exports[`renders system without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Reason
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 update
               </div>
@@ -357,12 +357,12 @@ exports[`renders system without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Setting
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 Show_message_in_email_notification
               </div>
@@ -371,12 +371,12 @@ exports[`renders system without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Changed_from
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 false
               </div>
@@ -385,12 +385,12 @@ exports[`renders system without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
+                class="rcx-box rcx-box--full rcx-css-p0ao07"
               >
                 Changed_to
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-ld0nzd"
               >
                 true
               </div>
