@@ -130,7 +130,7 @@ services:
       - nats
 
   mongo:
-    image: mongodb/mongodb-community-server:8.2-ubi8
+    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.0}-ubi8
     restart: on-failure
     ports:
       - 27017:27017
