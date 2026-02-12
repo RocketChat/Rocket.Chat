@@ -381,7 +381,7 @@ const MessageBox = ({
 	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
-	const shouldDisableDueUploads = !hasUploads || isUploading;
+	const canSendUploads = hasUploads && !isUploading;
 
 	return (
 		<>
@@ -483,10 +483,10 @@ const MessageBox = ({
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
-									disabled={!canSend || (!typing && !isEditing && shouldDisableDueUploads)}
+									disabled={!canSend || (!typing && !isEditing && !canSendUploads)}
 									onClick={handleSendMessage}
-									secondary={typing || isEditing || !shouldDisableDueUploads}
-									info={typing || isEditing || !shouldDisableDueUploads}
+									secondary={typing || isEditing || canSendUploads}
+									info={typing || isEditing || canSendUploads}
 								/>
 							</>
 						)}
