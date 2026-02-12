@@ -44,6 +44,7 @@ const MessageComposerFileComponent = ({
 			className={previewWrapperStyle}
 			display='flex'
 			flexShrink={0}
+			flexGrow={0}
 			padding={4}
 			borderRadius={4}
 			borderWidth={1}
