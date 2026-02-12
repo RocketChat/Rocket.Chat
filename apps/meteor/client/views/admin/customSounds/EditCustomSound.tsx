@@ -6,7 +6,7 @@ import EditSound from './EditSound';
 import { FormSkeleton } from '../../../components/Skeleton';
 
 type EditCustomSoundProps = {
-	_id: string;
+	_id: string | undefined;
 	onChange?: () => void;
 	close: () => void;
 };
@@ -16,9 +16,8 @@ function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProp
 
 	const { data, isPending } = useQuery({
 		queryKey: ['custom-sound', _id],
-		queryFn: async () => {
-			return getSound({ _id });
-		},
+		queryFn: () => getSound({ _id: _id! }),
+		enabled: !!_id,
 		meta: { apiErrorToastMessage: true },
 	});
 
