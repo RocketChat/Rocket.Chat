@@ -168,7 +168,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			try {
 				const { intentData } = await createRegistrationIntent({ resend, email });
 				invalidateLicenseQuery(100);
-				queryClient.invalidateQueries({ queryKey: ['getRegistrationStatus'] });
+				void queryClient.invalidateQueries({ queryKey: ['getRegistrationStatus'] });
 
 				setSetupWizardData((prevState) => ({
 					...prevState,
@@ -176,7 +176,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 				}));
 
 				goToStep(4);
-				setShowSetupWizard('in_progress');
+				void setShowSetupWizard('in_progress');
 			} catch (e) {
 				dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
 			}
