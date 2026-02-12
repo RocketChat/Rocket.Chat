@@ -1,4 +1,5 @@
 import '../lib/rooms/roomTypes';
+import '../lib/injectPresetReactions';
 import './appRoot';
 import './audit';
 import './callbacks';

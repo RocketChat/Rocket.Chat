@@ -11,6 +11,7 @@ import { memo } from 'react';
 import { useAudioMessageAction } from './hooks/useAudioMessageAction';
 import { useCreateDiscussionAction } from './hooks/useCreateDiscussionAction';
 import { useFileUploadAction } from './hooks/useFileUploadAction';
+import { usePresetReactionsAction } from './hooks/usePresetReactionsAction';
 import { useShareLocationAction } from './hooks/useShareLocationAction';
 import { useTimestampAction } from './hooks/useTimestampAction';
 import { useVideoMessageAction } from './hooks/useVideoMessageAction';
@@ -28,6 +29,7 @@ type MessageBoxActionsToolbarProps = {
 	isRecording: boolean;
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
+	onOpenPresetReactions?: () => void;
 };
 
 const isHidden = (hiddenActions: Array<string>, action: GenericMenuItemProps) => {
@@ -45,6 +47,7 @@ const MessageBoxActionsToolbar = ({
 	tmid,
 	variant = 'large',
 	isMicrophoneDenied,
+	onOpenPresetReactions,
 }: MessageBoxActionsToolbarProps) => {
 	const t = useTranslation();
 	const chatContext = useChat();
@@ -62,6 +65,7 @@ const MessageBoxActionsToolbar = ({
 	const createDiscussionAction = useCreateDiscussionAction(room);
 	const shareLocationAction = useShareLocationAction(room, tmid);
 	const timestampAction = useTimestampAction(chatContext.composer);
+	const presetReactionsAction = usePresetReactionsAction(!canSend || typing || isRecording, onOpenPresetReactions);
 
 	const apps = useMessageboxAppsActionButtons();
 	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
@@ -73,6 +77,7 @@ const MessageBoxActionsToolbar = ({
 		...(!isHidden(hiddenActions, createDiscussionAction) && { createDiscussionAction }),
 		...(!isHidden(hiddenActions, shareLocationAction) && { shareLocationAction }),
 		...(timestampAction && !isHidden(hiddenActions, timestampAction) && { timestampAction }),
+		...(presetReactionsAction && !isHidden(hiddenActions, presetReactionsAction) && { presetReactionsAction }),
 		...(!hiddenActions.includes('webdav-add') && webdavActions && { webdavActions }),
 	};
 
@@ -85,6 +90,10 @@ const MessageBoxActionsToolbar = ({
 
 	if (allActions.timestampAction) {
 		insert.push(allActions.timestampAction);
+	}
+
+	if (allActions.presetReactionsAction) {
+		insert.push(allActions.presetReactionsAction);
 	}
 
 	if (variant === 'small') {

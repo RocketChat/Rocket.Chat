@@ -14,7 +14,7 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
+import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -44,6 +44,13 @@ import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedR
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
+import PresetReactionsModal from '../../modals/PresetReactionsModal';
+import { setPresetReactions as storePresetReactions } from '../../../../lib/chats/presetReactionsStore';
+
+type PresetReaction = {
+	emoji: string;
+	label?: string;
+};
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -114,6 +121,8 @@ const MessageBox = ({
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 	const quoteChainLimit = useSetting('Message_QuoteChainLimit', 2);
 	const [typing, setTyping] = useReducer(reducer, false);
+	const [presetReactions, setPresetReactions] = useState<PresetReaction[]>([]);
+	const [isPresetReactionsModalOpen, setIsPresetReactionsModalOpen] = useState(false);
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
@@ -156,6 +165,20 @@ const MessageBox = ({
 
 		const ref = messageComposerRef.current as HTMLElement;
 		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
+	});
+
+	const handleOpenPresetReactionsModal = useEffectEvent(() => {
+		setIsPresetReactionsModalOpen(true);
+	});
+
+	const handleClosePresetReactionsModal = useEffectEvent(() => {
+		setIsPresetReactionsModalOpen(false);
+	});
+
+	const handleConfirmPresetReactions = useEffectEvent((reactions: PresetReaction[]) => {
+		setPresetReactions(reactions);
+		storePresetReactions(room._id, reactions);
+		setIsPresetReactionsModalOpen(false);
 	});
 
 	const handleSendMessage = useEffectEvent(() => {
@@ -456,6 +479,7 @@ const MessageBox = ({
 							tmid={tmid}
 							isRecording={isRecording}
 							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
+							onOpenPresetReactions={handleOpenPresetReactionsModal}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
@@ -481,6 +505,13 @@ const MessageBox = ({
 				</MessageComposerToolbar>
 			</MessageComposer>
 			<ComposerUserActionIndicator rid={room._id} tmid={tmid} />
+			{isPresetReactionsModalOpen && (
+				<PresetReactionsModal
+					initialPresetReactions={presetReactions}
+					onConfirm={handleConfirmPresetReactions}
+					onCancel={handleClosePresetReactionsModal}
+				/>
+			)}
 		</>
 	);
 };
