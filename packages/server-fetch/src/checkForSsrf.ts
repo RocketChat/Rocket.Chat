@@ -1,7 +1,5 @@
 import { lookup } from 'dns';
 
-import { Settings } from '@rocket.chat/models';
-
 import {
 	allowlistedIpResolved,
 	isIpInAnyRange,
@@ -20,19 +18,24 @@ export const parseSsrfAllowlist = (value: string | undefined): string[] => {
 		.filter((entry) => entry.length > 0);
 };
 
-const getEffectiveAllowlist = async (): Promise<string[]> => {
-	const raw = await Settings.getValueById<string>('SSRF_Allowlist');
-	return parseSsrfAllowlist(raw)
-		.map(normalizeAllowlistEntry)
-		.filter((entry) => entry.length > 0);
-};
+function getEffectiveAllowlist(allowListRaw?: string[]): string[] {
+	if (!allowListRaw || allowListRaw.length === 0) return [];
+	return allowListRaw.map(normalizeAllowlistEntry).filter((entry) => entry.length > 0);
+}
 
-const isInAllowlist = async (hostOrIp: string, port: string | undefined): Promise<boolean> => {
+/** Normalize allowList (string or string[]) to a single effective list. Parses raw string in this single place. */
+function toEffectiveAllowlist(allowList?: string | string[]): string[] {
+	if (allowList === undefined || allowList === null) return [];
+	if (typeof allowList === 'string') return getEffectiveAllowlist(parseSsrfAllowlist(allowList));
+	return getEffectiveAllowlist(allowList);
+}
+
+function isInAllowlist(hostOrIp: string, port: string | undefined, allowlist: string[]): boolean {
+	if (allowlist.length === 0) return false;
 	const normalized = normalizeHostForAllowlistMatch(hostOrIp);
 	const withPort = port ? `${normalized}:${port}` : normalized;
-	const allowlist = await getEffectiveAllowlist();
 	return allowlist.some((entry) => entry === normalized || entry === withPort);
-};
+}
 
 export const nslookup = (hostname: string): Promise<string> => {
 	return new Promise((resolve, reject) => {
@@ -43,12 +46,24 @@ export const nslookup = (hostname: string): Promise<string> => {
 	});
 };
 
-export const checkForSsrf = async (input: string): Promise<boolean> => {
-	const result = await checkForSsrfWithIp(input);
+/**
+ * Returns whether the URL is allowed by SSRF rules.
+ * @param input - URL or host to check
+ * @param allowList - Optional raw string (newline/comma-separated) or array of allowed hosts/IPs/CIDRs. Parsed inside.
+ */
+export const checkForSsrf = async (input: string, allowList?: string | string[]): Promise<boolean> => {
+	const result = await checkForSsrfWithIp(input, allowList);
 	return result.allowed;
 };
 
-export const checkForSsrfWithIp = async (input: string): Promise<{ allowed: false } | { allowed: true; resolvedIp: string }> => {
+/**
+ * SSRF check with resolved IP for pinning. allowList is optional; string is parsed in this single place.
+ */
+export const checkForSsrfWithIp = async (
+	input: string,
+	allowList?: string | string[],
+): Promise<{ allowed: false } | { allowed: true; resolvedIp: string }> => {
+	const effectiveAllowlist = toEffectiveAllowlist(allowList);
 	let ipOrDomain: string;
 	let port: string | undefined;
 	let wasUrlParsed = false;
@@ -84,7 +99,7 @@ export const checkForSsrfWithIp = async (input: string): Promise<{ allowed: fals
 
 	if (!ipValid && !domainValid) return { allowed: false };
 
-	if (await isInAllowlist(ipOrDomain, port)) {
+	if (isInAllowlist(ipOrDomain, port, effectiveAllowlist)) {
 		if (ipValid) {
 			return { allowed: true, resolvedIp: allowlistedIpResolved(ipOrDomain, port, wasUrlParsed) };
 		}

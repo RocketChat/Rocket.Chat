@@ -48,17 +48,20 @@ const ipv6Ranges = [
 export const isIpInCidrRange = (ip: string, cidr: string): boolean => {
 	const [network, prefixStr] = cidr.split('/');
 	const ipUnwrapped = unwrapBrackets(ip);
-	if (net.isIP(ipUnwrapped) === 4) {
+	if (net.isIPv4(ipUnwrapped)) {
 		const prefix = prefixStr ? parseInt(prefixStr, 10) : 32;
-		if (!network || net.isIP(network) !== 4) return false;
+		if (!network || !net.isIPv4(network)) {
+			return false;
+		}
+
 		const toNum = (ipString: string) =>
 			ipString.split('.').reduce((accumulated, octet) => (accumulated << 8) + parseInt(octet, 10), 0) >>> 0;
 		const mask = prefix === 0 ? 0 : (0xffffffff << (32 - prefix)) >>> 0;
 		return (toNum(ipUnwrapped) & mask) === (toNum(network) & mask);
 	}
-	if (net.isIP(ipUnwrapped) === 6) {
+	if (net.isIPv6(ipUnwrapped)) {
 		const prefix = prefixStr ? parseInt(prefixStr, 10) : 128;
-		if (!network || net.isIP(unwrapBrackets(network)) !== 6) return false;
+		if (!network || !net.isIPv6(unwrapBrackets(network))) return false;
 		const toBigInt = (address: string): bigint => {
 			const parts = unwrapBrackets(address).split(':');
 			const nonEmptyParts = parts.filter((part) => part.length > 0);
@@ -72,7 +75,7 @@ export const isIpInCidrRange = (ip: string, cidr: string): boolean => {
 						filled = true;
 					}
 				} else if (part.includes('.')) {
-					if (net.isIP(part) !== 4) return 0n;
+					if (!net.isIPv4(part)) return 0n;
 					const num = part.split('.').reduce((accumulated, octet) => (accumulated << 8) + parseInt(octet, 10), 0) >>> 0;
 					groups.push((num >>> 16).toString(16), (num & 0xffff).toString(16));
 				} else {
@@ -97,13 +100,17 @@ export const normalizeAllowlistEntry = (entry: string): string => {
 	if (!trimmed) return '';
 	if (isValidDomain(trimmed)) return trimmed.toLowerCase();
 	if (trimmed.startsWith('[')) return trimmed;
-	if (trimmed.includes(':') && net.isIP(trimmed) === 6) return `[${trimmed}]`;
+	if (trimmed.includes(':') && net.isIPv6(trimmed)) return `[${trimmed}]`;
 	return trimmed.toLowerCase();
 };
 
 export const normalizeHostForAllowlistMatch = (hostOrIp: string): string => {
-	if (hostOrIp.startsWith('[')) return hostOrIp;
-	if (hostOrIp.includes(':') && net.isIP(hostOrIp) === 6) return `[${hostOrIp}]`;
+	if (hostOrIp.startsWith('[')) {
+		return hostOrIp;
+	}
+	if (hostOrIp.includes(':') && net.isIPv6(hostOrIp)) {
+		return `[${hostOrIp}]`;
+	}
 	return hostOrIp.toLowerCase();
 };
 

@@ -103,7 +103,9 @@ export async function setUserAvatar(
 			let response: Response;
 
 			try {
-				response = await fetch(dataURI);
+				response = await fetch(dataURI, {
+					allowList: settings.get<string>('SSRF_Allowlist'),
+				});
 			} catch (e) {
 				SystemLogger.info({
 					msg: 'Not a valid response from the avatar url',

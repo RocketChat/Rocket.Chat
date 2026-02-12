@@ -1,5 +1,3 @@
-import { Settings } from '@rocket.chat/models';
-
 import * as ssrfModule from '../src/checkForSsrf';
 import {
 	allowlistedIpResolved,
@@ -13,20 +11,11 @@ import {
 	unwrapBrackets,
 } from '../src/checkForSsrfHelpers';
 
-jest.mock('@rocket.chat/models', () => ({
-	Settings: {
-		getValueById: jest.fn().mockResolvedValue(undefined),
-	},
-}));
-
-const mockGetValueById = Settings.getValueById as jest.MockedFunction<typeof Settings.getValueById>;
-
 describe('checkForSsrf', () => {
 	let nslookupSpy: jest.SpyInstance;
 
 	afterEach(() => {
 		nslookupSpy?.mockRestore();
-		mockGetValueById.mockResolvedValue(undefined);
 	});
 
 	it('returns false if URL does not start with http:// or https://', async () => {
@@ -110,45 +99,46 @@ describe('checkForSsrf', () => {
 		});
 	});
 
-	describe('allowlist (Settings.getValueById)', () => {
-		it('allows allowlisted private IPv4 when setting returns it', async () => {
-			mockGetValueById.mockResolvedValue('127.0.0.1');
-			expect(await ssrfModule.checkForSsrf('http://127.0.0.1')).toBe(true);
+	describe('allowlist (options.allowList per call)', () => {
+		it('allows allowlisted private IPv4 when allowList contains it', async () => {
+			expect(await ssrfModule.checkForSsrf('http://127.0.0.1', ['127.0.0.1'])).toBe(true);
 		});
 
 		it('allows allowlisted private IPv4 with port', async () => {
-			mockGetValueById.mockResolvedValue('192.168.1.1:8080');
-			expect(await ssrfModule.checkForSsrf('http://192.168.1.1:8080')).toBe(true);
+			expect(await ssrfModule.checkForSsrf('http://192.168.1.1:8080', ['192.168.1.1:8080'])).toBe(true);
 		});
 
 		it('allows allowlisted private IPv6', async () => {
-			mockGetValueById.mockResolvedValue('[::1]');
-			expect(await ssrfModule.checkForSsrf('http://[::1]')).toBe(true);
+			expect(await ssrfModule.checkForSsrf('http://[::1]', ['[::1]'])).toBe(true);
 		});
 
 		it('allows allowlisted domain that resolves to private IP', async () => {
 			nslookupSpy = jest.spyOn(ssrfModule, 'nslookup').mockResolvedValue('10.0.0.1');
-			mockGetValueById.mockResolvedValue('internal.corp');
-			expect(await ssrfModule.checkForSsrf('http://internal.corp')).toBe(true);
+			expect(await ssrfModule.checkForSsrf('http://internal.corp', ['internal.corp'])).toBe(true);
 		});
 
-		it('denies when setting returns empty', async () => {
-			mockGetValueById.mockResolvedValue('127.0.0.1');
-			expect(await ssrfModule.checkForSsrf('http://127.0.0.1')).toBe(true);
-			mockGetValueById.mockResolvedValue('');
+		it('denies when allowList is empty or not provided', async () => {
+			expect(await ssrfModule.checkForSsrf('http://127.0.0.1', ['127.0.0.1'])).toBe(true);
+			expect(await ssrfModule.checkForSsrf('http://127.0.0.1', [])).toBe(false);
 			expect(await ssrfModule.checkForSsrf('http://127.0.0.1')).toBe(false);
 		});
 
-		it('parses newline- and comma-separated entries from setting', async () => {
-			mockGetValueById.mockResolvedValue('127.0.0.1\n192.168.1.1, 10.0.0.1');
-			expect(await ssrfModule.checkForSsrf('http://127.0.0.1')).toBe(true);
-			expect(await ssrfModule.checkForSsrf('http://192.168.1.1')).toBe(true);
-			expect(await ssrfModule.checkForSsrf('http://10.0.0.1')).toBe(true);
+		it('accepts multiple allowlist entries per call', async () => {
+			const allowList = ['127.0.0.1', '192.168.1.1', '10.0.0.1'];
+			expect(await ssrfModule.checkForSsrf('http://127.0.0.1', allowList)).toBe(true);
+			expect(await ssrfModule.checkForSsrf('http://192.168.1.1', allowList)).toBe(true);
+			expect(await ssrfModule.checkForSsrf('http://10.0.0.1', allowList)).toBe(true);
 		});
 
-		it('denies when setting returns undefined', async () => {
-			mockGetValueById.mockResolvedValue(undefined);
+		it('denies when allowList is undefined', async () => {
 			expect(await ssrfModule.checkForSsrf('http://127.0.0.1')).toBe(false);
+		});
+
+		it('parses raw string (newline/comma-separated) in a single place', async () => {
+			const rawSetting = '127.0.0.1\n192.168.1.1, 10.0.0.1';
+			expect(await ssrfModule.checkForSsrf('http://127.0.0.1', rawSetting)).toBe(true);
+			expect(await ssrfModule.checkForSsrf('http://192.168.1.1', rawSetting)).toBe(true);
+			expect(await ssrfModule.checkForSsrf('http://10.0.0.1', rawSetting)).toBe(true);
 		});
 	});
 });
@@ -203,8 +193,7 @@ describe('checkForSsrfWithIp', () => {
 	});
 
 	it('returns allowed: true with resolvedIp for allowlisted private IP', async () => {
-		mockGetValueById.mockResolvedValue('127.0.0.1');
-		const result = await ssrfModule.checkForSsrfWithIp('http://127.0.0.1');
+		const result = await ssrfModule.checkForSsrfWithIp('http://127.0.0.1', ['127.0.0.1']);
 		expect(result).toEqual({ allowed: true, resolvedIp: '127.0.0.1' });
 	});
 });

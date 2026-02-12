@@ -99,6 +99,7 @@ async function getFetchAgentWithValidation<U extends string>(
 	url: U,
 	allowSelfSignedCerts?: boolean,
 	ignoreSsrfValidation?: boolean,
+	allowList?: string | string[],
 ): Promise<{
 	agent: http.Agent | https.Agent | null | HttpsProxyAgent<U> | HttpProxyAgent<U>;
 	pinnedUrl: string;
@@ -111,7 +112,7 @@ async function getFetchAgentWithValidation<U extends string>(
 
 	if (!ignoreSsrfValidation) {
 		// eslint-disable-next-line no-await-in-loop
-		const ssrfResult = await checkForSsrfWithIp(url);
+		const ssrfResult = await checkForSsrfWithIp(url, allowList);
 		if (!ssrfResult.allowed) {
 			logger.error({ msg: 'SSRF validation failed for URL', url });
 			throw new Error('error-ssrf-validation-failed');
@@ -169,6 +170,7 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 				currentUrl,
 				allowSelfSignedCerts,
 				options?.ignoreSsrfValidation,
+				options?.allowList,
 			);
 
 			const params = new URLSearchParams(options?.params);
