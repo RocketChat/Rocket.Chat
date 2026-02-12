@@ -38,7 +38,7 @@ test.describe('Admin Device Management Page', () => {
 	test('should logout current device from device info tab and redirect to login page', async () => {
 		const deviceId = await adminDeviceManagement.getUsersDeviceId('rocketchat.internal.admin.test');
 		await adminDeviceManagement.searchUserDevice('rocketchat.internal.admin.test');
-		await adminDeviceManagement.getDeviceRowById(deviceId).click();
+		await adminDeviceManagement.table.getDeviceRowById(deviceId).click();
 
 		await expect(adminDeviceManagement.deviceInfo.getDeviceInfoId(deviceId)).toBeVisible();
 		await adminDeviceManagement.deviceInfo.btnLogoutDevice.click();
@@ -61,7 +61,7 @@ test.describe('Admin Device Management Page', () => {
 
 		await test.step('should no longer show user2 device in admin device management page', async () => {
 			await adminDeviceManagement.searchUserDevice('rocketchat.internal.user2.test');
-			await expect(adminDeviceManagement.getDeviceRowById(user2DeviceId)).not.toBeVisible();
+			await expect(adminDeviceManagement.table.getDeviceRowById(user2DeviceId)).not.toBeVisible();
 		});
 
 		await user2Page.close();

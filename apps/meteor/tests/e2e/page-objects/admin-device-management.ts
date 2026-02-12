@@ -1,16 +1,9 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Admin } from './admin';
-import { MenuOptions } from './fragments';
+import { MenuOptions, DevicesTable } from './fragments';
 import { DeviceInfoFlexTab } from './fragments/device-info-flextab';
 import { ConfirmLogoutModal } from './fragments/modals';
-import { Table } from './fragments/table';
-
-class DevicesTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Devices' }));
-	}
-}
 
 export class AdminDeviceManagement extends Admin {
 	readonly deviceInfo: DeviceInfoFlexTab;
@@ -48,12 +41,8 @@ export class AdminDeviceManagement extends Admin {
 		return deviceId || '';
 	}
 
-	getDeviceRowById(deviceId: string): Locator {
-		return this.table.findRowByName(deviceId);
-	}
-
 	async openDeviceOptionsById(deviceId: string) {
-		const row = this.getDeviceRowById(deviceId);
+		const row = this.table.getDeviceRowById(deviceId);
 		await row.getByRole('button', { name: 'Options' }).click();
 	}
 
