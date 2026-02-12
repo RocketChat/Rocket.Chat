@@ -4,7 +4,7 @@ services:
     volumes:
       - ${COVERAGE_DIR:-/tmp/coverage}:${COVERAGE_DIR:-/tmp/coverage}
     build:
-      dockerfile: apps/meteor/.docker/Dockerfile.backend
+      dockerfile: ${GITHUB_WORKSPACE:-}/apps/meteor/.docker/Dockerfile.backend
       context: /tmp/build
       x-bake:
         platforms:
@@ -46,7 +46,7 @@ services:
 
   frontend:
     build:
-      context: apps/meteor
+      context: ${GITHUB_WORKSPACE:-}/apps/meteor
       dockerfile: .docker/Dockerfile.frontend
       x-bake:
         platforms:
