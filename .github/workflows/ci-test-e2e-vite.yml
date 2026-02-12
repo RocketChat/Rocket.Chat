@@ -246,18 +246,33 @@ jobs:
           set -o xtrace
           docker ps
 
+          # Give Traefik time to discover services
+          sleep 5
+          
+          # Show Traefik discovered routers via API
+          echo "=== Traefik discovered HTTP routers ==="
+          curl -s http://localhost:8080/api/http/routers | jq '.' || echo "Failed to query Traefik API"
+          
+          echo "=== Traefik discovered HTTP services ==="
+          curl -s http://localhost:8080/api/http/services | jq '.' || echo "Failed to query Traefik API"
+          
           # Wait for Traefik to discover the frontend service
           echo "Waiting for frontend to be accessible via Traefik..."
           for i in {1..30}; do
-            if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/ | grep -q "200"; then
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/)
+            echo "Attempt $i: Got status code $STATUS"
+            if [ "$STATUS" = "200" ]; then
               echo "Frontend is accessible!"
               break
             fi
-            echo "Attempt $i: Frontend not ready yet..."
             if [ $i -eq 30 ]; then
               echo "Frontend not accessible after 30 attempts"
+              echo "=== Traefik logs ==="
               docker compose -f docker-compose-ci-vite.yml logs traefik
+              echo "=== Frontend logs ==="
               docker compose -f docker-compose-ci-vite.yml logs frontend
+              echo "=== Curl verbose output ==="
+              curl -v http://localhost:3000/ || true
               exit 1
             fi
             sleep 2
