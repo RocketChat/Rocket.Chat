@@ -31,7 +31,8 @@ const BoldSpan = ({ children }: BoldSpanProps): ReactElement => (
 				block.type === 'PLAIN_TEXT' ||
 				block.type === 'STRIKE' ||
 				block.type === 'ITALIC' ||
-				block.type === 'INLINE_CODE'
+				block.type === 'INLINE_CODE' ||
+				block.type === 'SPOILER'
 			) {
 				return <strong key={index}>{renderBlockComponent(block, index)}</strong>;
 			}
