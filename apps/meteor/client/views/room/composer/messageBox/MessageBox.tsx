@@ -383,7 +383,6 @@ const MessageBox = ({
 	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
-	console.log('COMPOSER', shouldPopupPreview, popup.option);
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
