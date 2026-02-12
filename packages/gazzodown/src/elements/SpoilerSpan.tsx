@@ -78,7 +78,7 @@ const SpoilerSpan = ({ children }: SpoilerSpanProps): ReactElement => {
 	const srText = t('Spoiler_hidden_activate_to_reveal', { defaultValue: 'Spoiler hidden. Activate to reveal.' });
 
 	if (revealed) {
-		return <span style={style} aria-label={t('Spoiler_revealed', { defaultValue: 'Spoiler revealed' })}>{children.map((block, index) => renderBlockComponent(block, index))}</span>;
+		return <span style={style}>{children.map((block, index) => renderBlockComponent(block, index))}</span>;
 	}
 
 	return (
