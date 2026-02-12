@@ -95,7 +95,7 @@ const PresetReactionsModal = ({ initialPresetReactions = [], onConfirm, onCancel
 						</Box>
 					)}
 					<Box fontScale='p2' fontWeight='bold' mb={8}>
-						{t('Available_Reactions')}:
+						{t('Available')}:
 					</Box>
 					<Box display='flex' flexWrap='wrap' gap={8}>
 						{COMMON_EMOJIS.map((emoji) => (
