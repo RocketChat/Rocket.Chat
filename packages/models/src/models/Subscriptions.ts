@@ -1656,8 +1656,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 		// Return format compatible with previous Promise.all implementation
 		return [
-			{ acknowledged: result.ok === 1, matchedCount: result.nMatched, modifiedCount: result.nModified, upsertedCount: 0, upsertedId: null },
-			{ acknowledged: result.ok === 1, matchedCount: result.nMatched, modifiedCount: result.nModified, upsertedCount: 0, upsertedId: null },
+			{ acknowledged: result.ok === 1, matchedCount: result.matchedCount, modifiedCount: result.modifiedCount, upsertedCount: 0, upsertedId: null },
+			{ acknowledged: result.ok === 1, matchedCount: result.matchedCount, modifiedCount: result.modifiedCount, upsertedCount: 0, upsertedId: null },
 		] as UpdateResult[];
 	}
 
