@@ -20,7 +20,6 @@ export type ComposerMessageProps = {
 	onSend?: () => void;
 	onNavigateToNextMessage?: () => void;
 	onNavigateToPreviousMessage?: () => void;
-	onUploadFiles?: (files: readonly File[]) => void;
 	onClickSelectAll?: () => void;
 };
 
