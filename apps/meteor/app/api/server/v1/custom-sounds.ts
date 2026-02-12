@@ -1,18 +1,26 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import { CustomSounds } from '@rocket.chat/models';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
-type CustomSoundsList = PaginatedRequest<{ name?: string }>;
+type CustomSoundsList = PaginatedRequest<{ name?: string; _id?: string }>;
 
 const CustomSoundsListSchema = {
 	type: 'object',
 	properties: {
+		_id: {
+			type: 'string',
+		},
 		count: {
 			type: 'number',
 			nullable: true,
@@ -44,6 +52,9 @@ const customSoundsEndpoints = API.v1.get(
 	'custom-sounds.list',
 	{
 		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			200: ajv.compile<
 				PaginatedResult<{
 					sounds: ICustomSound[];
@@ -85,10 +96,11 @@ const customSoundsEndpoints = API.v1.get(
 		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
 		const { sort, query } = await this.parseJsonQuery();
 
-		const { name } = this.queryParams;
+		const { name, _id } = this.queryParams;
 
 		const filter = {
 			...query,
+			...(_id ? { _id } : {}),
 			...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
 		};
 
