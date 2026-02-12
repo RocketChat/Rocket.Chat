@@ -27,9 +27,7 @@ const MessageComposerFileArea = ({ uploads, onRemove, onEdit, onCancel }: Messag
 			style={{ whiteSpace: 'nowrap' }}
 		>
 			{uploads?.map((upload) => (
-				<div key={upload.id}>
-					<MessageComposerFile upload={upload} onRemove={onRemove} onEdit={onEdit} onCancel={onCancel} />
-				</div>
+				<MessageComposerFile key={upload.id} upload={upload} onRemove={onRemove} onEdit={onEdit} onCancel={onCancel} />
 			))}
 		</Box>
 	);

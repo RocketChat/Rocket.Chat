@@ -18,7 +18,7 @@ const MessageComposerFileComponent = ({ fileTitle, fileSubtitle, actionIcon, err
 	`;
 
 	const previewWrapperStyle = css`
-		background-color: 'surface-tint';
+		background-color: ${Palette.surface['surface-tint']};
 
 		&:hover {
 			cursor: ${error ? 'unset' : 'pointer'};
@@ -34,6 +34,7 @@ const MessageComposerFileComponent = ({ fileTitle, fileSubtitle, actionIcon, err
 			readOnly={error}
 			className={previewWrapperStyle}
 			display='flex'
+			flexShrink={0}
 			padding={4}
 			borderRadius={4}
 			borderWidth={1}
