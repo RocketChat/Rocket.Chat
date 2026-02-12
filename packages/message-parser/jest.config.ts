@@ -1,10 +1,7 @@
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 
 import server from '@rocket.chat/jest-presets/server';
 import type { Config } from 'jest';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default {
 	preset: server.preset,
