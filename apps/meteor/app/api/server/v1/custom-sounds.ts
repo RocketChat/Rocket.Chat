@@ -122,7 +122,7 @@ const customSoundsEndpoints = API.v1
 		'custom-sounds.getOne',
 		{
 			response: {
-				200: ajv.compile<{ _id: ICustomSound['_id']; name: ICustomSound['name'] }>({
+				200: ajv.compile<{ _id: ICustomSound['_id']; name: ICustomSound['name']; success: boolean }>({
 					additionalProperties: false,
 					type: 'object',
 					properties: {

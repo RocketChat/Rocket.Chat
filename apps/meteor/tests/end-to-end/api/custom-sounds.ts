@@ -209,7 +209,7 @@ describe('[CustomSounds]', () => {
 					expect(res.body).to.have.property('_id', fileId);
 					expect(res.body).to.have.property('name', fileName);
 
-					// ensures there are no extra properites (because of additionalProperties: false)
+					// ensures there are no extra properties (because of additionalProperties: false)
 					expect(Object.keys(res.body)).to.have.lengthOf(3);
 				});
 		});

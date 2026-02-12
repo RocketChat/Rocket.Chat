@@ -28,7 +28,7 @@ function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProp
 	}
 
 	if (!data) {
-		return <ContextualbarEmptyContent icon='warning' title={t('Call_info_could_not_be_loaded')} />;
+		return <ContextualbarEmptyContent icon='warning' title={t('No_results_found')} />;
 	}
 
 	const handleChange: () => void = () => {
