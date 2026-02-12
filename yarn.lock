@@ -8583,7 +8583,7 @@ __metadata:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-tokens": "*"
-    "@rocket.chat/message-parser": 0.31.33-rc.0
+    "@rocket.chat/message-parser": 0.31.33
     "@rocket.chat/styled": "*"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -10435,7 +10435,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.4
-    "@rocket.chat/ui-contexts": 27.0.0-rc.2
+    "@rocket.chat/ui-contexts": 27.0.0
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
