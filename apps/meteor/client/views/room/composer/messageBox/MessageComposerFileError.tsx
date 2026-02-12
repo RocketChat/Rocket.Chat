@@ -3,13 +3,14 @@ import { useTranslation } from 'react-i18next';
 
 import MessageComposerFileComponent from './MessageComposerFileComponent';
 
-type MessageComposerFileComponentProps = {
+type MessageComposerFileErrorProps = {
 	fileTitle: string;
 	error: Error;
 	actionIcon: ReactElement;
+	onClick: () => void;
 } & AllHTMLAttributes<HTMLButtonElement>;
 
-const MessageComposerFileError = ({ fileTitle, error, actionIcon, ...props }: MessageComposerFileComponentProps) => {
+const MessageComposerFileError = ({ fileTitle, error, actionIcon, onClick, ...props }: MessageComposerFileErrorProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -19,6 +20,7 @@ const MessageComposerFileError = ({ fileTitle, error, actionIcon, ...props }: Me
 			fileSubtitle={t('Upload_failed')}
 			actionIcon={actionIcon}
 			title={error.message}
+			onClick={onClick}
 			{...props}
 		/>
 	);

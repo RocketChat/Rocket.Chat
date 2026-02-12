@@ -1,5 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { AllHTMLAttributes, ReactElement } from 'react';
 
 type MessageComposerFileComponentProps = {
@@ -7,10 +8,18 @@ type MessageComposerFileComponentProps = {
 	fileSubtitle: string;
 	actionIcon: ReactElement;
 	error?: boolean;
+	onClick: () => void;
 } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
 // TODO: This component will live in `ui-composer`
-const MessageComposerFileComponent = ({ fileTitle, fileSubtitle, actionIcon, error, ...props }: MessageComposerFileComponentProps) => {
+const MessageComposerFileComponent = ({
+	fileTitle,
+	fileSubtitle,
+	actionIcon,
+	error,
+	onClick,
+	...props
+}: MessageComposerFileComponentProps) => {
 	const closeWrapperStyle = css`
 		position: absolute;
 		right: 0.5rem;
@@ -26,10 +35,10 @@ const MessageComposerFileComponent = ({ fileTitle, fileSubtitle, actionIcon, err
 		}
 	`;
 
+	const buttonProps = useButtonPattern(onClick);
+
 	return (
 		<Box
-			tabIndex={0}
-			role='button'
 			rcx-input-box__wrapper
 			readOnly={error}
 			className={previewWrapperStyle}
@@ -44,6 +53,7 @@ const MessageComposerFileComponent = ({ fileTitle, fileSubtitle, actionIcon, err
 			height='x56'
 			width='x200'
 			mie={8}
+			{...buttonProps}
 			{...props}
 		>
 			<Box width='x160' mis={4} display='flex' flexDirection='column'>
