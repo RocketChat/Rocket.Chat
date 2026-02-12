@@ -13,10 +13,7 @@ const defaultProps = {
 	onClose: () => undefined,
 	file: new File([], 'testing.png', { type: 'image/png' }),
 	fileName: 'testing.png',
-	fileDescription: '',
 	onSubmit: () => undefined,
-	invalidContentType: false,
-	showDescription: true,
 };
 
 const defaultWrapper = mockAppRoot().withTranslations('en', 'core', {
