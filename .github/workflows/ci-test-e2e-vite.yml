@@ -71,6 +71,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     env:
+      GITHUB_WORKSPACE: ${{ github.workspace }}
       DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
       MONGODB_VERSION: ${{ matrix.mongodb-version }}
       COVERAGE_DIR: '/tmp/coverage/${{ inputs.type }}'
@@ -102,6 +103,15 @@ jobs:
           echo fs.file-max=20000500 | sudo tee -a /etc/sysctl.conf
           echo fs.nr_open=20000500 | sudo tee -a /etc/sysctl.conf
           sudo sysctl -p
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo docker system prune -af
+          df -h
 
       - name: Login to GitHub Container Registry
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
@@ -163,12 +173,8 @@ jobs:
       - name: Build Meteor backend
         working-directory: ./apps/meteor
         run: |
-          meteor build --server-only --directory ../../build
-
-      - name: Prepare build context
-        run: |
           mkdir -p /tmp/build
-          cp -r build/bundle /tmp/build/
+          meteor build --server-only --directory /tmp/build
 
       # Download Docker images from build artifacts (if needed for EE services)
       - name: Download Docker images
@@ -213,8 +219,6 @@ jobs:
 
       - name: Start containers for CE
         if: inputs.release == 'ce'
-        env:
-          GITHUB_WORKSPACE: ${{ github.workspace }}
         run: |
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci-vite.yml up -d rocketchat frontend --wait
 
@@ -223,7 +227,6 @@ jobs:
         env:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
-          GITHUB_WORKSPACE: ${{ github.workspace }}
         run: |
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci-vite.yml up -d --wait
 
