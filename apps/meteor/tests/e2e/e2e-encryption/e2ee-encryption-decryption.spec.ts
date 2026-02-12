@@ -103,10 +103,9 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 				await fileUploadModal.setName(fileName);
 				await fileUploadModal.update();
 				await expect(encryptedRoomPage.composer.getFileByName(fileName)).toBeVisible();
-				await encryptedRoomPage.sendMessage(fileDescription);
 			}).toPass();
 
-			// Check the file upload
+			await encryptedRoomPage.sendMessage(fileDescription);
 			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
 			await expect(encryptedRoomPage.lastMessage.fileUploadName).toContainText(fileName);
 			await expect(encryptedRoomPage.lastMessage.body).toHaveText(fileDescription);
