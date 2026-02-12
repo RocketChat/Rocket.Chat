@@ -26,7 +26,7 @@ const logger = new Logger('LivechatStartup');
 
 // TODO this patch is temporary because `ContactMerger` still a lot of dependencies, so it is not suitable to be moved to omni-core package
 // TODO add tests covering the ContactMerger usage
-registerGuest.patch(async (originalFn: typeof registerGuest, newData: Parameters<typeof registerGuest>[0], options?: Parameters<typeof registerGuest>[1]) => {
+registerGuest.patch(async (originalFn: (...args: any[]) => Promise<any>, newData: any, options?: any) => {
 	const visitor = await originalFn(newData, options);
 	if (!visitor) {
 		return null;
