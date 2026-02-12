@@ -11,7 +11,7 @@ import { Random } from './random.ts';
 class LocalCollectionDriver {
 	noConnCollections: Map<string, LocalCollection> = new Map();
 
-	open(name?: string, conn?: { _mongo_livedata_collections?: Map<string, LocalCollection> }): LocalCollection {
+	open(name?: string, conn: Connection | null = null): LocalCollection {
 		if (!name) {
 			return new LocalCollection();
 		}
@@ -63,7 +63,7 @@ export const ID_GENERATORS = {
 export function setupConnection(name: string, options: { connection?: Connection | null }): Connection | null {
 	if (!name || options.connection === null) return null;
 	if (options.connection) return options.connection;
-	return Meteor.connection;
+	return DDP.connection;
 }
 
 export function setupDriver(_name: string, _connection: Connection | null, options: { _driver?: any }): LocalCollectionDriver {
@@ -71,7 +71,7 @@ export function setupDriver(_name: string, _connection: Connection | null, optio
 	return driver;
 }
 
-export function setupAutopublish(collection: LocalCollection, _name: string, options: { _preventAutopublish?: boolean }): void {
+export function setupAutopublish(collection: Collection, _name: string, options: { _preventAutopublish?: boolean }): void {
 	if (Package.autopublish && !options._preventAutopublish && collection._connection && collection._connection.publish) {
 		collection._connection.publish(null, () => collection.find(), {
 			is_auto: true,
@@ -150,6 +150,7 @@ export const normalizeProjection = (options?: { fields?: any; projection?: any }
 };
 
 export class Collection {
+	_connection: Connection | null;
 	constructor(name, options) {
 		let _ID_GENERATORS$option;
 		let _ID_GENERATORS;
