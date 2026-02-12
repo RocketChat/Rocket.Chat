@@ -58,7 +58,7 @@ const SpoilerSpan = ({ children }: SpoilerSpanProps): ReactElement => {
 		if (revealed) {
 			return {
 				filter: 'none',
-				transition: 'filter 150ms ease',
+				transition: 'filter 230ms ease',
 			} as const;
 		}
 
@@ -68,7 +68,7 @@ const SpoilerSpan = ({ children }: SpoilerSpanProps): ReactElement => {
 			borderRadius: 2,
 			paddingInline: 2,
 			filter: 'blur(4px)',
-			transition: 'filter 150ms ease',
+			transition: 'filter 230ms ease',
 		} as const;
 	}, [revealed]);
 
