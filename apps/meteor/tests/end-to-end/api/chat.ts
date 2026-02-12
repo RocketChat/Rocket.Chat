@@ -1153,12 +1153,19 @@ describe('[Chat]', () => {
 			let ytEmbedMsgId: IMessage['_id'];
 			let imgUrlMsgId: IMessage['_id'];
 
-			before(() => Promise.all([updateSetting('API_EmbedIgnoredHosts', ''), updateSetting('API_EmbedSafePorts', '80, 443, 3000')]));
+			before(() =>
+				Promise.all([
+					updateSetting('API_EmbedIgnoredHosts', ''),
+					updateSetting('API_EmbedSafePorts', '80, 443, 3000'),
+					updateSetting('SSRF_Allowlist', '127.0.0.1:3000'),
+				]),
+			);
 
 			after(() =>
 				Promise.all([
 					updateSetting('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16'),
 					updateSetting('API_EmbedSafePorts', '80, 443'),
+					updateSetting('SSRF_Allowlist', ''),
 				]),
 			);
 
@@ -1177,7 +1184,7 @@ describe('[Chat]', () => {
 				const imgUrlMsgPayload = {
 					_id: `id-${Date.now()}1`,
 					rid: testChannel._id,
-					msg: 'https://avatars.githubusercontent.com/u/12508788?s=48&v=4',
+					msg: 'http://127.0.0.1:3000/images/logo/logo.png',
 					emoji: ':smirk:',
 				};
 
