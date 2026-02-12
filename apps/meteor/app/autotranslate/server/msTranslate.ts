@@ -87,7 +87,11 @@ class MsAutoTranslate extends AutoTranslate {
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
 		}
-		const request = await fetch(this.apiGetLanguages);
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+		const request = await fetch(this.apiGetLanguages, {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
+		});
 		if (!request.ok) {
 			throw new Error(request.statusText);
 		}
@@ -121,7 +125,10 @@ class MsAutoTranslate extends AutoTranslate {
 			}
 			return language;
 		});
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch(this.apiEndPointUrl, {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			method: 'POST',
 			headers: {
 				'Ocp-Apim-Subscription-Key': this.apiKey,

@@ -65,6 +65,7 @@ API.v1.addRoute(
 				body: sampleData,
 				// SECURITY: Webhooks can only be configured by users with enough privileges. It's ok to disable this check here.
 				ignoreSsrfValidation: true,
+				allowList: settings.get<string>('SSRF_Allowlist'),
 			};
 
 			const webhookUrl = settings.get<string>('Livechat_webhookUrl');

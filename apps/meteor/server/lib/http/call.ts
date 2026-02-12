@@ -2,6 +2,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { HTTP } from 'meteor/http';
 import { URL, URLSearchParams } from 'meteor/url';
 
+import { settings } from '../../../app/settings/server';
 import { truncate } from '../../../lib/utils/stringUtils';
 
 // Code extracted from https://github.com/meteor/meteor/blob/master/packages/deprecated/http
@@ -149,6 +150,8 @@ function _call(httpMethod: string, url: string, options: HttpCallOptions, callba
 		referrer: options.referrer,
 		integrity: options.integrity,
 		headers,
+		ignoreSsrfValidation: true,
+		allowList: settings.get<string>('SSRF_Allowlist'),
 	} as const;
 
 	fetch(newUrl, requestOptions)

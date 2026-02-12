@@ -101,7 +101,10 @@ class DeeplAutoTranslate extends AutoTranslate {
 		}
 		let result: (ISupportedLanguage & { supports_formality?: boolean })[] = [];
 
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch(this.supportedLanguageEndpointUrl, {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			params: { type: 'target' },
 			headers: {
 				Authorization: `DeepL-Auth-Key ${this.apiKey}`,
@@ -140,7 +143,10 @@ class DeeplAutoTranslate extends AutoTranslate {
 				language = language.substr(0, 2);
 			}
 			try {
+				// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 				const result = await fetch(this.apiEndPointUrl, {
+					ignoreSsrfValidation: true,
+					allowList: settings.get<string>('SSRF_Allowlist'),
 					params: { target_lang: language, text: msgs },
 					headers: {
 						Authorization: `DeepL-Auth-Key ${this.apiKey}`,
@@ -186,7 +192,10 @@ class DeeplAutoTranslate extends AutoTranslate {
 				language = language.substr(0, 2);
 			}
 			try {
+				// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 				const result = await fetch(this.apiEndPointUrl, {
+					ignoreSsrfValidation: true,
+					allowList: settings.get<string>('SSRF_Allowlist'),
 					params: {
 						auth_key: this.apiKey,
 						target_lang: language,

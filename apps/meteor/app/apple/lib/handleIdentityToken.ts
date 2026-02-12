@@ -7,6 +7,8 @@ import { settings } from '../../settings/server';
 async function isValidAppleJWT(identityToken: string, header: any): Promise<boolean> {
 	const request = await fetch('https://appleid.apple.com/auth/keys', {
 		method: 'GET',
+		// SECURITY: Hardcoded URL, no SSRF protection needed
+		ignoreSsrfValidation: true,
 		allowList: settings.get<string>('SSRF_Allowlist'),
 	});
 	const applePublicKeys = ((await request.json()) as { keys: { kid: string; e: string; n: string }[] }).keys;

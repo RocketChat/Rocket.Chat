@@ -155,7 +155,9 @@ export async function getAvatarSuggestionForUser(
 	const validAvatars: Record<string, { blob: string; contentType: string; service: string; url: string }> = {};
 	for await (const avatar of avatars) {
 		try {
-			const response = await fetch(avatar.url);
+			const response = await fetch(avatar.url, {
+				allowList: settings.get<string>('SSRF_Allowlist'),
+			});
 			const newAvatar: { service: string; url: string; blob: string; contentType: string } = {
 				service: avatar.service,
 				url: avatar.url,

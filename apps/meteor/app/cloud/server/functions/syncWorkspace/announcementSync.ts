@@ -25,6 +25,9 @@ const fetchCloudAnnouncementsSync = async ({
 			Authorization: `Bearer ${token}`,
 		},
 		body: data,
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+		ignoreSsrfValidation: true,
+		allowList: settings.get<string>('SSRF_Allowlist'),
 	});
 
 	if (!response.ok) {

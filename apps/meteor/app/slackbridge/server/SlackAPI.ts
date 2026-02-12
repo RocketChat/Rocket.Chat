@@ -4,6 +4,8 @@
 // @ts-nocheck
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
+import { settings } from '../../settings/server';
+
 export class SlackAPI {
 	constructor(apiOrBotToken) {
 		this.token = apiOrBotToken;
@@ -11,7 +13,10 @@ export class SlackAPI {
 
 	async getChannels(cursor = null) {
 		let channels = [];
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch('https://slack.com/api/conversations.list', {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
@@ -37,7 +42,10 @@ export class SlackAPI {
 
 	async getGroups(cursor = null) {
 		let groups = [];
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch('https://slack.com/api/conversations.list', {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
@@ -62,7 +70,10 @@ export class SlackAPI {
 	}
 
 	async getRoomInfo(roomId) {
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch(`https://slack.com/api/conversations.info`, {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
@@ -83,6 +94,9 @@ export class SlackAPI {
 		for (let index = 0; index < num_members; index += MAX_MEMBERS_PER_CALL) {
 			// eslint-disable-next-line no-await-in-loop
 			const request = await fetch('https://slack.com/api/conversations.members', {
+				// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+				ignoreSsrfValidation: true,
+				allowList: settings.get<string>('SSRF_Allowlist'),
 				headers: {
 					Authorization: `Bearer ${this.token}`,
 				},
@@ -106,7 +120,10 @@ export class SlackAPI {
 	}
 
 	async react(data) {
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch('https://slack.com/api/reactions.add', {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
@@ -118,7 +135,10 @@ export class SlackAPI {
 	}
 
 	async removeReaction(data) {
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch('https://slack.com/api/reactions.remove', {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
@@ -130,7 +150,10 @@ export class SlackAPI {
 	}
 
 	async removeMessage(data) {
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch('https://slack.com/api/chat.delete', {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
@@ -142,7 +165,10 @@ export class SlackAPI {
 	}
 
 	async sendMessage(data) {
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch('https://slack.com/api/chat.postMessage', {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
@@ -153,7 +179,10 @@ export class SlackAPI {
 	}
 
 	async updateMessage(data) {
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch('https://slack.com/api/chat.update', {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
@@ -165,7 +194,10 @@ export class SlackAPI {
 	}
 
 	async getHistory(options) {
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch(`https://slack.com/api/conversations.history`, {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
@@ -176,7 +208,10 @@ export class SlackAPI {
 	}
 
 	async getPins(channelId) {
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch('https://slack.com/api/pins.list', {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
@@ -189,7 +224,10 @@ export class SlackAPI {
 	}
 
 	async getUser(userId) {
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch('https://slack.com/api/users.info', {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			headers: {
 				Authorization: `Bearer ${this.token}`,
 			},
@@ -202,7 +240,10 @@ export class SlackAPI {
 	}
 
 	static async verifyToken(token) {
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch('https://slack.com/api/auth.test', {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
@@ -213,7 +254,10 @@ export class SlackAPI {
 	}
 
 	static async verifyAppCredentials({ botToken, appToken }) {
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch('https://slack.com/api/apps.connections.open', {
+			ignoreSsrfValidation: true,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			headers: {
 				Authorization: `Bearer ${appToken}`,
 			},
