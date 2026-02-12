@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@rocket.chat/logger": "workspace:^",
+    "@rocket.chat/models": "workspace:^",
     "@types/proxy-from-env": "^1.0.4",
     "http-proxy-agent": "^7.0.2",
     "https-proxy-agent": "^7.0.6",

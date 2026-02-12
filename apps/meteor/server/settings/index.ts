@@ -1,5 +1,3 @@
-import { setSsrfAllowlistGetter } from '@rocket.chat/server-fetch';
-
 import { createAccountSettings } from './accounts';
 import { createAnalyticsSettings } from './analytics';
 import { createAssetsSettings } from './assets';
@@ -36,7 +34,6 @@ import { createTroubleshootSettings } from './troubleshoot';
 import { createUserDataSettings } from './userDataDownload';
 import { createVConfSettings } from './video-conference';
 import { createWebDavSettings } from './webdav';
-import { settings } from '../../app/settings/server';
 import { addMatrixBridgeFederationSettings } from '../services/federation/Settings';
 
 await Promise.all([
@@ -76,9 +73,6 @@ await Promise.all([
 	createUserDataSettings(),
 	createWebDavSettings(),
 ]);
-
-// SSRF allowlist is read and parsed in server-fetch when needed for each request
-setSsrfAllowlistGetter(() => settings.get<string>('SSRF_Allowlist'));
 
 // Run after all the other settings are created since it depends on some of them
 await Promise.all([

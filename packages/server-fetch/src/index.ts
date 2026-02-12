@@ -8,7 +8,7 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import fetch, { Response } from 'node-fetch';
 import { getProxyForUrl } from 'proxy-from-env';
 
-import { checkForSsrfWithIp, parseSsrfAllowlist, setSsrfAllowlist, setSsrfAllowlistGetter } from './checkForSsrf';
+import { checkForSsrfWithIp, parseSsrfAllowlist } from './checkForSsrf';
 import { parseRequestOptions } from './parsers';
 import type { ExtendedFetchOptions } from './types';
 
@@ -242,4 +242,4 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 
 export { Response };
 export { ExtendedFetchOptions };
-export { parseSsrfAllowlist, setSsrfAllowlist, setSsrfAllowlistGetter };
+export { parseSsrfAllowlist };

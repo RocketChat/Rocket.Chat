@@ -1,5 +1,7 @@
 import { lookup } from 'dns';
 
+import { Settings } from '@rocket.chat/models';
+
 import {
 	allowlistedIpResolved,
 	isIpInAnyRange,
@@ -10,10 +12,6 @@ import {
 	parseIpv4WithPort,
 } from './checkForSsrfHelpers';
 
-let ssrfAllowlist: string[] = [];
-
-let ssrfAllowlistGetter: (() => string | undefined) | undefined;
-
 export const parseSsrfAllowlist = (value: string | undefined): string[] => {
 	if (typeof value !== 'string' || !value.trim()) return [];
 	return value
@@ -22,28 +20,18 @@ export const parseSsrfAllowlist = (value: string | undefined): string[] => {
 		.filter((entry) => entry.length > 0);
 };
 
-export const setSsrfAllowlist = (allowlist: string[]): void => {
-	ssrfAllowlist = allowlist.map(normalizeAllowlistEntry).filter((entry) => entry.length > 0);
+const getEffectiveAllowlist = async (): Promise<string[]> => {
+	const raw = await Settings.getValueById<string>('SSRF_Allowlist');
+	return parseSsrfAllowlist(raw)
+		.map(normalizeAllowlistEntry)
+		.filter((entry) => entry.length > 0);
 };
 
-export const setSsrfAllowlistGetter = (getter: (() => string | undefined) | undefined): void => {
-	ssrfAllowlistGetter = getter;
-};
-
-const getEffectiveAllowlist = (): string[] => {
-	if (ssrfAllowlistGetter) {
-		const raw = ssrfAllowlistGetter();
-		return parseSsrfAllowlist(raw)
-			.map(normalizeAllowlistEntry)
-			.filter((entry) => entry.length > 0);
-	}
-	return ssrfAllowlist;
-};
-
-const isInAllowlist = (hostOrIp: string, port: string | undefined): boolean => {
+const isInAllowlist = async (hostOrIp: string, port: string | undefined): Promise<boolean> => {
 	const normalized = normalizeHostForAllowlistMatch(hostOrIp);
 	const withPort = port ? `${normalized}:${port}` : normalized;
-	return getEffectiveAllowlist().some((entry) => entry === normalized || entry === withPort);
+	const allowlist = await getEffectiveAllowlist();
+	return allowlist.some((entry) => entry === normalized || entry === withPort);
 };
 
 export const nslookup = (hostname: string): Promise<string> => {
@@ -96,7 +84,7 @@ export const checkForSsrfWithIp = async (input: string): Promise<{ allowed: fals
 
 	if (!ipValid && !domainValid) return { allowed: false };
 
-	if (isInAllowlist(ipOrDomain, port)) {
+	if (await isInAllowlist(ipOrDomain, port)) {
 		if (ipValid) {
 			return { allowed: true, resolvedIp: allowlistedIpResolved(ipOrDomain, port, wasUrlParsed) };
 		}
