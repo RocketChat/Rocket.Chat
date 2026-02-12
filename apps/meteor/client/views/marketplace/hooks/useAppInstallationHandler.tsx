@@ -53,7 +53,9 @@ export function useAppInstallationHandler({
 	const success = useCallback(
 		(appPermissions?: App['permissions']) => {
 			setModal(null);
-			onSuccess(action, appPermissions);
+			onSuccess(action, appPermissions).catch(() => {
+				/* error handled by mutation */
+			});
 		},
 		[action, onSuccess, setModal],
 	);
