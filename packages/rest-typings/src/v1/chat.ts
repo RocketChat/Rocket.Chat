@@ -63,6 +63,24 @@ const chatSendMessageSchema = {
 					type: 'object',
 					nullable: true,
 				},
+				presetReactions: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							emoji: {
+								type: 'string',
+							},
+							label: {
+								type: 'string',
+								nullable: true,
+							},
+						},
+						required: ['emoji'],
+						additionalProperties: false,
+					},
+					nullable: true,
+				},
 			},
 		},
 		previewUrls: {
@@ -431,6 +449,7 @@ interface IChatUpdateText extends IChatUpdate {
 	text: string;
 	previewUrls?: string[];
 	customFields?: IMessage['customFields'];
+	presetReactions?: Array<{ emoji: string; label?: string }>;
 }
 
 interface IChatUpdateEncrypted extends IChatUpdate {
@@ -463,6 +482,24 @@ const ChatUpdateSchema = {
 				},
 				customFields: {
 					type: 'object',
+					nullable: true,
+				},
+				presetReactions: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							emoji: {
+								type: 'string',
+							},
+							label: {
+								type: 'string',
+								nullable: true,
+							},
+						},
+						required: ['emoji'],
+						additionalProperties: false,
+					},
 					nullable: true,
 				},
 			},

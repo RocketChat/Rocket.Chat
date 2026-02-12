@@ -11,7 +11,7 @@ import { applyAirGappedRestrictionsValidation } from '../../../license/server/ai
 import { settings } from '../../../settings/server';
 import { updateMessage } from '../functions/updateMessage';
 
-const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg', 'customFields', 'content', 'e2eMentions'];
+const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg', 'customFields', 'content', 'e2eMentions', 'presetReactions'];
 
 export async function executeUpdateMessage(
 	uid: IUser['_id'],

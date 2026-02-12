@@ -9,6 +9,7 @@ import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import { isURL } from '../../../../lib/utils/isURL';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
+import { initializePresetReactions } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById } from '../lib/notifyListener';
@@ -277,6 +278,11 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		}
 		const { insertedId } = await Messages.insertOne(message);
 		message._id = insertedId;
+	}
+
+	// Initialize preset reactions if any
+	if (message.presetReactions && message.presetReactions.length > 0) {
+		await initializePresetReactions(message);
 	}
 
 	if (Apps.self?.isLoaded()) {
