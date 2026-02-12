@@ -1,0 +1,300 @@
+name: Tests E2E (Vite)
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+      deno-version:
+        required: true
+        type: string
+      lowercase-repo:
+        required: true
+        type: string
+      gh-docker-tag:
+        required: true
+        type: string
+      enterprise-license:
+        type: string
+      transporter:
+        type: string
+      mongodb-version:
+        default: "['8.0']"
+        required: false
+        type: string
+      release:
+        required: true
+        type: string
+      shard:
+        default: '[1]'
+        required: false
+        type: string
+      total-shard:
+        default: 1
+        required: false
+        type: number
+      retries:
+        default: 0
+        required: false
+        type: number
+      type:
+        required: true
+        type: string
+      coverage:
+        required: false
+        type: string
+    secrets:
+      CR_USER:
+        required: true
+      CR_PAT:
+        required: true
+      QASE_API_TOKEN:
+        required: false
+      REPORTER_ROCKETCHAT_URL:
+        required: false
+      REPORTER_ROCKETCHAT_API_KEY:
+        required: false
+      CODECOV_TOKEN:
+        required: false
+      REPORTER_JIRA_ROCKETCHAT_API_KEY:
+        required: false
+
+env:
+  MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
+  TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+  LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
+  DOCKER_TAG: ${{ inputs.gh-docker-tag }}-amd64
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+
+    env:
+      DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+      MONGODB_VERSION: ${{ matrix.mongodb-version }}
+      COVERAGE_DIR: '/tmp/coverage/${{ inputs.type }}'
+      COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
+      COVERAGE_REPORTER: ${{ inputs.coverage == matrix.mongodb-version && 'json' || '' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
+        shard: ${{ fromJSON(inputs.shard) }}
+
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.coverage == matrix.mongodb-version && ' coverage' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) [Vite]
+
+    steps:
+      - name: Collect Workflow Telemetry
+        if: inputs.type == 'perf'
+        uses: catchpoint/workflow-telemetry-action@v2
+        with:
+          theme: dark
+          job_summary: true
+          comment_on_pr: false
+
+      - name: Setup kernel limits
+        run: |
+          echo "500 65535" > sudo tee -a /proc/sys/net/ipv4/ip_local_port_range
+          sudo sysctl -w net.ipv4.tcp_mem="383865   511820   2303190"
+
+          echo fs.file-max=20000500 | sudo tee -a /etc/sysctl.conf
+          echo fs.nr_open=20000500 | sudo tee -a /etc/sysctl.conf
+          sudo sysctl -p
+
+      - name: Login to GitHub Container Registry
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
+      - uses: actions/checkout@v6
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ inputs.node-version }}
+          deno-version: ${{ inputs.deno-version }}
+          cache-modules: true
+          install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - uses: rharkor/caching-for-turbo@v1.8
+
+      - name: Restore packages build
+        uses: actions/download-artifact@v7
+        with:
+          name: packages-build
+          path: /tmp
+
+      - name: Unpack packages build
+        shell: bash
+        run: |
+          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
+
+      - name: Build Vite frontend
+        working-directory: ./apps/meteor
+        run: |
+          ROOT_URL=http://localhost:3000/ npx vite build
+
+      - name: Build Meteor backend
+        working-directory: ./apps/meteor
+        run: |
+          meteor build --server-only --directory ../../build
+
+      - name: Prepare build context
+        run: |
+          mkdir -p /tmp/build
+          cp -r build/bundle /tmp/build/
+
+      # Download Docker images from build artifacts (if needed for EE services)
+      - name: Download Docker images
+        uses: actions/download-artifact@v7
+        if: inputs.release == 'ee' && github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
+        with:
+          pattern: 'docker-image-*-amd64-coverage'
+          path: /tmp/docker-images
+          merge-multiple: true
+
+      - name: Load Docker images
+        if: inputs.release == 'ee' && github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
+        shell: bash
+        run: |
+          set -o xtrace
+
+          for image_file in /tmp/docker-images/*.tar; do
+            if [ -f "$image_file" ]; then
+              echo "Loading image from $image_file"
+              docker load -i "$image_file"
+              rm "$image_file"
+            fi
+          done
+
+          docker images
+
+      - name: Set DEBUG_LOG_LEVEL (debug enabled)
+        if: runner.debug == '1'
+        run: echo "DEBUG_LOG_LEVEL=2" >> $GITHUB_ENV
+
+      - name: Start httpbin container and wait for it to be ready
+        if: inputs.type == 'api'
+        run: |
+          docker compose -f docker-compose-ci-vite.yml up -d httpbin
+
+      - name: Prepare code coverage directory
+        run: |
+          set -o xtrace
+
+          mkdir -p $COVERAGE_DIR
+          chmod 777 $COVERAGE_DIR
+
+      - name: Start containers for CE
+        if: inputs.release == 'ce'
+        run: |
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci-vite.yml up -d rocketchat frontend --wait
+
+      - name: Start containers for EE
+        if: inputs.release == 'ee'
+        env:
+          ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
+          TRANSPORTER: ${{ inputs.transporter }}
+        run: |
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci-vite.yml up -d --wait
+
+      - uses: ./.github/actions/setup-playwright
+        if: inputs.type == 'ui'
+
+      - name: Wait services to start up
+        if: inputs.release == 'ee'
+        run: |
+          docker ps
+
+          until echo "$(docker compose -f docker-compose-ci-vite.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
+            echo "Waiting 'ddp-streamer' to start up"
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci-vite.yml logs ddp-streamer-service && exit 1
+            sleep 10
+          done;
+
+      - name: Remove unused Docker images
+        run: docker system prune -af
+
+      - name: E2E Test API
+        if: inputs.type == 'api'
+        working-directory: ./apps/meteor
+        env:
+          WEBHOOK_TEST_URL: 'http://httpbin'
+          IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+        run: |
+          set -o xtrace
+
+          npm run testapi
+
+          docker compose -f ../../docker-compose-ci-vite.yml stop
+
+          ls -la $COVERAGE_DIR
+          exit $s
+
+      - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
+        if: inputs.type == 'ui'
+        env:
+          E2E_COVERAGE: ${{ inputs.coverage == matrix.mongodb-version && 'true' || '' }}
+          IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
+          REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+          REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
+          REPORTER_ROCKETCHAT_REPORT: ${{ github.event.pull_request.draft != 'true' && secrets.REPORTER_ROCKETCHAT_URL != '' && 'true' || '' }}
+          REPORTER_ROCKETCHAT_RUN: ${{ github.run_number }}
+          REPORTER_ROCKETCHAT_BRANCH: ${{ github.ref }}
+          REPORTER_ROCKETCHAT_DRAFT: ${{ github.event.pull_request.draft }}
+          REPORTER_ROCKETCHAT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPORTER_ROCKETCHAT_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REPORTER_ROCKETCHAT_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REPORTER_ROCKETCHAT_PR: ${{ github.event.pull_request.number }}
+          QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+          QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
+          CI: true
+          PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
+        working-directory: ./apps/meteor
+        run: |
+          set -o xtrace
+
+          yarn prepare
+          yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
+
+      - name: Merge ui coverage files
+        if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
+        working-directory: ./apps/meteor
+        run: |
+          npx nyc merge .nyc_output ${COVERAGE_DIR}/${COVERAGE_FILE_NAME}
+          ls -la $COVERAGE_DIR || true
+
+      - name: Store playwright test trace
+        if: inputs.type == 'ui' && always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-test-trace-vite-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          path: ./apps/meteor/tests/e2e/.playwright*
+          include-hidden-files: true
+
+      - name: Show server logs if E2E test failed
+        if: failure()
+        run: docker compose -f docker-compose-ci-vite.yml logs rocketchat frontend authorization-service queue-worker-service ddp-streamer-service account-service presence-service omnichannel-transcript-service
+
+      - name: Show mongo logs if E2E test failed
+        if: failure()
+        run: docker compose -f docker-compose-ci-vite.yml logs mongo
+
+      - name: Show traefik logs if E2E test failed
+        if: failure()
+        run: docker compose -f docker-compose-ci-vite.yml logs traefik
+
+      - name: Store coverage
+        if: inputs.coverage == matrix.mongodb-version
+        uses: actions/upload-artifact@v6
+        with:
+          name: coverage-vite-${{ inputs.type }}-${{ matrix.shard }}
+          path: /tmp/coverage
+          include-hidden-files: true

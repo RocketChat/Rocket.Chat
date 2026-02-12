@@ -8,11 +8,20 @@ services:
     image: rocketchat:experiment
     environment:
       - TEST_MODE=true
+      - DEBUG=${DEBUG:-}
       - EXIT_UNHANDLEDPROMISEREJECTION=true
-      - MONGO_URL=mongodb://mongo:27017/rocketchat
-      - MONGO_OPLOG_URL=mongodb://mongo:27017/local
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'MONGO_OPLOG_URL=${MONGO_OPLOG_URL:-}'
+      - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
-      - OVERWRITE_SETTING_Log_Level=2
+      - 'ROCKETCHAT_LICENSE=${ENTERPRISE_LICENSE:-}'
+      - 'COVERAGE_DIR=${COVERAGE_DIR:-}'
+      - 'COVERAGE_REPORTER=${COVERAGE_REPORTER:-}'
+      - 'COVERAGE_FILE_NAME=${COVERAGE_FILE_NAME:-}'
+      - OVERWRITE_SETTING_Log_Level=${DEBUG_LOG_LEVEL:-0}
+      - Federation_Service_Enabled=true
+      - 'Federation_Service_Domain=rc.host'
+      - HEAP_USAGE_PERCENT=99
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -29,7 +38,7 @@ services:
       - rocketchat
 
   mongo:
-    image: mongodb/mongodb-community-server:8.2-ubi8
+    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.0}-ubi8
     restart: on-failure
     ports:
       - 27017:27017
