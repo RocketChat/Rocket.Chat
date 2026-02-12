@@ -126,6 +126,32 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		]);
 	});
 
+	test(`OC - Chat transfers [Monitor role] - Transfer to department with no online agents should fail`, async ({ api }) => {
+		const [roomA] = conversations.map(({ data }) => data.room);
+		const [, agentB] = sessions;
+
+		const emptyDepartment = await createDepartment(api);
+
+		await test.step('expect to open forward chat modal', async () => {
+			await poOmnichannel.chats.openChat(roomA.fname);
+			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
+		});
+
+		await test.step('expect transfer to department with no online agents to fail', async () => {
+			await poOmnichannel.content.forwardChatModal.selectDepartment(emptyDepartment.data.name);
+			await poOmnichannel.content.forwardChatModal.inputComment.type('transfer_attempt');
+			await expect(poOmnichannel.content.forwardChatModal.btnForward).toBeEnabled();
+			await poOmnichannel.content.forwardChatModal.btnForward.click();
+			await poOmnichannel.toastMessage.waitForDisplay({ type: 'error' });
+		});
+
+		await test.step('expect conversation to remain with original agent', async () => {
+			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomA.fname)).not.toBeVisible();
+		});
+
+		await emptyDepartment.delete();
+	});
+
 	test(`OC - Chat transfers [Monitor role] - Transfer to another department`, async () => {
 		const [, departmentB] = departments.map(({ data }) => data);
 		const [roomA] = conversations.map(({ data }) => data.room);
