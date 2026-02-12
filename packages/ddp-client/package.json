@@ -1,14 +1,14 @@
 {
 	"name": "@rocket.chat/ddp-client",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
 	"scripts": {
-		"build": "tsc",
-		"dev": "tsc --watch --preserveWatchOutput",
+		"build": "tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",

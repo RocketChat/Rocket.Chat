@@ -1,6 +1,6 @@
 import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken, UserStatus } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
+import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
@@ -17,10 +17,6 @@ import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEm
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
 import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
 import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type UsersInfo = { userId?: IUser['_id']; username?: IUser['username'] };
 
