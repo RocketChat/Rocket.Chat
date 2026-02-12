@@ -8,6 +8,7 @@ import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
+import Timestamp from './Timestamp';
 import CodeElement from '../code/CodeElement';
 import EmojiElement from '../emoji/EmojiElement';
 import ChannelMentionElement from '../mentions/ChannelMentionElement';
@@ -132,6 +133,9 @@ const renderBlockComponent = (block: MessageBlock, index: number): ReactElement 
 
 		case 'SPOILER':
 			return <SpoilerSpan key={index}>{block.value}</SpoilerSpan>;
+
+		case 'TIMESTAMP':
+			return <Timestamp key={index}>{block}</Timestamp>;
 
 		default:
 			return null;
