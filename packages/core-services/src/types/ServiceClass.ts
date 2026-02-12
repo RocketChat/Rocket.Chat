@@ -82,6 +82,7 @@ export abstract class ServiceClass implements IServiceClass {
 
 	removeAllListeners(): void {
 		this.events.removeAllListeners();
+		this.settings.removeAllListeners();
 	}
 
 	getName(): string {
