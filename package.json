@@ -28,7 +28,6 @@
 		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
 		"ms": "turbo run ms --env-mode=loose",
 		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts",
-		"set:mongo-version": "node ./scripts/set-mongo-version.mjs",
 		"fuselage": "./fuselage.sh",
 		"lint": "turbo run lint",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
