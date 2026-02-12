@@ -12,18 +12,14 @@ type SidebarGenericItemProps = {
 };
 
 const SidebarGenericItem = ({ href, active, externalUrl, onClick , children, ...props }: SidebarGenericItemProps): ReactElement => {
-	const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        if (onClick) {
-            onClick();
-        }
-    };
+	
 	return(
 	<SidebarItem
 		selected={active}
 		clickable
 		is='a'
 		href={href}
-		onClick={(e) => {onClick?.();}}
+		onClick={onClick}
 		{...(externalUrl && { target: '_blank', rel: 'noopener noreferrer' })}
 		{...props}
 	>
