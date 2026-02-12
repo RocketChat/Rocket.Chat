@@ -57,14 +57,13 @@ export abstract class ServiceClass implements IServiceClass {
 
 	protected events = new EventEmitter();
 
+	protected settings = new EventEmitter();
+
 	protected internal = false;
 
 	protected api?: IApiService;
 
-	protected settingEvents: Map<
-		string,
-		{ cb: (data: { clientAction: ClientAction; setting: ISetting }) => Promise<void>; ignoreActions?: ClientAction[] }
-	> = new Map();
+	protected settingListenerActive = false;
 
 	constructor() {
 		this.emit = this.emit.bind(this);
@@ -106,24 +105,16 @@ export abstract class ServiceClass implements IServiceClass {
 	}
 
 	private registerEventListener() {
-		if (this.settingEvents.size !== 0) {
+		if (this.settingListenerActive) {
 			return;
 		}
+
+		this.settingListenerActive = true;
 
 		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
 			const { _id } = setting;
 
-			const settingHandler = this.settingEvents.get(_id);
-
-			if (!settingHandler || settingHandler.ignoreActions?.includes(clientAction)) {
-				return;
-			}
-
-			try {
-				await settingHandler.cb({ clientAction, setting });
-			} catch {
-				// noop
-			}
+			this.settings.emit(_id, { clientAction, setting });
 		});
 	}
 
@@ -134,7 +125,17 @@ export abstract class ServiceClass implements IServiceClass {
 	): void {
 		this.registerEventListener();
 
-		this.settingEvents.set(settingId, { cb, ignoreActions });
+		this.settings.on(settingId, async ({ clientAction, setting }: { clientAction: ClientAction; setting: ISetting }): Promise<void> => {
+			if (ignoreActions?.includes(clientAction)) {
+				return;
+			}
+
+			try {
+				await cb({ clientAction, setting });
+			} catch {
+				// noop
+			}
+		});
 	}
 
 	async created(): Promise<void> {
