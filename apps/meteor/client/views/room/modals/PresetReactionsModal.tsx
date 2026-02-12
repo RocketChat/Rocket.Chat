@@ -1,128 +1,113 @@
-import { Box, Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Modal, Icon } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useEmojiPicker } from '../../../contexts/EmojiPickerContext';
+
 type PresetReaction = {
-	emoji: string;
-	label?: string;
+emoji: string;
+label?: string;
 };
 
 type PresetReactionsModalProps = {
-	initialPresetReactions?: PresetReaction[];
-	onConfirm: (presetReactions: PresetReaction[]) => void;
-	onCancel: () => void;
+initialPresetReactions?: PresetReaction[];
+onConfirm: (presetReactions: PresetReaction[]) => void;
+onCancel: () => void;
 };
 
-// Common emojis that users might want to preset
-const COMMON_EMOJIS = [
-	':+1:',
-	':-1:',
-	':heart:',
-	':tada:',
-	':clap:',
-	':fire:',
-	':rocket:',
-	':eyes:',
-	':raised_hands:',
-	':100:',
-	':white_check_mark:',
-	':x:',
-	':thinking_face:',
-	':smile:',
-	':laughing:',
-	':cry:',
-	':pray:',
-	':muscle:',
-	':sparkles:',
-	':star:',
-];
+const PresetReactionsModal = ({ initialPresetReactions = [], onConfirm, onCancel }: PresetReactionsModalProps): ReactElement => {
+const { t } = useTranslation();
+const [selectedReactions, setSelectedReactions] = useState<PresetReaction[]>(initialPresetReactions);
+const emojiPickerRef = useRef<HTMLButtonElement>(null);
+const { open: openEmojiPicker } = useEmojiPicker();
+
+const handleAddEmoji = () => {
+if (!emojiPickerRef.current) {
+return;
+}
+
+openEmojiPicker(emojiPickerRef.current, (emoji: string) => {
+// Format emoji with colons if not already formatted
+const formattedEmoji = emoji.startsWith(':') ? emoji : `:${emoji}:`;
+
+// Check if already selected
+if (!selectedReactions.some((r) => r.emoji === formattedEmoji)) {
+setSelectedReactions((prev) => [...prev, { emoji: formattedEmoji }]);
+}
+});
+};
+
+const handleRemoveEmoji = (emoji: string) => {
+setSelectedReactions((prev) => prev.filter((r) => r.emoji !== emoji));
+};
+
+const handleConfirm = () => {
+onConfirm(selectedReactions);
+};
 
 // Simple emoji rendering (will be properly rendered by the emoji system)
 const emojiToDisplay = (emoji: string) => emoji.replace(/:/g, '');
 
-const PresetReactionsModal = ({ initialPresetReactions = [], onConfirm, onCancel }: PresetReactionsModalProps): ReactElement => {
-	const { t } = useTranslation();
-	const [selectedReactions, setSelectedReactions] = useState<PresetReaction[]>(initialPresetReactions);
+return (
+<Modal>
+<Modal.Header>
+<Modal.Title>{t('Select_Preset_Reactions')}</Modal.Title>
+<Modal.Close onClick={onCancel} />
+</Modal.Header>
+<Modal.Content>
+<Box mb={16}>
+<Box fontScale='p2' color='hint' mb={16}>
+{t('Preset_Reactions_Description')}
+</Box>
 
-	const handleEmojiClick = (emoji: string) => {
-		setSelectedReactions((prev) => {
-			const existingIndex = prev.findIndex((p) => p.emoji === emoji);
-			if (existingIndex >= 0) {
-				return prev.filter((_, i) => i !== existingIndex);
-			}
-			return [...prev, { emoji }];
-		});
-	};
+<Box mb={16}>
+<Box fontScale='p2' fontWeight='bold' mb={8}>
+{t('Selected')} ({selectedReactions.length}):
+</Box>
+{selectedReactions.length > 0 ? (
+<Box display='flex' flexWrap='wrap' gap={8} mb={8}>
+{selectedReactions.map((preset) => (
+<Box
+key={preset.emoji}
+display='flex'
+alignItems='center'
+p={8}
+borderRadius={4}
+bg='surface-selected'
+style={{ cursor: 'pointer' }}
+onClick={() => handleRemoveEmoji(preset.emoji)}
+title={`${preset.emoji} - Click to remove`}
+>
+<Box is='span' fontSize='x20' lineHeight='1'>
+{emojiToDisplay(preset.emoji)}
+</Box>
+<Icon name='cross-small' size='x16' mis={4} />
+</Box>
+))}
+</Box>
+) : (
+<Box fontScale='p2' color='hint' mb={8}>
+{t('No_reactions_selected')}
+</Box>
+)}
+</Box>
 
-	const isSelected = (emoji: string) => selectedReactions.some((p) => p.emoji === emoji);
-
-	const handleConfirm = () => {
-		onConfirm(selectedReactions);
-	};
-
-	return (
-		<Modal>
-			<Modal.Header>
-				<Modal.Title>{t('Select_Preset_Reactions')}</Modal.Title>
-				<Modal.Close onClick={onCancel} />
-			</Modal.Header>
-			<Modal.Content>
-				<Box mb={16}>
-					<Box fontScale='p2' color='hint' mb={8}>
-						{t('Preset_Reactions_Description')}
-					</Box>
-					{selectedReactions.length > 0 && (
-						<Box mb={16}>
-							<Box fontScale='p2' fontWeight='bold' mb={8}>
-								{t('Selected')}:
-							</Box>
-							<Box display='flex' flexWrap='wrap' gap={8}>
-								{selectedReactions.map((preset) => (
-									<Box
-										key={preset.emoji}
-										p={8}
-										borderRadius={4}
-										bg='surface-selected'
-										style={{ cursor: 'pointer' }}
-										onClick={() => handleEmojiClick(preset.emoji)}
-										title={preset.emoji}
-									>
-										{emojiToDisplay(preset.emoji)}
-									</Box>
-								))}
-							</Box>
-						</Box>
-					)}
-					<Box fontScale='p2' fontWeight='bold' mb={8}>
-						{t('Available')}:
-					</Box>
-					<Box display='flex' flexWrap='wrap' gap={8}>
-						{COMMON_EMOJIS.map((emoji) => (
-							<Box
-								key={emoji}
-								p={8}
-								borderRadius={4}
-								bg={isSelected(emoji) ? 'surface-selected' : 'surface-neutral'}
-								style={{ cursor: 'pointer' }}
-								onClick={() => handleEmojiClick(emoji)}
-								title={emoji}
-							>
-								{emojiToDisplay(emoji)}
-							</Box>
-						))}
-					</Box>
-				</Box>
-			</Modal.Content>
-			<Modal.Footer>
-				<ButtonGroup align='end'>
-					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button primary onClick={handleConfirm}>
-						{t('Confirm')}
-					</Button>
-				</ButtonGroup>
-			</Modal.Footer>
-		</Modal>
-	);
+<Button ref={emojiPickerRef} onClick={handleAddEmoji} icon='emoji' secondary>
+{t('Add_Emoji')}
+</Button>
+</Box>
+</Modal.Content>
+<Modal.Footer>
+<ButtonGroup align='end'>
+<Button onClick={onCancel}>{t('Cancel')}</Button>
+<Button primary onClick={handleConfirm} disabled={selectedReactions.length === 0}>
+{t('Confirm')}
+</Button>
+</ButtonGroup>
+</Modal.Footer>
+</Modal>
+);
 };
 
+export default PresetReactionsModal;
