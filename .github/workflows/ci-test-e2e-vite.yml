@@ -150,6 +150,17 @@ jobs:
         run: |
           ROOT_URL=http://localhost:3000/ npx vite build
 
+      - name: Verify Vite build output
+        working-directory: ./apps/meteor
+        run: |
+          echo "Checking Vite build output..."
+          ls -la dist/
+          if [ ! -f dist/index.html ]; then
+            echo "ERROR: dist/index.html not found!"
+            exit 1
+          fi
+          echo "Vite build verified - index.html exists"
+
       - name: Install Meteor
         shell: bash
         run: |
@@ -229,6 +240,28 @@ jobs:
           TRANSPORTER: ${{ inputs.transporter }}
         run: |
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci-vite.yml up -d --wait
+
+      - name: Verify Traefik routing
+        run: |
+          set -o xtrace
+          docker ps
+
+          # Wait for Traefik to discover the frontend service
+          echo "Waiting for frontend to be accessible via Traefik..."
+          for i in {1..30}; do
+            if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/ | grep -q "200"; then
+              echo "Frontend is accessible!"
+              break
+            fi
+            echo "Attempt $i: Frontend not ready yet..."
+            if [ $i -eq 30 ]; then
+              echo "Frontend not accessible after 30 attempts"
+              docker compose -f docker-compose-ci-vite.yml logs traefik
+              docker compose -f docker-compose-ci-vite.yml logs frontend
+              exit 1
+            fi
+            sleep 2
+          done
 
       - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
