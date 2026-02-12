@@ -6,6 +6,7 @@ import {
 	ajv,
 	validateBadRequestErrorResponse,
 	validateNotFoundErrorResponse,
+	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -51,6 +52,9 @@ const customSoundsEndpoints = API.v1
 		'custom-sounds.list',
 		{
 			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 				200: ajv.compile<
 					PaginatedResult<{
 						sounds: ICustomSound[];
@@ -81,8 +85,8 @@ const customSoundsEndpoints = API.v1
 								$ref: '#/components/schemas/ICustomSound',
 							},
 						},
+						required: ['count', 'offset', 'total', 'sounds', 'success'],
 					},
-					required: ['count', 'offset', 'total', 'sounds', 'success'],
 				}),
 			},
 			query: isCustomSoundsListProps,
@@ -139,6 +143,7 @@ const customSoundsEndpoints = API.v1
 				}),
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 				404: validateNotFoundErrorResponse,
 			},
 			query: isCustomSoundsGetOneProps,

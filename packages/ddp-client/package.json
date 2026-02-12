@@ -7,8 +7,8 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "tsc",
-		"dev": "tsc --watch --preserveWatchOutput",
+		"build": "tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
