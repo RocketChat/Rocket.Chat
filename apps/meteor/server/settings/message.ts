@@ -81,6 +81,14 @@ export const createMessageSettings = () =>
 				i18nDescription: 'Message_Read_Receipt_Archive_Cron_Description',
 				enableQuery: { _id: 'Message_Read_Receipt_Store_Users', value: true },
 			});
+			await this.add('Message_Read_Receipt_Archive_Batch_Size', 10000, {
+				type: 'int',
+				enterprise: true,
+				invalidValue: 10000,
+				modules: ['message-read-receipt'],
+				i18nDescription: 'Message_Read_Receipt_Archive_Batch_Size_Description',
+				enableQuery: { _id: 'Message_Read_Receipt_Store_Users', value: true },
+			});
 		});
 		await this.add('Message_CustomDomain_AutoLink', '', {
 			type: 'string',

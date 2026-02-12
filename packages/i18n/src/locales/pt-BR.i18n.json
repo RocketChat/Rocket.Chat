@@ -3290,6 +3290,8 @@
   "Message_Read_Receipt_Archive_Retention_Days_Description": "Número de dias para manter as confirmações de leitura no armazenamento ativo antes de arquivar no armazenamento frio",
   "Message_Read_Receipt_Archive_Cron": "Agendamento do Arquivo",
   "Message_Read_Receipt_Archive_Cron_Description": "Expressão cron para o agendamento do arquivamento (por exemplo, '0 2 * * *' para diariamente às 2h da manhã)",
+  "Message_Read_Receipt_Archive_Batch_Size": "Tamanho do Lote de Arquivo",
+  "Message_Read_Receipt_Archive_Batch_Size_Description": "Número de confirmações de leitura a processar por lote durante o arquivamento. Valores mais baixos reduzem a carga do servidor, mas levam mais tempo para concluir.",
   "Message_ShowDeletedStatus": "Mostrar status excluído",
   "Message_ShowEditedStatus": "Mostrar status editado",
   "Message_ShowFormattingTips": "Exibir dicas de formatação",

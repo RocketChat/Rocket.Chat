@@ -3484,6 +3484,8 @@
   "Message_Read_Receipt_Archive_Retention_Days_Description": "Number of days to keep read receipts in hot storage before archiving to cold storage",
   "Message_Read_Receipt_Archive_Cron": "Archive Cron Schedule",
   "Message_Read_Receipt_Archive_Cron_Description": "Cron expression for the archiving schedule (e.g., '0 2 * * *' for daily at 2 AM)",
+  "Message_Read_Receipt_Archive_Batch_Size": "Archive Batch Size",
+  "Message_Read_Receipt_Archive_Batch_Size_Description": "Number of read receipts to process per batch during archiving. Lower values reduce server load but take longer to complete.",
   "Message_ShowDeletedStatus": "Show Deleted Status",
   "Message_ShowEditedStatus": "Show Edited Status",
   "Message_ShowFormattingTips": "Show Formatting Tips",
