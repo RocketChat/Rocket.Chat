@@ -120,7 +120,7 @@ test.describe.serial('message-composer', () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
-		await test.step('expect to edit last message message', async () => {
+		await test.step('expect to edit last message', async () => {
 			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
 			await poHomeChannel.content.openLastMessageMenu();
 			await poHomeChannel.content.btnOptionEditMessage.click();
@@ -148,7 +148,7 @@ test.describe.serial('message-composer', () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
-		await test.step('expect to edit last message message', async () => {
+		await test.step('expect to edit last message', async () => {
 			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
 			await poHomeChannel.content.openLastMessageMenu();
 			await poHomeChannel.content.btnOptionEditMessage.click();
