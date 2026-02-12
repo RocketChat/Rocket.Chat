@@ -14,7 +14,7 @@ export async function archiveOldReadReceipts(): Promise<void> {
 	
 	logger.info(`Starting to archive read receipts older than ${cutoffDate.toISOString()}`);
 
-	// Find all receipts older than 30 days
+	// Find all receipts older than the retention period
 	const oldReceipts = await ReadReceipts.findOlderThan(cutoffDate).toArray();
 
 	if (oldReceipts.length === 0) {
