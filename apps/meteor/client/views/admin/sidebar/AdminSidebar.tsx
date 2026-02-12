@@ -26,7 +26,7 @@ const AdminSidebar = () => {
 					}
 				/>
 				<Sidebar.Content>
-					<AdminSidebarPages currentPath={currentPath || ''} onClick={() => {sidebar.toggle()}} />
+					<AdminSidebarPages currentPath={currentPath || ''} onClick={sidebar.close} />
 				</Sidebar.Content>
 			</Sidebar>
 		</SettingsProvider>
