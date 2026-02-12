@@ -213,6 +213,8 @@ jobs:
 
       - name: Start containers for CE
         if: inputs.release == 'ce'
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
         run: |
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci-vite.yml up -d rocketchat frontend --wait
 
@@ -221,6 +223,7 @@ jobs:
         env:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
+          GITHUB_WORKSPACE: ${{ github.workspace }}
         run: |
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci-vite.yml up -d --wait
 
