@@ -28,10 +28,11 @@ const getClientAddress = (req: IncomingMessage): string | undefined => {
 		return req.socket.remoteAddress;
 	}
 
+	const forwardedForHeader = req.headers['x-forwarded-for'];
 	const forwardedFor =
-		(req.headers['x-forwarded-for'] && Array.isArray(req.headers['x-forwarded-for'])
-			? req.headers['x-forwarded-for'][0]
-			: req.headers['x-forwarded-for']) || '';
+		(Array.isArray(forwardedForHeader)
+			? forwardedForHeader[0]
+			: forwardedForHeader) || '';
 	if (!forwardedFor) {
 		return;
 	}
@@ -78,7 +79,7 @@ export class Client extends EventEmitter {
 	private updatePresence = throttle(
 		() => {
 			if (this.userId) {
-				void Presence.updateConnection(this.userId, this.connection.id).catch((err) => {
+				void Presence.updateConnection(this.userId, this.connection.id).catch((err: unknown) => {
 					console.error('Error updating connection presence:', err);
 				});
 			}
@@ -97,7 +98,7 @@ export class Client extends EventEmitter {
 		this.connection = {
 			id: this.session,
 			instanceId: server.id,
-			onClose: (fn): void => {
+			onClose: (fn: (...args: unknown[]) => void): void => {
 				this.on('close', fn);
 			},
 			clientAddress: getClientAddress(req),
@@ -146,11 +147,17 @@ export class Client extends EventEmitter {
 	}
 
 	async callMethod(packet: IPacket): Promise<void> {
-		this.chain = this.chain.then(() => server.call(this, packet)).catch();
+		// Chain method calls - log errors but continue processing
+		this.chain = this.chain.then(() => server.call(this, packet)).catch((error) => {
+			console.error('DDP method call failed', { method: packet.method, error: error.message });
+		});
 	}
 
 	async callSubscribe(packet: IPacket): Promise<void> {
-		this.chain = this.chain.then(() => server.subscribe(this, packet)).catch();
+		// Chain subscription calls - log errors but continue processing
+		this.chain = this.chain.then(() => server.subscribe(this, packet)).catch((error) => {
+			console.error('DDP subscription failed', { name: packet.name, error: error.message });
+		});
 	}
 
 	process(action: string, packet: IPacket): void {

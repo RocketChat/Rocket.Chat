@@ -26,7 +26,7 @@ const logger = new Logger('LivechatStartup');
 
 // TODO this patch is temporary because `ContactMerger` still a lot of dependencies, so it is not suitable to be moved to omni-core package
 // TODO add tests covering the ContactMerger usage
-registerGuest.patch(async (originalFn, newData, options) => {
+registerGuest.patch(async (originalFn: typeof registerGuest, newData: Parameters<typeof registerGuest>[0], options?: Parameters<typeof registerGuest>[1]) => {
 	const visitor = await originalFn(newData, options);
 	if (!visitor) {
 		return null;
@@ -133,7 +133,10 @@ Meteor.startup(async () => {
 			return;
 		}
 
-		void setUserStatusLivechatIf(user._id, ILivechatAgentStatus.NOT_AVAILABLE, {}, { livechatStatusSystemModified: true }).catch();
+		// Update agent status on logout - log error but don't block logout
+		void setUserStatusLivechatIf(user._id, ILivechatAgentStatus.NOT_AVAILABLE, {}, { livechatStatusSystemModified: true }).catch((error) => {
+			logger.error('Failed to update livechat agent status on logout', { userId: user._id, error });
+		});
 
 		// TODO: Shouldn't this notifier be the same as the one inside setUserStatusLivechatIf?
 		void notifyOnUserChange({

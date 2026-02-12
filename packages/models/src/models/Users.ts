@@ -134,6 +134,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				key: { active: 1, lastLogin: 1 },
 				partialFilterExpression: { active: true, lastLogin: { $exists: true } },
 			},
+			// Compound indexes for common query patterns - performance optimization
+			{
+				key: { statusLivechat: 1, roles: 1, active: 1, status: 1 },
+				sparse: true,
+				background: true,
+			}, // For livechat agent availability queries
+			{
+				key: { type: 1, active: 1 },
+				background: true,
+			}, // For active users by type queries
+			{
+				key: { active: 1, roles: 1 },
+				sparse: true,
+				background: true,
+			}, // For permission checks and role-based queries
 		];
 	}
 

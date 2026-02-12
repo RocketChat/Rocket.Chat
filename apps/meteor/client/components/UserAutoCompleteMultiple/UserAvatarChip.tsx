@@ -2,6 +2,7 @@ import { Box, Chip, Icon } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
+import { memo } from 'react';
 
 type UserAvatarChipProps = ComponentProps<typeof Chip> & {
 	federated?: boolean;
@@ -9,7 +10,8 @@ type UserAvatarChipProps = ComponentProps<typeof Chip> & {
 	name?: string;
 };
 
-const UserAvatarChip = ({ federated, username, name, ...props }: UserAvatarChipProps) => {
+// Memoized to prevent re-renders in lists when sibling items change
+const UserAvatarChip = memo(({ federated, username, name, ...props }: UserAvatarChipProps) => {
 	const displayName = useUserDisplayName({ name, username });
 	return (
 		<Chip height='x20' {...props}>
@@ -19,6 +21,6 @@ const UserAvatarChip = ({ federated, username, name, ...props }: UserAvatarChipP
 			</Box>
 		</Chip>
 	);
-};
+});
 
 export default UserAvatarChip;

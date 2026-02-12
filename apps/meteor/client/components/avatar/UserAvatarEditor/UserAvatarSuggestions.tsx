@@ -1,5 +1,5 @@
 import { Button, Avatar } from '@rocket.chat/fuselage';
-import { useCallback } from 'react';
+import { useCallback, memo } from 'react';
 
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import { useUserAvatarSuggestions } from './useUserAvatarSuggestions';
@@ -9,8 +9,10 @@ type UserAvatarSuggestionsProps = {
 	onSelectOne?: (suggestion: UserAvatarSuggestion) => void;
 };
 
-function UserAvatarSuggestions({ disabled, onSelectOne }: UserAvatarSuggestionsProps) {
-	const { data: suggestions = [] } = useUserAvatarSuggestions();
+// Memoized to prevent re-renders when parent updates but props haven't changed
+const UserAvatarSuggestions = memo(function UserAvatarSuggestions({ disabled, onSelectOne }: UserAvatarSuggestionsProps) {
+	const { data } = useUserAvatarSuggestions();
+	const suggestions = (data ?? []) as UserAvatarSuggestion[];
 
 	const handleClick = useCallback((suggestion: UserAvatarSuggestion) => () => onSelectOne?.(suggestion), [onSelectOne]);
 
@@ -26,6 +28,6 @@ function UserAvatarSuggestions({ disabled, onSelectOne }: UserAvatarSuggestionsP
 			)}
 		</>
 	);
-}
+});
 
 export default UserAvatarSuggestions;

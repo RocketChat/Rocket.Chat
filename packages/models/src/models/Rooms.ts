@@ -96,6 +96,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				key: { federated: 1 },
 				sparse: true,
 			},
+			// Compound indexes for common query patterns - performance optimization
+			{
+				key: { teamId: 1, archived: 1 },
+				sparse: true,
+				background: true,
+			}, // For team room queries with archive filter
+			{
+				key: { t: 1, archived: 1 },
+				background: true,
+			}, // For room type queries with archive filter
 			{
 				key: {
 					'usersWaitingForE2EKeys.userId': 1,
