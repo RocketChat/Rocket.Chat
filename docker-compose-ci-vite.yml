@@ -36,6 +36,7 @@ services:
       traefik.enable: true
       traefik.http.services.rocketchat-backend.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat-backend.service: rocketchat-backend
+      traefik.http.routers.rocketchat-backend.entrypoints: http
       traefik.http.routers.rocketchat-backend.rule: PathPrefix(`/api`) || PathPrefix(`/livechat`) || PathPrefix(`/_timesync`) || PathPrefix(`/__cordova`) || PathPrefix(`/websocket`) || PathPrefix(`/sockjs`) || PathPrefix(`/assets`) || PathPrefix(`/avatar`) || PathPrefix(`/file-upload`) || PathPrefix(`/emoji-custom`) || PathPrefix(`/custom-sounds`) || PathPrefix(`/layout`)
       traefik.http.routers.rocketchat-backend.priority: 50
       traefik.http.middlewares.test-retry.retry.attempts: 4
@@ -62,6 +63,7 @@ services:
       traefik.enable: true
       traefik.http.services.rocketchat-frontend.loadbalancer.server.port: 80
       traefik.http.routers.rocketchat-frontend.service: rocketchat-frontend
+      traefik.http.routers.rocketchat-frontend.entrypoints: http
       traefik.http.routers.rocketchat-frontend.rule: PathPrefix(`/`)
       traefik.http.routers.rocketchat-frontend.priority: 1
     healthcheck:
@@ -155,6 +157,7 @@ services:
       traefik.enable: true
       traefik.http.services.ddp-streamer-service.loadbalancer.server.port: 3000
       traefik.http.routers.ddp-streamer-service.service: ddp-streamer-service
+      traefik.http.routers.ddp-streamer-service.entrypoints: http
       traefik.http.routers.ddp-streamer-service.rule: PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)
       traefik.http.routers.ddp-streamer-service.priority: 100
 
