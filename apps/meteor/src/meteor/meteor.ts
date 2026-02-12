@@ -1,5 +1,5 @@
 import type { Connection } from './ddp-client.ts';
-import { Package } from './package-registry.ts';
+// import { Package } from './package-registry.ts';
 import { noop } from './utils/noop.ts';
 
 // --- Types & Interfaces ---
@@ -667,12 +667,7 @@ function waitForEagerAsyncModules() {
 		maybeReady();
 	}
 
-	const potentialPromise = Package['core-runtime']?.waitUntilAllLoaded();
-	if (potentialPromise && typeof potentialPromise.then === 'function') {
-		potentialPromise.then(finish);
-	} else {
-		finish();
-	}
+	finish();
 }
 
 const loadingCompleted = function () {
@@ -681,19 +676,11 @@ const loadingCompleted = function () {
 	waitForEagerAsyncModules();
 };
 
-if (typeof document !== 'undefined') {
-	if (document.readyState === 'complete') {
-		window.setTimeout(loadingCompleted);
-	} else {
-		document.addEventListener('DOMContentLoaded', loadingCompleted, false);
-		window.addEventListener('load', loadingCompleted, false);
-	}
+if (document.readyState === 'complete') {
+	window.setTimeout(loadingCompleted);
+} else {
+	document.addEventListener('DOMContentLoaded', loadingCompleted, false);
+	window.addEventListener('load', loadingCompleted, false);
 }
 
 export { Meteor, globalScope as global, meteorEnv };
-
-Package.meteor = {
-	Meteor,
-	global: globalScope,
-	meteorEnv,
-};

@@ -256,7 +256,7 @@ const diffQueryOrderedChanges = (
 };
 
 const diffQueryChanges = (
-	ordered: boolean,
+	ordered: boolean | undefined,
 	oldResults: any,
 	newResults: any,
 	observer: any,

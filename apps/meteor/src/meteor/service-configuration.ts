@@ -1,8 +1,8 @@
 import { Accounts } from './accounts-base.ts';
-import { Mongo } from './mongo.ts';
+import { Collection } from './mongo.ts';
 import { Package } from './package-registry.ts';
 
-class ConfigError extends Error {
+export class ConfigError extends Error {
 	constructor(serviceName?: string) {
 		super();
 		this.name = 'ServiceConfiguration.ConfigError';
@@ -17,15 +17,15 @@ class ConfigError extends Error {
 	}
 }
 
-const ServiceConfiguration = {
-	configurations: new Mongo.Collection('meteor_accounts_loginServiceConfiguration', {
-		_preventAutopublish: true,
-		connection: Accounts.connection,
-	}),
+export const configurations = new Collection('meteor_accounts_loginServiceConfiguration', {
+	_preventAutopublish: true,
+	connection: Accounts.connection,
+});
+
+export const ServiceConfiguration = {
+	configurations,
 	ConfigError,
 };
-
-export { ServiceConfiguration };
 
 Package['service-configuration'] = {
 	ServiceConfiguration,
