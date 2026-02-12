@@ -246,17 +246,65 @@ describe('checkForSsrfHelpers', () => {
 	});
 
 	describe('isIpInCidrRange', () => {
-		it('returns true when IPv4 is in CIDR range', () => {
-			expect(isIpInCidrRange('192.168.1.1', '192.168.0.0/16')).toBe(true);
-			expect(isIpInCidrRange('10.0.0.1', '10.0.0.0/8')).toBe(true);
+		describe('IPv4', () => {
+			it('returns true when IPv4 is in CIDR range', () => {
+				expect(isIpInCidrRange('192.168.1.1', '192.168.0.0/16')).toBe(true);
+				expect(isIpInCidrRange('10.0.0.1', '10.0.0.0/8')).toBe(true);
+			});
+			it('returns false when IPv4 is not in CIDR range', () => {
+				expect(isIpInCidrRange('192.168.1.1', '10.0.0.0/8')).toBe(false);
+				expect(isIpInCidrRange('8.8.8.8', '127.0.0.0/8')).toBe(false);
+			});
+			it('returns true for /32 exact match', () => {
+				expect(isIpInCidrRange('192.168.1.1', '192.168.1.1/32')).toBe(true);
+				expect(isIpInCidrRange('192.168.1.2', '192.168.1.1/32')).toBe(false);
+			});
+			it('treats missing prefix as /32', () => {
+				expect(isIpInCidrRange('10.0.0.1', '10.0.0.1')).toBe(true);
+				expect(isIpInCidrRange('10.0.0.2', '10.0.0.1')).toBe(false);
+			});
+			it('returns true for first and last IP in range (boundary)', () => {
+				expect(isIpInCidrRange('127.0.0.0', '127.0.0.0/8')).toBe(true);
+				expect(isIpInCidrRange('127.255.255.255', '127.0.0.0/8')).toBe(true);
+				expect(isIpInCidrRange('128.0.0.0', '127.0.0.0/8')).toBe(false);
+			});
+			it('returns false when network is invalid or missing', () => {
+				expect(isIpInCidrRange('192.168.1.1', '/16')).toBe(false);
+			});
+			it('returns false when IP version does not match CIDR (IPv4 IP with IPv6-style cidr)', () => {
+				// 192.168.1.1 is IPv4; if cidr looks like IPv6 we still parse as IPv4 first - actually the cidr is split by / so "::1/128" gives network "::1" which is not valid IPv4, so net.isIP(network) !== 4 and we return false
+				expect(isIpInCidrRange('192.168.1.1', '::1/128')).toBe(false);
+			});
 		});
-		it('returns false when IPv4 is not in CIDR range', () => {
-			expect(isIpInCidrRange('192.168.1.1', '10.0.0.0/8')).toBe(false);
-			expect(isIpInCidrRange('8.8.8.8', '127.0.0.0/8')).toBe(false);
+		describe('IPv6', () => {
+			it('returns true when IPv6 is in CIDR range', () => {
+				expect(isIpInCidrRange('::1', '::1/128')).toBe(true);
+				expect(isIpInCidrRange('fe80::1', 'fe80::/10')).toBe(true);
+			});
+			it('returns false when IPv6 is not in CIDR range', () => {
+				expect(isIpInCidrRange('2a00:1450:4007:806::200e', 'fc00::/7')).toBe(false);
+				expect(isIpInCidrRange('::2', '::1/128')).toBe(false);
+			});
+			it('accepts bracketed IPv6', () => {
+				expect(isIpInCidrRange('[::1]', '::1/128')).toBe(true);
+				expect(isIpInCidrRange('[fe80::1]', 'fe80::/10')).toBe(true);
+			});
+			it('treats missing prefix as /128', () => {
+				expect(isIpInCidrRange('::1', '::1')).toBe(true);
+				expect(isIpInCidrRange('::2', '::1')).toBe(false);
+			});
+			it('returns true for range boundaries', () => {
+				expect(isIpInCidrRange('fe80::', 'fe80::/10')).toBe(true);
+				expect(isIpInCidrRange('febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff', 'fe80::/10')).toBe(true);
+				expect(isIpInCidrRange('fec0::1', 'fe80::/10')).toBe(false);
+			});
+			it('returns false when IP version does not match (IPv6 IP with IPv4 cidr)', () => {
+				expect(isIpInCidrRange('::1', '127.0.0.0/8')).toBe(false);
+			});
 		});
-		it('returns true when IPv6 is in CIDR range', () => {
-			expect(isIpInCidrRange('::1', '::1/128')).toBe(true);
-			expect(isIpInCidrRange('fe80::1', 'fe80::/10')).toBe(true);
+		it('returns false for invalid IP', () => {
+			expect(isIpInCidrRange('not-an-ip', '192.168.0.0/16')).toBe(false);
+			expect(isIpInCidrRange('256.1.1.1', '192.168.0.0/16')).toBe(false);
 		});
 	});
 
