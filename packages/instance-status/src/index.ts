@@ -36,7 +36,7 @@ let createIndexes = async () => {
 			result.some((index) => {
 				if (index.key && index.key._updatedAt === 1) {
 					if (index.expireAfterSeconds !== indexExpire && index.name) {
-						InstanceStatusModel.col.dropIndex(index.name);
+						void InstanceStatusModel.col.dropIndex(index.name);
 						return false;
 					}
 					return true;
@@ -46,7 +46,7 @@ let createIndexes = async () => {
 		)
 		.then((created) => {
 			if (!created) {
-				InstanceStatusModel.col.createIndex({ _updatedAt: 1 }, { expireAfterSeconds: indexExpire });
+				void InstanceStatusModel.col.createIndex({ _updatedAt: 1 }, { expireAfterSeconds: indexExpire });
 			}
 		});
 
@@ -56,7 +56,7 @@ let createIndexes = async () => {
 };
 
 async function registerInstance(name: string, extraInformation: Partial<IInstanceStatus['extraInformation']>): Promise<unknown> {
-	createIndexes();
+	void createIndexes();
 
 	currentInstance.name = name;
 	currentInstance.extraInformation = extraInformation;
