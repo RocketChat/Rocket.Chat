@@ -188,6 +188,7 @@ export abstract class BaseRaw<
 
 		await this.trash.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
 			upsert: true,
+			session: options?.session,
 		});
 
 		try {
