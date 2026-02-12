@@ -981,28 +981,19 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isUsersSendConfirmationEmailParamsPOST,
+		rateLimiterOptions: {
+			numRequestsAllowed: 1,
+			intervalTimeInMS: 60000,
+		},
 	},
 	{
 		async post() {
 			const { email } = this.bodyParams;
 
-      try {
-				const user = await Meteor.users.findOneAsync({ 'emails.address': email });
-				if (!user) {
-					return API.v1.failure('User not found');
-				}
-				const now = Date.now();
-				const lastSent = user?.services?.email?.lastConfirmationSent || 0;
-				if (now - lastSent < 1 * 60 * 1000) {
-					return API.v1.failure('Please wait before requesting another confirmation email.');
-				}
-				if (await sendConfirmationEmail(email)) {
-					await Meteor.users.updateAsync(user._id, { $set: { 'services.email.lastConfirmationSent': now } });
-					return API.v1.success();
-				}
-				return API.v1.failure();
-			} catch (error) {
-				return API.v1.failure('Database operation failed');
+      if (await sendConfirmationEmail(email)) {
+				return API.v1.success();
+			}
+			return API.v1.failure();
 			}
 		},
 	},
