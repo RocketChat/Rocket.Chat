@@ -23,8 +23,19 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 	}, []);
 
 	return (
-		<Box mb={16} mi='neg-x4' is='form' onSubmit={handleFormSubmit} display='flex' flexWrap='wrap' alignItems='center'>
-			<Box mi={4} display='flex' flexGrow={1}>
+		<Box 
+			mb={16} 
+			mi='neg-x4' 
+			is='form' 
+			onSubmit={handleFormSubmit} 
+			display='flex' 
+			flexWrap='wrap' 
+			alignItems='center'
+			gap='x4'
+			position='relative'
+			minHeight='x44'
+		>
+			<Box mi={4} display='flex' flexGrow={1} minWidth='x220'>
 				<TextInput
 					{...props}
 					placeholder={placeholder ?? t('Search')}

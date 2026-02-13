@@ -11,7 +11,15 @@ const RadioButtonList = ({ group, onSelected }: RadioDropDownProps): ReactElemen
 			</Box>
 		)}
 		{group.items.map((item) => (
-			<Option key={item.id} label={item.label} onClick={(): void => onSelected(item)}>
+			<Option 
+				key={item.id} 
+				label={item.label} 
+				onClick={(): void => onSelected(item)}
+				paddingBlock='x8'
+				display='flex'
+				alignItems='center'
+				minHeight='x40'
+			>
 				<RadioButton checked={item.checked} onChange={(): void => onSelected(item)} />
 			</Option>
 		))}

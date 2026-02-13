@@ -15,7 +15,15 @@ const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListPr
 						</Box>
 					)}
 					{category.items.map((item) => (
-						<Option key={item.id} {...({ label: item.label } as any)} onClick={(): void => onSelected(item)}>
+						<Option 
+							key={item.id} 
+							{...({ label: item.label } as any)} 
+							onClick={(): void => onSelected(item)}
+							paddingBlock='x8'
+							display='flex'
+							alignItems='center'
+							minHeight='x40'
+						>
 							<CheckBox checked={item.checked} onChange={(): void => onSelected(item)} />
 						</Option>
 					))}

@@ -45,6 +45,7 @@ const AppsFilters = ({
 
 	const isPrivateAppsPage = context === 'private';
 	const breakpoints = useBreakpoints();
+	const isMobile = !breakpoints.includes('sm');
 
 	const appsSearchPlaceholders: { [key: string]: string } = {
 		explore: t('Search_Apps'),
@@ -54,19 +55,22 @@ const AppsFilters = ({
 		private: t('Search_Private_apps'),
 	};
 
-	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
+	// Responsive filter sizing: full width on mobile, fixed width on desktop
+	const fixFiltersSize = isMobile 
+		? { minWidth: 'x100', flexGrow: 1 } 
+		: { maxWidth: 'x200', minWidth: 'x200' };
 
 	return (
-		<Box pi={24}>
+		<Box pi={24} position='relative' zIndex={1}>
 			<FilterByText value={text} onChange={(event) => setText(event.target.value)} placeholder={appsSearchPlaceholders[context]}>
 				{!isPrivateAppsPage && (
-					<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
+					<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} {...fixFiltersSize} />
 				)}
-				<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
+				<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} {...fixFiltersSize} />
 				{!isPrivateAppsPage && (
-					<CategoryDropDown categories={categories} selectedCategories={selectedCategories} onSelected={onSelected} flexGrow={1} />
+					<CategoryDropDown categories={categories} selectedCategories={selectedCategories} onSelected={onSelected} {...fixFiltersSize} />
 				)}
-				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
+				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} {...fixFiltersSize} />
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 		</Box>
