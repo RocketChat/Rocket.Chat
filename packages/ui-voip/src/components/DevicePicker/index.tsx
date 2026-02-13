@@ -7,8 +7,8 @@ import type { MouseEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useMediaCallContext } from '../context';
-import { useDevicePermissionPrompt2, stopTracks } from '../hooks/useDevicePermissionPrompt';
+import { useMediaCallContext } from '../../context';
+import { useDevicePermissionPrompt2, stopTracks } from '../../hooks/useDevicePermissionPrompt';
 import DevicePickerButton from './DevicePickerButton';
 import { getDefaultDeviceItem } from './getDefaultDeviceItem';
 
@@ -86,11 +86,11 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
             void requestPermission({
                 actionType: 'device-change',
             })
-                .then((stream) => {
+                .then((stream: MediaStream) => {
                     stopTracks(stream);
                     setIsOpen(true);
                 })
-                .catch((error) => {
+                .catch((error: unknown) => {
                     // Permission denied or error occurred, keep menu closed
                     console.warn('DevicePicker: Failed to request device permissions', error);
                     setIsOpen(false);
