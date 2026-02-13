@@ -20,14 +20,14 @@ export const uploadFiles = async (
 	const room = await chat.data.getRoom();
 	const queue = [...files];
 
-	const uploadFile = (file: File, encrypted?: EncryptedFileUploadContent) => {
+	const uploadFile = async (file: File, encrypted?: EncryptedFileUploadContent) => {
 		if (encrypted) {
-			uploadsStore.send(file, encrypted);
+			await uploadsStore.send(file, encrypted);
 		} else {
-			uploadsStore.send(file);
+			await uploadsStore.send(file);
 		}
 
-		uploadNextFile();
+		await uploadNextFile();
 	};
 
 	const uploadNextFile = async (): Promise<void> => {
@@ -44,8 +44,8 @@ export const uploadFiles = async (
 
 		const e2eRoom = await e2e.getInstanceByRoomId(room._id);
 
-		if (!e2eRoom) {
-			uploadFile(file);
+		if (!e2eRoom?.isReady()) {
+			await uploadFile(file);
 			return;
 		}
 
@@ -57,37 +57,40 @@ export const uploadFiles = async (
 			return;
 		}
 
-		if (!e2eRoom.isReady()) {
-			uploadFile(file);
+		const encryptedFile = await e2eRoom.encryptFile(file);
+
+		if (!encryptedFile) {
+			dispatchToastMessage({
+				type: 'error',
+				message: t('Error_encrypting_file'),
+			});
+
+			await uploadNextFile();
 			return;
 		}
 
-		const encryptedFile = await e2eRoom.encryptFile(file);
+		const fileContentData = {
+			type: file.type,
+			typeGroup: file.type.split('/')[0],
+			name: file.name,
+			encryption: {
+				key: encryptedFile.key,
+				iv: encryptedFile.iv,
+			},
+			hashes: {
+				sha256: encryptedFile.hash,
+			},
+		};
 
-		if (encryptedFile) {
-			const fileContentData = {
-				type: file.type,
-				typeGroup: file.type.split('/')[0],
-				name: file.name,
-				encryption: {
-					key: encryptedFile.key,
-					iv: encryptedFile.iv,
-				},
-				hashes: {
-					sha256: encryptedFile.hash,
-				},
-			};
+		const fileContent = {
+			raw: fileContentData,
+			encrypted: await e2eRoom.encryptMessageContent(fileContentData),
+		};
 
-			const fileContent = {
-				raw: fileContentData,
-				encrypted: await e2eRoom.encryptMessageContent(fileContentData),
-			};
-
-			uploadFile(encryptedFile.file, { rawFile: file, fileContent, encryptedFile });
-		}
+		await uploadFile(encryptedFile.file, { rawFile: file, fileContent, encryptedFile });
 	};
 
-	uploadNextFile();
 	resetFileInput?.();
 	chat?.action.performContinuously('uploading');
+	await uploadNextFile();
 };
