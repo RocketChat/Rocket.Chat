@@ -165,18 +165,18 @@ class ReadReceiptClass {
 		// Fallback: Use subscription last seen (ls) to determine who read the message
 		// Find all subscriptions where ls >= message.ts
 		const subscriptions = await Subscriptions.findByRoomId(message.rid, {
-			projection: { userId: 1, ls: 1 },
+			projection: { 'u._id': 1, ls: 1 },
 		}).toArray();
 
 		const usersWhoRead = subscriptions.filter((sub) => sub.ls && sub.ls >= message.ts);
 
 		return Promise.all(
 			usersWhoRead.map(async (sub) => {
-				const user = await Users.findOneById(sub.userId, { projection: { username: 1, name: 1 } });
+				const user = await Users.findOneById(sub.u._id, { projection: { username: 1, name: 1 } });
 				return {
-					_id: `${message._id}-${sub.userId}`,
+					_id: `${message._id}-${sub.u._id}`,
 					roomId: message.rid,
-					userId: sub.userId,
+					userId: sub.u._id,
 					messageId: message._id,
 					ts: sub.ls, // Use subscription's last seen as the timestamp
 					user: user as IReadReceiptWithUser['user'],
