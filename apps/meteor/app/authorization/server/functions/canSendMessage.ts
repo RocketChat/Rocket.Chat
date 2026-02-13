@@ -34,7 +34,7 @@ export async function validateRoomMessagePermissionsAsync(
 	}
 
 	if (room.archived) {
-		throw new Error('room-archived');
+		throw new Error('room_is_archived');
 	}
 
 	if (room.ro === true && !(await hasPermissionAsync(uid, 'post-readonly', room._id))) {

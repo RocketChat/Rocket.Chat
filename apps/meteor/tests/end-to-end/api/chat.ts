@@ -887,7 +887,7 @@ describe('[Chat]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'room-archived');
+						expect(res.body).to.have.property('error', 'room_is_archived');
 					})
 					.end(done);
 			});
@@ -1207,7 +1207,7 @@ describe('[Chat]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'room-archived');
+						expect(res.body).to.have.property('error', 'room_is_archived');
 					})
 					.end(done);
 			});
