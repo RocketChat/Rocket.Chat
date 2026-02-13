@@ -10,7 +10,7 @@ import type { WithRequiredProperty } from './utils';
 
 const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
 	enabled: true,
-	name: `new department ${Date.now()}`,
+	name: `new department ${Random.id()}`,
 	description: 'created from api',
 	showOnRegistration: true,
 	email: faker.internet.email(),
