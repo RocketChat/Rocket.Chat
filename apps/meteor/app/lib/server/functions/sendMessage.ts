@@ -260,7 +260,7 @@ export const sendMessage = async (
 
 	const uploadIdsToConfirm = filesToConfirm?.map(({ _id }) => _id);
 
-	if (uploadIdsToConfirm?.length && !isE2E) {
+	if (uploadIdsToConfirm?.length) {
 		const uploadsToConfirm: Partial<IUpload>[] = await Uploads.findByIds(uploadIdsToConfirm).toArray();
 		const { files, attachments } = await parseMultipleFilesIntoMessageAttachments(uploadsToConfirm, message.rid, user);
 		message.files = files;
