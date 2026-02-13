@@ -69,6 +69,10 @@ export class OmnichannelRoomInfo {
 		return this.dialogRoomInfo.getByRole('list', { name: 'Tags' }).getByText(label, { exact: true });
 	}
 
+	getCustomFieldInput(label: string): Locator {
+		return this.dialogEditRoom.getByLabel(label);
+	}
+
 	getBadgeIndicator(name: string, title: string): Locator {
 		return this.sidebar.getSidebarItemByName(name).getByTitle(title);
 	}

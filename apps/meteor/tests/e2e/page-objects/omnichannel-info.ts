@@ -39,6 +39,10 @@ export class OmnichannelContactInfo extends OmnichannelManageContact {
 		return this.dialogContactInfo.getByRole('button', { name: 'See conflicts' });
 	}
 
+	getCustomFieldInput(label: string): Locator {
+		return this.dialogContactInfo.getByLabel(label);
+	}
+
 	async solveConflict(field: string, value: string) {
 		await this.btnSeeConflicts.click();
 		await this.contactReviewModal.solveConfirmation(field, value);
