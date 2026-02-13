@@ -164,7 +164,7 @@ class ReadReceiptClass {
 
 		// Fallback: Use subscription last seen (ls) to determine who read the message
 		// Find all subscriptions where ls >= message.ts
-		const subscriptions = await Subscriptions.findByRoomIdAndLastSeenAfter(message.rid, message.ts, {
+		const subscriptions = await Subscriptions.findByRoomIdAndLastSeenAtOrAfter(message.rid, message.ts, {
 			projection: { 'u._id': 1, ls: 1 },
 		}).toArray();
 
@@ -176,7 +176,7 @@ class ReadReceiptClass {
 					roomId: message.rid,
 					userId: sub.u._id,
 					messageId: message._id,
-					ts: sub.ls!, // Non-null assertion since query filters for non-null ls
+					ts: sub.ls ?? message.ts, // Use subscription's last seen or message timestamp as fallback
 					user: user as IReadReceiptWithUser['user'],
 				};
 			}),
