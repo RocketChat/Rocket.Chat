@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/message-parser",
-	"version": "0.31.32",
+	"version": "0.31.33",
 	"description": "Rocket.Chat parser for messages",
 	"homepage": "https://github.com/RocketChat/fuselage#readme",
 	"bugs": {
