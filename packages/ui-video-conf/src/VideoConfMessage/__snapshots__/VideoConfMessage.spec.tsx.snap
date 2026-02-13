@@ -126,7 +126,7 @@ exports[`renders CallEnded without crashing 1`] = `
                 >
                   <button
                     aria-label="info"
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
                     type="button"
                   >
                     <i
@@ -296,7 +296,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                 >
                   <button
                     aria-label="info"
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
                     type="button"
                   >
                     <i
@@ -466,7 +466,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                 >
                   <button
                     aria-label="info"
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
                     type="button"
                   >
                     <i
@@ -646,7 +646,7 @@ exports[`renders CallingDM without crashing 1`] = `
                 >
                   <button
                     aria-label="info"
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
                     type="button"
                   >
                     <i
@@ -937,7 +937,7 @@ exports[`renders NoAvatars without crashing 1`] = `
                 >
                   <button
                     aria-label="info"
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
                     type="button"
                   >
                     <i

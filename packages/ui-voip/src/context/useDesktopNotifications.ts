@@ -71,7 +71,7 @@ export const useDesktopNotifications = (sessionInfo: SessionInfo) => {
 			});
 		};
 
-		notifyDesktop();
+		void notifyDesktop();
 		previousCallId.current = sessionInfo.callId;
 
 		return () => {

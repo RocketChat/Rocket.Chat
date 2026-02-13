@@ -44,7 +44,7 @@ const findDirectMessageRoom = async (
 		throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" or "username" is required');
 	}
 
-	const user = await Users.findOneById(uid, { projection: { username: 1 } });
+	const user = await Users.findOneById(uid);
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'findDirectMessageRoom',
@@ -155,7 +155,7 @@ const dmDeleteAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
-		await eraseRoom(room._id, this.userId);
+		await eraseRoom(room._id, this.user);
 
 		return API.v1.success();
 	};
