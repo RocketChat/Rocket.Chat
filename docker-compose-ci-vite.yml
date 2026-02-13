@@ -14,9 +14,8 @@ services:
     volumes:
       - ${COVERAGE_DIR:-/tmp/coverage}:${COVERAGE_DIR:-/tmp/coverage}
     build:
-      # FIX: Context relative to the meteor app location
-      context: ${GITHUB_WORKSPACE:-}/apps/meteor
-      dockerfile: .docker/Dockerfile.backend
+      context: /tmp/build
+      dockerfile: ${GITHUB_WORKSPACE:-}/apps/meteor/.docker/Dockerfile.backend
       x-bake:
         platforms:
           - linux/amd64
