@@ -164,21 +164,19 @@ class ReadReceiptClass {
 
 		// Fallback: Use subscription last seen (ls) to determine who read the message
 		// Find all subscriptions where ls >= message.ts
-		const subscriptions = await Subscriptions.findByRoomId(message.rid, {
+		const subscriptions = await Subscriptions.findByRoomIdAndLastSeenAfter(message.rid, message.ts, {
 			projection: { 'u._id': 1, ls: 1 },
 		}).toArray();
 
-		const usersWhoRead = subscriptions.filter((sub) => sub.ls && sub.ls >= message.ts);
-
 		return Promise.all(
-			usersWhoRead.map(async (sub) => {
+			subscriptions.map(async (sub) => {
 				const user = await Users.findOneById(sub.u._id, { projection: { username: 1, name: 1 } });
 				return {
 					_id: Random.id(), // Generate a unique ID for this synthetic receipt
 					roomId: message.rid,
 					userId: sub.u._id,
 					messageId: message._id,
-					ts: sub.ls!, // Non-null assertion since we filtered for non-null ls above
+					ts: sub.ls!, // Non-null assertion since query filters for non-null ls
 					user: user as IReadReceiptWithUser['user'],
 				};
 			}),
