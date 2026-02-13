@@ -7,7 +7,7 @@ import type { ComponentProps, FormEvent } from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-moment.locale('en');
+
 
 type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
 	onChange(range: { start: string; end: string }): void;
