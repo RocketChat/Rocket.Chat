@@ -23,4 +23,5 @@ export type EncryptedFile = {
 	readonly hash: string;
 };
 
-export const isEncryptedUpload = (upload: Upload): upload is EncryptedUpload => 'encryptedFile' in upload;
+export const isEncryptedUpload = (upload: Upload): upload is EncryptedUpload =>
+	'encryptedFile' in upload && upload.encryptedFile !== undefined;

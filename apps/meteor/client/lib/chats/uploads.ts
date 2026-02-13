@@ -85,7 +85,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	async send(file: File, encrypted?: EncryptedFileUploadContent): Promise<void> {
 		const maxFileSize = settings.peek('FileUpload_MaxFileSize');
-		const invalidContentType = !fileUploadIsValidContentType(file.type);
+		const invalidContentType = !fileUploadIsValidContentType(encrypted ? encrypted.rawFile.type : file.type);
 		const id = Random.id();
 
 		this.set([
@@ -94,8 +94,10 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 				id,
 				file: encrypted ? encrypted.rawFile : file,
 				percentage: 0,
-				encryptedFile: encrypted?.encryptedFile,
-				metadataForEncryption: encrypted?.fileContent.raw,
+				...(encrypted && {
+					encryptedFile: encrypted.encryptedFile,
+					metadataForEncryption: encrypted.fileContent.raw,
+				}),
 			},
 		]);
 
