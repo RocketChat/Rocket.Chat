@@ -35,7 +35,9 @@ import { IS_EE } from '../../e2e/config/constants';
 		const param1Value = 'hello%20world';
 		const param2Value = '123@456';
 
-		const response = await request.get(apps(`/public/${app.id}/api/${encodeURIComponent(param1Value)}/${encodeURIComponent(param2Value)}/test`)).set(credentials);
+		const response = await request
+			.get(apps(`/public/${app.id}/api/${encodeURIComponent(param1Value)}/${encodeURIComponent(param2Value)}/test`))
+			.set(credentials);
 
 		expect(response.status, 'API endpoint request failed').to.equal(200);
 		expect(response.text, 'Response body does not contain correct parameters').to.equal(`Param1: ${param1Value}, Param2: ${param2Value}`);
