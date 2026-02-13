@@ -96,9 +96,9 @@ const AgentsTable = () => {
 			)}
 			{isSuccess && data?.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={isLoading} data-qa-id='agents-table'>
+					<GenericTable aria-label={t('Agents')} aria-busy={isLoading}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
+						<GenericTableBody>
 							{data?.users.map((user) => <AgentsTableRow key={user._id} user={user} mediaQuery={mediaQuery} />)}
 						</GenericTableBody>
 					</GenericTable>

@@ -14,7 +14,15 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export const generatePersonalAccessTokenOfUser = async ({ bypassTwoFactor, tokenName, userId }: {tokenName: string, userId: string, bypassTwoFactor: boolean}): Promise<string> => {
+export const generatePersonalAccessTokenOfUser = async ({
+	bypassTwoFactor,
+	tokenName,
+	userId,
+}: {
+	tokenName: string;
+	userId: string;
+	bypassTwoFactor: boolean;
+}): Promise<string> => {
 	if (!(await hasPermissionAsync(userId, 'create-personal-access-tokens'))) {
 		throw new Meteor.Error('not-authorized', 'Not Authorized', {
 			method: 'personalAccessTokens:generateToken',
@@ -44,17 +52,23 @@ export const generatePersonalAccessTokenOfUser = async ({ bypassTwoFactor, token
 		},
 	});
 	return token;
-}
+};
 
 Meteor.methods<ServerMethods>({
-	'personalAccessTokens:generateToken': twoFactorRequired(async function ({ tokenName, bypassTwoFactor }) {
+	'personalAccessTokens:generateToken': twoFactorRequired(async function ({
+		tokenName,
+		bypassTwoFactor,
+	}: {
+		tokenName: string;
+		bypassTwoFactor: boolean;
+	}) {
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', {
 				method: 'personalAccessTokens:generateToken',
 			});
 		}
-		
+
 		return generatePersonalAccessTokenOfUser({ tokenName, userId: uid, bypassTwoFactor });
 	}),
 });
