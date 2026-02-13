@@ -174,11 +174,11 @@ class ReadReceiptClass {
 			usersWhoRead.map(async (sub) => {
 				const user = await Users.findOneById(sub.u._id, { projection: { username: 1, name: 1 } });
 				return {
-					_id: `${message._id}-${sub.u._id}`,
+					_id: Random.id(), // Generate a unique ID for this synthetic receipt
 					roomId: message.rid,
 					userId: sub.u._id,
 					messageId: message._id,
-					ts: sub.ls, // Use subscription's last seen as the timestamp
+					ts: sub.ls!, // Non-null assertion since we filtered for non-null ls above
 					user: user as IReadReceiptWithUser['user'],
 				};
 			}),

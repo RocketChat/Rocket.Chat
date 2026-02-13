@@ -2715,7 +2715,7 @@ describe('[Chat]', () => {
 					expect(response.body).to.have.property('receipts').and.to.be.an('array');
 					expect(response.body).to.have.property('success', true);
 
-					// Should have at least one receipt (the user who sent the message)
+					// Receipts may be empty if no users have read the message yet
 					expect(response.body.receipts.length).to.be.greaterThanOrEqual(0);
 
 					// Each receipt should have the required properties
