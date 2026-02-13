@@ -7,136 +7,136 @@ import type { MouseEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useMediaCallContext } from '../../context';
-import { useDevicePermissionPrompt2, stopTracks } from '../../hooks/useDevicePermissionPrompt';
 import DevicePickerButton from './DevicePickerButton';
 import { getDefaultDeviceItem } from './getDefaultDeviceItem';
+import { useMediaCallContext } from '../../context';
+import { useDevicePermissionPrompt2, stopTracks } from '../../hooks/useDevicePermissionPrompt';
 
 const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
-    const { t } = useTranslation();
+	const { t } = useTranslation();
 
-    const { onDeviceChange } = useMediaCallContext();
+	const { onDeviceChange } = useMediaCallContext();
 
-    const availableDevices = useAvailableDevices();
-    const selectedAudioDevices = useSelectedDevices();
+	const availableDevices = useAvailableDevices();
+	const selectedAudioDevices = useSelectedDevices();
 
-    const availableInputDevice =
-        availableDevices?.audioInput?.map<GenericMenuItemProps>((device) => {
-            // Only use default item when device.id is actually missing
-            if (!device.id) {
-                return getDefaultDeviceItem(t('Default'), 'input');
-            }
+	const availableInputDevice =
+		availableDevices?.audioInput?.map<GenericMenuItemProps>((device) => {
+			// Only use default item when device.id is actually missing
+			if (!device.id) {
+				return getDefaultDeviceItem(t('Default'), 'input');
+			}
 
-            return {
-                id: `${device.id}-input`,
-                content: (
-                    <Box is='span' title={device.label || t('Default')} fontSize={14}>
-                        {device.label || t('Default')}
-                    </Box>
-                ),
-                addon: <RadioButton checked={device.id === selectedAudioDevices?.audioInput?.id} />,
-            };
-        }) || [];
+			return {
+				id: `${device.id}-input`,
+				content: (
+					<Box is='span' title={device.label || t('Default')} fontSize={14}>
+						{device.label || t('Default')}
+					</Box>
+				),
+				addon: <RadioButton checked={device.id === selectedAudioDevices?.audioInput?.id} />,
+			};
+		}) || [];
 
-    const availableOutputDevice =
-        availableDevices?.audioOutput?.map<GenericMenuItemProps>((device) => {
-            // Only use default item when device.id is actually missing
-            if (!device.id) {
-                return getDefaultDeviceItem(t('Default'), 'output');
-            }
+	const availableOutputDevice =
+		availableDevices?.audioOutput?.map<GenericMenuItemProps>((device) => {
+			// Only use default item when device.id is actually missing
+			if (!device.id) {
+				return getDefaultDeviceItem(t('Default'), 'output');
+			}
 
-            return {
-                id: `${device.id}-output`,
-                content: (
-                    <Box is='span' title={device.label || t('Default')} fontSize={14}>
-                        {device.label || t('Default')}
-                    </Box>
-                ),
-                addon: <RadioButton checked={device.id === selectedAudioDevices?.audioOutput?.id} />,
-                onClick(e?: MouseEvent<HTMLElement>) {
-                    e?.preventDefault();
-                    e?.stopPropagation();
-                },
-            };
-        }) || [];
+			return {
+				id: `${device.id}-output`,
+				content: (
+					<Box is='span' title={device.label || t('Default')} fontSize={14}>
+						{device.label || t('Default')}
+					</Box>
+				),
+				addon: <RadioButton checked={device.id === selectedAudioDevices?.audioOutput?.id} />,
+				onClick(e?: MouseEvent<HTMLElement>) {
+					e?.preventDefault();
+					e?.stopPropagation();
+				},
+			};
+		}) || [];
 
-    const micSection = {
-        title: t('Microphone'),
-        items: availableInputDevice,
-    };
+	const micSection = {
+		title: t('Microphone'),
+		items: availableInputDevice,
+	};
 
-    const speakerSection = {
-        title: t('Speaker'),
-        items: availableOutputDevice,
-    };
+	const speakerSection = {
+		title: t('Speaker'),
+		items: availableOutputDevice,
+	};
 
-    const disabled = availableOutputDevice.length === 0 && availableInputDevice.length === 0;
+	const disabled = availableOutputDevice.length === 0 && availableInputDevice.length === 0;
 
-    const [isOpen, setIsOpen] = useSafely(useState(false));
+	const [isOpen, setIsOpen] = useSafely(useState(false));
 
-    const requestPermission = useDevicePermissionPrompt2();
+	const requestPermission = useDevicePermissionPrompt2();
 
-    const onOpenChange = useCallback(
-        (isOpen: boolean) => {
-            if (!isOpen) {
-                setIsOpen(false);
-                return;
-            }
+	const onOpenChange = useCallback(
+		(isOpen: boolean) => {
+			if (!isOpen) {
+				setIsOpen(false);
+				return;
+			}
 
-            void requestPermission({
-                actionType: 'device-change',
-            })
-                .then((stream: MediaStream) => {
-                    stopTracks(stream);
-                    setIsOpen(true);
-                })
-                .catch((error: unknown) => {
-                    // Permission denied or error occurred, keep menu closed
-                    console.warn('DevicePicker: Failed to request device permissions', error);
-                    setIsOpen(false);
-                });
-        },
-        [requestPermission, setIsOpen],
-    );
+			void requestPermission({
+				actionType: 'device-change',
+			})
+				.then((stream: MediaStream) => {
+					stopTracks(stream);
+					setIsOpen(true);
+				})
+				.catch((error: unknown) => {
+					// Permission denied or error occurred, keep menu closed
+					console.warn('DevicePicker: Failed to request device permissions', error);
+					setIsOpen(false);
+				});
+		},
+		[requestPermission, setIsOpen],
+	);
 
-    return (
-        <GenericMenu
-            title={disabled ? t('Device_settings_not_supported_by_browser') : t('Device_settings_lowercase')}
-            sections={[micSection, speakerSection]}
-            disabled={disabled}
-            placement='top-end'
-            selectionMode='multiple'
-            isOpen={isOpen}
-            onOpenChange={onOpenChange}
-            onAction={(deviceId) => {
-                if (typeof deviceId !== 'string') {
-                    return;
-                }
+	return (
+		<GenericMenu
+			title={disabled ? t('Device_settings_not_supported_by_browser') : t('Device_settings_lowercase')}
+			sections={[micSection, speakerSection]}
+			disabled={disabled}
+			placement='top-end'
+			selectionMode='multiple'
+			isOpen={isOpen}
+			onOpenChange={onOpenChange}
+			onAction={(deviceId) => {
+				if (typeof deviceId !== 'string') {
+					return;
+				}
 
-                // Use endsWith to check suffix and slice to remove it
-                if (deviceId.endsWith('-input')) {
-                    const id = deviceId.slice(0, -6); // Remove '-input' suffix
-                    const device = availableDevices?.audioInput?.find((device) => device.id === id);
-                    if (device) {
-                        onDeviceChange(device);
-                    }
-                    return;
-                }
+				// Use endsWith to check suffix and slice to remove it
+				if (deviceId.endsWith('-input')) {
+					const id = deviceId.slice(0, -6); // Remove '-input' suffix
+					const device = availableDevices?.audioInput?.find((device) => device.id === id);
+					if (device) {
+						onDeviceChange(device);
+					}
+					return;
+				}
 
-                if (deviceId.endsWith('-output')) {
-                    const id = deviceId.slice(0, -7); // Remove '-output' suffix
-                    const device = availableDevices?.audioOutput?.find((device) => device.id === id);
-                    if (device) {
-                        onDeviceChange(device);
-                    }
-                    return;
-                }
+				if (deviceId.endsWith('-output')) {
+					const id = deviceId.slice(0, -7); // Remove '-output' suffix
+					const device = availableDevices?.audioOutput?.find((device) => device.id === id);
+					if (device) {
+						onDeviceChange(device);
+					}
+					return;
+				}
 
-                console.warn('Device Picker - Failed to select device: Invalid deviceId', deviceId);
-            }}
-            button={<DevicePickerButton secondary={secondary} tiny={!secondary} />}
-        />
-    );
+				console.warn('Device Picker - Failed to select device: Invalid deviceId', deviceId);
+			}}
+			button={<DevicePickerButton secondary={secondary} tiny={!secondary} />}
+		/>
+	);
 };
 
 export default DevicePicker;
