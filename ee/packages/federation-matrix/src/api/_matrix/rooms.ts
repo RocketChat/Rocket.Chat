@@ -1,6 +1,8 @@
-import type { HomeserverServices } from '@rocket.chat/federation-sdk';
+import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
+
+import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
 
 const PublicRoomsQuerySchema = {
 	type: 'object',
@@ -121,10 +123,9 @@ const PublicRoomsPostBodySchema = {
 
 const isPublicRoomsPostBodyProps = ajv.compile(PublicRoomsPostBodySchema);
 
-export const getMatrixRoomsRoutes = (services: HomeserverServices) => {
-	const { state } = services;
-
+export const getMatrixRoomsRoutes = () => {
 	return new Router('/federation')
+		.use(isAuthenticatedMiddleware())
 		.get(
 			'/v1/publicRooms',
 			{
@@ -143,7 +144,7 @@ export const getMatrixRoomsRoutes = (services: HomeserverServices) => {
 					avatar_url: '', // ?? don't have any yet
 				};
 
-				const publicRooms = await state.getAllPublicRoomIdsAndNames();
+				const publicRooms = await federationSDK.getAllPublicRoomIdsAndNames();
 
 				return {
 					body: {
@@ -178,7 +179,7 @@ export const getMatrixRoomsRoutes = (services: HomeserverServices) => {
 
 				const { filter } = body;
 
-				const publicRooms = await state.getAllPublicRoomIdsAndNames();
+				const publicRooms = await federationSDK.getAllPublicRoomIdsAndNames();
 
 				return {
 					body: {

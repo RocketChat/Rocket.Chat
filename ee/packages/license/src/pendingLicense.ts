@@ -11,7 +11,7 @@ export function setPendingLicense(this: LicenseManager, encryptedLicense: string
 export async function applyPendingLicense(this: LicenseManager) {
 	if (this.pendingLicense) {
 		logger.info('Applying pending license.');
-		return this.setLicense(this.pendingLicense);
+		await this.setLicense(this.pendingLicense);
 	}
 }
 

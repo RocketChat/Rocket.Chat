@@ -18,6 +18,10 @@ export type CallRole = 'caller' | 'callee';
 
 export type CallService = 'webrtc';
 
+export const callFeatureList = ['audio'] as const;
+
+export type CallFeature = (typeof callFeatureList)[number];
+
 export type CallState =
 	| 'none' // trying to call with no idea if it'll reach anyone
 	| 'ringing' // call has been acknoledged by the callee's agent, but no response about them accepting it or not
@@ -26,18 +30,25 @@ export type CallState =
 	| 'renegotiating' // a webrtc connection had been established before, but a new one is being negotiated
 	| 'hangup'; // call is over
 
+// Changes to this list must be reflected on the enum for clientMediaSignalHangupSchema too
 export type CallHangupReason =
 	| 'normal' // User explicitly hanged up
 	| 'remote' // The client was told the call is over
 	| 'rejected' // The callee rejected the call
 	| 'unavailable' // The actor is not available
 	| 'transfer' // one of the users requested the other be transferred to someone else
+	| 'not-answered' // max ringing duration was reached with no answer from the other user
+	| 'timeout-remote-sdp' // Timeout waiting for the remote SDP
+	| 'timeout-local-sdp' // Timeout while generating the local SDP + waiting for ICE Gathering
+	| 'timeout-activation' // Timeout connecting to the negotiated session
 	| 'timeout' // The call state hasn't progressed for too long
 	| 'signaling-error' // Hanging up because of an error during the signal processing
 	| 'service-error' // Hanging up because of an error setting up the service connection
 	| 'media-error' // Hanging up because of an error setting up the media connection
+	| 'input-error' // Something wrong with the audio input track on the client
 	| 'error' // Hanging up because of an unidentified error
-	| 'unknown'; // One of the call's signed users reported they don't know this call
+	| 'unknown' // One of the call's signed users reported they don't know this call
+	| 'another-client'; // One of the call's users requested a hangup from a different client session than the one where the call is happening
 
 export type CallAnswer =
 	| 'accept' // actor accepts the call
@@ -61,10 +72,13 @@ export type CallRejectedReason =
 	| 'invalid-call-params' // something is wrong with the params (eg. no valid route between caller and callee)
 	| 'forbidden'; // one of the actors on the call doesn't have permission for it
 
+export type CallFlag = 'internal' | 'create-data-channel';
+
 export interface IClientMediaCall {
 	callId: string;
 	role: CallRole;
 	service: CallService | null;
+	flags: readonly CallFlag[];
 
 	state: CallState;
 	ignored: boolean;
@@ -75,15 +89,23 @@ export interface IClientMediaCall {
 	held: boolean;
 	/* busy = state >= 'accepted' && state < 'hangup' */
 	busy: boolean;
+	/* if the other side has put the call on hold */
+	remoteHeld: boolean;
+	remoteMute: boolean;
 
 	contact: CallContact;
 	transferredBy: CallContact | null;
 	audioLevel: number;
 	localAudioLevel: number;
 
+	/** if the call was requested by this session, then this will have the ID used to request the call, otherwise it will be the same as callId */
+	readonly tempCallId: string;
+	/** confirmed indicates if the call exists on the server */
+	readonly confirmed: boolean;
+
 	emitter: Emitter<CallEvents>;
 
-	getRemoteMediaStream(): MediaStream;
+	getRemoteMediaStream(): MediaStream | null;
 
 	accept(): void;
 	reject(): void;
@@ -95,4 +117,5 @@ export interface IClientMediaCall {
 	sendDTMF(dtmf: string, duration?: number): void;
 
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
+	isFeatureAvailable(feature: CallFeature): boolean;
 }

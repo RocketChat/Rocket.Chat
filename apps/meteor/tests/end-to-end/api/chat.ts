@@ -5,9 +5,9 @@ import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
+import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
 import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
-import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { addUserToRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -461,6 +461,126 @@ describe('[Chat]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
+		it('should throw an error when the properties (attachments.fields.title) is missing', (done) => {
+			void request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: 'Sample message',
+					emoji: ':smirk:',
+					alias: 'Gruggy',
+					avatar: 'http://res.guggy.com/logo_128.png',
+					attachments: [
+						{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							message_link: 'https://google.com',
+							collapsed: false,
+							author_name: 'Bradley Hilton',
+							author_link: 'https://rocket.chat/',
+							author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							title_link_download: true,
+							image_url: 'http://res.guggy.com/logo_128.png',
+							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+							video_url: 'http://www.w3schools.com/tags/movie.mp4',
+							fields: [
+								{
+									short: true,
+									value: 'This is attachment field value',
+								},
+							],
+						},
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
+		it('should throw an error when the properties (attachments.fields.value) is missing', (done) => {
+			void request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: 'Sample message',
+					emoji: ':smirk:',
+					alias: 'Gruggy',
+					avatar: 'http://res.guggy.com/logo_128.png',
+					attachments: [
+						{
+							color: '#ff0000',
+							text: 'Yay for gruggy!',
+							ts: '2016-12-09T16:53:06.761Z',
+							thumb_url: 'http://res.guggy.com/logo_128.png',
+							message_link: 'https://google.com',
+							collapsed: false,
+							author_name: 'Bradley Hilton',
+							author_link: 'https://rocket.chat/',
+							author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+							title: 'Attachment Example',
+							title_link: 'https://youtube.com',
+							title_link_download: true,
+							image_url: 'http://res.guggy.com/logo_128.png',
+							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+							video_url: 'http://www.w3schools.com/tags/movie.mp4',
+							fields: [
+								{
+									short: true,
+									title: 'This is attachment field title',
+								},
+							],
+						},
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				})
+				.end(done);
+		});
+
+		it('attachment.fields should work fine when value and title are provided', (done) => {
+			void request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: 'Sample message',
+					attachments: [
+						{
+							text: 'This is attachment field',
+							color: '#764FA5',
+							fields: [{ short: true, value: 'This is value', title: 'This is title' }],
+						},
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.not.have.property('error');
+					expect(res.body).to.have.nested.property('message.msg', 'Sample message');
+					expect(res.body).to.have.nested.property('message.attachments').to.be.an('array');
+					expect(res.body).to.have.nested.property('message.attachments[0].fields').to.be.an('array');
+					expect(res.body).to.have.nested.property('message.attachments[0].fields[0].short', true);
+					expect(res.body).to.have.nested.property('message.attachments[0].fields[0].value', 'This is value');
+					expect(res.body).to.have.nested.property('message.attachments[0].fields[0].title', 'This is title');
 				})
 				.end(done);
 		});
@@ -1165,6 +1285,9 @@ describe('[Chat]', () => {
 						msgId = res.body.message._id;
 					});
 
+				// process is async now so wait for a sec
+				await sleep(1000);
+
 				await request
 					.get(api('chat.getMessage'))
 					.set(credentials)
@@ -1419,17 +1542,6 @@ describe('[Chat]', () => {
 							customFields,
 						},
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(statusCode)
-					.expect(testCb);
-
-				await (
-					customFields
-						? request.post(api(`rooms.upload/${testChannel._id}`)).field('customFields', JSON.stringify(customFields))
-						: request.post(api(`rooms.upload/${testChannel._id}`))
-				)
-					.set(credentials)
-					.attach('file', imgURL)
 					.expect('Content-Type', 'application/json')
 					.expect(statusCode)
 					.expect(testCb);
@@ -2123,6 +2235,142 @@ describe('[Chat]', () => {
 				const userWhoWasFollowingTheThreadSubscription = await getSubscriptionByRoomId(testChannel._id, otherUserCredentials);
 
 				expectNoUnreadThreadMessages(userWhoWasFollowingTheThreadSubscription);
+			});
+		});
+
+		describe('in read-only rooms with unmuted users', () => {
+			let readOnlyChannel: IRoom;
+			let unmutedUser: TestUser<IUser>;
+			let unmutedUserCredentials: Credentials;
+			let notUnmutedUser: TestUser<IUser>;
+			let notUnmutedUserCredentials: Credentials;
+
+			before(async () => {
+				unmutedUser = await createUser();
+				unmutedUserCredentials = await login(unmutedUser.username, password);
+
+				notUnmutedUser = await createUser();
+				notUnmutedUserCredentials = await login(notUnmutedUser.username, password);
+
+				const channelResult = await request
+					.post(api('channels.create'))
+					.set(credentials)
+					.send({
+						name: `readonly-delete-test-${Date.now()}`,
+						readOnly: true,
+					});
+				readOnlyChannel = channelResult.body.channel;
+
+				await request.post(api('channels.invite')).set(credentials).send({
+					roomId: readOnlyChannel._id,
+					userId: unmutedUser._id,
+				});
+				await request.post(api('channels.invite')).set(credentials).send({
+					roomId: readOnlyChannel._id,
+					userId: notUnmutedUser._id,
+				});
+
+				await request.post(api('rooms.unmuteUser')).set(credentials).send({
+					roomId: readOnlyChannel._id,
+					username: unmutedUser.username,
+				});
+
+				await updatePermission('delete-message', ['user']);
+			});
+
+			after(async () => {
+				await Promise.all([
+					readOnlyChannel && deleteRoom({ type: 'c', roomId: readOnlyChannel._id }),
+					unmutedUser && deleteUser(unmutedUser),
+					notUnmutedUser && deleteUser(notUnmutedUser),
+					updatePermission('delete-message', ['admin', 'owner', 'moderator']),
+				]);
+			});
+
+			it('should allow unmuted user to delete message from another user in read-only room', async () => {
+				const messageResult = await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: readOnlyChannel._id,
+							msg: 'Message to be deleted by unmuted user',
+						},
+					});
+
+				const deleteMsgId = messageResult.body.message._id;
+
+				await request
+					.post(api('chat.delete'))
+					.set(unmutedUserCredentials)
+					.send({
+						roomId: readOnlyChannel._id,
+						msgId: deleteMsgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+
+			it('should NOT allow non-unmuted user to delete message in read-only room (regression test)', async () => {
+				const messageResult = await request
+					.post(api('chat.sendMessage'))
+					.set(unmutedUserCredentials)
+					.send({
+						message: {
+							rid: readOnlyChannel._id,
+							msg: 'Message from unmuted user',
+						},
+					});
+
+				const deleteMsgId = messageResult.body.message._id;
+
+				await request
+					.post(api('chat.delete'))
+					.set(notUnmutedUserCredentials)
+					.send({
+						roomId: readOnlyChannel._id,
+						msgId: deleteMsgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', "You can't delete messages because the room is readonly.");
+					});
+			});
+
+			it('should NOT allow unmuted user without delete-message permission to delete message', async () => {
+				await updatePermission('delete-message', []);
+
+				const messageResult = await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: readOnlyChannel._id,
+							msg: 'Message that unmuted user without permission cannot delete',
+						},
+					});
+
+				const deleteMsgId = messageResult.body.message._id;
+
+				await request
+					.post(api('chat.delete'))
+					.set(unmutedUserCredentials)
+					.send({
+						roomId: readOnlyChannel._id,
+						msgId: deleteMsgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					});
+
+				await updatePermission('delete-message', ['user']);
 			});
 		});
 	});

@@ -11,7 +11,7 @@ const UnorderedListBlock = ({ items }: UnorderedListBlockProps): ReactElement =>
 	<ul>
 		{items.map((item, index) => (
 			<li key={index}>
-				<InlineElements children={item.value} />
+				<InlineElements>{item.value}</InlineElements>
 			</li>
 		))}
 	</ul>

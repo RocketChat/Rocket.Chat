@@ -32,8 +32,8 @@ export const sendForgotPasswordEmail = async (to: string): Promise<boolean | und
 	try {
 		Accounts.sendResetPasswordEmail(user._id, email);
 		return true;
-	} catch (error) {
-		SystemLogger.error(error);
+	} catch (err) {
+		SystemLogger.error({ err });
 	}
 };
 

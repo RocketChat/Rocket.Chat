@@ -1,12 +1,12 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { createElement } from 'react';
-import type { ComponentProps, ComponentType, ReactNode } from 'react';
+import type { ComponentPropsWithoutRef, ComponentType, ReactNode } from 'react';
 
 import { modalStore } from '../providers/ModalProvider/ModalStore';
 
 type ReactModalDescriptor<TComponent extends ComponentType<any> = ComponentType<any>> = {
 	component: TComponent;
-	props?: ComponentProps<TComponent>;
+	props?: ComponentPropsWithoutRef<TComponent>;
 };
 
 type ModalDescriptor = ReactModalDescriptor | null;
@@ -27,6 +27,8 @@ const mapCurrentModal = (descriptor: ModalDescriptor): ReactNode => {
 			...descriptor.props,
 		});
 	}
+
+	return null;
 };
 
 class ImperativeModalEmmiter extends Emitter<{ update: ModalDescriptor }> {

@@ -43,7 +43,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const isEnterprise = data?.isEnterprise ?? false;
 
 	const appAddon = app.addon;
-	const workspaceHasAddon = useHasLicenseModule(appAddon);
+	const { data: workspaceHasAddon = false } = useHasLicenseModule(appAddon);
 
 	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '', isEnterprise);
 

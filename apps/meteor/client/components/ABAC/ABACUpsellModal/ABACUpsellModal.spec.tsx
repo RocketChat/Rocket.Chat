@@ -4,11 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
 import ABACUpsellModal from './ABACUpsellModal';
-
-// Mock the hooks used by ABACUpsellModal
-jest.mock('../../../hooks/useHasLicenseModule', () => ({
-	useHasLicenseModule: jest.fn(() => false),
-}));
+import { createFakeLicenseInfo } from '../../../../tests/mocks/data';
 
 jest.mock('../../GenericUpsellModal/hooks', () => ({
 	useUpsellActions: jest.fn(() => ({
@@ -34,6 +30,9 @@ const appRoot = mockAppRoot()
 		Upgrade: 'Upgrade',
 		Cancel: 'Cancel',
 	})
+	.withEndpoint('GET', '/v1/licenses.info', async () => ({
+		license: createFakeLicenseInfo(),
+	}))
 	.build();
 
 describe('ABACUpsellModal', () => {

@@ -28,7 +28,7 @@ class ExtractRange extends stream.Transform {
 		this.bytes_read = 0;
 	}
 
-	_transform(chunk: any, _enc: BufferEncoding, cb: TransformCallback) {
+	override _transform(chunk: any, _enc: BufferEncoding, cb: TransformCallback) {
 		if (this.bytes_read > this.stop) {
 			// done reading
 			this.end();

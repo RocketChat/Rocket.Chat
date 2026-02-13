@@ -1,5 +1,5 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 
 import VideoConfPopup from './VideoConfPopup';
 import VideoConfPopupContent from './VideoConfPopupContent';

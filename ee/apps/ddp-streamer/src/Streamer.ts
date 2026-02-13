@@ -33,7 +33,7 @@ export class Stream<N extends StreamNames> extends Streamer<N> {
 		);
 	}
 
-	async sendToManySubscriptions(
+	override async sendToManySubscriptions(
 		subscriptions: Set<DDPSubscription>,
 		origin: Connection | undefined,
 		eventName: string,

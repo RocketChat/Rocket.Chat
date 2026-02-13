@@ -17,7 +17,7 @@ const FakeRoomProvider = ({ children, roomOverrides, subscriptionOverrides }: Fa
 		<RoomContext.Provider
 			value={useMemo(() => {
 				const room = createFakeRoom(roomOverrides);
-				const subscription = faker.datatype.boolean() ? createFakeSubscription(subscriptionOverrides) : undefined;
+				const subscription = createFakeSubscription(subscriptionOverrides);
 
 				return {
 					rid: room._id,

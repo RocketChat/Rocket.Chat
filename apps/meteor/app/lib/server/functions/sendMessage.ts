@@ -1,5 +1,5 @@
-import { Apps } from '@rocket.chat/apps';
-import { api, Message } from '@rocket.chat/core-services';
+import { AppEvents, Apps } from '@rocket.chat/apps';
+import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -11,7 +11,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
-import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
@@ -79,8 +79,8 @@ const validateAttachmentsFields = (attachmentField: any) => {
 		}),
 	);
 
-	if (typeof attachmentField.value !== 'undefined') {
-		attachmentField.value = String(attachmentField.value);
+	if (!attachmentField.value || !attachmentField.title) {
+		throw new Error('Invalid attachment field, title and value is required');
 	}
 };
 
@@ -225,27 +225,21 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 	await validateMessage(message, room, user);
 	prepareMessageObject(message, room._id, user);
 
-	if (message.t === 'otr') {
-		void api.broadcast('otrMessage', { roomId: message.rid, message, user, room });
-		return message;
-	}
-
 	if (settings.get('Message_Read_Receipt_Enabled')) {
 		message.unread = true;
 	}
 
 	// For the Rocket.Chat Apps :)
 	if (Apps.self?.isLoaded()) {
-		const listenerBridge = Apps.getBridges()?.getListenerBridge();
+		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreMessageSentPrevent, message);
 
-		const prevent = await listenerBridge?.messageEvent('IPreMessageSentPrevent', message);
 		if (prevent) {
 			return;
 		}
 
-		const result = await listenerBridge?.messageEvent(
-			'IPreMessageSentModify',
-			await listenerBridge?.messageEvent('IPreMessageSentExtend', message),
+		const result = await Apps.self?.triggerEvent(
+			AppEvents.IPreMessageSentModify,
+			await Apps.self?.triggerEvent(AppEvents.IPreMessageSentExtend, message),
 		);
 
 		if (typeof result === 'object') {
@@ -287,14 +281,11 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 
 	if (Apps.self?.isLoaded()) {
 		// If the message has a type (system message), we should notify the listener about it
-		const messageEvent = message.t ? 'IPostSystemMessageSent' : 'IPostMessageSent';
-		void Apps.getBridges()?.getListenerBridge().messageEvent(messageEvent, message);
+		const messageEvent = message.t ? AppEvents.IPostSystemMessageSent : AppEvents.IPostMessageSent;
+		void Apps.self?.triggerEvent(messageEvent, message);
 	}
 
-	// TODO: is there an opportunity to send returned data to notifyOnMessageChange?
 	await afterSaveMessage(message, room, user);
-
-	void notifyOnMessageChange({ id: message._id });
 
 	void notifyOnRoomChangedById(message.rid);
 

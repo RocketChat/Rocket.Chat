@@ -9,6 +9,8 @@ export type ClientMediaSignalError = {
 	errorType?: 'signaling' | 'service' | 'other';
 	errorCode?: string;
 	negotiationId?: string;
+	critical?: boolean;
+	errorDetails?: string;
 };
 
 export const clientMediaSignalErrorSchema: JSONSchemaType<ClientMediaSignalError> = {
@@ -38,6 +40,14 @@ export const clientMediaSignalErrorSchema: JSONSchemaType<ClientMediaSignalError
 			nullable: true,
 		},
 		negotiationId: {
+			type: 'string',
+			nullable: true,
+		},
+		critical: {
+			type: 'boolean',
+			nullable: true,
+		},
+		errorDetails: {
 			type: 'string',
 			nullable: true,
 		},

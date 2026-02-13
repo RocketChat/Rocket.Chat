@@ -1,9 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
-import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users, CallHistory } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
-import { _setRealName } from './setRealName';
+import { setRealName } from './setRealName';
 import { _setUsername } from './setUsername';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
@@ -65,7 +65,7 @@ export async function saveUserIdentity({
 	}
 
 	if (typeof rawName !== 'undefined' && nameChanged) {
-		if (!(await _setRealName(_id, name, user, updater, session))) {
+		if (!(await setRealName(_id, name, user, updater, session))) {
 			return false;
 		}
 	}
@@ -88,7 +88,7 @@ export async function saveUserIdentity({
 					try {
 						await updateUsernameReferences(handleUpdateParams);
 					} catch (err) {
-						SystemLogger.error(err);
+						SystemLogger.error({ err });
 					}
 				});
 			} else {
@@ -181,5 +181,8 @@ async function updateUsernameReferences({
 
 		// update name and username of users on video conferences
 		await VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName);
+
+		// update name and username of users on call history
+		await CallHistory.updateUserReferences(user._id, username || previousUsername, name || previousName);
 	}
 }

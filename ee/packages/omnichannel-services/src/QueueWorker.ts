@@ -37,7 +37,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		return message.includes('retry');
 	}
 
-	async created(): Promise<void> {
+	override async created(): Promise<void> {
 		this.queue.databasePromise = () => {
 			return Promise.resolve(this.db);
 		};
@@ -46,7 +46,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 			await this.createIndexes();
 			this.registerWorkers();
 		} catch (e) {
-			this.logger.fatal(e, 'Fatal error occurred when registering workers');
+			this.logger.fatal({ msg: 'Fatal error occurred when registering workers', err: e });
 			process.exit(1);
 		}
 	}
@@ -62,7 +62,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		await this.db.collection(this.queue.collectionName).createIndex({ receivedTime: 1 }, { sparse: true });
 	}
 
-	async stopped(): Promise<void> {
+	override async stopped(): Promise<void> {
 		this.logger.info('Stopping queue worker');
 		this.queue.stopPolling();
 	}
@@ -75,24 +75,24 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	}
 
 	private async workerCallback(queueItem: Work<{ to: string; data: any }>): Promise<ValidResult> {
-		this.logger.info(`Processing queue item ${queueItem._id} for work`);
-		this.logger.info(`Queue item is trying to call ${queueItem.message.to}`);
+		this.logger.info({ msg: 'Processing queue item for work', queueItemId: queueItem._id });
+		this.logger.info({ msg: 'Queue item is trying to call', to: queueItem.message.to });
 		try {
 			await api.call(queueItem.message.to, [queueItem.message]);
-			this.logger.info(`Queue item ${queueItem._id} completed`);
+			this.logger.info({ msg: 'Queue item completed', queueItemId: queueItem._id });
 			return 'Completed' as const;
 		} catch (err: unknown) {
 			const e = err as Error;
-			this.logger.error(`Queue item ${queueItem._id} errored: ${e.message}`);
+			this.logger.error({ msg: 'Queue item errored', queueItemId: queueItem._id, err: e });
 			queueItem.releasedReason = e.message;
 			// Let's only retry for X times when the error is "service not found"
 			// For any other error, we'll just reject the item
 			if ((queueItem.retryCount || 0) < this.retryCount && this.isRetryableError(e.message)) {
-				this.logger.info(`Queue item ${queueItem._id} will be retried in 10 seconds`);
+				this.logger.info({ msg: 'Queue item will be retried', queueItemId: queueItem._id, retry: this.retryDelay });
 				queueItem.nextReceivableTime = new Date(Date.now() + this.retryDelay);
 				return 'Retry' as const;
 			}
-			this.logger.info(`Queue item ${queueItem._id} will be rejected`);
+			this.logger.info({ msg: 'Queue item will be rejected', queueItemId: queueItem._id });
 			return 'Rejected' as const;
 		}
 	}
@@ -119,7 +119,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	// `to` is a service name that will be called, including namespace + action
 	// This is a "generic" job that allows you to call any service
 	async queueWork<T extends Record<string, unknown>>(queue: Actions, to: string, data: T): Promise<void> {
-		this.logger.info(`Queueing work for ${to}`);
+		this.logger.info({ msg: 'Queueing work for', to });
 		if (!this.matchServiceCall(to)) {
 			// We don't want to queue calls to invalid service names
 			throw new Error(`Invalid service name ${to}`);

@@ -1,4 +1,4 @@
-import type { ILivechatUnitMonitor, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
+import type { ILivechatUnitMonitor, IOmnichannelBusinessUnit, OmnichannelBusinessUnitPayload } from '@rocket.chat/core-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
@@ -16,11 +16,11 @@ declare module '@rocket.chat/rest-typings' {
 		};
 		'/v1/livechat/units': {
 			GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult & { units: IOmnichannelBusinessUnit[] };
-			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
+			POST: (params: OmnichannelBusinessUnitPayload) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
 		};
 		'/v1/livechat/units/:id': {
 			GET: () => IOmnichannelBusinessUnit;
-			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
+			POST: (params: OmnichannelBusinessUnitPayload) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
 			DELETE: () => number;
 		};
 	}

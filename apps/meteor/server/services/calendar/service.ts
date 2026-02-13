@@ -331,7 +331,12 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 				status: event.previousStatus,
 			});
 		} else {
-			logger.debug(`Not restoring status for user ${event.uid}: current=${user.status}, stored=${event.previousStatus}`);
+			logger.debug({
+				msg: 'Not restoring status for user',
+				userId: event.uid,
+				currentStatus: user.status,
+				previousStatus: event.previousStatus,
+			});
 		}
 	}
 
@@ -355,6 +360,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			text: event.startTime.toLocaleTimeString(undefined, { hour: 'numeric', minute: 'numeric', dayPeriod: 'narrow' }),
 			payload: {
 				_id: event._id,
+				startTimeUtc: event.startTime.toISOString(),
 			},
 		});
 	}

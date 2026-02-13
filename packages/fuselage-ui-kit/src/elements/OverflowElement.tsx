@@ -22,7 +22,7 @@ const OverflowElement = ({ block, context }: OverflowElementProps): ReactElement
 	);
 
 	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(-1, options, (selectedOption, [, hide]) => {
-		fireChange([selectedOption[0] as string, selectedOption[1] as string]);
+		void fireChange([selectedOption[0] as string, selectedOption[1] as string]);
 		reset();
 		hide();
 	});
@@ -38,7 +38,7 @@ const OverflowElement = ({ block, context }: OverflowElementProps): ReactElement
 			if (url) {
 				window.open(url);
 			}
-			action({ target: { value: String(value) } });
+			void action({ target: { value: String(value) } });
 			reset();
 			hide();
 		},

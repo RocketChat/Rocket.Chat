@@ -1,3 +1,4 @@
+import type { Optional } from '@rocket.chat/core-typings';
 import {
 	createDocumentMatcherFromFilter,
 	createPredicateFromFilter,
@@ -134,7 +135,7 @@ export class LocalCollection<T extends { _id: string }> {
 	}
 
 	private _insertInResults(query: Query<T>, doc: T) {
-		const fields: Omit<T, '_id'> & Partial<Pick<T, '_id'>> = clone(doc);
+		const fields: Optional<T, '_id'> = clone(doc);
 
 		delete fields._id;
 
@@ -158,7 +159,7 @@ export class LocalCollection<T extends { _id: string }> {
 	}
 
 	private async _insertInResultsAsync(query: Query<T>, doc: T) {
-		const fields: Omit<T, '_id'> & Partial<Pick<T, '_id'>> = clone(doc);
+		const fields: Optional<T, '_id'> = clone(doc);
 
 		delete fields._id;
 

@@ -1,14 +1,14 @@
 import { DuplicatedLicenseError } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { fetchWorkspaceSyncPayload } from './fetchWorkspaceSyncPayload';
 import { CloudWorkspaceAccessError } from '../../../../../lib/errors/CloudWorkspaceAccessError';
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
 import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
-import { fetchWorkspaceSyncPayload } from './fetchWorkspaceSyncPayload';
 
 export async function syncCloudData() {
 	try {

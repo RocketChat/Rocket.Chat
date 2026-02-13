@@ -2,7 +2,7 @@ import type {
 	IOutboundEmailMessageProvider,
 	IOutboundMessageProviders,
 	IOutboundPhoneMessageProvider,
-} from '@rocket.chat/apps-engine/definition/outboundComunication';
+} from '@rocket.chat/apps-engine/definition/outboundCommunication';
 import { OutboundMessageBridge } from '@rocket.chat/apps-engine/server/bridges';
 
 export class TestOutboundCommunicationBridge extends OutboundMessageBridge {
