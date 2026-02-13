@@ -2246,6 +2246,8 @@
   "Federation_Service_Join_Non_Private_Rooms": "Allow joining non-private rooms",
   "Federation_Service_Allow_List": "Domain Allow List",
   "Federation_Service_Allow_List_Description": "Restrict federation to the given allow list of domains.",
+  "Federation_Service_Validate_User_Domain": "Users email restrictions",
+  "Federation_Service_Validate_User_Domain_Description": "Restrict access to verified email addresses that match your Federated Domain.",
   "Field": "Field",
   "Field_removed": "Field removed",
   "Field_required": "Field required",
