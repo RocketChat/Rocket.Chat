@@ -33,6 +33,10 @@ export async function validateRoomMessagePermissionsAsync(
 		}
 	}
 
+	if (room.archived) {
+		throw new Error('room-archived');
+	}
+
 	if (room.ro === true && !(await hasPermissionAsync(uid, 'post-readonly', room._id))) {
 		// Unless the user was manually unmuted
 		if (username && !(room.unmuted || []).includes(username)) {

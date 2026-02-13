@@ -1149,6 +1149,39 @@ describe('[Chat]', () => {
 			});
 		});
 
+		describe('Archived rooms', () => {
+			let archivedChannel: IRoom;
+
+			before(async () => {
+				archivedChannel = (await createRoom({ type: 'c', name: `chat.api-archived-test-${Date.now()}` })).body.channel;
+				await request.post(api('channels.archive')).set(credentials).send({ roomId: archivedChannel._id });
+			});
+
+			after(async () => {
+				await request.post(api('channels.unarchive')).set(credentials).send({ roomId: archivedChannel._id });
+				await deleteRoom({ type: 'c', roomId: archivedChannel._id });
+			});
+
+			it('should fail to send a message to an archived room', (done) => {
+				void request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: archivedChannel._id,
+							msg: 'This message should not be sent',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'room-archived');
+					})
+					.end(done);
+			});
+		});
+
 		describe('oembed', () => {
 			let ytEmbedMsgId: IMessage['_id'];
 			let imgUrlMsgId: IMessage['_id'];
