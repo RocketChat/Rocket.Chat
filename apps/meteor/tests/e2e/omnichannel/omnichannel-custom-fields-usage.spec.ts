@@ -89,13 +89,13 @@ test.describe('OC - Custom fields usage, scope : room and visitor', () => {
 		});
 
 		await test.step('Agent fills room custom field and saves', async () => {
-			await poHomeChannel.roomInfo.getCustomFieldInput(roomCustomFieldLabel).fill(roomCustomFieldValue);
+			await poHomeChannel.roomInfo.getRoomCustomFieldInput(roomCustomFieldLabel).fill(roomCustomFieldValue);
 			await poHomeChannel.roomInfo.btnSaveEditRoom.click();
 		});
 
 		await test.step('assert custom field is updated successfully', async () => {
 			await poHomeChannel.roomInfo.btnEditRoomInfo.click();
-			await expect(poHomeChannel.roomInfo.getCustomFieldInput(roomCustomFieldLabel)).toHaveValue(roomCustomFieldValue);
+			await expect(poHomeChannel.roomInfo.getRoomCustomFieldInput(roomCustomFieldLabel)).toHaveValue(roomCustomFieldValue);
 		});
 	});
 
@@ -109,13 +109,13 @@ test.describe('OC - Custom fields usage, scope : room and visitor', () => {
 		await test.step('Agent opens edit room and updates custom field', async () => {
 			await poHomeChannel.roomInfo.btnEditRoomInfo.click();
 			await expect(poHomeChannel.roomInfo.dialogEditRoom).toBeVisible();
-			await poHomeChannel.roomInfo.getCustomFieldInput(roomCustomFieldLabel).fill(updatedValue);
+			await poHomeChannel.roomInfo.getRoomCustomFieldInput(roomCustomFieldLabel).fill(updatedValue);
 			await poHomeChannel.roomInfo.btnSaveEditRoom.click();
 		});
 
 		await test.step('Room Information displays the updated custom field value', async () => {
 			await poHomeChannel.roomInfo.btnEditRoomInfo.click();
-			await expect(poHomeChannel.roomInfo.getCustomFieldInput(roomCustomFieldLabel)).toHaveValue(updatedValue);
+			await expect(poHomeChannel.roomInfo.getRoomCustomFieldInput(roomCustomFieldLabel)).toHaveValue(updatedValue);
 		});
 	});
 
@@ -148,7 +148,7 @@ test.describe('OC - Custom fields usage, scope : room and visitor', () => {
 
 		await test.step('Agent clicks Edit and updates visitor custom field', async () => {
 			await poHomeChannel.contacts.contactInfo.btnEdit.click();
-			await poHomeChannel.contacts.contactInfo.getCustomFieldInput(visitorCustomFieldLabel).fill(updatedVisitorCustomFieldValue);
+			await poHomeChannel.contacts.contactInfo.getVisitorCustomFieldInput(visitorCustomFieldLabel).fill(updatedVisitorCustomFieldValue);
 			await poHomeChannel.contacts.contactInfo.btnSave.click();
 		});
 

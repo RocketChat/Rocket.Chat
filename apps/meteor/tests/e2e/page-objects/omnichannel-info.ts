@@ -39,7 +39,7 @@ export class OmnichannelContactInfo extends OmnichannelManageContact {
 		return this.dialogContactInfo.getByRole('button', { name: 'See conflicts' });
 	}
 
-	getCustomFieldInput(label: string): Locator {
+	getVisitorCustomFieldInput(label: string): Locator {
 		return this.dialogContactInfo.getByLabel(label);
 	}
 

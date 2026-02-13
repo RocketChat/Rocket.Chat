@@ -69,7 +69,7 @@ export class OmnichannelRoomInfo {
 		return this.dialogRoomInfo.getByRole('list', { name: 'Tags' }).getByText(label, { exact: true });
 	}
 
-	getCustomFieldInput(label: string): Locator {
+	getRoomCustomFieldInput(label: string): Locator {
 		return this.dialogEditRoom.getByLabel(label);
 	}
 
