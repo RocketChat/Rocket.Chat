@@ -6,8 +6,9 @@ import { getCredentials, request, credentials } from '../../data/api-data';
 import { appAPIParameterTest } from '../../data/apps/app-packages';
 import { apps } from '../../data/apps/apps-data';
 import { cleanupApps, installLocalTestPackage } from '../../data/apps/helper';
+import { IS_EE } from '../../e2e/config/constants';
 
-describe('Apps - API Endpoint Parameter Parsing', () => {
+(IS_EE ? describe : describe.skip)('Apps - API Endpoint Parameter Parsing', () => {
 	let app: App;
 
 	before((done) => getCredentials(done));
@@ -31,10 +32,10 @@ describe('Apps - API Endpoint Parameter Parsing', () => {
 	});
 
 	it('should handle special characters in URL parameters', async () => {
-		const param1Value = 'hello-world';
-		const param2Value = '123-456';
+		const param1Value = 'hello%20world';
+		const param2Value = '123@456';
 
-		const response = await request.get(apps(`/public/${app.id}/api/${param1Value}/${param2Value}/test`)).set(credentials);
+		const response = await request.get(apps(`/public/${app.id}/api/${encodeURIComponent(param1Value)}/${encodeURIComponent(param2Value)}/test`)).set(credentials);
 
 		expect(response.status, 'API endpoint request failed').to.equal(200);
 		expect(response.text, 'Response body does not contain correct parameters').to.equal(`Param1: ${param1Value}, Param2: ${param2Value}`);
