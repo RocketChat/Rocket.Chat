@@ -93,6 +93,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 		control,
 		handleSubmit,
 		setValue,
+		setError,
 		watch,
 		formState: { errors, isSubmitting },
 	} = useForm<CreateTeamModalInputs>({
@@ -148,8 +149,11 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 			goToRoomById(team.roomId);
 			onClose();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} 
+			setError('root.serverError', {
+				type: 'manual',
+				message: error instanceof Error ? error.message : t('Something_went_wrong_try_again_later'),
+			});
+		}
 	};
 
 	const createTeamFormId = useId();
@@ -314,6 +318,13 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 						</FieldGroup>
 					</AccordionItem>
 				</Accordion>
+				{errors?.root?.serverError ? (
+					<Field>
+						<FieldError aria-live='assertive'>
+							{errors.root.serverError.message}
+						</FieldError>
+					</Field>
+				) : null}
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>

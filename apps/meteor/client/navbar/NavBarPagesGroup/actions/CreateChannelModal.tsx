@@ -109,6 +109,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 		handleSubmit,
 		control,
 		setValue,
+		setError,
 		watch,
 	} = useForm({
 		mode: 'onBlur',
@@ -188,7 +189,10 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 			reload?.();
 			onClose();
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			setError('root.serverError', {
+				type: 'manual',
+				message: error instanceof Error ? error.message : t('Something_went_wrong_try_again_later'),
+			});
 		}
 	};
 
@@ -400,6 +404,13 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 						</FieldGroup>
 					</AccordionItem>
 				</Accordion>
+				{errors?.root?.serverError ? (
+					<Field>
+						<FieldError aria-live='assertive'>
+							{errors.root.serverError.message}
+						</FieldError>
+					</Field>
+				) : null}
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
