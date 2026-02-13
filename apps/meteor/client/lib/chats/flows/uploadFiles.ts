@@ -44,16 +44,8 @@ export const uploadFiles = async (
 
 		const e2eRoom = await e2e.getInstanceByRoomId(room._id);
 
-		if (!e2eRoom?.isReady()) {
+		if (!e2eRoom?.isReady() || !settings.peek('E2E_Enable_Encrypt_Files')) {
 			await uploadFile(file);
-			return;
-		}
-
-		if (!settings.peek('E2E_Enable_Encrypt_Files')) {
-			dispatchToastMessage({
-				type: 'error',
-				message: t('Encrypted_file_not_allowed'),
-			});
 			return;
 		}
 
