@@ -29,7 +29,7 @@ export async function configureEmailInboxes(): Promise<void> {
 
 	for await (const emailInboxRecord of emailInboxesCursor) {
 		try {
-			logger.info(`Setting up email interceptor for ${emailInboxRecord.email}`);
+			logger.info({ msg: 'Setting up email interceptor', email: emailInboxRecord.email });
 
 			const imap = new IMAPInterceptor(
 				{
@@ -64,9 +64,9 @@ export async function configureEmailInboxes(): Promise<void> {
 				try {
 					await EmailMessageHistory.create({ _id: email.messageId, email: emailInboxRecord.email });
 					void onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
-				} catch (e: any) {
+				} catch (err: any) {
 					// In case the email message history has been received by other instance..
-					logger.error(e);
+					logger.error({ err });
 				}
 			});
 
@@ -84,11 +84,11 @@ export async function configureEmailInboxes(): Promise<void> {
 
 			inboxes.set(emailInboxRecord.email, { imap, smtp, config: emailInboxRecord });
 		} catch (err) {
-			logger.error({ msg: `Error setting up email interceptor for ${emailInboxRecord.email}`, err });
+			logger.error({ msg: 'Error setting up email interceptor', email: emailInboxRecord.email, err });
 		}
 	}
 
-	logger.info(`Configured a total of ${inboxes.size} inboxes`);
+	logger.info({ msg: 'Configured a total of inboxes', count: inboxes.size });
 }
 
 Meteor.startup(() => {

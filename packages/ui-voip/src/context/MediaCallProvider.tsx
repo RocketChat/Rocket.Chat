@@ -1,4 +1,4 @@
-import { AnchorPortal } from '@rocket.chat/ui-client';
+import { AnchorPortal, useGoToDirectMessage } from '@rocket.chat/ui-client';
 import type { Device } from '@rocket.chat/ui-contexts';
 import {
 	useEndpoint,
@@ -12,7 +12,7 @@ import {
 	useSetting,
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -36,6 +36,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const user = useUser();
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const [openRoomId, setOpenRoomId] = useState<string | undefined>(undefined);
 
 	const setModal = useSetModal();
 
@@ -57,6 +58,11 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 
 	const forceSIPRouting = useSetting('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls');
 
+	const onClickDirectMessage = useGoToDirectMessage(
+		{ username: session.peerInfo && 'username' in session.peerInfo ? session.peerInfo.username : undefined },
+		openRoomId,
+	);
+
 	// For some reason `exhaustive-deps` is complaining that "session" is not in the dependencies
 	// But we're only using the changeDevice method from the session
 	// So I'll just destructure it here
@@ -64,7 +70,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 
 	useEffect(() => {
 		if (audioInput?.id && !session.hidden) {
-			changeDevice(audioInput.id);
+			void changeDevice(audioInput.id);
 		}
 	}, [audioInput?.id, changeDevice, session.hidden]);
 
@@ -110,12 +116,12 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 		}
 
 		if ('userId' in peerInfo) {
-			session.startCall(peerInfo.userId, 'user');
+			void session.startCall(peerInfo.userId, 'user');
 			return;
 		}
 
 		if ('number' in peerInfo) {
-			session.startCall(peerInfo.number, 'sip');
+			void session.startCall(peerInfo.number, 'sip');
 			return;
 		}
 
@@ -138,7 +144,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 			return;
 		}
 
-		session.acceptCall();
+		void session.acceptCall();
 	};
 
 	const onDeviceChange = (device: Device) => {
@@ -262,6 +268,8 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 		hidden: session.hidden,
 		remoteMuted: session.remoteMuted,
 		remoteHeld: session.remoteHeld,
+		onClickDirectMessage,
+		setOpenRoomId,
 		onMute,
 		onHold,
 		onDeviceChange,

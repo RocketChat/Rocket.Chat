@@ -61,7 +61,7 @@ const RegisterServerStep = (): ReactElement => {
 
 		onSuccess: () => {
 			invalidateLicenseQuery(100);
-			completeSetupWizard();
+			void completeSetupWizard();
 		},
 
 		onError: () => {

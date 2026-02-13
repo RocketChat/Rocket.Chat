@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/fuselage';
+import { MessageHighlight } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
 import { memo, useContext, useMemo } from 'react';
@@ -25,9 +25,9 @@ const ChannelMentionElement = ({ mention }: ChannelMentionElementProps): ReactEl
 	}
 
 	return (
-		<Message.Highlight title={t('Mentions_channel')} variant='link' clickable {...buttonProps}>
+		<MessageHighlight title={t('Mentions_channel')} variant='link' clickable {...buttonProps}>
 			{handleChannelMention(resolved.fname ?? mention, showMentionSymbol)}
-		</Message.Highlight>
+		</MessageHighlight>
 	);
 };
 

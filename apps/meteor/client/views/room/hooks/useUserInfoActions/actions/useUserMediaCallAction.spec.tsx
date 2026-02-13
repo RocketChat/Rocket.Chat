@@ -46,6 +46,7 @@ describe('useUserMediaCallAction', () => {
 			onToggleWidget: undefined,
 			onEndCall: undefined,
 			peerInfo: undefined,
+			setOpenRoomId: undefined,
 		});
 
 		const { result } = renderHook(() => useUserMediaCallAction(fakeUser, mockRid), { wrapper: mockAppRoot().build() });
@@ -114,6 +115,7 @@ describe('useUserMediaCallAction', () => {
 			onToggleWidget: mockOnToggleWidget,
 			peerInfo: undefined,
 			onEndCall: () => undefined,
+			setOpenRoomId: () => undefined,
 		});
 
 		const { result } = renderHook(() => useUserMediaCallAction(fakeUser, mockRid));
@@ -133,6 +135,7 @@ describe('useUserMediaCallAction', () => {
 			onToggleWidget: jest.fn(),
 			peerInfo: undefined,
 			onEndCall: () => undefined,
+			setOpenRoomId: () => undefined,
 		});
 
 		const { result } = renderHook(() => useUserMediaCallAction(fakeUser, mockRid));

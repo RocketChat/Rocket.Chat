@@ -4,7 +4,6 @@ import { differenceInMilliseconds } from 'date-fns';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import type { MutableRefObject } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { getUserId } from '../../../../client/lib/user';
@@ -23,7 +22,7 @@ const processMessage = async (msg: IMessage & { ignored?: boolean }, { subscript
 		msg.ignored = true;
 	}
 
-	if (msg.t === 'e2e' && !msg.file) {
+	if (msg.t === 'e2e') {
 		msg.e2e = 'pending';
 	}
 
@@ -86,7 +85,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 	private async queue(): Promise<void> {
 		return new Promise((resolve) => {
-			const requestId = uuidv4();
+			const requestId = crypto.randomUUID();
 			const done = () => {
 				this.lastRequest = new Date();
 				resolve();

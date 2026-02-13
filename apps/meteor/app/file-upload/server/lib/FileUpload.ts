@@ -269,7 +269,7 @@ export const FileUpload = {
 		try {
 			await writeFile(tempFilePath, data);
 		} catch (err: any) {
-			SystemLogger.error(err);
+			SystemLogger.error({ err });
 		}
 
 		await this.getCollection().updateOne(
@@ -537,12 +537,17 @@ export const FileUpload = {
 
 	getStoreByName(handlerName?: string) {
 		if (!handlerName) {
-			SystemLogger.error(`Empty Upload handler does not exists`);
+			SystemLogger.error({
+				msg: 'Empty Upload handler does not exists',
+			});
 			throw new Error(`Empty Upload handler does not exists`);
 		}
 
 		if (this.handlers[handlerName] == null) {
-			SystemLogger.error(`Upload handler "${handlerName}" does not exists`);
+			SystemLogger.error({
+				msg: 'Upload handler does not exists',
+				handlerName,
+			});
 		}
 		return this.handlers[handlerName];
 	},
