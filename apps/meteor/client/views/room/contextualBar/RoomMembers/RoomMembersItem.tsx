@@ -67,7 +67,7 @@ const RoomMembersItem = ({
 			</OptionAvatar>
 			<OptionColumn>{federated ? <Icon name='globe' size='x16' /> : <ReactiveUserStatus uid={_id} />}</OptionColumn>
 			<OptionContent data-qa={`MemberItem-${username}`}>
-				{nameOrUsername} {displayUsername && <OptionDescription>({displayUsername})</OptionDescription>}
+				{nameOrUsername} {displayUsername && <OptionDescription>@{displayUsername}</OptionDescription>}
 			</OptionContent>
 			{subscription?.status === 'INVITED' && (
 				<OptionColumn>
