@@ -134,7 +134,7 @@ describe('VideoRecorder', () => {
 			VideoRecorder.start(mockVideoElement, cb2);
 
 			secondDeferred.resolve(secondStream);
-			await Promise.resolve();
+			await jest.runAllTimersAsync();
 			firstDeferred.resolve(firstStream);
 			await jest.runAllTimersAsync();
 
