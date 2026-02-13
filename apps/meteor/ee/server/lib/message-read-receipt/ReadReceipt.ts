@@ -176,7 +176,7 @@ class ReadReceiptClass {
 					roomId: message.rid,
 					userId: sub.u._id,
 					messageId: message._id,
-					// Don't include ts when using fallback mode (detailed storage disabled)
+					// ts field omitted in fallback mode - subscription ls timestamps don't reflect exact read time
 					user: user as IReadReceiptWithUser['user'],
 				};
 			}),
