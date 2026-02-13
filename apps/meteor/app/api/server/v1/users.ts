@@ -31,7 +31,6 @@ import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/persona
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
 import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
-import { removeOtherTokens } from '../../../../server/lib/removeOtherTokens';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { registerUser } from '../../../../server/methods/registerUser';
 import { requestDataDownload } from '../../../../server/methods/requestDataDownload';
@@ -187,13 +186,7 @@ API.v1.addRoute(
 						twoFactorMethod: 'password',
 					};
 
-			await executeSaveUserProfile.call(
-				this as unknown as Meteor.MethodThisType,
-				this.user,
-				userData,
-				this.bodyParams.customFields,
-				twoFactorOptions,
-			);
+			await executeSaveUserProfile.call(this, this.user, userData, this.bodyParams.customFields, twoFactorOptions);
 
 			return API.v1.success({
 				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
@@ -518,8 +511,6 @@ API.v1.addRoute(
 
 			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
 
-			const hasUserQuery = query && Object.keys(query).length > 0;
-
 			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
 
 			// if user provided a query, validate it with their allowed operators
@@ -535,7 +526,9 @@ API.v1.addRoute(
 						inclusiveFieldsKeys.includes('type') && 'type.*',
 						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
 					].filter(Boolean) as string[],
-					hasUserQuery ? this.queryOperations : [...this.queryOperations, '$regex', '$options'],
+					// At this point, we have already validated the user query not containing malicious fields
+					// On here we are using our own query so we can allow some extra fields
+					[...this.queryOperations, '$regex', '$options'],
 				)
 			) {
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
@@ -1239,7 +1232,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			return API.v1.success(await removeOtherTokens(this.userId, this.connection.id));
+			return API.v1.success(await Users.removeNonLoginTokensExcept(this.userId, this.token));
 		},
 	},
 );
@@ -1410,9 +1403,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = await (async (): Promise<
-				Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText' | 'roles'> | undefined | null
-			> => {
+			const user = await (async () => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Users.findOneById(this.userId);
 				}
@@ -1429,7 +1420,7 @@ API.v1.addRoute(
 			let { statusText, status } = user;
 
 			if (this.bodyParams.message || this.bodyParams.message === '') {
-				await setStatusText(user._id, this.bodyParams.message, { emit: false });
+				await setStatusText(user, this.bodyParams.message, { emit: false });
 				statusText = this.bodyParams.message;
 			}
 

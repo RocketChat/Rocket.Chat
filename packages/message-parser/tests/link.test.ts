@@ -385,6 +385,26 @@ Text after line break`,
 		'[test **bold with __italic__**](https://rocket.chat)',
 		[paragraph([link('https://rocket.chat', [plain('test '), bold([plain('bold with '), italic([plain('italic')])])])])],
 	],
+	// Test case for issue #31418 - text in brackets between two links should not break markdown
+	[
+		'[Rocket.Chat] [New release](https://www.rocket.chat/blog/new-starter-pro-plans)',
+		[paragraph([plain('[Rocket.Chat] '), link('https://www.rocket.chat/blog/new-starter-pro-plans', [plain('New release')])])],
+	],
+	// Test case for issue #31766 - multiple links with bracketed text between them
+	[
+		'[BUG #11111](https://github.com/) - [BACK] changelog description',
+		[paragraph([link('https://github.com/', [plain('BUG #11111')]), plain(' - [BACK] changelog description')])],
+	],
+	[
+		'[BUG #11111](https://github.com/) - [BACK] [Another link](https://github.com/)',
+		[
+			paragraph([
+				link('https://github.com/', [plain('BUG #11111')]),
+				plain(' - [BACK] '),
+				link('https://github.com/', [plain('Another link')]),
+			]),
+		],
+	],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
 });

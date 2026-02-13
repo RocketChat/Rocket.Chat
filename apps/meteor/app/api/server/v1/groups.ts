@@ -380,7 +380,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			await eraseRoom(findResult.rid, this.userId);
+			await eraseRoom(findResult.rid, this.user);
 
 			return API.v1.success();
 		},
