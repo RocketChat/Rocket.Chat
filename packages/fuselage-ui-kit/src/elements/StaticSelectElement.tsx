@@ -20,7 +20,7 @@ const StaticSelectElement = ({ block, context }: StaticSelectElementProps): Reac
 
 	const handleChange = useCallback(
 		(value: string) => {
-			action({ target: { value } });
+			void action({ target: { value } });
 		},
 		[action],
 	);

@@ -72,7 +72,7 @@ export const useDevicePermissionPrompt = ({ onAccept: _onAccept, onReject, actio
 			const onAccept = (stream: MediaStream) => {
 				// Since we now have requested a stream, we can now invalidate the devices list and generate a complete one.
 				// Obs2: Safari does not seem to be dispatching the change event when permission is granted, so we need to invalidate the permission query as well.
-				queryClient.invalidateQueries({ queryKey: ['media-devices-list'] });
+				void queryClient.invalidateQueries({ queryKey: ['media-devices-list'] });
 
 				stream.getTracks().forEach((track) => {
 					const { deviceId } = track.getSettings();
@@ -81,7 +81,7 @@ export const useDevicePermissionPrompt = ({ onAccept: _onAccept, onReject, actio
 					}
 
 					if (track.kind === 'audio' && navigator.mediaDevices.enumerateDevices) {
-						navigator.mediaDevices.enumerateDevices().then((devices) => {
+						void navigator.mediaDevices.enumerateDevices().then((devices) => {
 							const device = devices.find((device) => device.deviceId === deviceId);
 							if (!device) {
 								return;
@@ -107,14 +107,14 @@ export const useDevicePermissionPrompt = ({ onAccept: _onAccept, onReject, actio
 			};
 
 			if (state === 'granted') {
-				requestDevice({
+				void requestDevice({
 					onAccept,
 				});
 				return;
 			}
 
 			const onConfirm = () => {
-				requestDevice?.({
+				void requestDevice?.({
 					onReject,
 					onAccept: (...args) => {
 						onAccept(...args);
@@ -157,7 +157,7 @@ export const useDevicePermissionPrompt2 = () => {
 				const resolve = (stream: MediaStream) => {
 					// Since we now have requested a stream, we can now invalidate the devices list and generate a complete one.
 					// Obs2: Safari does not seem to be dispatching the change event when permission is granted, so we need to invalidate the permission query as well.
-					queryClient.invalidateQueries({ queryKey: ['media-devices-list'] });
+					void queryClient.invalidateQueries({ queryKey: ['media-devices-list'] });
 					_resolve(stream);
 				};
 
@@ -169,7 +169,7 @@ export const useDevicePermissionPrompt2 = () => {
 						}
 
 						if (track.kind === 'audio' && navigator.mediaDevices.enumerateDevices) {
-							navigator.mediaDevices.enumerateDevices().then((devices) => {
+							void navigator.mediaDevices.enumerateDevices().then((devices) => {
 								const device = devices.find((device) => device.deviceId === deviceId);
 								if (!device) {
 									return;
@@ -190,7 +190,7 @@ export const useDevicePermissionPrompt2 = () => {
 				};
 
 				if (state === 'granted') {
-					requestDevice({
+					void requestDevice({
 						onAccept: resolve,
 						onReject: reject,
 						constraints,
@@ -199,7 +199,7 @@ export const useDevicePermissionPrompt2 = () => {
 				}
 
 				const onConfirm = () => {
-					requestDevice?.({
+					void requestDevice?.({
 						onReject: (...args) => {
 							reject(...args);
 							setModal(<PermissionFlowModal type='denied' onCancel={() => setModal(null)} onConfirm={() => setModal(null)} />);

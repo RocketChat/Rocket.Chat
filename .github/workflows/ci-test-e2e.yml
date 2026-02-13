@@ -20,7 +20,7 @@ on:
       transporter:
         type: string
       mongodb-version:
-        default: "['8.2']"
+        default: "['8.0']"
         required: false
         type: string
       release:
@@ -88,6 +88,7 @@ jobs:
 
     steps:
       - name: Collect Workflow Telemetry
+        if: inputs.type == 'perf'
         uses: catchpoint/workflow-telemetry-action@v2
         with:
           theme: dark
