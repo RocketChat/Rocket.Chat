@@ -42,7 +42,6 @@ export class DefaultProvider extends SearchProvider<{ searchAll?: boolean; limit
 ): Promise<void> {
 	try {
 		const _rid = payload.searchAll ? undefined : context.rid;
-		
 		const _limit = payload.limit || this._settings.get<number>('PageSize');
 
 		const result = await messageSearch(userId, text, _rid, _limit);
@@ -57,7 +56,6 @@ export class DefaultProvider extends SearchProvider<{ searchAll?: boolean; limit
 			return callback(null, safeResult);
 		}
 
-		// If SearchProvider expects promise-based handling
 		return;
 	} catch (error) {
 		if (callback) {
