@@ -14,7 +14,7 @@ export const usePreventDefault = (ref: RefObject<Element>): { ref: RefObject<Ele
 		};
 		current?.addEventListener('click', stopPropagation);
 
-		return (): void => current?.addEventListener('click', stopPropagation);
+		return (): void => current?.removeEventListener('click', stopPropagation);
 	}, [ref]);
 
 	return { ref };
