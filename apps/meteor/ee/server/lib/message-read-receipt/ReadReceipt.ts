@@ -147,16 +147,41 @@ class ReadReceiptClass {
 		}
 	}
 
-	async getReceipts(message: Pick<IMessage, '_id'>): Promise<IReadReceiptWithUser[]> {
-		const receipts = await ReadReceipts.findByMessageId(message._id).toArray();
+	async getReceipts(message: Pick<IMessage, '_id' | 'rid' | 'ts'>): Promise<IReadReceiptWithUser[]> {
+		// If detailed mode is enabled, return receipts from the read_receipts collection
+		if (settings.get('Message_Read_Receipt_Store_Users')) {
+			const receipts = await ReadReceipts.findByMessageId(message._id).toArray();
+
+			return Promise.all(
+				receipts.map(async (receipt) => ({
+					...receipt,
+					user: (receipt.token
+						? await LivechatVisitors.getVisitorByToken(receipt.token, { projection: { username: 1, name: 1 } })
+						: await Users.findOneById(receipt.userId, { projection: { username: 1, name: 1, token: 1 } })) as IReadReceiptWithUser['user'],
+				})),
+			);
+		}
+
+		// Fallback: Use subscription last seen (ls) to determine who read the message
+		// Find all subscriptions where ls >= message.ts
+		const subscriptions = await Subscriptions.findByRoomId(message.rid, {
+			projection: { userId: 1, ls: 1 },
+		}).toArray();
+
+		const usersWhoRead = subscriptions.filter((sub) => sub.ls && sub.ls >= message.ts);
 
 		return Promise.all(
-			receipts.map(async (receipt) => ({
-				...receipt,
-				user: (receipt.token
-					? await LivechatVisitors.getVisitorByToken(receipt.token, { projection: { username: 1, name: 1 } })
-					: await Users.findOneById(receipt.userId, { projection: { username: 1, name: 1, token: 1 } })) as IReadReceiptWithUser['user'],
-			})),
+			usersWhoRead.map(async (sub) => {
+				const user = await Users.findOneById(sub.userId, { projection: { username: 1, name: 1 } });
+				return {
+					_id: `${message._id}-${sub.userId}`,
+					roomId: message.rid,
+					userId: sub.userId,
+					messageId: message._id,
+					ts: sub.ls, // Use subscription's last seen as the timestamp
+					user: user as IReadReceiptWithUser['user'],
+				};
+			}),
 		);
 	}
 }
