@@ -1,3 +1,4 @@
+import { I18nProvider as ReactAriaI18nProvider } from '@react-aria/i18n';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import {
 	addSprinfToI18n,
@@ -286,7 +287,11 @@ const TranslationProviderInner = ({
 		[availableLanguages, i18n, t],
 	);
 
-	return <TranslationContext.Provider value={value}>{children}</TranslationContext.Provider>;
+	return (
+		<ReactAriaI18nProvider locale={i18n.resolvedLanguage ?? i18n.language}>
+			<TranslationContext.Provider value={value}>{children}</TranslationContext.Provider>
+		</ReactAriaI18nProvider>
+	);
 };
 
 export default TranslationProvider;
