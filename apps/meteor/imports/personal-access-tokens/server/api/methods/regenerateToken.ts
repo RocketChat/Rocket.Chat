@@ -44,7 +44,7 @@ export const regeneratePersonalAccessTokenOfUser = async (tokenName: string, use
 };
 
 Meteor.methods<ServerMethods>({
-	'personalAccessTokens:regenerateToken': twoFactorRequired(async function ({ tokenName }) {
+	'personalAccessTokens:regenerateToken': twoFactorRequired(async function ({ tokenName }: { tokenName: string }) {
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', {
