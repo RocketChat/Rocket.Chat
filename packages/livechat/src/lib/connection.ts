@@ -28,7 +28,7 @@ const Connection = {
 			await loadConfig();
 			this.addListeners();
 			await Livechat.connection.connect();
-			this.clearAlerts();
+			void this.clearAlerts();
 		} catch (e) {
 			console.error('Connecting error: ', e);
 		}
@@ -53,14 +53,14 @@ const Connection = {
 
 	async clearAlerts() {
 		const { alerts } = store.state;
-		await store.setState({
+		store.setState({
 			alerts: alerts?.filter((alert) => ![livechatDisconnectedAlertId, livechatConnectedAlertId].includes(alert.id)),
 		});
 	},
 
 	async displayAlert(alert = {}) {
 		const { alerts } = store.state;
-		await store.setState({ alerts: (alerts?.push(alert), alerts) });
+		store.setState({ alerts: (alerts?.push(alert), alerts) });
 	},
 
 	async handleConnected() {

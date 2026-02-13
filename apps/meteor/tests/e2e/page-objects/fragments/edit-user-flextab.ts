@@ -15,10 +15,6 @@ export class EditUserFlexTab extends FlexTab {
 		return this.root.locator('role=button[name="Save user"]');
 	}
 
-	get inputName(): Locator {
-		return this.root.getByRole('textbox', { name: 'Name', exact: true });
-	}
-
 	get inputUserName(): Locator {
 		return this.root.getByRole('textbox', { name: 'Username', exact: true });
 	}

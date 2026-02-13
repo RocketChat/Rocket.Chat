@@ -40,7 +40,7 @@ test.describe('image-upload', () => {
 			await poHomeChannel.content.descriptionInput.fill('bad-orientation_description');
 			await poHomeChannel.content.btnModalConfirm.click();
 
-			await expect(poHomeChannel.statusUploadIndicator).toContainText('Error:');
+			await expect(poHomeChannel.statusUploadError).toBeVisible();
 		});
 	});
 

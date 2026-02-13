@@ -8,7 +8,7 @@ export class OmnichannelTransferChatModal extends Modal {
 
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Forward chat' }));
-		this.listbox = new Listbox(page.getByRole('listbox'));
+		this.listbox = new Listbox(page);
 	}
 
 	get inputComment(): Locator {
