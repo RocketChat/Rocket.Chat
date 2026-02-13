@@ -4,6 +4,7 @@ import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users } from './fixtures/userStates';
+import { Registration } from './page-objects';
 import { AdminDeviceManagement } from './page-objects/admin-device-management';
 import { test, expect } from './utils/test';
 
@@ -13,10 +14,12 @@ test.describe('Admin Device Management Page', () => {
 
 	let page: Page;
 	let adminDeviceManagement: AdminDeviceManagement;
+	let loginPage: Registration;
 
 	test.beforeEach(async ({ browser }) => {
 		({ page } = await createAuxContext(browser, Users.admin));
 		adminDeviceManagement = new AdminDeviceManagement(page);
+		loginPage = new Registration(page);
 		await page.goto('/admin/device-management');
 	});
 
@@ -32,7 +35,7 @@ test.describe('Admin Device Management Page', () => {
 	test('should logout current device and redirect to login page', async () => {
 		const deviceId = await adminDeviceManagement.getUsersDeviceId('rocketchat.internal.admin.test');
 		await adminDeviceManagement.logoutDeviceById(deviceId);
-		await expect(page.getByRole('form', { name: 'Login' })).toBeVisible();
+		await expect(loginPage.loginForm).toBeVisible();
 	});
 
 	test('should logout current device from device info tab and redirect to login page', async () => {
@@ -43,11 +46,12 @@ test.describe('Admin Device Management Page', () => {
 		await expect(adminDeviceManagement.deviceInfo.getDeviceInfoId(deviceId)).toBeVisible();
 		await adminDeviceManagement.deviceInfo.btnLogoutDevice.click();
 		await adminDeviceManagement.logoutModal.confirmLogout();
-		await expect(page.getByRole('form', { name: 'Login' })).toBeVisible();
+		await expect(loginPage.loginForm).toBeVisible();
 	});
 
 	test('should logout other device successfully', async ({ browser }) => {
 		const user2Page = await browser.newPage({ storageState: Users.user2.state });
+		const loginPage2 = new Registration(user2Page);
 		await user2Page.goto('/');
 		await expect(user2Page.getByRole('main')).toBeVisible();
 
@@ -55,8 +59,8 @@ test.describe('Admin Device Management Page', () => {
 
 		await test.step('should logout user2 and redirect to login page', async () => {
 			await adminDeviceManagement.logoutDeviceById(user2DeviceId);
-			await user2Page.getByRole('form', { name: 'Login' }).waitFor();
-			await expect(user2Page.getByRole('form', { name: 'Login' })).toBeVisible();
+			await loginPage2.loginForm.waitFor();
+			await expect(loginPage2.loginForm).toBeVisible();
 		});
 
 		await test.step('should no longer show user2 device in admin device management page', async () => {

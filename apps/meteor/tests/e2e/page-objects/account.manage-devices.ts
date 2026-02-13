@@ -21,7 +21,7 @@ export class AccountManageDevices extends Account {
 	async getNthDeviceId(nth: number): Promise<string> {
 		const deviceId = await this.devicesPageContent.getByRole('row').nth(nth).getAttribute('aria-label');
 		if (!deviceId) {
-			throw new Error(`Device ID not found for the ${nth} device`);
+			throw new Error(`Device ID not found for the device ${nth}`);
 		}
 		return deviceId || '';
 	}
