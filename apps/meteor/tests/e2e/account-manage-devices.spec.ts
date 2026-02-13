@@ -61,6 +61,6 @@ test.describe('Account Manage Devices Page', () => {
 			await expect(accountDevices2.table.getDeviceRowById(device1Id)).not.toBeVisible();
 		});
 
-		await page2.close();
+		await context2.close();
 	});
 });

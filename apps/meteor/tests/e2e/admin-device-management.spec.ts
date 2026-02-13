@@ -60,7 +60,7 @@ test.describe('Admin Device Management Page', () => {
 		});
 
 		await test.step('should no longer show user2 device in admin device management page', async () => {
-			await adminDeviceManagement.searchUserDevice('rocketchat.internal.user2.test');
+			await adminDeviceManagement.searchUserDevice('user2');
 			await expect(adminDeviceManagement.table.getDeviceRowById(user2DeviceId)).not.toBeVisible();
 		});
 
