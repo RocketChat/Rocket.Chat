@@ -51,7 +51,7 @@ const cleanupRooms = async () => {
 	}
 };
 
-describe.only('LIVECHAT - Queue', () => {
+describe('LIVECHAT - Queue', () => {
 	before((done) => getCredentials(done));
 
 	before(async () =>
