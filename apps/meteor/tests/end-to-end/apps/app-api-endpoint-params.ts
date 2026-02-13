@@ -32,7 +32,7 @@ import { IS_EE } from '../../e2e/config/constants';
 	});
 
 	it('should handle special characters in URL parameters', async () => {
-		const param1Value = 'hello%20world';
+		const param1Value = 'hello world';
 		const param2Value = '123@456';
 
 		const response = await request
@@ -40,6 +40,8 @@ import { IS_EE } from '../../e2e/config/constants';
 			.set(credentials);
 
 		expect(response.status, 'API endpoint request failed').to.equal(200);
-		expect(response.text, 'Response body does not contain correct parameters').to.equal(`Param1: ${param1Value}, Param2: ${param2Value}`);
+		expect(response.text, `Response body does not contain correct parameters: Param1=${param1Value}, Param2=${param2Value}`).to.equal(
+			`Param1: ${param1Value}, Param2: ${param2Value}`,
+		);
 	});
 });
