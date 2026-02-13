@@ -5,21 +5,21 @@ networks:
 
 services:
   traefik:
-    image: traefik:v2.9
+    image: traefik:v3.6.6
     profiles:
       - test
       - element
     command:
-      - "--api.insecure=true"
+      - '--api.insecure=true'
       # - "--log.level=DEBUG"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.websecure.address=:443'
     ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
+      - '80:80'
+      - '443:443'
+      - '8080:8080'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./docker-compose/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
@@ -39,7 +39,7 @@ services:
       element-net:
         aliases: [hs1, rc1, rc.host, element]
 
-# HomeServer 1 (synapse)
+  # HomeServer 1 (synapse)
   hs1:
     image: matrixdotorg/synapse:latest
     profiles:
@@ -71,13 +71,13 @@ services:
     networks:
       - hs1-net
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.hs1.rule=Host(`hs1`)"
-      - "traefik.http.routers.hs1.entrypoints=websecure"
-      - "traefik.http.routers.hs1.tls=true"
-      - "traefik.http.services.hs1.loadbalancer.server.port=8008"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.hs1.rule=Host(`hs1`)'
+      - 'traefik.http.routers.hs1.entrypoints=websecure'
+      - 'traefik.http.routers.hs1.tls=true'
+      - 'traefik.http.services.hs1.loadbalancer.server.port=8008'
 
-# Rocket.Chat rc1
+  # Rocket.Chat rc1
   rc1:
     build:
       context: ${ROCKETCHAT_BUILD_CONTEXT:-./test/dist}
@@ -109,24 +109,24 @@ services:
     depends_on:
       - mongo
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.rc1.rule=Host(`rc1`)"
-      - "traefik.http.routers.rc1.entrypoints=websecure"
-      - "traefik.http.routers.rc1.tls=true"
-      - "traefik.http.services.rc1.loadbalancer.server.port=3000"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.rc1.rule=Host(`rc1`)'
+      - 'traefik.http.routers.rc1.entrypoints=websecure'
+      - 'traefik.http.routers.rc1.tls=true'
+      - 'traefik.http.services.rc1.loadbalancer.server.port=3000'
       # HTTPS Redirect
-      - "traefik.http.middlewares.rc1.redirectscheme.scheme=https"
-      - "traefik.http.routers.rc1-http.rule=Host(`rc1`)"
-      - "traefik.http.routers.rc1-http.middlewares=rc1"
+      - 'traefik.http.middlewares.rc1.redirectscheme.scheme=https'
+      - 'traefik.http.routers.rc1-http.rule=Host(`rc1`)'
+      - 'traefik.http.routers.rc1-http.middlewares=rc1'
 
   mongo:
-    image: mongo:8.0
+    image: mongo:${MONGODB_FEDERATION_VERSION:-8.0}
     profiles:
       - test
       - element
     restart: on-failure
     ports:
-      - "27017:27017"
+      - '27017:27017'
     entrypoint: |
       bash -c
         "mongod --replSet rs0 --bind_ip_all &
@@ -153,12 +153,12 @@ services:
     networks:
       - element-net
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.element.rule=Host(`element`)"
-      - "traefik.http.routers.element.entrypoints=websecure"
-      - "traefik.http.routers.element.tls=true"
-      - "traefik.http.services.element.loadbalancer.server.port=80"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.element.rule=Host(`element`)'
+      - 'traefik.http.routers.element.entrypoints=websecure'
+      - 'traefik.http.routers.element.tls=true'
+      - 'traefik.http.services.element.loadbalancer.server.port=80'
       # HTTPS Redirect
-      - "traefik.http.middlewares.element.redirectscheme.scheme=https"
-      - "traefik.http.routers.element-http.rule=Host(`element`)"
-      - "traefik.http.routers.element-http.middlewares=element"
+      - 'traefik.http.middlewares.element.redirectscheme.scheme=https'
+      - 'traefik.http.routers.element-http.rule=Host(`element`)'
+      - 'traefik.http.routers.element-http.middlewares=element'

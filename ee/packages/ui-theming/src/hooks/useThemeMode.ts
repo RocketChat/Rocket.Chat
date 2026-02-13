@@ -14,7 +14,7 @@ export const useThemeMode = (): [ThemeMode, (value: ThemeMode) => () => void, Th
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
 	const [updaters] = useState(
-		(): Record<ThemeMode, () => void> => ({
+		(): Record<ThemeMode, () => ReturnType<typeof saveUserPreferences>> => ({
 			'light': () => saveUserPreferences({ data: { themeAppearence: 'light' } }),
 			'dark': () => saveUserPreferences({ data: { themeAppearence: 'dark' } }),
 			'auto': () => saveUserPreferences({ data: { themeAppearence: 'auto' } }),

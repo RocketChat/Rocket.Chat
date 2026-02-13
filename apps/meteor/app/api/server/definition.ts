@@ -150,6 +150,7 @@ export type SharedOptions<TMethod extends string> = (
 		version: DeprecationLoggerNextPlannedVersion;
 		alternatives?: PathPattern[];
 	};
+	applyMeteorContext?: boolean;
 };
 
 export type GenericRouteExecutionContext = ActionThis<any, any, any>;
@@ -190,6 +191,8 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
 	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
+
+	readonly twoFactorChecked: boolean;
 
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
@@ -292,6 +295,7 @@ export type TypedOptions = {
 } & SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
 
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
+	readonly logger: Logger;
 	userId: TOptions['authRequired'] extends true ? string : string | undefined;
 	user: TOptions['authRequired'] extends true ? IUser : IUser | null;
 	token: TOptions['authRequired'] extends true ? string : string | undefined;
