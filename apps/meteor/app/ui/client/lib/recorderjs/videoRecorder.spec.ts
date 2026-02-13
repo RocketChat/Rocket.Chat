@@ -38,12 +38,12 @@ describe('VideoRecorder', () => {
 			stop: jest.fn(),
 		} as unknown as MediaStreamTrack;
 
-		mockStream = {
-			getVideoTracks: jest.fn(() => [mockVideoTrack]),
-			getAudioTracks: jest.fn(() => [mockAudioTrack]),
-		} as unknown as MediaStream;
+		mockStream = createMockStream(mockVideoTrack, mockAudioTrack);
 
 		mockVideoElement = document.createElement('video');
+		mockVideoElement.load = jest.fn();
+		mockVideoElement.play = jest.fn().mockResolvedValue(undefined);
+		mockVideoElement.pause = jest.fn();
 
 		getUserMediaMock = jest.fn();
 
@@ -75,9 +75,7 @@ describe('VideoRecorder', () => {
 			VideoRecorder.stop();
 
 			streamDeferred.resolve(mockStream);
-			await Promise.resolve();
-			jest.runAllTimers();
-			await Promise.resolve();
+			await jest.runAllTimersAsync();
 
 			expect(mockVideoTrack.stop).toHaveBeenCalled();
 			expect(mockAudioTrack.stop).toHaveBeenCalled();
@@ -93,9 +91,7 @@ describe('VideoRecorder', () => {
 			VideoRecorder.stop();
 
 			streamDeferred.resolve(mockStream);
-			await Promise.resolve();
-			jest.runAllTimers();
-			await Promise.resolve();
+			await jest.runAllTimersAsync();
 
 			expect(VideoRecorder.cameraStarted.get()).toBe(false);
 		});
@@ -116,9 +112,7 @@ describe('VideoRecorder', () => {
 			VideoRecorder.start(mockVideoElement, cb);
 
 			stream2Deferred.resolve(stream2);
-			await Promise.resolve();
-			jest.runAllTimers();
-			await Promise.resolve();
+			await jest.runAllTimersAsync();
 
 			expect(cb).toHaveBeenCalledWith(true);
 			expect(VideoRecorder.cameraStarted.get()).toBe(true);
@@ -142,9 +136,7 @@ describe('VideoRecorder', () => {
 			secondDeferred.resolve(secondStream);
 			await Promise.resolve();
 			firstDeferred.resolve(firstStream);
-			await Promise.resolve();
-			jest.runAllTimers();
-			await Promise.resolve();
+			await jest.runAllTimersAsync();
 
 			expect(firstStream.getVideoTracks).toHaveBeenCalled();
 			expect(firstStream.getAudioTracks).toHaveBeenCalled();
@@ -160,9 +152,7 @@ describe('VideoRecorder', () => {
 			const cb = jest.fn();
 			VideoRecorder.start(mockVideoElement, cb);
 
-			await Promise.resolve();
-			jest.runAllTimers();
-			await Promise.resolve();
+			await jest.runAllTimersAsync();
 
 			expect(cb).toHaveBeenCalledWith(true);
 			expect(VideoRecorder.cameraStarted.get()).toBe(true);
@@ -190,9 +180,7 @@ describe('VideoRecorder', () => {
 			const cb = jest.fn();
 			VideoRecorder.start(mockVideoElement, cb);
 
-			await Promise.resolve();
-			jest.runAllTimers();
-			await Promise.resolve();
+			await jest.runAllTimersAsync();
 
 			expect(cb).toHaveBeenCalledWith(false);
 		});
