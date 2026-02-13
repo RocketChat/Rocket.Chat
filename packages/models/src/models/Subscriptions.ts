@@ -117,7 +117,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	findByRoomIdAndLastSeenAtOrAfter(roomId: string, lastSeen: Date, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
 		const query = {
 			rid: roomId,
-			ls: { $gte: lastSeen },
+			ls: { $gte: lastSeen, $ne: null },
 		};
 
 		return this.find(query, options);

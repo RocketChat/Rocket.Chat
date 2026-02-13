@@ -176,7 +176,7 @@ class ReadReceiptClass {
 					roomId: message.rid,
 					userId: sub.u._id,
 					messageId: message._id,
-					ts: sub.ls ?? message.ts, // Use subscription's last seen or message timestamp as fallback
+					ts: sub.ls!, // Safe non-null assertion: query explicitly filters for non-null ls
 					user: user as IReadReceiptWithUser['user'],
 				};
 			}),
