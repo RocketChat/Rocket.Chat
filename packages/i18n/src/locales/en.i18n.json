@@ -4356,6 +4356,7 @@
   "RegisterWorkspace_Setup_No_Account_Title": "Don't have an account?",
   "RegisterWorkspace_Setup_Steps": "Step {{step}} of {{numberOfSteps}}",
   "RegisterWorkspace_Setup_Subtitle": "To register this workspace it needs to be associated it with a Rocket.Chat Cloud account.",
+  "RegisterWorkspace_Didnt_Receive_Email": "Didn't receive email? <1>Resend</1> or <3>change email</3>",
   "RegisterWorkspace_Syncing_Complete": "Sync Complete",
   "RegisterWorkspace_Syncing_Error": "An error occurred syncing your workspace",
   "RegisterWorkspace_Token_Step_Two": "Copy the token and paste it below.",
