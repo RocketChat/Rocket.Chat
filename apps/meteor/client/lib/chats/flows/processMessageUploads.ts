@@ -121,16 +121,24 @@ async function continueSendingMessage(chat: ChatAPI, store: UploadsAPI, message:
 	const shouldConvertSentMessages = await e2eRoom?.shouldConvertSentMessages({ msg });
 
 	let content;
+	const hasEncryptedUploads = filesToUpload.some((upload) => isEncryptedUpload(upload));
+
 	if (e2eRoom && shouldConvertSentMessages) {
-		content = await getEncryptedContent(filesToUpload as EncryptedUpload[], e2eRoom, msg);
+		const encryptedUploads = filesToUpload.filter((upload): upload is EncryptedUpload => isEncryptedUpload(upload));
+
+		if (encryptedUploads.length > 0) {
+			content = await getEncryptedContent(encryptedUploads, e2eRoom, msg);
+		}
 	}
+
+	const shouldMarkAsE2E = e2eRoom && (content || hasEncryptedUploads);
 
 	const composedMessage: AtLeast<IMessage, 'msg' | '_id' | 'rid'> = {
 		...message,
 		tmid,
 		msg,
 		content,
-		...(e2eRoom && {
+		...(shouldMarkAsE2E && {
 			t: 'e2e',
 			msg: '',
 		}),
