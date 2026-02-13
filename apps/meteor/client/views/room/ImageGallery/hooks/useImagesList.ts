@@ -25,6 +25,7 @@ export const useImagesList = ({ roomId, startingFromId }: { roomId: IRoom['_id']
 				...file,
 				uploadedAt: file.uploadedAt ? new Date(file.uploadedAt) : undefined,
 				modifiedAt: file.modifiedAt ? new Date(file.modifiedAt) : undefined,
+				expiresAt: file.expiresAt ? new Date(file.expiresAt) : undefined,
 			}));
 
 			for await (const file of items) {

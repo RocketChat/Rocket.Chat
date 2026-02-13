@@ -1,42 +1,25 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { HomeContent } from './home-content';
-import { OmnichannelTransferChatModal } from './modals';
+import { OmnichannelTransferChatModal, OmnichannelReturnToQueueModal } from './modals';
 
 export class HomeOmnichannelContent extends HomeContent {
 	readonly forwardChatModal: OmnichannelTransferChatModal;
 
+	readonly returnToQueueModal: OmnichannelReturnToQueueModal;
+
 	constructor(page: Page) {
 		super(page);
 		this.forwardChatModal = new OmnichannelTransferChatModal(page);
+		this.returnToQueueModal = new OmnichannelReturnToQueueModal(page);
 	}
 
 	get btnReturnToQueue(): Locator {
 		return this.page.locator('role=button[name="Move to the queue"]');
 	}
 
-	get modalReturnToQueue(): Locator {
-		return this.page.locator('[data-qa-id="return-to-queue-modal"]');
-	}
-
-	get btnReturnToQueueConfirm(): Locator {
-		return this.modalReturnToQueue.locator('role=button[name="Confirm"]');
-	}
-
-	get btnReturnToQueueCancel(): Locator {
-		return this.modalReturnToQueue.locator('role=button[name="Cancel"]');
-	}
-
 	get btnTakeChat(): Locator {
 		return this.page.locator('role=button[name="Take it!"]');
-	}
-
-	get contactContextualBar() {
-		return this.page.getByRole('dialog', { name: 'Contact' });
-	}
-
-	get infoContactEmail(): Locator {
-		return this.contactContextualBar.getByRole('list', { name: 'Email' }).getByRole('listitem').first().locator('p');
 	}
 
 	get header(): Locator {
@@ -55,6 +38,9 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('.rcx-room-header').getByRole('heading');
 	}
 
+	/**
+	 * FIXME: useX naming convention should be exclusively for react hooks
+	 **/
 	async useCannedResponse(cannedResponseName: string): Promise<void> {
 		await this.composer.inputMessage.pressSequentially('!');
 		await this.page.locator('[role="menu"][name="ComposerBoxPopup"]').waitFor({ state: 'visible' });
