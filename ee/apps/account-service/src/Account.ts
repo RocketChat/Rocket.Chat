@@ -15,14 +15,8 @@ export class Account extends ServiceClass implements IAccount {
 	constructor() {
 		super();
 
-		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
-			if (clientAction === 'removed') {
-				return;
-			}
-			const { _id, value } = setting;
-			if (_id !== 'Accounts_LoginExpiration') {
-				return;
-			}
+		this.onSettingChanged('Accounts_LoginExpiration', async ({ setting }): Promise<void> => {
+			const { value } = setting;
 
 			this.loginExpiration = getLoginExpirationInDays(value as number);
 		});
