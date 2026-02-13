@@ -113,14 +113,16 @@ test.describe.serial('read-receipts', () => {
 
 			// Admin reads the message
 			await poHomeChannel.navbar.openChat(targetChannel);
-			await page.waitForTimeout(1000); // Wait for subscription to update
+			// Wait for the message to appear before checking receipts
+			await poHomeChannel.content.lastUserMessage.waitFor({ state: 'visible' });
 
 			// Go back to user1 and check receipts
 			await auxContext.poHomeChannel.content.openLastMessageMenu();
 			await user1Page.locator('role=menuitem[name="Read receipts"]').click();
 
-			// Should show at least user1 (sender) and admin (who read it)
-			await expect(user1Page.getByRole('dialog').getByRole('listitem')).toHaveCount.greaterThanOrEqual(1);
+			// Should show at least user1 (sender) and potentially admin (who read it)
+			const receiptsCount = await user1Page.getByRole('dialog').getByRole('listitem').count();
+			expect(receiptsCount).toBeGreaterThanOrEqual(1);
 		});
 	});
 });

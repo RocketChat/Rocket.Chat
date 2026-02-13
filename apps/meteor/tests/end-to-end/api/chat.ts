@@ -2714,10 +2714,10 @@ describe('[Chat]', () => {
 
 					expect(response.body).to.have.property('receipts').and.to.be.an('array');
 					expect(response.body).to.have.property('success', true);
-					
+
 					// Should have at least one receipt (the user who sent the message)
 					expect(response.body.receipts.length).to.be.greaterThanOrEqual(0);
-					
+
 					// Each receipt should have the required properties
 					if (response.body.receipts.length > 0) {
 						const receipt = response.body.receipts[0];
