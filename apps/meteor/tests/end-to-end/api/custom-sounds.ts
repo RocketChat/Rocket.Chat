@@ -131,6 +131,25 @@ describe('[CustomSounds]', () => {
 	});
 
 	describe('Accessing custom sounds', () => {
+		const customEmojiName = 'emoji-name';
+
+		before(async () => {
+			await request
+				.post(api('emoji-custom.create'))
+				.set(credentials)
+				.attach('emoji', imgURL)
+				.field({
+					name: customEmojiName,
+					aliases: `${customEmojiName}-alias`,
+				})
+				.expect(200);
+		});
+
+		after(async () => {
+			const emojisResponse = await request.get(api('emoji-custom.all')).set(credentials).query({ name: customEmojiName }).expect(200);
+			await request.post(api('emoji-custom.delete')).set(credentials).send({ emojiId: emojisResponse.body.emojis[0]._id }).expect(200);
+		});
+
 		it('should return forbidden if the there is no fileId on the url', (done) => {
 			void request
 				.get('/custom-sounds/')
@@ -186,25 +205,13 @@ describe('[CustomSounds]', () => {
 		});
 
 		it('should return not found if the requested file is an emoji in the same directory using FileSystem storage mode', async () => {
-			const customEmojiName = 'emoji-name';
 			await request
-				.post(api('emoji-custom.create'))
-				.set(credentials)
-				.attach('emoji', imgURL)
-				.field({
-					name: customEmojiName,
-					aliases: `${customEmojiName}-alias`,
-				})
-				.expect(200);
-			await request
-				.get(`/custom-sounds/${customEmojiName}`)
+				.get(`/custom-sounds/${customEmojiName}.png`)
 				.set(credentials)
 				.expect(404)
 				.expect((res) => {
 					expect(res.text).to.be.equal('Not found');
 				});
-			const emojisResponse = await request.get(api('emoji-custom.all')).set(credentials).query({ name: customEmojiName }).expect(200);
-			await request.post(api('emoji-custom.delete')).set(credentials).send({ emojiId: emojisResponse.body.emojis[0]._id }).expect(200);
 		});
 	});
 });
