@@ -54,6 +54,13 @@ describe('[CustomSounds]', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
+		// TEST PURPOSE console.logs
+		const soundsSettingResponse = await request.get(api('settings/CustomSounds_Storage_Type')).set(credentials);
+		console.log('CustomSounds_Storage_Type', soundsSettingResponse.body.value);
+		const emojisSettingResponse = await request.get(api('settings/EmojiUpload_Storage_Type')).set(credentials);
+
+		console.log('EmojiUpload_Storage_Type', emojisSettingResponse.body.value);
+
 		const data = readFileSync(path.resolve(__dirname, '../../mocks/files/audio_mock.wav'));
 		const binary = data.toString('binary');
 
