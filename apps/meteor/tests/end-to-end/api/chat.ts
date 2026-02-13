@@ -2609,11 +2609,7 @@ describe('[Chat]', () => {
 					message: {
 						text: 'Message with preset reactions',
 						rid: testChannel._id,
-						presetReactions: [
-							{ emoji: ':+1:' },
-							{ emoji: ':heart:' },
-							{ emoji: ':rocket:' },
-						],
+						presetReactions: [{ emoji: ':+1:' }, { emoji: ':heart:' }, { emoji: ':rocket:' }],
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -2624,7 +2620,7 @@ describe('[Chat]', () => {
 			expect(res.body.message).to.have.property('presetReactions');
 			expect(res.body.message.presetReactions).to.be.an('array').with.lengthOf(3);
 			expect(res.body.message.presetReactions[0]).to.deep.equal({ emoji: ':+1:' });
-			
+
 			messageWithPresets = res.body.message;
 		});
 
@@ -2710,10 +2706,7 @@ describe('[Chat]', () => {
 					roomId: testChannel._id,
 					msgId: messageWithPresets._id,
 					text: 'Updated message with different preset reactions',
-					presetReactions: [
-						{ emoji: ':fire:' },
-						{ emoji: ':tada:' },
-					],
+					presetReactions: [{ emoji: ':fire:' }, { emoji: ':tada:' }],
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200);
