@@ -115,14 +115,11 @@ const UpdatedSchema = z.strictObject({
 	methods: z.array(z.string()),
 });
 
-<<<<<<< HEAD
 const ServerIdSchema = z.strictObject({
 	msg: z.literal('server_id'),
 	server_id: z.string(),
 });
 
-=======
->>>>>>> 4ed1b3ee50 (chore: remove rocketchat:streamer meteor package)
 /**
  * Main DDP Message Schema
  */
@@ -153,12 +150,9 @@ const DDPMessageSchema = z.discriminatedUnion('msg', [
 	MethodSchema,
 	ResultSchema,
 	UpdatedSchema,
-<<<<<<< HEAD
 
 	// Server ID
 	ServerIdSchema,
-=======
->>>>>>> 4ed1b3ee50 (chore: remove rocketchat:streamer meteor package)
 ]);
 
 /**
