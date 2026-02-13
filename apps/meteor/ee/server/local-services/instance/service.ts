@@ -50,15 +50,8 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			}
 		});
 
-		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
-			if (clientAction === 'removed') {
-				return;
-			}
-
-			const { _id, value } = setting;
-			if (_id !== 'Troubleshoot_Disable_Instance_Broadcast') {
-				return;
-			}
+		this.onSettingChanged('Troubleshoot_Disable_Instance_Broadcast', async ({ setting }): Promise<void> => {
+			const { value } = setting;
 
 			if (typeof value !== 'boolean') {
 				return;
