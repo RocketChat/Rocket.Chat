@@ -1,7 +1,7 @@
 import os from 'os';
 
 import type { AppStatusReport } from '@rocket.chat/core-services';
-import { Apps, License, ServiceClassInternal } from '@rocket.chat/core-services';
+import { Apps, License, ServiceClassInternal, Settings } from '@rocket.chat/core-services';
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatus, defaultPingInterval, indexExpire } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
@@ -185,6 +185,8 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			}
 
 			await this.startBroadcast();
+
+			this.troubleshootDisableInstanceBroadcast = await Settings.get<boolean>('Troubleshoot_Disable_Instance_Broadcast');
 		} catch (error) {
 			console.error('Instance service did not start correctly', error);
 		}

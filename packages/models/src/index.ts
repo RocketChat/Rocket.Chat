@@ -1,10 +1,4 @@
-import type {
-	ILivechatDepartmentAgents,
-	ILivechatInquiryRecord,
-	ISetting,
-	ISubscription,
-	RocketChatRecordDeleted,
-} from '@rocket.chat/core-typings';
+import type { ILivechatDepartmentAgents, ILivechatInquiryRecord, ISubscription, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type {
 	IAnalyticsModel,
 	IAvatarsModel,
@@ -108,7 +102,6 @@ import {
 	LivechatVisitorsRaw,
 	RolesRaw,
 	RoomsRaw,
-	SettingsRaw,
 	SubscriptionsRaw,
 	TeamRaw,
 	UsersRaw,
@@ -216,7 +209,6 @@ export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorksp
 export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
-	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
 	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw(db));
 	registerModel('IUsersModel', () => new UsersRaw(db));
 

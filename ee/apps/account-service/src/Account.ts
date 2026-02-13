@@ -1,6 +1,5 @@
-import { ServiceClass } from '@rocket.chat/core-services';
+import { ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IAccount, ILoginResult } from '@rocket.chat/core-services';
-import { Settings } from '@rocket.chat/models';
 import { getLoginExpirationInDays } from '@rocket.chat/tools';
 
 import { loginViaResume } from './lib/loginViaResume';
@@ -39,8 +38,8 @@ export class Account extends ServiceClass implements IAccount {
 	}
 
 	override async started(): Promise<void> {
-		const expiry = await Settings.findOne({ _id: 'Accounts_LoginExpiration' }, { projection: { value: 1 } });
+		const expiry = await Settings.get<number>('Accounts_LoginExpiration');
 
-		this.loginExpiration = getLoginExpirationInDays(expiry?.value as number);
+		this.loginExpiration = getLoginExpirationInDays(expiry);
 	}
 }
