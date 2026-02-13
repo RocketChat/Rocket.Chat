@@ -28,7 +28,7 @@ test.describe.serial('files-management', () => {
 
 	test('should send a file and manage it in the list', async () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.composer.btnSend.click();
 		await expect(poHomeChannel.content.lastMessageFileName).toHaveText(TEST_FILE_TXT);
 
 		await poHomeChannel.roomToolbar.openMoreOptions();
@@ -49,7 +49,7 @@ test.describe.serial('files-management', () => {
 			await poHomeChannel.tabs.files.deleteFile(TEST_FILE_TXT);
 
 			await expect(poHomeChannel.tabs.files.getFileByName(TEST_FILE_TXT)).toHaveCount(0);
-			await expect(poHomeChannel.content.lastUserMessage).not.toBeVisible();
+			await expect(poHomeChannel.content.lastUserMessage.getByRole('link').getByText(TEST_FILE_TXT)).not.toBeVisible();
 		});
 	});
 });
