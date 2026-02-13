@@ -38,7 +38,7 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 
 import type { AutoUpdateRecord } from '../types/IMeteor';
 
-type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
+export type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
 type LoginServiceConfigurationEvent = {
 	id: string;

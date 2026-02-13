@@ -497,7 +497,7 @@
   "All_messages": "All messages",
   "All_roles": "All roles",
   "All_rooms": "All rooms",
-  "All_status": "All status",
+  "All_statuses": "All statuses",
   "All_time": "All time",
   "All_users": "All users",
   "All_users_in_the_channel_can_write_new_messages": "All users in the channel can write new messages",
@@ -2345,6 +2345,7 @@
   "File_not_allowed_direct_messages": "File sharing not allowed in direct messages.",
   "File_removed_by_automatic_prune": "File removed by automatic prune",
   "File_removed_by_prune": "File removed by prune",
+  "File_removed": "File removed",
   "File_type_is_not_accepted": "File type is not accepted.",
   "File_uploaded": "File uploaded",
   "File_uploaded_successfully": "File uploaded successfully",
@@ -4355,6 +4356,7 @@
   "RegisterWorkspace_Setup_No_Account_Title": "Don't have an account?",
   "RegisterWorkspace_Setup_Steps": "Step {{step}} of {{numberOfSteps}}",
   "RegisterWorkspace_Setup_Subtitle": "To register this workspace it needs to be associated it with a Rocket.Chat Cloud account.",
+  "RegisterWorkspace_Didnt_Receive_Email": "Didn't receive email? <1>Resend</1> or <3>change email</3>",
   "RegisterWorkspace_Syncing_Complete": "Sync Complete",
   "RegisterWorkspace_Syncing_Error": "An error occurred syncing your workspace",
   "RegisterWorkspace_Token_Step_Two": "Copy the token and paste it below.",
@@ -7095,5 +7097,6 @@
   "timestamps.relativeTimeDescription": "1 year ago",
   "Message_composer": "Message composer",
   "Thread_composer": "Thread composer",
-  "Room_composer": "Room composer"
+  "Room_composer": "Room composer",
+  "Date_range_presets": "Date range presets"
 }
