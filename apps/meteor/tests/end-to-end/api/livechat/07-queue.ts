@@ -29,7 +29,12 @@ import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 const cleanupRooms = async () => {
-	const response = await request.get(api('livechat/queue')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+	const response = await request
+		.get(api('livechat/queue'))
+		.set(credentials)
+		.query({ count: 100 })
+		.expect('Content-Type', 'application/json')
+		.expect(200);
 
 	const { queue } = response.body;
 
@@ -102,6 +107,20 @@ describe('LIVECHAT - Queue', () => {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
+				});
+		});
+		it('should have an empty queue (cause we removed everything above)', async () => {
+			await request
+				.get(api('livechat/queue'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.queue).to.be.an('array').that.is.empty;
+					expect(res.body).to.have.property('offset', 0);
+					expect(res.body).to.have.property('total', 0);
+					expect(res.body).to.have.property('count', 0);
 				});
 		});
 	});
