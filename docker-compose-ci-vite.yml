@@ -218,6 +218,9 @@ services:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
       - --entrypoints.http.address=:80
+      - --entrypoints.traefik.address=:8080
+      - --api=true
+      - --api.dashboard=true
       - --api.insecure=true
       - '--serverstransport.maxidleconnsperhost=-1'
       - --log.level=DEBUG
