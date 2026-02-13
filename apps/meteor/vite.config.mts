@@ -5,6 +5,7 @@ import { defineConfig, esmExternalRequirePlugin, type BuildEnvironmentOptions } 
 
 import info from './vite/plugins/info';
 import meteor from './vite/plugins/meteor';
+import typia from './vite/plugins/typia';
 
 const build = {
 	emptyOutDir: true,
@@ -52,6 +53,7 @@ export default defineConfig(async () => {
 			react({
 				exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
 			}),
+			typia(),
 			process.env.VITE_INSPECT === 'true' ? await import('vite-plugin-inspect').then(({ default: inspect }) => inspect()) : null,
 		],
 		build,
