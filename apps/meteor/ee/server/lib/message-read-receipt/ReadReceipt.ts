@@ -165,7 +165,7 @@ class ReadReceiptClass {
 		// Fallback: Use subscription last seen (ls) to determine who read the message
 		// Find all subscriptions where ls >= message.ts
 		const subscriptions = await Subscriptions.findByRoomIdAndLastSeenAtOrAfter(message.rid, message.ts, {
-			projection: { 'u._id': 1, ls: 1 },
+			projection: { 'u._id': 1, 'ls': 1 },
 		}).toArray();
 
 		return Promise.all(

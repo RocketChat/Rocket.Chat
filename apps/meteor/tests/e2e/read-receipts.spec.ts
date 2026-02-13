@@ -104,7 +104,7 @@ test.describe.serial('read-receipts', () => {
 			await expect(page.locator('role=menuitem[name="Read receipts"]')).toBeVisible();
 		});
 
-		test('should show the reads receipt modal with users based on last seen', async ({ page, browser }) => {
+		test('should show the reads receipt modal with users based on last seen', async ({ browser }) => {
 			// Send a message from user1
 			const { page: user1Page } = await createAuxContext(browser, Users.user1);
 			auxContext = { page: user1Page, poHomeChannel: new HomeChannel(user1Page) };
