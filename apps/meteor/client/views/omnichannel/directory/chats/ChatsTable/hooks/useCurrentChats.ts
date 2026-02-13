@@ -5,7 +5,7 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useCallback } from 'react';
 
-import { sdk } from '../../../../../../app/utils/client/lib/SDKClient';
+import { sdk } from '../../../../../../../app/utils/client/lib/SDKClient';
 
 /**
  * Subscribes to Omnichannel room change streams to enable real-time updates.
@@ -35,13 +35,13 @@ const useCurrentChatsStreamUpdates = (): void => {
 		});
 
 		// Subscribe to inquiry queue changes (added/removed/changed inquiries)
-		sdk.stream('livechat-inquiry-queue-observer', ['public'], () => {
+		const unsubscribeInquiry = sdk.stream('livechat-inquiry-queue-observer', ['public'], () => {
 			invalidateCurrentChats();
 		});
 
 		return () => {
 			unsubscribePriority();
-			sdk.stop('livechat-inquiry-queue-observer', 'public');
+			unsubscribeInquiry.stop();
 		};
 	}, [userId, subscribeToNotifyLogged, invalidateCurrentChats]);
 };
