@@ -166,6 +166,10 @@ export class OmnichannelLiveChat {
 		return this.page.getByRole('link', { name: fileName });
 	}
 
+	get typingIndicatorForVisitor(): Locator {
+		return this.page.getByRole('status', { name: /typing/i });
+	}
+
 	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true, department?: string): Promise<void> {
 		const buttonLabel = isOffline ? 'Send' : 'Start chat';
 		await this.inputName.fill(liveChatUser.name);

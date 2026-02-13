@@ -62,7 +62,7 @@ const AdminInfoStep = (): ReactElement => {
 	};
 
 	const handleSubmit: ComponentProps<typeof AdminInfoPage>['onSubmit'] = async (data) => {
-		registerAdminUser(data);
+		void registerAdminUser(data);
 	};
 
 	return (
