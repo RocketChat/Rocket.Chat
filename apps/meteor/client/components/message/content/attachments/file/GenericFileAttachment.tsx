@@ -6,7 +6,7 @@ import {
 	MessageGenericPreviewTitle,
 	MessageGenericPreviewDescription,
 } from '@rocket.chat/fuselage';
-import { useMediaUrl } from '@rocket.chat/ui-contexts';
+import { useMediaUrl, useSetModal } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import type { UIEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,7 @@ import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
 import AttachmentSize from '../structure/AttachmentSize';
+import PdfPreviewModal from './PdfPreviewModal';
 
 const openDocumentViewer = window.RocketChatDesktop?.openDocumentViewer;
 
@@ -33,6 +34,7 @@ const GenericFileAttachment = ({
 	collapsed,
 }: GenericFileAttachmentProps) => {
 	const getURL = useMediaUrl();
+	const setModal = useSetModal();
 	const uid = useId();
 	const { t } = useTranslation();
 
@@ -41,21 +43,39 @@ const GenericFileAttachment = ({
 			return;
 		}
 
-		if (openDocumentViewer && format === 'PDF') {
-			event.preventDefault();
-
-			const url = new URL(getURL(link), window.location.origin);
-			url.searchParams.set('contentDisposition', 'inline');
-			openDocumentViewer(url.toString(), format, '');
-			return;
-		}
-
 		if (link.includes('/file-decrypt/')) {
 			event.preventDefault();
 
 			registerDownloadForUid(uid, t, title);
 			forAttachmentDownload(uid, link);
+			return;
 		}
+
+		if (format === 'PDF') {
+			event.preventDefault();
+
+			const previewUrl = new URL(getURL(link), window.location.origin);
+			previewUrl.searchParams.set('contentDisposition', 'inline');
+
+			const downloadUrl = hasDownload ? getExternalUrl() : undefined;
+
+			const handleClose = () => setModal(null);
+			const openInApp = openDocumentViewer
+				? () => openDocumentViewer(previewUrl.toString(), format, '')
+				: undefined;
+
+			setModal(
+				<PdfPreviewModal
+					title={title}
+					url={previewUrl.toString()}
+					onClose={handleClose}
+					downloadUrl={downloadUrl}
+					onOpenInApp={openInApp}
+				/>,
+			);
+			return;
+		}
+
 	};
 
 	const getExternalUrl = () => {
