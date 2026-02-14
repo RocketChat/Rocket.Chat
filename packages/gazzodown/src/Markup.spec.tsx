@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Suspense } from 'react';
 
 import { MarkupInteractionContext } from '.';
@@ -232,7 +232,7 @@ it('renders a code block', async () => {
 
 	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument());
 
-	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
+	expect(screen.getByRole('code')).toHaveTextContent('const foo = bar;');
 });
 
 it('renders a code block with language', async () => {
@@ -252,8 +252,55 @@ it('renders a code block with language', async () => {
 
 	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument());
 
-	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
+	expect(screen.getByRole('code')).toHaveTextContent('const foo = bar;');
 	expect(screen.getByRole('region').querySelector('.language-javascript')).toBeInTheDocument();
+});
+
+it('copies code block content and shows copied feedback', async () => {
+	jest.useFakeTimers();
+
+	try {
+		const writeText = jest.fn().mockResolvedValue(undefined);
+		Object.defineProperty(navigator, 'clipboard', {
+			value: { writeText },
+			configurable: true,
+		});
+
+		render(
+			<Suspense fallback={null}>
+				<Markup
+					tokens={[
+						{
+							type: 'CODE',
+							value: [
+								{ type: 'CODE_LINE', value: { type: 'PLAIN_TEXT', value: 'multi' } },
+								{ type: 'CODE_LINE', value: { type: 'PLAIN_TEXT', value: 'line' } },
+								{ type: 'CODE_LINE', value: { type: 'PLAIN_TEXT', value: 'code' } },
+							],
+							language: undefined,
+						},
+					]}
+				/>
+			</Suspense>,
+		);
+
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Copy' })).toBeInTheDocument());
+
+		fireEvent.click(screen.getByRole('button', { name: 'Copy' }));
+
+		await waitFor(() => expect(writeText).toHaveBeenCalledWith('multi\nline\ncode'));
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Copied' })).toBeInTheDocument());
+		expect(screen.getByText('Copied!')).toBeInTheDocument();
+
+		act(() => {
+			jest.advanceTimersByTime(3000);
+		});
+
+		await waitFor(() => expect(screen.queryByText('Copied!')).not.toBeInTheDocument());
+		expect(screen.getByRole('button', { name: 'Copy' })).toBeInTheDocument();
+	} finally {
+		jest.useRealTimers();
+	}
 });
 
 it('renders a Katex block', async () => {
