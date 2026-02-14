@@ -2,9 +2,13 @@ import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import RoomEdit from './RoomEdit';
+import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
 import { FormSkeleton } from '../../../components';
+import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';
+import { useSlaPolicies } from '../../../hooks/useSlaPolicies';
 import { useOmnichannelRoomInfo } from '../../../hooks/useOmnichannelRoomInfo';
 import { useVisitorInfo } from '../../../hooks/useVisitorInfo';
+import { useOmnichannelPriorities } from '../../../../hooks/useOmnichannelPriorities';
 
 type RoomEditWithDataProps = {
 	id: string;
@@ -16,12 +20,20 @@ type RoomEditWithDataProps = {
 function RoomEditWithData({ id: roomId, reload, reloadInfo, onClose }: RoomEditWithDataProps) {
 	const { t } = useTranslation();
 
+	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
+
 	const { data: room, isLoading: isRoomLoading, isError: isRoomError } = useOmnichannelRoomInfo(roomId);
 	const { _id: visitorId } = room?.v ?? {};
 
 	const { data: visitor, isLoading: isVisitorLoading, isError: isVisitorError } = useVisitorInfo(visitorId!, { enabled: !!visitorId });
+	const { data: slaPolicies, isLoading: isSlaPoliciesLoading } = useSlaPolicies();
+	const { data: customFieldsMetadata, isLoading: isCustomFieldsLoading } = useCustomFieldsMetadata({
+		scope: 'room',
+		enabled: canViewCustomFields,
+	});
+	const { data: priorities, isLoading: isPrioritiesLoading } = useOmnichannelPriorities();
 
-	if (isRoomLoading || isVisitorLoading) {
+	if (isRoomLoading || isVisitorLoading || isSlaPoliciesLoading || isCustomFieldsLoading || isPrioritiesLoading) {
 		return <FormSkeleton />;
 	}
 
@@ -33,7 +45,19 @@ function RoomEditWithData({ id: roomId, reload, reloadInfo, onClose }: RoomEditW
 		return <Box mbs={16}>{t('Visitor_not_found')}</Box>;
 	}
 
-	return <RoomEdit room={room} visitor={visitor} reload={reload} reloadInfo={reloadInfo} onClose={onClose} />;
+	return (
+		<RoomEdit
+			room={room}
+			visitor={visitor}
+			reload={reload}
+			reloadInfo={reloadInfo}
+			onClose={onClose}
+			slaPolicies={slaPolicies}
+			customFieldsMetadata={customFieldsMetadata}
+			priorities={priorities}
+			canViewCustomFields={canViewCustomFields}
+		/>
+	);
 }
 
 export default RoomEditWithData;
