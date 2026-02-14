@@ -5,13 +5,9 @@ import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { Streamer, StreamerCentral } from '../../../../../server/modules/streamer/streamer.module';
 
 class TestStreamer extends Streamer<any> {
-	registerPublication(): void {
-		// no-op for unit test
-	}
+	registerPublication(): void {}
 
-	registerMethod(): void {
-		// no-op for unit test
-	}
+	registerMethod(): void {}
 
 	changedPayload(): string {
 		return 'payload';
@@ -54,7 +50,9 @@ describe('Streamer.sendToManySubscriptions', () => {
 
 	afterEach(() => {
 		sinon.restore();
-		createdStreamers.splice(0).forEach((name) => delete StreamerCentral.instances[name]);
+		for (const name of createdStreamers.splice(0)) {
+			delete StreamerCentral.instances[name];
+		}
 	});
 
 	it('waits for async permission checks before resolving', async () => {
