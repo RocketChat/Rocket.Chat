@@ -4,7 +4,7 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarScrollableContent, ContextualbarFooter, InfoPanelField, InfoPanelLabel, InfoPanelText } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission, useUserId } from '@rocket.chat/ui-contexts';
-import moment from 'moment';
+
 import { useMemo } from 'react';
 
 import DepartmentField from './DepartmentField';
@@ -24,7 +24,7 @@ type ChatInfoProps = {
 	route: keyof IRouterPaths;
 };
 
-// TODO: Remove moment we are mixing moment and our own formatters :sadface:
+
 function ChatInfo({ id, route }: ChatInfoProps) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -124,10 +124,10 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 							<InfoPanelText>{queueTime}</InfoPanelText>
 						</InfoPanelField>
 					)}
-					{closedAt && (
+					{closedAt && ts && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Chat_Duration')}</InfoPanelLabel>
-							<InfoPanelText>{moment(closedAt).from(moment(ts), true)}</InfoPanelText>
+							<InfoPanelText>{formatDuration((new Date(closedAt).getTime() - new Date(ts).getTime()) / 1000)}</InfoPanelText>
 						</InfoPanelField>
 					)}
 					{ts && (
@@ -157,7 +157,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 					{!waitingResponse && responseBy?.lastMessageTs && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Inactivity_Time')}</InfoPanelLabel>
-							<InfoPanelText>{moment(responseBy.lastMessageTs).fromNow(true)}</InfoPanelText>
+							<InfoPanelText>{formatDuration((Date.now() - new Date(responseBy.lastMessageTs).getTime()) / 1000)}</InfoPanelText>
 						</InfoPanelField>
 					)}
 					{customFieldEntries?.length > 0 &&
