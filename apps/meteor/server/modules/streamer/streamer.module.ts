@@ -290,19 +290,32 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 		args: any[],
 		getMsg: string | TransformMessage,
 	): Promise<void> {
-		subscriptions.forEach(async (subscription) => {
-			if (this.retransmitToSelf === false && origin && origin === subscription.subscription.connection) {
-				return;
-			}
-
-			const allowed = await this.isEmitAllowed(subscription.subscription, eventName, ...args);
-			if (allowed) {
-				const msg = typeof getMsg === 'string' ? getMsg : getMsg(this, subscription, eventName, args, allowed);
-				if (msg) {
-					subscription.subscription._session.socket?.send(msg);
+		const results = await Promise.allSettled(
+			[...subscriptions].map(async (subscription) => {
+				if (this.retransmitToSelf === false && origin && origin === subscription.subscription.connection) {
+					return;
 				}
+
+				const allowed = await this.isEmitAllowed(subscription.subscription, eventName, ...args);
+				if (allowed) {
+					const msg = typeof getMsg === 'string' ? getMsg : getMsg(this, subscription, eventName, args, allowed);
+					if (msg) {
+						subscription.subscription._session.socket?.send(msg);
+					}
+				}
+			}),
+		);
+
+		for (const result of results) {
+			if (result.status === 'rejected') {
+				SystemLogger.error({
+					msg: 'Error while delivering streamer event',
+					eventName,
+					streamName: this.name,
+					err: result.reason,
+				});
 			}
-		});
+		}
 	}
 
 	override emit(eventName: string | symbol, ...args: any[]): boolean {
