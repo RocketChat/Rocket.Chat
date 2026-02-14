@@ -1,6 +1,8 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useEffectEvent, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import type { Root } from '@rocket.chat/message-parser';
+import { parse } from '@rocket.chat/message-parser';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -11,10 +13,11 @@ import {
 	MessageComposerButton,
 	MessageComposerInputExpandable,
 } from '@rocket.chat/ui-composer';
+import { Box } from '@rocket.chat/fuselage';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
+import { memo, useRef, useState, useMemo, useCallback, useSyncExternalStore } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -44,11 +47,15 @@ import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedR
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
+import MessageContentBody from '../../../../components/message/MessageContentBody';
 
-const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
-	const target = event.target as HTMLInputElement;
-
-	return Boolean(target.value.trim());
+const parseMessage = (text: string): Root => {
+	try {
+		const parsedMessage = parse(text, { emoticons: true });
+		return parsedMessage[0]?.type !== 'LINE_BREAK' ? parsedMessage : (parsedMessage.slice(1) as Root);
+	} catch {
+		return [];
+	}
 };
 
 const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: FormattingButton[], composer: ComposerAPI) => {
@@ -104,6 +111,7 @@ const MessageBox = ({
 	onTyping,
 	tshow,
 	previewUrls,
+	showFormattingTips,
 }: MessageBoxProps): ReactElement => {
 	const chat = useChat();
 	const room = useRoom();
@@ -113,7 +121,9 @@ const MessageBox = ({
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 	const quoteChainLimit = useSetting('Message_QuoteChainLimit', 2);
-	const [typing, setTyping] = useReducer(reducer, false);
+	const [typing, setTyping] = useState(false);
+	const [composerText, setComposerText] = useState('');
+	const [composerMode, setComposerMode] = useState<'write' | 'preview'>('write');
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
@@ -135,9 +145,13 @@ const MessageBox = ({
 			}
 
 			if (chat.composer) {
+				setTyping(Boolean(node.value.trim()));
+				setComposerText(node.value);
 				return;
 			}
 			chat.setComposerAPI(createComposerAPI(node, storageID, quoteChainLimit, messageComposerRef));
+			setTyping(Boolean(node.value.trim()));
+			setComposerText(node.value);
 		},
 		[chat, storageID, quoteChainLimit],
 	);
@@ -161,6 +175,9 @@ const MessageBox = ({
 	const handleSendMessage = useEffectEvent(() => {
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
+		setTyping(false);
+		setComposerText('');
+		setComposerMode('write');
 		popup.clear();
 
 		onSend?.({
@@ -354,6 +371,16 @@ const MessageBox = ({
 	const popupOptions = useComposerPopupOptions();
 	const popup = useComposerBoxPopup(popupOptions);
 
+	const previewMd = useMemo(() => parseMessage(composerText), [composerText]);
+	const showPreviewTabs = showFormattingTips && !isRecording;
+	const isPreviewMode = showPreviewTabs && composerMode === 'preview';
+
+	const handleComposerChange = useCallback((event: FormEvent<HTMLInputElement>) => {
+		const value = (event.target as HTMLTextAreaElement).value;
+		setTyping(Boolean(value.trim()));
+		setComposerText(value);
+	}, []);
+
 	const keyDownHandlerCallbackRef = useSafeRefCallback(
 		useCallback(
 			(node: HTMLTextAreaElement) => {
@@ -419,28 +446,79 @@ const MessageBox = ({
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
-				<MessageComposerInputExpandable
-					dimensions={sizes}
-					ref={mergedRefs}
-					aria-label={composerPlaceholder}
-					name='msg'
-					disabled={isRecording || !canSend}
-					onChange={setTyping}
-					style={textAreaStyle}
-					placeholder={composerPlaceholder}
-					onPaste={handlePaste}
-					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
-				/>
+				<Box position='relative' w='full' minWidth={0}>
+					<MessageComposerInputExpandable
+						dimensions={sizes}
+						ref={mergedRefs}
+						aria-label={composerPlaceholder}
+						name='msg'
+						disabled={isPreviewMode || isRecording || !canSend}
+						onChange={handleComposerChange}
+						style={{
+							...textAreaStyle,
+							display: 'block',
+							width: '100%',
+							minWidth: 0,
+							boxSizing: 'border-box',
+							...(isPreviewMode && { visibility: 'hidden', pointerEvents: 'none' }),
+						}}
+						placeholder={composerPlaceholder}
+						dir='auto'
+						onPaste={handlePaste}
+						aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
+					/>
+					{isPreviewMode && (
+						<Box
+							position='absolute'
+							style={{ inset: 0, direction: 'ltr' }}
+							borderBlockStartWidth={1}
+							borderColor='stroke-light'
+							w='full'
+							overflowY='auto'
+						>
+							<Box pi={12} pbe={16} pbs={12} dir='auto'>
+								<MessageContentBody md={previewMd} />
+							</Box>
+						</Box>
+					)}
+				</Box>
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
-						<MessageComposerAction
-							icon='emoji'
-							disabled={!useEmojis || isRecording || !canSend}
-							onClick={handleOpenEmojiPicker}
-							title={t('Emoji')}
-						/>
-						<MessageComposerActionsDivider />
-						{chat.composer && formatters.length > 0 && (
+						{showPreviewTabs && (
+							<>
+								<MessageComposerButton
+									onClick={() => setComposerMode('write')}
+									primary={!isPreviewMode}
+									secondary={isPreviewMode}
+									aria-pressed={!isPreviewMode}
+									disabled={isRecording}
+								>
+									Write
+								</MessageComposerButton>
+								<MessageComposerButton
+									onClick={() => setComposerMode('preview')}
+									primary={isPreviewMode}
+									secondary={!isPreviewMode}
+									aria-pressed={isPreviewMode}
+									disabled={isRecording}
+								>
+									{t('Preview')}
+								</MessageComposerButton>
+								{!isPreviewMode && <MessageComposerActionsDivider />}
+							</>
+						)}
+						{!isPreviewMode && (
+							<>
+								<MessageComposerAction
+									icon='emoji'
+									disabled={!useEmojis || isRecording || !canSend}
+									onClick={handleOpenEmojiPicker}
+									title={t('Emoji')}
+								/>
+								<MessageComposerActionsDivider />
+							</>
+						)}
+						{!isPreviewMode && chat.composer && formatters.length > 0 && (
 							<MessageBoxFormattingToolbar
 								composer={chat.composer}
 								variant={sizes.inlineSize < 480 ? 'small' : 'large'}
@@ -448,15 +526,17 @@ const MessageBox = ({
 								disabled={isRecording || !canSend}
 							/>
 						)}
-						<MessageBoxActionsToolbar
-							canSend={canSend}
-							typing={typing}
-							isMicrophoneDenied={isMicrophoneDenied}
-							rid={room._id}
-							tmid={tmid}
-							isRecording={isRecording}
-							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
-						/>
+						{!isPreviewMode && (
+							<MessageBoxActionsToolbar
+								canSend={canSend}
+								typing={typing}
+								isMicrophoneDenied={isMicrophoneDenied}
+								rid={room._id}
+								tmid={tmid}
+								isRecording={isRecording}
+								variant={sizes.inlineSize < 480 ? 'small' : 'large'}
+							/>
+						)}
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (
