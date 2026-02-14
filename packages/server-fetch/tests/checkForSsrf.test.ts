@@ -1,6 +1,10 @@
 import * as ssrfModule from '../src/checkForSsrf';
+import * as helpers from '../src/helpers';
 import {
 	allowlistedIpResolved,
+	buildPinnedUrl,
+	checkDirectIp,
+	extractHostname,
 	isIpInCidrRange,
 	isIpInAnyRange,
 	isIpValid,
@@ -9,7 +13,7 @@ import {
 	normalizeHostForAllowlistMatch,
 	parseIpv4WithPort,
 	unwrapBrackets,
-} from '../src/checkForSsrfHelpers';
+} from '../src/helpers';
 
 describe('checkForSsrf', () => {
 	let nslookupSpy: jest.SpyInstance;
@@ -39,12 +43,12 @@ describe('checkForSsrf', () => {
 	});
 
 	it('returns false if DNS resolves to restricted IPv4', async () => {
-		nslookupSpy = jest.spyOn(ssrfModule, 'nslookup').mockResolvedValue('127.0.0.1');
+		nslookupSpy = jest.spyOn(helpers, 'nslookup').mockResolvedValue('127.0.0.1');
 		expect(await ssrfModule.checkForSsrf('http://example.com')).toBe(false);
 	});
 
 	it('returns true if DNS resolves to public IPv4', async () => {
-		nslookupSpy = jest.spyOn(ssrfModule, 'nslookup').mockResolvedValue('216.58.214.174');
+		nslookupSpy = jest.spyOn(helpers, 'nslookup').mockResolvedValue('216.58.214.174');
 		expect(await ssrfModule.checkForSsrf('http://example.com')).toBe(true);
 	});
 
@@ -53,27 +57,27 @@ describe('checkForSsrf', () => {
 	});
 
 	it('returns true if valid URL resolves to public IPv4', async () => {
-		nslookupSpy = jest.spyOn(ssrfModule, 'nslookup').mockResolvedValue('216.58.214.174');
+		nslookupSpy = jest.spyOn(helpers, 'nslookup').mockResolvedValue('216.58.214.174');
 		const url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Cat_August_2010-4.jpg/2560px-Cat_August_2010-4.jpg';
 		expect(await ssrfModule.checkForSsrf(url)).toBe(true);
 	});
 
 	it('returns true for valid public IPv6 addresses', async () => {
 		const publicIp = '2a00:1450:4007:806::200e';
-		nslookupSpy = jest.spyOn(ssrfModule, 'nslookup').mockResolvedValue(publicIp);
+		nslookupSpy = jest.spyOn(helpers, 'nslookup').mockResolvedValue(publicIp);
 		expect(await ssrfModule.checkForSsrf('http://example.com')).toBe(true);
 		expect(await ssrfModule.checkForSsrf(`[${publicIp}]`)).toBe(true);
 		expect(await ssrfModule.checkForSsrf(publicIp)).toBe(true);
 	});
 
 	it('returns false if DNS resolves to restricted IPv6', async () => {
-		nslookupSpy = jest.spyOn(ssrfModule, 'nslookup').mockResolvedValue('::1');
+		nslookupSpy = jest.spyOn(helpers, 'nslookup').mockResolvedValue('::1');
 		expect(await ssrfModule.checkForSsrf('http://example.com')).toBe(false);
 	});
 
 	it('returns true if DNS resolves to public IPv6', async () => {
 		const publicIp = '2a00:1450:4007:806::200e';
-		nslookupSpy = jest.spyOn(ssrfModule, 'nslookup').mockResolvedValue(publicIp);
+		nslookupSpy = jest.spyOn(helpers, 'nslookup').mockResolvedValue(publicIp);
 		expect(await ssrfModule.checkForSsrf('https://[2a00:1450:4007:806::200e]')).toBe(true);
 	});
 
@@ -82,7 +86,7 @@ describe('checkForSsrf', () => {
 	});
 
 	it('returns false if DNS resolution fails', async () => {
-		nslookupSpy = jest.spyOn(ssrfModule, 'nslookup').mockRejectedValue(new Error('DNS fail'));
+		nslookupSpy = jest.spyOn(helpers, 'nslookup').mockRejectedValue(new Error('DNS fail'));
 		expect(await ssrfModule.checkForSsrf('http://example.com')).toBe(false);
 	});
 
@@ -113,7 +117,7 @@ describe('checkForSsrf', () => {
 		});
 
 		it('allows allowlisted domain that resolves to private IP', async () => {
-			nslookupSpy = jest.spyOn(ssrfModule, 'nslookup').mockResolvedValue('10.0.0.1');
+			nslookupSpy = jest.spyOn(helpers, 'nslookup').mockResolvedValue('10.0.0.1');
 			expect(await ssrfModule.checkForSsrf('http://internal.corp', ['internal.corp'])).toBe(true);
 		});
 
@@ -144,10 +148,6 @@ describe('checkForSsrf', () => {
 });
 
 describe('parseSsrfAllowlist', () => {
-	it('returns empty array for undefined', () => {
-		expect(ssrfModule.parseSsrfAllowlist(undefined)).toEqual([]);
-	});
-
 	it('returns empty array for empty string', () => {
 		expect(ssrfModule.parseSsrfAllowlist('')).toEqual([]);
 	});
@@ -374,5 +374,174 @@ describe('isIpInCidrRange (IPv4-mapped IPv6)', () => {
 		// ::ffff:192.168.1.1 should be in ::ffff:192.168.0.0/112 but not in ::ffff:10.0.0.0/112
 		expect(isIpInCidrRange('::ffff:192.168.1.1', '::ffff:192.168.0.0/112')).toBe(true);
 		expect(isIpInCidrRange('::ffff:192.168.1.1', '::ffff:10.0.0.0/112')).toBe(false);
+	});
+});
+
+describe('checkDirectIp', () => {
+	it('returns true for IPv4 addresses', () => {
+		expect(checkDirectIp('192.168.1.1')).toBe(true);
+		expect(checkDirectIp('127.0.0.1')).toBe(true);
+		expect(checkDirectIp('10.0.0.1')).toBe(true);
+		expect(checkDirectIp('255.255.255.255')).toBe(true);
+		expect(checkDirectIp('8.8.8.8')).toBe(true);
+	});
+
+	it('returns true for IPv6 addresses with brackets', () => {
+		expect(checkDirectIp('[2001:db8::1]')).toBe(true);
+		expect(checkDirectIp('[::1]')).toBe(true);
+		expect(checkDirectIp('[fe80::1]')).toBe(true);
+		expect(checkDirectIp('[2a00:1450:4007:806::200e]')).toBe(true);
+	});
+
+	it('returns true for IPv6 addresses without brackets', () => {
+		expect(checkDirectIp('2001:db8::1')).toBe(true);
+		expect(checkDirectIp('::1')).toBe(true);
+		expect(checkDirectIp('fe80::1')).toBe(true);
+		expect(checkDirectIp('2a00:1450:4007:806::200e')).toBe(true);
+	});
+
+	it('returns false for domain names', () => {
+		expect(checkDirectIp('example.com')).toBe(false);
+		expect(checkDirectIp('sub.example.com')).toBe(false);
+		expect(checkDirectIp('google.com')).toBe(false);
+		expect(checkDirectIp('localhost')).toBe(false);
+	});
+
+	it('returns false for invalid input', () => {
+		expect(checkDirectIp('')).toBe(false);
+		expect(checkDirectIp('not-an-ip')).toBe(false);
+		expect(checkDirectIp('http://example.com')).toBe(false);
+	});
+
+	it('returns true for patterns that look like IPs (even if invalid)', () => {
+		// checkDirectIp uses a simple regex pattern match, not validation
+		// It's designed to detect if something looks like an IP for DNS pinning decisions
+		// So things that look like IPs but are invalid should still return true here, and then later validation will catch them as invalid
+		expect(checkDirectIp('256.1.1.1')).toBe(true);
+		expect(checkDirectIp('999.999.999.999')).toBe(true);
+	});
+
+	it('returns false for IPv4 with port', () => {
+		expect(checkDirectIp('192.168.1.1:8080')).toBe(false);
+	});
+
+	it('returns false for IPv6 with port', () => {
+		expect(checkDirectIp('[::1]:8080')).toBe(false);
+	});
+});
+
+describe('extractHostname', () => {
+	it('extracts hostname from http URL', () => {
+		expect(extractHostname('http://example.com')).toBe('example.com');
+		expect(extractHostname('http://example.com/')).toBe('example.com');
+		expect(extractHostname('http://example.com/path')).toBe('example.com');
+	});
+
+	it('extracts hostname from https URL', () => {
+		expect(extractHostname('https://example.com')).toBe('example.com');
+		expect(extractHostname('https://sub.example.com')).toBe('sub.example.com');
+	});
+
+	it('extracts hostname with port', () => {
+		expect(extractHostname('http://example.com:8080')).toBe('example.com');
+		expect(extractHostname('https://example.com:443')).toBe('example.com');
+	});
+
+	it('extracts IPv4 address', () => {
+		expect(extractHostname('http://192.168.1.1')).toBe('192.168.1.1');
+		expect(extractHostname('http://127.0.0.1:8080')).toBe('127.0.0.1');
+	});
+
+	it('extracts and unwraps bracketed IPv6 addresses', () => {
+		expect(extractHostname('http://[::1]')).toBe('::1');
+		expect(extractHostname('http://[2001:db8::1]')).toBe('2001:db8::1');
+		expect(extractHostname('https://[fe80::1]:8080')).toBe('fe80::1');
+	});
+
+	it('extracts hostname from URL with path and query', () => {
+		expect(extractHostname('https://example.com/path/to/resource?query=value')).toBe('example.com');
+		expect(extractHostname('http://example.com:3000/api/users?id=123')).toBe('example.com');
+	});
+
+	it('extracts hostname from URL with fragment', () => {
+		expect(extractHostname('https://example.com/page#section')).toBe('example.com');
+	});
+
+	it('returns null for invalid URLs', () => {
+		expect(extractHostname('not-a-url')).toBeNull();
+		expect(extractHostname('example.com')).toBeNull();
+		expect(extractHostname('')).toBeNull();
+	});
+
+	it('extracts hostname from complex URLs', () => {
+		expect(extractHostname('https://user:pass@example.com:8080/path')).toBe('example.com');
+		expect(extractHostname('http://subdomain.example.co.uk/path')).toBe('subdomain.example.co.uk');
+	});
+});
+
+describe('buildPinnedUrl', () => {
+	it('replaces hostname with IPv4 address', () => {
+		expect(buildPinnedUrl('http://example.com/path', '93.184.216.34')).toBe('http://93.184.216.34/path');
+		expect(buildPinnedUrl('https://example.com:443/api', '93.184.216.34')).toBe('https://93.184.216.34/api');
+	});
+
+	it('replaces hostname with IPv4 address and strips port from resolvedIp', () => {
+		// When resolvedIp has port like "93.184.216.34:8080", extract just the IP
+		expect(buildPinnedUrl('http://example.com/path', '93.184.216.34:8080')).toBe('http://93.184.216.34/path');
+	});
+
+	it('replaces hostname with bracketed IPv6 address', () => {
+		expect(buildPinnedUrl('http://example.com/path', '2001:db8::1')).toBe('http://[2001:db8::1]/path');
+		expect(buildPinnedUrl('https://example.com:443/api', 'fe80::1')).toBe('https://[fe80::1]/api');
+	});
+
+	it('replaces hostname with already-bracketed IPv6 address', () => {
+		expect(buildPinnedUrl('http://example.com/path', '[2001:db8::1]')).toBe('http://[2001:db8::1]/path');
+		expect(buildPinnedUrl('https://example.com/api', '[::1]')).toBe('https://[::1]/api');
+	});
+
+	it('replaces hostname with IPv6 address and strips port from resolvedIp', () => {
+		// When resolvedIp has port like "[2001:db8::1]:8080", extract just the bracketed IP
+		expect(buildPinnedUrl('http://example.com/path', '[2001:db8::1]:8080')).toBe('http://[2001:db8::1]/path');
+		expect(buildPinnedUrl('https://example.com/api', '[::1]:443')).toBe('https://[::1]/api');
+	});
+
+	it('preserves original URL path, query, and fragment', () => {
+		expect(buildPinnedUrl('http://example.com/path/to/resource?query=value#section', '93.184.216.34')).toBe(
+			'http://93.184.216.34/path/to/resource?query=value#section',
+		);
+	});
+
+	it('preserves original URL port', () => {
+		expect(buildPinnedUrl('http://example.com:8080/path', '93.184.216.34')).toBe('http://93.184.216.34:8080/path');
+		expect(buildPinnedUrl('https://example.com:9443/api', '2001:db8::1')).toBe('https://[2001:db8::1]:9443/api');
+	});
+
+	it('preserves original URL protocol', () => {
+		expect(buildPinnedUrl('http://example.com/path', '93.184.216.34')).toBe('http://93.184.216.34/path');
+		expect(buildPinnedUrl('https://example.com/path', '93.184.216.34')).toBe('https://93.184.216.34/path');
+	});
+
+	it('handles authentication in URL', () => {
+		expect(buildPinnedUrl('http://user:pass@example.com/path', '93.184.216.34')).toBe('http://user:pass@93.184.216.34/path');
+	});
+
+	it('returns original URL when URL parsing fails', () => {
+		expect(buildPinnedUrl('not-a-url', '93.184.216.34')).toBe('not-a-url');
+		expect(buildPinnedUrl('', '93.184.216.34')).toBe('');
+	});
+
+	it('returns original URL for IPv4-mapped IPv6 addresses without brackets', () => {
+		// ::ffff:192.168.1.1 contains both dots and colons
+		// The function's condition `includes(':') && !includes('.')` is false, so it falls through to else
+		// It tries to set the hostname to the raw IPv6 string without brackets, which fails
+		// The try-catch returns the original URL
+		expect(buildPinnedUrl('http://example.com/path', '::ffff:192.168.1.1')).toBe('http://example.com/path');
+	});
+
+	it('handles IPv4-mapped IPv6 addresses with brackets correctly', () => {
+		// If the IPv4-mapped IPv6 is already bracketed, the URL API converts it to canonical form
+		// 192.168.1.1 = 0xc0a80101 = c0a8:0101 in hex
+		expect(buildPinnedUrl('http://example.com/path', '[::ffff:192.168.1.1]')).toBe('http://[::ffff:c0a8:101]/path');
 	});
 });

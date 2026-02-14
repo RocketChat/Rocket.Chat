@@ -11,56 +11,10 @@ import { getProxyForUrl } from 'proxy-from-env';
 import { checkForSsrfWithIp, parseSsrfAllowlist } from './checkForSsrf';
 import { parseRequestOptions } from './parsers';
 import type { ExtendedFetchOptions } from './types';
-
-const MAX_REDIRECTS = 5;
-const redirectStatus = new Set([301, 302, 303, 307, 308]);
+import { buildPinnedUrl, checkDirectIp, extractHostname } from './helpers';
+import { MAX_REDIRECTS, redirectStatus } from './constants';
 
 const logger = new Logger('ExternalRequest');
-
-function checkDirectIp(ip: string): boolean {
-	return /^(\d+\.\d+\.\d+\.\d+|\[?[0-9a-fA-F:]+]?)$/.test(ip);
-}
-
-function extractHostname(urlString: string): string | null {
-	try {
-		const { hostname } = new URL(urlString);
-		if (hostname.startsWith('[') && hostname.endsWith(']')) {
-			return hostname.slice(1, -1);
-		}
-		return hostname;
-	} catch {
-		return null;
-	}
-}
-
-function buildPinnedUrl(originalUrl: string, resolvedIp: string): string {
-	try {
-		const url = new URL(originalUrl);
-
-		let ipAddress: string;
-
-		const ipv4WithPortMatch = resolvedIp.match(/^(\d+\.\d+\.\d+\.\d+)(?::(\d+))$/);
-		if (ipv4WithPortMatch) {
-			ipAddress = ipv4WithPortMatch[1];
-		} else if (resolvedIp.includes(':') && !resolvedIp.includes('.')) {
-			const ipv6WithPortMatch = resolvedIp.match(/^(\[[0-9a-fA-F:]+\])(?::(\d+))$/);
-			if (ipv6WithPortMatch) {
-				ipAddress = ipv6WithPortMatch[1];
-			} else {
-				ipAddress = resolvedIp.startsWith('[') && resolvedIp.endsWith(']') ? resolvedIp : `[${resolvedIp}]`;
-			}
-		} else {
-			// IPv4 without port
-			ipAddress = resolvedIp;
-		}
-
-		url.hostname = ipAddress;
-
-		return url.toString();
-	} catch {
-		return originalUrl;
-	}
-}
 
 function getFetchAgent<U extends string>(
 	url: U,

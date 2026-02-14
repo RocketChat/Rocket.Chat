@@ -1,4 +1,4 @@
-import { lookup } from 'dns';
+import { isTruthy } from '@rocket.chat/tools';
 
 import {
 	allowlistedIpResolved,
@@ -7,44 +7,43 @@ import {
 	isValidDomain,
 	normalizeAllowlistEntry,
 	normalizeHostForAllowlistMatch,
+	nslookup,
 	parseIpv4WithPort,
-} from './checkForSsrfHelpers';
+} from './helpers';
 
-export const parseSsrfAllowlist = (value: string | undefined): string[] => {
-	if (typeof value !== 'string' || !value.trim()) return [];
+export const parseSsrfAllowlist = (value: string): string[] => {
+	if (!value.trim()) {
+		return [];
+	}
 	return value
 		.split(/[\n,]/)
 		.map((entry) => entry.trim())
-		.filter((entry) => entry.length > 0);
+		.filter(isTruthy);
 };
 
-function getEffectiveAllowlist(allowListRaw?: string[]): string[] {
-	if (!allowListRaw || allowListRaw.length === 0) return [];
+function getEffectiveAllowlist(allowListRaw: string[]): string[] {
 	return allowListRaw.map(normalizeAllowlistEntry).filter((entry) => entry.length > 0);
 }
 
 /** Normalize allowList (string or string[]) to a single effective list. Parses raw string in this single place. */
 function toEffectiveAllowlist(allowList?: string | string[]): string[] {
-	if (allowList === undefined || allowList === null) return [];
-	if (typeof allowList === 'string') return getEffectiveAllowlist(parseSsrfAllowlist(allowList));
+	if (allowList === undefined || allowList === null) {
+		return [];
+	}
+	if (typeof allowList === 'string') {
+		return getEffectiveAllowlist(parseSsrfAllowlist(allowList));
+	}
 	return getEffectiveAllowlist(allowList);
 }
 
 function isInAllowlist(hostOrIp: string, port: string | undefined, allowlist: string[]): boolean {
-	if (allowlist.length === 0) return false;
+	if (allowlist.length === 0) {
+		return false;
+	}
 	const normalized = normalizeHostForAllowlistMatch(hostOrIp);
 	const withPort = port ? `${normalized}:${port}` : normalized;
 	return allowlist.some((entry) => entry === normalized || entry === withPort);
 }
-
-export const nslookup = (hostname: string): Promise<string> => {
-	return new Promise((resolve, reject) => {
-		lookup(hostname, (err, address) => {
-			if (err) reject(err);
-			else resolve(address);
-		});
-	});
-};
 
 /**
  * Returns whether the URL is allowed by SSRF rules.
@@ -70,7 +69,9 @@ export const checkForSsrfWithIp = async (
 
 	try {
 		const url = new URL(input);
-		if (url.protocol !== 'http:' && url.protocol !== 'https:') return { allowed: false };
+		if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+			return { allowed: false };
+		}
 		ipOrDomain = url.hostname;
 		port = url.port || undefined;
 		wasUrlParsed = true;
@@ -91,18 +92,23 @@ export const checkForSsrfWithIp = async (
 	const parsed = parseIpv4WithPort(ipOrDomain);
 	if (parsed) {
 		ipOrDomain = parsed.ip;
-		if (parsed.port && !port) port = parsed.port;
+		if (parsed.port && !port) {
+			port = parsed.port;
+		}
 	}
 
 	const ipValid = isIpValid(ipOrDomain);
 	const domainValid = isValidDomain(ipOrDomain);
 
-	if (!ipValid && !domainValid) return { allowed: false };
+	if (!ipValid && !domainValid) {
+		return { allowed: false };
+	}
 
 	if (isInAllowlist(ipOrDomain, port, effectiveAllowlist)) {
 		if (ipValid) {
 			return { allowed: true, resolvedIp: allowlistedIpResolved(ipOrDomain, port, wasUrlParsed) };
 		}
+
 		if (domainValid) {
 			try {
 				const resolvedIp = await nslookup(ipOrDomain);
@@ -114,20 +120,27 @@ export const checkForSsrfWithIp = async (
 		}
 	}
 
-	if (ipValid && isIpInAnyRange(ipOrDomain)) return { allowed: false };
-	if (domainValid && /metadata\.google\.internal/i.test(ipOrDomain)) return { allowed: false };
-
-	if (domainValid) {
-		try {
-			const resolvedIp = await nslookup(ipOrDomain);
-			if (isIpInAnyRange(resolvedIp)) return { allowed: false };
-			const resolvedIpWithPort = !wasUrlParsed && port ? `${resolvedIp}:${port}` : resolvedIp;
-			return { allowed: true, resolvedIp: resolvedIpWithPort };
-		} catch {
-			return { allowed: false };
-		}
+	if (ipValid && isIpInAnyRange(ipOrDomain)) {
+		return { allowed: false };
+	}
+	if (domainValid && /metadata\.google\.internal/i.test(ipOrDomain)) {
+		return { allowed: false };
 	}
 
-	const ipWithPort = !wasUrlParsed && port ? `${ipOrDomain}:${port}` : ipOrDomain;
-	return { allowed: true, resolvedIp: ipWithPort };
+	if (!domainValid) {
+		const ipWithPort = !wasUrlParsed && port ? `${ipOrDomain}:${port}` : ipOrDomain;
+		return { allowed: true, resolvedIp: ipWithPort };
+	}
+
+	try {
+		const resolvedIp = await nslookup(ipOrDomain);
+		if (isIpInAnyRange(resolvedIp)) {
+			return { allowed: false };
+		}
+
+		const resolvedIpWithPort = !wasUrlParsed && port ? `${resolvedIp}:${port}` : resolvedIp;
+		return { allowed: true, resolvedIp: resolvedIpWithPort };
+	} catch {
+		return { allowed: false };
+	}
 };
