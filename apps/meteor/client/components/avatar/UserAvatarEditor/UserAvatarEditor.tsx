@@ -55,7 +55,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, avatarObj, 
 	};
 
 	const clickReset = (): void => {
-		setNewAvatarSource(`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`);
+		setNewAvatarSource(`/avatar/@${useFullNameForDefaultAvatar ? name : username}`);
 		setAvatarObj('reset');
 	};
 

@@ -109,7 +109,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
-	const handleSave = async ({ email, name, username, statusType, statusText, nickname, bio, customFields }: AccountProfileFormValues) => {
+	const handleSave = async ({ email, name, username, statusType, statusText, nickname, bio, customFields, avatar }: AccountProfileFormValues) => {
 		try {
 			await updateOwnBasicInfo({
 				data: {
@@ -129,7 +129,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
-			reset({ email, name, username, statusType, statusText, nickname, bio, customFields });
+			reset({ email, name, username, statusType, statusText, nickname, bio, customFields, avatar });
 		}
 	};
 
