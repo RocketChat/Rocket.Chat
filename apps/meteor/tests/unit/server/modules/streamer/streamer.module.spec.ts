@@ -5,9 +5,13 @@ import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { Streamer, StreamerCentral } from '../../../../../server/modules/streamer/streamer.module';
 
 class TestStreamer extends Streamer<any> {
-	registerPublication(): void {}
+	registerPublication(): void {
+		// no-op for unit test subclass
+	}
 
-	registerMethod(): void {}
+	registerMethod(): void {
+		// no-op for unit test subclass
+	}
 
 	changedPayload(): string {
 		return 'payload';
