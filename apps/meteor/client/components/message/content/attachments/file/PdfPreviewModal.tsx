@@ -31,7 +31,7 @@ const PdfPreviewModal = ({ title, url, onClose, downloadUrl, onOpenInApp }: PdfP
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<iframe src={url} style={iframeStyle} title={title || t('PDF_preview')} sandbox='allow-same-origin' />
+				<iframe src={url} style={iframeStyle} title={title || t('PDF_preview')} />
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
