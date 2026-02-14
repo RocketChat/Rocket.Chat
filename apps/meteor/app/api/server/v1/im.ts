@@ -44,7 +44,7 @@ const findDirectMessageRoom = async (
 		throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" or "username" is required');
 	}
 
-	const user = await Users.findOneById(uid, { projection: { username: 1 } });
+	const user = await Users.findOneById(uid);
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'findDirectMessageRoom',
