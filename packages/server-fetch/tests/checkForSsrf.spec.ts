@@ -1,5 +1,4 @@
 import * as ssrfModule from '../src/checkForSsrf';
-import * as helpers from '../src/helpers';
 import {
 	allowlistedIpResolved,
 	buildPinnedUrl,
@@ -15,11 +14,19 @@ import {
 	unwrapBrackets,
 } from '../src/helpers';
 
-describe('checkForSsrf', () => {
-	let nslookupSpy: jest.SpyInstance;
+// Mock the nslookup function
+jest.mock('../src/helpers', () => ({
+	...jest.requireActual('../src/helpers'),
+	nslookup: jest.fn(),
+}));
 
+import { nslookup } from '../src/helpers';
+
+const nslookupMock = nslookup as jest.MockedFunction<typeof nslookup>;
+
+describe('checkForSsrf', () => {
 	afterEach(() => {
-		nslookupSpy?.mockRestore();
+		jest.clearAllMocks();
 	});
 
 	it('returns false if URL does not start with http:// or https://', async () => {
@@ -43,12 +50,12 @@ describe('checkForSsrf', () => {
 	});
 
 	it('returns false if DNS resolves to restricted IPv4', async () => {
-		nslookupSpy = jest.spyOn(helpers, 'nslookup').mockResolvedValue('127.0.0.1');
+		nslookupMock.mockResolvedValue('127.0.0.1');
 		expect(await ssrfModule.checkForSsrf('http://example.com')).toBe(false);
 	});
 
 	it('returns true if DNS resolves to public IPv4', async () => {
-		nslookupSpy = jest.spyOn(helpers, 'nslookup').mockResolvedValue('216.58.214.174');
+		nslookupMock.mockResolvedValue('216.58.214.174');
 		expect(await ssrfModule.checkForSsrf('http://example.com')).toBe(true);
 	});
 
@@ -57,27 +64,27 @@ describe('checkForSsrf', () => {
 	});
 
 	it('returns true if valid URL resolves to public IPv4', async () => {
-		nslookupSpy = jest.spyOn(helpers, 'nslookup').mockResolvedValue('216.58.214.174');
+		nslookupMock.mockResolvedValue('216.58.214.174');
 		const url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Cat_August_2010-4.jpg/2560px-Cat_August_2010-4.jpg';
 		expect(await ssrfModule.checkForSsrf(url)).toBe(true);
 	});
 
 	it('returns true for valid public IPv6 addresses', async () => {
 		const publicIp = '2a00:1450:4007:806::200e';
-		nslookupSpy = jest.spyOn(helpers, 'nslookup').mockResolvedValue(publicIp);
+		nslookupMock.mockResolvedValue(publicIp);
 		expect(await ssrfModule.checkForSsrf('http://example.com')).toBe(true);
 		expect(await ssrfModule.checkForSsrf(`[${publicIp}]`)).toBe(true);
 		expect(await ssrfModule.checkForSsrf(publicIp)).toBe(true);
 	});
 
 	it('returns false if DNS resolves to restricted IPv6', async () => {
-		nslookupSpy = jest.spyOn(helpers, 'nslookup').mockResolvedValue('::1');
+		nslookupMock.mockResolvedValue('::1');
 		expect(await ssrfModule.checkForSsrf('http://example.com')).toBe(false);
 	});
 
 	it('returns true if DNS resolves to public IPv6', async () => {
 		const publicIp = '2a00:1450:4007:806::200e';
-		nslookupSpy = jest.spyOn(helpers, 'nslookup').mockResolvedValue(publicIp);
+		nslookupMock.mockResolvedValue(publicIp);
 		expect(await ssrfModule.checkForSsrf('https://[2a00:1450:4007:806::200e]')).toBe(true);
 	});
 
@@ -86,7 +93,7 @@ describe('checkForSsrf', () => {
 	});
 
 	it('returns false if DNS resolution fails', async () => {
-		nslookupSpy = jest.spyOn(helpers, 'nslookup').mockRejectedValue(new Error('DNS fail'));
+		nslookupMock.mockRejectedValue(new Error('DNS fail'));
 		expect(await ssrfModule.checkForSsrf('http://example.com')).toBe(false);
 	});
 
@@ -117,7 +124,7 @@ describe('checkForSsrf', () => {
 		});
 
 		it('allows allowlisted domain that resolves to private IP', async () => {
-			nslookupSpy = jest.spyOn(helpers, 'nslookup').mockResolvedValue('10.0.0.1');
+			nslookupMock.mockResolvedValue('10.0.0.1');
 			expect(await ssrfModule.checkForSsrf('http://internal.corp', ['internal.corp'])).toBe(true);
 		});
 

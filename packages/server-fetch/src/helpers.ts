@@ -108,14 +108,14 @@ export const allowlistedIpResolved = (ipOrDomain: string, port: string | undefin
 	return `${ipOrDomain}:${port}`;
 };
 
-export const nslookup = (hostname: string): Promise<string> => {
+export function nslookup(hostname: string): Promise<string> {
 	return new Promise((resolve, reject) => {
 		lookup(hostname, (err, address) => {
 			if (err) reject(err);
 			else resolve(address);
 		});
 	});
-};
+}
 
 export function checkDirectIp(ip: string): boolean {
 	return /^(\d+\.\d+\.\d+\.\d+|\[?[0-9a-fA-F:]+]?)$/.test(ip);
