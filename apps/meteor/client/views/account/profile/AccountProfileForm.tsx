@@ -149,16 +149,17 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 				<Field>
 					<Controller
 						control={control}
-						name='avatar'
-						render={({ field: { onChange } }) => (
-							<UserAvatarEditor
-								etag={user?.avatarETag}
-								currentUsername={user?.username}
-								name={userFullName}
-								username={username}
-								setAvatarObj={onChange}
-								disabled={!allowUserAvatarChange}
-							/>
+					name='avatar'
+					render={({ field: { onChange } }) => (
+						<UserAvatarEditor
+							etag={user?.avatarETag}
+							currentUsername={user?.username}
+							name={userFullName}
+							username={username}
+							avatarObj={avatar}
+							setAvatarObj={onChange}
+							disabled={!allowUserAvatarChange}
+						/>
 						)}
 					/>
 				</Field>

@@ -3,7 +3,7 @@ import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
-import { useId, useState, useCallback } from 'react';
+import { useId, useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
@@ -16,12 +16,13 @@ type UserAvatarEditorProps = {
 	currentUsername: IUser['username'];
 	username: IUser['username'];
 	setAvatarObj: (obj: AvatarObject) => void;
+	avatarObj?: AvatarObject;
 	disabled?: boolean;
 	etag: IUser['avatarETag'];
 	name: IUser['name'];
 };
 
-function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disabled, etag }: UserAvatarEditorProps): ReactElement {
+function UserAvatarEditor({ currentUsername, username, setAvatarObj, avatarObj, name, disabled, etag }: UserAvatarEditorProps): ReactElement {
 	const { t } = useTranslation();
 	const useFullNameForDefaultAvatar = useSetting('UI_Use_Name_Avatar');
 	const rotateImages = useSetting('FileUpload_RotateImages');
@@ -46,7 +47,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 		[setAvatarObj, t, dispatchToastMessage],
 	);
 
-	const [clickUpload] = useSingleFileInput(setUploadedPreview);
+	const [clickUpload, resetUpload] = useSingleFileInput(setUploadedPreview);
 
 	const handleAddUrl = (): void => {
 		setNewAvatarSource(avatarFromUrl);
@@ -71,6 +72,14 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 		},
 		[setAvatarObj, setNewAvatarSource],
 	);
+
+	useEffect(() => {
+		if (avatarObj === '') {
+			setNewAvatarSource(undefined);
+			setAvatarFromUrl('');
+			resetUpload();
+		}
+	}, [avatarObj, resetUpload]);
 
 	return (
 		<Box display='flex' flexDirection='column' fontScale='p2m' color='default'>
