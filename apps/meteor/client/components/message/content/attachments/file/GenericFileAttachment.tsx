@@ -61,7 +61,10 @@ const GenericFileAttachment = ({
 
 			const handleClose = () => setModal(null);
 			const openInApp = openDocumentViewer
-				? () => openDocumentViewer(previewUrl.toString(), format, '')
+				? () => {
+						openDocumentViewer(previewUrl.toString(), format, '');
+						handleClose();
+				  }
 				: undefined;
 
 			setModal(
