@@ -9,10 +9,10 @@ import fetch, { Response } from 'node-fetch';
 import { getProxyForUrl } from 'proxy-from-env';
 
 import { checkForSsrfWithIp, parseSsrfAllowlist } from './checkForSsrf';
+import { MAX_REDIRECTS, redirectStatus } from './constants';
+import { buildPinnedUrl, checkDirectIp, extractHostname } from './helpers';
 import { parseRequestOptions } from './parsers';
 import type { ExtendedFetchOptions } from './types';
-import { buildPinnedUrl, checkDirectIp, extractHostname } from './helpers';
-import { MAX_REDIRECTS, redirectStatus } from './constants';
 
 const logger = new Logger('ExternalRequest');
 

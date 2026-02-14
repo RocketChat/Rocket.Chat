@@ -12,6 +12,7 @@ import {
 	normalizeHostForAllowlistMatch,
 	parseIpv4WithPort,
 	unwrapBrackets,
+	nslookup,
 } from '../src/helpers';
 
 // Mock the nslookup function
@@ -19,8 +20,6 @@ jest.mock('../src/helpers', () => ({
 	...jest.requireActual('../src/helpers'),
 	nslookup: jest.fn(),
 }));
-
-import { nslookup } from '../src/helpers';
 
 const nslookupMock = nslookup as jest.MockedFunction<typeof nslookup>;
 
