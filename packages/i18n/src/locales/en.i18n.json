@@ -37,6 +37,7 @@
   "ABAC_Attribute_created": "{{attributeName}} attribute created",
   "ABAC_Attribute_updated": "{{attributeName}} attribute updated",
   "ABAC_Attribute_deleted": "{{attributeName}} attribute deleted",
+  "User_is_already_an_agent": "User is already an agent",
   "ABAC_New_attribute": "New attribute",
   "ABAC_Edit_attribute": "Edit attribute",
   "ABAC_Edit_attribute_description": "Attribute values cannot be edited, but can be added or deleted.",

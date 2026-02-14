@@ -72,7 +72,7 @@ const AgentsTable = () => {
 
 	return (
 		<>
-			<AddAgent />
+			<AddAgent agents={data?.users} />
 			{((isSuccess && data?.users.length > 0) || queryHasChanged) && (
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
