@@ -115,6 +115,7 @@ declare module 'meteor/meteor' {
 					},
 				]
 			): SubscriptionHandle;
+			_lastSessionId: string;
 		}
 
 		const connection: IMeteorConnection;

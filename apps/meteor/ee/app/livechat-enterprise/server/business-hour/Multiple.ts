@@ -35,29 +35,35 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	async onStartBusinessHours(): Promise<void> {
-		await this.UsersRepository.removeBusinessHoursFromAllUsers();
+		try {
+			await this.UsersRepository.removeBusinessHoursFromAllUsers();
 
-		// TODO is this required? since we're calling `this.openBusinessHour(businessHour)` later on, which will call this again (kinda)
-		await makeAgentsUnavailableBasedOnBusinessHour();
+			// TODO is this required? since we're calling `this.openBusinessHour(businessHour)` later on, which will call this again (kinda)
+			await makeAgentsUnavailableBasedOnBusinessHour();
 
-		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
-		const day = currentTime.format('dddd');
-		const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
-			projection: {
-				workHours: 1,
-				timezone: 1,
-				type: 1,
-				active: 1,
-			},
-		});
-		const businessHoursToOpen = await filterBusinessHoursThatMustBeOpened(activeBusinessHours);
-		bhLogger.info({
-			msg: 'Starting Multiple Business Hours',
-			totalBusinessHoursToOpen: businessHoursToOpen.length,
-			top10BusinessHoursToOpen: businessHoursToOpen.slice(0, 10),
-		});
-		for (const businessHour of businessHoursToOpen) {
-			void this.openBusinessHour(businessHour);
+			const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
+			const day = currentTime.format('dddd');
+			const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
+				projection: {
+					workHours: 1,
+					timezone: 1,
+					type: 1,
+					active: 1,
+				},
+			});
+			const businessHoursToOpen = await filterBusinessHoursThatMustBeOpened(activeBusinessHours);
+			bhLogger.info({
+				msg: 'Starting Multiple Business Hours',
+				totalBusinessHoursToOpen: businessHoursToOpen.length,
+				top10BusinessHoursToOpen: businessHoursToOpen.slice(0, 10),
+			});
+			for (const businessHour of businessHoursToOpen) {
+				void this.openBusinessHour(businessHour).catch((err) => {
+					bhLogger.error({ msg: 'Error while opening business hour during start', businessHourId: businessHour._id, err });
+				});
+			}
+		} catch (err) {
+			bhLogger.error({ msg: 'Error while starting business hours', err });
 		}
 	}
 

@@ -4,8 +4,10 @@ import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/I
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../lib/accessors/mod.ts';
+import { RequestContext } from '../lib/requestContext.ts';
 
-export default async function handleScheduler(method: string, params: unknown): Promise<Defined | JsonRpcError> {
+export default async function handleScheduler(request: RequestContext): Promise<Defined | JsonRpcError> {
+	const { method, params } = request;
 	const [, processorId] = method.split(':');
 	if (!Array.isArray(params)) {
 		return JsonRpcError.invalidParams({ message: 'Invalid params' });
