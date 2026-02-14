@@ -90,7 +90,9 @@ const GenericFileAttachment = ({
 			return url.toString();
 		}
 
-		return getURL(link);
+		const url = new URL(getURL(link), window.location.origin);
+		url.searchParams.set('download', '');
+		return url.toString();
 	};
 
 	return (
