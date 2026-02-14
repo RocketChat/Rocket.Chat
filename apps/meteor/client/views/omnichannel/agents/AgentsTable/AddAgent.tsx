@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
-const AddAgent = () => {
+const AddAgent = ({ agents }: { agents?: { username?: string }[] }) => {
 	const { t } = useTranslation();
 	const [username, setUsername] = useState('');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -25,7 +25,16 @@ const AddAgent = () => {
 		},
 	});
 
-	const handleSave = useEffectEvent(async () => {
+	const handleSave = useEffectEvent(async () => { 
+		const isAlreadyAgent = agents?.some((agent) => agent.username && agent.username === username);
+
+		if (isAlreadyAgent) {
+			dispatchToastMessage({
+				type: 'error',
+				message: t('User is already an agent'),
+			});
+			return;
+		}
 		await saveAction({ username });
 	});
 
