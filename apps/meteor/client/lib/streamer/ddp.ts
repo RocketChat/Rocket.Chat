@@ -115,6 +115,11 @@ const UpdatedSchema = z.strictObject({
 	methods: z.array(z.string()),
 });
 
+const ServerIdSchema = z.strictObject({
+	msg: z.literal('server_id'),
+	server_id: z.string(),
+});
+
 /**
  * Main DDP Message Schema
  */
@@ -145,6 +150,9 @@ const DDPMessageSchema = z.discriminatedUnion('msg', [
 	MethodSchema,
 	ResultSchema,
 	UpdatedSchema,
+
+	// Server ID
+	ServerIdSchema,
 ]);
 
 /**
