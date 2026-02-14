@@ -18,15 +18,7 @@ const CurrentChatTags = ({ value, handler, department, viewAll, ...props }: Curr
 		return null;
 	}
 
-	return (
-		<AutoCompleteTagsMultiple
-			{...props}
-			onChange={handler}
-			value={value}
-			department={department}
-			viewAll={viewAll}
-		/>
-	);
+	return <AutoCompleteTagsMultiple {...props} onChange={handler} value={value} department={department} viewAll={viewAll} />;
 };
 
 export default CurrentChatTags;
