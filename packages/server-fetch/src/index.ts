@@ -171,8 +171,8 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			const response = await fetch(url.toString(), {
 				// @ts-expect-error - This complained when types were moved to file :/
 				signal: controller.signal,
-				redirect: 'manual',
 				...parsedOptions,
+				redirect: 'manual',
 				headers,
 				...(agent ? { agent } : {}),
 			});
