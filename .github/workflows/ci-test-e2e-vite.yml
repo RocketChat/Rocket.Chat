@@ -251,10 +251,10 @@ jobs:
           
           # Show Traefik discovered routers via API
           echo "=== Traefik discovered HTTP routers ==="
-          curl -s http://localhost:8080/api/http/routers | jq '.' || echo "Failed to query Traefik API"
+          curl -s http://localhost:8081/api/http/routers | jq '.' || echo "Failed to query Traefik API"
           
           echo "=== Traefik discovered HTTP services ==="
-          curl -s http://localhost:8080/api/http/services | jq '.' || echo "Failed to query Traefik API"
+          curl -s http://localhost:8081/api/http/services | jq '.' || echo "Failed to query Traefik API"
           
           # Wait for Traefik to discover the frontend service
           echo "Waiting for frontend to be accessible via Traefik..."
