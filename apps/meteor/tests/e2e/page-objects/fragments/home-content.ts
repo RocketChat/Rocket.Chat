@@ -4,7 +4,7 @@ import { resolve, join, relative } from 'node:path';
 import type { Locator, Page } from '@playwright/test';
 
 import { RoomComposer, ThreadComposer } from './composer';
-import waitForMediaResponse from '../../fixtures/responses/mediaResponse';
+import { createMediaResponsePromise } from '../../fixtures/responses/mediaResponse';
 import { expect } from '../../utils/test';
 
 const FIXTURES_PATH = relative(process.cwd(), resolve(__dirname, '../../fixtures/files'));
@@ -365,11 +365,11 @@ export class HomeContent {
 			return data;
 		}, contract);
 
+		const responsePromise = waitForLoad ? createMediaResponsePromise(this.page) : null;
 		await this.composer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
-
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
-		if (waitForLoad) {
-			await waitForMediaResponse(this.page);
+		if (responsePromise) {
+			await responsePromise;
 		}
 	}
 
@@ -384,27 +384,28 @@ export class HomeContent {
 			return data;
 		}, contract);
 
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.threadComposer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
-
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
-
-		if (waitForResponse) {
-			await waitForMediaResponse(this.page);
+		if (responsePromise) {
+			await responsePromise;
 		}
 	}
 
 	async sendFileMessage(fileName: string, { waitForResponse = true } = {}): Promise<void> {
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.page.getByLabel('Room composer').locator('input[type=file]').setInputFiles(getFilePath(fileName));
-		if (waitForResponse) {
-			await waitForMediaResponse(this.page);
+		if (responsePromise) {
+			await responsePromise;
 		}
 	}
 
 	async sendFileMessageToThread(fileName: string, { waitForResponse = true } = {}): Promise<void> {
 		await this.threadComposer.inputMessage.click();
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.page.getByLabel('Thread composer').locator('input[type=file]').setInputFiles(getFilePath(fileName));
-		if (waitForResponse) {
-			await waitForMediaResponse(this.page);
+		if (responsePromise) {
+			await responsePromise;
 		}
 	}
 
