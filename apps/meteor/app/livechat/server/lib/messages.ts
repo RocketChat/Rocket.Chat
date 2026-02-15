@@ -94,9 +94,6 @@ export async function sendOfflineMessage(data: OfflineMessageData) {
 }
 
 export async function updateMessage({ guest, message }: { guest: ILivechatVisitor; message: AtLeast<IMessage, '_id' | 'msg' | 'rid'> }) {
-	// TODO: Remove check
-	check(message, Match.ObjectIncluding({ _id: String }));
-
 	const originalMessage = await Messages.findOneById<Pick<IMessage, 'u' | '_id'>>(message._id, { projection: { u: 1 } });
 	if (!originalMessage?._id) {
 		return;
