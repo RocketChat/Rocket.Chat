@@ -6,7 +6,7 @@ export type AccountProfileFormValues = {
 	email: string;
 	name: string;
 	username: string;
-	avatar: AvatarObject;
+	avatar: AvatarObject | '';
 	url: string;
 	statusText: string;
 	statusType: string;

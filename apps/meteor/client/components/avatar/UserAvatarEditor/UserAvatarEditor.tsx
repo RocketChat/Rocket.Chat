@@ -12,11 +12,13 @@ import { readFileAsDataURL } from './readFileAsDataURL';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 
+type AvatarValue = AvatarObject | '';
+
 type UserAvatarEditorProps = {
 	currentUsername: IUser['username'];
 	username: IUser['username'];
-	setAvatarObj: (obj: AvatarObject) => void;
-	avatarObj?: AvatarObject;
+	setAvatarObj: (obj: AvatarValue) => void;
+	avatarObj?: AvatarValue;
 	disabled?: boolean;
 	etag: IUser['avatarETag'];
 	name: IUser['name'];
@@ -67,7 +69,8 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, avatarObj, 
 		setAvatarVersion(Date.now());
 	}, [avatarObj]);
 
-	const url = newAvatarSource ?? `${getUserAvatarPath({ username: currentUsername || '', etag })}?_ts=${avatarVersion}`;
+	const baseAvatarPath = getUserAvatarPath({ username: currentUsername || '', etag });
+	const url = newAvatarSource ?? `${baseAvatarPath}${baseAvatarPath.includes('?') ? '&' : '?'}_ts=${avatarVersion}`;
 
 	const handleAvatarFromUrlChange = (event: ChangeEvent<HTMLInputElement>): void => {
 		setAvatarFromUrl(event.currentTarget.value);

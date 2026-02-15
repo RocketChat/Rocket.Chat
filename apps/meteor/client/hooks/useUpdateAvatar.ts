@@ -6,13 +6,15 @@ import { useTranslation } from 'react-i18next';
 import { useEndpointMutation } from './useEndpointMutation';
 import { useEndpointUploadMutation } from './useEndpointUploadMutation';
 
-const isAvatarReset = (avatarObj: AvatarObject): avatarObj is AvatarReset => avatarObj === 'reset';
-const isServiceObject = (avatarObj: AvatarObject): avatarObj is AvatarServiceObject =>
+type AvatarInput = AvatarObject | '';
+
+const isAvatarReset = (avatarObj: AvatarInput): avatarObj is AvatarReset => avatarObj === 'reset';
+const isServiceObject = (avatarObj: AvatarInput): avatarObj is AvatarServiceObject =>
 	!isAvatarReset(avatarObj) && typeof avatarObj === 'object' && 'service' in avatarObj;
-const isAvatarUrl = (avatarObj: AvatarObject): avatarObj is AvatarUrlObj =>
+const isAvatarUrl = (avatarObj: AvatarInput): avatarObj is AvatarUrlObj =>
 	!isAvatarReset(avatarObj) && typeof avatarObj === 'object' && 'service' && 'avatarUrl' in avatarObj;
 
-export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']) => {
+export const useUpdateAvatar = (avatarObj: AvatarInput, userId: IUser['_id']) => {
 	const { t } = useTranslation();
 	const avatarUrl = isAvatarUrl(avatarObj) ? avatarObj.avatarUrl : '';
 
@@ -38,6 +40,10 @@ export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']) =
 	});
 
 	const updateAvatar = useCallback(async () => {
+		if (avatarObj === '') {
+			return;
+		}
+
 		if (isAvatarReset(avatarObj)) {
 			await resetAvatarAction({
 				userId,
