@@ -41,20 +41,30 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	private readonly logger = new Logger(this.name);
 
 	override async created(): Promise<void> {
-		// although this is async function, it is not awaited, so we need to register the listeners before everything else
-		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
-			if (clientAction === 'removed') {
-				return;
-			}
-
-			const { _id, value } = setting;
-			if (_id === 'Federation_Service_Domain' && typeof value === 'string') {
+		this.onSettingChanged('Federation_Service_Domain', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'string') {
 				this.serverName = value;
-			} else if (_id === 'Federation_Service_EDU_Process_Typing' && typeof value === 'boolean') {
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_EDU_Process_Typing', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
 				this.processEDUTyping = value;
-			} else if (_id === 'Federation_Service_EDU_Process_Presence' && typeof value === 'boolean') {
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_EDU_Process_Presence', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
 				this.processEDUPresence = value;
-			} else if (_id === 'Federation_Service_Validate_User_Domain' && typeof value === 'boolean') {
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_Validate_User_Domain', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
 				this.validateUserDomain = value;
 			}
 		});
