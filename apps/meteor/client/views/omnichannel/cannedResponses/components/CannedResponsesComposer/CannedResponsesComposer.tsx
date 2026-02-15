@@ -16,7 +16,11 @@ import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 import { Backdrop } from '../../../../../components/Backdrop';
 import { useEmojiPicker } from '../../../../../contexts/EmojiPickerContext';
 
-const CannedResponsesComposer = ({ onChange, ...props }: ComponentProps<typeof MessageComposerInput>) => {
+type CannedResponsesComposerProps = Omit<ComponentProps<typeof MessageComposerInput>, 'onChange'> & {
+	onChange: (value: string) => void;
+};
+
+const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposerProps) => {
 	const { t } = useTranslation();
 	const useEmojisPreference = useUserPreference('useEmojis');
 
@@ -53,7 +57,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: ComponentProps<typeof M
 					textAreaRef.current.setSelectionRange(startPos + 1, endPos + 1);
 				}
 
-				onChange?.(textAreaRef.current.value as any);
+				onChange?.(textAreaRef.current.value);
 			}
 		}, [char]);
 
@@ -68,7 +72,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: ComponentProps<typeof M
 			textAreaRef.current.focus();
 			textAreaRef.current.setSelectionRange(startPos + emojiValue.length, startPos + emojiValue.length);
 
-			onChange?.(textAreaRef.current.value as any);
+			onChange?.(textAreaRef.current.value);
 		}
 	};
 
@@ -91,7 +95,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: ComponentProps<typeof M
 
 	return (
 		<MessageComposer>
-			<MessageComposerInput ref={textAreaRef} rows={10} onChange={onChange} {...props} />
+			<MessageComposerInput ref={textAreaRef} rows={10} onChange={(e): void => onChange(e.target.value)} {...props} />
 			<MessageComposerToolbar>
 				<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 					<MessageComposerAction icon='emoji' disabled={!useEmojisPreference} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
