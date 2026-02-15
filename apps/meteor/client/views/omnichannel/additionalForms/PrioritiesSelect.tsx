@@ -21,7 +21,7 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 	const formattedOptions = useMemo<SelectOption[]>(
 		() => [
 			['', t('Unprioritized')],
-			...options?.map(({ dirty, name, i18n, _id }) => [_id, dirty && name ? name : t(i18n as TranslationKey)] as SelectOption),
+			...(options || []).map(({ dirty, name, i18n, _id }) => [_id, dirty && name ? name : t(i18n as TranslationKey)] as SelectOption),
 		],
 		[options, t],
 	);
