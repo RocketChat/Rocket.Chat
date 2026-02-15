@@ -1,5 +1,78 @@
 # @rocket.chat/ui-voip
 
+## 17.0.0
+
+### Minor Changes
+
+- ([#37616](https://github.com/RocketChat/Rocket.Chat/pull/37616)) Introduces realtime user presence updates for the selected user when starting/transferring a voice call.
+
+### Patch Changes
+
+- ([#38169](https://github.com/RocketChat/Rocket.Chat/pull/38169)) Introduces in the call widget a quick link that redirects to the participant's direct message
+
+- <details><summary>Updated dependencies [00b36c5a59fb45573f72c5409735238a817ff5ca, 719b85aa769fed231d0455bdd60f28867ceecfbe]:</summary>
+
+  - @rocket.chat/ui-client@27.0.0
+  - @rocket.chat/ui-contexts@27.0.0
+  - @rocket.chat/fuselage-ui-kit@27.0.0
+  - @rocket.chat/ui-avatar@23.0.0
+  </details>
+
+## 17.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@27.0.0-rc.2
+  - @rocket.chat/ui-avatar@23.0.0-rc.2
+  - @rocket.chat/ui-client@27.0.0-rc.2
+  - @rocket.chat/ui-contexts@27.0.0-rc.2
+  </details>
+
+## 17.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/ui-contexts@27.0.0-rc.1
+  - @rocket.chat/ui-client@27.0.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@27.0.0-rc.1
+  - @rocket.chat/ui-avatar@23.0.0-rc.1
+  </details>
+
+## 17.0.0-rc.0
+
+### Minor Changes
+
+- ([#37616](https://github.com/RocketChat/Rocket.Chat/pull/37616)) Introduces realtime user presence updates for the selected user when starting/transferring a voice call.
+
+### Patch Changes
+
+- ([#38169](https://github.com/RocketChat/Rocket.Chat/pull/38169)) Introduces in the call widget a quick link that redirects to the participant's direct message
+
+- <details><summary>Updated dependencies [00b36c5a59fb45573f72c5409735238a817ff5ca, 719b85aa769fed231d0455bdd60f28867ceecfbe]:</summary>
+
+  - @rocket.chat/ui-client@27.0.0-rc.0
+  - @rocket.chat/ui-contexts@27.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@27.0.0-rc.0
+  - @rocket.chat/ui-avatar@23.0.0-rc.0
+
+  </details>
+
+## 16.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/fuselage-ui-kit@26.0.1
+
+  - @rocket.chat/ui-avatar@22.0.1
+  - @rocket.chat/ui-client@26.0.1
+  - @rocket.chat/ui-contexts@26.0.1
+
+  </details>
+
 ## 16.0.0
 
 ### Major Changes

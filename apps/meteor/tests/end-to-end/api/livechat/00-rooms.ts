@@ -2940,7 +2940,6 @@ describe('LIVECHAT - rooms', () => {
 				expect(latestRoom).to.have.property('tags').to.include('tag2');
 				expect(latestRoom).to.have.property('livechatData').to.have.property(cfName, 'test-input-1-value');
 			});
-
 			it('should throw an error if custom fields are not valid', async () => {
 				await request
 					.post(api('livechat/room.saveInfo'))
@@ -2999,6 +2998,56 @@ describe('LIVECHAT - rooms', () => {
 					.expect(400);
 				expect(response.body).to.have.property('success', false);
 				expect(response.body).to.have.property('error', 'Invalid value for intfield field');
+			});
+			it('should throw an error if room _id is empty string', async () => {
+				await request
+					.post(api('livechat/room.saveInfo'))
+					.set(credentials)
+					.send({
+						roomData: {
+							_id: '',
+							livechatData: {},
+						},
+						guestData: {
+							_id: visitor._id,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+			});
+			it('should throw an error if visitor _id is empty string', async () => {
+				await request
+					.post(api('livechat/room.saveInfo'))
+					.set(credentials)
+					.send({
+						roomData: {
+							_id: room._id,
+							livechatData: {},
+						},
+						guestData: {
+							_id: '',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+			});
+
+			it('should throw an error if livechatData contains invalid field format', async () => {
+				const response = await request
+					.post(api('livechat/room.saveInfo'))
+					.set(credentials)
+					.send({
+						roomData: {
+							_id: room._id,
+							livechatData: { intfield: ['array', 'instead', 'of', 'string'] },
+						},
+						guestData: {
+							_id: visitor._id,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+				expect(response.body).to.have.property('success', false);
 			});
 			it('should not throw an error if a valid custom field passes the check', async () => {
 				const response2 = await request
