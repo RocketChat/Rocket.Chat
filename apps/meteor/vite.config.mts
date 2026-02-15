@@ -58,7 +58,7 @@ export default defineConfig(async () => {
 		],
 		build,
 		resolve: {
-			dedupe: ['react', 'react-dom', 'react-i18next', '@tanstack/react-query'],
+			dedupe: ['react', 'react-dom', 'react-i18next', '@tanstack/react-query', 'react-aria', 'react-stately'],
 			alias: {
 				// Rocket.Chat Packages
 				'@rocket.chat/api-client': path.resolve('../../packages/api-client/src/index.ts'),
