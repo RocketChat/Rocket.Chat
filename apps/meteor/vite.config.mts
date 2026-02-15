@@ -121,7 +121,7 @@ export default defineConfig(async () => {
 				'/readyz': { target: ROOT_URL.origin, changeOrigin: true },
 				'/requestSeats': { target: ROOT_URL.origin, changeOrigin: true },
 				'/data-export': { target: ROOT_URL.origin, changeOrigin: true },
-
+				'/meteor_runtime_config.js': { target: ROOT_URL.origin, changeOrigin: true, followRedirects: true },
 				'/file-upload': {
 					target: ROOT_URL.origin,
 					changeOrigin: true,
