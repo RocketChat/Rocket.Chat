@@ -111,9 +111,9 @@ const CannedResponseList = ({
 					</Box>
 				)}
 
-				{error instanceof Error && (
+				{!!error && (
 					<Callout mi={24} type='danger'>
-						{error.toString()}
+						{error instanceof Error ? error.message : t('Something_went_wrong')}
 					</Callout>
 				)}
 
