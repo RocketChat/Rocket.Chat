@@ -1,7 +1,7 @@
 import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
 import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSetting, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
 import { useId, useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,8 +26,10 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, avatarObj, 
 	const { t } = useTranslation();
 	const useFullNameForDefaultAvatar = useSetting('UI_Use_Name_Avatar');
 	const rotateImages = useSetting('FileUpload_RotateImages');
+	const getUserAvatarPath = useUserAvatarPath();
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
+	const [avatarVersion, setAvatarVersion] = useState(() => Date.now());
 	const imageUrlField = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -57,9 +59,15 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, avatarObj, 
 	const clickReset = (): void => {
 		setNewAvatarSource(`/avatar/@${useFullNameForDefaultAvatar ? name : username}`);
 		setAvatarObj('reset');
+		setAvatarFromUrl('');
+		resetUpload();
 	};
 
-	const url = newAvatarSource;
+	useEffect(() => {
+		setAvatarVersion(Date.now());
+	}, [avatarObj]);
+
+	const url = newAvatarSource ?? `${getUserAvatarPath({ username: currentUsername || '', etag })}?_ts=${avatarVersion}`;
 
 	const handleAvatarFromUrlChange = (event: ChangeEvent<HTMLInputElement>): void => {
 		setAvatarFromUrl(event.currentTarget.value);
