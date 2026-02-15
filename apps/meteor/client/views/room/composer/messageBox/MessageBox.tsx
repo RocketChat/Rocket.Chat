@@ -470,7 +470,7 @@ const MessageBox = ({
 					{isPreviewMode && (
 						<Box
 							position='absolute'
-							style={{ inset: 0, direction: 'ltr' }}
+							style={{ inset: 0 }}
 							borderBlockStartWidth={1}
 							borderColor='stroke-light'
 							w='full'
@@ -493,7 +493,7 @@ const MessageBox = ({
 									aria-pressed={!isPreviewMode}
 									disabled={isRecording}
 								>
-									Write
+									{t('Write')}
 								</MessageComposerButton>
 								<MessageComposerButton
 									onClick={() => setComposerMode('preview')}
