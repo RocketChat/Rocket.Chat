@@ -1,9 +1,15 @@
+import fs from 'fs';
+import type Stream from 'stream';
+
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
 import type { IUpload, IUser, FilesAndAttachments, IMessage } from '@rocket.chat/core-typings';
 import { isFileAttachment } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Uploads } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import sharp from 'sharp';
 
 import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 import { canDeleteMessageAsync } from '../../../app/authorization/server/functions/canDeleteMessage';
@@ -13,6 +19,7 @@ import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
 import { i18n } from '../../lib/i18n';
+import { UploadFS } from '../../ufs';
 
 const logger = new Logger('UploadService');
 
@@ -49,9 +56,9 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		return parseFileIntoMessageAttachments(file, roomId, user);
 	}
 
-	async canDeleteFile(userId: IUser['_id'], file: IUpload, msg: IMessage | null): Promise<boolean> {
+	async canDeleteFile(user: IUser, file: IUpload, msg: IMessage | null): Promise<boolean> {
 		if (msg) {
-			return canDeleteMessageAsync(userId, msg);
+			return canDeleteMessageAsync(user, msg);
 		}
 
 		if (!file.userId || !file.rid) {
@@ -59,13 +66,13 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		}
 
 		// If file is not confirmed and was sent by the same user
-		if (file.expiresAt && file.userId === userId) {
-			return canAccessRoomIdAsync(file.rid, userId);
+		if (file.expiresAt && file.userId === user._id) {
+			return canAccessRoomIdAsync(file.rid, user._id);
 		}
 
 		// It's a confirmed file but it has no message, so use data from the file to run message delete permission checks
 		const msgForValidation = { u: { _id: file.userId }, ts: file.uploadedAt, rid: file.rid };
-		return canDeleteMessageAsync(userId, msgForValidation);
+		return canDeleteMessageAsync(user, msgForValidation);
 	}
 
 	async deleteFile(user: IUser, fileId: IUpload['_id'], msg: IMessage | null): Promise<{ deletedFiles: IUpload['_id'][] }> {
@@ -107,7 +114,7 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 
 	private async updateMessageRemovingFiles(msg: IMessage, filesToRemove: IUpload['_id'][], user: IUser): Promise<void> {
 		const text = `_${i18n.t('File_removed')}_`;
-		const newAttachment = { color: NOTIFICATION_ATTACHMENT_COLOR, text };
+		const color = NOTIFICATION_ATTACHMENT_COLOR;
 
 		const newFiles = msg.files?.filter((file) => !filesToRemove.includes(file._id));
 		const newAttachments = msg.attachments?.map((attachment) => {
@@ -120,7 +127,7 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 				return attachment;
 			}
 
-			return newAttachment;
+			return { type: 'removed-file', color, text, ...(attachment.fileId && { fileId: attachment.fileId }) };
 		});
 		const newFile = msg.file?._id && !filesToRemove.includes(msg.file._id) ? msg.file : newFiles?.[0];
 
@@ -132,5 +139,72 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		};
 
 		await updateMessage(editedMessage, user, msg);
+	}
+
+	async streamUploadedFile({
+		file,
+		imageResizeOpts,
+	}: {
+		file: IUpload;
+		imageResizeOpts?: { width: number; height: number };
+	}): Promise<Stream.Readable> {
+		const stream = await FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
+		if (!stream) {
+			throw new Error('error-file-not-found');
+		}
+
+		if (file?.type?.includes('image') && imageResizeOpts) {
+			const { width, height } = imageResizeOpts;
+
+			const transformer = sharp().resize({ width, height, fit: 'contain' });
+
+			stream.on('error', (err) => transformer.destroy(err));
+
+			return stream.pipe(transformer);
+		}
+
+		return stream;
+	}
+
+	async uploadFileFromStream({
+		streamParam,
+		details,
+	}: {
+		streamParam: Stream.Readable;
+		details: Omit<IUploadDetails, 'size'>;
+	}): Promise<IUpload> {
+		const resolver = Promise.withResolvers<IUpload>();
+
+		const tempFilePath = UploadFS.getTempFilePath(Random.id());
+
+		const writeStream = fs.createWriteStream(tempFilePath);
+		streamParam.pipe(writeStream);
+
+		const cleanup = (err: unknown) => {
+			fs.promises.unlink(tempFilePath).catch(() => undefined);
+			resolver.reject(err);
+		};
+
+		writeStream.on('finish', async () => {
+			FileUpload.getStore('Uploads')
+				.insert(
+					{
+						...details,
+						size: writeStream.bytesWritten,
+					},
+					tempFilePath,
+				)
+				.then(resolver.resolve)
+				.catch(cleanup);
+		});
+
+		streamParam.on('error', async (err) => {
+			writeStream.destroy();
+			cleanup(err);
+		});
+
+		writeStream.on('error', cleanup);
+
+		return resolver.promise;
 	}
 }
