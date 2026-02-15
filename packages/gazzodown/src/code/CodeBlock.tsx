@@ -117,7 +117,7 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 				<Box is='span' display='inline-flex' alignItems='center' position='absolute' style={{ top: 8, right: 8 }} zIndex={1}>
 					{copied && (
 						<Box is='span' fontScale='c1' mie={4} aria-live='polite'>
-							{t('Copied')}!
+							{t('Copied')}
 						</Box>
 					)}
 					<IconButton

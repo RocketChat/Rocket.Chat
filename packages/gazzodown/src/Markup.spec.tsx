@@ -258,6 +258,7 @@ it('renders a code block with language', async () => {
 
 it('copies code block content and shows copied feedback', async () => {
 	jest.useFakeTimers();
+	const originalClipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard');
 
 	try {
 		const writeText = jest.fn().mockResolvedValue(undefined);
@@ -290,15 +291,20 @@ it('copies code block content and shows copied feedback', async () => {
 
 		await waitFor(() => expect(writeText).toHaveBeenCalledWith('multi\nline\ncode'));
 		await waitFor(() => expect(screen.getByRole('button', { name: 'Copied' })).toBeInTheDocument());
-		expect(screen.getByText('Copied!')).toBeInTheDocument();
+		expect(screen.getByText('Copied')).toBeInTheDocument();
 
 		act(() => {
 			jest.advanceTimersByTime(3000);
 		});
 
-		await waitFor(() => expect(screen.queryByText('Copied!')).not.toBeInTheDocument());
+		await waitFor(() => expect(screen.queryByText('Copied')).not.toBeInTheDocument());
 		expect(screen.getByRole('button', { name: 'Copy' })).toBeInTheDocument();
 	} finally {
+		if (originalClipboard) {
+			Object.defineProperty(navigator, 'clipboard', originalClipboard);
+		} else {
+			delete (navigator as { clipboard?: Clipboard }).clipboard;
+		}
 		jest.useRealTimers();
 	}
 });
