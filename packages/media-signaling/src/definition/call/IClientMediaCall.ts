@@ -18,6 +18,10 @@ export type CallRole = 'caller' | 'callee';
 
 export type CallService = 'webrtc';
 
+export const callFeatureList = ['audio'] as const;
+
+export type CallFeature = (typeof callFeatureList)[number];
+
 export type CallState =
 	| 'none' // trying to call with no idea if it'll reach anyone
 	| 'ringing' // call has been acknoledged by the callee's agent, but no response about them accepting it or not
@@ -113,4 +117,5 @@ export interface IClientMediaCall {
 	sendDTMF(dtmf: string, duration?: number): void;
 
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
+	isFeatureAvailable(feature: CallFeature): boolean;
 }

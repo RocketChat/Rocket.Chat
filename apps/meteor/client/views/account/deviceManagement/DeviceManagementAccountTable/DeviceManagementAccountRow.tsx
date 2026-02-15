@@ -24,7 +24,7 @@ const DeviceManagementAccountRow = ({ _id, deviceName, deviceType = 'browser', d
 	const handleDeviceLogout = useDeviceLogout(_id, '/v1/sessions/logout.me');
 
 	return (
-		<GenericTableRow key={_id}>
+		<GenericTableRow key={_id} aria-label={_id}>
 			<GenericTableCell>
 				<Box display='flex' alignItems='center'>
 					<DeviceIcon deviceType={deviceType} />
