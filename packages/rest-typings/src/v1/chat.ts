@@ -1072,7 +1072,7 @@ export const isChatGetScheduledMessagesProps = ajv.compile<ChatGetScheduledMessa
 
 type ChatUpdateScheduledMessage = {
 	messageId: string;
-	scheduledAt?: string; // ISO date string
+	scheduledAt?: string;
 	message?: string;
 };
 
