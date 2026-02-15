@@ -83,15 +83,15 @@ void i18n.init({
 	ns: availableTranslationNamespaces,
 	nsSeparator: '.',
 	resources: Object.fromEntries(
-		await Promise.all(languages.map(async (language) => [
+		languages.map((language) => [
 			language,
 			extractTranslationNamespaces(
 				// TODO: commonjs is terrible but we don't have esm build yet
 				// eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require
-				await import(`@rocket.chat/i18n/dist/resources/${language}.i18n.json`) as unknown as Record<string, string>,
+				require(`@rocket.chat/i18n/dist/resources/${language}.i18n.json`) as unknown as Record<string, string>,
 			),
 		]),
-	)),
+	),
 	initImmediate: false,
 });
 
