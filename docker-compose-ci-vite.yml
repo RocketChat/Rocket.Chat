@@ -218,7 +218,7 @@ services:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
       - --entrypoints.http.address=:80
-      - --entrypoints.traefik.address=:8080
+      - --entrypoints.traefik.address=:8081
       - --api=true
       - --api.dashboard=true
       - --api.insecure=true
@@ -226,7 +226,7 @@ services:
       - --log.level=DEBUG
     ports:
       - 3000:80
-      - 8080:8080
+      - 8081:8081
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
