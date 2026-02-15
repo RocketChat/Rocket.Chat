@@ -35,7 +35,6 @@
   "Closed_automatically": "সিস্টেম দ্বারা স্বয়ংক্রিয়ভাবে বন্ধ",
   "Customize": "কাস্টমাইজ করুন",
   "This_room_encryption_has_been_disabled_by__username_": "এই ঘরের এনক্রিপশনটি {{username}} দ্বারা বন্ধ করা হয়েছে",
-  "Write": "লিখুন",
   "access-mailer_description": "সকল ব্যবহারকারীর কাছে গণ ইমেল প্রেরণের অনুমতি।",
   "access-permissions_description": "বিভিন্ন ভূমিকা জন্য অনুমতি পরিবর্তন করুন।",
   "access-setting-permissions": "সেটিং-ভিত্তিক অনুমতিগুলি পরিবর্তন করুন",
