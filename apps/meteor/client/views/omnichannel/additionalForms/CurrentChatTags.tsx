@@ -8,9 +8,10 @@ type CurrentChatTagsProps = Pick<ComponentProps<typeof AutoCompleteTagsMultiple>
 	handler: (value: { label: string; value: string }[]) => void;
 	department?: string;
 	viewAll?: boolean;
+	error?: string;
 };
 
-const CurrentChatTags = ({ value, handler, department, viewAll, ...props }: CurrentChatTagsProps) => {
+const CurrentChatTags = ({ value, handler, department, viewAll, error, ...props }: CurrentChatTagsProps) => {
 	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
 	if (!hasLicense) {
@@ -24,6 +25,7 @@ const CurrentChatTags = ({ value, handler, department, viewAll, ...props }: Curr
 			value={value}
 			department={department}
 			viewAll={viewAll}
+			error={!!error}
 		/>
 	);
 };
