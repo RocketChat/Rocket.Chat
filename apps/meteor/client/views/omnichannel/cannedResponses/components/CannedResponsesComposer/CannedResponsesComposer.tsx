@@ -8,7 +8,7 @@ import {
 	MessageComposerActionsDivider,
 } from '@rocket.chat/ui-composer';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ChangeEvent } from 'react';
 import { memo, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -95,7 +95,12 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 
 	return (
 		<MessageComposer>
-			<MessageComposerInput ref={textAreaRef} rows={10} onChange={(e): void => onChange(e.target.value)} {...props} />
+			<MessageComposerInput
+				ref={textAreaRef}
+				rows={10}
+				onChange={(e: ChangeEvent<HTMLTextAreaElement>): void => onChange(e.target.value)}
+				{...props}
+			/>
 			<MessageComposerToolbar>
 				<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 					<MessageComposerAction icon='emoji' disabled={!useEmojisPreference} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
