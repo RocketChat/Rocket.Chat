@@ -228,6 +228,14 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			return 'transferred';
 		}
 
+		if (call.hangupReason === 'not-answered') {
+			return 'not-answered';
+		}
+
+		if (call.hangupReason?.startsWith('timeout')) {
+			return 'failed';
+		}
+
 		if (call.hangupReason?.includes('error')) {
 			if (!call.activatedAt) {
 				return 'failed';

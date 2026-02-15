@@ -72,6 +72,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			callee: signedCallee,
 			calleeAgent,
 			callerAgent,
+			features: ['audio'],
 		});
 
 		const channel = await calleeAgent.getOrCreateChannel(call, session.sessionId);
@@ -239,7 +240,7 @@ export class OutgoingSipCall extends BaseSipCall {
 					answer: null,
 				});
 
-				callerAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
+				void callerAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
 
 				logger.debug({ msg: 'modify', method: 'OutgoingSipCall.createDialog', req: this.session.stripDrachtioServerDetails(req) });
 			} catch (err) {
@@ -266,6 +267,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		await mediaCallDirector.acceptCall(call, this.agent, {
 			calleeContractId: this.session.sessionId,
 			webrtcAnswer: { type: 'answer', sdp: this.sipDialog.remote.sdp },
+			supportedFeatures: ['audio'],
 		});
 	}
 

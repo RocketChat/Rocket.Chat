@@ -17,5 +17,3 @@ export interface ILivechatPriority extends IRocketChatRecord {
 	// Whether the priority has been modified by the user or not
 	dirty: boolean;
 }
-
-export type ILivechatPriorityData = Omit<ILivechatPriority, '_id' | '_updatedAt'>;

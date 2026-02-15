@@ -1,4 +1,4 @@
-import { FederationMatrix, Authorization, MeteorError, Room } from '@rocket.chat/core-services';
+import { FederationMatrix, MeteorError, Room } from '@rocket.chat/core-services';
 import { isEditedMessage, isRoomNativeFederated, isUserNativeFederated } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
@@ -112,8 +112,7 @@ beforeAddUserToRoom.add(
 			return;
 		}
 
-		// TODO should we really check for "user" here? it is potentially an external user
-		if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
+		if (!isUserNativeFederated(user) && !(await FederationMatrix.canUserAccessFederation(user))) {
 			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation');
 		}
 

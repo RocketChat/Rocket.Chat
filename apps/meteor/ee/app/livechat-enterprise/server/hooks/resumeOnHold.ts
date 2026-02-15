@@ -16,7 +16,7 @@ const resumeOnHoldCommentAndUser = async (room: IOmnichannelRoom): Promise<{ com
 		projection: { name: 1, username: 1 },
 	});
 	if (!visitor) {
-		callbackLogger.error(`[afterOmnichannelSaveMessage] Visitor Not found for room ${rid} while trying to resume on hold`);
+		callbackLogger.error({ msg: '[afterOmnichannelSaveMessage] Visitor Not found for room while trying to resume on hold', rid });
 		throw new Error('Visitor not found while trying to resume on hold');
 	}
 
@@ -26,7 +26,7 @@ const resumeOnHoldCommentAndUser = async (room: IOmnichannelRoom): Promise<{ com
 
 	const resumedBy = await Users.findOneById('rocket.cat');
 	if (!resumedBy) {
-		callbackLogger.error(`[afterOmnichannelSaveMessage] User Not found for room ${rid} while trying to resume on hold`);
+		callbackLogger.error({ msg: '[afterOmnichannelSaveMessage] User Not found for room while trying to resume on hold', rid });
 		throw new Error(`User not found while trying to resume on hold`);
 	}
 
@@ -53,13 +53,13 @@ callbacks.add(
 		}
 
 		if (isMessageFromVisitor(message) && room.onHold) {
-			callbackLogger.debug(`[afterOmnichannelSaveMessage] Room ${rid} is on hold, resuming it now since visitor sent a message`);
+			callbackLogger.debug({ msg: '[afterOmnichannelSaveMessage] Room is on hold, resuming it now since visitor sent a message', rid });
 
 			try {
 				const { comment: resumeChatComment, resumedBy } = await resumeOnHoldCommentAndUser(updatedRoom);
 				await OmnichannelEEService.resumeRoomOnHold(updatedRoom, resumeChatComment, resumedBy);
 			} catch (error) {
-				callbackLogger.error(`[afterOmnichannelSaveMessage] Error while resuming room ${rid} on hold: Error: `, error);
+				callbackLogger.error({ msg: '[afterOmnichannelSaveMessage] Error while resuming room on hold', rid, err: error });
 				return message;
 			}
 		}

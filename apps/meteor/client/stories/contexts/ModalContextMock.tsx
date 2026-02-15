@@ -28,7 +28,7 @@ const ModalContextMock = ({ children }: ModalContextMockProps): ReactElement => 
 		[context],
 	);
 
-	return <ModalContext.Provider children={children} value={value} />;
+	return <ModalContext.Provider value={value}>{children}</ModalContext.Provider>;
 };
 
 export default ModalContextMock;

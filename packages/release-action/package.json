@@ -26,7 +26,7 @@
 		"@types/node": "~22.16.5",
 		"typescript": "~5.9.3"
 	},
-	"packageManager": "yarn@4.11.0",
+	"packageManager": "yarn@4.12.0",
 	"volta": {
 		"extends": "../../package.json"
 	}

@@ -16,7 +16,6 @@ import EJSON from 'ejson';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
-import { v4 as uuidv4 } from 'uuid';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -476,6 +475,7 @@ API.v1.addRoute(
 		authRequired: true,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
+		applyMeteorContext: true,
 	},
 	{
 		async post() {
@@ -515,27 +515,29 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = await Meteor.callAsync(method, ...params);
-				return API.v1.success(mountResult({ id, result }));
+				return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
-					SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
+					SystemLogger.error({ msg: 'Exception while invoking method', err, method });
 				}
 
 				if (settings.get('Log_Level') === '2') {
 					Meteor._debug(`Exception while invoking method ${method}`, err);
 				}
-				return API.v1.success(mountResult({ id, error: err }));
+
+				return API.v1.failure(mountResult({ id, error: err }));
 			}
 		},
 	},
 );
+
 API.v1.addRoute(
 	'method.callAnon/:method',
 	{
 		authRequired: false,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
+		applyMeteorContext: true,
 	},
 	{
 		async post() {
@@ -571,16 +573,15 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = await Meteor.callAsync(method, ...params);
-				return API.v1.success(mountResult({ id, result }));
+				return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
-					SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
+					SystemLogger.error({ msg: 'Exception while invoking method', err, method });
 				}
 				if (settings.get('Log_Level') === '2') {
 					Meteor._debug(`Exception while invoking method ${method}`, err);
 				}
-				return API.v1.success(mountResult({ id, error: err }));
+				return API.v1.failure(mountResult({ id, error: err }));
 			}
 		},
 	},
@@ -672,7 +673,7 @@ API.v1.addRoute(
 
 			const promises = settingsIds.map((settingId) => {
 				if (settingId === 'uniqueID') {
-					return auditSettingOperation(Settings.resetValueById, 'uniqueID', process.env.DEPLOYMENT_ID || uuidv4());
+					return auditSettingOperation(Settings.resetValueById, 'uniqueID', process.env.DEPLOYMENT_ID || crypto.randomUUID());
 				}
 
 				if (settingId === 'Cloud_Workspace_Access_Token_Expires_At') {

@@ -1,5 +1,160 @@
 # @rocket.chat/omnichannel-services
 
+## 0.3.46
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f4fa393fccb6abefbe6fb6550563e8ca21fc792d, e639382ee1faee44cfce44bdf6113d1b56da8692, 7b51ba84340480fa28e85c8f35d9d2f947d3250e, fd319d58a621d66c20029fd962ddb24a1a24ecc3, 5c3c52b1fc8b0bd52d4744614ad4d2b8e2e03937, 9a205633c25065fda9024184c406ac9675c3f23f, 6654c5b481f91bdcb03d68ee0f3a12d58201137e, 020dfbcab6a940ca2e03d802d0f6b54714a34aa2, 5fa150953b86ff36face25083ed49e8c97a8044d, 05c415b94cb91907de39a39c6d277579258f334e]:</summary>
+
+  - @rocket.chat/model-typings@2.0.2
+  - @rocket.chat/models@2.0.2
+  - @rocket.chat/pdf-worker@0.3.28
+  - @rocket.chat/core-services@0.12.2
+  - @rocket.chat/i18n@2.0.1
+  - @rocket.chat/rest-typings@8.1.0
+  - @rocket.chat/core-typings@8.1.0
+  - @rocket.chat/message-types@0.1.0
+  </details>
+
+## 0.3.46-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/pdf-worker@0.3.28-rc.2
+  - @rocket.chat/core-services@0.12.2-rc.2
+  - @rocket.chat/core-typings@8.1.0-rc.2
+  - @rocket.chat/rest-typings@8.1.0-rc.2
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/model-typings@2.0.2-rc.2
+  - @rocket.chat/models@2.0.2-rc.2
+  </details>
+
+## 0.3.46-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [fd319d58a621d66c20029fd962ddb24a1a24ecc3]:</summary>
+
+  - @rocket.chat/rest-typings@8.1.0-rc.1
+  - @rocket.chat/core-services@0.12.1-rc.1
+  - @rocket.chat/models@2.0.1-rc.1
+  - @rocket.chat/core-typings@8.1.0-rc.1
+  - @rocket.chat/pdf-worker@0.3.27-rc.1
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/model-typings@2.0.1-rc.1
+  </details>
+
+## 0.3.46-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f4fa393fccb6abefbe6fb6550563e8ca21fc792d, e639382ee1faee44cfce44bdf6113d1b56da8692, 7b51ba84340480fa28e85c8f35d9d2f947d3250e, 5c3c52b1fc8b0bd52d4744614ad4d2b8e2e03937, 9a205633c25065fda9024184c406ac9675c3f23f, 6654c5b481f91bdcb03d68ee0f3a12d58201137e, 020dfbcab6a940ca2e03d802d0f6b54714a34aa2, 5fa150953b86ff36face25083ed49e8c97a8044d, 05c415b94cb91907de39a39c6d277579258f334e]:</summary>
+
+  - @rocket.chat/model-typings@2.0.1-rc.0
+  - @rocket.chat/models@2.0.1-rc.0
+  - @rocket.chat/pdf-worker@0.3.27-rc.0
+  - @rocket.chat/core-services@0.12.1-rc.0
+  - @rocket.chat/i18n@2.0.1-rc.0
+  - @rocket.chat/rest-typings@8.1.0-rc.0
+  - @rocket.chat/core-typings@8.1.0-rc.0
+  - @rocket.chat/message-types@0.1.0
+  </details>
+
+## 0.3.45
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.1
+  - @rocket.chat/rest-typings@8.0.1
+  - @rocket.chat/pdf-worker@0.3.27
+  - @rocket.chat/core-services@0.12.1
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/model-typings@2.0.1
+  - @rocket.chat/models@2.0.1
+  </details>
+
+## 0.3.44
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [347b8f973440f3e2239f79c00c2d9b430859eef2, b802430fbfdc7fa69a976468dc6dee6f3c4de26f, 872da49986436d2efa65fc42e416b45d706fd59c, 176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 2de4547580c472f4458568629d7bf98fd5faf342, ac11ea05ffadeca978c794ff38d5199d9acb2c29, 1baa03cced8f94584da1224ad59cad86f219707a, 0c0258604632342f42fc36cabac2d6cfe0e477c4, f3f0b273ab49e9d1048ba43d52eb36005274905e, ac11ea05ffadeca978c794ff38d5199d9acb2c29, a1d65f493fdb039d34ef4f65d243a97931763f4b, bd5edfc2993c93bd77f42dcd30d38b57eeb50481, ddc935727e9a7275813006d9dcaa7fe866610844, a5a7343a835b04812c70699be1b13e54f0e10d48, 73d9eb2783176954f42aa2cbeda8abf1d49ac260, 611e4cdfa04849416a58071646b853b95e9b817b, 476a070b0099b95e4c463ee85960c4dcfbd87120, 239f4b1171bcf448cfba345cc90c4b5cd7c21afc, 9e03ed5c5ea829c62c2da2de9413a27a4696f8a3, dc67590d14d510b069dee074c55314c56f74bb11, be80b724a636877294b5e5baa501d070941131dd, 4aa3634186d97f4144c39f6b42a65107d3d30df0, dccdcc5b4a0da4814f72a020bc4eccb8ea2497d8, 5ac1863be4c6e82666989f4b569928c0805691ff, ec0f8b435dd12c218adffa8892737c7ced4debb8, f056c451c2926e849f52b95fed957945398ef5f6, cb3c5e3455606a045f95f168dae6ed32a387697c, 5b3f93c47a03b628d613a77005e92021cd6cee4b]:</summary>
+
+  - @rocket.chat/rest-typings@8.0.0
+  - @rocket.chat/core-typings@8.0.0
+  - @rocket.chat/i18n@2.0.0
+  - @rocket.chat/model-typings@2.0.0
+  - @rocket.chat/models@2.0.0
+  - @rocket.chat/core-services@0.12.0
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/tools@0.2.4
+  - @rocket.chat/logger@1.0.0
+  - @rocket.chat/pdf-worker@0.3.26
+  </details>
+
+## 0.3.44-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.5
+  - @rocket.chat/rest-typings@8.0.0-rc.5
+  - @rocket.chat/pdf-worker@0.3.26-rc.5
+  - @rocket.chat/core-services@0.12.0-rc.5
+  - @rocket.chat/message-types@0.1.0-rc.0
+  - @rocket.chat/model-typings@2.0.0-rc.5
+  - @rocket.chat/models@2.0.0-rc.5
+  </details>
+
+## 0.3.44-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.4
+  - @rocket.chat/rest-typings@8.0.0-rc.4
+  - @rocket.chat/pdf-worker@0.3.26-rc.4
+  - @rocket.chat/core-services@0.12.0-rc.4
+  - @rocket.chat/message-types@0.1.0-rc.0
+  - @rocket.chat/model-typings@2.0.0-rc.4
+  - @rocket.chat/models@2.0.0-rc.4
+  </details>
+
+## 0.3.44-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.12.0-rc.3
+  - @rocket.chat/core-typings@8.0.0-rc.3
+  - @rocket.chat/rest-typings@8.0.0-rc.3
+  - @rocket.chat/pdf-worker@0.3.26-rc.3
+  - @rocket.chat/message-types@0.1.0-rc.0
+  - @rocket.chat/model-typings@2.0.0-rc.3
+  - @rocket.chat/models@2.0.0-rc.3
+  </details>
+
+## 0.3.44-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.2
+  - @rocket.chat/rest-typings@8.0.0-rc.2
+  - @rocket.chat/pdf-worker@0.3.26-rc.2
+  - @rocket.chat/core-services@0.12.0-rc.2
+  - @rocket.chat/message-types@0.1.0-rc.0
+  - @rocket.chat/model-typings@2.0.0-rc.2
+  - @rocket.chat/models@2.0.0-rc.2
+  </details>
+
 ## 0.3.44-rc.1
 
 ### Patch Changes

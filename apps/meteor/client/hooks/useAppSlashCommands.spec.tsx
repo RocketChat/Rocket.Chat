@@ -5,6 +5,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 
 import { useAppSlashCommands } from './useAppSlashCommands';
 import { slashCommands } from '../../app/utils/client/slashCommand';
+import { appsQueryKeys } from '../lib/queryKeys';
 
 const mockSlashCommands: SlashCommand[] = [
 	{
@@ -30,6 +31,7 @@ const mockSlashCommands: SlashCommand[] = [
 const mockApiResponse = {
 	commands: mockSlashCommands,
 	total: mockSlashCommands.length,
+	appsLoaded: true,
 };
 
 describe('useAppSlashCommands', () => {
@@ -96,7 +98,7 @@ describe('useAppSlashCommands', () => {
 		expect(slashCommands.commands['/test']).toBeUndefined();
 
 		await waitFor(() => {
-			expect(queryClient.invalidateQueries).toHaveBeenCalledWith(expect.objectContaining({ queryKey: ['apps', 'slashCommands'] }));
+			expect(queryClient.invalidateQueries).toHaveBeenCalledWith(expect.objectContaining({ queryKey: appsQueryKeys.slashCommands() }));
 		});
 	});
 
@@ -123,7 +125,7 @@ describe('useAppSlashCommands', () => {
 		expect(slashCommands.commands['/test']).toBeUndefined();
 
 		await waitFor(() => {
-			expect(queryClient.invalidateQueries).toHaveBeenCalledWith(expect.objectContaining({ queryKey: ['apps', 'slashCommands'] }));
+			expect(queryClient.invalidateQueries).toHaveBeenCalledWith(expect.objectContaining({ queryKey: appsQueryKeys.slashCommands() }));
 		});
 	});
 
@@ -155,6 +157,7 @@ describe('useAppSlashCommands', () => {
 				},
 			],
 			total: mockSlashCommands.length + 1,
+			appsLoaded: true,
 		});
 
 		streamRef.controller?.emit('apps', [['command/added', ['/newcommand']]]);
@@ -188,11 +191,37 @@ describe('useAppSlashCommands', () => {
 		streamRef.controller?.emit('apps', [['command/updated', ['/test']]]);
 
 		await waitFor(() => {
-			expect(queryClient.invalidateQueries).toHaveBeenCalledWith(expect.objectContaining({ queryKey: ['apps', 'slashCommands'] }));
+			expect(queryClient.invalidateQueries).toHaveBeenCalledWith(expect.objectContaining({ queryKey: appsQueryKeys.slashCommands() }));
 		});
 
 		expect(slashCommands.commands['/test']).toBeDefined();
 		expect(slashCommands.commands['/weather']).toBeDefined();
+	});
+
+	it('should ignore events that do not start with command/', async () => {
+		const streamRef: StreamControllerRef<'apps'> = {};
+
+		renderHook(() => useAppSlashCommands(), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withQueryClient(queryClient)
+				.withStream('apps', streamRef)
+				.withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands)
+				.build(),
+		});
+
+		expect(streamRef.controller).toBeDefined();
+
+		await waitFor(() => {
+			expect(Object.keys(slashCommands.commands)).toHaveLength(mockSlashCommands.length);
+		});
+
+		// @ts-expect-error - testing invalid event
+		streamRef.controller?.emit('apps', [['some/random/event', ['/test']]]);
+
+		await new Promise((resolve) => setTimeout(resolve, 200));
+
+		expect(queryClient.invalidateQueries).not.toHaveBeenCalled();
 	});
 
 	it('should not set up stream listener when user ID is not available', () => {
@@ -221,6 +250,7 @@ describe('useAppSlashCommands', () => {
 			return Promise.resolve({
 				commands: largeMockCommands.slice(offset, offset + count),
 				total: largeMockCommands.length,
+				appsLoaded: true,
 			});
 		});
 
@@ -231,5 +261,25 @@ describe('useAppSlashCommands', () => {
 		await waitFor(() => {
 			expect(Object.keys(slashCommands.commands)).toHaveLength(largeMockCommands.length);
 		});
+	});
+
+	it('should not load commands when apps are not loaded', async () => {
+		mockGetSlashCommands.mockResolvedValue({
+			commands: [],
+			total: 0,
+			appsLoaded: false,
+		});
+
+		expect(Object.keys(slashCommands.commands)).toHaveLength(0);
+
+		renderHook(() => useAppSlashCommands(), {
+			wrapper: mockAppRoot().withJohnDoe().withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands).build(),
+		});
+
+		await waitFor(() => {
+			expect(mockGetSlashCommands).toHaveBeenCalled();
+		});
+
+		expect(Object.keys(slashCommands.commands)).toHaveLength(0);
 	});
 });

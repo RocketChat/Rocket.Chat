@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/media-signaling",
-	"version": "0.1.1-rc.0",
+	"version": "0.1.1",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -16,7 +16,7 @@
 		"test": "jest"
 	},
 	"dependencies": {
-		"@rocket.chat/emitter": "~0.31.25",
+		"@rocket.chat/emitter": "^0.32.0",
 		"ajv": "^8.17.1"
 	},
 	"devDependencies": {
