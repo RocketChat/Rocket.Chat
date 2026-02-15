@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, VideoConference } from '@rocket.chat/models';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
@@ -36,6 +37,11 @@ callbacks.add(
 
 		if (!room) {
 			return message;
+		}
+
+		if (!isEditedMessage(message)) {
+			room.msgs = (room.msgs || 0) + 1;
+			room.lm = message.ts;
 		}
 
 		await updateAndNotifyParentRoomWithParentMessage(room);
