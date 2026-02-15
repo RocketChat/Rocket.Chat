@@ -286,7 +286,7 @@ class RocketChatIntegrationHandler {
 				}
 
 				if (message.bot) {
-					data.bot = Boolean(message.bot); // TODO: need to double check this, since it makes no sense
+					data.bot = true;
 				}
 
 				if (message.editedAt) {
@@ -314,7 +314,7 @@ class RocketChatIntegrationHandler {
 				}
 
 				if (message.bot) {
-					data.bot = Boolean(message.bot); // TODO: need to double check this, since it makes no sense
+					data.bot = true;
 				}
 				break;
 			case 'roomCreated':
