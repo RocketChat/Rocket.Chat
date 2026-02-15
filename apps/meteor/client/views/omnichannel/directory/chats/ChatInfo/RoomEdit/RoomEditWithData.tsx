@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import RoomEdit from './RoomEdit';
-import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
+import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import { FormSkeleton } from '../../../components';
 import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';
 import { useSlaPolicies } from '../../../hooks/useSlaPolicies';
@@ -20,7 +20,7 @@ type RoomEditWithDataProps = {
 function RoomEditWithData({ id: roomId, reload, reloadInfo, onClose }: RoomEditWithDataProps) {
 	const { t } = useTranslation();
 
-	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
+	const canViewCustomFields = useAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
 	const { data: room, isLoading: isRoomLoading, isError: isRoomError } = useOmnichannelRoomInfo(roomId);
 	const { _id: visitorId } = room?.v ?? {};
