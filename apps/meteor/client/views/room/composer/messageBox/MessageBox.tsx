@@ -20,6 +20,7 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
+import ScheduleMessageButton from './ScheduleMessageButton';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -467,6 +468,14 @@ const MessageBox = ({
 						{canSend && (
 							<>
 								{isEditing && <MessageComposerButton onClick={closeEditing}>{t('Cancel')}</MessageComposerButton>}
+								{!isEditing && (
+									<ScheduleMessageButton
+										disabled={!canSend || !typing}
+										tmid={tmid}
+										tshow={tshow}
+										previewUrls={previewUrls}
+									/>
+								)}
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
