@@ -78,14 +78,6 @@ export abstract class AbstractRouter<TActionCallback = (c: Context) => Promise<R
 	protected abstract convertActionToHandler(action: TActionCallback): (c: Context) => Promise<ResponseSchema<TypedOptions>>;
 }
 
-type InnerRouter = Hono<{
-	Variables: {
-		remoteAddress: string;
-		bodyParams: Record<string, unknown>;
-		queryParams: Record<string, unknown>;
-	};
-}>;
-
 export class Router<
 	TBasePath extends string,
 	TOperations extends {
@@ -93,7 +85,11 @@ export class Router<
 	} = NonNullable<unknown>,
 	TActionCallback = (c: Context) => Promise<ResponseSchema<TypedOptions>>,
 > extends AbstractRouter<TActionCallback> {
-	protected innerRouter: InnerRouter;
+	protected innerRouter: Hono<{
+		Variables: {
+			remoteAddress: string;
+		};
+	}>;
 
 	constructor(readonly base: TBasePath) {
 		super();
@@ -154,15 +150,20 @@ export class Router<
 		};
 	}
 
-	protected async parseBodyParams({ request }: { request: HonoRequest }): Promise<NonNullable<unknown>> {
+	protected async parseBodyParams<T extends Record<string, any>>({ request }: { request: HonoRequest; extra?: T }) {
 		try {
-			const contentType = request.header('content-type') || '';
+			let parsedBody = {};
+			const contentType = request.header('content-type');
 
-			if (contentType.includes('application/json')) {
-				return await request.raw.clone().json();
+			if (contentType?.includes('multipart/form-data')) {
+				// Don't parse multipart here, routes handle it manually via UploadService.parse()
+				// since multipart/form-data is only used for file uploads
+				return parsedBody;
 			}
 
-			if (contentType.includes('application/x-www-form-urlencoded')) {
+			if (contentType?.includes('application/json')) {
+				parsedBody = await request.raw.clone().json();
+			} else if (contentType?.includes('application/x-www-form-urlencoded')) {
 				const req = await request.raw.clone().formData();
 				parsedBody = Object.fromEntries(req.entries());
 			} else {
@@ -197,17 +198,12 @@ export class Router<
 		const [middlewares, action] = splitArray<MiddlewareHandler, TActionCallback>(actions);
 		const convertedAction = this.convertActionToHandler(action);
 
-	const honoMiddlewares = middlewares as unknown as MiddlewareHandler[];
-
-(this.innerRouter as unknown as any)[method.toLowerCase() as Lowercase<Method>](
-  `/${subpath}`.replaceAll('//', '/'),
-  ...honoMiddlewares, async (c: Context) => {
+		(this.innerRouter as any)[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c: Context) => {
 			const { req, res } = c;
 
 			let queryParams: Record<string, any>;
 			try {
 				queryParams = this.parseQueryParams(req);
-				c.set('queryParams', queryParams);
 			} catch (e) {
 				logger.warn({ msg: 'Error parsing query params for request', path: req.path, err: e });
 
@@ -237,7 +233,6 @@ export class Router<
 			}
 
 			const bodyParams = await this.parseBodyParams({ request: req });
-			c.set('bodyParams', bodyParams);
 
 			if (options.body) {
 				const validatorFn = options.body;
@@ -444,7 +439,11 @@ export class Router<
 		return router;
 	}
 
-	getHonoRouter(): InnerRouter {
+	getHonoRouter(): Hono<{
+		Variables: {
+			remoteAddress: string;
+		};
+	}> {
 		return this.innerRouter;
 	}
 }
