@@ -470,6 +470,7 @@
   "Agent_Name": "Agent Name",
   "Agent_Name_Placeholder": "Please enter an agent name...",
   "Agent_added": "Agent added",
+  "Agent_already_exists": "User is already an agent",
   "Agent_deactivated": "Agent was deactivated",
   "Agent_messages": "Agent Messages",
   "Agent_removed": "Agent removed",
