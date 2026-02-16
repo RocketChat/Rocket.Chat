@@ -47,7 +47,7 @@ const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessag
 	const [recordingState, setRecordingState] = useState<'idle' | 'loading' | 'recording'>('idle');
 	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
 	const isRecording = recordingState === 'recording';
-	const sendButtonDisabled = !(VideoRecorder.cameraStarted.get() && !(recordingState === 'recording'));
+	const sendButtonDisabled = !VideoRecorder.cameraStarted.get() || recordingState !== 'idle' || !time;
 
 	const chat = useChat() ?? chatContext;
 
