@@ -79,7 +79,7 @@ export class AppHttpBridge extends HttpBridge {
 				body: content,
 				headers,
 				timeout,
-				ignoreSsrfValidation: !info.ssrfValidation,
+				ignoreSsrfValidation: info.ssrfValidation !== true,
 			},
 			(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
 				(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized),

@@ -65,7 +65,7 @@ export interface IHttpRequest {
 	 * If `true`, enables SSRF (Server-Side Request Forgery) validation for the HTTP request.
 	 * When enabled, the request URL will be checked against internal IP addresses and private networks.
 	 *
-	 * Default: `false` (SSRF validation is disabled by default for backward compatibility).
+	 * Default: `undefined` (SSRF validation is disabled by default for backward compatibility).
 	 */
 	ssrfValidation?: boolean;
 }
