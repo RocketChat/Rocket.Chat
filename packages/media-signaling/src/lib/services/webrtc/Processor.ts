@@ -311,7 +311,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	public setRemoteIds(streams: MediaStreamIdentification[]): void {
-		return this.streams.setRemoteIds(streams);
+		this.streams.setRemoteIds(streams);
 	}
 
 	public getLocalStreamIds(): MediaStreamIdentification[] {

@@ -37,7 +37,7 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 
 	private remoteIds: string[];
 
-	private _audioStatsTracker: ReturnType<typeof setInterval> | null;
+	private _audioStatsTracker: ReturnType<typeof setTimeout> | null;
 
 	private _audioLevel: number;
 
@@ -60,8 +60,6 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 
 		// Main stream initiates as active, any other initiates as inactive
 		this._active = tag === 'main';
-
-		this.registerAudioLevelTracker();
 	}
 
 	public hasAudio(): boolean {
@@ -176,7 +174,11 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	private removeTracks(kind?: MediaStreamTrack['kind']): void {
 		const tracks = this.getTracks(kind);
 
-		tracks.forEach((track) => track && this.stream.removeTrack(track));
+		tracks.forEach((track) => {
+			if (track) {
+				this.stream.removeTrack(track);
+			}
+		});
 	}
 
 	private async replaceTrack(kind: MediaStreamTrack['kind'], newTrack: MediaStreamTrack | null): Promise<void> {
@@ -228,6 +230,10 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 			if (this.local && wrapper) {
 				wrapper.enabled = this.audioEnabled;
 			}
+
+			if (wrapper && !this.stopped && !this._audioStatsTracker) {
+				this.registerAudioLevelTracker();
+			}
 		} else {
 			this.videoTrack = wrapper;
 		}
@@ -266,12 +272,15 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 			this.unregisterAudioLevelTracker();
 		}
 
-		this._audioStatsTracker = setInterval(() => this.collectAudioStats(), AUDIO_STATS_INTERVAL);
+		this._audioStatsTracker = setTimeout(() => this.collectAudioStats(), AUDIO_STATS_INTERVAL);
 	}
 
 	private async collectAudioStats() {
+		this._audioStatsTracker = null;
+
 		if (!this.audioTrack) {
 			this._audioLevel = 0;
+			this.registerAudioLevelTracker();
 			return;
 		}
 
@@ -299,6 +308,9 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		} catch {
 			this._audioLevel = 0;
 		}
+
+		// Ensure that the countdown for the next iteration only starts after fully processing the current one
+		this.registerAudioLevelTracker();
 	}
 
 	private unregisterAudioLevelTracker() {
@@ -306,7 +318,7 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 			return;
 		}
 
-		clearInterval(this._audioStatsTracker);
+		clearTimeout(this._audioStatsTracker);
 		this._audioStatsTracker = null;
 		this._audioLevel = 0;
 	}

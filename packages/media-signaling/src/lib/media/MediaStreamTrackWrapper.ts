@@ -45,6 +45,14 @@ export class MediaStreamTrackWrapper {
 
 	private endedIntervalHandler: ReturnType<typeof setInterval> | null = null;
 
+	private cleared = false;
+
+	private _onTrackMute: () => void;
+
+	private _onTrackUnmute: () => void;
+
+	private _onTrackEnded: () => void;
+
 	constructor(public readonly track: MediaStreamTrack) {
 		this.emitter = new Emitter();
 		this.muteTriggered = track.muted ?? false;
@@ -57,11 +65,22 @@ export class MediaStreamTrackWrapper {
 
 			this.setEnded();
 		}, ENDED_INTERVAL);
+
+		this._onTrackMute = () => this.onTrackMute();
+		this._onTrackUnmute = () => this.onTrackUnmute();
+		this._onTrackEnded = () => this.setEnded();
 	}
 
 	public clear() {
+		this.cleared = true;
 		this.clearMuteTimeout();
 		this.clearEndedInterval();
+
+		if (this.track) {
+			this.track.removeEventListener('mute', this._onTrackMute);
+			this.track.removeEventListener('unmute', this._onTrackUnmute);
+			this.track.removeEventListener('ended', this._onTrackEnded);
+		}
 	}
 
 	private setMuted(muted: boolean) {
@@ -90,25 +109,28 @@ export class MediaStreamTrackWrapper {
 	}
 
 	configureEvents() {
-		this.track.addEventListener('mute', () => {
-			this.clearMuteTimeout();
+		this.track.addEventListener('mute', this._onTrackMute);
+		this.track.addEventListener('unmute', this._onTrackUnmute);
+		this.track.addEventListener('ended', this._onTrackEnded);
+	}
 
-			this.muteTimeoutHandler = setTimeout(() => {
-				this.setMuted(true);
-			}, MUTE_DELAY);
-		});
+	onTrackMute() {
+		if (this.cleared) {
+			return;
+		}
+		this.clearMuteTimeout();
 
-		this.track.addEventListener('unmute', () => {
-			this.clearMuteTimeout();
+		this.muteTimeoutHandler = setTimeout(() => {
+			this.setMuted(true);
+		}, MUTE_DELAY);
+	}
 
-			if (this.muteTriggered) {
-				this.setMuted(false);
-			}
-		});
+	onTrackUnmute() {
+		this.clearMuteTimeout();
 
-		this.track.addEventListener('ended', () => {
-			this.setEnded();
-		});
+		if (this.muteTriggered) {
+			this.setMuted(false);
+		}
 	}
 
 	clearMuteTimeout() {
