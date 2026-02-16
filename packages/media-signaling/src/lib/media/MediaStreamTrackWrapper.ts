@@ -59,6 +59,11 @@ export class MediaStreamTrackWrapper {
 		}, ENDED_INTERVAL);
 	}
 
+	public clear() {
+		this.clearMuteTimeout();
+		this.clearEndedInterval();
+	}
+
 	private setMuted(muted: boolean) {
 		if (this.endedTriggered || this.muteTriggered === muted) {
 			return;

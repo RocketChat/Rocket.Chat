@@ -4,6 +4,8 @@ import { MediaStreamTrackWrapper } from './MediaStreamTrackWrapper';
 import type { IMediaSignalLogger } from '../../definition/logger';
 import type { IMediaStreamWrapper, MediaStreamEvents } from '../../definition/media/IMediaStreamWrapper';
 
+const AUDIO_STATS_INTERVAL = 50;
+
 export class MediaStreamWrapper implements IMediaStreamWrapper {
 	public readonly emitter: Emitter<MediaStreamEvents>;
 
@@ -35,6 +37,14 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 
 	private remoteIds: string[];
 
+	private _audioStatsTracker: ReturnType<typeof setInterval> | null;
+
+	private _audioLevel: number;
+
+	public get audioLevel(): number {
+		return this._audioLevel;
+	}
+
 	constructor(
 		remote: boolean,
 		public readonly tag: string,
@@ -45,9 +55,13 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		this.stream = new MediaStream();
 		this.emitter = new Emitter();
 		this.remoteIds = [];
+		this._audioLevel = 0;
+		this._audioStatsTracker = null;
 
 		// Main stream initiates as active, any other initiates as inactive
 		this._active = tag === 'main';
+
+		this.registerAudioLevelTracker();
 	}
 
 	public hasAudio(): boolean {
@@ -76,7 +90,7 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		return true;
 	}
 
-	public isAudioMuted(): boolean {
+	public isAudioMutedBySystem(): boolean {
 		if (!this.audioTrack) {
 			return false;
 		}
@@ -97,14 +111,14 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	}
 
 	public setAudioEnabled(enabled: boolean) {
-		const wasMuted = this.isAudioMuted();
+		const wasMuted = this.isAudioMutedBySystem();
 
 		this.audioEnabled = enabled;
 		if (this.audioTrack) {
 			this.audioTrack.enabled = enabled;
 		}
 
-		if (this.isAudioMuted() !== wasMuted) {
+		if (this.isAudioMutedBySystem() !== wasMuted) {
 			this.emitter.emit('stateChanged');
 		}
 	}
@@ -121,6 +135,9 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	public stop(): void {
 		this.stopped = true;
 		this.removeTracks();
+		this.audioTrack?.clear();
+		this.videoTrack?.clear();
+		this.unregisterAudioLevelTracker();
 	}
 
 	public async setTrack(kind: MediaStreamTrack['kind'], track: MediaStreamTrack | null): Promise<void> {
@@ -200,6 +217,11 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	private wrapTrack(kind: MediaStreamTrack['kind'], track: MediaStreamTrack | null) {
 		const wrapper = track ? new MediaStreamTrackWrapper(track) : null;
 
+		const oldWrapper = this.getWrappedTrack(kind);
+		if (oldWrapper) {
+			oldWrapper.clear();
+		}
+
 		if (kind === 'audio') {
 			this.audioTrack = wrapper;
 
@@ -229,5 +251,63 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 
 	private isSameTrack(trackId: string): boolean {
 		return Boolean(this.stream.getTrackById(trackId));
+	}
+
+	private getWrappedTrack(kind: MediaStreamTrack['kind']): MediaStreamTrackWrapper | null {
+		if (kind !== 'audio') {
+			return this.videoTrack;
+		}
+
+		return this.audioTrack;
+	}
+
+	private registerAudioLevelTracker() {
+		if (this._audioStatsTracker) {
+			this.unregisterAudioLevelTracker();
+		}
+
+		this._audioStatsTracker = setInterval(() => this.collectAudioStats(), AUDIO_STATS_INTERVAL);
+	}
+
+	private async collectAudioStats() {
+		if (!this.audioTrack) {
+			this._audioLevel = 0;
+			return;
+		}
+
+		try {
+			const stats = await this.peer.getStats(this.audioTrack.track);
+
+			if (!stats) {
+				return;
+			}
+
+			const relevantReportType = this.local ? 'media-source' : 'inbound-rtp';
+
+			// stats is an object that has a forEach function
+			stats.forEach((report) => {
+				if (report.kind !== 'audio') {
+					return;
+				}
+
+				if (report.type !== relevantReportType) {
+					return;
+				}
+
+				this._audioLevel = report.audioLevel ?? 0;
+			});
+		} catch {
+			this._audioLevel = 0;
+		}
+	}
+
+	private unregisterAudioLevelTracker() {
+		if (!this._audioStatsTracker) {
+			return;
+		}
+
+		clearInterval(this._audioStatsTracker);
+		this._audioStatsTracker = null;
+		this._audioLevel = 0;
 	}
 }

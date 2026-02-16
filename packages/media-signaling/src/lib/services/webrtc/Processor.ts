@@ -40,21 +40,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private addedEmptyTransceiver = false;
 
-	private _audioLevelTracker: ReturnType<typeof setInterval> | null;
-
-	private _audioLevel: number;
-
-	public get audioLevel(): number {
-		return this._audioLevel;
-	}
-
-	private _localAudioLevel: number;
-
 	private initialization: Promise<void>;
-
-	public get localAudioLevel(): number {
-		return this._localAudioLevel;
-	}
 
 	private _dataChannel: RTCDataChannel | null;
 
@@ -65,9 +51,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	constructor(private readonly config: WebRTCProcessorConfig) {
 		this.iceGatheringWaiters = new Set();
 		this.inputTrack = config.inputTrack;
-		this._audioLevel = 0;
-		this._localAudioLevel = 0;
-		this._audioLevelTracker = null;
 		this._dataChannel = null;
 
 		this.peer = new RTCPeerConnection(config.rtc);
@@ -78,7 +61,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.streams.emitter.on('streamChanged', () => {
 			this.emitter.emit('streamChanged');
 		});
-		this.registerAudioLevelTracker();
 
 		this.initialization = this.initialize().catch((e) => {
 			config.logger?.error('MediaCallWebRTCProcessor.initialization error', e);
@@ -157,7 +139,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		// Stop only the remote stream; the track of the local stream may still be in use by another call so it's up to the session to stop it.
 		this.streams.stopRemoteStreams();
 		this.unregisterPeerEvents();
-		this.unregisterAudioLevelTracker();
 
 		this.peer.close();
 	}
@@ -592,51 +573,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		} catch {
 			// suppress exceptions here
 		}
-	}
-
-	private registerAudioLevelTracker() {
-		if (this._audioLevelTracker) {
-			this.unregisterAudioLevelTracker();
-		}
-
-		this._audioLevelTracker = setInterval(() => {
-			this.getStats()
-				.then((stats) => {
-					if (!stats) {
-						return;
-					}
-
-					stats.forEach((report) => {
-						if (report.kind !== 'audio') {
-							return;
-						}
-
-						switch (report.type) {
-							case 'inbound-rtp':
-								this._audioLevel = report.audioLevel ?? 0;
-								break;
-							case 'media-source':
-								this._localAudioLevel = report.audioLevel ?? 0;
-								break;
-						}
-					});
-				})
-				.catch(() => {
-					this._audioLevel = 0;
-					this._localAudioLevel = 0;
-				});
-		}, 50);
-	}
-
-	private unregisterAudioLevelTracker() {
-		if (!this._audioLevelTracker) {
-			return;
-		}
-
-		clearInterval(this._audioLevelTracker);
-		this._audioLevelTracker = null;
-		this._audioLevel = 0;
-		this._localAudioLevel = 0;
 	}
 
 	private restartIce() {

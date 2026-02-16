@@ -198,14 +198,6 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private enabledFeatures: CallFeature[] | null;
 
-	public get audioLevel(): number {
-		return this.webrtcProcessor?.audioLevel || 0;
-	}
-
-	public get localAudioLevel(): number {
-		return this.webrtcProcessor?.localAudioLevel || 0;
-	}
-
 	private _flags: CallFlag[];
 
 	public get flags(): CallFlag[] {
