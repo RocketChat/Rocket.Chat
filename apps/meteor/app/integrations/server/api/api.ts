@@ -132,14 +132,20 @@ function getBodyParams(bodyParams: unknown, request: Request): Record<string, un
 		Object.keys(bodyParams).length === 1 &&
 		typeof bodyParams.payload === 'string'
 	) {
+		let parsed: unknown;
 		try {
-			const parsed: unknown = JSON.parse(bodyParams.payload);
-			if (isPlainObject(parsed)) {
-				return parsed;
-			}
+			parsed = JSON.parse(bodyParams.payload);
 		} catch {
-			// Keep original if JSON parsing fails
+			// Invalid JSON -> return original bodyParams (backward compatibility)
+			return bodyParams;
 		}
+
+		// Valid JSON must be an object, not an array or primitive
+		if (!isPlainObject(parsed)) {
+			throw new Error('Integration payload must be a JSON object, not an array or primitive');
+		}
+
+		return parsed;
 	}
 
 	return bodyParams;
