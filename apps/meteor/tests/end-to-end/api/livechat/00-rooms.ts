@@ -522,6 +522,8 @@ describe('LIVECHAT - rooms', () => {
 
 			expect(body.rooms.length).to.be.equal(1);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+
+			await Promise.all([closeOmnichannelRoom(expectedRoom._id), deleteDepartment(department._id)]);
 		});
 		(IS_EE ? it : it.skip)('should return rooms with the given departments', async () => {
 			const { department } = await createDepartmentWithAnOnlineAgent();
@@ -562,11 +564,13 @@ describe('LIVECHAT - rooms', () => {
 
 			expect(body.rooms.length).to.be.equal(1);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+
+			await Promise.all([closeOmnichannelRoom(expectedRoom._id), deleteDepartment(department._id)]);
 		});
 		(IS_EE ? it : it.skip)('should return no rooms with the given department and the given status (if none match the filter)', async () => {
 			const { department } = await createDepartmentWithAnOnlineAgent();
 
-			await startANewLivechatRoomAndTakeIt({
+			const { room: expectedRoom } = await startANewLivechatRoomAndTakeIt({
 				departmentId: department._id,
 			});
 
@@ -577,6 +581,8 @@ describe('LIVECHAT - rooms', () => {
 				.expect(200);
 
 			expect(body.rooms.length).to.be.equal(0);
+
+			await Promise.all([closeOmnichannelRoom(expectedRoom._id), deleteDepartment(department._id)]);
 		});
 		(IS_EE ? it : it.skip)('should return only rooms served by the given agent', async () => {
 			const { department, agent } = await createDepartmentWithAnOnlineAgent();
@@ -591,7 +597,7 @@ describe('LIVECHAT - rooms', () => {
 			expect(body.rooms.length).to.be.equal(1);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
 
-			await Promise.all([deleteDepartment(department._id)]);
+			await Promise.all([closeOmnichannelRoom(expectedRoom._id), deleteDepartment(department._id)]);
 		});
 		(IS_EE ? it : it.skip)('should return only rooms served by the given agents', async () => {
 			const { department, agent } = await createDepartmentWithAnOnlineAgent();
@@ -618,7 +624,12 @@ describe('LIVECHAT - rooms', () => {
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom2._id)).to.be.true;
 
-			await Promise.all([deleteDepartment(department._id), deleteDepartment(department2._id)]);
+			await Promise.all([
+				closeOmnichannelRoom(expectedRoom._id),
+				closeOmnichannelRoom(expectedRoom2._id),
+				deleteDepartment(department._id),
+				deleteDepartment(department2._id),
+			]);
 		});
 		(IS_EE ? it : it.skip)('should return only rooms with the given tags', async () => {
 			const tag = await saveTags();
@@ -635,6 +646,10 @@ describe('LIVECHAT - rooms', () => {
 			let openRoom: IOmnichannelRoom;
 			let closeRoom: IOmnichannelRoom;
 			let department: ILivechatDepartment;
+
+			after(async () => {
+				await Promise.all([closeOmnichannelRoom(openRoom._id), deleteDepartment(department._id)]);
+			});
 
 			it('prepare data for further tests', async () => {
 				const { department: localDepartment } = await createDepartmentWithAnOnlineAgent();

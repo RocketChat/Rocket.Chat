@@ -38,6 +38,11 @@ describe('LIVECHAT - inquiries', () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
+		await updateSetting('Omnichannel_enable_department_removal', true);
+	});
+
+	after(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	describe('livechat/inquiries.list', () => {
@@ -226,6 +231,8 @@ describe('LIVECHAT - inquiries', () => {
 
 	describe('livechat/inquiries.queuedForUser', () => {
 		let testUser: { user: IUser; credentials: { [key: string]: string } };
+		const departmentsToRemove: ILivechatDepartment[] = [];
+		const roomsToClose: IOmnichannelRoom[] = [];
 		before(async () => {
 			await updateSetting('Livechat_accept_chats_with_no_agents', true);
 			const user = await createUser();
@@ -241,6 +248,8 @@ describe('LIVECHAT - inquiries', () => {
 		after(async () => {
 			await updateSetting('Livechat_accept_chats_with_no_agents', false);
 			await deleteUser(testUser.user);
+			await Promise.all(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
+			await Promise.all(departmentsToRemove.map((dep) => deleteDepartment(dep._id)));
 		});
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-l-room', []);
@@ -290,8 +299,10 @@ describe('LIVECHAT - inquiries', () => {
 		});
 		(IS_EE ? it : it.skip)('should return inquiries of the same department as the user', async () => {
 			const dep = await createDepartment([{ agentId: testUser.user._id }]);
+			departmentsToRemove.push(dep);
 			const visitor = await createVisitor(dep._id);
-			await createLivechatRoom(visitor.token);
+			const room = await createLivechatRoom(visitor.token);
+			roomsToClose.push(room);
 
 			const { body } = await request
 				.get(api('livechat/inquiries.queuedForUser'))
@@ -307,8 +318,10 @@ describe('LIVECHAT - inquiries', () => {
 		});
 		(IS_EE ? it : it.skip)('should not return an inquiry of a department the user is not part of', async () => {
 			const dep = await createDepartment();
+			departmentsToRemove.push(dep);
 			const visitor = await createVisitor(dep._id);
-			await createLivechatRoom(visitor.token);
+			const room = await createLivechatRoom(visitor.token);
+			roomsToClose.push(room);
 
 			const { body } = await request
 				.get(api('livechat/inquiries.queuedForUser'))
@@ -326,6 +339,8 @@ describe('LIVECHAT - inquiries', () => {
 
 	describe('livechat/inquiries.returnAsInquiry', () => {
 		let testUser: { user: IUser; credentials: Credentials };
+		const departmentsToRemove: ILivechatDepartment[] = [];
+		const roomsToClose: IOmnichannelRoom[] = [];
 		before(async () => {
 			const user = await createUser();
 			await createAgent(user.username);
@@ -339,6 +354,8 @@ describe('LIVECHAT - inquiries', () => {
 		});
 		after(async () => {
 			await deleteUser(testUser.user);
+			await Promise.all(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
+			await Promise.all(departmentsToRemove.map((dep) => deleteDepartment(dep._id)));
 		});
 
 		it('should throw an error if user doesnt have view-l-room permission', async () => {
@@ -419,8 +436,10 @@ describe('LIVECHAT - inquiries', () => {
 		let room: IOmnichannelRoom;
 		(IS_EE ? it : it.skip)('should move a room back to queue', async () => {
 			const dep = await createDepartment([{ agentId: testUser.user._id }]);
+			departmentsToRemove.push(dep);
 			const visitor = await createVisitor(dep._id);
 			room = await createLivechatRoom(visitor.token);
+			roomsToClose.push(room);
 			const inq = await fetchInquiry(room._id);
 			inquiry = inq;
 			await takeInquiry(inq._id, testUser.credentials);
@@ -446,8 +465,6 @@ describe('LIVECHAT - inquiries', () => {
 			const depInq = body.inquiries.filter((inq: { _id: string }) => inq._id === inquiry._id);
 
 			expect(depInq.length).to.be.equal(1);
-
-			await closeOmnichannelRoom(room._id);
 		});
 	});
 

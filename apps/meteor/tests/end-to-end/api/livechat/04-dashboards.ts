@@ -8,7 +8,7 @@ import moment from 'moment';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
 import {
 	closeOmnichannelRoom,
 	placeRoomOnHold,
@@ -137,6 +137,7 @@ describe('LIVECHAT - dashboards', function () {
 			return;
 		}
 		await Promise.allSettled(roomList.map((room) => closeOmnichannelRoom(room._id)));
+		await Promise.allSettled([deleteDepartment(department._id), ...agents.map((agent) => deleteUser(agent.user))]);
 	});
 
 	describe('livechat/analytics/dashboards/conversation-totalizers', () => {
