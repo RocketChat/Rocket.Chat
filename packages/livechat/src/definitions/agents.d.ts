@@ -5,7 +5,7 @@ export type Agent = {
 	name?: string;
 	status?: string;
 	emails?: Array<{ address: string }>;
-	phone?: Array<{ phoneNumber: string }>;
+	phone?: string | Array<{ phoneNumber: string }>; // API can return either string or array
 	customFields?: { phone?: string };
 	avatar?: {
 		description: string;

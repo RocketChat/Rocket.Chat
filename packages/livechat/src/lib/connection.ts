@@ -54,8 +54,9 @@ const Connection = {
 
 	async clearAlerts() {
 		const { alerts } = store.state;
+		const alertIdsToRemove = [livechatDisconnectedAlertId, livechatConnectedAlertId] as string[];
 		await store.setState({
-			alerts: alerts?.filter((alert) => ![livechatDisconnectedAlertId as string, livechatConnectedAlertId as string].includes(alert.id)),
+			alerts: alerts?.filter((alert) => !alertIdsToRemove.includes(alert.id)),
 		});
 	},
 
