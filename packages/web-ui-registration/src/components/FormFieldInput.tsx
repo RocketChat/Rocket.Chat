@@ -1,5 +1,5 @@
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, TextAreaInput } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import type { FieldError as FieldErrorType, UseFormRegisterReturn } from 'react-hook-form';
 
 type FormFieldInputProps = {

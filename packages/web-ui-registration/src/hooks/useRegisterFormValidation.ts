@@ -41,7 +41,7 @@ export const useRegisterFormValidation = (watch: UseFormWatch<LoginRegisterPaylo
         },
         passwordConfirmation: {
             required: t('Required_field', { field: t('registration.component.form.confirmPassword') }),
-            deps: ['password'] as const,
+            deps: ['password'] as string[], // Cast to string[] to match react-hook-form types
             validate: (val: string) => (watch('password') === val ? true : t('registration.component.form.invalidConfirmPass')),
         },
         reason: {
