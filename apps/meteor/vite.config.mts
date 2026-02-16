@@ -58,7 +58,20 @@ export default defineConfig(async () => {
 		],
 		build,
 		resolve: {
-			dedupe: ['react', 'react-dom', 'react-i18next', '@tanstack/react-query', 'react-aria', 'react-stately', 'react-i18next', '@rocket.chat/fuselage', '@rocket.chat/fuselage-tokens'],
+			dedupe: [
+				'react',
+				'react-dom',
+				'react-i18next',
+				'@tanstack/react-query',
+				'react-aria',
+				'react-stately',
+				'react-i18next',
+				'@rocket.chat/fuselage',
+				'@rocket.chat/fuselage-tokens',
+				'@rocket.chat/fuselage-forms',
+				'@rocket.chat/emitter',
+				'react-hook-form',
+			],
 			alias: {
 				// Rocket.Chat Packages
 				'@rocket.chat/api-client': path.resolve('../../packages/api-client/src/index.ts'),
@@ -101,6 +114,9 @@ export default defineConfig(async () => {
 			cors: true,
 			origin: ROOT_URL.origin,
 			allowedHosts: [ROOT_URL.hostname, 's3.amazonaws.com'],
+			watch: {
+				ignored: ['tests/**'],
+			},
 			proxy: {
 				'/api': { target: ROOT_URL.origin, changeOrigin: true },
 				'/avatar': { target: ROOT_URL.origin, changeOrigin: true },
@@ -110,7 +126,7 @@ export default defineConfig(async () => {
 				'/sockjs': { target: ROOT_URL.origin, ws: true, rewriteWsOrigin: true, changeOrigin: true, autoRewrite: true },
 				'/websocket': { target: ROOT_URL.origin, ws: true, rewriteWsOrigin: true, changeOrigin: true, autoRewrite: true },
 				'/packages': { target: ROOT_URL.origin, changeOrigin: true },
-				'/_oauth': { target: ROOT_URL.origin, changeOrigin: true, followRedirects: true },
+				'/_oauth': { target: ROOT_URL.origin, changeOrigin: true },
 				'/custom-sounds': { target: ROOT_URL.origin, changeOrigin: true },
 				'/i18n': { target: ROOT_URL.origin, changeOrigin: true },
 				'/file-decrypt': { target: ROOT_URL.origin, changeOrigin: true },
@@ -121,7 +137,10 @@ export default defineConfig(async () => {
 				'/readyz': { target: ROOT_URL.origin, changeOrigin: true },
 				'/requestSeats': { target: ROOT_URL.origin, changeOrigin: true },
 				'/data-export': { target: ROOT_URL.origin, changeOrigin: true },
+				// '/simplesaml': { target: ROOT_URL.origin, changeOrigin: true },
+				'/_saml': { target: ROOT_URL.origin, changeOrigin: true },
 				'/meteor_runtime_config.js': { target: ROOT_URL.origin, changeOrigin: true, followRedirects: true },
+
 				'/file-upload': {
 					target: ROOT_URL.origin,
 					changeOrigin: true,
