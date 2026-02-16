@@ -56,7 +56,6 @@ export class MediaStreamTrackWrapper {
 	constructor(public readonly track: MediaStreamTrack) {
 		this.emitter = new Emitter();
 		this.muteTriggered = track.muted ?? false;
-		this.configureEvents();
 
 		this.endedIntervalHandler = setInterval(() => {
 			if (this.endedTriggered || this.track.readyState !== 'ended') {
@@ -69,6 +68,8 @@ export class MediaStreamTrackWrapper {
 		this._onTrackMute = () => this.onTrackMute();
 		this._onTrackUnmute = () => this.onTrackUnmute();
 		this._onTrackEnded = () => this.setEnded();
+
+		this.configureEvents();
 	}
 
 	public clear() {
