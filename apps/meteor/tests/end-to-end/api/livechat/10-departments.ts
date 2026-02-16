@@ -104,7 +104,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		await createAgent();
 		await makeAgentAvailable();
 		await updateSetting('Omnichannel_enable_department_removal', true);
-		initialDep = await createDepartment(undefined, 'Pagination Test Department');
+		initialDep = await createDepartment(undefined, 'Random Pagination Department');
 	});
 
 	after(async () => {
