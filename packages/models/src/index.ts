@@ -95,6 +95,9 @@ import type {
 	IMedsenseAuditModel,
 	IMedsenseRequestsModel,
 	IMedsensePharmacyInvitesModel,
+	IMedsenseInterventionsModel,
+	IMedsenseInterventionNotesModel,
+	IMedsensePatientContextModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -129,6 +132,9 @@ import {
 	MedsenseAuditRaw,
 	MedsenseRequestsRaw,
 	MedsensePharmacyInvitesRaw,
+	MedsenseInterventionsRaw,
+	MedsenseInterventionNotesRaw,
+	MedsensePatientContextRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -235,6 +241,9 @@ export const MedsensePharmacyTeams = proxify<IMedsensePharmacyTeamsModel>('IMeds
 export const MedsenseAudit = proxify<IMedsenseAuditModel>('IMedsenseAuditModel');
 export const MedsenseRequests = proxify<IMedsenseRequestsModel>('IMedsenseRequestsModel');
 export const MedsensePharmacyInvites = proxify<IMedsensePharmacyInvitesModel>('IMedsensePharmacyInvitesModel');
+export const MedsenseInterventions = proxify<IMedsenseInterventionsModel>('IMedsenseInterventionsModel');
+export const MedsenseInterventionNotes = proxify<IMedsenseInterventionNotesModel>('IMedsenseInterventionNotesModel');
+export const MedsensePatientContext = proxify<IMedsensePatientContextModel>('IMedsensePatientContextModel');
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
@@ -277,4 +286,7 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('IMedsenseAuditModel', () => new MedsenseAuditRaw(db));
 	registerModel('IMedsenseRequestsModel', () => new MedsenseRequestsRaw(db));
 	registerModel('IMedsensePharmacyInvitesModel', () => new MedsensePharmacyInvitesRaw(db));
+	registerModel('IMedsenseInterventionsModel', () => new MedsenseInterventionsRaw(db));
+	registerModel('IMedsenseInterventionNotesModel', () => new MedsenseInterventionNotesRaw(db));
+	registerModel('IMedsensePatientContextModel', () => new MedsensePatientContextRaw(db));
 }

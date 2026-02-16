@@ -7159,5 +7159,17 @@
   "Medsense_Start_Chat_Label": "Start chat label",
   "Medsense_Start_Chat_Label_Description": "Label shown in the Create New menu.",
   "Medsense_Start_Chat_Greeting": "Start chat greeting",
-  "Medsense_Start_Chat_Greeting_Description": "Greeting shown when starting a Medsense chat."
+  "Medsense_Start_Chat_Greeting_Description": "Greeting shown when starting a Medsense chat.",
+  "Interventions": "Interventions",
+  "Select_Patient": "Select patient",
+  "No_patient_selected": "No patient selected",
+  "No_interventions_for_selected_patient": "No interventions for selected patient",
+  "Intervention_Details": "Intervention details",
+  "Notes_History": "Notes history",
+  "No_notes_yet": "No notes yet",
+  "New_Note": "New note",
+  "Add_a_note": "Add a note",
+  "View_details": "View details",
+  "Add_note": "Add note",
+  "Initial_Notes": "Initial notes"
 }

@@ -7,12 +7,14 @@ import { useOutboundMessageAccess } from '../../../views/omnichannel/components/
 import { useOutboundMessageModal } from '../../../views/omnichannel/components/outboundMessage/modals';
 import CreateChannelModal from '../actions/CreateChannelModal';
 import CreateMedsenseBotRoomModal from '../actions/CreateMedsenseBotRoomModal';
+import CreateMedsenseInternalChat from '../actions/CreateMedsenseInternalChat';
 import CreateDirectMessage from '../actions/CreateDirectMessage';
 import CreateTeamModal from '../actions/CreateTeamModal';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 const CREATE_TEAM_PERMISSIONS = ['create-team'];
 const CREATE_DIRECT_PERMISSIONS = ['create-d'];
+const CREATE_MEDSENSE_INTERNAL_PERMISSIONS = ['medsense-create-chat-internal'];
 const CREATE_DISCUSSION_PERMISSIONS = ['start-discussion', 'start-discussion-other-user'];
 
 const normalizeRoleSetting = (rolesSetting: unknown): string[] => {
@@ -46,6 +48,7 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const canCreateTeam = useAtLeastOnePermission(CREATE_TEAM_PERMISSIONS);
 	const canCreateDirectMessages = useAtLeastOnePermission(CREATE_DIRECT_PERMISSIONS);
+	const canCreateMedsenseInternal = useAtLeastOnePermission(CREATE_MEDSENSE_INTERNAL_PERMISSIONS);
 	const canCreateDiscussion = useAtLeastOnePermission(CREATE_DISCUSSION_PERMISSIONS);
 	const canSendOutboundMessage = useOutboundMessageAccess();
 
@@ -53,6 +56,7 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 	const createTeam = useCreateRoomModal(CreateTeamModal);
 	const createDiscussion = useCreateRoomModal(CreateDiscussion);
 	const createDirectMessage = useCreateRoomModal(CreateDirectMessage);
+	const createMedsenseInternal = useCreateRoomModal(CreateMedsenseInternalChat);
 	const createMedsenseBotRoom = useCreateRoomModal(CreateMedsenseBotRoomModal);
 	const outboundMessageModal = useOutboundMessageModal();
 
@@ -62,6 +66,14 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 		icon: 'balloon',
 		onClick: () => {
 			createMedsenseBotRoom();
+		},
+	};
+	const createMedsenseInternalItem: GenericMenuItemProps = {
+		id: 'medsense-internal-chat',
+		content: t('Medsense_Internal_Chat'),
+		icon: 'team',
+		onClick: () => {
+			createMedsenseInternal();
 		},
 	};
 	const createChannelItem: GenericMenuItemProps = {
@@ -105,6 +117,7 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 
 	return [
 		...(canStartMedsenseChat ? [createMedsenseChatItem] : []),
+		...(canCreateMedsenseInternal ? [createMedsenseInternalItem] : []),
 		...(canCreateDirectMessages ? [createDirectMessageItem] : []),
 		...(canCreateDiscussion && discussionEnabled ? [createDiscussionItem] : []),
 		...(canCreateChannel ? [createChannelItem] : []),

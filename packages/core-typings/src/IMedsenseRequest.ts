@@ -28,5 +28,8 @@ export interface IMedsenseRequest extends IRocketChatRecord {
     contextSummary?: string;
     answers?: Record<string, any>; // JSON responses from forms
     currentStepId?: string; // Tracks progress in multi-step assessment
+    aiSummary?: string;
+    aiFollowUpCount?: number;
     preAssessmentExpiresAt?: Date; // Timeout for pre-assessment
 }
+

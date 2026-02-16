@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
-import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize, useDarkMode, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import {
 	MessageComposerAction,
@@ -15,15 +15,17 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
+import { Fragment, memo, useRef, useReducer, useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
+import '../ComposerUserActionIndicator/ComposerUserActionIndicator.css';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import { UserAction } from '../../../../../app/ui/client/lib/UserAction';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
@@ -37,7 +39,6 @@ import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
 import { useRoom } from '../../contexts/RoomContext';
 import ComposerBoxPopup from '../ComposerBoxPopup';
 import ComposerBoxPopupPreview from '../ComposerBoxPopupPreview';
-import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
@@ -76,6 +77,95 @@ const emptySubscribe = () => () => undefined;
 const getEmptyFalse = () => false;
 const a: any[] = [];
 const getEmptyArray = () => a;
+const maxUsernames = 5;
+const MEDSENSE_LABEL = 'medsense';
+
+const MessageBoxUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }): ReactElement | null => {
+	const t = useTranslation();
+	const isDarkMode = useDarkMode();
+
+	const roomAction = useSyncExternalStore(
+		UserAction.subscribe,
+		useCallback(() => UserAction.get(tmid || rid), [rid, tmid]),
+	);
+
+	const actions = useMemo(
+		() =>
+			Object.entries(roomAction ?? {})
+				.map(([key, usersMap]) => {
+					const action = key.split('-')[1] as 'typing' | 'recording' | 'uploading' | 'playing';
+					const users = Object.keys(usersMap || {});
+					if (!users.length) {
+						return;
+					}
+
+					return { action, users };
+				})
+				.filter(Boolean) as Array<{
+				action: 'typing' | 'recording' | 'uploading' | 'playing';
+				users: string[];
+			}>,
+		[roomAction],
+	);
+
+	const formatUsers = useCallback(
+		(users: string[]) => {
+			if (users.length < maxUsernames) {
+				return users.join(', ');
+			}
+
+			return `${users.slice(0, maxUsernames - 1).join(', ')} ${t('and')} ${t('others')}`;
+		},
+		[t],
+	);
+
+	const activityPhrases = useMemo(() => {
+		return actions.flatMap(({ action, users }) => {
+			const normalizedUsers = users.map((user) => user.trim().toLowerCase());
+			const hasMedsense = action === 'typing' && normalizedUsers.includes(MEDSENSE_LABEL);
+			const nonMedsenseUsers = users.filter((user) => user.trim().toLowerCase() !== MEDSENSE_LABEL);
+
+			const phrases: string[] = [];
+			if (hasMedsense) {
+				phrases.push('MedSense is thinking');
+			}
+
+			if (nonMedsenseUsers.length > 0) {
+				const userList = formatUsers(nonMedsenseUsers);
+				phrases.push(`${userList} ${nonMedsenseUsers.length > 1 ? t(`are_${action}`) : t(`is_${action}`)}`);
+			}
+
+			if (!phrases.length && users.length > 0) {
+				const userList = formatUsers(users);
+				phrases.push(`${userList} ${users.length > 1 ? t(`are_${action}`) : t(`is_${action}`)}`);
+			}
+
+			return phrases;
+		});
+	}, [actions, formatUsers, t]);
+
+	if (!activityPhrases.length) {
+		return null;
+	}
+
+	return (
+		<div
+			className={`rc-message-box__activity-wrapper rc-message-box__activity-wrapper--medsense ${
+				isDarkMode ? 'rc-message-box__activity-wrapper--theme-dark' : 'rc-message-box__activity-wrapper--theme-light'
+			}`}
+			aria-live='polite'
+		>
+			<span className='rc-message-box__activity-pill'>
+				{activityPhrases.map((phrase, index) => (
+					<Fragment key={`${phrase}-${index}`}>
+						{index > 0 && ', '}
+						{phrase}
+					</Fragment>
+				))}
+			</span>
+		</div>
+	);
+};
 
 type MessageBoxProps = {
 	tmid?: IMessage['_id'];
@@ -421,6 +511,7 @@ const MessageBox = ({
 				isMobile={isMobile}
 			/>
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
+			<MessageBoxUserActionIndicator rid={room._id} tmid={tmid} />
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInputExpandable
@@ -484,7 +575,6 @@ const MessageBox = ({
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
 			</MessageComposer>
-			<ComposerUserActionIndicator rid={room._id} tmid={tmid} />
 		</>
 	);
 };

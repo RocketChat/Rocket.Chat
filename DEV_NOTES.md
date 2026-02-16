@@ -1704,3 +1704,1021 @@ Available variants: `primary`, `secondary`, `danger`, `warning`, `secondary-dang
 
 ### UTI App (`MedsenseUtiApp`)
 - **Strict Logic**: Modal submission now strictly uses the input field value for `contactPhone`, ensuring "Modal is Source of Truth" and preventing profile fallbacks.
+
+---
+
+## Intervention Management (Plan) (2026-02-02)
+
+**Goal**: Replace Clinical Actions with **Manage Interventions**. Interventions are attached to the **patient** (not room) and include AI summary from the **request contextSummary**. Request close actions live in the room app; intervention close/complete lives in the queue tab. Add a new Interventions tab in Medsense Queue (pharmacy scoped).
+
+### Scope / Behavior
+- **Contextual bar app**: “Manage Interventions” (replaces Clinical Actions app).
+- **Visibility**: Only users with permission `medsense-create-interventions`.
+- **Intervention** attaches to `patientUserId` + `pharmacyId` (not to room).
+- **Request close actions (room app)**:
+  - **Close & leave conversation** → close **active request** in the room, remove **current staff** from room.
+  - **Close & remove all staff** → close **active request** and remove all **non-user, non-bot** users from room (patient + AI bot stay).
+  - **Conditional display** (avoid “limbo”):  
+    - If **staffCount > 1** → show **Close & remove all staff** only.  
+    - If **staffCount == 1** → show **Close & leave conversation** only.  
+    - If **staffCount == 0** → hide both (safety fallback).
+  - **Member counts** use existing room membership data (`rooms.members` or contextual room data), with bot resolved via `Medsense_Bot_User`.
+- **Intervention close/complete** is **only** from the queue tab (not from the room app).
+- **Notes**: simple text + timestamp + author; notes allowed even after close.
+- **Complete**: sets `status=completed`, `completedAt`, `completedBy`, `closedAt`, `closedBy`, and stores completion note.
+- **Interventions tab**: show **active interventions by pharmacy**, newest first.
+- **AI summary**: stored on intervention; generated on creation using **request.contextSummary**.
+- **Bot to preserve**: `Medsense_Bot_User` setting.
+
+---
+
+### Data Model (new)
+**Why**: Need persistent interventions + notes tied to patient + pharmacy.
+
+1) **Intervention record**
+- **New typing**: `packages/core-typings/src/IMedsenseIntervention.ts`
+- **New model typing**: `packages/model-typings/src/models/IMedsenseInterventionsModel.ts`
+- **New DB model**: `packages/models/src/models/MedsenseInterventions.ts`
+- **Registration**:
+  - `packages/models/src/index.ts`
+  - `packages/models/src/modelClasses.ts`
+
+**Fields** (proposal):
+- `_id`, `patientUserId`, `pharmacyId`, `status: 'active' | 'closed' | 'completed'`
+- `type` (string), `aiSummary` (string)
+- `createdAt`, `createdBy` (id + username)
+- `closedAt`, `closedBy`
+- `completedAt`, `completedBy`
+- optional `requestId` and/or `roomId` (store active request + room at creation time for staff removal)
+
+**Indexes**:
+- `{ pharmacyId: 1, status: 1, createdAt: -1 }`
+- `{ patientUserId: 1, status: 1 }`
+
+2) **Notes**
+- **New typing**: `packages/core-typings/src/IMedsenseInterventionNote.ts`
+- **New model typing**: `packages/model-typings/src/models/IMedsenseInterventionNotesModel.ts`
+- **New DB model**: `packages/models/src/models/MedsenseInterventionNotes.ts`
+- **Registration**:
+  - `packages/models/src/index.ts`
+  - `packages/models/src/modelClasses.ts`
+
+**Fields**:
+- `_id`, `interventionId`, `authorId`, `authorUsername`, `createdAt`
+- `noteType: 'note' | 'complete'`
+- `text`
+
+**Index**:
+- `{ interventionId: 1, createdAt: -1 }`
+
+---
+
+### Server API (apps/meteor)
+**Why**: intervention lifecycle + request close actions from room app.
+
+File: `apps/meteor/app/api/server/v1/medsense.ts`
+
+1) **Create intervention**
+- `POST /api/v1/medsense/interventions.create`
+- **Auth**: `medsense-create-interventions`
+- **Input**: `{ patientUserId, pharmacyId, type }`
+- **Logic**:
+  - Resolve latest request for patient + pharmacy: `MedsenseRequests.find({ requestedByUserId, pharmacyId }).sort({ createdAt: -1 }).limit(1)`
+  - Use `contextSummary` from that request as `aiSummary` (store on intervention)
+  - Persist intervention with `status='active'`
+
+2) **List active interventions by pharmacy**
+- `GET /api/v1/medsense/interventions.list?pharmacyId=...`
+- **Auth**: `medsense-create-interventions` (or add separate `medsense-view-interventions` if needed)
+- **Return**: active interventions sorted newest first
+
+3) **Add note**
+- `POST /api/v1/medsense/interventions.note.add`
+- **Input**: `{ interventionId, text }`
+- **Auth**: `medsense-create-interventions`
+- **Effect**: insert note (noteType='note')
+
+4) **Complete intervention**
+- `POST /api/v1/medsense/interventions.complete`
+- **Input**: `{ interventionId, text }`
+- **Effect**: set `status='completed'`, `completedAt`, `completedBy`, `closedAt`, `closedBy`; insert note (noteType='complete')
+
+5) **Close & leave conversation (request)**  
+- Use existing `POST /api/v1/medsense/request.close`  
+- **Input**: `{ requestId }`  
+- **Effect**: close **request**, remove **current user** from room (already implemented).  
+
+6) **Close & remove all staff (request)**  
+- **New endpoint**: `POST /api/v1/medsense/request.close.removeStaff`  
+- **Input**: `{ requestId }`  
+- **Effect**: close **request**, remove all **non-user, non-bot** users from room.  
+- **Bot to keep**: `settings.get('Medsense_Bot_User')`.  
+ - **Reason**: Orchestrator won’t respond while non-user staff remain; this clears staff to prevent “limbo”.
+
+**Room removal implementation for request close**:
+- Use `removeUserFromRoom` from `apps/meteor/app/lib/server/functions/removeUserFromRoom.ts`.
+- Determine staff set via `Subscriptions.findByRoomId` + `Users.findByIds`, filter roles.
+
+---
+
+### Permissions
+File: `apps/meteor/app/lib/server/startup/medsense.ts`
+- Add new permission: `medsense-create-interventions`.
+- Decide whether to reuse for viewing list/notes or add `medsense-view-interventions`.
+
+---
+
+### Client UI (apps/meteor)
+**Queue Tab**
+File: `apps/meteor/client/views/medsense/queue/QueuePage.tsx`
+- Add **Interventions** tab alongside existing queue tabs.
+- Query `/v1/medsense/interventions.list?pharmacyId=...`.
+- Actions:
+  - **Complete** → opens “complete note” modal.
+  - **Add note** → opens modal with timestamp + author (read-only) + text.
+
+**Notes modal**
+- Use `Modal` (Fuselage) with read-only timestamp + author fields.
+
+---
+
+### App Replacement (Clinical Actions → Manage Interventions)
+**Why**: contextual bar UX for staff inside conversation.
+
+Repo referenced in notes: `medsense-chat-local/clinical-actions-app` (Apps-Engine)
+- Rename to **Manage Interventions**
+- Update app ID, name, and menu item in contextual bar.
+- UI Flow:
+  - List patient’s interventions (active + closed if desired)
+  - **Create new intervention** button (optional; staff can choose not to create one)
+    - On open, call `interventions.create` with `patientUserId`, `pharmacyId`, `type`.
+    - Display stored `aiSummary` + right-side manual entry form (per mock).
+  - **Close actions** buttons:
+    - Close & leave conversation (request close)
+    - Close & remove all staff (request close)
+
+**AI Summary Source**
+- Use latest request for patient/pharmacy and read `contextSummary`.
+- That summary is stored in `medsense_requests.contextSummary` and exposed in API.
+
+---
+
+### Leave Room Permission Removal (Staff)
+**Goal**: prevent leaving without closing **request**.
+- Disable/guard “Leave Room” UI action for staff in Medsense rooms.
+- Candidate files:
+  - `apps/meteor/client/hooks/roomActions/useLeaveRoomAction.ts` (check gating)
+  - `apps/meteor/app/lib/server/methods/leaveRoom.ts` (server-side guard if needed)
+- Guard using: room has active Medsense request, user has staff role.
+- **Policy**: staff can only exit via **request close** actions (no manual leave).
+
+---
+
+### QA / Junior Dev Checklist
+- Verify `medsense-create-interventions` permission added and visible in Admin.
+- Ensure interventions list is pharmacy-scoped and sorted newest first.
+- Validate “close & remove all staff” keeps **patient + Medsense bot**.
+- Validate conditional close buttons based on staff count (1 → leave, >1 → remove all).
+- Confirm intervention notes can be added after close.
+- Confirm **complete** sets `status=completed` + `completedAt/By` + `closedAt/By`.
+- Confirm AI summary loads from latest `medsense_requests.contextSummary`.
+- Confirm Clinical Actions app no longer visible; Manage Interventions app is visible only with permission.
+- Confirm room close buttons only affect **request**, not intervention.
+
+---
+
+## Medsense Internal DM (Plan) (2026-02-02)
+
+**Goal**: Add a **Medsense‑gated** “Create DM” option in the Create‑New dropdown. The modal includes a **pharmacy selector** (any membership), and user autocomplete is filtered to **all users in that pharmacy** (staff + patients, no bots). Reuse existing parts wherever possible.
+
+### Scope / Behavior
+- **New Create‑New item**: “Create Medsense Chat”
+- **Visibility**: `medsense-create-chat-internal`
+- **Pharmacy dropdown**: show **all pharmacies where the staff user is a member** (not only managers). Default to first/only.
+- **Allowed users**: all users tied to selected pharmacy (staff + patients), **exclude bots**.
+
+### Client UI
+**Create‑New dropdown**
+- File: `apps/meteor/client/navbar/NavBarPagesGroup/hooks/useCreateNewItems.tsx`
+- Add new item (do **not** replace standard DM).
+
+**Modal**
+- New file: `apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateMedsenseDirectMessage.tsx`
+- Reuse `CreateDirectMessage.tsx` layout and `UserAutoCompleteMultiple`.
+- Add pharmacy selector (similar to UTI app modal).
+
+### Server API (reuse where possible)
+**Pharmacy list (any membership)**
+- Use existing `MedsensePharmacyMemberships` to return pharmacies where user is a member.
+- If no endpoint exists, add **minimal** endpoint:
+  - `GET /api/v1/medsense/pharmacies.list.mine`
+  - Returns pharmacies where `MedsensePharmacyMemberships.userId === this.userId`.
+
+**User autocomplete (pharmacy‑scoped)**
+- Add endpoint:
+  - `GET /api/v1/medsense/users.autocomplete?term=...&pharmacyId=...`
+  - Auth: `medsense-create-chat-internal`
+  - Return users where:
+    - Staff: `MedsensePharmacyMemberships.pharmacyId`
+    - Patients: `MedsensePatientPharmacy.pharmacyId`
+  - Exclude bots (role contains `bot` or username equals `Medsense_Bot_User`).
+
+**DM creation**
+- Reuse `/v1/dm.create` (no custom DM creation endpoint needed).
+- Client filters ensure only allowed users can be selected.
+
+### QA Checklist
+- Create‑New shows **Medsense DM** only with `medsense-create-chat-internal`.
+- Pharmacy dropdown includes all memberships and defaults to first.
+- Autocomplete results change when pharmacy selection changes.
+- Bots never appear in autocomplete.
+- DM creation succeeds via existing `/v1/dm.create`.
+
+## Manage Interventions & Context Filtering (Implemented 2026-02-02)
+
+### 1. Manage Interventions App
+- **Renamed**: "Clinical Actions" -> "Manage Interventions".
+- **Path**: `d:/medsense-chat-local/clinical-actions-app`.
+- **Logic**:
+  - Uses `medsense/context.room` API to auto-detect Patient/Pharmacy context.
+  - Lists active interventions.
+  - Allows "Create Intervention" via Modal.
+  - Allows "Close Request" (removes staff).
+
+### 2. Internal DM & Pharmacy Filter
+- **Sidebar**: Added `PharmacyFilter` dropdown above the Room List.
+- **Filtering Logic**:
+  - Requires `medsense-view-pharmacy-members` (implied).
+  - Fetches context via `medsense/pharmacies.context`.
+  - Shows only Rooms linked to pharmacy and DMs with pharmacy members.
+- **Client Code**: `apps/meteor/client/sidebar/Sidebar.tsx`, `useRoomList.ts`, `views/medsense/sidebar/PharmacyFilter.tsx`.
+
+## Patient Profile Context Updates (Orchestrator) (2026-02-06)
+
+Goal: Maintain a lightweight patient profile derived from patient-authored messages; updates run at session completion (Memory Agent).
+
+### Data Shape (patient profile)
+Store on the user profile (custom fields) to avoid extra collections:
+
+~~~
+users.customFields.patientProfile = Array<{ type: 'allergy' | 'medication' | 'medicalHistory'; value: string; addedAt: string; roomId: string }>;
+~~~
+
+- value is a short descriptive sentence, not a raw keyword.
+  - Example: "Reports new allergy to penicillin"
+  - Example: "No longer reacts to ibuprofen"
+  - Example: "Started metformin 500mg daily"
+- addedAt is ISO timestamp
+- roomId ties the fact to the originating conversation
+
+### Room Field (incremental processing)
+Store one room field (timestamp):
+
+~~~
+room.medsenseLastContextMessageTs = ISO timestamp
+~~~
+
+### Server Endpoint (new, Medsense-scoped)
+Create a Medsense endpoint that mirrors groups.history but allows filtering by userId:
+
+- GET /api/v1/medsense/messages.byUser
+- Params: roomId, userId, oldest (required), baselineTs/minCount/maxMessages/timeWindowMs (optional)
+- Baseline source of truth: orchestrator computes baselineTs (room.medsenseSessionInfo.windowStartTs ?? request.createdAt ?? room._createdAt) and passes it. Server does not guess baseline.
+- Behavior: always return count; only return messages when threshold OR time window is met.
+- Reuse getChannelHistory + Messages filtering (avoid touching core groups.history).
+
+### Orchestrator Flow (aligned with Session Memory plan)
+- Memory agent runs ONLY when deterministic completion rules say the session is done.
+  - Compute baselineTs = room.medsenseSessionInfo.windowStartTs ?? request.createdAt ?? room._createdAt
+  - Call /v1/medsense/messages.byUser with roomId, userId, oldest=baselineTs
+    - For completion runs, pass minCount=0 or timeWindowMs=0 to force message return
+  - If messages returned:
+    - Run Context Agent (LLM) to extract only deltas (no full profile)
+    - Deduplicate (type + normalized value) and append to profile array
+    - Set addedAt/roomId from webhook payload
+    - Update room.medsenseLastContextMessageTs = latestMessage.ts
+
+### Prompt Template (Context Agent)
+System / Instruction:
+
+~~~
+You are extracting patient profile updates from patient-authored messages only.
+You will be given the existing patient profile context; return ONLY updates (deltas) to that context.
+Return ONLY the updates array with type + short descriptive sentence.
+Do NOT return the full profile. Do NOT include timestamps or roomId.
+If nothing new is found, return an empty updates array.
+Output must strictly match the provided JSON schema.
+~~~
+
+Input:
+- Patient messages since last timestamp (raw text)
+- Existing patient profile context (current array)
+
+Output JSON (exact schema):
+~~~
+[
+  { "type": "allergy", "value": "..." },
+  { "type": "medication", "value": "..." },
+  { "type": "medicalHistory", "value": "..." }
+]
+~~~
+
+Examples:
+- allergy sentence: "Reports new allergy to penicillin"
+- med sentence: "Started metformin 500mg daily"
+- history sentence: "History of asthma since childhood"
+
+### Deduplication Rules
+- Normalize value (lowercase + trim)
+- Skip if same normalized value already exists for the same type
+
+### Permissions
+- Ensure only internal services (bot/orchestrator) can call:
+  - /v1/medsense/messages.byUser
+  - updates to user customFields
+
+### Expected Changes / Files
+Server (Rocket.Chat)
+- apps/meteor/app/api/server/v1/medsense.ts
+  - Add medsense/messages.byUser route
+  - Return filtered messages by roomId + userId + oldest
+- apps/meteor/app/lib/server/functions (if needed)
+  - reuse getChannelHistory
+
+Orchestrator
+- Replace any raw history fetch with messages.byUser
+- Track room.medsenseLastContextMessageTs
+- Add env vars: MEDSENSE_CONTEXT_TIMEFRAME_MS (default 120000), MEDSENSE_CONTEXT_MIN_MESSAGES (default 3), MEDSENSE_CONTEXT_MAX_MESSAGES (default 10)
+- For completion runs, allow override (minCount=0 or timeWindowMs=0) to force message return
+
+### QA Checklist
+- Only patient/user messages are considered
+- New profile entries are descriptive sentences
+- No duplicate entries
+- medsenseLastContextMessageTs advances only after successful update
+- Orchestrator can read profile from users.customFields.patientProfile
+
+### Message Fetch Logic (Threshold OR Time Window)
+Note: For session completion, allow override (minCount=0 or timeWindowMs=0) to force returning messages.
+Use BOTH triggers so updates happen even with low volume:
+
+Rule: Return messages if either:
+- count >= N (message threshold)
+- now - baselineTs >= X minutes (time window elapsed)
+
+Algorithm:
+1) baselineTs = room.medsenseSessionInfo.windowStartTs ?? request.createdAt ?? room._createdAt
+2) oldest = max(baselineTs, now - X minutes)
+3) Count patient messages since oldest
+4) If (count >= N) OR (now - baselineTs >= X):
+   - return up to Y most recent messages (sorted newest first)
+   - else return count only
+
+Parameters:
+- X minutes: MEDSENSE_CONTEXT_TIMEFRAME_MS (default 120000)
+- N messages: MEDSENSE_CONTEXT_MIN_MESSAGES (default 3)
+- Y cap: MEDSENSE_CONTEXT_MAX_MESSAGES (default 10)
+
+### Detailed Spec (Junior-Dev Friendly)
+
+#### New Endpoint: GET /api/v1/medsense/messages.byUser
+Purpose: return patient messages for a room since a timestamp, optionally returning only count unless threshold/time rules are met.
+
+Query Params:
+- roomId (string, required)
+- userId (string, required)
+- oldest (ISO timestamp, required)
+- baselineTs (ISO timestamp, optional) used to evaluate time window; if omitted use oldest
+- minCount (number, optional, default MEDSENSE_CONTEXT_MIN_MESSAGES)
+- maxMessages (number, optional, default MEDSENSE_CONTEXT_MAX_MESSAGES)
+- timeWindowMs (number, optional, default MEDSENSE_CONTEXT_TIMEFRAME_MS)
+
+Response (success with messages):
+~~~
+{
+  "success": true,
+  "count": 4,
+  "returned": 4,
+  "thresholdMet": true,
+  "timeWindowElapsed": true,
+  "messages": [
+    {
+      "_id": "abc123",
+      "rid": "roomId",
+      "u": { "_id": "userId", "username": "testuser2" },
+      "ts": "2026-02-06T12:00:00.000Z",
+      "msg": "I am allergic to penicillin"
+    }
+  ]
+}
+~~~
+
+Response (count only):
+~~~
+{
+  "success": true,
+  "count": 2,
+  "returned": 0,
+  "thresholdMet": false,
+  "timeWindowElapsed": false,
+  "messages": []
+}
+~~~
+
+Logic:
+- baselineTs = baselineTs || oldest
+- timeWindowElapsed = (now - baselineTs) >= timeWindowMs
+- thresholdMet = count >= minCount
+- Return messages if thresholdMet OR timeWindowElapsed
+- Sort messages newest first (ts desc)
+- Limit messages to maxMessages
+- Only include messages where rid == roomId AND u._id == userId
+- Exclude removed/hidden messages: t != 'rm' AND _hidden != true
+
+Suggested Mongo query (single request):
+- Use $match (rid, u._id, ts >= oldest, t != 'rm', _hidden != true)
+- Use $facet to compute count + latest messages:
+  - count: [{ $count: 'count' }]
+  - messages: [{ $sort: { ts: -1 } }, { $limit: maxMessages }]
+
+Auth:
+- Only internal services (bot/orchestrator or staff with Medsense permission)
+- Caller must have room access
+
+#### Orchestrator Extraction (context agent)
+- Only run for patient-authored messages (role includes user AND not bot)
+- Use room.medsenseLastContextMessageTs as baseline
+- If endpoint returns messages, extract only deltas and append
+- Update room.medsenseLastContextMessageTs to latest message ts after successful update
+
+#### Profile Schema (user customFields)
+~~~
+users.customFields.patientProfile = Array<{ type: 'allergy' | 'medication' | 'medicalHistory'; value: string; addedAt: string; roomId: string }>;
+~~~
+
+Value format (short descriptive sentence):
+- "Reports new allergy to penicillin"
+- "No longer reacts to ibuprofen"
+- "Started metformin 500mg daily"
+- "History of asthma since childhood"
+
+Deduplication:
+- Normalize value (lowercase + trim)
+- Skip if same normalized value already exists for the same type
+
+Env Vars:
+- MEDSENSE_CONTEXT_TIMEFRAME_MS (default 120000)
+- MEDSENSE_CONTEXT_MIN_MESSAGES (default 3)
+- MEDSENSE_CONTEXT_MAX_MESSAGES (default 10)
+
+Files to edit:
+- apps/meteor/app/api/server/v1/medsense.ts
+  - add medsense/messages.byUser route (custom Medsense endpoint)
+- orchestrator: replace any raw history fetch with messages.byUser
+
+QA:
+- count returns even when messages are empty
+- threshold OR time window logic works
+- only patient messages included
+- dedupe works
+- room.medsenseLastContextMessageTs updates only on success
+
+## Session Memory + Patient Profile Flow (2026-02-06)
+
+### Goal
+Keep the agent lightweight while still feeling “personalized”:
+- Short session memory stored per room
+- Long-term patient context stored on user profile
+- Memory updates happen only when deterministic completion rules are met
+
+### Room Schema (session memory + routing)
+All fields live under one object:
+
+~~~
+room.medsenseSessionInfo = {
+  assignedAgent: string | null,
+  windowStartMsgId: string | null,
+  windowStartTs: ISODate | null,
+  summary: {
+    text: string,          // 1–2 sentence final summary
+    updatedAt: ISODate
+  },
+  summaryLog: Array<{ text: string; ts: ISODate }> // keep last 10
+}
+~~~
+
+### Patient Profile Schema (long-term context)
+Store on user custom fields:
+
+~~~
+users.customFields.patientProfile = Array<{ type: 'allergy' | 'medication' | 'medicalHistory'; value: string; addedAt: string; roomId: string }>;
+~~~
+
+### Orchestrator Flow (finalized)
+1) User message arrives (persist only)
+2) Routing decision
+   - If assignedAgent == null:
+     - Run triage
+     - Set room.medsenseSessionInfo.assignedAgent
+     - Set windowStartMsgId + windowStartTs
+   - Else: route directly to assigned agent
+3) Agent handles message
+   - Agent receives: current msg, 1–2 recent msgs, patientProfile, (optional) summaryLog tail
+   - Agent returns reply + signals
+4) System posts reply
+5) Deterministic state check (non-LLM)
+   - If complete:
+     - Run Memory Agent ONCE:
+       - Update patient profile (type/value deltas only)
+       - Write final session summary to room.medsenseSessionInfo.summary
+       - Optionally append one final summaryLog entry
+     - Clear assignedAgent + windowStartMsgId + windowStartTs
+   - If not complete: loop back to step 3
+
+### Memory Agent Inputs/Outputs
+Input:
+- Patient messages since baseline
+- Existing patientProfile array
+
+Output (strict JSON array):
+~~~
+[
+  { "type": "allergy", "value": "..." },
+  { "type": "medication", "value": "..." },
+  { "type": "medicalHistory", "value": "..." }
+]
+~~~
+
+Notes:
+- No timestamps or roomId in output (use webhook msg ts + roomId)
+- Deduplicate by type + normalized value
+- summaryLog: keep last 10 entries (drop oldest)
+
+### Server Endpoint (Medsense)
+- GET /api/v1/medsense/messages.byUser
+- Params: roomId, userId, oldest (required), baselineTs/minCount/maxMessages/timeWindowMs (optional)
+- Behavior: always return count; return messages only if threshold OR time window met
+
+### Files to Edit / Reasons
+Rocket.Chat server:
+- apps/meteor/app/api/server/v1/medsense.ts
+  - Add medsense/messages.byUser endpoint
+  - Reason: orchestrator needs a safe, scoped way to fetch patient messages
+
+Orchestrator:
+- routing/triage handler
+  - Set/clear room.medsenseSessionInfo (assignedAgent + windowStart*)
+- memory agent runner (on completion only)
+  - Update patientProfile and room summary
+  - Enforce summaryLog max 10
+
+### QA Checklist
+- assignedAgent/windowStart fields set only when session starts
+- deterministic completion triggers memory agent once
+- patientProfile updates are deltas only (no full profile overwrite)
+- summaryLog keeps last 10
+- summary written only at completion
+- room fields cleared at completion
+- messages.byUser respects threshold OR time window
+
+
+## Patient Context + Session Memory Plan (Authoritative v2) (2026-02-06)
+
+This section is the authoritative implementation plan for patient context and session memory.
+It supersedes earlier notes that implied direct periodic profile updates during active sessions.
+
+### Scope for this rollout
+- Implement full layered flow below.
+- Enable assessor-agent behavior first for `med_qa_agent` only.
+- Keep all memory bounded and deterministic.
+
+### Layers (bottom to top)
+1. Messages (raw)
+- Stored as-is.
+- Agent sees only last 5 raw messages verbatim.
+
+2. Session Summary (ephemeral, per agent run)
+- Generated only when current assigned agent transitions to `completed` or `escalated`.
+- Covers message window `sessionStartMsgId -> sessionEndMsgId`.
+- Used as promotion input; not retained as a standalone long-term object.
+
+3. Room Context Summaries (ephemeral, bounded)
+- Append one entry per completed/escalated session.
+- Same summary schema as session summary.
+- Keep max 10 entries.
+- If >10 entries, merge oldest two into one deterministic merged summary entry.
+
+4. Patient Context (optional, gated)
+- Same summary schema again, promoted only if gate passes.
+- Promotion gate is conservative (stable preference, long-lived constraint, reusable fact).
+- Bounded and deduplicated.
+
+### Shared summary schema (session/room/patient)
+Use one shape across all summary layers:
+
+~~~
+{
+  summaryId: string,
+  kind: 'session' | 'room' | 'patient',
+  text: string,
+  ts: ISODate,
+  roomId: string,
+  agentId: string,
+  sessionStartMsgId?: string,
+  sessionEndMsgId?: string,
+  sourceSummaryIds?: string[]
+}
+~~~
+
+Notes:
+- `sourceSummaryIds` is required on merged room summaries.
+- Keep text concise (1-3 sentences).
+
+### Room state schema
+Keep routing + bounded room memory under one object:
+
+~~~
+room.medsenseSessionInfo = {
+  assignedAgent: string | null,
+  sessionStartMsgId: string | null,
+  sessionStartTs: ISODate | null,
+  roomContextSummaries: Array<Summary>, // max 10 with merge rule
+  summary: {
+    text: string,
+    updatedAt: ISODate
+  }
+}
+~~~
+
+### Patient profile schema (flattened)
+~~~
+users.customFields.patientProfile = Array<{
+  type: 'allergy' | 'medication' | 'medicalHistory',
+  value: string,
+  addedAt: ISODate,
+  roomId: string
+}>;
+~~~
+
+### Core flow (step-by-step)
+1) User message arrives
+- Persist message.
+- If no assigned agent: triage assigns agent and sets `sessionStartMsgId` + `sessionStartTs`.
+- If assigned agent exists: route to that agent.
+
+2) Agent responds
+- Returns reply + structured signals.
+
+3) Assessor evaluates (deterministic)
+- Evaluates agent signals and small rule set.
+- Produces one of: `in_progress`, `completed`, `escalated`.
+
+4) If `in_progress`
+- Keep assigned agent.
+- Continue loop.
+
+5) If `completed` or `escalated`
+- Build one session summary for the current message window.
+- Append/promote:
+  - Append to room summaries.
+  - Apply room cap+merge if >10.
+  - Optionally promote to patient context if gate passes.
+- Write final short room summary (`medsenseSessionInfo.summary`).
+- Clear routing window:
+  - `assignedAgent = null`
+  - `sessionStartMsgId = null`
+  - `sessionStartTs = null`
+
+6) Next user message
+- New session starts from triage.
+
+### Assessor agent (phase 1: qa agent only)
+- Implement assessor path for `med_qa_agent` first.
+- All other agents can continue existing behavior for now.
+- Deterministic QA assessor rule baseline:
+  - If `answer_sent == true` and `followup_required == false` and `handoff_suggested == false` => `completed`
+  - If `handoff_suggested == true` => `escalated`
+  - Else => `in_progress`
+
+### Endpoint usage
+Use Medsense message endpoint as retrieval primitive for summary building:
+- `GET /api/v1/medsense/messages.byUser`
+- Params: `roomId`, `userId`, `oldest` required; optional threshold/time params.
+- For completion-time summary generation, allow override (`minCount=0` or `timeWindowMs=0`) to force return.
+
+### Prompt contract (Context/Memory agent)
+- Input includes:
+  - last 5 raw messages
+  - existing room context summaries
+  - existing patient context/profile (for promotion decisions)
+- Output for patient profile extraction must be strict array only:
+
+~~~
+[
+  { "type": "allergy", "value": "..." },
+  { "type": "medication", "value": "..." },
+  { "type": "medicalHistory", "value": "..." }
+]
+~~~
+
+- No timestamps/roomId in LLM output.
+- Orchestrator stamps `addedAt` and `roomId` from webhook/message context.
+
+### Files to modify (junior implementation)
+Rocket.Chat server:
+- `apps/meteor/app/api/server/v1/medsense.ts`
+  - Ensure `medsense/messages.byUser` supports completion-time forcing and stable response shape.
+  - Add/update room-session info helpers if needed.
+
+Orchestrator:
+- `medsense-orchestrator/main.py`
+  - Add/normalize `medsenseSessionInfo` lifecycle in routing.
+  - Add deterministic assessor for `med_qa_agent`.
+  - Add session summary build + room append/merge + optional patient promotion.
+- `medsense-orchestrator/rocketchat_client.py`
+  - Ensure helpers for reading/updating room fields and user profile fields are present and typed.
+
+### Junior dev acceptance checklist
+- Session starts set `assignedAgent`, `sessionStartMsgId`, `sessionStartTs` correctly.
+- Agent in-progress loops do not generate summaries.
+- Completed/escalated sessions generate exactly one session summary.
+- Room summaries append and cap at 10 with deterministic oldest-two merge.
+- Patient profile updates are delta-only and deduped by `(type, normalized value)`.
+- Room routing fields clear atomically on completion/escalation.
+- `med_qa_agent` assessor path is active and deterministic.
+
+### Reviewer checklist (for Codex follow-up review)
+- Verify no direct periodic patient profile writes during active in-progress loops.
+- Verify summary generation trigger is only completion/escalation.
+- Verify merge logic preserves traceability (`sourceSummaryIds`).
+- Verify no unbounded arrays (room summaries and patient profile bounded policy respected).
+- Verify LLM output contract is strict and parse-safe.
+- Verify failure handling: if memory write fails, routing state is not partially cleared.
+- Verify logs are sufficient to reconstruct each session decision chain.
+
+## Patient Context + Session Memory (Field Dictionary Addendum) (2026-02-06)
+
+This addendum is authoritative for field naming to avoid junior-dev confusion.
+
+### 1) Codebase naming alignment
+- Existing room request fields already used by server APIs:
+  - room.medsenseActiveRequestId
+  - room.medsenseActiveRequestStatus
+  - Source: apps/meteor/app/api/server/v1/medsense.ts
+- New session/memory fields must live under exactly one top-level room key:
+  - room.medsenseSessionInfo
+- Canonical session window names for this rollout:
+  - sessionStartMsgId
+  - sessionStartTs
+- Do not introduce parallel synonyms like windowStartMsgId / windowStartTs in new code.
+
+### 2) Canonical room schema
+~~~
+room.medsenseSessionInfo = {
+  version: 1,
+  assignedAgent: string | null,
+  sessionStartMsgId: string | null,
+  sessionStartTs: ISODate | null,
+  lastAssessedMsgId?: string | null,
+  roomContextSummaries: Array<{
+    summaryId: string,
+    kind: 'room',
+    text: string,
+    ts: ISODate,
+    roomId: string,
+    agentId: string,
+    sessionStartMsgId?: string,
+    sessionEndMsgId?: string,
+    sourceSummaryIds?: string[]
+  }>,
+  summary: {
+    text: string,
+    updatedAt: ISODate
+  }
+}
+~~~
+
+### 3) Canonical patient profile schema
+~~~
+users.customFields.patientProfile = Array<{
+  type: 'allergy' | 'medication' | 'medicalHistory',
+  value: string,
+  addedAt: ISODate,
+  roomId: string
+}>;
+~~~
+
+### 4) Ownership (write/read)
+1. Room session fields (medsenseSessionInfo)
+- Writer: orchestrator only.
+- Reader: orchestrator (routing + assessor + memory).
+- Rocket.Chat server stores/returns only.
+
+2. Room request fields (medsenseActiveRequestId, medsenseActiveRequestStatus)
+- Writer: Rocket.Chat request lifecycle APIs.
+- Reader: server endpoints/apps/orchestrator for active request context.
+
+3. Patient profile (users.customFields.patientProfile)
+- Writer: orchestrator memory stage only (completion/escalation).
+- Reader: orchestrator during agent prompt assembly.
+
+### 5) Step-to-field mapping
+1. Session starts (first user message in idle room)
+- Set:
+  - medsenseSessionInfo.version = 1
+  - medsenseSessionInfo.assignedAgent
+  - medsenseSessionInfo.sessionStartMsgId
+  - medsenseSessionInfo.sessionStartTs
+
+2. In-progress agent loop
+- No patient profile writes.
+- Optional heartbeat:
+  - medsenseSessionInfo.lastAssessedMsgId
+
+3. Completed/escalated session
+- Build one session summary.
+- Append to roomContextSummaries.
+- Enforce cap=10 with deterministic oldest-two merge.
+- Update summary.
+- If promotion gate passes, append patient profile deltas (type/value/addedAt/roomId).
+
+4. Teardown
+- Clear routing only:
+  - assignedAgent = null
+  - sessionStartMsgId = null
+  - sessionStartTs = null
+- Keep room summaries + summary for future sessions.
+
+### 6) Explicit anti-confusion rules for junior dev
+- Do not write patient profile during in_progress.
+- Do not overwrite full patient profile; append deduped deltas only.
+- Do not rename existing request fields (medsenseActiveRequestId, medsenseActiveRequestStatus).
+- Do not create a second room memory root key; use medsenseSessionInfo only.
+
+## Room Context Summary Finalization Plan (Authoritative) (2026-02-11)
+
+This section supersedes prior ambiguity about periodic room summary generation.
+
+### Goal
+- Keep using existing fields only.
+- Room context summary must be generated only when a session is finished (`completed` or `escalated`).
+- The full `sessionBuffer` is condensed by LLM into a 1-2 line summary and appended once to `roomContextSummaries`.
+
+### Existing fields (no new fields)
+- `room.medsenseSessionInfo.assignedAgent`
+- `room.medsenseSessionInfo.sessionStartMsgId`
+- `room.medsenseSessionInfo.sessionStartTs`
+- `room.medsenseSessionInfo.sessionBuffer`
+- `room.medsenseSessionInfo.roomContextSummaries`
+
+No new schema keys should be introduced for this change.
+
+### Intended lifecycle
+1. Session starts:
+- `assignedAgent` set (e.g., `knowledge_agent` / `staff`)
+- `sessionStartMsgId`, `sessionStartTs` set
+- `sessionBuffer = []`
+
+2. In progress:
+- `sessionBuffer` can receive intermediate summary entries (window-based).
+- Do not append to `roomContextSummaries` while session is in progress.
+
+3. Session end (`completed` or `escalated`):
+- Build one final LLM summary from entire `sessionBuffer`.
+- Summary style: 1-2 concise lines, factual, no workflow noise.
+- Append exactly one new entry to `roomContextSummaries`.
+- Clear session runtime fields:
+  - `assignedAgent = null`
+  - `sessionStartMsgId = null`
+  - `sessionStartTs = null`
+  - `sessionBuffer = []`
+
+4. Cap behavior:
+- Keep `roomContextSummaries` max length = 10.
+- If >10, merge oldest two deterministically.
+- If deterministic merge exceeds character limit, call LLM merge callback.
+
+### Files to edit (exact)
+1) `medsense-orchestrator/main.py`
+- Remove periodic room rollup during in-progress message handling.
+- Specifically, remove/disable logic that calls `rollup_session_buffer(...)` based on buffer length while session remains active.
+- Keep window-trigger summary generation for `sessionBuffer` only.
+
+2) `medsense-orchestrator/session_memory.py`
+- In `end_session(...)`, replace current fold-based room summary text with explicit LLM finalization from full buffer content:
+  - Input = all `sessionBuffer[].text` entries
+  - Output = one 1-2 line summary text
+- Then append that text as one entry to `roomContextSummaries`.
+- Keep cap/merge policy unchanged (deterministic first, LLM on char-limit overflow).
+
+3) `medsense-orchestrator/main.py` (summary helper wiring)
+- Reuse existing Gemini helper pattern used by `generate_session_summary(...)`.
+- Add a dedicated helper for final session-to-room summary if needed (same model config, stricter 1-2 line instruction).
+- Register/route helper so `end_session(...)` gets LLM final summary text at close.
+
+4) `medsense-orchestrator/session_memory.py` (optional safety)
+- Keep deterministic fallback if LLM call fails:
+  - compact fallback based on first/last meaningful session notes
+  - never block session close.
+
+### Explicit do/do-not
+Do:
+- Append to `roomContextSummaries` only on `end_session(...)`.
+- Keep `sessionBuffer` as working memory only.
+
+Do not:
+- Write to `roomContextSummaries` in active in-progress loops.
+- Add new room fields for this feature.
+
+### Expected outcome
+- `roomContextSummaries` entries are clean 1-2 line AI summaries of completed sessions.
+- No stitched multi-block `---` style for normal new entries.
+- Session remains lightweight and deterministic during active turns.
+- Finalized context remains bounded and reusable for future prompts.
+
+### Junior dev verification checklist
+1. Start a session and send <5 qualifying messages:
+- `sessionBuffer` may update
+- `roomContextSummaries` does not change.
+
+2. Continue messages, keep session `in_progress`:
+- still no new `roomContextSummaries` entry.
+
+3. Force assessor `completed`:
+- exactly 1 new room context entry appended
+- text is 1-2 lines
+- session fields cleared.
+
+4. Force assessor `escalated`:
+- same as completed (append 1 summary + clear runtime session fields).
+
+5. Overflow test:
+- produce >10 room summaries
+- oldest-two merge occurs
+- if merged text exceeds char limit, LLM merge callback path executes.
+
+## MedsenseUIKit v1 - Smart Forms Styling (2026-02-12)
+
+### Scope
+- Smart Forms UIKit surfaces only (message + modal).
+- Style-only rollout to match the approved sandbox look.
+- No Smart Forms backend/business-logic changes.
+- Non-Smart-Forms UIKit remains on stock renderer.
+- Mandatory safe fallback: if custom renderer fails, render stock UIKit.
+
+### Files Created
+1) apps/meteor/client/views/medsense/uikit/isSmartFormsLayout.ts
+- Deterministic Smart Forms detection helper:
+- actionId/blockId prefix selection-form__*
+- modal view.id prefix selection-form__*
+
+2) apps/meteor/client/views/medsense/uikit/medsenseUIKit.css
+- Medsense style tokens + classes for panel, row/input/select, and footer controls.
+
+3) apps/meteor/client/views/medsense/uikit/MedsenseUiKitMessage.tsx
+- Smart Forms message wrapper using stock UIKit renderer with Medsense visual container classes.
+
+4) apps/meteor/client/views/medsense/uikit/MedsenseUiKitModal.tsx
+- Smart Forms modal wrapper using stock UIKit renderer with Medsense visual container classes.
+
+### Files Edited
+1) apps/meteor/client/components/message/uikit/UiKitMessageBlock.tsx
+- Route Smart Forms layouts to MedsenseUiKitMessage.
+- Keep stock path for non-Smart-Forms.
+- Add ErrorBoundary fallback back to stock renderer.
+
+2) apps/meteor/client/views/modal/uikit/ModalBlock.tsx
+- Route Smart Forms modal views to MedsenseUiKitModal.
+- Keep stock path for non-Smart-Forms.
+- Preserve existing submit/cancel/close behavior.
+- Add Smart Forms footer style hooks (Dismiss, ESC chip, primary submit styling).
+- Add ErrorBoundary fallback back to stock renderer.
+
+### Optional App-Side Alignment (Smart Forms app)
+- Keep action IDs as selection-form__*.
+- Keep modal IDs as selection-form__${formId}.
+- Optional future payload flag: uiVariant?: "default" | "medsense_v1" (non-breaking).
+
+### Test Checklist
+1) Functional
+- Smart Forms inline message form submits unchanged payload.
+- Smart Forms modal next/back/select/custom text/submit works unchanged.
+- Non-Smart-Forms UIKit message/modal is unchanged.
+- UTI app modal behavior unchanged.
+
+2) Styling parity
+- Dark rounded panel + border/shadow.
+- Numbered option pattern appearance maintained by Smart Forms content.
+- Selected-state emphasis visible.
+- Inline editable row style (placeholder/muted text) remains readable.
+- Footer alignment: Dismiss, ESC chip, primary rounded action button.
+
+3) Stability
+- No console errors for room render and modal open/submit.
+- Force custom renderer exception -> stock renderer still appears.
+
+### Rollback Rule
+If any regression appears in Smart Forms rendering:
+1) bypass Medsense branch in UiKitMessageBlock.tsx and ModalBlock.tsx
+2) render stock UIKit only
+3) keep all Smart Forms logic intact

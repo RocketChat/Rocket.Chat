@@ -84,6 +84,9 @@ import {
 	MedsenseAuditRaw,
 	MedsenseRequestsRaw,
 	MedsensePharmacyInvitesRaw,
+	MedsenseInterventionsRaw,
+	MedsenseInterventionNotesRaw,
+	MedsensePatientContextRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
 
@@ -91,6 +94,8 @@ import { trashCollection } from './database/trash';
 import { db } from './database/utils';
 
 registerModel('IAnalyticsModel', new AnalyticsRaw(db));
+
+
 registerModel('IAppLogsModel', new AppsLogsModel(db));
 registerModel('IAppsModel', new AppsModel(db));
 registerModel('IAppsPersistenceModel', new AppsPersistenceModel(db));
@@ -179,3 +184,6 @@ registerModel('IMedsensePharmacyTeamsModel', new MedsensePharmacyTeamsRaw(db));
 registerModel('IMedsenseAuditModel', new MedsenseAuditRaw(db));
 registerModel('IMedsenseRequestsModel', new MedsenseRequestsRaw(db));
 registerModel('IMedsensePharmacyInvitesModel', new MedsensePharmacyInvitesRaw(db));
+registerModel('IMedsenseInterventionsModel', new MedsenseInterventionsRaw(db));
+registerModel('IMedsenseInterventionNotesModel', new MedsenseInterventionNotesRaw(db));
+registerModel('IMedsensePatientContextModel', new MedsensePatientContextRaw(db));

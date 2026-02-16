@@ -89,4 +89,7 @@ export * from './models/IMedsensePatientPharmacyModel';
 export * from './models/IMedsensePharmacyTeamsModel';
 export * from './models/IMedsenseAuditModel';
 export * from './models/IMedsenseRequestsModel';
+export * from './models/IMedsensePatientContextModel';
 export * from './models/IMedsensePharmacyInvitesModel';
+export * from './models/IMedsenseInterventionsModel';
+export * from './models/IMedsenseInterventionNotesModel';

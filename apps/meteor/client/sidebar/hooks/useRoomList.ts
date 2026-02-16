@@ -5,6 +5,9 @@ import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.cha
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
+import { usePharmacyFilter } from '../../views/medsense/context/PharmacyFilterContext';
+import { useUserId } from '@rocket.chat/ui-contexts';
+
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
@@ -45,6 +48,9 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 	const options = useSortQueryOptions();
 
+	const { selectedPharmacyId, pharmacyContext } = usePharmacyFilter();
+	const userId = useUserId();
+
 	const rooms = useUserSubscriptions(query, options);
 
 	const inquiries = useQueuedInquiries();
@@ -67,6 +73,24 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			const onHold = new Set();
 
 			rooms.forEach((room) => {
+				// Medsense Pharmacy Filter
+				if (selectedPharmacyId && pharmacyContext) {
+					let keep = false;
+					// 1. Is it a specialized room (Request/Team/Intake)?
+					if (pharmacyContext.roomIds.includes(room.rid)) {
+						keep = true;
+					}
+					// 2. Is it a DM with a pharmacy member?
+					else if (room.t === 'd' && room.uids && userId) {
+						const otherId = room.uids.find((id: string) => id !== userId);
+						if (otherId && pharmacyContext.memberUserIds.includes(otherId)) {
+							keep = true;
+						}
+					}
+
+					if (!keep) return;
+				}
+
 				if (room.archived) {
 					return;
 				}

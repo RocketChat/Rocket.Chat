@@ -111,6 +111,8 @@ export const addMedsenseSettings = async function (): Promise<void> {
     await Permissions.create('medsense-take-request', ['admin', 'pharmacy-manager', 'pharmacy-staff']);
     await Permissions.create('medsense-close-request', ['admin', 'pharmacy-manager', 'pharmacy-staff']);
     await Permissions.create('medsense-view-hub', ['admin']);
+    await Permissions.create('medsense-create-interventions', ['admin', 'pharmacy-manager', 'pharmacy-staff']);
+    await Permissions.create('medsense-create-chat-internal', ['admin', 'pharmacy-manager', 'pharmacy-staff']);
 
     // Remove deprecated permissions
     await Permissions.deleteOne({ _id: 'medsense-manage-pharmacies' });

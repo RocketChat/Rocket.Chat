@@ -1,33 +1,33 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import { useCallback, Fragment, useSyncExternalStore, useMemo } from 'react';
+import { Fragment, useCallback, useMemo, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { UserAction } from '../../../../../app/ui/client/lib/UserAction';
+import './ComposerUserActionIndicator.css';
 
 const maxUsernames = 5;
+const MEDSENSE_LABEL = 'medsense';
 
-const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }): ReactElement => {
+export const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }): ReactElement | null => {
 	const { t } = useTranslation();
+
 	const roomAction = useSyncExternalStore(
 		UserAction.subscribe,
 		useCallback(() => UserAction.get(tmid || rid), [rid, tmid]),
 	);
+
 	const actions = useMemo(
 		() =>
 			Object.entries(roomAction ?? {})
-				.map(([key, _users]) => {
-					const action = key.split('-')[1];
-
-					const users = Object.keys(_users);
-					if (users.length === 0) {
+				.map(([key, usersMap]) => {
+					const action = key.split('-')[1] as 'typing' | 'recording' | 'uploading' | 'playing';
+					const users = Object.keys(usersMap || {});
+					if (!users.length) {
 						return;
 					}
 
-					return {
-						action,
-						users,
-					};
+					return { action, users };
 				})
 				.filter(Boolean) as {
 				action: 'typing' | 'recording' | 'uploading' | 'playing';
@@ -36,25 +36,56 @@ const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string
 		[roomAction],
 	);
 
+	const formatUsers = useCallback(
+		(users: string[]) => {
+			if (users.length < maxUsernames) {
+				return users.join(', ');
+			}
+
+			return `${users.slice(0, maxUsernames - 1).join(', ')} ${t('and')} ${t('others')}`;
+		},
+		[t],
+	);
+
+	const activityPhrases = useMemo(() => {
+		return actions.flatMap(({ action, users }) => {
+			const normalizedUsers = users.map((user) => user.trim().toLowerCase());
+			const hasMedsense = action === 'typing' && normalizedUsers.includes(MEDSENSE_LABEL);
+			const nonMedsenseUsers = users.filter((user) => user.trim().toLowerCase() !== MEDSENSE_LABEL);
+
+			const phrases: string[] = [];
+			if (hasMedsense) {
+				phrases.push('MedSense is thinking');
+			}
+
+			if (nonMedsenseUsers.length > 0) {
+				const userList = formatUsers(nonMedsenseUsers);
+				phrases.push(`${userList} ${nonMedsenseUsers.length > 1 ? t(`are_${action}`) : t(`is_${action}`)}`);
+			}
+
+			if (!phrases.length && users.length > 0) {
+				const userList = formatUsers(users);
+				phrases.push(`${userList} ${users.length > 1 ? t(`are_${action}`) : t(`is_${action}`)}`);
+			}
+
+			return phrases;
+		});
+	}, [actions, formatUsers, t]);
+
+	if (!activityPhrases.length) {
+		return null;
+	}
+
 	return (
-		<Box
-			h='x20'
-			className='rc-message-box__activity-wrapper'
-			fontScale='c1'
-			color='annotation'
-			aria-live='polite'
-			display='flex'
-			alignItems='center'
-		>
-			{actions.map(({ action, users }, index) => (
-				<Fragment key={action}>
-					{index > 0 && ', '}
-					{users.length < maxUsernames
-						? users.join(', ')
-						: `${users.slice(0, maxUsernames - 1).join(', ')} ${t('and')} ${t('others')}`}{' '}
-					{users.length > 1 ? t(`are_${action}`) : t(`is_${action}`)}
-				</Fragment>
-			))}
+		<Box className='rc-message-box__activity-wrapper rc-message-box__activity-wrapper--medsense' aria-live='polite'>
+			<Box className='rc-message-box__activity-pill' fontScale='c1' color='annotation'>
+				{activityPhrases.map((phrase, index) => (
+					<Fragment key={`${phrase}-${index}`}>
+						{index > 0 && ', '}
+						{phrase}
+					</Fragment>
+				))}
+			</Box>
 		</Box>
 	);
 };

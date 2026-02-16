@@ -1,24 +1,28 @@
 import {
-	Modal,
 	AnimatedVisibility,
-	Button,
 	Box,
-	ModalHeader,
-	ModalThumb,
-	ModalTitle,
+	Button,
+	Modal,
 	ModalClose,
 	ModalContent,
 	ModalFooter,
 	ModalFooterControllers,
+	ModalHeader,
+	ModalThumb,
+	ModalTitle,
 } from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent, FormEventHandler, ReactElement } from 'react';
-import { useId, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef } from 'react';
 import { FocusScope } from 'react-aria';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import { getButtonStyle } from './getButtonStyle';
 import { getURL } from '../../../../app/utils/client/getURL';
+import MedsenseUiKitModal from '../../medsense/uikit/MedsenseUiKitModal';
+import { isSmartFormsModalView } from '../../medsense/uikit/isSmartFormsLayout';
+import '../../medsense/uikit/medsenseUIKit.css';
 
 const focusableElementsString = `
 	a[href]:not([tabindex="-1"]),
@@ -67,6 +71,7 @@ const KeyboardCode = new Map<string, number>([
 const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockParams): ReactElement => {
 	const id = `modal_id_${useId()}`;
 	const ref = useRef<HTMLElement>(null);
+	const isSmartForms = isSmartFormsModalView(view);
 
 	useEffect(() => {
 		if (!ref.current) {
@@ -172,6 +177,8 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 		};
 	}, [handleKeyDown, onClose]);
 
+	const stockModal = <UiKitComponent render={UiKitModal} blocks={view.blocks} />;
+
 	return (
 		<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
 			<FocusScope contain restoreFocus autoFocus>
@@ -183,18 +190,31 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 					</ModalHeader>
 					<ModalContent>
 						<Box ref={formRef} is='form' method='post' action='#' onSubmit={onSubmit}>
-							<UiKitComponent render={UiKitModal} blocks={view.blocks} />
+							{isSmartForms ? (
+								<ErrorBoundary fallbackRender={() => stockModal}>
+									<MedsenseUiKitModal blocks={view.blocks} />
+								</ErrorBoundary>
+							) : (
+								stockModal
+							)}
 						</Box>
 					</ModalContent>
-					<ModalFooter>
-						<ModalFooterControllers>
+					<ModalFooter className={isSmartForms ? 'medsenseUIKit-footer' : undefined}>
+						<ModalFooterControllers className={isSmartForms ? 'medsenseUIKit-footerControllers' : undefined}>
 							{view.close && (
-								<Button danger={view.close.style === 'danger'} onClick={onCancel}>
-									{modalParser.text(view.close.text, UiKit.BlockContext.NONE, 0)}
-								</Button>
+								<>
+									<Button
+										danger={view.close.style === 'danger'}
+										onClick={onCancel}
+										className={isSmartForms ? 'medsenseUIKit-dismiss' : undefined}
+									>
+										{modalParser.text(view.close.text, UiKit.BlockContext.NONE, 0)}
+									</Button>
+									{isSmartForms ? <span className='medsenseUIKit-escChip'>ESC</span> : null}
+								</>
 							)}
 							{view.submit && (
-								<Button {...getButtonStyle(view.submit)} onClick={onSubmit}>
+								<Button {...getButtonStyle(view.submit)} onClick={onSubmit} className={isSmartForms ? 'medsenseUIKit-submit' : undefined}>
 									{modalParser.text(view.submit.text, UiKit.BlockContext.NONE, 1)}
 								</Button>
 							)}

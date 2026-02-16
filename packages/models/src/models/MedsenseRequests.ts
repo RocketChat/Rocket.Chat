@@ -73,7 +73,7 @@ export class MedsenseRequestsRaw extends BaseRaw<IMedsenseRequest> implements IM
         return this.findOne({ roomId, status: { $in: ['waiting_patient', 'ai_preassessment', 'waiting_staff', 'ready_for_staff', 'taken'] } });
     }
 
-    updateAssessmentProgress(requestId: string, data: Partial<Pick<IMedsenseRequest, 'answers' | 'contextSummary' | 'patientStage' | 'currentStepId' | 'status'>>): Promise<UpdateResult | Document> {
+    updateAssessmentProgress(requestId: string, data: Partial<Pick<IMedsenseRequest, 'answers' | 'contextSummary' | 'patientStage' | 'currentStepId' | 'status' | 'aiSummary' | 'aiFollowUpCount'>>): Promise<UpdateResult | Document> {
         return this.updateOne(
             { _id: requestId },
             {

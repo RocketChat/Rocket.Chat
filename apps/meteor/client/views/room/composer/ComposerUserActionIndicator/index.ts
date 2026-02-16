@@ -1,1 +1,4 @@
-export { default } from './ComposerUserActionIndicator';
+import ComposerUserActionIndicator from './ComposerUserActionIndicator';
+
+export { ComposerUserActionIndicator };
+export default ComposerUserActionIndicator;

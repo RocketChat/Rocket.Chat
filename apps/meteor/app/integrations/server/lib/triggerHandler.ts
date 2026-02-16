@@ -8,7 +8,7 @@ import type {
 	RequiredField,
 	AtLeast,
 } from '@rocket.chat/core-typings';
-import { Integrations, Users, Rooms, Messages } from '@rocket.chat/models';
+import { Integrations, Users, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -47,6 +47,7 @@ type IntegrationData = {
 	user_roles?: string[];
 	text?: string;
 	siteUrl?: string;
+	room_has_non_bot_non_user_staff?: boolean;
 	alias?: string;
 	isEdited?: boolean;
 	tmid?: string;
@@ -54,6 +55,18 @@ type IntegrationData = {
 	room?: IRoom;
 	message?: IMessage;
 	owner?: Partial<IUser>;
+};
+
+const isNonBotNonUserStaff = (roles?: string[], userType?: string, isBotMessage = false): boolean => {
+	if (isBotMessage || userType === 'bot' || roles?.includes('bot')) {
+		return false;
+	}
+
+	if (!Array.isArray(roles) || roles.length === 0) {
+		return false;
+	}
+
+	return roles.some((role) => role !== 'user' && role !== 'bot' && role !== 'app');
 };
 
 class RocketChatIntegrationHandler {
@@ -96,6 +109,45 @@ class RocketChatIntegrationHandler {
 	// eslint-disable-next-line no-unused-vars
 	getEngine(_integration: any): IsolatedVMScriptEngine<false> {
 		return this.ivmEngine;
+	}
+
+	private async hasNonBotNonUserStaffInRoom(
+		room: Pick<IRoom, '_id'> & Partial<Pick<IRoom, 'uids' | 'usersCount'>>,
+		senderRoles?: string[],
+		senderType?: string,
+		isBotMessage = false,
+	): Promise<boolean> {
+		if (isNonBotNonUserStaff(senderRoles, senderType, isBotMessage)) {
+			return true;
+		}
+
+		const subscriptions = await Subscriptions.findByRoomId(room._id, {
+			projection: {
+				u: 1,
+			},
+		}).toArray();
+
+		const memberIds = Array.from(
+			new Set(
+				subscriptions
+					.map((sub) => sub?.u?._id)
+					.filter((id): id is string => Boolean(id)),
+			),
+		);
+		if (memberIds.length === 0) {
+			return false;
+		}
+
+		const members = await Users.find(
+			{ _id: { $in: memberIds } },
+			{
+				projection: {
+					roles: 1,
+					type: 1,
+				},
+			},
+		).toArray();
+		return members.some((member) => isNonBotNonUserStaff(member.roles, member.type));
 	}
 
 	removeIntegration(record: AtLeast<IOutgoingIntegration, '_id'>): void {
@@ -277,11 +329,15 @@ class RocketChatIntegrationHandler {
 				data.timestamp = message.ts;
 				data.user_id = message.u._id;
 				data.user_name = message.u.username;
+				let senderRoles: string[] | undefined;
+				let senderType: string | undefined;
 				if (message.u?._id) {
-					const userRecord = await Users.findOneById(message.u._id, { projection: { roles: 1 } });
+					const userRecord = await Users.findOneById(message.u._id, { projection: { roles: 1, type: 1 } });
 					if (Array.isArray(userRecord?.roles)) {
-						data.user_roles = userRecord.roles;
+						senderRoles = userRecord.roles;
+						data.user_roles = senderRoles;
 					}
+					senderType = userRecord?.type;
 				}
 				data.text = message.msg;
 				data.siteUrl = settings.get('Site_Url');
@@ -289,18 +345,26 @@ class RocketChatIntegrationHandler {
 					room.medsenseActiveRequestId !== undefined || room.medsenseActiveRequestStatus !== undefined
 						? room
 						: await Rooms.findOneById(room._id, {
-							projection: {
-								name: 1,
-								medsenseActiveRequestId: 1,
-								medsenseActiveRequestStatus: 1,
-							},
-						});
+								projection: {
+									name: 1,
+									medsenseActiveRequestId: 1,
+									medsenseActiveRequestStatus: 1,
+									uids: 1,
+									usersCount: 1,
+								},
+							});
 				data.room = {
 					_id: room._id,
 					name: room.name,
 					medsenseActiveRequestId: (room as any).medsenseActiveRequestId ?? roomWithRequest?.medsenseActiveRequestId,
 					medsenseActiveRequestStatus: (room as any).medsenseActiveRequestStatus ?? roomWithRequest?.medsenseActiveRequestStatus,
 				};
+				data.room_has_non_bot_non_user_staff = await this.hasNonBotNonUserStaffInRoom(
+					(roomWithRequest ?? room) as Pick<IRoom, '_id'> & Partial<Pick<IRoom, 'uids' | 'usersCount'>>,
+					senderRoles,
+					senderType,
+					Boolean(message.bot),
+				);
 
 				if (message.alias) {
 					data.alias = message.alias;

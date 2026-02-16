@@ -153,3 +153,6 @@ export * from './IMedsensePharmacyInvite';
 export * from './ServerAudit/IAuditServerAbacAction';
 
 export { schemas } from './Ajv';
+export * from './IMedsenseIntervention';
+export * from './IMedsenseInterventionNote';
+export * from './IMedsensePatientContext';

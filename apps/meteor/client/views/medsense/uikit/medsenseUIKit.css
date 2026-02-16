@@ -1,0 +1,308 @@
+.medsenseUIKit {
+  --medsense-bg: #252525;
+  --medsense-border: #3a3a3a;
+  --medsense-row: #303030;
+  --medsense-row-selected: #3b4758;
+  --medsense-primary: #4ea7ff;
+  --medsense-primary-hover: #6ab4ff;
+  --medsense-title: #ececec;
+  --medsense-text: #d8d8d8;
+  --medsense-muted: #a8a8a8;
+  color: var(--medsense-text);
+}
+
+.medsenseUIKit.medsenseUIKit--message,
+.medsenseUIKit.medsenseUIKit--modal {
+  background: var(--medsense-bg);
+  border: 1px solid var(--medsense-border);
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
+  padding: 18px;
+}
+
+.medsenseUIKit .rcx-markdown {
+  color: var(--medsense-text);
+}
+
+.medsenseUIKit .rcx-markdown p {
+  line-height: 1.45;
+}
+
+.medsenseUIKit .rcx-field__label,
+.medsenseUIKit .rcx-label,
+.medsenseUIKit .rcx-box--full {
+  color: var(--medsense-title);
+}
+
+.medsenseUIKit-actions--option {
+  width: 100%;
+}
+
+.medsenseUIKit-actions--option > .rcx-box {
+  width: 100%;
+  flex-basis: 100% !important;
+  flex-grow: 1 !important;
+  margin: 4px 0 !important;
+}
+
+.medsenseUIKit-actions--option .rcx-box > .rcx-button {
+  width: 100%;
+  min-height: 44px;
+  justify-content: space-between;
+  border-radius: 10px;
+  border: 1px solid #434343;
+  background: var(--medsense-row);
+  color: #e7e7e7;
+  font-weight: 600;
+  text-align: left;
+  padding: 0 12px;
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.medsenseUIKit-actions--option .rcx-box > .rcx-button:hover {
+  background: #373737;
+}
+
+.medsenseUIKit-actions--option .rcx-box > .rcx-button > span {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.medsenseUIKit-actions--selected .rcx-box > .rcx-button {
+  background: var(--medsense-row);
+  border-color: #66b8ff;
+  box-shadow: 0 0 0 1px rgba(102, 184, 255, 0.65);
+  color: #eef6ff;
+  font-weight: 700;
+}
+
+.medsenseUIKit-actions--selected .rcx-box > .rcx-button:hover {
+  background: var(--medsense-row);
+  border-color: #78c5ff;
+  box-shadow: 0 0 0 1px rgba(120, 197, 255, 0.7);
+}
+
+
+.medsenseUIKit-actions--selected .rcx-box > .rcx-button::after {
+  content: '\2713';
+  color: #dff0ff;
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.medsenseUIKit-inputRow--custom .rcx-field {
+  width: 100%;
+}
+
+.medsenseUIKit-inputRow--custom .rcx-field__label {
+  display: none;
+}
+
+.medsenseUIKit-inputRow--custom .rcx-field__row {
+  margin-top: 0;
+}
+
+.medsenseUIKit-inputRow--custom .rcx-input-box {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 10px;
+  background: var(--medsense-row);
+  border: 1px solid #434343;
+}
+
+.medsenseUIKit-inputRow--custom .rcx-input-box__input {
+  color: #e7e7e7;
+}
+
+.medsenseUIKit-inputRow--custom .rcx-input-box__input::placeholder,
+.medsenseUIKit-inputRow--custom input::placeholder {
+  color: var(--medsense-muted);
+  opacity: 1;
+}
+
+.medsenseUIKit-actions--submit > .rcx-box {
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.medsenseUIKit-actions--submit .rcx-box > .rcx-button {
+  width: auto;
+  min-height: 38px;
+  justify-content: center;
+  border-radius: 20px;
+  border: 1px solid var(--medsense-primary);
+  background: var(--medsense-primary);
+  color: #071320;
+  font-weight: 700;
+  padding: 0 18px;
+}
+
+.medsenseUIKit-actions--submit .rcx-box > .rcx-button:hover {
+  background: var(--medsense-primary-hover);
+}
+
+.medsenseUIKit-actions--nav > .rcx-box {
+  margin-top: 8px;
+}
+
+.medsenseUIKit-actions--nav .rcx-box > .rcx-button {
+  min-height: 36px;
+  border-radius: 10px;
+  border: 1px solid #4b4b4b;
+  background: #2d2d2d;
+  color: #d4d4d4;
+}
+
+.medsenseUIKit-footer {
+  margin-top: 14px;
+}
+
+.medsenseUIKit-footerControllers {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.medsenseUIKit-dismiss {
+  color: #bcbcbc;
+}
+
+.medsenseUIKit-escChip {
+  border: 1px solid #525252;
+  background: #3a3a3a;
+  color: #c6c6c6;
+  border-radius: 8px;
+  height: 24px;
+  min-width: 34px;
+  display: inline-grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0 8px;
+}
+
+.medsenseUIKit-submit {
+  border-radius: 20px;
+  background: var(--medsense-primary);
+  color: #071320;
+}
+
+.medsenseUIKit-submit:hover {
+  background: var(--medsense-primary-hover);
+}
+
+.medsenseUIKit-inlineForm {
+  color: var(--medsense-text);
+}
+
+.medsenseUIKit-inlineForm__title {
+  color: var(--medsense-title);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.medsenseUIKit-inlineForm__prompt {
+  color: var(--medsense-text);
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+
+.medsenseUIKit-inlineForm__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.medsenseUIKit-inlineRow {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 10px;
+  border: 1px solid #434343;
+  background: var(--medsense-row);
+  color: #e7e7e7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  font-weight: 600;
+}
+
+button.medsenseUIKit-inlineRow {
+  cursor: pointer;
+}
+
+button.medsenseUIKit-inlineRow:hover {
+  background: #373737;
+}
+
+.medsenseUIKit-inlineRow--selected {
+  border-color: #66b8ff;
+  box-shadow: 0 0 0 1px rgba(102, 184, 255, 0.65);
+  background: var(--medsense-row);
+}
+
+.medsenseUIKit-inlineRow--selected:hover {
+  border-color: #78c5ff;
+  box-shadow: 0 0 0 1px rgba(120, 197, 255, 0.75);
+  background: var(--medsense-row);
+}
+
+.medsenseUIKit-inlineRow__label {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.medsenseUIKit-inlineRow__indicator {
+  margin-left: 12px;
+  min-width: 14px;
+  text-align: right;
+  color: #dff0ff;
+  font-size: 13px;
+}
+
+.medsenseUIKit-inlineRow--customOpen {
+  padding: 0;
+}
+
+.medsenseUIKit-inlineRow__input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #e7e7e7;
+  font: inherit;
+  padding: 0 12px;
+  height: 42px;
+}
+
+.medsenseUIKit-inlineRow__input::placeholder {
+  color: var(--medsense-muted);
+  opacity: 1;
+}
+
+.medsenseUIKit-inlineForm__footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.medsenseUIKit-inlineForm__submit {
+  width: auto;
+  min-height: 38px;
+  justify-content: center;
+  border-radius: 20px;
+  border: 1px solid var(--medsense-primary);
+  background: var(--medsense-primary);
+  color: #071320;
+  font-weight: 700;
+  padding: 0 18px;
+  cursor: pointer;
+}
+
+.medsenseUIKit-inlineForm__submit:hover {
+  background: var(--medsense-primary-hover);
+}
