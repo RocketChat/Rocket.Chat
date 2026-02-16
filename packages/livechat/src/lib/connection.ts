@@ -29,7 +29,7 @@ const Connection = {
 			await loadConfig();
 			this.addListeners();
 			await Livechat.connection.connect();
-			this.clearAlerts();
+			void this.clearAlerts();
 		} catch (e) {
 			console.error('Connecting error: ', e);
 		}
@@ -54,15 +54,24 @@ const Connection = {
 
 	async clearAlerts() {
 		const { alerts } = store.state;
+<<<<<<< refactor/livechat-typescript-types
 		const alertIdsToRemove = [livechatDisconnectedAlertId, livechatConnectedAlertId] as string[];
 		await store.setState({
 			alerts: alerts?.filter((alert) => !alertIdsToRemove.includes(alert.id)),
+=======
+		store.setState({
+			alerts: alerts?.filter((alert) => ![livechatDisconnectedAlertId, livechatConnectedAlertId].includes(alert.id)),
+>>>>>>> develop
 		});
 	},
 
 	async displayAlert(alert: Alert) {
 		const { alerts } = store.state;
+<<<<<<< refactor/livechat-typescript-types
 		await store.setState({ alerts: [...(alerts || []), alert] });
+=======
+		store.setState({ alerts: (alerts?.push(alert), alerts) });
+>>>>>>> develop
 	},
 
 	async handleConnected() {
