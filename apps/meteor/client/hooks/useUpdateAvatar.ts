@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useEndpointMutation } from './useEndpointMutation';
 import { useEndpointUploadMutation } from './useEndpointUploadMutation';
+import { Users } from '../stores';
 
 type AvatarInput = AvatarObject | '';
 
@@ -17,6 +18,18 @@ const isAvatarUrl = (avatarObj: AvatarInput): avatarObj is AvatarUrlObj =>
 export const useUpdateAvatar = (avatarObj: AvatarInput, userId: IUser['_id']) => {
 	const { t } = useTranslation();
 	const avatarUrl = isAvatarUrl(avatarObj) ? avatarObj.avatarUrl : '';
+
+	const bumpLocalAvatarETag = useCallback(
+		(newETag?: string) => {
+			if (!userId) {
+				return;
+			}
+
+			const etag = newETag ?? Date.now().toString();
+			Users.state.update(({ _id }) => _id === userId, (record) => ({ ...record, avatarETag: etag }));
+		},
+		[userId],
+	);
 
 	const successMessage = t('Avatar_changed_successfully');
 	const setAvatarFromService = useMethod('setAvatarFromService');
@@ -48,6 +61,7 @@ export const useUpdateAvatar = (avatarObj: AvatarInput, userId: IUser['_id']) =>
 			await resetAvatarAction({
 				userId,
 			});
+			bumpLocalAvatarETag();
 			return;
 		}
 
@@ -56,6 +70,7 @@ export const useUpdateAvatar = (avatarObj: AvatarInput, userId: IUser['_id']) =>
 				userId,
 				...(avatarUrl && { avatarUrl }),
 			});
+			bumpLocalAvatarETag();
 			return;
 		}
 
@@ -64,6 +79,7 @@ export const useUpdateAvatar = (avatarObj: AvatarInput, userId: IUser['_id']) =>
 			try {
 				await setAvatarFromService(blob, contentType, service);
 				dispatchToastMessage({ type: 'success', message: successMessage });
+				bumpLocalAvatarETag();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -72,8 +88,10 @@ export const useUpdateAvatar = (avatarObj: AvatarInput, userId: IUser['_id']) =>
 		if (avatarObj instanceof FormData) {
 			avatarObj.set('userId', userId);
 			await saveAvatarAction(avatarObj);
+			bumpLocalAvatarETag();
 		}
 	}, [
+		bumpLocalAvatarETag,
 		avatarObj,
 		avatarUrl,
 		dispatchToastMessage,

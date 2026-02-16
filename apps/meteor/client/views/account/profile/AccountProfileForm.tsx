@@ -126,12 +126,11 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 
 			await updateAvatar();
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			} finally {
-				reset({ email, name, username, statusType, statusText, nickname, bio, customFields, avatar });
-			}
-		};
+			reset({ email, name, username, statusType, statusText, nickname, bio, customFields, avatar: '' });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	};
 
 	const nameId = useId();
 	const usernameId = useId();
