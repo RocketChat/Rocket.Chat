@@ -63,7 +63,7 @@ import { setUsernameWithValidation } from '../../../lib/server/functions/setUser
 import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
 import { validateNameChars } from '../../../lib/server/functions/validateNameChars';
 import { validateUsername } from '../../../lib/server/functions/validateUsername';
-import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener';
+import { notifyOnUserChange, notifyOnUserChangeAsync, notifyOnUserLoginTokensChanged } from '../../../lib/server/lib/notifyListener';
 import { generateAccessToken } from '../../../lib/server/methods/createToken';
 import { deleteUserOwnAccount } from '../../../lib/server/methods/deleteUserOwnAccount';
 import { settings } from '../../../settings/server';
@@ -995,20 +995,13 @@ API.v1.addRoute(
 				throw new MeteorError('error-logging-out-other-clients', 'Error logging out other clients');
 			}
 
-			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
-			// instead of having to listen to every watch.users event
-			void notifyOnUserChangeAsync(async () => {
-				const user = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1, 'services.email2fa': 1 } });
-				if (!user) {
-					return;
-				}
+			const user = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1, 'services.email2fa': 1 } });
+			if (!user) {
+				return API.v1.success();
+			}
 
-				return {
-					clientAction: 'updated',
-					id: this.user._id,
-					diff: { 'services.resume.loginTokens': user.services?.resume?.loginTokens, 'services.email2fa': user.services?.email2fa },
-				};
-			});
+			void notifyOnUserLoginTokensChanged({ id: this.user._id, loginTokens: user.services?.resume?.loginTokens });
+			void notifyOnUserChange({ clientAction: 'updated', id: this.user._id, diff: { 'services.email2fa': user.services?.email2fa } });
 
 			return API.v1.success();
 		},

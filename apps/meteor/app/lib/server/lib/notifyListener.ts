@@ -21,6 +21,7 @@ import type {
 	SettingValue,
 	MessageTypesValues,
 	ILivechatContact,
+	ILoginToken,
 } from '@rocket.chat/core-typings';
 import {
 	Rooms,
@@ -43,6 +44,10 @@ import { subscriptionFields } from '../../../../lib/publishFields';
 import { shouldHideSystemMessage } from '../../../../server/lib/systemMessage/hideSystemMessage';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
+type NotifyOnUserLoginTokensChange = {
+	id: IUser['_id'];
+	loginTokens: ILoginToken[] | undefined;
+};
 
 export const notifyOnLivechatPriorityChanged = async (
 	data: Pick<ILivechatPriority, 'name' | '_id'>,
@@ -599,5 +604,28 @@ export const notifyOnSubscriptionChangedByRoomIdAndUserIds = async (
 
 	void cursor.forEach((subscription) => {
 		void api.broadcast('watch.subscriptions', { clientAction, subscription });
+	});
+};
+
+export const notifyOnUserLoginTokensChanged = async ({
+	id,
+	loginTokens,
+}: NotifyOnUserLoginTokensChange): Promise<void> => {
+	void api.broadcast('watch.userSessions', { id, loginTokens: loginTokens ?? [] });
+};
+
+
+export const notifyOnUserLoginTokensChangedById = async (
+	id: IUser['_id'],
+): Promise<void> => {
+	const user = await Users.findOneById(id, { projection: { 'services.resume.loginTokens': 1 } });
+
+	if (!user) {
+		return;
+	}
+
+	return notifyOnUserLoginTokensChanged({
+		id,
+		loginTokens: user.services?.resume?.loginTokens,
 	});
 };

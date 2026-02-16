@@ -5,6 +5,19 @@ import { PushToken } from '@rocket.chat/models';
 export class PushService extends ServiceClassInternal implements IPushService {
 	protected name = 'push';
 
+	private async syncPushTokensByLoginTokens(userId: string, loginTokens: Array<{ hashedToken: string }> | undefined): Promise<void> {
+		if (!Array.isArray(loginTokens) || loginTokens.length === 0) {
+			await PushToken.removeAllByUserId(userId);
+			return;
+		}
+
+		const tokens = loginTokens.map(({ hashedToken }) => hashedToken);
+		if (tokens.length > 0) {
+			await PushToken.removeByUserIdExceptTokens(userId, tokens);
+		}
+	}
+
+
 	constructor() {
 		super();
 
@@ -15,15 +28,12 @@ export class PushService extends ServiceClassInternal implements IPushService {
 			}
 
 			const loginTokens = Array.isArray(data.diff['services.resume.loginTokens']) ? data.diff['services.resume.loginTokens'] : [];
-
-			if (data.diff['services.resume.loginTokens'] === undefined || loginTokens.length === 0) {
-				await PushToken.removeAllByUserId(data.id);
-				return;
-			}
-			const tokens = loginTokens.map(({ hashedToken }: { hashedToken: string }) => hashedToken);
-			if (tokens.length > 0) {
-				await PushToken.removeByUserIdExceptTokens(data.id, tokens);
-			}
+			await this.syncPushTokensByLoginTokens(data.id, Array.isArray(loginTokens) ? loginTokens : undefined);
 		});
+
+		this.onEvent('watch.userSessions', async ({ id, loginTokens }) => {
+			await this.syncPushTokensByLoginTokens(id, loginTokens);
+		});
+
 	}
 }
