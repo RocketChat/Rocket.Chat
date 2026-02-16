@@ -15,9 +15,9 @@ export const messageParser = new FuselageMessageSurfaceRenderer();
 export const modalParser = new ModalSurfaceRenderer();
 export const contextualBarParser = new ContextualBarSurfaceRenderer();
 
-export const UiKitBanner = createSurfaceRenderer(BannerSurface, bannerParser);
-export const UiKitMessage = createSurfaceRenderer(MessageSurface, messageParser);
-export const UiKitModal = createSurfaceRenderer(ModalSurface, modalParser);
-export const UiKitContextualBar = createSurfaceRenderer(ContextualBarSurface, contextualBarParser);
+export const uiKitBanner = createSurfaceRenderer(BannerSurface, bannerParser);
+export const uiKitMessage = createSurfaceRenderer(MessageSurface, messageParser);
+export const uiKitModal = createSurfaceRenderer(ModalSurface, modalParser);
+export const uiKitContextualBar = createSurfaceRenderer(ContextualBarSurface, contextualBarParser);
 
 export { createSurfaceRenderer, Surface, FuselageSurfaceRenderer, renderTextObject };

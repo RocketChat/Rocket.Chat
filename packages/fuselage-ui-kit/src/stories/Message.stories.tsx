@@ -17,7 +17,7 @@ import {
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
 
-import { UiKitContext, UiKitMessage } from '..';
+import { UiKitContext, uiKitMessage } from '..';
 import * as payloads from './payloads';
 
 export default {
@@ -66,7 +66,7 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
 							errors,
 						}}
 					>
-						{UiKitMessage(blocks)}
+						{uiKitMessage(blocks)}
 					</UiKitContext.Provider>
 				</MessageBody>
 			</MessageContainer>
