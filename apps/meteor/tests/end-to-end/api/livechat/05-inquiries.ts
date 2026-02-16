@@ -66,6 +66,9 @@ describe('LIVECHAT - inquiries', () => {
 		let room: IOmnichannelRoom;
 		let visitor: ILivechatVisitor;
 		before(async () => {
+			await createAgent();
+			await makeAgentAvailable();
+
 			visitor = await createVisitor();
 
 			room = await createLivechatRoom(visitor.token);
@@ -99,8 +102,6 @@ describe('LIVECHAT - inquiries', () => {
 		});
 
 		it('should get an inquiry by room id', async () => {
-			await createAgent();
-			await makeAgentAvailable();
 			const inquiry = await fetchInquiry(room._id);
 			await request
 				.get(api(`livechat/inquiries.getOne`))
