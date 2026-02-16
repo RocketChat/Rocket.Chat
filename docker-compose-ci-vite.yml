@@ -47,7 +47,7 @@ services:
       traefik.http.services.rocketchat-backend.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat-backend.service: rocketchat-backend
       traefik.http.routers.rocketchat-backend.entrypoints: http
-      traefik.http.routers.rocketchat-backend.rule: PathPrefix(`/api`) || PathPrefix(`/livechat`) || PathPrefix(`/_timesync`) || PathPrefix(`/__cordova`) || PathPrefix(`/websocket`) || PathPrefix(`/sockjs`) || PathPrefix(`/assets`) || PathPrefix(`/avatar`) || PathPrefix(`/file-upload`) || PathPrefix(`/emoji-custom`) || PathPrefix(`/custom-sounds`) || PathPrefix(`/layout`)
+      traefik.http.routers.rocketchat-backend.rule: PathPrefix(`/api`) || PathPrefix(`/livechat`) || PathPrefix(`/_timesync`) || PathPrefix(`/__cordova`) || PathPrefix(`/websocket`) || PathPrefix(`/sockjs`) || PathPrefix(`/assets`) || PathPrefix(`/avatar`) || PathPrefix(`/file-upload`) || PathPrefix(`/emoji-custom`) || PathPrefix(`/custom-sounds`) || PathPrefix(`/layout`) || PathPrefix(`/_saml`)
       traefik.http.routers.rocketchat-backend.priority: 50
       traefik.http.middlewares.test-retry.retry.attempts: 4
     healthcheck:
@@ -183,7 +183,7 @@ services:
     image: nats:2.6-alpine
 
   mongo:
-    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-7.0}-ubi8
+    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.0}-ubi8
     container_name: mongo
     restart: on-failure
     ports:

@@ -53,7 +53,7 @@ export class ObjectID {
 		return this.valueOf();
 	}
 
-	static stringify(id: unknown): string {
+	static stringify(id: ObjectID | string | object | null | undefined): string {
 		if (id instanceof ObjectID) {
 			return id.valueOf();
 		}
@@ -110,6 +110,8 @@ EJSON.addType('oid', (str) => new ObjectID(str));
 const MongoID = {
 	ObjectID,
 	_looksLikeObjectID,
+	idStringify: ObjectID.stringify,
+	idParse: ObjectID.parse,
 };
 
 Package['mongo-id'] = {
