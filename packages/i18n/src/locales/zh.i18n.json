@@ -6408,7 +6408,6 @@
   "join-without-join-code": "无加入码加入",
   "join-without-join-code_description": "绕过频道加入码的权限",
   "joined": "已加入",
-  "_joined.comment": "用户 a 和用户 b 加入了视频通话",
   "kick-user-from-any-c-room": "从任意公共频道踢出用户",
   "kick-user-from-any-c-room_description": "从任意公共频道踢出用户的权限",
   "kick-user-from-any-p-room": "从任意私有频道踢出用户",
