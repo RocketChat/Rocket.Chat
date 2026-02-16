@@ -2,10 +2,10 @@ import i18next from 'i18next';
 
 import { Livechat } from '../api';
 import store from '../store';
-import type { Alert } from '../store/types';
 import constants from './constants';
 import { loadConfig } from './main';
 import { loadMessages } from './room';
+import type { Alert } from '../store/types';
 
 let connectedListener: (() => void) | undefined;
 let disconnectedListener: (() => void) | undefined;
@@ -55,7 +55,7 @@ const Connection = {
 	async clearAlerts() {
 		const { alerts } = store.state;
 		await store.setState({
-			alerts: alerts?.filter((alert) => ![livechatDisconnectedAlertId, livechatConnectedAlertId].includes(alert.id)),
+			alerts: alerts?.filter((alert) => ![livechatDisconnectedAlertId as string, livechatConnectedAlertId as string].includes(alert.id)),
 		});
 	},
 

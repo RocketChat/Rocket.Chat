@@ -74,7 +74,14 @@ export const getAgent = async (triggerAction: ILivechatTriggerAction): Promise<A
 	return agentPromise;
 };
 
-export const upsertMessage = async (message: { _id: string; msg?: string; token: string; u: AgentPromise; ts: string; trigger: boolean }) => {
+export const upsertMessage = async (message: {
+	_id: string;
+	msg?: string;
+	token: string;
+	u: AgentPromise;
+	ts: string;
+	trigger: boolean;
+}) => {
 	await store.setState({
 		messages: upsert(
 			store.state.messages,
