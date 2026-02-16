@@ -33,6 +33,10 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 
 	private videoTrack: MediaStreamTrackWrapper | null = null;
 
+	private audioSender: RTCRtpSender | null = null;
+
+	private videoSender: RTCRtpSender | null = null;
+
 	private stopped = false;
 
 	private remoteIds: string[];
@@ -197,22 +201,31 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		if (this.remote) {
 			return;
 		}
-		this.logger?.debug('MediaStreamWrapper.setPeerTrack', kind, JSON.stringify(this.peer.getSenders()));
-
-		// If the peer doesn't yet have any track of this kind, add as a new one
-		const sender = this.peer.getSenders().find((sender) => sender.track?.kind === kind);
-		if (!sender) {
-			if (track) {
-				this.logger?.debug('MediaStreamWrapper.setPeerTrack.addTrack', kind);
-				// This will require a re-negotiation
-				this.peer.addTrack(track, this.stream);
-			}
+		const sender = kind === 'audio' ? this.audioSender : this.videoSender;
+		if (sender) {
+			// If we already have a sender of the same kind for this stream, we can just replace the track with no issues
+			// TODO: safe guard against edge cases where this would fail (eg: changing number of audio channels or increasing video quality)
+			this.logger?.debug('MediaStreamWrapper.setPeerTrack.replaceTrack', kind);
+			await sender.replaceTrack(track);
 			return;
 		}
 
-		// If the peer already has a track of the same kind, we can just replace it with the new track with no issues
-		// TODO: safe guard against edge cases where this would fail (eg: changing number of audio channels or increasing video quality)
-		await sender.replaceTrack(track);
+		if (!track) {
+			return;
+		}
+
+		this.logger?.debug('MediaStreamWrapper.setPeerTrack.addTrack', kind);
+		// This will require a re-negotiation
+		this.peer.addTrack(track, this.stream);
+
+		const transceiver = this.peer.getTransceivers().find((t) => t.sender.track === track);
+		if (transceiver) {
+			if (kind === 'audio') {
+				this.audioSender = transceiver.sender;
+			} else {
+				this.videoSender = transceiver.sender;
+			}
+		}
 	}
 
 	private wrapTrack(kind: MediaStreamTrack['kind'], track: MediaStreamTrack | null) {

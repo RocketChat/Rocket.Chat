@@ -38,8 +38,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private iceCandidateCount = 0;
 
-	private addedEmptyTransceiver = false;
-
 	private initialization: Promise<void>;
 
 	private _dataChannel: RTCDataChannel | null;
@@ -87,17 +85,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		await this.initialization;
-
-		if (!this.addedEmptyTransceiver) {
-			this.config.logger?.debug('MediaCallWebRTCProcessor.createOffer.addEmptyTransceiver');
-			// If there's no audio transceivers yet, add a new one; since it's an offer, the track can be set later
-			const transceivers = this.getAudioTransceivers();
-
-			if (!transceivers.length) {
-				this.peer.addTransceiver('audio', { direction: 'sendrecv' });
-				this.addedEmptyTransceiver = true;
-			}
-		}
 
 		this.createDataChannel();
 		this.updateAudioDirectionBeforeNegotiation();
