@@ -37,7 +37,7 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 
 	private remoteIds: string[];
 
-	private _audioStatsTracker: ReturnType<typeof setTimeout> | null;
+	private _trackingAudioStats: boolean;
 
 	private _audioLevel: number;
 
@@ -56,7 +56,7 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		this.emitter = new Emitter();
 		this.remoteIds = [];
 		this._audioLevel = 0;
-		this._audioStatsTracker = null;
+		this._trackingAudioStats = false;
 
 		// Main stream initiates as active, any other initiates as inactive
 		this._active = tag === 'main';
@@ -135,7 +135,6 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		this.removeTracks();
 		this.audioTrack?.clear();
 		this.videoTrack?.clear();
-		this.unregisterAudioLevelTracker();
 	}
 
 	public async setTrack(kind: MediaStreamTrack['kind'], track: MediaStreamTrack | null): Promise<void> {
@@ -231,7 +230,7 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 				wrapper.enabled = this.audioEnabled;
 			}
 
-			if (wrapper && !this.stopped && !this._audioStatsTracker) {
+			if (wrapper && !this._trackingAudioStats) {
 				this.registerAudioLevelTracker();
 			}
 		} else {
@@ -268,62 +267,53 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	}
 
 	private registerAudioLevelTracker() {
-		if (this._audioStatsTracker) {
-			this.unregisterAudioLevelTracker();
-		}
-
 		if (this.stopped) {
 			return;
 		}
 
-		this._audioStatsTracker = setTimeout(() => this.collectAudioStats(), AUDIO_STATS_INTERVAL);
+		this._trackingAudioStats = true;
+		setTimeout(() => this.collectAudioStats(), AUDIO_STATS_INTERVAL);
 	}
 
 	private async collectAudioStats() {
-		this._audioStatsTracker = null;
-
-		if (!this.audioTrack) {
+		if (this.stopped) {
 			this._audioLevel = 0;
-			this.registerAudioLevelTracker();
 			return;
 		}
 
 		try {
-			const stats = await this.peer.getStats(this.audioTrack.track);
-
-			if (!stats) {
+			if (!this.audioTrack) {
+				this._audioLevel = 0;
 				return;
 			}
 
-			const relevantReportType = this.local ? 'media-source' : 'inbound-rtp';
+			try {
+				const stats = await this.peer.getStats(this.audioTrack.track);
 
-			// stats is an object that has a forEach function
-			stats.forEach((report) => {
-				if (report.kind !== 'audio') {
+				if (!stats) {
 					return;
 				}
 
-				if (report.type !== relevantReportType) {
-					return;
-				}
+				const relevantReportType = this.local ? 'media-source' : 'inbound-rtp';
 
-				this._audioLevel = report.audioLevel ?? 0;
-			});
-		} catch {
-			this._audioLevel = 0;
+				// stats is an object that has a forEach function
+				stats.forEach((report) => {
+					if (report.kind !== 'audio') {
+						return;
+					}
+
+					if (report.type !== relevantReportType) {
+						return;
+					}
+
+					this._audioLevel = report.audioLevel ?? 0;
+				});
+			} catch {
+				this._audioLevel = 0;
+			}
+		} finally {
+			// Ensure that the countdown for the next iteration only starts after fully processing the current one
+			this.registerAudioLevelTracker();
 		}
-
-		// Ensure that the countdown for the next iteration only starts after fully processing the current one
-		this.registerAudioLevelTracker();
-	}
-
-	private unregisterAudioLevelTracker() {
-		if (!this._audioStatsTracker) {
-			return;
-		}
-
-		clearTimeout(this._audioStatsTracker);
-		this._audioStatsTracker = null;
-		this._audioLevel = 0;
 	}
 }
