@@ -125,3 +125,4 @@ slashCommands.add({
 		permission: 'add-user-to-joined-room',
 	},
 });
+module.exports = inviteAll;
