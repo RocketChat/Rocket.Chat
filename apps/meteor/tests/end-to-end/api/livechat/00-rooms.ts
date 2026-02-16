@@ -80,7 +80,7 @@ const getSubscriptionForRoom = async (roomId: string, overrideCredential?: Crede
 	return subscription;
 };
 
-describe.only('LIVECHAT - rooms', () => {
+describe('LIVECHAT - rooms', () => {
 	let visitor: ILivechatVisitor;
 	let room: IOmnichannelRoom;
 	let appId: string;
@@ -88,7 +88,7 @@ describe.only('LIVECHAT - rooms', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
-		if (false) {
+		if (IS_EE) {
 			// install the app
 			await request
 				.post(apps())
@@ -123,7 +123,7 @@ describe.only('LIVECHAT - rooms', () => {
 		await closeOmnichannelRoom(room._id);
 		await deleteVisitor(visitor.token);
 
-		if (false) {
+		if (IS_EE) {
 			await request
 				.delete(apps(`/${appId}`))
 				.set(credentials)
