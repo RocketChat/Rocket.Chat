@@ -8,9 +8,9 @@ import { RequestContext } from '../lib/requestContext.ts';
 
 export default async function apiHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
 	const { method: call, params } = request;
-	const parts = call.split(':');
-	const httpMethod = parts[parts.length - 1];
-	const path = parts.slice(1, -1).join(':');
+	const [/* always "api" */, ...parts] = call.split(':');
+	const httpMethod = parts.pop();
+	const path = parts.join(':');
 
 	const endpoint = AppObjectRegistry.get<IApiEndpoint>(`api:${path}`);
 	const logger = AppObjectRegistry.get<Logger>('logger');
