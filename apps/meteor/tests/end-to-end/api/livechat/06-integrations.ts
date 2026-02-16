@@ -69,6 +69,7 @@ describe('LIVECHAT - Integrations', () => {
 
 		after(async () => {
 			await closeOmnichannelRoom(smsRoom);
+
 			await deleteVisitor(smsVisitor.token);
 
 			await updateSetting('SMS_Default_Omnichannel_Department', '');
@@ -125,7 +126,10 @@ describe('LIVECHAT - Integrations', () => {
 
 				expect(response).to.have.property('text', '<Response></Response>');
 
-				smsRoom = (await getLivechatVisitorByToken(smsVisitor.token)).lastChat?._id;
+				const lastChat = (await getLivechatVisitorByToken(smsVisitor.token)).lastChat?._id;
+				expect(lastChat).to.exist;
+
+				smsRoom = lastChat as string;
 			});
 		});
 	});
