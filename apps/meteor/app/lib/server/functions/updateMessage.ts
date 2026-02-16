@@ -75,15 +75,15 @@ export const updateMessage = async function (
 	}
 
 	// do not send $unset if not defined. Can cause exceptions in certain mongo versions.
-	await Messages.updateOne(
-		{ _id },
-		{
-			$set: {
-				...editedMessage,
-			},
-			...(!editedMessage.md && { $unset: { md: 1 } }),
+await Messages.update(
+	{ _id },
+	{
+		$set: {
+			...editedMessage,
 		},
-	);
+		...(!editedMessage.md && { $unset: { md: 1 } }),
+	},
+);
 
 	if (Apps.self?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
