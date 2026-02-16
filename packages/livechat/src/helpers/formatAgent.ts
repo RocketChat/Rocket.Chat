@@ -1,5 +1,5 @@
-import type { Agent } from '../definitions/agents';
 import { getAvatarUrl } from './baseUrl';
+import type { Agent } from '../definitions/agents';
 
 export const formatAgent = (agent: Agent | undefined) => {
 	if (!agent) {

@@ -57,7 +57,7 @@ export const getAgent = async (triggerAction: ILivechatTriggerAction): Promise<A
 		if (sender === 'queue') {
 			try {
 				const agent = await getNextAgentFromQueue();
-				resolve(agent);
+				resolve(agent as AgentPromise);
 			} catch (_) {
 				resolve({ username: 'rocket.cat' });
 			}
