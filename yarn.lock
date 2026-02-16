@@ -9115,6 +9115,7 @@ __metadata:
     "@types/passport": "npm:^0"
     "@types/passport-facebook": "npm:^3"
     "@types/passport-google-oauth20": "npm:^2"
+    "@types/passport-oauth2": "npm:^1"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/proxy-from-env": "npm:^1.0.4"
     "@types/proxyquire": "npm:^1.3.31"
@@ -9269,7 +9270,9 @@ __metadata:
     overlayscrollbars-react: "npm:^0.5.6"
     passport: "npm:^0.7.0"
     passport-facebook: "npm:^3.0.0"
+    passport-github2: "npm:^0.1.12"
     passport-google-oauth20: "npm:^2.0.0"
+    passport-oauth2: "npm:^1.8.0"
     path: "npm:^0.12.7"
     path-to-regexp: "npm:^6.3.0"
     pino: "npm:^8.21.0"
@@ -13405,7 +13408,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport-oauth2@npm:*":
+"@types/passport-oauth2@npm:*, @types/passport-oauth2@npm:^1":
   version: 1.8.0
   resolution: "@types/passport-oauth2@npm:1.8.0"
   dependencies:
@@ -29191,6 +29194,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"passport-github2@npm:^0.1.12":
+  version: 0.1.12
+  resolution: "passport-github2@npm:0.1.12"
+  dependencies:
+    passport-oauth2: "npm:1.x.x"
+  checksum: 10/cf174d1738a2b1d398ec9f4ba2e1ca229214ef65cfd05f5754303f664d5cfd6e3bacbf49ece19fcd576be43bfcc1d3795541f50692148436b9e4ddbffbe625ac
+  languageName: node
+  linkType: hard
+
 "passport-google-oauth20@npm:^2.0.0":
   version: 2.0.0
   resolution: "passport-google-oauth20@npm:2.0.0"
@@ -29200,7 +29212,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-oauth2@npm:1.x.x":
+"passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.8.0":
   version: 1.8.0
   resolution: "passport-oauth2@npm:1.8.0"
   dependencies:
