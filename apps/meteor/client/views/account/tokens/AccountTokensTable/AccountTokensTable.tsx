@@ -169,7 +169,7 @@ const AccountTokensTable = (): ReactElement => {
 								filteredTokens &&
 								filteredTokens.map((filteredToken) => (
 									<AccountTokensRow
-										key={filteredToken.createdAt}
+										key={filteredToken.lastTokenPart}
 										onRegenerate={handleRegenerate}
 										onRemove={handleRemove}
 										isMedium={isMedium}

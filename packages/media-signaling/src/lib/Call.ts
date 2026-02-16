@@ -13,6 +13,7 @@ import type {
 	CallHangupReason,
 	CallActorType,
 	CallFlag,
+	CallFeature,
 } from '../definition/call';
 import type { ClientContractState, ClientState } from '../definition/client';
 import type { IMediaSignalLogger } from '../definition/logger';
@@ -35,6 +36,7 @@ export interface IClientMediaCallConfig {
 
 	iceGatheringTimeout: number;
 	iceServers: RTCIceServer[];
+	supportedFeatures: CallFeature[];
 }
 
 const TIMEOUT_TO_ACCEPT = 30000;
@@ -193,6 +195,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private receivedRemoteSdp: boolean;
 
+	private enabledFeatures: CallFeature[] | null;
+
 	public get audioLevel(): number {
 		return this.webrtcProcessor?.audioLevel || 0;
 	}
@@ -232,6 +236,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.creationTimestamp = new Date();
 		this.sentLocalSdp = false;
 		this.receivedRemoteSdp = false;
+		this.enabledFeatures = null;
 
 		this.earlySignals = new Set();
 		this.stateTimeoutHandlers = new Set();
@@ -278,7 +283,11 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	/** Initialize an outbound call with the callee information and send a call request to the server */
-	public async requestCall(callee: { type: CallActorType; id: string }, contactInfo?: CallContact): Promise<void> {
+	public async requestCall(
+		callee: { type: CallActorType; id: string },
+		supportedFeatures: CallFeature[],
+		contactInfo?: CallContact,
+	): Promise<void> {
 		if (this.initialized) {
 			return;
 		}
@@ -288,6 +297,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.config.transporter.sendToServer(this.callId, 'request-call', {
 			callee,
 			supportedServices: Object.keys(this.config.processorFactories) as CallService[],
+			supportedFeatures,
 		});
 
 		return this.initializeOutboundCall({ ...contactInfo, ...callee });
@@ -530,7 +540,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.acceptedLocally = true;
-		this.config.transporter.answer(this.callId, 'accept');
+		this.config.transporter.answer(this.callId, 'accept', { supportedFeatures: this.config.supportedFeatures });
 
 		if (this.getClientState() === 'accepting') {
 			this.updateStateTimeouts();
@@ -735,6 +745,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.webrtcProcessor?.getStats(selector) ?? null;
 	}
 
+	public isFeatureAvailable(feature: CallFeature): boolean {
+		if (!this.enabledFeatures) {
+			return false;
+		}
+
+		return this.enabledFeatures.includes(feature);
+	}
+
 	private changeState(newState: CallState): void {
 		if (newState === this._state) {
 			return;
@@ -830,7 +848,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.requireWebRTC();
-		this.negotiationManager.addNegotiation(negotiationId);
+		void this.negotiationManager.addNegotiation(negotiationId);
 	}
 
 	protected shouldIgnoreWebRTC(): boolean {
@@ -856,7 +874,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.requireWebRTC();
 
-		this.negotiationManager.addNegotiation(signal.negotiationId, signal.sdp);
+		void this.negotiationManager.addNegotiation(signal.negotiationId, signal.sdp);
 	}
 
 	protected sendError(error: Partial<ClientMediaSignalError>): void {
@@ -960,7 +978,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		switch (signal.notification) {
 			case 'accepted':
-				return this.flagAsAccepted();
+				return this.flagAsAccepted(signal.features);
 			case 'active':
 				if (this.state === 'accepted' || this.hidden) {
 					this.changeState('active');
@@ -972,8 +990,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	private async flagAsAccepted(): Promise<void> {
+	private async flagAsAccepted(enabledFeatures?: CallFeature[]): Promise<void> {
 		this.config.logger?.debug('ClientMediaCall.flagAsAccepted');
+
+		if (enabledFeatures && this._state !== 'accepted') {
+			this.enabledFeatures = enabledFeatures;
+		}
 
 		// If hidden, just move the state without doing anything
 		if (this.hidden) {

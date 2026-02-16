@@ -1,7 +1,10 @@
-import { Agenda } from '@rocket.chat/agenda';
+import { type Job, Agenda } from '@rocket.chat/agenda';
+import { Logger } from '@rocket.chat/logger';
 import { CronHistory } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { Db } from 'mongodb';
+
+const logger = new Logger('Cron');
 
 const runCronJobFunctionAndPersistResult = async (fn: () => Promise<any>, jobName: string): Promise<void> => {
 	const { insertedId } = await CronHistory.insertOne({
@@ -66,6 +69,65 @@ export class AgendaCronJobs {
 			defaultConcurrency: 1,
 			processEvery: '1 minute',
 		});
+
+		this.scheduler.on('start', (job: Job) => {
+			logger.debug({
+				msg: `Job "${job.attrs.name}" starting`,
+				jobId: job.attrs._id,
+				jobName: job.attrs.name,
+				nextRunAt: job.attrs.nextRunAt,
+			});
+		});
+
+		this.scheduler.on('complete', (job: Job) => {
+			logger.info({
+				msg: `Job "${job.attrs.name}" completed`,
+				jobId: job.attrs._id,
+				jobName: job.attrs.name,
+				lastRunAt: job.attrs.lastRunAt,
+				nextRunAt: job.attrs.nextRunAt,
+				duration:
+					job.attrs.lastFinishedAt && job.attrs.lastRunAt ? job.attrs.lastFinishedAt.getTime() - job.attrs.lastRunAt.getTime() : undefined,
+			});
+		});
+
+		this.scheduler.on('success', (job: Job) => {
+			logger.debug({
+				msg: `Job "${job.attrs.name}" succeeded`,
+				jobId: job.attrs._id,
+				jobName: job.attrs.name,
+			});
+		});
+
+		this.scheduler.on('fail', (err: unknown, job: Job) => {
+			logger.error({
+				msg: `Job "${job.attrs.name}" failed`,
+				jobId: job.attrs._id,
+				jobName: job.attrs.name,
+				err,
+				failCount: job.attrs.failCount,
+				failReason: job.attrs.failReason,
+			});
+		});
+
+		this.scheduler.on('error:database', (err: unknown) => {
+			logger.error({
+				msg: 'Database error in cron scheduler',
+				err,
+			});
+		});
+
+		this.scheduler.on('error', (err: unknown) => {
+			logger.error({
+				msg: 'Error in cron scheduler',
+				err,
+			});
+		});
+
+		this.scheduler.on('ready', () => {
+			logger.debug({ msg: 'Cron scheduler database ready' });
+		});
+
 		await this.scheduler.start();
 
 		for await (const job of this.reservedJobs) {
@@ -86,6 +148,7 @@ export class AgendaCronJobs {
 
 		await this.define(name, callback);
 		await this.scheduler.every(schedule, name, {}, {});
+		logger.debug({ msg: `Cron job "${name}" scheduled`, jobName: name, schedule });
 	}
 
 	public async addAtTimestamp(name: string, when: Date, callback: () => any | Promise<any>): Promise<void> {
@@ -95,6 +158,7 @@ export class AgendaCronJobs {
 
 		await this.define(name, callback);
 		await this.scheduler.schedule(when, name, {});
+		logger.debug({ msg: `Cron job "${name}" scheduled at timestamp`, jobName: name, when });
 	}
 
 	public async remove(name: string): Promise<void> {
@@ -103,6 +167,7 @@ export class AgendaCronJobs {
 		}
 
 		await this.scheduler.cancel({ name });
+		logger.debug({ msg: `Cron job "${name}" removed`, jobName: name });
 	}
 
 	public async has(jobName: string): Promise<boolean> {

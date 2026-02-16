@@ -22,6 +22,10 @@ export async function validateRoomMessagePermissionsAsync(
 		throw new Error('error-invalid-room');
 	}
 
+	if (room.archived) {
+		throw new Error('room_is_archived');
+	}
+
 	if (type !== 'app' && !(await canAccessRoomAsync(room, { _id: uid }, extraData))) {
 		throw new Error('error-not-allowed');
 	}
