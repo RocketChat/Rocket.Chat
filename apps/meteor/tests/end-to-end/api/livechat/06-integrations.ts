@@ -13,6 +13,7 @@ import {
 	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
 import { sleep } from '../../../data/livechat/utils';
+import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - Integrations', () => {
@@ -59,7 +60,7 @@ describe('LIVECHAT - Integrations', () => {
 
 	describe('Incoming SMS', () => {
 		let smsVisitor: ILivechatVisitor;
-		let smsRoom: IOmnichannelRoom;
+		let smsRoom: string;
 
 		before(async () => {
 			await updateSetting('SMS_Enabled', true);
@@ -67,7 +68,7 @@ describe('LIVECHAT - Integrations', () => {
 		});
 
 		after(async () => {
-			await closeOmnichannelRoom(smsRoom._id);
+			await closeOmnichannelRoom(smsRoom);
 			await deleteVisitor(smsVisitor.token);
 
 			await updateSetting('SMS_Default_Omnichannel_Department', '');
@@ -113,17 +114,18 @@ describe('LIVECHAT - Integrations', () => {
 
 				// Create visitor with the phone number that will be used in SMS
 				// createVisitor(department, visitorName, customEmail, customPhone)
-				smsVisitor = await createVisitor(undefined, 'sms-visitor', undefined, '12345678910');
-				smsRoom = await createLivechatRoom(smsVisitor.token);
+				smsVisitor = await createVisitor(undefined, 'sms-visitor', undefined, '+12345678910');
 
 				const response = await request
 					.post(api('livechat/sms-incoming/twilio'))
 					.set(credentials)
-					.send('From=%2B123456789&To=%2B12345678910&Body=Hello')
+					.send('From=%2B12345678910&To=%2B123456789&Body=Hello')
 					.expect('Content-Type', 'text/xml')
 					.expect(200);
 
 				expect(response).to.have.property('text', '<Response></Response>');
+
+				smsRoom = (await getLivechatVisitorByToken(smsVisitor.token)).lastChat?._id;
 			});
 		});
 	});
