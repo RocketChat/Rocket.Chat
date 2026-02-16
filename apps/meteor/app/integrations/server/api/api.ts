@@ -175,7 +175,13 @@ async function executeIntegrationRest(
 
 	const scriptEngine = getEngine(this.request.integration);
 
-	let bodyParams = getBodyParams(this.bodyParams, this.request);
+	let bodyParams: Record<string, unknown>;
+	try {
+		bodyParams = getBodyParams(this.bodyParams, this.request);
+	} catch (err) {
+		return API.v1.failure(err instanceof Error ? err.message : String(err));
+	}
+
 	const separateResponse = bodyParams.separateResponse === true;
 	let scriptResponse: Record<string, any> | undefined;
 
