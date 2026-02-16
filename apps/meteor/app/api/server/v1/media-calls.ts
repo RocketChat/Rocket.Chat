@@ -65,7 +65,6 @@ const mediaCallsAnswerEndpoints = API.v1.post(
 						type: 'object',
 						$ref: '#/components/schemas/IMediaCall',
 						description: 'The updated call information.',
-						nullable: true,
 					},
 					success: {
 						type: 'boolean',
