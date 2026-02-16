@@ -11,6 +11,6 @@ export type Agent = {
 		description: string;
 		src: string;
 	};
-	ts: number;
+	ts?: number;
 	[key: string]: unknown;
 };

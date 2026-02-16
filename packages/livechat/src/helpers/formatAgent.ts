@@ -10,9 +10,9 @@ type AgentType = {
 	customFields: { phone: string };
 };
 
-export const formatAgent = (agent: AgentType) => {
+export const formatAgent = (agent: AgentType | undefined) => {
 	if (!agent) {
-		return;
+		return undefined;
 	}
 
 	return {
@@ -24,9 +24,9 @@ export const formatAgent = (agent: AgentType) => {
 		phone: agent.phone?.[0]?.phoneNumber || agent.customFields?.phone,
 		avatar: agent.username
 			? {
-					description: agent.username,
-					src: getAvatarUrl(agent.username),
-				}
+				description: agent.username,
+				src: getAvatarUrl(agent.username),
+			}
 			: undefined,
 	};
 };

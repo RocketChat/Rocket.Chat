@@ -2,6 +2,7 @@ import i18next from 'i18next';
 
 import { Livechat } from '../api';
 import store from '../store';
+import type { Alert } from '../store/types';
 import constants from './constants';
 import { loadConfig } from './main';
 import { loadMessages } from './room';
@@ -58,9 +59,9 @@ const Connection = {
 		});
 	},
 
-	async displayAlert(alert = {}) {
+	async displayAlert(alert: Alert) {
 		const { alerts } = store.state;
-		await store.setState({ alerts: (alerts?.push(alert), alerts) });
+		await store.setState({ alerts: [...(alerts || []), alert] });
 	},
 
 	async handleConnected() {
