@@ -28,12 +28,11 @@ test.describe('OC - Custom fields usage, scope : room and visitor', () => {
 	let visitorCustomField: Awaited<ReturnType<typeof createCustomField>>;
 
 	test.beforeAll('Set up agent, manager and custom fields', async ({ api }) => {
-		(
-			await Promise.all([
-				api.post('/livechat/users/agent', { username: 'user1' }),
-				api.post('/livechat/users/manager', { username: 'user1' }),
-			])
-		).every((res) => expect(res.status()).toBe(200));
+		const responses = await Promise.all([
+			api.post('/livechat/users/agent', { username: 'user1' }),
+			api.post('/livechat/users/manager', { username: 'user1' }),
+		]);
+		responses.forEach((res) => expect(res.status()).toBe(200));
 
 		roomCustomField = await createCustomField(api, {
 			field: roomCustomFieldLabel,
@@ -69,9 +68,8 @@ test.describe('OC - Custom fields usage, scope : room and visitor', () => {
 	});
 
 	test.afterAll('Remove agent, manager and custom fields', async ({ api }) => {
-		(await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/manager/user1')])).every((res) =>
-			expect(res.status()).toBe(200),
-		);
+		const responses = await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/manager/user1')]);
+		responses.forEach((res) => expect(res.status()).toBe(200));
 
 		await roomCustomField.delete();
 		await visitorCustomField.delete();
@@ -83,7 +81,7 @@ test.describe('OC - Custom fields usage, scope : room and visitor', () => {
 			await poHomeChannel.sidebar.getSidebarItemByName(visitor.name).click();
 		});
 
-		await test.step('Agent opens Edit Room', async () => {
+		await test.step('Agent opens edit room', async () => {
 			await poHomeChannel.roomInfo.btnEditRoomInfo.click();
 			await expect(poHomeChannel.roomInfo.dialogEditRoom).toBeVisible();
 		});
@@ -146,7 +144,7 @@ test.describe('OC - Custom fields usage, scope : room and visitor', () => {
 			await expect(poHomeChannel.contacts.contactInfo.dialogContactInfo).toBeVisible();
 		});
 
-		await test.step('Agent clicks Edit and updates visitor custom field', async () => {
+		await test.step('Agent clicks edit and updates visitor custom field', async () => {
 			await poHomeChannel.contacts.contactInfo.btnEdit.click();
 			await poHomeChannel.contacts.contactInfo.getVisitorCustomFieldInput(visitorCustomFieldLabel).fill(updatedVisitorCustomFieldValue);
 			await poHomeChannel.contacts.contactInfo.btnSave.click();
