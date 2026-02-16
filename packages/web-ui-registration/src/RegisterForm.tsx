@@ -8,12 +8,12 @@ import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
 import EmailConfirmationForm from './EmailConfirmationForm';
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
-import { useRegisterMethod } from './hooks/useRegisterMethod';
-import { useRegisterFormValidation } from './hooks/useRegisterFormValidation';
-import { useRegisterErrorHandler } from './hooks/useRegisterErrorHandler';
 import { FormFieldInput } from './components/FormFieldInput';
 import { PasswordFieldWithVerifier } from './components/PasswordFieldWithVerifier';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter';
+import { useRegisterErrorHandler } from './hooks/useRegisterErrorHandler';
+import { useRegisterFormValidation } from './hooks/useRegisterFormValidation';
+import { useRegisterMethod } from './hooks/useRegisterMethod';
 
 type LoginRegisterPayload = {
 	name: string;
