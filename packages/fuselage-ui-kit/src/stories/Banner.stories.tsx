@@ -2,7 +2,7 @@ import { Banner, Icon } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
 
-import { UiKitContext, uiKitBanner } from '..';
+import { UiKitContext, UiKitBanner } from '..';
 import * as payloads from './payloads';
 
 export default {
@@ -39,7 +39,7 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[], errors = {}) => {
 			}}
 		>
 			<Banner icon={<Icon name='info' size='x20' />} closeable variant={type}>
-				{uiKitBanner(blocks)}
+				{UiKitBanner(blocks)}
 			</Banner>
 		</UiKitContext.Provider>
 	);
