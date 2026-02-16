@@ -17,6 +17,7 @@ import {
 	takeInquiry,
 	fetchInquiry,
 	makeAgentAvailable,
+	makeAgentUnavailable,
 	startANewLivechatRoomAndTakeIt,
 	moveBackToQueue,
 	closeOmnichannelRoom,
@@ -64,6 +65,7 @@ describe('LIVECHAT - Agents', () => {
 	});
 
 	after(async () => {
+		await makeAgentUnavailable();
 		await updateSetting('Omnichannel_enable_department_removal', false);
 		await deleteUser(agent2.user);
 	});

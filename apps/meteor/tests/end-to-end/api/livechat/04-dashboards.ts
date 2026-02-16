@@ -972,6 +972,7 @@ describe('LIVECHAT - dashboards', function () {
 			Promise.all([
 				deleteUser(agent.user),
 				deleteUser(forwardAgent.user),
+				deleteUser(botAgent.user),
 				updateSetting('Omnichannel_Metrics_Ignore_Automatic_Messages', false),
 			]),
 		);

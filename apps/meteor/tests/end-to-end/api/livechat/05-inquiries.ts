@@ -77,6 +77,7 @@ describe('LIVECHAT - inquiries', () => {
 		});
 		after(async () => {
 			await closeOmnichannelRoom(room._id);
+			await deleteVisitor(visitor.token);
 		});
 
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
@@ -136,9 +137,10 @@ describe('LIVECHAT - inquiries', () => {
 		let takenRoom: IOmnichannelRoom;
 		let servedByRoom: IOmnichannelRoom;
 		let visitor: ILivechatVisitor;
+		let visitor2: ILivechatVisitor;
 		before(async () => {
 			visitor = await createVisitor();
-			const visitor2 = await createVisitor();
+			visitor2 = await createVisitor();
 
 			takenRoom = await createLivechatRoom(visitor.token);
 			servedByRoom = await createLivechatRoom(visitor2.token);
@@ -147,6 +149,8 @@ describe('LIVECHAT - inquiries', () => {
 		after(async () => {
 			await closeOmnichannelRoom(takenRoom._id);
 			await closeOmnichannelRoom(servedByRoom._id);
+			await deleteVisitor(visitor.token);
+			await deleteVisitor(visitor2.token);
 		});
 
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
@@ -482,6 +486,7 @@ describe('LIVECHAT - inquiries', () => {
 		});
 
 		after(async () => {
+			await closeOmnichannelRoom(room._id);
 			await deleteVisitor(visitor.token);
 		});
 

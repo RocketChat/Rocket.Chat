@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, ISetting } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IOmnichannelRoom, ISetting } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
@@ -11,6 +11,7 @@ import {
 	createVisitor,
 	deleteVisitor,
 	getLivechatRoomInfo,
+	makeAgentUnavailable,
 	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
 import { sleep } from '../../../data/livechat/utils';
@@ -155,6 +156,7 @@ describe('LIVECHAT - Integrations', () => {
 				await createAgent();
 			});
 			after(async () => {
+				await makeAgentUnavailable();
 				await updateSetting('Livechat_webhookUrl', '');
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 				await updateSetting('Livechat_webhook_on_start', false);
@@ -166,7 +168,7 @@ describe('LIVECHAT - Integrations', () => {
 			it('should send a notification on chat start', async () => {
 				await updateSetting('Livechat_webhook_on_start', true);
 
-				const { room } = await startANewLivechatRoomAndTakeIt();
+				const { room, visitor } = await startANewLivechatRoomAndTakeIt();
 				await sleep(1000);
 
 				const roomInfo = await getLivechatRoomInfo(room._id);
@@ -177,11 +179,12 @@ describe('LIVECHAT - Integrations', () => {
 					.that.has.property('type', 'LivechatSessionStart');
 				await updateSetting('Livechat_webhook_on_start', false);
 				await closeOmnichannelRoom(room._id);
+				await deleteVisitor(visitor.token);
 			});
 			it('should send a notification on chat taken', async () => {
 				await updateSetting('Livechat_webhook_on_chat_taken', true);
 
-				const { room } = await startANewLivechatRoomAndTakeIt();
+				const { room, visitor } = await startANewLivechatRoomAndTakeIt();
 				await sleep(1000);
 
 				const roomInfo = await getLivechatRoomInfo(room._id);
@@ -192,13 +195,15 @@ describe('LIVECHAT - Integrations', () => {
 					.that.has.property('type', 'LivechatSessionTaken');
 				await updateSetting('Livechat_webhook_on_chat_taken', false);
 				await closeOmnichannelRoom(room._id);
+				await deleteVisitor(visitor.token);
 			});
 			let room: IOmnichannelRoom;
+			let queuedVisitor: ILivechatVisitor;
 			it('should send a notification on chat queued', async () => {
 				await updateSetting('Livechat_webhook_on_chat_queued', true);
 
-				const visitor = await createVisitor();
-				room = await createLivechatRoom(visitor.token);
+				queuedVisitor = await createVisitor();
+				room = await createLivechatRoom(queuedVisitor.token);
 				await sleep(1000);
 
 				const roomInfo = await getLivechatRoomInfo(room._id);
@@ -223,6 +228,7 @@ describe('LIVECHAT - Integrations', () => {
 					.to.have.property('json')
 					.that.has.property('type', 'LivechatSession');
 				await updateSetting('Livechat_webhook_on_close', false);
+				await deleteVisitor(queuedVisitor.token);
 			});
 		});
 	});

@@ -6,7 +6,7 @@ import type { Response } from 'supertest';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import { closeOmnichannelRoom, createLivechatRoom, createVisitor, deleteVisitor, getLivechatRoomInfo } from '../../../data/livechat/rooms';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - custom fields', () => {
 	before((done) => getCredentials(done));
@@ -92,6 +92,7 @@ describe('LIVECHAT - custom fields', () => {
 				.post(api('livechat/custom.field'))
 				.send({ token: visitor.token, key: 'invalid-key', value: 'invalid-value', overwrite: true })
 				.expect(400);
+			await deleteVisitor(visitor.token);
 		});
 		it('should save a custom field on visitor', async () => {
 			const visitor = await createVisitor();
@@ -114,6 +115,8 @@ describe('LIVECHAT - custom fields', () => {
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('field');
 			expect(body.field).to.have.property('value', 'test_address');
+			await deleteVisitor(visitor.token);
+			await deleteCustomField(customFieldName);
 		});
 	});
 
@@ -468,7 +471,6 @@ describe('LIVECHAT - custom fields', () => {
 		});
 
 		after(async () => {
-			// TODO: add clean up for contacts, visitors, etc
 			await Promise.all([
 				deleteCustomField(customFieldName),
 				deleteCustomField(`${customFieldName}_2`),
@@ -476,6 +478,8 @@ describe('LIVECHAT - custom fields', () => {
 				deleteVisitor(visitor.token),
 				closeOmnichannelRoom(room._id),
 				updateSetting('Livechat_accept_chats_with_no_agents', false),
+				restorePermissionToRoles('create-livechat-contact'),
+				restorePermissionToRoles('view-livechat-contact'),
 			]);
 		});
 
