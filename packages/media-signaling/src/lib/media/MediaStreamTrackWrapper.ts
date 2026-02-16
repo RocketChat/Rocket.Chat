@@ -69,7 +69,9 @@ export class MediaStreamTrackWrapper {
 		this._onTrackUnmute = () => this.onTrackUnmute();
 		this._onTrackEnded = () => this.setEnded();
 
-		this.configureEvents();
+		this.track.addEventListener('mute', this._onTrackMute);
+		this.track.addEventListener('unmute', this._onTrackUnmute);
+		this.track.addEventListener('ended', this._onTrackEnded);
 	}
 
 	public clear() {
@@ -77,11 +79,9 @@ export class MediaStreamTrackWrapper {
 		this.clearMuteTimeout();
 		this.clearEndedInterval();
 
-		if (this.track) {
-			this.track.removeEventListener('mute', this._onTrackMute);
-			this.track.removeEventListener('unmute', this._onTrackUnmute);
-			this.track.removeEventListener('ended', this._onTrackEnded);
-		}
+		this.track.removeEventListener('mute', this._onTrackMute);
+		this.track.removeEventListener('unmute', this._onTrackUnmute);
+		this.track.removeEventListener('ended', this._onTrackEnded);
 	}
 
 	private setMuted(muted: boolean) {
@@ -107,12 +107,6 @@ export class MediaStreamTrackWrapper {
 		this.clearMuteTimeout();
 		this.endedTriggered = true;
 		this.emitter.emit('ended');
-	}
-
-	private configureEvents() {
-		this.track.addEventListener('mute', this._onTrackMute);
-		this.track.addEventListener('unmute', this._onTrackUnmute);
-		this.track.addEventListener('ended', this._onTrackEnded);
 	}
 
 	private onTrackMute() {
