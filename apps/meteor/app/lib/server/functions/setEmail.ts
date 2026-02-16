@@ -6,10 +6,9 @@ import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { RateLimiter, validateEmailDomain } from '../lib';
+import { validateEmailDomain } from '../lib';
 import { checkEmailAvailability } from './checkEmailAvailability';
 import { sendConfirmationEmail } from '../../../../server/methods/sendConfirmationEmail';
 
@@ -42,7 +41,7 @@ const _sendEmailChangeNotification = async function (to: string, newEmail: strin
 	}
 };
 
-const _setEmail = async function (
+export const setEmail = async function (
 	userId: string,
 	email: string,
 	shouldSendVerificationEmail = true,
@@ -105,10 +104,3 @@ const _setEmail = async function (
 	}
 	return result;
 };
-
-export const setEmail = RateLimiter.limitFunction(_setEmail, 1, 60000, {
-	async 0() {
-		const userId = Meteor.userId();
-		return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
-	}, // Administrators have permission to change others emails, so don't limit those
-});

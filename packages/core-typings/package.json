@@ -1,7 +1,7 @@
 {
 	"$schema": "https://json.schemastore.org/package",
 	"name": "@rocket.chat/core-typings",
-	"version": "8.1.0-develop",
+	"version": "8.2.0-develop",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -22,7 +22,8 @@
 		"@rocket.chat/icons": "~0.46.0",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
-		"typia": "~9.7.2"
+		"typia": "~9.7.2",
+		"zod": "~4.3.6"
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",

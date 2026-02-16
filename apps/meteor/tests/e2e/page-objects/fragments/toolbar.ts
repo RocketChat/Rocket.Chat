@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { MenuOptions } from './menu';
 import { OmnichannelCloseChatModal, OmnichannelOnHoldModal } from './modals';
 
 export abstract class Toolbar {
@@ -11,8 +12,11 @@ export abstract class Toolbar {
 }
 
 export class RoomToolbar extends Toolbar {
+	readonly menu: MenuOptions;
+
 	constructor(page: Page) {
 		super(page.getByRole('toolbar', { name: 'Primary Room actions' }));
+		this.menu = new MenuOptions(page);
 	}
 
 	get btnRoomInfo() {
@@ -81,6 +85,10 @@ export class RoomToolbar extends Toolbar {
 
 	get menuItemPruneMessages(): Locator {
 		return this.root.getByRole('menuitem', { name: 'Prune Messages' });
+	}
+
+	get menuItemFiles(): Locator {
+		return this.menu.getMenuItem('Files');
 	}
 
 	async openRoomInfo() {

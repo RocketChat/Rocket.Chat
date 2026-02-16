@@ -21,7 +21,7 @@ const MultiStaticSelectElement = ({ block, context }: MultiStaticSelectElementPr
 
 	const handleChange = useCallback(
 		(value: string[]) => {
-			action({ target: { value } });
+			void action({ target: { value } });
 		},
 		[action],
 	);
