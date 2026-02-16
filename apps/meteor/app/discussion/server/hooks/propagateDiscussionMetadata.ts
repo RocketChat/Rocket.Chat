@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Messages, Rooms, VideoConference } from '@rocket.chat/models';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { Messages, Rooms, VideoConference } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
