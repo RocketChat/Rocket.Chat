@@ -4812,7 +4812,7 @@
   "Hide_conversation_after_closing": "إخفاء المحادثة بعد الإغلاق", 
   "After_closing_the_conversation_you_will_be_redirected_to_Home": "بعد إغلاق المحادثة سيتم توجيهك إلى الصفحة الرئيسية", 
   "Conversational_transcript": "نسخة المحادثة", 
-  "Exportchat_transcript_as_PDF": "تصدير نسخة المحادثة كملف PDF", 
+  "Export_conversation_transcript_as_PDF": "تصدير نسخة المحادثة كملف PDF", 
   "Always_export_the_transcript_as_PDF_at_the_end_of_conversations": "دائماً تصدير نسخة المحادثة كملف PDF في نهاية المحادثات", 
   "Send_chat_transcript_via_email": "إرسال نسخة المحادثة عبر البريد الإلكتروني", 
   "Always_send_the_transcript_to_contacts_at_the_end_of_the_conversations._This_preference_may_l": "إرسال نسخة المحادثة دائماً إلى جهات الاتصال في نهاية المحادثات. قد يؤدي هذا التفضيل إلى...",
@@ -4847,5 +4847,5 @@
   "Queued": "في قائمة الانتظار", 
   "Units": "الوحدات",
   "No_contacts_yet": "لا توجد جهات اتصال حتى الآن", 
-  "All_your_contacts_will_appear_here": "ستظهر جميع جهات الات صال الخاصة بك هنا"
+  "All_your_contacts_will_appear_here": "ستظهر جميع جهات الاتصال الخاصة بك هنا"
 }
