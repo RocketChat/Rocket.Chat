@@ -1,4 +1,5 @@
 import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent, Serialized } from '@rocket.chat/core-typings';
+import { Tracker } from 'meteor/tracker';
 
 import { useLivechatInquiryStore } from '../../../../../client/hooks/useLivechatInquiryStore';
 import { queryClient } from '../../../../../client/lib/queryClient';
