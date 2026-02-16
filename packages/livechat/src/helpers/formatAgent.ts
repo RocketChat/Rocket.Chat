@@ -15,9 +15,9 @@ export const formatAgent = (agent: Agent | undefined) => {
 		phone: typeof agent.phone === 'string' ? agent.phone : agent.phone?.[0]?.phoneNumber || agent.customFields?.phone,
 		avatar: agent.username
 			? {
-				description: agent.username,
-				src: getAvatarUrl(agent.username),
-			}
+					description: agent.username,
+					src: getAvatarUrl(agent.username),
+				}
 			: undefined,
 	};
 };
