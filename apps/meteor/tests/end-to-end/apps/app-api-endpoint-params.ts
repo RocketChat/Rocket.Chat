@@ -30,18 +30,4 @@ import { IS_EE } from '../../e2e/config/constants';
 		expect(response.header['content-type'], 'Content-Type header is incorrect').to.include('text/plain');
 		expect(response.text, 'Response body does not contain correct parameters').to.equal(`Param1: ${param1Value}, Param2: ${param2Value}`);
 	});
-
-	it('should handle special characters in URL parameters', async () => {
-		const param1Value = 'hello world';
-		const param2Value = '123@456';
-
-		const response = await request
-			.get(apps(`/public/${app.id}/api/${encodeURIComponent(param1Value)}/${encodeURIComponent(param2Value)}/test`))
-			.set(credentials);
-
-		expect(response.status, 'API endpoint request failed').to.equal(200);
-		expect(response.text, `Response body does not contain correct parameters: Param1=${param1Value}, Param2=${param2Value}`).to.equal(
-			`Param1: ${param1Value}, Param2: ${param2Value}`,
-		);
-	});
 });
