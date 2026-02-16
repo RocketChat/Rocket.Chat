@@ -125,4 +125,28 @@ export class HttpAccessorTestFixture {
 
 		Expect(this.mockHttpBridge.doCall).toHaveBeenCalled().exactly(11);
 	}
+
+	@AsyncTest()
+	public async ssrfValidationOption() {
+		const http = new Http(this.mockAccessorManager, this.mockAppBridge, this.mockHttpExtender, this.mockAppId);
+		const doCallSpy = SpyOn(this.mockHttpBridge, 'doCall');
+
+		// Test with ssrfValidation enabled
+		await http.get('url-here', { ssrfValidation: true });
+		Expect(doCallSpy.call(0).args[0].ssrfValidation).toBe(true);
+
+		// Test with ssrfValidation disabled
+		await http.post('url-here', { ssrfValidation: false });
+		Expect(doCallSpy.call(1).args[0].ssrfValidation).toBe(false);
+
+		// Test with ssrfValidation undefined (default)
+		await http.put('url-here', {});
+		Expect(doCallSpy.call(2).args[0].ssrfValidation).toBe(undefined);
+
+		// Test with no options
+		await http.del('url-here');
+		Expect(doCallSpy.call(3).args[0].ssrfValidation).toBe(undefined);
+
+		Expect(this.mockHttpBridge.doCall).toHaveBeenCalled().exactly(4);
+	}
 }

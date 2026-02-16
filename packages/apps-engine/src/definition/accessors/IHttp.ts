@@ -61,6 +61,13 @@ export interface IHttpRequest {
 	 * https://nodejs.org/api/tls.html#tls_tls_connect_options_callback
 	 */
 	rejectUnauthorized?: boolean;
+	/**
+	 * If `true`, enables SSRF (Server-Side Request Forgery) validation for the HTTP request.
+	 * When enabled, the request URL will be checked against internal IP addresses and private networks.
+	 *
+	 * Default: `false` (SSRF validation is disabled by default for backward compatibility).
+	 */
+	ssrfValidation?: boolean;
 }
 
 export interface IHttpResponse {

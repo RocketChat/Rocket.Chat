@@ -66,6 +66,7 @@ export class Http implements IHttp {
 			method,
 			url,
 			request,
+			ssrfValidation: request.ssrfValidation,
 		});
 
 		for (const handler of this.httpExtender.getPreResponseHandlers()) {

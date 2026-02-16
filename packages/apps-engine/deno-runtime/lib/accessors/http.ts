@@ -77,6 +77,7 @@ export class Http implements IHttp {
 					method,
 					url,
 					request,
+					ssrfValidation: request.ssrfValidation,
 				},
 			],
 		}).catch((error) => {
