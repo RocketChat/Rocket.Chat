@@ -272,6 +272,10 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 			this.unregisterAudioLevelTracker();
 		}
 
+		if (this.stopped) {
+			return;
+		}
+
 		this._audioStatsTracker = setTimeout(() => this.collectAudioStats(), AUDIO_STATS_INTERVAL);
 	}
 

@@ -108,13 +108,13 @@ export class MediaStreamTrackWrapper {
 		this.emitter.emit('ended');
 	}
 
-	configureEvents() {
+	private configureEvents() {
 		this.track.addEventListener('mute', this._onTrackMute);
 		this.track.addEventListener('unmute', this._onTrackUnmute);
 		this.track.addEventListener('ended', this._onTrackEnded);
 	}
 
-	onTrackMute() {
+	private onTrackMute() {
 		if (this.cleared) {
 			return;
 		}
@@ -125,7 +125,7 @@ export class MediaStreamTrackWrapper {
 		}, MUTE_DELAY);
 	}
 
-	onTrackUnmute() {
+	private onTrackUnmute() {
 		this.clearMuteTimeout();
 
 		if (this.muteTriggered) {
@@ -133,7 +133,7 @@ export class MediaStreamTrackWrapper {
 		}
 	}
 
-	clearMuteTimeout() {
+	private clearMuteTimeout() {
 		if (!this.muteTimeoutHandler) {
 			return;
 		}
@@ -142,7 +142,7 @@ export class MediaStreamTrackWrapper {
 		this.muteTimeoutHandler = null;
 	}
 
-	clearEndedInterval() {
+	private clearEndedInterval() {
 		if (!this.endedIntervalHandler) {
 			return;
 		}

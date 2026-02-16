@@ -20,6 +20,7 @@ import type { IMediaSignalLogger } from '../definition/logger';
 import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
 import { isPendingState } from './services/states';
 import { serializeError } from './utils/serializeError';
+import type { MediaStreamIdentification } from '../definition/media';
 import type { IMediaStreamWrapper } from '../definition/media/IMediaStreamWrapper';
 import type {
 	ServerMediaSignal,
@@ -930,7 +931,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.updateClientState();
 	}
 
-	protected getLocalStreamIds() {
+	protected getLocalStreamIds(): MediaStreamIdentification[] {
 		return this.webrtcProcessor?.getLocalStreamIds() || [];
 	}
 

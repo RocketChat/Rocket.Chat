@@ -2,6 +2,7 @@ import type {
 	IMediaCall,
 	IMediaCallChannel,
 	MediaCallActorType,
+	MediaCallNegotiationStream,
 	MediaCallSignedActor,
 	MediaCallSignedContact,
 } from '@rocket.chat/core-typings';
@@ -122,7 +123,7 @@ export class UserActorSignalProcessor {
 	protected async saveLocalDescription(
 		sdp: RTCSessionDescriptionInit,
 		negotiationId: string,
-		streams?: { tag: string; id: string }[],
+		streams?: MediaCallNegotiationStream[],
 	): Promise<void> {
 		if (!this.signed) {
 			return;

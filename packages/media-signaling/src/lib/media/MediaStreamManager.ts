@@ -77,7 +77,7 @@ export class MediaStreamManager implements IMediaStreamManager {
 	private findStreamWrappersForRemoteTrack(track: MediaStreamTrack, streams: readonly MediaStream[]): MediaStreamWrapper[] {
 		const streamWrappers = streams
 			.map((stream) => this.getRemoteStreamById(stream.id))
-			.filter((wrapper) => Boolean(wrapper)) as MediaStreamWrapper[];
+			.filter((wrapper): wrapper is MediaStreamWrapper => Boolean(wrapper));
 
 		if (streamWrappers.length) {
 			this.logger?.debug('found stream wrappers for track');
