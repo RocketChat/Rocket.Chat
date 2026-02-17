@@ -747,7 +747,14 @@ const teardownWidget = () => {
 	stopNavigationTracking();
 	detachMessageListener();
 	detachMediaQueryListener();
+
+	const isWidgetOpened = widget?.dataset?.state === 'opened';
+	if (smallScreen && isWidgetOpened && typeof scrollPosition === 'number') {
+		document.documentElement.scrollTop = scrollPosition;
+	}
 	document.body.classList.remove('rc-livechat-mobile-full-screen');
+	currentPage.href = null;
+	currentPage.title = null;
 
 	if (widget?.parentNode) {
 		widget.parentNode.removeChild(widget);

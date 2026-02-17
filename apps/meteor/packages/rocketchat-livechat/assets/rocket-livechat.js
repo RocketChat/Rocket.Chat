@@ -571,6 +571,10 @@
 		iframe = null;
 		ready = false;
 		hookQueue = [];
+		if (currentPage) {
+			currentPage.href = null;
+			currentPage.title = null;
+		}
 	};
 
 	// hooks
