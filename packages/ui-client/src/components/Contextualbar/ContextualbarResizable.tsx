@@ -3,6 +3,7 @@ import { Palette, Box } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ResizeCallback } from 're-resizable';
 import { Resizable } from 're-resizable';
+import { useCallback } from 'react';
 import type { ComponentProps } from 'react';
 
 type ContextualbarResizableProps = { defaultWidth: string } & ComponentProps<typeof Resizable>;
@@ -18,9 +19,12 @@ const ContextualbarResizable = ({ defaultWidth, children, ...props }: Contextual
 		}
 	`;
 
-	const handleResize: ResizeCallback = (_e, _dir, elRef) => {
-		setContextualbarWidth(elRef.style.width);
-	};
+	const handleResize: ResizeCallback = useCallback(
+		(_e, _dir, elRef) => {
+			setContextualbarWidth(elRef.style.width);
+		},
+		[setContextualbarWidth],
+	);
 
 	return (
 		<Resizable
