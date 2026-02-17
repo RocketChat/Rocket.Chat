@@ -54,9 +54,13 @@ const AvatarCropModal = ({ src, mimeType, onCancel, onConfirm }: AvatarCropModal
     const dragRef = useRef<{ id: number; originX: number; originY: number; startX: number; startY: number }>();
 
     useEffect(() => {
+        let cancelled = false;
         const image = new Image();
         image.src = src;
         image.onload = () => {
+            if (cancelled) {
+                return;
+            }
             setDimensions({ width: image.naturalWidth, height: image.naturalHeight });
             const initialScale = Math.max(VIEWPORT / image.naturalWidth, VIEWPORT / image.naturalHeight);
             setScale(initialScale);
@@ -67,6 +71,19 @@ const AvatarCropModal = ({ src, mimeType, onCancel, onConfirm }: AvatarCropModal
                 y: (VIEWPORT - image.naturalHeight * initialScale) / 2,
             });
             setImageElement(image);
+        };
+        image.onerror = () => {
+            if (cancelled) {
+                return;
+            }
+            setDimensions({ width: 0, height: 0 });
+            setImageElement(undefined);
+        };
+
+        return () => {
+            cancelled = true;
+            image.onload = null;
+            image.onerror = null;
         };
     }, [src]);
 
@@ -137,36 +154,40 @@ const AvatarCropModal = ({ src, mimeType, onCancel, onConfirm }: AvatarCropModal
             return;
         }
 
-        const cropSize = Math.min(1024, Math.min(width, height));
-        const canvas = document.createElement('canvas');
-        canvas.width = cropSize;
-        canvas.height = cropSize;
-        const context = canvas.getContext('2d');
-        if (!context) {
-            return;
+        try {
+            const cropSize = Math.min(1024, Math.min(width, height));
+            const canvas = document.createElement('canvas');
+            canvas.width = cropSize;
+            canvas.height = cropSize;
+            const context = canvas.getContext('2d');
+            if (!context) {
+                throw new Error('Missing canvas context');
+            }
+
+            const sourceSize = VIEWPORT / scale;
+            const sx = (0 - position.x) / scale;
+            const sy = (0 - position.y) / scale;
+
+            context.fillStyle = '#fff';
+            context.fillRect(0, 0, cropSize, cropSize);
+            context.drawImage(imageElement, sx, sy, sourceSize, sourceSize, 0, 0, cropSize, cropSize);
+
+            const type = mimeType || 'image/png';
+            const dataUrl = canvas.toDataURL(type);
+            const blob = await new Promise<Blob>((resolve, reject) => {
+                canvas.toBlob((value) => {
+                    if (!value) {
+                        reject(new Error('Unable to crop image'));
+                        return;
+                    }
+                    resolve(value);
+                }, type);
+            });
+
+            onConfirm({ blob, dataUrl });
+        } catch (error) {
+            console.error('Avatar crop failed', error);
         }
-
-        const sourceSize = VIEWPORT / scale;
-        const sx = (0 - position.x) / scale;
-        const sy = (0 - position.y) / scale;
-
-        context.fillStyle = '#fff';
-        context.fillRect(0, 0, cropSize, cropSize);
-        context.drawImage(imageElement, sx, sy, sourceSize, sourceSize, 0, 0, cropSize, cropSize);
-
-        const type = mimeType || 'image/png';
-        const dataUrl = canvas.toDataURL(type);
-        const blob = await new Promise<Blob>((resolve, reject) => {
-            canvas.toBlob((value) => {
-                if (!value) {
-                    reject(new Error('Unable to crop image'));
-                    return;
-                }
-                resolve(value);
-            }, type);
-        });
-
-        onConfirm({ blob, dataUrl });
     }, [height, imageElement, mimeType, onConfirm, position.x, position.y, scale, width]);
 
     const containerStyle = useMemo(
@@ -197,9 +218,6 @@ const AvatarCropModal = ({ src, mimeType, onCancel, onConfirm }: AvatarCropModal
                     p={12}
                 >
                     <Box
-                        display='flex'
-                        alignItems='center'
-                        justifyContent='center'
                         bg='neutral-200'
                         style={{ width: VIEWPORT, height: VIEWPORT }}
                         className={containerStyle}
@@ -215,6 +233,9 @@ const AvatarCropModal = ({ src, mimeType, onCancel, onConfirm }: AvatarCropModal
                                 src={src}
                                 draggable={false}
                                 style={{
+                                    position: 'absolute',
+                                    left: 0,
+                                    top: 0,
                                     width: width * scale,
                                     height: height * scale,
                                     transform: `translate(${position.x}px, ${position.y}px)`,

@@ -13,7 +13,7 @@ const isAvatarReset = (avatarObj: AvatarInput): avatarObj is AvatarReset => avat
 const isServiceObject = (avatarObj: AvatarInput): avatarObj is AvatarServiceObject =>
 	!isAvatarReset(avatarObj) && typeof avatarObj === 'object' && 'service' in avatarObj;
 const isAvatarUrl = (avatarObj: AvatarInput): avatarObj is AvatarUrlObj =>
-	!isAvatarReset(avatarObj) && typeof avatarObj === 'object' && 'service' && 'avatarUrl' in avatarObj;
+	!isAvatarReset(avatarObj) && typeof avatarObj === 'object' && 'avatarUrl' in avatarObj;
 
 export const useUpdateAvatar = (avatarObj: AvatarInput, userId: IUser['_id']) => {
 	const { t } = useTranslation();
@@ -26,7 +26,10 @@ export const useUpdateAvatar = (avatarObj: AvatarInput, userId: IUser['_id']) =>
 			}
 
 			const etag = newETag ?? Date.now().toString();
-			Users.state.update(({ _id }) => _id === userId, (record) => ({ ...record, avatarETag: etag }));
+			const updated = Users.state.update(({ _id }) => _id === userId, (record) => ({ ...record, avatarETag: etag }));
+			if (!updated) {
+				console.warn('Avatar ETag bump skipped: user not found in store', { userId });
+			}
 		},
 		[userId],
 	);
