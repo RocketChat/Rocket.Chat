@@ -239,7 +239,7 @@
   "Accounts_Registration_InviteUrlType": "მოწვევის მისამართის სახეობა",
   "Accounts_Registration_InviteUrlType_Direct": "პირდაპირი",
   "Accounts_Registration_InviteUrlType_Proxy": "პროქსი",
-  "Accounts_RequireNameForSignUp": "სახელის მოთხოვნა რეგისტრაციისთვის",
+  "Accounts_RequireFullName": "სახელის მოთხოვნა რეგისტრაციისთვის",
   "Accounts_RequirePasswordConfirmation": "პაროლის დამოწმების მოთხოვნა",
   "Accounts_SearchFields": "ძებნაში გასათვალისწინებელი ველები",
   "Accounts_Send_Email_When_Activating": "მომხმარებლის გააქტიურებისას მისთვის ელ. ფოსტის გაგზავნა",

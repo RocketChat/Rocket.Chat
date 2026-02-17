@@ -199,7 +199,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Προκαθορισμένοι Ρόλοι για Υπηρεσίες Ελέγχου Ταυτότητας",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Προκαθορισμένοι ρόλοι (χωρισμένοι με κόμμα) που θα δοθούν στους χρήστες όταν θα κάνουν εγγραφή μέσω υπηρεσιών ελέγχου ταυτότητας",
   "Accounts_Registration_AuthenticationServices_Enabled": "Εγγραφή με Υπηρεσίες Ελέγχου Ταυτότητας",
-  "Accounts_RequireNameForSignUp": "Απαίτηση Ονόματος Για Εγγραφή",
+  "Accounts_RequireFullName": "Απαίτηση Ονόματος Για Εγγραφή",
   "Accounts_RequirePasswordConfirmation": "Απαίτηση Επιβεβαίωσης Κωδικού",
   "Accounts_SearchFields": "Πεδία που θα ληφθούν υπ' όψη στην Αναζήτηση",
   "Accounts_SetDefaultAvatar": "Ορισμός Προκαθορισμένου Avatar",

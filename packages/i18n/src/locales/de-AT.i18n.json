@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Standardrollen für Authentifizierungsdienste",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Standardrollen (durch Kommas getrennte Benutzer) werden bei der Registrierung über Authentifizierungsdienste angegeben",
   "Accounts_Registration_AuthenticationServices_Enabled": "Anmeldung mit Authentifizierungsdiensten",
-  "Accounts_RequireNameForSignUp": "Namen für die Anmeldung verlangen",
+  "Accounts_RequireFullName": "Namen für die Anmeldung verlangen",
   "Accounts_RequirePasswordConfirmation": "Passwortbestätigung erforderlich",
   "Accounts_SearchFields": "Zu berücksichtigende Felder in der Suche",
   "Accounts_SetDefaultAvatar": "Setze Standard-Avatar",

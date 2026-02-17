@@ -254,7 +254,7 @@
   "Accounts_Registration_Users_Default_Roles": "Rols predeterminats per als usuaris",
   "Accounts_Registration_Users_Default_Roles_Description": "S'atorgaran rols predeterminats (separats per comes) als usuaris quan es registrin a través del registre manual (fins i tot a través d'API)",
   "Accounts_Registration_Users_Default_Roles_Enabled": "Habilitar rols predeterminats per al registre manual",
-  "Accounts_RequireNameForSignUp": "Requerir el nom per registrar-se",
+  "Accounts_RequireFullName": "Requerir el nom per registrar-se",
   "Accounts_RequirePasswordConfirmation": "Requereix confirmació de la contrasenya",
   "Accounts_RoomAvatarExternalProviderUrl": "Room URL de l'proveïdor extern d'Avatar",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "Exemple: `https://acme.com/api/v1/{roomId}`",

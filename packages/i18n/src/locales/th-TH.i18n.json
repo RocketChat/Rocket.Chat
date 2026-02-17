@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "บทบาทเริ่มต้นสำหรับบริการการตรวจสอบสิทธิ์",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "ผู้ใช้ที่เป็นค่าเริ่มต้น (ผู้ใช้จะคั่นด้วยเครื่องหมายจุลภาค) จะได้รับเมื่อลงทะเบียนผ่านบริการพิสูจน์ตัวตน",
   "Accounts_Registration_AuthenticationServices_Enabled": "การลงทะเบียนกับบริการรับรองความถูกต้อง",
-  "Accounts_RequireNameForSignUp": "ต้องการชื่อสำหรับสมัครสมาชิก",
+  "Accounts_RequireFullName": "ต้องการชื่อสำหรับสมัครสมาชิก",
   "Accounts_RequirePasswordConfirmation": "ต้องได้รับการยืนยันรหัสผ่าน",
   "Accounts_SearchFields": "เขตข้อมูลที่ต้องพิจารณาในการค้นหา",
   "Accounts_SetDefaultAvatar": "ตั้งค่า Avatar เริ่มต้น",

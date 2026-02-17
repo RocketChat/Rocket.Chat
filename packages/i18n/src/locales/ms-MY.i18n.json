@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Peranan lalai untuk Perkhidmatan Pengesahan",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Pengguna lalai (dipisahkan koma) akan diberikan semasa mendaftar melalui perkhidmatan pengesahan",
   "Accounts_Registration_AuthenticationServices_Enabled": "Pendaftaran dengan Pengesahan Perkhidmatan",
-  "Accounts_RequireNameForSignUp": "Memerlukan Nama Untuk Daftar",
+  "Accounts_RequireFullName": "Memerlukan Nama Untuk Daftar",
   "Accounts_RequirePasswordConfirmation": "Memerlukan Pengesahan Kata Laluan",
   "Accounts_SearchFields": "Medan untuk Pertimbangkan dalam Carian",
   "Accounts_SetDefaultAvatar": "Tetapkan Default Avatar",

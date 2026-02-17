@@ -268,7 +268,7 @@
   "Accounts_Registration_Users_Default_Roles": "Käyttäjien oletusroolit",
   "Accounts_Registration_Users_Default_Roles_Description": "Oletusroolit (erotettu pilkulla), jotka annetaan käyttäjille rekisteröitäessä manuaalisesti (myös API)",
   "Accounts_Registration_Users_Default_Roles_Enabled": "Ota käyttöön manuaalisen rekisteröinnin oletusroolit",
-  "Accounts_RequireNameForSignUp": "Edellytä nimeä rekisteröidyttäessä",
+  "Accounts_RequireFullName": "Edellytä nimeä rekisteröidyttäessä",
   "Accounts_RequirePasswordConfirmation": "Edellytä salasanan vahvistusta",
   "Accounts_RoomAvatarExternalProviderUrl": "Huoneen avatarin ulkoisen toimittajan URL-osoite",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "Esimerkki: `https://acme.com/api/v1/{roomId}`",

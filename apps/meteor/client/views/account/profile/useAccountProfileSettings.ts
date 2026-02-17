@@ -8,7 +8,7 @@ export const useAccountProfileSettings = () => {
 	const allowEmailChange = useSetting('Accounts_AllowEmailChange', true);
 
 	const allowUserAvatarChange = useSetting('Accounts_AllowUserAvatarChange', true);
-	const requireName = useSetting('Accounts_RequireNameForSignUp', true);
+	const requireName = useSetting('Accounts_RequireFullName', true);
 	const namesRegexSetting = useSetting('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.]+');
 
 	const namesRegex = useMemo(() => new RegExp(`^${namesRegexSetting}$`), [namesRegexSetting]);

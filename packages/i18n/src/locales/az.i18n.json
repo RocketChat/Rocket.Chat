@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Kimlik Doğrulama Xidmətləri üçün Standart Roles",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Doğrulama xidmətləri vasitəsilə qeydiyyatdan keçərkən standart rollar (vergüllə ayrılmış) istifadəçilər veriləcək",
   "Accounts_Registration_AuthenticationServices_Enabled": "Doğrulama Xidmətləri ilə qeydiyyatdan keçin",
-  "Accounts_RequireNameForSignUp": "Qeydiyyat üçün adı tələb edin",
+  "Accounts_RequireFullName": "Qeydiyyat üçün adı tələb edin",
   "Accounts_RequirePasswordConfirmation": "Parolun Təsdiqini tələb edin",
   "Accounts_SearchFields": "Sahələr axtarışda düşünün",
   "Accounts_SetDefaultAvatar": "Default Avatar seçin",

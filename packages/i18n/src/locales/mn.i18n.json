@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Баталгаажуулалтын үйлчилгээний үндсэн үүрэг",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Баталгаажуулалтын үйлчилгээнд бүртгүүлэх үед анхдагч үүрэг (таслалаар тусгаарлагдсан) хэрэглэгчид өгөх болно",
   "Accounts_Registration_AuthenticationServices_Enabled": "Баталгаажуулалтын үйлчилгээнд бүртгүүлэх",
-  "Accounts_RequireNameForSignUp": "Бүртгүүлэхээр нэр өгөх шаардлагатай",
+  "Accounts_RequireFullName": "Бүртгүүлэхээр нэр өгөх шаардлагатай",
   "Accounts_RequirePasswordConfirmation": "Нууц үг баталгаажуулах шаардлагатай",
   "Accounts_SearchFields": "Хайлт хийх талаархи талбарууд",
   "Accounts_SetDefaultAvatar": "Default Хуудсыг тохируулж болно",

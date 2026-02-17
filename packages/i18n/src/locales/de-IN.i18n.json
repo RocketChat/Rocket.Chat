@@ -217,7 +217,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Standardrolle bei Nutzung von Authentifizierungsdiensten",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Standardrollen, die Benutzern zugewiesen werden, wenn diese sich über Authentifizierungsdienste registrieren",
   "Accounts_Registration_AuthenticationServices_Enabled": "Registrierung mit Authentifizierungsdiensten",
-  "Accounts_RequireNameForSignUp": "Namen für die Anmeldung verlangen",
+  "Accounts_RequireFullName": "Namen für die Anmeldung verlangen",
   "Accounts_RequirePasswordConfirmation": "Passwortbestätigung erforderlich",
   "Accounts_SearchFields": "Felder, die in der Suche berücksichtigt werden sollen",
   "Accounts_Send_Email_When_Activating": "Eine E-Mail an den Benutzer senden, wenn dieser aktiviert wurde. ",

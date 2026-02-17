@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Роли по подразбиране за услугите за удостоверяване",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Ролите по подразбиране (разделени със запетая) ще се дават при регистриране чрез услуги за удостоверяване",
   "Accounts_Registration_AuthenticationServices_Enabled": "Регистрация с услуги за удостоверяване",
-  "Accounts_RequireNameForSignUp": "Изисква се име за регистрация",
+  "Accounts_RequireFullName": "Изисква се име за регистрация",
   "Accounts_RequirePasswordConfirmation": "Изисква потвърждение на паролата",
   "Accounts_SearchFields": "Полетата, които да разгледате в търсенето",
   "Accounts_SetDefaultAvatar": "Задайте аватар по подразбиране",

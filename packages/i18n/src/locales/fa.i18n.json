@@ -233,7 +233,7 @@
   "Accounts_Registration_InviteUrlType": "نوع آدرس دعوت",
   "Accounts_Registration_InviteUrlType_Direct": "مستقیم",
   "Accounts_Registration_InviteUrlType_Proxy": "پروکسی",
-  "Accounts_RequireNameForSignUp": "برای ثبت نام به نام نیاز است",
+  "Accounts_RequireFullName": "برای ثبت نام به نام نیاز است",
   "Accounts_RequirePasswordConfirmation": "نیاز به تایید رمز عبور",
   "Accounts_RoomAvatarExternalProviderUrl": "URL ارایه دهنده خارجی تصویر اتاق",
   "Accounts_SearchFields": "بخش های در نظر گرفتن در جستجو",

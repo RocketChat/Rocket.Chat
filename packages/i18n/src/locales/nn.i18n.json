@@ -281,7 +281,7 @@
   "Accounts_Registration_Users_Default_Roles": "Standard roller for brukere",
   "Accounts_Registration_Users_Default_Roles_Description": "Standardroller (kommaseparert) brukere vil bli gitt ved registrering gjennom manuell registrering (inkludert via API)",
   "Accounts_Registration_Users_Default_Roles_Enabled": "Aktiver standardroller for manuell registrering",
-  "Accounts_RequireNameForSignUp": "Krever navn for registrering",
+  "Accounts_RequireFullName": "Krever navn for registrering",
   "Accounts_RequirePasswordConfirmation": "Kreve passordbekreftelse",
   "Accounts_RoomAvatarExternalProviderUrl": "Room Avatar ekstern tilbyder URL",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "Eksempel: `https://acme.com/api/v1/{roomId}`",

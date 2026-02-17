@@ -355,7 +355,7 @@
   "Accounts_Registration_Users_Default_Roles": "Default Roles for Users",
   "Accounts_Registration_Users_Default_Roles_Description": "Default roles (comma-separated) users will be given when registering through manual registration (including via API)",
   "Accounts_Registration_Users_Default_Roles_Enabled": "Enable Default Roles for Manual Registration",
-  "Accounts_RequireNameForSignUp": "Require Name For Signup",
+  "Accounts_RequireFullName": "Require Name For Signup",
   "Accounts_RequirePasswordConfirmation": "Require Password Confirmation",
   "Accounts_RoomAvatarExternalProviderUrl": "Room Avatar External Provider URL",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "Example: `https://acme.com/api/v1/{roomId}`",

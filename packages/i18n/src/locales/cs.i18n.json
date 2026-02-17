@@ -241,7 +241,7 @@
   "Accounts_Registration_InviteUrlType": "Typ URL pozvánky",
   "Accounts_Registration_InviteUrlType_Direct": "Přímý",
   "Accounts_Registration_InviteUrlType_Proxy": "Proxy",
-  "Accounts_RequireNameForSignUp": "Vyžadovat jméno",
+  "Accounts_RequireFullName": "Vyžadovat jméno",
   "Accounts_RequirePasswordConfirmation": "Vyžadovat potvrzení hesla",
   "Accounts_SearchFields": "Pole zohledněná ve vyhledávání",
   "Accounts_Send_Email_When_Activating": "Po aktivaci odeslat uživateli e-mail ",

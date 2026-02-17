@@ -267,7 +267,7 @@
   "Accounts_Registration_Users_Default_Roles": "Domyślne role dla użytkowników",
   "Accounts_Registration_Users_Default_Roles_Description": "Domyślne role (rozdzielone przecinkami), które zostaną przypisane użytkownikom podczas rejestracji ręcznej (w tym przez API)",
   "Accounts_Registration_Users_Default_Roles_Enabled": "Włącz domyślne role dla rejestracji ręcznej",
-  "Accounts_RequireNameForSignUp": "Wymagaj podania nazwy podczas rejestracji",
+  "Accounts_RequireFullName": "Wymagaj podania nazwy podczas rejestracji",
   "Accounts_RequirePasswordConfirmation": "Wymagaj potwierdzenia hasła",
   "Accounts_RoomAvatarExternalProviderUrl": "URL zewnętrznego dostawcy awatarów w pokoju Room",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "Przykład: „https://acme.com/api/v1/{roomId}”",

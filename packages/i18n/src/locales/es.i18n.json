@@ -256,7 +256,7 @@
   "Accounts_Registration_Users_Default_Roles": "Roles por defecto para usuarios",
   "Accounts_Registration_Users_Default_Roles_Description": "Roles por defecto (separados por comas) que se otorgarán a los usuarios cuando se registren de forma manual (incluso vía API).",
   "Accounts_Registration_Users_Default_Roles_Enabled": "Habilitar roles por defecto para registro manual",
-  "Accounts_RequireNameForSignUp": "Requerir un nombre para el registro",
+  "Accounts_RequireFullName": "Requerir un nombre para el registro",
   "Accounts_RequirePasswordConfirmation": "Requerir confirmación de contraseña",
   "Accounts_RoomAvatarExternalProviderUrl": "URL del proveedor externo del avatar de Room",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "Ejemplo: https://acme.com/api/v1/{roomId}",

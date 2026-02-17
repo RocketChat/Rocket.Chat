@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Privzete vloge za storitve overjanja",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Ob registraciji s storitvami preverjanja prisotnosti bodo uporabniki prejeli privzete naloge (ločene z vejico)",
   "Accounts_Registration_AuthenticationServices_Enabled": "Registracija s storitvami preverjanja prisotnosti",
-  "Accounts_RequireNameForSignUp": "Zahtevaj ime za prijavo ",
+  "Accounts_RequireFullName": "Zahtevaj ime za prijavo ",
   "Accounts_RequirePasswordConfirmation": "Zahtevaj potrditev gesla",
   "Accounts_SearchFields": "Relevantna področja za iskanje",
   "Accounts_SetDefaultAvatar": "Nastavi privzeti avatar",

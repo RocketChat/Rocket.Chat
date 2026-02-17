@@ -355,7 +355,7 @@
   "Accounts_Registration_Users_Default_Roles": "用户默认角色",
   "Accounts_Registration_Users_Default_Roles_Description": "通过手动注册（含 API）注册的用户将被赋予的默认角色（以逗号分隔）",
   "Accounts_Registration_Users_Default_Roles_Enabled": "启用手动注册默认角色",
-  "Accounts_RequireNameForSignUp": "姓名必须填写",
+  "Accounts_RequireFullName": "姓名必须填写",
   "Accounts_RequirePasswordConfirmation": "请输入确认密码",
   "Accounts_RoomAvatarExternalProviderUrl": "房间头像外部提供者 URL",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "示例: `https://acme.com/api/v1/{roomId}`",

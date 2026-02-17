@@ -235,7 +235,7 @@
   "Accounts_Registration_InviteUrlType": "សូមអញ្ជើញប្រភេទ URL",
   "Accounts_Registration_InviteUrlType_Direct": "ដោយផ្ទាល់",
   "Accounts_Registration_InviteUrlType_Proxy": "ប្រូកស៊ី",
-  "Accounts_RequireNameForSignUp": "ត្រូវការ Name សម្រាប់ការចុះឈ្មោះ",
+  "Accounts_RequireFullName": "ត្រូវការ Name សម្រាប់ការចុះឈ្មោះ",
   "Accounts_RequirePasswordConfirmation": "ទាមទារការបញ្ជាក់ពាក្យសម្ងាត់",
   "Accounts_SearchFields": "វាលដែលត្រូវពិចារណាក្នុងការស្វែងរក",
   "Accounts_Send_Email_When_Activating": "ផ្ញើអ៊ីមែលទៅអ្នកប្រើនៅពេលអ្នកប្រើត្រូវបានធ្វើឱ្យសកម្ម",

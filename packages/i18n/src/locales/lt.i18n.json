@@ -215,7 +215,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Numatytos funkcijos autentifikavimo tarnyboms",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Numatytieji roles (atskirti kableliais) vartotojai bus įvedami registruojant autentifikavimo paslaugas",
   "Accounts_Registration_AuthenticationServices_Enabled": "Registracija naudojant autentifikavimo paslaugas",
-  "Accounts_RequireNameForSignUp": "Reikalauti registracijos vardo",
+  "Accounts_RequireFullName": "Reikalauti registracijos vardo",
   "Accounts_RequirePasswordConfirmation": "Reikalauti slaptažodžio patvirtinimo",
   "Accounts_SearchFields": "Laukai, kuriuos reikia apsvarstyti paieškoje",
   "Accounts_Send_Email_When_Activating": "Siųsti naudotojui el. laišką, kai naudotojas aktyvuojamas",

@@ -225,7 +225,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Kimlik Doğrulama Hizmetleri için varsayılan roller",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Kimlik doğrulama hizmetlerini kullanarak kayıt olan kullanıcılara verilecek varsayılan roller (virgülle ayrılmış olmalıdır)",
   "Accounts_Registration_AuthenticationServices_Enabled": "Kimlik Doğrulama Hizmetleri ile kayıt etkin",
-  "Accounts_RequireNameForSignUp": "Kaydolmak için ad gerekli olsun",
+  "Accounts_RequireFullName": "Kaydolmak için ad gerekli olsun",
   "Accounts_RequirePasswordConfirmation": "Şifre doğrulaması gerekli olsun",
   "Accounts_SearchFields": "Arama sırasında kullanılacak alanlar",
   "Accounts_Send_Email_When_Activating": "Kullanıcı etkinleştirildiğinde kullanıcıya e-posta gönderilsin",

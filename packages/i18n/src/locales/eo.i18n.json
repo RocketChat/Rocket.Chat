@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Defaŭlta Roloj por Aŭtentikaj Servoj",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Defaŭltaj roloj (komo-disigitaj) uzantoj estos donitaj al la registrado per aŭtentikaj servoj",
   "Accounts_Registration_AuthenticationServices_Enabled": "Aliĝilo kun Aŭtentikaj Servoj",
-  "Accounts_RequireNameForSignUp": "Postulas nomon por subskribo",
+  "Accounts_RequireFullName": "Postulas nomon por subskribo",
   "Accounts_RequirePasswordConfirmation": "Postuli Pasvorton Konfirmon",
   "Accounts_SearchFields": "Kampoj por Konsideri en Serĉo",
   "Accounts_SetDefaultAvatar": "Ŝanĝu Defaŭlta Avatar",

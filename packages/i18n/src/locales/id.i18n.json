@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Peran Default untuk Layanan Otentikasi",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Peran default (comma-separated) pengguna akan diberikan saat mendaftar melalui layanan otentikasi",
   "Accounts_Registration_AuthenticationServices_Enabled": "Pendaftaran dengan Authentication Services",
-  "Accounts_RequireNameForSignUp": "Membutuhkan Nama Untuk Pendaftaran",
+  "Accounts_RequireFullName": "Membutuhkan Nama Untuk Pendaftaran",
   "Accounts_RequirePasswordConfirmation": "Memerlukan Password Confirmation",
   "Accounts_SearchFields": "Bidang yang Harus Dipertimbangkan dalam Pencarian",
   "Accounts_SetDefaultAvatar": "Set Default Avatar",

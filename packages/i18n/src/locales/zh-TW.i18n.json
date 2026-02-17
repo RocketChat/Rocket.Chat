@@ -254,7 +254,7 @@
   "Accounts_Registration_Users_Default_Roles": "預設使用者的身份",
   "Accounts_Registration_Users_Default_Roles_Description": "透過手動註冊（包括透過API）註冊時，將給予預設角色（逗號分隔）的使用者",
   "Accounts_Registration_Users_Default_Roles_Enabled": "啟用預設身份給手動註冊",
-  "Accounts_RequireNameForSignUp": "註冊時姓名為必填",
+  "Accounts_RequireFullName": "註冊時姓名為必填",
   "Accounts_RequirePasswordConfirmation": "密碼需再次確認",
   "Accounts_RoomAvatarExternalProviderUrl": "Room 大頭貼外部提供網站",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "例如: `https://acme.com/api/v1/{roomId}`",

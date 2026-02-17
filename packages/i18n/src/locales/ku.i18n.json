@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Roles Destnîşan ji bo Xizmetkirina Serastkirin",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Bikarhênerên default-defa (bikarhênerên dabeşkirî yên cuda) dê di dema ku xizmetên rastdariyê de qeydkirina qeydkirinê bên dayîn",
   "Accounts_Registration_AuthenticationServices_Enabled": "Registration bi Services Têketin",
-  "Accounts_RequireNameForSignUp": "Hewce Name Ji bo Signup",
+  "Accounts_RequireFullName": "Hewce Name Ji bo Signup",
   "Accounts_RequirePasswordConfirmation": "Piştre Şîfreya Pêdivî ye",
   "Accounts_SearchFields": "Zeviyên ku li Navîgasyon lêgerîn",
   "Accounts_SetDefaultAvatar": "Setup Avatar",

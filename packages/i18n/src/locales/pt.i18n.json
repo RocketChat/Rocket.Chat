@@ -236,7 +236,7 @@
   "Accounts_Registration_InviteUrlType": "Tipo de URL de convite",
   "Accounts_Registration_InviteUrlType_Direct": "Direto",
   "Accounts_Registration_InviteUrlType_Proxy": "Proxy",
-  "Accounts_RequireNameForSignUp": "O nome é obrigatório para registo",
+  "Accounts_RequireFullName": "O nome é obrigatório para registo",
   "Accounts_RequirePasswordConfirmation": "Requer Confirmação de Senha",
   "Accounts_SearchFields": "Campos a considerar na busca",
   "Accounts_Send_Email_When_Activating": "Enviar email para o utilizador quando este for ativado",

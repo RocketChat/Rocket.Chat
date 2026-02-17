@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "அங்கீகார சேவைகளுக்கான இயல்புநிலைப் பாத்திரங்கள்",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "அங்கீகார சேவைகளின் மூலம் பதிவு செய்யும் போது இயல்புநிலை பாத்திரங்கள் (கமா பிரிக்கப்பட்ட) பயனர்கள் வழங்கப்படும்",
   "Accounts_Registration_AuthenticationServices_Enabled": "அங்கீகரிப்பு சேவைகள் பதிவு",
-  "Accounts_RequireNameForSignUp": "இணைந்ததற்கு பெயர் தேவை",
+  "Accounts_RequireFullName": "இணைந்ததற்கு பெயர் தேவை",
   "Accounts_RequirePasswordConfirmation": "கடவுச்சொல் உறுதிப்படுத்தல் தேவை",
   "Accounts_SearchFields": "தேடலில் கவனம் செலுத்துவதற்கான புலங்கள்",
   "Accounts_SetDefaultAvatar": "Default Avatar ஐ அமை",

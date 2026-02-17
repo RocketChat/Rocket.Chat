@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Rolau Diofyn ar gyfer Gwasanaethau Dilysu",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Rhoddir rolau diofyn (defnyddwyr wedi'u cymalau) wrth gofrestru trwy wasanaethau dilysu",
   "Accounts_Registration_AuthenticationServices_Enabled": "Cofrestru gyda Gwasanaethau Dilysu",
-  "Accounts_RequireNameForSignUp": "Gofynnol Enw Ar gyfer Cofrestru",
+  "Accounts_RequireFullName": "Gofynnol Enw Ar gyfer Cofrestru",
   "Accounts_RequirePasswordConfirmation": "Angen Cadarnhad Cyfrinair",
   "Accounts_SearchFields": "Meysydd i'w hystyried wrth chwilio",
   "Accounts_SetDefaultAvatar": "Gosod Avatar Diofyn",

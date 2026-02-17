@@ -254,7 +254,7 @@
   "Accounts_Registration_Users_Default_Roles": "ユーザーのデフォルトロール",
   "Accounts_Registration_Users_Default_Roles_Description": "手動による登録時に、デフォルトロール（コンマ区切り） のユーザーが指定されます",
   "Accounts_Registration_Users_Default_Roles_Enabled": "手動登録のデフォルトロールを有効にする",
-  "Accounts_RequireNameForSignUp": "登録時にユーザー名が必要",
+  "Accounts_RequireFullName": "登録時にユーザー名が必要",
   "Accounts_RequirePasswordConfirmation": "パスワードの確認が必要",
   "Accounts_RoomAvatarExternalProviderUrl": "Roomアバターの外部プロバイダーURL",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "例：https://acme.com/api/v1/{roomId}",

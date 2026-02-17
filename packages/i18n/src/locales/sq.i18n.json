@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Rolet e Parazgjedhura për Shërbimet e Autentifikimit",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Rolet e paracaktuara (ndarjet me presje) do të jepen kur regjistrohen përmes shërbimeve të legalizuara",
   "Accounts_Registration_AuthenticationServices_Enabled": "Regjistrimi me Authentication Shërbimet",
-  "Accounts_RequireNameForSignUp": "Nevojitet emri për regjistrim",
+  "Accounts_RequireFullName": "Nevojitet emri për regjistrim",
   "Accounts_RequirePasswordConfirmation": "Kërko konfirmimin e fjalëkalimit",
   "Accounts_SearchFields": "Fushat që duhet të shqyrtohen në kërkim",
   "Accounts_SetDefaultAvatar": "Vendos Default Avatar",

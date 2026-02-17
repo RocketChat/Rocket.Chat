@@ -254,7 +254,7 @@
   "Accounts_Registration_Users_Default_Roles": "الأدوار الافتراضية للمستخدمين",
   "Accounts_Registration_Users_Default_Roles_Description": "سيتم منح المستخدمين الأدوار الافتراضية (مفصولة بفواصل) عند التسجيل من خلال التسجيل اليدوي (بما في ذلك عبر واجهة برمجة التطبيقات)",
   "Accounts_Registration_Users_Default_Roles_Enabled": "تمكين الأدوار الافتراضية للتسجيل اليدوي",
-  "Accounts_RequireNameForSignUp": "يلزم وجود اسم للاشتراك",
+  "Accounts_RequireFullName": "يلزم وجود اسم للاشتراك",
   "Accounts_RequirePasswordConfirmation": "يلزم تأكيد كلمة المرور",
   "Accounts_RoomAvatarExternalProviderUrl": "عنوان URL للموفر الخارجي للصور الرمزية لـ Room",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "مثال: \"‎https://acme.com/api/v1/{roomId}‎\"",

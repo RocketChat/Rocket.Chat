@@ -206,7 +206,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Ролі па змаўчанні для службы аўтэнтыфікацыі",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Ролі па змаўчанні (падзеленыя коскай) карыстальнікі будуць прадастаўлены пры рэгістрацыі праз службу аўтэнтыфікацыі",
   "Accounts_Registration_AuthenticationServices_Enabled": "Рэгістрацыя з Authentication Services",
-  "Accounts_RequireNameForSignUp": "Патрабуецца назва для Signup",
+  "Accounts_RequireFullName": "Патрабуецца назва для Signup",
   "Accounts_RequirePasswordConfirmation": "Патрабуецца пацверджанне пароля",
   "Accounts_SearchFields": "Палі для разгляду ў пошуку",
   "Accounts_SetDefaultAvatar": "Ўсталяваць па змаўчанні Аватар",

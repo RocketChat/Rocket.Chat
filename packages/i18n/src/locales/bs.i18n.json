@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Zadane uloge za usluge provjere autentičnosti",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Zadane uloge (odvojene zarezom) korisnici će se dati prilikom registracije putem usluga provjere autentičnosti",
   "Accounts_Registration_AuthenticationServices_Enabled": "Registracija s uslugama provjere autentičnosti",
-  "Accounts_RequireNameForSignUp": "Zahtijevaj ime pri prijavi",
+  "Accounts_RequireFullName": "Zahtijevaj ime pri prijavi",
   "Accounts_RequirePasswordConfirmation": "Zahtjevaj potvrdu lozinke",
   "Accounts_SearchFields": "Polja koja treba razmotriti u pretraživanju",
   "Accounts_SetDefaultAvatar": "Namjesti zadani Avatar",

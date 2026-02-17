@@ -219,7 +219,7 @@
   "Accounts_Registration_InviteUrlType_Proxy": "Proxy",
   "Accounts_Registration_Users_Default_Roles": "Vai trò mặc định cho người dùng",
   "Accounts_Registration_Users_Default_Roles_Enabled": "Bật vai trò mặc định để đăng ký thủ công",
-  "Accounts_RequireNameForSignUp": "Yêu cầu tên khi đăng ký",
+  "Accounts_RequireFullName": "Yêu cầu tên khi đăng ký",
   "Accounts_RequirePasswordConfirmation": "Yêu cầu xác nhận mật khẩu",
   "Accounts_SearchFields": "Các trường cho phép tìm kiếm",
   "Accounts_Send_Email_When_Activating": "Gửi email cho người dùng khi người dùng được kích hoạt",

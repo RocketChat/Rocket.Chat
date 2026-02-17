@@ -53,7 +53,7 @@ export const validateUserData = makeFunction(async (userId: IUser['_id'], userDa
 		});
 	}
 
-	if (settings.get('Accounts_RequireNameForSignUp') && !isUpdateUserData(userData) && !trim(userData.name)) {
+	if (settings.get('Accounts_RequireFullName') && !isUpdateUserData(userData) && !trim(userData.name)) {
 		throw new MeteorError('error-the-field-is-required', 'The field Name is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Name',

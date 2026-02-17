@@ -198,7 +198,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Noklusējuma lomas autentifikācijas pakalpojumiem",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Noklusējuma lomas (ar komatu atdalītās) lietotājiem tiks dotas reģistrējoties, izmantojot autentifikācijas pakalpojumus",
   "Accounts_Registration_AuthenticationServices_Enabled": "Reģistrācija ar Autentifikācijas pakalpojumiem",
-  "Accounts_RequireNameForSignUp": "Pieprasīt vārdu reģistrācijai",
+  "Accounts_RequireFullName": "Pieprasīt vārdu reģistrācijai",
   "Accounts_RequirePasswordConfirmation": "Pieprasīt paroles apstiprināšanu",
   "Accounts_SearchFields": "Lauki, kas jāņem vērā meklēšanā",
   "Accounts_SetDefaultAvatar": "Iestatīt noklusējuma avataru",

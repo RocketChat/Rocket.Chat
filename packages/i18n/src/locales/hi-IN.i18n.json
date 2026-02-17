@@ -274,7 +274,7 @@
   "Accounts_Registration_Users_Default_Roles": "उपयोगकर्ताओं के लिए डिफ़ॉल्ट भूमिकाएँ",
   "Accounts_Registration_Users_Default_Roles_Description": "मैन्युअल पंजीकरण (एपीआई सहित) के माध्यम से पंजीकरण करते समय उपयोगकर्ताओं को डिफ़ॉल्ट भूमिकाएं (अल्पविराम से अलग) दी जाएंगी",
   "Accounts_Registration_Users_Default_Roles_Enabled": "मैन्युअल पंजीकरण के लिए डिफ़ॉल्ट भूमिकाएँ सक्षम करें",
-  "Accounts_RequireNameForSignUp": "साइनअप के लिए नाम की आवश्यकता है",
+  "Accounts_RequireFullName": "साइनअप के लिए नाम की आवश्यकता है",
   "Accounts_RequirePasswordConfirmation": "पासवर्ड पुष्टिकरण की आवश्यकता है",
   "Accounts_RoomAvatarExternalProviderUrl": "कक्ष अवतार बाहरी प्रदाता यूआरएल",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "उदाहरण: `https://acme.com/api/v1/{roomId}`",

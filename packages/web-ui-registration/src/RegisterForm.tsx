@@ -36,7 +36,7 @@ type LoginRegisterPayload = {
 export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const { t } = useTranslation();
 
-	const requireNameForRegister = useSetting('Accounts_RequireNameForSignUp', true);
+	const requireNameForRegister = useSetting('Accounts_RequireFullName', true);
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation', true);
 	const manuallyApproveNewUsersRequired = useSetting('Accounts_ManuallyApproveNewUsers', false);
 

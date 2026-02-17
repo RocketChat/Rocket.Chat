@@ -265,7 +265,7 @@
   "Accounts_Registration_Users_Default_Roles": "Роли по умолчанию для пользователей",
   "Accounts_Registration_Users_Default_Roles_Description": "Роли по умолчанию (разделенные запятыми), которые пользователи будут получать при регистрации вручную (в том числе через API)",
   "Accounts_Registration_Users_Default_Roles_Enabled": "Включение ролей по умолчанию для ручной регистрации",
-  "Accounts_RequireNameForSignUp": "Требуется имя для регистрации",
+  "Accounts_RequireFullName": "Требуется имя для регистрации",
   "Accounts_RequirePasswordConfirmation": "Запрашивать подтверждение пароля",
   "Accounts_RoomAvatarExternalProviderUrl": "URL внешнего поставщика аватаров",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "Пример: `https://acme.com/api/v1/{roomId}`",

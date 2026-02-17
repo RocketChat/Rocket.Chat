@@ -1,12 +1,26 @@
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { InstanceStatus } from '@rocket.chat/instance-status';
-import { getHeader } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
+import type { IncomingHttpHeaders } from 'http';
 
 import type { ILoginAttempt } from '../../app/authentication/server/ILoginAttempt';
 import { deviceManagementEvents } from '../services/device-management/events';
 import { sauEvents } from '../services/sauMonitor/events';
+
+type HeaderLike = IncomingHttpHeaders | Headers | Record<string, string | string[] | undefined>;
+
+const getHeader = <T extends string | string[] = string>(headers: HeaderLike, key: string): T => {
+	if (!headers) {
+		return '' as T;
+	}
+
+	if (headers instanceof Headers) {
+		return (headers.get(key) ?? '') as T;
+	}
+
+	return (headers[key] ?? '') as T;
+};
 
 Accounts.onLogin((info: ILoginAttempt) => {
 	const {

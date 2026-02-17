@@ -281,7 +281,7 @@
   "Accounts_Registration_Users_Default_Roles": "Funções padrão para usuários",
   "Accounts_Registration_Users_Default_Roles_Description": "Funções padrão (separados por vírgulas) concedidos aos usuários ao se registrarem de forma manual (incluindo via API)",
   "Accounts_Registration_Users_Default_Roles_Enabled": "Ativar funções padrão para registro manual",
-  "Accounts_RequireNameForSignUp": "Nome é obrigatório para cadastro",
+  "Accounts_RequireFullName": "Nome é obrigatório para cadastro",
   "Accounts_RequirePasswordConfirmation": "Requer confirmação de senha ",
   "Accounts_RoomAvatarExternalProviderUrl": "URL do provedor externo de avatares de salas",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "Exemplo: `https://acme.com/api/v1/{roomId}`",

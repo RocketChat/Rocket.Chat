@@ -265,7 +265,7 @@
   "Accounts_Registration_Users_Default_Roles": "Alapértelmezett szerepek a felhasználóknak",
   "Accounts_Registration_Users_Default_Roles_Description": "Alapértelmezett szerepek (vesszővel elválasztva), amelyeket a felhasználók akkor kapnak meg, ha kézi regisztráción keresztül regisztrálnak (beleértve az API-n keresztüli regisztrációt is).",
   "Accounts_Registration_Users_Default_Roles_Enabled": "Alapértelmezett szerepek engedélyezése a kézi regisztrációhoz",
-  "Accounts_RequireNameForSignUp": "Név megkövetelése a regisztrációhoz",
+  "Accounts_RequireFullName": "Név megkövetelése a regisztrációhoz",
   "Accounts_RequirePasswordConfirmation": "Jelszó megerősítésének megkövetelése",
   "Accounts_RoomAvatarExternalProviderUrl": "Szoba-profilkép külső szolgáltatójának URL-je",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "Például: „https://acme.com/api/v1/{roomId}”",

@@ -243,7 +243,7 @@
   "Accounts_Registration_InviteUrlType": "Тип запрошувальної URL-адреси",
   "Accounts_Registration_InviteUrlType_Direct": "Пряма відповідь",
   "Accounts_Registration_InviteUrlType_Proxy": "Проксі-сервер",
-  "Accounts_RequireNameForSignUp": "Вимагати ім'я для реєстрації",
+  "Accounts_RequireFullName": "Вимагати ім'я для реєстрації",
   "Accounts_RequirePasswordConfirmation": "Вимагати підтвердження паролю",
   "Accounts_RoomAvatarExternalProviderUrl": "URL-адреса зовнішнього постачальника аватару Room",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "Приклад: `https://acme.com/api/v1/{roomId}`",

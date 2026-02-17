@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Rolul implicit pentru serviciile de autentificare",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Rolurile implicite (utilizatorii separați prin virgulă) vor fi difuzați la înregistrarea prin intermediul serviciilor de autentificare",
   "Accounts_Registration_AuthenticationServices_Enabled": "Înregistrare cu servicii de autentificare",
-  "Accounts_RequireNameForSignUp": "Cere nume pentru înregistrare",
+  "Accounts_RequireFullName": "Cere nume pentru înregistrare",
   "Accounts_RequirePasswordConfirmation": "Solicitați confirmarea parolei",
   "Accounts_SearchFields": "Domenii de luat în considerare în căutarea",
   "Accounts_SetDefaultAvatar": "Setați Avatar implicit",

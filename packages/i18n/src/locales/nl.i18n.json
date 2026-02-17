@@ -254,7 +254,7 @@
   "Accounts_Registration_Users_Default_Roles": "Standaardrollen voor gebruikers",
   "Accounts_Registration_Users_Default_Roles_Description": "Standaardrollen (komma-gescheiden) die gebruikers krijgen bij een handmatige registratie (inclusief via API)",
   "Accounts_Registration_Users_Default_Roles_Enabled": "Schakel standaardrollen in voor handmatige registratie",
-  "Accounts_RequireNameForSignUp": "Vereis naam tijdens registratie",
+  "Accounts_RequireFullName": "Vereis naam tijdens registratie",
   "Accounts_RequirePasswordConfirmation": "Vereist wachtwoordbevestiging",
   "Accounts_RoomAvatarExternalProviderUrl": "URL van externe provider van kameravatar",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "Voorbeeld: `https://acme.com/api/v1/{roomId}`",

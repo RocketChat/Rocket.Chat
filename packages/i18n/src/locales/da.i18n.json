@@ -268,7 +268,7 @@
   "Accounts_Registration_Users_Default_Roles": "Standardroller for brugere",
   "Accounts_Registration_Users_Default_Roles_Description": "Standardroller (kommasepareret), som brugerne får, når de registrerer sig manuelt (også via API)",
   "Accounts_Registration_Users_Default_Roles_Enabled": "Aktivér standardroller til manuel registrering",
-  "Accounts_RequireNameForSignUp": "Navn er påkrævet for tilmelding",
+  "Accounts_RequireFullName": "Navn er påkrævet for tilmelding",
   "Accounts_RequirePasswordConfirmation": "Kræv kodeordsbekræftelse",
   "Accounts_SearchFields": "Felter der skal medtages i søgning",
   "Accounts_Send_Email_When_Activating": "Send en e-mail til brugeren, når brugeren er aktiveret",

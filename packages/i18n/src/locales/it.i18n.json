@@ -223,7 +223,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Ruoli predefiniti per i servizi di autenticazione",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Ruoli predefiniti (separati da virgola) per gli utenti che saranno registrati tramite servizi di autenticazione",
   "Accounts_Registration_AuthenticationServices_Enabled": "Registrazione tramite servizi di autenticazione",
-  "Accounts_RequireNameForSignUp": "Richiedi il nome per la registrazione",
+  "Accounts_RequireFullName": "Richiedi il nome per la registrazione",
   "Accounts_RequirePasswordConfirmation": "Richiede conferma della password",
   "Accounts_SearchFields": "Campi da considerare nella ricerca",
   "Accounts_Send_Email_When_Activating": "Invia mail all'utente quando quando è attivato",

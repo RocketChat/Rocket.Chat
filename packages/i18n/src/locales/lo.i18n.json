@@ -201,7 +201,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "ພາລະບົດບາດຕົ້ນຕໍສໍາລັບການບໍລິການກວດສອບຄວາມຖືກຕ້ອງ",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "ຜູ້ນໍາໃຊ້ພາລະບົດບາດຕົ້ນສະບັບ (comma-separated) ຈະຖືກມອບໃຫ້ໃນເວລາທີ່ລົງທະບຽນໂດຍຜ່ານການບໍລິການກວດສອບ",
   "Accounts_Registration_AuthenticationServices_Enabled": "ການຈົດທະບຽນມີການບໍລິການກວດສອບ",
-  "Accounts_RequireNameForSignUp": "ຮຽກຮ້ອງໃຫ້ຊື່ສໍາລັບສະຫມັກ",
+  "Accounts_RequireFullName": "ຮຽກຮ້ອງໃຫ້ຊື່ສໍາລັບສະຫມັກ",
   "Accounts_RequirePasswordConfirmation": "ຕ້ອງການການຢືນຢັນລະຫັດຜ່ານ",
   "Accounts_SearchFields": "ພາກສະຫນາມທີ່ຕ້ອງພິຈາລະນາໃນການຄົ້ນຫາ",
   "Accounts_SetDefaultAvatar": "ຕັ້ງມາດຕະຖານເລີ່ມຕົ້ນ",

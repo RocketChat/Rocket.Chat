@@ -194,7 +194,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Verstekrolle vir verifikasiedienste",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Verstek rolle (komma geskei) gebruikers sal gegee word wanneer jy registreer deur verifikasie dienste",
   "Accounts_Registration_AuthenticationServices_Enabled": "Registrasie met verifikasiedienste",
-  "Accounts_RequireNameForSignUp": "Vereis Naam vir Inskrywing",
+  "Accounts_RequireFullName": "Vereis Naam vir Inskrywing",
   "Accounts_RequirePasswordConfirmation": "Vereis wagwoord bevestiging",
   "Accounts_SearchFields": "Gebiede om in die soektog te oorweeg",
   "Accounts_SetDefaultAvatar": "Stel Standaard Avatar",

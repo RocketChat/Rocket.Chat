@@ -264,7 +264,7 @@
   "Accounts_Registration_Users_Default_Roles": "Standard-Rollen für Nutzer",
   "Accounts_Registration_Users_Default_Roles_Description": "Standard-Rollen (kommagetrennt), die Nutzer bei manueller Registrierung erhalten (inklusive via API)",
   "Accounts_Registration_Users_Default_Roles_Enabled": "Aktivieren von Standardrollen für die manuelle Registrierung",
-  "Accounts_RequireNameForSignUp": "Namen für die Anmeldung verlangen",
+  "Accounts_RequireFullName": "Namen für die Anmeldung verlangen",
   "Accounts_RequirePasswordConfirmation": "Passwortbestätigung erforderlich",
   "Accounts_RoomAvatarExternalProviderUrl": "Room-URL des externen Avatar-Providers",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "Beispiel: `https://acme.com/api/v1/{roomId}`",

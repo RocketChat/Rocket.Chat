@@ -296,8 +296,7 @@ export const createAccountSettings = () =>
 			await this.add('Accounts_DefaultUsernamePrefixSuggestion', 'user', {
 				type: 'string',
 			});
-			await this.add('Accounts_RequireNameForSignUp', true, {
-				// TODO rename to Accounts_RequireFullName
+			await this.add('Accounts_RequireFullName', true, {
 				type: 'boolean',
 				public: true,
 			});

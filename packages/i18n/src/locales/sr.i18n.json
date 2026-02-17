@@ -132,7 +132,7 @@
   "Accounts_Registration_AuthenticationServices_Enabled": "Регистрација путем сервиса за аутентификацију",
   "Accounts_Registration_InviteUrlType_Direct": "Директан",
   "Accounts_Registration_InviteUrlType_Proxy": "Прокси",
-  "Accounts_RequireNameForSignUp": "Захтева име за регистрацију",
+  "Accounts_RequireFullName": "Захтева име за регистрацију",
   "Accounts_RequirePasswordConfirmation": "Захтевај потврду лозинке",
   "Accounts_SearchFields": "Поља за разматрање у потрази",
   "Accounts_Send_Email_When_Activating": "Пошаљи имејл кориснику када је корисник активиран",

@@ -204,7 +204,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "身份验证服务的默认角色",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "在通过认证服务注册时，默认角色（以逗号分隔）的用户将被给予",
   "Accounts_Registration_AuthenticationServices_Enabled": "注册认证服务",
-  "Accounts_RequireNameForSignUp": "需要注册名称",
+  "Accounts_RequireFullName": "需要注册名称",
   "Accounts_RequirePasswordConfirmation": "需要密码确认",
   "Accounts_SearchFields": "搜索中需要考虑的字段",
   "Accounts_Send_Email_When_Activating": "用户激活时向用户发送电子邮件",

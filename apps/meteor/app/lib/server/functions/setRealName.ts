@@ -16,7 +16,7 @@ export const setRealName = async function (
 ): Promise<IUser | undefined> {
 	name = name.trim();
 
-	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
+	if (!userId || (settings.get('Accounts_RequireFullName') && !name)) {
 		return;
 	}
 

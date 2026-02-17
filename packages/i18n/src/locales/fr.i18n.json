@@ -254,7 +254,7 @@
   "Accounts_Registration_Users_Default_Roles": "Rôles par défaut des utilisateurs",
   "Accounts_Registration_Users_Default_Roles_Description": "Rôles par défaut (séparés par des virgules) attribués aux utilisateurs lors de l'enregistrement manuel (y compris via l'API)",
   "Accounts_Registration_Users_Default_Roles_Enabled": "Activer les rôles par défaut pour l'enregistrement manuel",
-  "Accounts_RequireNameForSignUp": "Demander un nom pour l'inscription",
+  "Accounts_RequireFullName": "Demander un nom pour l'inscription",
   "Accounts_RequirePasswordConfirmation": "Demander la confirmation du mot de passe",
   "Accounts_RoomAvatarExternalProviderUrl": "URL du fournisseur externe de l'avatar du salon",
   "Accounts_RoomAvatarExternalProviderUrl_Description": "Exemple : `https://acme.com/api/v1/{roomId}`",

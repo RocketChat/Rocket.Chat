@@ -113,7 +113,7 @@
   "Accounts_RegistrationForm_SecretURL_Description": "`https://open.rocket.chat/register/[secret_hash]` سىز چوقۇم خالىغان ھەرپ-بەلگە تىزىقى بىلەن تەمىنلىشىڭىز كېرەك ، ئۇ ھەرپ-بەلگە تىزىقى سىزنىڭ تىزىملىتىش ئادرېسىڭىزغا قېتىلىدۇ. مەسىلەن: مۇنداق",
   "Accounts_RegistrationForm_Secret_URL": "شەخسىي ئادرېسى",
   "Accounts_Registration_AuthenticationServices_Enabled": "دەلىللەش مۇلازىمىتىنى ئىشلىتىپ تىزىملىتىش",
-  "Accounts_RequireNameForSignUp": "ئىسىم_فامىلە يازغاندىن كېيىن ئاندىن تىزىملىتىلىدۇ",
+  "Accounts_RequireFullName": "ئىسىم_فامىلە يازغاندىن كېيىن ئاندىن تىزىملىتىلىدۇ",
   "Accounts_ShowFormLogin": "جەدۋەلنى ئاساس قىلغاندىكى كىرىش يۈزىنى كۆرسىتىدۇ",
   "Accounts_UseDNSDomainCheck": "دائىرە نامىنى دەلىللەشنى ئىشلىتىشDNS",
   "Accounts_UseDefaultBlockedDomainsList": "بەلگىلەنگەن دائىرە نامى توسۇش تىزىملىكىنى ئىشلىتىش",

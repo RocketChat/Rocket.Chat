@@ -196,7 +196,7 @@
   "Accounts_Registration_AuthenticationServices_Default_Roles": "Predvolené funkcie pre služby overovania",
   "Accounts_Registration_AuthenticationServices_Default_Roles_Description": "Čiarkami oddelené predvolené používateľské funkcie budú používané pri registrácii prostredníctvom autentifikačných služieb",
   "Accounts_Registration_AuthenticationServices_Enabled": "Registrácia pomocou autentifikačných služieb",
-  "Accounts_RequireNameForSignUp": "Vyžadovať meno pre registráciu",
+  "Accounts_RequireFullName": "Vyžadovať meno pre registráciu",
   "Accounts_RequirePasswordConfirmation": "Vyžadovať potvrdenie hesla",
   "Accounts_SearchFields": "Polia, ktoré je potrebné zvážiť vo vyhľadávaní",
   "Accounts_SetDefaultAvatar": "Nastaviť predvolený profilový obrázok",
