@@ -1,14 +1,12 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, CodeSnippet } from '@rocket.chat/fuselage';
+import { useClipboard } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useAbsoluteUrl, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Wrapper from './Wrapper';
 import RawText from '../../../components/RawText';
-import TextCopy from '../../../components/TextCopy';
 
-// TODO: use `CodeSnippet` Component
 const Installation = (): ReactElement => {
 	const { t } = useTranslation();
 	const siteUrl = useSetting('Site_Url', useAbsoluteUrl()('')).replace(/\/$/, '');
@@ -23,6 +21,8 @@ const Installation = (): ReactElement => {
 	})(window, document, 'script', '${siteUrl}/livechat');
 	</script>`;
 
+	const { copy, hasCopied } = useClipboard(installString);
+
 	return (
 		<Page>
 			<PageHeader title={t('Installation')} />
@@ -33,7 +33,9 @@ const Installation = (): ReactElement => {
 							{t('To_install_RocketChat_Livechat_in_your_website_copy_paste_this_code_above_the_last_body_tag_on_your_site')}
 						</RawText>
 					</p>
-					<TextCopy pi='none' text={installString} wrapper={Wrapper} />
+					<CodeSnippet buttonText={hasCopied ? t('Copied') : t('Copy')} buttonDisabled={hasCopied} onClick={() => copy()}>
+						{installString}
+					</CodeSnippet>
 				</Box>
 			</PageScrollableContentWithShadow>
 		</Page>
@@ -41,3 +43,4 @@ const Installation = (): ReactElement => {
 };
 
 export default Installation;
+
