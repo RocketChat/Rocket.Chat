@@ -1,7 +1,12 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import { CustomSounds } from '@rocket.chat/models';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -47,6 +52,9 @@ const customSoundsEndpoints = API.v1.get(
 	'custom-sounds.list',
 	{
 		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			200: ajv.compile<
 				PaginatedResult<{
 					sounds: ICustomSound[];
