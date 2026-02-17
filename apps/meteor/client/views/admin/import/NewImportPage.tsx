@@ -106,19 +106,31 @@ function NewImportPage() {
 		if (importerKey) {
 			const validExts = allowedExtensions[importerKey] || [];
 			if (validExts.length === 0) {
-				dispatchToastMessage({ type: 'error', message: t("User selected fileType is not found on allowed extension") });
+				dispatchToastMessage({
+					type: 'error',
+					message: t("FileType_NotAllowed")
+				});
+
 				return;
 			}
 			const filteredFiles = Array.from(files).filter((file) =>
 				validExts.some((ext) => file.name.toLowerCase().endsWith(ext))
 			);
 			if (filteredFiles.length === 0) {
-				dispatchToastMessage({ type: 'error', message: t(`Invalid file type, please upload  ${validExts.join(', ')}`) });
+				dispatchToastMessage({
+					type: 'error',
+					message: t("FileType_Invalid", { validExts: validExts.join(', ') })
+				});
 				return;
 			}
 			setFiles(Array.from(filteredFiles ?? []));
 		} else {
-			dispatchToastMessage({ type: 'error', message: t("Importer key not found") });
+			dispatchToastMessage({
+				type: 'error',
+				message: t("Import_Invalid_Key")
+			});
+
+
 			return;
 		}
 	};
@@ -132,7 +144,11 @@ function NewImportPage() {
 			return;
 		}
 		if (files.length === 0) {
-			dispatchToastMessage({ type: 'error', message: t("No files selected or the file is corrupted.") })
+			dispatchToastMessage({
+				type: 'error',
+				message: t("File_NotSelectedOrCorrupted")
+			});
+
 			return;
 		}
 		setLoading(true);
