@@ -63,9 +63,11 @@ export interface IHttpRequest {
 	rejectUnauthorized?: boolean;
 	/**
 	 * If `true`, enables SSRF (Server-Side Request Forgery) validation for the HTTP request.
-	 * When enabled, the request URL will be checked against internal IP addresses and private networks.
+	 * The request URL will be checked against internal IP addresses and private networks.
 	 *
-	 * Default: `undefined` (SSRF validation is disabled by default for backward compatibility).
+	 * Default: `false`
+	 *
+	 * As SSRF validation can potentially break legitimate requests to internal resources, it is not enabled by default.
 	 */
 	ssrfValidation?: boolean;
 }

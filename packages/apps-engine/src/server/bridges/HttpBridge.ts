@@ -9,7 +9,6 @@ export interface IHttpBridgeRequestInfo {
 	method: RequestMethod;
 	url: string;
 	request: IHttpRequest;
-	ssrfValidation?: boolean;
 }
 
 export abstract class HttpBridge extends BaseBridge {
