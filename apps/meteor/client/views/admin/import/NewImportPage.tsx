@@ -25,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useErrorHandler } from './useErrorHandler';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
-import { dispatchToastMessage } from '/client/lib/toast';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 const allowedExtensions: Record<string, string[]> = {
 	csv: ['.zip'],
@@ -106,19 +106,19 @@ function NewImportPage() {
 		if (importerKey) {
 			const validExts = allowedExtensions[importerKey] || [];
 			if (validExts.length === 0) {
-				dispatchToastMessage({ type: 'error', message: "User selected fileType is not found on allowed extension" });
+				dispatchToastMessage({ type: 'error', message: t("User selected fileType is not found on allowed extension") });
 				return;
 			}
 			const filteredFiles = Array.from(files).filter((file) =>
 				validExts.some((ext) => file.name.toLowerCase().endsWith(ext))
 			);
 			if (filteredFiles.length === 0) {
-				dispatchToastMessage({ type: 'error', message: `Invalid file type, please upload  ${validExts.join(', ')}` });
+				dispatchToastMessage({ type: 'error', message: t(`Invalid file type, please upload  ${validExts.join(', ')}`) });
 				return;
 			}
-			setFiles(Array.from(files ?? []));
+			setFiles(Array.from(filteredFiles ?? []));
 		} else {
-			dispatchToastMessage({ type: 'error', message: "Importer key not found" });
+			dispatchToastMessage({ type: 'error', message: t("Importer key not found") });
 			return;
 		}
 	};
@@ -132,7 +132,7 @@ function NewImportPage() {
 			return;
 		}
 		if (files.length === 0) {
-			dispatchToastMessage({ type: 'error', message: "No files selected or the file is corrupted." })
+			dispatchToastMessage({ type: 'error', message: t("No files selected or the file is corrupted.") })
 			return;
 		}
 		setLoading(true);
