@@ -43,4 +43,3 @@ const Installation = (): ReactElement => {
 };
 
 export default Installation;
-
