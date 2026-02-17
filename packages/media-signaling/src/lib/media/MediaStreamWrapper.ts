@@ -289,41 +289,35 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 	}
 
 	private async collectAudioStats() {
-		if (this.stopped) {
+		if (this.stopped || !this.audioTrack) {
 			this._audioLevel = 0;
+			this._trackingAudioStats = false;
 			return;
 		}
 
 		try {
-			if (!this.audioTrack) {
-				this._audioLevel = 0;
+			const stats = await this.peer.getStats(this.audioTrack.track);
+
+			if (!stats) {
 				return;
 			}
 
-			try {
-				const stats = await this.peer.getStats(this.audioTrack.track);
+			const relevantReportType = this.local ? 'media-source' : 'inbound-rtp';
 
-				if (!stats) {
+			// stats is an object that has a forEach function
+			stats.forEach((report) => {
+				if (report.kind !== 'audio') {
 					return;
 				}
 
-				const relevantReportType = this.local ? 'media-source' : 'inbound-rtp';
+				if (report.type !== relevantReportType) {
+					return;
+				}
 
-				// stats is an object that has a forEach function
-				stats.forEach((report) => {
-					if (report.kind !== 'audio') {
-						return;
-					}
-
-					if (report.type !== relevantReportType) {
-						return;
-					}
-
-					this._audioLevel = report.audioLevel ?? 0;
-				});
-			} catch {
-				this._audioLevel = 0;
-			}
+				this._audioLevel = report.audioLevel ?? 0;
+			});
+		} catch {
+			this._audioLevel = 0;
 		} finally {
 			// Ensure that the countdown for the next iteration only starts after fully processing the current one
 			this.registerAudioLevelTracker();
