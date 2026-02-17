@@ -107,7 +107,6 @@ test.describe('OC - Custom fields usage, scope : room and visitor', () => {
 		});
 
 		await test.step('Agent opens edit room and updates custom field', async () => {
-			// await poHomeChannel.roomToolbar.openRoomInfo();
 			await poHomeChannel.roomInfo.waitForDisplay();
 			await poHomeChannel.roomInfo.btnEdit.click();
 			await poHomeChannel.editRoomInfo.waitForDisplay();
@@ -116,8 +115,6 @@ test.describe('OC - Custom fields usage, scope : room and visitor', () => {
 		});
 
 		await test.step('Room Information displays the updated custom field value', async () => {
-			// await poHomeChannel.roomToolbar.openRoomInfo();
-			// await poHomeChannel.roomInfo.waitForDisplay();
 			await poHomeChannel.roomInfo.btnEdit.click();
 			await poHomeChannel.editRoomInfo.waitForDisplay();
 			await expect(poHomeChannel.editRoomInfo.getRoomCustomField(roomCustomFieldLabel)).toHaveValue(updatedValue);
