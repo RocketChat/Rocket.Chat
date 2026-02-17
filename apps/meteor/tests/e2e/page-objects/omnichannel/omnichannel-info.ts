@@ -39,6 +39,14 @@ export class OmnichannelContactInfo extends FlexTab {
 		return this.root.getByRole('button', { name: 'See conflicts' });
 	}
 
+	get dialogContactInfo(): Locator {
+		return this.root;
+	}
+
+	getVisitorCustomField(label: string): Locator {
+		return this.root.getByLabel(label);
+	}
+
 	async solveConflict(field: string, value: string) {
 		await this.btnSeeConflicts.click();
 		await this.contactReviewModal.solveConfirmation(field, value);
