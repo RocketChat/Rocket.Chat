@@ -75,7 +75,7 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		return {
 			id: _id,
 			username,
-			avatarUrl: this.getUserAvatarUrl(username) || '',
+			avatarUrl: this.getUserAvatarUrl(username),
 		};
 	}
 }
