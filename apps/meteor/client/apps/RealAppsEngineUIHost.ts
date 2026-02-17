@@ -1,6 +1,5 @@
 import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
 import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps-engine/client/definition';
-import type { IUser } from '@rocket.chat/core-typings';
 
 import { getUserAvatarURL } from '../../app/utils/client/getUserAvatarURL';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
@@ -44,7 +43,7 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 			const { members } = await sdk.rest.get('/v1/groups.members', { roomId: id });
 
 			cachedMembers = members
-				.filter((member): member is IUser & { username: string } => !!member.username)
+				.filter((member): member is (typeof members)[number] & { username: string } => !!member.username)
 				.map(
 					({ _id, username }): IExternalComponentUserInfo => ({
 						id: _id,
