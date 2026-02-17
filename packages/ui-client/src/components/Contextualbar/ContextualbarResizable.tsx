@@ -19,7 +19,7 @@ const ContextualbarResizable = ({ defaultWidth, children, ...props }: Contextual
 		}
 	`;
 
-	const handleResize: ResizeCallback = useCallback(
+	const handleResize = useCallback<ResizeCallback>(
 		(_e, _dir, elRef) => {
 			setContextualbarWidth(elRef.style.width);
 		},
