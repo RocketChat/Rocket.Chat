@@ -38,7 +38,6 @@ const cleanupRooms = async () => {
 
 	const { queue } = response.body;
 
-	console.log({ queue });
 	for await (const item of queue) {
 		const {
 			body: { rooms },
