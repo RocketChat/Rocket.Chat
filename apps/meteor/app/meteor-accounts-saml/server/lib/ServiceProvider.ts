@@ -108,8 +108,8 @@ export class SAMLServiceProvider {
 		This method will generate the request URL with all the query string params and pass it to the callback
 	*/
 	public async requestToUrl(request: string, operation: string): Promise<string | undefined> {
-		const buffer = await deflateRawAsync(request);
 		try {
+			const buffer = await deflateRawAsync(request);
 			const base64 = buffer.toString('base64');
 			let target = this.serviceProviderOptions.entryPoint;
 
@@ -164,7 +164,6 @@ export class SAMLServiceProvider {
 			target += '?';
 		}
 
-		// TBD. We should really include a proper RelayState here
 		const relayState = Meteor.absoluteUrl();
 
 		const samlResponse = this.maybeSignRequest({
