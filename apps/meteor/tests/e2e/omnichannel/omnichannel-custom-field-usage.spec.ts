@@ -11,7 +11,7 @@ const visitor = createFakeVisitor();
 
 test.use({ storageState: Users.user1.state });
 
-test.describe('OC - Custom fields usage, scope : room and visitor', () => {
+test.describe.serial('OC - Custom fields usage, scope : room and visitor', () => {
 	let poHomeChannel: HomeOmnichannel;
 
 	const roomCustomFieldLabel = `room_cf_${faker.string.alpha(8)}`;
@@ -64,7 +64,7 @@ test.describe('OC - Custom fields usage, scope : room and visitor', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeOmnichannel(page);
 		await page.goto('/');
-		await page.locator('#main-content').waitFor();
+		await poHomeChannel.waitForHome();
 	});
 
 	test.afterAll('Remove agent, manager and custom fields', async ({ api }) => {
