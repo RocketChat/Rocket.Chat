@@ -80,11 +80,20 @@ export const VALID_CALLBACKS = [
 const VALID_SYSTEM_MESSAGES = ['uj', 'ul', 'livechat-close', 'livechat-started', 'livechat_transfer_history'];
 
 const callbacks = new Emitter();
+const callbackHandlers = new Map<string, Set<(...args: unknown[]) => unknown>>();
+let navigationIntervalId: ReturnType<typeof setInterval> | null = null;
+let messageListenerAttached = false;
+let mediaQueryList: MediaQueryList | null = null;
+let mediaQueryListener: ((event: MediaQueryList | MediaQueryListEvent) => void) | null = null;
 
-function registerCallback(eventName: string, fn: () => unknown) {
+function registerCallback(eventName: string, fn: (...args: unknown[]) => unknown) {
 	if (VALID_CALLBACKS.indexOf(eventName) === -1) {
 		return false;
 	}
+
+	const handlers = callbackHandlers.get(eventName) ?? new Set();
+	handlers.add(fn);
+	callbackHandlers.set(eventName, handlers);
 
 	return callbacks.on(eventName, fn);
 }
@@ -98,9 +107,12 @@ function emitCallback(eventName: string, data?: unknown) {
 }
 
 function clearAllCallbacks() {
-	callbacks.events().forEach((callback) => {
-		callbacks.off(callback, () => undefined);
+	callbackHandlers.forEach((handlers, eventName) => {
+		handlers.forEach((handler) => {
+			callbacks.off(eventName, handler);
+		});
 	});
+	callbackHandlers.clear();
 }
 
 const formatMessage = (action: keyof HooksWidgetAPI, ...params: Parameters<HooksWidgetAPI[keyof HooksWidgetAPI]>) => ({
@@ -215,8 +227,17 @@ const createWidget = (url: string) => {
 		callHook('setParentUrl', window.location.href);
 	};
 
-	const mediaQueryList = window.matchMedia('screen and (max-device-width: 480px)');
-	mediaQueryList.addListener(handleMediaQueryTest);
+	mediaQueryList = window.matchMedia('screen and (max-device-width: 480px)');
+	mediaQueryListener = (event) => {
+		handleMediaQueryTest(event);
+	};
+
+	if (typeof mediaQueryList.addEventListener === 'function') {
+		mediaQueryList.addEventListener('change', mediaQueryListener);
+	} else {
+		mediaQueryList.addListener(mediaQueryListener);
+	}
+
 	handleMediaQueryTest(mediaQueryList);
 };
 
@@ -503,7 +524,7 @@ const api: InternalWidgetAPI = {
 	},
 
 	removeWidget() {
-		document.body.removeChild(widget as Node);
+		teardownWidget();
 	},
 
 	callback(eventName, data) {
@@ -680,12 +701,70 @@ function listenForMessageOnce<K extends keyof InternalWidgetAPI>(
 	window.addEventListener('message', listener);
 }
 
+const detachMessageListener = () => {
+	if (!messageListenerAttached) {
+		return;
+	}
+
+	window.removeEventListener('message', onNewMessage, false);
+	messageListenerAttached = false;
+};
+
 const attachMessageListener = () => {
+	if (messageListenerAttached) {
+		return;
+	}
+
 	window.addEventListener('message', onNewMessage, false);
+	messageListenerAttached = true;
+};
+
+const stopNavigationTracking = () => {
+	if (navigationIntervalId === null) {
+		return;
+	}
+
+	clearInterval(navigationIntervalId);
+	navigationIntervalId = null;
+};
+
+const detachMediaQueryListener = () => {
+	if (!mediaQueryList || !mediaQueryListener) {
+		return;
+	}
+
+	if (typeof mediaQueryList.removeEventListener === 'function') {
+		mediaQueryList.removeEventListener('change', mediaQueryListener);
+	} else {
+		mediaQueryList.removeListener(mediaQueryListener);
+	}
+
+	mediaQueryList = null;
+	mediaQueryListener = null;
+};
+
+const teardownWidget = () => {
+	stopNavigationTracking();
+	detachMessageListener();
+	detachMediaQueryListener();
+	document.body.classList.remove('rc-livechat-mobile-full-screen');
+
+	if (widget?.parentNode) {
+		widget.parentNode.removeChild(widget);
+	}
+
+	widget = null;
+	iframe = null;
+	ready = false;
+	hookQueue = [];
 };
 
 const trackNavigation = () => {
-	setInterval(() => {
+	if (navigationIntervalId !== null) {
+		return;
+	}
+
+	navigationIntervalId = setInterval(() => {
 		if (document.location.href !== currentPage.href) {
 			pageVisited('url');
 			currentPage.href = document.location.href;
@@ -702,6 +781,10 @@ const init = (url: string) => {
 	const trimmedUrl = url.trim();
 	if (!trimmedUrl) {
 		return;
+	}
+
+	if (widget) {
+		teardownWidget();
 	}
 
 	config.url = trimmedUrl;
