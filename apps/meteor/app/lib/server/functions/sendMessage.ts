@@ -14,7 +14,7 @@ import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 
-export type SendMessageOptions = {
+type SendMessageOptions = {
 	upsert?: boolean;
 	previewUrls?: string[];
 };
