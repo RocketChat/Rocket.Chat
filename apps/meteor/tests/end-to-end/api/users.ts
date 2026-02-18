@@ -1126,6 +1126,25 @@ describe('[Users]', () => {
 
 			await deleteUser(user);
 		});
+
+		it("should NOT return sensitive fields on services even though it's the same user requesting its info", (done) => {
+			void request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({
+					userId: credentials['X-User-Id'],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.services.password').and.to.be.a('boolean');
+					expect(res.body).to.not.have.nested.property('user.services.email');
+					expect(res.body).to.not.have.nested.property('user.services.resume');
+					expect(res.body).to.not.have.nested.property('user.services.passwordHistory');
+				})
+				.end(done);
+		});
 	});
 	describe('[/users.getPresence]', () => {
 		it("should query a user's presence by userId", (done) => {
@@ -2743,6 +2762,27 @@ describe('[Users]', () => {
 					expect(user.emails[0].address).to.be.equal(editedEmail);
 					expect(user.emails[0].verified).to.be.false;
 					expect(user).to.not.have.property('e2e');
+				})
+				.end(done);
+		});
+
+		it("should not include sensitive data on the 'services' object from the response", (done) => {
+			void request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						username: editedUsername,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { user } = res.body;
+					expect(res.body).to.have.property('success', true);
+					expect(user.services).to.not.have.property('passwordHistory');
+					expect(user.services).to.not.have.property('email');
+					expect(user.services.password).to.have.property('exists').that.is.a('boolean');
 				})
 				.end(done);
 		});
