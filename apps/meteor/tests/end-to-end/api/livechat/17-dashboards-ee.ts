@@ -372,7 +372,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			});
 
 			after(async () => {
-				// Cleanup
 				await deleteVisitor(visitor.token);
 				await deleteDepartment(department._id);
 			});
