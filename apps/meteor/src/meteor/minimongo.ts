@@ -894,12 +894,9 @@ class LocalCollection {
 
 	static _useOID = _useOID;
 
-	_docs = new _IdMap();
-
-	name: string;
-
 	constructor(name) {
 		this.name = name;
+		this._docs = new _IdMap();
 
 		// Replace Meteor._SynchronousQueue with simple execution or your own queue
 		this._observeQueue = {
@@ -1251,15 +1248,10 @@ class LocalCollection {
 
 	async _eachPossiblyMatchingDocAsync(selector, fn) {
 		const specificIds = _idsMatchedBySelector(selector);
-
 		if (specificIds) {
 			for (const id of specificIds) {
 				const doc = this._docs.get(id);
-
-				if (doc && (await fn(doc, id)) === false) {
-					// Changed from `!fn(doc,id)`
-					break;
-				}
+				if (doc && !(await fn(doc, id))) break;
 			}
 		} else {
 			await this._docs.forEachAsync(fn);
@@ -1268,15 +1260,10 @@ class LocalCollection {
 
 	_eachPossiblyMatchingDocSync(selector, fn) {
 		const specificIds = _idsMatchedBySelector(selector);
-
 		if (specificIds) {
 			for (const id of specificIds) {
 				const doc = this._docs.get(id);
-
-				if (doc && fn(doc, id) === false) {
-					// Changed from `!fn(doc,id)`
-					break;
-				}
+				if (doc && fn(doc, id) === false) break;
 			}
 		} else {
 			this._docs.forEach(fn);
