@@ -78,10 +78,9 @@ Actions.args = {
 	actions: (
 		<>
 			<IconButton secondary success icon='phone' aria-label='Accept Call' />
-            <IconButton secondary danger icon='circle-cross' aria-label='Decline' />
-            <IconButton secondary info icon='trash' aria-label='Delete' />
-            <IconButton secondary icon='phone' aria-label='Phone' />
-
+			<IconButton secondary danger icon='circle-cross' aria-label='Decline' />
+			<IconButton secondary info icon='trash' aria-label='Delete' />
+			<IconButton secondary icon='phone' aria-label='Phone' />
 		</>
 	),
 };
