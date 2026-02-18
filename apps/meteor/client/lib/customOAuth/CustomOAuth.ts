@@ -19,7 +19,10 @@ const isIOSClient = (): boolean => {
 		return false;
 	}
 
-	return /iPad|iPhone|iPod/.test(navigator.userAgent);
+	const iOSUserAgent = /iPad|iPhone|iPod/.test(navigator.userAgent);
+	const iPadOS13Plus = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+
+	return iOSUserAgent || iPadOS13Plus;
 };
 
 export class CustomOAuth<TServiceName extends string = string> implements IOAuthProvider {
@@ -90,7 +93,6 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 
 		const credentialToken = Random.secret();
 		const configuredLoginStyle = OAuth._loginStyle(this.name, config);
-		// Force redirect on iOS to avoid popup/webview auth limitations that can hide passkey options.
 		const loginStyle = isIOSClient() && configuredLoginStyle === 'popup' ? 'redirect' : configuredLoginStyle;
 
 		const separator = this.authorizePath.indexOf('?') !== -1 ? '&' : '?';
