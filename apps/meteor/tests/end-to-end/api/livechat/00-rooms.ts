@@ -2032,7 +2032,6 @@ describe('LIVECHAT - rooms', () => {
 			const userLeavingMessages = messagesList.filter((m) => m.t === 'ul');
 			expect(userLeavingMessages.length).to.be.equal(1);
 
-			// Cleanup from 'should return a success message when transferring to a fallback department'
 			await closeOmnichannelRoom(roomId);
 			await deleteVisitor(visitorToken);
 			await deleteDepartment(initialDepartmentToClean);
