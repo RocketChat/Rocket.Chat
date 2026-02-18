@@ -185,7 +185,6 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			}
 
 			await this.startBroadcast();
-
 		} catch (error) {
 			console.error('Instance service did not start correctly', error);
 		}
