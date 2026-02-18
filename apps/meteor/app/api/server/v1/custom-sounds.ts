@@ -122,7 +122,7 @@ const customSoundsEndpoints = API.v1
 		'custom-sounds.getOne',
 		{
 			response: {
-				200: ajv.compile<{ _id: ICustomSound['_id']; name: ICustomSound['name']; success: boolean }>({
+				200: ajv.compile<Pick<ICustomSound, '_id' | 'name'> & { success: boolean }>({
 					additionalProperties: false,
 					type: 'object',
 					properties: {
@@ -152,7 +152,7 @@ const customSoundsEndpoints = API.v1
 		async function action() {
 			const { _id } = this.queryParams;
 
-			const customSound = await CustomSounds.findOneById(_id);
+			const customSound = await CustomSounds.findOneById(_id, { projection: { _id: 1, name: 1 } });
 
 			if (!customSound) {
 				return API.v1.notFound('Custom Sound not found.');
