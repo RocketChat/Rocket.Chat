@@ -185,47 +185,43 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage): P
 		return continueSendingMessage(chat, store, message);
 	}
 
-	if (failedUploads.length > 0) {
-		const allUploadsFailed = failedUploads.length === filesToUpload.length;
+	const allUploadsFailed = failedUploads.length === filesToUpload.length;
 
-		return new Promise((resolve) => {
-			imperativeModal.open({
-				component: GenericModal,
-				props: {
-					variant: 'warning',
-					children: t('__count__files_failed_to_upload', {
-						count: failedUploads.length,
-						...(failedUploads.length === 1 && { name: failedUploads[0].file.name }),
-					}),
-					...(allUploadsFailed && {
-						title: t('Warning'),
-						confirmText: t('Ok'),
-						onConfirm: () => {
-							imperativeModal.close();
-							resolve(true);
-						},
-					}),
-					...(!allUploadsFailed && {
-						title: t('Are_you_sure'),
-						confirmText: t('Send_anyway'),
-						cancelText: t('Cancel'),
-						onConfirm: () => {
-							imperativeModal.close();
-							resolve(continueSendingMessage(chat, store, message));
-						},
-						onCancel: () => {
-							imperativeModal.close();
-							resolve(true);
-						},
-					}),
-					onClose: () => {
+	return new Promise((resolve) => {
+		imperativeModal.open({
+			component: GenericModal,
+			props: {
+				variant: 'warning',
+				children: t('__count__files_failed_to_upload', {
+					count: failedUploads.length,
+					...(failedUploads.length === 1 && { name: failedUploads[0].file.name }),
+				}),
+				...(allUploadsFailed && {
+					title: t('Warning'),
+					confirmText: t('Ok'),
+					onConfirm: () => {
 						imperativeModal.close();
 						resolve(true);
 					},
+				}),
+				...(!allUploadsFailed && {
+					title: t('Are_you_sure'),
+					confirmText: t('Send_anyway'),
+					cancelText: t('Cancel'),
+					onConfirm: () => {
+						imperativeModal.close();
+						resolve(continueSendingMessage(chat, store, message));
+					},
+					onCancel: () => {
+						imperativeModal.close();
+						resolve(true);
+					},
+				}),
+				onClose: () => {
+					imperativeModal.close();
+					resolve(true);
 				},
-			});
+			},
 		});
-	}
-
-	return continueSendingMessage(chat, store, message);
+	});
 };
