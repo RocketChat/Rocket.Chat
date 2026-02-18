@@ -52,3 +52,83 @@ export class TestIPreFileUpload extends App implements IPreFileUpload {
 ```
 
 </details>
+
+#### API Parameter Test
+
+File name: `api-parameter-test_0.0.1.zip`
+
+An app that provides a public API endpoint with URL parameters. The endpoint path is `/api/:param1/:param2/test` and returns the values of both parameters in the response.
+
+**Response format:**
+- Content-Type: `text/plain`
+- Body: `Param1: <param1_value>, Param2: <param2_value>`
+- Status: 200 OK
+
+<details>
+<summary>App source code</summary>
+
+**APIParameterTestApp.ts**
+```typescript
+import {
+    IAppAccessors,
+    IConfigurationExtend,
+    IEnvironmentRead,
+    ILogger,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { TestEndpoint } from './TestEndpoint';
+
+export class APIParameterTestApp extends App {
+    constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+        super(info, logger, accessors);
+    }
+
+    protected async extendConfiguration(configuration: IConfigurationExtend, environmentRead: IEnvironmentRead): Promise<void> {
+        await configuration.api.provideApi({
+            visibility: ApiVisibility.PUBLIC,
+            security: ApiSecurity.UNSECURE,
+            endpoints: [
+                new TestEndpoint(this),
+            ]
+        })
+    }
+}
+```
+
+**TestEndpoint.ts**
+```typescript
+import {
+    HttpStatusCode,
+    IModify,
+    IRead,
+} from "@rocket.chat/apps-engine/definition/accessors";
+import {
+    ApiEndpoint,
+    IApiEndpointInfo,
+    IApiRequest,
+    IApiResponse,
+} from "@rocket.chat/apps-engine/definition/api";
+
+export class TestEndpoint extends ApiEndpoint {
+    public path = "api/:param1/:param2/test";
+
+    public async get(
+        request: IApiRequest,
+        endpoint: IApiEndpointInfo,
+        read: IRead,
+        modify: IModify,
+    ): Promise<IApiResponse> {
+        return {
+            content: `Param1: ${request.params.param1}, Param2: ${request.params.param2}`,
+            status: HttpStatusCode.OK,
+            headers: {
+                "Content-Type": "text/plain",
+            },
+        }
+    }
+}
+```
+
+</details>
