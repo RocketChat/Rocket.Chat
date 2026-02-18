@@ -304,9 +304,7 @@ MarkdownLinkURLBody
   )+
 
 // Match content inside parentheses within URL
-MarkdownLinkURLBodyParen
-  = !(Whitespace / EndOfLine / ")")
-    (AnyText / [*\[\/\]\^_`{}~(])
+MarkdownLinkURLBodyParen = !(Whitespace / EndOfLine / ")") (AnyText / [*\[\/\]\^_`{}~(])
 
 MarkdownLinkExtra = [.,!%*\"':;=]
 
