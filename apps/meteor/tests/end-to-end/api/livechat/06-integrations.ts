@@ -114,7 +114,6 @@ describe('LIVECHAT - Integrations', () => {
 				await updateSetting('SMS_Service', 'twilio');
 
 				// Create visitor with the phone number that will be used in SMS
-				// createVisitor(department, visitorName, customEmail, customPhone)
 				smsVisitor = await createVisitor(undefined, 'sms-visitor', undefined, '+12345678910');
 
 				const response = await request
