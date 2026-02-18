@@ -1,6 +1,6 @@
 import type { IPublication, DDPSubscription, Connection, TransformMessage } from 'meteor/rocketchat:streamer';
 
-import { Streamer } from './streamer.module';
+import { Streamer, StreamerCentral } from './streamer.module';
 import { SystemLogger } from '../../lib/logger/system';
 
 // Mock SystemLogger
@@ -34,6 +34,9 @@ describe('Streamer.sendToManySubscriptions', () => {
 	beforeEach(() => {
 		// Reset mocks
 		jest.clearAllMocks();
+
+		// Clear StreamerCentral instances to prevent state leakage between tests
+		StreamerCentral.instances = {};
 
 		// Create mock socket
 		mockSocket = { send: jest.fn() };

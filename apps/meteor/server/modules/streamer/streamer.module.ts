@@ -283,16 +283,6 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 		return true;
 	}
 
-	/**
-	 * Sends a message to multiple subscriptions with proper async handling.
-	 * Ensures all permission checks complete before delivery and handles errors gracefully.
-	 *
-	 * @param subscriptions - Set of subscriptions to send to
-	 * @param origin - Connection that originated the message (skipped if retransmitToSelf is false)
-	 * @param eventName - Name of the event being sent
-	 * @param args - Arguments for the event
-	 * @param getMsg - Message payload or transform function
-	 */
 	async sendToManySubscriptions(
 		subscriptions: Set<DDPSubscription>,
 		origin: Connection | undefined,
