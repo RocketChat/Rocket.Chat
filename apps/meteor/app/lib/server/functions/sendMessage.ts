@@ -14,6 +14,11 @@ import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 
+export type SendMessageOptions = {
+	upsert?: boolean;
+	previewUrls?: string[];
+};
+
 // TODO: most of the types here are wrong, but I don't want to change them now
 
 /**
@@ -217,7 +222,9 @@ export function prepareMessageObject(
  * Caller of the function should verify the Message_MaxAllowedSize if needed.
  * There might be same use cases which needs to override this setting. Example - sending error logs.
  */
-export const sendMessage = async function (user: any, message: any, room: any, upsert = false, previewUrls?: string[]) {
+export const sendMessage = async function (user: any, message: any, room: any, options: SendMessageOptions = {}) {
+	const { upsert = false, previewUrls } = options;
+
 	if (!user || !message || !room._id) {
 		return false;
 	}
