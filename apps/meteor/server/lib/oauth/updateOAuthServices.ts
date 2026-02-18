@@ -48,7 +48,7 @@ export async function updateOAuthServices(): Promise<void> {
 				data.accessTokenParam = settings.get(`${key}-access_token_param`);
 				data.buttonLabelText = settings.get(`${key}-button_label_text`);
 				data.buttonLabelColor = settings.get(`${key}-button_label_color`);
-				data.loginStyle = settings.get(`${key}-login_style`) || 'redirect';
+				data.loginStyle = settings.get(`${key}-login_style`) ?? 'redirect';
 				data.buttonColor = settings.get(`${key}-button_color`);
 				data.tokenSentVia = settings.get(`${key}-token_sent_via`);
 				data.identityTokenSentVia = settings.get(`${key}-identity_token_sent_via`);
