@@ -23,7 +23,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('not-authorized');
 		}
 
-		// 2. استخدام api.call من غير @ts-ignore
 		return api.call('user.disable2FA', [userId, code]);
 	},
 });
