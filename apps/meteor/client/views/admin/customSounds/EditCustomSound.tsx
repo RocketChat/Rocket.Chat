@@ -19,7 +19,7 @@ function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProp
 
 	const { data, isPending } = useQuery({
 		queryKey: ['custom-sound', _id],
-		queryFn: () => typeof _id === 'string' ? getSound({ _id }): undefined,
+		queryFn: () => (typeof _id === 'string' ? getSound({ _id }) : undefined),
 		enabled: !!_id,
 	});
 
