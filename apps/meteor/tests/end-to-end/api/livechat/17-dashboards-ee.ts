@@ -362,7 +362,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 				// Create department with the current agent
 				department = await createDepartment({}, [{ agentId: credentials['X-User-Id'] }]);
 
-				// Create visitor in that department, room, take inquiry, send agent message, close room
 				visitor = await createVisitor(department._id);
 				const room = await createLivechatRoom(visitor.token);
 				const inq = await fetchInquiry(room._id);
