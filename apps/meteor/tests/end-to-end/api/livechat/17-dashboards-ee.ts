@@ -587,7 +587,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 				await closeOmnichannelRoom(room._id);
 			});
 			after(async () => {
-				// Cleanup
 				await deleteVisitor(visitor.token);
 				await deleteDepartment(department._id);
 			});
