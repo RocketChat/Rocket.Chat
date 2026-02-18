@@ -1,5 +1,6 @@
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
+import { api } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -10,24 +11,13 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async '2fa:checkCodesRemaining'() {
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+
+		if (!userId) {
 			throw new Meteor.Error('not-authorized');
 		}
 
-		const user = await Meteor.userAsync();
-
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: '2fa:checkCodesRemaining',
-			});
-		}
-
-		if (!user.services?.totp?.enabled) {
-			throw new Meteor.Error('invalid-totp');
-		}
-
-		return {
-			remaining: user.services.totp.hashedBackup.length,
-		};
+		// @ts-ignore
+		return api.waitAndCall('user.checkCodesRemaining', [userId]);
 	},
 });

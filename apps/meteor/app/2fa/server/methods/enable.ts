@@ -1,8 +1,6 @@
-import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-
-import { TOTP } from '../lib/totp';
+import { api } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,29 +12,12 @@ declare module '@rocket.chat/ddp-client' {
 Meteor.methods<ServerMethods>({
 	async '2fa:enable'() {
 		const userId = Meteor.userId();
+
 		if (!userId) {
-			throw new Meteor.Error('not-authorized');
+			throw new Meteor.Error('error-invalid-user');
 		}
 
-		const user = await Meteor.userAsync();
-
-		if (!user?.username) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: '2fa:enable',
-			});
-		}
-
-		if (user.services?.totp?.enabled) {
-			throw new Meteor.Error('error-2fa-already-enabled');
-		}
-
-		const secret = TOTP.generateSecret();
-
-		await Users.disable2FAAndSetTempSecretByUserId(userId, secret.base32);
-
-		return {
-			secret: secret.base32,
-			url: TOTP.generateOtpauthURL(secret, user.username),
-		};
+		// @ts-ignore
+		return api.waitAndCall('user.generate2FASecret', [userId]);
 	},
 });
