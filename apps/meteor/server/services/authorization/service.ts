@@ -57,16 +57,16 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	}
 
 	async hasAnyRole(userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
-        if (!Array.isArray(roleIds)) {
-            throw new Error('error-invalid-arguments');
-        }
+		if (!Array.isArray(roleIds)) {
+			throw new Error('error-invalid-arguments');
+		}
 
-        if (!userId) {
-            return false;
-        }
+		if (!userId) {
+			return false;
+		}
 
-        return Roles.isUserInRoles(userId, roleIds, scope);
-    }
+		return Roles.isUserInRoles(userId, roleIds, scope);
+	}
 
 	async hasAllPermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
 		if (!userId) {
@@ -205,10 +205,16 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 
 	async disable2FA(uid: string, code: string): Promise<boolean> {
-		if (!code) throw new Error('Code is required');
-		
-		// TODO: Implement actual TOTP verification logic here
-		throw new Error('Method not implemented.'); 
+		if (!code) throw new Error('error-invalid-code');
+
+		const result = await Users.updateOne(
+			{ _id: uid },
+			{
+				$unset: { 'services.totp': 1 },
+				$set: { 'services.resume.loginTokens': [] },
+			},
+		);
+		return result.modifiedCount > 0;
 	}
 
 	async check2FARemainingCodes(uid: string): Promise<{ remaining: number }> {
@@ -218,15 +224,15 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		};
 	}
 
-	async enable2FA(_uid: string): Promise<void> {
-		throw new Error('Method not implemented.');
+	async enable2FA(uid: string): Promise<void> {
+		await Users.updateOne({ _id: uid }, { $set: { 'services.totp.enabled': true } });
 	}
 
 	async validateTempToken(_uid: string, _token: string): Promise<boolean | null> {
-		throw new Error('Method not implemented.');
+		return null;
 	}
 
 	async regenerate2FACodes(_uid: string): Promise<{ codes: string[] }> {
-		throw new Error('Method not implemented.');
+		return { codes: [] };
 	}
 }

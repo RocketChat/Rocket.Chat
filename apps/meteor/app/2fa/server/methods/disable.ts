@@ -12,6 +12,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-code');
 		}
 
-		return (Authorization as any).disable2FA(userId, code);
+		return Authorization.disable2FA(userId, code);
 	}
 });
