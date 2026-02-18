@@ -359,7 +359,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			let visitor: ILivechatVisitor;
 
 			before(async () => {
-				// Create department with the current agent
 				department = await createDepartment({}, [{ agentId: credentials['X-User-Id'] }]);
 
 				visitor = await createVisitor(department._id);
