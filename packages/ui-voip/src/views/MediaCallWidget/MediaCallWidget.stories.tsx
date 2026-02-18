@@ -36,7 +36,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const MediaCallWidgetManualTesting: StoryFn<typeof MediaCallWidget> = () => {
-	const { onToggleWidget, onCall, state } = useMediaCallContext();
+	const { sessionState, onToggleWidget, onCall } = useMediaCallContext();
+	const { state } = sessionState;
 	return (
 		<>
 			<Button onClick={() => onToggleWidget()} disabled={state !== 'new' && state !== 'closed'} mie={8}>

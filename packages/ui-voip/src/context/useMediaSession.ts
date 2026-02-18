@@ -3,10 +3,9 @@ import type { MediaSignalingSession, CallState, CallRole } from '@rocket.chat/me
 import { useUserAvatarPath, useUserPresence } from '@rocket.chat/ui-contexts';
 import { useEffect, useReducer, useMemo, useCallback } from 'react';
 
-import type { ConnectionState, PeerInfo, State } from './MediaCallContext';
-import type { SessionInfo } from './useMediaSessionInstance';
+import type { ConnectionState, PeerInfo, State, SessionState } from './MediaCallContext';
 
-const defaultSessionInfo: SessionInfo = {
+const defaultSessionInfo: SessionState = {
 	state: 'closed' as const,
 	callId: undefined,
 	connectionState: 'CONNECTING' as const,
@@ -19,8 +18,6 @@ const defaultSessionInfo: SessionInfo = {
 	startedAt: new Date(),
 	hidden: false,
 };
-
-export type MediaSessionState = SessionInfo;
 
 export const getExtensionFromPeerInfo = (peerInfo: PeerInfo): string | undefined => {
 	if ('callerId' in peerInfo) {
@@ -66,12 +63,12 @@ const deriveConnectionStateFromCallState = (callState: CallState): ConnectionSta
 };
 
 const reducer = (
-	reducerState: SessionInfo,
+	reducerState: SessionState,
 	action: {
 		type: 'toggleWidget' | 'selectPeer' | 'instance_updated' | 'status_updated' | 'reset' | 'mute' | 'hold';
-		payload?: Partial<SessionInfo> & { status?: UserStatus };
+		payload?: Partial<SessionState> & { status?: UserStatus };
 	},
-): SessionInfo => {
+): SessionState => {
 	if (action.type === 'mute') {
 		return {
 			...reducerState,
@@ -97,7 +94,7 @@ const reducer = (
 	}
 
 	if (action.type === 'instance_updated') {
-		return { ...reducerState, ...action.payload } as SessionInfo;
+		return { ...reducerState, ...action.payload } as SessionState;
 	}
 
 	if (action.type === 'selectPeer') {
@@ -115,7 +112,8 @@ const reducer = (
 	return reducerState;
 };
 
-export type MediaSessionStateWithWidgetControls = MediaSessionState & {
+export type MediaSessionStateWithWidgetControls = {
+	sessionState: SessionState;
 	toggleWidget: (peerInfo?: PeerInfo) => void;
 	selectPeer: (peerInfo: PeerInfo) => void;
 };
@@ -222,10 +220,18 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 		return mediaSession.peerInfo ? { ...mediaSession.peerInfo, status: status?.status } : undefined;
 	}, [mediaSession.peerInfo, status]);
 
+	const sessionState: SessionState = useMemo(
+		() => ({
+			...mediaSession,
+			peerInfo: peerInfo!, // TODO: fix this. Since it comes from the useMemo, there's no relation with the state, so types fail
+			startedAt: mediaSession.startedAt ?? undefined,
+		}),
+		[mediaSession, peerInfo],
+	);
+
 	return {
-		...mediaSession,
-		peerInfo,
+		sessionState,
 		toggleWidget,
 		selectPeer,
-	} as MediaSessionStateWithWidgetControls;
+	};
 };

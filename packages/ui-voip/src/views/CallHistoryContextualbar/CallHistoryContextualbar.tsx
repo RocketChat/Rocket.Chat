@@ -66,7 +66,8 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 
 	const { voiceCall, directMessage } = actions;
 	const { duration, callId, direction, startedAt } = data;
-	const { state } = useMediaCallExternalContext();
+	const { sessionState } = useMediaCallExternalContext();
+	const { state } = sessionState;
 
 	const date = useFullStartDate(startedAt);
 	return (

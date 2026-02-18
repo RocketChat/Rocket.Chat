@@ -7,7 +7,8 @@ import { useMediaCallContext } from '../../context';
 const OutgoingCallTransfer = () => {
 	const { t } = useTranslation();
 
-	const { onEndCall, peerInfo, connectionState, transferredBy } = useMediaCallContext();
+	const { sessionState, onEndCall } = useMediaCallContext();
+	const { peerInfo, connectionState, transferredBy } = sessionState;
 
 	if (!peerInfo) {
 		throw new Error('Peer info is required');

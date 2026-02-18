@@ -10,7 +10,9 @@ export const useMediaCallAction = (
 ): { title: string; icon: IconNames; action: (callee?: PeerInfo) => void } | undefined => {
 	const { t } = useTranslation();
 
-	const { state, onToggleWidget, onEndCall, peerInfo } = useMediaCallExternalContext();
+	const { sessionState, onToggleWidget, onEndCall } = useMediaCallExternalContext();
+
+	const { state, peerInfo } = sessionState;
 
 	return useMemo(() => {
 		if (state === 'unauthorized') {
@@ -21,11 +23,21 @@ export const useMediaCallAction = (
 			return 'displayName' in peerInfo ? peerInfo?.displayName : peerInfo?.number;
 		};
 
+		const newCall = {
+			title: t('New_voice_call'),
+			icon: 'dialpad' as const,
+			action: () => onToggleWidget?.(undefined),
+		};
+
+		if (state === 'unlicensed') {
+			return newCall;
+		}
+
 		if (state === 'ongoing' && peerInfo) {
 			return {
 				title: t('Voice_call__user__hangup', { user: getDisplayName(peerInfo) }),
 				icon: 'phone-off',
-				action: () => onEndCall(),
+				action: () => onEndCall?.(),
 			};
 		}
 
@@ -33,7 +45,7 @@ export const useMediaCallAction = (
 			return {
 				title: t('Voice_call__user__cancel', { user: getDisplayName(peerInfo) }),
 				icon: 'phone-off',
-				action: () => onEndCall(),
+				action: () => onEndCall?.(),
 			};
 		}
 
@@ -41,7 +53,7 @@ export const useMediaCallAction = (
 			return {
 				title: t('Voice_call__user__reject', { user: getDisplayName(peerInfo) }),
 				icon: 'phone-off',
-				action: () => onEndCall(),
+				action: () => onEndCall?.(),
 			};
 		}
 
@@ -49,14 +61,10 @@ export const useMediaCallAction = (
 			return {
 				title: t('Voice_call__user_', { user: getDisplayName(callee) }),
 				icon: 'phone',
-				action: () => onToggleWidget(callee),
+				action: () => onToggleWidget?.(callee),
 			};
 		}
 
-		return {
-			title: t('New_voice_call'),
-			icon: 'dialpad',
-			action: () => onToggleWidget(),
-		};
+		return newCall;
 	}, [state, peerInfo, callee, t, onEndCall, onToggleWidget]);
 };

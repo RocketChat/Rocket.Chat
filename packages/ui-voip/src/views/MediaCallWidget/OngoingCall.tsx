@@ -21,20 +21,8 @@ import { useMediaCallContext } from '../../context';
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const {
-		muted,
-		held,
-		remoteMuted,
-		remoteHeld,
-		onMute,
-		onHold,
-		onForward,
-		onEndCall,
-		onTone,
-		peerInfo,
-		connectionState,
-		onClickDirectMessage,
-	} = useMediaCallContext();
+	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } = useMediaCallContext();
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState } = sessionState;
 
 	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
 

@@ -52,8 +52,8 @@ const getItems = (actions: HistoryActionCallbacks, t: TFunction, state: MediaCal
 const CallHistoryActions = ({ onClose, actions }: CallHistoryActionsProps) => {
 	const { t } = useTranslation();
 
-	const { state } = useMediaCallExternalContext();
-	const items = getItems(actions, t, state);
+	const { sessionState } = useMediaCallExternalContext();
+	const items = getItems(actions, t, sessionState.state);
 	return (
 		<ContextualbarActions>
 			{items.length > 0 && <GenericMenu title={t('Options')} items={items} />}

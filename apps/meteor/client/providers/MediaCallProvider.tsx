@@ -13,10 +13,9 @@ const MediaCallProvider = ({ children }: { children: ReactNode }) => {
 
 	const unauthorizedContextValue = useMemo(
 		() => ({
-			state: 'unauthorized' as const,
+			sessionState: { state: 'unauthorized' as const, peerInfo: undefined },
 			onToggleWidget: undefined,
 			onEndCall: undefined,
-			peerInfo: undefined,
 			setOpenRoomId: undefined,
 		}),
 		[],

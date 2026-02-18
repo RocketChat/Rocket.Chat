@@ -7,7 +7,8 @@ import { useMediaCallContext } from '../../context';
 const OutgoingCall = () => {
 	const { t } = useTranslation();
 
-	const { onEndCall, peerInfo, connectionState } = useMediaCallContext();
+	const { sessionState, onEndCall } = useMediaCallContext();
+	const { peerInfo, connectionState } = sessionState;
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {

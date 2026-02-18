@@ -2,8 +2,7 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { PeerInfo } from './MediaCallContext';
-import type { SessionInfo } from './useMediaSessionInstance';
+import type { PeerInfo, SessionState } from './MediaCallContext';
 import { convertAvatarUrlToPng } from '../utils/convertAvatarUrlToPng';
 
 const getDisplayInfo = (peerInfo?: PeerInfo) => {
@@ -20,7 +19,7 @@ const getDisplayInfo = (peerInfo?: PeerInfo) => {
 	return undefined;
 };
 
-export const useDesktopNotifications = (sessionInfo: SessionInfo) => {
+export const useDesktopNotifications = (sessionInfo: SessionState) => {
 	const previousCallId = useRef<string | undefined>(undefined);
 	const { t } = useTranslation();
 	const desktopNotificationsEnabled = useUserPreference('desktopNotificationVoiceCalls');

@@ -45,7 +45,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 
 	const instance = useMediaSessionInstance(userId ?? undefined);
 
-	const sessionState = useMediaSession(instance);
+	const { sessionState, toggleWidget, selectPeer } = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
 
 	useDesktopNotifications(sessionState);
@@ -209,7 +209,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	};
 
 	const onSelectPeer = (peerInfo: PeerInfo) => {
-		sessionState.selectPeer(peerInfo);
+		selectPeer(peerInfo);
 	};
 
 	const getAvatarPath = useUserAvatarPath();
@@ -253,19 +253,11 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	};
 
 	const onToggleWidget = (peerInfo?: PeerInfo) => {
-		sessionState.toggleWidget(peerInfo);
+		toggleWidget(peerInfo);
 	};
 
 	const contextValue = {
-		connectionState: sessionState.connectionState,
-		state: sessionState.state,
-		muted: sessionState.muted,
-		held: sessionState.held,
-		peerInfo: sessionState.peerInfo,
-		transferredBy: sessionState.transferredBy,
-		hidden: sessionState.hidden,
-		remoteMuted: sessionState.remoteMuted,
-		remoteHeld: sessionState.remoteHeld,
+		sessionState,
 		onClickDirectMessage,
 		setOpenRoomId,
 		onMute,
