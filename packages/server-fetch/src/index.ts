@@ -130,7 +130,7 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			const params = new URLSearchParams(options?.params);
 			const url = new URL(pinnedUrl);
 
-			if (params.toString()) {
+			if (redirectCount === 0 && params.toString()) {
 				params.forEach((value, key) => {
 					if (value) {
 						url.searchParams.append(key, value);
