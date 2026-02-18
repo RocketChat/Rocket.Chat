@@ -71,11 +71,12 @@ export default defineConfig(async () => {
 				'react-dom',
 				'react-hook-form',
 				'react-i18next',
-				'react-i18next',
 				'react-stately',
 				'react',
 			],
 			alias: {
+				// Third-party packages
+				'react-aria': path.resolve('./node_modules/react-aria'),
 				// Rocket.Chat Packages
 				'@rocket.chat/api-client': path.resolve('../../packages/api-client/src/index.ts'),
 				'@rocket.chat/apps-engine': path.resolve('../../packages/apps-engine/src'),
