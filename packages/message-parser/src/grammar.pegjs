@@ -284,6 +284,7 @@ LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
 
 MarkdownLinkRef = MarkdownLinkURL / MarkdownLinkFilePath / p:Phone { return 'tel:' + p.number; }
 
+// LinkRef is used for non-markdown link contexts (like <url|title> syntax) where parentheses aren't balanced
 LinkRef = URL / FilePath / p:Phone { return 'tel:' + p.number; }
 
 FilePath = $(URLScheme URLBody+)
@@ -307,7 +308,7 @@ MarkdownLinkURLBodyParen
   = !(Whitespace / EndOfLine / ")")
     (AnyText / [*\[\/\]\^_`{}~(])
 
-MarkdownLinkExtra = [.,!%~*\"':;=~]
+MarkdownLinkExtra = [.,!%*\"':;=]
 
 Image = "![" title:Line? "](" href:MarkdownLinkRef ")" { return title ? image(href, title) : image(href); }
 
