@@ -82,8 +82,6 @@ runs:
             swc_arch='arm64'
           fi
 
-          find /tmp/build/bundle/programs/server/npm/node_modules/meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc -type d -name 'core-*' -not -name "*linux-${swc_arch}-gnu*" -exec rm -rf {} +
-
           find /tmp/build/bundle/programs/server/npm/node_modules/@img -type d -name 'sharp-*' -not -name "*-linuxmusl-${swc_arch}" -exec rm -rf {} +
 
           find /tmp/build/bundle/programs/server/npm/node_modules/@napi-rs -type d -name 'pinyin-linux-*' -not -name "*-linux-${swc_arch}-*" -exec rm -rf {} +
