@@ -105,10 +105,10 @@ describe('isRelativeURL', () => {
 			expect(isRelativeURL('data:image/svg+xml,<svg onload=alert(1)>')).to.be.false;
 		});
 
-		it('should accept plain text that happens to contain colons (not at scheme position)', () => {
-			// These are relative because the colon is NOT at the beginning after letters
-			expect(isRelativeURL('file:name:with:colons.txt')).to.be.true; // filename, not a scheme
-			expect(isRelativeURL('C:\\path\\to\\file')).to.be.true; // Windows path (colon not in scheme position)
+		it('should treat file: prefix as a scheme even with unusual paths', () => {
+			// `file:` is a valid URI scheme per RFC 3986 and is correctly rejected
+			expect(isRelativeURL('file:name:with:colons.txt')).to.be.false;
+			expect(isRelativeURL('C:\\path\\to\\file')).to.be.true; // Windows path — backslash breaks scheme match
 		});
 
 		it('should handle case-insensitive schemes correctly', () => {
@@ -131,10 +131,8 @@ describe('isRelativeURL', () => {
 			expect(isRelativeURL('path/(parentheses)/file')).to.be.true;
 		});
 
-		it('should handle protocol-relative URLs (// prefix) as absolute', () => {
-			// Note: '//' is technically a protocol-relative URL (inherits protocol from page)
-			// But our function checks for schemes, so '//example.com' would return true
-			// This is acceptable as protocol-relative URLs are rare and context-dependent
+		it('should treat protocol-relative URLs (// prefix) as relative (no scheme present)', () => {
+			// '//' has no URI scheme, so isRelativeURL returns true for protocol-relative URLs
 			expect(isRelativeURL('//example.com')).to.be.true;
 			expect(isRelativeURL('//cdn.example.com/file.js')).to.be.true;
 		});
