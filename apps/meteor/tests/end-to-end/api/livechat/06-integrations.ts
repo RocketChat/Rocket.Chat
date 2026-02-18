@@ -235,7 +235,6 @@ describe('LIVECHAT - Integrations', () => {
 				await updateSetting('Livechat_webhook_on_close', true);
 
 				await closeOmnichannelRoom(queuedRoom._id);
-				// Remove from roomsToClose since we just closed it
 				const idx = roomsToClose.indexOf(queuedRoom);
 				if (idx > -1) {
 					roomsToClose.splice(idx, 1);
