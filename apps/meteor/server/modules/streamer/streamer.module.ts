@@ -296,6 +296,7 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 			}
 
 			try {
+				// eslint-disable-next-line no-await-in-loop
 				const allowed = await this.isEmitAllowed(subscription.subscription, eventName, ...args);
 				if (allowed) {
 					const msg = typeof getMsg === 'string' ? getMsg : getMsg(this, subscription, eventName, args, allowed);

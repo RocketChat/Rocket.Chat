@@ -11,12 +11,15 @@ jest.mock('../../lib/logger/system', () => ({
 }));
 
 // Concrete test implementation of Streamer
-class TestStreamer extends Streamer<'test'> {
-	registerPublication(name: string, fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => Promise<void>): void {
+class TestStreamer extends Streamer<'notify-all'> {
+	registerPublication(
+		_name: string,
+		_fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => Promise<void>,
+	): void {
 		// Mock implementation - not needed for these tests
 	}
 
-	registerMethod(methods: Record<string, (eventName: string, ...args: any[]) => any>): void {
+	registerMethod(_methods: Record<string, (eventName: string, ...args: any[]) => any>): void {
 		// Mock implementation - not needed for these tests
 	}
 
@@ -100,7 +103,9 @@ describe('Streamer.sendToManySubscriptions', () => {
 			});
 
 			// Should not throw
-			await expect(streamer.sendToManySubscriptions(mockSubscriptions, undefined, 'test-event', [], 'test-message')).resolves.toBeUndefined();
+			await expect(
+				streamer.sendToManySubscriptions(mockSubscriptions, undefined, 'test-event', [], 'test-message'),
+			).resolves.toBeUndefined();
 
 			// Should log the error
 			expect(SystemLogger.error).toHaveBeenCalledWith({
@@ -307,7 +312,7 @@ describe('Streamer.sendToManySubscriptions', () => {
 			const permissionData = { roomParticipant: true };
 			streamer.isEmitAllowed = jest.fn(async () => permissionData);
 
-			const transformFn: TransformMessage = jest.fn((streamer, subscription, eventName, args, allowed) => {
+			const transformFn: TransformMessage = jest.fn((_streamer, _subscription, eventName, _args, allowed) => {
 				return `transformed:${eventName}:${JSON.stringify(allowed)}`;
 			});
 
@@ -358,7 +363,9 @@ describe('Streamer.sendToManySubscriptions', () => {
 
 			streamer.isEmitAllowed = jest.fn(async () => true);
 
-			await expect(streamer.sendToManySubscriptions(mockSubscriptions, undefined, 'test-event', [], 'test-message')).resolves.toBeUndefined();
+			await expect(
+				streamer.sendToManySubscriptions(mockSubscriptions, undefined, 'test-event', [], 'test-message'),
+			).resolves.toBeUndefined();
 
 			expect(streamer.isEmitAllowed).not.toHaveBeenCalled();
 			expect(mockSocket.send).not.toHaveBeenCalled();
@@ -382,7 +389,9 @@ describe('Streamer.sendToManySubscriptions', () => {
 			streamer.isEmitAllowed = jest.fn(async () => true);
 
 			// Should not throw
-			await expect(streamer.sendToManySubscriptions(mockSubscriptions, undefined, 'test-event', [], 'test-message')).resolves.toBeUndefined();
+			await expect(
+				streamer.sendToManySubscriptions(mockSubscriptions, undefined, 'test-event', [], 'test-message'),
+			).resolves.toBeUndefined();
 
 			expect(streamer.isEmitAllowed).toHaveBeenCalled();
 			// send should not be called on null socket
@@ -405,7 +414,9 @@ describe('Streamer.sendToManySubscriptions', () => {
 
 			streamer.isEmitAllowed = jest.fn(async () => true);
 
-			await expect(streamer.sendToManySubscriptions(mockSubscriptions, undefined, 'test-event', [], 'test-message')).resolves.toBeUndefined();
+			await expect(
+				streamer.sendToManySubscriptions(mockSubscriptions, undefined, 'test-event', [], 'test-message'),
+			).resolves.toBeUndefined();
 
 			expect(streamer.isEmitAllowed).toHaveBeenCalled();
 		});
