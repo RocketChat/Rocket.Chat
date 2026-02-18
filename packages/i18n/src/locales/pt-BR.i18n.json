@@ -2105,7 +2105,7 @@
   "FileUpload_Disabled": "Uploads de arquivos estão desabilitados.",
   "FileUpload_Enable_json_web_token_for_files": "Habilitar proteção com JSON Web Tokens ao upload de arquivos",
   "FileUpload_Enable_json_web_token_for_files_description": "Acrescenta um JWT aos URLs dos arquivos carregados",
-  "FileUpload_Enable_json_web_token_for_files_Alert": "Esta opção só tem efeito quando um segredo JWT está configurado. Se o campo \"Segredo JWT para arquivos\" estiver vazio, nenhum token será gerado e a proteção de arquivos não será aplicada.",
+  "FileUpload_Enable_json_web_token_for_files_Alert": "Esta opção só tem efeito quando um segredo JWT está configurado. Se o campo \"Segredo JWT para arquivos\" estiver vazio, nenhum token será gerado e a proteção JWT de arquivos não será aplicada.",
   "FileUpload_Enabled": "Habilitar upload de arquivos",
   "FileUpload_Enabled_Direct": "Uploads de arquivos ativados em mensagens diretas",
   "FileUpload_Error": "Erro de upload de arquivo",
