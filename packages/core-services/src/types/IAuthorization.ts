@@ -16,7 +16,7 @@ export interface IAuthorization {
 	getUsersFromPublicRoles(): Promise<Pick<Required<IUser>, '_id' | 'username' | 'roles'>[]>;
 	hasAnyRole(userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean>;
 
-	disable2FA(uid: string): Promise<boolean>;
+	disable2FA(uid: string, code: string): Promise<boolean>;
 	enable2FA(uid: string): Promise<void>;
 	validateTempToken(uid: string, token: string): Promise<boolean | null>;
 	check2FARemainingCodes(uid: string): Promise<{ remaining: number }>;
