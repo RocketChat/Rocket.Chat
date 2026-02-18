@@ -20,7 +20,7 @@ import type { PeerInfo } from './MediaCallContext';
 import MediaCallContext from './MediaCallContext';
 import { useCallSounds } from './useCallSounds';
 import { useDesktopNotifications } from './useDesktopNotifications';
-import { getExtensionFromPeerInfo, useMediaSession } from './useMediaSession';
+import { getExtensionFromPeerInfo, useMediaSession, useMediaSessionControls } from './useMediaSession';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import useMediaStream from './useMediaStream';
 import { isValidTone, useTonePlayer } from './useTonePlayer';
@@ -43,9 +43,11 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const userId = user?._id;
 
 	const instance = useMediaSessionInstance(userId ?? undefined);
-	const session = useMediaSession(instance);
 
-	useDesktopNotifications(session);
+	const state = useMediaSession(instance);
+	const controls = useMediaSessionControls(instance);
+
+	useDesktopNotifications(state);
 
 	const [remoteStreamRefCallback, audioElement] = useMediaStream(instance);
 
@@ -59,49 +61,44 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const forceSIPRouting = useSetting('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls');
 
 	const onClickDirectMessage = useGoToDirectMessage(
-		{ username: session.peerInfo && 'username' in session.peerInfo ? session.peerInfo.username : undefined },
+		{ username: state.peerInfo && 'username' in state.peerInfo ? state.peerInfo.username : undefined },
 		openRoomId,
 	);
 
-	// For some reason `exhaustive-deps` is complaining that "session" is not in the dependencies
-	// But we're only using the changeDevice method from the session
-	// So I'll just destructure it here
-	const { changeDevice } = session;
-
 	useEffect(() => {
-		if (audioInput?.id && !session.hidden) {
-			void changeDevice(audioInput.id);
+		if (audioInput?.id && !state.hidden) {
+			void controls.changeDevice(audioInput.id);
 		}
-	}, [audioInput?.id, changeDevice, session.hidden]);
+	}, [audioInput?.id, controls, state.hidden]);
 
 	useCallSounds(
-		session.hidden ? 'closed' : session.state,
+		state.hidden ? 'closed' : state.state,
 		useCallback(
 			(callback) => {
 				if (!instance) {
 					return;
 				}
 				return instance.on('endedCall', () => {
-					if (session.hidden) {
+					if (state.hidden) {
 						return;
 					}
 					callback();
 				});
 			},
-			[instance, session.hidden],
+			[instance, state.hidden],
 		),
 	);
 
-	const onMute = () => session.toggleMute();
-	const onHold = () => session.toggleHold();
+	const onMute = () => controls.toggleMute();
+	const onHold = () => controls.toggleHold();
 
 	const onCall = async () => {
-		if (session.state !== 'new') {
-			console.error('Cannot start call in state', session.state);
+		if (state.state !== 'new') {
+			console.error('Cannot start call in state', state.state);
 			return;
 		}
 
-		const { peerInfo } = session;
+		const { peerInfo } = state;
 
 		if (!peerInfo) {
 			return;
@@ -116,12 +113,12 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 		}
 
 		if ('userId' in peerInfo) {
-			void session.startCall(peerInfo.userId, 'user');
+			void controls.startCall(peerInfo.userId, 'user');
 			return;
 		}
 
 		if ('number' in peerInfo) {
-			void session.startCall(peerInfo.number, 'sip');
+			void controls.startCall(peerInfo.number, 'sip');
 			return;
 		}
 
@@ -129,8 +126,8 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	};
 
 	const onAccept = async () => {
-		if (session.state !== 'ringing') {
-			console.error('Cannot accept call in state', session.state);
+		if (state.state !== 'ringing') {
+			console.error('Cannot accept call in state', state.state);
 			return;
 		}
 
@@ -139,12 +136,12 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 			stopTracks(stream);
 		} catch (error) {
 			if (error instanceof PermissionRequestCancelledCallRejectedError) {
-				session.endCall();
+				controls.endCall();
 			}
 			return;
 		}
 
-		void session.acceptCall();
+		void controls.acceptCall();
 	};
 
 	const onDeviceChange = (device: Device) => {
@@ -189,7 +186,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 
 		const onConfirm = (kind: 'user' | 'sip', peer: { displayName: string; id: string }) => {
 			offCallback?.();
-			session.forwardCall(kind, peer.id);
+			controls.forwardCall(kind, peer.id);
 			setModal(null);
 			dispatchToastMessage({ type: 'success', message: t('Call_transfered_to__name__', { name: peer.displayName }) });
 		};
@@ -200,18 +197,18 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const playTone = useTonePlayer(audioOutput?.id);
 
 	const onTone = (tone: string) => {
-		session.sendTone(tone);
+		controls.sendTone(tone);
 		if (isValidTone(tone)) {
 			playTone(tone);
 		}
 	};
 
 	const onEndCall = () => {
-		session.endCall();
+		controls.endCall();
 	};
 
 	const onSelectPeer = (peerInfo: PeerInfo) => {
-		session.selectPeer(peerInfo);
+		state.selectPeer(peerInfo);
 	};
 
 	const getAvatarPath = useUserAvatarPath();
@@ -219,8 +216,8 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const usersAutoCompleteEndpoint = useEndpoint('GET', '/v1/users.autocomplete');
 
 	const getAutocompleteOptions = async (filter: string) => {
-		const peerUsername = session.peerInfo && 'username' in session.peerInfo ? session.peerInfo.username : undefined;
-		const peerExtension = session.peerInfo ? getExtensionFromPeerInfo(session.peerInfo) : undefined;
+		const peerUsername = state.peerInfo && 'username' in state.peerInfo ? state.peerInfo.username : undefined;
+		const peerExtension = state.peerInfo ? getExtensionFromPeerInfo(state.peerInfo) : undefined;
 
 		const conditions =
 			peerExtension || forceSIPRouting
@@ -255,19 +252,19 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	};
 
 	const onToggleWidget = (peerInfo?: PeerInfo) => {
-		session.toggleWidget(peerInfo);
+		state.toggleWidget(peerInfo);
 	};
 
 	const contextValue = {
-		connectionState: session.connectionState,
-		state: session.state,
-		muted: session.muted,
-		held: session.held,
-		peerInfo: session.peerInfo,
-		transferredBy: session.transferredBy,
-		hidden: session.hidden,
-		remoteMuted: session.remoteMuted,
-		remoteHeld: session.remoteHeld,
+		connectionState: state.connectionState,
+		state: state.state,
+		muted: state.muted,
+		held: state.held,
+		peerInfo: state.peerInfo,
+		transferredBy: state.transferredBy,
+		hidden: state.hidden,
+		remoteMuted: state.remoteMuted,
+		remoteHeld: state.remoteHeld,
 		onClickDirectMessage,
 		setOpenRoomId,
 		onMute,

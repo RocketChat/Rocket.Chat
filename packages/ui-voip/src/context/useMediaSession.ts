@@ -1,7 +1,7 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 import type { MediaSignalingSession, CallState, CallRole } from '@rocket.chat/media-signaling';
 import { useUserAvatarPath, useUserPresence } from '@rocket.chat/ui-contexts';
-import { useEffect, useReducer, useMemo } from 'react';
+import { useEffect, useReducer, useMemo, useCallback } from 'react';
 
 import type { ConnectionState, PeerInfo, State } from './MediaCallContext';
 import type { SessionInfo } from './useMediaSessionInstance';
@@ -20,19 +20,15 @@ const defaultSessionInfo: SessionInfo = {
 	hidden: false,
 };
 
-type MediaSession = SessionInfo & {
+export type MediaSessionState = SessionInfo;
+
+export type MediaSessionControls = {
 	toggleMute: () => void;
 	toggleHold: () => void;
-
-	toggleWidget: (peerInfo?: PeerInfo) => void;
-	selectPeer: (peerInfo: PeerInfo) => void;
-
 	endCall: () => void;
 	startCall: (id: string, kind: 'user' | 'sip') => Promise<void>;
 	acceptCall: () => Promise<void>;
-
 	changeDevice: (deviceId: string) => Promise<void>;
-
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
 };
@@ -130,7 +126,12 @@ const reducer = (
 	return reducerState;
 };
 
-export const useMediaSession = (instance?: MediaSignalingSession): MediaSession => {
+export type MediaSessionStateWithWidgetControls = MediaSessionState & {
+	toggleWidget: (peerInfo?: PeerInfo) => void;
+	selectPeer: (peerInfo: PeerInfo) => void;
+};
+
+export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionStateWithWidgetControls => {
 	const [mediaSession, dispatch] = useReducer<typeof reducer>(reducer, defaultSessionInfo);
 
 	const getAvatarUrl = useUserAvatarPath();
@@ -218,24 +219,36 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 		};
 	}, [getAvatarUrl, instance]);
 
-	const cbs = useMemo(() => {
-		const toggleWidget = (peerInfo?: PeerInfo) => {
-			dispatch({ type: 'toggleWidget', payload: { peerInfo } });
-		};
+	const toggleWidget = useCallback((peerInfo?: PeerInfo) => {
+		dispatch({ type: 'toggleWidget', payload: { peerInfo } });
+	}, []);
 
-		const selectPeer = (peerInfo: PeerInfo) => {
-			dispatch({ type: 'selectPeer', payload: { peerInfo } });
-		};
+	const selectPeer = useCallback((peerInfo: PeerInfo) => {
+		dispatch({ type: 'selectPeer', payload: { peerInfo } });
+	}, []);
 
+	const status = useUserPresence(mediaSession.peerInfo && 'userId' in mediaSession.peerInfo ? mediaSession.peerInfo.userId : undefined);
+
+	const peerInfo = useMemo(() => {
+		return mediaSession.peerInfo ? { ...mediaSession.peerInfo, status: status?.status } : undefined;
+	}, [mediaSession.peerInfo, status]);
+
+	return {
+		...mediaSession,
+		peerInfo,
+		toggleWidget,
+		selectPeer,
+	} as MediaSessionStateWithWidgetControls;
+};
+
+export const useMediaSessionControls = (instance?: MediaSignalingSession): MediaSessionControls => {
+	return useMemo(() => {
 		const toggleMute = () => {
 			const mainCall = instance?.getMainCall();
 			if (!mainCall) {
 				return;
 			}
-
 			mainCall.setMuted(!mainCall.muted);
-
-			dispatch({ type: 'mute', payload: { muted: mainCall.muted } });
 		};
 
 		const toggleHold = () => {
@@ -243,29 +256,22 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			if (!mainCall) {
 				return;
 			}
-
 			mainCall.setHeld(!mainCall.held);
-
-			dispatch({ type: 'hold', payload: { held: mainCall.held } });
 		};
 
 		const endCall = () => {
 			if (!instance) {
 				return;
 			}
-
 			const mainCall = instance.getMainCall();
 			if (!mainCall) {
 				return;
 			}
-
 			const { role } = mainCall;
-
 			if (role === 'caller' || mainCall.state !== 'ringing') {
 				mainCall.hangup();
 				return;
 			}
-
 			mainCall.reject();
 		};
 
@@ -273,7 +279,6 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			if (!instance) {
 				return;
 			}
-
 			const call = instance.getMainCall();
 			if (!call || call.state !== 'ringing') {
 				return;
@@ -285,7 +290,6 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			if (!instance) {
 				return;
 			}
-
 			try {
 				await instance.startCall(kind, id);
 			} catch (error) {
@@ -297,7 +301,6 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			if (!instance) {
 				return;
 			}
-
 			void instance.setDeviceId({ exact: deviceId });
 		};
 
@@ -305,12 +308,10 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			if (!instance) {
 				return;
 			}
-
 			const mainCall = instance.getMainCall();
 			if (!mainCall) {
 				return;
 			}
-
 			mainCall.transfer({ type, id });
 		};
 
@@ -318,12 +319,10 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			if (!instance) {
 				return;
 			}
-
 			const mainCall = instance.getMainCall();
 			if (!mainCall) {
 				return;
 			}
-
 			try {
 				mainCall.sendDTMF(tone);
 			} catch (error) {
@@ -332,28 +331,14 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 		};
 
 		return {
-			toggleWidget,
+			toggleMute,
 			toggleHold,
 			endCall,
 			startCall,
+			acceptCall,
 			changeDevice,
 			forwardCall,
 			sendTone,
-			selectPeer,
-			toggleMute,
-			acceptCall,
 		};
 	}, [instance]);
-
-	const status = useUserPresence(mediaSession.peerInfo && 'userId' in mediaSession.peerInfo ? mediaSession.peerInfo.userId : undefined);
-
-	const peerInfo = useMemo(() => {
-		return mediaSession.peerInfo ? { ...mediaSession.peerInfo, status: status?.status } : undefined;
-	}, [mediaSession.peerInfo, status]);
-
-	return {
-		...mediaSession,
-		peerInfo,
-		...cbs,
-	} as MediaSession;
 };
