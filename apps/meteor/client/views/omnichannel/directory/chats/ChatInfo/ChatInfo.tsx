@@ -4,7 +4,6 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarScrollableContent, ContextualbarFooter, InfoPanelField, InfoPanelLabel, InfoPanelText } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission, useUserId } from '@rocket.chat/ui-contexts';
-
 import { useMemo } from 'react';
 
 import DepartmentField from './DepartmentField';
@@ -77,15 +76,15 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 		routePath.push(
 			route
 				? {
-					tab: 'room-info',
-					context: 'edit',
-					id,
-				}
+						tab: 'room-info',
+						context: 'edit',
+						id,
+					}
 				: {
-					page: 'chats',
-					id,
-					bar: 'edit',
-				},
+						page: 'chats',
+						id,
+						bar: 'edit',
+					},
 		);
 	});
 
