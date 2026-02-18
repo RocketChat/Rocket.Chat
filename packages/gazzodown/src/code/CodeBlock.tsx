@@ -1,5 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { IconButton } from '@rocket.chat/fuselage';
+import styled from '@rocket.chat/styled';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import hljs from 'highlight.js';
 import type { ReactElement } from 'react';
@@ -12,6 +13,17 @@ type CodeBlockProps = {
 	language?: string;
 	lines: MessageParser.CodeLine[];
 };
+
+const CodeBlockWrapper = styled('div')`
+	position: relative;
+`;
+
+const CopyButton = styled(IconButton)`
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	z-index: 1;
+`;
 
 const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 	const ref = useRef<HTMLElement>(null);
@@ -68,23 +80,17 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 			await navigator.clipboard.writeText(code);
 			dispatchToastMessage({ type: 'success', message: t('Copied') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error.message : t('Failed_to_copy') });
 		}
 	}, [code, dispatchToastMessage, t]);
 
 	return (
-		<div style={{ position: 'relative' }}>
-			<IconButton
+		<CodeBlockWrapper>
+			<CopyButton
 				icon='copy'
 				small
 				title={t('Copy')}
 				onClick={handleCopy}
-				style={{
-					position: 'absolute',
-					top: '0.5rem',
-					right: '0.5rem',
-					zIndex: 1,
-				}}
 			/>
 			<pre role='region'>
 				<span className='copyonly'>```</span>
@@ -97,7 +103,7 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 				</code>
 				<span className='copyonly'>```</span>
 			</pre>
-		</div>
+		</CodeBlockWrapper>
 	);
 };
 
