@@ -1,4 +1,5 @@
 import { api, OmnichannelIntegration } from "@rocket.chat/core-services";
+import { createHash, randomBytes, randomInt, timingSafeEqual } from "crypto";
 import {
     MedsensePharmacies,
     MedsensePharmacyMemberships,
@@ -16,19 +17,142 @@ import {
 import { check, Match } from "meteor/check";
 import { HTTP } from "meteor/http";
 import { Meteor } from "meteor/meteor";
+import { Mongo } from "meteor/mongo";
 import { Apps } from '@rocket.chat/apps';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
 
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from "../../../authorization/server/functions/hasPermission";
 import { addUserToRoom } from "../../../lib/server/functions/addUserToRoom";
+import { checkEmailAvailability } from "../../../lib/server/functions/checkEmailAvailability";
+import { checkUsernameAvailability } from "../../../lib/server/functions/checkUsernameAvailability";
 import { removeUserFromRoom } from "../../../lib/server/functions/removeUserFromRoom";
 import { sendMessage } from "../../../lib/server/functions/sendMessage";
+import { setUsernameWithValidation } from "../../../lib/server/functions/setUsername";
+import { validateNameChars } from "../../../lib/server/functions/validateNameChars";
 import { settings } from '../../../settings/server';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
+import { registerUser } from '../../../../server/methods/registerUser';
 import { API } from "../api";
 import notifications from "../../../notifications/server/lib/Notifications";
+
+type MedsenseRegistrationStatus = 'pending' | 'verified' | 'locked' | 'completed' | 'expired';
+
+type MedsenseRegistrationPrefill = {
+    name?: string;
+    email?: string;
+    username?: string;
+    phone?: string;
+    reason?: string;
+    pharmacyId?: string;
+};
+
+type IMedsensePatientRegistration = {
+    _id: string;
+    tokenHash: string;
+    codeHash: string;
+    phoneNumber: string;
+    codeExpiresAt: Date;
+    attemptCount: number;
+    resendCount: number;
+    lastSentAt: Date;
+    status: MedsenseRegistrationStatus;
+    prefill: MedsenseRegistrationPrefill;
+    specialtyFlowId?: string;
+    specialtyRoomId?: string;
+    startedByUserId: string;
+    startedByUsername?: string;
+    verificationSessionHash?: string;
+    verificationSessionExpiresAt?: Date;
+    completedUserId?: string;
+    completedAt?: Date;
+    createdAt: Date;
+    _updatedAt: Date;
+};
+
+const MedsensePatientRegistrations = new Mongo.Collection<IMedsensePatientRegistration>('medsense_patient_registrations');
+
+const REGISTRATION_CODE_TTL_MS = 15 * 60 * 1000;
+const REGISTRATION_SESSION_TTL_MS = 30 * 60 * 1000;
+const REGISTRATION_LOCK_TTL_MS = 15 * 60 * 1000;
+const REGISTRATION_MAX_ATTEMPTS = 5;
+const REGISTRATION_RESEND_COOLDOWN_MS = 60 * 1000;
+const REGISTRATION_MAX_RESENDS = 3;
+
+const hashRegistrationValue = (value: string): string => createHash('sha256').update(value).digest('hex');
+
+const safeHashEqual = (left: string, right: string): boolean => {
+    const leftBuffer = Buffer.from(left);
+    const rightBuffer = Buffer.from(right);
+    if (leftBuffer.length !== rightBuffer.length) {
+        return false;
+    }
+    return timingSafeEqual(leftBuffer, rightBuffer);
+};
+
+const createRegistrationCode = (): string => String(randomInt(100000, 1000000));
+const createRegistrationToken = (): string => randomBytes(24).toString('hex');
+const createRegistrationSessionToken = (): string => randomBytes(32).toString('hex');
+
+const normalizeRegistrationPhone = (value: string): string | null => {
+    if (!value) {
+        return null;
+    }
+    const trimmed = String(value).trim();
+    const digits = trimmed.replace(/\D/g, '');
+    if (trimmed.startsWith('+')) {
+        return /^\+[1-9]\d{1,14}$/.test(trimmed) ? trimmed : null;
+    }
+    if (digits.length === 10) {
+        return `+1${digits}`;
+    }
+    if (digits.length === 11 && digits.startsWith('1')) {
+        return `+${digits}`;
+    }
+    return null;
+};
+
+const getMedsenseSmsService = async () => {
+    const service = settings.get<string>('SMS_Service');
+    if (!service || service === 'false') {
+        throw new Meteor.Error('sms-disabled', 'SMS Service is disabled in Administration settings');
+    }
+
+    const SMSService = await OmnichannelIntegration.getSmsService(service);
+    if (!SMSService) {
+        throw new Meteor.Error('sms-provider-missing', 'SMS Service provider not found');
+    }
+
+    const fromNumber = settings.get<string>('SMS_Twilio_Number');
+    if (!fromNumber) {
+        throw new Meteor.Error('sms-from-missing', 'Twilio "From" number not found in settings.');
+    }
+
+    return { SMSService, fromNumber };
+};
+
+const sendMedsenseSMS = async (phoneNumber: string, body: string): Promise<void> => {
+    const { SMSService, fromNumber } = await getMedsenseSmsService();
+    await SMSService.send(fromNumber, phoneNumber, body);
+};
+
+const buildRegistrationSMS = ({ linkUrl, code, patientName }: { linkUrl: string; code: string; patientName?: string }): string => {
+    const greeting = patientName?.trim() ? `Hello ${patientName.trim()},` : 'Hello,';
+    return `${greeting} use code ${code} to continue your MedSense registration: ${linkUrl} (expires in 15 minutes).`;
+};
+
+const findRegistrationByToken = async (token: string): Promise<IMedsensePatientRegistration | null> => {
+    const tokenHash = hashRegistrationValue(token);
+    return MedsensePatientRegistrations.findOneAsync({ tokenHash });
+};
+
+Meteor.startup(() => {
+    const raw = MedsensePatientRegistrations.rawCollection();
+    void raw.createIndex({ tokenHash: 1 }, { unique: true });
+    void raw.createIndex({ status: 1, _updatedAt: -1 });
+    void raw.createIndex({ codeExpiresAt: 1 });
+});
 
 // Pharmacies Management (Kept Intact)
 API.v1.addRoute(
@@ -106,7 +230,7 @@ API.v1.addRoute(
     {
         async get() {
             const pharmacies = await MedsensePharmacies.find(
-                { active: true },
+                { active: { $ne: false } },
                 { projection: { _id: 1, name: 1 }, sort: { name: 1 } }
             ).toArray();
 
@@ -1187,6 +1311,437 @@ API.v1.addRoute(
             }
         }
     }
+);
+
+// =========================================================================================
+// Patient Registration with Verification Code
+// =========================================================================================
+API.v1.addRoute(
+    "medsense/registration.start",
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                phoneNumber: String,
+                name: Match.Maybe(String),
+                email: Match.Maybe(String),
+                username: Match.Maybe(String),
+                reason: Match.Maybe(String),
+                pharmacyId: Match.Maybe(String),
+                specialtyFlowId: Match.Maybe(String),
+                specialtyRoomId: Match.Maybe(String),
+            }));
+
+            if (!(await hasPermissionAsync(this.userId, "medsense-view-request"))) {
+                return API.v1.forbidden();
+            }
+
+            const normalizedPhone = normalizeRegistrationPhone(String(this.bodyParams.phoneNumber));
+            if (!normalizedPhone) {
+                return API.v1.failure("Invalid phone number format. Use +1234567890 or 1234567890");
+            }
+
+            const selectedPharmacyId = this.bodyParams.pharmacyId ? String(this.bodyParams.pharmacyId) : undefined;
+            if (!selectedPharmacyId || selectedPharmacyId === "all") {
+                return API.v1.failure("pharmacyId is required");
+            }
+
+            const pharmacy = await MedsensePharmacies.findOneById(selectedPharmacyId);
+            if (!pharmacy) {
+                return API.v1.failure("Pharmacy not found");
+            }
+            if (pharmacy.active === false) {
+                return API.v1.failure("Pharmacy is inactive");
+            }
+
+            const canManageAll = await hasPermissionAsync(this.userId, "medsense-manage-all-pharmacies");
+            if (!canManageAll) {
+                const membership = await MedsensePharmacyMemberships.findOne({ pharmacyId: selectedPharmacyId, userId: this.userId });
+                if (!membership) {
+                    return API.v1.forbidden();
+                }
+            }
+
+            const token = createRegistrationToken();
+            const code = createRegistrationCode();
+            const now = new Date();
+            const codeExpiresAt = new Date(now.getTime() + REGISTRATION_CODE_TTL_MS);
+            const tokenHash = hashRegistrationValue(token);
+            const codeHash = hashRegistrationValue(code);
+            const linkUrl = Meteor.absoluteUrl(`medsense/registration/${token}`);
+
+            const prefill: MedsenseRegistrationPrefill = {
+                name: this.bodyParams.name ? String(this.bodyParams.name).trim() : undefined,
+                email: this.bodyParams.email ? String(this.bodyParams.email).trim().toLowerCase() : undefined,
+                username: this.bodyParams.username ? String(this.bodyParams.username).trim() : undefined,
+                phone: normalizedPhone,
+                reason: this.bodyParams.reason ? String(this.bodyParams.reason).trim() : undefined,
+                pharmacyId: selectedPharmacyId,
+            };
+
+            console.info('[medsense.registration.start] prefill-created', {
+                startedByUserId: this.userId,
+                startedByUsername: this.user?.username,
+                selectedPharmacyId,
+                prefill,
+            });
+
+            const registrationId = await MedsensePatientRegistrations.insertAsync({
+                tokenHash,
+                codeHash,
+                phoneNumber: normalizedPhone,
+                codeExpiresAt,
+                attemptCount: 0,
+                resendCount: 0,
+                lastSentAt: now,
+                status: "pending",
+                prefill,
+                specialtyFlowId: this.bodyParams.specialtyFlowId ? String(this.bodyParams.specialtyFlowId) : undefined,
+                specialtyRoomId: this.bodyParams.specialtyRoomId ? String(this.bodyParams.specialtyRoomId) : undefined,
+                startedByUserId: this.userId,
+                startedByUsername: this.user?.username,
+                createdAt: now,
+                _updatedAt: now,
+            } as any);
+
+            try {
+                const smsBody = buildRegistrationSMS({
+                    linkUrl,
+                    code,
+                    patientName: prefill.name,
+                });
+                await sendMedsenseSMS(normalizedPhone, smsBody);
+            } catch (error: any) {
+                await MedsensePatientRegistrations.removeAsync({ _id: registrationId as string });
+                return API.v1.failure(`SMS Send Failed: ${error?.message || error}`);
+            }
+
+            return API.v1.success({
+                registrationId,
+                linkUrl,
+                smsStatus: "sent",
+            });
+        },
+    },
+);
+
+API.v1.addRoute(
+    "medsense/registration.verify",
+    { authRequired: false },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                token: String,
+                code: String,
+            }));
+
+            const token = String(this.bodyParams.token).trim();
+            const code = String(this.bodyParams.code).trim();
+            if (!token || !code) {
+                return API.v1.failure("Invalid verification request");
+            }
+
+            const registration = await findRegistrationByToken(token);
+            if (!registration) {
+                return API.v1.failure("Registration link is invalid");
+            }
+
+            const now = new Date();
+            if (registration.status === "completed") {
+                return API.v1.failure("Registration is already completed");
+            }
+
+            if (registration.status === "expired") {
+                return API.v1.failure("Verification code expired");
+            }
+
+            if (
+                registration.status === "locked" &&
+                registration._updatedAt &&
+                (now.getTime() - new Date(registration._updatedAt).getTime()) < REGISTRATION_LOCK_TTL_MS
+            ) {
+                return API.v1.failure("Too many invalid attempts. Please wait and try again.");
+            }
+
+            if (new Date(registration.codeExpiresAt).getTime() <= now.getTime()) {
+                await MedsensePatientRegistrations.updateAsync(
+                    { _id: registration._id },
+                    { $set: { status: "expired", _updatedAt: now } } as any,
+                );
+                return API.v1.failure("Verification code expired");
+            }
+
+            const codeHash = hashRegistrationValue(code);
+            if (!safeHashEqual(registration.codeHash, codeHash)) {
+                const nextAttempts = (registration.attemptCount || 0) + 1;
+                const nextStatus: MedsenseRegistrationStatus = nextAttempts >= REGISTRATION_MAX_ATTEMPTS ? "locked" : "pending";
+                await MedsensePatientRegistrations.updateAsync(
+                    { _id: registration._id },
+                    { $set: { attemptCount: nextAttempts, status: nextStatus, _updatedAt: now } } as any,
+                );
+                if (nextStatus === "locked") {
+                    return API.v1.failure("Too many invalid attempts. Please wait and try again.");
+                }
+                return API.v1.failure("Invalid verification code");
+            }
+
+            const verificationSession = createRegistrationSessionToken();
+            const verificationSessionHash = hashRegistrationValue(verificationSession);
+            const verificationSessionExpiresAt = new Date(now.getTime() + REGISTRATION_SESSION_TTL_MS);
+
+            await MedsensePatientRegistrations.updateAsync(
+                { _id: registration._id },
+                {
+                    $set: {
+                        status: "verified",
+                        attemptCount: 0,
+                        verificationSessionHash,
+                        verificationSessionExpiresAt,
+                        _updatedAt: now,
+                    },
+                } as any,
+            );
+
+            return API.v1.success({
+                verificationSession,
+                verificationSessionExpiresAt: verificationSessionExpiresAt.toISOString(),
+            });
+        },
+    },
+);
+
+API.v1.addRoute(
+    "medsense/registration.resend",
+    { authRequired: false },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                token: String,
+            }));
+
+            const token = String(this.bodyParams.token).trim();
+            const registration = await findRegistrationByToken(token);
+            if (!registration) {
+                return API.v1.failure("Registration link is invalid");
+            }
+
+            if (registration.status === "completed") {
+                return API.v1.failure("Registration is already completed");
+            }
+
+            const now = new Date();
+            if (registration.resendCount >= REGISTRATION_MAX_RESENDS) {
+                await MedsensePatientRegistrations.updateAsync(
+                    { _id: registration._id },
+                    { $set: { status: "locked", _updatedAt: now } } as any,
+                );
+                return API.v1.failure("Resend limit reached");
+            }
+
+            const lastSentTime = new Date(registration.lastSentAt).getTime();
+            if (now.getTime() - lastSentTime < REGISTRATION_RESEND_COOLDOWN_MS) {
+                return API.v1.failure("Please wait before requesting a new code");
+            }
+
+            const code = createRegistrationCode();
+            const codeHash = hashRegistrationValue(code);
+            const codeExpiresAt = new Date(now.getTime() + REGISTRATION_CODE_TTL_MS);
+            const linkUrl = Meteor.absoluteUrl(`medsense/registration/${token}`);
+
+            try {
+                const smsBody = buildRegistrationSMS({
+                    linkUrl,
+                    code,
+                    patientName: registration.prefill?.name,
+                });
+                await sendMedsenseSMS(registration.phoneNumber, smsBody);
+            } catch (error: any) {
+                return API.v1.failure(`SMS Send Failed: ${error?.message || error}`);
+            }
+
+            await MedsensePatientRegistrations.updateAsync(
+                { _id: registration._id },
+                {
+                    $set: {
+                        codeHash,
+                        codeExpiresAt,
+                        lastSentAt: now,
+                        attemptCount: 0,
+                        status: "pending",
+                        verificationSessionHash: undefined,
+                        verificationSessionExpiresAt: undefined,
+                        _updatedAt: now,
+                    },
+                    $inc: { resendCount: 1 },
+                } as any,
+            );
+
+            return API.v1.success({
+                smsStatus: "sent",
+                resendCount: (registration.resendCount || 0) + 1,
+            });
+        },
+    },
+);
+
+API.v1.addRoute(
+    "medsense/registration.prefill",
+    { authRequired: false },
+    {
+        async get() {
+            check(this.queryParams, Match.ObjectIncluding({
+                token: String,
+                verificationSession: String,
+            }));
+
+            const token = String(this.queryParams.token).trim();
+            const verificationSession = String(this.queryParams.verificationSession).trim();
+            const registration = await findRegistrationByToken(token);
+            if (!registration) {
+                return API.v1.failure("Registration link is invalid");
+            }
+
+            if (!registration.verificationSessionHash || !registration.verificationSessionExpiresAt) {
+                return API.v1.failure("Verification session is missing");
+            }
+
+            const verificationSessionHash = hashRegistrationValue(verificationSession);
+            if (!safeHashEqual(registration.verificationSessionHash, verificationSessionHash)) {
+                return API.v1.failure("Verification session is invalid");
+            }
+
+            if (new Date(registration.verificationSessionExpiresAt).getTime() <= Date.now()) {
+                return API.v1.failure("Verification session expired");
+            }
+
+            console.info('[medsense.registration.prefill] prefill-returned', {
+                registrationId: registration._id,
+                startedByUserId: registration.startedByUserId,
+                prefill: registration.prefill || {},
+            });
+
+            return API.v1.success({
+                prefill: registration.prefill || {},
+            });
+        },
+    },
+);
+
+API.v1.addRoute(
+    "medsense/registration.complete",
+    { authRequired: false },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                token: String,
+                verificationSession: String,
+                name: String,
+                email: String,
+                username: String,
+                pass: String,
+                reason: String,
+                phone: Match.Maybe(String),
+                pharmacyId: Match.Maybe(String),
+            }));
+
+            const token = String(this.bodyParams.token).trim();
+            const verificationSession = String(this.bodyParams.verificationSession).trim();
+            const registration = await findRegistrationByToken(token);
+            if (!registration) {
+                return API.v1.failure("Registration link is invalid");
+            }
+
+            if (registration.status === "completed") {
+                return API.v1.failure("Registration is already completed");
+            }
+
+            if (!registration.verificationSessionHash || !registration.verificationSessionExpiresAt) {
+                return API.v1.failure("Verification session is missing");
+            }
+
+            const verificationSessionHash = hashRegistrationValue(verificationSession);
+            if (!safeHashEqual(registration.verificationSessionHash, verificationSessionHash)) {
+                return API.v1.failure("Verification session is invalid");
+            }
+
+            if (new Date(registration.verificationSessionExpiresAt).getTime() <= Date.now()) {
+                return API.v1.failure("Verification session expired");
+            }
+
+            const name = String(this.bodyParams.name).trim();
+            const email = String(this.bodyParams.email).trim().toLowerCase();
+            const username = String(this.bodyParams.username).trim();
+            const reason = String(this.bodyParams.reason).trim();
+            const pass = String(this.bodyParams.pass);
+            const phoneCandidate = this.bodyParams.phone
+                ? String(this.bodyParams.phone)
+                : registration.prefill?.phone || registration.phoneNumber;
+            const normalizedPhone = normalizeRegistrationPhone(phoneCandidate || "");
+            if (!normalizedPhone) {
+                return API.v1.failure("error-invalid-phone-number");
+            }
+
+            if (!validateNameChars(name)) {
+                return API.v1.failure("Name contains invalid characters");
+            }
+
+            if (!(await checkUsernameAvailability(username))) {
+                return API.v1.failure("Username is already in use");
+            }
+
+            if (!(await checkEmailAvailability(email))) {
+                return API.v1.failure("Email already exists");
+            }
+
+            let userId: string;
+            try {
+                const createdUser = await registerUser({ email, pass, name, reason, phone: normalizedPhone } as any);
+                if (typeof createdUser !== "string") {
+                    return API.v1.failure("Error creating user");
+                }
+                userId = createdUser;
+                await setUsernameWithValidation(userId, username);
+                await addUserRolesAsync(userId, ["user"]);
+            } catch (error: any) {
+                return API.v1.failure(error?.error || error?.message || "Error creating user");
+            }
+
+            const resolvedPharmacyId = this.bodyParams.pharmacyId || registration.prefill?.pharmacyId;
+            if (resolvedPharmacyId) {
+                const pharmacy = await MedsensePharmacies.findOneById(String(resolvedPharmacyId));
+                if (pharmacy) {
+                    await MedsensePatientPharmacy.setStartPharmacy(userId, String(resolvedPharmacyId), registration.startedByUserId || userId);
+                }
+            }
+
+            const now = new Date();
+            await MedsensePatientRegistrations.updateAsync(
+                { _id: registration._id },
+                {
+                    $set: {
+                        status: "completed",
+                        completedUserId: userId,
+                        completedAt: now,
+                        verificationSessionHash: undefined,
+                        verificationSessionExpiresAt: undefined,
+                        _updatedAt: now,
+                    },
+                } as any,
+            );
+
+            return API.v1.success({
+                success: true,
+                userId,
+                specialty: registration.specialtyFlowId
+                    ? {
+                        flowId: registration.specialtyFlowId,
+                        roomId: registration.specialtyRoomId,
+                        status: registration.specialtyRoomId ? "pending_room_link" : "pending",
+                    }
+                    : null,
+            });
+        },
+    },
 );
 // =========================================================================================
 // NEW: Pharmacy Staff Invites (MedsensePharmacyInvites)
@@ -2505,4 +3060,3 @@ API.v1.addRoute(
 		},
 	},
 );
-

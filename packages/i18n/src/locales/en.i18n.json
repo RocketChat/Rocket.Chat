@@ -7171,5 +7171,21 @@
   "Add_a_note": "Add a note",
   "View_details": "View details",
   "Add_note": "Add note",
-  "Initial_Notes": "Initial notes"
+  "Initial_Notes": "Initial notes",
+  "Register_Patient": "Register patient",
+  "Send_registration_sms": "Send registration SMS",
+  "Patient_registration_sms_sent": "Registration link and code sent by SMS",
+  "Verify_registration_code": "Verify registration code",
+  "Verification_successful": "Verification successful",
+  "Verification_failed": "Verification failed",
+  "Verification_code_resent": "Verification code resent",
+  "Failed_to_resend_verification_code": "Failed to resend verification code",
+  "Invalid_registration_link": "Invalid registration link",
+  "Registration_completed_successfully": "Registration completed successfully",
+  "Complete_registration": "Complete registration",
+  "Resend_code": "Resend code",
+  "Verification_Code": "Verification code",
+  "Code_must_be_6_digits": "Code must be 6 digits",
+  "Specialty_flow": "Specialty flow",
+  "Specialty_room_id": "Specialty room ID"
 }

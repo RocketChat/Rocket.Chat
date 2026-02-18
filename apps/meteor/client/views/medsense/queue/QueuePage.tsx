@@ -20,6 +20,10 @@ import {
 	TableCell,
 	TableHead,
 	TableRow,
+	TextInput,
+	Field,
+	FieldLabel,
+	FieldRow,
 	Tabs,
 	TabsItem,
 	Throbber,
@@ -27,8 +31,9 @@ import {
 	TextAreaInput,
 	Pagination,
 } from '@rocket.chat/fuselage';
-import { useEndpoint, useRoute, useSetting, useToastMessageDispatch, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import { GenericMenu, Page, PageContent, PageHeader, usePagination } from '@rocket.chat/ui-client';
+import { useEndpoint, useRoute, useSetting, useToastMessageDispatch, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
+import { PhoneNumberInput } from '@rocket.chat/web-ui-registration';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -854,8 +859,19 @@ const InterventionDetailsModal = ({
 export const QueueContent = (): JSX.Element => {
 	const t = useTranslation();
 	const canViewRequest = usePermission('medsense-view-request');
+	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
 	const [tab, setTab] = useState<'waiting' | 'followed' | 'history' | 'interventions'>('waiting');
 	const [selectedPharmacy, setSelectedPharmacy] = useState<string>('');
+	const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+	const [registrationName, setRegistrationName] = useState('');
+	const [registrationEmail, setRegistrationEmail] = useState('');
+	const [registrationUsername, setRegistrationUsername] = useState('');
+	const [registrationPhone, setRegistrationPhone] = useState('');
+	const [isRegistrationPhoneValid, setIsRegistrationPhoneValid] = useState(true);
+	const [registrationReason, setRegistrationReason] = useState('');
+	const [registrationSpecialtyFlow, setRegistrationSpecialtyFlow] = useState('');
+	const [registrationPharmacyId, setRegistrationPharmacyId] = useState('');
 	const badgeStyle = {
 		fontSize: '0.75rem',
 		minWidth: '20px',
@@ -875,6 +891,12 @@ export const QueueContent = (): JSX.Element => {
 		queryKey: ['my-pharmacies'],
 		queryFn: async () => getPharmacies({}),
 	});
+	const getMyPharmacy = useEndpoint('GET', '/v1/medsense/patient.pharmacy.mine');
+	const { data: myPharmacyData } = useQuery({
+		queryKey: ['my-pharmacy'],
+		queryFn: async () => getMyPharmacy(),
+		enabled: canViewRequest,
+	});
 
 	const pharmacyIds = useMemo(
 		() => (pharmacyData?.pharmacies ? pharmacyData.pharmacies.map((p: any) => String(p._id)) : []),
@@ -882,9 +904,17 @@ export const QueueContent = (): JSX.Element => {
 	);
 	const pharmacyOptions = useMemo(() => {
 		if (!pharmacyData?.pharmacies?.length) return [];
-		const options = pharmacyData.pharmacies.map((p: any) => [p._id, p.name]);
+		const options = pharmacyData.pharmacies.map((p: any) => [String(p._id), p.name]);
 		return [['all', t('All')], ...options];
 	}, [pharmacyData, t]);
+	const registrationPharmacyOptions = useMemo(
+		() =>
+			pharmacyData?.pharmacies
+				? pharmacyData.pharmacies.filter((p: any) => p?.active !== false).map((p: any) => [String(p._id), p.name])
+				: [],
+		[pharmacyData],
+	);
+	const preferredPharmacyId = useMemo(() => String(myPharmacyData?.pharmacy?._id || ''), [myPharmacyData]);
 
 	useEffect(() => {
 		if (!selectedPharmacy && pharmacyOptions.length > 0) {
@@ -897,6 +927,40 @@ export const QueueContent = (): JSX.Element => {
 			setTab('waiting');
 		}
 	}, [canViewRequest, tab]);
+
+	useEffect(() => {
+		if (!showRegistrationModal || registrationPharmacyId) {
+			return;
+		}
+
+		const allowedPharmacyIds = registrationPharmacyOptions.map((option: any) => String(option?.[0] || ''));
+
+		if (preferredPharmacyId && allowedPharmacyIds.includes(preferredPharmacyId)) {
+			setRegistrationPharmacyId(preferredPharmacyId);
+			return;
+		}
+
+		if (selectedPharmacy && selectedPharmacy !== 'all') {
+			setRegistrationPharmacyId(selectedPharmacy);
+			return;
+		}
+
+		if (registrationPharmacyOptions.length > 0) {
+			setRegistrationPharmacyId(String(registrationPharmacyOptions[0]?.[0] || ''));
+		}
+	}, [preferredPharmacyId, registrationPharmacyId, registrationPharmacyOptions, selectedPharmacy, showRegistrationModal]);
+
+	const resetRegistrationForm = useCallback(() => {
+		setShowRegistrationModal(false);
+		setRegistrationName('');
+		setRegistrationEmail('');
+		setRegistrationUsername('');
+		setRegistrationPhone('');
+		setIsRegistrationPhoneValid(true);
+		setRegistrationReason('');
+		setRegistrationSpecialtyFlow('');
+		setRegistrationPharmacyId('');
+	}, []);
 
 	const getWaitingQueue = useEndpoint('GET', '/v1/medsense/request.list');
 	const {
@@ -944,7 +1008,46 @@ export const QueueContent = (): JSX.Element => {
 	const followedRequests = followedQueueData?.requests || [];
 	const followedCount = followedRequests.length;
 
-	useQueryClient();
+	const startRegistration = useEndpoint('POST', '/v1/medsense/registration.start');
+	const startRegistrationMutation = useMutation({
+		mutationFn: async () => {
+			const payload = {
+				phoneNumber: registrationPhone,
+				name: registrationName || undefined,
+				email: registrationEmail || undefined,
+				username: registrationUsername || undefined,
+				reason: registrationReason || undefined,
+				pharmacyId: registrationPharmacyId,
+				specialtyFlowId: registrationSpecialtyFlow || undefined,
+			};
+			console.info('[Medsense][RegistrationStart][Staff]', payload);
+			return startRegistration(payload);
+		},
+		onSuccess: () => {
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Patient_registration_sms_sent'),
+			});
+			resetRegistrationForm();
+			queryClient.invalidateQueries({ queryKey: ['waiting-queue'] });
+		},
+		onError: (error: any) => {
+			dispatchToastMessage({ type: 'error', message: error?.message || String(error) });
+		},
+	});
+
+	const canSubmitRegistration = useMemo(() => {
+		if (!registrationPhone.trim()) {
+			return false;
+		}
+		if (!isRegistrationPhoneValid) {
+			return false;
+		}
+		if (!registrationPharmacyId) {
+			return false;
+		}
+		return true;
+	}, [isRegistrationPhoneValid, registrationPhone, registrationPharmacyId]);
 
 	return (
 		<Box display='flex' flexDirection='column' w='full' h='full'>
@@ -979,14 +1082,17 @@ export const QueueContent = (): JSX.Element => {
 						</TabsItem>
 					)}
 				</Tabs>
-				<Box minWidth='x200'>
-					<Select
-						options={pharmacyOptions}
-						value={selectedPharmacy}
-						onChange={(val) => setSelectedPharmacy(String(val))}
-						placeholder={t('Select_Pharmacy')}
-						disabled={isLoadingPharmacies}
-					/>
+				<Box display='flex' alignItems='center' gap='x8'>
+					<Box minWidth='x200'>
+						<Select
+							options={pharmacyOptions}
+							value={selectedPharmacy}
+							onChange={(val) => setSelectedPharmacy(String(val))}
+							placeholder={t('Select_Pharmacy')}
+							disabled={isLoadingPharmacies}
+						/>
+					</Box>
+					{canViewRequest && <Button onClick={() => setShowRegistrationModal(true)}>{t('Register_Patient')}</Button>}
 				</Box>
 			</Box>
 
@@ -1000,6 +1106,111 @@ export const QueueContent = (): JSX.Element => {
 				<HistoryQueueContent pharmacyId={selectedPharmacy} pharmacyIds={pharmacyIds} />
 			) : (
 				<InterventionsQueueContent pharmacyId={selectedPharmacy} />
+			)}
+
+			{showRegistrationModal && (
+				<Modal>
+					<ModalHeader>
+						<ModalTitle>{t('Register_Patient')}</ModalTitle>
+						<ModalClose onClick={resetRegistrationForm} />
+					</ModalHeader>
+					<ModalContent>
+						<Box display='flex' flexDirection='column' gap='x12'>
+							<Field>
+								<FieldLabel>{t('Preferred_Pharmacy')}</FieldLabel>
+								<FieldRow>
+									<Select
+										options={registrationPharmacyOptions}
+										value={registrationPharmacyId}
+										onChange={(value) => {
+											if (value === undefined || value === null) {
+												return;
+											}
+											setRegistrationPharmacyId(String(value));
+										}}
+										placeholder={t('Select_Pharmacy')}
+									/>
+								</FieldRow>
+							</Field>
+							<Field>
+								<FieldLabel>{t('Name')}</FieldLabel>
+								<FieldRow>
+									<TextInput
+										value={registrationName}
+										onChange={(event) => setRegistrationName(event.currentTarget.value)}
+										placeholder={t('registration.component.form.name')}
+									/>
+								</FieldRow>
+							</Field>
+							<Field>
+								<FieldLabel>{t('registration.component.form.email')}</FieldLabel>
+								<FieldRow>
+									<TextInput
+										value={registrationEmail}
+										onChange={(event) => setRegistrationEmail(event.currentTarget.value)}
+										placeholder='name@example.com'
+									/>
+								</FieldRow>
+							</Field>
+							<Field>
+								<FieldLabel>{t('registration.component.form.username')}</FieldLabel>
+								<FieldRow>
+									<TextInput
+										value={registrationUsername}
+										onChange={(event) => setRegistrationUsername(event.currentTarget.value)}
+										placeholder='jane.doe'
+									/>
+								</FieldRow>
+							</Field>
+							<Field>
+								<FieldLabel>{t('Phone_number')}</FieldLabel>
+								<FieldRow>
+									<PhoneNumberInput
+										value={registrationPhone}
+										onChange={setRegistrationPhone}
+										onValidityChange={setIsRegistrationPhoneValid}
+										name='registrationPhone'
+										id='registrationPhone'
+										defaultCountry='CA'
+									/>
+								</FieldRow>
+							</Field>
+							<Field>
+								<FieldLabel>{t('registration.component.form.reasonToJoin')}</FieldLabel>
+								<FieldRow>
+									<TextAreaInput
+										value={registrationReason}
+										onChange={(event) => setRegistrationReason(event.currentTarget.value)}
+										rows={2}
+									/>
+								</FieldRow>
+							</Field>
+							<Field>
+								<FieldLabel>{t('Specialty_flow')}</FieldLabel>
+								<FieldRow>
+									<Select
+										options={[
+											['', t('None')],
+											['uti', 'UTI'],
+										]}
+										value={registrationSpecialtyFlow}
+										onChange={(value) => setRegistrationSpecialtyFlow(String(value || ''))}
+									/>
+								</FieldRow>
+							</Field>
+						</Box>
+					</ModalContent>
+					<ModalFooter>
+						<Button onClick={resetRegistrationForm}>{t('Cancel')}</Button>
+						<Button
+							primary
+							onClick={() => startRegistrationMutation.mutate()}
+							disabled={!canSubmitRegistration || startRegistrationMutation.isLoading}
+						>
+							{startRegistrationMutation.isLoading ? <Throbber inheritColor /> : t('Send_registration_sms')}
+						</Button>
+					</ModalFooter>
+				</Modal>
 			)}
 		</Box>
 	);

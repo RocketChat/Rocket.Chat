@@ -16,18 +16,18 @@ import {
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useAccountsCustomFields, useSetting, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useEffect, useId, useRef, useState, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
 
 import EmailConfirmationForm from './EmailConfirmationForm';
 import PhoneNumberInput from './components/PhoneNumberInput/PhoneNumberInput';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
 
-type LoginRegisterPayload = {
+export type LoginRegisterPayload = {
 	name: string;
 	passwordConfirmation: string;
 	username: string;
@@ -38,13 +38,35 @@ type LoginRegisterPayload = {
 	phoneNumber?: string;
 };
 
-export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
+type RegisterFormProps = {
+	setLoginRoute: DispatchLoginRouter;
+	initialValues?: Partial<LoginRegisterPayload>;
+	onSubmit?: (payload: {
+		name: string;
+		email: string;
+		username: string;
+		pass: string;
+		reason: string;
+		pharmacyId?: string;
+		phone?: string;
+	}) => Promise<void> | void;
+	submitLabel?: string;
+	hideBackLink?: boolean;
+	disablePharmacySelection?: boolean;
+};
+
+export const RegisterForm = ({
+	setLoginRoute,
+	initialValues,
+	onSubmit,
+	submitLabel,
+	hideBackLink = false,
+	disablePharmacySelection = false,
+}: RegisterFormProps): ReactElement => {
 	const { t } = useTranslation();
 
 	const requireNameForRegister = useSetting('Accounts_RequireNameForSignUp', true);
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation', true);
-
-
 
 	const usernameOrEmailPlaceholder = useSetting('Accounts_EmailOrUsernamePlaceholder', '');
 	const passwordPlaceholder = useSetting('Accounts_PasswordPlaceholder', '');
@@ -65,6 +87,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 
 	const [serverError, setServerError] = useState<string | undefined>(undefined);
 	const [isPhoneValid, setIsPhoneValid] = useState(true);
+	const [isCustomSubmitting, setIsCustomSubmitting] = useState(false);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -77,7 +100,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const pharmacyOptions = useMemo(
 		// @ts-ignore
 		// @ts-ignore
-		() => (pharmacyData?.pharmacies?.map((p: any) => [p._id, p.name]) || []) as [string, string][],
+		() => (pharmacyData?.pharmacies?.map((p: any) => [String(p._id), p.name]) || []) as [string, string][],
 		[pharmacyData],
 	);
 
@@ -91,12 +114,63 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		control,
 		setValue,
 		formState: { errors },
-	} = useForm<LoginRegisterPayload>({ mode: 'onBlur' });
+	} = useForm<LoginRegisterPayload>({
+		mode: 'onBlur',
+		defaultValues: initialValues,
+	});
 
 	const { password } = watch();
 	const passwordIsValid = useValidatePassword(password);
-	console.log('[Medsense Debug] RegisterForm errors:', errors);
 	const registerFormRef = useRef<HTMLElement>(null);
+
+	const applyKnownFormErrors = (error: any): boolean => {
+		if ([error?.error, error?.errorType].includes('error-invalid-email')) {
+			setError('email', { type: 'invalid-email', message: t('registration.component.form.invalidEmail') });
+			return true;
+		}
+		if (error?.errorType === 'error-user-already-exists') {
+			setError('username', { type: 'user-already-exists', message: t('registration.component.form.usernameAlreadyExists') });
+			return true;
+		}
+		if (/Email already exists/.test(error?.error || '')) {
+			setError('email', { type: 'email-already-exists', message: t('registration.component.form.emailAlreadyExists') });
+			return true;
+		}
+		if (/Username is already in use/.test(error?.error || '')) {
+			setError('username', { type: 'username-already-exists', message: t('registration.component.form.userAlreadyExist') });
+			return true;
+		}
+		if (/The username provided is not valid/.test(error?.error || '')) {
+			setError('username', {
+				type: 'username-contains-invalid-chars',
+				message: t('registration.component.form.usernameContainsInvalidChars'),
+			});
+			return true;
+		}
+		if (/Name contains invalid characters/.test(error?.error || '')) {
+			setError('name', { type: 'name-contains-invalid-chars', message: t('registration.component.form.nameContainsInvalidChars') });
+			return true;
+		}
+		if (/error-too-many-requests/.test(error?.error || '')) {
+			dispatchToastMessage({ type: 'error', message: error.error });
+			return true;
+		}
+		if (/error-user-is-not-activated/.test(error?.error || '')) {
+			dispatchToastMessage({ type: 'info', message: t('registration.page.registration.waitActivationWarning') });
+			setLoginRoute('login');
+			return true;
+		}
+		if (error?.error === 'error-user-registration-custom-field') {
+			setServerError(error.message);
+			return true;
+		}
+		if (['error-invalid-phone', 'error-invalid-phone-number'].includes(error?.error)) {
+			const phoneFormatHint = `${t('error-invalid-phone-number')} (Use +1234567890 or 1234567890)`;
+			setError('phoneNumber', { type: 'invalid-phone', message: phoneFormatHint });
+			return true;
+		}
+		return false;
+	};
 
 	useEffect(() => {
 		if (registerFormRef.current) {
@@ -104,7 +178,30 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		}
 	}, []);
 
+	useEffect(() => {
+		if (!initialValues) {
+			return;
+		}
+		const entries = Object.entries(initialValues) as Array<[keyof LoginRegisterPayload, string | undefined]>;
+		for (const [key, value] of entries) {
+			if (value !== undefined && value !== null) {
+				setValue(key, value as any);
+			}
+		}
+	}, [initialValues, setValue]);
+	useEffect(() => {
+		if (!initialValues?.pharmacyId) {
+			return;
+		}
+
+		console.info('[Medsense][RegisterForm][PharmacyOptions]', {
+			initialPharmacyId: initialValues.pharmacyId,
+			optionIds: pharmacyOptions.map(([id]) => String(id)),
+		});
+	}, [initialValues?.pharmacyId, pharmacyOptions]);
+
 	const handleRegister = async ({ password, passwordConfirmation: _, phoneNumber, ...formData }: LoginRegisterPayload) => {
+		setServerError(undefined);
 		const phoneFormatHint = `${t('error-invalid-phone-number')} (Use +1234567890 or 1234567890)`;
 		if (!isPhoneValid) {
 			setError('phoneNumber', { type: 'invalid-phone', message: phoneFormatHint });
@@ -115,47 +212,28 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		if (phoneNumber) {
 			payload.phone = phoneNumber;
 		}
-		registerUser.mutate(
-			payload,
-			{
-				onError: (error: any) => {
-					if ([error.error, error.errorType].includes('error-invalid-email')) {
-						setError('email', { type: 'invalid-email', message: t('registration.component.form.invalidEmail') });
-					}
-					if (error.errorType === 'error-user-already-exists') {
-						setError('username', { type: 'user-already-exists', message: t('registration.component.form.usernameAlreadyExists') });
-					}
-					if (/Email already exists/.test(error.error)) {
-						setError('email', { type: 'email-already-exists', message: t('registration.component.form.emailAlreadyExists') });
-					}
-					if (/Username is already in use/.test(error.error)) {
-						setError('username', { type: 'username-already-exists', message: t('registration.component.form.userAlreadyExist') });
-					}
-					if (/The username provided is not valid/.test(error.error)) {
-						setError('username', {
-							type: 'username-contains-invalid-chars',
-							message: t('registration.component.form.usernameContainsInvalidChars'),
-						});
-					}
-					if (/Name contains invalid characters/.test(error.error)) {
-						setError('name', { type: 'name-contains-invalid-chars', message: t('registration.component.form.nameContainsInvalidChars') });
-					}
-					if (/error-too-many-requests/.test(error.error)) {
-						dispatchToastMessage({ type: 'error', message: error.error });
-					}
-					if (/error-user-is-not-activated/.test(error.error)) {
-						dispatchToastMessage({ type: 'info', message: t('registration.page.registration.waitActivationWarning') });
-						setLoginRoute('login');
-					}
-					if (error.error === 'error-user-registration-custom-field') {
-						setServerError(error.message);
-					}
-					if (['error-invalid-phone', 'error-invalid-phone-number'].includes(error.error)) {
-						setError('phoneNumber', { type: 'invalid-phone', message: phoneFormatHint });
-					}
-				},
+
+		if (onSubmit) {
+			setIsCustomSubmitting(true);
+			try {
+				await onSubmit(payload);
+			} catch (error: any) {
+				const handled = applyKnownFormErrors(error);
+				if (!handled) {
+					const message = error?.error || error?.message || t('error-invalid-data');
+					setServerError(String(message));
+				}
+			} finally {
+				setIsCustomSubmitting(false);
+			}
+			return;
+		}
+
+		registerUser.mutate(payload, {
+			onError: (error: any) => {
+				applyKnownFormErrors(error);
 			},
-		);
+		});
 	};
 
 	if (errors.email?.type === 'invalid-email') {
@@ -356,16 +434,27 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						)}
 					</Field>
 
-
 					<Field>
 						<FieldLabel htmlFor='pharmacyId'>{t('Preferred_Pharmacy')}</FieldLabel>
 						<FieldRow>
-							<Select
-								id='pharmacyId'
-								placeholder={t('Select_an_option')}
-								options={pharmacyOptions}
-								{...register('pharmacyId')}
-								onChange={(val) => setValue('pharmacyId', String(val))}
+							<Controller
+								control={control}
+								name='pharmacyId'
+								render={({ field }) => (
+									<Select
+										id='pharmacyId'
+										placeholder={t('Select_an_option')}
+										options={pharmacyOptions}
+										value={field.value || ''}
+										onChange={(val) => {
+											if (val === undefined || val === null) {
+												return;
+											}
+											field.onChange(String(val));
+										}}
+										disabled={disablePharmacySelection}
+									/>
+								)}
 							/>
 						</FieldRow>
 					</Field>
@@ -376,17 +465,19 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			</Form.Container>
 			<Form.Footer>
 				<ButtonGroup>
-					<Button type='submit' loading={registerUser.isPending} primary>
-						{t('registration.component.form.joinYourTeam')}
+					<Button type='submit' loading={onSubmit ? isCustomSubmitting : registerUser.isPending} primary>
+						{submitLabel || t('registration.component.form.joinYourTeam')}
 					</Button>
 				</ButtonGroup>
-				<ActionLink
-					onClick={(): void => {
-						setLoginRoute('login');
-					}}
-				>
-					<Trans i18nKey='registration.page.register.back'>Back to Login</Trans>
-				</ActionLink>
+				{!hideBackLink && (
+					<ActionLink
+						onClick={(): void => {
+							setLoginRoute('login');
+						}}
+					>
+						<Trans i18nKey='registration.page.register.back'>Back to Login</Trans>
+					</ActionLink>
+				)}
 			</Form.Footer>
 		</Form>
 	);
