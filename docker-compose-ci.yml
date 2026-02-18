@@ -25,8 +25,6 @@ services:
       - 'COVERAGE_REPORTER=${COVERAGE_REPORTER:-}'
       - 'COVERAGE_FILE_NAME=${COVERAGE_FILE_NAME:-}'
       - OVERWRITE_SETTING_Log_Level=${DEBUG_LOG_LEVEL:-0}
-      - OVERWRITE_SETTING_CustomSounds_Storage_Type=FileSystem
-      - OVERWRITE_SETTING_EmojiUpload_Storage_Type=FileSystem
       - Federation_Service_Enabled=true
       - 'Federation_Service_Domain=rc.host'
       - HEAP_USAGE_PERCENT=99
