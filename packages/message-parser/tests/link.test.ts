@@ -410,14 +410,8 @@ Text after line break`,
 		'[link](https://example.com/query?this=(is)&a=problem)',
 		[paragraph([link('https://example.com/query?this=(is)&a=problem', [plain('link')])])],
 	],
-	[
-		'[link](https://example.com/path/to/func(param))',
-		[paragraph([link('https://example.com/path/to/func(param)', [plain('link')])])],
-	],
-	[
-		'[link](https://example.com/path/(section)/page)',
-		[paragraph([link('https://example.com/path/(section)/page', [plain('link')])])],
-	],
+	['[link](https://example.com/path/to/func(param))', [paragraph([link('https://example.com/path/to/func(param)', [plain('link')])])]],
+	['[link](https://example.com/path/(section)/page)', [paragraph([link('https://example.com/path/(section)/page', [plain('link')])])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
 });
