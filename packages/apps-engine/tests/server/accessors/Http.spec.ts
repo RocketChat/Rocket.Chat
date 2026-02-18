@@ -142,18 +142,18 @@ export class HttpAccessorTestFixture {
 		// Test with ssrfValidation enabled
 		await http.get('url-here', { ssrfValidation: true });
 		Expect(capturedInfo).toBeDefined();
-		Expect(capturedInfo!.ssrfValidation).toBe(true);
+		Expect(capturedInfo!.request.ssrfValidation).toBe(true);
 
 		// Test with ssrfValidation disabled
 		await http.post('url-here', { ssrfValidation: false });
-		Expect(capturedInfo!.ssrfValidation).toBe(false);
+		Expect(capturedInfo!.request.ssrfValidation).toBe(false);
 
 		// Test with ssrfValidation undefined (default)
 		await http.put('url-here', {});
-		Expect(capturedInfo!.ssrfValidation).toBe(undefined);
+		Expect(capturedInfo!.request.ssrfValidation).toBe(undefined);
 
 		// Test with no options
 		await http.del('url-here');
-		Expect(capturedInfo!.ssrfValidation).toBe(undefined);
+		Expect(capturedInfo!.request.ssrfValidation).toBe(undefined);
 	}
 }
