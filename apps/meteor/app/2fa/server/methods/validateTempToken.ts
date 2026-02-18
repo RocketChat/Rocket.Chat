@@ -23,7 +23,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		// @ts-ignore
-		return api.waitAndCall('user.validateTempToken', [userId, userToken]);
+		return api.call('user.validateTempToken', [userId, userToken]);
 	},
 });

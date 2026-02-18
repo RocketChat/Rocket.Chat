@@ -17,7 +17,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('not-authorized');
 		}
 
-		// @ts-ignore
-		return api.waitAndCall('user.checkCodesRemaining', [userId]);
+		return api.call('user.checkCodesRemaining', [userId]);
 	},
 });

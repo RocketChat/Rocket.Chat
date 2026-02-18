@@ -11,13 +11,19 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async '2fa:disable'(code) {
+		if (!code) {
+			throw new Meteor.Error('error-invalid-code', 'Invalid code', {
+				method: '2fa:disable',
+			});
+		}
+
 		const userId = Meteor.userId();
 
 		if (!userId) {
 			throw new Meteor.Error('not-authorized');
 		}
 
-		// @ts-ignore
-		return api.waitAndCall('user.disable2FA', [userId, code]);
+		// 2. استخدام api.call من غير @ts-ignore
+		return api.call('user.disable2FA', [userId, code]);
 	},
 });

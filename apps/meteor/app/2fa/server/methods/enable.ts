@@ -17,7 +17,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user');
 		}
 
-		// @ts-ignore
-		return api.waitAndCall('user.generate2FASecret', [userId]);
+		return api.call('user.generate2FASecret', [userId]);
 	},
 });
