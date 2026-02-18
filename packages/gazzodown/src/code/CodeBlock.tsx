@@ -1,7 +1,10 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
+import { IconButton } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import hljs from 'highlight.js';
 import type { ReactElement } from 'react';
-import { Fragment, useContext, useLayoutEffect, useMemo, useRef } from 'react';
+import { Fragment, useContext, useLayoutEffect, useMemo, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
@@ -14,6 +17,8 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 	const ref = useRef<HTMLElement>(null);
 
 	const { highlightRegex } = useContext(MarkupInteractionContext);
+	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const code = useMemo(() => lines.map((line) => line.value.value).join('\n'), [lines]);
 
@@ -58,18 +63,41 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 		}
 	}, [language, content]);
 
+	const handleCopy = useCallback(async () => {
+		try {
+			await navigator.clipboard.writeText(code);
+			dispatchToastMessage({ type: 'success', message: t('Copied') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	}, [code, dispatchToastMessage, t]);
+
 	return (
-		<pre role='region'>
-			<span className='copyonly'>```</span>
-			<code
-				key={language + code}
-				ref={ref}
-				className={((!language || language === 'none') && 'code-colors') || `code-colors language-${language}`}
-			>
-				{content}
-			</code>
-			<span className='copyonly'>```</span>
-		</pre>
+		<div style={{ position: 'relative' }}>
+			<IconButton
+				icon='copy'
+				small
+				title={t('Copy')}
+				onClick={handleCopy}
+				style={{
+					position: 'absolute',
+					top: '0.5rem',
+					right: '0.5rem',
+					zIndex: 1,
+				}}
+			/>
+			<pre role='region'>
+				<span className='copyonly'>```</span>
+				<code
+					key={language + code}
+					ref={ref}
+					className={((!language || language === 'none') && 'code-colors') || `code-colors language-${language}`}
+				>
+					{content}
+				</code>
+				<span className='copyonly'>```</span>
+			</pre>
+		</div>
 	);
 };
 
