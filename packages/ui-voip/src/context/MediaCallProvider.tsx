@@ -281,7 +281,6 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 		onToggleWidget,
 		onSelectPeer,
 		getAutocompleteOptions,
-		getPeerInfo: () => Promise.resolve(session.peerInfo), // TODO remove this probably
 	};
 
 	return (

@@ -148,7 +148,6 @@ const MockedMediaCallProvider = ({
 		onToggleWidget,
 		onSelectPeer,
 		getAutocompleteOptions,
-		getPeerInfo,
 	};
 
 	return <MediaCallContext.Provider value={contextValue}>{children}</MediaCallContext.Provider>;
