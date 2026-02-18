@@ -186,7 +186,6 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 			await this.startBroadcast();
 
-			this.troubleshootDisableInstanceBroadcast = await Settings.get<boolean>('Troubleshoot_Disable_Instance_Broadcast');
 		} catch (error) {
 			console.error('Instance service did not start correctly', error);
 		}
