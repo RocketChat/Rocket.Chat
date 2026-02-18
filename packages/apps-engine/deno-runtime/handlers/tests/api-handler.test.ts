@@ -78,4 +78,40 @@ describe('handlers > api', () => {
 			code: -32000,
 		});
 	});
+
+	it('correctly handles dynamic paths with parameters (e.g., webhook/:event)', async () => {
+		const mockDynamicEndpoint: IApiEndpoint = {
+			path: 'webhook/:event',
+			// deno-lint-ignore no-unused-vars
+			post: (request: any, endpoint: any, read: any, modify: any, http: any, persis: any) => Promise.resolve('webhook handled'),
+		};
+
+		AppObjectRegistry.set('api:webhook/:event', mockDynamicEndpoint);
+
+		const _spy = spy(mockDynamicEndpoint, 'post');
+
+		const result = await apiHandler(jsonrpc.request(1, 'api:webhook/:event:post', ['request', 'endpointInfo']));
+
+		assertEquals(result, 'webhook handled');
+		assertEquals(_spy.calls[0].args.length, 6);
+		assertEquals(_spy.calls[0].args[0], 'request');
+		assertEquals(_spy.calls[0].args[1], 'endpointInfo');
+	});
+
+	it('correctly handles paths with multiple segments and colons', async () => {
+		const mockComplexEndpoint: IApiEndpoint = {
+			path: 'api/v1/:resource/:id',
+			// deno-lint-ignore no-unused-vars
+			get: (request: any, endpoint: any, read: any, modify: any, http: any, persis: any) => Promise.resolve('complex path'),
+		};
+
+		AppObjectRegistry.set('api:api/v1/:resource/:id', mockComplexEndpoint);
+
+		const _spy = spy(mockComplexEndpoint, 'get');
+
+		const result = await apiHandler(jsonrpc.request(1, 'api:api/v1/:resource/:id:get', ['request', 'endpointInfo']));
+
+		assertEquals(result, 'complex path');
+		assertEquals(_spy.calls[0].args.length, 6);
+	});
 });
