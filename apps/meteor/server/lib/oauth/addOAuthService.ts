@@ -102,7 +102,6 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 		values: [
 			{ key: 'redirect', i18nLabel: 'Redirect' },
 			{ key: 'popup', i18nLabel: 'Popup' },
-			{ key: '', i18nLabel: 'Default' },
 		],
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-button_label_text`, values.buttonLabelText || '', {
