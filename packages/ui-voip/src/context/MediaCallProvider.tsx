@@ -45,10 +45,10 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 
 	const instance = useMediaSessionInstance(userId ?? undefined);
 
-	const state = useMediaSession(instance);
+	const sessionState = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
 
-	useDesktopNotifications(state);
+	useDesktopNotifications(sessionState);
 
 	const [remoteStreamRefCallback, audioElement] = useMediaStream(instance);
 
@@ -62,31 +62,31 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const forceSIPRouting = useSetting('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls');
 
 	const onClickDirectMessage = useGoToDirectMessage(
-		{ username: state.peerInfo && 'username' in state.peerInfo ? state.peerInfo.username : undefined },
+		{ username: sessionState.peerInfo && 'username' in sessionState.peerInfo ? sessionState.peerInfo.username : undefined },
 		openRoomId,
 	);
 
 	useEffect(() => {
-		if (audioInput?.id && !state.hidden) {
+		if (audioInput?.id && !sessionState.hidden) {
 			void controls.changeDevice(audioInput.id);
 		}
-	}, [audioInput?.id, controls, state.hidden]);
+	}, [audioInput?.id, controls, sessionState.hidden]);
 
 	useCallSounds(
-		state.hidden ? 'closed' : state.state,
+		sessionState.hidden ? 'closed' : sessionState.state,
 		useCallback(
 			(callback) => {
 				if (!instance) {
 					return;
 				}
 				return instance.on('endedCall', () => {
-					if (state.hidden) {
+					if (sessionState.hidden) {
 						return;
 					}
 					callback();
 				});
 			},
-			[instance, state.hidden],
+			[instance, sessionState.hidden],
 		),
 	);
 
@@ -94,12 +94,12 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const onHold = () => controls.toggleHold();
 
 	const onCall = async () => {
-		if (state.state !== 'new') {
-			console.error('Cannot start call in state', state.state);
+		if (sessionState.state !== 'new') {
+			console.error('Cannot start call in state', sessionState.state);
 			return;
 		}
 
-		const { peerInfo } = state;
+		const { peerInfo } = sessionState;
 
 		if (!peerInfo) {
 			return;
@@ -127,8 +127,8 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	};
 
 	const onAccept = async () => {
-		if (state.state !== 'ringing') {
-			console.error('Cannot accept call in state', state.state);
+		if (sessionState.state !== 'ringing') {
+			console.error('Cannot accept call in state', sessionState.state);
 			return;
 		}
 
@@ -209,7 +209,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	};
 
 	const onSelectPeer = (peerInfo: PeerInfo) => {
-		state.selectPeer(peerInfo);
+		sessionState.selectPeer(peerInfo);
 	};
 
 	const getAvatarPath = useUserAvatarPath();
@@ -217,8 +217,8 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const usersAutoCompleteEndpoint = useEndpoint('GET', '/v1/users.autocomplete');
 
 	const getAutocompleteOptions = async (filter: string) => {
-		const peerUsername = state.peerInfo && 'username' in state.peerInfo ? state.peerInfo.username : undefined;
-		const peerExtension = state.peerInfo ? getExtensionFromPeerInfo(state.peerInfo) : undefined;
+		const peerUsername = sessionState.peerInfo && 'username' in sessionState.peerInfo ? sessionState.peerInfo.username : undefined;
+		const peerExtension = sessionState.peerInfo ? getExtensionFromPeerInfo(sessionState.peerInfo) : undefined;
 
 		const conditions =
 			peerExtension || forceSIPRouting
@@ -253,19 +253,19 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	};
 
 	const onToggleWidget = (peerInfo?: PeerInfo) => {
-		state.toggleWidget(peerInfo);
+		sessionState.toggleWidget(peerInfo);
 	};
 
 	const contextValue = {
-		connectionState: state.connectionState,
-		state: state.state,
-		muted: state.muted,
-		held: state.held,
-		peerInfo: state.peerInfo,
-		transferredBy: state.transferredBy,
-		hidden: state.hidden,
-		remoteMuted: state.remoteMuted,
-		remoteHeld: state.remoteHeld,
+		connectionState: sessionState.connectionState,
+		state: sessionState.state,
+		muted: sessionState.muted,
+		held: sessionState.held,
+		peerInfo: sessionState.peerInfo,
+		transferredBy: sessionState.transferredBy,
+		hidden: sessionState.hidden,
+		remoteMuted: sessionState.remoteMuted,
+		remoteHeld: sessionState.remoteHeld,
 		onClickDirectMessage,
 		setOpenRoomId,
 		onMute,
