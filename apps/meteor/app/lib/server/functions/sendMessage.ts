@@ -16,6 +16,12 @@ import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 
+type SendMessageOptions = {
+	upsert?: boolean;
+	previewUrls?: string[];
+	filesToConfirm?: IUploadToConfirm[];
+};
+
 // TODO: most of the types here are wrong, but I don't want to change them now
 
 /**
@@ -240,14 +246,9 @@ const updateFileNames = async (filesToConfirm: IUploadToConfirm[], isE2E: boolea
  * Caller of the function should verify the Message_MaxAllowedSize if needed.
  * There might be same use cases which needs to override this setting. Example - sending error logs.
  */
-export const sendMessage = async (
-	user: any,
-	message: any,
-	room: any,
-	upsert = false,
-	previewUrls?: string[],
-	filesToConfirm?: IUploadToConfirm[],
-) => {
+export const sendMessage = async function (user: any, message: any, room: any, options: SendMessageOptions = {}) {
+	const { upsert = false, previewUrls, filesToConfirm } = options;
+
 	if (!user || !message || !room._id) {
 		return false;
 	}
