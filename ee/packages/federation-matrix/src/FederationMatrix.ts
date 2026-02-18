@@ -108,7 +108,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				);
 			},
 		);
+	}
 
+	override async started(): Promise<void> {
 		this.serverName = (await Settings.get<string>('Federation_Service_Domain')) || '';
 		this.processEDUTyping = (await Settings.get<boolean>('Federation_Service_EDU_Process_Typing')) || false;
 		this.processEDUPresence = (await Settings.get<boolean>('Federation_Service_EDU_Process_Presence')) || false;
