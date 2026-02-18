@@ -8,8 +8,9 @@ import type { IOAuthApps } from './IOAuthApps';
 import type { IPermission } from './IPermission';
 import type { ISubscription } from './ISubscription';
 import type { IMediaCall } from './mediaCalls/IMediaCall';
+import type { SlashCommand } from './SlashCommands';
 
 export const schemas = typia.json.schemas<
-	[ISubscription | IInvite | ICustomSound | IMessage | IOAuthApps | IPermission | IMediaCall, CallHistoryItem],
+	[ISubscription | IInvite | ICustomSound | IMessage | IOAuthApps | IPermission | IMediaCall | CallHistoryItem | SlashCommand ],
 	'3.0'
 >();
