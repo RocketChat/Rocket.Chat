@@ -17,8 +17,6 @@ class VideoRecorder {
 
 	private mediaRecorder: MediaRecorder | undefined;
 
-	// Session ID to handle race conditions between start/stop calls
-	// Prevents camera from staying active when modal is closed before camera initializes
 	private sessionId = 0;
 
 	public getSupportedMimeTypes() {
@@ -33,13 +31,10 @@ class VideoRecorder {
 
 	public start(videoel?: HTMLVideoElement, cb?: (this: this, success: boolean) => void) {
 		this.videoel = videoel;
-		// Increment and capture session ID for this start request
 		const currentSessionId = ++this.sessionId;
 
 		const handleSuccess = (stream: MediaStream) => {
-			// If stop() was called before this async callback, session IDs won't match
-			// Clean up the stream immediately to prevent camera from staying active
-			if (this.sessionId !== currentSessionId) {
+			if (this.isStaleSession(currentSessionId)) {
 				this.stopStreamTracks(stream);
 				return;
 			}
@@ -96,6 +91,10 @@ class VideoRecorder {
 		}
 	}
 
+	private isStaleSession(sessionId: number): boolean {
+		return this.sessionId !== sessionId;
+	}
+
 	private startUserMedia(stream: MediaStream) {
 		if (!this.videoel) {
 			return;
@@ -114,7 +113,6 @@ class VideoRecorder {
 	}
 
 	public stop(cb?: (blob: Blob) => void) {
-		// Increment session ID to invalidate any pending start() callbacks
 		this.sessionId++;
 
 		this.stopRecording();
