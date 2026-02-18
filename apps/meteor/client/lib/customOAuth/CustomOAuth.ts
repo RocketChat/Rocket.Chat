@@ -14,6 +14,14 @@ import { CustomOAuthError } from './CustomOAuthError';
 
 const configuredOAuthServices = new Map<string, CustomOAuth>();
 
+const isIOSClient = (): boolean => {
+	if (typeof navigator === 'undefined') {
+		return false;
+	}
+
+	return /iPad|iPhone|iPod/.test(navigator.userAgent);
+};
+
 export class CustomOAuth<TServiceName extends string = string> implements IOAuthProvider {
 	public serverURL: string;
 
@@ -81,7 +89,9 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 		}
 
 		const credentialToken = Random.secret();
-		const loginStyle = OAuth._loginStyle(this.name, config);
+		const configuredLoginStyle = OAuth._loginStyle(this.name, config);
+		// Force redirect on iOS to avoid popup/webview auth limitations that can hide passkey options.
+		const loginStyle = isIOSClient() && configuredLoginStyle === 'popup' ? 'redirect' : configuredLoginStyle;
 
 		const separator = this.authorizePath.indexOf('?') !== -1 ? '&' : '?';
 
