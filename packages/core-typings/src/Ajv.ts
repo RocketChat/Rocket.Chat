@@ -11,6 +11,6 @@ import type { SlashCommand } from './SlashCommands';
 import type { IMediaCall } from './mediaCalls/IMediaCall';
 
 export const schemas = typia.json.schemas<
-	[ISubscription | IInvite | ICustomSound | IMessage | IOAuthApps | IPermission | IMediaCall | CallHistoryItem | SlashCommand ],
+	[ISubscription | IInvite | ICustomSound | IMessage | IOAuthApps | IPermission | IMediaCall | CallHistoryItem | SlashCommand],
 	'3.0'
 >();
