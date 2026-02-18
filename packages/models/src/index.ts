@@ -122,6 +122,7 @@ export * from './dummy/ReadReceipts';
 
 export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
+export { readSecondaryPreferred } from './readSecondaryPreferred';
 
 export const Apps = proxify<IAppsModel>('IAppsModel');
 export const AppsPersistence = proxify<IAppsPersistenceModel>('IAppsPersistenceModel');
