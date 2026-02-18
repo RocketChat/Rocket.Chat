@@ -41,13 +41,14 @@ export class SlackUsersImporter extends Importer {
 		await this.converter.clearImportData();
 		await this.updateRecord({ file: fileName });
 
-		await super.updateProgress(ProgressStep.PREPARING_USERS);
-		const uriResult = RocketChatFile.dataURIParse(dataURI);
-		const buf = Buffer.from(uriResult.image, 'base64');
-		const parsed = this.csvParser(buf.toString());
+		try {
+			await super.updateProgress(ProgressStep.PREPARING_USERS);
+			const uriResult = RocketChatFile.dataURIParse(dataURI);
+			const buf = Buffer.from(uriResult.image, 'base64');
+			const parsed = this.csvParser(buf.toString());
 
-		let userCount = 0;
-		for await (const [index, user] of parsed.entries()) {
+			let userCount = 0;
+			for await (const [index, user] of parsed.entries()) {
 			// Ignore the first column
 			if (index === 0) {
 				continue;
@@ -102,5 +103,10 @@ export class SlackUsersImporter extends Importer {
 
 		await super.updateRecord({ 'count.users': userCount });
 		return super.getProgress();
+		} catch (error) {
+			this.logger.error({ msg: 'Error parsing CSV file', err: error });
+			await super.updateProgress(ProgressStep.ERROR);
+			return super.getProgress();
+		}
 	}
 }

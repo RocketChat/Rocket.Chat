@@ -50,6 +50,10 @@ export const executeGetImportFileData = async (): Promise<IImporterSelection | {
 	];
 
 	if (readySteps.indexOf(instance.progress.step) >= 0) {
+		// If import failed/errored, throw error instead of trying to build selection
+		if (instance.progress.step === ProgressStep.ERROR) {
+			throw new Meteor.Error('error-import-file-format-invalid', 'Failed to process import file. Please check the file format and try again.', 'getImportFileData');
+		}
 		return instance.buildSelection();
 	}
 

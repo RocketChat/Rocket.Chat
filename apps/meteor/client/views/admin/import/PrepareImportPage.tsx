@@ -24,13 +24,24 @@ import { numberFormat } from '../../../../lib/utils/stringUtils';
 
 const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>
 	new Promise<U>((resolve, reject) => {
+		let retryCount = 0;
+		const maxRetries = 60; 
+		
 		const callPromise = () => {
+			if (retryCount >= maxRetries) {
+				reject(new Error('Failed to process import file - maximum retries exceeded'));
+				return;
+			}
+
+
 			fn().then((result) => {
 				if (predicate(result)) {
 					resolve(result);
 					return;
 				}
 
+				
+				retryCount++;
 				setTimeout(callPromise, 1000);
 			}, reject);
 		};

@@ -85,6 +85,46 @@ function NewImportPage() {
 	};
 
 	const [files, setFiles] = useState<File[]>([]);
+	const [fileValidationError, setFileValidationError] = useState<string>('');
+
+	useEffect(() => {
+		setFileValidationError('');
+		setFiles([]);
+	}, [importerKey]);
+
+	// Get allowed file types based on importer
+	const getAllowedFileTypes = (importerKeyParam: string | undefined): string[] => {
+		if (!importerKeyParam) {
+			return [];
+		}
+
+		// CSV and Slack Users expect CSV files
+		if (importerKeyParam === 'csv' || importerKeyParam === 'slack-users') {
+			return ['text/csv', '.csv', 'text/plain'];
+		}
+
+		// Slack and other JSON-based importers expect ZIP files
+		if (importerKeyParam === 'slack' || importerKeyParam === 'hipchat') {
+			return ['application/zip', '.zip'];
+		}
+
+		return [];
+	};
+
+	const validateFile = (file: File, importerKeyParam: string | undefined): boolean => {
+		const allowedTypes = getAllowedFileTypes(importerKeyParam);
+		
+		if (allowedTypes.length === 0) {
+			return true; // No validation if importer not recognized
+		}
+
+		// Check MIME type or file extension
+		const fileExtension = `.${file.name.split('.').pop()?.toLowerCase()}`;
+		const isMimeTypeValid = allowedTypes.includes(file.type);
+		const isExtensionValid = allowedTypes.includes(fileExtension);
+
+		return isMimeTypeValid || isExtensionValid;
+	};
 
 	const isDataTransferEvent = <T extends SyntheticEvent>(event: T): event is T & DragEvent<HTMLInputElement> =>
 		Boolean('dataTransfer' in event && (event as any).dataTransfer.files);
@@ -97,7 +137,20 @@ function NewImportPage() {
 			}
 		}
 
-		setFiles(Array.from(files ?? []));
+		const filesArray = Array.from(files ?? []);
+		
+		// Validate all files
+		const invalidFiles = filesArray.filter(file => !validateFile(file, importerKey));
+		
+		if (invalidFiles.length > 0) {
+			const allowedTypes = getAllowedFileTypes(importerKey);
+			setFileValidationError(t('Invalid_Import_File_Type') + ': Expected ' + allowedTypes.join(', '));
+			setFiles([]);
+			return;
+		}
+
+		setFileValidationError('');
+		setFiles(filesArray);
 	};
 
 	const handleFileUploadChipClick = (file: File) => () => {
@@ -105,7 +158,7 @@ function NewImportPage() {
 	};
 
 	const handleFileUploadImportButtonClick = async () => {
-		if (!importerKey) {
+		if (!importerKey || fileValidationError) {
 			return;
 		}
 
@@ -201,12 +254,13 @@ function NewImportPage() {
 		(fileType === 'path' && handleFilePathImportButtonClick) ||
 		undefined;
 
+	const isImportDisabled = isLoading || !importer || (fileType === 'upload' && !!fileValidationError) || (fileType === 'upload' && files.length === 0);
 	return (
 		<Page>
 			<PageHeader title={t('Import_New_File')} onClickBack={() => router.navigate('/admin/import')}>
 				<ButtonGroup>
 					{importer && (
-						<Button primary minHeight='x40' loading={isLoading} onClick={handleImportButtonClick}>
+						<Button primary minHeight='x40' loading={isLoading} disabled={isImportDisabled} onClick={handleImportButtonClick}>
 							{t('Import')}
 						</Button>
 					)}
@@ -271,6 +325,11 @@ function NewImportPage() {
 										) : (
 											<Callout type='info' marginBlock='x16'>
 												{t('Importer_Upload_Unlimited_FileSize')}
+											</Callout>
+										)}
+										{fileValidationError && (
+											<Callout type='danger' marginBlock='x16'>
+												{fileValidationError}
 											</Callout>
 										)}
 										<Field>
