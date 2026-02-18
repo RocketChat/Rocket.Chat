@@ -19,7 +19,7 @@ export class ReadReceiptsArchiveRaw extends BaseRaw<IReadReceipt> implements IRe
 
 	findByMessageId(messageId: string): FindCursor<IReadReceipt> {
 		// Pass read preference directly to the find query to prefer reading from secondary replicas
-		return this.find({ messageId }, { readPreference: readSecondaryPreferred(this.db) });
+		return this.find({ messageId }, { readPreference: readSecondaryPreferred() });
 	}
 
 	// Archive doesn't need all the delete methods from hot storage
@@ -66,6 +66,6 @@ export class ReadReceiptsArchiveRaw extends BaseRaw<IReadReceipt> implements IRe
 
 	findOlderThan(date: Date): FindCursor<IReadReceipt> {
 		// Pass read preference directly to the find query to prefer reading from secondary replicas
-		return this.find({ ts: { $lt: date } }, { readPreference: readSecondaryPreferred(this.db) });
+		return this.find({ ts: { $lt: date } }, { readPreference: readSecondaryPreferred() });
 	}
 }
