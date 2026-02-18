@@ -1,27 +1,23 @@
 import { Meteor } from 'meteor/meteor';
-import { api } from '@rocket.chat/core-services';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Authorization } from '@rocket.chat/core-services';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		'2fa:disable': (code: string) => Promise<boolean>;
-	}
-}
+Meteor.methods({
+    async '2fa:disable'(code: string) {
+        const userId = Meteor.userId();
+        if (!userId) {
+            throw new Meteor.Error('not-authorized');
+        }
 
-Meteor.methods<ServerMethods>({
-	async '2fa:disable'(code) {
-    const userId = Meteor.userId();
-    if (!userId) {
-        throw new Meteor.Error('not-authorized');
-    }
+        if (!code) {
+            throw new Meteor.Error('error-invalid-code');
+        }
 
-    if (!code) {
-        throw new Meteor.Error('error-invalid-code', 'Invalid code', {
-            method: '2fa:disable',
-        });
-    }
+        const wasDisabled = await (Authorization as any).disable2FA(userId);
 
-    return api.call('user.disable2FA', [userId, code]);
-},
+        if (!wasDisabled) {
+            throw new Meteor.Error('error-not-authorized', '2FA is already disabled');
+        }
+
+        return true;
+    },
 });

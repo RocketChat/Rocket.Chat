@@ -202,4 +202,33 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 		return Roles.isUserInRoles(userId, roleIds, scope);
 	}
+	async disable2FA(uid: string): Promise<boolean> {
+		const result = await Users.updateOne(
+			{ _id: uid },
+			{
+				$unset: { 'services.totp': 1 },
+				$set: { 'services.resume.loginTokens': [] },
+			},
+		);
+		return result.modifiedCount > 0;
+	}
+
+	async check2FARemainingCodes(uid: string): Promise<{ remaining: number }> {
+		const user = await Users.findOneById(uid, { projection: { 'services.totp.hashedBackup': 1 } });
+		return {
+			remaining: user?.services?.totp?.hashedBackup?.length || 0,
+		};
+	}
+
+	async enable2FA(uid: string): Promise<void> {
+		await Users.updateOne({ _id: uid }, { $set: { 'services.totp.enabled': true } });
+	}
+
+	async validateTempToken(_uid: string, _token: string): Promise<boolean | null> {
+		return null; 
+	}
+
+	async regenerate2FACodes(_uid: string): Promise<{ codes: string[] }> {
+		return { codes: [] };
+	}
 }
