@@ -205,7 +205,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	): Promise<number>;
 	findVisibleByRoomIdBeforeTimestamp(roomId: string, timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	getLastTimestamp(options?: FindOptions<IMessage>): Promise<Date | undefined>;
-	findOneBySlackBotIdAndSlackTs(slackBotId: string, slackTs: Date): Promise<IMessage | null>;
+	findOneBySlackBotIdAndSlackTs(slackBotId: string, slackTs: string): Promise<IMessage | null>;
 	findByRoomIdAndMessageIds(rid: string, messageIds: string[], options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findForUpdates(roomId: IMessage['rid'], timestamp: { $lt: Date } | { $gt: Date }, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	updateUsernameOfEditByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
@@ -214,7 +214,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	setUrlsById(_id: string, urls: NonNullable<IMessage['urls']>): Promise<UpdateResult>;
 	getLastVisibleUserMessageSentByRoomId(rid: string, messageId?: string): Promise<IMessage | null>;
 
-	findOneBySlackTs(slackTs: Date): Promise<IMessage | null>;
+	findOneBySlackTs(slackTs: string): Promise<IMessage | null>;
 
 	cloneAndSaveAsHistoryById(_id: string, user: IMessage['u']): Promise<InsertOneResult<IMessage>>;
 	cloneAndSaveAsHistoryByRecord(record: IMessage, user: IMessage['u']): Promise<InsertOneResult<IMessage>>;
@@ -239,7 +239,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		newMessage: string,
 	): Promise<UpdateResult>;
 	unlinkUserId(userId: string, newUserId: string, newUsername: string, newNameAlias: string): Promise<UpdateResult | Document>;
-	setSlackBotIdAndSlackTs(_id: string, slackBotId: string, slackTs: Date): Promise<UpdateResult>;
+	setSlackBotIdAndSlackTs(_id: string, slackBotId: string, slackTs: string): Promise<UpdateResult>;
 	setMessageAttachments(_id: string, attachments: IMessage['attachments']): Promise<UpdateResult>;
 
 	removeByRoomIds(rids: string[]): Promise<DeleteResult>;

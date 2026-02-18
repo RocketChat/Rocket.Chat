@@ -111,3 +111,10 @@ export function pad(_str: unknown, _length: number, padStr?: string, type: 'righ
 export function lrpad(str: unknown, length: number, padStr?: string): string {
 	return pad(str, length, padStr, 'both');
 }
+
+export async function replace(str: string, regex: RegExp, replaceFn: (...match: string[]) => Promise<string>): Promise<string> {
+	// Run the regex to get all possible matches and call the async replaceFn for each of them
+	const newValues = await Promise.all(str.matchAll(regex).map(async (match) => (await replaceFn(...match)) ?? match[0]));
+	// After waiting for all promises to resolve, the newValues array will have a list with the result of all individual function calls, which we can use to actually replace the matches
+	return str.replace(regex, () => newValues.shift() as string);
+}

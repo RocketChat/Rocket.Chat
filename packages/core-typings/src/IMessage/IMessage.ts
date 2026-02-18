@@ -156,7 +156,7 @@ export interface IMessage extends IRocketChatRecord {
 	md?: Root;
 
 	_hidden?: boolean;
-	imported?: boolean;
+	imported?: boolean | 'slackbridge';
 	replies?: IUser['_id'][];
 	location?: {
 		type: 'Point';
