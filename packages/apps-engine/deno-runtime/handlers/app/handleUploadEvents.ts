@@ -8,14 +8,15 @@ import { toArrayBuffer } from '@std/streams';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import { assertAppAvailable, assertHandlerFunction, isRecord } from '../lib/assertions.ts';
+import { assertAppAvailable, assertHandlerFunction, isPlainObject } from '../lib/assertions.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
 import { RequestContext } from '../../lib/requestContext.ts';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
 
 export const uploadEvents = ['executePreFileUpload'] as const;
 
 function assertIsUpload(v: unknown): asserts v is IUploadDetails {
-	if (isRecord(v) && !!v.rid && (!!v.userId || !!v.visitorToken)) return;
+	if (isPlainObject(v) && !!v.rid && (!!v.userId || !!v.visitorToken)) return;
 
 	throw JsonRpcError.invalidParams({ err: `Invalid 'file' parameter. Expected IUploadDetails, got`, value: v });
 }
@@ -53,7 +54,7 @@ export default async function handleUploadEvents(request: RequestContext): Promi
 		}
 
 		return await handlerFunction.call(
-			app,
+			wrapAppForRequest(app, request),
 			context,
 			AppAccessorsInstance.getReader(),
 			AppAccessorsInstance.getHttp(),
