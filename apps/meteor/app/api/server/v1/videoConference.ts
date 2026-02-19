@@ -1,5 +1,6 @@
 import { VideoConf } from '@rocket.chat/core-services';
 import type { VideoConference } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
 import {
 	isVideoConfStartProps,
 	isVideoConfJoinProps,
@@ -27,6 +28,15 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasPermissionAsync(userId, 'call-management', roomId))) {
+				return API.v1.forbidden();
+			}
+
+			const room = await Rooms.findOneById(roomId, { projection: { ro: 1 } });
+			if (!room) {
+				return API.v1.failure('invalid-room');
+			}
+
+			if (room.ro === true && !(await hasPermissionAsync(userId, 'post-readonly', roomId))) {
 				return API.v1.forbidden();
 			}
 
