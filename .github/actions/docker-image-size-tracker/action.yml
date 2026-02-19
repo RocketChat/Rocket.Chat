@@ -434,14 +434,6 @@ runs:
           echo "| $service | $(numfmt --to=iec-i --suffix=B $current) | $(numfmt --to=iec-i --suffix=B $baseline) | ${sign}$(numfmt --to=iec-i --suffix=B ${service_diff#-}) | $badge |" >> report.md
         done
 
-        echo "comment-triggered=$comment_triggered" >> $GITHUB_OUTPUT
-        echo "failed=$fail_triggered" >> $GITHUB_OUTPUT
-
-        if [[ "$fail_triggered" == "true" ]]; then
-          echo "::error::Docker image size exceeded fail-thresholds (mb/percent). Check the report for details."
-          exit 1
-        fi
-
         # Generate historical trend chart
         echo "" >> report.md
         echo "## 📊 Historical Trend" >> report.md
@@ -558,6 +550,14 @@ runs:
 
         </details>
         EOF
+
+        echo "comment-triggered=$comment_triggered" >> $GITHUB_OUTPUT
+        echo "failed=$fail_triggered" >> $GITHUB_OUTPUT
+
+        if [[ "$fail_triggered" == "true" ]]; then
+          echo "::error::Docker image size exceeded fail-thresholds (mb/percent). Check the report for details."
+          exit 1
+        fi
 
     - name: Add report to Job Summary
       if: always()
