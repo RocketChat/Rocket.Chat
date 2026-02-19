@@ -1,0 +1,43 @@
+{
+	"compilerOptions": {
+		"target": "es2018",
+		"module": "esNext",
+		"lib": ["esnext", "dom"],
+		"allowJs": true,
+		"checkJs": false,
+		"jsx": "react-jsx",
+		"noEmit": true,
+		"strict": false,
+		"strictPropertyInitialization": false,
+		"noImplicitReturns": false,
+		"noFallthroughCasesInSwitch": false,
+		"baseUrl": ".",
+		"paths": {
+			"@rocket.chat/*": ["packages/*/src", "packages/*/index.ts"],
+			"/*": ["*"]
+		},
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"declaration": false
+	},
+	"include": [
+		"packages/**/*",
+		"apps/**/*",
+		"ee/**/*"
+	],
+	"exclude": [
+		"**/node_modules/**",
+		"**/dist/**",
+		"**/.meteor/**",
+		"**/build/**",
+		"**/public/**"
+	],
+	"ts-node": {
+		"files": false,
+		"swc": true
+	}
+}
