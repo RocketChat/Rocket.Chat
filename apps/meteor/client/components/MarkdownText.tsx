@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import { Box } from '@rocket.chat/fuselage';
 import { isExternal, getBaseURI } from '@rocket.chat/ui-client';
 import dompurify from 'dompurify';
@@ -102,7 +103,6 @@ type MarkdownTextProps = Partial<MarkdownTextParams>;
 export const supportedURISchemes = ['http', 'https', 'notes', 'ftp', 'ftps', 'tel', 'mailto', 'sms', 'cid'];
 
 let isHookRegistered = false;
-let translateFn: any = null;
 const MarkdownText = ({
 	content,
 	variant = 'document',
@@ -115,7 +115,6 @@ const MarkdownText = ({
 	const { t } = useTranslation();
 	let markedOptions: marked.MarkedOptions;
 
-	translateFn = t;
 	switch (variant) {
 		case 'inline':
 			markedOptions = inlineOptions;
@@ -157,7 +156,7 @@ const MarkdownText = ({
                 node.setAttribute('title', '');
             } else {
                 // For internal links, add a translated title with the relative path
-                node.setAttribute('title', `${translateFn('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
+                node.setAttribute('title', `${i18next.t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
             }
         };	
         dompurify.addHook('afterSanitizeAttributes', hook);
