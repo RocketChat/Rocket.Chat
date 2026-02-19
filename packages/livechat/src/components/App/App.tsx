@@ -124,7 +124,7 @@ export class App extends Component<AppProps, AppState> {
 			Triggers.init();
 		}
 
-		Triggers.processTriggers();
+		void Triggers.processTriggers();
 	}
 
 	protected handleVisibilityChange = async () => {
@@ -153,7 +153,7 @@ export class App extends Component<AppProps, AppState> {
 
 		visibility.addListener(this.handleVisibilityChange);
 
-		this.handleVisibilityChange();
+		void this.handleVisibilityChange();
 
 		window.addEventListener('beforeunload', () => {
 			visibility.removeListener(this.handleVisibilityChange);
@@ -182,11 +182,11 @@ export class App extends Component<AppProps, AppState> {
 	}
 
 	override componentDidMount() {
-		this.initialize();
+		void this.initialize();
 	}
 
 	override componentWillUnmount() {
-		this.finalize();
+		void this.finalize();
 	}
 
 	override componentDidUpdate() {
