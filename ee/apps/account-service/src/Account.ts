@@ -3,7 +3,6 @@ import type { IAccount, ILoginResult } from '@rocket.chat/core-services';
 import { getLoginExpirationInDays } from '@rocket.chat/tools';
 
 import { loginViaResume } from './lib/loginViaResume';
-import { loginViaUsername } from './lib/loginViaUsername';
 import { removeSession } from './lib/removeSession';
 
 export class Account extends ServiceClass implements IAccount {
@@ -21,13 +20,9 @@ export class Account extends ServiceClass implements IAccount {
 		});
 	}
 
-	async login({ resume, user, password }: { resume: string; user: { username: string }; password: string }): Promise<false | ILoginResult> {
+	async login({ resume }: { resume: string }): Promise<false | ILoginResult> {
 		if (resume) {
 			return loginViaResume(resume, this.loginExpiration);
-		}
-
-		if (user && password) {
-			return loginViaUsername(user, password, this.loginExpiration);
 		}
 
 		return false;
