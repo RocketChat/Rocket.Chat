@@ -136,7 +136,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	}
 
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {
-		return sendMessage(user, message, room, upsert);
+		return sendMessage(user, message, room, { upsert });
 	}
 
 	async deleteMessage(user: IUser, message: IMessage): Promise<void> {

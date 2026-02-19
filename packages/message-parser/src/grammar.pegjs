@@ -306,18 +306,40 @@ SpoilerInlineItemFallback = &{ skipInlineEmoji = true; return true; } item:Any {
  *
  */
 References
-  = "[" title:LinkTitle* "](" href:LinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
+  = "[" title:LinkTitle* "](" href:MarkdownLinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
   / "<" href:LinkRef "|" title:LinkTitle2 ">" { return link(href, [plain(title)]); }
 
 LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) !("] [" [^\]]* "](") .) { return plain(anyTitle) }
 
 LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
 
-LinkRef = URL / FilePath / p:Phone { return 'tel:' + p.number; } // TODO: Accept parenthesis
+MarkdownLinkRef = MarkdownLinkURL / MarkdownLinkFilePath / p:Phone { return 'tel:' + p.number; }
+
+// LinkRef is used for non-markdown link contexts (like <url|title> syntax) where parentheses aren't balanced
+LinkRef = URL / FilePath / p:Phone { return 'tel:' + p.number; }
 
 FilePath = $(URLScheme URLBody+)
 
-Image = "![" title:Line? "](" href:LinkRef ")" { return title ? image(href, title) : image(href); }
+MarkdownLinkFilePath = $(URLScheme MarkdownLinkURLBody+)
+
+// MarkdownLinkURL allows parentheses in URLs when inside markdown link syntax [title](url)
+MarkdownLinkURL
+  = $(URLScheme URLAuthority MarkdownLinkURLBody*)
+  / $(URLAuthorityHost MarkdownLinkURLBody*)
+
+MarkdownLinkURLBody
+  = (
+    !(MarkdownLinkExtra+ (Whitespace / EndOfLine) / Whitespace)
+    !")" // Don't consume closing paren
+    (AnyText / [*\[\/\]\^_`{}~] / "(" MarkdownLinkURLBodyParen* ")")
+  )+
+
+// Match content inside parentheses within URL
+MarkdownLinkURLBodyParen = !(Whitespace / EndOfLine / ")") (AnyText / [*\[\/\]\^_`{}~(])
+
+MarkdownLinkExtra = [.,!%*\"':;=]
+
+Image = "![" title:Line? "](" href:MarkdownLinkRef ")" { return title ? image(href, title) : image(href); }
 
 URL
   = $(URLScheme URLAuthority URLBody*)
