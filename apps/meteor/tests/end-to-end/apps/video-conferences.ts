@@ -971,9 +971,10 @@ describe('Apps - Video Conferences', () => {
 					.send({
 						roomId: readOnlyRoomId,
 					})
-					.expect(403)
+					.expect(400)
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(false);
+						expect(res.body.error).to.be.a('string');
 					});
 			});
 
