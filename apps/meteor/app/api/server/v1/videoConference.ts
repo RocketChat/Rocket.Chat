@@ -35,11 +35,7 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-user');
 			}
 
-			try {
-				await canSendMessageAsync(roomId, { uid: userId, username: this.user.username, type: this.user.type });
-			} catch (error: any) {
-				return API.v1.failure(error.message || error.error || 'error-not-allowed-to-start-video-conference');
-			}
+			await canSendMessageAsync(roomId, { uid: userId, username: this.user.username, type: this.user.type });
 
 			try {
 				const providerName = videoConfProviders.getActiveProvider();
