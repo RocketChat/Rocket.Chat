@@ -550,52 +550,13 @@ runs:
         </details>
         EOF
 
-    - name: Comment on PR
-      if: github.event_name == 'pull_request' && steps.compare.outputs.comment-triggered == 'true'
-      uses: actions/github-script@v7
-      with:
-        github-token: ${{ inputs.github-token }}
-        script: |
-          const fs = require('fs');
-
-          if (!fs.existsSync('report.md')) {
-            console.log('No report found, skipping comment');
-            return;
-          }
-
-          const report = fs.readFileSync('report.md', 'utf8');
-
-          // Find existing comment
-          const comments = await github.rest.issues.listComments({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: context.issue.number
-          });
-
-          const botComment = comments.data.find(comment =>
-            comment.user.type === 'Bot' &&
-            comment.body.includes('📦 Docker Image Size Report')
-          );
-
-          const commentBody = report + '\n\n---\n*Updated: ' + new Date().toUTCString() + '*';
-
-          if (botComment) {
-            await github.rest.issues.updateComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: botComment.id,
-              body: commentBody
-            });
-            console.log('Updated existing comment');
-          } else {
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: commentBody
-            });
-            console.log('Created new comment');
-          }
+    - name: Add report to Job Summary
+      if: always()
+      shell: bash
+      run: |
+        if [[ -f report.md ]]; then
+          cat report.md >> $GITHUB_STEP_SUMMARY
+        fi
 
     - name: Cleanup worktree
       if: always()
