@@ -93,7 +93,7 @@ apiServer.use('/api/apps/ui.interaction/', bodyParser.json(), cors(corsOptions),
 
 type UiKitUserInteractionRequest = Request<
 	UrlParams<'/apps/ui.interaction/:id'>,
-	OperationResult<'POST', '/apps/ui.interaction/:id'>,
+	OperationResult<'POST', '/apps/ui.interaction/:id'> | { error: unknown },
 	OperationParams<'POST', '/apps/ui.interaction/:id'> & {
 		visitor?: {
 			id: string;
@@ -208,7 +208,7 @@ export class AppUIKitInteractionApi {
 
 	private routeHandler = async (
 		req: UiKitUserInteractionRequest,
-		res: Response<OperationResult<'POST', '/apps/ui.interaction/:id'>>,
+		res: Response<OperationResult<'POST', '/apps/ui.interaction/:id'> | { error: unknown }>,
 	): Promise<void> => {
 		const { orch } = this;
 		const { id: appId } = req.params;
