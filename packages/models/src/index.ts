@@ -19,7 +19,6 @@ import type {
 	IEmojiCustomModel,
 	IExportOperationsModel,
 	IFederationKeysModel,
-	IFederationServersModel,
 	IInstanceStatusModel,
 	IIntegrationHistoryModel,
 	IIntegrationsModel,
@@ -147,7 +146,6 @@ export const EmailInbox = proxify<IEmailInboxModel>('IEmailInboxModel');
 export const EmailMessageHistory = proxify<IEmailMessageHistoryModel>('IEmailMessageHistoryModel');
 export const EmojiCustom = proxify<IEmojiCustomModel>('IEmojiCustomModel');
 export const ExportOperations = proxify<IExportOperationsModel>('IExportOperationsModel');
-export const FederationServers = proxify<IFederationServersModel>('IFederationServersModel');
 export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
 export const FederationRoomEvents = proxify<IFederationRoomEventsModel>('IFederationRoomEventsModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
