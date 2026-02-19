@@ -307,13 +307,17 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 	const roomMembersCount = await Users.countRoomMembers(room._id);
 	const disableAllMessageNotifications = roomMembersCount > maxMembersForNotification && maxMembersForNotification !== 0;
 
+	// For @all/@here mentions in threads, we should not restrict notifications to only thread followers
+	// This allows all channel members to be notified based on their notification preferences
+	const shouldRestrictToThreadUsers = usersInThread.length > 0 && !hasMentionToAll && !hasMentionToHere;
+
 	const query: WithRequiredProperty<RootFilterOperators<ISubscription>, '$or'> = {
 		rid: room._id,
 		ignored: { $ne: sender._id },
 		disableNotifications: { $ne: true },
 		$or: [
 			{ 'userHighlights.0': { $exists: 1 } },
-			...(usersInThread.length > 0 && !hasMentionToAll && !hasMentionToHere ? [{ 'u._id': { $in: usersInThread } }] : []),
+			...(shouldRestrictToThreadUsers ? [{ 'u._id': { $in: usersInThread } }] : []),
 		],
 	} as const;
 
