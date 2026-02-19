@@ -1,11 +1,6 @@
 import { AppEvents, type IAppServerOrchestrator } from '@rocket.chat/apps';
-import type {
-	UiKitCoreAppBlockActionPayload,
-	UiKitCoreAppViewClosedPayload,
-	UiKitCoreAppViewSubmitPayload,
-} from '@rocket.chat/core-services';
 import { UiKitCoreApp } from '@rocket.chat/core-services';
-import type { OperationParams, UrlParams } from '@rocket.chat/rest-typings';
+import type { OperationParams, OperationResult, UrlParams } from '@rocket.chat/rest-typings';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import type { Request, Response } from 'express';
@@ -98,7 +93,7 @@ apiServer.use('/api/apps/ui.interaction/', bodyParser.json(), cors(corsOptions),
 
 type UiKitUserInteractionRequest = Request<
 	UrlParams<'/apps/ui.interaction/:id'>,
-	any,
+	OperationResult<'POST', '/apps/ui.interaction/:id'>,
 	OperationParams<'POST', '/apps/ui.interaction/:id'> & {
 		visitor?: {
 			id: string;
@@ -115,66 +110,6 @@ type UiKitUserInteractionRequest = Request<
 	}
 >;
 
-const getCoreAppPayload = (req: UiKitUserInteractionRequest) => {
-	const { id: appId } = req.params;
-
-	if (req.body.type === 'blockAction') {
-		const { user } = req;
-		const { type, actionId, triggerId, payload, container, visitor } = req.body;
-		const message = 'mid' in req.body ? req.body.mid : undefined;
-		const room = 'rid' in req.body ? req.body.rid : undefined;
-
-		return {
-			appId,
-			type,
-			actionId,
-			triggerId,
-			container,
-			message,
-			payload,
-			user,
-			visitor,
-			room,
-		} satisfies UiKitCoreAppBlockActionPayload;
-	}
-
-	if (req.body.type === 'viewClosed') {
-		const { user } = req;
-		const {
-			type,
-			payload: { view, isCleared },
-			triggerId,
-		} = req.body;
-
-		return {
-			appId,
-			triggerId,
-			type,
-			user,
-			payload: {
-				view,
-				isCleared,
-			},
-		} satisfies UiKitCoreAppViewClosedPayload;
-	}
-
-	if (req.body.type === 'viewSubmit') {
-		const { user } = req;
-		const { type, actionId, triggerId, payload } = req.body;
-
-		return {
-			appId,
-			type,
-			actionId,
-			triggerId,
-			payload,
-			user,
-		} satisfies UiKitCoreAppViewSubmitPayload;
-	}
-
-	throw new Error('Type not supported');
-};
-
 router.post('/:id', async (req: UiKitUserInteractionRequest, res, next) => {
 	const { id: appId } = req.params;
 
@@ -184,12 +119,78 @@ router.post('/:id', async (req: UiKitUserInteractionRequest, res, next) => {
 	}
 
 	try {
-		const payload = getCoreAppPayload(req);
+		const { user } = req;
 
-		const result = await UiKitCoreApp[payload.type](payload as any);
+		switch (req.body.type) {
+			case 'blockAction': {
+				const { type, actionId, triggerId, payload, container, visitor } = req.body;
+				const message = 'mid' in req.body ? req.body.mid : undefined;
+				const room = 'rid' in req.body ? req.body.rid : undefined;
 
-		// Using ?? to always send something in the response, even if the app had no result.
-		res.send(result ?? {});
+				const result = await UiKitCoreApp.blockAction({
+					appId,
+					type,
+					actionId,
+					triggerId,
+					container,
+					message,
+					payload,
+					user,
+					visitor,
+					room,
+				});
+
+				// Using ?? to always send something in the response, even if the app had no result.
+				res.send(result ?? {});
+
+				return;
+			}
+
+			case 'viewSubmit': {
+				const { type, actionId, triggerId, payload } = req.body;
+
+				const result = await UiKitCoreApp.viewSubmit({
+					appId,
+					type,
+					actionId,
+					triggerId,
+					payload,
+					user,
+				});
+
+				// Using ?? to always send something in the response, even if the app had no result.
+				res.send(result ?? {});
+
+				return;
+			}
+
+			case 'viewClosed': {
+				const {
+					type,
+					payload: { view, isCleared },
+					triggerId,
+				} = req.body;
+
+				const result = await UiKitCoreApp.viewClosed({
+					appId,
+					triggerId,
+					type,
+					user,
+					payload: {
+						view,
+						isCleared,
+					},
+				});
+
+				// Using ?? to always send something in the response, even if the app had no result.
+				res.send(result ?? {});
+
+				return;
+			}
+
+			default:
+				throw new Error('Type not supported');
+		}
 	} catch (e) {
 		const error = e instanceof Error ? e.message : e;
 		res.status(500).send({ error });
@@ -205,7 +206,10 @@ export class AppUIKitInteractionApi {
 		router.post('/:id', this.routeHandler);
 	}
 
-	private routeHandler = async (req: UiKitUserInteractionRequest, res: Response): Promise<void> => {
+	private routeHandler = async (
+		req: UiKitUserInteractionRequest,
+		res: Response<OperationResult<'POST', '/apps/ui.interaction/:id'>>,
+	): Promise<void> => {
 		const { orch } = this;
 		const { id: appId } = req.params;
 

@@ -257,6 +257,6 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/ui.interaction/:id': {
-		POST: (params: UiKit.UserInteraction) => any;
+		POST: (params: UiKit.UserInteraction) => UiKit.ServerInteraction | Record<never, never>;
 	};
 };
