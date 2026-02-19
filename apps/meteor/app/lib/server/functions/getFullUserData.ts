@@ -116,5 +116,9 @@ export async function getFullUserDataByIdOrUsernameOrImportId(
 		(user.services.password as any) = true;
 	}
 
+	delete user?.services?.passwordHistory;
+	delete user?.services?.resume;
+	delete user?.services?.email;
+
 	return user;
 }
