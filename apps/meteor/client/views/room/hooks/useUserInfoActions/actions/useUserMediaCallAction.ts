@@ -10,7 +10,8 @@ export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'n
 	const { t } = useTranslation();
 	const ownUserId = useUserId();
 	const { closeUserCard } = useUserCard();
-	const { state, onToggleWidget } = useMediaCallContext();
+	const { sessionState, onToggleWidget } = useMediaCallContext();
+	const { state } = sessionState;
 	const getAvatarUrl = useUserAvatarPath();
 
 	const currentSubscription = useUserSubscription(rid);
@@ -22,7 +23,7 @@ export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'n
 		return undefined;
 	}
 
-	if (state === 'unauthorized') {
+	if (state === 'unauthorized' || state === 'unlicensed') {
 		return undefined;
 	}
 
@@ -30,7 +31,7 @@ export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'n
 		return undefined;
 	}
 
-	const disabled = !['closed', 'new', 'unlicensed'].includes(state);
+	const disabled = !['closed', 'new'].includes(state);
 
 	if (user._id === ownUserId) {
 		return undefined;
@@ -44,7 +45,7 @@ export const useUserMediaCallAction = (user: Pick<IUser, '_id' | 'username' | 'n
 		icon: 'phone',
 		onClick: () => {
 			closeUserCard();
-			onToggleWidget({
+			onToggleWidget?.({
 				userId: user._id,
 				displayName: user.name || user.username || '',
 				avatarUrl,

@@ -66,7 +66,8 @@ const CallHistoryRowInternalUser = ({
 	onClick,
 }: CallHistoryRowInternalUserProps) => {
 	const { t } = useTranslation();
-	const { state } = useMediaCallContext();
+	const { sessionState } = useMediaCallContext();
+	const { state } = sessionState;
 	const actions = useMediaCallInternalHistoryActions({
 		contact: {
 			_id: contact._id,

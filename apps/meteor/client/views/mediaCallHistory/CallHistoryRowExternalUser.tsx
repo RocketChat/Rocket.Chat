@@ -11,7 +11,9 @@ type CallHistoryRowExternalUserProps = Omit<CallHistoryTableRowProps<CallHistory
 const CallHistoryRowExternalUser = ({ _id, contact, type, status, duration, timestamp, onClick }: CallHistoryRowExternalUserProps) => {
 	const { t } = useTranslation();
 
-	const { onToggleWidget, state } = useMediaCallContext();
+	const { onToggleWidget, sessionState } = useMediaCallContext();
+
+	const { state } = sessionState;
 
 	const handleClick = useCallback(() => {
 		onClick(_id);

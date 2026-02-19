@@ -28,7 +28,8 @@ export const useMediaCallInternalHistoryActions = ({
 	messageRoomId,
 	openUserInfo,
 }: UseMediaCallInternalHistoryActionsBaseOptions) => {
-	const { onToggleWidget, state } = useMediaCallContext();
+	const { onToggleWidget, sessionState } = useMediaCallContext();
+	const { state } = sessionState;
 	const router = useRouter();
 
 	const getAvatarUrl = useUserAvatarPath();

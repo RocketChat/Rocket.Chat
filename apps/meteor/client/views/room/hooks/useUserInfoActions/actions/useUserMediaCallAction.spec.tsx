@@ -21,6 +21,20 @@ jest.mock('@rocket.chat/ui-voip', () => ({
 
 const useMediaCallContextMocked = jest.mocked(useMediaCallContext);
 
+const baseSessionState = {
+	state: 'closed',
+	callId: undefined,
+	connectionState: 'CONNECTING',
+	peerInfo: undefined,
+	transferredBy: undefined,
+	hidden: false,
+	muted: false,
+	held: false,
+	remoteMuted: false,
+	remoteHeld: false,
+	startedAt: undefined,
+} as const;
+
 describe('useUserMediaCallAction', () => {
 	const fakeUser = createFakeUser({ _id: 'own-uid' });
 	const mockRid = 'room-id';
@@ -42,10 +56,9 @@ describe('useUserMediaCallAction', () => {
 
 	it('should return undefined if state is unauthorized', () => {
 		useMediaCallContextMocked.mockReturnValueOnce({
-			state: 'unauthorized',
+			sessionState: { state: 'unauthorized', peerInfo: undefined },
 			onToggleWidget: undefined,
 			onEndCall: undefined,
-			peerInfo: undefined,
 			setOpenRoomId: undefined,
 		});
 
@@ -111,9 +124,8 @@ describe('useUserMediaCallAction', () => {
 	it('should call onClick handler correctly', () => {
 		const mockOnToggleWidget = jest.fn();
 		useMediaCallContextMocked.mockReturnValueOnce({
-			state: 'closed',
+			sessionState: { ...baseSessionState, state: 'closed' },
 			onToggleWidget: mockOnToggleWidget,
-			peerInfo: undefined,
 			onEndCall: () => undefined,
 			setOpenRoomId: () => undefined,
 		});
@@ -131,9 +143,13 @@ describe('useUserMediaCallAction', () => {
 
 	it('should be disabled if state is not closed, new, or unlicensed', () => {
 		useMediaCallContextMocked.mockReturnValueOnce({
-			state: 'calling',
+			sessionState: {
+				...baseSessionState,
+				callId: 'call-id',
+				state: 'calling',
+				peerInfo: { userId: 'user-id', displayName: 'user-name', avatarUrl: 'avatar-url' },
+			},
 			onToggleWidget: jest.fn(),
-			peerInfo: undefined,
 			onEndCall: () => undefined,
 			setOpenRoomId: () => undefined,
 		});
