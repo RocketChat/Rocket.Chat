@@ -1,10 +1,9 @@
 import type { IMessage, AtLeast } from '@rocket.chat/core-typings';
-import { parse } from '@rocket.chat/message-parser';
 
+import { extractUrlsFromMessageAST } from './extractUrlsFromMessageAST';
 import { getMessageUrlRegex } from '../../../../lib/getMessageUrlRegex';
 import { Markdown } from '../../../markdown/server';
 import { settings } from '../../../settings/server';
-import { extractTextFromBlocks, extractUrlsFromMessageAST } from './extractTextFromBlocks';
 
 // TODO move this function to message service to be used like a "beforeSaveMessage" hook
 export const parseUrlsInMessage = (message: AtLeast<IMessage, 'msg'> & { parseUrls?: boolean }, previewUrls?: string[]) => {
@@ -15,36 +14,21 @@ export const parseUrlsInMessage = (message: AtLeast<IMessage, 'msg'> & { parseUr
 	message.html = message.msg;
 	message = Markdown.code(message);
 
-	const urls = message.html?.match(getMessageUrlRegex()) || [];
-	
+	const urls: string[] = [];
+
+	// Also extract URLs from message blocks if they exist
+	if (message.md) {
+		const astUrls = extractUrlsFromMessageAST(message.md);
+		urls.push(...astUrls);
+	}
+
 	// Parse the message to extract URLs from links without schema
 	// The message parser converts links like "github.com" to proper links with "//" prefix
-	if (message.msg) {
-		try {
-			const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
-				? settings
-						.get<string>('Message_CustomDomain_AutoLink')
-						.split(',')
-						.map((domain) => domain.trim())
-				: [];
-			
-			const parsedMessage = parse(message.msg, { customDomains });
-			const astUrls = extractUrlsFromMessageAST(parsedMessage);
-			urls.push(...astUrls);
-		} catch (e) {
-			// If parsing fails, just continue with URLs from regex
-			// This can happen with malformed messages or if the parser encounters unexpected input
-			console.debug('Failed to parse message for URL extraction:', e);
-		}
+	if (!message.md) {
+		const htmlUrls = message.html?.match(getMessageUrlRegex()) || [];
+		urls.push(...htmlUrls);
 	}
-	
-	// Also extract URLs from message blocks if they exist
-	if (message.blocks) {
-		const blockTexts = extractTextFromBlocks(message.blocks);
-		const blockUrls = blockTexts.flatMap((text) => text.match(getMessageUrlRegex()) || []);
-		urls.push(...blockUrls);
-	}
-	
+
 	if (urls.length > 0) {
 		message.urls = [...new Set(urls)].map((url) => ({
 			url,
