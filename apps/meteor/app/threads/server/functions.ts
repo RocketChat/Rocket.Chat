@@ -34,16 +34,18 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 
 	const threadFollowersUids = threadFollowers?.filter((userId) => userId !== u._id && !mentionIds.includes(userId)) || [];
 
-	// Notify everyone involved in the thread
-	const notifyOptions = toAll || toHere ? { groupMention: true } : {};
-
 	// Notify message mentioned users and highlights
 	const mentionedUsers = [...new Set([...mentionIds, ...highlightsUids])];
 
-	const promises = [
-		ReadReceipts.setAsThreadById(tmid),
-		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, threadFollowersUids, tmid, notifyOptions),
-	];
+	const promises: Promise<any>[] = [ReadReceipts.setAsThreadById(tmid)];
+
+	// For @all/@here, notify everyone in the room (not just thread followers)
+	if (toAll || toHere) {
+		promises.push(Subscriptions.addUnreadThreadByRoomIdExcludingUserId(rid, u._id, tmid, { groupMention: true }));
+	} else if (threadFollowersUids.length) {
+		// For regular thread messages, only notify thread followers
+		promises.push(Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, threadFollowersUids, tmid, {}));
+	}
 
 	if (mentionedUsers.length) {
 		promises.push(Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, mentionedUsers, tmid, { userMention: true }));
@@ -58,7 +60,11 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 
 	await Promise.allSettled(promises);
 
-	void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, [...threadFollowersUids, ...mentionedUsers, ...highlightsUids]);
+	// For notifications, collect all affected users
+	const affectedUsers = toAll || toHere ? [] : [...threadFollowersUids, ...mentionedUsers, ...highlightsUids];
+	if (affectedUsers.length > 0) {
+		void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, affectedUsers);
+	}
 }
 
 export async function follow({ tmid, uid }: { tmid: string; uid: string }) {

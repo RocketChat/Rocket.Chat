@@ -1994,6 +1994,27 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		);
 	}
 
+	async addUnreadThreadByRoomIdExcludingUserId(
+		rid: string,
+		userId: string,
+		tmid: string,
+		{ groupMention = false, userMention = false }: { groupMention?: boolean; userMention?: boolean } = {},
+	): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{
+				'rid': rid,
+				'u._id': { $ne: userId },
+			},
+			{
+				$addToSet: {
+					tunread: tmid,
+					...(groupMention && { tunreadGroup: tmid }),
+					...(userMention && { tunreadUser: tmid }),
+				},
+			},
+		);
+	}
+
 	removeUnreadThreadByRoomIdAndUserId(rid: string, userId: string, tmid: string, clearAlert = false): Promise<UpdateResult> {
 		const update: UpdateFilter<ISubscription> = {
 			$pull: {

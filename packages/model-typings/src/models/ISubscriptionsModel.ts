@@ -318,6 +318,12 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		tmid: string,
 		data: { groupMention?: boolean; userMention?: boolean },
 	): Promise<UpdateResult | Document | void>;
+	addUnreadThreadByRoomIdExcludingUserId(
+		rid: string,
+		userId: string,
+		tmid: string,
+		data: { groupMention?: boolean; userMention?: boolean },
+	): Promise<UpdateResult | Document>;
 	removeUnreadThreadByRoomIdAndUserId(rid: string, userId: string, tmid: string, clearAlert?: boolean): Promise<UpdateResult>;
 
 	removeUnreadThreadsByRoomId(rid: string, tunread: string[]): Promise<UpdateResult | Document>;
