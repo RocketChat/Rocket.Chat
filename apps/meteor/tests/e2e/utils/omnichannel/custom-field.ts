@@ -23,7 +23,8 @@ export const setVisitorCustomFieldValue = async (
 	if (!response.ok()) {
 		throw new Error(`Failed to set visitor custom field [http status: ${response.status()}]`);
 	}
-	return response;
+	const { field } = await response.json();
+	return { response, field };
 };
 
 export const createCustomField = async (api: BaseTest['api'], overwrites: Partial<CustomField>) => {
