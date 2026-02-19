@@ -202,7 +202,10 @@ describe('[CustomSounds]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('sound');
+					expect(res.body).to.have.property('sound').and.to.be.an('object');
+					expect(res.body.sound).to.have.property('_id', fileId);
+					expect(res.body.sound).to.have.property('name').and.to.be.a('string');
+					expect(res.body.sound).to.have.property('extension').and.to.be.a('string');
 				});
 		});
 
