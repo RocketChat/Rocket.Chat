@@ -12,7 +12,7 @@ export const extractTextFromBlocks = (blocks?: MessageSurfaceLayout): string[] =
 
 	const textParts: string[] = [];
 
-	const extractTextFromObject = (obj: any): void => {
+	const extractTextFromObject = (obj: Record<string, any> | any[] | null | undefined): void => {
 		if (!obj || typeof obj !== 'object') {
 			return;
 		}
@@ -54,7 +54,7 @@ export const extractUrlsFromMessageAST = (md?: Root): string[] => {
 
 	const urls: string[] = [];
 
-	const traverse = (node: any): void => {
+	const traverse = (node: Record<string, any> | any[] | null | undefined): void => {
 		if (!node || typeof node !== 'object') {
 			return;
 		}

@@ -33,6 +33,8 @@ export const parseUrlsInMessage = (message: AtLeast<IMessage, 'msg'> & { parseUr
 			urls.push(...astUrls);
 		} catch (e) {
 			// If parsing fails, just continue with URLs from regex
+			// This can happen with malformed messages or if the parser encounters unexpected input
+			console.debug('Failed to parse message for URL extraction:', e);
 		}
 	}
 	
