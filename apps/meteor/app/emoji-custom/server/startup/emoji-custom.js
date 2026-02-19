@@ -1,5 +1,7 @@
+import { EmojiCustom } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import _ from 'underscore';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { RocketChatFile } from '../../../file/server';
@@ -40,20 +42,21 @@ Meteor.startup(() => {
 	return WebApp.connectHandlers.use('/emoji-custom/', async (req, res /* , next*/) => {
 		const params = { emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
 
-		const extension = params.emoji?.split('.').pop()?.toLowerCase() ?? '';
-
-		if (!extension) {
+		if (_.isEmpty(params.emoji)) {
 			res.writeHead(403);
 			res.write('Forbidden');
 			res.end();
 			return;
 		}
 
-		const file = await RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(params.emoji));
+		const [emojiCount, file] = await Promise.all([
+			EmojiCustom.countByNameOrAlias(params.emoji.split('.')[0]),
+			RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(params.emoji)),
+		]);
 
 		res.setHeader('Content-Disposition', 'inline');
 
-		if (!file || !file.contentType?.startsWith('image/')) {
+		if (!file || !emojiCount) {
 			// use code from username initials renderer until file upload is complete
 			res.setHeader('Content-Type', 'image/svg+xml');
 			res.setHeader('Cache-Control', 'public, max-age=0');
@@ -98,9 +101,9 @@ Meteor.startup(() => {
 		res.setHeader('Last-Modified', fileUploadDate || new Date().toUTCString());
 		res.setHeader('Content-Length', file.length);
 
-		if (/^svg$/i.test(extension)) {
+		if (/^svg$/i.test(params.emoji.split('.').pop())) {
 			res.setHeader('Content-Type', 'image/svg+xml');
-		} else if (/^png$/i.test(extension)) {
+		} else if (/^png$/i.test(params.emoji.split('.').pop())) {
 			res.setHeader('Content-Type', 'image/png');
 		} else {
 			res.setHeader('Content-Type', 'image/jpeg');

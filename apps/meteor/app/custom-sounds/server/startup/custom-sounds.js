@@ -1,3 +1,4 @@
+import { CustomSounds } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
@@ -47,9 +48,12 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const file = await RocketChatFileCustomSoundsInstance.getFileWithReadStream(fileId);
+		const [sound, file] = await Promise.all([
+			CustomSounds.findOneById(fileId.split('.')[0], { projection: { _id: 1 } }),
+			RocketChatFileCustomSoundsInstance.getFileWithReadStream(fileId),
+		]);
 
-		if (!file || !file.contentType?.startsWith('audio/')) {
+		if (!file || !sound) {
 			res.writeHead(404);
 			res.write('Not found');
 			res.end();
