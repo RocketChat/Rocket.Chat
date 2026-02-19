@@ -19,6 +19,6 @@ export const isCustomSoundsGetOneProps = ajv.compile<CustomSoundsGetOne>(CustomS
 
 export type CustomSoundEndpoints = {
 	'/v1/custom-sounds.getOne': {
-		GET: (params: CustomSoundsGetOne) => { _id: ICustomSound['_id']; name: ICustomSound['name'] };
+		GET: (params: CustomSoundsGetOne) => { sound: ICustomSound };
 	};
 };

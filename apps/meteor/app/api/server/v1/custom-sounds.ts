@@ -15,11 +15,14 @@ import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
-type CustomSoundsList = PaginatedRequest<{ name?: string }>;
+type CustomSoundsList = PaginatedRequest<{ name?: string; _id?: string }>;
 
 const CustomSoundsListSchema = {
 	type: 'object',
 	properties: {
+		_id: {
+			type: 'string',
+		},
 		count: {
 			type: 'number',
 			nullable: true,
@@ -96,10 +99,11 @@ const customSoundsEndpoints = API.v1
 			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
 			const { sort, query } = await this.parseJsonQuery();
 
-			const { name } = this.queryParams;
+			const { name, _id } = this.queryParams;
 
 			const filter = {
 				...query,
+				...(_id ? { _id } : {}),
 				...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
 			};
 
@@ -122,24 +126,19 @@ const customSoundsEndpoints = API.v1
 		'custom-sounds.getOne',
 		{
 			response: {
-				200: ajv.compile<Pick<ICustomSound, '_id' | 'name'> & { success: boolean }>({
+				200: ajv.compile<{ sound: ICustomSound; success: boolean }>({
 					additionalProperties: false,
 					type: 'object',
 					properties: {
-						_id: {
-							type: 'string',
-							description: 'The ID of the custom sound.',
-						},
-						name: {
-							type: 'string',
-							description: 'The name of the custom sound.',
+						sound: {
+							$ref: '#/components/schemas/ICustomSound',
 						},
 						success: {
 							type: 'boolean',
 							description: 'Indicates if the request was successful.',
 						},
 					},
-					required: ['_id', 'name', 'success'],
+					required: ['sound', 'success'],
 				}),
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
@@ -152,16 +151,13 @@ const customSoundsEndpoints = API.v1
 		async function action() {
 			const { _id } = this.queryParams;
 
-			const customSound = await CustomSounds.findOneById(_id, { projection: { _id: 1, name: 1 } });
+			const sound = await CustomSounds.findOneById(_id);
 
-			if (!customSound) {
+			if (!sound) {
 				return API.v1.notFound('Custom Sound not found.');
 			}
 
-			return API.v1.success({
-				_id: customSound._id,
-				name: customSound.name,
-			});
+			return API.v1.success({ sound });
 		},
 	);
 

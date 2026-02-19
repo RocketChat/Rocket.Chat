@@ -19,7 +19,12 @@ function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProp
 
 	const { data, isPending } = useQuery({
 		queryKey: ['custom-sound', _id],
-		queryFn: () => (typeof _id === 'string' ? getSound({ _id }) : undefined),
+		queryFn: () => {
+			if (!_id) {
+				throw new Error('Cannot fetch custom sound: missing _id in query.');
+			}
+			return getSound({ _id });
+		},
 		enabled: !!_id,
 	});
 
@@ -35,7 +40,7 @@ function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProp
 		onChange?.();
 	};
 
-	return <EditSound data={data} close={close} onChange={handleChange} {...props} />;
+	return <EditSound data={data.sound} close={close} onChange={handleChange} {...props} />;
 }
 
 export default EditCustomSound;
