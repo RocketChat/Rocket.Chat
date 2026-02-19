@@ -1,7 +1,7 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useGoToDirectMessage } from '@rocket.chat/ui-client';
 import { useRouter, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { useMediaCallContext } from '@rocket.chat/ui-voip';
+import { useWidgetExternalControls, usePeekMediaSessionState } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 
 export type InternalCallHistoryContact = {
@@ -28,18 +28,18 @@ export const useMediaCallInternalHistoryActions = ({
 	messageRoomId,
 	openUserInfo,
 }: UseMediaCallInternalHistoryActionsBaseOptions) => {
-	const { onToggleWidget, sessionState } = useMediaCallContext();
-	const { state } = sessionState;
+	const state = usePeekMediaSessionState();
+	const { toggleWidget } = useWidgetExternalControls();
 	const router = useRouter();
 
 	const getAvatarUrl = useUserAvatarPath();
 
 	const voiceCall = useEffectEvent(() => {
-		if (state === 'unauthorized' || state === 'unlicensed' || !onToggleWidget) {
+		if (state !== 'available') {
 			return;
 		}
 
-		onToggleWidget({
+		toggleWidget({
 			userId: contact._id,
 			displayName: contact.displayName ?? '',
 			username: contact.username,
