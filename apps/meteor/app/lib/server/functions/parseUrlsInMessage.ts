@@ -1,4 +1,5 @@
 import type { IMessage, AtLeast } from '@rocket.chat/core-typings';
+import { parse } from '@rocket.chat/message-parser';
 
 import { getMessageUrlRegex } from '../../../../lib/getMessageUrlRegex';
 import { Markdown } from '../../../markdown/server';
@@ -16,10 +17,23 @@ export const parseUrlsInMessage = (message: AtLeast<IMessage, 'msg'> & { parseUr
 
 	const urls = message.html?.match(getMessageUrlRegex()) || [];
 	
-	// Extract URLs from parsed message AST (message.md) - these have normalized schemas
-	if (message.md) {
-		const astUrls = extractUrlsFromMessageAST(message.md);
-		urls.push(...astUrls);
+	// Parse the message to extract URLs from links without schema
+	// The message parser converts links like "github.com" to proper links with "//" prefix
+	if (message.msg) {
+		try {
+			const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
+				? settings
+						.get<string>('Message_CustomDomain_AutoLink')
+						.split(',')
+						.map((domain) => domain.trim())
+				: [];
+			
+			const parsedMessage = parse(message.msg, { customDomains });
+			const astUrls = extractUrlsFromMessageAST(parsedMessage);
+			urls.push(...astUrls);
+		} catch (e) {
+			// If parsing fails, just continue with URLs from regex
+		}
 	}
 	
 	// Also extract URLs from message blocks if they exist
