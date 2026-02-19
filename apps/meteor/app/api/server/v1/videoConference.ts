@@ -28,11 +28,11 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			if (!this.user?.username) {
-				return API.v1.failure('error-invalid-user');
+			try {
+				await canSendMessageAsync(roomId, { uid: userId, username: this.user.username!, type: this.user.type! });
+			} catch (error) {
+				return API.v1.forbidden();
 			}
-
-			await canSendMessageAsync(roomId, { uid: userId, username: this.user.username!, type: this.user.type! });
 
 			try {
 				const providerName = videoConfProviders.getActiveProvider();
