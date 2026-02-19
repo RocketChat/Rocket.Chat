@@ -85,7 +85,9 @@ export type Quote = {
 
 export type Spoiler = {
 	type: 'SPOILER';
-	value: Array<Link | Emoji | UserMention | ChannelMention | InlineCode | Italic | Bold | Strike | Timestamp | Color | Image | InlineKaTeX>;
+	value: Array<
+		Link | Emoji | UserMention | ChannelMention | InlineCode | Italic | Bold | Strike | Timestamp | Color | Image | InlineKaTeX | Plain
+	>;
 };
 
 export type SpoilerBlock = {
