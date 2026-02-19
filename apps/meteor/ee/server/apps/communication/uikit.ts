@@ -1,5 +1,9 @@
 import { AppEvents, type IAppServerOrchestrator } from '@rocket.chat/apps';
-import type { UiKitCoreAppPayload } from '@rocket.chat/core-services';
+import type {
+	UiKitCoreAppBlockActionPayload,
+	UiKitCoreAppViewClosedPayload,
+	UiKitCoreAppViewSubmitPayload,
+} from '@rocket.chat/core-services';
 import { UiKitCoreApp } from '@rocket.chat/core-services';
 import type { OperationParams, UrlParams } from '@rocket.chat/rest-typings';
 import bodyParser from 'body-parser';
@@ -111,7 +115,7 @@ type UiKitUserInteractionRequest = Request<
 	}
 >;
 
-const getCoreAppPayload = (req: UiKitUserInteractionRequest): UiKitCoreAppPayload => {
+const getCoreAppPayload = (req: UiKitUserInteractionRequest) => {
 	const { id: appId } = req.params;
 
 	if (req.body.type === 'blockAction') {
@@ -131,7 +135,7 @@ const getCoreAppPayload = (req: UiKitUserInteractionRequest): UiKitCoreAppPayloa
 			user,
 			visitor,
 			room,
-		};
+		} satisfies UiKitCoreAppBlockActionPayload;
 	}
 
 	if (req.body.type === 'viewClosed') {
@@ -151,7 +155,7 @@ const getCoreAppPayload = (req: UiKitUserInteractionRequest): UiKitCoreAppPayloa
 				view,
 				isCleared,
 			},
-		};
+		} satisfies UiKitCoreAppViewClosedPayload;
 	}
 
 	if (req.body.type === 'viewSubmit') {
@@ -165,7 +169,7 @@ const getCoreAppPayload = (req: UiKitUserInteractionRequest): UiKitCoreAppPayloa
 			triggerId,
 			payload,
 			user,
-		};
+		} satisfies UiKitCoreAppViewSubmitPayload;
 	}
 
 	throw new Error('Type not supported');
@@ -182,7 +186,7 @@ router.post('/:id', async (req: UiKitUserInteractionRequest, res, next) => {
 	try {
 		const payload = getCoreAppPayload(req);
 
-		const result = await UiKitCoreApp[payload.type](payload);
+		const result = await UiKitCoreApp[payload.type](payload as any);
 
 		// Using ?? to always send something in the response, even if the app had no result.
 		res.send(result ?? {});
