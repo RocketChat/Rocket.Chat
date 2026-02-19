@@ -48,7 +48,7 @@ type IntegrationThis = GenericRouteExecutionContext & {
 	request: Request & {
 		integration: IIncomingIntegration;
 	};
-	user: IUser & { username: RequiredField<IUser, 'username'> };
+	user: RequiredField<IUser, 'username'>;
 };
 
 async function createIntegration(options: IntegrationOptions, user: IUser): Promise<IOutgoingIntegration | undefined> {
