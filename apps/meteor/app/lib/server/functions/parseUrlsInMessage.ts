@@ -3,6 +3,7 @@ import type { IMessage, AtLeast } from '@rocket.chat/core-typings';
 import { getMessageUrlRegex } from '../../../../lib/getMessageUrlRegex';
 import { Markdown } from '../../../markdown/server';
 import { settings } from '../../../settings/server';
+import { extractTextFromBlocks, extractUrlsFromMessageAST } from './extractTextFromBlocks';
 
 // TODO move this function to message service to be used like a "beforeSaveMessage" hook
 export const parseUrlsInMessage = (message: AtLeast<IMessage, 'msg'> & { parseUrls?: boolean }, previewUrls?: string[]) => {
@@ -14,7 +15,21 @@ export const parseUrlsInMessage = (message: AtLeast<IMessage, 'msg'> & { parseUr
 	message = Markdown.code(message);
 
 	const urls = message.html?.match(getMessageUrlRegex()) || [];
-	if (urls) {
+	
+	// Extract URLs from parsed message AST (message.md) - these have normalized schemas
+	if (message.md) {
+		const astUrls = extractUrlsFromMessageAST(message.md);
+		urls.push(...astUrls);
+	}
+	
+	// Also extract URLs from message blocks if they exist
+	if (message.blocks) {
+		const blockTexts = extractTextFromBlocks(message.blocks);
+		const blockUrls = blockTexts.flatMap((text) => text.match(getMessageUrlRegex()) || []);
+		urls.push(...blockUrls);
+	}
+	
+	if (urls.length > 0) {
 		message.urls = [...new Set(urls)].map((url) => ({
 			url,
 			meta: {},
