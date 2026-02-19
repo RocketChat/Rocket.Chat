@@ -3,7 +3,9 @@ import { faker } from '@faker-js/faker';
 import { createFakeVisitor } from '../../mocks/data';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
-import { createCustomField } from '../utils/omnichannel/custom-field';
+import { createAgent } from '../utils/omnichannel/agents';
+import { createCustomField, setVisitorCustomFieldValue } from '../utils/omnichannel/custom-field';
+import { createManager } from '../utils/omnichannel/managers';
 import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
@@ -23,42 +25,38 @@ test.describe.serial('OC - Custom fields usage, scope : room and visitor', () =>
 	const visitorCustomFieldValue = faker.lorem.words(3);
 	const visitorToken = faker.string.uuid();
 
+	let agent: Awaited<ReturnType<typeof createAgent>>;
+	let manager: Awaited<ReturnType<typeof createManager>>;
 	let conversation: Awaited<ReturnType<typeof createConversation>>;
 	let roomCustomField: Awaited<ReturnType<typeof createCustomField>>;
 	let visitorCustomField: Awaited<ReturnType<typeof createCustomField>>;
 
 	test.beforeAll('Set up agent, manager and custom fields', async ({ api }) => {
-		const responses = await Promise.all([
-			api.post('/livechat/users/agent', { username: 'user1' }),
-			api.post('/livechat/users/manager', { username: 'user1' }),
+		[agent, manager] = await Promise.all([createAgent(api, 'user1'), createManager(api, 'user1')]);
+
+		[roomCustomField, visitorCustomField, conversation] = await Promise.all([
+			createCustomField(api, {
+				field: roomCustomFieldLabel,
+				label: roomCustomFieldName,
+				scope: 'room',
+			}),
+			createCustomField(api, {
+				field: visitorCustomFieldLabel,
+				label: visitorCustomFieldName,
+				scope: 'visitor',
+			}),
+			createConversation(api, {
+				visitorName: visitor.name,
+				agentId: 'user1',
+				visitorToken,
+			}),
 		]);
-		responses.forEach((res) => expect(res.status()).toBe(200));
 
-		roomCustomField = await createCustomField(api, {
-			field: roomCustomFieldLabel,
-			label: roomCustomFieldName,
-			scope: 'room',
-		});
-
-		visitorCustomField = await createCustomField(api, {
-			field: visitorCustomFieldName,
-			label: visitorCustomFieldLabel,
-			scope: 'visitor',
-		});
-
-		conversation = await createConversation(api, {
-			visitorName: visitor.name,
-			agentId: 'user1',
-			visitorToken,
-		});
-
-		const res = await api.post('/livechat/custom.field', {
+		await setVisitorCustomFieldValue(api, {
 			token: visitorToken,
-			key: visitorCustomField.customField._id,
+			customFieldId: visitorCustomField.customField._id,
 			value: visitorCustomFieldValue,
-			overwrite: true,
 		});
-		expect(res.status()).toBe(200);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -67,13 +65,8 @@ test.describe.serial('OC - Custom fields usage, scope : room and visitor', () =>
 		await poHomeChannel.waitForHome();
 	});
 
-	test.afterAll('Remove agent, manager and custom fields', async ({ api }) => {
-		const responses = await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/manager/user1')]);
-		responses.forEach((res) => expect(res.status()).toBe(200));
-
-		await roomCustomField.delete();
-		await visitorCustomField.delete();
-		await conversation.delete();
+	test.afterAll('Remove agent, manager, custom fields and conversation', async () => {
+		await Promise.all([agent.delete(), manager.delete(), roomCustomField.delete(), visitorCustomField.delete(), conversation.delete()]);
 	});
 
 	test('Should be allowed to set room custom field for a conversation', async () => {
