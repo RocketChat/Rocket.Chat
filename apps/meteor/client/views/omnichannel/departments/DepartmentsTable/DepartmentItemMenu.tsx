@@ -95,7 +95,7 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 	const disabledKeys = useMemo(() => items.filter((item) => item.disabled).map((item) => item.id), [items]);
 
 	return (
-		<MenuV2 title={t('Options')} onAction={onAction} disabledKeys={disabledKeys} detached>
+		<MenuV2 title={t('Options')} onAction={onAction} disabledKeys={disabledKeys}>
 			{items.map((item) => (
 				<MenuItem key={item.id}>
 					{item.icon && <MenuItemIcon name={item.icon} />}
