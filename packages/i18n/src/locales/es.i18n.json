@@ -1604,6 +1604,7 @@
   "FileUpload_Disabled": "La subida de archivos está deshabilitada",
   "FileUpload_Enable_json_web_token_for_files": "Habilitar protección de tokens web Json para subidas de archivos",
   "FileUpload_Enable_json_web_token_for_files_description": "Añade un token web Json a las URL de los archivos subidos",
+  "FileUpload_Enable_json_web_token_for_files_Alert": "Esta opción solo tiene efecto cuando se configura un secreto JWT. Si el campo \"Secreto JWT para archivos\" está vacío, no se generará ningún token y la protección JWT de archivos no se aplicará.",
   "FileUpload_Enabled": "Habilitar subidas de archivos",
   "FileUpload_Enabled_Direct": "Subidas de archivos habilitadas en mensajes directos",
   "FileUpload_Error": "Error de subida de archivo",
