@@ -1,6 +1,6 @@
 import { VideoConf } from '@rocket.chat/core-services';
 import type { VideoConference } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { Users } from '@rocket.chat/models';
 import {
 	isVideoConfStartProps,
 	isVideoConfJoinProps,
@@ -12,6 +12,7 @@ import {
 import { availabilityErrors } from '../../../../lib/videoConference/constants';
 import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -31,12 +32,14 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const room = await Rooms.findOneById(roomId, { projection: { ro: 1 } });
-			if (!room) {
-				return API.v1.failure('invalid-room');
+			const user = await Users.findOneById(userId, { projection: { username: 1, type: 1 } });
+			if (!user?.username) {
+				return API.v1.failure('error-invalid-user');
 			}
 
-			if (room.ro === true && !(await hasPermissionAsync(userId, 'post-readonly', roomId))) {
+			try {
+				await canSendMessageAsync(roomId, { uid: userId, username: user.username, type: user.type });
+			} catch (error) {
 				return API.v1.forbidden();
 			}
 
