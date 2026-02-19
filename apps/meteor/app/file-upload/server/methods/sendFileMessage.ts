@@ -33,7 +33,17 @@ function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtL
 function isImagePreviewSupported(mimeType: string): boolean {
 	// Only attempt preview generation for image types that can be processed by Sharp
 	// This excludes vendor-specific formats like image/vnd.dwg that cannot be rendered
-	return /^image\/((x-windows-)?bmp|p?jpeg|png|gif|webp|svg\+xml)$/.test(mimeType);
+	const supportedTypes = new Set([
+		'image/bmp',
+		'image/x-windows-bmp',
+		'image/jpeg',
+		'image/pjpeg',
+		'image/png',
+		'image/gif',
+		'image/webp',
+		'image/svg+xml',
+	]);
+	return supportedTypes.has(mimeType);
 }
 
 export const parseFileIntoMessageAttachments = async (

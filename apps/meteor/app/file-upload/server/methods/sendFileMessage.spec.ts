@@ -10,7 +10,10 @@ const { parseFileIntoMessageAttachments } = proxyquire.noCallThru().load('./send
 		},
 	},
 	'../../../../lib/utils/getFileExtension': {
-		getFileExtension: sinon.stub().returns('dwg'),
+		getFileExtension: sinon.stub().callsFake((filename: string) => {
+			const parts = filename.split('.');
+			return parts.length > 1 ? parts[parts.length - 1] : '';
+		}),
 	},
 	'../../../../lib/utils/omit': {
 		omit: sinon.stub().callsFake((obj) => obj),
