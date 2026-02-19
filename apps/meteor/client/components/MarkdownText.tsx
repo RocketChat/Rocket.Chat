@@ -139,23 +139,16 @@ const MarkdownText = ({
             const isExternalLink = isExternal(href);
             const isMailto = href.startsWith('mailto:');
 
-            // Set appropriate attributes based on link type
             if (isExternalLink || isMailto) {
                 node.setAttribute('rel', 'nofollow noopener noreferrer');
-                // Enforcing external links to open in new tabs is critical to assure users never navigate away from the chat
-                // This attribute must be preserved to guarantee users maintain their chat context
                 node.setAttribute('target', '_blank');
             }
 
-            // Set appropriate title based on link type
             if (isMailto) {
-                // For mailto links, use the email address as the title for better user experience
                 node.setAttribute('title', href);
             } else if (isExternalLink) {
-                // For external links, set an empty title to prevent tooltips
                 node.setAttribute('title', '');
             } else {
-                // For internal links, add a translated title with the relative path
                 node.setAttribute('title', `${i18next.t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
             }
         };	
