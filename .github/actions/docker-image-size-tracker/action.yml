@@ -27,6 +27,14 @@ inputs:
     description: 'Platform architecture to compare (amd64 or arm64)'
     required: false
     default: 'amd64'
+  size-thresholds:
+    description: 'Optional JSON: per-image trigger thresholds. Only comment when an image increase exceeds its threshold. Example: {"rocketchat":{"mb":50,"percent":5},"omnichannel":{"mb":10,"percent":2}}'
+    required: false
+    default: ''
+  fail-thresholds:
+    description: 'Optional JSON: per-image fail thresholds. Task fails when an image increase exceeds its threshold (mb and/or percent). Example: {"rocketchat":{"mb":100,"percent":15}}'
+    required: false
+    default: ''
 
 outputs:
   total-size:
@@ -38,6 +46,12 @@ outputs:
   size-diff-percent:
     description: 'Size difference percentage'
     value: ${{ steps.compare.outputs.size-diff-percent }}
+  comment-triggered:
+    description: 'Whether to post PR comment (only when size is bigger and thresholds met)'
+    value: ${{ steps.compare.outputs.comment-triggered }}
+  failed:
+    description: 'True if image size exceeded fail-thresholds'
+    value: ${{ steps.compare.outputs.failed }}
 
 runs:
   using: 'composite'
@@ -279,6 +293,7 @@ runs:
           echo "No baseline available"
           echo "size-diff=0" >> $GITHUB_OUTPUT
           echo "size-diff-percent=0" >> $GITHUB_OUTPUT
+          echo "comment-triggered=false" >> $GITHUB_OUTPUT
 
           cat > report.md << 'EOF'
         # 📦 Docker Image Size Report
@@ -301,6 +316,17 @@ runs:
 
         echo "size-diff=$diff" >> $GITHUB_OUTPUT
         echo "size-diff-percent=$percent" >> $GITHUB_OUTPUT
+
+        # Only comment when size is bigger than baseline; optionally require per-image thresholds
+        THRESHOLDS='${{ inputs.size-thresholds }}'
+        FAIL_THRESHOLDS='${{ inputs.fail-thresholds }}'
+        comment_triggered=false
+        fail_triggered=false
+        if [[ $diff -gt 0 ]]; then
+          if [[ -z "$THRESHOLDS" ]] || [[ "$THRESHOLDS" == "{}" ]]; then
+            comment_triggered=true
+          fi
+        fi
 
         color="gray"
         if (( $(awk "BEGIN {print ($percent > 0.01)}") )); then
@@ -346,6 +372,38 @@ runs:
             service_percent=0
           fi
 
+          # Check per-image thresholds for comment trigger (only when size increased)
+          if [[ $diff -gt 0 ]] && [[ -n "$THRESHOLDS" ]] && [[ "$THRESHOLDS" != "{}" ]]; then
+            threshold_mb=$(echo "$THRESHOLDS" | jq -r ".\"$service\".mb // empty")
+            threshold_pct=$(echo "$THRESHOLDS" | jq -r ".\"$service\".percent // empty")
+            if [[ -n "$threshold_mb" ]] || [[ -n "$threshold_pct" ]]; then
+              exceeded=false
+              if [[ -n "$threshold_mb" ]] && [[ $service_diff -ge $(awk "BEGIN {printf \"%.0f\", $threshold_mb * 1048576}") ]]; then
+                exceeded=true
+              fi
+              if [[ -n "$threshold_pct" ]] && [[ $service_percent != "0.00" ]] && (( $(awk "BEGIN {print ($service_percent >= $threshold_pct)}") )); then
+                exceeded=true
+              fi
+              [[ "$exceeded" == "true" ]] && comment_triggered=true
+            fi
+          fi
+
+          # Check per-image fail thresholds (task fails when exceeded)
+          if [[ $diff -gt 0 ]] && [[ -n "$FAIL_THRESHOLDS" ]] && [[ "$FAIL_THRESHOLDS" != "{}" ]]; then
+            fail_mb=$(echo "$FAIL_THRESHOLDS" | jq -r ".\"$service\".mb // empty")
+            fail_pct=$(echo "$FAIL_THRESHOLDS" | jq -r ".\"$service\".percent // empty")
+            if [[ -n "$fail_mb" ]] || [[ -n "$fail_pct" ]]; then
+              exceeded=false
+              if [[ -n "$fail_mb" ]] && [[ $service_diff -ge $(awk "BEGIN {printf \"%.0f\", $fail_mb * 1048576}") ]]; then
+                exceeded=true
+              fi
+              if [[ -n "$fail_pct" ]] && [[ $service_percent != "0.00" ]] && (( $(awk "BEGIN {print ($service_percent >= $fail_pct)}") )); then
+                exceeded=true
+              fi
+              [[ "$exceeded" == "true" ]] && fail_triggered=true
+            fi
+          fi
+
           color="gray"
           if (( $(awk "BEGIN {print ($service_percent > 0.01)}") )); then
             color="red"
@@ -366,6 +424,14 @@ runs:
 
           echo "| $service | $(numfmt --to=iec-i --suffix=B $current) | $(numfmt --to=iec-i --suffix=B $baseline) | ${sign}$(numfmt --to=iec-i --suffix=B ${service_diff#-}) | $badge |" >> report.md
         done
+
+        echo "comment-triggered=$comment_triggered" >> $GITHUB_OUTPUT
+        echo "failed=$fail_triggered" >> $GITHUB_OUTPUT
+
+        if [[ "$fail_triggered" == "true" ]]; then
+          echo "::error::Docker image size exceeded fail-thresholds (mb/percent). Check the report for details."
+          exit 1
+        fi
 
         # Generate historical trend chart
         echo "" >> report.md
@@ -485,7 +551,7 @@ runs:
         EOF
 
     - name: Comment on PR
-      if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request' && steps.compare.outputs.comment-triggered == 'true'
       uses: actions/github-script@v7
       with:
         github-token: ${{ inputs.github-token }}
