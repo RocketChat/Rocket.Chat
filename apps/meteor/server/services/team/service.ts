@@ -40,54 +40,6 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
 
 	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
-		// Validate team data
-		if (!team || typeof team !== 'object') {
-			throw new Error('invalid-team-data');
-		}
-
-		if (!team.name || typeof team.name !== 'string' || team.name.trim().length === 0) {
-			throw new Error('invalid-team-name');
-		}
-
-		if (team.name.length > 255) {
-			throw new Error('team-name-too-long');
-		}
-
-		if (team.type !== TeamType.PRIVATE && team.type !== TeamType.PUBLIC) {
-			throw new Error('invalid-team-type');
-		}
-
-		// Validate members array
-		if (members !== undefined && members !== null) {
-			if (!Array.isArray(members)) {
-				throw new Error('invalid-members-format');
-			}
-
-			for (const member of members) {
-				if (typeof member !== 'string' || member.trim().length === 0) {
-					throw new Error('invalid-member-id');
-				}
-			}
-
-			// Check for duplicate members
-			const uniqueMembers = new Set(members);
-			if (uniqueMembers.size !== members.length) {
-				throw new Error('duplicate-members');
-			}
-		}
-
-		// Validate owner if provided
-		if (owner !== undefined && owner !== null) {
-			if (typeof owner !== 'string' || owner.trim().length === 0) {
-				throw new Error('invalid-owner-id');
-			}
-		}
-
-		// Validate room data if provided
-		if (!room || typeof room !== 'object') {
-			throw new Error('invalid-room-data');
-		}
-
 		if (!(await checkUsernameAvailability(team.name))) {
 			throw new Error('team-name-already-exists');
 		}

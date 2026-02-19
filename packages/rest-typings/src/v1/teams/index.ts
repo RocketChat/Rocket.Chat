@@ -1,6 +1,7 @@
 import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 
 import type { TeamsAddMembersProps } from './TeamsAddMembersProps';
+import type { TeamsCreateProps } from './TeamsCreateProps';
 import type { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
 import type { TeamsDeleteProps } from './TeamsDeleteProps';
 import type { TeamsLeaveProps } from './TeamsLeaveProps';
@@ -13,6 +14,7 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export * from './TeamsAddMembersProps';
+export { TeamsCreateProps, isTeamsCreateProps } from './TeamsCreateProps';
 export * from './TeamsConvertToChannelProps';
 export * from './TeamsDeleteProps';
 export * from './TeamsLeaveProps';
@@ -60,38 +62,7 @@ export type TeamsEndpoints = {
 		GET: () => { teams: ITeam[] } & PaginatedResult;
 	};
 	'/v1/teams.create': {
-		POST: (params: {
-			name: ITeam['name'];
-			type: ITeam['type'];
-			members?: IUser['_id'][];
-			room: {
-				id?: string;
-				name?: IRoom['name'];
-				members?: IUser['_id'][];
-				readOnly?: boolean;
-				extraData?: {
-					teamId?: string;
-					teamMain?: boolean;
-				} & { [key: string]: string | boolean };
-				options?: {
-					creator: string;
-					subscriptionExtra?: {
-						open: boolean;
-						ls: Date;
-						prid: IRoom['_id'];
-					};
-				} & {
-					[key: string]:
-						| string
-						| {
-								open: boolean;
-								ls: Date;
-								prid: IRoom['_id'];
-						  };
-				};
-			};
-			owner?: IUser['_id'];
-		}) => {
+		POST: (params: TeamsCreateProps) => {
 			team: ITeam;
 		};
 	};
