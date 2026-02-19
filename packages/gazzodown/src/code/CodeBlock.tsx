@@ -1,6 +1,6 @@
+import { css } from '@rocket.chat/css-in-js';
+import { IconButton, Box } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { IconButton } from '@rocket.chat/fuselage';
-import styled from '@rocket.chat/styled';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import hljs from 'highlight.js';
 import type { ReactElement } from 'react';
@@ -14,15 +14,14 @@ type CodeBlockProps = {
 	lines: MessageParser.CodeLine[];
 };
 
-const CodeBlockWrapper = styled('div')`
-	position: relative;
-`;
+const onHoverStyle = css`
+	opacity: 0;
+	user-select: none;
 
-const CopyButton = styled(IconButton)`
-	position: absolute;
-	top: 0.5rem;
-	right: 0.5rem;
-	z-index: 1;
+	[data-code-block-wrapper]:hover &,
+	[data-code-block-wrapper]:focus-within & {
+		opacity: 1;
+	}
 `;
 
 const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
@@ -85,25 +84,29 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 	}, [code, dispatchToastMessage, t]);
 
 	return (
-		<CodeBlockWrapper>
-			<CopyButton
+		<Box is='pre' position='relative' data-code-block-wrapper role='region'>
+			<IconButton
 				icon='copy'
 				small
+				className={onHoverStyle}
 				title={t('Copy')}
-				onClick={handleCopy}
+				onClick={() => {
+					void handleCopy();
+				}}
+				position='absolute'
+				insetInlineEnd={0}
+				margin={8}
 			/>
-			<pre role='region'>
-				<span className='copyonly'>```</span>
-				<code
-					key={language + code}
-					ref={ref}
-					className={((!language || language === 'none') && 'code-colors') || `code-colors language-${language}`}
-				>
-					{content}
-				</code>
-				<span className='copyonly'>```</span>
-			</pre>
-		</CodeBlockWrapper>
+			<span className='copyonly'>```</span>
+			<code
+				key={language + code}
+				ref={ref}
+				className={((!language || language === 'none') && 'code-colors') || `code-colors language-${language}`}
+			>
+				{content}
+			</code>
+			<span className='copyonly'>```</span>
+		</Box>
 	);
 };
 
