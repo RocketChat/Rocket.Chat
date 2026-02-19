@@ -32,7 +32,7 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-user');
 			}
 
-			await canSendMessageAsync(roomId, { uid: userId, username: this.user.username, type: this.user.type });
+			await canSendMessageAsync(roomId, { uid: userId, username: this.user.username!, type: this.user.type! });
 
 			try {
 				const providerName = videoConfProviders.getActiveProvider();
