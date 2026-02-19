@@ -3,6 +3,7 @@ import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
 import { RequestContext } from '../../lib/requestContext.ts';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
 
 export default function handleOnPreSettingUpdate(request: RequestContext): Promise<object> {
 	const { params } = request;
@@ -20,5 +21,11 @@ export default function handleOnPreSettingUpdate(request: RequestContext): Promi
 
 	const [setting] = params as [Record<string, unknown>];
 
-	return app.onPreSettingUpdate(setting, AppAccessorsInstance.getConfigurationModify(), AppAccessorsInstance.getReader(), AppAccessorsInstance.getHttp());
+	return app.onPreSettingUpdate.call(
+		wrapAppForRequest(app, request),
+		setting,
+		AppAccessorsInstance.getConfigurationModify(),
+		AppAccessorsInstance.getReader(),
+		AppAccessorsInstance.getHttp(),
+	);
 }
