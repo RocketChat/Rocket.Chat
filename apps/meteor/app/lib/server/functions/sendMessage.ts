@@ -257,10 +257,9 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 		}
 	}
 
-	message = await Message.beforeSave({ message, room, user });
-
-	// TODO: move this to the message service
 	parseUrlsInMessage(message, previewUrls);
+
+	message = await Message.beforeSave({ message, room, user });
 
 	if (!message) {
 		return;

@@ -51,15 +51,14 @@ export const updateMessage = async function (
 		},
 	});
 
+	parseUrlsInMessage(messageData, previewUrls);
+
 	const room = await Rooms.findOneById(messageData.rid);
 	if (!room) {
 		return;
 	}
 
 	messageData = await Message.beforeSave({ message: messageData, room, user });
-
-	// TODO: move this to the message service
-	parseUrlsInMessage(messageData, previewUrls);
 
 	if (messageData.customFields) {
 		validateCustomMessageFields({
