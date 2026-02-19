@@ -39,8 +39,8 @@ API.v1.addRoute(
 
 			try {
 				await canSendMessageAsync(roomId, { uid: userId, username: user.username, type: user.type });
-			} catch (error) {
-				return API.v1.forbidden();
+			} catch (error: any) {
+				return API.v1.failure(error.message || error.error || 'error-not-allowed');
 			}
 
 			try {
