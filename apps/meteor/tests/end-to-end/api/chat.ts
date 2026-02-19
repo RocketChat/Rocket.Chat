@@ -861,6 +861,37 @@ describe('[Chat]', () => {
 					.end(done);
 			});
 		});
+
+		describe('Archived rooms', () => {
+			let archivedChannel: IRoom;
+
+			before(async () => {
+				archivedChannel = (await createRoom({ type: 'c', name: `chat.api-archived-post-test-${Date.now()}` })).body.channel;
+				await request.post(api('channels.archive')).set(credentials).send({ roomId: archivedChannel._id });
+			});
+
+			after(async () => {
+				await request.post(api('channels.unarchive')).set(credentials).send({ roomId: archivedChannel._id });
+				await deleteRoom({ type: 'c', roomId: archivedChannel._id });
+			});
+
+			it('should fail to post a message to an archived room', (done) => {
+				void request
+					.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						roomId: archivedChannel._id,
+						text: 'This message should not be posted',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'room_is_archived');
+					})
+					.end(done);
+			});
+		});
 	});
 
 	describe('/chat.getMessage', () => {
@@ -1146,6 +1177,39 @@ describe('[Chat]', () => {
 						const text = para.value[0];
 						expect(text).to.have.property('value', 'This message has ******* ********');
 					});
+			});
+		});
+
+		describe('Archived rooms', () => {
+			let archivedChannel: IRoom;
+
+			before(async () => {
+				archivedChannel = (await createRoom({ type: 'c', name: `chat.api-archived-test-${Date.now()}` })).body.channel;
+				await request.post(api('channels.archive')).set(credentials).send({ roomId: archivedChannel._id });
+			});
+
+			after(async () => {
+				await request.post(api('channels.unarchive')).set(credentials).send({ roomId: archivedChannel._id });
+				await deleteRoom({ type: 'c', roomId: archivedChannel._id });
+			});
+
+			it('should fail to send a message to an archived room', (done) => {
+				void request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: archivedChannel._id,
+							msg: 'This message should not be sent',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'room_is_archived');
+					})
+					.end(done);
 			});
 		});
 

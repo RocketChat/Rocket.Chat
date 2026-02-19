@@ -1557,6 +1557,7 @@
   "FileUpload_Disabled": "Le chargement de fichiers est désactivé.",
   "FileUpload_Enable_json_web_token_for_files": "Activer la protection des jetons Web JSON pour le chargement de fichiers",
   "FileUpload_Enable_json_web_token_for_files_description": "Ajoute un jeton Web JSON aux URL des fichiers chargés",
+  "FileUpload_Enable_json_web_token_for_files_Alert": "Cette option n'a d'effet que si un secret JWT est configuré. Si le champ \"Secret JWT pour les fichiers\" est vide, aucun jeton ne sera généré et la protection JWT des fichiers ne sera pas appliquée.",
   "FileUpload_Enabled": "Chargement de fichiers activé",
   "FileUpload_Enabled_Direct": "Chargement de fichiers activé dans les messages directs",
   "FileUpload_Error": "Erreur de chargement de fichier",
