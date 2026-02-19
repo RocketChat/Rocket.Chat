@@ -2089,6 +2089,30 @@ describe('Meteor.methods', () => {
 				})
 				.end(done);
 		});
+
+		it('should fail when sending more than 10 files', async () => {
+			const filesToConfirm = Array.from({ length: 11 }, (_, i) => ({ _id: `file${i + 1}`, name: `test${i + 1}.txt` }));
+
+			await request
+				.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ _id: Random.id(), rid, msg: 'test message with files' }, [], filesToConfirm],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data.error).to.have.a.property('error', 'error-too-many-files');
+				});
+		});
 	});
 
 	describe('[@updateMessage]', () => {

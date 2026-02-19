@@ -42,8 +42,7 @@ test.describe('prune-messages', () => {
 			} = poHomeChannel;
 
 			await content.sendFileMessage('any_file.txt');
-			await content.descriptionInput.fill('a message with a file');
-			await content.btnModalConfirm.click();
+			await poHomeChannel.composer.btnSend.click();
 			await expect(content.lastMessageFileName).toHaveText('any_file.txt');
 
 			await sendTargetChannelMessage(api, targetChannel.fname as string, {
@@ -110,8 +109,7 @@ test.describe('prune-messages', () => {
 			} = poHomeChannel;
 
 			await content.sendFileMessage('any_file.txt');
-			await content.descriptionInput.fill('a message with a file');
-			await content.btnModalConfirm.click();
+			await poHomeChannel.composer.btnSend.click();
 			await expect(content.lastMessageFileName).toHaveText('any_file.txt');
 
 			await test.step('prune files only', async () => {
@@ -145,8 +143,7 @@ test.describe('prune-messages', () => {
 			const { content } = poHomeChannel;
 
 			await content.sendFileMessage('any_file.txt');
-			await content.descriptionInput.fill('a message with a file');
-			await content.btnModalConfirm.click();
+			await poHomeChannel.composer.btnSend.click();
 			await expect(content.lastMessageFileName).toHaveText('any_file.txt');
 
 			await content.lastUserMessage.hover();

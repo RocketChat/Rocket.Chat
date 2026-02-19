@@ -1,10 +1,16 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
+import { FileUploadWarningModal } from './page-objects/fragments/modals';
 import { createTargetChannel } from './utils';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
+
+const TEST_FILE_TXT = 'any_file.txt';
+const TEST_FILE_LST = 'lst-test.lst';
+const TEST_FILE_DRAWIO = 'diagram.drawio';
+const TEST_EMPTY_FILE = 'empty_file.txt';
 
 test.describe.serial('file-upload', () => {
 	let poHomeChannel: HomeChannel;
@@ -27,55 +33,216 @@ test.describe.serial('file-upload', () => {
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
-	test('should successfully cancel upload', async () => {
+	test('should cancel uploaded file attached to message composer', async () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
-		await poHomeChannel.content.btnModalCancel.click();
-		await expect(poHomeChannel.content.modalFilePreview).not.toBeVisible();
+		await poHomeChannel.composer.removeFileByName(TEST_FILE_TXT);
+
+		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toBeVisible();
 	});
 
-	test('should not display modal when clicking in send file', async () => {
-		await poHomeChannel.content.dragAndDropTxtFile();
-		await poHomeChannel.content.btnModalConfirm.click();
-		await expect(poHomeChannel.content.modalFilePreview).not.toBeVisible();
+	test('should send file with name updated', async () => {
+		const updatedFileName = `edited_${TEST_FILE_TXT}`;
+		await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT);
+
+		await test.step('update file name and send', async () => {
+			await poHomeChannel.composer.getFileByName(TEST_FILE_TXT).click();
+			await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
+			await poHomeChannel.content.btnUpdateFileUpload.click();
+
+			expect(poHomeChannel.composer.getFileByName(updatedFileName));
+			await poHomeChannel.composer.btnSend.click();
+		});
+
+		await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
+		await expect(poHomeChannel.content.lastMessageFileName).toContainText(updatedFileName);
 	});
 
-	test('should send file with name/description updated', async () => {
+	test('should attach multiple files and send one per message', async () => {
+		await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT);
+		await poHomeChannel.content.sendFileMessage(TEST_FILE_LST);
+		expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT));
+		expect(poHomeChannel.composer.getFileByName(TEST_FILE_LST));
+
+		await poHomeChannel.composer.btnSend.click();
+		await expect(poHomeChannel.content.lastUserMessageDownloadLink).toHaveCount(1);
+	});
+
+	test('should not be able to attach files when editing a message', async () => {
+		await poHomeChannel.content.sendMessage('message to be edited');
+		await poHomeChannel.content.openLastMessageMenu();
+		await poHomeChannel.content.btnOptionEditMessage.click();
+
 		await poHomeChannel.content.dragAndDropTxtFile();
-		await expect(poHomeChannel.content.descriptionInput).toBeFocused();
-
-		await poHomeChannel.content.descriptionInput.fill('any_description');
-		await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
-		await poHomeChannel.content.btnModalConfirm.click();
-
-		await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
-		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toBeVisible();
 	});
 
 	test('should send lst file successfully', async () => {
 		await poHomeChannel.content.dragAndDropLstFile();
-		await poHomeChannel.content.descriptionInput.fill('lst_description');
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.composer.btnSend.click();
 
-		await expect(poHomeChannel.content.getFileDescription).toHaveText('lst_description');
-		await expect(poHomeChannel.content.lastMessageFileName).toContainText('lst-test.lst');
+		await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
+		await expect(poHomeChannel.content.lastMessageFileName).toContainText(TEST_FILE_LST);
 	});
 
 	test('should send drawio (unknown media type) file successfully', async ({ page }) => {
 		await page.reload();
-		await poHomeChannel.content.sendFileMessage('diagram.drawio');
-		await poHomeChannel.content.descriptionInput.fill('drawio_description');
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.content.sendFileMessage(TEST_FILE_DRAWIO);
+		await poHomeChannel.composer.btnSend.click();
 
-		await expect(poHomeChannel.content.getFileDescription).toHaveText('drawio_description');
-		await expect(poHomeChannel.content.lastMessageFileName).toContainText('diagram.drawio');
+		await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
+		await expect(poHomeChannel.content.lastMessageFileName).toContainText(TEST_FILE_DRAWIO);
 	});
 
 	test('should not to send drawio file (unknown media type) when the default media type is blocked', async ({ api, page }) => {
 		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'application/octet-stream');
 
 		await page.reload();
-		await poHomeChannel.content.sendFileMessage('diagram.drawio');
-		await expect(poHomeChannel.content.btnModalConfirm).not.toBeVisible();
+		await poHomeChannel.content.sendFileMessage(TEST_FILE_DRAWIO, { waitForResponse: false });
+
+		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_DRAWIO)).toHaveAttribute('readonly');
+	});
+
+	test.describe.serial('multiple file upload', () => {
+		test.beforeAll(async ({ api }) => {
+			await setSettingValueById(api, 'FileUpload_EnableMultipleFilesPerMessage', true);
+		});
+
+		test.afterAll(async ({ api }) => {
+			await setSettingValueById(api, 'FileUpload_EnableMultipleFilesPerMessage', false);
+		});
+
+		test('should attach multiple files and send in a single message', async () => {
+			const message = 'Here are two files';
+			await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT);
+			await poHomeChannel.content.sendFileMessage(TEST_FILE_LST);
+			expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT));
+			expect(poHomeChannel.composer.getFileByName(TEST_FILE_LST));
+
+			await poHomeChannel.composer.inputMessage.fill(message);
+			await poHomeChannel.composer.btnSend.click();
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(TEST_FILE_TXT);
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(TEST_FILE_LST);
+			await expect(poHomeChannel.content.lastUserMessageDownloadLink).toHaveCount(2);
+		});
+
+		test('should be able to remove file from composer before sending', async () => {
+			await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT);
+			await poHomeChannel.content.sendFileMessage(TEST_FILE_LST);
+
+			await poHomeChannel.composer.removeFileByName(TEST_FILE_TXT);
+
+			await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toBeVisible();
+			await expect(poHomeChannel.composer.getFileByName(TEST_FILE_LST)).toBeVisible();
+
+			await poHomeChannel.composer.btnSend.click();
+
+			await expect(poHomeChannel.content.lastUserMessage).not.toContainText(TEST_FILE_TXT);
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(TEST_FILE_LST);
+		});
+
+		test('should respect the maximum number of files allowed per message: 10', async () => {
+			const file11 = 'number6.png';
+			const files = new Array(10).fill('number1.png');
+
+			await Promise.all(files.map((file) => poHomeChannel.content.sendFileMessage(file)));
+			await poHomeChannel.content.dragAndDropTxtFile();
+
+			await expect(poHomeChannel.composer.getFilesInComposer()).toHaveCount(10);
+			await expect(poHomeChannel.composer.getFileByName(file11)).not.toBeVisible();
+		});
+
+		test.describe.serial('thread multiple file upload', () => {
+			test('should be able to remove file from thread composer before sending', async () => {
+				await poHomeChannel.content.sendMessage('this is a message for thread reply');
+				await poHomeChannel.content.openReplyInThread();
+				await poHomeChannel.content.sendFileMessageToThread(TEST_FILE_TXT);
+				await poHomeChannel.content.sendFileMessageToThread(TEST_FILE_LST);
+
+				await poHomeChannel.threadComposer.removeFileByName(TEST_FILE_LST);
+
+				await expect(poHomeChannel.threadComposer.getFileByName(TEST_FILE_TXT)).toBeVisible();
+				await expect(poHomeChannel.threadComposer.getFileByName(TEST_FILE_LST)).not.toBeVisible();
+			});
+
+			test('should send multiple files in a single thread message', async () => {
+				const message = 'Here are two files in thread';
+				await poHomeChannel.content.openReplyInThread();
+				await poHomeChannel.content.sendFileMessageToThread(TEST_FILE_TXT);
+				await poHomeChannel.content.sendFileMessageToThread(TEST_FILE_LST);
+
+				await poHomeChannel.threadComposer.inputMessage.fill(message);
+				await poHomeChannel.threadComposer.btnSend.click();
+
+				await expect(poHomeChannel.content.lastThreadMessageText).toContainText(message);
+				await expect(poHomeChannel.content.lastThreadMessageText.getByRole('link').getByText(TEST_FILE_LST)).toBeVisible();
+				await expect(poHomeChannel.content.lastThreadMessageText.getByRole('link').getByText(TEST_FILE_TXT)).toBeVisible();
+			});
+		});
+	});
+
+	test.describe.serial('file upload fails', () => {
+		let fileUploadWarningModal: FileUploadWarningModal;
+
+		test.beforeAll(async ({ api }) => {
+			await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'application/octet-stream');
+		});
+
+		test.afterAll(async ({ api }) => {
+			await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
+		});
+
+		test('should open warning modal when all file uploads fail', async ({ page }) => {
+			fileUploadWarningModal = new FileUploadWarningModal(page.getByRole('dialog', { name: 'Warning' }));
+
+			await poHomeChannel.content.sendFileMessage(TEST_EMPTY_FILE, { waitForResponse: false });
+			await poHomeChannel.content.sendFileMessage(TEST_FILE_DRAWIO, { waitForResponse: false });
+
+			await expect(poHomeChannel.composer.getFileByName(TEST_EMPTY_FILE)).toHaveAttribute('readonly');
+			await expect(poHomeChannel.composer.getFileByName(TEST_FILE_DRAWIO)).toHaveAttribute('readonly');
+
+			await poHomeChannel.composer.btnSend.click();
+			await fileUploadWarningModal.waitForDisplay();
+
+			await expect(fileUploadWarningModal.getContent('2 files failed to upload')).toBeVisible();
+			await expect(fileUploadWarningModal.btnOk).toBeVisible();
+			await expect(fileUploadWarningModal.btnSendAnyway).not.toBeVisible();
+		});
+
+		test('should handle multiple files with one failing upload', async ({ page }) => {
+			fileUploadWarningModal = new FileUploadWarningModal(page.getByRole('dialog', { name: 'Are you sure' }));
+
+			await test.step('should only mark as "Upload failed" the specific file that failed to upload', async () => {
+				await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT, { waitForResponse: false });
+				await poHomeChannel.content.sendFileMessage(TEST_EMPTY_FILE, { waitForResponse: false });
+
+				await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toHaveAttribute('readonly');
+				await expect(poHomeChannel.composer.getFileByName(TEST_EMPTY_FILE)).toHaveAttribute('readonly');
+			});
+
+			await test.step('should open warning modal', async () => {
+				await poHomeChannel.composer.btnSend.click();
+				await fileUploadWarningModal.waitForDisplay();
+
+				await expect(fileUploadWarningModal.getContent('One file failed to upload')).toBeVisible();
+			});
+
+			await test.step('should close modal when clicking "Cancel" button', async () => {
+				await fileUploadWarningModal.cancel();
+
+				await expect(poHomeChannel.composer.getFileByName(TEST_EMPTY_FILE)).toBeVisible();
+				await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).toBeVisible();
+			});
+
+			await test.step('should send message with the valid file when confirming "Send anyway"', async () => {
+				await poHomeChannel.composer.btnSend.click();
+				await fileUploadWarningModal.confirmSend();
+
+				await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toBeVisible();
+				await expect(poHomeChannel.content.lastMessageFileName).toContainText(TEST_FILE_TXT);
+				await expect(poHomeChannel.composer.getFileByName(TEST_EMPTY_FILE)).not.toBeVisible();
+			});
+		});
 	});
 });
 
@@ -100,6 +267,7 @@ test.describe('file-upload-not-member', () => {
 
 	test('should not be able to upload if not a member', async () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
-		await expect(poHomeChannel.content.modalFilePreview).not.toBeVisible();
+
+		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toBeVisible();
 	});
 });

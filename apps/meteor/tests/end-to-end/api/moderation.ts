@@ -1,9 +1,11 @@
 import type { IMessage, IModerationAudit, IModerationReport, IUser } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
+import { imgURL } from '../../data/interactions';
 import { createUser, deleteUser } from '../../data/users.helper';
 
 const makeModerationApiRequest = async (
@@ -766,6 +768,80 @@ describe('[Moderation]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.a('string');
 				});
+		});
+
+		describe('with multiple files', () => {
+			let generalRoomId: string;
+			let messageWithFiles: IMessage;
+			let fileUrls: string[];
+
+			before(async () => {
+				const channelInfoResponse = await request.get(api('channels.info')).set(credentials).query({ roomName: 'general' }).expect(200);
+				generalRoomId = channelInfoResponse.body.channel._id;
+
+				const file1Response = await request
+					.post(api(`rooms.media/${generalRoomId}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect(200);
+
+				const file2Response = await request
+					.post(api(`rooms.media/${generalRoomId}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect(200);
+
+				const uploadedFileIds = [file1Response.body.file._id, file2Response.body.file._id];
+
+				const filesToConfirm = uploadedFileIds.map((id) => ({ _id: id, name: 'test.png' }));
+				const sendMessageResponse = await request
+					.post(methodCall('sendMessage'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'sendMessage',
+							params: [{ _id: Random.id(), rid: generalRoomId, msg: 'message with multiple files' }, [], filesToConfirm],
+							id: 'id',
+							msg: 'method',
+						}),
+					})
+					.expect(200);
+
+				const data = JSON.parse(sendMessageResponse.body.message);
+				messageWithFiles = data.result;
+
+				fileUrls =
+					messageWithFiles.files?.map((f: { _id: string; name?: string }) => `/file-upload/${f._id}/${encodeURIComponent(f.name || '')}`) ??
+					[];
+
+				await request
+					.post(api('chat.reportMessage'))
+					.set(credentials)
+					.send({
+						messageId: messageWithFiles._id,
+						description: 'test report for multiple files',
+					})
+					.expect(200);
+			});
+
+			it('should delete reported messages and all associated files', async () => {
+				expect(fileUrls.length).to.be.greaterThan(1, 'Test requires multiple files');
+
+				await request
+					.post(api('moderation.user.deleteReportedMessages'))
+					.set(credentials)
+					.send({
+						userId: messageWithFiles.u._id,
+					})
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				for await (const fileUrl of fileUrls) {
+					await request.get(fileUrl).set(credentials).expect(404);
+				}
+			});
 		});
 	});
 
