@@ -12,6 +12,22 @@ export type MediaSessionControls = {
 	sendTone: (tone: string) => void;
 };
 
+export const getEndCall = (instance?: MediaSignalingSession) => () => {
+	if (!instance) {
+		return;
+	}
+	const mainCall = instance.getMainCall();
+	if (!mainCall) {
+		return;
+	}
+	const { role } = mainCall;
+	if (role === 'caller' || mainCall.state !== 'ringing') {
+		mainCall.hangup();
+		return;
+	}
+	mainCall.reject();
+};
+
 export const useMediaSessionControls = (instance?: MediaSignalingSession): MediaSessionControls => {
 	return useMemo(() => {
 		const toggleMute = () => {
@@ -30,21 +46,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			mainCall.setHeld(!mainCall.held);
 		};
 
-		const endCall = () => {
-			if (!instance) {
-				return;
-			}
-			const mainCall = instance.getMainCall();
-			if (!mainCall) {
-				return;
-			}
-			const { role } = mainCall;
-			if (role === 'caller' || mainCall.state !== 'ringing') {
-				mainCall.hangup();
-				return;
-			}
-			mainCall.reject();
-		};
+		const endCall = getEndCall(instance);
 
 		const acceptCall = async () => {
 			if (!instance) {

@@ -1,9 +1,9 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
-import type { MediaSignalingSession, CallState, CallRole } from '@rocket.chat/media-signaling';
+import type { MediaSignalingSession, CallState, CallRole, CallContact } from '@rocket.chat/media-signaling';
 import { useUserAvatarPath, useUserPresence } from '@rocket.chat/ui-contexts';
 import { useEffect, useReducer, useCallback } from 'react';
 
-import type { ConnectionState, PeerInfo, State, SessionState } from './MediaCallContext';
+import type { ConnectionState, PeerInfo, State, ExternalPeerInfo, InternalPeerInfo, SessionState } from './definitions';
 
 const defaultSessionInfo: SessionState = {
 	state: 'closed' as const,
@@ -31,7 +31,15 @@ export const getExtensionFromPeerInfo = (peerInfo: PeerInfo): string | undefined
 	return undefined;
 };
 
-const deriveWidgetStateFromCallState = (
+export const getExtensionFromInstanceContact = (contact: CallContact): string | undefined => {
+	if (contact.type === 'sip') {
+		return contact.id;
+	}
+
+	return contact.sipExtension;
+};
+
+export const deriveWidgetStateFromCallState = (
 	callState: CallState,
 	callRole: CallRole,
 ): Extract<State, 'ongoing' | 'ringing' | 'calling'> | undefined => {
@@ -60,6 +68,37 @@ const deriveConnectionStateFromCallState = (callState: CallState): ConnectionSta
 		default:
 			return 'CONNECTING';
 	}
+};
+
+const deriveExternalPeerInfoFromInstanceContact = (contact: CallContact): ExternalPeerInfo => {
+	if (contact.type !== 'sip') {
+		throw new Error('deriveExternalPeerInfoFromInstanceContact: Contact is not a SIP contact');
+	}
+
+	return {
+		number: contact.id || 'unknown',
+	};
+};
+
+const deriveInternalPeerInfoFromInstanceContact = (contact: CallContact): Omit<InternalPeerInfo, 'avatarUrl'> => {
+	if (contact.type !== 'user') {
+		throw new Error('deriveInternalPeerInfoFromInstanceContact: Contact is not a user contact');
+	}
+
+	return {
+		displayName: contact.displayName || 'unknown',
+		userId: contact.id || 'unknown',
+		username: contact.username,
+		callerId: contact.sipExtension,
+	};
+};
+
+export const derivePeerInfoFromInstanceContact = (contact: CallContact) => {
+	if (contact.type === 'sip') {
+		return deriveExternalPeerInfoFromInstanceContact(contact);
+	}
+
+	return deriveInternalPeerInfoFromInstanceContact(contact);
 };
 
 const reducer = (
@@ -167,7 +206,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				dispatch({
 					type: 'instance_updated',
 					payload: {
-						peerInfo: { number: contact.id || 'unknown' },
+						peerInfo: derivePeerInfoFromInstanceContact(contact),
 						transferredBy,
 						state,
 						muted,
@@ -194,13 +233,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				return undefined;
 			})();
 
-			const peerInfo = {
-				displayName: contact.displayName,
-				userId: contact.id,
-				username: contact.username,
-				avatarUrl,
-				callerId: contact.sipExtension,
-			} as PeerInfo;
+			const peerInfo = { ...derivePeerInfoFromInstanceContact(contact), avatarUrl };
 
 			dispatch({
 				type: 'instance_updated',
