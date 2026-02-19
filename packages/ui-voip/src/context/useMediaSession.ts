@@ -1,7 +1,7 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 import type { MediaSignalingSession, CallState, CallRole } from '@rocket.chat/media-signaling';
 import { useUserAvatarPath, useUserPresence } from '@rocket.chat/ui-contexts';
-import { useEffect, useReducer, useMemo, useCallback } from 'react';
+import { useEffect, useReducer, useCallback } from 'react';
 
 import type { ConnectionState, PeerInfo, State, SessionState } from './MediaCallContext';
 
@@ -64,10 +64,15 @@ const deriveConnectionStateFromCallState = (callState: CallState): ConnectionSta
 
 const reducer = (
 	reducerState: SessionState,
-	action: {
-		type: 'toggleWidget' | 'selectPeer' | 'instance_updated' | 'status_updated' | 'reset' | 'mute' | 'hold';
-		payload?: Partial<SessionState> & { status?: UserStatus };
-	},
+	action:
+		| {
+				type: 'toggleWidget' | 'selectPeer' | 'instance_updated' | 'reset' | 'mute' | 'hold';
+				payload?: Partial<SessionState>;
+		  }
+		| {
+				type: 'status_updated';
+				payload?: { status?: UserStatus };
+		  },
 ): SessionState => {
 	if (action.type === 'mute') {
 		return {
@@ -107,6 +112,10 @@ const reducer = (
 
 	if (action.type === 'reset') {
 		return defaultSessionInfo;
+	}
+
+	if (action.type === 'status_updated' && reducerState.peerInfo && 'userId' in reducerState.peerInfo) {
+		return { ...reducerState, peerInfo: { ...reducerState.peerInfo, status: action.payload?.status } };
 	}
 
 	return reducerState;
@@ -216,21 +225,14 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 
 	const status = useUserPresence(mediaSession.peerInfo && 'userId' in mediaSession.peerInfo ? mediaSession.peerInfo.userId : undefined);
 
-	const peerInfo = useMemo(() => {
-		return mediaSession.peerInfo ? { ...mediaSession.peerInfo, status: status?.status } : undefined;
-	}, [mediaSession.peerInfo, status]);
-
-	const sessionState: SessionState = useMemo(
-		() => ({
-			...mediaSession,
-			peerInfo: peerInfo!, // TODO: fix this. Since it comes from the useMemo, there's no relation with the state, so types fail
-			startedAt: mediaSession.startedAt ?? undefined,
-		}),
-		[mediaSession, peerInfo],
-	);
+	useEffect(() => {
+		if (status?.status) {
+			dispatch({ type: 'status_updated', payload: { status: status.status } });
+		}
+	}, [status?.status]);
 
 	return {
-		sessionState,
+		sessionState: mediaSession,
 		toggleWidget,
 		selectPeer,
 	};
