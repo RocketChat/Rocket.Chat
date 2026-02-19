@@ -71,6 +71,11 @@ describe('getUserInfo', () => {
 		);
 	});
 
+	it("should NOT return user preferences when 'pullPreferences' param is false", async () => {
+		const userInfo = await getUserInfo(user, false);
+		expect(userInfo.settings).not.toHaveProperty('preferences');
+	});
+
 	describe('email handling', () => {
 		it('should not include email if no emails are present', async () => {
 			user.emails = [];
