@@ -90,4 +90,14 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 
 		return this.countDocuments(query);
 	}
+
+	findOneByName(emojiName: string, options?: FindOptions<IEmojiCustom>): Promise<IEmojiCustom | null> {
+		let name = emojiName;
+
+		if (typeof emojiName === 'string') {
+			name = emojiName.replace(/:/g, '');
+		}
+
+		return this.findOne({ name }, options);
+	}
 }

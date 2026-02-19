@@ -48,12 +48,18 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const [sound, file] = await Promise.all([
-			CustomSounds.findOneById(fileId.split('.')[0], { projection: { _id: 1 } }),
-			RocketChatFileCustomSoundsInstance.getFileWithReadStream(fileId),
-		]);
+		const sound = await CustomSounds.findOneById(fileId.split('.')[0], { projection: { _id: 1 } });
 
-		if (!file || !sound) {
+		if (!sound) {
+			res.writeHead(404);
+			res.write('Not found');
+			res.end();
+			return;
+		}
+
+		const file = await RocketChatFileCustomSoundsInstance.getFileWithReadStream(fileId);
+
+		if (!file) {
 			res.writeHead(404);
 			res.write('Not found');
 			res.end();

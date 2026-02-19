@@ -12,4 +12,5 @@ export interface IEmojiCustomModel extends IBaseModel<IEmojiCustom> {
 	setETagByName(name: string, etag: string): Promise<UpdateResult>;
 	create(data: InsertionModel<IEmojiCustom>): Promise<InsertOneResult<WithId<IEmojiCustom>>>;
 	countByNameOrAlias(name: string): Promise<number>;
+	findOneByName(emojiName: string, options?: FindOptions<IEmojiCustom>): Promise<IEmojiCustom | null>;
 }
