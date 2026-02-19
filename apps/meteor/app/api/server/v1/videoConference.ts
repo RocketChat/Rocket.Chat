@@ -40,7 +40,7 @@ API.v1.addRoute(
 			try {
 				await canSendMessageAsync(roomId, { uid: userId, username: user.username, type: user.type });
 			} catch (error: any) {
-				return API.v1.failure(error.message || error.error || 'error-not-allowed');
+				return API.v1.failure(error.message || error.error || 'error-not-allowed-to-start-video-conference');
 			}
 
 			try {
