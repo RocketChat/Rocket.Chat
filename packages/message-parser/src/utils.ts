@@ -60,6 +60,7 @@ export const inlineCode = generate('INLINE_CODE');
 export const tasks = generate('TASKS');
 
 export const italic = generate('ITALIC');
+export const spoiler = generate('SPOILER');
 
 export const plain = generate('PLAIN_TEXT');
 export const strike = generate('STRIKE');
@@ -82,7 +83,7 @@ export const link = (src: string, label?: Markup[]): Link => ({
 export const autoLink = (src: string, customDomains?: string[]) => {
 	const validHosts = ['localhost', ...(customDomains ?? [])];
 	const { isIcann, isIp, isPrivate, domain } = tldParse(src, {
-		detectIp: false,
+		detectIp: true,
 		allowPrivateDomains: true,
 		validHosts,
 	});
@@ -117,6 +118,7 @@ export const image = (() => {
 })();
 
 export const quote = generate('QUOTE');
+export const spoilerBlock = generate('SPOILER_BLOCK');
 
 export const mentionChannel = (() => {
 	const fn = generate('MENTION_CHANNEL');

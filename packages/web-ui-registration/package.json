@@ -17,7 +17,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"dompurify": "~3.2.7"
+		"dompurify": "~3.3.1"
 	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:~",
@@ -44,7 +44,6 @@
 		"@tanstack/react-query": "~5.65.1",
 		"@testing-library/dom": "~10.4.1",
 		"@testing-library/react": "~16.3.2",
-		"@types/dompurify": "~3.2.0",
 		"@types/react": "~18.3.27",
 		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",

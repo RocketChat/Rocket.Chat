@@ -7,6 +7,7 @@ import ImageElement from './ImageElement';
 import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
+import SpoilerSpan from './SpoilerSpan';
 import StrikeSpan from './StrikeSpan';
 import Timestamp from './Timestamp';
 import CodeElement from '../code/CodeElement';
@@ -34,6 +35,9 @@ const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
 
 				case 'ITALIC':
 					return <ItalicSpan key={index}>{child.value}</ItalicSpan>;
+
+				case 'SPOILER':
+					return <SpoilerSpan key={index}>{child.value}</SpoilerSpan>;
 
 				case 'LINK':
 					return (
