@@ -7,6 +7,7 @@ import { Messages, Rooms } from '@rocket.chat/models';
 
 import { OEmbed } from './hooks/AfterSaveOEmbed';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
+import { parseUrlsInMessage } from '../../../app/lib/server/functions/parseUrlsInMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
@@ -217,10 +218,12 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		message,
 		room,
 		user,
+		previewUrls,
 	}: {
 		message: IMessage;
 		room: IRoom;
 		user: Pick<IUser, '_id' | 'username' | 'name' | 'emails' | 'language'>;
+		previewUrls?: string[];
 	}): Promise<IMessage> {
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
@@ -243,6 +246,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 				useRealName: settings.get<boolean>('UI_Use_Real_Name'),
 			},
 		});
+
+		// Parse URLs in the message for link previews
+		parseUrlsInMessage(message, previewUrls);
 
 		if (!this.isEditedOrOld(message)) {
 			await Promise.all([

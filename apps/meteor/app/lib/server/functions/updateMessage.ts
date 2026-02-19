@@ -4,7 +4,6 @@ import type { IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById } from '../lib/notifyListener';
@@ -51,14 +50,12 @@ export const updateMessage = async function (
 		},
 	});
 
-	parseUrlsInMessage(messageData, previewUrls);
-
 	const room = await Rooms.findOneById(messageData.rid);
 	if (!room) {
 		return;
 	}
 
-	messageData = await Message.beforeSave({ message: messageData, room, user });
+	messageData = await Message.beforeSave({ message: messageData, room, user, previewUrls });
 
 	if (messageData.customFields) {
 		validateCustomMessageFields({
