@@ -1,6 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions, ReadReceipts, NotificationQueue } from '@rocket.chat/models';
+import type { UpdateResult, Document } from 'mongodb';
 
 import {
 	notifyOnSubscriptionChangedByRoomIdAndUserIds,
@@ -38,7 +39,7 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 	// Notify message mentioned users and highlights
 	const mentionedUsers = [...new Set([...mentionIds, ...highlightsUids])];
 
-	const promises: Promise<any>[] = [ReadReceipts.setAsThreadById(tmid)];
+	const promises: Promise<UpdateResult | Document | void>[] = [ReadReceipts.setAsThreadById(tmid)];
 
 	// For @all/@here, notify everyone in the room (not just thread followers)
 	if (toAll || toHere) {
