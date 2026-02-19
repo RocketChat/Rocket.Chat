@@ -2195,6 +2195,7 @@
   "FileUpload_Disabled": "File uploads are disabled.",
   "FileUpload_Enable_json_web_token_for_files": "Enable Json Web Tokens protection to file uploads",
   "FileUpload_Enable_json_web_token_for_files_description": "Appends a JWT to uploaded files urls",
+  "FileUpload_Enable_json_web_token_for_files_Alert": "This option only takes effect when a JWT secret is configured. If \"JWT secret for files\" is left empty, no token will be generated and JWT file protection will not be applied.",
   "FileUpload_Enabled": "File Uploads Enabled",
   "FileUpload_Enabled_Direct": "File Uploads Enabled in Direct Messages ",
   "FileUpload_Error": "File Upload Error",
