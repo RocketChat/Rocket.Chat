@@ -5,7 +5,6 @@ import BoldSpan from './BoldSpan';
 import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
-import SpoilerSpan from './SpoilerSpan';
 import CodeElement from '../code/CodeElement';
 import EmojiElement from '../emoji/EmojiElement';
 import ChannelMentionElement from '../mentions/ChannelMentionElement';
@@ -32,8 +31,7 @@ const StrikeSpan = ({ children }: StrikeSpanProps): ReactElement => (
 				block.type === 'PLAIN_TEXT' ||
 				block.type === 'ITALIC' ||
 				block.type === 'BOLD' ||
-				block.type === 'INLINE_CODE' ||
-				block.type === 'SPOILER'
+				block.type === 'INLINE_CODE'
 			) {
 				return <del key={index}>{renderBlockComponent(block, index)}</del>;
 			}
@@ -64,9 +62,6 @@ const renderBlockComponent = (block: MessageBlock, index: number): ReactElement 
 
 		case 'BOLD':
 			return <BoldSpan key={index}>{block.value}</BoldSpan>;
-
-		case 'SPOILER':
-			return <SpoilerSpan key={index}>{block.value}</SpoilerSpan>;
 
 		case 'INLINE_CODE':
 			return <CodeElement key={index} code={block.value.value} />;

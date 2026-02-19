@@ -4,7 +4,6 @@ import type { ReactElement } from 'react';
 import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
-import SpoilerSpan from './SpoilerSpan';
 import StrikeSpan from './StrikeSpan';
 import CodeElement from '../code/CodeElement';
 import EmojiElement from '../emoji/EmojiElement';
@@ -31,8 +30,7 @@ const BoldSpan = ({ children }: BoldSpanProps): ReactElement => (
 				block.type === 'PLAIN_TEXT' ||
 				block.type === 'STRIKE' ||
 				block.type === 'ITALIC' ||
-				block.type === 'INLINE_CODE' ||
-				block.type === 'SPOILER'
+				block.type === 'INLINE_CODE'
 			) {
 				return <strong key={index}>{renderBlockComponent(block, index)}</strong>;
 			}
@@ -63,9 +61,6 @@ const renderBlockComponent = (block: MessageBlock, index: number): ReactElement 
 
 		case 'ITALIC':
 			return <ItalicSpan key={index}>{block.value}</ItalicSpan>;
-
-		case 'SPOILER':
-			return <SpoilerSpan key={index}>{block.value}</SpoilerSpan>;
 
 		case 'INLINE_CODE':
 			return <CodeElement key={index} code={block.value.value} />;

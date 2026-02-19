@@ -85,24 +85,10 @@ export type Quote = {
 
 export type Spoiler = {
 	type: 'SPOILER';
-	value: Array<
-		| MarkupExcluding<Spoiler>
-		| Link
-		| Emoji
-		| UserMention
-		| ChannelMention
-		| InlineCode
-		| Italic
-		| Bold
-		| Strike
-		| Timestamp
-		| Color
-		| Image
-		| InlineKaTeX
-	>;
+	value: Array<Link | Emoji | UserMention | ChannelMention | InlineCode | Italic | Bold | Strike | Timestamp | Color | Image | InlineKaTeX>;
 };
 
-export type Markup = Italic | Strike | Bold | Spoiler | Plain | ChannelMention;
+export type Markup = Italic | Strike | Bold | Plain | ChannelMention;
 export type MarkupExcluding<T extends Markup> = Exclude<Markup, T>;
 
 export type Bold = {
