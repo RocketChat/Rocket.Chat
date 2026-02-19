@@ -11,27 +11,9 @@ const { parseFileIntoMessageAttachments } = proxyquire.noCallThru().load('./send
 		},
 		Users: sinon.stub(),
 	},
-	'@rocket.chat/ddp-client': {
-		'@noCallThru': true,
-	},
-	'meteor/check': {
-		Match: {
-			Maybe: sinon.stub(),
-			Optional: sinon.stub(),
-			ObjectIncluding: sinon.stub(),
-		},
-		check: sinon.stub(),
-	},
-	'meteor/meteor': {
-		Meteor: {
-			Error: sinon.stub().callsFake((error: string, reason: string, details?: any) => {
-				const err = new Error(reason);
-				(err as any).error = error;
-				(err as any).details = details;
-				return err;
-			}),
-		},
-	},
+	'@rocket.chat/ddp-client': sinon.stub(),
+	'meteor/check': sinon.stub(),
+	'meteor/meteor': sinon.stub(),
 	'../../../../lib/utils/getFileExtension': {
 		getFileExtension: sinon.stub().callsFake((filename: string) => {
 			const parts = filename.split('.');
