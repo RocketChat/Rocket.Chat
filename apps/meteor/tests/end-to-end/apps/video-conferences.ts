@@ -6,8 +6,8 @@ import { getCredentials, request, api, credentials } from '../../data/api-data';
 import { cleanupApps, installTestApp } from '../../data/apps/helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
-import { createUser, deleteUser, login } from '../../data/users.helper';
 import { adminUsername } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('Apps - Video Conferences', () => {
