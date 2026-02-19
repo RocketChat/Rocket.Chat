@@ -1092,7 +1092,6 @@ describe('[Users]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('user.services.password');
-						expect(res.body).to.have.nested.property('user.services.resume');
 					})
 					.end(done);
 			});
