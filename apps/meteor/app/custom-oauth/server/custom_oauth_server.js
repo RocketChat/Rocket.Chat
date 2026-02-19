@@ -98,8 +98,12 @@ export class CustomOAuth {
 	}
 
 	if (!isAbsoluteURL(this.identityPath)) {
-			Accounts.addAutopublishFields(options.addAutopublishFields);
-		}
+		this.identityPath = this.serverURL + this.identityPath;
+	}
+
+	if (Match.test(options.addAutopublishFields, Object)) {
+		Accounts.addAutopublishFields(options.addAutopublishFields);
+	}
 	}
 
 	async getAccessToken(query) {
