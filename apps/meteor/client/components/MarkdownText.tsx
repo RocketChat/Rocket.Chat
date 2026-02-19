@@ -3,7 +3,7 @@ import { isExternal, getBaseURI } from '@rocket.chat/ui-client';
 import dompurify from 'dompurify';
 import { marked } from 'marked';
 import type { ComponentProps } from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
@@ -101,6 +101,8 @@ type MarkdownTextProps = Partial<MarkdownTextParams>;
 
 export const supportedURISchemes = ['http', 'https', 'notes', 'ftp', 'ftps', 'tel', 'mailto', 'sms', 'cid'];
 
+let isHookRegistered = false;
+let translateFn: any = null;
 const MarkdownText = ({
 	content,
 	variant = 'document',
@@ -113,6 +115,7 @@ const MarkdownText = ({
 	const { t } = useTranslation();
 	let markedOptions: marked.MarkedOptions;
 
+	translateFn = t;
 	switch (variant) {
 		case 'inline':
 			markedOptions = inlineOptions;
@@ -124,6 +127,43 @@ const MarkdownText = ({
 		default:
 			markedOptions = options;
 	}
+
+	useEffect(() => {
+        if (isHookRegistered) return;
+
+        const hook = (node: Node) => {
+            if (!isLinkElement(node)) {
+                return;
+            }
+
+            const href = node.getAttribute('href') || '';
+            const isExternalLink = isExternal(href);
+            const isMailto = href.startsWith('mailto:');
+
+            // Set appropriate attributes based on link type
+            if (isExternalLink || isMailto) {
+                node.setAttribute('rel', 'nofollow noopener noreferrer');
+                // Enforcing external links to open in new tabs is critical to assure users never navigate away from the chat
+                // This attribute must be preserved to guarantee users maintain their chat context
+                node.setAttribute('target', '_blank');
+            }
+
+            // Set appropriate title based on link type
+            if (isMailto) {
+                // For mailto links, use the email address as the title for better user experience
+                node.setAttribute('title', href);
+            } else if (isExternalLink) {
+                // For external links, set an empty title to prevent tooltips
+                node.setAttribute('title', '');
+            } else {
+                // For internal links, add a translated title with the relative path
+                node.setAttribute('title', `${translateFn('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
+            }
+        };	
+        dompurify.addHook('afterSanitizeAttributes', hook);
+        isHookRegistered = true;
+
+    }, []);
 
 	const __html = useMemo(() => {
 		const html = ((): any => {
@@ -142,40 +182,6 @@ const MarkdownText = ({
 				return markedHtml;
 			}
 		})();
-
-		// Add a hook to make all external links open a new window
-		dompurify.addHook('afterSanitizeAttributes', (node) => {
-			if (!isLinkElement(node)) {
-				return;
-			}
-
-			const href = node.getAttribute('href') || '';
-			const isExternalLink = isExternal(href);
-			const isMailto = href.startsWith('mailto:');
-
-			// Set appropriate attributes based on link type
-			if (isExternalLink || isMailto) {
-				node.setAttribute('rel', 'nofollow noopener noreferrer');
-				// Enforcing external links to open in new tabs is critical to assure users never navigate away from the chat
-				// This attribute must be preserved to guarantee users maintain their chat context
-				node.setAttribute('target', '_blank');
-			}
-
-			// Set appropriate title based on link type
-			if (isMailto) {
-				// For mailto links, use the email address as the title for better user experience
-				// Example: for href "mailto:user@example.com" the title would be "mailto:user@example.com"
-				node.setAttribute('title', href);
-			} else if (isExternalLink) {
-				// For external links, set an empty title to prevent tooltips
-				// This reduces visual clutter and lets users see the URL in the browser's status bar instead
-				node.setAttribute('title', '');
-			} else {
-				// For internal links, add a translated title with the relative path
-				// Example: for href "https://my-server.rocket.chat/channel/general" the title would be "Go to #general"
-				node.setAttribute('title', `${t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
-			}
-		});
 
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(supportedURISchemes) });
 	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji, t]);
