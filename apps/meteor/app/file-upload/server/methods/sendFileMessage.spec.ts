@@ -5,8 +5,31 @@ import sinon from 'sinon';
 
 const { parseFileIntoMessageAttachments } = proxyquire.noCallThru().load('./sendFileMessage', {
 	'@rocket.chat/models': {
+		Rooms: sinon.stub(),
 		Uploads: {
 			updateFileComplete: sinon.stub().resolves(),
+		},
+		Users: sinon.stub(),
+	},
+	'@rocket.chat/ddp-client': {
+		'@noCallThru': true,
+	},
+	'meteor/check': {
+		Match: {
+			Maybe: sinon.stub(),
+			Optional: sinon.stub(),
+			ObjectIncluding: sinon.stub(),
+		},
+		check: sinon.stub(),
+	},
+	'meteor/meteor': {
+		Meteor: {
+			Error: sinon.stub().callsFake((error: string, reason: string, details?: any) => {
+				const err = new Error(reason);
+				(err as any).error = error;
+				(err as any).details = details;
+				return err;
+			}),
 		},
 	},
 	'../../../../lib/utils/getFileExtension': {
@@ -20,6 +43,12 @@ const { parseFileIntoMessageAttachments } = proxyquire.noCallThru().load('./send
 	},
 	'../../../../server/lib/callbacks': { callbacks: sinon.stub() },
 	'../../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub() } },
+	'../../../authorization/server/functions/canAccessRoom': {
+		canAccessRoomAsync: sinon.stub(),
+	},
+	'../../../lib/server/methods/sendMessage': {
+		executeSendMessage: sinon.stub(),
+	},
 	'../lib/FileUpload': {
 		FileUpload: {
 			getPath: sinon.stub().returns('/file/path'),
@@ -27,7 +56,6 @@ const { parseFileIntoMessageAttachments } = proxyquire.noCallThru().load('./send
 			createImageThumbnail: sinon.stub().resolves(null),
 		},
 	},
-	'meteor/meteor': sinon.stub(),
 });
 
 describe('sendFileMessage - parseFileIntoMessageAttachments', () => {
