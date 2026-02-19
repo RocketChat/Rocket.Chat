@@ -201,9 +201,14 @@ export function prepareMessageObject(
 	}
 
 	const { _id, username, name } = user;
+	const resolvedUsername = username ?? name ?? _id;
+	if (!username) {
+		// Log a warning so operators can spot users / visitors with missing usernames
+		console.warn(`[sendMessage] user ${_id} has no username – falling back to "${resolvedUsername}"`);
+	}
 	message.u = {
 		_id,
-		username: username as string, // FIXME: this is wrong but I don't want to change it now
+		username: resolvedUsername,
 		name,
 	};
 	message.rid = rid;
