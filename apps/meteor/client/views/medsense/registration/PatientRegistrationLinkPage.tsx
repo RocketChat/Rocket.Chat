@@ -3,6 +3,7 @@ import { VerticalWizardLayout } from '@rocket.chat/layout';
 import {
 	useAssetWithDarkModePath,
 	useEndpoint,
+	useLoginWithPassword,
 	useRouteParameter,
 	useRouter,
 	useSetting,
@@ -29,6 +30,7 @@ const PatientRegistrationLinkPage = (): JSX.Element => {
 	const customLogo = useAssetWithDarkModePath('logo');
 	const customBackground = useAssetWithDarkModePath('background');
 	const token = String(useRouteParameter('token') || '');
+	const loginWithPassword = useLoginWithPassword();
 	const verifyRegistration = useEndpoint('POST', '/v1/medsense/registration.verify');
 	const resendRegistration = useEndpoint('POST', '/v1/medsense/registration.resend');
 	const getPrefill = useEndpoint('GET', '/v1/medsense/registration.prefill');
@@ -182,6 +184,13 @@ const PatientRegistrationLinkPage = (): JSX.Element => {
 						verificationSession,
 						...payload,
 					});
+					try {
+						await loginWithPassword(payload.username, payload.pass);
+						router.navigate('/home', { replace: true });
+						return;
+					} catch (e: any) {
+						console.error('Failed to auto-login after registration completion', e);
+					}
 					setIsCompleted(true);
 				}}
 			/>

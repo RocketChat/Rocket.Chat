@@ -59,6 +59,11 @@ type IMedsensePatientRegistration = {
     lastSentAt: Date;
     status: MedsenseRegistrationStatus;
     prefill: MedsenseRegistrationPrefill;
+    specialtyActionId?: string;
+    specialtyRequestId?: string;
+    specialtyStatus?: string;
+    specialtyError?: string;
+    // Legacy fields kept for backward compatibility with older records/payloads.
     specialtyFlowId?: string;
     specialtyRoomId?: string;
     startedByUserId: string;
@@ -153,6 +158,126 @@ Meteor.startup(() => {
     void raw.createIndex({ status: 1, _updatedAt: -1 });
     void raw.createIndex({ codeExpiresAt: 1 });
 });
+
+type MedsenseHubAction = {
+    id: string;
+    label?: string;
+    icon?: string;
+    order?: number;
+    description?: string;
+    capabilities?: {
+        registrationHandoff?: boolean;
+    };
+    [key: string]: any;
+};
+
+const parseQualifiedHubActionId = (qualifiedActionId: string): { appId: string; actionId: string } | null => {
+    const separatorIndex = qualifiedActionId.indexOf(':');
+    if (separatorIndex === -1) {
+        return null;
+    }
+
+    const appId = qualifiedActionId.substring(0, separatorIndex);
+    const actionId = qualifiedActionId.substring(separatorIndex + 1);
+    if (!appId || !actionId) {
+        return null;
+    }
+
+    return { appId, actionId };
+};
+
+const discoverMedsenseHubActions = async (): Promise<MedsenseHubAction[]> => {
+    if (!Apps.self?.isInitialized()) {
+        return [];
+    }
+
+    try {
+        const apps = await Apps.getManager().get();
+        const enabledApps = [];
+
+        for (const app of apps) {
+            const status = await app.getStatus();
+            if (AppStatusUtils.isEnabled(status)) {
+                enabledApps.push(app);
+            }
+        }
+
+        const results = await Promise.all(
+            enabledApps.map(async (app) => {
+                const appId = app.getID();
+                try {
+                    const url = Meteor.absoluteUrl('api/apps/public/' + appId + '/hub.actions');
+                    const response = await HTTP.get(url, { timeout: 2000, throwError: false });
+
+                    if (response.statusCode !== 200 || !response.data?.actions || !Array.isArray(response.data.actions)) {
+                        return [];
+                    }
+
+                    return response.data.actions
+                        .map((action: any) => {
+                            if (!action?.id || typeof action.id !== 'string') {
+                                return null;
+                            }
+
+                            const qualifiedId = action.id.includes(':') ? action.id : appId + ':' + action.id;
+                            return {
+                                ...action,
+                                id: qualifiedId,
+                            } as MedsenseHubAction;
+                        })
+                        .filter((action: MedsenseHubAction | null): action is MedsenseHubAction => Boolean(action));
+                } catch {
+                    return [];
+                }
+            }),
+        );
+
+        return results.flat();
+    } catch {
+        return [];
+    }
+};
+
+const relayMedsenseHubExecute = async (
+    qualifiedActionId: string,
+    payload: Record<string, unknown>,
+): Promise<{ statusCode: number; data?: any }> => {
+    const parsed = parseQualifiedHubActionId(qualifiedActionId);
+    if (!parsed) {
+        throw new Error('Invalid actionId format');
+    }
+
+    const url = Meteor.absoluteUrl('api/apps/public/' + parsed.appId + '/hub.execute');
+    const response = await HTTP.post(url, {
+        data: {
+            actionId: parsed.actionId,
+            ...payload,
+        },
+        throwError: false,
+    });
+
+    return {
+        statusCode: response.statusCode,
+        data: response.data,
+    };
+};
+
+const resolveLegacySpecialtyFlowToActionId = async (legacyFlowId: string): Promise<string | null> => {
+    if (!legacyFlowId) {
+        return null;
+    }
+
+    if (legacyFlowId.includes(':')) {
+        return legacyFlowId;
+    }
+
+    const actions = await discoverMedsenseHubActions();
+    const normalized = legacyFlowId.trim().toLowerCase();
+    const mapped = actions.find((action) => action.id.toLowerCase().endsWith(':' + normalized))
+        || actions.find((action) => action.id.toLowerCase().endsWith(':uti_assessment') && normalized === 'uti');
+
+    return mapped?.id || null;
+};
 
 // Pharmacies Management (Kept Intact)
 API.v1.addRoute(
@@ -1124,60 +1249,38 @@ API.v1.addRoute(
                 return API.v1.forbidden();
             }
 
-            // Dynamic Discovery: Find all apps that support hub.actions
-            if (!Apps.self?.isInitialized()) {
-                return API.v1.success({ actions: [] });
+            const actions = await discoverMedsenseHubActions();
+            return API.v1.success({ actions });
+        },
+    },
+);
+
+API.v1.addRoute(
+    "medsense/registration.specialtyActions",
+    { authRequired: true },
+    {
+        async get() {
+            if (!(await hasPermissionAsync(this.userId, 'medsense-view-request'))) {
+                return API.v1.forbidden();
             }
 
-            try {
-                const apps = await Apps.getManager().get();
-                const enabledApps = [];
-
-                for (const app of apps) {
-                    const status = await app.getStatus();
-                    if (AppStatusUtils.isEnabled(status)) {
-                        enabledApps.push(app);
-                    }
-                }
-
-                const promises = enabledApps.map(async (app) => {
-                    const appId = app.getID();
-                    try {
-                        const url = Meteor.absoluteUrl(`api/apps/public/${appId}/hub.actions`);
-                        console.warn(`[Medsense] Hub Discovery: Probing ${appId} -> ${url}`);
-
-                        const response = await HTTP.get(url, { timeout: 2000, throwError: false });
-
-                        if (response.statusCode === 200 && response.data && response.data.actions) {
-                            console.warn(`[Medsense] Hub Discovery: Found actions for ${appId}`);
-                            return response.data.actions.map((action: any) => ({
-                                ...action,
-                                id: `${appId}:${action.id}`
-                            }));
-                        }
-                        if (response.statusCode === 404 || response.statusCode === 401 || response.statusCode === 403) {
-                            console.warn(`[Medsense] Hub Discovery: ${appId} skipped (${response.statusCode})`);
-                            return [];
-                        }
-                    } catch (e) {
-                        const error = e as any;
-                        if (error.response?.statusCode === 404 || error.statusCode === 404) {
-                            console.warn(`[Medsense] Hub Discovery: ${appId} skipped (No hub endpoint)`);
-                        } else {
-                            console.warn(`[Medsense] Hub Discovery Error for ${appId}:`, error.message);
-                        }
-                    }
-                    return [];
+            const discovered = await discoverMedsenseHubActions();
+            const actions = discovered
+                .filter((action) => Boolean(action.capabilities?.registrationHandoff))
+                .sort((left, right) => (left.order || 0) - (right.order || 0))
+                .map((action) => {
+                    const parsed = parseQualifiedHubActionId(action.id);
+                    return {
+                        actionId: action.id,
+                        id: action.id,
+                        appId: parsed?.appId,
+                        label: action.label || parsed?.actionId || action.id,
+                        description: action.description,
+                        icon: action.icon,
+                    };
                 });
 
-                const results = await Promise.all(promises);
-                const actions = results.flat();
-
-                return API.v1.success({ actions });
-            } catch (error) {
-                console.error('Medsense Hub Discovery Error:', error);
-                return API.v1.success({ actions: [] });
-            }
+            return API.v1.success({ actions });
         },
     },
 );
@@ -1188,40 +1291,25 @@ API.v1.addRoute(
     {
         async post() {
             check(this.bodyParams, Match.ObjectIncluding({ actionId: String }));
-            const { actionId } = this.bodyParams; // Expected format: appId:actionId
+            const { actionId } = this.bodyParams;
 
             if (!(await hasPermissionAsync(this.userId, 'medsense-view-hub'))) {
                 return API.v1.forbidden();
             }
 
-            const separatorIndex = actionId.indexOf(':');
-            if (separatorIndex === -1) {
-                return API.v1.failure('Invalid actionId format');
-            }
-
-            const appId = actionId.substring(0, separatorIndex);
-            const realActionId = actionId.substring(separatorIndex + 1);
-
             try {
-                // Relay to specific App
-                const url = Meteor.absoluteUrl(`api/apps/public/${appId}/hub.execute`);
-                const response = await HTTP.post(url, {
-                    data: {
-                        actionId: realActionId,
-                        userId: this.userId,
-                        username: this.user?.username,
-                    },
-                    throwError: false,
+                const relayed = await relayMedsenseHubExecute(String(actionId), {
+                    userId: this.userId,
+                    username: this.user?.username,
                 });
 
-                if (response.statusCode !== 200 || !response.data) {
+                if (relayed.statusCode !== 200 || !relayed.data) {
                     return API.v1.failure('Failed to execute action via Hub App');
                 }
 
-                return API.v1.success({ view: response.data.view });
+                return API.v1.success({ view: relayed.data.view });
             } catch (error) {
-                console.error('Medsense Hub Error:', error);
-                return API.v1.failure('Error executing hub action');
+                return API.v1.failure((error as Error)?.message || 'Error executing hub action');
             }
         },
     },
@@ -1328,6 +1416,7 @@ API.v1.addRoute(
                 username: Match.Maybe(String),
                 reason: Match.Maybe(String),
                 pharmacyId: Match.Maybe(String),
+                specialtyActionId: Match.Maybe(String),
                 specialtyFlowId: Match.Maybe(String),
                 specialtyRoomId: Match.Maybe(String),
             }));
@@ -1359,6 +1448,21 @@ API.v1.addRoute(
                 const membership = await MedsensePharmacyMemberships.findOne({ pharmacyId: selectedPharmacyId, userId: this.userId });
                 if (!membership) {
                     return API.v1.forbidden();
+                }
+            }
+
+            const providedSpecialtyActionId = this.bodyParams.specialtyActionId
+                ? String(this.bodyParams.specialtyActionId).trim()
+                : undefined;
+            const legacySpecialtyFlowId = this.bodyParams.specialtyFlowId
+                ? String(this.bodyParams.specialtyFlowId).trim()
+                : undefined;
+            let resolvedSpecialtyActionId = providedSpecialtyActionId;
+
+            if (!resolvedSpecialtyActionId && legacySpecialtyFlowId) {
+                resolvedSpecialtyActionId = await resolveLegacySpecialtyFlowToActionId(legacySpecialtyFlowId) || undefined;
+                if (!resolvedSpecialtyActionId) {
+                    return API.v1.failure('Unsupported specialtyFlowId');
                 }
             }
 
@@ -1396,7 +1500,8 @@ API.v1.addRoute(
                 lastSentAt: now,
                 status: "pending",
                 prefill,
-                specialtyFlowId: this.bodyParams.specialtyFlowId ? String(this.bodyParams.specialtyFlowId) : undefined,
+                specialtyActionId: resolvedSpecialtyActionId,
+                specialtyFlowId: legacySpecialtyFlowId,
                 specialtyRoomId: this.bodyParams.specialtyRoomId ? String(this.bodyParams.specialtyRoomId) : undefined,
                 startedByUserId: this.userId,
                 startedByUsername: this.user?.username,
@@ -1714,6 +1819,52 @@ API.v1.addRoute(
                 }
             }
 
+            const specialtyActionId = registration.specialtyActionId || registration.specialtyFlowId;
+            let specialtyRoomId = registration.specialtyRoomId;
+            let specialtyRequestId: string | undefined;
+            let specialtyStatus: string | undefined = specialtyActionId ? "pending" : undefined;
+            let specialtyError: string | undefined;
+
+            if (specialtyActionId) {
+                try {
+                    const relayed = await relayMedsenseHubExecute(String(specialtyActionId), {
+                        userId: registration.startedByUserId || userId,
+                        username: registration.startedByUsername || username,
+                        context: {
+                            origin: "registration_complete",
+                            registrationId: registration._id,
+                            patientUserId: userId,
+                            patientUsername: username,
+                            pharmacyId: resolvedPharmacyId ? String(resolvedPharmacyId) : undefined,
+                            requestedByUserId: registration.startedByUserId || userId,
+                            requestedByUsername: registration.startedByUsername || username,
+                        },
+                    });
+
+                    if (relayed.statusCode === 200 && relayed.data) {
+                        const result = relayed.data.result || relayed.data;
+                        if (typeof result?.roomId === "string") {
+                            specialtyRoomId = result.roomId;
+                        }
+                        if (typeof result?.requestId === "string") {
+                            specialtyRequestId = result.requestId;
+                        }
+                        specialtyStatus = typeof result?.status === "string"
+                            ? result.status
+                            : (specialtyRoomId ? "pending_room_link" : "pending");
+                        if (typeof result?.error === "string") {
+                            specialtyError = result.error;
+                        }
+                    } else {
+                        specialtyStatus = "failed";
+                        specialtyError = "Failed to execute specialty action";
+                    }
+                } catch (error: any) {
+                    specialtyStatus = "failed";
+                    specialtyError = error?.message || "Failed to execute specialty action";
+                }
+            }
+
             const now = new Date();
             await MedsensePatientRegistrations.updateAsync(
                 { _id: registration._id },
@@ -1722,6 +1873,11 @@ API.v1.addRoute(
                         status: "completed",
                         completedUserId: userId,
                         completedAt: now,
+                        specialtyActionId: specialtyActionId || undefined,
+                        specialtyRoomId: specialtyRoomId || undefined,
+                        specialtyRequestId,
+                        specialtyStatus,
+                        specialtyError,
                         verificationSessionHash: undefined,
                         verificationSessionExpiresAt: undefined,
                         _updatedAt: now,
@@ -1732,11 +1888,14 @@ API.v1.addRoute(
             return API.v1.success({
                 success: true,
                 userId,
-                specialty: registration.specialtyFlowId
+                specialty: specialtyActionId
                     ? {
-                        flowId: registration.specialtyFlowId,
-                        roomId: registration.specialtyRoomId,
-                        status: registration.specialtyRoomId ? "pending_room_link" : "pending",
+                        actionId: specialtyActionId,
+                        flowId: specialtyActionId,
+                        roomId: specialtyRoomId,
+                        requestId: specialtyRequestId,
+                        status: specialtyStatus || (specialtyRoomId ? "pending_room_link" : "pending"),
+                        error: specialtyError,
                     }
                     : null,
             });

@@ -870,7 +870,7 @@ export const QueueContent = (): JSX.Element => {
 	const [registrationPhone, setRegistrationPhone] = useState('');
 	const [isRegistrationPhoneValid, setIsRegistrationPhoneValid] = useState(true);
 	const [registrationReason, setRegistrationReason] = useState('');
-	const [registrationSpecialtyFlow, setRegistrationSpecialtyFlow] = useState('');
+	const [registrationSpecialtyActionId, setRegistrationSpecialtyActionId] = useState('');
 	const [registrationPharmacyId, setRegistrationPharmacyId] = useState('');
 	const badgeStyle = {
 		fontSize: '0.75rem',
@@ -897,6 +897,12 @@ export const QueueContent = (): JSX.Element => {
 		queryFn: async () => getMyPharmacy(),
 		enabled: canViewRequest,
 	});
+	const getRegistrationSpecialtyActions = useEndpoint('GET', '/v1/medsense/registration.specialtyActions');
+	const { data: registrationSpecialtyActionsData } = useQuery({
+		queryKey: ['registration-specialty-actions'],
+		queryFn: async () => getRegistrationSpecialtyActions(),
+		enabled: canViewRequest,
+	});
 
 	const pharmacyIds = useMemo(
 		() => (pharmacyData?.pharmacies ? pharmacyData.pharmacies.map((p: any) => String(p._id)) : []),
@@ -914,6 +920,21 @@ export const QueueContent = (): JSX.Element => {
 				: [],
 		[pharmacyData],
 	);
+	const registrationSpecialtyOptions = useMemo(() => {
+		const actions = Array.isArray(registrationSpecialtyActionsData?.actions) ? registrationSpecialtyActionsData.actions : [];
+		const options = actions
+			.map((action: any) => {
+				const value = String(action?.actionId || action?.id || '');
+				if (!value) {
+					return null;
+				}
+				const label = String(action?.label || value);
+				return [value, label];
+			})
+			.filter((option: any): option is [string, string] => Array.isArray(option) && Boolean(option[0]));
+
+		return [['', t('None')], ...options];
+	}, [registrationSpecialtyActionsData, t]);
 	const preferredPharmacyId = useMemo(() => String(myPharmacyData?.pharmacy?._id || ''), [myPharmacyData]);
 
 	useEffect(() => {
@@ -958,7 +979,7 @@ export const QueueContent = (): JSX.Element => {
 		setRegistrationPhone('');
 		setIsRegistrationPhoneValid(true);
 		setRegistrationReason('');
-		setRegistrationSpecialtyFlow('');
+		setRegistrationSpecialtyActionId('');
 		setRegistrationPharmacyId('');
 	}, []);
 
@@ -1018,7 +1039,7 @@ export const QueueContent = (): JSX.Element => {
 				username: registrationUsername || undefined,
 				reason: registrationReason || undefined,
 				pharmacyId: registrationPharmacyId,
-				specialtyFlowId: registrationSpecialtyFlow || undefined,
+				specialtyActionId: registrationSpecialtyActionId || undefined,
 			};
 			console.info('[Medsense][RegistrationStart][Staff]', payload);
 			return startRegistration(payload);
@@ -1189,12 +1210,9 @@ export const QueueContent = (): JSX.Element => {
 								<FieldLabel>{t('Specialty_flow')}</FieldLabel>
 								<FieldRow>
 									<Select
-										options={[
-											['', t('None')],
-											['uti', 'UTI'],
-										]}
-										value={registrationSpecialtyFlow}
-										onChange={(value) => setRegistrationSpecialtyFlow(String(value || ''))}
+										options={registrationSpecialtyOptions}
+										value={registrationSpecialtyActionId}
+										onChange={(value) => setRegistrationSpecialtyActionId(String(value || ''))}
 									/>
 								</FieldRow>
 							</Field>
