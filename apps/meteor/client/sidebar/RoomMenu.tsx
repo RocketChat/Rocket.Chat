@@ -15,15 +15,16 @@ type RoomMenuProps = {
 	cl?: boolean;
 	name?: string;
 	hideDefaultOptions: boolean;
+	onOpenChange?: (isOpen: boolean) => void;
 };
 
-const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name = '', hideDefaultOptions = false }: RoomMenuProps) => {
+const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name = '', hideDefaultOptions = false, onOpenChange }: RoomMenuProps) => {
 	const t = useTranslation();
 
 	const isUnread = alert || unread || threadUnread;
 	const sections = useRoomMenuActions({ rid, type, name, isUnread, cl, roomOpen, hideDefaultOptions });
 
-	return <GenericMenu detached title={t('Options')} mini aria-keyshortcuts='alt' sections={sections} />;
+	return <GenericMenu detached title={t('Options')} mini aria-keyshortcuts='alt' sections={sections} onOpenChange={onOpenChange} />;
 };
 
 export default memo(RoomMenu);

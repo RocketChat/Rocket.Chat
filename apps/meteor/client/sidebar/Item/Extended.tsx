@@ -14,6 +14,10 @@ import { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
+type MenuProps = {
+	onOpenChange?: (isOpen: boolean) => void;
+};
+
 type ExtendedProps = {
 	icon?: ReactNode;
 	title: ReactNode;
@@ -21,7 +25,7 @@ type ExtendedProps = {
 	actions?: ReactNode;
 	href?: string;
 	time?: any;
-	menu?: () => ReactNode;
+	menu?: (props?: MenuProps) => ReactNode;
 	subtitle?: ReactNode;
 	badges?: ReactNode;
 	unread?: boolean;
@@ -46,16 +50,25 @@ const Extended = ({
 	threadUnread: _threadUnread,
 	unread,
 	selected,
+	className,
 	...props
 }: ExtendedProps) => {
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
+	const [menuOpen, setMenuOpen] = useState(false);
 
 	const handleFocus = () => setMenuVisibility(true);
 	const handlePointerEnter = () => setMenuVisibility(true);
 
 	return (
-		<SidebarV2Item href={href} selected={selected} {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
+		<SidebarV2Item
+			href={href}
+			selected={selected}
+			{...props}
+			className={[className, menuOpen && 'is-hovered'].filter(Boolean).join(' ')}
+			onFocus={handleFocus}
+			onPointerEnter={handlePointerEnter}
+		>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 			<SidebarV2ItemCol>
 				<SidebarV2ItemRow>
@@ -69,7 +82,7 @@ const Extended = ({
 					{actions}
 					{menu && (
 						<SidebarV2ItemMenu>
-							{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
+							{menuVisibility ? menu({ onOpenChange: setMenuOpen }) : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
 						</SidebarV2ItemMenu>
 					)}
 				</SidebarV2ItemRow>
