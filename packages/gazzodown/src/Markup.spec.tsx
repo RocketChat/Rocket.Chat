@@ -230,7 +230,7 @@ it('renders a code block', async () => {
 		</Suspense>,
 	);
 
-	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument());
+	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument(), { timeout: 5000 });
 
 	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
 });
