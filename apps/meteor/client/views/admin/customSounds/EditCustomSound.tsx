@@ -17,7 +17,7 @@ function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProp
 	const getSound = useEndpoint('GET', '/v1/custom-sounds.getOne');
 	const { t } = useTranslation();
 
-	const { data, isPending } = useQuery({
+	const { data, isLoading } = useQuery({
 		queryKey: ['custom-sound', _id],
 		queryFn: () => {
 			if (!_id) {
@@ -28,7 +28,7 @@ function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProp
 		enabled: !!_id,
 	});
 
-	if (isPending) {
+	if (isLoading) {
 		return <FormSkeleton pi={20} />;
 	}
 
