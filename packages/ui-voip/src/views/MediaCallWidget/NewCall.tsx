@@ -12,13 +12,16 @@ import {
 	DevicePicker,
 	ActionButton,
 } from '../../components';
-import { useMediaCallContext, usePeerAutocomplete } from '../../context';
+import { usePeerAutocomplete } from '../../context';
+import { useMediaCallWidgetContext } from '../../context/MediaCallWidgetContext';
+import { useWidgetExternalControls } from '../../context/useWidgetExternalControls';
 
 const NewCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onCall, onToggleWidget, onSelectPeer } = useMediaCallContext();
+	const { sessionState, onCall, onSelectPeer } = useMediaCallWidgetContext();
 	const { peerInfo } = sessionState;
+	const { toggleWidget } = useWidgetExternalControls();
 
 	const autocomplete = usePeerAutocomplete(onSelectPeer, peerInfo);
 
@@ -26,7 +29,7 @@ const NewCall = () => {
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={t('New_call')}>
-				<ActionButton tiny secondary={false} label={t('Close')} icon='cross' onClick={onToggleWidget} />
+				<ActionButton tiny secondary={false} label={t('Close')} icon='cross' onClick={() => toggleWidget()} />
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerAutocomplete {...autocomplete} />

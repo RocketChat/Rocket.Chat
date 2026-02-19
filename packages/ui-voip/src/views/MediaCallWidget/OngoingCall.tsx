@@ -16,12 +16,12 @@ import {
 	useKeypad,
 	useInfoSlots,
 } from '../../components';
-import { useMediaCallContext } from '../../context';
+import { useMediaCallWidgetContext } from '../../context/MediaCallWidgetContext';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } = useMediaCallContext();
+	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } = useMediaCallWidgetContext();
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState } = sessionState;
 
 	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);

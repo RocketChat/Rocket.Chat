@@ -3,7 +3,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 
 import MediaCallWidget from './MediaCallWidget';
-import { useMediaCallContext, MockedMediaCallProvider } from '../../context';
+import { useMediaCallWidgetContext, MockedMediaCallProvider, useWidgetExternalControls } from '../../context';
 
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {
@@ -36,11 +36,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const MediaCallWidgetManualTesting: StoryFn<typeof MediaCallWidget> = () => {
-	const { sessionState, onToggleWidget, onCall } = useMediaCallContext();
+	const { sessionState, onCall } = useMediaCallWidgetContext();
+	const { toggleWidget } = useWidgetExternalControls();
 	const { state } = sessionState;
 	return (
 		<>
-			<Button onClick={() => onToggleWidget()} disabled={state !== 'new' && state !== 'closed'} mie={8}>
+			<Button onClick={() => toggleWidget()} disabled={state !== 'new' && state !== 'closed'} mie={8}>
 				Toggle widget
 			</Button>
 			<Button onClick={() => onCall()} disabled={state !== 'closed'}>
