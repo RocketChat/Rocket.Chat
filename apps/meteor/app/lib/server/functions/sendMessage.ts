@@ -6,7 +6,7 @@ import { Match, check } from 'meteor/check';
 
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
-import { isAbsoluteURL } from '../../../../lib/utils/isAbsoluteURL';
+import { isAbsoluteURL } from '@rocket.chat/tools';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';

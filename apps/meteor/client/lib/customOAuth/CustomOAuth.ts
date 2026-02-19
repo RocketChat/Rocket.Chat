@@ -5,7 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
-import { isAbsoluteURL } from '../../../lib/utils/isAbsoluteURL';
+import { isAbsoluteURL } from '@rocket.chat/tools';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import { createOAuthTotpLoginMethod } from '../../meteor/login/oauth';
 import { overrideLoginMethod, type LoginCallback } from '../2fa/overrideLoginMethod';

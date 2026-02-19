@@ -10,7 +10,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
-import { isAbsoluteURL } from '../../../lib/utils/isAbsoluteURL';
+import { isAbsoluteURL } from '@rocket.chat/tools';
 import { client } from '../../../server/database/utils';
 import { callbacks } from '../../../server/lib/callbacks';
 import { saveUserIdentity } from '../../lib/server/functions/saveUserIdentity';

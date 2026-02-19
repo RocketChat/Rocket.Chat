@@ -18,7 +18,7 @@ import { camelCase } from 'lodash';
 
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
-import { isAbsoluteURL } from '../../../../lib/utils/isAbsoluteURL';
+import { isAbsoluteURL } from '@rocket.chat/tools';
 import { afterParseUrlContent, beforeGetUrlContent } from '../lib/oembed/providers';
 
 const MAX_EXTERNAL_URL_PREVIEWS = 5;
