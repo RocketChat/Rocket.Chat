@@ -1,6 +1,5 @@
 import { VideoConf } from '@rocket.chat/core-services';
 import type { VideoConference } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
 import {
 	isVideoConfStartProps,
 	isVideoConfJoinProps,
@@ -32,13 +31,12 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const user = await Users.findOneById(userId, { projection: { username: 1, type: 1 } });
-			if (!user?.username) {
+			if (!this.user?.username) {
 				return API.v1.failure('error-invalid-user');
 			}
 
 			try {
-				await canSendMessageAsync(roomId, { uid: userId, username: user.username, type: user.type });
+				await canSendMessageAsync(roomId, { uid: userId, username: this.user.username, type: this.user.type });
 			} catch (error: any) {
 				return API.v1.failure(error.message || error.error || 'error-not-allowed-to-start-video-conference');
 			}
