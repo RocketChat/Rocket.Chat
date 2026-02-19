@@ -1,6 +1,7 @@
 import type { IAppsTokens, RequiredField, Optional, IPushNotificationConfig } from '@rocket.chat/core-typings';
 import { AppsTokens } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
+import type { ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { pick, truncateString } from '@rocket.chat/tools';
 import { JWT } from 'google-auth-library';
@@ -259,13 +260,15 @@ class PushClass {
 		notification.uniqueId = this.options.uniqueId;
 
 		const options = {
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
 			method: 'POST',
 			body: {
 				token,
 				options: notification,
 			},
 			...(token && this.options.getAuthorization && { headers: { Authorization: await this.options.getAuthorization() } }),
-		};
+		} as ExtendedFetchOptions;
 
 		const result = await fetch(`${gateway}/push/${service}/send`, options);
 		const response = await result.text();

@@ -6,6 +6,7 @@ import HeadingBlock from './blocks/HeadingBlock';
 import OrderedListBlock from './blocks/OrderedListBlock';
 import ParagraphBlock from './blocks/ParagraphBlock';
 import QuoteBlock from './blocks/QuoteBlock';
+import SpoilerBlock from './blocks/SpoilerBlock';
 import TaskList from './blocks/TaskListBlock';
 import UnorderedListBlock from './blocks/UnorderedListBlock';
 import BigEmojiBlock from './emoji/BigEmojiBlock';
@@ -46,6 +47,9 @@ const Markup = ({ tokens }: MarkupProps): ReactElement => (
 
 				case 'QUOTE':
 					return <QuoteBlock key={index}>{block.value}</QuoteBlock>;
+
+				case 'SPOILER_BLOCK':
+					return <SpoilerBlock key={index}>{block.value}</SpoilerBlock>;
 
 				case 'CODE':
 					return <CodeBlock key={index} language={block.language} lines={block.value} />;

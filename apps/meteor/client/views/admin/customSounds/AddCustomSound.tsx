@@ -63,7 +63,6 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 						(typeof error === 'string' || error instanceof Error) && dispatchToastMessage({ type: 'error', message: error });
 					}
 				};
-				close();
 				return soundId;
 			} catch (error) {
 				(typeof error === 'string' || error instanceof Error) && dispatchToastMessage({ type: 'error', message: error });
