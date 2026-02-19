@@ -43,6 +43,14 @@ export class Router implements RouterContextValue {
 
 	private readonly page = new Page();
 
+	private historyIndex = 0;
+
+	private historyMaxIndex = 0;
+
+	private pendingHistoryDelta = 0;
+
+	private pendingPush = false;
+
 	constructor() {
 		this.registerRoute('*', { id: 'not-found' });
 		this.updateCallbacks();
@@ -166,6 +174,16 @@ export class Router implements RouterContextValue {
 	}
 
 	private refresh() {
+		if (this.pendingHistoryDelta !== 0) {
+			this.historyIndex += this.pendingHistoryDelta;
+			this.pendingHistoryDelta = 0;
+		}
+		if (this.pendingPush) {
+			this.historyIndex += 1;
+			this.historyMaxIndex = this.historyIndex;
+			this.pendingPush = false;
+		}
+
 		if (!this.current?.route) return;
 
 		const currentContext = this.current;
@@ -273,6 +291,7 @@ export class Router implements RouterContextValue {
 		},
 	) => {
 		if (typeof toOrDelta === 'number') {
+			this.pendingHistoryDelta = toOrDelta;
 			history.go(toOrDelta);
 			return;
 		}
@@ -283,6 +302,7 @@ export class Router implements RouterContextValue {
 		if (options?.replace) {
 			history.replaceState(state, '', path);
 		} else {
+			this.pendingPush = true;
 			history.pushState(state, '', path);
 		}
 
@@ -315,6 +335,10 @@ export class Router implements RouterContextValue {
 	readonly getRoomRoute = (roomType: RoomType, routeData: RoomRouteData) => {
 		return { path: roomCoordinator.getRouteLink(roomType, routeData) || '/' };
 	};
+
+	readonly getCanGoBack = (): boolean => this.historyIndex > 0;
+
+	readonly getCanGoForward = (): boolean => this.historyIndex < this.historyMaxIndex;
 }
 
 type RouteOptions = {
