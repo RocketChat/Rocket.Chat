@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 
-import { isURL } from '../../../../lib/utils/isURL';
+import { isAbsoluteURL } from '../../../../lib/utils/isAbsoluteURL';
 
-describe('isURL', () => {
+describe('isAbsoluteURL', () => {
 	const testCases = [
 		['/', false],
 		['test', false],
@@ -15,7 +15,7 @@ describe('isURL', () => {
 
 	testCases.forEach(([parameter, expectedResult]) => {
 		it(`should return ${JSON.stringify(expectedResult)} for ${JSON.stringify(parameter)}`, () => {
-			const result = isURL(parameter);
+			const result = isAbsoluteURL(parameter);
 			expect(result).to.be.equal(expectedResult);
 		});
 	});

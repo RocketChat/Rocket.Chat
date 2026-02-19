@@ -10,7 +10,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
-import { isURL } from '../../../lib/utils/isURL';
+import { isAbsoluteURL } from '../../../lib/utils/isAbsoluteURL';
 import { client } from '../../../server/database/utils';
 import { callbacks } from '../../../server/lib/callbacks';
 import { saveUserIdentity } from '../../lib/server/functions/saveUserIdentity';
@@ -93,15 +93,11 @@ export class CustomOAuth {
 			this.identityTokenSentVia = this.tokenSentVia;
 		}
 
-		if (!isURL(this.tokenPath)) {
-			this.tokenPath = this.serverURL + this.tokenPath;
-		}
+	if (!isAbsoluteURL(this.tokenPath)) {
+		this.tokenPath = this.serverURL + this.tokenPath;
+	}
 
-		if (!isURL(this.identityPath)) {
-			this.identityPath = this.serverURL + this.identityPath;
-		}
-
-		if (Match.test(options.addAutopublishFields, Object)) {
+	if (!isAbsoluteURL(this.identityPath)) {
 			Accounts.addAutopublishFields(options.addAutopublishFields);
 		}
 	}
