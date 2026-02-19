@@ -1,7 +1,7 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import hljs from 'highlight.js';
 import type { ReactElement } from 'react';
-import { Fragment, useContext, useLayoutEffect, useMemo, useRef } from 'react';
+import { Fragment, useContext, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
@@ -12,6 +12,7 @@ type CodeBlockProps = {
 
 const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 	const ref = useRef<HTMLElement>(null);
+	const [copied, setCopied] = useState(false);
 
 	const { highlightRegex } = useContext(MarkupInteractionContext);
 
@@ -26,18 +27,16 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 
 			return (
 				<>
-					<>{head}</>
-					{chunks.map((chunk, i) => {
-						if (i % 2 === 0) {
-							return (
-								<mark key={i} className='highlight-text'>
-									{chunk}
-								</mark>
-							);
-						}
-
-						return <Fragment key={i}>{chunk}</Fragment>;
-					})}
+					{head}
+					{chunks.map((chunk, i) =>
+						i % 2 === 0 ? (
+							<mark key={i} className='highlight-text'>
+								{chunk}
+							</mark>
+						) : (
+							<Fragment key={i}>{chunk}</Fragment>
+						),
+					)}
 				</>
 			);
 		}
@@ -47,7 +46,6 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 
 	useLayoutEffect(() => {
 		const element = ref.current;
-
 		if (!element) {
 			return;
 		}
@@ -58,18 +56,55 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 		}
 	}, [language, content]);
 
+	const handleCopy = async () => {
+		try {
+			await navigator.clipboard.writeText(code);
+			setCopied(true);
+			setTimeout(() => setCopied(false), 1500);
+		} catch (e) {
+			console.error('Copy failed', e);
+		}
+	};
+
 	return (
-		<pre role='region'>
-			<span className='copyonly'>```</span>
-			<code
-				key={language + code}
-				ref={ref}
-				className={((!language || language === 'none') && 'code-colors') || `code-colors language-${language}`}
+		<div
+			className='rc-code-block'
+			style={{ position: 'relative' }}
+		>
+			<button
+				onClick={handleCopy}
+				title='Copy code'
+				aria-label='Copy code block'
+				style={{
+					position: 'absolute',
+					top: 6,
+					right: 6,
+					fontSize: 12,
+					padding: '4px 6px',
+					cursor: 'pointer',
+					borderRadius: 4,
+					border: 'none',
+					background: '#2f343d',
+					color: '#fff',
+					opacity: 0.85,
+				}}
+				className='rc-code-copy-button'
 			>
-				{content}
-			</code>
-			<span className='copyonly'>```</span>
-		</pre>
+				{copied ? 'Copied' : 'Copy'}
+			</button>
+
+			<pre role='region'>
+				<span className='copyonly'>```</span>
+				<code
+					key={language + code}
+					ref={ref}
+					className={((!language || language === 'none') && 'code-colors') || `code-colors language-${language}`}
+				>
+					{content}
+				</code>
+				<span className='copyonly'>```</span>
+			</pre>
+		</div>
 	);
 };
 
