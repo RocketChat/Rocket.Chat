@@ -1,4 +1,5 @@
 import { getUserDisplayName, VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useGoToRoom, useSetting, useTranslation, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import {
@@ -109,9 +110,29 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElemen
 			: t('joined');
 	}, [displayAvatars, t, result.data?.users.length]);
 
-	if (result.isPending || result.isError) {
-		// TODO: error handling
+	if (result.isPending) {
 		return <VideoConfMessageSkeleton />;
+	}
+
+	if (result.isError) {
+		return (
+			<VideoConfMessage>
+				<VideoConfMessageRow>
+					<VideoConfMessageContent>
+						<Box display='flex' flexDirection='column' alignItems='center'>
+							<States>
+								<StatesIcon name='warning' variation='danger' />
+								<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+								<StatesSubtitle>{result.error?.message ?? t('We_Could_not_retrive_any_data')}</StatesSubtitle>
+								<StatesActions>
+									<StatesAction onClick={() => result.refetch()}>{t('Retry')}</StatesAction>
+								</StatesActions>
+							</States>
+						</Box>
+					</VideoConfMessageContent>
+				</VideoConfMessageRow>
+			</VideoConfMessage>
+		);
 	}
 
 	const { data } = result;
