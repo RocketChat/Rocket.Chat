@@ -999,13 +999,15 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const users = await Users.findActiveByIds(members.map((member) => member.userId)).toArray();
 
 		await Promise.all(
-			defaultRooms.map(async (room) => {
+			defaultRooms.map((room) =>
 				// at this point, users are already part of the team so we won't check for membership
-				for (const user of users) {
-					// add each user to the default room
-					await addUserToRoom(room._id, user, inviter, { skipSystemMessage: false });
-				}
-			}),
+				Promise.all(
+					users.map((user) =>
+						// add each user to the default room
+						addUserToRoom(room._id, user, inviter, { skipSystemMessage: false }),
+					),
+				),
+			),
 		);
 	}
 

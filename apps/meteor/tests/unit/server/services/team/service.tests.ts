@@ -3,12 +3,6 @@ import { describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const flushMicrotasks = async (): Promise<void> => {
-	await Promise.resolve();
-	await Promise.resolve();
-	await Promise.resolve();
-};
-
 const createTeamService = (deps: { Rooms: any; Users: any; addUserToRoom: sinon.SinonStub }) => {
 	const { TeamService } = proxyquire.noCallThru().load('../../../../../server/services/team/service', {
 		'@rocket.chat/core-services': {
@@ -63,12 +57,15 @@ describe('Team service', () => {
 		this.timeout(15000);
 
 		const addUserToRoom = sinon.stub();
-		let resolveSecondCall!: () => void;
+		let secondCallResolved = false;
 
 		addUserToRoom.onFirstCall().resolves(true);
 		addUserToRoom.onSecondCall().returns(
 			new Promise<void>((resolve) => {
-				resolveSecondCall = resolve;
+				setTimeout(() => {
+					secondCallResolved = true;
+					resolve();
+				}, 20);
 			}),
 		);
 
@@ -80,27 +77,22 @@ describe('Team service', () => {
 
 		const Users = {
 			findActiveByIds: sinon.stub().returns({
-				toArray: () => Promise.resolve([{ _id: 'user-1', username: 'user-1' }, { _id: 'user-2', username: 'user-2' }]),
+				toArray: () =>
+					Promise.resolve([
+						{ _id: 'user-1', username: 'user-1' },
+						{ _id: 'user-2', username: 'user-2' },
+					]),
 			}),
 		};
 
 		const service = createTeamService({ Rooms, Users, addUserToRoom });
-		let resolved = false;
 
-		const operation = service.addMembersToDefaultRooms({ _id: 'inviter', username: 'inviter' }, 'team-id', [
+		await service.addMembersToDefaultRooms({ _id: 'inviter', username: 'inviter' }, 'team-id', [
 			{ userId: 'user-1' },
 			{ userId: 'user-2' },
 		]);
-		void operation.then(() => {
-			resolved = true;
-		});
 
-		await flushMicrotasks();
-		expect(resolved).to.be.false;
-
-		resolveSecondCall();
-		await operation;
-
+		expect(secondCallResolved).to.be.true;
 		expect(addUserToRoom.callCount).to.equal(2);
 	});
 
