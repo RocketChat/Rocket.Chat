@@ -23,9 +23,6 @@ API.v1.addRoute(
 		async post() {
 			const { roomId, title, allowRinging: requestRinging } = this.bodyParams;
 			const { userId } = this;
-			if (!userId || !(await canAccessRoomIdAsync(roomId, userId))) {
-				return API.v1.failure('invalid-params');
-			}
 
 			if (!(await hasPermissionAsync(userId, 'call-management', roomId))) {
 				return API.v1.forbidden();
