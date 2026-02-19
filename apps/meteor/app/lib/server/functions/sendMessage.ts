@@ -2,11 +2,11 @@ import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
+import { isAbsoluteURL } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
-import { isAbsoluteURL } from '@rocket.chat/tools';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';

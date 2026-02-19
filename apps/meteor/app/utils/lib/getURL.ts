@@ -1,5 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { isAbsoluteURL } from '@rocket.chat/tools';
+
 import { ltrim, rtrim, trim } from '../../../lib/utils/stringUtils';
 
 function getCloudUrl(

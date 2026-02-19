@@ -2,6 +2,7 @@ import { LDAP } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { isAbsoluteURL } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -10,7 +11,6 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
-import { isAbsoluteURL } from '@rocket.chat/tools';
 import { client } from '../../../server/database/utils';
 import { callbacks } from '../../../server/lib/callbacks';
 import { saveUserIdentity } from '../../lib/server/functions/saveUserIdentity';
@@ -93,17 +93,17 @@ export class CustomOAuth {
 			this.identityTokenSentVia = this.tokenSentVia;
 		}
 
-	if (!isAbsoluteURL(this.tokenPath)) {
-		this.tokenPath = this.serverURL + this.tokenPath;
-	}
+		if (!isAbsoluteURL(this.tokenPath)) {
+			this.tokenPath = this.serverURL + this.tokenPath;
+		}
 
-	if (!isAbsoluteURL(this.identityPath)) {
-		this.identityPath = this.serverURL + this.identityPath;
-	}
+		if (!isAbsoluteURL(this.identityPath)) {
+			this.identityPath = this.serverURL + this.identityPath;
+		}
 
-	if (Match.test(options.addAutopublishFields, Object)) {
-		Accounts.addAutopublishFields(options.addAutopublishFields);
-	}
+		if (Match.test(options.addAutopublishFields, Object)) {
+			Accounts.addAutopublishFields(options.addAutopublishFields);
+		}
 	}
 
 	async getAccessToken(query) {
