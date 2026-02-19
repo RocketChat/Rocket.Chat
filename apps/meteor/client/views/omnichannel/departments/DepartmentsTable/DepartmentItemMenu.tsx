@@ -1,6 +1,7 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import { MenuItem, MenuItemContent, MenuItemIcon, MenuV2 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { GenericMenu } from '@rocket.chat/ui-client';
+import { useHandleMenuAction } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRoute, useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -19,7 +20,6 @@ type DepartmentItemMenuProps = {
 	archived: boolean;
 };
 
-// TODO: Use MenuV2 instead of Menu
 const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): ReactElement => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
@@ -91,7 +91,19 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 		[archived, departmentRemovalEnabled, handleEdit, handleToggleArchive, handlePermanentDepartmentRemoval, t],
 	);
 
-	return <GenericMenu title={t('Options')} items={items} />;
+	const onAction = useHandleMenuAction(items);
+	const disabledKeys = useMemo(() => items.filter((item) => item.disabled).map((item) => item.id), [items]);
+
+	return (
+		<MenuV2 title={t('Options')} onAction={onAction} disabledKeys={disabledKeys} detached>
+			{items.map((item) => (
+				<MenuItem key={item.id}>
+					{item.icon && <MenuItemIcon name={item.icon} />}
+					<MenuItemContent title={item.tooltip}>{item.content}</MenuItemContent>
+				</MenuItem>
+			))}
+		</MenuV2>
+	);
 };
 
 export default DepartmentItemMenu;
