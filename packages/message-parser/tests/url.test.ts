@@ -27,6 +27,7 @@ test.each([
 	['https://rocket.chat/test?search', [paragraph([link('https://rocket.chat/test?search')])]],
 	['https://rocket.chat/test?search=test', [paragraph([link('https://rocket.chat/test?search=test')])]],
 	['https://rocket.chat', [paragraph([link('https://rocket.chat')])]],
+	['http://127.0.0.1:3000/images/logo/logo.png', [paragraph([link('http://127.0.0.1:3000/images/logo/logo.png')])]],
 	['https://localhost', [paragraph([link('https://localhost')])]],
 	['https://localhost:3000', [paragraph([link('https://localhost:3000')])]],
 	['https://localhost:3000#fragment', [paragraph([link('https://localhost:3000#fragment')])]],
