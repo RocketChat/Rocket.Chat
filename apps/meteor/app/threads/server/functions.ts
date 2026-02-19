@@ -5,6 +5,7 @@ import { Messages, Subscriptions, ReadReceipts, NotificationQueue } from '@rocke
 import {
 	notifyOnSubscriptionChangedByRoomIdAndUserIds,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
+	notifyOnSubscriptionChangedByRoomId,
 } from '../../lib/server/lib/notifyListener';
 import { getMentions, getUserIdsFromHighlights } from '../../lib/server/lib/notifyUsersOnMessage';
 
@@ -60,10 +61,13 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 
 	await Promise.allSettled(promises);
 
-	// For notifications, collect all affected users
-	const affectedUsers = toAll || toHere ? [] : [...threadFollowersUids, ...mentionedUsers, ...highlightsUids];
-	if (affectedUsers.length > 0) {
-		void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, affectedUsers);
+	// Notify about subscription changes
+	if (toAll || toHere) {
+		// For @all/@here, notify all room subscriptions
+		void notifyOnSubscriptionChangedByRoomId(rid);
+	} else if (threadFollowersUids.length > 0 || mentionedUsers.length > 0 || highlightsUids.length > 0) {
+		// For regular thread messages, notify specific users
+		void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, [...threadFollowersUids, ...mentionedUsers, ...highlightsUids]);
 	}
 }
 
