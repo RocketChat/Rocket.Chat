@@ -26,7 +26,7 @@ type AppStatusProps = {
 
 const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps): ReactElement => {
 	const { t } = useTranslation();
-	const [endUserRequested, setEndUserRequested] = useState(false);
+	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser ?? false);
 	const [loading, setLoading] = useSafely(useState(false));
 	const [isAppPurchased, setPurchased] = useSafely(useState(!!app?.isPurchased));
 	const setModal = useSetModal();
@@ -34,7 +34,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const context = useRouteParameter('context');
 	const { price, purchaseType, pricingPlans } = app;
 
-	const button = appButtonProps({ ...app, isAdminUser, endUserRequested });
+	const button = appButtonProps({ ...app, isAdminUser, requestedEndUser });
 	const isAppRequestsPage = context === 'requested';
 	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly;
 	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
@@ -60,7 +60,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 				if (action !== 'request') {
 					await marketplaceActions[action]({ ...app, permissionsGranted });
 				} else {
-					setEndUserRequested(true);
+					setRequestedEndUser(true);
 				}
 			}
 
@@ -152,7 +152,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						primary
 						small
 						loading={loading}
-						disabled={action === 'request' && (app?.requestedEndUser || endUserRequested)}
+						disabled={action === 'request' && requestedEndUser}
 						onClick={handleAcquireApp}
 						mie={8}
 					>
