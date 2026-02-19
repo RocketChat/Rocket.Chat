@@ -30,6 +30,12 @@ function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtL
 	});
 }
 
+function isImagePreviewSupported(mimeType: string): boolean {
+	// Only attempt preview generation for image types that can be processed by Sharp
+	// This excludes vendor-specific formats like image/vnd.dwg that cannot be rendered
+	return /^image\/((x-windows-)?bmp|p?jpeg|png|gif|webp|svg\+xml)$/.test(mimeType);
+}
+
 export const parseFileIntoMessageAttachments = async (
 	file: Partial<IUpload>,
 	roomId: string,
@@ -54,7 +60,7 @@ export const parseFileIntoMessageAttachments = async (
 		},
 	];
 
-	if (/^image\/.+/.test(file.type as string)) {
+	if (isImagePreviewSupported(file.type as string)) {
 		const attachment: FileAttachmentProps = {
 			title: file.name,
 			type: 'file',
