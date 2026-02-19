@@ -118,6 +118,7 @@ export const image = (() => {
 })();
 
 export const quote = generate('QUOTE');
+export const spoilerBlock = generate('SPOILER_BLOCK');
 
 export const mentionChannel = (() => {
 	const fn = generate('MENTION_CHANNEL');

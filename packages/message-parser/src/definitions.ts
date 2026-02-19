@@ -88,6 +88,11 @@ export type Spoiler = {
 	value: Array<Link | Emoji | UserMention | ChannelMention | InlineCode | Italic | Bold | Strike | Timestamp | Color | Image | InlineKaTeX>;
 };
 
+export type SpoilerBlock = {
+	type: 'SPOILER_BLOCK';
+	value: Paragraph[];
+};
+
 export type Markup = Italic | Strike | Bold | Plain | ChannelMention;
 export type MarkupExcluding<T extends Markup> = Exclude<Markup, T>;
 
@@ -191,6 +196,7 @@ export type Types = {
 	LIST_ITEM: ListItem;
 	IMAGE: Image;
 	LINE_BREAK: LineBreak;
+	SPOILER_BLOCK: SpoilerBlock;
 };
 
 export type ASTNode =
@@ -206,6 +212,7 @@ export type ASTNode =
 	| InlineCode
 	| Heading
 	| Quote
+	| SpoilerBlock
 	| Link
 	| UserMention
 	| ChannelMention
@@ -231,6 +238,6 @@ export type Inlines =
 	| Color
 	| InlineKaTeX;
 
-export type Blocks = Code | Heading | Quote | ListItem | Tasks | OrderedList | UnorderedList | LineBreak | KaTeX;
+export type Blocks = Code | Heading | Quote | SpoilerBlock | ListItem | Tasks | OrderedList | UnorderedList | LineBreak | KaTeX;
 
 export type Root = Array<Paragraph | Blocks> | [BigEmoji];

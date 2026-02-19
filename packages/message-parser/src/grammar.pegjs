@@ -29,6 +29,7 @@
     quote,
     reducePlainTexts,
     spoiler,
+    spoilerBlock,
     strike,
     task,
     tasks,
@@ -58,6 +59,7 @@ Start
  */
 Blocks
   = Blockquote
+  / BlockSpoiler
   / Code
   / Heading
   / Tasks
@@ -75,6 +77,16 @@ Blocks
 Blockquote = b:BlockquoteLine+ { return quote(b); }
 
 BlockquoteLine = ">" [ \t]* @Paragraph
+
+/**
+ * Block Spoiler
+ * e.g:
+ * ||
+ * line one
+ * line two
+ * ||
+ */
+BlockSpoiler = "||" EndOfLine first:(&(! "||") @Paragraph) rest:(&(! "||") @Paragraph)* EndOfLine? "||" { return spoilerBlock([first, ...rest]); }
 
 // <t:1630360800:?{format}>
 // <t:2025-07-22T10:00:00.000Z?:?{format}>
