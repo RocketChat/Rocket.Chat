@@ -7,8 +7,9 @@ export type LoginService = LoginServiceConfiguration & {
 };
 
 export type AuthenticationContextValue = {
+	readonly isLoggingIn: boolean;
 	loginWithPassword: (user: string | { username: string } | { email: string } | { id: string }, password: string) => Promise<void>;
-	loginWithToken: (user: string) => Promise<void>;
+	loginWithToken: (user: string, callback?: (error: Error | null | undefined) => void) => Promise<void>;
 	loginWithService<T extends LoginServiceConfiguration>(service: T): () => Promise<true>;
 	loginWithIframe: (token: string, callback?: (error: Error | null | undefined) => void) => Promise<void>;
 	loginWithTokenRoute: (token: string, callback?: (error: Error | null | undefined) => void) => Promise<void>;
@@ -20,6 +21,7 @@ export type AuthenticationContextValue = {
 };
 
 export const AuthenticationContext = createContext<AuthenticationContextValue>({
+	isLoggingIn: false,
 	loginWithService: () => () => Promise.reject('loginWithService not implemented'),
 	loginWithPassword: async () => Promise.reject('loginWithPassword not implemented'),
 	loginWithToken: async () => Promise.reject('loginWithToken not implemented'),

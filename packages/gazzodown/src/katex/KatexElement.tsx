@@ -1,5 +1,6 @@
 import katex from 'katex';
-import { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import { useMemo } from 'react';
 
 import 'katex/dist/katex.css';
 

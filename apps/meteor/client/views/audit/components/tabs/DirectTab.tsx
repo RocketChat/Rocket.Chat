@@ -33,7 +33,7 @@ const DirectTab = ({ form: { control } }: DirectTabProps): ReactElement => {
 			<FieldRow>
 				<UserAutoCompleteMultiple
 					value={usersField.value}
-					error={!!usersFieldState.error}
+					error={usersFieldState.error?.message}
 					onChange={usersField.onChange}
 					placeholder={t('Username_Placeholder')}
 				/>

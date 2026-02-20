@@ -1,8 +1,8 @@
 {
 	"name": "@rocket.chat/base64",
+	"version": "1.0.13",
 	"private": true,
 	"description": "Base64 encoding and decoding; Fork of Meteor's Base64 package",
-	"version": "1.0.13",
 	"main": "./dist/base64.js",
 	"types": "./dist/base64.d.ts",
 	"scripts": {
@@ -10,19 +10,16 @@
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
-		"test": "jest"
+		"test": "jest",
+		"testunit": "jest"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.26.10",
-		"@babel/preset-env": "~7.26.9",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@typescript-eslint/eslint-plugin": "~5.60.1",
-		"@typescript-eslint/parser": "~5.60.1",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.2",
-		"typescript": "~5.8.3"
+		"jest": "~30.2.0",
+		"typescript": "~5.9.3"
 	},
 	"volta": {
 		"extends": "../../package.json"

@@ -1,10 +1,10 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-1szqnba rcx-css-k3fjzq"
+      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-vsh9r1 rcx-css-k3fjzq"
       role="button"
       tabindex="0"
     >
@@ -22,7 +22,7 @@ exports[`renders WithLink without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-1szqnba rcx-css-k3fjzq"
+      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-vsh9r1 rcx-css-k3fjzq"
       role="button"
       tabindex="0"
     >

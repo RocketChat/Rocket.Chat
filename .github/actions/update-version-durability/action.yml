@@ -2,6 +2,10 @@ name: Update Version Durability
 description: Update Version Durability page on Document360
 
 inputs:
+  LTS_VERSIONS:
+    required: true
+    description: Comma separated list of LTS versions
+    type: string
   GH_TOKEN:
     required: true
     description: GitHub API Token

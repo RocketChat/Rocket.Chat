@@ -28,11 +28,15 @@
     plain,
     quote,
     reducePlainTexts,
+    spoiler,
+    spoilerBlock,
     strike,
     task,
     tasks,
     unorderedList,
     timestamp,
+    timestampFromHours,
+    timestampFromIsoTime,
   } = require('./utils');
 
 let skipBold = false;
@@ -55,6 +59,7 @@ Start
  */
 Blocks
   = Blockquote
+  / BlockSpoiler
   / Code
   / Heading
   / Tasks
@@ -73,13 +78,40 @@ Blockquote = b:BlockquoteLine+ { return quote(b); }
 
 BlockquoteLine = ">" [ \t]* @Paragraph
 
+/**
+ * Block Spoiler
+ * e.g:
+ * ||
+ * line one
+ * line two
+ * ||
+ */
+BlockSpoiler = "||" EndOfLine first:(&(! "||") @Paragraph) rest:(&(! "||") @Paragraph)* EndOfLine? "||" { return spoilerBlock([first, ...rest]); }
+
 // <t:1630360800:?{format}>
+// <t:2025-07-22T10:00:00.000Z?:?{format}>
+// <t:2025-07-22T10:00:00:?{format}>
+// <t:00:00:?{format}>
 
 TimestampType = "t" / "T" / "d" / "D" / "f" / "F" / "R"
 
 Unixtime = d:Digit |10| { return d.join(''); }
 
-Timestamp = "<t:" date:Unixtime ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:Unixtime ">" { return timestamp(date); }
+TimestampHoursMinutesSeconds = hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| tz:Timezone? { return timestampFromHours(hours.join(''), minutes.join(''), seconds.join(''), tz); }
+
+TimestampHoursMinutes = hours:Digit |2| ":" minutes:Digit|2| tz:Timezone? { return timestampFromHours(hours.join(''), minutes.join(''),undefined,  tz); }
+
+
+Timestamp = TimestampHoursMinutesSeconds / TimestampHoursMinutes
+
+Timezone = offset:('+'/'-') tzHour: Digit |2| ':' tzMinute: Digit |2| { return `${offset}${tzHour.join('')}:${tzMinute.join('')}`  }
+
+ISO8601Date = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "." milliseconds:Digit |3| tz:Timezone? { return timestampFromIsoTime({year: year.join(''), month: month.join(''), day: day.join(''), hours: hours.join(''), minutes: minutes.join(''), seconds: seconds.join(''), milliseconds: milliseconds.join(''), timezone: tz}) }
+
+ISO8601DateWithoutMilliseconds = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| tz:Timezone? { return timestampFromIsoTime({year: year.join(''), month: month.join(''), day: day.join(''), hours: hours.join(''), minutes: minutes.join(''), seconds: seconds.join(''), timezone: tz}) }
+
+
+TimestampRules = "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" { return timestamp(date); }
 
 /**
  *
@@ -230,11 +262,12 @@ InlineEmoji = & { return !skipInlineEmoji; } emo:Emoji { return emo; }
 InlineEmoticon = & { return !skipInlineEmoji; } emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { skipInlineEmoji = false; return emo; }
 
 InlineItemPattern = Whitespace
-  / Timestamp
+  / TimestampRules
   / MaybeReferences
   / AutolinkedPhone
   / AutolinkedEmail
   / AutolinkedURL
+  / Spoiler
   / EmphasisWithWhitespace
   / Emphasis
   / UserMention
@@ -249,6 +282,23 @@ InlineItemPattern = Whitespace
 
 /**
  *
+ * Spoiler
+ * e.g: ||spoiler||, ||spoiler **bold**||
+ *
+ */
+Spoiler = "||" &{ skipInlineEmoji = false; return true; } text:SpoilerContentItems "||" { return spoiler(text); }
+
+SpoilerContentItems = text:SpoilerContentItem+ { return reducePlainTexts(text); }
+
+// Ensure we consume at least one character and do not accidentally match the closing "||"
+SpoilerContentItem = !"||" item:SpoilerInlineItem { return item; } / !"||" item:SpoilerInlineItemFallback { return item; }
+
+SpoilerInlineItem = &{ skipInlineEmoji = false; return true; } item:InlineItemPattern { return item; }
+
+SpoilerInlineItemFallback = &{ skipInlineEmoji = true; return true; } item:Any { return item; }
+
+/**
+ *
  * URL
  * e.g:
  * Reference: [Rocket.Chat Website](https://rocket.chat), [](https://rocket.chat), <rocket.chat|Rocket.Chat Website>
@@ -256,18 +306,40 @@ InlineItemPattern = Whitespace
  *
  */
 References
-  = "[" title:LinkTitle* "](" href:LinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
+  = "[" title:LinkTitle* "](" href:MarkdownLinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
   / "<" href:LinkRef "|" title:LinkTitle2 ">" { return link(href, [plain(title)]); }
 
-LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) .) { return plain(anyTitle) }
+LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) !("] [" [^\]]* "](") .) { return plain(anyTitle) }
 
 LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
 
-LinkRef = URL / FilePath / p:Phone { return 'tel:' + p.number; } // TODO: Accept parenthesis
+MarkdownLinkRef = MarkdownLinkURL / MarkdownLinkFilePath / p:Phone { return 'tel:' + p.number; }
+
+// LinkRef is used for non-markdown link contexts (like <url|title> syntax) where parentheses aren't balanced
+LinkRef = URL / FilePath / p:Phone { return 'tel:' + p.number; }
 
 FilePath = $(URLScheme URLBody+)
 
-Image = "![" title:Line? "](" href:LinkRef ")" { return title ? image(href, title) : image(href); }
+MarkdownLinkFilePath = $(URLScheme MarkdownLinkURLBody+)
+
+// MarkdownLinkURL allows parentheses in URLs when inside markdown link syntax [title](url)
+MarkdownLinkURL
+  = $(URLScheme URLAuthority MarkdownLinkURLBody*)
+  / $(URLAuthorityHost MarkdownLinkURLBody*)
+
+MarkdownLinkURLBody
+  = (
+    !(MarkdownLinkExtra+ (Whitespace / EndOfLine) / Whitespace)
+    !")" // Don't consume closing paren
+    (AnyText / [*\[\/\]\^_`{}~] / "(" MarkdownLinkURLBodyParen* ")")
+  )+
+
+// Match content inside parentheses within URL
+MarkdownLinkURLBodyParen = !(Whitespace / EndOfLine / ")") (AnyText / [*\[\/\]\^_`{}~(])
+
+MarkdownLinkExtra = [.,!%*\"':;=]
+
+Image = "![" title:Line? "](" href:MarkdownLinkRef ")" { return title ? image(href, title) : image(href); }
 
 URL
   = $(URLScheme URLAuthority URLBody*)
@@ -304,7 +376,7 @@ DomainName
 
 DomainNameLabel = $(DomainChar+ ("-" DomainChar+)*)
 
-DomainChar = !Extra ([\__-] / !Safe) !EndOfLine !Space ![\\/|><%`] .
+DomainChar = !Extra ([\__-] / !Safe) !EndOfLine !Space ![\\/|><%`\[\]] .
 
 /**
  *
@@ -494,7 +566,7 @@ BoldEmoticon = & { return !skipBoldEmoji; } emo:Emoticon & (EmoticonNeighbor / B
 /* Strike */
 Strikethrough = [\x7E] [\x7E] @StrikethroughContent [\x7E] [\x7E] / [\x7E] @StrikethroughContent [\x7E]
 
-StrikethroughContent = text:(Timestamp / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
+StrikethroughContent = text:(TimestampRules / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
       return strike(reducePlainTexts(text));
     }
 

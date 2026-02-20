@@ -20,7 +20,8 @@ export class AppFabricationFulfillment {
 	}
 
 	public setAppInfo(information: IAppInfo): void {
-		this.info = information;
+		this.info = structuredClone(information);
+
 		this.licenseValidationResult.setAppId(information.id);
 	}
 
@@ -37,7 +38,7 @@ export class AppFabricationFulfillment {
 	}
 
 	public setImplementedInterfaces(interfaces: { [int: string]: boolean }): void {
-		this.implemented = interfaces;
+		this.implemented = structuredClone(interfaces);
 	}
 
 	public getImplementedInferfaces(): { [int: string]: boolean } {

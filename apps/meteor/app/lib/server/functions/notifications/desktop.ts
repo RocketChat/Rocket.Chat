@@ -4,7 +4,6 @@ import type { IMessage, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings'
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 import { metrics } from '../../../../metrics/server';
 import { settings } from '../../../../settings/server';
-import type { SubscriptionAggregation } from '../../lib/sendNotificationsOnMessage';
 
 /**
  * Send notification to user
@@ -23,7 +22,7 @@ export async function notifyDesktopUser({
 	room,
 	duration,
 	notificationMessage,
-	receiver,
+	audioNotificationValue,
 }: {
 	userId: string;
 	user: AtLeast<IUser, '_id' | 'name' | 'username'>;
@@ -31,13 +30,11 @@ export async function notifyDesktopUser({
 	room: IRoom;
 	duration?: number;
 	notificationMessage: string;
-	receiver?: SubscriptionAggregation['receiver'][number];
+	audioNotificationValue?: string;
 }): Promise<void> {
 	const { title, text, name } = await roomCoordinator
 		.getRoomDirectives(room.t)
-		.getNotificationDetails(room, user, notificationMessage, userId, receiver?.language);
-
-	const showPushMessage = settings.get<boolean>('Push_show_message');
+		.getNotificationDetails(room, user, notificationMessage, userId);
 
 	const payload = {
 		title: title || '',
@@ -56,12 +53,16 @@ export async function notifyDesktopUser({
 			sender: message.u,
 			type: room.t,
 			message: {
-				msg: 'msg' in message && showPushMessage ? message.msg : '',
+				msg: 'msg' in message ? message.msg : '',
 				...('t' in message && {
 					t: message.t,
 				}),
+				...('content' in message && {
+					content: message.content,
+				}),
 			},
 			name,
+			audioNotificationValue,
 		},
 	};
 

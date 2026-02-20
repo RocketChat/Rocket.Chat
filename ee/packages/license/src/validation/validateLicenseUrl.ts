@@ -50,9 +50,9 @@ export function validateLicenseUrl(this: LicenseManager, license: ILicenseV3, op
 					return !validateHash(url.value, workspaceUrl);
 				case 'url':
 					return !validateUrl(url.value, workspaceUrl);
+				default:
+					return false;
 			}
-
-			return false;
 		})
 		.map((url) => {
 			if (!options.suppressLog) {

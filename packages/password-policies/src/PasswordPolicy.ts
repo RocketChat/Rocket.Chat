@@ -1,15 +1,42 @@
 import { PasswordPolicyError } from './PasswordPolicyError';
 
-type PasswordPolicyType = {
-	enabled: boolean;
-	policy: [name: string, options?: Record<string, unknown>][];
+type PasswordPolicyMap = {
+	minLength: number;
+	maxLength: number;
+	forbidRepeatingCharacters: boolean;
+	forbidRepeatingCharactersCount: number;
+	mustContainAtLeastOneLowercase: boolean;
+	mustContainAtLeastOneUppercase: boolean;
+	mustContainAtLeastOneNumber: boolean;
+	mustContainAtLeastOneSpecialCharacter: boolean;
 };
 
-type ValidationMessageType = {
-	name: string;
-	isValid: boolean;
-	limit?: number;
+type PasswordPolicyKey = keyof PasswordPolicyMap;
+type PasswordPolicyName<K extends PasswordPolicyKey> = `get-password-policy-${K}`;
+
+type PasswordPolicyParametersEntry = {
+	[K in PasswordPolicyKey]: PasswordPolicyMap[K] extends number
+		? [PasswordPolicyName<K>, Record<K, PasswordPolicyMap[K]>]
+		: [PasswordPolicyName<K>];
+}[PasswordPolicyKey];
+
+type PasswordPolicyType<Entry = PasswordPolicyParametersEntry> = {
+	enabled: boolean;
+	policy: Entry[];
 };
+
+export type PasswordPolicyOptions = Partial<
+	PasswordPolicyMap & {
+		enabled: boolean;
+		throwError: boolean;
+	}
+>;
+
+export type PasswordPolicyValidation = {
+	[K in PasswordPolicyKey]: PasswordPolicyMap[K] extends number
+		? { name: PasswordPolicyName<K>; limit: number }
+		: { name: PasswordPolicyName<K> };
+}[PasswordPolicyKey] & { isValid: boolean };
 
 export class PasswordPolicy {
 	private regex: {
@@ -51,7 +78,7 @@ export class PasswordPolicy {
 		mustContainAtLeastOneNumber = false,
 		mustContainAtLeastOneSpecialCharacter = false,
 		throwError = true,
-	}) {
+	}: PasswordPolicyOptions) {
 		this.enabled = enabled;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
@@ -87,12 +114,8 @@ export class PasswordPolicy {
 		return false;
 	}
 
-	sendValidationMessage(password: string): {
-		name: string;
-		isValid: boolean;
-		limit?: number;
-	}[] {
-		const validationReturn: ValidationMessageType[] = [];
+	sendValidationMessage(password: string): PasswordPolicyValidation[] {
+		const validationReturn: PasswordPolicyValidation[] = [];
 
 		if (!this.enabled) {
 			return [];
@@ -223,7 +246,7 @@ export class PasswordPolicy {
 		return true;
 	}
 
-	getPasswordPolicy(): PasswordPolicyType {
+	getPasswordPolicy(): PasswordPolicyType<[name: string, params?: Record<string, number | boolean>]> {
 		const data: PasswordPolicyType = {
 			enabled: false,
 			policy: [],

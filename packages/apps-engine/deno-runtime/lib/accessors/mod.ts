@@ -13,6 +13,10 @@ import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcom
 import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor.ts';
 import type { IApi } from '@rocket.chat/apps-engine/definition/api/IApi.ts';
 import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/IVideoConfProvider.ts';
+import type {
+	IOutboundPhoneMessageProvider,
+	IOutboundEmailMessageProvider,
+} from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider.ts';
 
 import { Http } from './http.ts';
 import { HttpExtend } from './extenders/HttpExtender.ts';
@@ -188,6 +192,17 @@ export class AppAccessors {
 						return this._proxy.provideVideoConfProvider(provider);
 					},
 				},
+				outboundCommunication: {
+					_proxy: this.proxify('getConfigurationExtend:outboundCommunication'),
+					registerEmailProvider(provider: IOutboundEmailMessageProvider) {
+						AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
+						return this._proxy.registerEmailProvider(provider);
+					},
+					registerPhoneProvider(provider: IOutboundPhoneMessageProvider) {
+						AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
+						return this._proxy.registerPhoneProvider(provider);
+					},
+				},
 				slashCommands: {
 					_proxy: this.proxify('getConfigurationExtend:slashCommands'),
 					provideSlashCommand(slashcommand: ISlashCommand) {
@@ -238,6 +253,7 @@ export class AppAccessors {
 				getThreadReader: () => this.proxify('getReader:getThreadReader'),
 				getRoleReader: () => this.proxify('getReader:getRoleReader'),
 				getContactReader: () => this.proxify('getReader:getContactReader'),
+				getExperimentalReader: () => this.proxify('getReader:getExperimentalReader'),
 			};
 		}
 

@@ -9,7 +9,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		super(db, 'calendar_event', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: { startTime: -1, uid: 1, externalId: 1 },

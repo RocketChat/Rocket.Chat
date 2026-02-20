@@ -1,7 +1,8 @@
 import os from 'os';
 
 import type { AppStatusReport } from '@rocket.chat/core-services';
-import { Apps, License, ServiceClassInternal } from '@rocket.chat/core-services';
+import { Apps, License, ServiceClassInternal, Settings } from '@rocket.chat/core-services';
+import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatus, defaultPingInterval, indexExpire } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
 import EJSON from 'ejson';
@@ -10,7 +11,9 @@ import { ServiceBroker, Transporters, Serializers } from 'moleculer';
 
 import { getLogger } from './getLogger';
 import { getTransporter } from './getTransporter';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
+import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
 
 const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost';
@@ -18,11 +21,11 @@ const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() 
 const { Base } = Serializers;
 
 class EJSONSerializer extends Base {
-	serialize(obj: any): Buffer {
+	override serialize(obj: any): Buffer {
 		return Buffer.from(EJSON.stringify(obj));
 	}
 
-	deserialize(buf: Buffer): any {
+	override deserialize(buf: Buffer): any {
 		return EJSON.parse(buf.toString());
 	}
 }
@@ -47,15 +50,8 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			}
 		});
 
-		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
-			if (clientAction === 'removed') {
-				return;
-			}
-
-			const { _id, value } = setting;
-			if (_id !== 'Troubleshoot_Disable_Instance_Broadcast') {
-				return;
-			}
+		this.onSettingChanged('Troubleshoot_Disable_Instance_Broadcast', async ({ setting }): Promise<void> => {
+			const { value } = setting;
 
 			if (typeof value !== 'boolean') {
 				return;
@@ -69,19 +65,16 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		});
 	}
 
-	async created() {
+	override async created() {
 		const transporter = getTransporter({
 			transporter: process.env.TRANSPORTER,
 			port: process.env.TCP_PORT,
 			extra: process.env.TRANSPORTER_EXTRA,
 		});
 
-		const activeInstances = InstanceStatusRaw.getActiveInstancesAddress();
+		const isTransporterTCP = typeof transporter !== 'string';
 
-		this.transporter =
-			typeof transporter !== 'string'
-				? new Transporters.TCP({ ...transporter, urls: activeInstances })
-				: new Transporters.NATS({ url: transporter });
+		this.transporter = isTransporterTCP ? new Transporters.TCP(transporter) : new Transporters.NATS({ url: transporter });
 
 		this.broker = new ServiceBroker({
 			nodeID: InstanceStatus.id(),
@@ -124,9 +117,45 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 				},
 			},
 		});
+
+		if (isTransporterTCP) {
+			const changeStream = InstanceStatusRaw.watchActiveInstances();
+
+			changeStream
+				.on('change', (change) => {
+					if (change.operationType === 'update') {
+						return;
+					}
+					if (change.operationType === 'insert' && change.fullDocument?.extraInformation?.tcpPort) {
+						this.connectNode(change.fullDocument);
+						return;
+					}
+					if (change.operationType === 'delete') {
+						this.disconnectNode(change.documentKey._id);
+					}
+				})
+				.once('error', (err) => {
+					SystemLogger.error({ msg: 'Error in InstanceStatus change stream:', err });
+				});
+		}
 	}
 
-	async started() {
+	private connectNode(record: IInstanceStatus) {
+		if (record._id === InstanceStatus.id()) {
+			return;
+		}
+
+		const { host, tcpPort } = record.extraInformation;
+
+		(this.broker?.transit?.tx as any).addOfflineNode(record._id, host, tcpPort);
+	}
+
+	private disconnectNode(nodeId: string) {
+		(this.broker.transit?.tx as any).nodes.disconnected(nodeId, false);
+		(this.broker.transit?.tx as any).nodes.nodes.delete(nodeId);
+	}
+
+	override async started() {
 		await this.broker.start();
 
 		const instance = {
@@ -154,6 +183,8 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			if (!hasLicense) {
 				return;
 			}
+
+			this.troubleshootDisableInstanceBroadcast = await Settings.get<boolean>('Troubleshoot_Disable_Instance_Broadcast');
 
 			await this.startBroadcast();
 		} catch (error) {
@@ -186,14 +217,14 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	async getAppsStatusInInstances(): Promise<AppStatusReport> {
 		const instances = await this.getInstances();
 
+		if (instances.length < 2) {
+			throw new AppsEngineNoNodesFoundError();
+		}
+
 		const control: Promise<void>[] = [];
 		const statusByApp: AppStatusReport = {};
 
 		instances.forEach((instance) => {
-			if (instance.local) {
-				return;
-			}
-
 			const { id: instanceId } = instance;
 
 			control.push(
@@ -213,7 +244,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 							statusByApp[appId] = [];
 						}
 
-						statusByApp[appId].push({ instanceId, status });
+						statusByApp[appId].push({ instanceId, isLocal: instance.local, status });
 					});
 				})(),
 			);

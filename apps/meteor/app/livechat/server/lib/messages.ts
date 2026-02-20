@@ -7,7 +7,7 @@ import { LivechatDepartment, Messages } from '@rocket.chat/models';
 import type { ILivechatMessage } from './localTypes';
 import { getRoom } from './rooms';
 import { showConnecting } from './utils';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { deleteMessage as deleteMessageFunc } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage as sendMessageFunc } from '../../../lib/server/functions/sendMessage';
 import { updateMessage as updateMessageFunc } from '../../../lib/server/functions/updateMessage';

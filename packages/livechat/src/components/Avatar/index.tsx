@@ -1,8 +1,8 @@
 import { Component } from 'preact';
 import type { CSSProperties } from 'preact/compat';
 
-import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
+import { createClassName } from '../../helpers/createClassName';
 
 type AvatarProps = {
 	small?: boolean;
@@ -19,7 +19,7 @@ type AvatarState = {
 };
 
 export class Avatar extends Component<AvatarProps, AvatarState> {
-	static getDerivedStateFromProps(props: AvatarProps) {
+	static override getDerivedStateFromProps(props: AvatarProps) {
 		if (props.src) {
 			return { errored: false };
 		}
@@ -27,7 +27,7 @@ export class Avatar extends Component<AvatarProps, AvatarState> {
 		return null;
 	}
 
-	state = {
+	override state = {
 		errored: false,
 	};
 

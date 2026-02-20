@@ -2,7 +2,6 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import { cronJobs } from '@rocket.chat/cron';
 import { Settings, Users } from '@rocket.chat/models';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
@@ -77,25 +76,25 @@ const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApp
 
 const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	const token = await getWorkspaceAccessToken();
-	const baseUrl = Apps.getMarketplaceUrl();
 	const workspaceIdSetting = await Settings.getValueById('Cloud_Workspace_Id');
 
 	const currentSeats = await Users.getActiveLocalUserCount();
 
-	const fullUrl = `${baseUrl}/v1/workspaces/${workspaceIdSetting}/apps`;
-	const options = {
-		headers: {
-			Authorization: `Bearer ${token}`,
-		},
-		params: {
-			seats: currentSeats,
-		},
-	};
+	const fullUrl = `v1/workspaces/${workspaceIdSetting}/apps`;
 
 	let data = [];
 
 	try {
-		const response = await fetch(fullUrl, options);
+		const response = await Apps.getMarketplaceClient().fetch(fullUrl, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+			params: {
+				seats: currentSeats,
+			},
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
+		});
 
 		const result = await response.json();
 

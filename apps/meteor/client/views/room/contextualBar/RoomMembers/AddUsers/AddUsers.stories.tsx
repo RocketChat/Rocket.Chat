@@ -1,10 +1,9 @@
+import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import AddUsers from './AddUsers';
-import { Contextualbar } from '../../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/RoomMembers/AddUsers',
 	component: AddUsers,
 	parameters: {
 		layout: 'fullscreen',

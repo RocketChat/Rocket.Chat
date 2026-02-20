@@ -1,12 +1,13 @@
 import { Box, ModalFooterAnnotation, ModalIcon } from '@rocket.chat/fuselage';
 import { ExternalLink, GenericModal } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { dispatchToastMessage } from '../../../../lib/toast';
+import { links } from '../../../../lib/links';
 import { useE2EEResetRoomKey } from '../../hooks/useE2EEResetRoomKey';
 
-const E2EE_RESET_KEY_LINK = 'https://go.rocket.chat/i/e2ee-guide';
+const E2EE_RESET_KEY_LINK = links.go.e2eeGuide;
 
 type ResetKeysE2EEModalProps = {
 	roomType: string;
@@ -17,6 +18,8 @@ type ResetKeysE2EEModalProps = {
 const ResetKeysE2EEModal = ({ roomType, roomId, onCancel }: ResetKeysE2EEModalProps): ReactElement => {
 	const { t } = useTranslation();
 	const resetRoomKeyMutation = useE2EEResetRoomKey();
+
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleResetRoomKey = () => {
 		resetRoomKeyMutation.mutate(

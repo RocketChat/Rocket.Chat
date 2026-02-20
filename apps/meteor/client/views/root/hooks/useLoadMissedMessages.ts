@@ -2,9 +2,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useConnectionStatus } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
-import { Messages, Subscriptions } from '../../../../app/models/client';
 import { LegacyRoomManager, upsertMessage } from '../../../../app/ui-utils/client';
 import { callWithErrorHandling } from '../../../lib/utils/callWithErrorHandling';
+import { Messages, Subscriptions } from '../../../stores';
 
 /**
  * Loads missed messages for a room
@@ -23,7 +23,7 @@ const loadMissedMessages = async (rid: IRoom['_id']): Promise<void> => {
 	try {
 		const result = await callWithErrorHandling('loadMissedMessages', rid, lastMessage.ts);
 		if (result) {
-			const subscription = Subscriptions.findOne({ rid });
+			const subscription = Subscriptions.state.find((record) => record.rid === rid);
 			await Promise.all(Array.from(result).map((msg) => upsertMessage({ msg, subscription })));
 		}
 	} catch (error) {

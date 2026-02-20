@@ -2,9 +2,10 @@ import type { IRole } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { Roles } from '../../app/models/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
+import { watchUserId } from '../meteor/user';
+import { Roles } from '../stores';
 
 Meteor.startup(() => {
 	onLoggedIn(async () => {
@@ -26,9 +27,7 @@ Meteor.startup(() => {
 	};
 
 	Tracker.autorun((c) => {
-		if (!Meteor.userId()) {
-			return;
-		}
+		if (!watchUserId()) return;
 
 		Tracker.afterFlush(() => {
 			sdk.stream('roles', ['roles'], (role) => {

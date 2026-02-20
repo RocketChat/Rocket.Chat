@@ -1,21 +1,14 @@
 import { api } from '@rocket.chat/core-services';
-import type { IRoom, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
 
 import { deleteRoom } from './deleteRoom';
+import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../../lib/constants';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
 
 const FILE_CLEANUP_BATCH_SIZE = 1000;
-async function performFileAttachmentCleanupBatch(idsSet: Set<string>, replaceWith?: MessageAttachment) {
-	if (idsSet.size === 0) return;
-
-	const ids = [...idsSet];
-	await Messages.removeFileAttachmentsByMessageIds(ids, replaceWith);
-	await Messages.clearFilesByMessageIds(ids);
-	idsSet.clear();
-}
 
 export async function cleanRoomHistory({
 	rid = '',
@@ -55,6 +48,27 @@ export async function cleanRoomHistory({
 	});
 
 	const targetMessageIdsForAttachmentRemoval = new Set<string>();
+	// Since we remove every file from the messages, we don't need to specify which fileId has been removed.
+	const pruneMessageAttachment = { type: 'removed-file', color: NOTIFICATION_ATTACHMENT_COLOR, text };
+
+	async function performFileAttachmentCleanupBatch() {
+		if (targetMessageIdsForAttachmentRemoval.size === 0) return;
+
+		const ids = [...targetMessageIdsForAttachmentRemoval];
+		await Messages.removeFileAttachmentsByMessageIds(ids, pruneMessageAttachment);
+		await Messages.clearFilesByMessageIds(ids);
+		void api.broadcast('notify.deleteMessageBulk', rid, {
+			rid,
+			excludePinned,
+			ignoreDiscussion,
+			ts,
+			users: fromUsers,
+			ids,
+			filesOnly: true,
+			replaceFileAttachmentsWith: pruneMessageAttachment,
+		});
+		targetMessageIdsForAttachmentRemoval.clear();
+	}
 
 	for await (const document of cursor) {
 		const uploadsStore = FileUpload.getStore('Uploads');
@@ -67,12 +81,12 @@ export async function cleanRoomHistory({
 		}
 
 		if (targetMessageIdsForAttachmentRemoval.size >= FILE_CLEANUP_BATCH_SIZE) {
-			await performFileAttachmentCleanupBatch(targetMessageIdsForAttachmentRemoval, { color: '#FD745E', text });
+			await performFileAttachmentCleanupBatch();
 		}
 	}
 
 	if (targetMessageIdsForAttachmentRemoval.size > 0) {
-		await performFileAttachmentCleanupBatch(targetMessageIdsForAttachmentRemoval, { color: '#FD745E', text });
+		await performFileAttachmentCleanupBatch();
 	}
 
 	if (filesOnly) {

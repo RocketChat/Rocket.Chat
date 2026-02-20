@@ -3,7 +3,6 @@ import type { RouteName } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../app/authorization/client';
-import { Subscriptions } from '../../../app/models/client';
 import type {
 	RoomSettingsEnum,
 	RoomMemberActions,
@@ -15,6 +14,7 @@ import type {
 } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { router } from '../../providers/RouterProvider';
+import { Subscriptions } from '../../stores';
 import RoomRoute from '../../views/room/RoomRoute';
 import MainLayout from '../../views/root/MainLayout';
 import { appLayout } from '../appLayout';
@@ -42,23 +42,17 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			getUiText(_context: ValueOf<typeof UiTextContext>): string {
 				return '';
 			},
-			condition(): boolean {
-				return true;
-			},
 			getAvatarPath(_room): string {
 				return '';
 			},
 			findRoom(_identifier: string): IRoom | undefined {
 				return undefined;
 			},
-			showJoinLink(_roomId: string): boolean {
-				return false;
-			},
 			isLivechatRoom(): boolean {
 				return false;
 			},
 			canSendMessage(room: IRoom): boolean {
-				return Subscriptions.find({ rid: room._id }).count() > 0;
+				return Subscriptions.state.count((record) => record.rid === room._id) > 0;
 			},
 			...directives,
 			config: roomConfig,
@@ -73,18 +67,18 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		roomType: RoomType,
 		subData: RoomIdentification,
 		queryParams?: Record<string, string>,
-		options: { replace?: boolean } = {},
+		options: { replace?: boolean; routeParamsOverrides?: Record<string, string> } = {},
 	): void {
 		const config = this.getRoomTypeConfig(roomType);
 		if (!config?.route) {
 			return;
 		}
 
-		let routeData = {};
+		let _routeData = {};
 		if (config.route.link) {
-			routeData = config.route.link(subData);
+			_routeData = config.route.link(subData);
 		} else if (subData?.name) {
-			routeData = {
+			_routeData = {
 				name: subData.name,
 			};
 		} else {
@@ -94,7 +88,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		router.navigate(
 			{
 				pattern: config.route.path ?? '/home',
-				params: routeData,
+				params: { ..._routeData, ...options.routeParamsOverrides },
 				search: queryParams,
 			},
 			options,
@@ -162,7 +156,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		}
 	}
 
-	protected validateRoomConfig(roomConfig: IRoomTypeClientConfig): void {
+	protected override validateRoomConfig(roomConfig: IRoomTypeClientConfig): void {
 		super.validateRoomConfig(roomConfig);
 
 		const { route, label } = roomConfig;
@@ -176,7 +170,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		}
 	}
 
-	protected addRoomType(roomConfig: IRoomTypeClientConfig, directives: IRoomTypeClientDirectives): void {
+	protected override addRoomType(roomConfig: IRoomTypeClientConfig, directives: IRoomTypeClientDirectives): void {
 		super.addRoomType(roomConfig, directives);
 
 		if (roomConfig.route?.path && roomConfig.route.name && directives.extractOpenRoomParams) {

@@ -1,13 +1,15 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout, FieldError } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
-import { useId, type ReactElement } from 'react';
+import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useId, useMemo, type ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import UsersInRoleTable from './UsersInRoleTable';
-import { Page, PageHeader, PageContent } from '../../../../components/Page';
+import { useRemoveUserFromRole } from './hooks/useRemoveUserFromRole';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 
@@ -17,7 +19,7 @@ type UsersInRolePayload = {
 };
 
 const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
 
@@ -41,7 +43,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 			await Promise.all(
 				users.map(async (user) => {
 					if (user) {
-						await addUserToRoleEndpoint({ roleName: _id, username: user, roomId: rid });
+						await addUserToRoleEndpoint({ roleId: _id, username: user, roomId: rid });
 					}
 				}),
 			);
@@ -53,6 +55,28 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
+
+	const getUsersInRoleEndpoint = useEndpoint('GET', '/v1/roles.getUsersInRole');
+
+	const paginationData = usePagination();
+	const { itemsPerPage, current } = paginationData;
+
+	const query = useMemo(
+		() => ({
+			role: _id,
+			...(rid && { roomId: rid }),
+			...(itemsPerPage && { count: itemsPerPage }),
+			...(current && { offset: current }),
+		}),
+		[itemsPerPage, current, rid, _id],
+	);
+
+	const { data, isLoading, isSuccess, refetch, isError } = useQuery({
+		queryKey: ['getUsersInRole', _id, query],
+		queryFn: async () => getUsersInRoleEndpoint(query),
+	});
+
+	const handleRemove = useRemoveUserFromRole({ rid, roleId: _id, roleName: name, roleDescription: description });
 
 	return (
 		<Page>
@@ -127,7 +151,18 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 					</Margins>
 				</Box>
 				<Margins blockStart={8}>
-					{(role.scope === 'Users' || rid) && <UsersInRoleTable rid={rid} roleId={_id} roleName={name} description={description} />}
+					{(role.scope === 'Users' || rid) && (
+						<UsersInRoleTable
+							isLoading={isLoading}
+							isError={isError}
+							isSuccess={isSuccess}
+							total={data?.total || 0}
+							users={data?.users || []}
+							onRemove={handleRemove}
+							refetch={refetch}
+							paginationData={paginationData}
+						/>
+					)}
 					{role.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}
 				</Margins>
 			</PageContent>

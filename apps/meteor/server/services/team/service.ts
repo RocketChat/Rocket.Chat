@@ -1,4 +1,4 @@
-import { Room, Authorization, Message, ServiceClassInternal } from '@rocket.chat/core-services';
+import { Room, Authorization, Message, ServiceClassInternal, api } from '@rocket.chat/core-services';
 import type {
 	IListRoomsFilter,
 	ITeamAutocompleteResult,
@@ -9,7 +9,7 @@ import type {
 	ITeamService,
 	ITeamUpdateData,
 } from '@rocket.chat/core-services';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import type {
 	IRoom,
 	IUser,
@@ -39,10 +39,7 @@ import { settings } from '../../../app/settings/server';
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
 
-	async create(
-		uid: string,
-		{ team, room = { name: team.name, extraData: {} }, members, owner, sidepanel }: ITeamCreateParams,
-	): Promise<ITeam> {
+	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
 		if (!(await checkUsernameAvailability(team.name))) {
 			throw new Error('team-name-already-exists');
 		}
@@ -84,13 +81,12 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				(
 					await Room.create(owner || uid, {
 						...room,
-						type: team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c',
+						type: team.type === TeamType.PRIVATE ? 'p' : 'c',
 						name: team.name,
 						members: memberUsernames as string[],
 						extraData: {
 							...room.extraData,
 						},
-						sidepanel,
 					})
 				)._id;
 
@@ -162,7 +158,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		if (updateRoom && typeof type !== 'undefined') {
-			await saveRoomType(team.roomId, type === TEAM_TYPE.PRIVATE ? 'p' : 'c', user);
+			await saveRoomType(team.roomId, type === TeamType.PRIVATE ? 'p' : 'c', user);
 		}
 
 		await Team.updateNameAndType(teamId, updateData);
@@ -177,7 +173,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		let teamIds = unfilteredTeamIds;
 
 		if (callerId) {
-			const publicTeams = await Team.findByIdsAndType<Pick<ITeam, '_id'>>(unfilteredTeamIds, TEAM_TYPE.PUBLIC, {
+			const publicTeams = await Team.findByIdsAndType<Pick<ITeam, '_id'>>(unfilteredTeamIds, TeamType.PUBLIC, {
 				projection: { _id: 1 },
 			}).toArray();
 			const publicTeamIds = publicTeams.map(({ _id }) => _id);
@@ -420,29 +416,24 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		};
 	}
 
-	async unsetTeamIdOfRooms(uid: string, teamId: string): Promise<void> {
-		if (!teamId) {
-			throw new Error('missing-teamId');
-		}
-
-		const team = await Team.findOneById<Pick<ITeam, 'roomId'>>(teamId, { projection: { roomId: 1 } });
+	async unsetTeamIdOfRooms(user: AtLeast<IUser, '_id' | 'username' | 'name'>, team: AtLeast<ITeam, '_id' | 'roomId'>): Promise<void> {
 		if (!team) {
 			throw new Error('invalid-team');
 		}
 
 		const room = await Rooms.findOneById<Pick<IRoom, 'name'>>(team.roomId, { projection: { name: 1 } });
+
 		if (!room) {
 			throw new Error('invalid-room');
 		}
 
-		const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(uid, { projection: { username: 1, name: 1 } });
 		if (!user) {
 			throw new Error('invalid-user');
 		}
 
 		await Message.saveSystemMessage('user-converted-to-channel', team.roomId, room.name || '', user);
 
-		await Rooms.unsetTeamId(teamId);
+		await Rooms.unsetTeamId(team._id);
 	}
 
 	async updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom = false): Promise<IRoom> {
@@ -533,7 +524,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const { getAllRooms, allowPrivateTeam, name, isDefault } = filter;
 
 		const isMember = await TeamMember.findOneByUserIdAndTeamId(uid, teamId);
-		if (team.type === TEAM_TYPE.PRIVATE && !allowPrivateTeam && !isMember) {
+		if (team.type === TeamType.PRIVATE && !allowPrivateTeam && !isMember) {
 			throw new Error('user-not-on-private-team');
 		}
 
@@ -580,7 +571,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('invalid-team');
 		}
 		const isMember = await TeamMember.findOneByUserIdAndTeamId(uid, teamId);
-		if (team.type === TEAM_TYPE.PRIVATE && !allowPrivateTeam && !isMember) {
+		if (team.type === TeamType.PRIVATE && !allowPrivateTeam && !isMember) {
 			throw new Error('user-not-on-private-team');
 		}
 
@@ -727,7 +718,21 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			await addUserToRoom(team.roomId, user, createdBy, { skipSystemMessage: false });
 
 			if (member.roles) {
-				await this.addRolesToMember(teamId, member.userId, member.roles);
+				const isRoleAddedToTeam = await this.addRolesToMember(teamId, member.userId, member.roles);
+				const isRoleAddedToSubscription = await this.addRolesToSubscription(team.roomId, member.userId, member.roles);
+				if (settings.get<boolean>('UI_DisplayRoles') && isRoleAddedToTeam && isRoleAddedToSubscription) {
+					member.roles.forEach((role) => {
+						void api.broadcast('user.roleUpdate', {
+							type: 'added',
+							_id: role,
+							u: {
+								_id: user._id,
+								username: user.username,
+							},
+							scope: team.roomId,
+						});
+					});
+				}
 			}
 		}
 	}
@@ -889,7 +894,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	getAllPublicTeams(options: FindOptions<ITeam>): Promise<ITeam[]>;
 
 	async getAllPublicTeams(options?: undefined | FindOptions<ITeam>): Promise<ITeam[]> {
-		return options ? Team.findByType(TEAM_TYPE.PUBLIC, options).toArray() : Team.findByType(TEAM_TYPE.PUBLIC).toArray();
+		return options ? Team.findByType(TeamType.PUBLIC, options).toArray() : Team.findByType(TeamType.PUBLIC).toArray();
 	}
 
 	async getOneById(teamId: string, options?: FindOptions<ITeam>): Promise<ITeam | null> {
@@ -941,6 +946,17 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		return !!(await TeamMember.updateRolesByTeamIdAndUserId(teamId, userId, roles));
+	}
+
+	async addRolesToSubscription(roomId: string, userId: string, roles: Array<string>): Promise<boolean> {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, userId);
+
+		if (!subscription) {
+			// TODO should this throw an error instead?
+			return false;
+		}
+
+		return !!(await Subscriptions.addRolesByUserId(userId, roles, roomId));
 	}
 
 	async removeRolesFromMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {
@@ -1058,9 +1074,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		return rooms;
 	}
 
-	private getParentRoom(team: AtLeast<ITeam, 'roomId'>): Promise<Pick<IRoom, 'name' | 'fname' | 't' | '_id' | 'sidepanel'> | null> {
-		return Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | '_id' | 'sidepanel'>>(team.roomId, {
-			projection: { name: 1, fname: 1, t: 1, sidepanel: 1 },
+	private getParentRoom(team: AtLeast<ITeam, 'roomId'>): Promise<Pick<IRoom, 'name' | 'fname' | 't' | '_id'> | null> {
+		return Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | '_id'>>(team.roomId, {
+			projection: { name: 1, fname: 1, t: 1 },
 		});
 	}
 

@@ -175,10 +175,10 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 	return (
 		<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
 			<FocusScope contain restoreFocus autoFocus>
-				<Modal open id={id} ref={ref}>
+				<Modal aria-labelledby={`${id}-title`} open id={id} ref={ref}>
 					<ModalHeader>
 						{view.showIcon ? <ModalThumb url={getURL(`/api/apps/${view.appId}/icon`)} /> : null}
-						<ModalTitle>{modalParser.text(view.title, UiKit.BlockContext.NONE, 0)}</ModalTitle>
+						<ModalTitle id={`${id}-title`}>{modalParser.text(view.title, UiKit.BlockContext.NONE, 0)}</ModalTitle>
 						<ModalClose tabIndex={-1} onClick={onClose} />
 					</ModalHeader>
 					<ModalContent>

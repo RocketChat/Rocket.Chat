@@ -25,6 +25,7 @@ import {
 	Modify,
 	Notifier,
 	OAuthAppsReader,
+	OutboundMessageProviderExtend,
 	Persistence,
 	PersistenceRead,
 	Reader,
@@ -47,6 +48,7 @@ import {
 } from '../accessors';
 import { CloudWorkspaceRead } from '../accessors/CloudWorkspaceRead';
 import { ContactRead } from '../accessors/ContactRead';
+import { ExperimentalRead } from '../accessors/ExperimentalRead';
 import { ThreadRead } from '../accessors/ThreadRead';
 import { UIExtend } from '../accessors/UIExtend';
 import type { AppBridges } from '../bridges/AppBridges';
@@ -114,8 +116,9 @@ export class AppAccessorManager {
 			const excs = new ExternalComponentsExtend(this.manager.getExternalComponentManager(), appId);
 			const scheduler = new SchedulerExtend(this.manager.getSchedulerManager(), appId);
 			const ui = new UIExtend(this.manager.getUIActionButtonManager(), appId);
+			const outboundComms = new OutboundMessageProviderExtend(this.manager.getOutboundCommunicationProviderManager(), appId);
 
-			this.configExtenders.set(appId, new ConfigurationExtend(htt, sets, cmds, apis, excs, scheduler, ui, videoConf));
+			this.configExtenders.set(appId, new ConfigurationExtend(htt, sets, cmds, apis, excs, scheduler, ui, videoConf, outboundComms));
 		}
 
 		return this.configExtenders.get(appId);
@@ -186,12 +189,28 @@ export class AppAccessorManager {
 			const oauthApps = new OAuthAppsReader(this.bridges.getOAuthAppsBridge(), appId);
 			const contactReader = new ContactRead(this.bridges, appId);
 			const thread = new ThreadRead(this.bridges.getThreadBridge(), appId);
-
 			const role = new RoleRead(this.bridges.getRoleBridge(), appId);
+			const experimental = new ExperimentalRead(this.bridges.getExperimentalBridge(), appId);
 
 			this.readers.set(
 				appId,
-				new Reader(env, msg, persist, room, user, noti, livechat, upload, cloud, videoConf, contactReader, oauthApps, thread, role),
+				new Reader(
+					env,
+					msg,
+					persist,
+					room,
+					user,
+					noti,
+					livechat,
+					upload,
+					cloud,
+					videoConf,
+					contactReader,
+					oauthApps,
+					thread,
+					role,
+					experimental,
+				),
 			);
 		}
 

@@ -2,6 +2,7 @@ import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { App, SettingValue } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useMemo, useCallback } from 'react';
@@ -13,6 +14,7 @@ import AppDetailsPageTabs from './AppDetailsPageTabs';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetails from './tabs/AppDetails';
+import AppInstances from './tabs/AppInstances';
 import AppLogs from './tabs/AppLogs';
 import { AppLogsFilterContextualBar } from './tabs/AppLogs/Filters/AppLogsFilterContextualBar';
 import { useAppLogsFilterForm } from './tabs/AppLogs/useAppLogsFilterForm';
@@ -22,7 +24,6 @@ import AppSecurity from './tabs/AppSecurity/AppSecurity';
 import AppSettings from './tabs/AppSettings';
 import { useCompactMode } from './useCompactMode';
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
-import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 
 type AppDetailsPageFormData = Record<string, SettingValue>;
 
@@ -121,6 +122,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 									isSecurityVisible={isSecurityVisible}
 									settings={settings}
 									tab={tab}
+									hasCluster={!!appData.clusterStatus}
 								/>
 								{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
 								{tab === 'requests' && <AppRequests id={id} isAdminUser={isAdminUser} />}
@@ -143,6 +145,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 										<AppLogs id={id} />
 									</FormProvider>
 								)}
+								{tab === 'instances' && <AppInstances id={id} />}
 							</>
 						)}
 					</Box>
@@ -160,7 +163,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 			</Page>
 			{compactMode && contextualBar === 'filter-logs' && (
 				<FormProvider {...logsFilterFormMethods}>
-					<AppLogsFilterContextualBar onClose={handleReturnToLogs} />
+					<AppLogsFilterContextualBar appId={id} onClose={handleReturnToLogs} />
 				</FormProvider>
 			)}
 		</Page>

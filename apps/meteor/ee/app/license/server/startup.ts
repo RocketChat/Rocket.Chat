@@ -9,7 +9,7 @@ import { getAppCount } from './lib/getAppCount';
 import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorkspace';
 import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 
 export const startLicense = async () => {
 	settings.watch<string>('Site_Url', (value) => {
@@ -107,7 +107,9 @@ export const startLicense = async () => {
 
 	License.setLicenseLimitCounter('activeUsers', () => Users.getActiveLocalUserCount());
 	License.setLicenseLimitCounter('guestUsers', () => Users.getActiveLocalGuestCount());
-	License.setLicenseLimitCounter('roomsPerGuest', async (context) => (context?.userId ? Subscriptions.countByUserId(context.userId) : 0));
+	License.setLicenseLimitCounter('roomsPerGuest', async (context) =>
+		context?.userId ? Subscriptions.countByUserIdExceptType(context.userId, 'd') : 0,
+	);
 	License.setLicenseLimitCounter('privateApps', () => getAppCount('private'));
 	License.setLicenseLimitCounter('marketplaceApps', () => getAppCount('marketplace'));
 	License.setLicenseLimitCounter('monthlyActiveContacts', () => LivechatContacts.countContactsOnPeriod(moment.utc().format('YYYY-MM')));

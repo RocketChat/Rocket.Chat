@@ -1,10 +1,9 @@
+import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import AutoTranslate from './AutoTranslate';
-import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/AutoTranslate',
 	component: AutoTranslate,
 	parameters: {
 		layout: 'fullscreen',

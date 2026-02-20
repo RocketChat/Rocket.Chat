@@ -1,9 +1,9 @@
 import type { IRoomRead } from '../../definition/accessors';
 import type { IMessageRaw } from '../../definition/messages';
-import type { IRoom } from '../../definition/rooms';
+import type { IRoom, IRoomRaw } from '../../definition/rooms';
 import type { IUser } from '../../definition/users';
 import type { RoomBridge } from '../bridges';
-import { type GetMessagesOptions, GetMessagesSortableFields } from '../bridges/RoomBridge';
+import { type GetMessagesOptions, type GetRoomsFilters, type GetRoomsOptions, GetMessagesSortableFields } from '../bridges/RoomBridge';
 
 export class RoomRead implements IRoomRead {
 	constructor(
@@ -44,6 +44,22 @@ export class RoomRead implements IRoomRead {
 
 	public getMembers(roomId: string): Promise<Array<IUser>> {
 		return this.roomBridge.doGetMembers(roomId, this.appId);
+	}
+
+	public getAllRooms(filters: GetRoomsFilters = {}, { limit = 100, skip = 0 }: GetRoomsOptions = {}): Promise<Array<IRoomRaw> | undefined> {
+		if (!Number.isFinite(limit) || limit <= 0 || limit > 100) {
+			throw new Error(`Invalid limit provided. Expected number between 1 and 100, got ${limit}`);
+		}
+
+		if (!Number.isFinite(skip) || skip < 0) {
+			throw new Error(`Invalid skip provided. Expected number >= 0, got ${skip}`);
+		}
+
+		return this.roomBridge.doGetAllRooms(
+			filters,
+			{ limit, skip },
+			this.appId,
+		);
 	}
 
 	public getDirectByUsernames(usernames: Array<string>): Promise<IRoom> {

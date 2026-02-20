@@ -1,4 +1,4 @@
-import type { ISetting, ISettingColor, ISettingSelectOption, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { ISetting, ISettingColor, ISettingSelectOption, RocketChatRecordDeleted, SettingValue } from '@rocket.chat/core-typings';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
 import type {
 	Collection,
@@ -21,10 +21,10 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		super(db, 'settings', trash);
 	}
 
-	async getValueById(_id: string): Promise<ISetting['value'] | undefined> {
+	async getValueById<T extends SettingValue = SettingValue>(_id: string): Promise<T | undefined> {
 		const setting = await this.findOne<Pick<ISetting, 'value'>>({ _id }, { projection: { value: 1 } });
 
-		return setting?.value;
+		return setting?.value as T;
 	}
 
 	findNotHidden({ updatedAfter }: { updatedAfter?: Date } = {}): FindCursor<ISetting> {
