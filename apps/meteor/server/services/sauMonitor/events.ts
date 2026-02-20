@@ -1,9 +1,16 @@
-import type { ISocketConnection, ISocketConnectionLogged } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 
 export const sauEvents = new Emitter<{
-	'accounts.login': { userId: string; connection: ISocketConnectionLogged };
-	'accounts.logout': { userId: string; connection: ISocketConnection };
-	'socket.connected': ISocketConnection;
-	'socket.disconnected': ISocketConnection;
+	'sau.accounts.login': {
+		userId: string;
+		instanceId: string;
+		connectionId: string;
+		loginToken?: string;
+		clientAddress: string;
+		userAgent: string;
+		host: string;
+	};
+	'sau.accounts.logout': { userId: string; sessionId: string };
+	'sau.socket.connected': { instanceId: string; connectionId: string };
+	'sau.socket.disconnected': { instanceId: string; connectionId: string };
 }>();

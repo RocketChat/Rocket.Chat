@@ -169,7 +169,7 @@ export class IncomingSipCall extends BaseSipCall {
 					answer: null,
 				});
 
-				calleeAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
+				void calleeAgent.onRemoteDescriptionChanged(this.call._id, negotiationId);
 
 				logger.debug({ msg: 'modify', method: 'IncomingSipCall.createDialog', req: this.session.stripDrachtioServerDetails(req) });
 			} catch (err) {
