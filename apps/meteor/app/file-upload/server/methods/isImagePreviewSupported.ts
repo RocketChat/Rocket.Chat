@@ -1,15 +1,14 @@
 export function isImagePreviewSupported(mimeType: string): boolean {
 	// Only attempt preview generation for image types that can be processed by Sharp
 	// This excludes vendor-specific formats like image/vnd.dwg that cannot be rendered
-	const supportedTypes = new Set([
-		'image/bmp',
-		'image/x-windows-bmp',
-		'image/jpeg',
-		'image/pjpeg',
-		'image/png',
-		'image/gif',
-		'image/webp',
-		'image/svg+xml',
-	]);
-	return supportedTypes.has(mimeType);
+	return (
+		mimeType === 'image/bmp' ||
+		mimeType === 'image/x-windows-bmp' ||
+		mimeType === 'image/jpeg' ||
+		mimeType === 'image/pjpeg' ||
+		mimeType === 'image/png' ||
+		mimeType === 'image/gif' ||
+		mimeType === 'image/webp' ||
+		mimeType === 'image/svg+xml'
+	);
 }
