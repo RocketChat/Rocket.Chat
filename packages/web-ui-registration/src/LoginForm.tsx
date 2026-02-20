@@ -33,10 +33,6 @@ const LOGIN_SUBMIT_ERRORS = {
 		type: 'danger',
 		i18n: 'registration.page.login.errors.AppUserNotAllowedToLogin',
 	},
-	'user-not-found': {
-		type: 'danger',
-		i18n: 'registration.page.login.errors.wrongCredentials',
-	},
 	'error-login-blocked-for-ip': {
 		type: 'danger',
 		i18n: 'registration.page.login.errors.loginBlockedForIp',
@@ -69,18 +65,24 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		getValues,
 		formState: { errors },
 	} = useForm<{ usernameOrEmail: string; password: string }>({
-		mode: 'onBlur',
+		mode: 'onSubmit',
+		reValidateMode: 'onChange',
 	});
 
 	const watchUsernameOrEmail = watch('usernameOrEmail');
 	const watchPassword = watch('password');
 
 	useEffect(() => {
-		if (watchUsernameOrEmail || watchPassword) {
-			clearErrors('usernameOrEmail');
+		if (watchUsernameOrEmail) {
 			clearErrors('password');
 		}
-	}, [watchUsernameOrEmail, watchPassword, clearErrors]);
+	}, [watchUsernameOrEmail, clearErrors]);
+
+	useEffect(() => {
+		if (watchPassword) {
+			clearErrors('usernameOrEmail');
+		}
+	}, [watchPassword, clearErrors]);
 
 	const { t } = useTranslation();
 	const formLabelId = useId();
@@ -99,8 +101,6 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 			return login(formData.usernameOrEmail, formData.password);
 		},
 		onError: (error: any) => {
-			setErrorOnSubmit(undefined);
-			clearErrors();
 			if (error.error === 'user-not-found' || error.error === 401 || error.reason === 'User not found') {
 				setError('password', {
 					type: 'manual',
@@ -116,10 +116,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 			if ('error' in error && error.error !== 403) {
 				setErrorOnSubmit([error.error, error.reason]);
-				return;
 			}
-
-			setErrorOnSubmit(['user-not-found']);
 		},
 	});
 
@@ -193,7 +190,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 									/>
 								</FieldRow>
 								{errors.usernameOrEmail && (
-									<FieldError aria-live='assertive' id={`${usernameId}-error`}>
+									<FieldError role='alert' id={`${usernameId}-error`}>
 										{errors.usernameOrEmail.message}
 									</FieldError>
 								)}
@@ -215,7 +212,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 									/>
 								</FieldRow>
 								{errors.password && (
-									<FieldError aria-live='assertive' id={`${passwordId}-error`}>
+									<FieldError role='alert' id={`${passwordId}-error`}>
 										{errors.password.message}
 									</FieldError>
 								)}
