@@ -74,6 +74,7 @@ import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
+import { getUserInfo } from '../helpers/getUserInfo';
 import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
@@ -189,7 +190,7 @@ API.v1.addRoute(
 			);
 
 			return API.v1.success({
-				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
+				user: await getUserInfo((await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude })) as IUser, false),
 			});
 		},
 	},
