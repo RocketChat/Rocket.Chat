@@ -272,7 +272,7 @@ describe('[Incoming Integrations]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(['error-invalid-alias', 'error-invalid-params']).to.include(res.body.errorType);
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});

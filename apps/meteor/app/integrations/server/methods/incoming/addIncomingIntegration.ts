@@ -79,15 +79,20 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		});
 	}
 
-	if (validateIntegrationAlias(integration.alias) !== 'ok') {
-		throw new Meteor.Error('error-invalid-alias', 'Invalid alias', {
-			method: 'addIncomingIntegration',
-		});
+	const aliasValidation = validateIntegrationAlias(integration.alias);
+	if (aliasValidation === 'too-long') {
+		throw new Meteor.Error('error-invalid-alias-length', 'Invalid alias length', { method: 'addIncomingIntegration' });
+	}
+
+	if (aliasValidation === 'invalid-characters') {
+		throw new Meteor.Error('error-invalid-alias', 'Invalid alias', { method: 'addIncomingIntegration' });
 	}
 
 	if (integration.script?.trim()) {
 		validateScriptEngine(integration.scriptEngine ?? 'isolated-vm');
 	}
+
+	const sanitizedAlias = integration.alias?.trim();
 
 	const user = await Users.findOne({ username: integration.username });
 
@@ -99,6 +104,7 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 
 	const integrationData: IIncomingIntegration = {
 		...integration,
+		alias: sanitizedAlias || undefined,
 		scriptEngine: integration.scriptEngine ?? 'isolated-vm',
 		type: 'webhook-incoming',
 		channel: channels,

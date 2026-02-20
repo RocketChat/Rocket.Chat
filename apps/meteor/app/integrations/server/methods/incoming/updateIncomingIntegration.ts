@@ -72,11 +72,16 @@ export const updateIncomingIntegration = async (
 		});
 	}
 
-	if (validateIntegrationAlias(integration.alias) !== 'ok') {
-		throw new Meteor.Error('error-invalid-alias', 'Invalid alias', {
-			method: 'updateIncomingIntegration',
-		});
+	const aliasValidation = validateIntegrationAlias(integration.alias);
+	if (aliasValidation === 'too-long') {
+		throw new Meteor.Error('error-invalid-alias-length', 'Invalid alias length', { method: 'updateIncomingIntegration' });
 	}
+
+	if (aliasValidation === 'invalid-characters') {
+		throw new Meteor.Error('error-invalid-alias', 'Invalid alias', { method: 'updateIncomingIntegration' });
+	}
+
+	const sanitizedAlias = integration.alias?.trim();
 
 	const oldScriptEngine = currentIntegration.scriptEngine;
 	const scriptEngine = integration.scriptEngine ?? oldScriptEngine ?? 'isolated-vm';
@@ -185,7 +190,7 @@ export const updateIncomingIntegration = async (
 				name: integration.name,
 				avatar: integration.avatar,
 				emoji: integration.emoji,
-				alias: integration.alias,
+				alias: sanitizedAlias || undefined,
 				channel: channels,
 				...('username' in integration && { username: user.username, userId: user._id }),
 				...(isFrozen
