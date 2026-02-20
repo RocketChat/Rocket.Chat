@@ -115,7 +115,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 		await Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, groupMentionInc);
 	}
 
-	if (!toAll && !toHere && unreadAllMessages) {
+	if (!toAll && !toHere && (unreadAllMessages || room.t === 'd')) {
 		await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
 	}
 
