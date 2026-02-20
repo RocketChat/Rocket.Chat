@@ -112,7 +112,7 @@ const registerDOMPurifyHooks = () => {
 	if (hooksRegistered) {
 		return;
 	}
-	
+
 	dompurify.addHook('afterSanitizeAttributes', (node) => {
 		if (!isLinkElement(node)) {
 			return;
@@ -146,7 +146,7 @@ const registerDOMPurifyHooks = () => {
 			node.setAttribute('title', `${i18next.t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
 		}
 	});
-	
+
 	hooksRegistered = true;
 };
 

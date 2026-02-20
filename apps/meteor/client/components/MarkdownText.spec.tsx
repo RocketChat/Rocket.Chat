@@ -438,7 +438,7 @@ describe('DOMPurify hook registration', () => {
 		// Import the module to trigger hook registration
 		const dompurify = require('dompurify');
 		const addHookSpy = jest.spyOn(dompurify, 'addHook');
-		
+
 		// Clear any previous calls from module initialization
 		addHookSpy.mockClear();
 
