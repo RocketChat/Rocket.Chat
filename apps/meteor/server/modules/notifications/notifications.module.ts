@@ -1,7 +1,7 @@
-import { Authorization, MediaCall, VideoConf } from '@rocket.chat/core-services';
+import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
-import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
 
 import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
@@ -201,7 +201,7 @@ export class NotificationsModule {
 				}
 
 				// TODO consider using something to cache settings
-				const key = (await Settings.getValueById('UI_Use_Real_Name')) ? 'name' : 'username';
+				const key = (await Settings.get('UI_Use_Real_Name')) ? 'name' : 'username';
 
 				const user = await Users.findOneById<Pick<IUser, 'name' | 'username'>>(userId, {
 					projection: {
@@ -311,7 +311,7 @@ export class NotificationsModule {
 		this.streamCannedResponses.allowRead(async function () {
 			return (
 				!!this.userId &&
-				!!(await Settings.getValueById('Canned_Responses_Enable')) &&
+				!!(await Settings.get('Canned_Responses_Enable')) &&
 				Authorization.hasPermission(this.userId, 'view-canned-responses')
 			);
 		});

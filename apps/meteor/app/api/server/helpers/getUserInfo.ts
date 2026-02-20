@@ -65,7 +65,10 @@ const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar =
 	return calendarSettings;
 };
 
-export async function getUserInfo(me: IUser): Promise<
+export async function getUserInfo(
+	me: IUser,
+	pullPreferences = true,
+): Promise<
 	IUser & {
 		email?: string;
 		avatarUrl: string;
@@ -80,10 +83,7 @@ export async function getUserInfo(me: IUser): Promise<
 		email: verifiedEmail ? verifiedEmail.address : undefined,
 		settings: {
 			profile: {},
-			preferences: {
-				...(await getUserPreferences(me)),
-				...userPreferences,
-			},
+			...(pullPreferences && { preferences: { ...(await getUserPreferences(me)), ...userPreferences } }),
 			calendar: getUserCalendar(verifiedEmail),
 		},
 		avatarUrl: getURL(`/avatar/${me.username}`, { cdn: false, full: true }),
