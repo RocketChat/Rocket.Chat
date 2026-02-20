@@ -1,12 +1,12 @@
 import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
-import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
 
 import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
+import type { IStreamer, IStreamerConstructor, IPublication } from '../streamer/types';
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer<'notify-logged'>;
@@ -235,8 +235,11 @@ export class NotificationsModule {
 		});
 
 		this.streamRoomUsers.allowRead('none');
-		this.streamRoomUsers.allowWrite(async function (eventName, ...args: any[]) {
-			const [roomId, e] = eventName.split('/');
+		this.streamRoomUsers.allowWrite(async function (
+			eventName: `${string}/video-conference` | `${string}/userData`,
+			...args: [{ action: string; params: { callId: string; uid: string; rid: string } }] | [IUserDataEvent]
+		) {
+			const [roomId, e] = eventName.split('/') as [string, 'video-conference' | 'userData'];
 			if (this.userId && (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId)) > 0) {
 				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, {
 					projection: { 'u._id': 1, '_id': 0 },
