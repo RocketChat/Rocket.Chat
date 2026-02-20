@@ -958,7 +958,7 @@ describe('Apps - Video Conferences', () => {
 
 			after(async () => {
 				await Promise.all([
-					deleteRoom({ type: 'c', roomId: readOnlyRoomId }),
+					...(readOnlyRoomId ? [deleteRoom({ type: 'c', roomId: readOnlyRoomId })] : []),
 					deleteUser(regularUser),
 					updatePermission('post-readonly', ['admin', 'owner', 'moderator']),
 				]);
