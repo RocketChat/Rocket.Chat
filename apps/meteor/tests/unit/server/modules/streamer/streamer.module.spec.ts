@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { Streamer, StreamerCentral } from '../../../../../server/modules/streamer/streamer.module';
 
 class TestStreamer extends Streamer<any> {
@@ -105,7 +104,7 @@ describe('Streamer.sendToManySubscriptions', () => {
 		expect(deniedSub.send.called).to.equal(false);
 	});
 
-	it('logs rejected subscription dispatches at debug level and continues with other subscribers', async () => {
+	it('continues dispatching to other subscribers when a permission check rejects', async () => {
 		const streamer = createStreamer();
 
 		const failingSub = makeSubscription('failing');
@@ -116,18 +115,12 @@ describe('Streamer.sendToManySubscriptions', () => {
 		isEmitAllowed.onFirstCall().rejects(error);
 		isEmitAllowed.onSecondCall().resolves(true);
 
-		const loggerSpy = sinon.stub(SystemLogger, 'debug');
-
 		await streamer.sendToManySubscriptions(new Set([failingSub.entry, successSub.entry]), undefined, 'event-name', [], 'test-msg');
 
+		expect(isEmitAllowed.calledTwice).to.equal(true);
+		expect(isEmitAllowed.firstCall.calledWithExactly(failingSub.entry.subscription, 'event-name')).to.equal(true);
+		expect(isEmitAllowed.secondCall.calledWithExactly(successSub.entry.subscription, 'event-name')).to.equal(true);
 		expect(failingSub.send.called).to.equal(false);
 		expect(successSub.send.calledOnceWithExactly('test-msg')).to.equal(true);
-		expect(loggerSpy.calledOnce).to.equal(true);
-		expect(loggerSpy.firstCall.args[0]).to.deep.include({
-			msg: 'Error while delivering streamer event',
-			eventName: 'event-name',
-			streamName: streamer.name,
-		});
-		expect((loggerSpy.firstCall.args[0] as { err: unknown }).err).to.equal(error);
 	});
 });
