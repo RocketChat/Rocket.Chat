@@ -138,22 +138,27 @@ export class BeforeSaveJumpToMessage {
 
 		const quotes = [];
 
+		console.log('message.urls', message.urls);
 		for (const item of message.urls) {
 			if (!item.url.includes(config.siteUrl)) {
+				console.log('item.url', item.url, config.siteUrl);
 				continue;
 			}
 
 			const linkedMessage = linkedMessages.find((msg) => msg?.url === item.url);
 			if (!linkedMessage) {
+				console.log('linkedMessage not found', item.url);
 				continue;
 			}
 
 			const messageFromUrl = validMessages.find((msg) => msg._id === linkedMessage.msgId);
 			if (!messageFromUrl) {
+				console.log('messageFromUrl not found', item.url);
 				continue;
 			}
 
 			if (!validRooms?.find((room) => room?._id === messageFromUrl.rid)) {
+				console.log('validRooms not found', item.url);
 				continue;
 			}
 
@@ -161,6 +166,8 @@ export class BeforeSaveJumpToMessage {
 
 			quotes.push(createQuoteAttachment(messageFromUrl, item.url, useRealName, this.getUserAvatarURL(messageFromUrl.u.username)));
 		}
+
+		console.log('quotes', quotes);
 
 		if (quotes.length > 0) {
 			const currentAttachments = message.attachments || [];
