@@ -827,10 +827,10 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 						if (options.authRequired || options.authOrAnonRequired) {
 							const user = await api.authenticatedRoute(this);
-							this.user = user!;
+							this.user = user ?? undefined;
 							this.userId = this.user?._id;
 							const authToken = this.request.headers.get('x-auth-token');
-							this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
+							this.token = authToken ? Accounts._hashLoginToken(String(authToken)) : undefined;
 						}
 
 						const shouldPreventAnonymousRead = !this.user && options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead');
