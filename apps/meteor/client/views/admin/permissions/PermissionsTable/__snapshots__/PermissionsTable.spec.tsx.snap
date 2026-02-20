@@ -8,7 +8,6 @@ exports[`renders Default without crashing 1`] = `
     >
       <input
         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-1ltvj5u"
-        data-qa="PermissionTable-PermissionsTableFilter"
         placeholder="Search"
         size="1"
         type="text"
@@ -18,7 +17,7 @@ exports[`renders Default without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-h9m6k6"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+          class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
           data-overlayscrollbars="host"
         >
           <div
@@ -38,7 +37,7 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-table__wrapper"
             >
               <table
-                class="rcx-box rcx-box--full rcx-table--sticky rcx-table rcx-css-1l69a2k"
+                class="rcx-box rcx-box--full rcx-table--sticky rcx-table rcx-css-x1oxcc"
               >
                 <thead
                   class="rcx-box rcx-box--full rcx-table__head"
@@ -289,7 +288,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Owner of the workspace
                       </div>
@@ -312,7 +311,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Administrator
                       </div>
@@ -334,7 +333,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Leader
                       </div>
@@ -356,7 +355,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Moderator
                       </div>
@@ -378,7 +377,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         User
                       </div>
@@ -400,7 +399,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Guest
                       </div>
@@ -422,7 +421,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Bot
                       </div>
@@ -444,7 +443,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         App
                       </div>
@@ -478,7 +477,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Owner of the workspace
                       </div>
@@ -500,7 +499,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Administrator
                       </div>
@@ -522,7 +521,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Leader
                       </div>
@@ -544,7 +543,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Moderator
                       </div>
@@ -567,7 +566,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         User
                       </div>
@@ -589,7 +588,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Guest
                       </div>
@@ -611,7 +610,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Bot
                       </div>
@@ -633,7 +632,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         App
                       </div>
@@ -667,7 +666,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Owner of the workspace
                       </div>
@@ -689,7 +688,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Administrator
                       </div>
@@ -711,7 +710,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Leader
                       </div>
@@ -733,7 +732,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Moderator
                       </div>
@@ -756,7 +755,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         User
                       </div>
@@ -778,7 +777,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Guest
                       </div>
@@ -800,7 +799,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Bot
                       </div>
@@ -822,7 +821,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         App
                       </div>
@@ -856,7 +855,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Owner of the workspace
                       </div>
@@ -878,7 +877,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Administrator
                       </div>
@@ -900,7 +899,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Leader
                       </div>
@@ -922,7 +921,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Moderator
                       </div>
@@ -945,7 +944,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         User
                       </div>
@@ -967,7 +966,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Guest
                       </div>
@@ -989,7 +988,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Bot
                       </div>
@@ -1011,7 +1010,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         App
                       </div>
@@ -1169,7 +1168,6 @@ exports[`renders Empty without crashing 1`] = `
     >
       <input
         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-1ltvj5u"
-        data-qa="PermissionTable-PermissionsTableFilter"
         placeholder="Search"
         size="1"
         type="text"

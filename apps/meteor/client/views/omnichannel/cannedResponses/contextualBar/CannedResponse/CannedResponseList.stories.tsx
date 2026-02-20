@@ -1,9 +1,8 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Contextualbar } from '@rocket.chat/ui-client';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import CannedResponseList from './CannedResponseList';
-import { Contextualbar } from '../../../../../components/Contextualbar';
 
 export default {
 	component: CannedResponseList,
@@ -75,10 +74,4 @@ Default.args = {
 	itemCount: 3,
 	loadMoreItems: action('loadMoreItems'),
 };
-Default.decorators = [
-	(fn) => (
-		<Box h='600px'>
-			<Contextualbar>{fn()}</Contextualbar>
-		</Box>
-	),
-];
+Default.decorators = [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>];

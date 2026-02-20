@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { clientCallbacks } from '@rocket.chat/ui-client';
 import { Meteor } from 'meteor/meteor';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
@@ -7,7 +8,6 @@ import { settings } from '../../../../client/lib/settings';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { getUser, getUserId } from '../../../../client/lib/user';
 import { Messages, Rooms } from '../../../../client/stores';
-import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { t } from '../../../utils/lib/i18n';
 
@@ -44,7 +44,13 @@ Meteor.methods<ServerMethods>({
 
 		await onClientMessageReceived(message as IMessage).then((message) => {
 			Messages.state.store(message);
-			return callbacks.run('afterSaveMessage', message, { room, user });
+			void clientCallbacks.run('afterSaveMessage', message, { room, user });
+
+			// Now that the message is stored, we can go ahead and mark as sent
+			Messages.state.update(
+				(record) => record._id === message._id && record.temp === true,
+				({ temp: _, ...record }) => record,
+			);
 		});
 	},
 });

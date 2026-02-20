@@ -46,7 +46,7 @@ test.describe('video conference', () => {
 	});
 
 	test('should create video conference in targetChannel using keyboard', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello video conference');
 		await poHomeChannel.roomHeaderFavoriteBtn.focus();
 
@@ -78,7 +78,7 @@ test.describe('video conference', () => {
 		});
 
 		test('should NOT render avatars in video conference message block', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 
 			await expect(poHomeChannel.content.videoConfMessageBlock.last().getByRole('figure')).toHaveCount(0);
 		});
@@ -87,13 +87,13 @@ test.describe('video conference', () => {
 	test.describe('verify if user2 received a invite call in targetChannel', async () => {
 		test.use({ storageState: Users.user2.state });
 		test('should display a message block in a targetChannel', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 		});
 	});
 
 	test('should create video conference in a direct room', async () => {
-		await poHomeChannel.sidenav.openChat('user2');
+		await poHomeChannel.navbar.openChat('user2');
 
 		await poHomeChannel.content.btnVideoCall.click();
 		await poHomeChannel.content.btnStartVideoCall.click();
@@ -103,13 +103,13 @@ test.describe('video conference', () => {
 	test.describe('verify if user received from a direct', async () => {
 		test.use({ storageState: Users.user2.state });
 		test('verify if user received a call invite in direct', async () => {
-			await poHomeChannel.sidenav.openChat('user1');
+			await poHomeChannel.navbar.openChat('user1');
 			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 		});
 	});
 
 	test('should create video conference in targetTeam', async () => {
-		await poHomeChannel.sidenav.openChat(targetTeam);
+		await poHomeChannel.navbar.openChat(targetTeam);
 
 		await poHomeChannel.content.btnVideoCall.click();
 		await poHomeChannel.content.btnStartVideoCall.click();
@@ -119,13 +119,13 @@ test.describe('video conference', () => {
 	test.describe('verify if user2 received from a targetTeam', async () => {
 		test.use({ storageState: Users.user2.state });
 		test('should display a message block in a targetTeam', async () => {
-			await poHomeChannel.sidenav.openChat(targetTeam);
+			await poHomeChannel.navbar.openChat(targetTeam);
 			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 		});
 	});
 
 	test('should create video conference in a direct multiple', async () => {
-		await poHomeChannel.sidenav.openChat('rocketchat.internal.admin.test, user2');
+		await poHomeChannel.navbar.openChat('rocketchat.internal.admin.test, user2');
 
 		await poHomeChannel.content.btnVideoCall.click();
 		await poHomeChannel.content.btnStartVideoCall.click();
@@ -135,19 +135,19 @@ test.describe('video conference', () => {
 	test.describe('received in a direct multiple', async () => {
 		test.use({ storageState: Users.user2.state });
 		test('should display a message block in a direct multiple', async () => {
-			await poHomeChannel.sidenav.openChat('rocketchat.internal.admin.test, user1');
+			await poHomeChannel.navbar.openChat('rocketchat.internal.admin.test, user1');
 			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 		});
 	});
 
 	test('should NOT create video conference in a targetReadOnlyChannel', async () => {
-		await poHomeChannel.sidenav.openChat(targetReadOnlyChannel);
+		await poHomeChannel.navbar.openChat(targetReadOnlyChannel);
 
 		await expect(poHomeChannel.content.btnVideoCall).toBeDisabled();
 	});
 
 	test('should NOT be able to create video conference in targetArchivedChannel', async () => {
-		await poHomeChannel.sidenav.openChat(targetArchivedChannel);
+		await poHomeChannel.navbar.openChat(targetArchivedChannel);
 
 		await expect(poHomeChannel.content.btnVideoCall).toBeDisabled();
 	});

@@ -1,12 +1,4 @@
-import {
-	isEncryptedMessageContent,
-	isOTRAckMessage,
-	isOTRMessage,
-	type IEditedMessage,
-	type IMessage,
-	type IRoom,
-	type ISubscription,
-} from '@rocket.chat/core-typings';
+import { isEncryptedMessageContent, type IEditedMessage, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Random } from '@rocket.chat/random';
 import moment from 'moment';
@@ -71,10 +63,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 	const canUpdateMessage = async (message: IMessage): Promise<boolean> => {
 		if (MessageTypes.isSystemMessage(message)) {
-			return false;
-		}
-
-		if (isOTRMessage(message) || isOTRAckMessage(message)) {
 			return false;
 		}
 

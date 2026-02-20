@@ -23,18 +23,12 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
 
     name: Unit Tests
 
     steps:
-      - name: Collect Workflow Telemetry
-        uses: catchpoint/workflow-telemetry-action@v2
-        with:
-          theme: dark
-          job_summary: true
-          comment_on_pr: false
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -48,7 +42,7 @@ jobs:
       - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Restore packages build
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: packages-build
           path: /tmp
@@ -61,7 +55,7 @@ jobs:
       - name: Unit Test
         run: yarn testunit
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v5
         with:
           flags: unit
           verbose: true

@@ -9,7 +9,7 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 const MaxChatsPerAgent = ({ className }: { className?: ComponentProps<typeof Field>['className'] }) => {
 	const { t } = useTranslation();
 	const { control } = useFormContext();
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
 	const maxChatsField = useId();
 

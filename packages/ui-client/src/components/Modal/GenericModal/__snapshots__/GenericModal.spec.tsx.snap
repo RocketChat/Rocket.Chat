@@ -8,7 +8,7 @@ exports[`renders should render a modal without crashing 1`] = `
   open=""
 >
   <div
-    class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+    class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
   >
     <header
       class="rcx-box rcx-box--full rcx-modal__header"
@@ -17,7 +17,7 @@ exports[`renders should render a modal without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-modal__header-inner"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-3k19uf"
+          class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-up1o3r"
         >
           <i
             aria-hidden="true"

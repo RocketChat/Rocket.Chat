@@ -21,7 +21,7 @@ test.describe('anonymous-user', () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat('general');
+		await poHomeChannel.navbar.openChat('general');
 	});
 
 	test('expect to go to the login page as anonymous user', async ({ page }) => {

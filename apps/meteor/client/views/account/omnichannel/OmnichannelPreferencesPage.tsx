@@ -1,11 +1,11 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import PreferencesConversationTranscript from './PreferencesConversationTranscript';
 import { PreferencesGeneral } from './PreferencesGeneral';
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 
 type FormData = {
 	omnichannelTranscriptPDF: boolean;

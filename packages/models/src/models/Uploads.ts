@@ -11,7 +11,7 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		super(db, 'uploads', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			...super.modelIndexes(),
 			{ key: { uploadedAt: -1 } },
@@ -92,5 +92,9 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 				sort: { uploadedAt: -1 },
 			},
 		);
+	}
+
+	findAllByOriginalFileId(originalFileId: string, options: FindOptions<IUpload> = {}): FindCursor<IUpload> {
+		return this.find({ originalFileId }, options);
 	}
 }

@@ -10,7 +10,7 @@ exports[`ABACUpsellModal should render the modal with correct content 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -22,7 +22,7 @@ exports[`ABACUpsellModal should render the modal with correct content 1`] = `
               class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
             >
               <div
-                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-ar0y0g"
+                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-mldzte"
               >
                 Premium capability
               </div>
@@ -36,6 +36,7 @@ exports[`ABACUpsellModal should render the modal with correct content 1`] = `
             <button
               aria-label="Close"
               class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              tabindex="-1"
               type="button"
             >
               <i
@@ -83,7 +84,7 @@ exports[`ABACUpsellModal should render the modal with correct content 1`] = `
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
               type="button"
             >
               <span
@@ -93,7 +94,7 @@ exports[`ABACUpsellModal should render the modal with correct content 1`] = `
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
               type="button"
             >
               <span

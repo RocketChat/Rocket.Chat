@@ -1,4 +1,4 @@
-import { isOmnichannelRoom, isVoipRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IRoom, IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
 
 import { useIsOverMacLimit } from './useIsOverMacLimit';
@@ -8,7 +8,7 @@ const getPeriod = (date: Date) => `${date.getFullYear()}-${String(date.getMonth(
 export const useIsRoomOverMacLimit = (room: IRoom) => {
 	const isOverMacLimit = useIsOverMacLimit();
 
-	if (!isOmnichannelRoom(room) && !isVoipRoom(room)) {
+	if (!isOmnichannelRoom(room)) {
 		return false;
 	}
 

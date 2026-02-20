@@ -17,13 +17,16 @@ const InlineElements = ({ children }: InlineElementsProps) => (
 		{children.map((child, index) => {
 			switch (child.type) {
 				case 'BOLD':
-					return <BoldSpan key={index} children={child.value} />;
+					return <BoldSpan key={index}>{child.value}</BoldSpan>;
 
 				case 'STRIKE':
-					return <StrikeSpan key={index} children={child.value} />;
+					return <StrikeSpan key={index}>{child.value}</StrikeSpan>;
 
 				case 'ITALIC':
-					return <ItalicSpan key={index} children={child.value} />;
+					return <ItalicSpan key={index}>{child.value}</ItalicSpan>;
+
+				case 'SPOILER':
+					return <InlineElements key={index}>{child.value}</InlineElements>;
 
 				case 'LINK':
 					return <LinkSpan key={index} label={Array.isArray(child.value.label) ? child.value.label : [child.value.label]} />;

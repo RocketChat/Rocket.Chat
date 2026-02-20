@@ -246,7 +246,7 @@ export abstract class App implements IApp {
 	 * @param status the new status of this App
 	 */
 	protected async setStatus(status: AppStatus): Promise<void> {
-		this.logger.debug(`The status is now: ${status}`);
+		this.logger.debug({ msg: 'The status is now', status });
 		this.status = status;
 	}
 

@@ -2,6 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 
 import { Admin } from './admin';
 import { MenuMoreActions, UserInfoFlexTab, EditUserFlexTab } from './fragments';
+import { expect } from '../utils/test';
 
 type UserActions = 'Make Admin' | 'Remove Admin' | 'Activate' | 'Deactivate';
 
@@ -27,7 +28,7 @@ export class AdminUsers extends Admin {
 		return this.page.getByRole('button', { name: 'Invite', exact: true });
 	}
 
-	get inputSearchUsers(): Locator {
+	private get inputSearchUsers(): Locator {
 		return this.page.getByRole('textbox', { name: 'Search Users' });
 	}
 
@@ -36,7 +37,7 @@ export class AdminUsers extends Admin {
 	}
 
 	getUserRowByUsername(username: string): Locator {
-		return this.page.locator('tr', { hasText: username });
+		return this.page.locator('tr', { hasText: username }).first();
 	}
 
 	getTabByName(name: 'All' | 'Pending' | 'Active' | 'Deactivated' = 'All'): Locator {
@@ -53,9 +54,14 @@ export class AdminUsers extends Admin {
 	}
 
 	async deleteUser(username: string): Promise<void> {
-		await this.inputSearchUsers.fill(username);
+		await this.searchUser(username);
 		await this.getUserRowByUsername(username).click();
 		await this.userInfo.btnMoreActions.click();
 		await this.userInfo.menuItemDeleteUser.click();
+	}
+
+	async searchUser(username: string): Promise<void> {
+		await this.inputSearchUsers.fill(username);
+		await expect(this.getUserRowByUsername(username)).toHaveCount(1);
 	}
 }

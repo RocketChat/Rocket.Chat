@@ -58,11 +58,9 @@ test.describe.serial('Admin > Users', () => {
 		});
 
 		test('After the first login, the user gets listed under the Active tab', async () => {
-			await adminUsers.inputSearchUsers.fill(user.data.username);
-
 			await test.step('should be visible in the All tab', async () => {
-				await adminUsers.getTabByName('Active').click();
-				await expect(adminUsers.getUserRowByUsername(user.data.username)).toBeVisible();
+				await adminUsers.getTabByName().click();
+				await adminUsers.searchUser(user.data.username);
 			});
 
 			await test.step('should not be visible in the Pending tab', async () => {

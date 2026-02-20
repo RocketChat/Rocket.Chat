@@ -1,7 +1,21 @@
 {
 	"name": "@rocket.chat/password-policies",
-	"version": "0.0.2",
+	"version": "0.1.0",
 	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc",
+		"dev": "tsc --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
@@ -10,20 +24,6 @@
 		"jest": "~30.2.0",
 		"typescript": "~5.9.3"
 	},
-	"scripts": {
-		"build": "rm -rf dist && tsc",
-		"dev": "tsc --watch --preserveWatchOutput",
-		"typecheck": "tsc --noEmit",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"test": "jest",
-		"testunit": "jest"
-	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
 	"volta": {
 		"extends": "../../package.json"
 	}

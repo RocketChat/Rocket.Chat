@@ -23,36 +23,36 @@ Meteor.startup(async () => {
 			}
 
 			console.log('Successfully registered with token provided by REG_TOKEN!');
-		} catch (e: any) {
-			SystemLogger.error('An error occurred registering with token.', e.message);
+		} catch (err: any) {
+			SystemLogger.error({ msg: 'An error occurred registering with token.', err });
 		}
 	}
 
 	setImmediate(async () => {
 		try {
 			await syncWorkspace();
-		} catch (e: any) {
-			if (e instanceof CloudWorkspaceAccessTokenEmptyError) {
+		} catch (err: any) {
+			if (err instanceof CloudWorkspaceAccessTokenEmptyError) {
 				return;
 			}
-			if (e.type && e.type === 'AbortError') {
+			if (err.type && err.type === 'AbortError') {
 				return;
 			}
-			SystemLogger.error('An error occurred syncing workspace.', e.message);
+			SystemLogger.error({ msg: 'An error occurred syncing workspace.', err });
 		}
 	});
 	const minute = Math.floor(Math.random() * 60);
 	await cronJobs.add(licenseCronName, `${minute} */12 * * *`, async () => {
 		try {
 			await syncWorkspace();
-		} catch (e: any) {
-			if (e instanceof CloudWorkspaceAccessTokenEmptyError) {
+		} catch (err: any) {
+			if (err instanceof CloudWorkspaceAccessTokenEmptyError) {
 				return;
 			}
-			if (e.type && e.type === 'AbortError') {
+			if (err.type && err.type === 'AbortError') {
 				return;
 			}
-			SystemLogger.error('An error occurred syncing workspace.', e.message);
+			SystemLogger.error({ msg: 'An error occurred syncing workspace.', err });
 		}
 	});
 });

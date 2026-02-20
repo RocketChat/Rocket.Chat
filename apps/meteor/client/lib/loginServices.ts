@@ -35,7 +35,6 @@ class LoginServices extends Emitter<LoginServicesEvents> {
 		'dolphin': { title: 'Dolphin', icon: 'dophin' },
 		'drupal': { title: 'Drupal', icon: 'drupal' },
 		'nextcloud': { title: 'Nextcloud', icon: 'nextcloud' },
-		'tokenpass': { title: 'Tokenpass', icon: 'tokenpass' },
 		'meteor-developer': { title: 'Meteor', icon: 'meteor' },
 		'wordpress': { title: 'WordPress', icon: 'wordpress' },
 		'linkedin': { title: 'Linkedin', icon: 'linkedin' },

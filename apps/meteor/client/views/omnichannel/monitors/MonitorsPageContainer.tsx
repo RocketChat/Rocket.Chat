@@ -4,13 +4,13 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const MonitorsPageContainer = () => {
-	const license = useHasLicenseModule('livechat-enterprise');
+	const { isPending, data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
-	if (license === 'loading') {
+	if (isPending) {
 		return <PageSkeleton />;
 	}
 
-	if (!license) {
+	if (!hasLicense) {
 		return <NotAuthorizedPage />;
 	}
 

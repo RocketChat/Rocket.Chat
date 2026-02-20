@@ -1,4 +1,3 @@
-// import type { EnterpriseEndpoints } from "@rocket.chat/core-typings";
 import type { KeyOfEach } from '@rocket.chat/core-typings';
 
 import type { AppsEndpoints } from './apps';
@@ -44,8 +43,6 @@ import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
-import type { VoipEndpoints } from './v1/voip';
-import type { VoipFreeSwitchEndpoints } from './v1/voip-freeswitch';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
@@ -79,7 +76,6 @@ export interface Endpoints
 		InstancesEndpoints,
 		IntegrationsEndpoints,
 		IntegrationHooksEndpoints,
-		VoipEndpoints,
 		VideoConferenceEndpoints,
 		InvitesEndpoints,
 		E2eEndpoints,
@@ -93,7 +89,6 @@ export interface Endpoints
 		CalendarEndpoints,
 		AuthEndpoints,
 		ImportEndpoints,
-		VoipFreeSwitchEndpoints,
 		ServerEventsEndpoints,
 		DefaultEndpoints {}
 
@@ -227,6 +222,7 @@ export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
 export * from './v1/licenses';
 export * from './v1/omnichannel';
+export * from './helpers/IGetRoomRoles';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
@@ -251,8 +247,6 @@ export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
 export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/e2e';
 export * from './v1/import';
-export * from './v1/voip';
-export * from './v1/voip-freeswitch';
 export * from './v1/email-inbox';
 export * from './v1/calendar';
 export * from './v1/federation';

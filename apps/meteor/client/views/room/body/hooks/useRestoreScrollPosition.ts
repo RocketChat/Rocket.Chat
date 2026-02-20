@@ -1,4 +1,4 @@
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
+import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useRef } from 'react';
 
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
@@ -9,10 +9,7 @@ export function useRestoreScrollPosition(rid: string, wait = 100) {
 	const jumpToRef = useRef<HTMLElement>(undefined);
 	const ref = useSafeRefCallback(
 		useCallback(
-			(node: HTMLElement | null) => {
-				if (!node) {
-					return;
-				}
+			(node: HTMLElement) => {
 				const store = RoomManager.getStore(rid);
 				if (store?.atBottom) {
 					node.scrollTop = node.scrollHeight;

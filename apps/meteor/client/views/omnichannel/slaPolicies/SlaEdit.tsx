@@ -1,11 +1,10 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useController, useForm } from 'react-hook-form';
-
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 
 type SlaEditProps = {
 	isNew?: boolean;
@@ -81,7 +80,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 				<FieldRow>
 					<TextInput placeholder={t('Name')} flexGrow={1} {...nameField} error={errors.name?.message} />
 				</FieldRow>
-				<FieldError>{errors.name?.message}</FieldError>
+				<FieldError role='alert'>{errors.name?.message}</FieldError>
 			</Field>
 			<Field>
 				<FieldLabel>{t('Description')}</FieldLabel>
@@ -99,7 +98,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 						error={errors.dueTimeInMinutes?.message}
 					/>
 				</FieldRow>
-				<FieldError>{errors.dueTimeInMinutes?.message}</FieldError>
+				<FieldError role='alert'>{errors.dueTimeInMinutes?.message}</FieldError>
 			</Field>
 			<Field>
 				<FieldRow>

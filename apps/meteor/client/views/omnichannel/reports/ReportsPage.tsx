@@ -1,9 +1,9 @@
 import { Box, Grid, GridItem } from '@rocket.chat/fuselage';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { AgentsSection, ChannelsSection, DepartmentsSection, StatusSection, TagsSection } from './sections';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
@@ -13,7 +13,7 @@ const ReportsPage = () => {
 	const { t } = useTranslation();
 
 	const hasPermission = usePermission('view-livechat-reports');
-	const isEnterprise = useHasLicenseModule('livechat-enterprise');
+	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 
 	if (!hasPermission || !isEnterprise) {
 		return <NotAuthorizedPage />;

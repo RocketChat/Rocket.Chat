@@ -1,8 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import TeamsInfo from './TeamsInfo';
-import { Contextualbar } from '../../../../components/Contextualbar';
 
 const room = {
 	_id: 'awdawd',

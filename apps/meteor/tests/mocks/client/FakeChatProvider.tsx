@@ -10,7 +10,6 @@ type FakeChatProviderProps = {
 const FakeChatProvider = ({ children }: FakeChatProviderProps): ReactElement => {
 	return (
 		<ChatContext.Provider
-			children={children}
 			value={
 				{
 					data: {
@@ -20,7 +19,9 @@ const FakeChatProvider = ({ children }: FakeChatProviderProps): ReactElement => 
 					},
 				} as any
 			}
-		/>
+		>
+			{children}
+		</ChatContext.Provider>
 	);
 };
 

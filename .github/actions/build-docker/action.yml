@@ -1,14 +1,10 @@
-name: 'Meteor Docker'
+name: 'Build Docker'
 
 inputs:
   CR_USER:
     required: true
   CR_PAT:
     required: true
-  node-version:
-    required: true
-    description: 'Node version'
-    type: string
   deno-version:
     required: true
     description: 'Deno version'
@@ -16,7 +12,7 @@ inputs:
   arch:
     required: false
     description: 'Architecture'
-    default: 'amd64'
+    default: 'arm64'
   service:
     required: false
     description: 'Container to build'
@@ -25,17 +21,14 @@ inputs:
     required: false
     description: 'Publish image'
     default: 'true'
-  setup:
+  setup-docker:
     required: false
-    description: 'Setup node.js'
-    default: 'true'
-  NPM_TOKEN:
-    required: false
-    description: 'NPM token'
+    description: 'Setup Docker'
+    default: true
   type:
     required: false
     description: 'production or coverage'
-    default: 'production'
+    default: 'coverage'
 
 runs:
   using: composite
@@ -48,17 +41,6 @@ runs:
         registry: ghcr.io
         username: ${{ inputs.CR_USER }}
         password: ${{ inputs.CR_PAT }}
-
-    - name: Restore packages build
-      uses: actions/download-artifact@v6
-      with:
-        name: packages-build
-        path: /tmp
-
-    - name: Unpack packages build
-      shell: bash
-      run: |
-        tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
     - name: Restore meteor build
       if: inputs.service == 'rocketchat'
@@ -76,25 +58,40 @@ runs:
         rm Rocket.Chat.tar.gz
 
     - name: Set up Docker
+      if: inputs.setup-docker == true
       uses: docker/setup-docker-action@v4
       with:
         daemon-config: |
           {
-            "debug": true,
+            "debug": false,
             "features": {
               "containerd-snapshotter": true
             }
           }
-
-    - uses: docker/setup-buildx-action@v3
-      with:
-        buildkitd-flags: --oci-worker-gc --oci-worker-gc-keepstorage=4000
 
     - name: Build Docker images
       shell: bash
       run: |
         set -o xtrace
         export DENO_VERSION="${{ inputs.deno-version }}"
+
+        # Removes unnecessary swc cores and sharp binaries to reduce image size
+        swc_arch='x64'
+        if [[ "${{ inputs.service }}" == 'rocketchat' ]]; then
+          if [[ "${{ inputs.arch }}" == 'arm64' ]]; then
+            swc_arch='arm64'
+          fi
+
+          find /tmp/build/bundle/programs/server/npm/node_modules/meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc -type d -name 'core-*' -not -name "*linux-${swc_arch}-gnu*" -exec rm -rf {} +
+
+          find /tmp/build/bundle/programs/server/npm/node_modules/@img -type d -name 'sharp-*' -not -name "*-linuxmusl-${swc_arch}" -exec rm -rf {} +
+
+          find /tmp/build/bundle/programs/server/npm/node_modules/@napi-rs -type d -name 'pinyin-linux-*' -not -name "*-linux-${swc_arch}-*" -exec rm -rf {} +
+
+          find /tmp/build/bundle/programs/server/npm/node_modules/@esbuild -type d -name 'linux-*' -not -name "*-${swc_arch}" -exec rm -rf {} +
+
+          find /tmp/build/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/node_modules/@esbuild -type d -name 'linux-*' -not -name "*-${swc_arch}" -exec rm -rf {} +
+        fi
 
         if [[ "${{ inputs.publish-image }}" == 'true' ]]; then
           LOAD_OR_PUSH="--push"
@@ -122,16 +119,56 @@ runs:
         echo "Contents of /tmp/meta.json:"
         cat /tmp/meta.json
 
-        mkdir -p /tmp/digests/${{ inputs.service }}${{ inputs.type == 'coverage' && '-cov' || '' }}/${{ inputs.arch }}
-        DIGEST=$(jq -r '.["${{ inputs.service }}"].["containerimage.digest"]' "/tmp/meta.json")
-        IMAGE_NO_TAG=$(echo "$IMAGE"  | sed 's/:.*$//')
-        echo "${IMAGE_NO_TAG}@${DIGEST}" > "/tmp/digests/${{ inputs.service }}${{ inputs.type == 'coverage' && '-cov' || '' }}/${{ inputs.arch }}/digest.txt"
+        if [[ "${{ inputs.publish-image }}" == 'true' ]]; then
+          SERVICE_SUFFIX=${{ inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+
+          mkdir -p /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}
+
+          # Get digest and image info
+          DIGEST=$(jq -r '.["${{ inputs.service }}"].["containerimage.digest"]' "/tmp/meta.json")
+          IMAGE_NO_TAG=$(echo "$IMAGE" | sed 's/:.*$//')
+          FULL_IMAGE="${IMAGE_NO_TAG}@${DIGEST}"
+
+          echo "Inspecting image: $FULL_IMAGE"
+
+          # Inspect the image and save complete manifest with sizes (using -v for verbose)
+          docker manifest inspect -v "$FULL_IMAGE" > "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
+
+          echo "Saved manifest to /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
+          cat "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json" | jq '.'
+        fi
+
+    - name: Save Docker image as artifact
+      if: inputs.publish-image == 'false' && inputs.arch == 'amd64'
+      shell: bash
+      run: |
+        set -o xtrace
+
+        # Get image name from docker-compose-ci.yml
+        IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${{ inputs.service }}" '.services[$s].image')
+
+        # Create directory for image archives
+        mkdir -p /tmp/docker-images
+
+        # Save the image to a tar file
+        docker save "${IMAGE}" -o "/tmp/docker-images/${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}.tar"
+
+        echo "Saved image to /tmp/docker-images/${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}.tar"
+        ls -lh /tmp/docker-images/
+
+    - name: Upload Docker image artifact
+      if: inputs.publish-image == 'false' && inputs.arch == 'amd64'
+      uses: actions/upload-artifact@v4
+      with:
+        name: docker-image-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
+        path: /tmp/docker-images/${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}.tar
+        retention-days: 1
 
     - uses: actions/upload-artifact@v4
-      if: inputs.publish-image == 'true'
+      if: inputs.publish-image == 'true' && inputs.arch == 'amd64'
       with:
-        name: digests-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
-        path: /tmp/digests
+        name: manifests-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
+        path: /tmp/manifests
         retention-days: 5
 
     - name: Clean up temporary files
