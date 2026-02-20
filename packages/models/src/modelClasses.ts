@@ -17,7 +17,6 @@ export * from './models/EmojiCustom';
 export * from './models/ExportOperations';
 export * from './models/FederationKeys';
 export * from './models/FederationRoomEvents';
-export * from './models/FederationServers';
 export * from './models/ImportData';
 export * from './models/Imports';
 export * from './models/InstanceStatus';

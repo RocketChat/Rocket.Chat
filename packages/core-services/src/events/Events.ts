@@ -137,7 +137,7 @@ export type EventSignatures = {
 			  },
 	): void;
 	'user.deleteCustomStatus'(userStatus: Omit<ICustomUserStatus, '_updatedAt'>): void;
-	'user.forceLogout': (uid: string) => void;
+	'user.forceLogout': (uid: string, sessionId?: string) => void;
 	'user.media-signal'(data: { userId: IUser['_id']; signal: ServerMediaSignal }): void;
 	'user.nameChanged'(user: Pick<IUser, '_id' | 'name' | 'username'>): void;
 	'user.realNameChanged'(user: Partial<IUser>): void;
