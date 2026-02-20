@@ -106,52 +106,39 @@ const isLinkElement = (node: Node): node is HTMLAnchorElement => isElement(node)
 
 // Register the DOMPurify hook once at module level to prevent memory leaks
 // This hook will be shared by all MarkdownText component instances
-let hooksRegistered = false;
-
-const registerDOMPurifyHooks = () => {
-	if (hooksRegistered) {
+dompurify.addHook('afterSanitizeAttributes', (node) => {
+	if (!isLinkElement(node)) {
 		return;
 	}
 
-	dompurify.addHook('afterSanitizeAttributes', (node) => {
-		if (!isLinkElement(node)) {
-			return;
-		}
+	const href = node.getAttribute('href') || '';
+	const isExternalLink = isExternal(href);
+	const isMailto = href.startsWith('mailto:');
 
-		const href = node.getAttribute('href') || '';
-		const isExternalLink = isExternal(href);
-		const isMailto = href.startsWith('mailto:');
+	// Set appropriate attributes based on link type
+	if (isExternalLink || isMailto) {
+		node.setAttribute('rel', 'nofollow noopener noreferrer');
+		// Enforcing external links to open in new tabs is critical to assure users never navigate away from the chat
+		// This attribute must be preserved to guarantee users maintain their chat context
+		node.setAttribute('target', '_blank');
+	}
 
-		// Set appropriate attributes based on link type
-		if (isExternalLink || isMailto) {
-			node.setAttribute('rel', 'nofollow noopener noreferrer');
-			// Enforcing external links to open in new tabs is critical to assure users never navigate away from the chat
-			// This attribute must be preserved to guarantee users maintain their chat context
-			node.setAttribute('target', '_blank');
-		}
-
-		// Set appropriate title based on link type
-		if (isMailto) {
-			// For mailto links, use the email address as the title for better user experience
-			// Example: for href "mailto:user@example.com" the title would be "mailto:user@example.com"
-			node.setAttribute('title', href);
-		} else if (isExternalLink) {
-			// For external links, set an empty title to prevent tooltips
-			// This reduces visual clutter and lets users see the URL in the browser's status bar instead
-			node.setAttribute('title', '');
-		} else {
-			// For internal links, add a translated title with the relative path
-			// Example: for href "https://my-server.rocket.chat/channel/general" the title would be "Go to #general"
-			// Using i18next directly ensures we always get the current translation
-			node.setAttribute('title', `${i18next.t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
-		}
-	});
-
-	hooksRegistered = true;
-};
-
-// Register hooks immediately when module is loaded
-registerDOMPurifyHooks();
+	// Set appropriate title based on link type
+	if (isMailto) {
+		// For mailto links, use the email address as the title for better user experience
+		// Example: for href "mailto:user@example.com" the title would be "mailto:user@example.com"
+		node.setAttribute('title', href);
+	} else if (isExternalLink) {
+		// For external links, set an empty title to prevent tooltips
+		// This reduces visual clutter and lets users see the URL in the browser's status bar instead
+		node.setAttribute('title', '');
+	} else {
+		// For internal links, add a translated title with the relative path
+		// Example: for href "https://my-server.rocket.chat/channel/general" the title would be "Go to #general"
+		// Using i18next directly ensures we always get the current translation
+		node.setAttribute('title', `${i18next.t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
+	}
+});
 
 const MarkdownText = ({
 	content,
