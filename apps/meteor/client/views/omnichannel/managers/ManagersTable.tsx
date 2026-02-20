@@ -19,11 +19,11 @@ import { useMemo, useState } from 'react';
 import AddManager from './AddManager';
 import RemoveManagerButton from './RemoveManagerButton';
 import FilterByText from '../../../components/FilterByText';
+import GenericError from '../../../components/GenericError';
 import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
 import { links } from '../../../lib/links';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
-// TODO: Missing error state
 const ManagersTable = () => {
 	const t = useTranslation();
 
@@ -47,7 +47,7 @@ const ManagersTable = () => {
 	);
 
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
-	const { data, isLoading, isSuccess } = useQuery({
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
 		queryKey: omnichannelQueryKeys.managers(query),
 		queryFn: async () => getManagers(query),
 	});
@@ -143,6 +143,7 @@ const ManagersTable = () => {
 					/>
 				</>
 			)}
+			{isError && <GenericError buttonAction={refetch} />}
 		</>
 	);
 };
