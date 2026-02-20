@@ -83,16 +83,14 @@ Meteor.startup(() => {
 		const emoji = await EmojiCustom.findOneByName(params.emoji.split('.')[0], { projection: { _id: 1 } });
 
 		if (!emoji) {
-			writeSvgFallback(res);
-			return;
+			return writeSvgFallback(res, req);
 		}
 
 		const file = await RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(params.emoji));
 
 		if (!file) {
 			// use code from username initials renderer until file upload is complete
-			writeSvgFallback(res);
-			return;
+			return writeSvgFallback(res, req);
 		}
 
 		const fileUploadDate = file.uploadDate != null ? file.uploadDate.toUTCString() : undefined;
