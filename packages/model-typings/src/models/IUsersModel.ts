@@ -104,8 +104,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	isUserInRole(userId: IUser['_id'], roleId: IRole['_id']): Promise<Pick<IUser, 'roles' | '_id'> | null>;
 
-	getDistinctFederationDomains(): Promise<string[]>;
-
 	getNextLeastBusyAgent(
 		department?: string,
 		ignoreAgentId?: string,

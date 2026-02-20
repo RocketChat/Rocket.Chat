@@ -21,7 +21,7 @@ exports[`renders Default without crashing 1`] = `
           role="toolbar"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="emoji"
             type="button"
           >
@@ -33,10 +33,10 @@ exports[`renders Default without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-1ey0eb8"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1ey0eb8"
           />
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="bold"
             type="button"
           >
@@ -48,7 +48,7 @@ exports[`renders Default without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="italic"
             type="button"
           >
@@ -60,7 +60,7 @@ exports[`renders Default without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="underline"
             type="button"
           >
@@ -72,7 +72,7 @@ exports[`renders Default without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="strike"
             type="button"
           >
@@ -84,7 +84,7 @@ exports[`renders Default without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="code"
             type="button"
           >
@@ -96,7 +96,7 @@ exports[`renders Default without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="multiline"
             type="button"
           >
@@ -108,7 +108,7 @@ exports[`renders Default without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="link"
             type="button"
           >
@@ -120,7 +120,7 @@ exports[`renders Default without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="katex"
             type="button"
           >
@@ -132,10 +132,10 @@ exports[`renders Default without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-1ey0eb8"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1ey0eb8"
           />
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="mic"
             type="button"
           >
@@ -147,7 +147,7 @@ exports[`renders Default without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="video"
             type="button"
           >
@@ -159,7 +159,7 @@ exports[`renders Default without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="attachment"
             type="button"
           >
@@ -171,7 +171,7 @@ exports[`renders Default without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="more"
             type="button"
           >
@@ -226,7 +226,7 @@ exports[`renders Expandable without crashing 1`] = `
           role="toolbar"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="emoji"
             type="button"
           >
@@ -238,10 +238,10 @@ exports[`renders Expandable without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-1ey0eb8"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1ey0eb8"
           />
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="bold"
             type="button"
           >
@@ -253,7 +253,7 @@ exports[`renders Expandable without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="italic"
             type="button"
           >
@@ -265,7 +265,7 @@ exports[`renders Expandable without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="underline"
             type="button"
           >
@@ -277,7 +277,7 @@ exports[`renders Expandable without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="strike"
             type="button"
           >
@@ -289,7 +289,7 @@ exports[`renders Expandable without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="code"
             type="button"
           >
@@ -301,7 +301,7 @@ exports[`renders Expandable without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="multiline"
             type="button"
           >
@@ -313,7 +313,7 @@ exports[`renders Expandable without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="link"
             type="button"
           >
@@ -325,7 +325,7 @@ exports[`renders Expandable without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="katex"
             type="button"
           >
@@ -337,10 +337,10 @@ exports[`renders Expandable without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-1ey0eb8"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1ey0eb8"
           />
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="mic"
             type="button"
           >
@@ -352,7 +352,7 @@ exports[`renders Expandable without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="video"
             type="button"
           >
@@ -364,7 +364,7 @@ exports[`renders Expandable without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="attachment"
             type="button"
           >
@@ -376,7 +376,7 @@ exports[`renders Expandable without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="more"
             type="button"
           >
@@ -425,7 +425,7 @@ exports[`renders ToolbarActions without crashing 1`] = `
       role="toolbar"
     >
       <button
-        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
         title="emoji"
         type="button"
       >
@@ -437,10 +437,10 @@ exports[`renders ToolbarActions without crashing 1`] = `
         </i>
       </button>
       <hr
-        class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-1ey0eb8"
+        class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1ey0eb8"
       />
       <button
-        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
         title="bold"
         type="button"
       >
@@ -452,7 +452,7 @@ exports[`renders ToolbarActions without crashing 1`] = `
         </i>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
         title="italic"
         type="button"
       >
@@ -464,7 +464,7 @@ exports[`renders ToolbarActions without crashing 1`] = `
         </i>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
         title="underline"
         type="button"
       >
@@ -476,7 +476,7 @@ exports[`renders ToolbarActions without crashing 1`] = `
         </i>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
         title="strike"
         type="button"
       >
@@ -488,7 +488,7 @@ exports[`renders ToolbarActions without crashing 1`] = `
         </i>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
         title="code"
         type="button"
       >
@@ -500,7 +500,7 @@ exports[`renders ToolbarActions without crashing 1`] = `
         </i>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
         title="multiline"
         type="button"
       >
@@ -512,7 +512,7 @@ exports[`renders ToolbarActions without crashing 1`] = `
         </i>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
         title="link"
         type="button"
       >
@@ -524,7 +524,7 @@ exports[`renders ToolbarActions without crashing 1`] = `
         </i>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
         title="katex"
         type="button"
       >
@@ -536,10 +536,10 @@ exports[`renders ToolbarActions without crashing 1`] = `
         </i>
       </button>
       <hr
-        class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-1ey0eb8"
+        class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1ey0eb8"
       />
       <button
-        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
         title="mic"
         type="button"
       >
@@ -551,7 +551,7 @@ exports[`renders ToolbarActions without crashing 1`] = `
         </i>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
         title="video"
         type="button"
       >
@@ -563,7 +563,7 @@ exports[`renders ToolbarActions without crashing 1`] = `
         </i>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
         title="attachment"
         type="button"
       >
@@ -575,7 +575,7 @@ exports[`renders ToolbarActions without crashing 1`] = `
         </i>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
         title="more"
         type="button"
       >
@@ -643,7 +643,7 @@ exports[`renders WithHints without crashing 1`] = `
           role="toolbar"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="emoji"
             type="button"
           >
@@ -655,10 +655,10 @@ exports[`renders WithHints without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-1ey0eb8"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1ey0eb8"
           />
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="bold"
             type="button"
           >
@@ -670,7 +670,7 @@ exports[`renders WithHints without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="italic"
             type="button"
           >
@@ -682,7 +682,7 @@ exports[`renders WithHints without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="underline"
             type="button"
           >
@@ -694,7 +694,7 @@ exports[`renders WithHints without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="strike"
             type="button"
           >
@@ -706,7 +706,7 @@ exports[`renders WithHints without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="code"
             type="button"
           >
@@ -718,7 +718,7 @@ exports[`renders WithHints without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="multiline"
             type="button"
           >
@@ -730,7 +730,7 @@ exports[`renders WithHints without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="link"
             type="button"
           >
@@ -742,7 +742,7 @@ exports[`renders WithHints without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="katex"
             type="button"
           >
@@ -754,10 +754,10 @@ exports[`renders WithHints without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-1ey0eb8"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1ey0eb8"
           />
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="mic"
             type="button"
           >
@@ -769,7 +769,7 @@ exports[`renders WithHints without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="video"
             type="button"
           >
@@ -781,7 +781,7 @@ exports[`renders WithHints without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="attachment"
             type="button"
           >
@@ -793,7 +793,7 @@ exports[`renders WithHints without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="more"
             type="button"
           >
@@ -811,7 +811,7 @@ exports[`renders WithHints without crashing 1`] = `
         >
           <button
             aria-label="Send"
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button"
             type="button"
           >
             <i
@@ -849,7 +849,7 @@ exports[`renders WithSubmit without crashing 1`] = `
           role="toolbar"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="emoji"
             type="button"
           >
@@ -861,10 +861,10 @@ exports[`renders WithSubmit without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-1ey0eb8"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1ey0eb8"
           />
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="bold"
             type="button"
           >
@@ -876,7 +876,7 @@ exports[`renders WithSubmit without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="italic"
             type="button"
           >
@@ -888,7 +888,7 @@ exports[`renders WithSubmit without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="underline"
             type="button"
           >
@@ -900,7 +900,7 @@ exports[`renders WithSubmit without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="strike"
             type="button"
           >
@@ -912,7 +912,7 @@ exports[`renders WithSubmit without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="code"
             type="button"
           >
@@ -924,7 +924,7 @@ exports[`renders WithSubmit without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="multiline"
             type="button"
           >
@@ -936,7 +936,7 @@ exports[`renders WithSubmit without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="link"
             type="button"
           >
@@ -948,7 +948,7 @@ exports[`renders WithSubmit without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="katex"
             type="button"
           >
@@ -960,10 +960,10 @@ exports[`renders WithSubmit without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-1ey0eb8"
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-1ey0eb8"
           />
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="mic"
             type="button"
           >
@@ -975,7 +975,7 @@ exports[`renders WithSubmit without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="video"
             type="button"
           >
@@ -987,7 +987,7 @@ exports[`renders WithSubmit without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="attachment"
             type="button"
           >
@@ -999,7 +999,7 @@ exports[`renders WithSubmit without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
             title="more"
             type="button"
           >
@@ -1016,7 +1016,7 @@ exports[`renders WithSubmit without crashing 1`] = `
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small rcx-button"
             type="button"
           >
             <span
@@ -1026,7 +1026,7 @@ exports[`renders WithSubmit without crashing 1`] = `
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button"
             type="button"
           >
             <span
