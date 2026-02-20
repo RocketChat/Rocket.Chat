@@ -61,7 +61,7 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, action]: [string, UserInfoActionType]): ReactElement => (
-			<UserInfoAction key={key} title={action.title} label={action.content} onClick={action.onClick} icon={action.icon} />
+			<UserInfoAction key={key} title={action.title} label={action.content} onClick={action.onClick} icon={action.icon ?? 'kebab'} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
