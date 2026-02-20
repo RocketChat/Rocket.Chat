@@ -8607,7 +8607,7 @@ __metadata:
     ajv: "npm:^8.17.1"
     eslint: "npm:~8.45.0"
     express: "npm:^4.21.2"
-    hono: "npm:^4.10.7"
+    hono: "npm:^4.11.9"
     jest: "npm:~30.2.0"
     qs: "npm:^6.14.1"
     supertest: "npm:~7.1.4"
@@ -9211,7 +9211,7 @@ __metadata:
     gravatar: "npm:^1.8.2"
     he: "npm:^1.2.0"
     highlight.js: "npm:11.8.0"
-    hono: "npm:^4.10.6"
+    hono: "npm:^4.11.9"
     http-proxy-agent: "npm:^7.0.2"
     human-interval: "npm:^2.0.1"
     i18next: "npm:~23.4.9"
@@ -9862,11 +9862,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/server-fetch@workspace:packages/server-fetch"
   dependencies:
+    "@rocket.chat/logger": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/tools": "workspace:^"
+    "@types/jest": "npm:^29.5.5"
     "@types/node-fetch": "npm:~2.6.13"
     "@types/proxy-from-env": "npm:^1.0.4"
     eslint: "npm:~8.45.0"
     http-proxy-agent: "npm:^7.0.2"
     https-proxy-agent: "npm:^7.0.6"
+    jest: "npm:^29.7.0"
     node-fetch: "npm:2.7.0"
     proxy-from-env: "npm:^1.1.0"
     typescript: "npm:~5.9.3"
@@ -12955,7 +12960,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:*":
+"@types/jest@npm:*, @types/jest@npm:^29.5.5":
   version: 29.5.14
   resolution: "@types/jest@npm:29.5.14"
   dependencies:
@@ -22696,17 +22701,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hono@npm:^4.10.6":
-  version: 4.10.6
-  resolution: "hono@npm:4.10.6"
-  checksum: 10/a94a3780b934d2b9c9eb3d94bfd096717cd65beda007da2790db4af95ee49b6a8365fdc087c456ca749280b0d804381b51575d57169601042210f2401ba32f85
-  languageName: node
-  linkType: hard
-
-"hono@npm:^4.10.7":
-  version: 4.10.7
-  resolution: "hono@npm:4.10.7"
-  checksum: 10/564be57c7e037ad1237b5451cee52b3d39d89fb7cefa00976ccb4650e1c4eeb37b928e87b85255b1595eb28f18e80ea5effdb1998b8464b742b434bee3e1dda7
+"hono@npm:^4.11.9":
+  version: 4.11.9
+  resolution: "hono@npm:4.11.9"
+  checksum: 10/4332c09f446782da981b488e206dc4509bbd812f795f27cf532e3342f6f2e418cad5549859e35725cc0f8029ecb8f19ef74a7fc94a11f91c3988540c3176ca86
   languageName: node
   linkType: hard
 
@@ -25404,7 +25402,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:^29.6.4":
+"jest@npm:^29.6.4, jest@npm:^29.7.0":
   version: 29.7.0
   resolution: "jest@npm:29.7.0"
   dependencies:
