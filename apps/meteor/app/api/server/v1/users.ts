@@ -73,6 +73,7 @@ import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
+import { getUserInfo } from '../helpers/getUserInfo';
 import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
@@ -189,7 +190,7 @@ API.v1.addRoute(
 			await executeSaveUserProfile.call(this, this.user, userData, this.bodyParams.customFields, twoFactorOptions);
 
 			return API.v1.success({
-				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
+				user: await getUserInfo((await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude })) as IUser, false),
 			});
 		},
 	},
@@ -511,8 +512,6 @@ API.v1.addRoute(
 
 			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
 
-			const hasUserQuery = query && Object.keys(query).length > 0;
-
 			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
 
 			// if user provided a query, validate it with their allowed operators
@@ -528,7 +527,9 @@ API.v1.addRoute(
 						inclusiveFieldsKeys.includes('type') && 'type.*',
 						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
 					].filter(Boolean) as string[],
-					hasUserQuery ? this.queryOperations : [...this.queryOperations, '$regex', '$options'],
+					// At this point, we have already validated the user query not containing malicious fields
+					// On here we are using our own query so we can allow some extra fields
+					[...this.queryOperations, '$regex', '$options'],
 				)
 			) {
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
@@ -1072,6 +1073,10 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isUsersSendConfirmationEmailParamsPOST,
+		rateLimiterOptions: {
+			numRequestsAllowed: 1,
+			intervalTimeInMS: 60000,
+		},
 	},
 	{
 		async post() {

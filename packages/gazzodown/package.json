@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/gazzodown",
-	"version": "26.0.0",
+	"version": "27.0.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -22,7 +22,7 @@
 	},
 	"dependencies": {
 		"date-fns": "~4.1.0",
-		"dompurify": "~3.2.7",
+		"dompurify": "~3.3.1",
 		"highlight.js": "11.8.0",
 		"react-error-boundary": "^3.1.4",
 		"react-stately": "~3.17.0"
@@ -52,7 +52,6 @@
 		"@storybook/react-webpack5": "^8.6.15",
 		"@testing-library/dom": "~10.4.1",
 		"@testing-library/react": "~16.3.2",
-		"@types/dompurify": "~3.2.0",
 		"@types/jest": "~30.0.0",
 		"@types/katex": "~0.16.8",
 		"@types/react": "~18.3.27",
@@ -83,7 +82,7 @@
 		"@rocket.chat/css-in-js": "*",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-tokens": "*",
-		"@rocket.chat/message-parser": "0.31.32",
+		"@rocket.chat/message-parser": "0.31.33",
 		"@rocket.chat/styled": "*",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
