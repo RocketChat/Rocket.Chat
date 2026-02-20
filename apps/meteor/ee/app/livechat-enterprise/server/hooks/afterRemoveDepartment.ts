@@ -1,7 +1,7 @@
 import type { AtLeast, ILivechatAgent, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatUnit } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
 const afterRemoveDepartment = async (options: {
@@ -9,7 +9,7 @@ const afterRemoveDepartment = async (options: {
 	agentsId: ILivechatAgent['_id'][];
 }) => {
 	if (!options?.department) {
-		cbLogger.warn('No department found in options', options);
+		cbLogger.warn({ msg: 'No department found in options', options });
 		return options;
 	}
 

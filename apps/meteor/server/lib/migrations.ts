@@ -146,7 +146,12 @@ async function migrate(direction: 'up' | 'down', migration: IMigration): Promise
 		throw new Error(`Cannot migrate ${direction} on version ${migration.version}`);
 	}
 
-	log.startup(`Running ${direction}() on version ${migration.version}${migration.name ? `(${migration.name})` : ''}`);
+	log.startup({
+		msg: 'Running migration',
+		direction,
+		version: migration.version,
+		name: migration.name,
+	});
 
 	await migration[direction]?.(migration);
 }
@@ -181,9 +186,13 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 	// const { version } = orderedMigrations[orderedMigrations.length - 1];
 
 	if (!(await lock())) {
-		const msg = `Not migrating, control is locked. Attempt ${currentAttempt}/${maxAttempts}`;
 		if (currentAttempt <= maxAttempts) {
-			log.warn(`${msg}. Trying again in ${retryInterval} seconds.`);
+			log.warn({
+				msg: 'Not migrating, control is locked. Will retry.',
+				retryIntervalSeconds: retryInterval,
+				attempt: currentAttempt,
+				maxAttempts,
+			});
 
 			await sleep(retryInterval * 1000);
 
@@ -212,7 +221,10 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 	}
 
 	if (subcommands?.includes('rerun')) {
-		log.startup(`Rerunning version ${targetVersion}`);
+		log.startup({
+			msg: 'Rerunning migration',
+			targetVersion,
+		});
 		const migration = orderedMigrations.find((migration) => migration.version === targetVersion);
 
 		if (!migration) {
@@ -232,7 +244,10 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 	}
 
 	if (currentVersion === version) {
-		log.startup(`Not migrating, already at version ${version}`);
+		log.startup({
+			msg: 'Already at target migration version',
+			version,
+		});
 		unlock(currentVersion);
 		return true;
 	}
@@ -247,7 +262,11 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 		throw new Error(`Can't find migration version ${version}`);
 	}
 
-	log.startup(`Migrating from version ${orderedMigrations[startIdx].version} -> ${orderedMigrations[endIdx].version}`);
+	log.startup({
+		msg: 'Migrating between versions',
+		fromVersion: orderedMigrations[startIdx].version,
+		toVersion: orderedMigrations[endIdx].version,
+	});
 
 	try {
 		const migrations = [];

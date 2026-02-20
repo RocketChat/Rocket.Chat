@@ -11,8 +11,8 @@ import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
 import { setUserStatusLivechatIf } from './lib/utils';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
-import { callbacks } from '../../../lib/callbacks';
-import { beforeLeaveRoomCallback } from '../../../lib/callbacks/beforeLeaveRoomCallback';
+import { callbacks } from '../../../server/lib/callbacks';
+import { beforeLeaveRoomCallback } from '../../../server/lib/callbacks/beforeLeaveRoomCallback';
 import { i18n } from '../../../server/lib/i18n';
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { maybeMigrateLivechatRoom } from '../../api/server/lib/maybeMigrateLivechatRoom';
@@ -113,7 +113,7 @@ Meteor.startup(async () => {
 	settings.watch<boolean>(
 		'Livechat_enable_business_hours',
 		async (value) => {
-			logger.debug(`Starting business hour manager ${value}`);
+			logger.debug({ msg: 'Starting business hour manager', enabled: value });
 			if (value) {
 				await businessHourManager.startManager();
 				return;

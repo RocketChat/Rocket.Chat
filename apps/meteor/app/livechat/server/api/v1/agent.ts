@@ -1,12 +1,23 @@
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.chat/rest-typings';
+import {
+	isGETAgentNextToken,
+	isPOSTLivechatAgentSaveInfoParams,
+	isPOSTLivechatAgentStatusProps,
+	POSTLivechatAgentSaveInfoSuccessResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { hasRoleAsync } from '../../../../authorization/server/functions/hasRole';
 import { RoutingManager } from '../../lib/RoutingManager';
 import { getRequiredDepartment } from '../../lib/departmentsLib';
+import { saveAgentInfo } from '../../lib/omni-users';
 import { setUserStatusLivechat, allowAgentChangeServiceStatus } from '../../lib/utils';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 
@@ -124,3 +135,36 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const livechatAgentsEndpoints = API.v1.post(
+	'livechat/agents.saveInfo',
+	{
+		response: {
+			200: POSTLivechatAgentSaveInfoSuccessResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+		authRequired: true,
+		permissionsRequired: ['manage-livechat-agents'],
+		body: isPOSTLivechatAgentSaveInfoParams,
+	},
+	async function action() {
+		const { agentId, agentData, agentDepartments } = this.bodyParams;
+
+		if (!(await hasRoleAsync(agentId, 'livechat-agent'))) {
+			return API.v1.failure('error-user-is-not-agent');
+		}
+
+		await saveAgentInfo(agentId, agentData, agentDepartments);
+
+		return API.v1.success();
+	},
+);
+
+type LivechatAgentsEndpoints = ExtractRoutesFromAPI<typeof livechatAgentsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends LivechatAgentsEndpoints {}
+}

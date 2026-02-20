@@ -5,7 +5,7 @@ import type {
 	ITeam,
 	ITeamMember,
 	ITeamStats,
-	TEAM_TYPE,
+	TeamType,
 	IRoom,
 	IUser,
 	IRole,
@@ -61,11 +61,11 @@ export interface IListRoomsFilter {
 export type ITeamUpdateData = { updateRoom?: boolean } & (
 	| {
 			name: string;
-			type?: TEAM_TYPE;
+			type?: TeamType;
 	  }
 	| {
 			name?: string;
-			type: TEAM_TYPE;
+			type: TeamType;
 	  }
 );
 
@@ -106,7 +106,7 @@ export interface ITeamService {
 	getInfoById(teamId: string): Promise<Partial<ITeam> | null>;
 	deleteById(teamId: string): Promise<boolean>;
 	deleteByName(teamName: string): Promise<boolean>;
-	unsetTeamIdOfRooms(uid: string, teamId: string): void;
+	unsetTeamIdOfRooms(user: AtLeast<IUser, '_id' | 'username' | 'name'>, team: AtLeast<ITeam, '_id' | 'roomId'>): Promise<void>;
 	getOneById(teamId: string, options?: FindOptions<ITeam>): Promise<ITeam | null>;
 	getOneById<P extends Document>(teamId: string, options?: FindOptions<P extends ITeam ? ITeam : P>): Promise<ITeam | P | null>;
 	getOneByName(teamName: string | RegExp, options?: FindOptions<ITeam>): Promise<ITeam | null>;

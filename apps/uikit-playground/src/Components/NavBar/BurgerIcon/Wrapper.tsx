@@ -12,13 +12,14 @@ const Wrapper = ({ children }: { children: ReactNode }): ReactElement => (
     paddingBlock={4}
     paddingInline={2}
     verticalAlign="middle"
-    children={children}
     height="x24"
     className={css`
       cursor: pointer;
     `}
     width="x24"
-  />
+  >
+    {children}
+  </Box>
 );
 
 export default Wrapper;

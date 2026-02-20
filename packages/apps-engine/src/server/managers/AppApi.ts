@@ -65,7 +65,7 @@ export class AppApi {
 		};
 
 		try {
-			const result = await this.app.getDenoRuntime().sendRequest({
+			const result = await this.app.getRuntimeController().sendRequest({
 				method: `api:${path}:${method}`,
 				params: [request, endpoint],
 			});

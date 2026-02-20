@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { MouseEvent, ReactElement, ReactNode, RefObject } from 'react';
+import type { MouseEvent, ReactNode, RefObject } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 
 const useEscapeKey = (onDismiss: (() => void) | undefined): void => {
@@ -72,7 +72,7 @@ type ModalBackdropProps = {
 	onDismiss?: () => void;
 };
 
-const ModalBackdrop = ({ children, onDismiss }: ModalBackdropProps): ReactElement => {
+const ModalBackdrop = ({ children, onDismiss }: ModalBackdropProps) => {
 	const ref = useRef<HTMLDivElement>(null);
 
 	useEscapeKey(onDismiss);
@@ -81,7 +81,6 @@ const ModalBackdrop = ({ children, onDismiss }: ModalBackdropProps): ReactElemen
 	return (
 		<Box
 			ref={ref}
-			children={children}
 			className='rcx-modal__backdrop'
 			position='fixed'
 			zIndex={9999}
@@ -90,7 +89,9 @@ const ModalBackdrop = ({ children, onDismiss }: ModalBackdropProps): ReactElemen
 			flexDirection='column'
 			onMouseDown={onMouseDown}
 			onMouseUp={onMouseUp}
-		/>
+		>
+			{children}
+		</Box>
 	);
 };
 

@@ -25,8 +25,9 @@ const ToggleTabs = ({
           selected={selectedTab === index}
           onClick={() => onChange(index)}
           className={disableBorder}
-          children={item}
-        />
+        >
+          {item}
+        </Tabs.Item>
       ))}
     </Tabs>
   );

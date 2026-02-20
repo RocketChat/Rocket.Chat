@@ -1,19 +1,22 @@
 import type { DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, StatusBullet } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useRoute, useUserPresence } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-
 import {
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarTitle,
-} from '../../../../components/Contextualbar';
-import { InfoPanel, InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../components/InfoPanel';
+	InfoPanel,
+	InfoPanelField,
+	InfoPanelLabel,
+	InfoPanelText,
+} from '@rocket.chat/ui-client';
+import { useRoute, useUserPresence } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 

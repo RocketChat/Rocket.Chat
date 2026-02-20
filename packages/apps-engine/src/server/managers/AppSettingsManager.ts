@@ -34,7 +34,9 @@ export class AppSettingsManager {
 			throw new Error('No App found by the provided id.');
 		}
 
-		const oldSetting = rl.getStorageItem().settings[setting.id];
+		const storageItem = rl.getStorageItem();
+
+		const oldSetting = storageItem.settings[setting.id];
 		if (!oldSetting) {
 			throw new Error('No setting found for the App by the provided id.');
 		}
@@ -43,11 +45,9 @@ export class AppSettingsManager {
 			(await rl.call(AppMethod.ON_PRE_SETTING_UPDATE, { oldSetting, newSetting: setting } as ISettingUpdateContext)) || setting;
 
 		decoratedSetting.updatedAt = new Date();
-		rl.getStorageItem().settings[decoratedSetting.id] = decoratedSetting;
+		storageItem.settings[decoratedSetting.id] = decoratedSetting;
 
-		const item = await this.manager.getStorage().update(rl.getStorageItem());
-
-		rl.setStorageItem(item);
+		await this.manager.getStorage().updateSetting(storageItem._id, decoratedSetting);
 
 		this.manager.getBridges().getAppDetailChangesBridge().doOnAppSettingsChange(appId, decoratedSetting);
 

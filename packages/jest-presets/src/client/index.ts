@@ -6,5 +6,5 @@ const preset = '@rocket.chat/jest-presets/client';
 
 export default {
 	preset,
-	setupFilesAfterEnv: [`${preset}/jest-setup.js`],
+	setupFilesAfterEnv: [`${preset}/jest-setup`],
 } satisfies Config;

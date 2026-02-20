@@ -4,9 +4,8 @@ import type { Meta, StoryFn } from '@storybook/react';
 import ChannelsTab from './ChannelsOverview';
 
 export default {
-	title: 'Enterprise/Admin/Engagement Dashboard/ChannelsTab',
 	component: ChannelsTab,
-	decorators: [(fn) => <Margins children={fn()} all='x24' />],
+	decorators: [(fn) => <Margins all='x24'>{fn()}</Margins>],
 } satisfies Meta<typeof ChannelsTab>;
 
 export const Default: StoryFn<typeof ChannelsTab> = () => <ChannelsTab />;

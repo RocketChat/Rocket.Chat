@@ -13,7 +13,7 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		});
 	}
 
-	modelIndexes(): IndexDescription[] {
+	override modelIndexes(): IndexDescription[] {
 		return [{ key: { userId: 1, authToken: 1 } }, { key: { appName: 1, token: 1 } }];
 	}
 

@@ -282,6 +282,30 @@ export function addSettings(): Promise<void> {
 						invalidValue: '',
 					});
 				});
+
+				await this.section('LDAP_DataSync_ABAC', async function () {
+					await this.add('LDAP_Background_Sync_ABAC_Attributes', false, {
+						type: 'boolean',
+						enableQuery,
+						invalidValue: false,
+						modules: ['abac', 'ldap-enterprise'],
+					});
+
+					await this.add('LDAP_Background_Sync_ABAC_Attributes_Interval', '0 0 * * *', {
+						type: 'string',
+						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_ABAC_Attributes', value: true }],
+						invalidValue: '0 0 * * *',
+						modules: ['abac', 'ldap-enterprise'],
+					});
+
+					await this.add('LDAP_ABAC_AttributeMap', '{}', {
+						type: 'code',
+						multiline: true,
+						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_ABAC_Attributes', value: true }],
+						invalidValue: '{}',
+						modules: ['abac', 'ldap-enterprise'],
+					});
+				});
 			},
 		);
 	});

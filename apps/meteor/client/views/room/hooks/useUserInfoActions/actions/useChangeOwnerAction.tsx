@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { GenericModal } from '@rocket.chat/ui-client';
@@ -132,10 +132,10 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const changeOwnerAction = useEffectEvent(async () => handleChangeOwner());
 
 	const roomIsFederated = isRoomFederated(room);
-
+	const isFederationBlocked = room && !isRoomNativeFederated(room);
 	const changeOwnerOption = useMemo(
 		() =>
-			(roomIsFederated && roomCanSetOwner) || (!roomIsFederated && roomCanSetOwner && userCanSetOwner)
+			(roomIsFederated && !isFederationBlocked && roomCanSetOwner) || (!roomIsFederated && roomCanSetOwner && userCanSetOwner)
 				? {
 						content: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
 						icon: 'shield-check' as const,
@@ -143,7 +143,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 						type: 'privileges' as UserInfoActionType,
 					}
 				: undefined,
-		[changeOwnerAction, roomCanSetOwner, userCanSetOwner, isOwner, t, roomIsFederated],
+		[changeOwnerAction, roomCanSetOwner, userCanSetOwner, isOwner, t, roomIsFederated, isFederationBlocked],
 	);
 
 	return changeOwnerOption;

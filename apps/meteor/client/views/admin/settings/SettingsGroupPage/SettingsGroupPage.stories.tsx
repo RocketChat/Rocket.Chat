@@ -4,7 +4,6 @@ import SettingsGroupPage from './SettingsGroupPage';
 import SettingsGroupPageSkeleton from './SettingsGroupPageSkeleton';
 
 export default {
-	title: 'Admin/Settings/SettingsGroupPage',
 	component: SettingsGroupPage,
 	parameters: {
 		layout: 'fullscreen',

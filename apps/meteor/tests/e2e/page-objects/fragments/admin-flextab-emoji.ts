@@ -1,21 +1,19 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
-export class AdminFlextabEmoji {
-	private readonly page: Page;
+import { FlexTab } from './flextab';
 
+export class AddEmojiFlexTab extends FlexTab {
 	constructor(page: Page) {
-		this.page = page;
+		super(page.getByRole('dialog', { name: 'Add New Emoji' }));
+	}
+}
+
+export class EditEmojiFlexTab extends FlexTab {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Custom Emoji Info' }));
 	}
 
-	get nameInput(): Locator {
-		return this.page.locator('role=textbox[name="Name"]');
-	}
-
-	get btnSave(): Locator {
-		return this.page.locator('role=button[name="Save"]');
-	}
-
-	get btnDelete(): Locator {
-		return this.page.locator('role=button[name="Delete"]');
+	async delete() {
+		await this.btnDelete.click();
 	}
 }
