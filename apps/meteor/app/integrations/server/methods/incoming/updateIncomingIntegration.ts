@@ -182,30 +182,35 @@ export const updateIncomingIntegration = async (
 
 	await addUserRolesAsync(user._id, ['bot']);
 
+	const setFields = {
+		enabled: integration.enabled,
+		name: integration.name,
+		avatar: integration.avatar,
+		emoji: integration.emoji,
+		channel: channels,
+		...('username' in integration && { username: user.username, userId: user._id }),
+		...(isFrozen
+			? {}
+			: {
+					script: integration.script,
+					scriptEnabled: integration.scriptEnabled,
+					scriptEngine,
+				}),
+		...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
+			overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
+		}),
+		_updatedAt: new Date(),
+		_updatedBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
+	};
+
 	const updatedIntegration = await Integrations.findOneAndUpdate(
 		{ _id: integrationId },
 		{
 			$set: {
-				enabled: integration.enabled,
-				name: integration.name,
-				avatar: integration.avatar,
-				emoji: integration.emoji,
-				alias: sanitizedAlias || undefined,
-				channel: channels,
-				...('username' in integration && { username: user.username, userId: user._id }),
-				...(isFrozen
-					? {}
-					: {
-							script: integration.script,
-							scriptEnabled: integration.scriptEnabled,
-							scriptEngine,
-						}),
-				...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
-					overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
-				}),
-				_updatedAt: new Date(),
-				_updatedBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
+				...setFields,
+				...(sanitizedAlias ? { alias: sanitizedAlias } : {}),
 			},
+			...(sanitizedAlias ? {} : { $unset: { alias: 1 as const } }),
 		},
 		{ returnDocument: 'after' },
 	);
