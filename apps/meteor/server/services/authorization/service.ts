@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import type { IAuthorization, RoomAccessValidator } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
 import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
@@ -11,212 +12,234 @@ import { AuthorizationUtils } from '../../../app/authorization/lib/Authorization
 import './canAccessRoomLivechat';
 import { TOTP } from '../../../app/2fa/server/lib/totp';
 
+import { notifyOnUserChange } from '../../../app/lib/server/lib/notifyListener';
+
 // Register as class
 export class Authorization extends ServiceClass implements IAuthorization {
-	protected name = 'authorization';
+    protected name = 'authorization';
 
-	private getRolesCached = mem(this.getRoles.bind(this), {
-		maxAge: 1000,
-		cacheKey: JSON.stringify,
-	});
+    private getRolesCached = mem(this.getRoles.bind(this), {
+        maxAge: 1000,
+        cacheKey: JSON.stringify,
+    });
 
-	private rolesHasPermissionCached = mem(this.rolesHasPermission.bind(this), {
-		cacheKey: JSON.stringify,
-		...(process.env.TEST_MODE === 'true' && { maxAge: 1 }),
-	});
+    private rolesHasPermissionCached = mem(this.rolesHasPermission.bind(this), {
+        cacheKey: JSON.stringify,
+        ...(process.env.TEST_MODE === 'true' && { maxAge: 1 }),
+    });
 
-	constructor() {
-		super();
+    constructor() {
+        super();
 
-		const clearCache = (): void => {
-			mem.clear(this.getRolesCached);
-			mem.clear(this.rolesHasPermissionCached);
-		};
+        const clearCache = (): void => {
+            mem.clear(this.getRolesCached);
+            mem.clear(this.rolesHasPermissionCached);
+        };
 
-		this.onEvent('watch.roles', clearCache);
-		this.onEvent('permission.changed', clearCache);
-		this.onEvent('authorization.guestPermissions', (permissions: string[]) => {
-			AuthorizationUtils.addRolePermissionWhiteList('guest', permissions);
-		});
-	}
+        this.onEvent('watch.roles', clearCache);
+        this.onEvent('permission.changed', clearCache);
+        this.onEvent('authorization.guestPermissions', (permissions: string[]) => {
+            AuthorizationUtils.addRolePermissionWhiteList('guest', permissions);
+        });
+    }
 
-	override async started(): Promise<void> {
-		try {
-			if (!(await License.hasValidLicense())) {
-				return;
-			}
+    override async started(): Promise<void> {
+        try {
+            if (!(await License.hasValidLicense())) {
+                return;
+            }
 
-			const permissions = await License.getGuestPermissions();
-			if (!permissions) {
-				return;
-			}
+            const permissions = await License.getGuestPermissions();
+            if (!permissions) {
+                return;
+            }
 
-			AuthorizationUtils.addRolePermissionWhiteList('guest', permissions);
-		} catch (error) {
-			console.error('Authorization Service did not start correctly', error);
-		}
-	}
+            AuthorizationUtils.addRolePermissionWhiteList('guest', permissions);
+        } catch (error) {
+            console.error('Authorization Service did not start correctly', error);
+        }
+    }
 
-	async hasAllPermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
-		if (!userId) {
-			return false;
-		}
-		return this.all(userId, permissions, scope);
-	}
+    async hasAllPermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
+        if (!userId) {
+            return false;
+        }
+        return this.all(userId, permissions, scope);
+    }
 
-	async hasPermission(userId: string, permissionId: string, scope?: string): Promise<boolean> {
-		if (!userId) {
-			return false;
-		}
-		return this.all(userId, [permissionId], scope);
-	}
+    async hasPermission(userId: string, permissionId: string, scope?: string): Promise<boolean> {
+        if (!userId) {
+            return false;
+        }
+        return this.all(userId, [permissionId], scope);
+    }
 
-	async hasAtLeastOnePermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
-		if (!userId) {
-			return false;
-		}
-		return this.atLeastOne(userId, permissions, scope);
-	}
+    async hasAtLeastOnePermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
+        if (!userId) {
+            return false;
+        }
+        return this.atLeastOne(userId, permissions, scope);
+    }
 
-	async canAccessRoom(...args: Parameters<RoomAccessValidator>): Promise<boolean> {
-		return canAccessRoom(...args);
-	}
+    async canAccessRoom(...args: Parameters<RoomAccessValidator>): Promise<boolean> {
+        return canAccessRoom(...args);
+    }
 
-	async canReadRoom(...args: Parameters<RoomAccessValidator>): Promise<boolean> {
-		return canReadRoom(...args);
-	}
+    async canReadRoom(...args: Parameters<RoomAccessValidator>): Promise<boolean> {
+        return canReadRoom(...args);
+    }
 
-	async canAccessRoomId(rid: IRoom['_id'], uid: IUser['_id']): Promise<boolean> {
-		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>>(rid, {
-			projection: {
-				_id: 1,
-				t: 1,
-				teamId: 1,
-				prid: 1,
-				abacAttributes: 1,
-			},
-		});
+    async canAccessRoomId(rid: IRoom['_id'], uid: IUser['_id']): Promise<boolean> {
+        const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>>(rid, {
+            projection: {
+                _id: 1,
+                t: 1,
+                teamId: 1,
+                prid: 1,
+                abacAttributes: 1,
+            },
+        });
 
-		if (!room) {
-			return false;
-		}
+        if (!room) {
+            return false;
+        }
 
-		return this.canAccessRoom(room, { _id: uid });
-	}
+        return this.canAccessRoom(room, { _id: uid });
+    }
 
-	async addRoleRestrictions(role: IRole['_id'], permissions: string[]): Promise<void> {
-		AuthorizationUtils.addRolePermissionWhiteList(role, permissions);
-	}
+    async addRoleRestrictions(role: IRole['_id'], permissions: string[]): Promise<void> {
+        AuthorizationUtils.addRolePermissionWhiteList(role, permissions);
+    }
 
-	async getUsersFromPublicRoles(): Promise<
-		{
-			_id: string;
-			username: string;
-			roles: string[];
-		}[]
-	> {
-		const roleIds = await this.getPublicRoles();
+    async getUsersFromPublicRoles(): Promise<
+        {
+            _id: string;
+            username: string;
+            roles: string[];
+        }[]
+    > {
+        const roleIds = await this.getPublicRoles();
 
-		return this.getUserFromRoles(roleIds);
-	}
+        return this.getUserFromRoles(roleIds);
+    }
 
-	private getPublicRoles = mem(
-		async (): Promise<string[]> => {
-			const roles = Roles.find<Pick<IRole, '_id'>>({ scope: 'Users', description: { $exists: true, $ne: '' } }, { projection: { _id: 1 } });
+    private getPublicRoles = mem(
+        async (): Promise<string[]> => {
+            const roles = Roles.find<Pick<IRole, '_id'>>({ scope: 'Users', description: { $exists: true, $ne: '' } }, { projection: { _id: 1 } });
 
-			return roles.map(({ _id }) => _id).toArray();
-		},
-		{ maxAge: 10000 },
-	);
+            return roles.map(({ _id }) => _id).toArray();
+        },
+        { maxAge: 10000 },
+    );
 
-	private getUserFromRoles = mem(
-		async (roleIds: string[]) => {
-			const users = Users.findUsersInRoles<Pick<Required<IUser>, '_id' | 'username' | 'roles'>>(roleIds, null, {
-				sort: {
-					username: 1,
-				},
-				projection: {
-					_id: 1,
-					username: 1,
-					roles: 1,
-				},
-			});
+    private getUserFromRoles = mem(
+        async (roleIds: string[]) => {
+            const users = Users.findUsersInRoles<Pick<Required<IUser>, '_id' | 'username' | 'roles'>>(roleIds, null, {
+                sort: {
+                    username: 1,
+                },
+                projection: {
+                    _id: 1,
+                    username: 1,
+                    roles: 1,
+                },
+            });
 
-			return users
-				.map((user) => ({
-					...user,
-					roles: user.roles.filter((roleId: string) => roleIds.includes(roleId)),
-				}))
-				.toArray();
-		},
-		{ maxAge: 10000 },
-	);
+            return users
+                .map((user) => ({
+                    ...user,
+                    roles: user.roles.filter((roleId: string) => roleIds.includes(roleId)),
+                }))
+                .toArray();
+        },
+        { maxAge: 10000 },
+    );
 
-	private async rolesHasPermission(permission: string, roles: IRole['_id'][]): Promise<boolean> {
-		if (AuthorizationUtils.isPermissionRestrictedForRoleList(permission, roles)) {
-			return false;
-		}
+    private async rolesHasPermission(permission: string, roles: IRole['_id'][]): Promise<boolean> {
+        if (AuthorizationUtils.isPermissionRestrictedForRoleList(permission, roles)) {
+            return false;
+        }
 
-		const result = await Permissions.findOne({ _id: permission, roles: { $in: roles } }, { projection: { _id: 1 } });
-		return !!result;
-	}
+        const result = await Permissions.findOne({ _id: permission, roles: { $in: roles } }, { projection: { _id: 1 } });
+        return !!result;
+    }
 
-	private async getRoles(uid: string, scope?: IRoom['_id']): Promise<string[]> {
-		const { roles: userRoles = [] } = (await Users.findOneById(uid, { projection: { roles: 1 } })) || {};
-		const { roles: subscriptionsRoles = [] } =
-			(scope &&
-				(await Subscriptions.findOne<Pick<ISubscription, 'roles'>>({ 'rid': scope, 'u._id': uid }, { projection: { roles: 1 } }))) ||
-			{};
-		return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
-	}
+    private async getRoles(uid: string, scope?: IRoom['_id']): Promise<string[]> {
+        const { roles: userRoles = [] } = (await Users.findOneById(uid, { projection: { roles: 1 } })) || {};
+        const { roles: subscriptionsRoles = [] } =
+            (scope &&
+                (await Subscriptions.findOne<Pick<ISubscription, 'roles'>>({ 'rid': scope, 'u._id': uid }, { projection: { roles: 1 } }))) ||
+            {};
+        return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
+    }
 
-	private async atLeastOne(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
-		const sortedRoles = await this.getRolesCached(uid, scope);
-		for await (const permission of permissions) {
-			if (await this.rolesHasPermissionCached(permission, sortedRoles)) {
-				return true;
-			}
-		}
+    private async atLeastOne(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
+        const sortedRoles = await this.getRolesCached(uid, scope);
+        for await (const permission of permissions) {
+            if (await this.rolesHasPermissionCached(permission, sortedRoles)) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	private async all(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
-		const sortedRoles = await this.getRolesCached(uid, scope);
-		for await (const permission of permissions) {
-			if (!(await this.rolesHasPermissionCached(permission, sortedRoles))) {
-				return false;
-			}
-		}
+    private async all(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
+        const sortedRoles = await this.getRolesCached(uid, scope);
+        for await (const permission of permissions) {
+            if (!(await this.rolesHasPermissionCached(permission, sortedRoles))) {
+                return false;
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	async hasAnyRole(userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
-		if (!Array.isArray(roleIds)) {
-			throw new Error('error-invalid-arguments');
-		}
+    async hasAnyRole(userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
+        if (!Array.isArray(roleIds)) {
+            throw new Error('error-invalid-arguments');
+        }
 
-		if (!userId) {
-			return false;
-		}
+        if (!userId) {
+            return false;
+        }
 
-		return Roles.isUserInRoles(userId, roleIds, scope);
-	}
-	async disable2FA(uid: string, code: string): Promise<boolean> {
-		const user = await Users.findOneById(uid);
-		if (!user?.services?.totp?.enabled) return false;
+        return Roles.isUserInRoles(userId, roleIds, scope);
+    }
 
-		const verified = await TOTP.verify({
-			secret: user.services.totp.secret,
-			token: code,
-			userId: uid,
-			backupTokens: user.services.totp.hashedBackup,
-		});
+    async disable2FA(uid: string, code: string): Promise<boolean> {
+        const user = await Users.findOneById(uid, { projection: { 'services.totp': 1 } });
 
-		if (!verified) return false;
+        if (!user) {
+            throw new Meteor.Error('error-invalid-user', 'Invalid user');
+        }
 
-		const { modifiedCount } = await Users.disable2FAByUserId(uid);
-		return modifiedCount > 0;
-	}
+        if (!user.services?.totp?.enabled) {
+            return false;
+        }
+
+        const verified = await TOTP.verify({
+            secret: user.services.totp.secret,
+            token: code,
+            userId: uid,
+            backupTokens: user.services.totp.hashedBackup,
+        });
+
+        if (!verified) {
+            throw new Meteor.Error('invalid-totp');
+        }
+
+        const { modifiedCount } = await Users.disable2FAByUserId(uid);
+        
+        if (modifiedCount > 0) {
+            void notifyOnUserChange({ 
+                clientAction: 'updated', 
+                id: uid, 
+                diff: { 'services.totp.enabled': false } 
+            });
+            return true;
+        }
+
+        return false;
+    }
 }
