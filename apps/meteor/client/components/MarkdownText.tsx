@@ -4,7 +4,7 @@ import dompurify from 'dompurify';
 import { marked } from 'marked';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
-import i18next from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
 
@@ -104,6 +104,10 @@ export const supportedURISchemes = ['http', 'https', 'notes', 'ftp', 'ftps', 'te
 const isElement = (node: Node): node is Element => node.nodeType === Node.ELEMENT_NODE;
 const isLinkElement = (node: Node): node is HTMLAnchorElement => isElement(node) && node.tagName.toLowerCase() === 'a';
 
+// Special token used to mark internal links that need translation
+// This allows the hook to stay at module level while still using contextualized translations
+const INTERNAL_LINK_TOKEN = '__INTERNAL_LINK_TITLE__';
+
 // Register the DOMPurify hook once at module level to prevent memory leaks
 // This hook will be shared by all MarkdownText component instances
 dompurify.addHook('afterSanitizeAttributes', (node) => {
@@ -133,10 +137,10 @@ dompurify.addHook('afterSanitizeAttributes', (node) => {
 		// This reduces visual clutter and lets users see the URL in the browser's status bar instead
 		node.setAttribute('title', '');
 	} else {
-		// For internal links, add a translated title with the relative path
-		// Example: for href "https://my-server.rocket.chat/channel/general" the title would be "Go to #general"
-		// Using i18next directly ensures we always get the current translation
-		node.setAttribute('title', `${i18next.t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
+		// For internal links, use a token that will be replaced with translated text in the component
+		// This allows us to use the contextualized translation function
+		const relativePath = href.replace(getBaseURI(), '');
+		node.setAttribute('title', `${INTERNAL_LINK_TOKEN}${relativePath}`);
 	}
 });
 
@@ -149,6 +153,7 @@ const MarkdownText = ({
 	...props
 }: MarkdownTextProps) => {
 	const sanitizer = dompurify.sanitize;
+	const { t } = useTranslation();
 	let markedOptions: marked.MarkedOptions;
 
 	switch (variant) {
@@ -181,8 +186,18 @@ const MarkdownText = ({
 			}
 		})();
 
-		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(supportedURISchemes) });
-	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji]);
+		const sanitizedHtml = preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(supportedURISchemes) });
+		
+		// Replace internal link tokens with contextualized translations
+		if (sanitizedHtml && typeof sanitizedHtml === 'string') {
+			return sanitizedHtml.replace(
+				new RegExp(`${INTERNAL_LINK_TOKEN}([^"]*)`, 'g'),
+				(_, href) => t('Go_to_href', { href })
+			);
+		}
+		
+		return sanitizedHtml;
+	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji, t]);
 
 	return __html ? (
 		<Box
