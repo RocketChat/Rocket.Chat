@@ -105,7 +105,7 @@ describe('Streamer.sendToManySubscriptions', () => {
 		expect(deniedSub.send.called).to.equal(false);
 	});
 
-	it('logs rejected subscription dispatches and continues with other subscribers', async () => {
+	it('logs rejected subscription dispatches at debug level and continues with other subscribers', async () => {
 		const streamer = createStreamer();
 
 		const failingSub = makeSubscription('failing');
@@ -116,7 +116,7 @@ describe('Streamer.sendToManySubscriptions', () => {
 		isEmitAllowed.onFirstCall().rejects(error);
 		isEmitAllowed.onSecondCall().resolves(true);
 
-		const loggerSpy = sinon.stub(SystemLogger, 'error');
+		const loggerSpy = sinon.stub(SystemLogger, 'debug');
 
 		await streamer.sendToManySubscriptions(new Set([failingSub.entry, successSub.entry]), undefined, 'event-name', [], 'test-msg');
 
