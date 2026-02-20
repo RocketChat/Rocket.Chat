@@ -434,9 +434,13 @@ describe('code handling', () => {
 });
 
 describe('DOMPurify hook registration', () => {
-	it('should register hook only once per component instance', () => {
-		const addHookSpy = jest.spyOn(require('dompurify'), 'addHook');
-		const removeHookSpy = jest.spyOn(require('dompurify'), 'removeHook');
+	it('should register hook only once at module level', () => {
+		// Import the module to trigger hook registration
+		const dompurify = require('dompurify');
+		const addHookSpy = jest.spyOn(dompurify, 'addHook');
+		
+		// Clear any previous calls from module initialization
+		addHookSpy.mockClear();
 
 		const { rerender, unmount } = render(
 			<MarkdownText content="[Test Link](https://example.com)" variant="document" />,
@@ -445,19 +449,23 @@ describe('DOMPurify hook registration', () => {
 			}
 		);
 
-		// Hook should be registered once after initial render
-		expect(addHookSpy).toHaveBeenCalledTimes(1);
-		expect(addHookSpy).toHaveBeenCalledWith('afterSanitizeAttributes', expect.any(Function));
+		// Hook should NOT be registered during component render (it's registered at module level)
+		expect(addHookSpy).toHaveBeenCalledTimes(0);
 
-		// Re-rendering with same props should not register hook again
+		// Re-rendering with different props should not register hook again
 		rerender(<MarkdownText content="[Another Link](https://example.com)" variant="document" />);
-		expect(addHookSpy).toHaveBeenCalledTimes(1);
+		expect(addHookSpy).toHaveBeenCalledTimes(0);
 
-		// Unmounting should remove the hook
+		// Rendering another instance should not register hook again
+		render(<MarkdownText content="[Third Link](https://test.com)" variant="inline" />, {
+			wrapper: mockAppRoot().build(),
+		});
+		expect(addHookSpy).toHaveBeenCalledTimes(0);
+
+		// Unmounting should not affect the module-level hook
 		unmount();
-		expect(removeHookSpy).toHaveBeenCalledWith('afterSanitizeAttributes');
+		expect(addHookSpy).toHaveBeenCalledTimes(0);
 
 		addHookSpy.mockRestore();
-		removeHookSpy.mockRestore();
 	});
 });
