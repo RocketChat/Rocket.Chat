@@ -44,7 +44,7 @@ type UserInfoActionWithContent = {
 
 export type UserInfoAction = UserInfoActionWithContent | UserInfoActionWithOnlyIcon;
 
-type UserMenuAction = {
+export type UserMenuAction = {
 	id: string;
 	title: string;
 	items: GenericMenuItemProps[];
@@ -66,7 +66,7 @@ export const useUserInfoActions = ({
 	size = 2,
 	isMember,
 	isInvited,
-}: UserInfoActionsParams): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
+}: UserInfoActionsParams): { actions: [string, UserInfoAction][]; menuActions: UserMenuAction } => {
 	const addUser = useAddUserAction(user, rid, reload);
 	const blockUser = useBlockUserAction(user, rid);
 	const changeLeader = useChangeLeaderAction(user, rid);
