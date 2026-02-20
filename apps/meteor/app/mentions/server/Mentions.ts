@@ -59,7 +59,7 @@ export class MentionsServer extends MentionsParser {
 		mentions: string[],
 		rid: string,
 		sender: IMessage['u'],
-	): Promise<Pick<IRoom, '_id' | 'name' | 'fname' | 'federated'>[]> {
+	): Promise<IMessage['mentions']> {
 		const mentionsAll: { _id: string; username: string }[] = [];
 		const userMentions = new Set<string>();
 
