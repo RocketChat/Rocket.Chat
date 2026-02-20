@@ -234,10 +234,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			throw new FederationMatrixInvalidConfigurationError('Unable to send message');
 		}
 
-		message = await mentionServer.execute(message);
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 		message = await this.badWords.filterBadWords({ message });
 		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
+		message = await mentionServer.execute(message);
 		if (parseUrls) {
 			message.urls = parseUrlsInMessage(message, previewUrls);
 		}
