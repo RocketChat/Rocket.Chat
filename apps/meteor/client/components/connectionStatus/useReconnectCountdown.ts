@@ -24,7 +24,7 @@ export const useReconnectCountdown = (
 			return () => {
 				reconnectionTimerRef.current && clearInterval(reconnectionTimerRef.current);
 				reconnectionTimerRef.current = undefined;
-			}
+			};
 		}
 
 		reconnectionTimerRef.current && clearInterval(reconnectionTimerRef.current);
