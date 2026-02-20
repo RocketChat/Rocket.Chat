@@ -432,3 +432,32 @@ describe('code handling', () => {
 		expect(screen.getByRole('code').outerHTML).toEqual(expected);
 	});
 });
+
+describe('DOMPurify hook registration', () => {
+	it('should register hook only once per component instance', () => {
+		const addHookSpy = jest.spyOn(require('dompurify'), 'addHook');
+		const removeHookSpy = jest.spyOn(require('dompurify'), 'removeHook');
+
+		const { rerender, unmount } = render(
+			<MarkdownText content="[Test Link](https://example.com)" variant="document" />,
+			{
+				wrapper: mockAppRoot().build(),
+			}
+		);
+
+		// Hook should be registered once after initial render
+		expect(addHookSpy).toHaveBeenCalledTimes(1);
+		expect(addHookSpy).toHaveBeenCalledWith('afterSanitizeAttributes', expect.any(Function));
+
+		// Re-rendering with same props should not register hook again
+		rerender(<MarkdownText content="[Another Link](https://example.com)" variant="document" />);
+		expect(addHookSpy).toHaveBeenCalledTimes(1);
+
+		// Unmounting should remove the hook
+		unmount();
+		expect(removeHookSpy).toHaveBeenCalledWith('afterSanitizeAttributes');
+
+		addHookSpy.mockRestore();
+		removeHookSpy.mockRestore();
+	});
+});

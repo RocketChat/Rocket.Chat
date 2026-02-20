@@ -3,7 +3,7 @@ import { isExternal, getBaseURI } from '@rocket.chat/ui-client';
 import dompurify from 'dompurify';
 import { marked } from 'marked';
 import type { ComponentProps } from 'react';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
@@ -125,26 +125,9 @@ const MarkdownText = ({
 			markedOptions = options;
 	}
 
-	const __html = useMemo(() => {
-		const html = ((): any => {
-			if (content && typeof content === 'string') {
-				const markedHtml = /inline/.test(variant)
-					? marked.parseInline(new Option(content).innerHTML, markedOptions)
-					: marked.parse(new Option(content).innerHTML, markedOptions);
-
-				if (parseEmoji) {
-					// We are using the old emoji parser here. This could come
-					// with additional processing use, but is the workaround available right now.
-					// Should be replaced in the future with the new parser.
-					return renderMessageEmoji(markedHtml);
-				}
-
-				return markedHtml;
-			}
-		})();
-
-		// Add a hook to make all external links open a new window
-		dompurify.addHook('afterSanitizeAttributes', (node) => {
+	// Register the hook once when translation function changes and clean it up
+	useEffect(() => {
+		const hookCallback = (node: Node) => {
 			if (!isLinkElement(node)) {
 				return;
 			}
@@ -175,10 +158,37 @@ const MarkdownText = ({
 				// Example: for href "https://my-server.rocket.chat/channel/general" the title would be "Go to #general"
 				node.setAttribute('title', `${t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
 			}
-		});
+		};
+
+		// Add the hook to make all external links open a new window
+		dompurify.addHook('afterSanitizeAttributes', hookCallback);
+
+		// Clean up the hook when the component unmounts or when t changes
+		return () => {
+			dompurify.removeHook('afterSanitizeAttributes');
+		};
+	}, [t]);
+
+	const __html = useMemo(() => {
+		const html = ((): any => {
+			if (content && typeof content === 'string') {
+				const markedHtml = /inline/.test(variant)
+					? marked.parseInline(new Option(content).innerHTML, markedOptions)
+					: marked.parse(new Option(content).innerHTML, markedOptions);
+
+				if (parseEmoji) {
+					// We are using the old emoji parser here. This could come
+					// with additional processing use, but is the workaround available right now.
+					// Should be replaced in the future with the new parser.
+					return renderMessageEmoji(markedHtml);
+				}
+
+				return markedHtml;
+			}
+		})();
 
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(supportedURISchemes) });
-	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji, t]);
+	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji]);
 
 	return __html ? (
 		<Box
