@@ -1,46 +1,49 @@
-import type { Root } from '@rocket.chat/message-parser';
+import type { Root, Paragraph, Blocks, Inlines, UserMention, ChannelMention, Task, ListItem, BigEmoji } from '@rocket.chat/message-parser';
 
 type ExtractedMentions = {
 	mentions: string[];
 	channels: string[];
 };
 
-type ASTNode = {
-	type: string;
-	value?: unknown;
-};
+type MessageNode = Paragraph | Blocks | Inlines | Task | ListItem | BigEmoji;
 
-function isASTNode(node: unknown): node is ASTNode {
-	return typeof node === 'object' && node !== null && 'type' in node;
+function isUserMention(node: MessageNode): node is UserMention {
+	return node.type === 'MENTION_USER';
 }
 
-function traverse(node: unknown, mentions: Set<string>, channels: Set<string>): void {
-	if (!isASTNode(node)) {
+function isChannelMention(node: MessageNode): node is ChannelMention {
+	return node.type === 'MENTION_CHANNEL';
+}
+
+function hasArrayValue(node: MessageNode): node is MessageNode & { value: MessageNode[] } {
+	return Array.isArray(node.value);
+}
+
+function hasObjectValue(node: MessageNode): node is MessageNode & { value: Record<string, MessageNode> } {
+	return typeof node.value === 'object' && node.value !== null && !Array.isArray(node.value);
+}
+
+function traverse(node: MessageNode, mentions: Set<string>, channels: Set<string>): void {
+	if (isUserMention(node)) {
+		mentions.add(node.value.value);
 		return;
 	}
 
-	if (node.type === 'MENTION_USER' && isASTNode(node.value) && node.value.type === 'PLAIN_TEXT') {
-		const plainValue = node.value as { type: 'PLAIN_TEXT'; value: string };
-		mentions.add(plainValue.value);
+	if (isChannelMention(node)) {
+		channels.add(node.value.value);
 		return;
 	}
 
-	if (node.type === 'MENTION_CHANNEL' && isASTNode(node.value) && node.value.type === 'PLAIN_TEXT') {
-		const plainValue = node.value as { type: 'PLAIN_TEXT'; value: string };
-		channels.add(plainValue.value);
-		return;
-	}
-
-	if (Array.isArray(node.value)) {
+	if (hasArrayValue(node)) {
 		for (const child of node.value) {
 			traverse(child, mentions, channels);
 		}
 		return;
 	}
 
-	if (typeof node.value === 'object' && node.value !== null) {
+	if (hasObjectValue(node)) {
 		for (const key of Object.keys(node.value)) {
-			traverse((node.value as Record<string, unknown>)[key], mentions, channels);
+			traverse(node.value[key], mentions, channels);
 		}
 	}
 }
