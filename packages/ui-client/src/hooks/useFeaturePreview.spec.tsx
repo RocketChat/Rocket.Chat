@@ -7,7 +7,6 @@ jest.mock('./usePreferenceFeaturePreviewList');
 const mockUsePreferenceFeaturePreviewList = usePreferenceFeaturePreviewList as jest.Mock;
 
 describe('useFeaturePreview', () => {
-	// Reset
 	beforeEach(() => {
 		mockUsePreferenceFeaturePreviewList.mockReset();
 	});
@@ -90,7 +89,7 @@ describe('useFeaturePreview', () => {
 					{
 						name: 'newNavigation',
 						value: true,
-						disabled: true, // Parent is disabled!
+						disabled: true,
 					},
 				],
 			});
@@ -99,4 +98,19 @@ describe('useFeaturePreview', () => {
 
 			expect(result.current).toBe(false);
 		});
+        it('should return false if the dependency feature is completely missing from the list', () => {
+					mockUsePreferenceFeaturePreviewList.mockReturnValue({
+						features: [
+							{
+								name: 'secondarySidebar',
+								value: true,
+								enableQuery: { name: 'newNavigation', value: true },
+							},
+						],
+					});
+
+					const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+
+					expect(result.current).toBe(false);
+				});
 });
