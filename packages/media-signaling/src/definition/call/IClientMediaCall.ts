@@ -1,6 +1,7 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
 import type { CallEvents } from './CallEvents';
+import type { IMediaStreamWrapper } from '../media/IMediaStreamWrapper';
 
 export type CallActorType = 'user' | 'sip';
 
@@ -17,6 +18,10 @@ export type CallContact = {
 export type CallRole = 'caller' | 'callee';
 
 export type CallService = 'webrtc';
+
+export const callFeatureList = ['audio'] as const;
+
+export type CallFeature = (typeof callFeatureList)[number];
 
 export type CallState =
 	| 'none' // trying to call with no idea if it'll reach anyone
@@ -91,8 +96,6 @@ export interface IClientMediaCall {
 
 	contact: CallContact;
 	transferredBy: CallContact | null;
-	audioLevel: number;
-	localAudioLevel: number;
 
 	/** if the call was requested by this session, then this will have the ID used to request the call, otherwise it will be the same as callId */
 	readonly tempCallId: string;
@@ -101,7 +104,8 @@ export interface IClientMediaCall {
 
 	emitter: Emitter<CallEvents>;
 
-	getRemoteMediaStream(): MediaStream | null;
+	getLocalMediaStream(tag?: string): IMediaStreamWrapper | null;
+	getRemoteMediaStream(tag?: string): IMediaStreamWrapper | null;
 
 	accept(): void;
 	reject(): void;
@@ -113,4 +117,5 @@ export interface IClientMediaCall {
 	sendDTMF(dtmf: string, duration?: number): void;
 
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
+	isFeatureAvailable(feature: CallFeature): boolean;
 }
