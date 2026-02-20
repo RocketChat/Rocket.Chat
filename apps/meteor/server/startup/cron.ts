@@ -11,6 +11,6 @@ import { videoConferencesCron } from '../cron/videoConferences';
 const logger = new Logger('SyncedCron');
 
 export const startCronJobs = async (): Promise<void> => {
-	await Promise.all([startCron(), oembedCron(), usageReportCron(logger), npsCron(), temporaryUploadCleanupCron(), videoConferencesCron()]);
-	userDataDownloadsCron();
+	await Promise.all([startCron(), oembedCron(), usageReportCron(logger), npsCron(), temporaryUploadCleanupCron(), videoConferencesCron(),userDataDownloadsCron()]);
+	
 };
