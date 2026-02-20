@@ -1,15 +1,14 @@
-import { Authorization, License, Abac } from '@rocket.chat/core-services';
+import { Authorization, License, Abac, Settings } from '@rocket.chat/core-services';
 import type { RoomAccessValidator } from '@rocket.chat/core-services';
 import { TeamType, AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
 import type { IUser, ITeam } from '@rocket.chat/core-typings';
-import { Subscriptions, Rooms, Settings, TeamMember, Team } from '@rocket.chat/models';
+import { Subscriptions, Rooms, TeamMember, Team } from '@rocket.chat/models';
 
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 
 async function canAccessPublicRoom(user?: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {
-		// TODO: it was using cached version from /app/settings/server/raw.js
-		const anon = await Settings.getValueById('Accounts_AllowAnonymousRead');
+		const anon = await Settings.get<boolean>('Accounts_AllowAnonymousRead');
 		return !!anon;
 	}
 
@@ -62,11 +61,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		]);
 
 		// When there's no ABAC setting, license or values on the room, fallback to previous behavior
-		if (
-			!room?.abacAttributes?.length ||
-			!(await License.hasModule('abac')) ||
-			(!(await Settings.getValueById('ABAC_Enabled')) as boolean)
-		) {
+		if (!room?.abacAttributes?.length || !(await License.hasModule('abac')) || !(await Settings.get<boolean>('ABAC_Enabled'))) {
 			const includeInvitations = extraData?.includeInvitations ?? false;
 			if (!(await Subscriptions.countByRoomIdAndUserId(room._id, user._id, includeInvitations))) {
 				return false;

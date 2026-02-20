@@ -582,7 +582,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 	>(method: MinimalRoute['method'], subpath: TSubPathPattern, options: TOptions): void {
 		const path = `/${this.apiPath}/${subpath}`.replaceAll('//', '/') as TPathPattern;
 		this.typedRoutes = this.typedRoutes || {};
-		this.typedRoutes[path] = this.typedRoutes[subpath] || {};
+		this.typedRoutes[path] = this.typedRoutes[path] || {};
 		const { query, authRequired, response, body, tags, ...rest } = options;
 		this.typedRoutes[path][method.toLowerCase()] = {
 			...(response && {
