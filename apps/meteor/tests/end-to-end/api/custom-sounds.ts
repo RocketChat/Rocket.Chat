@@ -194,6 +194,10 @@ describe('[CustomSounds]', () => {
 			await request.get(api('custom-sounds.getOne')).set(credentials).query({ _id: 'invalid-id' }).expect(404);
 		});
 
+		it('should return bad request if the _id length is not more than one', async () => {
+			await request.get(api('custom-sounds.getOne')).set(credentials).query({ _id: '' }).expect(400);
+		});
+
 		it('should return the custom sound successfully', async () => {
 			await request
 				.get(api('custom-sounds.getOne'))

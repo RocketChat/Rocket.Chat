@@ -9,6 +9,7 @@ const CustomSoundsGetOneSchema = {
 	properties: {
 		_id: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['_id'],
