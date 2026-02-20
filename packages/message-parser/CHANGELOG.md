@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.31.34-rc.0
+
+### Patch Changes
+
+- ([#38629](https://github.com/RocketChat/Rocket.Chat/pull/38629) by [@copilot-swe-agent](https://github.com/copilot-swe-agent)) Fixes markdown breaking when text in square brackets appears between hyperlinks. This resolves issues #31418 and #31766 where typing `[text]` between links would incorrectly parse the markdown structure.
+
+- ([#38779](https://github.com/RocketChat/Rocket.Chat/pull/38779) by [@copilot-swe-agent](https://github.com/copilot-swe-agent)) fixes an issues where markdown link parser to was not handling parentheses in URLs
+
 ## 0.31.33
 
 ### Patch Changes
