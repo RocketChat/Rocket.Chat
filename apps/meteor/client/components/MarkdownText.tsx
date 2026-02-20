@@ -104,9 +104,9 @@ export const supportedURISchemes = ['http', 'https', 'notes', 'ftp', 'ftps', 'te
 const isElement = (node: Node): node is Element => node.nodeType === Node.ELEMENT_NODE;
 const isLinkElement = (node: Node): node is HTMLAnchorElement => isElement(node) && node.tagName.toLowerCase() === 'a';
 
-// Special token used to mark internal links that need translation
-// This allows the hook to stay at module level while still using contextualized translations
-const INTERNAL_LINK_TOKEN = '__INTERNAL_LINK_TITLE__';
+// Generate a unique token at runtime to prevent enumeration attacks
+// This token marks internal links that need translation
+const INTERNAL_LINK_TOKEN = `__INTERNAL_LINK_TITLE_${Math.random().toString(36).substring(2, 15)}__`;
 
 // Register the DOMPurify hook once at module level to prevent memory leaks
 // This hook will be shared by all MarkdownText component instances
