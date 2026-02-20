@@ -24,6 +24,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { EditIncomingWebhookFormData } from './EditIncomingWebhook';
+import { INTEGRATION_ALIAS_MAX_LENGTH, validateIntegrationAlias } from '../../../../../app/integrations/lib/validateAlias';
 import useClipboardWithToast from '../../../../hooks/useClipboardWithToast';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 import { useExampleData } from '../hooks/useExampleIncomingData';
@@ -77,6 +78,17 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 	const webhookUrlField = useId();
 	const tokenField = useId();
 	const curlField = useId();
+
+	const validateAlias = (alias: string): string | undefined => {
+		switch (validateIntegrationAlias(alias)) {
+			case 'too-long':
+				return t('error-invalid-alias-length', { max: INTEGRATION_ALIAS_MAX_LENGTH });
+			case 'invalid-characters':
+				return t('error-invalid-alias');
+			default:
+				return;
+		}
+	};
 
 	return (
 		<Box maxWidth='x600' alignSelf='center' w='full'>
@@ -229,12 +241,25 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								<Controller
 									name='alias'
 									control={control}
+									rules={{ validate: validateAlias }}
 									render={({ field }) => (
-										<TextInput id={aliasField} {...field} aria-describedby={`${aliasField}-hint`} addon={<Icon name='edit' size='x20' />} />
+										<TextInput
+											id={aliasField}
+											{...field}
+											maxLength={INTEGRATION_ALIAS_MAX_LENGTH}
+											aria-describedby={`${aliasField}-hint ${aliasField}-error`}
+											aria-invalid={Boolean(errors?.alias)}
+											addon={<Icon name='edit' size='x20' />}
+										/>
 									)}
 								/>
 							</FieldRow>
 							<FieldHint id={`${aliasField}-hint`}>{t('Choose_the_alias_that_will_appear_before_the_username_in_messages')}</FieldHint>
+							{errors?.alias && (
+								<FieldError aria-live='assertive' id={`${aliasField}-error`}>
+									{errors.alias.message}
+								</FieldError>
+							)}
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={avatarField}>{t('Avatar_URL')}</FieldLabel>

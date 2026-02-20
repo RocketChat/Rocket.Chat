@@ -10,6 +10,7 @@ import _ from 'underscore';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
+import { validateIntegrationAlias } from '../../../lib/validateAlias';
 import { validateScriptEngine, isScriptEngineFrozen } from '../../lib/validateScriptEngine';
 
 const validChannelChars = ['@', '#'];
@@ -74,6 +75,12 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 
 	if (!integration.username || typeof integration.username.valueOf() !== 'string' || integration.username.trim() === '') {
 		throw new Meteor.Error('error-invalid-username', 'Invalid username', {
+			method: 'addIncomingIntegration',
+		});
+	}
+
+	if (validateIntegrationAlias(integration.alias) !== 'ok') {
+		throw new Meteor.Error('error-invalid-alias', 'Invalid alias', {
 			method: 'addIncomingIntegration',
 		});
 	}

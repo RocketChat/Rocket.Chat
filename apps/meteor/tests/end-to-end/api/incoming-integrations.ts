@@ -231,6 +231,52 @@ describe('[Incoming Integrations]', () => {
 					.end(done);
 			});
 
+			it('should return an error when creating an incoming integration with invalid alias characters', (done) => {
+				void request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test invalid alias chars',
+						enabled: true,
+						alias: '@#$$',
+						username: 'rocket.cat',
+						scriptEnabled: false,
+						overrideDestinationChannelEnabled: true,
+						channel: '#general',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-invalid-alias');
+					})
+					.end(done);
+			});
+
+			it('should return an error when creating an incoming integration with an alias longer than the allowed length', (done) => {
+				void request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test invalid alias length',
+						enabled: true,
+						alias: 'a'.repeat(301),
+						username: 'rocket.cat',
+						scriptEnabled: false,
+						overrideDestinationChannelEnabled: true,
+						channel: '#general',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(['error-invalid-alias', 'error-invalid-params']).to.include(res.body.errorType);
+					})
+					.end(done);
+			});
+
 			it('should execute the incoming integration', (done) => {
 				void request
 					.post(`/hooks/${integration._id}/${integration.token}`)
@@ -914,6 +960,30 @@ describe('[Incoming Integrations]', () => {
 					const message = (res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage);
 					expect(message?.u).have.property('username', senderUser.username);
 				});
+		});
+
+		it('should return an error when updating an integration with invalid alias characters', (done) => {
+			void request
+				.put(api('integrations.update'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test invalid alias on update',
+					enabled: true,
+					alias: '@#$$',
+					username: senderUser.username,
+					scriptEnabled: true,
+					overrideDestinationChannelEnabled: true,
+					channel: '#general',
+					integrationId: integration._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-alias');
+				})
+				.end(done);
 		});
 	});
 
