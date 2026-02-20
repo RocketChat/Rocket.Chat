@@ -12,7 +12,6 @@ import type { ChannelsEndpoints } from './v1/channels';
 import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
 import type { CommandsEndpoints } from './v1/commands';
-import type { CustomSoundEndpoints } from './v1/customSounds';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DirectoryEndpoint } from './v1/directory';
 import type { ImEndpoints, DmEndpoints } from './v1/dm';
@@ -55,7 +54,6 @@ export interface Endpoints
 		CommandsEndpoints,
 		CloudEndpoints,
 		CommandsEndpoints,
-		CustomSoundEndpoints,
 		CustomUserStatusEndpoints,
 		DmEndpoints,
 		DirectoryEndpoint,
