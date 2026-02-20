@@ -9,7 +9,7 @@ const mockUsePreferenceFeaturePreviewList = usePreferenceFeaturePreviewList as j
 describe('useFeaturePreview', () => {
 	// Reset
 	beforeEach(() => {
-		mockUsePreferenceFeaturePreviewList.mockClear();
+		mockUsePreferenceFeaturePreviewList.mockReset();
 	});
 
 	it('should return false if feature does not exist in the list', () => {
@@ -79,4 +79,24 @@ describe('useFeaturePreview', () => {
 
 		expect(result.current).toBe(true);
 	});
+    it('should return false if dependency feature is disabled (even if value matches)', () => {
+			mockUsePreferenceFeaturePreviewList.mockReturnValue({
+				features: [
+					{
+						name: 'secondarySidebar',
+						value: true,
+						enableQuery: { name: 'newNavigation', value: true },
+					},
+					{
+						name: 'newNavigation',
+						value: true,
+						disabled: true, // Parent is disabled!
+					},
+				],
+			});
+
+			const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+
+			expect(result.current).toBe(false);
+		});
 });
