@@ -1000,8 +1000,16 @@ API.v1.addRoute(
 				return API.v1.success();
 			}
 
-			void notifyOnUserLoginTokensChanged({ id: this.user._id, loginTokens: user.services?.resume?.loginTokens });
-			void notifyOnUserChange({ clientAction: 'updated', id: this.user._id, diff: { 'services.email2fa': user.services?.email2fa } });
+			void notifyOnUserLoginTokensChanged({
+				id: this.userId,
+				loginTokens: user.services?.resume?.loginTokens,
+			});
+
+			void notifyOnUserChange({
+				clientAction: 'updated',
+				id: this.user._id,
+				diff: { 'services.email2fa': user.services?.email2fa },
+			});
 
 			return API.v1.success();
 		},

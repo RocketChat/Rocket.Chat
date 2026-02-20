@@ -17,7 +17,6 @@ export class PushService extends ServiceClassInternal implements IPushService {
 		}
 	}
 
-
 	constructor() {
 		super();
 
@@ -34,6 +33,5 @@ export class PushService extends ServiceClassInternal implements IPushService {
 		this.onEvent('watch.userSessions', async ({ id, loginTokens }) => {
 			await this.syncPushTokensByLoginTokens(id, loginTokens);
 		});
-
 	}
 }

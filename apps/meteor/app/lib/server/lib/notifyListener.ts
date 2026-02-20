@@ -607,17 +607,11 @@ export const notifyOnSubscriptionChangedByRoomIdAndUserIds = async (
 	});
 };
 
-export const notifyOnUserLoginTokensChanged = async ({
-	id,
-	loginTokens,
-}: NotifyOnUserLoginTokensChange): Promise<void> => {
+export const notifyOnUserLoginTokensChanged = async ({ id, loginTokens }: NotifyOnUserLoginTokensChange): Promise<void> => {
 	void api.broadcast('watch.userSessions', { id, loginTokens: loginTokens ?? [] });
 };
 
-
-export const notifyOnUserLoginTokensChangedById = async (
-	id: IUser['_id'],
-): Promise<void> => {
+export const notifyOnUserLoginTokensChangedById = async (id: IUser['_id']): Promise<void> => {
 	const user = await Users.findOneById(id, { projection: { 'services.resume.loginTokens': 1 } });
 
 	if (!user) {
