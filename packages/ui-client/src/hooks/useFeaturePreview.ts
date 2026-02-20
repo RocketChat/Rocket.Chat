@@ -16,7 +16,7 @@ export const useFeaturePreview = (featureName: FeaturesAvailable) => {
 	if (currentFeature.enableQuery) {
 		const requiredFeature = features?.find((f) => f.name === currentFeature.enableQuery?.name);
 
-		if (requiredFeature?.value !== currentFeature.enableQuery.value) {
+		if (requiredFeature?.disabled || requiredFeature?.value !== currentFeature.enableQuery.value) {
 			return false;
 		}
 	}
