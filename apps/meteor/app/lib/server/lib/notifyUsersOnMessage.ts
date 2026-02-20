@@ -127,7 +127,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 
 	subs.forEach((sub) => {
 		const hasUserMention = userIds.includes(sub.u._id);
-		const shouldIncUnread = hasUserMention || toAll || toHere || unreadAllMessages;
+		const shouldIncUnread = hasUserMention || toAll || toHere || unreadAllMessages || room.t === 'd';
 		void notifyOnSubscriptionChanged(
 			{
 				...sub,
