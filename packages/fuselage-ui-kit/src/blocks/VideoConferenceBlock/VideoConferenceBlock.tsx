@@ -123,7 +123,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElemen
 							<States>
 								<StatesIcon name='warning' variation='danger' />
 								<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-								<StatesSubtitle>{result.error?.message ?? t('We_Could_not_retrive_any_data')}</StatesSubtitle>
+								<StatesSubtitle>{result.error?.message ?? t('Unable_to_retrieve_data')}</StatesSubtitle>
 								<StatesActions>
 									<StatesAction onClick={() => result.refetch()}>{t('Retry')}</StatesAction>
 								</StatesActions>
