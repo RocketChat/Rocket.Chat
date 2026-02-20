@@ -21,7 +21,6 @@ import ActionConfirmModal from './ActionConfirmModal';
 import { getProfileInitialValues } from './getProfileInitialValues';
 import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
 import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
-import { InputError } from './DeleteAccountError';
 
 // TODO: enforce useMutation
 const AccountProfilePage = (): ReactElement => {
@@ -106,8 +105,9 @@ const AccountProfilePage = (): ReactElement => {
 				}
 
 				if (error.errorType === 'error-invalid-password') {
-					throw new InputError(t('Invalid_password'));
+					throw error;
 				}
+
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};

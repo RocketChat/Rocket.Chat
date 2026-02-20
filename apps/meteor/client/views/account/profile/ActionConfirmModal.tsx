@@ -1,9 +1,8 @@
 import { Box, PasswordInput, TextInput, FieldGroup, Field, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
-import { InputError } from './DeleteAccountError';
 
 type ActionConfirmModalProps = {
 	isPassword: boolean;
@@ -11,41 +10,35 @@ type ActionConfirmModalProps = {
 	onCancel: () => void;
 };
 
-// TODO: Use react-hook-form
 const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmModalProps) => {
 	const { t } = useTranslation();
 	const actionTextId = useId();
-	const inputId = useId();
-	const errorId = `${inputId}-error`;
+	const credentialFieldId = useId();
+	const credentialFieldError = `${credentialFieldId}-error`;
 
 	const {
 		control,
 		handleSubmit,
 		setError,
-		setFocus,
 		formState: { errors },
-	} = useForm<{ credential: string }>({
+	} = useForm({
 		defaultValues: { credential: '' },
 		mode: 'onBlur',
 	});
 
-	const handleSave = handleSubmit(async ({ credential }) => {
+	const handleSave = async ({ credential }: { credential: string }) => {
 		try {
 			await onConfirm(credential);
-		} catch (error) {
-			if (error instanceof InputError) {
-				setError('credential', { message: error.message });
-				setFocus('credential');
-				return;
+		} catch (error: any) {
+			if (error.errorType === 'error-invalid-password') {
+				setError('credential', { message: t('Invalid_password') }, { shouldFocus: true });
 			}
 		}
-	});
+	};
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSave} {...props} />}
-			onClose={onCancel}
-			onConfirm={handleSave}
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleSave)} {...props} />}
 			onCancel={onCancel}
 			variant='danger'
 			title={t('Delete_account?')}
@@ -60,24 +53,24 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 						<Controller
 							name='credential'
 							control={control}
-							rules={{ required: t('Invalid_field') }}
+							rules={{ required: t('error-the-field-is-required', { field: isPassword ? t('Password') : t('Username') }) }}
 							render={({ field }) =>
 								isPassword ? (
 									<PasswordInput
 										{...field}
-										id={inputId}
+										id={credentialFieldId}
 										aria-labelledby={actionTextId}
-										aria-describedby={errors.credential ? errorId : undefined}
+										aria-describedby={errors.credential ? credentialFieldError : undefined}
 										aria-invalid={Boolean(errors.credential)}
 										aria-required='true'
 									/>
 								) : (
 									<TextInput
 										{...field}
-										id={inputId}
+										id={credentialFieldId}
 										placeholder={t('Username')}
 										aria-labelledby={actionTextId}
-										aria-describedby={errors.credential ? errorId : undefined}
+										aria-describedby={errors.credential ? credentialFieldError : undefined}
 										aria-invalid={Boolean(errors.credential)}
 										aria-required='true'
 									/>
@@ -86,7 +79,7 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 						/>
 					</FieldRow>
 					{errors.credential && (
-						<FieldError aria-live='assertive' id={errorId}>
+						<FieldError role='alert' id={credentialFieldError}>
 							{errors.credential.message}
 						</FieldError>
 					)}
