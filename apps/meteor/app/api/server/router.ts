@@ -23,7 +23,7 @@ export type APIActionContext = {
 	bodyParams: Record<string, unknown>;
 	request: Request;
 	path: string;
-	response: any;
+	response: HonoContext['res'];
 	route: string;
 	incoming: IncomingMessage;
 };
@@ -40,13 +40,13 @@ export class RocketChatAPIRouter<
 		return async (c: HonoContext): Promise<ResponseSchema<TypedOptions>> => {
 			const { req, res } = c;
 
-			const request = req.raw.clone();
+			const request = req.raw;
 
 			const context: APIActionContext = {
 				requestIp: c.get('remoteAddress'),
 				urlParams: req.param(),
 				queryParams: c.get('queryParams'),
-				bodyParams: c.get('bodyParams-override') || c.get('bodyParams'),
+				bodyParams: c.get('bodyParams-override') ?? c.get('bodyParams'),
 				request,
 				path: req.path,
 				response: res,
