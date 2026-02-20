@@ -281,10 +281,7 @@ export type EventSignatures = {
 		diff?: undefined | Record<string, any>;
 		id: string;
 	}): void;
-	'watch.userSessions'(data: {
-		id: string;
-		loginTokens: Array<{hashedToken: string; }>;
-	}): void;
+	'watch.userSessions'(data: { id: string; loginTokens: Array<{ hashedToken: string }> }): void;
 	'omnichannel.room'(
 		roomId: string,
 		data:
