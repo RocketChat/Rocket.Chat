@@ -316,6 +316,7 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 
 	requestIp?: string;
 	route: string;
+	request: Request;
 	response: Response;
 };
 

@@ -1,6 +1,14 @@
 import type { IAppsTokens } from '@rocket.chat/core-typings';
 import { Messages, AppsTokens, Users, Rooms, Settings } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import {
+	ajv,
+	validateNotFoundErrorResponse,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
+import type { JSONSchemaType } from 'ajv';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -9,13 +17,130 @@ import { canAccessRoomAsync } from '../../../authorization/server/functions/canA
 import { pushUpdate } from '../../../push/server/methods';
 import PushNotification from '../../../push-notifications/server/lib/PushNotification';
 import { settings } from '../../../settings/server';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
+import type { SuccessResult } from '../definition';
 
-API.v1.addRoute(
-	'push.token',
-	{ authRequired: true },
-	{
-		async post() {
+type PushTokenPOST = {
+	id?: string;
+	type: 'apn' | 'gcm';
+	value: string;
+	appName: string;
+};
+
+const PushTokenPOSTSchema: JSONSchemaType<PushTokenPOST> = {
+	type: 'object',
+	properties: {
+		id: {
+			type: 'string',
+			nullable: true,
+		},
+		type: {
+			type: 'string',
+			enum: ['apn', 'gcm'],
+		},
+		value: {
+			type: 'string',
+			minLength: 1,
+		},
+		appName: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['type', 'value', 'appName'],
+	additionalProperties: false,
+};
+
+export const isPushTokenPOSTProps = ajv.compile<PushTokenPOST>(PushTokenPOSTSchema);
+
+type PushTokenDELETE = {
+	token: string;
+};
+
+const PushTokenDELETESchema: JSONSchemaType<PushTokenDELETE> = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const isPushTokenDELETEProps = ajv.compile<PushTokenDELETE>(PushTokenDELETESchema);
+
+const pushTokenEndpoints = API.v1
+	.post(
+		'push.token',
+		{
+			response: {
+				200: ajv.compile<SuccessResult<{ result: Omit<IAppsTokens, '_updatedAt'> }>['body']>({
+					additionalProperties: false,
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+						result: {
+							type: 'object',
+							description: 'The updated token data for this device',
+							properties: {
+								_id: {
+									type: 'string',
+								},
+								token: {
+									type: 'object',
+									properties: {
+										apn: {
+											type: 'string',
+										},
+										gcm: {
+											type: 'string',
+										},
+									},
+									required: [],
+									additionalProperties: false,
+								},
+								authToken: {
+									type: 'string',
+								},
+								appName: {
+									type: 'string',
+								},
+								userId: {
+									type: 'string',
+									nullable: true,
+								},
+								metadata: {
+									type: 'object',
+									additionalProperties: true,
+								},
+								enabled: {
+									type: 'boolean',
+								},
+								createdAt: {
+									type: 'string',
+								},
+								_updatedAt: {
+									type: 'string',
+								},
+							},
+						},
+					},
+					required: ['success', 'result'],
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+			body: isPushTokenPOSTProps,
+			authRequired: true,
+		},
+		async function action() {
 			const { id, type, value, appName } = this.bodyParams;
 
 			if (id && typeof id !== 'string') {
@@ -51,7 +176,30 @@ API.v1.addRoute(
 
 			return API.v1.success({ result });
 		},
-		async delete() {
+	)
+	.delete(
+		'push.token',
+		{
+			response: {
+				200: ajv.compile<void>({
+					additionalProperties: false,
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+						},
+					},
+					required: ['success'],
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				404: validateNotFoundErrorResponse,
+			},
+			body: isPushTokenDELETEProps,
+			authRequired: true,
+		},
+		async function action() {
 			const { token } = this.bodyParams;
 
 			if (!token || typeof token !== 'string') {
@@ -78,8 +226,14 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
+	);
+
+type PushTokenEndpoints = ExtractRoutesFromAPI<typeof pushTokenEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends PushTokenEndpoints {}
+}
 
 API.v1.addRoute(
 	'push.get',
