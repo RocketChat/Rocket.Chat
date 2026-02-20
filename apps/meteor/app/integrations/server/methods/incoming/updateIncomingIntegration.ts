@@ -227,7 +227,7 @@ Meteor.methods<ServerMethods>({
 	async updateIncomingIntegration(integrationId, integration) {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'updateOutgoingIntegration',
+				method: 'updateIncomingIntegration',
 			});
 		}
 
