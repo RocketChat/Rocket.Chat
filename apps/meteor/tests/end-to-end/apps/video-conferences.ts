@@ -6,7 +6,7 @@ import { getCredentials, request, api, credentials } from '../../data/api-data';
 import { cleanupApps, installTestApp } from '../../data/apps/helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
-import { adminUsername } from '../../data/user';
+import { adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
@@ -939,20 +939,23 @@ describe('Apps - Video Conferences', () => {
 			before(async () => {
 				// Create a regular user
 				regularUser = await createUser({ username: `regular.user.${Date.now()}`, roles: ['user'] });
-				regularUserCredentials = await login(regularUser.username, 'password');
+				regularUserCredentials = await login(regularUser.username, password);
 
-				// Create a read-only channel
 				const readOnlyRoomRes = await createRoom({
 					type: 'c',
 					name: `read-only-channel-${Date.now()}`,
 					username: undefined,
 					members: [regularUser.username],
-					credentials: undefined,
-					extraData: { readOnly: true },
+					credentials,
+					readOnly: true,
 				});
 				readOnlyRoomId = readOnlyRoomRes.body.channel._id;
 
 				// Set up video conference provider
+				await updateSetting('VideoConf_Default_Provider', 'test');
+			});
+
+			before(async () => {
 				await updateSetting('VideoConf_Default_Provider', 'test');
 			});
 
@@ -1003,9 +1006,6 @@ describe('Apps - Video Conferences', () => {
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(true);
 					});
-
-				// Restore original permissions
-				await updatePermission('post-readonly', ['admin', 'owner', 'moderator']);
 			});
 		});
 	});
