@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
+import dompurify from 'dompurify';
 
 import MarkdownText, { supportedURISchemes } from './MarkdownText';
 
@@ -436,7 +437,7 @@ describe('code handling', () => {
 describe('DOMPurify hook registration', () => {
 	it('should register hook only once at module level', () => {
 		// Import the module to trigger hook registration
-		const dompurify = require('dompurify');
+
 		const addHookSpy = jest.spyOn(dompurify, 'addHook');
 
 		// Clear any previous calls from module initialization
