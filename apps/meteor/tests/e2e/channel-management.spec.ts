@@ -249,7 +249,7 @@ test.describe.serial('channel-management', () => {
 			await user1Page.close();
 		});
 
-		test('should ignore user1 messages', async () => {
+		test('should ignore user1 messages', async ({ page }) => {
 			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.roomToolbar.openMembersTab();
 			await poHomeChannel.tabs.members.showAllUsers();
@@ -257,6 +257,7 @@ test.describe.serial('channel-management', () => {
 
 			await poHomeChannel.tabs.members.openMoreActions();
 			await expect(poHomeChannel.tabs.members.getMenuItemAction('Unignore')).toBeVisible();
+			await page.keyboard.press('Escape');
 
 			const user1Channel = new HomeChannel(user1Page);
 			await user1Page.goto(`/channel/${targetChannel}`);
@@ -281,7 +282,7 @@ test.describe.serial('channel-management', () => {
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText('only message to be unignored');
 		});
 
-		test('should unignore user1 messages', async () => {
+		test('should unignore user1 messages', async ({ page }) => {
 			const user1Channel = new HomeChannel(user1Page);
 			await user1Page.goto(`/channel/${targetChannel}`);
 			await user1Channel.content.waitForChannel();
@@ -296,6 +297,7 @@ test.describe.serial('channel-management', () => {
 
 			await poHomeChannel.tabs.members.openMoreActions();
 			await expect(poHomeChannel.tabs.members.getMenuItemAction('Ignore')).toBeVisible();
+			await page.keyboard.press('Escape');
 
 			await user1Channel.content.sendMessage('message after being unignored');
 

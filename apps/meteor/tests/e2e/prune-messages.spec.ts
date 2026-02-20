@@ -124,7 +124,7 @@ test.describe('prune-messages', () => {
 			});
 
 			await test.step('check message list for prune message-attachment', async () => {
-				expect(content.getLastMessageByFileName('any_file.txt')).not.toBeDefined();
+				await expect(content.getLastMessageByFileName('any_file.txt')).not.toBeVisible();
 				await expect(content.lastMessageTextAttachment, 'Prune message attachment replaces file attachment').toHaveText(
 					'File removed by prune',
 				);
@@ -162,7 +162,7 @@ test.describe('prune-messages', () => {
 			).toBe(200);
 
 			await test.step('check main thread message for prune message-attachment', async () => {
-				await expect(content.getLastThreadMessageByFileName('any_file.txt')).not.toBeDefined();
+				await expect(content.getLastThreadMessageByFileName('any_file.txt')).not.toBeVisible();
 				await expect(content.lastThreadMessageTextAttachment, 'Prune message attachment replaces file attachment').toHaveText(
 					'File removed by prune',
 				);

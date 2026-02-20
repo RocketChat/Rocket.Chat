@@ -37,7 +37,7 @@ test.describe.serial('Threads', () => {
 		await page.getByRole('dialog').locator('[name="msg"]').last().fill('This is a thread message also sent in channel');
 		await page.keyboard.press('Enter');
 		await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
-		await expect(poHomeChannel.content.lastUserMessage).toContainText('This is a thread message also sent in channel');
+		await expect(poHomeChannel.content.lastThreadMessagePreview).toContainText('This is a thread message also sent in channel');
 	});
 	test('expect open threads contextual bar when clicked on thread preview', async ({ page }) => {
 		await poHomeChannel.content.lastThreadMessagePreviewText.click();
