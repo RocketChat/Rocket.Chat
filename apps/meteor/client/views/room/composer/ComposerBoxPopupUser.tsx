@@ -1,7 +1,9 @@
 import { OptionAvatar, OptionColumn, OptionContent, OptionInput } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import { getUserDisplayNames } from '../../../../lib/getUserDisplayNames';
 import ReactiveUserStatus from '../../../components/UserStatus/ReactiveUserStatus';
 
 export type ComposerBoxPopupUserProps = {
@@ -19,6 +21,9 @@ export type ComposerBoxPopupUserProps = {
 
 function ComposerBoxPopupUser({ _id, system, username, name, nickname, outside, suggestion, variant }: ComposerBoxPopupUserProps) {
 	const { t } = useTranslation();
+	const useRealName = useSetting('UI_Use_Real_Name', false);
+
+	const [nameOrUsername, displayUsername] = getUserDisplayNames(name, username, useRealName);
 
 	return (
 		<>
@@ -31,15 +36,15 @@ function ComposerBoxPopupUser({ _id, system, username, name, nickname, outside, 
 						<ReactiveUserStatus uid={_id} />
 					</OptionColumn>
 					<OptionContent>
-						<strong>{name ?? username}</strong> {name && name !== username && username}
-						{nickname && <span className='popup-user-nickname'>({nickname})</span>}
+						<strong>{nameOrUsername}</strong> {displayUsername && `@${displayUsername}`}
+						{nickname && <span className='popup-user-nickname'> ({nickname})</span>}
 					</OptionContent>
 				</>
 			)}
 
 			{system && (
 				<OptionContent>
-					<strong>{username}</strong> {name}
+					<strong>@{username}</strong> {name}
 				</OptionContent>
 			)}
 

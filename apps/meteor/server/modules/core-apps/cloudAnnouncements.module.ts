@@ -256,6 +256,7 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 				Authorization: `Bearer ${token}`,
 			},
 			body: JSON.stringify(request),
+			ignoreSsrfValidation: true,
 		});
 
 		if (!response.ok) {
