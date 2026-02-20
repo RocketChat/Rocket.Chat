@@ -998,17 +998,16 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const defaultRooms = await Rooms.findDefaultRoomsForTeam(teamId).toArray();
 		const users = await Users.findActiveByIds(members.map((member) => member.userId)).toArray();
 
-		await Promise.all(
-			defaultRooms.map((room) =>
-				// at this point, users are already part of the team so we won't check for membership
-				Promise.all(
-					users.map((user) =>
+		for (const room of defaultRooms) {
+			// at this point, users are already part of the team so we won't check for membership
+			await Promise.all(
+				users.map(
+					(user) =>
 						// add each user to the default room
 						addUserToRoom(room._id, user, inviter, { skipSystemMessage: false }),
-					),
 				),
-			),
-		);
+			);
+		}
 	}
 
 	async deleteById(teamId: string): Promise<boolean> {
