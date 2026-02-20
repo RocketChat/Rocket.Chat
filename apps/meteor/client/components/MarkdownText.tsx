@@ -186,16 +186,15 @@ const MarkdownText = ({
 			}
 		})();
 
-		const sanitizedHtml = preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(supportedURISchemes) });
-		
+		const sanitizedHtml = preserveHtml
+			? html
+			: html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(supportedURISchemes) });
+
 		// Replace internal link tokens with contextualized translations
 		if (sanitizedHtml && typeof sanitizedHtml === 'string') {
-			return sanitizedHtml.replace(
-				new RegExp(`${INTERNAL_LINK_TOKEN}([^"]*)`, 'g'),
-				(_, href) => t('Go_to_href', { href })
-			);
+			return sanitizedHtml.replace(new RegExp(`${INTERNAL_LINK_TOKEN}([^"]*)`, 'g'), (_, href) => t('Go_to_href', { href }));
 		}
-		
+
 		return sanitizedHtml;
 	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji, t]);
 

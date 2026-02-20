@@ -442,22 +442,19 @@ describe('DOMPurify hook registration', () => {
 		// Clear any previous calls from module initialization
 		addHookSpy.mockClear();
 
-		const { rerender, unmount } = render(
-			<MarkdownText content="[Test Link](https://example.com)" variant="document" />,
-			{
-				wrapper: mockAppRoot().build(),
-			}
-		);
+		const { rerender, unmount } = render(<MarkdownText content='[Test Link](https://example.com)' variant='document' />, {
+			wrapper: mockAppRoot().build(),
+		});
 
 		// Hook should NOT be registered during component render (it's registered at module level)
 		expect(addHookSpy).toHaveBeenCalledTimes(0);
 
 		// Re-rendering with different props should not register hook again
-		rerender(<MarkdownText content="[Another Link](https://example.com)" variant="document" />);
+		rerender(<MarkdownText content='[Another Link](https://example.com)' variant='document' />);
 		expect(addHookSpy).toHaveBeenCalledTimes(0);
 
 		// Rendering another instance should not register hook again
-		render(<MarkdownText content="[Third Link](https://test.com)" variant="inline" />, {
+		render(<MarkdownText content='[Third Link](https://test.com)' variant='inline' />, {
 			wrapper: mockAppRoot().build(),
 		});
 		expect(addHookSpy).toHaveBeenCalledTimes(0);
