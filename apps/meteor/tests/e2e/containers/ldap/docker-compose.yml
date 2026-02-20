@@ -1,6 +1,6 @@
 services:
   test_openldap:
-    image: bitnami/openldap:latest
+    image: symas/openldap:latest
     volumes:
       - ./openldap:/opt/bitnami/openldap/data/
     environment:
