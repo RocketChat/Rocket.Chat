@@ -1000,13 +1000,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		for (const room of defaultRooms) {
 			// at this point, users are already part of the team so we won't check for membership
-			await Promise.all(
-				users.map(
-					(user) =>
-						// add each user to the default room
-						addUserToRoom(room._id, user, inviter, { skipSystemMessage: false }),
-				),
-			);
+			// eslint-disable-next-line no-await-in-loop
+			await Promise.all(users.map((user) => addUserToRoom(room._id, user, inviter, { skipSystemMessage: false })));
 		}
 	}
 
