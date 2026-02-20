@@ -72,6 +72,12 @@ export abstract class MessageBridge extends BaseBridge {
 		}
 	}
 
+	public async doDeleteNotifyRoom(room: IRoom, message: IMessage, appId: string): Promise<void> {
+		if (this.hasWritePermission(appId)) {
+			return this.deleteNotifyRoom(room, message, appId);
+		}
+	}
+
 	protected abstract create(message: IMessage, appId: string): Promise<string>;
 
 	protected abstract update(message: IMessage, appId: string): Promise<void>;
@@ -91,6 +97,8 @@ export abstract class MessageBridge extends BaseBridge {
 	protected abstract removeReaction(messageId: string, userId: string, reaction: Reaction): Promise<void>;
 
 	protected abstract deleteNotifyUser(user: IUser, message: IMessage, appId: string): Promise<void>;
+
+	protected abstract deleteNotifyRoom(room: IRoom, message: IMessage, appId: string): Promise<void>;
 
 	private hasReadPermission(appId: string): boolean {
 		if (AppPermissionManager.hasPermission(appId, AppPermissions.message.read)) {

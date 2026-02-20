@@ -29,6 +29,10 @@ export class TestsMessageBridge extends MessageBridge {
 		throw new Error('Method not implemented.');
 	}
 
+	public deleteNotifyRoom(room: IRoom, message: IMessage, appId: string): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
 	public delete(message: IMessage, user: IUser, appId: string): Promise<void> {
 		throw new Error('Method not implemented.');
 	}

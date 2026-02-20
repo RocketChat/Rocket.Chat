@@ -97,6 +97,27 @@ export class AppMessageBridge extends MessageBridge {
 		});
 	}
 
+	protected async deleteNotifyRoom(room: IRoom, message: IAppsMessage, appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${appId} is deleting a notification message from the room.`);
+
+		if (!room?.id) {
+			return;
+		}
+
+		const msg: IMessage | undefined = await this.orch.getConverters()?.get('messages').convertAppMessage(message);
+		const convertedMessage = msg as IMessage;
+
+		const users = (await Subscriptions.findByRoomIdWhenUserIdExists(room.id, { projection: { 'u._id': 1 } }).toArray()).map((s) => s.u._id);
+
+		await Users.findByIds(users, { projection: { _id: 1 } }).forEach(
+			({ _id }: { _id: string }) =>
+				void api.broadcast('notify.ephemeralMessage', _id, room.id, {
+					...convertedMessage,
+					_deleted: true,
+				}),
+		);
+	}
+
 	protected async notifyRoom(room: IRoom, message: IAppsMessage, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is notifying a room's users.`);
 
