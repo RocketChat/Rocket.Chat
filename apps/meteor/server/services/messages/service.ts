@@ -236,10 +236,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 		message = await this.badWords.filterBadWords({ message });
 		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
-		if(message.parseUrls){
-			message.urls = parseUrlsInMessage(message, previewUrls);
-
-		}
+		message.urls = parseUrlsInMessage(message, previewUrls);
 		message = await this.spotify.convertSpotifyLinks({ message });
 		message = await this.jumpToMessage.createAttachmentForMessageURLs({
 			message,
