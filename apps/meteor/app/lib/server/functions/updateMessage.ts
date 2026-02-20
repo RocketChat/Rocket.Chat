@@ -5,6 +5,7 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { parseUrlsInMessage } from './parseUrlsInMessage';
+import { initializePresetReactions } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById } from '../lib/notifyListener';
@@ -84,6 +85,11 @@ export const updateMessage = async function (
 			...(!editedMessage.md && { $unset: { md: 1 } }),
 		},
 	);
+
+	// Initialize preset reactions if updated
+	if (messageData.presetReactions && messageData.presetReactions.length > 0) {
+		await initializePresetReactions(messageData);
+	}
 
 	if (Apps.self?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message

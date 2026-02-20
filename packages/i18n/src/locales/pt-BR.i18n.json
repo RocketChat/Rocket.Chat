@@ -352,9 +352,13 @@
   "Add_a_Message": "Adicionar uma mensagem",
   "Add_agent": "Adicionar agente",
   "Add_contact": "Adicionar contato",
+  "Preset_Reactions": "Reações Predefinidas",
+  "Select_Preset_Reactions": "Selecionar Reações Predefinidas",
+  "Preset_Reactions_Description": "Selecione reações para mostrar como sugestões em sua mensagem. Elas aparecerão com contagem 0 até que alguém reaja.",
   "Add_custom_oauth": "Adicionar OAuth customizado",
   "Add_email": "Adicionar endereço de e-mail",
   "Add_emoji": "Adicionar emoji",
+  "Add_Emoji": "Adicionar Emoji",
   "Add_files_from": "Adicionar arquivos de",
   "Add_link": "Adicionar link",
   "Add_manager": "Adicionar gerente",
@@ -6756,5 +6760,6 @@
   "__usernames__and__count__more_joined": "{{usernames}} e {{count}} mais entraram",
   "__usernames__joined": "{{usernames}} entraram",
   "__usersCount__joined": "{{count}} entraram",
-  "__usersCount__people_will_be_invited": "{{usersCount}} usuários vão ser convidados"
+  "__usersCount__people_will_be_invited": "{{usersCount}} usuários vão ser convidados",
+  "No_reactions_selected": "Nenhuma reação selecionada ainda. Clique em \"Adicionar Emoji\" para selecionar reações."
 }

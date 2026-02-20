@@ -2669,6 +2669,125 @@ describe('[Chat]', () => {
 		});
 	});
 
+	describe('[Preset Reactions]', () => {
+		let messageWithPresets: { _id: IMessage['_id'] };
+
+		it('should send a message with preset reactions successfully', async () => {
+			const res = await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Message with preset reactions',
+						rid: testChannel._id,
+						presetReactions: [{ emoji: ':+1:' }, { emoji: ':heart:' }, { emoji: ':rocket:' }],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('message');
+			expect(res.body.message).to.have.property('presetReactions');
+			expect(res.body.message.presetReactions).to.be.an('array').with.lengthOf(3);
+			expect(res.body.message.presetReactions[0]).to.deep.equal({ emoji: ':+1:' });
+
+			messageWithPresets = res.body.message;
+		});
+
+		it('should have initialized reactions with 0 count for preset reactions', async () => {
+			const res = await request
+				.get(api('chat.getMessage'))
+				.set(credentials)
+				.query({
+					msgId: messageWithPresets._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('message');
+			expect(res.body.message).to.have.property('reactions');
+			expect(res.body.message.reactions).to.have.property(':+1:');
+			expect(res.body.message.reactions[':+1:'].usernames).to.be.an('array').that.is.empty;
+			expect(res.body.message.reactions).to.have.property(':heart:');
+			expect(res.body.message.reactions[':heart:'].usernames).to.be.an('array').that.is.empty;
+			expect(res.body.message.reactions).to.have.property(':rocket:');
+			expect(res.body.message.reactions[':rocket:'].usernames).to.be.an('array').that.is.empty;
+		});
+
+		it('should allow users to react to a preset reaction', async () => {
+			await request
+				.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':+1:',
+					messageId: messageWithPresets._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const res = await request
+				.get(api('chat.getMessage'))
+				.set(credentials)
+				.query({
+					msgId: messageWithPresets._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body.message.reactions[':+1:'].usernames).to.have.lengthOf(1);
+		});
+
+		it('should keep preset reaction with 0 count when all users unreact', async () => {
+			// Unreact
+			await request
+				.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':+1:',
+					messageId: messageWithPresets._id,
+					shouldReact: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const res = await request
+				.get(api('chat.getMessage'))
+				.set(credentials)
+				.query({
+					msgId: messageWithPresets._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			// Preset reaction should still exist with 0 count
+			expect(res.body.message.reactions).to.have.property(':+1:');
+			expect(res.body.message.reactions[':+1:'].usernames).to.be.an('array').that.is.empty;
+		});
+
+		it('should allow updating preset reactions via chat.update', async () => {
+			const res = await request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					msgId: messageWithPresets._id,
+					text: 'Updated message with different preset reactions',
+					presetReactions: [{ emoji: ':fire:' }, { emoji: ':tada:' }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.message).to.have.property('presetReactions');
+			expect(res.body.message.presetReactions).to.be.an('array').with.lengthOf(2);
+		});
+	});
+
 	describe('[/chat.getMessageReadReceipts]', () => {
 		const isEnterprise = typeof process.env.IS_EE === 'string' ? process.env.IS_EE === 'true' : !!process.env.IS_EE;
 		describe('when execute successfully', () => {

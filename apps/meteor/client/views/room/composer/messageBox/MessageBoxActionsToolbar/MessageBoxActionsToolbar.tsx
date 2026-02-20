@@ -1,16 +1,17 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
-import type { Icon } from '@rocket.chat/fuselage';
+import { Box, type Icon } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.chat/ui-composer';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, MouseEvent } from 'react';
-import { memo } from 'react';
+import type { ComponentProps, MouseEvent, RefObject } from 'react';
+import { memo, useRef } from 'react';
 
 import { useAudioMessageAction } from './hooks/useAudioMessageAction';
 import { useCreateDiscussionAction } from './hooks/useCreateDiscussionAction';
 import { useFileUploadAction } from './hooks/useFileUploadAction';
+import { usePresetReactionsAction } from './hooks/usePresetReactionsAction';
 import { useShareLocationAction } from './hooks/useShareLocationAction';
 import { useTimestampAction } from './hooks/useTimestampAction';
 import { useVideoMessageAction } from './hooks/useVideoMessageAction';
@@ -28,6 +29,7 @@ type MessageBoxActionsToolbarProps = {
 	isRecording: boolean;
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
+	onOpenPresetReactions?: (ref: RefObject<HTMLButtonElement>) => void;
 };
 
 const isHidden = (hiddenActions: Array<string>, action: GenericMenuItemProps) => {
@@ -45,6 +47,7 @@ const MessageBoxActionsToolbar = ({
 	tmid,
 	variant = 'large',
 	isMicrophoneDenied,
+	onOpenPresetReactions,
 }: MessageBoxActionsToolbarProps) => {
 	const t = useTranslation();
 	const chatContext = useChat();
@@ -62,6 +65,8 @@ const MessageBoxActionsToolbar = ({
 	const createDiscussionAction = useCreateDiscussionAction(room);
 	const shareLocationAction = useShareLocationAction(room, tmid);
 	const timestampAction = useTimestampAction(chatContext.composer);
+	const emojiPickerButtonRef = useRef<HTMLButtonElement>(null);
+	const presetReactionsAction = usePresetReactionsAction(!canSend || isRecording, onOpenPresetReactions, emojiPickerButtonRef);
 
 	const apps = useMessageboxAppsActionButtons();
 	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
@@ -73,6 +78,7 @@ const MessageBoxActionsToolbar = ({
 		...(!isHidden(hiddenActions, createDiscussionAction) && { createDiscussionAction }),
 		...(!isHidden(hiddenActions, shareLocationAction) && { shareLocationAction }),
 		...(timestampAction && !isHidden(hiddenActions, timestampAction) && { timestampAction }),
+		...(presetReactionsAction && !isHidden(hiddenActions, presetReactionsAction) && { presetReactionsAction }),
 		...(!hiddenActions.includes('webdav-add') && webdavActions && { webdavActions }),
 	};
 
@@ -85,6 +91,10 @@ const MessageBoxActionsToolbar = ({
 
 	if (allActions.timestampAction) {
 		insert.push(allActions.timestampAction);
+	}
+
+	if (allActions.presetReactionsAction) {
+		insert.push(allActions.presetReactionsAction);
 	}
 
 	if (variant === 'small') {
@@ -146,19 +156,21 @@ const MessageBoxActionsToolbar = ({
 		<>
 			<MessageComposerActionsDivider />
 			{featured.map((action) => action && renderAction(action))}
-			<GenericMenu
-				disabled={isRecording}
-				data-qa-id='menu-more-actions'
-				detached
-				icon='plus'
-				sections={[
-					{ title: t('Create_new'), items: createNewFiltered },
-					{ title: t('Share'), items: shareFiltered },
-					...(insertFiltered.length > 0 ? [{ title: t('Insert'), items: insertFiltered }] : []),
-					...messageBoxActions,
-				]}
-				title={t('More_actions')}
-			/>
+			<Box ref={emojiPickerButtonRef} display='inline-block'>
+				<GenericMenu
+					disabled={isRecording}
+					data-qa-id='menu-more-actions'
+					detached
+					icon='plus'
+					sections={[
+						{ title: t('Create_new'), items: createNewFiltered },
+						{ title: t('Share'), items: shareFiltered },
+						...(insertFiltered.length > 0 ? [{ title: t('Insert'), items: insertFiltered }] : []),
+						...messageBoxActions,
+					]}
+					title={t('More_actions')}
+				/>
+			</Box>
 		</>
 	);
 };

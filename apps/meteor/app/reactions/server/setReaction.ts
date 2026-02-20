@@ -25,7 +25,7 @@ export const removeUserReaction = (message: IMessage, reaction: string, username
 	}
 
 	message.reactions[reaction].usernames.splice(idx, 1);
-	if (!message.reactions[reaction].usernames.length) {
+	if (!message.reactions[reaction].usernames.length && !message.presetReactions?.some((preset) => preset.emoji === reaction)) {
 		delete message.reactions[reaction];
 	}
 	return message;
@@ -141,6 +141,34 @@ export async function executeSetReaction(
 	}
 
 	return setReaction(room, user, message, reaction, userAlreadyReacted);
+}
+
+export async function initializePresetReactions(message: IMessage): Promise<void> {
+	if (!message.presetReactions || message.presetReactions.length === 0) {
+		return;
+	}
+
+	// Initialize reactions object if it doesn't exist
+	if (!message.reactions) {
+		message.reactions = {};
+	}
+
+	// Add preset reactions to reactions object if they don't exist
+	for (const preset of message.presetReactions) {
+		if (!message.reactions[preset.emoji]) {
+			message.reactions[preset.emoji] = { usernames: [] };
+		}
+	}
+
+	// Update the message reactions in the database
+	if (Object.keys(message.reactions).length > 0) {
+		await Messages.setReactions(message._id, message.reactions);
+
+		const room = await Rooms.findOneById(message.rid);
+		if (room && isTheLastMessage(room, message)) {
+			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
+		}
+	}
 }
 
 declare module '@rocket.chat/ddp-client' {

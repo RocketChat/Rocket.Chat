@@ -115,6 +115,37 @@ describe('Reactions', () => {
 			expect(result.reactions.test.usernames).to.include('test');
 			expect(result.reactions.test.usernames).to.include('test2');
 		});
+		it('should not remove the reaction when the user is the last one if the reaction is a preset', () => {
+			const message = {
+				reactions: {
+					':+1:': {
+						usernames: ['test'],
+					},
+				},
+				presetReactions: [{ emoji: ':+1:' }],
+			};
+
+			const result = removeUserReaction(message as any, ':+1:', 'test');
+			expect(result.reactions[':+1:'].usernames).to.be.empty;
+			expect(result.reactions[':+1:']).to.exist;
+		});
+		it('should remove the reaction when the user is the last one if it is not a preset', () => {
+			const message = {
+				reactions: {
+					':+1:': {
+						usernames: ['test'],
+					},
+					':heart:': {
+						usernames: ['test'],
+					},
+				},
+				presetReactions: [{ emoji: ':heart:' }],
+			};
+
+			const result = removeUserReaction(message as any, ':+1:', 'test');
+			expect(result.reactions[':+1:']).to.be.undefined;
+			expect(result.reactions[':heart:']).to.exist;
+		});
 	});
 	describe('executeSetReaction', () => {
 		beforeEach(() => {

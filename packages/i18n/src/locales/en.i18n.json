@@ -428,9 +428,15 @@
   "Add_a_Message": "Add a Message",
   "Add_agent": "Add agent",
   "Add_contact": "Add contact",
+  "Preset_Reactions": "Preset Reactions",
+  "Select_Preset_Reactions": "Select Preset Reactions",
+  "Preset_Reactions_Description": "Select reactions to show as suggestions on your message. They will appear with 0 count until someone reacts.",
+  "Remove_preset_reaction": "Remove preset reaction {{reaction}}",
+  "Click_to_remove": "Click to remove",
   "Add_custom_oauth": "Add custom OAuth",
   "Add_email": "Add email",
   "Add_emoji": "Add emoji",
+  "Add_Emoji": "Add Emoji",
   "Add_files_from": "Add files from",
   "Add_link": "Add link",
   "Add_manager": "Add manager",
@@ -7107,5 +7113,6 @@
   "Message_composer": "Message composer",
   "Thread_composer": "Thread composer",
   "Room_composer": "Room composer",
-  "Date_range_presets": "Date range presets"
+  "Date_range_presets": "Date range presets",
+  "No_reactions_selected": "No reactions selected yet. Click \"Add Emoji\" to select reactions."
 }

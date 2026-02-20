@@ -201,6 +201,7 @@ export interface IMessage extends IRocketChatRecord {
 	reactions?: {
 		[key: string]: { names?: string[]; usernames: string[]; federationReactionEventIds?: Record<string, string> };
 	};
+	presetReactions?: Array<{ emoji: string; label?: string }>;
 
 	private?: boolean;
 	/* @deprecated */
