@@ -11,6 +11,7 @@ export async function loginViaResume(resume: string, loginExpiration: number): P
 	const user = await Users.findOne<IUser>(
 		{
 			'services.resume.loginTokens.hashedToken': hashedToken,
+			'active': true,
 		},
 		{
 			projection: {

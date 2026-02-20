@@ -2,9 +2,9 @@ import type { IApiEndpoint } from '@rocket.chat/apps-engine/definition/api/IApiE
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';
-import { Logger } from '../lib/logger.ts';
 import { AppAccessorsInstance } from '../lib/accessors/mod.ts';
 import { RequestContext } from '../lib/requestContext.ts';
+import { wrapComposedApp } from '../lib/wrapAppForRequest.ts';
 
 export default async function apiHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
 	const { method: call, params } = request;
@@ -13,7 +13,7 @@ export default async function apiHandler(request: RequestContext): Promise<JsonR
 	const path = parts.join(':');
 
 	const endpoint = AppObjectRegistry.get<IApiEndpoint>(`api:${path}`);
-	const logger = AppObjectRegistry.get<Logger>('logger');
+	const { logger } = request.context;
 
 	if (!endpoint) {
 		return new JsonRpcError(`Endpoint ${path} not found`, -32000);
@@ -27,11 +27,11 @@ export default async function apiHandler(request: RequestContext): Promise<JsonR
 
 	const [requestData, endpointInfo] = params as Array<unknown>;
 
-	logger?.debug(`${path}'s ${call} is being executed...`, requestData);
+	logger.debug(`${path}'s ${call} is being executed...`, requestData);
 
 	try {
 		// deno-lint-ignore ban-types
-		const result = await (method as Function).apply(endpoint, [
+		const result = await (method as Function).apply(wrapComposedApp(endpoint, request), [
 			requestData,
 			endpointInfo,
 			AppAccessorsInstance.getReader(),
@@ -40,11 +40,11 @@ export default async function apiHandler(request: RequestContext): Promise<JsonR
 			AppAccessorsInstance.getPersistence(),
 		]);
 
-		logger?.debug(`${path}'s ${call} was successfully executed.`);
+		logger.debug(`${path}'s ${call} was successfully executed.`);
 
 		return result;
 	} catch (e) {
-		logger?.debug(`${path}'s ${call} was unsuccessful.`);
+		logger.debug(`${path}'s ${call} was unsuccessful.`);
 		return new JsonRpcError(e.message || 'Internal server error', -32000);
 	}
 }

@@ -1,4 +1,5 @@
 import { Logger } from '@rocket.chat/logger';
+import type { ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { API } from '../../../../api/server';
@@ -63,7 +64,9 @@ API.v1.addRoute(
 					'Accept': 'application/json',
 				},
 				body: sampleData,
-			};
+				// SECURITY: Webhooks can only be configured by users with enough privileges. It's ok to disable this check here.
+				ignoreSsrfValidation: true,
+			} as ExtendedFetchOptions;
 
 			const webhookUrl = settings.get<string>('Livechat_webhookUrl');
 

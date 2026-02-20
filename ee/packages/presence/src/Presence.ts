@@ -1,8 +1,8 @@
 import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
-import { License, ServiceClass } from '@rocket.chat/core-services';
+import { License, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { Settings, Users, UsersSessions } from '@rocket.chat/models';
+import { Users, UsersSessions } from '@rocket.chat/models';
 
 import { PresenceReaper } from './lib/PresenceReaper';
 import { processPresenceAndStatus } from './lib/processConnectionStatus';
@@ -89,7 +89,7 @@ export class Presence extends ServiceClass implements IPresence {
 		}, 10000);
 
 		try {
-			await Settings.updateValueById('Presence_broadcast_disabled', false);
+			await Settings.set('Presence_broadcast_disabled', false);
 
 			this.hasScalabilityLicense = await License.hasModule('scalability');
 			this.hasPresenceLicense = await License.hasModule('unlimited-presence');
@@ -132,7 +132,7 @@ export class Presence extends ServiceClass implements IPresence {
 
 		// update the setting only to turn it on, because it may have been disabled via the troubleshooting setting, which doesn't affect the setting
 		if (enabled) {
-			await Settings.updateValueById('Presence_broadcast_disabled', false);
+			await Settings.set('Presence_broadcast_disabled', false);
 		}
 	}
 
@@ -312,7 +312,7 @@ export class Presence extends ServiceClass implements IPresence {
 		if (this.getTotalConnections() > MAX_CONNECTIONS) {
 			this.broadcastEnabled = false;
 
-			await Settings.updateValueById('Presence_broadcast_disabled', true);
+			await Settings.set('Presence_broadcast_disabled', true);
 		}
 	}
 
