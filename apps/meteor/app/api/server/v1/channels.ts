@@ -602,7 +602,7 @@ API.v1.addRoute(
 			}
 
 			if (!sub.open) {
-				return API.v1.failure(`The channel, ${findResult.name}, is already closed to the sender`);
+				return API.v1.success();
 			}
 
 			await hideRoomMethod(this.userId, findResult._id);
