@@ -12,18 +12,23 @@ const message: IMessage = {
 		name: 'userName',
 		username: 'userName',
 	},
-	msg: 'message body',
+	msg: 'message body :emoji:',
 	md: [
 		{
 			type: 'PARAGRAPH',
 			value: [
+				{ type: 'PLAIN_TEXT', value: 'message body ' },
 				{
-					type: 'PLAIN_TEXT',
-					value: 'message body',
+					type: 'EMOJI',
+					value: { type: 'PLAIN_TEXT', value: 'emoji' },
+					shortCode: 'emoji',
 				},
 			],
 		},
 	],
+	reactions: {
+		':emoji:': { usernames: ['userName'] },
+	},
 	rid: 'roomId',
 	_id: 'messageId',
 	_updatedAt: new Date('2021-10-27T00:00:00.000Z'),
@@ -62,7 +67,7 @@ it('should show normal message', () => {
 	);
 
 	expect(screen.getByRole('figure')).toBeInTheDocument();
-	expect(screen.getByText('message body')).toBeInTheDocument();
+	expect(screen.getByText('message body :emoji:')).toBeInTheDocument();
 	expect(screen.queryByRole('button', { name: 'Message_Ignored' })).not.toBeInTheDocument();
 });
 
@@ -83,7 +88,7 @@ it('should show fallback content for ignored user', () => {
 	);
 
 	expect(screen.getByRole('figure')).toBeInTheDocument();
-	expect(screen.queryByText('message body')).not.toBeInTheDocument();
+	expect(screen.queryByText('message body :emoji:')).not.toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'Message_Ignored' })).toBeInTheDocument();
 });
 
@@ -104,7 +109,7 @@ it('should show ignored message', () => {
 	);
 
 	expect(screen.getByRole('figure')).toBeInTheDocument();
-	expect(screen.queryByText('message body')).not.toBeInTheDocument();
+	expect(screen.queryByText('message body :emoji:')).not.toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'Message_Ignored' })).toBeInTheDocument();
 });
 
@@ -156,4 +161,54 @@ it('should not show read receipt if receipt is disabled', () => {
 	);
 
 	expect(screen.queryByRole('status', { name: 'Message_viewed' })).not.toBeInTheDocument();
+});
+
+it('should render emoji and show reactions if enabled', () => {
+	render(
+		<RoomMessage
+			message={message}
+			sequential={false}
+			all={false}
+			mention={false}
+			unread={false}
+			ignoredUser={false}
+			showUserAvatar={true}
+		/>,
+		{
+			wrapper: mockAppRoot()
+				.withUserPreference('useEmojis', true)
+				.wrap((children) => <MessageListContext.Provider value={messageListContextDefaultValue}>{children}</MessageListContext.Provider>)
+				.build(),
+		},
+	);
+
+	const emoji = screen.getByRole('img', { name: ':emoji:' });
+	expect(emoji.tagName).toBe('SPAN');
+	expect(emoji).toBeInTheDocument();
+	expect(screen.queryByText('message body :emoji:')).not.toBeInTheDocument();
+	expect(screen.getByRole('toolbar')).toBeInTheDocument();
+});
+
+it('should not render emoji and hide reactions if disabled', () => {
+	render(
+		<RoomMessage
+			message={message}
+			sequential={false}
+			all={false}
+			mention={false}
+			unread={false}
+			ignoredUser={false}
+			showUserAvatar={true}
+		/>,
+		{
+			wrapper: mockAppRoot()
+				.withUserPreference('useEmojis', false)
+				.wrap((children) => <MessageListContext.Provider value={messageListContextDefaultValue}>{children}</MessageListContext.Provider>)
+				.build(),
+		},
+	);
+
+	expect(screen.queryByRole('img')).not.toBeInTheDocument();
+	expect(screen.getByText('message body :emoji:')).toBeInTheDocument();
+	expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
 });
