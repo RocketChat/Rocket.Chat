@@ -219,11 +219,13 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		room,
 		user,
 		previewUrls,
+		parseUrls = true,
 	}: {
 		message: IMessage;
 		room: IRoom;
 		user: Pick<IUser, '_id' | 'username' | 'name' | 'emails' | 'language'>;
 		previewUrls?: string[];
+		parseUrls?: boolean;
 	}): Promise<IMessage> {
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
@@ -236,7 +238,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 		message = await this.badWords.filterBadWords({ message });
 		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
-		message.urls = parseUrlsInMessage(message, previewUrls);
+		if (parseUrls) {
+			message.urls = parseUrlsInMessage(message, previewUrls);
+		}
 		message = await this.spotify.convertSpotifyLinks({ message });
 		message = await this.jumpToMessage.createAttachmentForMessageURLs({
 			message,

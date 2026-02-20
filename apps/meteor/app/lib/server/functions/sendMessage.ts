@@ -256,7 +256,7 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 		}
 	}
 
-	message = await Message.beforeSave({ message, room, user, previewUrls });
+	message = await Message.beforeSave({ message, room, user, previewUrls, parseUrls: message.parseUrls });
 
 	if (!message) {
 		return;

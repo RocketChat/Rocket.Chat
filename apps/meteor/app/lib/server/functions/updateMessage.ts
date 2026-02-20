@@ -10,7 +10,12 @@ import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 
 export const updateMessage = async function (
-	message: AtLeast<IMessage, '_id' | 'rid' | 'msg' | 'customFields'> | AtLeast<IMessage, '_id' | 'rid' | 'content'>,
+	{
+		parseUrls,
+		...message
+	}: (AtLeast<IMessage, '_id' | 'rid' | 'msg' | 'customFields'> | AtLeast<IMessage, '_id' | 'rid' | 'content'>) & {
+		parseUrls?: boolean;
+	},
 	user: IUser,
 	originalMsg?: IMessage,
 	previewUrls?: string[],
@@ -55,7 +60,7 @@ export const updateMessage = async function (
 		return;
 	}
 
-	messageData = await Message.beforeSave({ message: messageData, room, user, previewUrls });
+	messageData = await Message.beforeSave({ message: messageData, room, user, previewUrls, parseUrls });
 
 	if (messageData.customFields) {
 		validateCustomMessageFields({
