@@ -1705,8 +1705,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	async getThreadFollowsByThreadId(tmid: string): Promise<string[] | undefined> {
-		const msg = await this.findOneById(tmid, { projection: { replies: 1 } });
-		return msg?.replies;
+		const msg = await this.findOneById(tmid, { projection: { replies: 1, tcount: 1, tlm: 1 } });
+		return msg && 'replies' in msg && Array.isArray(msg.replies) ? msg.replies : undefined;
 	}
 
 	addThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult> {
