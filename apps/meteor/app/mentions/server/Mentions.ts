@@ -55,11 +55,7 @@ export class MentionsServer extends MentionsParser {
 		return this.convertMentionsToUsers(mentions, rid, sender);
 	}
 
-	async convertMentionsToUsers(
-		mentions: string[],
-		rid: string,
-		sender: IMessage['u'],
-	): Promise<IMessage['mentions']> {
+	async convertMentionsToUsers(mentions: string[], rid: string, sender: IMessage['u']): Promise<IMessage['mentions']> {
 		const mentionsAll: { _id: string; username: string }[] = [];
 		const userMentions = new Set<string>();
 
