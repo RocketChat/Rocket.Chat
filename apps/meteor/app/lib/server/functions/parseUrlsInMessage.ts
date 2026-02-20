@@ -13,10 +13,7 @@ const prepareUrl = (url: string, previewUrls: string[] | undefined) => ({
 
 const prepareUrls = (urls: string[], previewUrls?: string[]) => [...new Set(urls)].map((url) => prepareUrl(url, previewUrls));
 
-export const parseUrlsInMessage = (message: AtLeast<IMessage, 'msg'> & { parseUrls?: boolean }, previewUrls?: string[]) => {
-	if (message.parseUrls === false) {
-		return [];
-	}
+export const parseUrlsInMessage = (message: AtLeast<IMessage, 'msg'>, previewUrls?: string[]) => {
 
 	// Also extract URLs from message blocks if they exist
 	if (message.md) {
