@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/cron",
-	"version": "0.1.49",
+	"version": "0.1.50",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
