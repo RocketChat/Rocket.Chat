@@ -458,6 +458,7 @@ jobs:
           repository: ${{ needs.release-versions.outputs.lowercase-repo }}
           tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           baseline-tag: develop
+          size-thresholds: '{"rocketchat":{"mb":11}}'
 
   checks:
     needs: [release-versions, packages-build]

@@ -248,7 +248,13 @@ function NewImportPage() {
 			<PageHeader title={t('Import_New_File')} onClickBack={() => router.navigate('/admin/import')}>
 				<ButtonGroup>
 					{importer && (
-						<Button primary minHeight='x40' loading={isLoading} onClick={handleImportButtonClick}>
+						<Button
+							primary
+							minHeight='x40'
+							loading={isLoading}
+							disabled={fileType === 'upload' && files.length === 0}
+							onClick={handleImportButtonClick}
+						>
 							{t('Import')}
 						</Button>
 					)}
