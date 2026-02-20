@@ -66,7 +66,7 @@ export const useUserInfoActions = ({
 	size = 2,
 	isMember,
 	isInvited,
-}: UserInfoActionsParams): { actions: [string, UserInfoAction][]; menuActions: UserMenuAction } => {
+}: UserInfoActionsParams): { actions: [string, UserInfoAction][]; menuActions: UserMenuAction | undefined } => {
 	const addUser = useAddUserAction(user, rid, reload);
 	const blockUser = useBlockUserAction(user, rid);
 	const changeLeader = useChangeLeaderAction(user, rid);
