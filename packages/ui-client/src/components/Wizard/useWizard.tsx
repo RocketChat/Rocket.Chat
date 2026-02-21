@@ -54,7 +54,7 @@ export const useWizard = ({ steps: stepsMetadata }: UseWizardProps) => {
 		}
 
 		steps.enableStep(currentStep.next);
-		goTo(currentStep.next);
+		void goTo(currentStep.next);
 	});
 
 	/**
@@ -67,7 +67,7 @@ export const useWizard = ({ steps: stepsMetadata }: UseWizardProps) => {
 		}
 
 		steps.enableStep(currentStep.prev);
-		goTo(currentStep.prev);
+		void goTo(currentStep.prev);
 	});
 
 	/**
