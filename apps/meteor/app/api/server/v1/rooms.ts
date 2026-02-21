@@ -1084,33 +1084,32 @@ export const roomEndpoints = API.v1
 		},
 	)
 	.post(
-	'rooms.invite',
-	{
-		authRequired: true,
-		body: isRoomsInviteProps,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<void>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
+		'rooms.invite',
+		{
+			authRequired: true,
+			body: isRoomsInviteProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
 		},
-	},
-	async function action() {
-		const { roomId, action } = this.bodyParams;
+		async function action() {
+			const { roomId, action } = this.bodyParams;
 
 			try {
-			await FederationMatrix.handleInvite(roomId, this.userId, action);
-			return API.v1.success();
-		} catch (error) {
-			return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
-		}
-	
+				await FederationMatrix.handleInvite(roomId, this.userId, action);
+				return API.v1.success();
+			} catch (error) {
+				return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
+			}
 		},
 	)
 	.post(
