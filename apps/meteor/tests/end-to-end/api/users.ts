@@ -154,14 +154,17 @@ const registerUser = async (
 		name?: string;
 		pass?: string;
 	} = {},
-	overrideCredentials = credentials,
+	overrideCredentials: Credentials | null = credentials,
 ) => {
 	const username = userData.username || `user.test.${Date.now()}`;
 	const email = userData.email || `${username}@rocket.chat`;
-	const result = await request
-		.post(api('users.register'))
-		.set(overrideCredentials)
-		.send({ email, name: username, username, pass: password, ...userData });
+
+	const req = request.post(api('users.register'));
+
+	if (overrideCredentials) {
+		req.set(overrideCredentials);
+	}
+	const result = await req.send({ email, name: username, username, pass: password, ...userData });
 
 	return result.body.user;
 };
@@ -1092,7 +1095,6 @@ describe('[Users]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('user.services.password');
-						expect(res.body).to.have.nested.property('user.services.resume');
 					})
 					.end(done);
 			});
@@ -1125,6 +1127,25 @@ describe('[Users]', () => {
 				});
 
 			await deleteUser(user);
+		});
+
+		it("should NOT return sensitive fields on services even though it's the same user requesting its info", (done) => {
+			void request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({
+					userId: credentials['X-User-Id'],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.services.password').and.to.be.a('boolean');
+					expect(res.body).to.not.have.nested.property('user.services.email');
+					expect(res.body).to.not.have.nested.property('user.services.resume');
+					expect(res.body).to.not.have.nested.property('user.services.passwordHistory');
+				})
+				.end(done);
 		});
 	});
 	describe('[/users.getPresence]', () => {
@@ -2747,6 +2768,27 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
+		it("should not include sensitive data on the 'services' object from the response", (done) => {
+			void request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						username: editedUsername,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { user } = res.body;
+					expect(res.body).to.have.property('success', true);
+					expect(user.services).to.not.have.property('passwordHistory');
+					expect(user.services).to.not.have.property('email');
+					expect(user.services.password).to.have.property('exists').that.is.a('boolean');
+				})
+				.end(done);
+		});
+
 		function failUpdateUserOwnBasicInfo(name: string) {
 			it(`should not update an user's basic info if the new username is the reserved word ${name}`, (done) => {
 				void request
@@ -3319,12 +3361,15 @@ describe('[Users]', () => {
 		let userCredentials: Credentials;
 
 		before(async () => {
-			targetUser = await registerUser({
-				email: `${testUsername}.@test.com`,
-				username: `${testUsername}test`,
-				name: testUsername,
-				pass: password,
-			});
+			targetUser = await registerUser(
+				{
+					email: `${testUsername}.@test.com`,
+					username: `${testUsername}test`,
+					name: testUsername,
+					pass: password,
+				},
+				null,
+			);
 			userCredentials = await login(targetUser.username, password);
 		});
 
@@ -3349,7 +3394,7 @@ describe('[Users]', () => {
 		let userCredentials: Credentials;
 
 		before(async () => {
-			targetUser = await registerUser();
+			targetUser = await registerUser(undefined, null);
 			userCredentials = await login(targetUser.username, password);
 		});
 
@@ -3417,7 +3462,7 @@ describe('[Users]', () => {
 		let userCredentials: Credentials;
 
 		before(async () => {
-			targetUser = await registerUser();
+			targetUser = await registerUser(undefined, null);
 			userCredentials = await login(targetUser.username, password);
 		});
 
@@ -3595,7 +3640,7 @@ describe('[Users]', () => {
 			let targetUser: TestUser<IUser>;
 			let room: IRoom;
 			beforeEach(async () => {
-				targetUser = await registerUser();
+				targetUser = await registerUser(undefined, null);
 				room = (
 					await createRoom({
 						type: 'c',
