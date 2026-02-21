@@ -11,11 +11,21 @@ type CreateRoomParams = {
 	username?: string;
 	members?: string[];
 	credentials?: Credentials;
+	readOnly?: boolean;
 	extraData?: Record<string, any>;
 	config?: IRequestConfig;
 };
 
-export const createRoom = ({ name, type, username, members, credentials: customCredentials, extraData, config }: CreateRoomParams) => {
+export const createRoom = ({
+	name,
+	type,
+	username,
+	members,
+	credentials: customCredentials,
+	extraData,
+	readOnly,
+	config,
+}: CreateRoomParams) => {
 	if (!type) {
 		throw new Error('"type" is required in "createRoom.ts" test helper');
 	}
@@ -42,6 +52,7 @@ export const createRoom = ({ name, type, username, members, credentials: customC
 		.send({
 			...params,
 			...(members && { members }),
+			...(readOnly && { readOnly }),
 			...(extraData && { extraData }),
 		});
 };
