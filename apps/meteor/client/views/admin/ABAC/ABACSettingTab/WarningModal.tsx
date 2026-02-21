@@ -1,4 +1,4 @@
-import { Button } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
@@ -35,7 +35,8 @@ const WarningModal = ({ onConfirm, onCancel }: WarningModalProps) => {
 			<Trans i18nKey='ABAC_Warning_Modal_Content'>
 				You will not be able to automatically or manually manage users in existing ABAC-managed rooms. To restore a room's default access
 				control, it must be removed from ABAC management in
-				<Button
+				<Box
+					is='button'
 					type='button'
 					onClick={handleNavigate}
 					style={{
@@ -50,7 +51,7 @@ const WarningModal = ({ onConfirm, onCancel }: WarningModalProps) => {
 				>
 					{' '}
 					ABAC {'>'} Rooms
-				</Button>
+				</Box>
 				.
 			</Trans>
 		</GenericModal>
