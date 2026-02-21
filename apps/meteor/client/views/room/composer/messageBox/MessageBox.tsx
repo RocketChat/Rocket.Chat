@@ -205,8 +205,8 @@ const MessageBox = ({
 
 				const olMatch = currentLine.match(/^(\d+)\.\s/);
 				const ulMatch = currentLine.match(/^-\s/);
-
-				if ((olMatch && currentLine.trim() === `${olMatch[1]}.`) || (ulMatch && currentLine.trim() === '-')) {
+				const textAfter = value.slice(selectionStart).split('\n')[0] || '';
+				if (((olMatch && currentLine.trim() === `${olMatch[1]}.`) || (ulMatch && currentLine.trim() === '-')) && textAfter.trim() === '') {
 					const lineStart = selectionStart - currentLine.length;
 					const newValue = value.slice(0, lineStart) + value.slice(selectionStart);
 					chat.composer?.setText(newValue);
