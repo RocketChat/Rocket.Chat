@@ -3389,7 +3389,7 @@ describe('[Users]', () => {
 		});
 	});
 
-	describe.only('[/users.checkUsernameAvailability]', () => {
+	describe('[/users.checkUsernameAvailability]', () => {
 		let targetUser: TestUser<IUser>;
 		let userCredentials: Credentials;
 
