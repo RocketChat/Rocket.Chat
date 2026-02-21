@@ -1,5 +1,4 @@
 import type { Connection } from './ddp-client.ts';
-// import { Package } from './package-registry.ts';
 import { noop } from './utils/noop.ts';
 
 // --- Types & Interfaces ---

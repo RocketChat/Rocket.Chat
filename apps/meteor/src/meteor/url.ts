@@ -1,4 +1,3 @@
-import { Package } from './package-registry.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 
 export const { URL } = globalThis;
@@ -71,8 +70,4 @@ export const _constructUrl = (url: string, query: string | null, params?: Record
 	}
 
 	return finalQuery ? `${baseUrl}?${finalQuery}` : baseUrl;
-};
-
-Package.url = {
-	URL,
 };

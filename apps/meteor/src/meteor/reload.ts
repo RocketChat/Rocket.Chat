@@ -31,7 +31,6 @@
 // useful for apps using `window.onbeforeunload`. See
 // https://github.com/meteor/meteor/pull/657
 import { Meteor } from './meteor.ts';
-import { Package } from './package-registry.ts';
 import type { UnknownFunction } from './utils/isFunction.ts';
 
 const reloadSettings = Meteor?.settings?.public?.packages?.reload || {};
@@ -130,7 +129,17 @@ let providers: any[] = [];
 // migrate or not; the reload will happen immediately without waiting
 // (used for OAuth redirect login).
 //
-export function _onMigrate(name: string, callback: (...args: any[]) => any) {
+export function _onMigrate(...args: [string, UnknownFunction] | [UnknownFunction]) {
+	let name: string | undefined;
+	let callback: UnknownFunction | undefined;
+
+	if (args.length === 1) {
+		callback = args[0] as UnknownFunction;
+	} else if (args.length === 2) {
+		name = args[0] as string;
+		callback = args[1] as UnknownFunction;
+	}
+
 	debug('_onMigrate', { name });
 	if (!callback) {
 		// name not provided, so first arg is callback.
@@ -290,5 +299,3 @@ export function _reload(options: any) {
 }
 
 export const Reload = { _getData, _onMigrate, _migrationData, _migrate, _withFreshProvidersForTest, _reload };
-
-Package.reload = { Reload };

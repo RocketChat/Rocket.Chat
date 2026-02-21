@@ -1,14 +1,9 @@
 import { Meteor } from './meteor.ts';
 import { OAuth } from './oauth.ts';
-import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 import { ServiceConfiguration } from './service-configuration.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 import { isObject } from './utils/isObject.ts';
-
-// -----------------------------------------------------------------------------
-// Types
-// -----------------------------------------------------------------------------
 
 type FacebookOptions = {
 	requestPermissions?: string[];
@@ -20,10 +15,6 @@ type FacebookOptions = {
 };
 
 type CredentialRequestCompleteCallback = (token?: string | Error) => void;
-
-// -----------------------------------------------------------------------------
-// Facebook OAuth Implementation
-// -----------------------------------------------------------------------------
 
 export const Facebook = {
 	requestCredential(
@@ -74,9 +65,3 @@ export const Facebook = {
 		});
 	},
 };
-
-// -----------------------------------------------------------------------------
-// Legacy Registration
-// -----------------------------------------------------------------------------
-
-Package['facebook-oauth'] = { Facebook };

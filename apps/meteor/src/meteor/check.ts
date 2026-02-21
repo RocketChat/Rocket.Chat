@@ -1,11 +1,8 @@
 import { EJSON } from './ejson.ts';
 import { Meteor } from './meteor.ts';
-import { Package } from './package-registry';
 import { hasOwn } from './utils/hasOwn.ts';
 import { isFunction } from './utils/isFunction.ts';
 import { isObject } from './utils/isObject.ts';
-
-// --- Types ---
 
 type ValidationError = {
 	message: string;
@@ -427,7 +424,7 @@ const testSubtree = (
 
 // --- Public API ---
 
-function check(value: unknown, pattern: Pattern, options: { throwAllErrors?: boolean } = { throwAllErrors: false }): void {
+export function check(value: unknown, pattern: Pattern, options: { throwAllErrors?: boolean } = { throwAllErrors: false }): void {
 	const argChecker = currentArgumentChecker.getOrNullIfOutsideFiber();
 	if (argChecker) {
 		argChecker.checking(value);
@@ -455,7 +452,7 @@ class MatchError extends Error {
 	}
 }
 
-const Match = {
+export const Match = {
 	Optional(pattern: Pattern) {
 		return new Optional(pattern);
 	},
@@ -565,8 +562,4 @@ const isArguments = baseIsArguments(
 	})(),
 )
 	? baseIsArguments
-	: (value: unknown): value is IArguments => isObject(value) && hasOwn(value, 'callee') && isFunction((value as any).callee);
-
-export { Match, check };
-
-Package.check = { Match, check };
+	: (value: unknown): value is IArguments => isObject(value) && hasOwn(value, 'callee') && isFunction(value.callee);

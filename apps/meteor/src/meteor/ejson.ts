@@ -1,5 +1,4 @@
 import { Base64 } from './base64.ts';
-import { Package } from './package-registry.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 
 // Types
@@ -675,7 +674,7 @@ const clone = (v: any): any => {
 	return ret;
 };
 
-const EJSON = {
+export const EJSON = {
 	addType: (name: string, factory: (jsonValue: any) => any) => {
 		if (customTypes.has(name)) {
 			throw new Error(`Type ${name} already present`);
@@ -697,7 +696,3 @@ const EJSON = {
 	clone,
 	newBinary: Base64.newBinary,
 };
-
-export { EJSON };
-
-Package.ejson = { EJSON };
