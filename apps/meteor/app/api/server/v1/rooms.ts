@@ -312,26 +312,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'rooms.favorite',
-	{ authRequired: true },
-	{
-		async post() {
-			const { favorite } = this.bodyParams;
-
-			if (!this.bodyParams.hasOwnProperty('favorite')) {
-				return API.v1.failure("The 'favorite' param is required");
-			}
-
-			const room = await findRoomByIdOrName({ params: this.bodyParams });
-
-			await toggleFavoriteMethod(this.userId, room._id, favorite);
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
 	'rooms.cleanHistory',
 	{ authRequired: true, validateParams: isRoomsCleanHistoryProps },
 	{
@@ -945,6 +925,16 @@ API.v1.addRoute(
 	},
 );
 
+type RoomsFavorite =
+	| {
+			roomId: string;
+			favorite: boolean;
+	  }
+	| {
+			roomName: string;
+			favorite: boolean;
+	  };
+
 const isRoomGetRolesPropsSchema = {
 	type: 'object',
 	properties: {
@@ -953,6 +943,32 @@ const isRoomGetRolesPropsSchema = {
 	additionalProperties: false,
 	required: ['rid'],
 };
+
+const RoomsFavoriteSchema = {
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				favorite: { type: 'boolean' },
+				roomName: { type: 'string' },
+			},
+			required: ['roomName', 'favorite'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				favorite: { type: 'boolean' },
+				roomId: { type: 'string' },
+			},
+			required: ['roomId', 'favorite'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
+
 export const roomEndpoints = API.v1
 	.get(
 		'rooms.roles',
@@ -1066,9 +1082,8 @@ export const roomEndpoints = API.v1
 				total,
 			});
 		},
-	);
-
-const roomInviteEndpoints = API.v1.post(
+	)
+	.post(
 	'rooms.invite',
 	{
 		authRequired: true,
@@ -1089,16 +1104,52 @@ const roomInviteEndpoints = API.v1.post(
 	async function action() {
 		const { roomId, action } = this.bodyParams;
 
-		try {
+			try {
 			await FederationMatrix.handleInvite(roomId, this.userId, action);
 			return API.v1.success();
 		} catch (error) {
 			return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
 		}
-	},
-);
+	
+		},
+	)
+	.post(
+		'rooms.favorite',
+		{
+			authRequired: true,
+			body: isRoomsFavoriteProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { favorite } = this.bodyParams;
 
-type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> & ExtractRoutesFromAPI<typeof roomInviteEndpoints>;
+			if (!this.bodyParams.hasOwnProperty('favorite')) {
+				return API.v1.failure("The 'favorite' param is required");
+			}
+
+			const room = await findRoomByIdOrName({ params: this.bodyParams });
+
+			await toggleFavoriteMethod(this.userId, room._id, favorite);
+
+			return API.v1.success();
+		},
+	);
+
+type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
