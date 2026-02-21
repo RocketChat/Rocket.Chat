@@ -102,14 +102,14 @@ function NewImportPage() {
 	};
 
 	const handleFileUploadChipClick = (file: File) => () => {
-		setFiles((files) => {
-			const filteredFiles = files.filter((_file) => _file !== file);
-			if (filteredFiles.length === 0 && fileInputRef.current) {
-				fileInputRef.current.value = '';
-			}
-			return filteredFiles;
-		});
+		setFiles((files) => files.filter((_file) => _file !== file));
 	};
+
+	useEffect(() => {
+		if (files.length === 0 && fileInputRef.current) {
+			fileInputRef.current.value = '';
+		}
+	}, [files]);
 
 	const handleFileUploadImportButtonClick = async () => {
 		if (!importerKey) {
