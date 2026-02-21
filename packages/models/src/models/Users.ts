@@ -585,10 +585,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<Pick<IUser, 'roles' | '_id'>>(query, { projection: { roles: 1 } });
 	}
 
-	getDistinctFederationDomains() {
-		return this.col.distinct('federation.origin', { federation: { $exists: true } });
-	}
-
 	async getNextLeastBusyAgent(
 		department?: string,
 		ignoreAgentId?: string,

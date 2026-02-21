@@ -2,9 +2,8 @@ import { writeAll } from 'https://deno.land/std@0.216.0/io/write_all.ts';
 
 import * as jsonrpc from 'jsonrpc-lite';
 
-import { AppObjectRegistry } from '../AppObjectRegistry.ts';
-import type { Logger } from './logger.ts';
 import { encoder } from './codec.ts';
+import { RequestContext } from './requestContext.ts';
 
 export type RequestDescriptor = Pick<jsonrpc.RequestObject, 'method' | 'params'>;
 
@@ -138,8 +137,8 @@ export async function sendMethodNotFound(id: jsonrpc.ID): Promise<void> {
 	await Queue.enqueue(rpc);
 }
 
-export async function errorResponse({ error: { message, code = -32000, data = {} }, id }: ErrorResponseDescriptor): Promise<void> {
-	const logger = AppObjectRegistry.get<Logger>('logger');
+export async function errorResponse({ error: { message, code = -32000, data = {} }, id }: ErrorResponseDescriptor, req?: RequestContext): Promise<void> {
+	const { logger } = req?.context || {};
 
 	if (logger?.hasEntries()) {
 		data.logs = logger.getLogs();
@@ -150,11 +149,11 @@ export async function errorResponse({ error: { message, code = -32000, data = {}
 	await Queue.enqueue(rpc);
 }
 
-export async function successResponse({ id, result }: SuccessResponseDescriptor): Promise<void> {
+export async function successResponse({ id, result }: SuccessResponseDescriptor, req: RequestContext): Promise<void> {
 	const payload = { value: result } as Record<string, unknown>;
-	const logger = AppObjectRegistry.get<Logger>('logger');
+	const { logger } = req.context;
 
-	if (logger?.hasEntries()) {
+	if (logger.hasEntries()) {
 		payload.logs = logger.getLogs();
 	}
 
