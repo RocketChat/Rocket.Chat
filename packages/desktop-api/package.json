@@ -17,7 +17,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",
-		"eslint": "~8.45.0",
+		"eslint": "~8.57.1",
 		"rimraf": "~6.0.1",
 		"typescript": "~5.9.3"
 	},

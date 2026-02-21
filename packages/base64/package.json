@@ -17,7 +17,7 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"eslint": "~8.45.0",
+		"eslint": "~8.57.1",
 		"jest": "~30.2.0",
 		"typescript": "~5.9.3"
 	},
