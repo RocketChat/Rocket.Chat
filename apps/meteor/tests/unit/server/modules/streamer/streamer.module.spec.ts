@@ -62,21 +62,15 @@ describe('Streamer.sendToManySubscriptions', () => {
 		const streamer = createStreamer();
 		const sub = makeSubscription('conn-1');
 
-		let release!: (value: boolean) => void;
-		const gate = new Promise<boolean>((resolve) => {
-			release = resolve;
-		});
-
-		sinon.stub(streamer, 'isEmitAllowed').returns(gate as any);
+		const isEmitAllowed = sinon.stub(streamer, 'isEmitAllowed').resolves(true);
 
 		const sendPromise = streamer.sendToManySubscriptions(new Set([sub.entry]), undefined, 'event', [], 'test-msg');
 
-		await Promise.resolve();
 		expect(sub.send.called).to.equal(false);
 
-		release(true);
 		await sendPromise;
 
+		expect(isEmitAllowed.calledOnceWithExactly(sub.entry.subscription, 'event')).to.equal(true);
 		expect(sub.send.calledOnceWithExactly('test-msg')).to.equal(true);
 	});
 
