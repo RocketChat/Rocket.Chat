@@ -11,19 +11,12 @@ type UnhideRoomProps = {
 	type: RoomType;
 };
 
-const OPEN_ENDPOINTS_BY_ROOM_TYPE = {
-	p: '/v1/groups.open', // private
-	c: '/v1/channels.open', // channel
-	d: '/v1/im.open', // direct message
-	l: '/v1/channels.open', // livechat
-} as const;
-
 export const useUnhideRoomAction = ({ rid: roomId, type }: UnhideRoomProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const userId = useUserId();
 
-	const openRoomEndpoint = useEndpoint('POST', OPEN_ENDPOINTS_BY_ROOM_TYPE[type]);
+	const openRoomEndpoint = useEndpoint('POST', '/v1/rooms.open');
 
 	const unhideRoom = useMutation({
 		mutationFn: () => openRoomEndpoint({ roomId }),
