@@ -33,7 +33,7 @@ yarn turbo run build --filter='./packages/*' --filter='./ee/packages/*'
 # Step 2: Build Vite frontend
 log_info "Building Vite frontend..."
 cd apps/meteor
-ROOT_URL=http://localhost:3000/ npx vite build
+ROOT_URL=http://localhost:3000/ npx vite build --outDir /tmp/build/dist
 cd ../..
 
 # Step 3: Build Meteor backend (with caching)
@@ -65,8 +65,8 @@ if [ ! -d "$BUILD_DIR/bundle" ]; then
   exit 1
 fi
 
-if [ ! -d "apps/meteor/dist" ]; then
-  log_error "Vite build output not found at apps/meteor/dist"
+if [ ! -d "/tmp/build/dist" ]; then
+  log_error "Vite build output not found at /tmp/build/dist"
   exit 1
 fi
 
