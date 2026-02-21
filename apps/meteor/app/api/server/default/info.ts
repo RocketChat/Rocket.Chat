@@ -3,7 +3,7 @@ import { getServerInfo } from '../lib/getServerInfo';
 
 API.default.addRoute(
 	'info',
-	{ authOrAnonRequired: true },
+	{ authRequired: false },
 	{
 		async get() {
 			return API.v1.success(await getServerInfo(this.userId));

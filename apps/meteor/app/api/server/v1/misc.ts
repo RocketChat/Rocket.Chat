@@ -189,7 +189,7 @@ const cacheInvalid = 60000; // 1 minute
 API.v1.addRoute(
 	'shield.svg',
 	{
-		authOrAnonRequired: true,
+		authRequired: false,
 		rateLimiterOptions: {
 			numRequestsAllowed: 60,
 			intervalTimeInMS: 60000,
