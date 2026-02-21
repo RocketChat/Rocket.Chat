@@ -59,9 +59,8 @@ services:
 
   frontend:
     build:
-      # FIX: Context relative to the meteor app location
-      context: ${GITHUB_WORKSPACE:-}/apps/meteor
-      dockerfile: .docker/Dockerfile.frontend
+      context: /tmp/build
+      dockerfile: ${GITHUB_WORKSPACE:-}/apps/meteor/.docker/Dockerfile.frontend
       x-bake:
         platforms:
           - linux/amd64
