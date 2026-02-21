@@ -87,6 +87,24 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		},
 	},
 	{
+		label: 'Ordered_list' as TranslationKey,
+		icon: 'list-numbers',
+		prompt: (composer: ComposerAPI) => {
+			const before = composer.text.slice(0, composer.selection.start);
+			const prefix = before.length > 0 && !before.endsWith('\n') ? '\n1. ' : '1. ';
+			composer.insertText(prefix);
+		},
+	},
+	{
+		label: 'Unordered_list' as TranslationKey,
+		icon: 'list-bullets',
+		prompt: (composer: ComposerAPI) => {
+			const before = composer.text.slice(0, composer.selection.start);
+			const prefix = before.length > 0 && !before.endsWith('\n') ? '\n- ' : '- ';
+			composer.insertText(prefix);
+		},
+	},
+	{
 		label: 'KaTeX' as TranslationKey,
 		icon: 'katex',
 		text: () => {
