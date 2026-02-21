@@ -150,17 +150,6 @@ jobs:
         run: |
           ROOT_URL=http://localhost:3000/ npx vite build --outDir /tmp/build/dist
 
-      - name: Verify Vite build output
-        working-directory: ./apps/meteor
-        run: |
-          echo "Checking Vite build output..."
-          ls -la dist/
-          if [ ! -f dist/index.html ]; then
-            echo "ERROR: dist/index.html not found!"
-            exit 1
-          fi
-          echo "Vite build verified - index.html exists"
-
       - name: Install Meteor
         shell: bash
         run: |
