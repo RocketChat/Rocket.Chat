@@ -10,7 +10,6 @@ type DefaultItemsProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;
-	enableEmojis: boolean;
 };
 
 const DefaultItems = ({ message, room, subscription }: DefaultItemsProps) => {
