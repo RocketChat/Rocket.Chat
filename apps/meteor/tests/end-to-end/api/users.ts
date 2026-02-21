@@ -886,6 +886,25 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
+		it('should return an error when logged in user tries to register', (done) => {
+			void request
+				.post(api('users.register'))
+				.set(credentials)
+				.send({
+					email: `newuser${Date.now()}@email.com`,
+					name: 'New User',
+					username: `newuser${Date.now()}`,
+					pass: 'P@ssw0rd1234.!',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.equal('Logged in users can not register again.');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/users.info]', () => {
