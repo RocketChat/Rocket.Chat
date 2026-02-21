@@ -1,6 +1,5 @@
 import { Meteor } from './meteor.ts';
 import { OAuth, type OAuthConfiguration } from './oauth.ts';
-import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 import { ServiceConfiguration } from './service-configuration.ts';
 import { hasOwn } from './utils/hasOwn.ts';
@@ -50,8 +49,4 @@ export const requestCredential = (
 export const Twitter = {
 	validParamsAuthenticate,
 	requestCredential,
-};
-
-Package['twitter-oauth'] = {
-	Twitter,
 };

@@ -1,7 +1,6 @@
 import { Base64 } from './base64.ts';
 import { check } from './check.ts';
 import { Meteor } from './meteor.ts';
-import { Package } from './package-registry.ts';
 import { Reload } from './reload.ts';
 import { _constructUrl } from './url.ts';
 
@@ -241,9 +240,3 @@ export const OAuth = {
 		return secret;
 	},
 };
-
-// -----------------------------------------------------------------------------
-// Legacy Registration
-// -----------------------------------------------------------------------------
-
-Package.oauth = { OAuth };

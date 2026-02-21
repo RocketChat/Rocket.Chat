@@ -168,8 +168,6 @@ export class AccountsClient {
 			}
 		}
 
-		// Currently this is read directly by packages like accounts-password
-		// and accounts-ui-unstyled.
 		this._options = options || {};
 
 		// Note that setting this.connection = null causes this.users to be a

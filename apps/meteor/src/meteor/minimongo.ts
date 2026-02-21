@@ -7,10 +7,12 @@ import { OrderedDict } from './ordered-dict';
 import { Random } from './random';
 import { Tracker } from './tracker';
 
-export const _selectorIsId = (selector: unknown): selector is string | number | ObjectID =>
+type IdSelector = string | number | ObjectID;
+
+export const _selectorIsId = (selector: unknown): selector is IdSelector =>
 	typeof selector === 'number' || typeof selector === 'string' || selector instanceof ObjectID;
 
-export const _selectorIsIdPerhapsAsObject = (selector: string | number | ObjectID | { _id: string | number | ObjectID }) =>
+export const _selectorIsIdPerhapsAsObject = (selector: unknown) =>
 	_selectorIsId(selector) || (_selectorIsId(selector && selector._id) && Object.keys(selector).length === 1);
 
 // --------------------------------------------------------------------------
@@ -21,21 +23,7 @@ function getAsyncMethodName(method) {
 	return `${method.replace('_', '')}Async`;
 }
 
-const ASYNC_COLLECTION_METHODS = [
-	'_createCappedCollection',
-	'dropCollection',
-	'dropIndex',
-	'createIndex',
-	'findOne',
-	'insert',
-	'remove',
-	'update',
-	'upsert',
-];
-
 const ASYNC_CURSOR_METHODS = ['count', 'fetch', 'forEach', 'map'];
-
-const CLIENT_ONLY_METHODS = ['findOne', 'insert', 'remove', 'update', 'upsert'];
 
 // --------------------------------------------------------------------------
 // observe_handle.js

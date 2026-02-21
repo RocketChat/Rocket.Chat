@@ -1,6 +1,5 @@
 import { EJSON } from './ejson.ts';
 import { Meteor } from './meteor.ts';
-import { Package } from './package-registry.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 import { isEmptyObject } from './utils/isEmptyObject.ts';
 import { keys } from './utils/keys.ts';
@@ -38,34 +37,34 @@ const diffObjects = <TLeft extends Record<PropertyKey, any>, TRight extends Reco
 	}
 };
 
-// const diffMaps = (
-// 	left: Map<any, any>,
-// 	right: Map<any, any>,
-// 	callbacks: {
-// 		leftOnly?: (key: string, value: any) => void;
-// 		rightOnly?: (key: string, value: any) => void;
-// 		both?: (key: string, leftValue: any, rightValue: any) => void;
-// 	},
-// ) => {
-// 	left.forEach((leftValue, key) => {
-// 		if (right.has(key)) {
-// 			if (callbacks.both) {
-// 				callbacks.both(key, leftValue, right.get(key));
-// 			}
-// 		} else if (callbacks.leftOnly) {
-// 			callbacks.leftOnly(key, leftValue);
-// 		}
-// 	});
+const diffMaps = (
+	left: Map<any, any>,
+	right: Map<any, any>,
+	callbacks: {
+		leftOnly?: (key: string, value: any) => void;
+		rightOnly?: (key: string, value: any) => void;
+		both?: (key: string, leftValue: any, rightValue: any) => void;
+	},
+) => {
+	left.forEach((leftValue, key) => {
+		if (right.has(key)) {
+			if (callbacks.both) {
+				callbacks.both(key, leftValue, right.get(key));
+			}
+		} else if (callbacks.leftOnly) {
+			callbacks.leftOnly(key, leftValue);
+		}
+	});
 
-// 	if (callbacks.rightOnly) {
-// 		const { rightOnly } = callbacks;
-// 		right.forEach((rightValue, key) => {
-// 			if (!left.has(key)) {
-// 				rightOnly(key, rightValue);
-// 			}
-// 		});
-// 	}
-// };
+	if (callbacks.rightOnly) {
+		const { rightOnly } = callbacks;
+		right.forEach((rightValue, key) => {
+			if (!left.has(key)) {
+				rightOnly(key, rightValue);
+			}
+		});
+	}
+};
 
 const makeChangedFields = <T extends Record<PropertyKey, any>>(newDoc: T, oldDoc: T) => {
 	const fields = Object.create(null);
@@ -281,18 +280,12 @@ const applyChanges = (doc: any, changeFields: any) => {
 	});
 };
 
-const DiffSequence = {
+export const DiffSequence = {
 	diffQueryChanges,
 	diffQueryUnorderedChanges,
 	diffQueryOrderedChanges,
 	diffObjects,
-	// diffMaps,
+	diffMaps,
 	makeChangedFields,
 	applyChanges,
 };
-
-Package['diff-sequence'] = {
-	DiffSequence,
-};
-
-export { DiffSequence };

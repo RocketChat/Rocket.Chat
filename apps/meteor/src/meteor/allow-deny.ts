@@ -2,7 +2,6 @@ import { check, Match } from './check.ts';
 import { EJSON } from './ejson.ts';
 import { MeteorError } from './meteor.ts';
 import { _selectorIsIdPerhapsAsObject } from './minimongo.ts';
-import { Package } from './package-registry.ts';
 import { isKey } from './utils/isKey.ts';
 
 // --- Types ---
@@ -130,7 +129,7 @@ const validateUpdateMutator = (mutator: MongoDoc): string[] => {
  * A class containing the logic for Allow/Deny security.
  * NOTE: Methods here are copied to CollectionPrototype below to ensure enumerability.
  */
-class RestrictedCollectionMixin {
+export class RestrictedCollectionMixin {
 	// These properties are expected to exist on the instance mixing this class in.
 	// We declare them for TypeScript, but they are initialized by the host Collection.
 	public _name?: string;
@@ -175,8 +174,7 @@ class RestrictedCollectionMixin {
 	}
 
 	public _isInsecure(): boolean {
-		if (this._insecure === undefined) return !!Package.insecure;
-		return this._insecure;
+		return !!this._insecure;
 	}
 
 	public _updateFetch(fields?: string[]): void {
@@ -436,7 +434,7 @@ class RestrictedCollectionMixin {
 }
 
 // --- MIXIN EXPORT LOGIC ---
-// To support standard Object.assign/_.extend mixin patterns used by Meteor legacy packages,
+// To support standard Object.assign/_.extend mixin patterns used by Meteor legacy pkgs,
 // we must extract the class methods into a plain, enumerable object.
 const CollectionPrototype: Record<string, any> = {};
 const propertyNames = Object.getOwnPropertyNames(RestrictedCollectionMixin.prototype);
@@ -449,12 +447,6 @@ for (const name of propertyNames) {
 	}
 }
 
-const AllowDeny = {
+export const AllowDeny = {
 	CollectionPrototype,
-};
-
-export { AllowDeny, RestrictedCollectionMixin };
-
-Package['allow-deny'] = {
-	AllowDeny,
 };

@@ -292,8 +292,6 @@ export class ReactiveDict {
 	}
 
 	static _loadMigratedDict(_dictName: string) {
-		// Logic to retrieve data from Reload package
-		// This is usually handled by the framework
 		return null;
 	}
 }
