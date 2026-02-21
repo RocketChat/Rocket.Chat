@@ -105,7 +105,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 		roomId: room._id,
 		uidsExclude: [message.u._id],
 		uidsInclude: userIds,
-		onlyRead: !toAll && !toHere && !unreadAllMessages,
+		onlyRead: !toAll && !toHere && !unreadAllMessages && room.t !== 'd',
 	}).toArray();
 
 	// Give priority to user mentions over group mentions
@@ -132,7 +132,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 			{
 				...sub,
 				alert: true,
-				open: true,
+			//	open: true,
 				...(shouldIncUnread && { unread: sub.unread + 1 }),
 				...(hasUserMention && { userMentions: sub.userMentions + 1 }),
 				...((toAll || toHere) && { groupMentions: sub.groupMentions + 1 }),
