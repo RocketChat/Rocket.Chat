@@ -388,13 +388,13 @@ describe('Streamer.sendToManySubscriptions', () => {
 
 			streamer.isEmitAllowed = jest.fn(async () => true);
 
-			// Should not throw
 			await expect(
 				streamer.sendToManySubscriptions(mockSubscriptions, undefined, 'test-event', [], 'test-message'),
 			).resolves.toBeUndefined();
 
 			expect(streamer.isEmitAllowed).toHaveBeenCalled();
-			// send should not be called on null socket
+			// Optional chaining (socket?.send) prevents TypeError — no error should be logged
+			expect(SystemLogger.error).not.toHaveBeenCalled();
 		});
 
 		it('should handle undefined socket gracefully', async () => {
@@ -419,6 +419,8 @@ describe('Streamer.sendToManySubscriptions', () => {
 			).resolves.toBeUndefined();
 
 			expect(streamer.isEmitAllowed).toHaveBeenCalled();
+			// Optional chaining (socket?.send) prevents TypeError — no error should be logged
+			expect(SystemLogger.error).not.toHaveBeenCalled();
 		});
 
 		it('should process multiple subscriptions in order', async () => {
