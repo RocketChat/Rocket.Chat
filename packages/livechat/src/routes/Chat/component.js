@@ -148,21 +148,21 @@ class Chat extends Component {
 			.catch((err) => console.log("feedback err", err));
 	};
 
-	onForwardToCrm = () => {
-		const { user: _id, token } = store.state;
-		const { room } = this.props;
-		fetch(
-			`${host}/api/v1/forward_room_to_crm?room_id=${room._id}&user_token=${token}`,
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}
-		)
-			.then((res) => console.log("forward_room_to_crm res", res))
-			.catch((err) => console.log("forward_room_to_crm err", err));
-	};
+	// onForwardToCrm = () => {
+	// 	const { user: _id, token } = store.state;
+	// 	const { room } = this.props;
+	// 	fetch(
+	// 		`${host}/api/v1/forward_room_to_crm?room_id=${room._id}&user_token=${token}`,
+	// 		{
+	// 			method: "POST",
+	// 			headers: {
+	// 				"Content-Type": "application/json",
+	// 			},
+	// 		}
+	// 	)
+	// 		.then((res) => console.log("forward_room_to_crm res", res))
+	// 		.catch((err) => console.log("forward_room_to_crm err", err));
+	// };
 
 	render = (
 		{
@@ -324,7 +324,7 @@ class Chat extends Component {
 						</div>
 						ثبت بازخورد
 					</span>
-					{this.props?.room?.servedBy?.username === "bot" && (
+					{/* {this.props?.room?.servedBy?.username === "bot" && (
 						<span
 							onClick={this.onForwardToCrm}
 							style={{
@@ -354,7 +354,7 @@ class Chat extends Component {
 								</svg>
 							</div>
 						</span>
-					)}
+					)} */}
 				</div>
 
 
