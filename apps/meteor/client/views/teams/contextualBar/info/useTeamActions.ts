@@ -17,7 +17,6 @@ export const useTeamActions = (room: IRoom, { onClickEdit }: GenProps) => {
 	const { t } = useTranslation();
 	const subscription = useUserSubscription(room._id);
 	const isRoomHidden = subscription?.open === false;
-	
 	const hideTeam = useHideRoomAction({ rid: room._id, type: room.t, name: room.name ?? '' });
 	const unhideTeam = useUnhideRoomAction({ rid: room._id, type: room.t });
 	const convertToChannel = useConvertToChannel(room);
