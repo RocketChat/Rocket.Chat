@@ -5,6 +5,7 @@ import { defineConfig, esmExternalRequirePlugin, type BuildEnvironmentOptions } 
 
 import info from './vite/plugins/info';
 import meteor from './vite/plugins/meteor';
+import nginx from './vite/plugins/nginx';
 import typia from './vite/plugins/typia';
 
 const build = {
@@ -54,6 +55,7 @@ export default defineConfig(async () => {
 				exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
 			}),
 			typia(),
+			nginx(),
 			process.env.VITE_INSPECT === 'true' ? await import('vite-plugin-inspect').then(({ default: inspect }) => inspect()) : null,
 		],
 		build,
@@ -101,17 +103,6 @@ export default defineConfig(async () => {
 				'@rocket.chat/media-signaling': path.resolve('../../packages/media-signaling/src/index.ts'),
 				// Rocket.Chat Enterprise Packages
 				'@rocket.chat/ui-theming': path.resolve('../../ee/packages/ui-theming/src/index.ts'),
-				// Fuselage packages used in the Meteor app
-				// '@rocket.chat/fuselage-hooks': path.resolve('../../../fuselage/packages/fuselage-hooks/src/index.ts'),
-				// '@rocket.chat/layout': path.resolve('../../../fuselage/packages/layout/src/index.ts'),
-				// '@rocket.chat/logo': path.resolve('../../../fuselage/packages/logo/src/index.ts'),
-				// '@rocket.chat/onboarding-ui': path.resolve('../../../fuselage/packages/onboarding-ui/src/index.ts'),
-				// '@rocket.chat/styled': path.resolve('../../../fuselage/packages/styled/src/index.ts'),
-				// '@rocket.chat/css-in-js': path.resolve('../../../fuselage/packages/css-in-js/src/index.ts'),
-				// '@rocket.chat/fuselage': path.resolve('../../../fuselage/packages/fuselage/src/index.ts'),
-				// '@rocket.chat/fuselage-tokens': path.resolve('../../../fuselage/packages/fuselage-tokens'),
-				// '@rocket.chat/fuselage-tokens/breakpoints.mjs': path.resolve('../../../fuselage/packages/fuselage-tokens/breakpoints.mjs'),
-				// '@rocket.chat/fuselage-tokens/breakpoints.scss': path.resolve('../../../fuselage/packages/fuselage-tokens/breakpoints.scss'),
 			},
 		},
 		server: {
@@ -119,7 +110,7 @@ export default defineConfig(async () => {
 			origin: ROOT_URL.origin,
 			allowedHosts: [ROOT_URL.hostname, 's3.amazonaws.com'],
 			watch: {
-				ignored: ['tests/**'],
+				ignored: ['**/tests/**'],
 			},
 			proxy: {
 				'/api': { target: ROOT_URL.origin, changeOrigin: true },
@@ -141,14 +132,12 @@ export default defineConfig(async () => {
 				'/readyz': { target: ROOT_URL.origin, changeOrigin: true },
 				'/requestSeats': { target: ROOT_URL.origin, changeOrigin: true },
 				'/data-export': { target: ROOT_URL.origin, changeOrigin: true },
-				// '/simplesaml': { target: ROOT_URL.origin, changeOrigin: true },
 				'/_saml': { target: ROOT_URL.origin, changeOrigin: true },
 				'/meteor_runtime_config.js': { target: ROOT_URL.origin, changeOrigin: true, followRedirects: true },
 
 				'/file-upload': {
 					target: ROOT_URL.origin,
 					changeOrigin: true,
-					// cookieDomainRewrite: '',
 					configure: (proxy) => {
 						proxy.on('proxyReq', (proxyReq) => {
 							proxyReq.setHeader('Host', ROOT_URL.hostname);

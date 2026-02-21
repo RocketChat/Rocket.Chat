@@ -148,7 +148,7 @@ jobs:
       - name: Build Vite frontend
         working-directory: ./apps/meteor
         run: |
-          ROOT_URL=http://localhost:3000/ npx vite build
+          ROOT_URL=http://localhost:3000/ npx vite build --outDir /tmp/build/dist
 
       - name: Verify Vite build output
         working-directory: ./apps/meteor
