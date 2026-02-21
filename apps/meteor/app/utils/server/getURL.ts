@@ -13,7 +13,7 @@ export const getURL = function (
 	cloudDeepLinkUrl?: string,
 ): string {
 	const cdnPrefix = settings.get<string>('CDN_PREFIX') || '';
-	const siteUrl = settings.get<string>('Site_Url') || '';
+	const siteUrl = settings.get<string>('Site_Url') || process.env.ROOT_URL || '';
 
 	return getURLWithoutSettings(path, params, cdnPrefix, siteUrl, cloudDeepLinkUrl);
 };
