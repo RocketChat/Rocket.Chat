@@ -154,14 +154,17 @@ const registerUser = async (
 		name?: string;
 		pass?: string;
 	} = {},
-	overrideCredentials = credentials,
+	overrideCredentials: Credentials | null = credentials,
 ) => {
 	const username = userData.username || `user.test.${Date.now()}`;
 	const email = userData.email || `${username}@rocket.chat`;
-	const result = await request
-		.post(api('users.register'))
-		.set(overrideCredentials)
-		.send({ email, name: username, username, pass: password, ...userData });
+
+	const req = request.post(api('users.register'));
+
+	if (overrideCredentials) {
+		req.set(overrideCredentials);
+	}
+	const result = await req.send({ email, name: username, username, pass: password, ...userData });
 
 	return result.body.user;
 };
@@ -3358,12 +3361,15 @@ describe('[Users]', () => {
 		let userCredentials: Credentials;
 
 		before(async () => {
-			targetUser = await registerUser({
-				email: `${testUsername}.@test.com`,
-				username: `${testUsername}test`,
-				name: testUsername,
-				pass: password,
-			});
+			targetUser = await registerUser(
+				{
+					email: `${testUsername}.@test.com`,
+					username: `${testUsername}test`,
+					name: testUsername,
+					pass: password,
+				},
+				null,
+			);
 			userCredentials = await login(targetUser.username, password);
 		});
 
@@ -3388,7 +3394,7 @@ describe('[Users]', () => {
 		let userCredentials: Credentials;
 
 		before(async () => {
-			targetUser = await registerUser();
+			targetUser = await registerUser(undefined, null);
 			userCredentials = await login(targetUser.username, password);
 		});
 
@@ -3456,7 +3462,7 @@ describe('[Users]', () => {
 		let userCredentials: Credentials;
 
 		before(async () => {
-			targetUser = await registerUser();
+			targetUser = await registerUser(undefined, null);
 			userCredentials = await login(targetUser.username, password);
 		});
 
@@ -3634,7 +3640,7 @@ describe('[Users]', () => {
 			let targetUser: TestUser<IUser>;
 			let room: IRoom;
 			beforeEach(async () => {
-				targetUser = await registerUser();
+				targetUser = await registerUser(undefined, null);
 				room = (
 					await createRoom({
 						type: 'c',
