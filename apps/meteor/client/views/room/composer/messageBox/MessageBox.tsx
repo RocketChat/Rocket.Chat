@@ -159,7 +159,7 @@ const MessageBox = ({
 	});
 
 	const handleSendMessage = useEffectEvent(() => {
-		const text = (chat.composer?.text ?? '').replace(/\n(?:\d+\.\s*|-\s*)$/, '');
+		const text = (chat.composer?.text ?? '').replace(/\n(?:\d+\.\s+|-\s+)$/, '');
 		chat.composer?.clear();
 		popup.clear();
 
