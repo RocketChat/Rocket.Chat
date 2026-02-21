@@ -1123,6 +1123,7 @@ export const roomEndpoints = API.v1
 					properties: {
 						success: {
 							type: 'boolean',
+							enum: [true],
 							description: 'Indicates if the request was successful.',
 						},
 					},
