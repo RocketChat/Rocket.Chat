@@ -76,9 +76,23 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 								<Box mbe={4} wordBreak='break-word' style={{ whiteSpace: 'normal' }}>
 									{t('User_status_disabled')}
 								</Box>
-								<Box is='a' color='info' onClick={handleStatusDisabledModal}>
-									{t('Learn_more')}
-								</Box>
+							<Box
+								is='button'
+								type='button'
+								color='info'
+								onClick={handleStatusDisabledModal}
+								style={{
+									background: 'none',
+									border: 'none',
+									color: 'inherit',
+									textDecoration: 'underline',
+									cursor: 'pointer',
+									padding: 0,
+									font: 'inherit',
+								}}
+							>
+								{t('Learn_more')}
+							</Box>
 							</Box>
 						),
 					},
