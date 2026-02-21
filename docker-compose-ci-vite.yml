@@ -66,6 +66,12 @@ services:
           - linux/amd64
           - linux/arm64
     image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat-frontend:${DOCKER_TAG}
+    environment:
+      - VITE_TEST_MODE=true
+      - TEST_MODE=true
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'TRANSPORTER=${TRANSPORTER:-}'
+      - MOLECULER_LOG_LEVEL=info
     depends_on:
       rocketchat:
         condition: service_healthy
