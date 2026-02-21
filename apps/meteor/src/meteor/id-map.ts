@@ -1,5 +1,4 @@
 import { EJSON } from './ejson.ts';
-import { Package } from './package-registry.ts';
 
 export class IdMap<TId = unknown, TValue = unknown> {
 	_map = new Map<string, TValue>();
@@ -90,7 +89,3 @@ export class IdMap<TId = unknown, TValue = unknown> {
 		return clone;
 	}
 }
-
-Package['id-map'] = {
-	IdMap,
-};

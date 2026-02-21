@@ -1,11 +1,6 @@
 import { OAuth } from './oauth.ts';
-import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 import { ServiceConfiguration } from './service-configuration.ts';
-
-// -----------------------------------------------------------------------------
-// Types
-// -----------------------------------------------------------------------------
 
 type GoogleOptions = {
 	requestPermissions?: string[];
@@ -21,10 +16,6 @@ type GoogleOptions = {
 
 type CredentialRequestCompleteCallback = (error?: Error | unknown) => void;
 
-// -----------------------------------------------------------------------------
-// Constants
-// -----------------------------------------------------------------------------
-
 const ILLEGAL_PARAMETERS: Record<string, boolean> = {
 	response_type: true,
 	client_id: true,
@@ -32,10 +23,6 @@ const ILLEGAL_PARAMETERS: Record<string, boolean> = {
 	redirect_uri: true,
 	state: true,
 };
-
-// -----------------------------------------------------------------------------
-// Google OAuth Implementation
-// -----------------------------------------------------------------------------
 
 export const Google = {
 	requestCredential(
@@ -124,9 +111,3 @@ export const Google = {
 		});
 	},
 };
-
-// -----------------------------------------------------------------------------
-// Legacy Registration
-// -----------------------------------------------------------------------------
-
-Package['google-oauth'] = { Google };

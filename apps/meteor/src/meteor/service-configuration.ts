@@ -1,6 +1,5 @@
 import { Accounts } from './accounts-base.ts';
 import { Collection } from './mongo.ts';
-import { Package } from './package-registry.ts';
 
 export class ConfigError extends Error {
 	constructor(serviceName?: string) {
@@ -25,8 +24,4 @@ export const configurations = new Collection('meteor_accounts_loginServiceConfig
 export const ServiceConfiguration = {
 	configurations,
 	ConfigError,
-};
-
-Package['service-configuration'] = {
-	ServiceConfiguration,
 };

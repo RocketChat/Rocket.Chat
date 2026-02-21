@@ -5,7 +5,6 @@ import { EJSON } from './ejson.ts';
 import { Meteor } from './meteor.ts';
 import { LocalCollection } from './minimongo.ts';
 import { ObjectID } from './mongo-id.ts';
-import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 
 class LocalCollectionDriver {
@@ -69,14 +68,6 @@ export function setupConnection(name: string, options: { connection?: Connection
 export function setupDriver(_name: string, _connection: Connection | null, options: { _driver?: any }): LocalCollectionDriver {
 	if (options._driver) return options._driver;
 	return driver;
-}
-
-export function setupAutopublish(collection: Collection, _name: string, options: { _preventAutopublish?: boolean }): void {
-	if (Package.autopublish && !options._preventAutopublish && collection._connection && collection._connection.publish) {
-		collection._connection.publish(null, () => collection.find(), {
-			is_auto: true,
-		});
-	}
 }
 
 export function setupMutationMethods(collection, name, options) {
@@ -174,7 +165,6 @@ export class Collection {
 		this._name = name;
 		this._settingUpReplicationPromise = this._maybeSetUpReplication(name, options);
 		setupMutationMethods(this, name, options);
-		setupAutopublish(this, name, options);
 		Mongo._collections.set(name, this);
 	}
 

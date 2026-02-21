@@ -1,11 +1,6 @@
 import { OAuth } from './oauth.ts';
-import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 import { ServiceConfiguration } from './service-configuration.ts';
-
-// -----------------------------------------------------------------------------
-// Types
-// -----------------------------------------------------------------------------
 
 type MeteorDeveloperOptions = {
 	developerAccountsServer?: string;
@@ -18,10 +13,6 @@ type MeteorDeveloperOptions = {
 };
 
 type CredentialRequestCompleteCallback = (error?: Error | unknown) => void;
-
-// -----------------------------------------------------------------------------
-// Meteor Developer Accounts Implementation
-// -----------------------------------------------------------------------------
 
 export const MeteorDeveloperAccounts = {
 	_server: 'https://www.meteor.com',
@@ -94,9 +85,3 @@ export const MeteorDeveloperAccounts = {
 		});
 	},
 };
-
-// -----------------------------------------------------------------------------
-// Legacy Registration
-// -----------------------------------------------------------------------------
-
-Package['meteor-developer-oauth'] = { MeteorDeveloperAccounts };

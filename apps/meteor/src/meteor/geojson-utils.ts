@@ -1,7 +1,4 @@
-import { Package } from './package-registry';
-
-// --- Types ---
-export type Position = [number, number]; // [Longitude, Latitude]
+export type Position = [longitude: number, latitude: number];
 
 export type Point = {
 	type: 'Point';
@@ -20,10 +17,7 @@ export type Polygon = {
 
 export type Geometry = Point | LineString | Polygon;
 
-// --- Constants ---
 const EARTH_RADIUS_KM = 6371;
-
-// --- Conversions ---
 
 export const numberToRadius = (deg: number): number => (deg * Math.PI) / 180;
 export const numberToDegree = (rad: number): number => (rad * 180) / Math.PI;
@@ -417,6 +411,3 @@ export const GeoJSON = {
 	simplify,
 	destinationPoint,
 };
-
-// Legacy Registry Support
-Package['geojson-utils'] = { GeoJSON };

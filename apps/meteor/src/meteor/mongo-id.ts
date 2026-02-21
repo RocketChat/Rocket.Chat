@@ -1,5 +1,4 @@
 import { EJSON } from './ejson.ts';
-import { Package } from './package-registry.ts';
 import { Random } from './random';
 
 const _looksLikeObjectID = (str: string) => str.length === 24 && /^[0-9a-f]*$/.test(str);
@@ -53,7 +52,7 @@ export class ObjectID {
 		return this.valueOf();
 	}
 
-	static stringify(id: ObjectID | string | object | null | undefined): string {
+	static stringify(id: unknown): string {
 		if (id instanceof ObjectID) {
 			return id.valueOf();
 		}
@@ -93,10 +92,10 @@ export class ObjectID {
 			return undefined;
 		}
 		if (firstChar === '-') {
-			return id.substr(1);
+			return id.slice(1);
 		}
 		if (firstChar === '~') {
-			return JSON.parse(id.substr(1));
+			return JSON.parse(id.slice(1));
 		}
 		if (_looksLikeObjectID(id)) {
 			return new ObjectID(id);
@@ -107,15 +106,9 @@ export class ObjectID {
 
 EJSON.addType('oid', (str) => new ObjectID(str));
 
-const MongoID = {
+export const MongoID = {
 	ObjectID,
 	_looksLikeObjectID,
 	idStringify: ObjectID.stringify,
 	idParse: ObjectID.parse,
 };
-
-Package['mongo-id'] = {
-	MongoID,
-};
-
-export { MongoID };

@@ -6,8 +6,8 @@ import { IdMap } from './id-map.ts';
 import { Meteor } from './meteor.ts';
 import type { LocalCollection } from './minimongo.ts';
 import { ObjectID } from './mongo-id.ts';
-import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
+import { Reload } from './reload.ts';
 import { Retry } from './retry.ts';
 import { ClientStream, type ClientStreamOptions } from './socket-stream-client.ts';
 import { Tracker } from './tracker.ts';
@@ -1023,14 +1023,6 @@ export class Connection {
 
 		this._stream = new ClientStream(url, {
 			ConnectionError,
-			// headers: options.headers,
-			// Used to keep some tests quiet, or for other cases in which
-			// the right thing to do with connection errors is to silently
-			// fail (e.g. sending package usage stats). At some point we
-			// should have a real API for handling client-stream-level
-			// errors.
-			// _dontPrintErrors: options._dontPrintErrors,
-			// npmFayeOptions: options.npmFayeOptions,
 			...options,
 		});
 
@@ -1170,8 +1162,8 @@ export class Connection {
 		this._userIdDeps = new Tracker.Dependency();
 
 		// Block auto-reload while we're waiting for method responses.
-		if (Package.reload && !options.reloadWithOutstanding) {
-			Package.reload.Reload._onMigrate((retry: any) => {
+		if (!options.reloadWithOutstanding) {
+			Reload._onMigrate((retry: any) => {
 				if (!this._readyToMigrate()) {
 					this._retryMigrate = retry;
 					return [false];
@@ -1275,24 +1267,7 @@ export class Connection {
 		return true;
 	}
 
-	/**
-	 * @memberOf Meteor
-	 * @importFromPackage meteor
-	 * @alias Meteor.subscribe
-	 * @summary Subscribe to a record set.  Returns a handle that provides
-	 * `stop()` and `ready()` methods.
-	 * @locus Client
-	 * @param {String} name Name of the subscription.  Matches the name of the
-	 * server's `publish()` call.
-	 * @param {EJSONable} [arg1,arg2...] Optional arguments passed to publisher
-	 * function on server.
-	 * @param {Function|Object} [callbacks] Optional. May include `onStop`
-	 * and `onReady` callbacks. If there is an error, it is passed as an
-	 * argument to `onStop`. If a function is passed instead of an object, it
-	 * is interpreted as an `onReady` callback.
-	 */
 	subscribe(name: string, ...params: any[]) {
-		// const self = this;
 		let callbacks: any = Object.create(null);
 		if (params.length) {
 			const lastParam = params[params.length - 1];
@@ -1441,14 +1416,6 @@ export class Connection {
 		return handle;
 	}
 
-	/**
-	 * @summary Tells if the method call came from a call or a callAsync.
-	 * @alias Meteor.isAsyncCall
-	 * @locus Anywhere
-	 * @memberOf Meteor
-	 * @importFromPackage meteor
-	 * @returns boolean
-	 */
 	isAsyncCall() {
 		return DDP._CurrentMethodInvocation._isCallAsyncMethodRunning();
 	}
@@ -1472,16 +1439,6 @@ export class Connection {
 		return alreadyInSimulation && DDP._CurrentMethodInvocation._isCallAsyncMethodRunning();
 	}
 
-	/**
-	 * @memberOf Meteor
-	 * @importFromPackage meteor
-	 * @alias Meteor.call
-	 * @summary Invokes a method with a sync stub, passing any number of arguments.
-	 * @locus Anywhere
-	 * @param name Name of method to invoke
-	 * @param args Optional method arguments
-	 * @param {Function} [asyncCallback] Optional callback, which is called asynchronously with the error or result after the method is complete. If not provided, the method runs synchronously if possible (see below).
-	 */
 	call(name: string, ...args: [...EJSONable[], (...args: any[]) => any]): any {
 		// if it's a function, the last argument is the result callback,
 		// not a parameter to the remote method.
@@ -1493,11 +1450,6 @@ export class Connection {
 		return this.apply(name, args, undefined);
 	}
 
-	/**
-	 * @summary Invokes a method with an async stub, passing any number of arguments.
-	 * @param name Name of method to invoke
-	 * @param args Optional method arguments
-	 */
 	callAsync(name: string, ...args: EJSONable[]): Promise<any> {
 		if (args.length && typeof args[args.length - 1] === 'function') {
 			throw new Error("Meteor.callAsync() does not accept a callback. You should 'await' the result, or use .then().");
@@ -1506,22 +1458,6 @@ export class Connection {
 		return this.applyAsync(name, args, { returnServerResultPromise: true });
 	}
 
-	/**
-	 * @memberOf Meteor
-	 * @importFromPackage meteor
-	 * @alias Meteor.apply
-	 * @summary Invoke a method passing an array of arguments.
-	 * @locus Anywhere
-	 * @param {String} name Name of method to invoke
-	 * @param {EJSONable[]} args Method arguments
-	 * @param {Object} [options]
-	 * @param {Boolean} options.wait (Client only) If true, don't send this method until all previous method calls have completed, and don't send any subsequent method calls until this one is completed.
-	 * @param {Function} options.onResultReceived (Client only) This callback is invoked with the error or result of the method (just like `asyncCallback`) as soon as the error or result is available. The local cache may not yet reflect the writes performed by the method.
-	 * @param {Boolean} options.noRetry (Client only) if true, don't send this method again on reload, simply call the callback an error with the error code 'invocation-failed'.
-	 * @param {Boolean} options.throwStubExceptions (Client only) If true, exceptions thrown by method stubs will be thrown instead of logged, and the method will not be invoked on the server.
-	 * @param {Boolean} options.returnStubValue (Client only) If true then in cases where we would have otherwise discarded the stub's return value and returned undefined, instead we go ahead and return it. Specifically, this is any time other than when (a) we are already inside a stub or (b) we are in Node and no callback was provided. Currently we require this flag to be explicitly passed to reduce the likelihood that stub return values will be confused with server return values; we may improve this in future.
-	 * @param {Function} [asyncCallback] Optional callback; same semantics as in [`Meteor.call`](#meteor_call).
-	 */
 	apply(
 		name: string,
 		args: any[],
@@ -1559,22 +1495,6 @@ export class Connection {
 		return this._apply(name, stubOptions, args, options, callback);
 	}
 
-	/**
-	 * @memberOf Meteor
-	 * @importFromPackage meteor
-	 * @alias Meteor.applyAsync
-	 * @summary Invoke a method passing an array of arguments.
-	 * @locus Anywhere
-	 * @param {String} name Name of method to invoke
-	 * @param {EJSONable[]} args Method arguments
-	 * @param {Object} [options]
-	 * @param {Boolean} options.wait (Client only) If true, don't send this method until all previous method calls have completed, and don't send any subsequent method calls until this one is completed.
-	 * @param {Function} options.onResultReceived (Client only) This callback is invoked with the error or result of the method (just like `asyncCallback`) as soon as the error or result is available. The local cache may not yet reflect the writes performed by the method.
-	 * @param {Boolean} options.noRetry (Client only) if true, don't send this method again on reload, simply call the callback an error with the error code 'invocation-failed'.
-	 * @param {Boolean} options.throwStubExceptions (Client only) If true, exceptions thrown by method stubs will be thrown instead of logged, and the method will not be invoked on the server.
-	 * @param {Boolean} options.returnStubValue (Client only) If true then in cases where we would have otherwise discarded the stub's return value and returned undefined, instead we go ahead and return it. Specifically, this is any time other than when (a) we are already inside a stub or (b) we are in Node and no callback was provided. Currently we require this flag to be explicitly passed to reduce the likelihood that stub return values will be confused with server return values; we may improve this in future.
-	 * @param {Boolean} options.returnServerResultPromise (Client only) If true, the promise returned by applyAsync will resolve to the server's return value, rather than the stub's return value. This is useful when you want to ensure that the server's return value is used, even if the stub returns a promise. The same behavior as `callAsync`.
-	 */
 	applyAsync(name: string, args: any[], options: any, callback?: ((...args: any[]) => void) | undefined) {
 		const stubPromise = this._applyAsyncStubInvocation(name, args, options);
 
@@ -1612,7 +1532,7 @@ export class Connection {
 				/*
 				 * The code below follows the same logic as the function withValues().
 				 *
-				 * But as the Meteor package is not compiled by ecmascript, it is unable to use newer syntax in the browser,
+				 * But as the Meteor pkg is not compiled by ecmascript, it is unable to use newer syntax in the browser,
 				 * such as, the async/await.
 				 *
 				 * So, to keep supporting old browsers, like IE 11, we're creating the logic one level above.
@@ -1651,10 +1571,6 @@ export class Connection {
 	}
 
 	_apply(name: string, stubCallValue: StubOptions, args: any[], options: any, callback?: ((...args: any[]) => any) | null | undefined) {
-		// const self = this;
-
-		// We were passed 3 arguments. They may be either (name, args, options)
-		// or (name, args, callback)
 		if (!callback && typeof options === 'function') {
 			callback = options;
 			options = Object.create(null);
@@ -1939,37 +1855,14 @@ export class Connection {
 		this._stream._lostConnection(maybeError);
 	}
 
-	/**
-	 * @memberOf Meteor
-	 * @importFromPackage meteor
-	 * @alias Meteor.status
-	 * @summary Get the current connection status. A reactive data source.
-	 * @locus Client
-	 */
 	status() {
 		return this._stream.status();
 	}
 
-	/**
-   * @summary Force an immediate reconnection attempt if the client is not connected to the server.
-
-  This method does nothing if the client is already connected.
-   * @memberOf Meteor
-   * @importFromPackage meteor
-   * @alias Meteor.reconnect
-   * @locus Client
-   */
 	reconnect(...args: any[]) {
 		return this._stream.reconnect(...args);
 	}
 
-	/**
-	 * @memberOf Meteor
-	 * @importFromPackage meteor
-	 * @alias Meteor.disconnect
-	 * @summary Disconnect the client from the server.
-	 * @locus Client
-	 */
 	disconnect(...args: any[]) {
 		return this._stream.disconnect(...args);
 	}
@@ -1978,9 +1871,6 @@ export class Connection {
 		return this._stream.disconnect({ _permanent: true });
 	}
 
-	// /
-	// / Reactive user system
-	// /
 	userId() {
 		if (this._userIdDeps) this._userIdDeps.depend();
 		return this._userId;
@@ -2356,17 +2246,15 @@ const retry = new Retry();
 function onDDPVersionNegotiationFailure(description: string) {
 	Meteor._debug(description);
 
-	if (Package.reload) {
-		const migrationData = Package.reload.Reload._migrationData('livedata') || Object.create(null);
-		let failures = migrationData.DDPVersionNegotiationFailures || 0;
+	const migrationData = Reload._migrationData('livedata') || Object.create(null);
+	let failures = migrationData.DDPVersionNegotiationFailures || 0;
 
-		++failures;
-		Package.reload.Reload._onMigrate('livedata', () => [true, { DDPVersionNegotiationFailures: failures }]);
+	++failures;
+	Reload._onMigrate('livedata', () => [true, { DDPVersionNegotiationFailures: failures }]);
 
-		retry.retryLater(failures, () => {
-			Package.reload.Reload._reload({ immediateMigration: true });
-		});
-	}
+	retry.retryLater(failures, () => {
+		Reload._reload({ immediateMigration: true });
+	});
 }
 
 Meteor.connection = connection;
@@ -2374,5 +2262,3 @@ Meteor.connection = connection;
 ['subscribe', 'methods', 'isAsyncCall', 'call', 'callAsync', 'apply', 'applyAsync', 'status', 'reconnect', 'disconnect'].forEach((name) => {
 	(Meteor as any)[name] = (Meteor.connection as any)[name].bind(Meteor.connection);
 });
-
-Package['ddp-client'] = { DDP };

@@ -1,6 +1,5 @@
 import { EJSON } from './ejson.ts';
 import { Meteor } from './meteor.ts';
-import { Package } from './package-registry.ts';
 import { Random } from './random.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 import { isEmpty } from './utils/isEmpty.ts';
@@ -294,8 +293,4 @@ export const DDPCommon = {
 	MethodInvocation,
 	RandomStream,
 	makeRpcSeed,
-};
-
-Package['ddp-common'] = {
-	DDPCommon,
 };
