@@ -4,7 +4,7 @@ import { cronJobs } from '@rocket.chat/cron';
 import { settings } from '../../app/settings/server';
 import * as dataExport from '../lib/dataExport';
 
-export const userDataDownloadsCron = (): void => {
+export const userDataDownloadsCron = async (): Promise<void> => {
 	const jobName = 'Generate download files for user data';
 	const name = 'UserDataDownload';
 
