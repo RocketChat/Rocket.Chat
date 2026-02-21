@@ -6,7 +6,10 @@ import { defineConfig, esmExternalRequirePlugin, type BuildEnvironmentOptions } 
 import info from './vite/plugins/info';
 import meteor from './vite/plugins/meteor';
 import nginx from './vite/plugins/nginx';
-import typia from './vite/plugins/typia';
+
+process.env.TEST_MODE ??= process.env.VITE_TEST_MODE;
+
+console.log('TEST_MODE:', process.env.TEST_MODE);
 
 const build = {
 	emptyOutDir: true,
@@ -54,11 +57,14 @@ export default defineConfig(async () => {
 			react({
 				exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
 			}),
-			typia(),
 			nginx(),
 			process.env.VITE_INSPECT === 'true' ? await import('vite-plugin-inspect').then(({ default: inspect }) => inspect()) : null,
 		],
 		build,
+		define: {
+			'process.env.TEST_MODE': JSON.stringify(process.env.TEST_MODE),
+			'process.platform': JSON.stringify(process.platform),
+		},
 		resolve: {
 			dedupe: [
 				'@rocket.chat/core-typings',
@@ -77,6 +83,9 @@ export default defineConfig(async () => {
 				'react',
 			],
 			alias: {
+				// Meteor packages
+				'meteor': path.resolve('./src/meteor'),
+				'typia': path.resolve('./src/typia'),
 				// Third-party packages
 				'react-aria': path.resolve('./node_modules/react-aria'),
 				// Rocket.Chat Packages

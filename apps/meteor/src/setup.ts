@@ -1,3 +1,6 @@
+// eslint-disable-next-line spaced-comment
+/// <reference types="vite/client" />
+
 import { Accounts } from './meteor/accounts-base.ts';
 import { registerService, serviceNames, unregisterService } from './meteor/accounts-oauth.ts';
 import { loginWithPassword, _hashPassword } from './meteor/accounts-password.ts';
@@ -23,8 +26,6 @@ const require = (text: string) => {
 };
 
 Object.assign(globalThis, { require });
-
-Object.assign(globalThis, { process: {} });
 
 Object.assign(Accounts, { _hashPassword }, { oauth: { registerService, serviceNames, unregisterService } });
 Object.assign(Meteor, {
