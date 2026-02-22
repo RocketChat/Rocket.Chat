@@ -121,7 +121,7 @@ function ContactTable() {
 			)}
 			{isSuccess && data?.contacts.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable aria-label={t('Omnichannel_Contact_Center_Contacts')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>{data?.contacts.map((contact) => <ContactTableRow key={contact._id} {...contact} />)}</GenericTableBody>
 					</GenericTable>

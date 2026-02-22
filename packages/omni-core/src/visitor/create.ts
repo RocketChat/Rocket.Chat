@@ -107,7 +107,7 @@ export const registerGuest = makeFunction(
 		});
 
 		if (!upsertedLivechatVisitor) {
-			logger.debug(`No visitor found after upsert`);
+			logger.debug('No visitor found after upsert');
 			return null;
 		}
 

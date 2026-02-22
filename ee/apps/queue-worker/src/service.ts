@@ -7,7 +7,7 @@ import polka from 'polka';
 
 const PORT = process.env.PORT || 3038;
 
-(async () => {
+void (async () => {
 	const { db, client } = await getConnection();
 
 	startTracing({ service: 'queue-worker', db: client });

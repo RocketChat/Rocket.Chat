@@ -1,8 +1,8 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import type { StreamerEvents } from '@rocket.chat/ddp-client';
 import { EventEmitter } from 'eventemitter3';
-import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from 'meteor/rocketchat:streamer';
 
+import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from './types';
 import { SystemLogger } from '../../lib/logger/system';
 
 class StreamerCentralClass<N extends keyof StreamerEvents> extends EventEmitter {
@@ -246,8 +246,8 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 
 		try {
 			this.registerMethod(method);
-		} catch (e) {
-			SystemLogger.error(e);
+		} catch (err) {
+			SystemLogger.error({ err });
 		}
 	}
 
