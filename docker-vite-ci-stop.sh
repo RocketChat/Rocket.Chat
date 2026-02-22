@@ -1,1 +1,0 @@
-docker compose -f docker-compose-ci-vite.yml down -v
