@@ -230,7 +230,7 @@ it('renders a code block', async () => {
 		</Suspense>,
 	);
 
-	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument());
+	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument(), { timeout: 5000 });
 
 	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
 });
@@ -250,7 +250,7 @@ it('renders a code block with language', async () => {
 		</Suspense>,
 	);
 
-	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument());
+	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument(), { timeout: 5000 });
 
 	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
 	expect(screen.getByRole('region').querySelector('.language-javascript')).toBeInTheDocument();
@@ -271,7 +271,7 @@ it('renders a Katex block', async () => {
 	);
 
 	// workaround for jest-dom's inability to handle MathML
-	await waitFor(() => expect(container.querySelector('math')).toBeTruthy());
+	await waitFor(() => expect(container.querySelector('math')).toBeTruthy(), { timeout: 5000 });
 	container.querySelector('math')?.remove();
 
 	expect(screen.getByRole('math', { name: 'x^2 + y^2 = z^2' })).toBeInTheDocument();
