@@ -285,30 +285,54 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'rooms.saveNotification',
-	{ authRequired: true },
-	{
-		async post() {
-			const { roomId, notifications } = this.bodyParams;
+const saveNotificationBodySchema = ajv.compile<{
+    roomId: string;
+    notifications: Record<string, unknown>;
+}>({
+    type: 'object',
+    properties: {
+        roomId: { type: 'string' },
+        notifications: {
+            type: 'object',
+            minProperties: 1,
+            additionalProperties: true,
+        },
+    },
+    required: ['roomId', 'notifications'],
+    additionalProperties: false,
+});
 
-			if (!roomId) {
-				return API.v1.failure("The 'roomId' param is required");
-			}
+const saveNotificationResponseSchema = ajv.compile({
+    type: 'object',
+    properties: {
+        success: { type: 'boolean', enum: [true] },
+    },
+    required: ['success'],
+    additionalProperties: false,
+});
 
-			if (!notifications || Object.keys(notifications).length === 0) {
-				return API.v1.failure("The 'notifications' param is required");
-			}
+API.v1.post(
+    'rooms.saveNotification',
+    {
+        authRequired: true,
+        body: saveNotificationBodySchema,
+        response: {
+            200: saveNotificationResponseSchema,
+            400: validateBadRequestErrorResponse,
+            401: validateUnauthorizedErrorResponse,
+        },
+    },
+    async function action() {
+        const { roomId, notifications } = this.bodyParams;
 
-			await Promise.all(
-				Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
-					saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
-				),
-			);
+        await Promise.all(
+            Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
+                saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
+            ),
+        );
 
-			return API.v1.success();
-		},
-	},
+        return API.v1.success();
+    },
 );
 
 API.v1.addRoute(
