@@ -36,7 +36,7 @@ const useMediaStream = (
 						return;
 					}
 
-					node.srcObject = remoteStream;
+					node.srcObject = remoteStream.stream;
 					node.play().catch((error) => {
 						console.error('MediaCall: useMediaStream - Error playing media stream', error);
 					});

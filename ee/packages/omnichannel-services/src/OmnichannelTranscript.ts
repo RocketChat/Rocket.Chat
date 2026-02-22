@@ -33,6 +33,20 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	currentJobNumber = 0;
 
+	siteName = 'Rocket.Chat';
+
+	dateFormat = 'LL';
+
+	timeAndDateFormat = 'LLL';
+
+	serverLanguage = 'en';
+
+	reportingTimezone: 'server' | 'custom' | 'user' = 'server';
+
+	defaultCustomTimezone = 'UTC';
+
+	showSystemMessages = false;
+
 	constructor(
 		loggerConstructor: typeof Logger,
 		// Instance of i18n. Should already be init'd and loaded with the translation files
@@ -42,14 +56,56 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		this.worker = new PdfWorker('chat-transcript');
 		// eslint-disable-next-line new-cap
 		this.log = new loggerConstructor('OmnichannelTranscript');
+
+		this.onSettingChanged('Site_Name', async ({ setting }): Promise<void> => {
+			this.siteName = setting.value as string;
+		});
+		this.onSettingChanged('Message_DateFormat', async ({ setting }): Promise<void> => {
+			this.dateFormat = setting.value as string;
+		});
+		this.onSettingChanged('Message_TimeAndDateFormat', async ({ setting }): Promise<void> => {
+			this.timeAndDateFormat = setting.value as string;
+		});
+		this.onSettingChanged('Language', async ({ setting }): Promise<void> => {
+			this.serverLanguage = setting.value as string;
+		});
+		this.onSettingChanged('Default_Timezone_For_Reporting', async ({ setting }): Promise<void> => {
+			this.reportingTimezone = setting.value as 'server' | 'custom' | 'user';
+		});
+		this.onSettingChanged('Default_Custom_Timezone', async ({ setting }): Promise<void> => {
+			this.defaultCustomTimezone = setting.value as string;
+		});
+		this.onSettingChanged('Livechat_transcript_show_system_messages', async ({ setting }): Promise<void> => {
+			this.showSystemMessages = setting.value as boolean;
+		});
+	}
+
+	override async started(): Promise<void> {
+		// TODO: cache these with mem
+		const [siteName, dateFormat, timeAndDateFormat, serverLanguage, reportingTimezone, defaultCustomTimezone, showSystemMessages] =
+			await Promise.all([
+				settingsService.get<string>('Site_Name'),
+				settingsService.get<string>('Message_DateFormat'),
+				settingsService.get<string>('Message_TimeAndDateFormat'),
+				settingsService.get<string>('Language'),
+				settingsService.get<'server' | 'custom' | 'user'>('Default_Timezone_For_Reporting'),
+				settingsService.get<string>('Default_Custom_Timezone'),
+				settingsService.get<boolean>('Livechat_transcript_show_system_messages'),
+			]);
+
+		this.siteName = siteName;
+		this.dateFormat = dateFormat;
+		this.timeAndDateFormat = timeAndDateFormat;
+		this.serverLanguage = serverLanguage;
+		this.reportingTimezone = reportingTimezone;
+		this.defaultCustomTimezone = defaultCustomTimezone;
+		this.showSystemMessages = showSystemMessages;
 	}
 
 	async getTimezone(agent?: AtLeast<ILivechatAgent, 'utcOffset'> | null): Promise<string> {
-		const reportingTimezone = await settingsService.get<'server' | 'custom' | 'user'>('Default_Timezone_For_Reporting');
-
-		switch (reportingTimezone) {
+		switch (this.reportingTimezone) {
 			case 'custom':
-				return settingsService.get<string>('Default_Custom_Timezone');
+				return this.defaultCustomTimezone;
 			case 'user':
 				if (agent?.utcOffset) {
 					return guessTimezoneFromOffset(agent.utcOffset);
@@ -61,10 +117,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async getMessagesFromRoom({ rid }: { rid: string }): Promise<IMessage[]> {
-		const showSystemMessages = await settingsService.get<boolean>('Livechat_transcript_show_system_messages');
-
 		// Closing message should not appear :)
-		return Messages.findLivechatMessagesWithoutTypes(rid, ['command'], showSystemMessages, {
+		return Messages.findLivechatMessagesWithoutTypes(rid, ['command'], this.showSystemMessages, {
 			sort: { ts: 1 },
 			projection: {
 				_id: 1,
@@ -290,18 +344,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			throw new Error('retry');
 		}
 		this.currentJobNumber++;
-		// TODO: cache these with mem
-		const [siteName, dateFormat, timeAndDateFormat, serverLanguage] = await Promise.all([
-			settingsService.get<string>('Site_Name'),
-			settingsService.get<string>('Message_DateFormat'),
-			settingsService.get<string>('Message_TimeAndDateFormat'),
-			settingsService.get<string>('Language'),
-		]);
 
 		const user = await Users.findOneById<Pick<IUser, '_id' | 'language'>>(details.userId, { projection: { _id: 1, language: 1 } });
 		if (!user) return;
 
-		const language = user.language ?? serverLanguage;
+		const language = user.language ?? this.serverLanguage;
 		const i18n = this.translator.cloneInstance({ lng: language });
 
 		try {
@@ -345,10 +392,10 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				visitor,
 				agent,
 				closedAt: room.closedAt,
-				siteName,
+				siteName: this.siteName,
 				messages: messagesData,
-				dateFormat,
-				timeAndDateFormat,
+				dateFormat: this.dateFormat,
+				timeAndDateFormat: this.timeAndDateFormat,
 				timezone,
 			};
 
@@ -375,7 +422,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			});
 			await this.pdfComplete({ details, transcriptFile, rocketCatFile, i18n });
 		} catch (error) {
-			this.pdfFailed({ details, e: error as Error, i18n });
+			void this.pdfFailed({ details, e: error as Error, i18n });
 		}
 	}
 
