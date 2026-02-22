@@ -15,25 +15,13 @@ export const _selectorIsId = (selector: unknown): selector is IdSelector =>
 export const _selectorIsIdPerhapsAsObject = (selector: unknown) =>
 	_selectorIsId(selector) || (_selectorIsId(selector && selector._id) && Object.keys(selector).length === 1);
 
-// --------------------------------------------------------------------------
-// constants.js
-// --------------------------------------------------------------------------
-
 function getAsyncMethodName(method) {
 	return `${method.replace('_', '')}Async`;
 }
 
 const ASYNC_CURSOR_METHODS = ['count', 'fetch', 'forEach', 'map'];
 
-// --------------------------------------------------------------------------
-// observe_handle.js
-// --------------------------------------------------------------------------
-
 class ObserveHandle {}
-
-// --------------------------------------------------------------------------
-// common.js (Part 1 - Helpers & Errors)
-// --------------------------------------------------------------------------
 
 const hasOwn = Object.prototype.hasOwnProperty;
 
@@ -413,7 +401,6 @@ const wrapTransform = (transform) => {
 			throw new Error('can only transform documents with _id');
 		}
 		const id = doc._id;
-		// Dependency: Tracker
 		const transformed = Tracker.nonreactive(() => transform(doc));
 		if (!_isPlainObject(transformed)) {
 			throw new Error('transform must return object');
@@ -430,10 +417,6 @@ const wrapTransform = (transform) => {
 	wrapped.__wrappedTransform__ = true;
 	return wrapped;
 };
-
-// --------------------------------------------------------------------------
-// cursor.js
-// --------------------------------------------------------------------------
 
 class Cursor {
 	matcher: Matcher;
@@ -671,12 +654,6 @@ ASYNC_CURSOR_METHODS.forEach((method) => {
 		}
 	};
 });
-
-// --------------------------------------------------------------------------
-// matcher.js (LocalCollection._f & Matcher)
-// --------------------------------------------------------------------------
-
-// Helpers used by compiled selector code
 const _f = {
 	_type(v) {
 		if (typeof v === 'number') return 1;
@@ -689,7 +666,6 @@ const _f = {
 		if (v instanceof Date) return 9;
 		if (EJSON.isBinary(v)) return 5;
 		if (v instanceof ObjectID) return 7;
-		// Dependency: Decimal check if needed
 		return 3;
 	},
 
@@ -800,7 +776,6 @@ class _CachingChangeObserver {
 			const doc = this.docs.get(id);
 			if (!doc) throw new Error(`Unknown id for changed: ${id}`);
 			if (callbacks.changed) callbacks.changed.call(this, id, EJSON.clone(fields));
-			// Dependency: DiffSequence
 			DiffSequence.applyChanges(doc, fields);
 		};
 		this.applyChange.removed = (id) => {
@@ -816,13 +791,7 @@ class _IdMap extends IdMap<string | ObjectID | undefined> {
 	}
 }
 
-// --------------------------------------------------------------------------
-// local_collection.js (Shell & Utilities)
-// --------------------------------------------------------------------------
-
 const _useOID = false;
-
-// Placeholder for LocalCollection class, populated fully later
 class LocalCollection {
 	static _IdMap = _IdMap;
 
@@ -885,8 +854,6 @@ class LocalCollection {
 	constructor(name) {
 		this.name = name;
 		this._docs = new _IdMap();
-
-		// Replace Meteor._SynchronousQueue with simple execution or your own queue
 		this._observeQueue = {
 			queueTask: (task) => task(),
 			drain: () => Promise.resolve(),
@@ -924,7 +891,6 @@ class LocalCollection {
 	}
 
 	prepareInsert(doc) {
-		// Dependency: Random
 		if (!hasOwn.call(doc, '_id')) doc._id = _useOID ? new ObjectID() : Random.id();
 		const id = doc._id;
 		if (this._docs.has(id)) throw MinimongoError(`Duplicate _id '${id}'`);
@@ -1331,10 +1297,6 @@ class LocalCollection {
 	}
 }
 
-// --------------------------------------------------------------------------
-// common.js (Part 2 - Operators & Compilation)
-// --------------------------------------------------------------------------
-
 function isIndexable(obj) {
 	return Array.isArray(obj) || _isPlainObject(obj);
 }
@@ -1416,10 +1378,7 @@ const ELEMENT_OPERATORS = {
 	$type: {
 		dontIncludeLeafArrays: true,
 		compileElementSelector(operand) {
-			// ... (Omitting full type alias map for brevity, ensure you copy the map from original file if needed)
 			if (typeof operand === 'string') {
-				// Simplification: assume numeric types are passed or implement full map
-				// Map provided in original code should be pasted here.
 				const operandAliasMap = {
 					double: 1,
 					string: 2,
@@ -1567,7 +1526,6 @@ const VALUE_OPERATORS = {
 			maxDistance = operand.$maxDistance;
 			point = operand.$geometry;
 			distance = (value) => {
-				// Dependency: GeoJSON
 				if (!value) return null;
 				if (!value.type) return GeoJSON.pointDistance(point, { type: 'Point', coordinates: pointToArray(value) });
 				if (value.type === 'Point') return GeoJSON.pointDistance(point, value);
@@ -1881,10 +1839,6 @@ function validateObject(object, path) {
 	}
 }
 
-// --------------------------------------------------------------------------
-// matcher.js (Class Definition)
-// --------------------------------------------------------------------------
-
 class Matcher {
 	constructor(selector, isUpdate = false) {
 		this._paths = {};
@@ -1945,10 +1899,6 @@ class Matcher {
 		this._paths[path] = true;
 	}
 }
-
-// --------------------------------------------------------------------------
-// sorter.js
-// --------------------------------------------------------------------------
 
 class Sorter {
 	constructor(spec) {
@@ -2084,15 +2034,9 @@ function composeComparators(comparatorArray) {
 		return 0;
 	};
 }
-
-// --------------------------------------------------------------------------
-// local_collection.js (Prototype Methods & Modifiers)
-// --------------------------------------------------------------------------
-
-// Modifiers (omitting full list for brevity, same as in local_collection.js)
 const MODIFIERS = {
 	$currentDate(target, field, arg) {
-		/* ... */ target[field] = new Date();
+		target[field] = new Date();
 	},
 	$inc(target, field, arg) {
 		if (typeof arg !== 'number') throw MinimongoError('Modifier $inc allowed for numbers only');
@@ -2117,7 +2061,7 @@ const MODIFIERS = {
 		else target[field] = 0;
 	},
 	$rename(target, field, arg, keypath, doc) {
-		/* ... (logic from local_collection.js) ... */ if (target !== undefined) {
+		if (target !== undefined) {
 			const object = target[field];
 			delete target[field];
 			const keyparts = arg.split('.');
@@ -2287,10 +2231,6 @@ function findModTarget(doc, keyparts, options = {}) {
 		doc = doc[keypart];
 	}
 }
-
-// --------------------------------------------------------------------------
-// Exports
-// --------------------------------------------------------------------------
 
 export const Minimongo = {
 	LocalCollection,

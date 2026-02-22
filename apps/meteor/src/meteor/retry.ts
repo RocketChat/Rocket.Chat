@@ -15,16 +15,7 @@ export class Retry {
 
 	retryTimer: ReturnType<typeof setTimeout> | null;
 
-	constructor({
-		baseTimeout = 1000,
-		exponent = 2.2,
-		// The default is high-ish to ensure a server can recover from a
-		// failure caused by load.
-		maxTimeout = 5 * 60 * 1000,
-		minTimeout = 10,
-		minCount = 2,
-		fuzz = 0.5,
-	} = {}) {
+	constructor({ baseTimeout = 1000, exponent = 2.2, maxTimeout = 5 * 60 * 1000, minTimeout = 10, minCount = 2, fuzz = 0.5 } = {}) {
 		this.baseTimeout = baseTimeout;
 		this.exponent = exponent;
 		this.maxTimeout = maxTimeout;

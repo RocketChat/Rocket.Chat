@@ -8,7 +8,6 @@ import { Tracker } from './tracker.ts';
 import { isKey } from './utils/isKey.ts';
 import { keys } from './utils/keys.ts';
 
-// config option keys
 const VALID_CONFIG_KEYS = [
 	'sendVerificationEmail',
 	'forbidClientAccountCreation',
@@ -62,21 +61,10 @@ type AccountsClientOptions = {
 	ddpUrl?: string;
 	connection?: Connection;
 };
-
-// how long (in days) until a login token expires
 const DEFAULT_LOGIN_EXPIRATION_DAYS = 90;
-// how long (in days) until reset password token expires
 const DEFAULT_PASSWORD_RESET_TOKEN_EXPIRATION_DAYS = 3;
-// how long (in days) until enrol password token expires
 const DEFAULT_PASSWORD_ENROLL_TOKEN_EXPIRATION_DAYS = 30;
-// Clients don't try to auto-login with a token that is going to expire within
-// .1 * DEFAULT_LOGIN_EXPIRATION_DAYS, capped at MIN_TOKEN_LIFETIME_CAP_SECS.
-// Tries to avoid abrupt disconnects from expiring tokens.
 const MIN_TOKEN_LIFETIME_CAP_SECS = 3600; // one hour
-// how often (in milliseconds) we check for expired tokens
-export const EXPIRE_TOKENS_INTERVAL_MS = 600 * 1000; // 10 minutes
-// A large number of expiration days (approximately 100 years worth) that is
-// used when creating unexpiring tokens.
 const LOGIN_UNEXPIRING_TOKEN_DAYS = 365 * 100;
 
 export class LoginCancelledError extends Error {
@@ -91,25 +79,31 @@ const URL_PARTS = [
 	{ key: 'enroll-account', regex: /^#\/enroll-account\/(.*)$/, property: '_enrollAccountToken' },
 ] as const;
 
-/**
- * @summary Constructor for the `Accounts` object on the client.
- * @locus Client
- * @class AccountsClient
- * @instancename accountsClient
- */
+type AttemptInfo = { type: string; allowed: boolean; error: any; methodName: string; methodArguments: [{ resume: string | null }] };
+
 export class AccountsClient {
-	// Properties from AccountsCommon
 	public _options: AccountsClientOptions;
 
 	public connection: Connection = DDP.connection;
 
 	public users: any;
 
-	public _onLoginHook: Hook<[{ type: 'resume' | 'normal'; allowed?: boolean; error?: any; methodName?: string; methodArguments?: any[] }]>;
+	public _onLoginHook = new Hook<
+		[{ type: 'resume' | 'normal'; allowed?: boolean; error?: any; methodName?: string; methodArguments?: any[] }]
+	>({
+		bindEnvironment: false,
+		debugPrintExceptions: 'onLogin callback',
+	});
 
-	public _onLoginFailureHook: Hook<[{ error: any }]>;
+	public _onLoginFailureHook = new Hook<[{ error: any }]>({
+		bindEnvironment: false,
+		debugPrintExceptions: 'onLoginFailure callback',
+	});
 
-	public _onLogoutHook: Hook;
+	public _onLogoutHook = new Hook<[]>({
+		bindEnvironment: false,
+		debugPrintExceptions: 'onLogout callback',
+	});
 
 	public DEFAULT_LOGIN_EXPIRATION_DAYS = DEFAULT_LOGIN_EXPIRATION_DAYS;
 
@@ -117,16 +111,15 @@ export class AccountsClient {
 
 	public LoginCancelledError = LoginCancelledError;
 
-	// Properties from AccountsClient
 	public _loggingIn = new ReactiveVar(false);
 
 	public _loggingOut = new ReactiveVar(false);
 
 	public _loginServicesHandle: any;
 
-	public _pageLoadLoginCallbacks: any[];
+	public _pageLoadLoginCallbacks: Array<(...args: any[]) => any> = [];
 
-	public _pageLoadLoginAttemptInfo: any;
+	public _pageLoadLoginAttemptInfo: AttemptInfo | null = null;
 
 	public savedHash: string;
 
@@ -159,9 +152,6 @@ export class AccountsClient {
 	public _enrollAccountToken: string | undefined;
 
 	constructor(options: AccountsClientOptions = {}) {
-		// --- Initialization Logic from AccountsCommon ---
-
-		// Validate config options keys
 		for (const key of keys(options)) {
 			if (!VALID_CONFIG_KEYS.includes(key)) {
 				console.error(`Accounts.config: Invalid key: ${key}`);
@@ -169,56 +159,20 @@ export class AccountsClient {
 		}
 
 		this._options = options || {};
-
-		// Note that setting this.connection = null causes this.users to be a
-		// LocalCollection, which is not what we want.
 		this.connection = this._initConnection(options || {});
-
-		// There is an allow call in accounts_server.js that restricts writes to
-		// this collection.
 		this.users = this._initializeCollection(options || {});
 
-		// Callback exceptions are printed with console.debug and ignored.
-		this._onLoginHook = new Hook({
-			bindEnvironment: false,
-			debugPrintExceptions: 'onLogin callback',
-		});
-
-		this._onLoginFailureHook = new Hook({
-			bindEnvironment: false,
-			debugPrintExceptions: 'onLoginFailure callback',
-		});
-
-		this._onLogoutHook = new Hook({
-			bindEnvironment: false,
-			debugPrintExceptions: 'onLogout callback',
-		});
-
-		// --- Initialization Logic from AccountsClient ---
-
 		this._loginServicesHandle = this.connection.subscribe('meteor.loginServiceConfiguration');
-
-		this._pageLoadLoginCallbacks = [];
-		this._pageLoadLoginAttemptInfo = null;
 
 		this.savedHash = window.location.hash;
 		this._autoLoginEnabled = true;
 		this._attemptToMatchHash();
 
 		this.storageLocation = localStorage;
-
-		// Defined in localstorage_token.js.
 		this._initLocalStorage();
-
-		// This is for .registerClientLoginFunction & .callLoginFunction.
 		this._loginFuncs = {};
-
-		// This tracks whether callbacks registered with
-		// Accounts.onLogin have been called
 		this._loginCallbacksCalled = false;
 	}
-
-	// --- Methods from AccountsCommon ---
 
 	_initializeCollection(options: AccountsClientOptions) {
 		if (options.collection && typeof options.collection !== 'string' && !(options.collection instanceof Collection)) {
@@ -238,34 +192,22 @@ export class AccountsClient {
 				});
 	}
 
-	// merge the defaultFieldSelector with an existing options object
 	_addDefaultFieldSelector(options: any = {}) {
-		// this will be the most common case for most people, so make it quick
 		if (!this._options.defaultFieldSelector) {
 			return options;
 		}
-
-		// if no field selector then just use defaultFieldSelector
 		if (!options.fields)
 			return {
 				...options,
 				fields: this._options.defaultFieldSelector,
 			};
-
-		// if empty field selector then the full user object is explicitly requested, so obey
 		const keys = Object.keys(options.fields);
 		if (!keys.length) {
 			return options;
 		}
-
-		// if the requested fields are +ve then ignore defaultFieldSelector
-		// assume they are all either +ve or -ve because Mongo doesn't like mixed
 		if (options.fields[keys[0]]) {
 			return options;
 		}
-
-		// The requested fields are -ve.
-		// If the defaultFieldSelector is +ve then use requested fields, otherwise merge them
 		const keys2 = Object.keys(this._options.defaultFieldSelector);
 		return this._options.defaultFieldSelector[keys2[0]]
 			? options
@@ -278,43 +220,27 @@ export class AccountsClient {
 				};
 	}
 
-	/**
-	 * @summary Get the current user record, or `null` if no user is logged in.
-	 */
 	user(options?: any) {
 		const userId = this.userId();
 		const findOne = (...args: any[]) => this.users.findOne(...args);
 		return userId ? findOne(userId, this._addDefaultFieldSelector(options)) : null;
 	}
 
-	/**
-	 * @summary Get the current user record, or `null` if no user is logged in.
-	 */
 	async userAsync(options?: any) {
 		const userId = this.userId();
 		return userId ? this.users.findOneAsync(userId, this._addDefaultFieldSelector(options)) : null;
 	}
 
-	/**
-	 * @summary Register a callback to be called after a login attempt succeeds.
-	 */
 	onLogin(func: (...args: any[]) => any) {
 		const ret = this._onLoginHook.register(func);
-		// call the just registered callback if already logged in
 		this._startupCallback(ret.callback);
 		return ret;
 	}
 
-	/**
-	 * @summary Register a callback to be called after a login attempt fails.
-	 */
 	onLoginFailure(func: (...args: any[]) => any) {
 		return this._onLoginFailureHook.register(func);
 	}
 
-	/**
-	 * @summary Register a callback to be called after a logout attempt succeeds.
-	 */
 	onLogout(func: (...args: any[]) => any) {
 		return this._onLogoutHook.register(func);
 	}
@@ -364,18 +290,11 @@ export class AccountsClient {
 		return new Date().getTime() > new Date(when).getTime() - minLifetimeMs;
 	}
 
-	// --- Methods from AccountsClient ---
-
 	initStorageLocation(options?: any) {
-		// Determine whether to use local or session storage to storage credentials and anything else.
 		this.storageLocation = options && options.clientStorage === 'session' ? sessionStorage : localStorage;
 	}
 
-	/**
-	 * @summary Set global accounts options.
-	 */
 	config(options: AccountsClientOptions) {
-		// --- Merged Logic from AccountsCommon.config ---
 		if (!__meteor_runtime_config__.accountsConfigCalled) {
 			console.debug('Accounts.config was called on the client but not on the server; some configuration options may not take effect.');
 		}
@@ -383,8 +302,6 @@ export class AccountsClient {
 		if (isKey(options, 'oauthSecretKey')) {
 			throw new Error('The oauthSecretKey option may only be specified on the server');
 		}
-
-		// Validate config options keys
 		for (const key of keys(options)) {
 			if (!VALID_CONFIG_KEYS.includes(key)) {
 				console.error(`Accounts.config: Invalid key: ${key}`);
@@ -394,8 +311,6 @@ export class AccountsClient {
 		if (options.collection && options.collection !== this.users._name && options.collection !== this.users) {
 			this.users = this._initializeCollection(options);
 		}
-
-		// --- Logic from AccountsClient.config ---
 		this.initStorageLocation(options);
 	}
 
@@ -528,7 +443,7 @@ export class AccountsClient {
 					this._reconnectStopper.stop();
 				}
 
-				this._reconnectStopper = DDP.onReconnect((conn: any) => {
+				this._reconnectStopper = DDP.onReconnect((conn) => {
 					if (conn !== this.connection) {
 						return;
 					}
@@ -632,7 +547,7 @@ export class AccountsClient {
 		}
 	}
 
-	_pageLoadLogin(attemptInfo: any) {
+	_pageLoadLogin(attemptInfo: AttemptInfo) {
 		if (this._pageLoadLoginAttemptInfo) {
 			console.debug('Ignoring unexpected duplicate page load login attempt info');
 			return;

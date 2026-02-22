@@ -4,8 +4,6 @@ import { MeteorError } from './meteor.ts';
 import { _selectorIsIdPerhapsAsObject } from './minimongo.ts';
 import { isKey } from './utils/isKey.ts';
 
-// --- Types ---
-
 type MongoDoc = Record<string, unknown>;
 type ValidatorFn = (userId: string | null, doc: MongoDoc, fields?: string[], modifier?: MongoDoc) => boolean | Promise<boolean>;
 
@@ -37,8 +35,6 @@ type MethodContext = {
 	connection: any;
 };
 
-// --- Constants ---
-
 const ALLOWED_UPDATE_OPERATIONS = new Set([
 	'$inc',
 	'$set',
@@ -51,8 +47,6 @@ const ALLOWED_UPDATE_OPERATIONS = new Set([
 	'$push',
 	'$bit',
 ]);
-
-// --- Helper Functions ---
 
 const asyncSome = async <T>(array: T[], predicate: (item: T) => boolean | Promise<boolean>): Promise<boolean> => {
 	for (const item of array) {
@@ -123,15 +117,7 @@ const validateUpdateMutator = (mutator: MongoDoc): string[] => {
 	return Object.keys(modifiedFields);
 };
 
-// --- Main Class Definition ---
-
-/**
- * A class containing the logic for Allow/Deny security.
- * NOTE: Methods here are copied to CollectionPrototype below to ensure enumerability.
- */
 export class RestrictedCollectionMixin {
-	// These properties are expected to exist on the instance mixing this class in.
-	// We declare them for TypeScript, but they are initialized by the host Collection.
 	public _name?: string;
 
 	public _connection?: any;
@@ -154,21 +140,14 @@ export class RestrictedCollectionMixin {
 
 	public _transform?: (doc: MongoDoc) => unknown;
 
-	// Stub for TS: Implemented by Mongo.Collection
 	public _makeNewID(): string {
 		throw new Error('Mixin requirement: _makeNewID not implemented');
 	}
 
-	/**
-	 * @summary Allow users to write directly to this collection from client code.
-	 */
 	public allow(options: AllowDenyOptions): void {
 		this._addValidator('allow', options);
 	}
 
-	/**
-	 * @summary Override `allow` rules.
-	 */
 	public deny(options: AllowDenyOptions): void {
 		this._addValidator('deny', options);
 	}
@@ -204,8 +183,6 @@ export class RestrictedCollectionMixin {
 		if (!this._name) return; // anonymous collection
 
 		this._prefix = `/${this._name}/`;
-
-		// Setup mutation methods on the connection (Server or Simulation)
 		if (this._connection) {
 			const methods: Record<string, (...args: any[]) => any> = {};
 			const methodNames = ['insertAsync', 'updateAsync', 'removeAsync', 'insert', 'update', 'remove'];
@@ -228,7 +205,6 @@ export class RestrictedCollectionMixin {
 	}
 
 	protected async _validatedInsertAsync(userId: string | null, doc: MongoDoc, generatedId: string | null): Promise<string> {
-		// Deny Checks
 		if (
 			await asyncSome(this._validators.insert.deny, (validator) =>
 				validator(userId, docToValidate(validator as any, doc, generatedId) as MongoDoc),
@@ -236,8 +212,6 @@ export class RestrictedCollectionMixin {
 		) {
 			throw new MeteorError(403, 'Access denied');
 		}
-
-		// Allow Checks
 		if (
 			await asyncEvery(
 				this._validators.insert.allow,
@@ -267,8 +241,6 @@ export class RestrictedCollectionMixin {
 
 		const doc = await this._collection.findOneAsync(selector, findOptions);
 		if (!doc) return 0;
-
-		// Deny Checks
 		if (
 			await asyncSome(this._validators.update.deny, (validator) =>
 				validator(userId, transformDoc(validator as any, doc) as MongoDoc, fields, mutator),
@@ -276,8 +248,6 @@ export class RestrictedCollectionMixin {
 		) {
 			throw new MeteorError(403, 'Access denied');
 		}
-
-		// Allow Checks
 		if (
 			await asyncEvery(
 				this._validators.update.allow,
@@ -295,13 +265,9 @@ export class RestrictedCollectionMixin {
 		const findOptions = this._getFindOptions();
 		const doc = await this._collection.findOneAsync(selector, findOptions);
 		if (!doc) return 0;
-
-		// Deny Checks
 		if (await asyncSome(this._validators.remove.deny, (validator) => validator(userId, transformDoc(validator as any, doc) as MongoDoc))) {
 			throw new MeteorError(403, 'Access denied');
 		}
-
-		// Allow Checks
 		if (
 			await asyncEvery(this._validators.remove.allow, (validator) => !validator(userId, transformDoc(validator as any, doc) as MongoDoc))
 		) {
@@ -335,27 +301,6 @@ export class RestrictedCollectionMixin {
 
 		this._restricted = true;
 
-		// const operations = ['insert', 'update', 'remove'] as const;
-
-		// // for (const name of operations) {
-		// // 	// eslint-disable-next-line no-nested-ternary
-		// // 	// const providedName = hasOwn(options, `${name}Async`) ? `${name}Async` : hasOwn(options, name) ? name : null;
-
-		// // 	// if (providedName) {
-		// // 	// 	const validator = options[providedName];
-		// // 	// 	if (typeof validator !== 'function') {
-		// // 	// 		throw new Error(`${allowOrDeny}: Value for \`${providedName}\` must be a function`);
-		// // 	// 	}
-
-		// // 	// 	const validatorWithTransform = validator;
-		// // 	// 	if (options.transform === undefined) {
-		// // 	// 		validatorWithTransform.transform = this._transform;
-		// // 	// 	}
-
-		// // 	// 	this._validators[name][allowOrDeny].push(validatorWithTransform);
-		// // 	// }
-		// // }
-
 		if (options.update || options.remove || options.updateAsync || options.removeAsync || options.fetch) {
 			if (options.fetch && !Array.isArray(options.fetch)) {
 				throw new Error(`${allowOrDeny}: Value for \`fetch\` must be an array`);
@@ -383,14 +328,10 @@ export class RestrictedCollectionMixin {
 	private async _executeMutation(methodContext: MethodContext, methodName: string, args: any[]): Promise<unknown> {
 		const isInsert = methodName.includes('insert');
 		const [firstArg] = args;
-
-		// 1. ID Generation for Insert
 		let generatedId: string | null = null;
 		if (isInsert && !isKey(firstArg, '_id')) {
 			generatedId = this._makeNewID();
 		}
-
-		// 2. Simulation Handling
 		if (methodContext.isSimulation) {
 			if (generatedId !== null && typeof firstArg === 'object' && firstArg !== null) {
 				firstArg._id = generatedId;
@@ -401,8 +342,6 @@ export class RestrictedCollectionMixin {
 		const syncMethodName = methodName.replace('Async', '');
 		const validatedMethodName =
 			`_validated${syncMethodName.charAt(0).toUpperCase()}${syncMethodName.slice(1)}Async` as keyof RestrictedCollectionMixin;
-
-		// 3. Restricted Mode (Allow/Deny)
 		if (this._restricted) {
 			if (this._validators[syncMethodName as 'insert' | 'update' | 'remove'].allow.length === 0) {
 				throw new MeteorError(403, `Access denied. No allow validators set on restricted collection for method '${methodName}'.`);
@@ -413,8 +352,6 @@ export class RestrictedCollectionMixin {
 
 			return this[validatedMethodName](...methodArgs);
 		}
-
-		// 4. Insecure Mode
 		if (this._isInsecure()) {
 			if (generatedId !== null && typeof firstArg === 'object' && firstArg !== null) {
 				(firstArg as MongoDoc)._id = generatedId;
@@ -427,15 +364,9 @@ export class RestrictedCollectionMixin {
 			const targetMethod = syncMethodsMapper[methodName as keyof typeof syncMethodsMapper] || methodName;
 			return this._collection[targetMethod](...args);
 		}
-
-		// 5. Default Deny
 		throw new MeteorError(403, 'Access denied');
 	}
 }
-
-// --- MIXIN EXPORT LOGIC ---
-// To support standard Object.assign/_.extend mixin patterns used by Meteor legacy pkgs,
-// we must extract the class methods into a plain, enumerable object.
 const CollectionPrototype: Record<string, any> = {};
 const propertyNames = Object.getOwnPropertyNames(RestrictedCollectionMixin.prototype);
 
