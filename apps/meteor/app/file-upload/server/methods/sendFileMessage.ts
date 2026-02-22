@@ -38,6 +38,14 @@ export const parseFileIntoMessageAttachments = async (
 ): Promise<FilesAndAttachments> => {
 	validateFileRequiredFields(file);
 
+	const upload = await Uploads.findOneById(file._id, {
+		projection: { _id: 1, userId: 1, rid: 1 },
+	});
+
+	if (!upload || upload.userId !== user._id || upload.rid !== roomId) {
+		throw new Meteor.Error('error-invalid-file', 'Invalid upload ownership');
+	}
+
 	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
 
 	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
