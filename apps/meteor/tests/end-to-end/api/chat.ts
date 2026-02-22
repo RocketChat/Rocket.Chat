@@ -5,6 +5,7 @@ import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
+import { retry } from './helpers/retry';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
 import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
@@ -1257,26 +1258,32 @@ describe('[Chat]', () => {
 				imgUrlMsgId = imgUrlResponse.body.message._id;
 			});
 
-			it('should have an iframe oembed with style max-width', (done) => {
-				setTimeout(() => {
-					void request
-						.get(api('chat.getMessage'))
-						.set(credentials)
-						.query({
-							msgId: ytEmbedMsgId,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
+			it('should have an iframe oembed with style max-width', async () => {
+				await retry(
+					'Oembed is generated async thats why the retry is required',
+					async () => {
+						await request
+							.get(api('chat.getMessage'))
+							.set(credentials)
+							.query({
+								msgId: ytEmbedMsgId,
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 
-							expect(res.body.message.urls[0])
-								.to.have.property('meta')
-								.to.have.property('oembedHtml')
-								.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
-						})
-						.end(done);
-				}, 1000);
+								expect(res.body.message.urls[0])
+									.to.have.property('meta')
+									.to.have.property('oembedHtml')
+									.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
+							});
+					},
+					{
+						delayMs: 100,
+						retries: 5,
+					},
+				);
 			});
 
 			it('should embed an image preview if message has an image url', (done) => {
