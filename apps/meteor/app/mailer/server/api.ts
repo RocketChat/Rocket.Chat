@@ -14,7 +14,6 @@ import { strLeft, strRightBack } from '../../../lib/utils/stringUtils';
 import { i18n } from '../../../server/lib/i18n';
 import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
-import { isSMTPConfigured} from '../../utils/server/functions/isSMTPConfigured';
 
 let contentHeader: string | undefined;
 let contentFooter: string | undefined;
@@ -160,12 +159,28 @@ export const sendNoWrap = async ({
 		throw new Meteor.Error('invalid email');
 	}
     
-    if (!isSMTPConfigured()) {
-    	throw new Meteor.Error(
-        	'smtp-not-configured',
-            'SMTP is not configured. Please configure it in Administration -> Settings -> Email -> SMTP before sending emails.',
-        );
-    }
+    const mailUrl=process.env.MAIL_URL;
+	if(!mailUrl){
+		const host = settings.get<string>('SMTP_Host');
+		const port = settings.get<number>('SMTP_Port');
+		const username = settings.get<string>('SMTP_Username');
+		const password = settings.get<string>('SMTP_Password');
+
+		const isIncompleteSMTP = 
+			!host?.trim() || 
+			!username?.trim() || 
+			!password?.trim() || 
+			!port === undefined ||
+			!port === null;
+
+		if(isIncompleteSMTP){
+			throw new Meteor.Error(
+				'smtp-not-configured',
+				'SMTP is not fully configured.'
+			);
+		}
+	}
+
 	if (!text) {
 		text = html ? stripHtml(html).result : undefined;
 	}
