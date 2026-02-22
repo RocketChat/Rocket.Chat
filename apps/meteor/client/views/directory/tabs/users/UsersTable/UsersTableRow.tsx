@@ -28,14 +28,18 @@ const UsersTableRow = ({
 		<GenericTableRow key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
-					{username && <UserAvatar size='x40' title={username} username={username} etag={avatarETag} />}
+					{username && (
+						<Box flexShrink={0}>
+							<UserAvatar size='x40' title={username} username={username} etag={avatarETag} />
+						</Box>
+					)}
 					<Box mi={8} flexGrow={1} flexShrink={1} flexBasis='0%' withTruncatedText>
 						<Box display='flex' alignItems='center'>
 							<Box fontScale='p2m' withTruncatedText>
 								{name || username}
 								{nickname && ` (${nickname})`}
-							</Box>{' '}
-							<Box mi={4} />{' '}
+							</Box>
+							<Box mi={4} />
 							<Box fontScale='p2' color='hint' withTruncatedText>
 								{username}
 							</Box>
