@@ -58,7 +58,7 @@ class TestDeleteCommand implements ISlashCommand {
         // Because ephemeral messages are not stored in the database, the bridge does not
         // return an ID for them. We must assign an ID manually to ensure we can
         // reference the SAME message in the delete call.
-        message.id = 'test-delete-id-' + Date.now();
+        message.id = user.id + '-' + Date.now();
 
         // 2. Notify the user
         await notifier.notifyUser(user, message);
