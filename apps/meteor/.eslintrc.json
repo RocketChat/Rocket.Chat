@@ -1,7 +1,6 @@
 {
 	"extends": [
 		"@rocket.chat/eslint-config",
-		"@rocket.chat/eslint-config/react",
 		"plugin:you-dont-need-lodash-underscore/compatible",
 		"plugin:storybook/recommended"
 	],

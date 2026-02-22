@@ -1,5 +1,5 @@
 module.exports = {
-	extends: ['../original/index.js', 'plugin:prettier/recommended', 'plugin:import/typescript'],
+	extends: ['../original/index.js', '../react.js', 'plugin:prettier/recommended', 'plugin:import/typescript'],
 	parser: '@babel/eslint-parser',
 	parserOptions: {
 		requireConfigFile: false,
@@ -21,6 +21,7 @@ module.exports = {
 				'plugin:@typescript-eslint/recommended',
 				'plugin:@typescript-eslint/eslint-recommended',
 				'../original/index.js',
+				'../react.js',
 				'plugin:prettier/recommended',
 			],
 			parser: '@typescript-eslint/parser',
