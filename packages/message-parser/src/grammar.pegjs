@@ -28,6 +28,8 @@
     plain,
     quote,
     reducePlainTexts,
+    spoiler,
+    spoilerBlock,
     strike,
     task,
     tasks,
@@ -57,6 +59,7 @@ Start
  */
 Blocks
   = Blockquote
+  / BlockSpoiler
   / Code
   / Heading
   / Tasks
@@ -74,6 +77,16 @@ Blocks
 Blockquote = b:BlockquoteLine+ { return quote(b); }
 
 BlockquoteLine = ">" [ \t]* @Paragraph
+
+/**
+ * Block Spoiler
+ * e.g:
+ * ||
+ * line one
+ * line two
+ * ||
+ */
+BlockSpoiler = "||" EndOfLine first:(&(! "||") @Paragraph) rest:(&(! "||") @Paragraph)* EndOfLine? "||" { return spoilerBlock([first, ...rest]); }
 
 // <t:1630360800:?{format}>
 // <t:2025-07-22T10:00:00.000Z?:?{format}>
@@ -254,6 +267,7 @@ InlineItemPattern = Whitespace
   / AutolinkedPhone
   / AutolinkedEmail
   / AutolinkedURL
+  / Spoiler
   / EmphasisWithWhitespace
   / Emphasis
   / UserMention
@@ -265,6 +279,23 @@ InlineItemPattern = Whitespace
   / Color
   / KatexInline
   / Escaped
+
+/**
+ *
+ * Spoiler
+ * e.g: ||spoiler||, ||spoiler **bold**||
+ *
+ */
+Spoiler = "||" &{ skipInlineEmoji = false; return true; } text:SpoilerContentItems "||" { return spoiler(text); }
+
+SpoilerContentItems = text:SpoilerContentItem+ { return reducePlainTexts(text); }
+
+// Ensure we consume at least one character and do not accidentally match the closing "||"
+SpoilerContentItem = !"||" item:SpoilerInlineItem { return item; } / !"||" item:SpoilerInlineItemFallback { return item; }
+
+SpoilerInlineItem = &{ skipInlineEmoji = false; return true; } item:InlineItemPattern { return item; }
+
+SpoilerInlineItemFallback = &{ skipInlineEmoji = true; return true; } item:Any { return item; }
 
 /**
  *
