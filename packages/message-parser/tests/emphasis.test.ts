@@ -126,6 +126,11 @@ test.each([
 	['*bold ending with colon :*and some more text', [paragraph([bold([plain('bold ending with colon :')]), plain('and some more text')])]],
 	['*bold with a kissing emoji :* *', [paragraph([bold([plain('bold with a kissing emoji :')]), plain(' *')])]],
 	['*bold with a kissing emoji :* ', [paragraph([bold([plain('bold with a kissing emoji :')]), plain(' ')])]],
+	// Decimal numbers and dots inside italic (#31920)
+	['_1.5_', [paragraph([italic([plain('1.5')])])]],
+	['_a.b_', [paragraph([italic([plain('a.b')])])]],
+	['_hello.world_', [paragraph([italic([plain('hello.world')])])]],
+	['_1.5 text_', [paragraph([italic([plain('1.5 text')])])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input, { emoticons: false })).toMatchObject(output);
 });

@@ -431,7 +431,7 @@ AutolinkedURL = u:AutoLinkURL { return autoLink(u, options.customDomains); }
 
 AutoLinkURL
   = $(URLScheme URLAuthority AutoLinkURLBody*)
-  / $(URLAuthorityHost AutoLinkURLBody*)
+  / !"_" @$(URLAuthorityHost AutoLinkURLBody*)
 
 AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine)) .
 
