@@ -14,6 +14,7 @@ import { strLeft, strRightBack } from '../../../lib/utils/stringUtils';
 import { i18n } from '../../../server/lib/i18n';
 import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
+import { isSMTPConfigured} from '../../utils/server/functions/isSMTPConfigured';
 
 let contentHeader: string | undefined;
 let contentFooter: string | undefined;
@@ -158,10 +159,10 @@ export const sendNoWrap = async ({
 	if (!checkAddressFormat(to)) {
 		throw new Meteor.Error('invalid email');
 	}
-    const smtpHost = settings.get<string>('SMTP_Host');
-    if (!smtpHost) {
-        throw new Meteor.Error(
-            'smtp-not-configured',
+    
+    if (!isSMTPConfigured()) {
+    	throw new Meteor.Error(
+        	'smtp-not-configured',
             'SMTP is not configured. Please configure it in Administration -> Settings -> Email -> SMTP before sending emails.',
         );
     }
