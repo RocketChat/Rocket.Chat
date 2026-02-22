@@ -311,7 +311,7 @@ const saveNotificationResponseSchema = ajv.compile({
     additionalProperties: false,
 });
 
-API.v1.post(
+export const roomsSaveNotificationEndpoint = API.v1.post(
     'rooms.saveNotification',
     {
         authRequired: true,
