@@ -8,7 +8,6 @@ import { executeSlashCommandPreview } from '../../../lib/server/methods/executeS
 import { getSlashCommandPreviews } from '../../../lib/server/methods/getSlashCommandPreviews';
 import { slashCommands } from '../../../utils/server/slashCommand';
 import { API } from '../api';
-import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(
@@ -248,7 +247,6 @@ API.v1.addRoute(
 		// Expects these query params: command: 'giphy', params: 'mine', roomId: 'value'
 		async get() {
 			const query = this.queryParams;
-			const user = await getLoggedInUser(this.request);
 
 			if (typeof query.command !== 'string') {
 				return API.v1.failure('You must provide a command to get the previews from.');
@@ -267,7 +265,7 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-			if (!(await canAccessRoomIdAsync(query.roomId, user?._id))) {
+			if (!(await canAccessRoomIdAsync(query.roomId, this.userId))) {
 				return API.v1.forbidden();
 			}
 
