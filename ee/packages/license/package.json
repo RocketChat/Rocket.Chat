@@ -11,7 +11,7 @@
 		"build": "tsc",
 		"dev": "tsc --watch --preserveWatchOutput",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix",
+		"lint:fix": "eslint --fix .",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"

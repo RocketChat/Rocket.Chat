@@ -10,7 +10,7 @@
 		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix",
+		"lint:fix": "eslint --fix .",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"

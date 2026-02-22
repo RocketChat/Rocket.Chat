@@ -30,7 +30,7 @@
 		".:build:clean": "rimraf dist",
 		".:build:tsc": "tsc -p tsconfig.build.json",
 		"build": "run-s .:build:clean .:build:tsc",
-		"lint": "eslint src"
+		"lint": "eslint ."
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",

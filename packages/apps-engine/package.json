@@ -47,7 +47,7 @@
 		".:build:default": "tsc -p tsconfig.json",
 		".:build:deno-cache": "node scripts/deno-cache.js",
 		".:deno-fmt:fix": "cd deno-runtime && deno fmt",
-		".:eslint:fix": "eslint . --fix",
+		".:eslint:fix": "eslint --fix .",
 		".:lint:deno": "deno lint --ignore=deno-runtime/.deno deno-runtime/",
 		".:lint:eslint": "eslint .",
 		".:test:deno": "cd deno-runtime && deno task test",

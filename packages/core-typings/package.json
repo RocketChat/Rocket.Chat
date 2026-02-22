@@ -15,7 +15,7 @@
 		"build": "run-s .:build:prepare .:build:clean .:build:build",
 		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix",
+		"lint:fix": "eslint --fix .",
 		"test": "echo \"no tests\" && exit 1"
 	},
 	"dependencies": {

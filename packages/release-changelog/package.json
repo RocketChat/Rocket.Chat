@@ -5,7 +5,7 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
-		"lint": "eslint src"
+		"lint": "eslint ."
 	},
 	"dependencies": {
 		"dataloader": "^2.2.3",

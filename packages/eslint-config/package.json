@@ -17,7 +17,7 @@
 	],
 	"scripts": {
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix"
+		"lint:fix": "eslint --fix ."
 	},
 	"dependencies": {
 		"@babel/core": "~7.28.6",

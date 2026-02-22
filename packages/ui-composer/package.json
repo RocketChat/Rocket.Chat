@@ -13,7 +13,7 @@
 		"build-preview": "storybook build",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix",
+		"lint:fix": "eslint --fix .",
 		"storybook": "storybook dev -p 6006",
 		"test": "jest",
 		"testunit": "jest",

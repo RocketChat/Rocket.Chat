@@ -10,7 +10,7 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix"
+		"lint:fix": "eslint --fix ."
 	},
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^"

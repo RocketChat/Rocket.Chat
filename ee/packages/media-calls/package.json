@@ -12,7 +12,7 @@
 		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/media-calls",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix",
+		"lint:fix": "eslint --fix .",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
