@@ -18,7 +18,7 @@ const testCases = Object.values(composeStories(stories)).map((Story) => [Story.s
 
 jest.mock('tinykeys', () => ({
 	__esModule: true,
-	default: jest.fn().mockReturnValue(() => () => undefined),
+	tinykeys: jest.fn().mockReturnValue(() => () => undefined),
 }));
 
 let isSubmitting = false;

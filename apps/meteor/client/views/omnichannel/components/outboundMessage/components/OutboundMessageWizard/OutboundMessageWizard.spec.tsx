@@ -21,7 +21,7 @@ useOutboundMessageUpsellModal;
 
 jest.mock('tinykeys', () => ({
 	__esModule: true,
-	default: jest.fn().mockReturnValue(() => () => undefined),
+	tinykeys: jest.fn().mockReturnValue(() => () => undefined),
 }));
 
 jest.mock('../../../../../../../app/utils/client', () => ({
