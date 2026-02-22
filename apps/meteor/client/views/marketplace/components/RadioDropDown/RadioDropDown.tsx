@@ -1,4 +1,5 @@
 import type { Button } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps, ReactElement } from 'react';
 import { useCallback, useRef } from 'react';
@@ -20,23 +21,21 @@ const RadioDropDown = ({ group, onSelected, ...props }: RadioDropDownProps & Com
 				toggleCollapsed(false);
 				return;
 			}
-
 			onMouseEventPreventSideEffects(e);
-
 			return false;
 		},
 		[toggleCollapsed],
 	);
 
 	return (
-		<>
-			<RadioDropDownAnchor ref={reference} group={group} onClick={toggleCollapsed as any} {...props} />
+		<Box position='relative' width='100%'>
+			<RadioDropDownAnchor ref={reference} group={group} onClick={toggleCollapsed as any} {...props} width='100%' />
 			{collapsed && (
 				<DropDownListWrapper ref={reference} onClose={onClose}>
 					<RadioButtonList group={group} onSelected={onSelected} />
 				</DropDownListWrapper>
 			)}
-		</>
+		</Box>
 	);
 };
 

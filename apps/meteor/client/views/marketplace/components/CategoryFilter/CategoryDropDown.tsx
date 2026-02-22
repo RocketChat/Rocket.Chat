@@ -1,4 +1,5 @@
 import type { Button } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps, ReactElement } from 'react';
 import { useRef, useCallback } from 'react';
@@ -26,26 +27,20 @@ const CategoryDropDown = ({ categories, onSelected, selectedCategories, ...props
 				toggleCollapsed(false);
 				return;
 			}
-
 			onMouseEventPreventSideEffects(e);
 		},
 		[toggleCollapsed],
 	);
 
 	return (
-		<>
-			<CategoryDropDownAnchor
-				ref={reference}
-				onClick={toggleCollapsed as any}
-				selectedCategoriesCount={selectedCategories.length}
-				{...props}
-			/>
+		<Box position='relative' width='100%'>
+			<CategoryDropDownAnchor ref={reference} onClick={toggleCollapsed as any} selectedCategoriesCount={selectedCategories.length} {...props} />
 			{collapsed && (
 				<DropDownListWrapper ref={reference} onClose={onClose}>
 					<CategoryDropDownList categories={categories} onSelected={onSelected} />
 				</DropDownListWrapper>
 			)}
-		</>
+		</Box>
 	);
 };
 
