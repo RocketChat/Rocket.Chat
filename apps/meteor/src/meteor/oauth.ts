@@ -4,10 +4,6 @@ import { Meteor } from './meteor.ts';
 import { Reload } from './reload.ts';
 import { _constructUrl } from './url.ts';
 
-// -----------------------------------------------------------------------------
-// Types
-// -----------------------------------------------------------------------------
-
 type PopupDimensions = {
 	width?: number;
 	height?: number;
@@ -30,21 +26,13 @@ type OAuthState = {
 	redirectUrl?: string;
 };
 
-export type OAuthConfiguration = {
+type OAuthConfiguration = {
 	loginStyle?: 'popup' | 'redirect';
 	[key: string]: any;
 };
 
-// -----------------------------------------------------------------------------
-// Module Scope Variables
-// -----------------------------------------------------------------------------
-
 const credentialSecrets: Record<string, string> = {};
 const STORAGE_TOKEN_PREFIX = 'Meteor.oauth.credentialSecret-';
-
-// -----------------------------------------------------------------------------
-// Helpers
-// -----------------------------------------------------------------------------
 
 const openCenteredPopup = (url: string, width: number, height: number): Window | null => {
 	const screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
@@ -70,10 +58,6 @@ const openCenteredPopup = (url: string, width: number, height: number): Window |
 
 	return newwindow;
 };
-
-// -----------------------------------------------------------------------------
-// OAuth Implementation
-// -----------------------------------------------------------------------------
 
 export const OAuth = {
 	_storageTokenPrefix: STORAGE_TOKEN_PREFIX,
@@ -113,8 +97,6 @@ export const OAuth = {
 				sessionStorage.setItem('Meteor.oauth.test', 'test');
 				sessionStorage.removeItem('Meteor.oauth.test');
 			} catch (e) {
-				// If session storage isn't available (e.g. private mode in some browsers),
-				// fall back to popup.
 				return 'popup';
 			}
 		}
@@ -128,10 +110,6 @@ export const OAuth = {
 			credentialToken,
 			isCordova: false,
 		};
-
-		// If the user manually provided a redirect URL, or if the settings say to use
-		// a redirect URL even for the popup flow (to support some strict OAuth providers),
-		// add it to the state.
 		const setRedirectUrl = Meteor.settings?.public?.packages?.oauth?.setRedirectUrlWhenLoginStyleIsPopup;
 
 		if (loginStyle === 'redirect' || (setRedirectUrl && loginStyle === 'popup')) {
@@ -142,7 +120,6 @@ export const OAuth = {
 	},
 
 	_redirectUri(serviceName: string, _config: any, params?: any, absoluteUrlOptions?: any) {
-		// Strip off internal flags from params
 		const safeParams = params ? { ...params } : undefined;
 		if (safeParams) {
 			delete safeParams.cordova;
@@ -182,7 +159,7 @@ export const OAuth = {
 			credentialSecret = sessionStorage.getItem(key);
 			sessionStorage.removeItem(key);
 		} catch (e) {
-			Meteor._debug('error retrieving credentialSecret', e);
+			console.debug('error retrieving credentialSecret', e);
 		}
 
 		return {

@@ -1,7 +1,6 @@
 import { Base64 } from './base64.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 
-// Types
 type EJSONOptions = {
 	canonical?: boolean;
 	indent?: boolean | number | string;
@@ -183,8 +182,6 @@ const canonicalStringify = (value: any, options: EJSONOptions): string => {
 
 	return str('', { '': value }, allOptions.indent, '', allOptions.canonical);
 };
-
-// Forward declarations
 function toJSONValue(item: any): any {
 	const changed = toJSONValueHelper(item);
 

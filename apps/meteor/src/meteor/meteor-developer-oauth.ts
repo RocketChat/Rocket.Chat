@@ -17,23 +17,16 @@ type CredentialRequestCompleteCallback = (error?: Error | unknown) => void;
 export const MeteorDeveloperAccounts = {
 	_server: 'https://www.meteor.com',
 
-	/**
-	 * Sets the server configuration (e.g. for testing against a local server).
-	 */
 	_config(options: MeteorDeveloperOptions) {
 		if (options.developerAccountsServer) {
 			this._server = options.developerAccountsServer;
 		}
 	},
 
-	/**
-	 * Request credentials from Meteor Developer Accounts.
-	 */
 	requestCredential(
 		options?: MeteorDeveloperOptions | CredentialRequestCompleteCallback,
 		credentialRequestCompleteCallback?: CredentialRequestCompleteCallback,
 	) {
-		// Support (callback) signature without options
 		if (!credentialRequestCompleteCallback && typeof options === 'function') {
 			credentialRequestCompleteCallback = options;
 			options = {};
@@ -51,14 +44,10 @@ export const MeteorDeveloperAccounts = {
 		const opts = (options as MeteorDeveloperOptions) || {};
 		const credentialToken = Random.secret();
 		const loginStyle = OAuth._loginStyle('meteor-developer', config, opts);
-
-		// Handle login hint logic (userEmail is legacy alias for loginHint)
 		let { loginHint } = opts;
 		if (opts.userEmail && !loginHint) {
 			loginHint = opts.userEmail;
 		}
-
-		// Construct Login URL
 		let loginUrl =
 			`${MeteorDeveloperAccounts._server}/oauth2/authorize` +
 			`?state=${OAuth._stateParam(loginStyle, credentialToken, opts.redirectUrl)}` +

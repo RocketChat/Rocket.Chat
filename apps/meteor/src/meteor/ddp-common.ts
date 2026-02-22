@@ -15,11 +15,11 @@ class Heartbeat {
 
 	_onTimeout: (...args: unknown[]) => void;
 
-	_seenPacket: boolean;
+	_seenPacket = false;
 
-	_heartbeatIntervalHandle: any;
+	_heartbeatIntervalHandle: ReturnType<typeof setInterval> | null = null;
 
-	_heartbeatTimeoutHandle: any;
+	_heartbeatTimeoutHandle: ReturnType<typeof setTimeout> | null = null;
 
 	constructor(options: {
 		heartbeatInterval: number;
@@ -31,9 +31,6 @@ class Heartbeat {
 		this.heartbeatTimeout = options.heartbeatTimeout;
 		this._sendPing = options.sendPing;
 		this._onTimeout = options.onTimeout;
-		this._seenPacket = false;
-		this._heartbeatIntervalHandle = null;
-		this._heartbeatTimeoutHandle = null;
 	}
 
 	stop() {
@@ -98,13 +95,13 @@ function parseDDP(stringMessage: string) {
 	try {
 		msg = JSON.parse(stringMessage);
 	} catch (e) {
-		Meteor._debug('Discarding message with invalid JSON', stringMessage);
+		console.debug('Discarding message with invalid JSON', stringMessage);
 
 		return null;
 	}
 
 	if (msg === null || typeof msg !== 'object') {
-		Meteor._debug('Discarding non-object DDP message', stringMessage);
+		console.debug('Discarding non-object DDP message', stringMessage);
 
 		return null;
 	}

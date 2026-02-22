@@ -1,31 +1,23 @@
-export type Position = [longitude: number, latitude: number];
+type Position = [longitude: number, latitude: number];
 
-export type Point = {
-	type: 'Point';
-	coordinates: Position;
+type Shape<TType extends string, TCoordinates extends Position | Position[] | Position[][]> = {
+	type: TType;
+	coordinates: TCoordinates;
 };
 
-export type LineString = {
-	type: 'LineString';
-	coordinates: Position[];
-};
+type Point = Shape<'Point', Position>;
 
-export type Polygon = {
-	type: 'Polygon';
-	coordinates: Position[][];
-};
+type LineString = Shape<'LineString', Position[]>;
 
-export type Geometry = Point | LineString | Polygon;
+type Polygon = Shape<'Polygon', Position[][]>;
+
+type Geometry = Point | LineString | Polygon;
 
 const EARTH_RADIUS_KM = 6371;
 
-export const numberToRadius = (deg: number): number => (deg * Math.PI) / 180;
-export const numberToDegree = (rad: number): number => (rad * 180) / Math.PI;
-
-// --- Intersection Logic ---
-
-// Adapted from http://www.kevlindev.com/gui/math/intersection/Intersection.js
-export function lineStringsIntersect(l1: LineString, l2: LineString) {
+const numberToRadius = (deg: number): number => (deg * Math.PI) / 180;
+const numberToDegree = (rad: number): number => (rad * 180) / Math.PI;
+function lineStringsIntersect(l1: LineString, l2: LineString) {
 	const intersects: Point[] = [];
 	const c1 = l1.coordinates;
 	const c2 = l2.coordinates;
@@ -60,17 +52,12 @@ export function lineStringsIntersect(l1: LineString, l2: LineString) {
 	return intersects.length > 0 ? intersects : false;
 }
 
-// --- Bounding Box ---
-
-export function boundingBoxAroundPolyCoords(coords: Position[][]): [[number, number], [number, number]] {
-	// Focusing on the outer ring (index 0)
+function boundingBoxAroundPolyCoords(coords: Position[][]): [[number, number], [number, number]] {
 	const outerRing = coords[0];
 
 	if (!outerRing || outerRing.length === 0) {
 		throw new Error('Polygon has no coordinates');
 	}
-
-	// Optimized: Find min/max in one pass (O(n)) instead of sorting (O(n log n))
 	const bounds = outerRing.reduce(
 		(acc, [lng, lat]) => ({
 			minLng: Math.min(acc.minLng, lng),
@@ -92,16 +79,12 @@ export function boundingBoxAroundPolyCoords(coords: Position[][]): [[number, num
 	];
 }
 
-export function pointInBoundingBox(point: Point, bounds: [[number, number], [number, number]]): boolean {
+function pointInBoundingBox(point: Point, bounds: [[number, number], [number, number]]): boolean {
 	const [lng, lat] = point.coordinates;
 	const [[minLng, minLat], [maxLng, maxLat]] = bounds;
 
 	return !(lat < minLat || lat > maxLat || lng < minLng || lng > maxLng);
 }
-
-// --- Point in Polygon ---
-
-// http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 function pnpoly(x: number, y: number, coords: Position[]): boolean {
 	const vert = [...coords, [0, 0]]; // Add placeholder for loop structure
 	let inside = false;
@@ -118,33 +101,21 @@ function pnpoly(x: number, y: number, coords: Position[]): boolean {
 	return inside;
 }
 
-export function pointInPolygon(p: Point, poly: Polygon): boolean {
-	// Support MultiPolygon structure implicitly by wrapping Polygon in array if needed,
-	// though the Type suggests strict Polygon.
-	// The original code handled coordinates as Position[][] (Polygon) or Position[][][] (MultiPolygonish).
-	// Assuming Standard GeoJSON Polygon: coords is Position[][] (LineString[])
+function pointInPolygon(p: Point, poly: Polygon): boolean {
 	const coords = poly.coordinates;
-
-	// 1. Fast bounding box check
 	const insideBox = pointInBoundingBox(p, boundingBoxAroundPolyCoords(coords));
 	if (!insideBox) return false;
-
-	// 2. Precise check
 	let insidePoly = false;
 	for (const ring of coords) {
 		if (pnpoly(p.coordinates[0], p.coordinates[1], ring)) {
 			insidePoly = true;
-			// Note: Logic for holes (inner rings) usually requires checking if point is *inside* outer
-			// but *outside* inner. The original code strictly ORs them, which is a common simplified approach.
 		}
 	}
 
 	return insidePoly;
 }
 
-// --- Geometric Shapes ---
-
-export function drawCircle(radiusInMeters: number, centerPoint: Point, steps = 15): Polygon {
+function drawCircle(radiusInMeters: number, centerPoint: Point, steps = 15): Polygon {
 	const [centerLng, centerLat] = centerPoint.coordinates;
 	const dist = radiusInMeters / 1000 / EARTH_RADIUS_KM;
 
@@ -164,8 +135,6 @@ export function drawCircle(radiusInMeters: number, centerPoint: Point, steps = 1
 
 		polyCoordinates.push([numberToDegree(lng), numberToDegree(lat)]);
 	}
-
-	// Close the polygon
 	polyCoordinates.push(polyCoordinates[0]);
 
 	return {
@@ -174,7 +143,7 @@ export function drawCircle(radiusInMeters: number, centerPoint: Point, steps = 1
 	};
 }
 
-export function rectangleCentroid(rectangle: Polygon): Point {
+function rectangleCentroid(rectangle: Polygon): Point {
 	const bbox = rectangle.coordinates[0];
 	const xmin = bbox[0][0];
 	const ymin = bbox[0][1];
@@ -187,10 +156,7 @@ export function rectangleCentroid(rectangle: Polygon): Point {
 	};
 }
 
-// --- Measurements ---
-
-// From http://www.movable-type.co.uk/scripts/latlong.html
-export function pointDistance(pt1: Point, pt2: Point): number {
+function pointDistance(pt1: Point, pt2: Point): number {
 	const [lon1, lat1] = pt1.coordinates;
 	const [lon2, lat2] = pt2.coordinates;
 
@@ -205,7 +171,7 @@ export function pointDistance(pt1: Point, pt2: Point): number {
 	return EARTH_RADIUS_KM * c * 1000; // returns meters
 }
 
-export function geometryWithinRadius(geometry: Geometry, center: Point, radius: number): boolean {
+function geometryWithinRadius(geometry: Geometry, center: Point, radius: number): boolean {
 	if (geometry.type === 'Point') {
 		return pointDistance(geometry, center) <= radius;
 	}
@@ -213,7 +179,6 @@ export function geometryWithinRadius(geometry: Geometry, center: Point, radius: 
 		let coordinates: Position[];
 
 		if (geometry.type === 'Polygon') {
-			// Check the exterior ring
 			coordinates = geometry.coordinates[0];
 		} else {
 			coordinates = geometry.coordinates;
@@ -229,12 +194,9 @@ export function geometryWithinRadius(geometry: Geometry, center: Point, radius: 
 	return true;
 }
 
-export function area(polygon: Polygon): number {
+function area(polygon: Polygon): number {
 	let areaSize = 0;
-	// TODO: handle polygon holes at coordinates[1..n]
 	const points = polygon.coordinates[0];
-
-	// Close loop: j is previous vertex, i is current
 	let j = points.length - 1;
 
 	for (let i = 0; i < points.length; i++) {
@@ -249,9 +211,7 @@ export function area(polygon: Polygon): number {
 
 	return areaSize / 2;
 }
-
-// Adapted from http://paulbourke.net/geometry/polyarea/javascript.txt
-export function centroid(polygon: Polygon): Point {
+function centroid(polygon: Polygon): Point {
 	let x = 0;
 	let y = 0;
 	let f;
@@ -276,15 +236,8 @@ export function centroid(polygon: Polygon): Point {
 	};
 }
 
-// --- Simplification (Douglas-Peucker) ---
-
-export function simplify(sourcePoints: Point[], kinkMeters = 20): Point[] {
-	/* sourcePoints: array of GeoJSON Points */
-	/* kinkMeters: kinks above this depth kept */
-
+function simplify(sourcePoints: Point[], kinkMeters = 20): Point[] {
 	if (sourcePoints.length < 3) return sourcePoints;
-
-	// Map to internal format for processing
 	const source = sourcePoints.map((o) => ({
 		lng: o.coordinates[0],
 		lat: o.coordinates[1],
@@ -298,8 +251,6 @@ export function simplify(sourcePoints: Point[], kinkMeters = 20): Point[] {
 	const sigStart: number[] = [0];
 	const sigEnd: number[] = [nSource - 1];
 	let nStack = 1;
-
-	// Use average lat to reduce lng distortion
 	const F = (Math.PI / 180.0) * 0.5;
 
 	while (nStack > 0) {
@@ -352,7 +303,6 @@ export function simplify(sourcePoints: Point[], kinkMeters = 20): Point[] {
 			if (maxDevSqr < bandSqr) {
 				index.push(start);
 			} else {
-				// Push two sub-sections on stack
 				nStack++;
 				sigStart[nStack - 1] = sig;
 				sigEnd[nStack - 1] = end;
@@ -366,16 +316,11 @@ export function simplify(sourcePoints: Point[], kinkMeters = 20): Point[] {
 	}
 
 	index.push(nSource - 1);
-
-	// The algorithm finds indices out of order due to stack processing,
-	// so we sort them to reconstruct the path correctly.
 	index.sort((a, b) => a - b);
 
 	return index.map((i) => sourcePoints[i]);
 }
-
-// http://www.movable-type.co.uk/scripts/latlong.html#destPoint
-export function destinationPoint(pt: Point, brng: number, dist: number): Point {
+function destinationPoint(pt: Point, brng: number, dist: number): Point {
 	const distRad = dist / EARTH_RADIUS_KM; // convert dist to angular distance in radians
 	const brngRad = numberToRadius(brng);
 
@@ -385,8 +330,6 @@ export function destinationPoint(pt: Point, brng: number, dist: number): Point {
 	const lat2 = Math.asin(Math.sin(lat1) * Math.cos(distRad) + Math.cos(lat1) * Math.sin(distRad) * Math.cos(brngRad));
 
 	let lon2 = lon1 + Math.atan2(Math.sin(brngRad) * Math.sin(distRad) * Math.cos(lat1), Math.cos(distRad) - Math.sin(lat1) * Math.sin(lat2));
-
-	// normalise to -180..+180º
 	lon2 = ((lon2 + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
 
 	return {

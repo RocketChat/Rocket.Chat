@@ -1,8 +1,6 @@
 import type { Connection } from './ddp-client.ts';
 import { noop } from './utils/noop.ts';
 
-// --- Types & Interfaces ---
-
 type Callback = (...args: any[]) => void;
 
 type PackagesSettings = Partial<{
@@ -46,11 +44,8 @@ type MeteorRuntimeConfig = {
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const __meteor_runtime_config__: MeteorRuntimeConfig;
-	// eslint-disable-next-line no-var
 	const meteorEnv: MeteorRuntimeConfig['meteorEnv'];
 }
-
-// Ensure global environment existence
 const globalScope = globalThis;
 const config: MeteorRuntimeConfig =
 	typeof __meteor_runtime_config__ === 'object'
@@ -59,8 +54,6 @@ const config: MeteorRuntimeConfig =
 				meteorEnv: {},
 			};
 const { meteorEnv } = config;
-
-// --- Meteor Error Class ---
 
 export class MeteorError extends Error {
 	public error: string | number;
@@ -79,8 +72,6 @@ export class MeteorError extends Error {
 		this.error = error;
 		this.reason = reason;
 		this.details = details;
-
-		// Set message safely after super()
 		if (this.reason) {
 			this.message = `${this.reason} [${this.error}]`;
 		} else {
@@ -92,8 +83,6 @@ export class MeteorError extends Error {
 		return new MeteorError(this.error, this.reason, this.details);
 	}
 }
-
-// --- Environment Variable (Fiber-like Context) ---
 
 let nextSlot = 0;
 let currentValues: unknown[] = [];
@@ -147,8 +136,6 @@ class EnvironmentVariable<T> {
 	}
 }
 
-// --- Queues ---
-
 class FakeDoubleEndedQueue {
 	private queue: unknown[] = [];
 
@@ -194,7 +181,7 @@ export class SynchronousQueue {
 					t?.();
 				} catch (e) {
 					if (tasks.length === 0) throw e;
-					Meteor._debug('Exception in queued task', e);
+					console.debug('Exception in queued task', e);
 				}
 			}
 		} finally {
@@ -224,8 +211,6 @@ export class SynchronousQueue {
 		return !this._running;
 	}
 }
-
-// --- Utilities & Polyfills ---
 
 const _setImmediate = ((): ((fn: () => void) => void) => {
 	let postMessageIsAsynchronous = true;
@@ -320,8 +305,6 @@ export const defer = (fn: VoidFunction) => {
 	fn();
 };
 
-// --- Main Meteor Object ---
-
 const Meteor = {
 	isProduction: true,
 	isDevelopment: false,
@@ -334,25 +317,17 @@ const Meteor = {
 	release: config.meteorRelease,
 	connection: null as Connection | null,
 	refresh: noop,
-
-	// Flags
 	isFibersDisabled: true,
 	isTest: false,
 	isAppTest: false,
 	isPackageTest: false,
 	isDebug: false,
-
-	// Classes
 	Error: MeteorError,
 	EnvironmentVariable,
 	_SynchronousQueue: SynchronousQueue,
 	_DoubleEndedQueue: FakeDoubleEndedQueue,
-
-	// Internal methods
 	_setImmediate,
 	_localStorage,
-
-	// Async / Promises
 
 	promisify(fn: Callback, context?: any, errorFirst = true) {
 		return function (this: any, ...args: any[]) {
@@ -415,7 +390,7 @@ const Meteor = {
 
 	_wrapAsync(fn: Callback, context?: any) {
 		if (!warnedAboutWrapAsync) {
-			Meteor._debug('Meteor._wrapAsync has been renamed to Meteor.wrapAsync');
+			console.debug('Meteor._wrapAsync has been renamed to Meteor.wrapAsync');
 			warnedAboutWrapAsync = true;
 		}
 		return Meteor.wrapAsync(fn, context);
@@ -449,19 +424,15 @@ const Meteor = {
 		return fn();
 	},
 
-	// Environment & Binding
-
 	bindEnvironment<T extends (...args: any[]) => any>(func: T, onException?: ((e: any) => void) | string, _this?: any): T {
 		const boundValues = currentValues.slice();
 
 		if (!onException || typeof onException === 'string') {
 			const description = onException || 'callback of async function';
 			onException = (error: any) => {
-				Meteor._debug(`Exception in ${description}:`, error);
+				console.debug(`Exception in ${description}:`, error);
 			};
 		}
-
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		return function (this: any, ...args: any[]) {
 			const savedValues = currentValues;
 			let ret;
@@ -477,12 +448,6 @@ const Meteor = {
 		} as unknown as T;
 	},
 
-	// Timers
-
-	// setTimeout(f: VoidFunction, duration: number) {
-	// 	return setTimeout(bindAndCatch('setTimeout callback', f), duration);
-	// },
-
 	setInterval(f: VoidFunction, duration: number) {
 		return setInterval(bindAndCatch('setInterval callback', f), duration);
 	},
@@ -496,8 +461,6 @@ const Meteor = {
 	},
 
 	defer,
-
-	// Logging
 
 	_debug(...args: unknown[]) {
 		if (suppress > 0) {
@@ -530,8 +493,6 @@ const Meteor = {
 		return String(string).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 	},
 
-	// Deprecation
-
 	deprecate(...args: any[]) {
 		if (typeof console === 'undefined' || !console.warn) return;
 
@@ -559,14 +520,10 @@ const Meteor = {
 		onceWarning(['[DEPRECATION]', ...messages]);
 	},
 
-	// Startup
-
 	startup(callback: () => void) {
 		if (isReady) callback();
 		else callbackQueue.push(callback);
 	},
-
-	// URL generation
 
 	absoluteUrl,
 
@@ -578,16 +535,12 @@ const Meteor = {
 	},
 };
 
-// Initialize default options for absoluteUrl
-
-// --- Internal Helpers ---
-
 let warnedAboutWrapAsync = false;
 let suppress = 0;
 
 function logErr(err: any) {
 	if (err) {
-		return Meteor._debug('Exception in callback of async function', err);
+		return console.debug('Exception in callback of async function', err);
 	}
 }
 
@@ -642,8 +595,6 @@ function cleanStackTrace(stackTrace: string): string {
 	}
 	return trace.join('\n');
 }
-
-// --- Startup Logic ---
 
 const callbackQueue: Array<() => void> = [];
 let isLoadingCompleted = false;

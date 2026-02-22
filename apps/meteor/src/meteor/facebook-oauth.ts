@@ -21,7 +21,6 @@ export const Facebook = {
 		options?: FacebookOptions | CredentialRequestCompleteCallback,
 		credentialRequestCompleteCallback?: CredentialRequestCompleteCallback,
 	) {
-		// Support (callback) without options
 		if (!credentialRequestCompleteCallback && typeof options === 'function') {
 			credentialRequestCompleteCallback = options;
 			options = {};
@@ -43,8 +42,6 @@ export const Facebook = {
 		const scope = opts.requestPermissions ? opts.requestPermissions.join(',') : 'email';
 
 		const loginStyle = OAuth._loginStyle('facebook', config, opts);
-
-		// Access nested settings safely
 		const API_VERSION = Meteor.settings?.public?.packages?.['facebook-oauth']?.apiVersion || '17.0';
 
 		const redirectUri = OAuth._redirectUri('facebook', config, opts.params, opts.absoluteUrlOptions);

@@ -32,16 +32,12 @@ export class ConnectionStreamHandlers {
 		this._connection = connection;
 	}
 
-	/**
-	 * Handles incoming raw messages from the DDP stream
-	 * @param {String} rawMsg The raw message received from the stream
-	 */
 	async onMessage(rawMsg: string) {
 		let msg;
 		try {
 			msg = DDPCommon.parseDDP(rawMsg);
 		} catch (e) {
-			Meteor._debug('Exception while parsing DDP', e);
+			console.debug('Exception while parsing DDP', e);
 			return;
 		}
 
@@ -64,11 +60,6 @@ export class ConnectionStreamHandlers {
 		await this._routeMessage(msg);
 	}
 
-	/**
-	 * Routes messages to their appropriate handlers based on message type
-	 * @private
-	 * @param {Object} msg The parsed DDP message
-	 */
 	async _routeMessage(msg: any) {
 		switch (msg.msg) {
 			case 'connected':
@@ -111,15 +102,10 @@ export class ConnectionStreamHandlers {
 				break;
 
 			default:
-				Meteor._debug('discarding unknown livedata message type', msg);
+				console.debug('discarding unknown livedata message type', msg);
 		}
 	}
 
-	/**
-	 * Handles failed connection messages
-	 * @private
-	 * @param {Object} msg The failed message object
-	 */
 	_handleFailedMessage(msg: any) {
 		if (this._connection._supportedDDPVersions.indexOf(msg.version) >= 0) {
 			this._connection._versionSuggestion = msg.version;
@@ -131,9 +117,6 @@ export class ConnectionStreamHandlers {
 		}
 	}
 
-	/**
-	 * Handles connection reset events
-	 */
 	onReset() {
 		// Reset is called even on the first connection, so this is
 		// the only place we send this message.
@@ -150,11 +133,6 @@ export class ConnectionStreamHandlers {
 		this._resendSubscriptions();
 	}
 
-	/**
-	 * Builds the initial connect message
-	 * @private
-	 * @returns The connect message object
-	 */
 	_buildConnectMessage() {
 		return {
 			msg: 'connect',
@@ -164,10 +142,6 @@ export class ConnectionStreamHandlers {
 		} as const;
 	}
 
-	/**
-	 * Handles outstanding methods during a reset
-	 * @private
-	 */
 	_handleOutstandingMethodsOnReset() {
 		const blocks = this._connection._outstandingMethodBlocks;
 		if (blocks.length === 0) return;
@@ -201,10 +175,6 @@ export class ConnectionStreamHandlers {
 		});
 	}
 
-	/**
-	 * Resends all active subscriptions
-	 * @private
-	 */
 	_resendSubscriptions() {
 		Object.entries(this._connection._subscriptions).forEach(([id, sub]: [string, any]) => {
 			this._connection._sendQueued({
@@ -224,10 +194,6 @@ export class MessageProcessors {
 		this._connection = connection;
 	}
 
-	/**
-	 * @summary Process the connection message and set up the session
-	 * @param {Object} msg The connection message
-	 */
 	async _livedata_connected(msg: any) {
 		const self = this._connection;
 
@@ -330,10 +296,6 @@ export class MessageProcessors {
 		}
 	}
 
-	/**
-	 * @summary Process various data messages from the server
-	 * @param {Object} msg The data message
-	 */
 	async _livedata_data(msg: any) {
 		const self = this._connection;
 
@@ -403,10 +365,6 @@ export class MessageProcessors {
 		}, self._bufferedWritesInterval);
 	}
 
-	/**
-	 * @summary Process individual data messages by type
-	 * @private
-	 */
 	async _processOneDataMessage(msg: any, updates: any) {
 		const messageType = msg.msg;
 
@@ -430,14 +388,10 @@ export class MessageProcessors {
 				// ignore this
 				break;
 			default:
-				Meteor._debug('discarding unknown livedata data message type', msg);
+				console.debug('discarding unknown livedata data message type', msg);
 		}
 	}
 
-	/**
-	 * @summary Handle method results arriving from the server
-	 * @param {Object} msg The method result message
-	 */
 	async _livedata_result(msg: any) {
 		const self = this._connection;
 
@@ -449,7 +403,7 @@ export class MessageProcessors {
 		// find the outstanding request
 		// should be O(1) in nearly all realistic use cases
 		if (isEmpty(self._outstandingMethodBlocks)) {
-			Meteor._debug('Received method result but no methods outstanding');
+			console.debug('Received method result but no methods outstanding');
 			return;
 		}
 		const currentMethodBlock = self._outstandingMethodBlocks[0].methods;
@@ -460,7 +414,7 @@ export class MessageProcessors {
 			return found;
 		});
 		if (!m) {
-			Meteor._debug("Can't match method response to original method call", msg);
+			console.debug("Can't match method response to original method call", msg);
 			return;
 		}
 
@@ -479,10 +433,6 @@ export class MessageProcessors {
 		}
 	}
 
-	/**
-	 * @summary Handle "nosub" messages arriving from the server
-	 * @param {Object} msg The nosub message
-	 */
 	async _livedata_nosub(msg: any) {
 		const self = this._connection;
 
@@ -518,13 +468,9 @@ export class MessageProcessors {
 		}
 	}
 
-	/**
-	 * @summary Handle errors from the server
-	 * @param {Object} msg The error message
-	 */
 	_livedata_error(msg: any) {
-		Meteor._debug('Received error from server: ', msg.reason);
-		if (msg.offendingMessage) Meteor._debug('For: ', msg.offendingMessage);
+		console.debug('Received error from server: ', msg.reason);
+		if (msg.offendingMessage) console.debug('For: ', msg.offendingMessage);
 	}
 
 	// Document change message processors will be defined in a separate class
@@ -537,11 +483,6 @@ export class DocumentProcessors {
 		this._connection = connection;
 	}
 
-	/**
-	 * @summary Process an 'added' message from the server
-	 * @param {Object} msg The added message
-	 * @param {Object} updates The updates accumulator
-	 */
 	async _process_added(msg: any, updates: any) {
 		const self = this._connection;
 		const id = ObjectID.parse(msg.id);
@@ -571,11 +512,6 @@ export class DocumentProcessors {
 		}
 	}
 
-	/**
-	 * @summary Process a 'changed' message from the server
-	 * @param {Object} msg The changed message
-	 * @param {Object} updates The updates accumulator
-	 */
 	_process_changed(msg: any, updates: any) {
 		const self = this._connection;
 		const serverDoc = self._getServerDoc(msg.collection, ObjectID.parse(msg.id));
@@ -590,11 +526,6 @@ export class DocumentProcessors {
 		}
 	}
 
-	/**
-	 * @summary Process a 'removed' message from the server
-	 * @param {Object} msg The removed message
-	 * @param {Object} updates The updates accumulator
-	 */
 	_process_removed(msg: any, updates: any) {
 		const self = this._connection;
 		const serverDoc = self._getServerDoc(msg.collection, ObjectID.parse(msg.id));
@@ -614,11 +545,6 @@ export class DocumentProcessors {
 		}
 	}
 
-	/**
-	 * @summary Process a 'ready' message from the server
-	 * @param {Object} msg The ready message
-	 * @param {Object} updates The updates accumulator
-	 */
 	_process_ready(msg: any, _updates: any) {
 		const self = this._connection;
 
@@ -639,11 +565,6 @@ export class DocumentProcessors {
 		});
 	}
 
-	/**
-	 * @summary Process an 'updated' message from the server
-	 * @param {Object} msg The updated message
-	 * @param {Object} updates The updates accumulator
-	 */
 	_process_updated(msg: any, updates: any) {
 		const self = this._connection;
 		// Process "method done" messages.
@@ -696,13 +617,6 @@ export class DocumentProcessors {
 		});
 	}
 
-	/**
-	 * @summary Push an update to the buffer
-	 * @private
-	 * @param {Object} updates The updates accumulator
-	 * @param {String} collection The collection name
-	 * @param {Object} msg The update message
-	 */
 	_pushUpdate(updates: any, collection: string, msg: any) {
 		if (!isKey(updates, collection)) {
 			updates[collection] = [];
@@ -710,13 +624,6 @@ export class DocumentProcessors {
 		updates[collection].push(msg);
 	}
 
-	/**
-	 * @summary Get a server document by collection and id
-	 * @private
-	 * @param {String} collection The collection name
-	 * @param {String} id The document id
-	 * @returns {Object|null} The server document or null
-	 */
 	_getServerDoc(collection: string, id: string) {
 		const self = this._connection;
 		if (!hasOwn(self._serverDocuments, collection)) {
@@ -1484,7 +1391,7 @@ export class Connection {
 			try {
 				stubOptions.stubReturnValue = DDP._CurrentMethodInvocation.withValue(stubOptions.invocation, stubOptions.stubInvocation);
 				if (Meteor._isPromise(stubOptions.stubReturnValue)) {
-					Meteor._debug(
+					console.debug(
 						`Method ${name}: Calling a method that has an async method stub with call/apply can lead to unexpected behaviors. Use callAsync/applyAsync instead.`,
 					);
 				}
@@ -1529,14 +1436,6 @@ export class Connection {
 				this._saveOriginals();
 			}
 			try {
-				/*
-				 * The code below follows the same logic as the function withValues().
-				 *
-				 * But as the Meteor pkg is not compiled by ecmascript, it is unable to use newer syntax in the browser,
-				 * such as, the async/await.
-				 *
-				 * So, to keep supporting old browsers, like IE 11, we're creating the logic one level above.
-				 */
 				const currentContext = DDP._CurrentMethodInvocation._setNewContextAndGetCurrent(stubOptions.invocation);
 				try {
 					stubOptions.stubReturnValue = await stubOptions.stubInvocation();
@@ -1638,7 +1537,7 @@ export class Connection {
 			if (options.throwStubExceptions) {
 				throw exception;
 			} else if (!exception._expectedByTest) {
-				Meteor._debug(`Exception while simulating the effect of invoking '${name}'`, exception);
+				console.debug(`Exception while simulating the effect of invoking '${name}'`, exception);
 			}
 		}
 
@@ -1650,7 +1549,7 @@ export class Connection {
 		if (!callback) {
 			if (!options.returnServerResultPromise && (!options.isFromCallAsync || options.returnStubValue)) {
 				callback = (err: any) => {
-					err && Meteor._debug(`Error invoking Method '${name}'`, err);
+					err && console.debug(`Error invoking Method '${name}'`, err);
 				};
 			} else {
 				promise = new Promise((resolve: any, reject) => {
@@ -1914,7 +1813,7 @@ export class Connection {
 		} else if (messageType === 'nosub') {
 			// ignore this
 		} else {
-			Meteor._debug('discarding unknown livedata data message type', msg);
+			console.debug('discarding unknown livedata data message type', msg);
 		}
 	}
 
@@ -1933,10 +1832,6 @@ export class Connection {
 		return writes;
 	}
 
-	/**
-	 * Client-side store updates handled synchronously for optimistic UI
-	 * @private
-	 */
 	_performWritesClient(updates: Record<string, any[]>) {
 		// const self = this;
 
@@ -1964,10 +1859,6 @@ export class Connection {
 		this._runAfterUpdateCallbacks();
 	}
 
-	/**
-	 * Executes buffered writes either synchronously (client) or async (server)
-	 * @private
-	 */
 	async _flushBufferedWrites() {
 		const writes = this._prepareBuffersToFlush();
 		return this._performWritesClient(writes);
@@ -2191,16 +2082,6 @@ const randomStream = (name: string) => {
 	return RandomStream.get(scope, name);
 };
 
-/**
- * @summary Connect to the server of a different Meteor application to subscribe to its document sets and invoke its remote methods.
- * @locus Anywhere
- * @param {String} url The URL of another Meteor application.
- * @param {Object} [options]
- * @param {Boolean} options.reloadWithOutstanding is it OK to reload if there are outstanding methods?
- * @param {Object} options.headers extra headers to send on the websockets connection, for server-to-server DDP only
- * @param {Object} options._sockjsOptions Specifies options to pass through to the sockjs client
- * @param {Function} options.onDDPNegotiationVersionFailure callback when version negotiation fails.
- */
 const connect = (url: string, options: Partial<ClientStreamOptions> = {}) => {
 	const connection = allConnections.get(url);
 	if (connection) {
@@ -2211,25 +2092,12 @@ const connect = (url: string, options: Partial<ClientStreamOptions> = {}) => {
 	return ret;
 };
 
-/**
- * @summary Register a function to call as the first step of
- * reconnecting. This function can call methods which will be executed before
- * any other outstanding methods. For example, this can be used to re-establish
- * the appropriate authentication context on the connection.
- * @locus Anywhere
- * @param {Function} callback The function to call. It will be called with a
- * single argument, the [connection object](#ddp_connect) that is reconnecting.
- */
 const onReconnect = (callback: (connection: Connection) => void) => _reconnectHook.register(callback);
 
 const runtimeConfig = typeof __meteor_runtime_config__ !== 'undefined' ? __meteor_runtime_config__ : Object.create(null);
 const ddpUrl = runtimeConfig.DDP_DEFAULT_CONNECTION_URL || '/';
 export const connection = connect(ddpUrl, { onDDPVersionNegotiationFailure });
 
-/**
- * @namespace DDP
- * @summary Namespace for DDP-related methods/classes.
- */
 export const DDP = {
 	_reconnectHook,
 	_CurrentMethodInvocation,
@@ -2244,7 +2112,7 @@ export const DDP = {
 const retry = new Retry();
 
 function onDDPVersionNegotiationFailure(description: string) {
-	Meteor._debug(description);
+	console.debug(description);
 
 	const migrationData = Reload._migrationData('livedata') || Object.create(null);
 	let failures = migrationData.DDPVersionNegotiationFailures || 0;

@@ -8,8 +8,6 @@ type ValidationError = {
 	message: string;
 	path: string;
 };
-
-// Success is false (no error), failure is an error object or array of objects
 type ValidationResult = null | false | ValidationError | ValidationError[];
 
 type Pattern =
@@ -32,8 +30,6 @@ type Matcher = {
 	validate(value: unknown, validateFn: typeof testSubtree): ValidationResult;
 };
 
-// --- Utils ---
-
 const class2type: Record<string, string> = {};
 const { toString } = class2type;
 const fnToString = hasOwn.toString;
@@ -53,8 +49,6 @@ const isPlainObject = (obj: unknown): obj is Record<string, unknown> => {
 	const Ctor = hasOwn(proto, 'constructor') && proto.constructor;
 	return typeof Ctor === 'function' && fnToString.call(Ctor) === ObjectFunctionString;
 };
-
-// --- Argument Checker ---
 
 class ArgumentChecker {
 	public args: unknown[];
@@ -94,8 +88,6 @@ class ArgumentChecker {
 
 const currentArgumentChecker = new Meteor.EnvironmentVariable<ArgumentChecker>();
 
-// --- Error Formatting ---
-
 const formatError = (result: ValidationError) => {
 	const err = new Match.Error(result.message) as MatchError;
 	if (result.path) {
@@ -119,8 +111,6 @@ const stringForErrorMessage = (value: unknown, options: { onlyShowType?: boolean
 	}
 	return EJSON.stringify(value);
 };
-
-// --- Matcher Classes ---
 
 class Optional implements Matcher {
 	constructor(public pattern: Pattern) {}
@@ -198,8 +188,6 @@ class ObjectWithValues implements Matcher {
 	}
 }
 
-// --- Validation Logic ---
-
 const typeofChecks = [
 	[String, 'string'],
 	[Number, 'number'],
@@ -211,8 +199,8 @@ const typeofChecks = [
 const checkPrimitive = (value: unknown, pattern: unknown): ValidationResult => {
 	for (const [typeConstructor, typeName] of typeofChecks) {
 		if (pattern === typeConstructor) {
-			// eslint-disable-next-line valid-typeof
-			if (typeof value === typeName) return false;
+			const valueType = typeof value;
+			if (valueType === typeName) return false;
 			return {
 				message: `Expected ${typeName}, got ${stringForErrorMessage(value, { onlyShowType: true })}`,
 				path: '',
@@ -251,8 +239,6 @@ const validateArray = (
 	if (!Array.isArray(value) && !isArguments(value)) {
 		return { message: `Expected array, got ${stringForErrorMessage(value)}`, path: '' };
 	}
-
-	// We know value is array-like here
 	const arrayValue = value as unknown[];
 
 	for (let i = 0; i < arrayValue.length; i++) {
@@ -279,8 +265,6 @@ const validateObjectWithValues = (value: unknown, valuePattern: Pattern, validat
 	if (!isPlainObject(value)) {
 		return { message: 'Expected plain object', path: '' };
 	}
-
-	// In ObjectWithValues, every value in the object must match the pattern
 	for (const key in value) {
 		if (hasOwn(value, key)) {
 			const result = validateFn((value as Record<string, unknown>)[key], valuePattern);
@@ -308,8 +292,6 @@ const validateObject = (
 
 	const requiredPatterns: Record<string, Pattern> = Object.create(null);
 	const optionalPatterns: Record<string, Pattern> = Object.create(null);
-
-	// Classify patterns
 	for (const key of Object.keys(pattern)) {
 		const subPattern = pattern[key];
 		if (subPattern instanceof Optional || subPattern instanceof Maybe) {
@@ -346,8 +328,6 @@ const validateObject = (
 			if (typeof subValue !== 'object' || res.message) errors.push(res);
 		}
 	}
-
-	// Check for missing required keys
 	const missingKeys = Object.keys(requiredPatterns);
 	if (missingKeys.length) {
 		const createMissingError = (key: string) => ({
@@ -366,8 +346,6 @@ const validateObject = (
 	return errors.length === 0 ? false : errors;
 };
 
-// --- Main Validation Function ---
-
 const testSubtree = (
 	value: unknown,
 	pattern: Pattern,
@@ -375,54 +353,34 @@ const testSubtree = (
 	errors: ValidationError[] = [],
 	path = '',
 ): ValidationResult => {
-	// 1. Any
 	if (pattern === Match.Any) return false;
-
-	// 2. Primitives (Constructors)
 	const primitiveResult = checkPrimitive(value, pattern);
 	if (primitiveResult !== null) return primitiveResult;
-
-	// 3. Literals
 	const literalResult = checkLiteral(value, pattern);
 	if (literalResult !== null) return literalResult;
-
-	// 4. Integer Special Case
 	if (pattern === Match.Integer) {
 		if (typeof value === 'number' && (value | 0) === value) return false;
 		return { message: `Expected Integer, got ${stringForErrorMessage(value)}`, path: '' };
 	}
-
-	// 5. Object (Generic)
 	if (pattern === Object) {
 		return validateObject(value, {}, true, testSubtree, collectErrors, errors, path);
 	}
-
-	// 6. Arrays
 	if (Array.isArray(pattern)) {
 		return validateArray(value, pattern, collectErrors, errors, path);
 	}
-
-	// 7. Matcher Objects (Optional, Maybe, OneOf, Where, ObjectIncluding)
-	// We check if it satisfies the Matcher interface (has validate method)
 	if (typeof pattern === 'object' && pattern !== null && 'validate' in pattern && isFunction((pattern as Matcher).validate)) {
 		return (pattern as Matcher).validate(value, testSubtree);
 	}
-
-	// 8. Custom Constructors (instanceof check)
 	if (pattern instanceof Function) {
 		if (value instanceof pattern) return false;
 		return { message: `Expected ${pattern.name || 'particular constructor'}`, path: '' };
 	}
-
-	// 9. Plain Objects (Strict structure)
 	if (typeof pattern === 'object' && pattern !== null) {
 		return validateObject(value, pattern as Record<string, Pattern>, false, testSubtree, collectErrors, errors, path);
 	}
 
 	return { message: 'Bad pattern: unknown pattern type', path: '' };
 };
-
-// --- Public API ---
 
 export function check(value: unknown, pattern: Pattern, options: { throwAllErrors?: boolean } = { throwAllErrors: false }): void {
 	const argChecker = currentArgumentChecker.getOrNullIfOutsideFiber();
@@ -485,8 +443,6 @@ export const Match = {
 		return result;
 	},
 };
-
-// --- Internal Helper Constants ---
 
 const _jsKeywords = new Set([
 	'do',
@@ -552,14 +508,4 @@ const _prependPath = (key: string | number, base: string): string => {
 	return keyStr + base;
 };
 
-const baseIsArguments = (item: unknown): item is IArguments =>
-	isObject(item) && Object.prototype.toString.call(item) === '[object Arguments]';
-
-const isArguments = baseIsArguments(
-	(function () {
-		// eslint-disable-next-line prefer-rest-params
-		return arguments;
-	})(),
-)
-	? baseIsArguments
-	: (value: unknown): value is IArguments => isObject(value) && hasOwn(value, 'callee') && isFunction(value.callee);
+const isArguments = (value: unknown): value is IArguments => isObject(value) && hasOwn(value, 'callee') && isFunction(value.callee);

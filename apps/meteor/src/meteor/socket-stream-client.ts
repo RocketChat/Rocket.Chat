@@ -1,6 +1,6 @@
 import { Meteor } from './meteor.ts';
 import { Retry } from './retry.ts';
-import { Dependency } from './tracker.ts';
+import { Tracker } from './tracker.ts';
 
 const forcedReconnectError = new Error('forced reconnect');
 
@@ -34,31 +34,29 @@ type EventCallbacks = {
 };
 
 class ClientStream {
-	// Properties merged from StreamClientCommon
-	currentStatus: StreamStatus;
+	currentStatus: StreamStatus = { status: 'connecting', connected: false, retryCount: 0 };
 
-	statusListeners: Dependency;
+	statusListeners = new Tracker.Dependency();
 
 	CONNECT_TIMEOUT: number;
 
-	_retry: Retry;
+	_retry = new Retry();
 
-	connectionTimer: ReturnType<typeof setTimeout> | null;
+	connectionTimer: ReturnType<typeof setTimeout> | null = null;
 
-	_forcedToDisconnect: boolean;
+	_forcedToDisconnect = false;
 
-	eventCallbacks: EventCallbacks;
+	eventCallbacks: EventCallbacks = Object.create(null);
 
 	options: ClientStreamOptions;
 
-	// Properties from ClientStream
 	rawUrl: string;
 
-	socket: WebSocket | null;
+	socket: WebSocket | null = null;
 
-	heartbeatTimer: ReturnType<typeof setTimeout> | null;
+	heartbeatTimer: ReturnType<typeof setTimeout> | null = null;
 
-	lastError: unknown;
+	lastError: unknown = null;
 
 	HEARTBEAT_TIMEOUT: number;
 
@@ -72,24 +70,11 @@ class ClientStream {
 			...options
 		}: Partial<ClientStreamOptions> = {},
 	) {
-		// Initialization logic merged from _initCommon
 		this.options = { retry, connectTimeoutMs, heartbeatInterval, heartbeatTimeout, ...options };
 		this.CONNECT_TIMEOUT = connectTimeoutMs;
 		this.HEARTBEAT_TIMEOUT = heartbeatTimeout;
 
 		this.rawUrl = url;
-		this.socket = null;
-		this.lastError = null;
-		this.connectionTimer = null;
-		this.heartbeatTimer = null;
-		this._forcedToDisconnect = false;
-
-		this.eventCallbacks = Object.create(null);
-		this.currentStatus = { status: 'connecting', connected: false, retryCount: 0 };
-		this.statusListeners = new Dependency();
-		this._retry = new Retry();
-
-		// Bind event handlers once to ensure add/removeEventListener works correctly
 		this._onOpen = this._onOpen.bind(this);
 		this._onMessage = this._onMessage.bind(this);
 		this._onError = this._onError.bind(this);
@@ -99,10 +84,6 @@ class ClientStream {
 		window.addEventListener('online', this._online, false);
 		this._launchConnection();
 	}
-
-	// -------------------------------------------------------------------------
-	// Public API
-	// -------------------------------------------------------------------------
 
 	on<K extends keyof StreamEvents>(name: K, callback: StreamEvents[K]) {
 		if (name !== 'message' && name !== 'reset' && name !== 'disconnect') {
@@ -169,10 +150,6 @@ class ClientStream {
 		}
 	}
 
-	// -------------------------------------------------------------------------
-	// Internal Logic
-	// -------------------------------------------------------------------------
-
 	protected forEachCallback<K extends keyof StreamEvents>(name: K, cb: (callback: StreamEvents[K]) => void) {
 		if (!this.eventCallbacks[name]?.length) {
 			return;
@@ -209,7 +186,6 @@ class ClientStream {
 				this._lostConnection(new Error('DDP connection timed out'));
 			}, this.CONNECT_TIMEOUT);
 		} catch (e) {
-			// Handle malformed URLs or other immediate instantiation errors
 			this._onError(e);
 		}
 	}
@@ -252,8 +228,6 @@ class ClientStream {
 	}
 
 	public _lostConnection(maybeError?: unknown) {
-		// In the original code, `_lostConnection` was bound to the 'close' event.
-		// If it's a CloseEvent, we don't treat it as an error object for the callback.
 		const errorToPass = maybeError instanceof Event ? undefined : maybeError;
 
 		this._cleanup(errorToPass);
@@ -314,10 +288,6 @@ class ClientStream {
 		this.heartbeatTimer = setTimeout(this._heartbeat_timeout.bind(this), this.HEARTBEAT_TIMEOUT);
 	}
 
-	// -------------------------------------------------------------------------
-	// Event Handlers
-	// -------------------------------------------------------------------------
-
 	private _onOpen() {
 		this.lastError = null;
 		this._connected();
@@ -341,10 +311,6 @@ class ClientStream {
 		console.error('stream error', error, new Date().toDateString());
 	}
 }
-
-// -----------------------------------------------------------------------------
-// Helpers
-// -----------------------------------------------------------------------------
 
 function translateUrl(url: string, newSchemeBase: string, subPath: string) {
 	if (!newSchemeBase) {

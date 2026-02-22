@@ -10,8 +10,6 @@ type Callback<TArgs extends any[] = unknown[], TResult = unknown> = (...args: TA
 export class Hook<TArgs extends any[] = [], TResult = void, TCallback extends Callback<TArgs, TResult> = Callback<TArgs, TResult>> {
 	nextCallbackId = 0;
 
-	// Optimization: Use Map instead of Object.
-	// Maps allow O(1) addition/deletion without de-optimizing the object's hidden class.
 	callbacks = new Map<number, TCallback>();
 
 	bindEnvironment = true;
@@ -53,21 +51,7 @@ export class Hook<TArgs extends any[] = [], TResult = void, TCallback extends Ca
 		this.callbacks.clear();
 	}
 
-	/**
-	 * For each registered callback, call the passed iterator function with the callback.
-	 *
-	 * The iterator function can choose whether or not to call the
-	 * callback.  (For example, it might not call the callback if the
-	 * observed object has been closed or terminated).
-	 * The iteration is stopped if the iterator function returns a falsy
-	 * value or throws an exception.
-	 *
-	 * @param iterator
-	 */
 	forEach(iterator: (callback: TCallback) => boolean | void | undefined) {
-		// Optimization: Iterate directly over Map values.
-		// Map iterators are live and handle deletions during iteration safely (the removed item is skipped).
-		// This removes the need for `Object.keys` allocation and `Object.hasOwn` checks.
 		for (const callback of this.callbacks.values()) {
 			if (!iterator(callback)) {
 				break;
@@ -84,10 +68,6 @@ export class Hook<TArgs extends any[] = [], TResult = void, TCallback extends Ca
 		}
 	}
 
-	/**
-	 * @deprecated use forEach
-	 * @param iterator
-	 */
 	each(iterator: (callback: TCallback) => boolean | void | undefined) {
 		return this.forEach(iterator);
 	}

@@ -7,13 +7,11 @@ export class ObjectID {
 	private _str: string;
 
 	constructor(hexString?: string) {
-		// random-based impl of Mongo ObjectID
 		if (hexString) {
 			hexString = hexString.toLowerCase();
 			if (!_looksLikeObjectID(hexString)) {
 				throw new Error('Invalid hexadecimal string for creating an ObjectID');
 			}
-			// meant to work with _.isEqual(), which relies on structural equality
 			this._str = hexString;
 		} else {
 			this._str = Random.hexString(24);
@@ -67,7 +65,6 @@ export class ObjectID {
 				_looksLikeObjectID(id) || // escape object-id-form strings
 				firstChar === '{'
 			) {
-				// escape object-form strings, for maybe implementing later
 				return `-${id}`;
 			}
 			return id; // other strings go through unchanged.
@@ -78,8 +75,6 @@ export class ObjectID {
 		if (typeof id === 'object' && id !== null) {
 			throw new Error('Meteor does not currently support objects other than ObjectID as ids');
 		}
-
-		// Numbers, true, false, null
 		return `~${JSON.stringify(id)}`;
 	}
 

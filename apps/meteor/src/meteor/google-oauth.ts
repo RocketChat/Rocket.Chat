@@ -29,7 +29,6 @@ export const Google = {
 		options?: GoogleOptions | CredentialRequestCompleteCallback,
 		credentialRequestCompleteCallback?: CredentialRequestCompleteCallback,
 	) {
-		// Support (callback) signature without options
 		if (!credentialRequestCompleteCallback && typeof options === 'function') {
 			credentialRequestCompleteCallback = options;
 			options = {};
@@ -49,26 +48,18 @@ export const Google = {
 		}
 
 		const credentialToken = Random.secret();
-
-		// Manage Scopes: Ensure 'email' is always present and remove duplicates
 		const scopeSet = new Set<string>(opts.requestPermissions || ['profile']);
 		scopeSet.add('email');
 		const scopes = Array.from(scopeSet);
-
-		// Merge Login URL Parameters (Config > Options)
 		const loginUrlParameters: Record<string, string> = {
 			...(config.loginUrlParameters || {}),
 			...(opts.loginUrlParameters || {}),
 		};
-
-		// Validate Parameters
 		Object.keys(loginUrlParameters).forEach((key) => {
 			if (ILLEGAL_PARAMETERS[key]) {
 				throw new Error(`Google.requestCredential: Invalid loginUrlParameter: ${key}`);
 			}
 		});
-
-		// Handle specific Google OAuth flags
 		if (opts.requestOfflineToken != null) {
 			loginUrlParameters.access_type = opts.requestOfflineToken ? 'offline' : 'online';
 		}
@@ -84,8 +75,6 @@ export const Google = {
 		}
 
 		const loginStyle = OAuth._loginStyle('google', config, opts);
-
-		// Add mandatory protocol parameters
 		Object.assign(loginUrlParameters, {
 			response_type: 'code',
 			client_id: config.clientId,
@@ -93,8 +82,6 @@ export const Google = {
 			redirect_uri: OAuth._redirectUri('google', config),
 			state: OAuth._stateParam(loginStyle, credentialToken, opts.redirectUrl),
 		});
-
-		// Construct Query String
 		const queryString = Object.keys(loginUrlParameters)
 			.map((param) => `${encodeURIComponent(param)}=${encodeURIComponent(loginUrlParameters[param])}`)
 			.join('&');

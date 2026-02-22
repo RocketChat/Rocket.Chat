@@ -40,10 +40,6 @@ function ensureCollection(name: string, collections: Map<string, LocalCollection
 
 	return newCollection;
 }
-
-// -----------------------------------------------------------------------------
-// mongo/collection/collection_utils.js
-// -----------------------------------------------------------------------------
 export const ID_GENERATORS = {
 	MONGO(name: string) {
 		return function () {
@@ -87,7 +83,7 @@ export function setupMutationMethods(collection, name, options) {
 
 export function validateCollectionName(name) {
 	if (!name && name !== null) {
-		Meteor._debug(
+		console.debug(
 			'Warning: creating anonymous collection. It will not be ' +
 				'saved or synchronized over the network. (Pass null for ' +
 				'the collection name to turn off this warning.)',
@@ -104,17 +100,13 @@ export function validateCollectionName(name) {
 
 export function normalizeOptions(options) {
 	if (options && options.methods) {
-		// Backwards compatibility hack with original signature
 		options = { connection: options };
 	}
-	// Backwards compatibility: "connection" used to be called "manager".
 	if (options && options.manager && !options.connection) {
 		options.connection = options.manager;
 	}
 
 	const cleanedOptions = Object.fromEntries(Object.entries(options || {}).filter(([_, v]) => v !== undefined));
-
-	// 2) Spread defaults first, then only the defined overrides
 	return {
 		connection: undefined,
 		idGeneration: 'STRING',
@@ -124,15 +116,8 @@ export function normalizeOptions(options) {
 		...cleanedOptions,
 	};
 }
-
-// -----------------------------------------------------------------------------
-// mongo/mongo_utils.js
-// -----------------------------------------------------------------------------
 export const normalizeProjection = (options?: { fields?: any; projection?: any }) => {
-	// transform fields key in projection
 	const { fields, projection, ...otherOptions } = options || {};
-	// TODO: enable this comment when deprecating the fields option
-	// Log.debug(`fields option has been deprecated, please use the new 'projection' instead`)
 
 	return {
 		...otherOptions,
@@ -142,6 +127,7 @@ export const normalizeProjection = (options?: { fields?: any; projection?: any }
 
 export class Collection {
 	_connection: Connection | null;
+
 	constructor(name, options) {
 		let _ID_GENERATORS$option;
 		let _ID_GENERATORS;
@@ -167,10 +153,6 @@ export class Collection {
 		setupMutationMethods(this, name, options);
 		Mongo._collections.set(name, this);
 	}
-
-	//-----------------------------------------------------------------------------
-	// Internal API
-	//-----------------------------------------------------------------------------
 
 	async _publishCursor(cursor, sub, collection) {
 		const observeHandle = await cursor.observeChanges(
@@ -245,9 +227,6 @@ export class Collection {
 		return { transform: self._transform, ...newOptions };
 	}
 
-	// -----------------------------------------------------------------------------
-	//Replication
-	// -----------------------------------------------------------------------------
 	async _maybeSetUpReplication(name) {
 		let _registerStoreResult;
 		let _registerStoreResult$;
@@ -393,9 +372,6 @@ export class Collection {
 					});
 	}
 
-	//-----------------------------------------------------------------------------
-	// Synchronous CRUD operations
-	//-----------------------------------------------------------------------------
 	find() {
 		for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
 			args[_key] = arguments[_key];
@@ -543,10 +519,6 @@ export class Collection {
 
 		return this.update(selector, modifier, { ...options, _returnObject: true, upsert: true });
 	}
-
-	//-----------------------------------------------------------------------------
-	// Asynchronous CRUD operations
-	//-----------------------------------------------------------------------------
 
 	findOneAsync() {
 		for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {

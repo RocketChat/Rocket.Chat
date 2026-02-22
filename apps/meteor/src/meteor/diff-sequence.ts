@@ -1,5 +1,4 @@
 import { EJSON } from './ejson.ts';
-import { Meteor } from './meteor.ts';
 import { hasOwn } from './utils/hasOwn.ts';
 import { isEmptyObject } from './utils/isEmptyObject.ts';
 import { keys } from './utils/keys.ts';
@@ -141,7 +140,7 @@ const diffQueryOrderedChanges = (
 
 	newResults.forEach((doc) => {
 		if (newPresenceOfId[doc._id]) {
-			Meteor._debug('Duplicate _id in newResults');
+			console.debug('Duplicate _id in newResults');
 		}
 		newPresenceOfId[doc._id] = true;
 	});
@@ -150,7 +149,7 @@ const diffQueryOrderedChanges = (
 
 	oldResults.forEach((doc, i) => {
 		if (doc._id in oldIndexOfId) {
-			Meteor._debug('Duplicate _id in oldResults');
+			console.debug('Duplicate _id in oldResults');
 		}
 		oldIndexOfId[doc._id] = i;
 	});
