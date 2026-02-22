@@ -127,11 +127,13 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	const emailField = useId();
 	const showOnOfflineFormField = useId();
 	const offlineMessageChannelNameField = useId();
+	const offlineMessageChannelNameFieldLabelId = `${offlineMessageChannelNameField}-label`;
 	const fallbackForwardDepartmentField = useId();
 	const requestTagBeforeClosingChatField = useId();
 	const chatClosingTagsField = useId();
 	const allowReceiveForwardOffline = useId();
 	const unitFieldId = useId();
+	const unitFieldLabelId = `${unitFieldId}-label`;
 	const agentsLabelId = useId();
 	const departmentsAllowedToForwardFieldId = useId();
 
@@ -222,7 +224,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							</FieldRow>
 						</Field>
 						<Field>
-							<FieldLabel htmlFor={offlineMessageChannelNameField}>{t('Livechat_DepartmentOfflineMessageToChannel')}</FieldLabel>
+							<FieldLabel id={offlineMessageChannelNameFieldLabelId}>
+							{t('Livechat_DepartmentOfflineMessageToChannel')}
+						</FieldLabel>
 							<FieldRow>
 								<Controller
 									control={control}
@@ -239,6 +243,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 											placeholder={t('Channel_name')}
 											endReached={() => fetchNextPage()}
 											aria-busy={fallbackFilter !== debouncedFallbackFilter}
+											aria-labelledby={offlineMessageChannelNameFieldLabelId}
 										/>
 									)}
 								/>
@@ -342,7 +347,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 									/>
 								</Field>
 								<Field>
-									<FieldLabel htmlFor={unitFieldId} required={isUnitRequired}>
+									<FieldLabel id={unitFieldLabelId} required={isUnitRequired}>
 										{t('Unit')}
 									</FieldLabel>
 									<FieldRow>
@@ -357,6 +362,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 													id={unitFieldId}
 													error={errors.unit?.message as string}
 													aria-describedby={`${unitFieldId}-error`}
+													aria-labelledby={unitFieldLabelId}
 													value={value}
 													onChange={onChange}
 													onLoadItems={(list) => {

@@ -9,7 +9,7 @@ import { useUnitsList } from '../hooks/useUnitsList';
 
 type AutoCompleteUnitProps = Omit<
 	ComponentProps<typeof PaginatedSelectFiltered>,
-	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
+	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem' | 'flexGrow' | 'flexShrink' | 'width'
 > & {
 	haveNone?: boolean;
 	value: string | undefined;
@@ -26,6 +26,8 @@ const AutoCompleteUnit = ({
 	haveNone,
 	onChange,
 	onLoadItems = () => undefined,
+	'aria-labelledby': ariaLabelledBy,
+	...props
 }: AutoCompleteUnitProps) => {
 	const { t } = useTranslation();
 	const [unitsFilter, setUnitsFilter] = useState<string>('');
@@ -42,8 +44,9 @@ const AutoCompleteUnit = ({
 
 	return (
 		<PaginatedSelectFiltered
+			{...props}
 			id={id}
-			aria-label={t('Unit')} // FIXME: remove this when PaginatedSelectFiltered properly associates the input with the label htmlFor
+			aria-labelledby={ariaLabelledBy}
 			error={error}
 			filter={unitsFilter}
 			flexGrow={0}
