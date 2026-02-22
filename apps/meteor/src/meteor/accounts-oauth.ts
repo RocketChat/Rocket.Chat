@@ -1,6 +1,3 @@
-/**
- * @see https://docs.meteor.com/api/accounts-oauth.html#AccountsOAuth-registerService
- */
 class ServiceSet extends Set<string> {
 	includes(service: string): boolean {
 		return this.has(service);
@@ -25,20 +22,10 @@ class ServiceSet extends Set<string> {
 
 const services = new ServiceSet();
 
-/**
- * Helper for registering OAuth based services.
- */
 export const registerService = <T extends string>(name: T) => {
 	services.add(name);
 };
 
-/**
- * Removes a previously registered service.
- * This will disable logging in with this service, and serviceNames() will not
- * contain it.
- * It's worth noting that already logged in users will remain logged in unless
- * you manually expire their sessions.
- */
 export const unregisterService = <T extends string>(name: T) => {
 	services.delete(name);
 };

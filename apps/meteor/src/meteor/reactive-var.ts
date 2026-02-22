@@ -1,4 +1,4 @@
-import { Dependency, Tracker } from './tracker.ts';
+import { Tracker } from './tracker.ts';
 
 type EqualsFunc<T> = (oldValue: T, newValue: T) => boolean;
 
@@ -12,7 +12,7 @@ export class ReactiveVar<T> {
 
 	readonly #equals: EqualsFunc<T>;
 
-	readonly #dep = new Dependency();
+	readonly #dep = new Tracker.Dependency();
 
 	constructor(initialValue: T, equalsFunc: EqualsFunc<T> = isEqual) {
 		this.#value = initialValue;

@@ -1,6 +1,3 @@
-/**
- * Internal interface for the Doubly Linked List Node.
- */
 type Node<K, V> = {
 	key: K;
 	value: V;
@@ -9,7 +6,6 @@ type Node<K, V> = {
 };
 
 export class OrderedDict<K = string, V = unknown> implements Iterable<[K, V]> {
-	// True ES private fields for runtime encapsulation
 	readonly #map = new Map<K, Node<K, V>>();
 
 	#head?: Node<K, V>;
@@ -135,8 +131,6 @@ export class OrderedDict<K = string, V = unknown> implements Iterable<[K, V]> {
 		this.#head = undefined;
 		this.#tail = undefined;
 	}
-
-	// --- Private Linked List Helpers ---
 
 	#unlink(node: Node<K, V>): void {
 		if (node.prev) node.prev.next = node.next;
