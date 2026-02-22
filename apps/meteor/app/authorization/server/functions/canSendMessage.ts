@@ -13,6 +13,7 @@ const subscriptionOptions = {
 	},
 };
 
+
 export async function validateRoomMessagePermissionsAsync(
 	room: IRoom | null,
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
@@ -28,6 +29,13 @@ export async function validateRoomMessagePermissionsAsync(
 
 	if (type !== 'app' && !(await canAccessRoomAsync(room, { _id: uid }, extraData))) {
 		throw new Error('error-not-allowed');
+	}
+
+	if (room.t !== 'd') {
+		const membership = await Subscriptions.findOneByRoomIdAndUserId(room._id, uid);
+		if (!membership) {
+			throw new Error('error-not-allowed');
+		}
 	}
 
 	if (await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BLOCK, uid)) {
