@@ -1,3 +1,4 @@
+import type { JsonValue } from '../JsonValue';
 import type { RocketChatAssociationModel } from '../metadata';
 import type { IRoom, RoomType } from '../rooms';
 import type { IUser } from '../users';
@@ -158,7 +159,7 @@ export interface IRoomBuilder {
 	 * @param key the name of the key
 	 * @param value the value of the custom field
 	 */
-	addCustomField(key: string, value: object): IRoomBuilder;
+	addCustomField(key: string, value: JsonValue): IRoomBuilder;
 
 	/**
 	 * Sets the entire custom field property to an object provided. This will overwrite
@@ -166,12 +167,12 @@ export interface IRoomBuilder {
 	 *
 	 * @param fields the data to set
 	 */
-	setCustomFields(fields: { [key: string]: object }): IRoomBuilder;
+	setCustomFields(fields: { [key: string]: JsonValue }): IRoomBuilder;
 
 	/**
 	 * Gets the custom field property of the room.
 	 */
-	getCustomFields(): { [key: string]: object };
+	getCustomFields(): { [key: string]: JsonValue };
 
 	/**
 	 * Gets user ids of members from a direct message

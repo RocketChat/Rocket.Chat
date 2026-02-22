@@ -1,4 +1,5 @@
 import type { IRoomBuilder } from '../../definition/accessors';
+import type { JsonValue } from '../../definition/JsonValue';
 import { RocketChatAssociationModel } from '../../definition/metadata';
 import type { IRoom, RoomType } from '../../definition/rooms';
 import type { IUser } from '../../definition/users';
@@ -18,7 +19,7 @@ export class RoomBuilder implements IRoomBuilder {
 
 	public setData(data: Partial<IRoom>): IRoomBuilder {
 		delete data.id;
-		this.room = data as IRoom;
+		this.room = { customFields: {}, ...data } as IRoom;
 
 		return this;
 	}
@@ -127,8 +128,8 @@ export class RoomBuilder implements IRoomBuilder {
 		return this.room.displaySystemMessages;
 	}
 
-	public addCustomField(key: string, value: object): IRoomBuilder {
-		if (typeof this.room.customFields !== 'object') {
+	public addCustomField(key: string, value: JsonValue): IRoomBuilder {
+		if (!this.room.customFields || typeof this.room.customFields !== 'object' || Array.isArray(this.room.customFields)) {
 			this.room.customFields = {};
 		}
 
@@ -136,12 +137,12 @@ export class RoomBuilder implements IRoomBuilder {
 		return this;
 	}
 
-	public setCustomFields(fields: { [key: string]: object }): IRoomBuilder {
+	public setCustomFields(fields: { [key: string]: JsonValue }): IRoomBuilder {
 		this.room.customFields = fields;
 		return this;
 	}
 
-	public getCustomFields(): { [key: string]: object } {
+	public getCustomFields(): { [key: string]: JsonValue } {
 		return this.room.customFields;
 	}
 
