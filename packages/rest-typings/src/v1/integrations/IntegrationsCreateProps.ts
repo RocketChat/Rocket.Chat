@@ -1,51 +1,52 @@
 import type { OutgoingIntegrationEvent, IntegrationScriptEngine } from '@rocket.chat/core-typings';
+import { ALIAS_MAX_LENGTH, ALIAS_ALLOWED_PATTERN } from '@rocket.chat/core-typings';
 
 import { ajv } from '../Ajv';
 
 export type IntegrationsCreateProps =
 	| {
-			type: 'webhook-incoming';
-			username: string;
-			channel: string;
-			overrideDestinationChannelEnabled?: boolean;
-			scriptEnabled: boolean;
-			script?: string;
-			name: string;
-			enabled: boolean;
-			alias?: string;
-			avatar?: string;
-			emoji?: string;
-			scriptEngine?: IntegrationScriptEngine;
-	  }
+		type: 'webhook-incoming';
+		username: string;
+		channel: string;
+		overrideDestinationChannelEnabled?: boolean;
+		scriptEnabled: boolean;
+		script?: string;
+		name: string;
+		enabled: boolean;
+		alias?: string;
+		avatar?: string;
+		emoji?: string;
+		scriptEngine?: IntegrationScriptEngine;
+	}
 	| {
-			type: 'webhook-outgoing';
-			username: string;
-			channel: string;
+		type: 'webhook-outgoing';
+		username: string;
+		channel: string;
 
-			event: OutgoingIntegrationEvent;
-			targetRoom?: string;
-			urls?: string[];
-			triggerWords?: string[];
-			triggerWordAnywhere?: boolean;
-			token?: string;
+		event: OutgoingIntegrationEvent;
+		targetRoom?: string;
+		urls?: string[];
+		triggerWords?: string[];
+		triggerWordAnywhere?: boolean;
+		token?: string;
 
-			scriptEnabled: boolean;
-			script?: string;
-			runOnEdits?: boolean;
+		scriptEnabled: boolean;
+		script?: string;
+		runOnEdits?: boolean;
 
-			retryFailedCalls?: boolean;
-			retryCount?: number;
-			retryDelay?: string;
-			impersonateUser?: boolean;
+		retryFailedCalls?: boolean;
+		retryCount?: number;
+		retryDelay?: string;
+		impersonateUser?: boolean;
 
-			name: string;
-			enabled: boolean;
+		name: string;
+		enabled: boolean;
 
-			alias?: string;
-			avatar?: string;
-			emoji?: string;
-			scriptEngine?: IntegrationScriptEngine;
-	  };
+		alias?: string;
+		avatar?: string;
+		emoji?: string;
+		scriptEngine?: IntegrationScriptEngine;
+	};
 
 const integrationsCreateSchema = {
 	oneOf: [
@@ -87,6 +88,8 @@ const integrationsCreateSchema = {
 				},
 				alias: {
 					type: 'string',
+					maxLength: ALIAS_MAX_LENGTH,
+					pattern: ALIAS_ALLOWED_PATTERN.source,
 					nullable: true,
 				},
 				avatar: {
@@ -191,6 +194,8 @@ const integrationsCreateSchema = {
 				},
 				alias: {
 					type: 'string',
+					maxLength: ALIAS_MAX_LENGTH,
+					pattern: ALIAS_ALLOWED_PATTERN.source,
 					nullable: true,
 				},
 				avatar: {

@@ -1,53 +1,54 @@
 import type { OutgoingIntegrationEvent } from '@rocket.chat/core-typings';
+import { ALIAS_MAX_LENGTH, ALIAS_ALLOWED_PATTERN } from '@rocket.chat/core-typings';
 
 import { ajv } from '../Ajv';
 
 export type IntegrationsUpdateProps =
 	| {
-			type: 'webhook-incoming';
-			integrationId: string;
-			channel: string;
-			scriptEnabled: boolean;
-			scriptEngine: 'isolated-vm';
-			overrideDestinationChannelEnabled?: boolean;
-			script?: string;
-			name: string;
-			enabled: boolean;
-			alias?: string;
-			avatar?: string;
-			emoji?: string;
-	  }
+		type: 'webhook-incoming';
+		integrationId: string;
+		channel: string;
+		scriptEnabled: boolean;
+		scriptEngine: 'isolated-vm';
+		overrideDestinationChannelEnabled?: boolean;
+		script?: string;
+		name: string;
+		enabled: boolean;
+		alias?: string;
+		avatar?: string;
+		emoji?: string;
+	}
 	| {
-			type: 'webhook-outgoing';
-			integrationId?: string;
-			target_url?: string;
-			username: string;
-			channel: string;
+		type: 'webhook-outgoing';
+		integrationId?: string;
+		target_url?: string;
+		username: string;
+		channel: string;
 
-			event: OutgoingIntegrationEvent;
-			targetRoom?: string;
-			urls?: string[];
-			triggerWords?: string[];
-			triggerWordAnywhere?: boolean;
-			token?: string;
+		event: OutgoingIntegrationEvent;
+		targetRoom?: string;
+		urls?: string[];
+		triggerWords?: string[];
+		triggerWordAnywhere?: boolean;
+		token?: string;
 
-			scriptEnabled: boolean;
-			scriptEngine: 'isolated-vm';
-			script?: string;
-			runOnEdits?: boolean;
+		scriptEnabled: boolean;
+		scriptEngine: 'isolated-vm';
+		script?: string;
+		runOnEdits?: boolean;
 
-			retryFailedCalls?: boolean;
-			retryCount?: number;
-			retryDelay?: string;
-			impersonateUser?: boolean;
+		retryFailedCalls?: boolean;
+		retryCount?: number;
+		retryDelay?: string;
+		impersonateUser?: boolean;
 
-			name: string;
-			enabled: boolean;
+		name: string;
+		enabled: boolean;
 
-			alias?: string;
-			avatar?: string;
-			emoji?: string;
-	  };
+		alias?: string;
+		avatar?: string;
+		emoji?: string;
+	};
 
 const integrationsUpdateSchema = {
 	oneOf: [
@@ -93,6 +94,8 @@ const integrationsUpdateSchema = {
 				},
 				alias: {
 					type: 'string',
+					maxLength: ALIAS_MAX_LENGTH,
+					pattern: ALIAS_ALLOWED_PATTERN.source,
 					nullable: true,
 				},
 				avatar: {
@@ -205,6 +208,8 @@ const integrationsUpdateSchema = {
 				},
 				alias: {
 					type: 'string',
+					maxLength: ALIAS_MAX_LENGTH,
+					pattern: ALIAS_ALLOWED_PATTERN.source,
 					nullable: true,
 				},
 				avatar: {

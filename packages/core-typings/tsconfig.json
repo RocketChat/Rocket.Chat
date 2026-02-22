@@ -1,11 +1,22 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
-		"lib": ["dom", "dom.iterable"],
+		"target": "es2020",
+		"lib": [
+			"dom",
+			"dom.iterable",
+			"es2020"
+		],
 		"declaration": true,
 		"rootDir": "./src",
 		"outDir": "./dist",
-		"plugins": [{ "transform": "typia/lib/transform" }]
+		"plugins": [
+			{
+				"transform": "typia/lib/transform"
+			}
+		]
 	},
-	"include": ["./src/**/*"]
+	"include": [
+		"./src/**/*"
+	]
 }

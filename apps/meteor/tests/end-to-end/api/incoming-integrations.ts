@@ -165,6 +165,153 @@ describe('[Incoming Integrations]', () => {
 				const integrationId = res.body.integration._id;
 				await removeIntegration(integrationId, 'incoming');
 			});
+
+			it('should reject an alias longer than 50 characters', async () => {
+				const res = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test',
+						enabled: true,
+						alias: 'a'.repeat(51),
+						username: 'rocket.cat',
+						scriptEnabled: false,
+						channel: '#general',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(res.body.success).to.be.false;
+			});
+
+			it('should reject an alias with special characters', async () => {
+				const res = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test',
+						enabled: true,
+						alias: '@#$$Invalid!',
+						username: 'rocket.cat',
+						scriptEnabled: false,
+						channel: '#general',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(res.body.success).to.be.false;
+			});
+
+			it('should accept an alias at exactly 50 characters', async () => {
+				const res = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test 50 chars',
+						enabled: true,
+						alias: 'a'.repeat(50),
+						username: 'rocket.cat',
+						scriptEnabled: false,
+						channel: '#general',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body.success).to.be.true;
+				if (res.body.integration?._id) {
+					await removeIntegration(res.body.integration._id, 'incoming');
+				}
+			});
+
+			it('should accept a valid alias', async () => {
+				const res = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test valid alias',
+						enabled: true,
+						alias: 'My-Bot_v2',
+						username: 'rocket.cat',
+						scriptEnabled: false,
+						channel: '#general',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body.success).to.be.true;
+				if (res.body.integration?._id) {
+					await removeIntegration(res.body.integration._id, 'incoming');
+				}
+			});
+
+			it('should accept a valid alias with Unicode characters', async () => {
+				const res = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test unicode alias',
+						enabled: true,
+						alias: 'Hürriyet_日本語_عربى',
+						username: 'rocket.cat',
+						scriptEnabled: false,
+						channel: '#general',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body.success).to.be.true;
+				if (res.body.integration?._id) {
+					await removeIntegration(res.body.integration._id, 'incoming');
+				}
+			});
+
+			it('should accept a webhook with no alias provided', async () => {
+				const res = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test omitted alias',
+						enabled: true,
+						username: 'rocket.cat',
+						scriptEnabled: false,
+						channel: '#general',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body.success).to.be.true;
+				if (res.body.integration?._id) {
+					await removeIntegration(res.body.integration._id, 'incoming');
+				}
+			});
+
+			it('should accept a webhook with an empty string alias', async () => {
+				const res = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test empty string alias',
+						enabled: true,
+						alias: '',
+						username: 'rocket.cat',
+						scriptEnabled: false,
+						channel: '#general',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body.success).to.be.true;
+				if (res.body.integration?._id) {
+					await removeIntegration(res.body.integration._id, 'incoming');
+				}
+			});
 		});
 
 		describe('With manage-own-incoming-integrations permission', () => {

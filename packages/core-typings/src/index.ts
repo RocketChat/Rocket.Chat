@@ -23,6 +23,7 @@ export * from './IPermission';
 export * from './IRole';
 export * from './IIntegration';
 export * from './IIntegrationHistory';
+export * from './integrations/constants';
 export * from './ICustomSound';
 export * from './ICloud';
 export * from './IServerEvent';

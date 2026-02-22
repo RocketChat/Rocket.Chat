@@ -21,6 +21,7 @@ import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useId, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { ALIAS_MAX_LENGTH, ALIAS_ALLOWED_PATTERN, ALIAS_ALLOWED_PATTERN_DESCRIPTION } from '@rocket.chat/core-typings';
 import { useTranslation } from 'react-i18next';
 
 import type { EditIncomingWebhookFormData } from './EditIncomingWebhook';
@@ -229,12 +230,42 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								<Controller
 									name='alias'
 									control={control}
+									rules={{
+										maxLength: {
+											value: ALIAS_MAX_LENGTH,
+											message: t('Max_length_is', { length: ALIAS_MAX_LENGTH }),
+										},
+										pattern: {
+											value: ALIAS_ALLOWED_PATTERN,
+											message: ALIAS_ALLOWED_PATTERN_DESCRIPTION,
+										},
+									}}
 									render={({ field }) => (
-										<TextInput id={aliasField} {...field} aria-describedby={`${aliasField}-hint`} addon={<Icon name='edit' size='x20' />} />
+										<TextInput
+											id={aliasField}
+											{...field}
+											maxLength={ALIAS_MAX_LENGTH}
+											aria-describedby={`${aliasField}-hint ${aliasField}-error`}
+											aria-invalid={Boolean(errors?.alias)}
+											error={errors?.alias?.message}
+											addon={
+												<>
+													<Box is='span' fontScale='micro' color='hint' mie='x8'>
+														{alias?.length ?? 0}/{ALIAS_MAX_LENGTH}
+													</Box>
+													<Icon name='edit' size='x20' />
+												</>
+											}
+										/>
 									)}
 								/>
 							</FieldRow>
 							<FieldHint id={`${aliasField}-hint`}>{t('Choose_the_alias_that_will_appear_before_the_username_in_messages')}</FieldHint>
+							{errors?.alias && (
+								<FieldError aria-live='assertive' id={`${aliasField}-error`}>
+									{errors.alias.message}
+								</FieldError>
+							)}
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={avatarField}>{t('Avatar_URL')}</FieldLabel>
