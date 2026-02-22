@@ -287,7 +287,7 @@ API.v1.addRoute(
 
 const saveNotificationBodySchema = ajv.compile<{
     roomId: string;
-    notifications: Record<string, unknown>;
+    notifications: Record<string, string>;
 }>({
     type: 'object',
     properties: {
@@ -295,7 +295,7 @@ const saveNotificationBodySchema = ajv.compile<{
         notifications: {
             type: 'object',
             minProperties: 1,
-            additionalProperties: true,
+            additionalProperties: { type: 'string' },
         },
     },
     required: ['roomId', 'notifications'],
