@@ -9,13 +9,18 @@ import nginx from './vite/plugins/nginx';
 
 process.env.TEST_MODE ??= process.env.VITE_TEST_MODE;
 
-console.log('TEST_MODE:', process.env.TEST_MODE);
+const isTestMode = process.env.TEST_MODE === 'true';
+
+if (isTestMode) {
+	console.warn('Running in TEST_MODE: source maps enabled');
+}
 
 const build = {
 	emptyOutDir: true,
 	assetsDir: 'static',
 	manifest: true,
 	target: 'esnext',
+	sourcemap: isTestMode ? 'inline' : false,
 	rolldownOptions: {
 		optimization: {
 			inlineConst: true,
