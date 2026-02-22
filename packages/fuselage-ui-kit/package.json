@@ -31,7 +31,7 @@
 		"build-storybook": "NODE_ENV=production storybook build",
 		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.build.json",
 		"docs": "cross-env NODE_ENV=production storybook build -o ../../static/fuselage-ui-kit",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint": "eslint .",
 		"storybook": "storybook dev -p 6006 --no-version-updates",
 		"test": "jest",
 		"testunit": "jest",

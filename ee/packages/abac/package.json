@@ -11,8 +11,8 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsc --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx src",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx src --fix",
+		"lint": "eslint src",
+		"lint:fix": "eslint src --fix",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit --skipLibCheck"

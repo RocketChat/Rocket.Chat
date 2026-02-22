@@ -10,8 +10,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc",
 		"dev": "tsc --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
 		"testunit": "jest --passWithNoTests"
 	},
 	"dependencies": {

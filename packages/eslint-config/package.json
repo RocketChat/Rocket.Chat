@@ -16,8 +16,8 @@
 		"react.js"
 	],
 	"scripts": {
-		"lint": "eslint --ext .js .",
-		"lint:fix": "eslint --ext .js . --fix"
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix"
 	},
 	"dependencies": {
 		"@babel/core": "~7.28.6",

@@ -34,7 +34,7 @@
 		"dev": "NODE_OPTIONS=\"--trace-warnings\" meteor --exclude-archs \"web.browser.legacy, web.cordova\"",
 		"docker:start": "docker-compose up",
 		"dsv": "meteor npm run dev",
-		"eslint": "NODE_OPTIONS=\"--max-old-space-size=8192\" eslint --ext .js,.jsx,.ts,.tsx . --cache",
+		"eslint": "NODE_OPTIONS=\"--max-old-space-size=8192\" eslint . --cache",
 		"eslint:fix": "yarn eslint --fix",
 		"ha": "meteor npm run ha:start",
 		"ha:add": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node .scripts/run-ha.ts instance",

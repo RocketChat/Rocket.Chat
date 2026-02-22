@@ -25,7 +25,7 @@
 		".:build:prepare": "ts-patch install && typia patch",
 		".:build:tsc": "tsc -p tsconfig.build.json",
 		"build": "run-s .:build:prepare .:build:clean .:build:tsc",
-		"lint": "eslint . --ext .ts,.tsx",
+		"lint": "eslint .",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
