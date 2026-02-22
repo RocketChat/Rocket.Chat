@@ -2,7 +2,8 @@
  * This file is part of https://github.com/martynsmith/node-irc
  * by https://github.com/martynsmith
  */
-import replyFor from './codes';
+
+const replyFor = require('./codes');
 
 /**
  * parseMessage(line, stripColors)
@@ -12,7 +13,7 @@ import replyFor from './codes';
  * @param {String} line Raw message from IRC server.
  * @return {Object} A parsed message object.
  */
-export function parseMessage(line) {
+module.exports = function parseMessage(line) {
 	const message = {};
 	let match;
 
