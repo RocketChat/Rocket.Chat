@@ -9434,7 +9434,7 @@ __metadata:
     swiper: "patch:swiper@npm%3A11.1.14#~/.yarn/patches/swiper-npm-11.1.14-8126fa478a.patch"
     template-file: "npm:^6.0.1"
     textarea-caret: "npm:^3.1.0"
-    tinykeys: "npm:^1.4.0"
+    tinykeys: "npm:^3.0.0"
     ts-node: "npm:^10.9.2"
     tsx: "npm:~4.20.6"
     tsyringe: "npm:^4.10.0"
@@ -35014,10 +35014,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinykeys@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "tinykeys@npm:1.4.0"
-  checksum: 10/3778d5db869ea2e37ae242223a05979c48f78ce8d0f60aac0b2980406c250eac1761c1b61ec92c1b6a2abf7efd1b67a983dc41794dabda4b97aed7a07a88b66d
+"tinykeys@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "tinykeys@npm:3.0.0"
+  checksum: 10/9ad9bfe3a45366ca77567a23018c8b24dbde4a66050c439f5aa439c66ca578102af0762ee5f7256ee4739b8c1ce64f076fcb8001f867fe842b4271d2bbe9de76
   languageName: node
   linkType: hard
 

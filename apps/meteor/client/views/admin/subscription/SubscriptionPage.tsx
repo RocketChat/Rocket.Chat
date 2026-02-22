@@ -11,7 +11,7 @@ import {
 import { useSearchParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
 import { memo, useCallback, useEffect } from 'react';
-import tinykeys from 'tinykeys';
+import { tinykeys } from 'tinykeys';
 
 import { SubscriptionCalloutLimits } from './SubscriptionCalloutLimits';
 import SubscriptionPageSkeleton from './SubscriptionPageSkeleton';

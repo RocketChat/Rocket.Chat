@@ -5,7 +5,7 @@ import { useFocusManager, useOverlayTrigger } from 'react-aria';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useOverlayTriggerState } from 'react-stately';
-import tinykeys from 'tinykeys';
+import { tinykeys } from 'tinykeys';
 
 import NavBarSearchListBox from './NavBarSearchListbox';
 import { getShortcutLabel } from './getShortcutLabel';
