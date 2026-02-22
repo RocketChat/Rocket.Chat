@@ -1,6 +1,6 @@
 import type { TelemetryEvents, TelemetryMap } from '@rocket.chat/core-services';
 import type { IStats } from '@rocket.chat/core-typings';
-import { ajv, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
+import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
 import { getStatistics, getLastStatistics } from '../../../statistics/server';
 import telemetryEvent from '../../../statistics/server/lib/telemetryEvents';
@@ -33,22 +33,19 @@ API.v1.get(
 				},
 				required: ['success'],
 			}),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 		},
 	},
 	async function action() {
 		const { refresh = 'false' } = this.queryParams;
 
-		const stats = await getLastStatistics({
-			userId: this.userId,
-			refresh: refresh === 'true',
-		});
-
-		if (!stats) {
-			throw new Error('No statistics found');
-		}
-
-		return API.v1.success(stats);
+		return API.v1.success(
+			await getLastStatistics({
+				userId: this.userId,
+				refresh: refresh === 'true',
+			}),
+		);
 	},
 );
 
@@ -88,6 +85,7 @@ API.v1.get(
 				},
 				required: ['statistics', 'count', 'offset', 'total', 'success'],
 			}),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 		},
 	},
@@ -142,6 +140,7 @@ API.v1.post(
 				required: ['success'],
 				additionalProperties: false,
 			}),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 		},
 	},
