@@ -1,23 +1,15 @@
-# Use Nginx Alpine as the base image
 FROM nginx:alpine
 
-# Remove the default Nginx configuration
 RUN rm -rf /etc/nginx/conf.d/*
 
-# Copy the custom Nginx configuration
 COPY dist/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Remove the nginx.conf from the dist folder to avoid copying it to the static assets
 RUN rm -f dist/nginx.conf
 
-# Remove default nginx static assets
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy the built static assets from the dist folder
 COPY dist /usr/share/nginx/html
 
-# Expose port 80
 EXPOSE 80
 
-# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
