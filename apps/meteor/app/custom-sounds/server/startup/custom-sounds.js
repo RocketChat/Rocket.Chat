@@ -7,7 +7,7 @@ import { settings } from '../../../settings/server';
 
 export let RocketChatFileCustomSoundsInstance;
 
-Meteor.startup(() => {
+const initializeCustomSoundsStorage = () => {
 	let storeType = 'GridFS';
 
 	if (settings.get('CustomSounds_Storage_Type')) {
@@ -85,4 +85,8 @@ Meteor.startup(() => {
 
 		file.readStream.pipe(res);
 	});
-});
+}
+
+Meteor.startup(initializeCustomSoundsStorage);
+
+settings.watchMultiple(['CustomSounds_Storage_Type', 'CustomSounds_FileSystemPath'], initializeCustomSoundsStorage);
