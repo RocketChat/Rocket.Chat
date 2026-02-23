@@ -68,7 +68,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			tabIndex={0}
 			onClick={isSelecting ? toggleSelected : undefined}
 			isSelected={isSelected}
-			data-qa-selected={isSelected}
 			data-system-message-type={message.t}
 			{...props}
 		>
