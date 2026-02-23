@@ -44,14 +44,16 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	const saveAction = useMethod('addUsersToRoom');
 
 	// Fetch existing room members to exclude them from autocomplete
+	// Note: Limited to 100 members due to API_Upper_Count_Limit setting
+	// In very large channels (>100 members), some existing members might still appear in autocomplete
 	const getRoomMembers = useEndpoint('GET', room.t === 'd' ? '/v1/im.members' : '/v1/rooms.membersOrderedByRole');
 	const { data: membersData } = useQuery({
 		queryKey: ['room-members', rid],
-		queryFn: () => getRoomMembers({ roomId: rid, offset: 0, count: 1000 }),
+		queryFn: () => getRoomMembers({ roomId: rid, offset: 0, count: 100 }),
 	});
 
 	const existingMemberUsernames = useMemo(
-		() => membersData?.members?.map((member) => member.username).filter(Boolean) || [],
+		() => membersData?.members?.map((member) => member.username).filter((username): username is string => !!username) || [],
 		[membersData],
 	);
 
