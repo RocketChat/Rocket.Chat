@@ -1,4 +1,4 @@
-import { Settings } from '@rocket.chat/models';
+import { Settings, Users } from '@rocket.chat/models';
 import semver from 'semver';
 
 import { i18n } from '../../../../server/lib/i18n';
@@ -7,6 +7,27 @@ import { updateAuditedBySystem } from '../../../../server/settings/lib/auditedSe
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
+
+const cleanupOutdatedVersionBanners = async (): Promise<void> => {
+	const admins = Users.findUsersInRolesWithQuery('admin', { banners: { $exists: true } }, { projection: { _id: 1, banners: 1 } });
+
+	for await (const admin of admins) {
+		if (!admin.banners) {
+			continue;
+		}
+
+		for await (const bannerId of Object.keys(admin.banners)) {
+			if (!bannerId.startsWith('versionUpdate-')) {
+				continue;
+			}
+
+			const version = bannerId.replace('versionUpdate-', '').replace(/_/g, '.');
+			if (semver.valid(version) && semver.lte(version, Info.version)) {
+				await Users.removeBannerById(admin._id, bannerId);
+			}
+		}
+	}
+};
 
 export const buildVersionUpdateMessage = async (
 	versions: {
@@ -25,8 +46,11 @@ export const buildVersionUpdateMessage = async (
 		return;
 	}
 
-	for await (const version of versions) {
-		// Ignore prerelease versions
+	const sortedVersions = [...versions].sort((a, b) => semver.rcompare(a.version, b.version));
+
+	await cleanupOutdatedVersionBanners();
+
+	for await (const version of sortedVersions) {
 		if (semver.prerelease(version.version)) {
 			continue;
 		}
