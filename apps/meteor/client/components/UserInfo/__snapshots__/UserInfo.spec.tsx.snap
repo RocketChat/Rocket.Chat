@@ -164,21 +164,22 @@ exports[`renders Default without crashing 1`] = `
                         </span>
                       </div>
                     </div>
-                    <div
+                    <dl
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
-                      <div
+                      <dt
                         class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        id=":r1:"
                       >
                         Username
-                      </div>
-                      <div
+                      </dt>
+                      <dd
+                        aria-labelledby=":r1:"
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
-                        data-qa="UserInfoUserName"
                       >
                         guilherme.gazzo
-                      </div>
-                    </div>
+                      </dd>
+                    </dl>
                     <div
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
@@ -467,21 +468,22 @@ exports[`renders InvitedUser without crashing 1`] = `
                         </span>
                       </div>
                     </div>
-                    <div
+                    <dl
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
-                      <div
+                      <dt
                         class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        id=":r3:"
                       >
                         Username
-                      </div>
-                      <div
+                      </dt>
+                      <dd
+                        aria-labelledby=":r3:"
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
-                        data-qa="UserInfoUserName"
                       >
                         guilherme.gazzo
-                      </div>
-                    </div>
+                      </dd>
+                    </dl>
                     <div
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
@@ -784,21 +786,22 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         </span>
                       </div>
                     </div>
-                    <div
+                    <dl
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
-                      <div
+                      <dt
                         class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        id=":r5:"
                       >
                         Username
-                      </div>
-                      <div
+                      </dt>
+                      <dd
+                        aria-labelledby=":r5:"
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
-                        data-qa="UserInfoUserName"
                       >
                         guilherme.gazzo
-                      </div>
-                    </div>
+                      </dd>
+                    </dl>
                     <div
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
@@ -1147,21 +1150,22 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         </span>
                       </div>
                     </div>
-                    <div
+                    <dl
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
-                      <div
+                      <dt
                         class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                        id=":r7:"
                       >
                         Username
-                      </div>
-                      <div
+                      </dt>
+                      <dd
+                        aria-labelledby=":r7:"
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
-                        data-qa="UserInfoUserName"
                       >
                         guilherme.gazzo
-                      </div>
-                    </div>
+                      </dd>
+                    </dl>
                     <div
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >

@@ -130,7 +130,7 @@ const UserInfo = ({
 					)}
 
 					{username && username !== name && (
-						<InfoPanelField>
+						<InfoPanelField is='dl'>
 							<InfoPanelLabel is='dt' id={usernameId}>
 								{t('Username')}
 							</InfoPanelLabel>
