@@ -1108,7 +1108,7 @@ export const roomEndpoints = API.v1
 				await FederationMatrix.handleInvite(roomId, this.userId, action);
 				return API.v1.success();
 			} catch (error) {
-				throw new Meteor.Error(`Failed to handle invite: ${error instanceof Error ? error.message : String(error)}`);
+				return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
 			}
 		},
 	)
