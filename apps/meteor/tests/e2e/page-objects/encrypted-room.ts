@@ -40,7 +40,7 @@ export class EncryptedRoomPage extends HomeContent {
 		const disableRoomEncryptionModal = new DisableRoomEncryptionModal(this.page);
 
 		await this.toolbar.openMoreOptions();
-		await this.toolbar.btnDisableE2EEncryption.click();
+		await this.toolbar.menuItemDisabledE2EEncryption.click();
 		await disableRoomEncryptionModal.disable();
 	}
 
