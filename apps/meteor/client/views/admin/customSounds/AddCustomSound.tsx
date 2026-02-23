@@ -31,8 +31,8 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
 
 	const saveAction = useCallback(
-		async (name: string, soundFile: File | undefined) => {
-			const soundData = createSoundData(soundFile ?? { name: '' }, name);
+		async (name: string, soundFile: File) => {
+			const soundData = createSoundData(soundFile, name);
 			const validation = validate(soundData, soundFile) as Array<Parameters<typeof t>[0]>;
 
 			validation.forEach((invalidFieldName) => {
@@ -49,11 +49,10 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 				dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
 
 				const reader = new FileReader();
-				// soundFile is defined here: validate() above throws when soundFile is missing
-				reader.readAsBinaryString(soundFile!);
+				reader.readAsBinaryString(soundFile);
 				reader.onloadend = (): void => {
 					try {
-						uploadCustomSound(reader.result as string, soundFile!.type, {
+						uploadCustomSound(reader.result as string, soundFile.type, {
 							...soundData,
 							_id: soundId,
 							random: Math.round(Math.random() * 1000),
@@ -110,7 +109,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave}>
+					<Button primary onClick={handleSave} disabled={!sound || !name}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
