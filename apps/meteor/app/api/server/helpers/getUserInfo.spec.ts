@@ -216,7 +216,15 @@ describe('getUserInfo', () => {
 
 		it('should filter out versionUpdate banners for versions <= current installed', async () => {
 			user.banners = {
-				'versionUpdate-6_2_0': { id: 'versionUpdate-6_2_0', priority: 10, title: 'Update', text: 'New version', modifiers: [], link: '', read: false },
+				'versionUpdate-6_2_0': {
+					id: 'versionUpdate-6_2_0',
+					priority: 10,
+					title: 'Update',
+					text: 'New version',
+					modifiers: [],
+					link: '',
+					read: false,
+				},
 			};
 			const userInfo = await getUserInfo(user);
 			expect(userInfo.banners).toEqual({});
@@ -224,14 +232,24 @@ describe('getUserInfo', () => {
 
 		it('should keep versionUpdate banners for versions > current installed', async () => {
 			user.banners = {
-				'versionUpdate-8_0_0': { id: 'versionUpdate-8_0_0', priority: 10, title: 'Update', text: 'New version', modifiers: [], link: '', read: false },
+				'versionUpdate-8_0_0': {
+					id: 'versionUpdate-8_0_0',
+					priority: 10,
+					title: 'Update',
+					text: 'New version',
+					modifiers: [],
+					link: '',
+					read: false,
+				},
 			};
 			const userInfo = await getUserInfo(user);
 			expect(userInfo.banners).toHaveProperty('versionUpdate-8_0_0');
 		});
 
 		it('should keep non-versionUpdate banners unchanged', async () => {
-			user.banners = { 'other-banner': { id: 'other-banner', priority: 10, title: 'Other', text: 'Other banner', modifiers: [], link: '', read: false } };
+			user.banners = {
+				'other-banner': { id: 'other-banner', priority: 10, title: 'Other', text: 'Other banner', modifiers: [], link: '', read: false },
+			};
 			const userInfo = await getUserInfo(user);
 			expect(userInfo.banners).toHaveProperty('other-banner');
 		});
