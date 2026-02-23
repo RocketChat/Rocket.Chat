@@ -127,8 +127,8 @@ const RegisterUsername = () => {
 				</Form.Container>
 				<Form.Footer>
 					<ButtonGroup stretch vertical>
-						<Button onClick={() => router.navigate(-1)}> 
-							Back
+						<Button onClick={() => router.navigate(-1)}>
+							{t('Back')}
 						</Button>
 						<Button disabled={isLoading} type='submit' primary>
 							{t('Use_this_username')}
