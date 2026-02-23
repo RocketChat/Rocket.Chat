@@ -9,7 +9,7 @@ import { validate, createSoundData } from './lib';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type EditSoundProps = {
-	close: () => void;
+	close?: () => void;
 	onChange: () => void;
 	data: {
 		_id: string;
@@ -82,7 +82,6 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 						}
 					};
 				}
-				close();
 			}
 
 			validation.forEach((invalidFieldName) =>
@@ -96,7 +95,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	);
 
 	const handleSave = useCallback(async () => {
-		await saveAction(sound);
+		saveAction(sound);
 		onChange();
 	}, [saveAction, sound, onChange]);
 

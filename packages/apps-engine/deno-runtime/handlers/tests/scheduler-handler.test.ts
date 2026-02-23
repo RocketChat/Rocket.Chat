@@ -1,10 +1,10 @@
 import { assertEquals } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
-import jsonrpc from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { AppAccessors } from '../../lib/accessors/mod.ts';
 import handleScheduler from '../scheduler-handler.ts';
+import { createMockApp, createMockRequest } from './helpers/mod.ts';
 
 describe('handlers > scheduler', () => {
 	const mockAppAccessors = new AppAccessors(() =>
@@ -16,13 +16,7 @@ describe('handlers > scheduler', () => {
 		})
 	);
 
-	const mockApp = {
-		getID: () => 'mockApp',
-		getLogger: () => ({
-			debug: () => {},
-			error: () => {},
-		}),
-	};
+	const mockApp = createMockApp();
 
 	beforeEach(() => {
 		AppObjectRegistry.clear();
@@ -40,7 +34,7 @@ describe('handlers > scheduler', () => {
 	});
 
 	it('correctly executes a request to a processor', async () => {
-		const result = await handleScheduler(jsonrpc.request(1, 'scheduler:mockId', [{}]));
+		const result = await handleScheduler(createMockRequest({ method: 'scheduler:mockId', params: [{}] }));
 
 		assertEquals(result, null);
 	});
