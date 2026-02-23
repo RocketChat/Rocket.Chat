@@ -27,6 +27,6 @@ jobs:
       - name: Run Issue Bot
         uses: juulsn/todo-issue@v1.1.4
         with:
-          excludePattern: '^(node_modules/)'
+          excludePattern: '(^|/)node_modules/'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
