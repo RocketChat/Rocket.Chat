@@ -12,7 +12,7 @@ jest.mock('../../../../client/lib/user', () => ({
 	getUserId: jest.fn(),
 }));
 jest.mock('../../../../client/lib/utils/callWithErrorHandling', () => ({
-	callWithErrorHandling: jest.fn((fn) => fn()),
+	callWithErrorHandling: jest.fn(),
 }));
 jest.mock('../../../../client/lib/utils/getConfig', () => ({
 	getConfig: jest.fn(() => '50'),
