@@ -71,6 +71,11 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	);
 
 	const handleSave = useCallback(async () => {
+		if (!sound) {
+			// unreachable: Save button is disabled when !sound — guard exists for type narrowing only
+			return;
+		}
+
 		try {
 			const result = await saveAction(name, sound);
 			if (result) {
