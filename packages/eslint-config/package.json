@@ -13,7 +13,15 @@
 		"/node",
 		"/style",
 		"/variables",
-		"react.js"
+		"react.js",
+		"best-practices.mjs",
+		"errors.mjs",
+		"es6.mjs",
+		"flat.mjs",
+		"imports.mjs",
+		"node.mjs",
+		"style.mjs",
+		"variables.mjs"
 	],
 	"scripts": {
 		"lint": "eslint .",
@@ -34,6 +42,7 @@
 		"eslint-plugin-jest": "~28.8.3",
 		"eslint-plugin-jsx-a11y": "^6.10.2",
 		"eslint-plugin-prettier": "~5.2.6",
+		"globals": "~17.3.0",
 		"prettier": "~3.3.3"
 	},
 	"devDependencies": {

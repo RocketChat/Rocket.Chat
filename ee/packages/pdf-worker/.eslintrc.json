@@ -1,5 +1,0 @@
-{
-	"extends": ["@rocket.chat/eslint-config", "plugin:storybook/recommended"],
-	"parser": "@typescript-eslint/parser",
-	"ignorePatterns": ["dist", "!.storybook"]
-}

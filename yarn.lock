@@ -8318,6 +8318,7 @@ __metadata:
     eslint-plugin-jest: "npm:~28.8.3"
     eslint-plugin-jsx-a11y: "npm:^6.10.2"
     eslint-plugin-prettier: "npm:~5.2.6"
+    globals: "npm:~17.3.0"
     prettier: "npm:~3.3.3"
     typescript: "npm:~5.9.3"
   languageName: unknown
@@ -22304,6 +22305,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"globals@npm:~17.3.0":
+  version: 17.3.0
+  resolution: "globals@npm:17.3.0"
+  checksum: 10/44ba2b7db93eb6a2531dfba09219845e21f2e724a4f400eb59518b180b7d5bcf7f65580530e3d3023d7dc2bdbacf5d265fd87c393f567deb9a2b0472b51c9d5e
+  languageName: node
+  linkType: hard
+
 "globalthis@npm:^1.0.4":
   version: 1.0.4
   resolution: "globalthis@npm:1.0.4"
@@ -32279,6 +32287,8 @@ __metadata:
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:~22.16.5"
     "@types/stream-buffers": "npm:^3.0.8"
+    eslint-plugin-no-floating-promise: "npm:~2.0.0"
+    eslint-plugin-you-dont-need-lodash-underscore: "npm:~6.14.0"
     node-gyp: "npm:^10.2.0"
     ts-node: "npm:^10.9.2"
     turbo: "npm:~2.8.11"
