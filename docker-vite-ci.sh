@@ -31,8 +31,12 @@ export GITHUB_WORKSPACE="${GITHUB_WORKSPACE:-$(pwd)}"
 export LOWERCASE_REPOSITORY="${LOWERCASE_REPOSITORY:-rocketchat}"
 export DOCKER_TAG="${DOCKER_TAG:-local-test}"
 export MONGODB_VERSION="${MONGODB_VERSION:-8.0}"
+export COVERAGE_DIR="${COVERAGE_DIR:-/tmp/coverage}"
 BUILD_DIR="${BUILD_DIR:-/tmp/build}"
 MARKER="$BUILD_DIR/.meteor-build-marker"
+
+# Flags
+ENABLE_COVERAGE=false
 
 # Check if rebuild is needed based on source file changes
 needs_rebuild() {
@@ -67,16 +71,32 @@ wait_for_healthy() {
 cmd_start() {
   log_info "Using workspace: $GITHUB_WORKSPACE"
   log_info "Build output dir: $BUILD_DIR"
+  [ "$ENABLE_COVERAGE" = true ] && log_info "Coverage enabled: $COVERAGE_DIR"
+
+  # Step 0: Prepare coverage directory if needed
+  if [ "$ENABLE_COVERAGE" = true ]; then
+    log_info "Preparing coverage directory: $COVERAGE_DIR"
+    mkdir -p "$COVERAGE_DIR"
+    chmod 777 "$COVERAGE_DIR"
+    export E2E_COVERAGE=true
+  fi
 
   # Step 1: Build workspace packages
   log_info "Building workspace packages..."
   yarn turbo run build --filter='./packages/*' --filter='./ee/packages/*'
 
   # Step 2: Build Vite frontend
-  log_info "Building Vite frontend..."
-  cd apps/meteor
-  ROOT_URL=http://localhost:3000/ VITE_TEST_MODE=true VITE_E2E_COVERAGE=true npx vite build --outDir /tmp/build/dist
-  cd ../..
+  if [ "$ENABLE_COVERAGE" = true ]; then
+    log_info "Building Vite frontend with coverage instrumentation..."
+    cd apps/meteor
+    ROOT_URL=http://localhost:3000/ VITE_TEST_MODE=true VITE_E2E_COVERAGE=true npx vite build --outDir /tmp/build/dist
+    cd ../..
+  else
+    log_info "Building Vite frontend..."
+    cd apps/meteor
+    ROOT_URL=http://localhost:3000/ VITE_TEST_MODE=true npx vite build --outDir /tmp/build/dist
+    cd ../..
+  fi
 
   # Step 3: Build Meteor backend (with caching)
   if [ "${FORCE_REBUILD:-}" = "1" ] || needs_rebuild; then
@@ -127,6 +147,7 @@ cmd_start() {
   echo "  Reset database: $0 reset"
   echo "  Traefik dashboard: http://localhost:8081"
   echo "  Application:    http://localhost:3000"
+  [ "$ENABLE_COVERAGE" = true ] && echo "  Coverage:       Enabled (output in $COVERAGE_DIR)"
   echo ""
   
   log_info "Waiting for services to be healthy..."
@@ -210,10 +231,17 @@ cmd_rebuild() {
   
   case "$target" in
     frontend)
-      log_info "Rebuilding Vite frontend..."
-      cd apps/meteor
-      ROOT_URL=http://localhost:3000/ VITE_TEST_MODE=true npx vite build --outDir /tmp/build/dist
-      cd ../..
+      if [ "$ENABLE_COVERAGE" = true ]; then
+        log_info "Rebuilding Vite frontend with coverage..."
+        cd apps/meteor
+        ROOT_URL=http://localhost:3000/ VITE_TEST_MODE=true VITE_E2E_COVERAGE=true npx vite build --outDir /tmp/build/dist
+        cd ../..
+      else
+        log_info "Rebuilding Vite frontend..."
+        cd apps/meteor
+        ROOT_URL=http://localhost:3000/ VITE_TEST_MODE=true npx vite build --outDir /tmp/build/dist
+        cd ../..
+      fi
       
       log_info "Rebuilding frontend Docker image..."
       docker compose -f $COMPOSE_FILE build frontend
@@ -284,32 +312,57 @@ cmd_help() {
   echo "Mimics the CI environment for the Vite-based frontend/backend setup."
   echo ""
   echo "Commands:"
-  echo "  start              Build and start all services (default)"
-  echo "  stop               Stop all services and remove volumes"
-  echo "  reset              Reset Rocket.Chat to initial state (drop database)"
-  echo "  rebuild [target]   Rebuild services without full restart"
-  echo "                     target: frontend (default), backend, all"
-  echo "  logs               Follow logs from rocketchat and frontend"
-  echo "  status             Show status of all services"
-  echo "  help               Show this help message"
+  echo "  start [--coverage]    Build and start all services (default)"
+  echo "  stop                  Stop all services and remove volumes"
+  echo "  reset                 Reset Rocket.Chat to initial state (drop database)"
+  echo "  rebuild [target]      Rebuild services without full restart"
+  echo "                        target: frontend (default), backend, all"
+  echo "  logs                  Follow logs from rocketchat and frontend"
+  echo "  status                Show status of all services"
+  echo "  help                  Show this help message"
+  echo ""
+  echo "Flags:"
+  echo "  --coverage            Enable code coverage instrumentation"
   echo ""
   echo "Environment variables:"
-  echo "  FORCE_REBUILD=1    Force Meteor backend rebuild even if cache is fresh"
-  echo "  BUILD_DIR          Build output directory (default: /tmp/build)"
-  echo "  MONGODB_VERSION    MongoDB version (default: 8.0)"
+  echo "  COVERAGE_DIR          Coverage output directory (default: /tmp/coverage)"
+  echo "  FORCE_REBUILD=1       Force Meteor backend rebuild even if cache is fresh"
+  echo "  BUILD_DIR             Build output directory (default: /tmp/build)"
+  echo "  MONGODB_VERSION       MongoDB version (default: 8.0)"
   echo ""
   echo "Examples:"
-  echo "  $0 start           # Build and start everything"
-  echo "  $0 reset           # Reset database for fresh test run"
-  echo "  $0 rebuild frontend # Rebuild only the frontend"
-  echo "  FORCE_REBUILD=1 $0 start  # Force full rebuild"
+  echo "  $0 start                      # Build and start everything"
+  echo "  $0 start --coverage           # Build with coverage instrumentation"
+  echo "  $0 reset                      # Reset database for fresh test run"
+  echo "  $0 rebuild frontend           # Rebuild only the frontend"
+  echo "  FORCE_REBUILD=1 $0 start      # Force full rebuild"
 }
 
 # ============================================================================
 # MAIN
 # ============================================================================
-COMMAND="${1:-start}"
-shift || true
+# Parse all arguments (flags can appear before or after command)
+COMMAND=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --coverage)
+      ENABLE_COVERAGE=true
+      shift
+      ;;
+    start|stop|reset|rebuild|logs|status|help)
+      COMMAND="$1"
+      shift
+      ;;
+    *)
+      if [ -z "$COMMAND" ]; then
+        COMMAND="$1"
+      fi
+      shift
+      ;;
+  esac
+done
+
+COMMAND="${COMMAND:-start}"
 
 case "$COMMAND" in
   start)   cmd_start ;;
