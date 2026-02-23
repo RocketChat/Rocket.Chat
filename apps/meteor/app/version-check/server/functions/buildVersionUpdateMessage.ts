@@ -22,7 +22,7 @@ const cleanupOutdatedVersionUpdateBanners = async (): Promise<void> => {
 			}
 
 			const version = bannerId.replace('versionUpdate-', '').replace(/_/g, '.');
-			if (semver.valid(version) && semver.lte(version, Info.version)) {
+			if (!semver.valid(version) || semver.lte(version, Info.version)) {
 				await Users.removeBannerById(admin._id, bannerId);
 			}
 		}

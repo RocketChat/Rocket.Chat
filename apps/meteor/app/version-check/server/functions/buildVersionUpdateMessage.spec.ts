@@ -102,6 +102,15 @@ describe('buildVersionUpdateMessage', () => {
 
 			expect(mockRemoveBannerById).not.toHaveBeenCalled();
 		});
+
+		it('should remove banners with invalid semver version IDs', async () => {
+			const admin = { _id: 'admin1', banners: { 'versionUpdate-invalid_version': { id: 'versionUpdate-invalid_version' } } };
+			mockFindUsersInRolesWithQuery.mockReturnValue(createAsyncIterableFromArray([admin]));
+
+			await buildVersionUpdateMessage([]);
+
+			expect(mockRemoveBannerById).toHaveBeenCalledWith('admin1', 'versionUpdate-invalid_version');
+		});
 	});
 
 	describe('version sorting', () => {
