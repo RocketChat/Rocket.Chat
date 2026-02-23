@@ -59,11 +59,11 @@ describe('useHasNewMessages', () => {
 			expect(RoomHistoryManager.clear).toHaveBeenCalledWith(rid, expect.any(Function));
 			expect(RoomHistoryManager.getMoreIfIsEmpty).toHaveBeenCalledWith(rid);
 
-			const filterFn = (RoomHistoryManager.clear as jest.Mock).mock.calls[0][1];
-			expect(filterFn({ _id: openThreadId })).toBe(false);
-			expect(filterFn({ _id: 'message_id', tmid: openThreadId })).toBe(false);
-			expect(filterFn({ _id: 'message_id', tmid: 'other-thread' })).toBe(true);
-			expect(filterFn({ _id: 'other-message-id' })).toBe(true);
+			const shouldRemoveFn = (RoomHistoryManager.clear as jest.Mock).mock.calls[0][1];
+			expect(shouldRemoveFn({ _id: openThreadId })).toBe(false);
+			expect(shouldRemoveFn({ _id: 'message_id', tmid: openThreadId })).toBe(false);
+			expect(shouldRemoveFn({ _id: 'message_id', tmid: 'other-thread' })).toBe(true);
+			expect(shouldRemoveFn({ _id: 'other-message-id' })).toBe(true);
 		});
 
 		it('should call RoomHistoryManager.clear with a filter to clear all messages of opened room when not in a thread', () => {
@@ -80,11 +80,11 @@ describe('useHasNewMessages', () => {
 			expect(RoomHistoryManager.clear).toHaveBeenCalledWith(rid, expect.any(Function));
 			expect(RoomHistoryManager.getMoreIfIsEmpty).toHaveBeenCalledWith(rid);
 
-			const filterFn = (RoomHistoryManager.clear as jest.Mock).mock.calls[0][1];
-			expect(filterFn({ _id: 'some-message-id' })).toBe(true);
-			expect(filterFn({ _id: 'some-message-id', tmid: 'any-thread' })).toBe(true);
-			expect(filterFn({ tmid: 'thread-without-id' })).toBe(true);
-			expect(filterFn({})).toBe(true);
+			const shouldRemoveFn = (RoomHistoryManager.clear as jest.Mock).mock.calls[0][1];
+			expect(shouldRemoveFn({ _id: 'some-message-id' })).toBe(true);
+			expect(shouldRemoveFn({ _id: 'some-message-id', tmid: 'any-thread' })).toBe(true);
+			expect(shouldRemoveFn({ tmid: 'thread-without-id' })).toBe(true);
+			expect(shouldRemoveFn({})).toBe(true);
 		});
 
 		it('should update atBottomRef when called', () => {
