@@ -28,4 +28,7 @@ export type CallEvents = {
 
 	/* Triggered when the call's state on the server changes to 'hangup' */
 	ended: void;
+
+	/* Triggered when any of the streams or tracks have changed */
+	streamChange: void;
 };
