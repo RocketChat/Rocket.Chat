@@ -137,7 +137,10 @@ export const initAPN = ({ options, absoluteUrl }: { options: RequiredField<PushO
 
 	// Rig apn connection
 	try {
-		apnConnection = new apn.Provider(options.apn);
+		apnConnection = new apn.Provider({
+			...options.apn,
+			production: options.production,
+		});
 	} catch (err) {
 		logger.error({ msg: 'Error trying to initialize APN', err });
 	}

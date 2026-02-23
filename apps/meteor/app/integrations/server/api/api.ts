@@ -369,6 +369,8 @@ class WebHookAPI extends APIClass<'/hooks'> {
 			throw new Error('Invalid integration id or token provided.');
 		}
 
+		routeContext.request.headers.set('x-auth-token', token);
+
 		routeContext.request.integration = integration;
 
 		return Users.findOneById(routeContext.request.integration.userId);
