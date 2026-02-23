@@ -7,7 +7,11 @@ import { settings } from '../../../settings/server';
 export async function getConfirmationPoll(deviceCode: string): Promise<CloudConfirmationPollData> {
 	try {
 		const cloudUrl = settings.get<string>('Cloud_Url');
-		const response = await fetch(`${cloudUrl}/api/v2/register/workspace/poll`, { params: { token: deviceCode } });
+		const response = await fetch(`${cloudUrl}/api/v2/register/workspace/poll`, {
+			params: { token: deviceCode },
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
+		});
 
 		try {
 			if (!response.ok) {
