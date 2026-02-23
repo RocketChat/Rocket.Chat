@@ -171,11 +171,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return this.doSetupNextStatusChange();
 	}
 
-	/**
-        * Public wrapper for upcoming status cancellation logic.
-        * Delegates the actual implementation to the statusEvents module.
-        * This method exists to keep the CalendarService API consistent.
-    */
+	
 	public async cancelUpcomingStatusChanges(uid: IUser['_id'], endTime = new Date()): Promise<void> {
 		return cancelUpcomingStatusChanges(uid, endTime);
 	}
