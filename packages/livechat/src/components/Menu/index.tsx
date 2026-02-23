@@ -9,10 +9,10 @@ import styles from './styles.scss';
 type MenuProps = {
 	hidden?: boolean;
 	placement?: string;
-	ref?: any; // FIXME: remove this
+	ref?: ((instance: (Component & { base: Element }) | null) => void) | null;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'ref'>;
 
-export const Menu = ({ children, hidden, placement = '', ...props }: MenuProps) => (
+export const Menu = ({ children, hidden, placement = '', ref: _ref, ...props }: MenuProps) => (
 	<div className={createClassName(styles, 'menu', { hidden, placement })} {...props}>
 		{children}
 	</div>
