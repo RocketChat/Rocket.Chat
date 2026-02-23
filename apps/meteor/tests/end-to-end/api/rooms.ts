@@ -1474,6 +1474,7 @@ describe('[Rooms]', () => {
 		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
 		let messageSent: IMessage;
 		let privateTeam: ITeam;
+		let deactivatedDiscussionUser: TestUser<IUser> | undefined;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
@@ -1491,6 +1492,7 @@ describe('[Rooms]', () => {
 				updatePermission('start-discussion', ['admin', 'user', 'guest', 'app']),
 				updatePermission('start-discussion-other-user', ['admin', 'user', 'guest', 'app']),
 				deleteTeam(credentials, privateTeam.name),
+				deactivatedDiscussionUser ? deleteUser(deactivatedDiscussionUser) : Promise.resolve(),
 			]),
 		);
 
@@ -1680,6 +1682,62 @@ describe('[Rooms]', () => {
 					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
 				})
 				.end(done);
+		});
+
+		it('should not auto-invite deactivated users from pmid author and users list', async () => {
+			deactivatedDiscussionUser = await createUser({ joinDefaultChannels: false });
+			const deactivatedDiscussionUserCredentials = await login(deactivatedDiscussionUser.username, password);
+
+			await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: deactivatedDiscussionUser.username,
+				})
+				.expect(200);
+
+			const deactivatedUserMessage = (
+				await sendSimpleMessage({
+					roomId: testChannel._id,
+					userCredentials: deactivatedDiscussionUserCredentials,
+					text: 'message from user that will be deactivated',
+				})
+			).body.message as IMessage;
+
+			await request
+				.post(api('users.setActiveStatus'))
+				.set(credentials)
+				.send({
+					userId: deactivatedDiscussionUser._id,
+					activeStatus: false,
+				})
+				.expect(200);
+
+			const discussionName = `discussion-with-deactivated-user-${Date.now()}`;
+			const response = await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: discussionName,
+					pmid: deactivatedUserMessage._id,
+					users: [deactivatedDiscussionUser.username],
+				})
+				.expect(200);
+
+			await request
+				.get(api('rooms.isMember'))
+				.set(credentials)
+				.query({
+					roomId: response.body.discussion._id,
+					username: deactivatedDiscussionUser.username,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('isMember', false);
+				});
 		});
 
 		describe('it should create a *private* discussion if the parent channel is public and inside a private team', async () => {
