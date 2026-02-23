@@ -1,0 +1,11 @@
+{
+	"report-dir": "./coverage",
+	"temp-dir": "./.nyc_output",
+	"reporter": ["html", "lcov", "text", "text-summary"],
+	"extension": [".ts", ".tsx", ".js", ".jsx"],
+	"exclude": ["**/*.spec.ts", "**/*.test.ts", "**/*.spec.js", "**/*.test.js", "tests/**", "node_modules/**", "**/*.d.ts"],
+	"all": false,
+	"check-coverage": false,
+	"sourceMap": true,
+	"instrument": false
+}

@@ -2,17 +2,24 @@ import path from 'node:path';
 
 import react from '@vitejs/plugin-react';
 import { defineConfig, esmExternalRequirePlugin, type BuildEnvironmentOptions } from 'vite';
+import istanbul from 'vite-plugin-istanbul';
 
 import info from './vite/plugins/info';
 import meteor from './vite/plugins/meteor';
 import nginx from './vite/plugins/nginx';
 
 process.env.TEST_MODE ??= process.env.VITE_TEST_MODE;
+process.env.E2E_COVERAGE ??= process.env.VITE_E2E_COVERAGE;
 
 const isTestMode = process.env.TEST_MODE === 'true';
+const isCoverageMode = process.env.E2E_COVERAGE === 'true';
 
 if (isTestMode) {
 	console.warn('Running in TEST_MODE: source maps enabled');
+}
+
+if (isCoverageMode) {
+	console.warn('Running in E2E_COVERAGE mode: code instrumentation enabled');
 }
 
 const build = {
@@ -20,7 +27,7 @@ const build = {
 	assetsDir: 'static',
 	manifest: true,
 	target: 'esnext',
-	sourcemap: isTestMode ? 'inline' : false,
+	sourcemap: isTestMode || isCoverageMode ? 'inline' : false,
 	rolldownOptions: {
 		optimization: {
 			inlineConst: true,
@@ -34,8 +41,7 @@ const build = {
 			format: 'esm',
 			minify: true,
 			cleanDir: true,
-			externalLiveBindings: false,
-
+			externalLiveBindings: true,
 			generatedCode: {
 				preset: 'es2015',
 			},
@@ -57,14 +63,18 @@ export default defineConfig(async () => {
 			}),
 			meteor({
 				rootUrl: ROOT_URL.toString(),
-				treeshake: true,
 			}),
-			react({
-				exclude: [/\.meteor\/local\/build\/programs\/web\.browser\/packages\/.*/],
-			}),
+			react(),
 			nginx(),
-			process.env.VITE_INSPECT === 'true' ? await import('vite-plugin-inspect').then(({ default: inspect }) => inspect()) : null,
-		],
+			isCoverageMode &&
+				istanbul({
+					include: 'client/**/*',
+					exclude: ['node_modules', 'tests/**/*', '**/*.spec.ts', '**/*.test.ts'],
+					extension: ['.ts', '.tsx', '.js', '.jsx'],
+					requireEnv: false,
+					forceBuildInstrument: true,
+				}),
+		].filter(Boolean),
 		build,
 		define: {
 			'process.env.TEST_MODE': JSON.stringify(process.env.TEST_MODE),
