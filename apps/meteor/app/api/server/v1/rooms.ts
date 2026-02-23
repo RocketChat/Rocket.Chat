@@ -1119,10 +1119,10 @@ export const roomEndpoints = API.v1
 			body: isRoomsFavoriteProps,
 			response: {
 				200: ajv.compile<
-			{
-				favorite: boolean;
-			} & ({ roomId: string } | { roomName: string })
-		>({
+					{
+						favorite: boolean;
+					} & ({ roomId: string } | { roomName: string })
+				>({
 					type: 'object',
 					properties: {
 						success: {
