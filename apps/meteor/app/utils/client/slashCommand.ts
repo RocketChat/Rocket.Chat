@@ -77,9 +77,9 @@ export const slashCommands = {
 	},
 	async getPreviews(
 		command: string,
-		userId: string,
 		params: string,
 		message: RequiredField<Partial<IMessage>, 'rid'>,
+		userId: string,
 	): Promise<SlashCommandPreviews | undefined> {
 		const cmd = this.commands[command];
 		if (typeof cmd?.previewer !== 'function') {

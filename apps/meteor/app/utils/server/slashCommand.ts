@@ -106,10 +106,10 @@ export const slashCommands = {
 	},
 	async executePreview(
 		command: string,
-		userId: string,
 		params: string,
 		message: Pick<IMessage, 'rid'> & Partial<Omit<IMessage, 'rid'>>,
 		preview: SlashCommandPreviewItem,
+		userId: string,
 		triggerId?: string,
 	) {
 		const cmd = this.commands[command];

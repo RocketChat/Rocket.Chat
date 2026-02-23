@@ -48,7 +48,7 @@ export const executeSlashCommandPreview = async (
 		});
 	}
 
-	return slashCommands.executePreview(command.cmd, userId, command.params, command.msg, preview, command.triggerId);
+	return slashCommands.executePreview(command.cmd, command.params, command.msg, preview, userId, command.triggerId);
 };
 
 Meteor.methods<ServerMethods>({
