@@ -1,6 +1,7 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import { TeamType } from '@rocket.chat/core-typings';
 import type { AtLeast, IIntegration, IMessage, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+import { ALIAS_MAX_LENGTH } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { assert, expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -174,7 +175,7 @@ describe('[Incoming Integrations]', () => {
 						type: 'webhook-incoming',
 						name: 'Incoming test',
 						enabled: true,
-						alias: 'a'.repeat(51),
+						alias: 'a'.repeat(ALIAS_MAX_LENGTH + 1),
 						username: 'rocket.cat',
 						scriptEnabled: false,
 						channel: '#general',
@@ -212,7 +213,7 @@ describe('[Incoming Integrations]', () => {
 						type: 'webhook-incoming',
 						name: 'Incoming test 50 chars',
 						enabled: true,
-						alias: 'a'.repeat(50),
+						alias: 'a'.repeat(ALIAS_MAX_LENGTH),
 						username: 'rocket.cat',
 						scriptEnabled: false,
 						channel: '#general',

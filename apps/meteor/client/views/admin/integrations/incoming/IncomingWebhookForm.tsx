@@ -21,7 +21,7 @@ import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useId, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { ALIAS_MAX_LENGTH, ALIAS_ALLOWED_PATTERN, ALIAS_ALLOWED_PATTERN_DESCRIPTION } from '@rocket.chat/core-typings';
+import { ALIAS_MAX_LENGTH, ALIAS_ALLOWED_PATTERN } from '@rocket.chat/core-typings';
 import { useTranslation } from 'react-i18next';
 
 import type { EditIncomingWebhookFormData } from './EditIncomingWebhook';
@@ -237,7 +237,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 										},
 										pattern: {
 											value: ALIAS_ALLOWED_PATTERN,
-											message: ALIAS_ALLOWED_PATTERN_DESCRIPTION,
+											message: t('Alias_allowed_characters'),
 										},
 									}}
 									render={({ field }) => (
@@ -247,7 +247,6 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 											maxLength={ALIAS_MAX_LENGTH}
 											aria-describedby={`${aliasField}-hint ${aliasField}-error`}
 											aria-invalid={Boolean(errors?.alias)}
-											error={errors?.alias?.message}
 											addon={
 												<>
 													<Box is='span' fontScale='micro' color='hint' mie='x8'>
