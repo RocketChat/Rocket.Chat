@@ -37,10 +37,10 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const [name, setName] = useState(() => data?.name ?? '');
 	const [sound, setSound] = useState<
 		| {
-			_id: string;
-			name: string;
-			extension?: string;
-		}
+				_id: string;
+				name: string;
+				extension?: string;
+		  }
 		| File
 	>(() => data);
 
@@ -61,7 +61,12 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 
 	const saveAction = useCallback(
 		async (sound: SoundFile) => {
-			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound instanceof File ? '' : sound.extension ?? '' });
+			const soundData = createSoundData(sound, name, {
+				previousName,
+				previousSound,
+				_id,
+				extension: sound instanceof File ? '' : (sound.extension ?? ''),
+			});
 			const soundFile = sound instanceof File ? sound : undefined;
 			const validation = validate(soundData, soundFile);
 			if (validation.length === 0) {
