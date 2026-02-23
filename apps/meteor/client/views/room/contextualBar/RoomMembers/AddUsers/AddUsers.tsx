@@ -11,8 +11,9 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useMethod, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import { useId } from 'react';
+import { useToastMessageDispatch, useMethod, useRoomToolbox, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import { useId, useMemo } from 'react';
 import type { ReactElement } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -41,6 +42,18 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 
 	const { closeTab } = useRoomToolbox();
 	const saveAction = useMethod('addUsersToRoom');
+
+	// Fetch existing room members to exclude them from autocomplete
+	const getRoomMembers = useEndpoint('GET', room.t === 'd' ? '/v1/im.members' : '/v1/rooms.membersOrderedByRole');
+	const { data: membersData } = useQuery({
+		queryKey: ['room-members', rid],
+		queryFn: () => getRoomMembers({ roomId: rid, offset: 0, count: 1000 }),
+	});
+
+	const existingMemberUsernames = useMemo(
+		() => membersData?.members?.map((member) => member.username).filter(Boolean) || [],
+		[membersData],
+	);
 
 	const {
 		handleSubmit,
@@ -84,6 +97,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 									federated={isFederated}
 									placeholder={t('Choose_users')}
 									aria-describedby={`${usersFieldId}-error`}
+									exceptions={existingMemberUsernames}
 									{...field}
 								/>
 							)}
