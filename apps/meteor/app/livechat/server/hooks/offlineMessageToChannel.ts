@@ -63,7 +63,7 @@ callbacks.add(
 			groupable: false,
 		};
 
-		await sendMessage(user, message, room, true);
+		await sendMessage(user, message, room, { upsert: true });
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-send-email-offline-message-to-channel',
