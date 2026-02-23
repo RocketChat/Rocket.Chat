@@ -31,8 +31,8 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
 
 	const saveAction = useCallback(
-		async (name: string, soundFile: File) => {
-			const soundData = createSoundData(soundFile, name);
+		async (name: string, soundFile: File | undefined) => {
+			const soundData = createSoundData(soundFile ?? { name: '' }, name);
 			const validation = validate(soundData, soundFile) as Array<Parameters<typeof t>[0]>;
 
 			validation.forEach((invalidFieldName) => {
@@ -49,10 +49,11 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 				dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
 
 				const reader = new FileReader();
-				reader.readAsBinaryString(soundFile);
+				// soundFile is defined here: validate() above throws when soundFile is missing
+				reader.readAsBinaryString(soundFile!);
 				reader.onloadend = (): void => {
 					try {
-						uploadCustomSound(reader.result as string, soundFile.type, {
+						uploadCustomSound(reader.result as string, soundFile!.type, {
 							...soundData,
 							_id: soundId,
 							random: Math.round(Math.random() * 1000),
@@ -72,10 +73,6 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 
 	const handleSave = useCallback(async () => {
 		try {
-			if (!sound) {
-				return;
-			}
-
 			const result = await saveAction(name, sound);
 			if (result) {
 				dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
