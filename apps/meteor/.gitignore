@@ -80,6 +80,7 @@ tests/end-to-end/temporary_staged_test
 /tests/e2e/.playwright
 coverage
 .nyc_output
+.nyc_cache
 /data
 tests/e2e/test-failures/
 out.txt
