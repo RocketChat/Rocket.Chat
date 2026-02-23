@@ -46,23 +46,43 @@ export const test = baseTest.extend<BaseTest>({
 			return;
 		}
 
-		await context.addInitScript(() =>
-			window.addEventListener('beforeunload', () => window.collectIstanbulCoverage(JSON.stringify(window.__coverage__))),
-		);
+		// Add coverage collection on page unload
+		await context.addInitScript(() => {
+			window.addEventListener('beforeunload', () => {
+				if (window.__coverage__) {
+					window.collectIstanbulCoverage(JSON.stringify(window.__coverage__));
+				}
+			});
+		});
 
 		await fs.promises.mkdir(PATH_NYC_OUTPUT, { recursive: true });
 
 		await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
-			if (coverageJSON) {
-				fs.writeFileSync(path.join(PATH_NYC_OUTPUT, `playwright_coverage_${randomUUID()}.json`), coverageJSON);
+			if (coverageJSON && coverageJSON !== 'undefined') {
+				try {
+					const coverage = JSON.parse(coverageJSON);
+					if (Object.keys(coverage).length > 0) {
+						fs.writeFileSync(path.join(PATH_NYC_OUTPUT, `playwright_coverage_${randomUUID()}.json`), coverageJSON);
+					}
+				} catch (error) {
+					console.warn('Failed to parse coverage data:', error);
+				}
 			}
 		});
 
 		await use(context);
 
+		// Collect coverage from all pages before closing
 		await Promise.all(
 			context.pages().map(async (page) => {
-				await page.evaluate(() => window.collectIstanbulCoverage(JSON.stringify(window.__coverage__)));
+				try {
+					const coverage = await page.evaluate(() => window.__coverage__);
+					if (coverage && Object.keys(coverage).length > 0) {
+						await page.evaluate(() => window.collectIstanbulCoverage(JSON.stringify(window.__coverage__)));
+					}
+				} catch (error) {
+					// Page might be closed or navigated away, ignore
+				}
 				await page.close();
 			}),
 		);
