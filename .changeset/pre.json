@@ -78,6 +78,7 @@
     "@rocket.chat/web-ui-registration": "27.0.1"
   },
   "changesets": [
+    "bump-patch-1771886743378",
     "calm-weeks-mate",
     "chilled-lemons-admire",
     "cold-coats-cross",
