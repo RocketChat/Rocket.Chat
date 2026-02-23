@@ -8,7 +8,7 @@ import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListen
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
 
-const cleanupOutdatedVersionBanners = async (): Promise<void> => {
+const cleanupOutdatedVersionUpdateBanners = async (): Promise<void> => {
 	const admins = Users.findUsersInRolesWithQuery('admin', { banners: { $exists: true } }, { projection: { _id: 1, banners: 1 } });
 
 	for await (const admin of admins) {
@@ -48,7 +48,7 @@ export const buildVersionUpdateMessage = async (
 
 	const sortedVersions = [...versions].sort((a, b) => semver.rcompare(a.version, b.version));
 
-	await cleanupOutdatedVersionBanners();
+	await cleanupOutdatedVersionUpdateBanners();
 
 	for await (const version of sortedVersions) {
 		if (semver.prerelease(version.version)) {
