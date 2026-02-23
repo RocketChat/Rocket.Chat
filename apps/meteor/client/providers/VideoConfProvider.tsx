@@ -44,6 +44,7 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 			VideoConfManager.off('direct/stopped', handleStop);
 			VideoConfManager.off('calling/ended', handleStop);
 		}
+		
 	}, []);
 
 	const contextValue = useMemo<VideoConfContextValue>(
