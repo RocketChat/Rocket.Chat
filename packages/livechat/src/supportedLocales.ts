@@ -24,7 +24,7 @@ export const supportedLocales = [
 	'gl',
 	'gu',
 	'he',
-	'hi',
+	'hi-IN',
 	'hr',
 	'hu',
 	'hy',
