@@ -50,10 +50,6 @@ describe('RoomHistoryManager.clear', () => {
 		Messages.state.replaceAll([]);
 	});
 
-	afterEach(() => {
-		Messages.state.replaceAll([]);
-	});
-
 	it('should remove all messages for a room when no filter is provided', () => {
 		const messages: MessageRecord[] = [
 			createMessage({ _id: 'msg1', rid, msg: 'Main channel message 1' }),

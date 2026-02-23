@@ -286,9 +286,9 @@ class RoomHistoryManagerClass extends Emitter {
 		delete this.histories[rid];
 	}
 
-	public clear(rid: IRoom['_id'], filter?: (record: MessageRecord) => boolean) {
+	public clear(rid: IRoom['_id'], shouldRemove?: (record: MessageRecord) => boolean) {
 		const room = this.getRoom(rid);
-		Messages.state.remove((record) => record.rid === rid && (!filter || filter(record)));
+		Messages.state.remove((record) => record.rid === rid && (!shouldRemove || shouldRemove(record)));
 		room.isLoading.set(false);
 		room.hasMore.set(true);
 		room.hasMoreNext.set(false);

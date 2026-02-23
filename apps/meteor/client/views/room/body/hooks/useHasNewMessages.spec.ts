@@ -37,6 +37,7 @@ describe('useHasNewMessages', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+		atBottomRef.current = false;
 		(useChat as jest.Mock).mockReturnValue({
 			composer: { focus: jest.fn() },
 		});
@@ -88,7 +89,6 @@ describe('useHasNewMessages', () => {
 
 		it('should update atBottomRef when called', () => {
 			(useRouteParameter as jest.Mock).mockReturnValue(undefined);
-			atBottomRef.current = false;
 
 			const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, scrollHelpers));
 
