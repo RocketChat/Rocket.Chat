@@ -55,7 +55,14 @@ const Extended = ({
 	const handlePointerEnter = () => setMenuVisibility(true);
 
 	return (
-		<SidebarV2Item href={href} selected={selected} {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
+		<SidebarV2Item
+			title={typeof title === 'string' ? title : undefined}
+			href={href}
+			selected={selected}
+			{...props}
+			onFocus={handleFocus}
+			onPointerEnter={handlePointerEnter}
+		>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 			<SidebarV2ItemCol>
 				<SidebarV2ItemRow>
