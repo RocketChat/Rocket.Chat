@@ -126,7 +126,7 @@ export const useAnalytics = (): void => {
 				console.log('Error while parsing JSON value of "piwikAdditionalTracker": ', e);
 			}
 			window._paq.push(['setTrackerUrl', `${piwikUrl}js/`]);
-			window._paq.push(['setSiteId', Number.parseInt(piwikSiteId)]);
+			window._paq.push(['setSiteId', Number.parseInt(piwikSiteId, 10)]);
 			const d = document;
 			const g = d.createElement('script');
 			g.setAttribute('id', 'piwik-analytics');

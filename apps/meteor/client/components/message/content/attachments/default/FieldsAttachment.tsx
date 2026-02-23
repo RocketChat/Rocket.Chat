@@ -14,7 +14,7 @@ type FieldsAttachmentProps = {
 
 const FieldsAttachment = ({ fields }: FieldsAttachmentProps) => (
 	<Box flexWrap='wrap' display='flex' mb={4} mi={-4}>
-		{fields.map((field, index) => (field.short ? <ShortField key={index} {...field} /> : <Field key={index} {...field} />))}
+		{fields.map((field, index) => (field.short ? <ShortField key={`${index}-${String(field.title)}`} {...field} /> : <Field key={`${index}-${String(field.title)}`} {...field} />))}
 	</Box>
 );
 

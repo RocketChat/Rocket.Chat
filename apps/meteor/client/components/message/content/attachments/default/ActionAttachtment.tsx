@@ -21,13 +21,13 @@ export const ActionAttachment = ({ actions }: ActionAttachmentProps) => {
 						const content = image ? <Box is='img' src={image} maxHeight={200} /> : text;
 						if (url) {
 							return (
-								<Button role='link' onClick={() => handleLinkClick(url)} key={index} small>
+								<Button role='link' onClick={() => handleLinkClick(url)} key={url ?? `action-${index}`} small>
 									{content}
 								</Button>
 							);
 						}
 						return (
-							<ActionAttachmentButton key={index} processingType={processingType} msg={msg} mid={msgId}>
+							<ActionAttachmentButton key={text ?? `action-${index}`} processingType={processingType} msg={msg} mid={msgId}>
 								{content}
 							</ActionAttachmentButton>
 						);

@@ -3,7 +3,7 @@ export const isIE11: boolean = ((): boolean => {
 	const msieIdx = userAgent.indexOf('MSIE');
 
 	if (msieIdx > 0) {
-		return parseInt(userAgent.substring(msieIdx + 5, userAgent.indexOf('.', msieIdx))) === 11;
+		return parseInt(userAgent.substring(msieIdx + 5, userAgent.indexOf('.', msieIdx)), 10) === 11;
 	}
 
 	// If MSIE detection fails, check the Trident engine version

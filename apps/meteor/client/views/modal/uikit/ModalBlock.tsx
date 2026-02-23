@@ -14,7 +14,7 @@ import {
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent, FormEventHandler, ReactElement } from 'react';
-import { useId, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useId, useCallback, useEffect, useRef } from 'react';
 import { FocusScope } from 'react-aria';
 
 import { getButtonStyle } from './getButtonStyle';
@@ -82,15 +82,15 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 		}
 	}, [errors]);
 
-	const previousFocus = useMemo(() => document.activeElement, []);
+	const previousFocus = useRef(document.activeElement);
 
 	useEffect(
 		() => () => {
-			if (previousFocus && isFocusable(previousFocus)) {
-				return previousFocus.focus();
+			if (previousFocus.current && isFocusable(previousFocus.current)) {
+				previousFocus.current.focus();
 			}
 		},
-		[previousFocus],
+		[],
 	);
 
 	const formRef = useRef<HTMLFormElement>(null);
