@@ -2600,6 +2600,7 @@
   "registration.component.form.emailOrUsername": "E-pos of gebruikersnaam",
   "registration.component.form.invalidConfirmPass": "Die wagwoord bevestiging pas nie by die wagwoord nie",
   "registration.component.form.invalidEmail": "Die ingevoerde e-pos is ongeldig",
+  "registration.component.form.invalidEmailDomain": "Het ingevoerde e-mailadres heeft een ongeldig e-maildomein",
   "registration.component.form.name": "naam",
   "registration.component.form.password": "wagwoord",
   "registration.component.form.reasonToJoin": "Rede om deel te neem",
