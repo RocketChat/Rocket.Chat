@@ -1725,12 +1725,14 @@ describe('[Rooms]', () => {
 					users: [deactivatedDiscussionUser.username],
 				})
 				.expect(200);
+			expect(response.body).to.have.nested.property('discussion._id').that.is.a('string');
+			const discussionId = response.body.discussion._id as string;
 
 			await request
 				.get(api('rooms.isMember'))
 				.set(credentials)
 				.query({
-					roomId: response.body.discussion._id,
+					roomId: discussionId,
 					username: deactivatedDiscussionUser.username,
 				})
 				.expect(200)
