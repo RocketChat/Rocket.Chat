@@ -64,7 +64,6 @@ import {
 	findChannelAndPrivateAutocompleteWithPagination,
 	findRoomsAvailableForTeams,
 } from '../lib/rooms';
-import { required } from 'zod/mini';
 
 export async function findRoomByIdOrName({
 	params,
@@ -312,44 +311,49 @@ API.v1.addRoute(
 	},
 );
 
-export const roomsFavoriteEndpoint = API.v1.post('rooms.favorite', {
-	authRequired: true,
-	body: ajv.compile<{ favorite: boolean} & ({ roomId: string} | { roomName:  string })>({
-		type: 'object',
-		properties: {
-			roomId: { type: 'string', minLength: 1 },
-			roomName: { type: 'string', minLength: 1 },
-			favorite: { type: 'boolean' },
-		},
-		oneOf: [
-			{ required: ['roomId', 'favorite'] },
-			{ required: ['roomName', 'favorite'] },
-		],
-		additionalProperties: false
-	}),
-	response: {
-		200: ajv.compile({
+export const roomsFavoriteEndpoint = API.v1.post(
+	'rooms.favorite',
+	{
+		authRequired: true,
+		body: ajv.compile<
+			{
+				favorite: boolean;
+			} & ({ roomId: string } | { roomName: string })
+		>({
 			type: 'object',
-			properties: { success: { type: 'boolean', enum: [true] } },
-			required: ['success'],
+			properties: {
+				roomId: { type: 'string', minLength: 1 },
+				roomName: { type: 'string', minLength: 1 },
+				favorite: { type: 'boolean' },
+			},
+			oneOf: [{ required: ['roomId', 'favorite'] }, { required: ['roomName', 'favorite'] }],
 			additionalProperties: false,
 		}),
-		400: validateBadRequestErrorResponse,
-		401: validateUnauthorizedErrorResponse,
-	}
-},
-async function action() {
-	const { favorite } = this.bodyParams;
-	const room = await findRoomByIdOrName({ params: this.bodyParams });
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: { success: { type: 'boolean', enum: [true] } },
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { favorite } = this.bodyParams;
+		const room = await findRoomByIdOrName({ params: this.bodyParams });
 
-	await toggleFavoriteMethod(this.userId, room._id, favorite);
+		await toggleFavoriteMethod(this.userId, room._id, favorite);
 
-	return API.v1.success();
-});
+		return API.v1.success();
+	},
+);
 
 type RoomsFavoriteEndpoint = ExtractRoutesFromAPI<typeof roomsFavoriteEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends RoomsFavoriteEndpoint {}
 }
 
