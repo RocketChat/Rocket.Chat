@@ -1118,11 +1118,7 @@ export const roomEndpoints = API.v1
 			authRequired: true,
 			body: isRoomsFavoriteProps,
 			response: {
-				200: ajv.compile<
-					{
-						favorite: boolean;
-					} & ({ roomId: string } | { roomName: string })
-				>({
+				200: ajv.compile<void>({
 					type: 'object',
 					properties: {
 						success: {
