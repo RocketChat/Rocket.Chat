@@ -36,6 +36,7 @@ const build = {
 		context: 'globalThis',
 		checks: {
 			circularDependency: true,
+			pluginTimings: false, // Suppress vite:istanbul timing warnings
 		},
 		output: {
 			format: 'esm',
@@ -69,10 +70,28 @@ export default defineConfig(async () => {
 			isCoverageMode &&
 				istanbul({
 					include: 'client/**/*',
-					exclude: ['node_modules', 'tests/**/*', '**/*.spec.ts', '**/*.test.ts'],
+					exclude: [
+						'node_modules/**',
+						'tests/**',
+						'**/*.spec.ts',
+						'**/*.test.ts',
+						'**/*.spec.js',
+						'**/*.test.js',
+						'**/*.stories.tsx',
+						'**/*.stories.ts',
+						'**/mocks/**',
+						'**/fixtures/**',
+						'**/__mocks__/**',
+						'**/*.d.ts',
+						'**/vite/**',
+						'client/lib/chatra/**', // Third-party integrations
+						'client/lib/2fa/**', // Vendor code
+					],
 					extension: ['.ts', '.tsx', '.js', '.jsx'],
 					requireEnv: false,
 					forceBuildInstrument: true,
+					cypress: false,
+					checkProd: false,
 				}),
 		].filter(Boolean),
 		build,
