@@ -43,8 +43,8 @@ export class OmnichannelContactInfo extends FlexTab {
 		return this.root;
 	}
 
-	getVisitorCustomField(customFieldId: string): Locator {
-		return this.root.locator(`[name="customFields.${customFieldId}"]`);
+	getVisitorCustomField(label: string): Locator {
+		return this.root.getByRole('group', { name: 'Custom Fields' }).getByLabel(label);
 	}
 
 	async solveConflict(field: string, value: string) {
