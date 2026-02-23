@@ -75,7 +75,7 @@ cmd_start() {
   # Step 2: Build Vite frontend
   log_info "Building Vite frontend..."
   cd apps/meteor
-  ROOT_URL=http://localhost:3000/ VITE_TEST_MODE=true npx vite build --outDir /tmp/build/dist
+  ROOT_URL=http://localhost:3000/ VITE_TEST_MODE=true VITE_E2E_COVERAGE=true npx vite build --outDir /tmp/build/dist
   cd ../..
 
   # Step 3: Build Meteor backend (with caching)
