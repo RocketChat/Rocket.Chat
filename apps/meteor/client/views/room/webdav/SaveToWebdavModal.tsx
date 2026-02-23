@@ -41,6 +41,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 	const dispatchToastMessage = useToastMessageDispatch();
 	const uploadFileToWebdav = useMethod('uploadFileToWebdav');
 	const fileRequest = useRef<XMLHttpRequest | null>(null);
+	const mountedRef = useRef(true);
 	const accountIdField = useId();
 
 	const {
@@ -57,7 +58,12 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 		return value?.map(({ _id, ...current }) => [_id, getWebdavServerName(current)]) ?? [];
 	}, [value]);
 
-	useEffect(() => () => fileRequest.current?.abort(), []);
+	useEffect(() => {
+		return () => {
+			mountedRef.current = false;
+			fileRequest.current?.abort();
+		};
+	}, []);
 
 	const handleSaveFile = ({ accountId }: { accountId: IWebdavAccount['_id'] }): void => {
 		setIsLoading(true);
@@ -77,16 +83,27 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 					if (!title) {
 						throw new Error('File name is required');
 					}
+					if (!mountedRef.current) {
+						return;
+					}
 					const response = await uploadFileToWebdav(accountId, arrayBuffer, title);
+					if (!mountedRef.current) {
+						return;
+					}
 					if (!response.success) {
 						throw new Error(response.message ? t(response.message) : 'Error uploading file');
 					}
 					return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 				} catch (error) {
+					if (!mountedRef.current) {
+						return;
+					}
 					return dispatchToastMessage({ type: 'error', message: error });
 				} finally {
-					setIsLoading(false);
-					onClose();
+					if (mountedRef.current) {
+						setIsLoading(false);
+						onClose();
+					}
 				}
 			}
 		};
