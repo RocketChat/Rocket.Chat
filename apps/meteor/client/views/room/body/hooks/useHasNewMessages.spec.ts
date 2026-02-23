@@ -96,5 +96,22 @@ describe('useHasNewMessages', () => {
 
 			expect(atBottomRef.current).toBe(true);
 		});
+
+		it('should clear all messages when thread tab is active but context is undefined', () => {
+			(useRouteParameter as jest.Mock).mockImplementation((param: string) => {
+				if (param === 'tab') return 'thread';
+				return undefined;
+			});
+
+			const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, scrollHelpers));
+
+			result.current.handleJumpToRecentButtonClick();
+
+			expect(RoomHistoryManager.clear).toHaveBeenCalledWith(rid, expect.any(Function));
+
+			const shouldRemoveFn = (RoomHistoryManager.clear as jest.Mock).mock.calls[0][1];
+			expect(shouldRemoveFn({ _id: 'any-msg' })).toBe(true);
+			expect(shouldRemoveFn({ _id: 'any-msg', tmid: 'any-thread' })).toBe(true);
+		});
 	});
 });

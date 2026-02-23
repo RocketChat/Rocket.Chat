@@ -60,6 +60,7 @@ describe('RoomHistoryManager.clear', () => {
 	beforeEach(() => {
 		Messages.state.replaceAll([]);
 		Messages.state.storeMany(messages);
+		(RoomHistoryManager as any).histories = {};
 	});
 
 	it('should remove all messages for a room when no filter is provided', () => {
