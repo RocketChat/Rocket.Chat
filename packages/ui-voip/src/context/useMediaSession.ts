@@ -105,28 +105,25 @@ const reducer = (
 	reducerState: SessionState,
 	action:
 		| {
-				type: 'toggleWidget' | 'selectPeer' | 'instance_updated' | 'reset' | 'mute' | 'hold';
-				payload?: Partial<SessionState>;
+				type: 'reset';
+		  }
+		| {
+				type: 'selectPeer';
+				payload: { peerInfo?: PeerInfo };
+		  }
+		| {
+				type: 'toggleWidget';
+				payload: { peerInfo?: PeerInfo };
+		  }
+		| {
+				type: 'instance_updated';
+				payload: SessionState;
 		  }
 		| {
 				type: 'status_updated';
 				payload?: { status?: UserStatus };
 		  },
 ): SessionState => {
-	if (action.type === 'mute') {
-		return {
-			...reducerState,
-			muted: action.payload?.muted ?? reducerState.muted,
-		};
-	}
-
-	if (action.type === 'hold') {
-		return {
-			...reducerState,
-			held: action.payload?.held ?? reducerState.held,
-		};
-	}
-
 	if (action.type === 'toggleWidget') {
 		if (reducerState.state === 'closed') {
 			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo };
@@ -138,7 +135,7 @@ const reducer = (
 	}
 
 	if (action.type === 'instance_updated') {
-		return { ...reducerState, ...action.payload } as SessionState;
+		return { ...reducerState, ...action.payload };
 	}
 
 	if (action.type === 'selectPeer') {
@@ -198,6 +195,12 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				callId,
 			} = mainCall;
 			const state = deriveWidgetStateFromCallState(callState, role);
+
+			if (!state) {
+				dispatch({ type: 'reset' });
+				return;
+			}
+
 			const connectionState = deriveConnectionStateFromCallState(callState);
 
 			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
