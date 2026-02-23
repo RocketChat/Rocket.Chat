@@ -135,7 +135,8 @@ export const {
 		href: '/admin/feature-preview',
 		i18nLabel: 'Feature_preview',
 		icon: 'flask',
-		permissionGranted: () => defaultFeaturesPreview?.length > 0,
+		permissionGranted: (): boolean => hasPermission('manage-feature-preview') &&
+			defaultFeaturesPreview?.length > 0,
 	},
 	{
 		href: '/admin/settings',
