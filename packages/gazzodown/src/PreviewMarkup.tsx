@@ -64,6 +64,16 @@ const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
 			);
 		}
 
+		case 'SPOILER_BLOCK': {
+			return (
+				<>
+					{firstBlock.value.map((paragraph, index: number) => (
+						<PreviewInlineElements key={index}>{paragraph.value}</PreviewInlineElements>
+					))}
+				</>
+			);
+		}
+
 		case 'CODE': {
 			return <PreviewCodeBlock language={firstBlock.language} lines={firstBlock.value} />;
 		}

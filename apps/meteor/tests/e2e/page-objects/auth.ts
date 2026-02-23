@@ -25,6 +25,10 @@ export class Registration extends Main {
 		super(page.getByRole('main'));
 	}
 
+	get loginForm(): Locator {
+		return this.page.getByRole('form', { name: 'Login', exact: true });
+	}
+
 	get btnSendInstructions(): Locator {
 		return this.page.locator('role=button[name="Send instructions"]');
 	}

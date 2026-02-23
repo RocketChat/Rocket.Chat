@@ -69,6 +69,7 @@ export const createFileUploadSettings = () =>
 			type: 'boolean',
 			i18nLabel: 'FileUpload_Enable_json_web_token_for_files',
 			i18nDescription: 'FileUpload_Enable_json_web_token_for_files_description',
+			alert: 'FileUpload_Enable_json_web_token_for_files_Alert',
 			enableQuery: {
 				_id: 'FileUpload_ProtectFiles',
 				value: true,

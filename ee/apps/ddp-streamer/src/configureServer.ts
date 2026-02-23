@@ -65,9 +65,9 @@ server.publish(autoUpdateCollection, function () {
 });
 
 server.methods({
-	async 'login'({ resume, user, password }: { resume: string; user: { username: string }; password: string }) {
+	async 'login'({ resume }: { resume: string }) {
 		try {
-			const result = await Account.login({ resume, user, password });
+			const result = await Account.login({ resume });
 			if (!result) {
 				throw new MeteorError(403, "You've been logged out by the server. Please log in again");
 			}
