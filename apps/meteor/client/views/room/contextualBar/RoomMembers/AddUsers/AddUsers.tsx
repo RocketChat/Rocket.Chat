@@ -60,7 +60,15 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 		if (isMembersQueryError || !membersData?.members) {
 			return [];
 		}
-		return membersData.members.map((member) => member.username).filter((username): username is string => !!username);
+		// Use single iteration with reduce for better performance
+		return membersData.members
+			.reduce<string[]>((acc, member) => {
+				if (member.username) {
+					acc.push(member.username);
+				}
+				return acc;
+			}, [])
+			.sort(); // Sort here for consistent query cache keys
 	}, [membersData, isMembersQueryError]);
 
 	const {
