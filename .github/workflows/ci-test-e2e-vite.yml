@@ -27,7 +27,7 @@ on:
         required: true
         type: string
       shard:
-        default: '[1]'
+        default: "[1]"
         required: false
         type: string
       total-shard:
@@ -74,8 +74,8 @@ jobs:
       GITHUB_WORKSPACE: ${{ github.workspace }}
       DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
       MONGODB_VERSION: ${{ matrix.mongodb-version }}
-      COVERAGE_DIR: '/tmp/coverage/${{ inputs.type }}'
-      COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
+      COVERAGE_DIR: "/tmp/coverage/${{ inputs.type }}"
+      COVERAGE_FILE_NAME: "${{ inputs.type }}-${{ matrix.shard }}.json"
       COVERAGE_REPORTER: ${{ inputs.coverage == matrix.mongodb-version && 'json' || '' }}
 
     strategy:
@@ -147,6 +147,8 @@ jobs:
 
       - name: Build Vite frontend
         working-directory: ./apps/meteor
+        env:
+          VITE_E2E_COVERAGE: ${{ inputs.coverage == matrix.mongodb-version && 'true' || '' }}
         run: |
           ROOT_URL=http://localhost:3000/ VITE_TEST_MODE=true npx vite build --outDir /tmp/build/dist
 
@@ -181,7 +183,7 @@ jobs:
         uses: actions/download-artifact@v7
         if: inputs.release == 'ee' && github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         with:
-          pattern: 'docker-image-*-amd64-coverage'
+          pattern: "docker-image-*-amd64-coverage"
           path: /tmp/docker-images
           merge-multiple: true
 
@@ -237,14 +239,14 @@ jobs:
 
           # Give Traefik time to discover services
           sleep 5
-          
+
           # Show Traefik discovered routers via API
           echo "=== Traefik discovered HTTP routers ==="
           curl -s http://localhost:8081/api/http/routers | jq '.' || echo "Failed to query Traefik API"
-          
+
           echo "=== Traefik discovered HTTP services ==="
           curl -s http://localhost:8081/api/http/services | jq '.' || echo "Failed to query Traefik API"
-          
+
           # Wait for Traefik to discover the frontend service
           echo "Waiting for frontend to be accessible via Traefik..."
           for i in {1..30}; do
@@ -288,7 +290,7 @@ jobs:
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
         env:
-          WEBHOOK_TEST_URL: 'http://httpbin'
+          WEBHOOK_TEST_URL: "http://httpbin"
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
         run: |
           set -o xtrace
