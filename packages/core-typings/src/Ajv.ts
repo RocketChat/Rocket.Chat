@@ -8,6 +8,7 @@ import type { IMessage } from './IMessage';
 import type { IOAuthApps } from './IOAuthApps';
 import type { IPermission } from './IPermission';
 import type { ISubscription } from './ISubscription';
+import type { SlashCommand } from './SlashCommands';
 import type { IMediaCall } from './mediaCalls/IMediaCall';
 
 export const schemas = typia.json.schemas<
