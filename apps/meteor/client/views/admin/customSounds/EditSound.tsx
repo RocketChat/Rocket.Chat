@@ -18,6 +18,14 @@ type EditSoundProps = {
 	};
 };
 
+type ExistingSound = {
+	_id: string;
+	name: string;
+	extension?: string;
+};
+
+type SoundFile = File | ExistingSound;
+
 function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactElement {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -29,10 +37,10 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const [name, setName] = useState(() => data?.name ?? '');
 	const [sound, setSound] = useState<
 		| {
-				_id: string;
-				name: string;
-				extension?: string;
-		  }
+			_id: string;
+			name: string;
+			extension?: string;
+		}
 		| File
 	>(() => data);
 
@@ -52,10 +60,10 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, previousName, previousSound, sound]);
 
 	const saveAction = useCallback(
-		// FIXME
-		async (sound: any) => {
-			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound.extension });
-			const validation = validate(soundData, sound);
+		async (sound: SoundFile) => {
+			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound instanceof File ? '' : sound.extension ?? '' });
+			const soundFile = sound instanceof File ? sound : undefined;
+			const validation = validate(soundData, soundFile);
 			if (validation.length === 0) {
 				let soundId: string;
 				try {
@@ -68,7 +76,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				soundData._id = soundId;
 				soundData.random = Math.round(Math.random() * 1000);
 
-				if (sound && sound !== previousSound) {
+				if (sound instanceof File) {
 					dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
 
 					const reader = new FileReader();

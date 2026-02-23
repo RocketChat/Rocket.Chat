@@ -30,7 +30,7 @@ export function validate(soundData: ICustomSoundData, soundFile?: ICustomSoundFi
 }
 
 export const createSoundData = (
-	soundFile: ICustomSoundFile,
+	soundFile: { name: string },
 	name: string,
 	previousData?: {
 		_id: string;
