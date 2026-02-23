@@ -13,7 +13,6 @@ export const useRedirectToSetupWizard = (): void => {
 
 	useEffect(() => {
 		const currentPath = router.getLocationPathname();
-		//DO NOT Redirect if already inside setup wizard (Fixes navigation)
 		if (mustRedirect && !currentPath?.startsWith('/setup-wizard')) {
 			router.navigate('/setup-wizard');
 		}

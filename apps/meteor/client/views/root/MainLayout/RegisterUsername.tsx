@@ -11,7 +11,7 @@ import {
 	useToastMessageDispatch,
 	useAssetWithDarkModePath,
 	useAccountsCustomFields,
-	useRouter, // ✅ ADDED
+	useRouter, 
 } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useId } from 'react';
@@ -27,7 +27,7 @@ const RegisterUsername = () => {
 	const t = useTranslation();
 	const uid = useUserId();
 	const logout = useLogout();
-	const router = useRouter(); // ✅ ADDED
+	const router = useRouter(); 
 	const formLabelId = useId();
 	const hideLogo = useSetting('Layout_Login_Hide_Logo', false);
 	const customLogo = useAssetWithDarkModePath('logo');
@@ -127,7 +127,7 @@ const RegisterUsername = () => {
 				</Form.Container>
 				<Form.Footer>
 					<ButtonGroup stretch vertical>
-						<Button onClick={() => router.navigate(-1)}> {/* ✅ BACK BUTTON ADDED */}
+						<Button onClick={() => router.navigate(-1)}> 
 							Back
 						</Button>
 						<Button disabled={isLoading} type='submit' primary>
