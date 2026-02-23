@@ -77,6 +77,7 @@ export const slashCommands = {
 	},
 	async getPreviews(
 		command: string,
+		userId: string,
 		params: string,
 		message: RequiredField<Partial<IMessage>, 'rid'>,
 	): Promise<SlashCommandPreviews | undefined> {
@@ -89,7 +90,7 @@ export const slashCommands = {
 			throw new InvalidCommandUsage();
 		}
 
-		const previewInfo = await cmd.previewer(command, params, message);
+		const previewInfo = await cmd.previewer(command, params, message, userId);
 
 		if (!previewInfo?.items?.length) {
 			return;
@@ -107,6 +108,7 @@ export const slashCommands = {
 		params: string,
 		message: Pick<IMessage, 'rid'> & Partial<Omit<IMessage, 'rid'>>,
 		preview: SlashCommandPreviewItem,
+		userId: string,
 		triggerId?: string,
 	) {
 		const cmd = this.commands[command];
@@ -123,7 +125,7 @@ export const slashCommands = {
 			throw new InvalidPreview();
 		}
 
-		return cmd.previewCallback(command, params, message, preview, triggerId);
+		return cmd.previewCallback(command, params, message, preview, userId, triggerId);
 	},
 };
 

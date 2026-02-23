@@ -27,6 +27,7 @@ export const executeSlashCommandPreview = async (
 		triggerId?: string;
 	},
 	preview: SlashCommandPreviewItem,
+	userId: string,
 ): Promise<void> => {
 	if (!command?.cmd || !slashCommands.commands[command.cmd]) {
 		throw new Meteor.Error('error-invalid-command', 'Invalid Command Provided', {
@@ -47,17 +48,18 @@ export const executeSlashCommandPreview = async (
 		});
 	}
 
-	return slashCommands.executePreview(command.cmd, command.params, command.msg, preview, command.triggerId);
+	return slashCommands.executePreview(command.cmd, userId, command.params, command.msg, preview, command.triggerId);
 };
 
 Meteor.methods<ServerMethods>({
 	executeSlashCommandPreview(command, preview) {
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'getSlashCommandPreview',
 			});
 		}
 
-		return executeSlashCommandPreview(command, preview);
+		return executeSlashCommandPreview(command, preview, userId);
 	},
 });
