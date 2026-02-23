@@ -85,7 +85,7 @@ const initializeCustomSoundsStorage = () => {
 
 		file.readStream.pipe(res);
 	});
-}
+};
 
 Meteor.startup(initializeCustomSoundsStorage);
 
