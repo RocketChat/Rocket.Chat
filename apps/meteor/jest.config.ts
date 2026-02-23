@@ -10,12 +10,13 @@ export default {
 			setupFilesAfterEnv: [...client.setupFilesAfterEnv],
 
 			testMatch: [
+				'<rootDir>/app/ui/client/**/**.spec.[jt]s?(x)',
+				'<rootDir>/app/ui-message/client/**/**.spec.[jt]s?(x)',
+				'<rootDir>/app/ui-utils/client/**/**.spec.[jt]s?(x)',
 				'<rootDir>/client/**/**.spec.[jt]s?(x)',
 				'<rootDir>/ee/client/**/**.spec.[jt]s?(x)',
-				'<rootDir>/app/ui-message/client/**/**.spec.[jt]s?(x)',
-				'<rootDir>/tests/unit/client/views/**/*.spec.{ts,tsx}',
 				'<rootDir>/tests/unit/client/providers/**/*.spec.{ts,tsx}',
-				'<rootDir>/app/ui/client/**/**.spec.[jt]s?(x)',
+				'<rootDir>/tests/unit/client/views/**/*.spec.{ts,tsx}',
 			],
 
 			moduleNameMapper: {

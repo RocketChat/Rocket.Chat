@@ -1,6 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { clientCallbacks } from '@rocket.chat/ui-client';
+import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -37,11 +38,15 @@ export const useHasNewMessages = (
 		chat.composer?.focus();
 	}, [atBottomRef, chat.composer, sendToBottomIfNecessary]);
 
+	const tab = useRouteParameter('tab');
+	const context = useRouteParameter('context');
+	const openThreadId = tab === 'thread' ? context : undefined;
+
 	const handleJumpToRecentButtonClick = useCallback(() => {
 		atBottomRef.current = true;
-		RoomHistoryManager.clear(rid);
+		RoomHistoryManager.clear(rid, (record) => !openThreadId || (record._id !== openThreadId && record.tmid !== openThreadId));
 		RoomHistoryManager.getMoreIfIsEmpty(rid);
-	}, [atBottomRef, rid]);
+	}, [atBottomRef, rid, openThreadId]);
 
 	const handleComposerResize = useCallback((): void => {
 		sendToBottomIfNecessary();
