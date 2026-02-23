@@ -330,7 +330,7 @@ jobs:
           yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
 
       - name: Merge ui coverage files
-        if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
+        if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version && always()
         working-directory: ./apps/meteor
         run: |
           npx nyc merge .nyc_output ${COVERAGE_DIR}/${COVERAGE_FILE_NAME}
@@ -357,7 +357,7 @@ jobs:
         run: docker compose -f docker-compose-ci-vite.yml logs traefik
 
       - name: Store coverage
-        if: inputs.coverage == matrix.mongodb-version
+        if: inputs.coverage == matrix.mongodb-version && always()
         uses: actions/upload-artifact@v6
         with:
           name: coverage-vite-${{ inputs.type }}-${{ matrix.shard }}
