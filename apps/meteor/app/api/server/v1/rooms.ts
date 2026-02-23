@@ -1108,7 +1108,7 @@ export const roomEndpoints = API.v1
 				await FederationMatrix.handleInvite(roomId, this.userId, action);
 				return API.v1.success();
 			} catch (error) {
-				return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
+				throw new Meteor.Error(`Failed to handle invite: ${error instanceof Error ? error.message : String(error)}`);
 			}
 		},
 	)
@@ -1136,10 +1136,6 @@ export const roomEndpoints = API.v1
 		},
 		async function action() {
 			const { favorite } = this.bodyParams;
-
-			if (!this.bodyParams.hasOwnProperty('favorite')) {
-				return API.v1.failure("The 'favorite' param is required");
-			}
 
 			const room = await findRoomByIdOrName({ params: this.bodyParams });
 
