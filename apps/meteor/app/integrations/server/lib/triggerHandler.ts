@@ -621,6 +621,7 @@ class RocketChatIntegrationHandler {
 				...(opts.data && { body: opts.data }),
 				// SECURITY: Integrations can only be configured by users with enough privileges. It's ok to disable this check here.
 				ignoreSsrfValidation: true,
+				size: 10 * 1024 * 1024,
 			},
 			settings.get('Allow_Invalid_SelfSigned_Certs'),
 		)
