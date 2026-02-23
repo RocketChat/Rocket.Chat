@@ -47,7 +47,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	// Note: Limited to 100 members due to API_Upper_Count_Limit setting
 	// In very large channels (>100 members), some existing members might still appear in autocomplete
 	const getRoomMembers = useEndpoint('GET', '/v1/rooms.membersOrderedByRole');
-	const { data: membersData, isError } = useQuery({
+	const { data: membersData, isError: isMembersQueryError } = useQuery({
 		queryKey: ['room-members', rid],
 		queryFn: () => getRoomMembers({ roomId: rid, offset: 0, count: 100 }),
 		// Disable query if room type is not supported
@@ -57,11 +57,11 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	const existingMemberUsernames = useMemo(() => {
 		// If the query is disabled or failed, return empty array (no exceptions)
 		// This means existing members might appear in autocomplete, but backend will handle duplicates
-		if (isError || !membersData?.members) {
+		if (isMembersQueryError || !membersData?.members) {
 			return [];
 		}
 		return membersData.members.map((member) => member.username).filter((username): username is string => !!username);
-	}, [membersData, isError]);
+	}, [membersData, isMembersQueryError]);
 
 	const {
 		handleSubmit,

@@ -120,7 +120,8 @@ export const usersQueryKeys = {
 	userInfo: ({ uid, username }: { uid?: IUser['_id']; username?: IUser['username'] }) =>
 		[...usersQueryKeys.all, 'info', { uid, username }] as const,
 	userAutoComplete: (filter: string, federated: boolean, exceptions: string[] = []) =>
-		[...usersQueryKeys.all, 'autocomplete', filter, federated, exceptions] as const,
+		// Sort exceptions to ensure consistent cache keys
+		[...usersQueryKeys.all, 'autocomplete', filter, federated, [...exceptions].sort()] as const,
 };
 
 export const teamsQueryKeys = {
