@@ -9,7 +9,7 @@ API.v1.get(
 		authRequired: true,
 		permissionsRequired: ['manage-user-status'],
 		response: {
-			200: ajv.compile<{ current: number; max: number }>({
+			200: ajv.compile<{ current: number; max: number; success: true }>({
 				type: 'object',
 				properties: {
 					current: { type: 'number' },
@@ -40,7 +40,7 @@ API.v1.post(
 		permissionsRequired: ['manage-user-status'],
 		twoFactorRequired: true,
 		response: {
-			200: ajv.compile<void>({
+			200: ajv.compile<{ success: true }>({
 				type: 'object',
 				properties: {
 					success: {
