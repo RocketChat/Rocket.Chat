@@ -24,9 +24,11 @@ Meteor.methods({
                 id: userId, 
                 diff: { 
                     'services.totp.enabled': false,
-                    'services.totp.secret': undefined,
-                    'services.totp.hashedBackup': undefined,
-                } 
+                },
+                unset: {
+                    'services.totp.secret': 1,
+                    'services.totp.hashedBackup': 1,
+                }
             });
         }
 
