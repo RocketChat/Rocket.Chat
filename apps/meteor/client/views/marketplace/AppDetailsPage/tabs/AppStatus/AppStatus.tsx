@@ -35,9 +35,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const { price, purchaseType, pricingPlans } = app;
 
 	useEffect(() => {
-		if (app?.requestedEndUser) {
-			setHasEndUserRequest(true);
-		}
+		setHasEndUserRequest(app?.requestedEndUser ?? false);
 	}, [app?.requestedEndUser]);
 
 	const button = appButtonProps({ ...app, isAdminUser, hasEndUserRequest });
