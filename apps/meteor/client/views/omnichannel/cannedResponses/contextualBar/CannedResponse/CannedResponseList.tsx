@@ -11,7 +11,7 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { Dispatch, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
+import type { Dispatch, FormEventHandler, MouseEvent, MouseEventHandler, ReactElement, SetStateAction } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
@@ -32,6 +32,7 @@ type CannedResponseListProps = {
 	setType: Dispatch<SetStateAction<string>>;
 	isRoomOverMacLimit: boolean;
 	onClickItem: (data: IOmnichannelCannedResponse & { departmentName?: ILivechatDepartment['name'] }) => void;
+	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
 	onClickCreate: (e: MouseEvent<HTMLOrSVGElement>) => void;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
 	reload: () => void;
@@ -49,6 +50,7 @@ const CannedResponseList = ({
 	setType,
 	isRoomOverMacLimit,
 	onClickItem,
+	onClickBack,
 	onClickCreate,
 	onClickUse,
 	reload,
@@ -70,7 +72,7 @@ const CannedResponseList = ({
 			<WrapCannedResponse
 				canUseCannedResponses={!isRoomOverMacLimit}
 				cannedItem={cannedItem}
-				onClickBack={onClickItem}
+				onClickBack={onClickBack}
 				onClickUse={onClickUse}
 				onClose={onClose}
 				reload={reload}

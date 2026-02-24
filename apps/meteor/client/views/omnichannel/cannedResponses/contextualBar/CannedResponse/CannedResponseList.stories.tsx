@@ -73,5 +73,7 @@ Default.args = {
 	],
 	itemCount: 3,
 	loadMoreItems: action('loadMoreItems'),
+	onClickItem: action('onClickItem'),
+	onClickBack: action('onClickBack'),
 };
 Default.decorators = [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>];

@@ -37,7 +37,7 @@ export const WrapCannedResponseList = () => {
 	const onClickItem = useEffectEvent(
 		(
 			data: IOmnichannelCannedResponse & {
-				departmentName: ILivechatDepartment['name'];
+				departmentName?: ILivechatDepartment['name'];
 			},
 		) => {
 			const { _id: context } = data;
@@ -52,6 +52,16 @@ export const WrapCannedResponseList = () => {
 			});
 		},
 	);
+
+	const onClickBack = useEffectEvent((_e: MouseEvent<HTMLOrSVGElement>) => {
+		router.navigate({
+			name: router.getRouteName() ?? 'live',
+			params: {
+				id: room._id,
+				tab: 'canned-responses',
+			},
+		});
+	});
 
 	const composer = useChat()?.composer;
 
@@ -81,6 +91,7 @@ export const WrapCannedResponseList = () => {
 			isRoomOverMacLimit={isRoomOverMacLimit}
 			onClickUse={onClickUse}
 			onClickItem={onClickItem}
+			onClickBack={onClickBack}
 			onClickCreate={onClickCreate}
 			reload={refetch}
 		/>
