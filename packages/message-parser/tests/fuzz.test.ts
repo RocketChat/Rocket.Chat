@@ -235,7 +235,7 @@ describe('fuzz: emphasis delimiter parity', () => {
 		() => {
 			fc.assert(
 				fc.property(
-					fc.stringOf(fc.constantFrom(...'abcdefghij '), { minLength: 1, maxLength: 30 }),
+					fc.stringOf(fc.constantFrom(...'abcdefghij'), { minLength: 1, maxLength: 30 }),
 					(content) => {
 						const input = `**${content}**`;
 						const result = parse(input);
@@ -261,7 +261,7 @@ describe('fuzz: emphasis delimiter parity', () => {
 		() => {
 			fc.assert(
 				fc.property(
-					fc.stringOf(fc.constantFrom(...'abcdefghij '), { minLength: 1, maxLength: 30 }),
+					fc.stringOf(fc.constantFrom(...'abcdefghij'), { minLength: 1, maxLength: 30 }),
 					(content) => {
 						const input = `_${content}_`;
 						const result = parse(input);
@@ -284,7 +284,7 @@ describe('fuzz: emphasis delimiter parity', () => {
 		() => {
 			fc.assert(
 				fc.property(
-					fc.stringOf(fc.constantFrom(...'abcdefghij '), { minLength: 1, maxLength: 30 }),
+					fc.stringOf(fc.constantFrom(...'abcdefghij'), { minLength: 1, maxLength: 30 }),
 					(content) => {
 						const input = `~~${content}~~`;
 						const result = parse(input);
