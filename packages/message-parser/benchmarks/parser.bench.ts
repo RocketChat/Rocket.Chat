@@ -17,7 +17,7 @@
  *  - Mixed real-world messages
  */
 
-import { Bench } from 'tinybench';
+import { Bench, type Task } from 'tinybench';
 
 import { parse } from '../src';
 import type { Options } from '../src';
@@ -105,8 +105,6 @@ const fixtures = {
 };
 
 // ── Options presets ────────────────────────────────────────────────────────
-
-const defaultOptions: Options = {};
 
 const fullOptions: Options = {
 	colors: true,
@@ -232,7 +230,7 @@ async function runBenchmarks() {
 		console.log(`── ${name} ${'─'.repeat(Math.max(0, 56 - name.length))}`);
 		await bench.run();
 		console.table(
-			bench.tasks.map((task) => ({
+			bench.tasks.map((task: Task) => ({
 				'Task': task.name,
 				'ops/sec': Math.round(task.result!.hz).toLocaleString(),
 				'Avg (ms)': (task.result!.mean * 1000).toFixed(4),

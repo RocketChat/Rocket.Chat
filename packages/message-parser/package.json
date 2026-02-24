@@ -35,7 +35,7 @@
 		".:build:bundle": "webpack-cli",
 		".:build:clean": "rimraf dist",
 		"build": "run-s .:build:clean .:build:bundle",
-		"bench": "jest --testPathPatterns='parser.bench' --no-coverage --verbose",
+		"bench": "jest --testMatch='**/benchmarks/**/*.bench.ts' --no-coverage --verbose",
 		"bench:size": "node -e \"const fs=require('fs'),zlib=require('zlib'),p='dist/messageParser.js';try{const s=fs.statSync(p),c=fs.readFileSync(p),g=zlib.gzipSync(c);console.log('Bundle:',p);console.log('Raw:',s.size,'bytes ('+(s.size/1024).toFixed(1),'KB)');console.log('Gzip:',g.length,'bytes ('+(g.length/1024).toFixed(1),'KB)')}catch(e){console.error('Build first: yarn build');process.exit(1)}\"",
 		"lint": "eslint .",
 		"test": "jest",
