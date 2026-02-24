@@ -58,13 +58,24 @@ function UserAvatarEditor({
 
 	const [clickUpload, resetFileInput] = useSingleFileInput(setUploadedPreview);
 
+	const clearAvatarInputs = useCallback(() => {
+		setNewAvatarSource(undefined);
+		setAvatarFromUrl('');
+		resetFileInput();
+	}, [resetFileInput]);
+
 	useEffect(() => {
 		if (!avatarValue) {
-			setNewAvatarSource(undefined);
-			setAvatarFromUrl('');
-			resetFileInput();
+			clearAvatarInputs();
 		}
-	}, [avatarValue, resetFileInput]);
+	}, [avatarValue, clearAvatarInputs]);
+
+	useEffect(() => {
+		if (!etag) {
+			return;
+		}
+		clearAvatarInputs();
+	}, [etag, clearAvatarInputs]);
 
 	const handleAddUrl = (): void => {
 		setNewAvatarSource(avatarFromUrl);
