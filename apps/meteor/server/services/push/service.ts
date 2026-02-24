@@ -41,12 +41,12 @@ export class PushService extends ServiceClassInternal implements IPushService {
 			logger.debug({ msg: 'Removed existing app items', removed: removeResult.deletedCount });
 		}
 
-		const updatedDoc = await PushToken.findOneById(tokenId);
-		if (updatedDoc) {
-			return updatedDoc;
+		const updatedDoc = await PushToken.findOneById<Omit<IPushToken, 'authToken'>>(tokenId, { projection: { authToken: 0 } });
+		if (!updatedDoc) {
+			logger.error({ msg: 'Could not find PushToken document on mongo after successful operation', tokenId });
+			throw new Error('could-not-find-token-document');
 		}
 
-		logger.error({ msg: 'Could not find PushToken document on mongo after successful operation', tokenId });
-		throw new Error('could-not-find-token-document');
+		return updatedDoc;
 	}
 }
