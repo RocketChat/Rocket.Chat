@@ -13,7 +13,7 @@ const getRemoteStream = (instance?: MediaSignalingSession) => {
 			return null;
 		}
 
-		return mainCall.getRemoteMediaStream();
+		return mainCall.getRemoteMediaStream()?.stream || null;
 	} catch (error) {
 		console.error('MediaCall: useMediaStream - Error getting remote media stream', error);
 		return null;
@@ -54,7 +54,7 @@ const useMediaStream = (
 						return;
 					}
 
-					node.srcObject = remoteStream.stream;
+					node.srcObject = remoteStream;
 					node.play().catch((error) => {
 						console.error('MediaCall: useMediaStream - Error playing media stream', error);
 					});
