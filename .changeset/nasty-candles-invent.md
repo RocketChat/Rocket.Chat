@@ -3,4 +3,4 @@
 '@rocket.chat/i18n': patch
 ---
 
-fix:signup error message display
+Fixes invalid email domain error not being displayed on the registration form.
