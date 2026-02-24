@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { lineBreak, autoLink, paragraph, plain, link } from '../src/utils';
+import { lineBreak, autoLink, paragraph, plain, link, italic } from '../src/utils';
 
 test.each([
 	[
@@ -176,14 +176,13 @@ describe('autoLink helper function', () => {
 });
 
 describe('autoLink with underscore-prefixed patterns', () => {
-	// When a domain-like string is wrapped in '_' italic markers, the trailing '_' is no longer
-	// consumed as part of the domain label or URL body, so the domain auto-links correctly
-	// and the trailing '_' is emitted as a separate plain-text character.
+	// Domain names starting with '_' are not auto-linked: the leading '_' prevents DomainName from
+	// matching, so '_x.y_' falls through to the italic parser, and '_x.y' (no closing '_') is
+	// returned as plain text via the Any fallback rule.
 	test.each([
-		['_example.com_', [paragraph([autoLink('_example.com'), plain('_')])]],
-		['_rocket.chat_', [paragraph([autoLink('_rocket.chat'), plain('_')])]],
-		// Without a closing '_', the domain (including the leading '_') is auto-linked as before.
-		['_example.com', [paragraph([autoLink('_example.com')])]],
+		['_example.com_', [paragraph([italic([plain('example.com')])])]],
+		['_rocket.chat_', [paragraph([italic([plain('rocket.chat')])])]],
+		['_example.com', [paragraph([plain('_example.com')])]],
 	])('parses %p', (input, output) => {
 		expect(parse(input)).toMatchObject(output);
 	});
