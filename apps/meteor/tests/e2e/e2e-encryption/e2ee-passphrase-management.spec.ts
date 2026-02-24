@@ -38,9 +38,10 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 	});
 
 	test.describe('Generate', () => {
-		test.beforeEach(async ({ page, api }) => {
-			const loginPage = new LoginPage(page);
+		let loginPage: LoginPage;
 
+		test.beforeEach(async ({ page, api }) => {
+			loginPage = new LoginPage(page);
 			await api.post('/method.call/e2e.resetOwnE2EKey', {
 				message: JSON.stringify({ msg: 'method', id: '1', method: 'e2e.resetOwnE2EKey', params: [] }),
 			});
@@ -51,7 +52,6 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 		});
 
 		test('expect the randomly generated password to work', async ({ page }) => {
-			const loginPage = new LoginPage(page);
 			const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
 			const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 			const e2EEKeyDecodeFailureBanner = new E2EEKeyDecodeFailureBanner(page);
@@ -61,6 +61,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 
 			// Log out
 			await navbar.logout();
+			await loginPage.waitForIt();
 
 			// Login again
 			await loginPage.loginByUserState(Users.admin);
@@ -75,18 +76,17 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 
 		test('expect to manually reset the password', async ({ page }) => {
 			const accountSecurityPage = new AccountSecurity(page);
-			const loginPage = new LoginPage(page);
 
 			// Reset the E2EE key to start the flow from the beginning
 			await accountSecurityPage.goto();
 			await accountSecurityPage.resetE2EEPassword();
 
 			await loginPage.loginByUserState(Users.admin);
+			await loginPage.waitForIt();
 		});
 
 		test('should reset e2e password from the modal', async ({ page }) => {
 			const navbar = new Navbar(page);
-			const loginPage = new LoginPage(page);
 			const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
 			const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 			const resetE2EEPasswordModal = new ResetE2EEPasswordModal(page);
@@ -95,6 +95,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 
 			// Logout
 			await navbar.logout();
+			await loginPage.waitForIt();
 
 			// Login again
 			await loginPage.loginByUserState(Users.admin);
@@ -103,14 +104,10 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 			await enterE2EEPasswordBanner.click();
 			await enterE2EEPasswordModal.forgotPassword();
 			await resetE2EEPasswordModal.confirmReset();
-
-			// restore login
-			await loginPage.loginByUserState(Users.admin);
 		});
 
 		test('expect to manually set a new password', async ({ page }) => {
 			const accountSecurityPage = new AccountSecurity(page);
-			const loginPage = new LoginPage(page);
 			const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
 			const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
 			const e2EEKeyDecodeFailureBanner = new E2EEKeyDecodeFailureBanner(page);
@@ -125,6 +122,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 					faker.string.symbol(),
 			});
 
+			await loginPage.loginByUserState(Users.admin);
 			await setupE2EEPassword(page);
 
 			// Set a new password
@@ -134,6 +132,7 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 
 			// Log out
 			await navbar.logout();
+			await loginPage.waitForIt();
 
 			// Login again
 			await loginPage.loginByUserState(Users.admin);
@@ -151,6 +150,8 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 		test.use({ storageState: Users.userE2EE.state });
 
 		test('expect to recover the keys using the recovery key', async ({ page }) => {
+			const loginPage = new LoginPage(page);
+
 			await test.step('Recover the keys', async () => {
 				await page.goto('/home');
 				await injectInitialData();
@@ -158,8 +159,8 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 				const navbar = new Navbar(page);
 
 				await navbar.logout();
+				await loginPage.waitForIt();
 
-				const loginPage = new LoginPage(page);
 				await loginPage.loginByUserState(Users.userE2EE, { except: ['private_key', 'public_key'] });
 
 				const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
@@ -174,12 +175,13 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 	});
 });
 
-test.use({ storageState: Users.admin.state });
-
 const roomSetupSettingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
 
 test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
+	test.use({ storageState: Users.admin.state });
+
 	let poAccountSecurity: AccountSecurity;
+	let loginPage: LoginPage;
 	let poHomeChannel: HomeChannel;
 	let e2eePassword: string;
 
@@ -188,6 +190,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 	test.beforeEach(async ({ page }) => {
 		poAccountSecurity = new AccountSecurity(page);
 		poHomeChannel = new HomeChannel(page);
+		loginPage = new LoginPage(page);
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -204,7 +207,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await poAccountSecurity.securityE2EEncryptionSection.click();
 		await poAccountSecurity.securityE2EEncryptionResetKeyButton.click();
 
-		await page.locator('role=button[name="Login"]').waitFor();
+		await loginPage.waitForIt();
 
 		await injectInitialData();
 		await restoreState(page, Users.admin);
@@ -252,6 +255,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 
 		// Logout to remove e2ee keys
 		await poHomeChannel.navbar.logout();
+		await loginPage.waitForIt();
 
 		await injectInitialData();
 		await restoreState(page, Users.admin, { except: ['private_key', 'public_key'] });
