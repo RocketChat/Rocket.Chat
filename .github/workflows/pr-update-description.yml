@@ -22,7 +22,7 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: 22.16.0
-          deno-version: 1.43.5
+          deno-version: 2.6.10
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
