@@ -9,8 +9,6 @@ import type {
 import type { FindPaginated, IModerationReportsModel, PaginationParams } from '@rocket.chat/model-typings';
 import type { AggregationCursor, Collection, Db, Document, FindCursor, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
@@ -242,7 +240,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		const fuzzyQuery = selector
 			? {
 				'message.msg': {
-					$regex: escapeRegExp(selector),
+					$regex: selector,
 					$options: 'i',
 				},
 			}
@@ -390,25 +388,25 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			$or: [
 				{
 					'message.msg': {
-						$regex: escapeRegExp(selector),
+						$regex: selector,
 						$options: 'i',
 					},
 				},
 				{
 					description: {
-						$regex: escapeRegExp(selector),
+						$regex: selector,
 						$options: 'i',
 					},
 				},
 				{
 					'message.u.username': {
-						$regex: escapeRegExp(selector),
+						$regex: selector,
 						$options: 'i',
 					},
 				},
 				{
 					'message.u.name': {
-						$regex: escapeRegExp(selector),
+						$regex: selector,
 						$options: 'i',
 					},
 				},
@@ -426,13 +424,13 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 			$or: [
 				{
 					'reportedUser.username': {
-						$regex: escapeRegExp(selector),
+						$regex: selector,
 						$options: 'i',
 					},
 				},
 				{
 					'reportedUser.name': {
-						$regex: escapeRegExp(selector),
+						$regex: selector,
 						$options: 'i',
 					},
 				},
