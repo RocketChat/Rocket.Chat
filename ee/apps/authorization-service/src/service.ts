@@ -1,3 +1,4 @@
+import { AbacService } from '@rocket.chat/abac';
 import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
 import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
@@ -6,7 +7,7 @@ import polka from 'polka';
 
 const PORT = process.env.PORT || 3034;
 
-(async () => {
+void (async () => {
 	const { db, client } = await getConnection();
 
 	startTracing({ service: 'authorization-service', db: client });
@@ -19,6 +20,11 @@ const PORT = process.env.PORT || 3034;
 	const { Authorization } = await import('../../../../apps/meteor/server/services/authorization/service');
 
 	api.registerService(new Authorization());
+
+	if (!process.env.USE_EXTERNAL_ABAC_SERVICE) {
+		// Same API as authz service but own core-services proxy
+		api.registerService(new AbacService());
+	}
 
 	await api.start();
 

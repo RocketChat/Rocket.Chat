@@ -31,7 +31,7 @@ addMigration({
 				migrated: true,
 			} as IAppStorageItem;
 
-			await appsStorage.update({
+			await appsStorage.updatePartialAndReturnDocument({
 				...updatedApp,
 				signature: await sigMan.signApp(updatedApp),
 			});

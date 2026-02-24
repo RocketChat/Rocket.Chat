@@ -1,6 +1,7 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import { clientCallbacks } from '@rocket.chat/ui-client';
 import type { Filter } from 'mongodb';
 
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
@@ -10,7 +11,6 @@ import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { modifyMessageOnFilesDelete } from '../../../../client/lib/utils/modifyMessageOnFilesDelete';
 import { Messages, Subscriptions } from '../../../../client/stores';
-import { callbacks } from '../../../../lib/callbacks';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
@@ -177,14 +177,24 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 				if (msg.t !== 'command') {
 					const subscription = Subscriptions.state.find(({ rid }) => rid === record.rid);
 					const isNew = !Messages.state.find((record) => record._id === msg._id && record.temp !== true);
-					({ _id: msg._id, temp: { $ne: true } });
+
+					// Measure and log message receive delay for messages
+					if (msg.ts) {
+						const receiveDelay = Date.now() - new Date(msg.ts).getTime();
+
+						// Log warning if delay is significant (>2 seconds)
+						if (receiveDelay > 2000) {
+							console.warn(`[Message Delivery] High delay detected: ${receiveDelay}ms. Possible network or backend issue.`);
+						}
+					}
+
 					await upsertMessage({ msg, subscription });
 					if (isNew) {
-						await callbacks.run('streamNewMessage', msg);
+						await clientCallbacks.run('streamNewMessage', msg);
 					}
 				}
 
-				await callbacks.run('streamMessage', { ...msg, name: room.name || '' });
+				await clientCallbacks.run('streamMessage', { ...msg, name: room.name || '' });
 
 				fireGlobalEvent('new-message', {
 					...msg,

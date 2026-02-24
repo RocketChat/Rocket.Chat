@@ -7,6 +7,7 @@ import { TestsCommandBridge } from './commandBridge';
 import { TestContactBridge } from './contactBridge';
 import { TestsEmailBridge } from './emailBridge';
 import { TestsEnvironmentalVariableBridge } from './environmentalVariableBridge';
+import { TestExperimentalBridge } from './experimentalBridge';
 import { TestsHttpBridge } from './httpBridge';
 import { TestsInternalBridge } from './internalBridge';
 import { TestsInternalFederationBridge } from './internalFederationBridge';
@@ -30,6 +31,7 @@ import type {
 	AppDetailChangesBridge,
 	ContactBridge,
 	EnvironmentalVariableBridge,
+	ExperimentalBridge,
 	HttpBridge,
 	IInternalBridge,
 	IListenerBridge,
@@ -106,6 +108,8 @@ export class TestsAppBridges extends AppBridges {
 
 	private readonly outboundCommsBridge: TestOutboundCommunicationBridge;
 
+	private readonly experimentalBridge: TestExperimentalBridge;
+
 	constructor() {
 		super();
 		this.appDetails = new TestsAppDetailChangesBridge();
@@ -134,6 +138,7 @@ export class TestsAppBridges extends AppBridges {
 		this.emailBridge = new TestsEmailBridge();
 		this.contactBridge = new TestContactBridge();
 		this.outboundCommsBridge = new TestOutboundCommunicationBridge();
+		this.experimentalBridge = new TestExperimentalBridge();
 	}
 
 	public getCommandBridge(): TestsCommandBridge {
@@ -242,5 +247,9 @@ export class TestsAppBridges extends AppBridges {
 
 	public getOutboundMessageBridge(): OutboundMessageBridge {
 		return this.outboundCommsBridge;
+	}
+
+	public getExperimentalBridge(): ExperimentalBridge {
+		return this.experimentalBridge;
 	}
 }

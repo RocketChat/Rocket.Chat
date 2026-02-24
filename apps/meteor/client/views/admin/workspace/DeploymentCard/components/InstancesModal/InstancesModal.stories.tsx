@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import InstancesModal from './InstancesModal';
 
 export default {
-	title: 'Admin/Info/InstancesModal',
 	component: InstancesModal,
 	parameters: {
 		layout: 'fullscreen',

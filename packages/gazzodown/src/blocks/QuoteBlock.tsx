@@ -10,7 +10,7 @@ type QuoteBlockProps = {
 const QuoteBlock = ({ children }: QuoteBlockProps): ReactElement => (
 	<blockquote>
 		{children.map((paragraph, index) => (
-			<ParagraphBlock key={index} children={paragraph.value} />
+			<ParagraphBlock key={index}>{paragraph.value}</ParagraphBlock>
 		))}
 	</blockquote>
 );

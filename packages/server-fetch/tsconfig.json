@@ -1,9 +1,10 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
-		"rootDir": "./src",
+		"module": "esnext",
+		"rootDir": ".",
 		"outDir": "./dist",
 		"declaration": true,
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src/**/*", "./tests/**/*"],
 }

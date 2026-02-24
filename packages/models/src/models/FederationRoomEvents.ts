@@ -10,7 +10,7 @@ export class FederationRoomEventsRaw extends FederationEventsModel implements IF
 		super(db, 'federation_room_events');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { 'context.roomId': 1 } }];
 	}
 

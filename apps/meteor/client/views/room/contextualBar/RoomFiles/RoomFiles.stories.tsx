@@ -1,11 +1,10 @@
+import { Contextualbar } from '@rocket.chat/ui-client';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import RoomFiles from './RoomFiles';
-import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/RoomFiles',
 	component: RoomFiles,
 	parameters: {
 		layout: 'fullscreen',

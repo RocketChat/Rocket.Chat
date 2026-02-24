@@ -1,9 +1,6 @@
 import type { IUserSettings } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../Ajv';
 
 export type UsersUpdateParamsPOST = {
 	userId: string;
@@ -25,6 +22,7 @@ export type UsersUpdateParamsPOST = {
 		settings?: IUserSettings;
 		language?: string;
 		status?: string;
+		freeSwitchExtension?: string;
 	};
 	confirmRelinquish?: boolean;
 };
@@ -102,6 +100,10 @@ const UsersUpdateParamsPostSchema = {
 					nullable: true,
 				},
 				status: {
+					type: 'string',
+					nullable: true,
+				},
+				freeSwitchExtension: {
 					type: 'string',
 					nullable: true,
 				},

@@ -1,5 +1,20 @@
 /* eslint-disable new-cap */
-import { Message, Avatar } from '@rocket.chat/fuselage';
+import {
+	Message,
+	MessageLeftContainer,
+	MessageContainer,
+	MessageHeader,
+	MessageNameContainer,
+	MessageName,
+	MessageUsername,
+	MessageRole,
+	MessageTimestamp,
+	MessageBody,
+	MessageToolbarWrapper,
+	MessageToolbar,
+	MessageToolbarItem,
+	Avatar,
+} from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
 
@@ -16,7 +31,7 @@ export default {
 const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
 	const story = ({ blocks, errors }: { blocks: readonly UiKit.LayoutBlock[]; errors: Record<string, string> }) => (
 		<Message clickable>
-			<Message.LeftContainer>
+			<MessageLeftContainer>
 				<Avatar
 					url='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
               4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
@@ -31,19 +46,19 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
               UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
 					size='x36'
 				/>
-			</Message.LeftContainer>
-			<Message.Container>
-				<Message.Header>
-					<Message.NameContainer>
-						<Message.Name>Haylie George</Message.Name>
-						<Message.Username>@haylie.george</Message.Username>
-					</Message.NameContainer>
-					<Message.Role>Admin</Message.Role>
-					<Message.Role>User</Message.Role>
-					<Message.Role>Owner</Message.Role>
-					<Message.Timestamp>12:00 PM</Message.Timestamp>
-				</Message.Header>
-				<Message.Body>
+			</MessageLeftContainer>
+			<MessageContainer>
+				<MessageHeader>
+					<MessageNameContainer>
+						<MessageName>Haylie George</MessageName>
+						<MessageUsername>@haylie.george</MessageUsername>
+					</MessageNameContainer>
+					<MessageRole>Admin</MessageRole>
+					<MessageRole>User</MessageRole>
+					<MessageRole>Owner</MessageRole>
+					<MessageTimestamp>12:00 PM</MessageTimestamp>
+				</MessageHeader>
+				<MessageBody>
 					<UiKitContext.Provider
 						value={{
 							action: action('action'),
@@ -54,15 +69,15 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
 					>
 						{UiKitMessage(blocks)}
 					</UiKitContext.Provider>
-				</Message.Body>
-			</Message.Container>
-			<Message.Toolbar.Wrapper>
-				<Message.Toolbar>
-					<Message.Toolbar.Item icon='quote' />
-					<Message.Toolbar.Item icon='clock' />
-					<Message.Toolbar.Item icon='thread' />
-				</Message.Toolbar>
-			</Message.Toolbar.Wrapper>
+				</MessageBody>
+			</MessageContainer>
+			<MessageToolbarWrapper>
+				<MessageToolbar>
+					<MessageToolbarItem icon='quote' />
+					<MessageToolbarItem icon='clock' />
+					<MessageToolbarItem icon='thread' />
+				</MessageToolbar>
+			</MessageToolbarWrapper>
 		</Message>
 	);
 	story.args = {
@@ -114,3 +129,7 @@ export const Conditional = createStory(payloads.conditional);
 
 export const Preview = createStory(payloads.preview);
 export const PreviewWithExternalUrl = createStory(payloads.previewWithExternalUrl);
+
+export const InfoCard = createStory(payloads.infoCard);
+export const InfoCardMultiple = createStory(payloads.infoCardMultiple);
+export const InfoCardMultipleIcons = createStory(payloads.infoCardMultipleIcons);

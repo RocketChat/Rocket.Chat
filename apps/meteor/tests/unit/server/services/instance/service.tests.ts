@@ -17,6 +17,8 @@ const serviceMocks = {
 	'@rocket.chat/core-services': {
 		ServiceClassInternal: class {
 			onEvent = sinon.stub();
+
+			onSettingChanged = sinon.stub();
 		},
 		Apps: AppsMock,
 	},

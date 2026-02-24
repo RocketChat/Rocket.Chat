@@ -12,17 +12,12 @@ export const rocketChatDecorator: Decorator = (fn, { parameters }) => {
 	const linkElement = document.getElementById('theme-styles') || document.createElement('link');
 	if (linkElement.id !== 'theme-styles') {
 		require('../app/theme/client/main.css');
-		require('../app/theme/client/vendor/fontello/css/fontello.css');
 		require('../app/theme/client/rocketchat.font.css');
 		linkElement.setAttribute('id', 'theme-styles');
 		linkElement.setAttribute('rel', 'stylesheet');
 		linkElement.setAttribute('href', 'https://open.rocket.chat/theme.css');
 		document.head.appendChild(linkElement);
 	}
-
-	/* eslint-disable @typescript-eslint/no-var-requires */
-	/* eslint-disable-next-line */
-	const { default: icons } = require('!!raw-loader!../private/public/icons.svg');
 
 	return (
 		<MockedAppRoot>
@@ -35,7 +30,6 @@ export const rocketChatDecorator: Decorator = (fn, { parameters }) => {
 									background-color: white;
 								}
 							`}</style>
-							<div dangerouslySetInnerHTML={{ __html: icons }} />
 							<div className='color-primary-font-color'>{fn()}</div>
 						</RouterContextMock>
 					</ModalContextMock>

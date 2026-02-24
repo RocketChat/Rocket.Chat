@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import {
 	isTeamsConvertToChannelProps,
@@ -20,8 +20,10 @@ import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { eraseTeam } from '../lib/eraseTeam';
 
 API.v1.addRoute(
 	'teams.list',
@@ -71,7 +73,7 @@ API.v1.addRoute(
 				this.bodyParams,
 				Match.ObjectIncluding({
 					name: String,
-					type: Match.OneOf(TEAM_TYPE.PRIVATE, TEAM_TYPE.PUBLIC),
+					type: Match.OneOf(TeamType.PRIVATE, TeamType.PUBLIC),
 					members: Match.Maybe([String]),
 					room: Match.Maybe(Match.Any),
 					owner: Match.Maybe(String),
@@ -131,11 +133,11 @@ API.v1.addRoute(
 
 			if (rooms.length) {
 				for await (const room of rooms) {
-					await eraseRoom(room, this.userId);
+					await eraseRoom(room, this.user);
 				}
 			}
 
-			await Promise.all([Team.unsetTeamIdOfRooms(this.userId, team._id), Team.removeAllMembersFromTeam(team._id)]);
+			await Promise.all([Team.unsetTeamIdOfRooms(this.user, team), Team.removeAllMembersFromTeam(team._id)]);
 
 			await Team.deleteById(team._id);
 
@@ -233,6 +235,13 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 			const canUpdateAny = !!(await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId));
+
+			if (settings.get('ABAC_Enabled') && isDefault) {
+				const room = await Rooms.findOneByIdAndType(roomId, 'p', { projection: { abacAttributes: 1 } });
+				if (room?.abacAttributes?.length) {
+					return API.v1.failure('error-room-is-abac-managed');
+				}
+			}
 
 			const room = await Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny);
 
@@ -634,6 +643,7 @@ API.v1.addRoute(
 			const { roomsToRemove = [] } = this.bodyParams;
 
 			const team = await getTeamByIdOrName(this.bodyParams);
+
 			if (!team) {
 				return API.v1.failure('team-does-not-exist');
 			}
@@ -642,26 +652,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const rooms: string[] = await Team.getMatchingTeamRooms(team._id, roomsToRemove);
-
-			// If we got a list of rooms to delete along with the team, remove them first
-			if (rooms.length) {
-				for await (const room of rooms) {
-					await eraseRoom(room, this.userId);
-				}
-			}
-
-			// Move every other room back to the workspace
-			await Team.unsetTeamIdOfRooms(this.userId, team._id);
-
-			// Remove the team's main room
-			await eraseRoom(team.roomId, this.userId);
-
-			// Delete all team memberships
-			await Team.removeAllMembersFromTeam(team._id);
-
-			// And finally delete the team itself
-			await Team.deleteById(team._id);
+			await eraseTeam(this.user, team, roomsToRemove);
 
 			return API.v1.success();
 		},

@@ -12,7 +12,7 @@ export class TrashRaw extends BaseRaw<RocketChatRecordDeleted<any>> {
 		});
 	}
 
-	protected modelIndexes(): IndexDescription[] | undefined {
+	protected override modelIndexes(): IndexDescription[] | undefined {
 		return [
 			{ key: { __collection__: 1 } },
 			{ key: { _deletedAt: 1 }, expireAfterSeconds: 60 * 60 * 24 * 30 },

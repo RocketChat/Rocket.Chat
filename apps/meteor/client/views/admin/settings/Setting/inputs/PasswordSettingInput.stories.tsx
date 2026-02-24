@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import PasswordSettingInput from './PasswordSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/PasswordSettingInput',
 	component: PasswordSettingInput,
 	parameters: {
 		actions: {

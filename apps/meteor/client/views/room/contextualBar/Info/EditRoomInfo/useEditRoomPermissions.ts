@@ -4,17 +4,13 @@ import { useMemo } from 'react';
 
 import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
 import { useTeamInfoQuery } from '../../../../../hooks/useTeamInfoQuery';
-import { E2EEState } from '../../../../../lib/e2ee/E2EEState';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import { useE2EEState } from '../../../hooks/useE2EEState';
 
 const getCanChangeType = (room: IRoom | IRoomWithRetentionPolicy, canCreateChannel: boolean, canCreateGroup: boolean, isAdmin: boolean) =>
 	(!room.default || isAdmin) && ((room.t === 'p' && canCreateChannel) || (room.t === 'c' && canCreateGroup));
 
 export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) => {
 	const isAdmin = useRole('admin');
-	const e2eeState = useE2EEState();
-	const isE2EEReady = e2eeState === E2EEState.READY || e2eeState === E2EEState.SAVE_PASSWORD;
 	const canCreateChannel = usePermission('create-c');
 	const canCreateGroup = usePermission('create-p');
 
@@ -37,7 +33,6 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		useMemo(() => ['archive-room', 'unarchive-room'], []),
 		room._id,
 	);
-	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || isE2EEReady);
 
 	const [
 		canViewName,
@@ -50,7 +45,6 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canViewHideSysMes,
 		canViewJoinCode,
 		canViewReactWhenReadOnly,
-		canViewEncrypted,
 	] = useMemo(() => {
 		const isAllowed =
 			roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange ||
@@ -68,7 +62,6 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 			isAllowed(room, RoomSettingsEnum.SYSTEM_MESSAGES),
 			isAllowed(room, RoomSettingsEnum.JOIN_CODE),
 			isAllowed(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY),
-			isAllowed(room, RoomSettingsEnum.E2E),
 		];
 	}, [room]);
 
@@ -78,7 +71,6 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canSetReactWhenReadOnly,
 		canEditRoomRetentionPolicy,
 		canArchiveOrUnarchive,
-		canToggleEncryption,
 		canViewName,
 		canViewTopic,
 		canViewAnnouncement,
@@ -89,6 +81,5 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canViewHideSysMes,
 		canViewJoinCode,
 		canViewReactWhenReadOnly,
-		canViewEncrypted,
 	};
 };

@@ -6,7 +6,6 @@ import ImportOperationSummary from './ImportOperationSummary';
 import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';
 
 export default {
-	title: 'Admin/Import/ImportOperationSummary',
 	component: ImportOperationSummary,
 	subcomponents: {
 		ImportOperationSummarySkeleton: ImportOperationSummarySkeleton as ComponentType<any>,

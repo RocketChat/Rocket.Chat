@@ -1,5 +1,5 @@
 {
-	"extends": ["@rocket.chat/eslint-config", "@rocket.chat/eslint-config/react"],
+	"extends": ["@rocket.chat/eslint-config", "@rocket.chat/eslint-config/react", "plugin:storybook/recommended"],
 	"parser": "@typescript-eslint/parser",
-	"ignorePatterns": ["**/dist"]
+	"ignorePatterns": ["dist", "!.storybook"]
 }

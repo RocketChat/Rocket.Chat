@@ -75,19 +75,11 @@ test.describe.serial('OC - Contact Review', () => {
 		await customField.delete();
 	});
 
-	test('OC - Contact Review - Update custom field conflicting', async ({ page }) => {
-		await poHomeChannel.sidenav.getSidebarItemByName(visitor.name).click();
-		await poHomeChannel.content.btnContactInformation.click();
+	test('OC - Contact Review - Update custom field conflicting', async () => {
+		await poHomeChannel.sidebar.getSidebarItemByName(visitor.name).click();
+		await poHomeChannel.roomToolbar.openContactInfo();
+		await poHomeChannel.contacts.contactInfo.solveConflict(customFieldName, 'custom-field-value-2');
 
-		await poHomeChannel.content.contactReviewModal.btnSeeConflicts.click();
-
-		await poHomeChannel.content.contactReviewModal.getFieldByName(customFieldName).click();
-		await poHomeChannel.content.contactReviewModal.findOption('custom-field-value-2').click();
-		const responseListener = page.waitForResponse('**/api/v1/omnichannel/contacts.conflicts');
-		await poHomeChannel.content.contactReviewModal.btnSave.click();
-		const response = await responseListener;
-		await expect(response.status()).toBe(200);
-
-		await expect(poHomeChannel.content.contactReviewModal.btnSeeConflicts).not.toBeVisible();
+		await expect(poHomeChannel.contacts.contactInfo.btnSeeConflicts).not.toBeVisible();
 	});
 });

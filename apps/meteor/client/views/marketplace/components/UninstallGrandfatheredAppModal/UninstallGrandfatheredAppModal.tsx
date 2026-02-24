@@ -13,6 +13,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
+import { links } from '../../../../lib/links';
 import type { MarketplaceRouteContext } from '../../hooks/useAppsCountQuery';
 import { usePrivateAppsEnabled } from '../../hooks/usePrivateAppsEnabled';
 
@@ -46,8 +47,7 @@ const UninstallGrandfatheredAppModal = ({ context, limit, appName, handleUninsta
 			</ModalContent>
 			<ModalFooter justifyContent='space-between'>
 				<ModalFooterAnnotation>
-					{/* TODO: Move the link to a go link when available */}
-					<a target='_blank' rel='noopener noreferrer' href='https://docs.rocket.chat/docs/rocketchat-marketplace'>
+					<a target='_blank' rel='noopener noreferrer' href={links.go.appsDocumentation}>
 						{t('Learn_more')}
 					</a>
 				</ModalFooterAnnotation>

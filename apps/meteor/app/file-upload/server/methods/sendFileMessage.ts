@@ -6,15 +6,17 @@ import type {
 	AtLeast,
 	FilesAndAttachments,
 	IMessage,
+	FileProp,
 } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { isImagePreviewSupported } from './isImagePreviewSupported';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import { omit } from '../../../../lib/utils/omit';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
@@ -42,17 +44,18 @@ export const parseFileIntoMessageAttachments = async (
 
 	const attachments: MessageAttachment[] = [];
 
-	const files = [
+	const files: FileProp[] = [
 		{
 			_id: file._id,
 			name: file.name || '',
 			type: file.type || 'file',
 			size: file.size || 0,
 			format: file.identify?.format || '',
+			typeGroup: file.typeGroup,
 		},
 	];
 
-	if (/^image\/.+/.test(file.type as string)) {
+	if (isImagePreviewSupported(file.type as string)) {
 		const attachment: FileAttachmentProps = {
 			title: file.name,
 			type: 'file',
@@ -62,6 +65,7 @@ export const parseFileIntoMessageAttachments = async (
 			image_url: fileUrl,
 			image_type: file.type as string,
 			image_size: file.size,
+			fileId: file._id,
 		};
 
 		if (file.identify?.size) {
@@ -96,10 +100,11 @@ export const parseFileIntoMessageAttachments = async (
 					type: thumbnail.type || 'file',
 					size: thumbnail.size || 0,
 					format: thumbnail.identify?.format || '',
+					typeGroup: thumbnail.typeGroup || '',
 				});
 			}
-		} catch (e) {
-			SystemLogger.error(e);
+		} catch (err) {
+			SystemLogger.error({ err });
 		}
 		attachments.push(attachment);
 	} else if (/^audio\/.+/.test(file.type as string)) {
@@ -112,6 +117,7 @@ export const parseFileIntoMessageAttachments = async (
 			audio_url: fileUrl,
 			audio_type: file.type as string,
 			audio_size: file.size,
+			fileId: file._id,
 		};
 		attachments.push(attachment);
 	} else if (/^video\/.+/.test(file.type as string)) {
@@ -124,6 +130,7 @@ export const parseFileIntoMessageAttachments = async (
 			video_url: fileUrl,
 			video_type: file.type as string,
 			video_size: file.size as number,
+			fileId: file._id,
 		};
 		attachments.push(attachment);
 	} else {
@@ -135,6 +142,7 @@ export const parseFileIntoMessageAttachments = async (
 			title_link: fileUrl,
 			title_link_download: true,
 			size: file.size as number,
+			fileId: file._id,
 		};
 		attachments.push(attachment);
 	}
@@ -158,13 +166,6 @@ export const sendFileMessage = async (
 		roomId: string;
 		file: Partial<IUpload>;
 		msgData?: Record<string, any>;
-	},
-	{
-		parseAttachmentsForE2EE,
-	}: {
-		parseAttachmentsForE2EE: boolean;
-	} = {
-		parseAttachmentsForE2EE: true,
 	},
 ): Promise<boolean> => {
 	const user = await Users.findOneById(userId, { projection: { services: 0 } });
@@ -213,12 +214,10 @@ export const sendFileMessage = async (
 		groupable: msgData?.groupable ?? false,
 	};
 
-	if (parseAttachmentsForE2EE || msgData?.t !== 'e2e') {
-		const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
-		data.file = files[0];
-		data.files = files;
-		data.attachments = attachments;
-	}
+	const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
+	data.file = files[0];
+	data.files = files;
+	data.attachments = attachments;
 
 	const msg = await executeSendMessage(userId, data);
 

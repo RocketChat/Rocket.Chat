@@ -14,7 +14,21 @@ export type OutlookEventsResponse = {
 	status: 'success' | 'canceled';
 };
 
+export type CustomNotificationOptions = {
+	type: 'voice' | 'text';
+	id?: string;
+	payload: {
+		title: string;
+		body: string;
+		avatar?: string;
+		silent?: boolean;
+		requireInteraction?: boolean;
+	};
+};
+
 export interface IRocketChatDesktop {
+	dispatchCustomNotification: (options: CustomNotificationOptions) => void;
+	closeCustomNotification: (id: string) => void;
 	onReady: (cb: (serverInfo: ServerInfo) => void) => void;
 	setServerInfo: (serverInfo: ServerInfo) => void;
 	setUrlResolver: (getAbsoluteUrl: (relativePath?: string) => string) => void;
@@ -48,4 +62,5 @@ export interface IRocketChatDesktop {
 	clearOutlookCredentials: () => void;
 	setUserToken: (token: string, userId: string) => void;
 	openDocumentViewer: (url: string, format: string, options: any) => void;
+	reloadServer: () => void;
 }

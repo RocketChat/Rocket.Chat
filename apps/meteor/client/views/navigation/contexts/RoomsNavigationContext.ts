@@ -1,10 +1,10 @@
 import { type ISubscription, type ILivechatInquiryRecord, type IRoom, isTeamRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
+import { isTruthy } from '@rocket.chat/tools';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 
 export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: TranslationKey; icon: IconName } } = {
@@ -72,8 +72,15 @@ export type AllGroupsKeys = SidePanelFiltersKeys | SideBarFiltersKeys;
 
 export type AllGroupsKeysWithUnread = SidePanelFilters | SideBarFiltersKeys | SideBarFiltersUnreadKeys;
 
+export type RecordTypeBySidebarKey<K extends AllGroupsKeysWithUnread> = K extends 'queue' ? ILivechatInquiryRecord : SubscriptionWithRoom;
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export interface RoomsNavigationGroup extends Map<AllGroupsKeysWithUnread, Set<RecordTypeBySidebarKey<AllGroupsKeysWithUnread>>> {
+	get<K extends AllGroupsKeysWithUnread>(key: K): Set<RecordTypeBySidebarKey<K>> | undefined;
+}
+
 export type RoomsNavigationContextValue = {
-	groups: Map<AllGroupsKeysWithUnread, Set<SubscriptionWithRoom | ILivechatInquiryRecord>>;
+	groups: RoomsNavigationGroup;
 	currentFilter: AllGroupsKeysWithUnread;
 	setFilter: (filter: AllGroupsKeys, unread: boolean, parentRid?: IRoom['_id']) => void;
 	unreadGroupData: Map<AllGroupsKeys, GroupedUnreadInfoData>;
@@ -164,7 +171,7 @@ export const useSideBarRoomsList = (): {
 	};
 };
 
-export const isUnreadSubscription = (subscription: Partial<ISubscription>) => {
+export const isUnreadSubscription = (subscription: Partial<ISubscription>): boolean => {
 	if (subscription.hideUnreadStatus) {
 		return false;
 	}
@@ -179,7 +186,11 @@ export const isUnreadSubscription = (subscription: Partial<ISubscription>) => {
 	);
 };
 
-export const useSidePanelRoomsListTab = (tab: AllGroupsKeys) => {
+export const useSidePanelQueueListTab = (): Array<ILivechatInquiryRecord> => {
+	return Array.from(useRoomsListContext().groups.get('queue') || []);
+};
+
+export const useSidePanelRoomsListTab = <K extends Exclude<AllGroupsKeys, 'queue'>>(tab: K): Array<RecordTypeBySidebarKey<K>> => {
 	const [, unread] = useSidePanelFilter();
 	const roomSet = useRoomsListContext().groups.get(tab);
 
@@ -203,7 +214,7 @@ export const useSidePanelRoomsListTab = (tab: AllGroupsKeys) => {
 					result[1].push(room);
 					return result;
 				},
-				[[], []] as [Array<SubscriptionWithRoom | ILivechatInquiryRecord>, Array<SubscriptionWithRoom | ILivechatInquiryRecord>],
+				[[], []] as [Array<RecordTypeBySidebarKey<K>>, Array<RecordTypeBySidebarKey<K>>],
 			)
 			.flat();
 	}, [roomSet, unread]);

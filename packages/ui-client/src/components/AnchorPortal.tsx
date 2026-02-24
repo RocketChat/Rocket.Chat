@@ -1,4 +1,5 @@
-import { ReactNode, useLayoutEffect } from 'react';
+import type { ReactNode } from 'react';
+import { useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 import { ensureAnchorElement, refAnchorElement, unrefAnchorElement } from '../helpers/anchors';

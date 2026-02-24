@@ -60,11 +60,6 @@
 	--rooms-list-empty-text-size: 0.75rem;
 
 	/*
-	* Message box
-	*/
-	--message-box-text-size: var(--input-font-size);
-
-	/*
 	* Flex nav
 	*/
 	--flex-nav-background: var(--color-gray-lightest);

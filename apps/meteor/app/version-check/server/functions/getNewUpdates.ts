@@ -38,6 +38,8 @@ export const getNewUpdates = async () => {
 		const response = await fetch(url, {
 			headers,
 			params,
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
 		});
 
 		const data = await response.json();

@@ -1,29 +1,19 @@
 import type { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarScrollableContent, ContextualbarFooter, InfoPanelField, InfoPanelLabel, InfoPanelText } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
-import {
-	useToastMessageDispatch,
-	useRoute,
-	useUserSubscription,
-	useTranslation,
-	usePermission,
-	useEndpoint,
-	useUserId,
-} from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import moment from 'moment';
+import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
-import { InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../../components/InfoPanel';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
-import { omnichannelQueryKeys } from '../../../../../lib/queryKeys';
+import { useFormattedRelativeTime } from '../../../../../hooks/useFormattedRelativeTime';
 import CustomField from '../../../components/CustomField';
+import { useValidCustomFields } from '../../../contactInfo/hooks/useValidCustomFields';
 import { AgentField, SlaField, ContactField, SourceField } from '../../components';
 import PriorityField from '../../components/PriorityField';
 import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
@@ -34,25 +24,17 @@ type ChatInfoProps = {
 	route: keyof IRouterPaths;
 };
 
-// TODO: Remove moment we are mixing moment and our own formatters :sadface:
 function ChatInfo({ id, route }: ChatInfoProps) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const formatDateAndTime = useFormatDateAndTime();
-	const getLivechatCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
-	const { data: customFields = [] } = useQuery({
-		queryKey: omnichannelQueryKeys.livechat.customFields(),
-		queryFn: async () => {
-			const { customFields } = await getLivechatCustomFields();
-			return customFields;
-		},
-	});
 	const formatDuration = useFormatDuration();
 
 	const { data: room } = useOmnichannelRoomInfo(id); // FIXME: `room` is serialized, but we need to deserialize it
 
 	const {
+		_id: roomId,
 		ts,
 		tags,
 		closedAt,
@@ -70,8 +52,11 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 		queuedAt,
 	} = room ?? {};
 
+	const inactivityTime = useFormattedRelativeTime(
+		responseBy?.lastMessageTs ? Date.now() - new Date(responseBy.lastMessageTs).getTime() : 0,
+	);
+
 	const routePath = useRoute(route || 'omnichannel-directory');
-	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 	const subscription = useUserSubscription(id);
 	const hasGlobalEditRoomPermission = usePermission('save-others-livechat-room-info');
 	const hasLocalEditRoomPermission = servedBy?._id === useUserId();
@@ -80,10 +65,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 
 	const queueTime = useMemo(() => formatQueuedAt(room), [room]);
 
-	const checkIsVisibleAndScopeRoom = (key: string) => {
-		const field = customFields.find(({ _id }) => _id === key);
-		return field?.visibility === 'visible' && field?.scope === 'room';
-	};
+	const customFieldEntries = useValidCustomFields(livechatData);
 
 	const onEditClick = useEffectEvent(() => {
 		const hasEditAccess = !!subscription || hasLocalEditRoomPermission || hasGlobalEditRoomPermission;
@@ -106,10 +88,6 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 		);
 	});
 
-	const customFieldEntries: [string, any][] = Object.entries(livechatData || {}).filter(
-		([key]) => checkIsVisibleAndScopeRoom(key) && livechatData[key],
-	);
-
 	return (
 		<>
 			<ContextualbarScrollableContent p={24}>
@@ -121,15 +99,17 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 					{departmentId && <DepartmentField departmentId={departmentId} />}
 					{tags && tags.length > 0 && (
 						<InfoPanelField>
-							<InfoPanelLabel>{t('Tags')}</InfoPanelLabel>
+							<InfoPanelLabel id={`${roomId}-tags`}>{t('Tags')}</InfoPanelLabel>
 							<InfoPanelText>
-								{tags.map((tag) => (
-									<Box key={tag} mie={4} display='inline'>
-										<Tag style={{ display: 'inline' }} disabled>
-											{tag}
-										</Tag>
-									</Box>
-								))}
+								<ul aria-labelledby={`${roomId}-tags`}>
+									{tags.map((tag) => (
+										<Box is='li' key={tag} mie={4} display='inline'>
+											<Tag style={{ display: 'inline' }} disabled>
+												{tag}
+											</Tag>
+										</Box>
+									))}
+								</ul>
 							</InfoPanelText>
 						</InfoPanelField>
 					)}
@@ -147,10 +127,10 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 							<InfoPanelText>{queueTime}</InfoPanelText>
 						</InfoPanelField>
 					)}
-					{closedAt && (
+					{closedAt && ts && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Chat_Duration')}</InfoPanelLabel>
-							<InfoPanelText>{moment(closedAt).from(moment(ts), true)}</InfoPanelText>
+							<InfoPanelText>{formatDuration((new Date(closedAt).getTime() - new Date(ts).getTime()) / 1000)}</InfoPanelText>
 						</InfoPanelField>
 					)}
 					{ts && (
@@ -180,10 +160,11 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 					{!waitingResponse && responseBy?.lastMessageTs && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Inactivity_Time')}</InfoPanelLabel>
-							<InfoPanelText>{moment(responseBy.lastMessageTs).fromNow(true)}</InfoPanelText>
+							<InfoPanelText>{inactivityTime}</InfoPanelText>
 						</InfoPanelField>
 					)}
-					{canViewCustomFields && customFieldEntries.map(([key, value]) => <CustomField key={key} id={key} value={value} />)}
+					{customFieldEntries?.length > 0 &&
+						customFieldEntries.map(([key, value]) => <CustomField key={key} id={key} value={value as string} />)}
 					{slaId && <SlaField id={slaId} />}
 					{priorityId && <PriorityField id={priorityId} />}
 				</Margins>

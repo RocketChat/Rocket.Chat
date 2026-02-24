@@ -4,7 +4,6 @@ import outdent from 'outdent';
 import MarkdownText from './MarkdownText';
 
 const meta = {
-	title: 'Components/MarkdownText',
 	component: MarkdownText,
 	parameters: {
 		layout: 'padded',

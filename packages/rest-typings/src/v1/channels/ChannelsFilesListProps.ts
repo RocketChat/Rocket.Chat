@@ -1,16 +1,12 @@
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../Ajv';
 
 export type ChannelsFilesListProps = PaginatedRequest<
 	({ roomId: string; roomName?: string } | { roomId?: string; roomName: string }) & {
 		name?: string;
 		typeGroup?: string;
 		query?: string;
+		onlyConfirmed?: boolean;
 	}
 >;
 
@@ -48,6 +44,9 @@ const channelsFilesListPropsSchema = {
 		query: {
 			type: 'string',
 			nullable: true,
+		},
+		onlyConfirmed: {
+			type: 'boolean',
 		},
 	},
 	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],

@@ -48,6 +48,7 @@ import {
 } from '../accessors';
 import { CloudWorkspaceRead } from '../accessors/CloudWorkspaceRead';
 import { ContactRead } from '../accessors/ContactRead';
+import { ExperimentalRead } from '../accessors/ExperimentalRead';
 import { ThreadRead } from '../accessors/ThreadRead';
 import { UIExtend } from '../accessors/UIExtend';
 import type { AppBridges } from '../bridges/AppBridges';
@@ -188,12 +189,28 @@ export class AppAccessorManager {
 			const oauthApps = new OAuthAppsReader(this.bridges.getOAuthAppsBridge(), appId);
 			const contactReader = new ContactRead(this.bridges, appId);
 			const thread = new ThreadRead(this.bridges.getThreadBridge(), appId);
-
 			const role = new RoleRead(this.bridges.getRoleBridge(), appId);
+			const experimental = new ExperimentalRead(this.bridges.getExperimentalBridge(), appId);
 
 			this.readers.set(
 				appId,
-				new Reader(env, msg, persist, room, user, noti, livechat, upload, cloud, videoConf, contactReader, oauthApps, thread, role),
+				new Reader(
+					env,
+					msg,
+					persist,
+					room,
+					user,
+					noti,
+					livechat,
+					upload,
+					cloud,
+					videoConf,
+					contactReader,
+					oauthApps,
+					thread,
+					role,
+					experimental,
+				),
 			);
 		}
 

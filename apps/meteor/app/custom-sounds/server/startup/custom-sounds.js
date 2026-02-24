@@ -1,3 +1,4 @@
+import { CustomSounds } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
@@ -20,7 +21,10 @@ Meteor.startup(() => {
 		throw new Error(`Invalid RocketChatStore type [${storeType}]`);
 	}
 
-	SystemLogger.info(`Using ${storeType} for custom sounds storage`);
+	SystemLogger.info({
+		msg: 'Using custom sounds storage',
+		storeType,
+	});
 
 	let path = '~/uploads';
 	if (settings.get('CustomSounds_FileSystemPath') != null) {
@@ -44,7 +48,17 @@ Meteor.startup(() => {
 			return;
 		}
 
+		const sound = await CustomSounds.findOneById(fileId.split('.')[0], { projection: { _id: 1 } });
+
+		if (!sound) {
+			res.writeHead(404);
+			res.write('Not found');
+			res.end();
+			return;
+		}
+
 		const file = await RocketChatFileCustomSoundsInstance.getFileWithReadStream(fileId);
+
 		if (!file) {
 			res.writeHead(404);
 			res.write('Not found');

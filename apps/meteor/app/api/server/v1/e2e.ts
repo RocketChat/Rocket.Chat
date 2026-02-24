@@ -1,9 +1,9 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import {
 	ajv,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
-	ise2eGetUsersOfRoomWithoutKeyParamsGET,
 	ise2eSetUserPublicAndPrivateKeysParamsPOST,
 	ise2eUpdateGroupKeyParamsPOST,
 	isE2EProvideUsersGroupKeyProps,
@@ -34,6 +34,10 @@ type E2eSetRoomKeyIdProps = {
 	keyID: string;
 };
 
+type e2eGetUsersOfRoomWithoutKeyParamsGET = {
+	rid: string;
+};
+
 const E2eSetRoomKeyIdSchema = {
 	type: 'object',
 	properties: {
@@ -48,8 +52,26 @@ const E2eSetRoomKeyIdSchema = {
 	additionalProperties: false,
 };
 
+const e2eGetUsersOfRoomWithoutKeyParamsGETSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+		},
+	},
+	additionalProperties: false,
+	required: ['rid'],
+};
+
 const isE2eSetRoomKeyIdProps = ajv.compile<E2eSetRoomKeyIdProps>(E2eSetRoomKeyIdSchema);
 
+<<<<<<< feat/openapi-e2e-fetchMyKeys
+=======
+const ise2eGetUsersOfRoomWithoutKeyParamsGET = ajv.compile<e2eGetUsersOfRoomWithoutKeyParamsGET>(
+	e2eGetUsersOfRoomWithoutKeyParamsGETSchema,
+);
+
+>>>>>>> develop
 const e2eEndpoints = API.v1
 	.post(
 		'e2e.setRoomKeyID',
@@ -78,6 +100,7 @@ const e2eEndpoints = API.v1
 		},
 	)
 	.get(
+<<<<<<< feat/openapi-e2e-fetchMyKeys
 		'e2e.fetchMyKeys',
 		{
 			authRequired: true,
@@ -93,28 +116,65 @@ const e2eEndpoints = API.v1
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['success'],
+=======
+		'e2e.getUsersOfRoomWithoutKey',
+		{
+			authRequired: true,
+			query: ise2eGetUsersOfRoomWithoutKeyParamsGET,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					users: Pick<IUser, '_id' | 'e2e'>[];
+				}>({
+					type: 'object',
+					properties: {
+						users: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									e2e: {
+										type: 'object',
+										properties: {
+											private_key: { type: 'string' },
+											public_key: { type: 'string' },
+										},
+									},
+								},
+								required: ['_id'],
+							},
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['users', 'success'],
+>>>>>>> develop
 				}),
 			},
 		},
 
 		async function action() {
+<<<<<<< feat/openapi-e2e-fetchMyKeys
 			const result = (await Users.fetchKeysByUserId(this.userId)) as unknown as { public_key: string; private_key: string };
+=======
+			const { rid } = this.queryParams;
+
+			const result = await getUsersOfRoomWithoutKeyMethod(this.userId, rid);
+>>>>>>> develop
 
 			return API.v1.success(result);
 		},
 	);
 
 API.v1.addRoute(
-	'e2e.getUsersOfRoomWithoutKey',
+	'e2e.fetchMyKeys',
 	{
 		authRequired: true,
-		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
 	},
 	{
 		async get() {
-			const { rid } = this.queryParams;
-
-			const result = await getUsersOfRoomWithoutKeyMethod(this.userId, rid);
+			const result = await Users.fetchKeysByUserId(this.userId);
 
 			return API.v1.success(result);
 		},
@@ -214,9 +274,6 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: ise2eUpdateGroupKeyParamsPOST,
-		deprecation: {
-			version: '8.0.0',
-		},
 	},
 	{
 		async post() {

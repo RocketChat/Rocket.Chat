@@ -9,7 +9,7 @@ export class CredentialTokensRaw extends BaseRaw<ICredentialToken> implements IC
 		super(db, 'credential_tokens', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { expireAt: 1 }, sparse: true, expireAfterSeconds: 0 }];
 	}
 

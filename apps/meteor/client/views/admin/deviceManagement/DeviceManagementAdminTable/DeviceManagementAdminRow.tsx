@@ -1,13 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { GenericMenu } from '@rocket.chat/ui-client';
+import { GenericMenu, GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import DeviceIcon from '../../../../components/deviceManagement/DeviceIcon';
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
@@ -67,7 +66,7 @@ const DeviceManagementAdminRow = ({
 	];
 
 	return (
-		<GenericTableRow key={_id} onKeyDown={handleKeyDown} onClick={handleClick} tabIndex={0} action>
+		<GenericTableRow key={_id} onKeyDown={handleKeyDown} onClick={handleClick} tabIndex={0} action aria-label={_id}>
 			<GenericTableCell>
 				<Box display='flex' alignItems='center'>
 					<DeviceIcon deviceType={deviceType} />

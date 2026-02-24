@@ -4,7 +4,6 @@ import type { Meta, StoryObj } from '@storybook/react';
 import GenericUpsellModal from '.';
 
 const meta = {
-	title: 'Components/GenericUpsellModal',
 	component: GenericUpsellModal,
 	args: {
 		onClose: action('onClose'),

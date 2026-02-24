@@ -1,8 +1,8 @@
 import type { IOmnichannelRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
-import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
+import { DEFAULT_SLA_CONFIG, isRoomNativeFederated, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import { PrivateCachedStore } from '../lib/cachedStores';
+import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
 import { Rooms, Subscriptions } from '../stores';
 
 class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, ISubscription> {
@@ -65,6 +65,12 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 			source: (room as IOmnichannelRoom | undefined)?.source,
 			queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,
 			federated: room?.federated,
+
+			...(room &&
+				isRoomNativeFederated(room) && {
+					federation: room.federation,
+				}),
+
 			lm: subscription.lr ? new Date(Math.max(subscription.lr.getTime(), lastRoomUpdate?.getTime() || 0)) : lastRoomUpdate,
 		};
 	}
@@ -73,7 +79,7 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 		return this.handleRecordEvent('changed', record);
 	}
 
-	protected deserializeFromCache(record: unknown) {
+	protected override deserializeFromCache(record: unknown) {
 		const deserialized = super.deserializeFromCache(record);
 
 		if (deserialized?.lastMessage?._updatedAt) {

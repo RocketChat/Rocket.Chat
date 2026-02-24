@@ -65,7 +65,7 @@ export class AppSlashCommand {
 		const { command } = this.slashCommand;
 
 		try {
-			const result = await this.app.getDenoRuntime().sendRequest({
+			const result = await this.app.getRuntimeController().sendRequest({
 				method: `slashcommand:${command}:${method}`,
 				params: [...runContextArgs, context],
 			});
