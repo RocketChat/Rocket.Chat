@@ -207,13 +207,6 @@ const pushTokenEndpoints = API.v1
 		},
 	);
 
-type PushTokenEndpoints = ExtractRoutesFromAPI<typeof pushTokenEndpoints>;
-
-declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends PushTokenEndpoints {}
-}
-
 API.v1.addRoute(
 	'push.get',
 	{ authRequired: true },
@@ -268,7 +261,7 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const pushTestEndpoints = API.v1.post(
 	'push.test',
 	{
 		authRequired: true,
@@ -277,17 +270,44 @@ API.v1.addRoute(
 			intervalTimeInMS: 1000,
 		},
 		permissionsRequired: ['test-push-notifications'],
-	},
-	{
-		async post() {
-			if (settings.get('Push_enable') !== true) {
-				throw new Meteor.Error('error-push-disabled', 'Push is disabled', {
-					method: 'push_test',
-				});
-			}
-
-			const tokensCount = await executePushTest(this.userId, this.user.username);
-			return API.v1.success({ tokensCount });
+		body: ajv.compile<undefined>({ type: 'object', additionalProperties: false }),
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<{ tokensCount: number }>({
+				type: 'object',
+				properties: {
+					tokensCount: { type: 'integer' },
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['tokensCount', 'success'],
+				additionalProperties: false,
+			}),
 		},
 	},
+
+	async function action() {
+		if (settings.get('Push_enable') !== true) {
+			throw new Meteor.Error('error-push-disabled', 'Push is disabled', {
+				method: 'push_test',
+			});
+		}
+
+		const tokensCount = await executePushTest(this.userId, this.user.username);
+		return API.v1.success({ tokensCount });
+	},
 );
+
+type PushTestEndpoints = ExtractRoutesFromAPI<typeof pushTestEndpoints>;
+
+type PushTokenEndpoints = ExtractRoutesFromAPI<typeof pushTokenEndpoints>;
+
+type PushEndpoints = PushTestEndpoints & PushTokenEndpoints;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends PushEndpoints {}
+}

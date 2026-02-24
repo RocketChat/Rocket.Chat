@@ -226,8 +226,8 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 				readonly token?: string;
 			}
 		: {
-				user?: IUser | null;
-				userId?: string | undefined;
+				user?: IUser;
+				userId?: string;
 				readonly token?: string;
 			});
 
@@ -297,7 +297,6 @@ export type TypedOptions = {
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
 	readonly logger: Logger;
 	userId: TOptions['authRequired'] extends true ? string : string | undefined;
-	user: TOptions['authRequired'] extends true ? IUser : IUser | null;
 	token: TOptions['authRequired'] extends true ? string : string | undefined;
 	queryParams: TOptions['query'] extends ValidateFunction<infer Query> ? Query : never;
 	urlParams: UrlParams<TPath> extends Record<any, any> ? UrlParams<TPath> : never;
@@ -318,7 +317,13 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 	route: string;
 	request: Request;
 	response: Response;
-};
+} & (TOptions['authRequired'] extends true
+	? {
+			user: IUser;
+		}
+	: {
+			user?: IUser;
+		});
 
 type PromiseOrValue<T> = T | Promise<T>;
 
