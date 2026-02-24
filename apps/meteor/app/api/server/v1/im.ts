@@ -218,7 +218,7 @@ const dmCloseAction = <Path extends string>(_path: Path): TypedAction<typeof dmC
 		} else {
 			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 			if (!canAccess) {
-				return API.v1.forbidden();
+				return API.v1.forbidden('error-not-allowed');
 			}
 
 			const { subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
