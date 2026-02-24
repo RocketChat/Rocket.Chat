@@ -65,13 +65,10 @@ const e2eGetUsersOfRoomWithoutKeyParamsGETSchema = {
 
 const isE2eSetRoomKeyIdProps = ajv.compile<E2eSetRoomKeyIdProps>(E2eSetRoomKeyIdSchema);
 
-<<<<<<< feat/openapi-e2e-fetchMyKeys
-=======
 const ise2eGetUsersOfRoomWithoutKeyParamsGET = ajv.compile<e2eGetUsersOfRoomWithoutKeyParamsGET>(
 	e2eGetUsersOfRoomWithoutKeyParamsGETSchema,
 );
 
->>>>>>> develop
 const e2eEndpoints = API.v1
 	.post(
 		'e2e.setRoomKeyID',
@@ -100,7 +97,6 @@ const e2eEndpoints = API.v1
 		},
 	)
 	.get(
-<<<<<<< feat/openapi-e2e-fetchMyKeys
 		'e2e.fetchMyKeys',
 		{
 			authRequired: true,
@@ -116,7 +112,20 @@ const e2eEndpoints = API.v1
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['success'],
-=======
+				}),
+			},
+		},
+		async function action() {
+			const result = await Users.fetchKeysByUserId(this.userId);
+
+			if (!('public_key' in result) || !('private_key' in result)) {
+				return API.v1.failure('E2E keys not found for user');
+			}
+
+			return API.v1.success(result);
+		},
+	)
+	.get(
 		'e2e.getUsersOfRoomWithoutKey',
 		{
 			authRequired: true,
@@ -149,37 +158,18 @@ const e2eEndpoints = API.v1
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['users', 'success'],
->>>>>>> develop
 				}),
 			},
 		},
 
 		async function action() {
-<<<<<<< feat/openapi-e2e-fetchMyKeys
-			const result = (await Users.fetchKeysByUserId(this.userId)) as unknown as { public_key: string; private_key: string };
-=======
 			const { rid } = this.queryParams;
 
 			const result = await getUsersOfRoomWithoutKeyMethod(this.userId, rid);
->>>>>>> develop
 
 			return API.v1.success(result);
 		},
 	);
-
-API.v1.addRoute(
-	'e2e.fetchMyKeys',
-	{
-		authRequired: true,
-	},
-	{
-		async get() {
-			const result = await Users.fetchKeysByUserId(this.userId);
-
-			return API.v1.success(result);
-		},
-	},
-);
 
 /**
  * @openapi
