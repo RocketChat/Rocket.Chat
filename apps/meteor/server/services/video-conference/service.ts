@@ -555,7 +555,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const appId = videoConfProviders.getProviderAppId(call.providerName);
 		const user = createdBy || (appId && (await Users.findOneByAppId(appId))) || (await Users.findOneById('rocket.cat'));
 
-		const message = await sendMessage(user, record, room, false);
+		const message = await sendMessage(user, record, room);
 
 		if (!message) {
 			throw new Error('failed-to-create-message');
