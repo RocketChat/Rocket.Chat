@@ -208,7 +208,11 @@ const dmCloseAction = <Path extends string>(_path: Path): TypedAction<typeof dmC
 		if (!roomId) {
 			throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
 		}
-
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'dm.close',
+			});
+		}
 		let subscription;
 
 		const roomExists = !!(await Rooms.findOneById(roomId));
