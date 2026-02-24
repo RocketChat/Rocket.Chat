@@ -1,5 +1,5 @@
 import { LDAP } from '@rocket.chat/core-services';
-import { ajv, validateUnauthorizedErrorResponse, validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
+import { ajv, isLdapTestSearch, validateUnauthorizedErrorResponse, validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
@@ -18,22 +18,13 @@ const messageResponseSchema = {
 	additionalProperties: false,
 };
 
-const isLdapTestSearch = ajv.compile<{ username: string }>({
-	type: 'object',
-	properties: {
-		username: { type: 'string' },
-	},
-	required: ['username'],
-	additionalProperties: false,
-});
-
 API.v1.post(
 	'ldap.testConnection',
 	{
 		authRequired: true,
 		permissionsRequired: ['test-admin-options'],
 		response: {
-			200: ajv.compile<{ message: string }>(messageResponseSchema),
+			200: ajv.compile<{ message: string; success: true }>(messageResponseSchema),
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
 		},
@@ -67,7 +58,7 @@ API.v1.post(
 		permissionsRequired: ['test-admin-options'],
 		body: isLdapTestSearch,
 		response: {
-			200: ajv.compile<{ message: string }>(messageResponseSchema),
+			200: ajv.compile<{ message: string; success: true }>(messageResponseSchema),
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
 		},
@@ -77,11 +68,16 @@ API.v1.post(
 			throw new Error('error-invalid-user');
 		}
 
-		if (settings.get('LDAP_Enable') !== true) {
+		if (settings.get<boolean>('LDAP_Enable') !== true) {
 			throw new Error('LDAP_disabled');
 		}
 
-		await LDAP.testSearch(this.bodyParams.username);
+		try {
+			await LDAP.testSearch(this.bodyParams.username);
+		} catch (err) {
+			SystemLogger.error({ err });
+			throw new Error('LDAP_search_failed');
+		}
 
 		return API.v1.success({
 			message: 'LDAP_User_Found' as const,
