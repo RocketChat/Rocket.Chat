@@ -31,8 +31,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
 
 	const saveAction = useCallback(
-		// FIXME
-		async (name: string, soundFile: any) => {
+		async (name: string, soundFile: File) => {
 			const soundData = createSoundData(soundFile, name);
 			const validation = validate(soundData, soundFile) as Array<Parameters<typeof t>[0]>;
 

@@ -8,14 +8,16 @@ import { useTranslation } from 'react-i18next';
 import { validate, createSoundData } from './lib';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
+type SoundData = {
+	_id: string;
+	name: string;
+	extension?: string;
+};
+
 type EditSoundProps = {
 	close: () => void;
 	onChange: () => void;
-	data: {
-		_id: string;
-		name: string;
-		extension?: string;
-	};
+	data: SoundData;
 };
 
 function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactElement {
@@ -27,14 +29,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const previousSound = useMemo(() => data || {}, [data]);
 
 	const [name, setName] = useState(() => data?.name ?? '');
-	const [sound, setSound] = useState<
-		| {
-				_id: string;
-				name: string;
-				extension?: string;
-		  }
-		| File
-	>(() => data);
+	const [sound, setSound] = useState<SoundData | File>(() => data);
 
 	useEffect(() => {
 		setName(previousName || '');
@@ -52,9 +47,9 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, previousName, previousSound, sound]);
 
 	const saveAction = useCallback(
-		// FIXME
-		async (sound: any) => {
-			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound.extension });
+		async (sound: SoundData | File) => {
+			const extension = sound instanceof File ? undefined : sound.extension;
+			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension });
 			const validation = validate(soundData, sound);
 			if (validation.length === 0) {
 				let soundId: string;
