@@ -1,6 +1,7 @@
 import type { IAppsTokens } from '@rocket.chat/core-typings';
 import { Messages, AppsTokens, Users, Rooms, Settings } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -9,6 +10,7 @@ import { canAccessRoomAsync } from '../../../authorization/server/functions/canA
 import { pushUpdate } from '../../../push/server/methods';
 import PushNotification from '../../../push-notifications/server/lib/PushNotification';
 import { settings } from '../../../settings/server';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -135,7 +137,7 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const pushEndpoints = API.v1.post(
 	'push.test',
 	{
 		authRequired: true,
@@ -144,17 +146,40 @@ API.v1.addRoute(
 			intervalTimeInMS: 1000,
 		},
 		permissionsRequired: ['test-push-notifications'],
-	},
-	{
-		async post() {
-			if (settings.get('Push_enable') !== true) {
-				throw new Meteor.Error('error-push-disabled', 'Push is disabled', {
-					method: 'push_test',
-				});
-			}
-
-			const tokensCount = await executePushTest(this.userId, this.user.username);
-			return API.v1.success({ tokensCount });
+		body: ajv.compile<undefined>({ type: 'object', additionalProperties: false }),
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<{ tokensCount: number }>({
+				type: 'object',
+				properties: {
+					tokensCount: { type: 'integer' },
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['tokensCount', 'success'],
+				additionalProperties: false,
+			}),
 		},
 	},
+
+	async function action() {
+		if (settings.get('Push_enable') !== true) {
+			throw new Meteor.Error('error-push-disabled', 'Push is disabled', {
+				method: 'push_test',
+			});
+		}
+
+		const tokensCount = await executePushTest(this.userId, this.user.username);
+		return API.v1.success({ tokensCount });
+	},
 );
+
+export type PushEndpoints = ExtractRoutesFromAPI<typeof pushEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends PushEndpoints {}
+}
