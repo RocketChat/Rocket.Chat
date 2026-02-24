@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Admin } from './admin';
-import { AddEmojiFlexTab, EditEmojiFlexTab } from './fragments/admin-flextab-emoji';
+import { AddEmojiFlexTab, EditEmojiFlexTab } from './fragments/flextabs';
 
 export class AdminEmoji extends Admin {
 	readonly addEmojiFlexTab: AddEmojiFlexTab;

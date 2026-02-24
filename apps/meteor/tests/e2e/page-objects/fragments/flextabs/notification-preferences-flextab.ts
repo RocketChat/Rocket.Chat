@@ -1,34 +1,30 @@
 import type { Locator, Page } from '@playwright/test';
 
-export class HomeFlextabNotificationPreferences {
-	private readonly page: Page;
+import { FlexTab } from './flextab';
+import { Listbox } from '../listbox';
+
+export class NotificationPreferencesFlexTab extends FlexTab {
+	readonly listbox: Listbox;
 
 	constructor(page: Page) {
-		this.page = page;
-	}
-
-	get btnSave(): Locator {
-		return this.page.locator('role=button[name="Save"]');
-	}
-
-	get dialogNotificationPreferences(): Locator {
-		return this.page.getByRole('dialog', { name: 'Notifications Preferences' });
+		super(page.getByRole('dialog', { name: 'Notification Preferences' }));
+		this.listbox = new Listbox(page);
 	}
 
 	getPreferenceByDevice(device: string): Locator {
-		return this.page.locator(`//div[@id="${device}Alert"]`);
+		return this.root.locator(`//div[@id="${device}Alert"]`);
 	}
 
 	async selectDropdownById(text: string): Promise<void> {
-		await this.dialogNotificationPreferences.locator(`//div[@id="${text}"]`).click();
+		await this.root.locator(`//div[@id="${text}"]`).click();
 	}
 
 	async selectOptionByLabel(text: string): Promise<void> {
-		await this.page.getByRole('listbox').getByRole('option', { name: text }).click();
+		await this.listbox.selectOption(text);
 	}
 
 	async selectDevice(text: string): Promise<void> {
-		await this.dialogNotificationPreferences.getByRole('button', { name: text }).click();
+		await this.root.getByRole('button', { name: text }).click();
 	}
 
 	async updateDevicePreference(device: string): Promise<void> {

@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { FlexTab } from './flextab';
-import { MenuMore } from './menu';
+import { MenuMore } from '../menu';
 
 export class UserInfoFlexTab extends FlexTab {
 	readonly menu: MenuMore;
@@ -21,5 +21,9 @@ export class UserInfoFlexTab extends FlexTab {
 
 	get menuItemDeleteUser(): Locator {
 		return this.menu.root.getByRole('menuitem', { name: 'Delete' });
+	}
+
+	get userName(): Locator {
+		return this.root.getByLabel('Username');
 	}
 }

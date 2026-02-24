@@ -1,7 +1,27 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeFlextab, Navbar, Sidepanel, RoomSidebar, ToastMessages, RoomComposer, ThreadComposer } from './fragments';
+import {
+	HomeContent,
+	Navbar,
+	Sidepanel,
+	RoomSidebar,
+	ToastMessages,
+	RoomComposer,
+	ThreadComposer,
+	MembersFlexTab,
+	ChannelsFlexTab,
+	NotificationPreferencesFlexTab,
+	ExportMessagesFlexTab,
+	PruneMessagesFlexTab,
+	SearchMessagesFlexTab,
+	RoomInfoFlexTab,
+	ThreadsFlexTab,
+	EditRoomFlexTab,
+	UserInfoFlexTab,
+	FilesFlexTab,
+} from './fragments';
 import { RoomToolbar } from './fragments/toolbar';
+import { UserCard } from './fragments/user-card';
 import { VoiceCalls } from './fragments/voice-calls';
 
 export class HomeChannel {
@@ -15,7 +35,9 @@ export class HomeChannel {
 
 	readonly navbar: Navbar;
 
-	readonly tabs: HomeFlextab;
+	readonly userCard: UserCard;
+
+	readonly tabs;
 
 	readonly roomToolbar: RoomToolbar;
 
@@ -33,7 +55,20 @@ export class HomeChannel {
 		this.sidebar = new RoomSidebar(page);
 		this.sidepanel = new Sidepanel(page);
 		this.navbar = new Navbar(page);
-		this.tabs = new HomeFlextab(page);
+		this.userCard = new UserCard(page);
+		this.tabs = {
+			members: new MembersFlexTab(page),
+			userInfo: new UserInfoFlexTab(page),
+			room: new RoomInfoFlexTab(page.getByRole('dialog', { name: 'Room Information' }), page),
+			editRoom: new EditRoomFlexTab(page.getByRole('dialog', { name: 'Edit channel' })),
+			channels: new ChannelsFlexTab(page),
+			notificationPreferences: new NotificationPreferencesFlexTab(page),
+			exportMessages: new ExportMessagesFlexTab(page),
+			pruneMessages: new PruneMessagesFlexTab(page),
+			searchMessages: new SearchMessagesFlexTab(page),
+			threads: new ThreadsFlexTab(page),
+			files: new FilesFlexTab(page),
+		};
 		this.roomToolbar = new RoomToolbar(page);
 		this.voiceCalls = new VoiceCalls(page);
 		this.toastMessage = new ToastMessages(page);

@@ -17,6 +17,21 @@ export class ConfirmDeleteModal extends Modal {
 	}
 }
 
+export class ConfirmDeleteRoomModal extends Modal {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Delete' }));
+	}
+
+	get btnDelete() {
+		return this.root.getByRole('button', { name: 'Yes, delete', exact: true });
+	}
+
+	async confirmDelete() {
+		await this.btnDelete.click();
+		await this.waitForDismissal();
+	}
+}
+
 export class ConfirmDeleteDepartmentModal extends ConfirmDeleteModal {
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Delete Department?' }));
@@ -29,5 +44,20 @@ export class ConfirmDeleteDepartmentModal extends ConfirmDeleteModal {
 	async deleteDepartment(departmentName: string) {
 		await this.inputConfirmDepartmentName.fill(departmentName);
 		await this.confirmDelete();
+	}
+}
+
+export class ConfirmDeleteTeamModal extends Modal {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Delete team', exact: true }));
+	}
+
+	private get btnDelete() {
+		return this.root.getByRole('button', { name: 'Yes, delete', exact: true });
+	}
+
+	async confirmDelete() {
+		await this.btnDelete.click();
+		await this.waitForDismissal();
 	}
 }

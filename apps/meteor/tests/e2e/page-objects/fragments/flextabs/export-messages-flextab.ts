@@ -2,7 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 
 import { FlexTab } from './flextab';
 
-export class ExportMessagesTab extends FlexTab {
+export class ExportMessagesFlexTab extends FlexTab {
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Export Messages' }));
 	}
