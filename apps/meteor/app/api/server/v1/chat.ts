@@ -365,9 +365,7 @@ const chatEndpoints = API.v1
 		},
 
 		async function action() {
-			if (!this.queryParams.msgId) {
-				return API.v1.failure('The "msgId" query parameter must be provided.');
-			}
+		const msg: IMessage | null = await getSingleMessage(this.userId, this.queryParams.msgId);
 
 			const msg: IMessage | null = await getSingleMessage(this.userId, this.queryParams.msgId);
 
