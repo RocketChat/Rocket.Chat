@@ -94,20 +94,20 @@ BlockSpoiler = "||" EndOfLine first:(&(! "||") @Paragraph) rest:(&(! "||") @Para
 
 TimestampType = "t" / "T" / "d" / "D" / "f" / "F" / "R"
 
-Unixtime = d:Digit |10| { return d.join(''); }
+Unixtime = $(Digit |10|)
 
-TimestampHoursMinutesSeconds = hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| tz:Timezone? { return timestampFromHours(hours.join(''), minutes.join(''), seconds.join(''), tz); }
+TimestampHoursMinutesSeconds = hours:$(Digit |2|) ":" minutes:$(Digit |2|) ":" seconds:$(Digit |2|) tz:Timezone? { return timestampFromHours(hours, minutes, seconds, tz); }
 
-TimestampHoursMinutes = hours:Digit |2| ":" minutes:Digit|2| tz:Timezone? { return timestampFromHours(hours.join(''), minutes.join(''),undefined,  tz); }
+TimestampHoursMinutes = hours:$(Digit |2|) ":" minutes:$(Digit |2|) tz:Timezone? { return timestampFromHours(hours, minutes, undefined, tz); }
 
 
 Timestamp = TimestampHoursMinutesSeconds / TimestampHoursMinutes
 
-Timezone = offset:('+'/'-') tzHour: Digit |2| ':' tzMinute: Digit |2| { return `${offset}${tzHour.join('')}:${tzMinute.join('')}`  }
+Timezone = offset:('+'/'-') tzHour:$(Digit |2|) ":" tzMinute:$(Digit |2|) { return offset + tzHour + ':' + tzMinute; }
 
-ISO8601Date = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "." milliseconds:Digit |3| tz:Timezone? { return timestampFromIsoTime({year: year.join(''), month: month.join(''), day: day.join(''), hours: hours.join(''), minutes: minutes.join(''), seconds: seconds.join(''), milliseconds: milliseconds.join(''), timezone: tz}) }
+ISO8601Date = year:$(Digit |4|) "-" month:$(Digit |2|) "-" day:$(Digit |2|) "T" hours:$(Digit |2|) ":" minutes:$(Digit |2|) ":" seconds:$(Digit |2|) "." milliseconds:$(Digit |3|) tz:Timezone? { return timestampFromIsoTime({ year, month, day, hours, minutes, seconds, milliseconds, timezone: tz }); }
 
-ISO8601DateWithoutMilliseconds = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| tz:Timezone? { return timestampFromIsoTime({year: year.join(''), month: month.join(''), day: day.join(''), hours: hours.join(''), minutes: minutes.join(''), seconds: seconds.join(''), timezone: tz}) }
+ISO8601DateWithoutMilliseconds = year:$(Digit |4|) "-" month:$(Digit |2|) "-" day:$(Digit |2|) "T" hours:$(Digit |2|) ":" minutes:$(Digit |2|) ":" seconds:$(Digit |2|) tz:Timezone? { return timestampFromIsoTime({ year, month, day, hours, minutes, seconds, timezone: tz }); }
 
 
 TimestampRules = "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" { return timestamp(date); }
@@ -129,7 +129,9 @@ CodeLine
   / "\n" chunk:CodeChunk { return codeLine(chunk); }
   / "\n" !"```" { return codeLine(plain('')); }
 
-CodeChunk = text:$(!EndOfLine !"```" .)+ { return plain(text); }
+// Charclass avoids per-char lookahead; never consume start of "```"
+CodeChunkChar = [^\r\n`] / "`" [^`\r\n] / "`" "`" [^`\r\n]
+CodeChunk = text:$(CodeChunkChar)+ { return plain(text); }
 
 /**
  *
@@ -315,6 +317,7 @@ References
   = "[" title:LinkTitle* "](" href:MarkdownLinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
   / "<" href:LinkRef "|" title:LinkTitle2 ">" { return link(href, [plain(title)]); }
 
+// Hot path: complex negative lookahead for ]( and ] [ ... ](
 LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) !("] [" [^\]]* "](") .) { return plain(anyTitle) }
 
 LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
@@ -330,8 +333,7 @@ MarkdownLinkFilePath = $(URLScheme MarkdownLinkURLBody+)
 
 // MarkdownLinkURL allows parentheses in URLs when inside markdown link syntax [title](url)
 MarkdownLinkURL
-  = $(URLScheme URLAuthority MarkdownLinkURLBody*)
-  / $(URLAuthorityHost MarkdownLinkURLBody*)
+  = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(MarkdownLinkURLBody*) { return head + tail; }
 
 MarkdownLinkURLBody
   = (
@@ -381,6 +383,7 @@ DomainName
 
 DomainNameLabel = $(DomainChar+ ("-" DomainChar+)*)
 
+// Hot path: multiple negative lookaheads per character; consider post-validate if profiling shows cost
 DomainChar = !Extra ([\__-] / !Safe) !EndOfLine !Space ![\\/|><%`\[\]] .
 
 /**
@@ -435,8 +438,7 @@ AutolinkedEmail = e:Email { return autoEmail(e); }
 AutolinkedURL = u:AutoLinkURL { return autoLink(u, options.customDomains); }
 
 AutoLinkURL
-  = $(URLScheme URLAuthority AutoLinkURLBody*)
-  / $(URLAuthorityHost AutoLinkURLBody*)
+  = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(AutoLinkURLBody*) { return head + tail; }
 
 AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine / !.)) .
 
