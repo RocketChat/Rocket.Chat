@@ -4,6 +4,5 @@
     "rootDir": ".",
 		"target": "es2020",
 		"module": "esnext"
-  },
-  "exclude": ["benchmarks"]
+  }
 }
