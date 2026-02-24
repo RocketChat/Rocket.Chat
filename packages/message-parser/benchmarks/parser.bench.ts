@@ -122,14 +122,14 @@ async function runBenchmarks() {
 	console.log();
 
 	// Group 1: Plain text parsing
-	const plainTextBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
+	const plainTextBench = new Bench({ time: 1000, warmupTime: 200 });
 	plainTextBench
 		.add('plain: short', () => parse(fixtures.plainShort))
 		.add('plain: medium', () => parse(fixtures.plainMedium))
 		.add('plain: long', () => parse(fixtures.plainLong));
 
 	// Group 2: Emphasis / formatting
-	const emphasisBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
+	const emphasisBench = new Bench({ time: 1000, warmupTime: 200 });
 	emphasisBench
 		.add('emphasis: bold', () => parse(fixtures.boldSimple))
 		.add('emphasis: italic', () => parse(fixtures.italicSimple))
@@ -139,7 +139,7 @@ async function runBenchmarks() {
 		.add('emphasis: multiple', () => parse(fixtures.multipleEmphasis));
 
 	// Group 3: URLs
-	const urlBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
+	const urlBench = new Bench({ time: 1000, warmupTime: 200 });
 	urlBench
 		.add('url: single', () => parse(fixtures.singleUrl))
 		.add('url: multiple', () => parse(fixtures.multipleUrls))
@@ -148,7 +148,7 @@ async function runBenchmarks() {
 		.add('url: with path', () => parse(fixtures.urlWithPath));
 
 	// Group 4: Emoji
-	const emojiBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
+	const emojiBench = new Bench({ time: 1000, warmupTime: 200 });
 	emojiBench
 		.add('emoji: single shortcode', () => parse(fixtures.singleEmoji))
 		.add('emoji: triple shortcode (BigEmoji)', () => parse(fixtures.tripleEmoji))
@@ -158,7 +158,7 @@ async function runBenchmarks() {
 		.add('emoji: mixed', () => parse(fixtures.mixedEmoji));
 
 	// Group 5: Mentions
-	const mentionBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
+	const mentionBench = new Bench({ time: 1000, warmupTime: 200 });
 	mentionBench
 		.add('mention: single user', () => parse(fixtures.singleMention))
 		.add('mention: multiple users', () => parse(fixtures.multipleMentions))
@@ -166,14 +166,14 @@ async function runBenchmarks() {
 		.add('mention: mixed', () => parse(fixtures.mixedMentions));
 
 	// Group 6: Code
-	const codeBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
+	const codeBench = new Bench({ time: 1000, warmupTime: 200 });
 	codeBench
 		.add('code: inline', () => parse(fixtures.inlineCode))
 		.add('code: block', () => parse(fixtures.codeBlock))
 		.add('code: multi inline', () => parse(fixtures.multiInlineCode));
 
 	// Group 7: Structured blocks
-	const blockBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
+	const blockBench = new Bench({ time: 1000, warmupTime: 200 });
 	blockBench
 		.add('block: ordered list', () => parse(fixtures.orderedList))
 		.add('block: unordered list', () => parse(fixtures.unorderedList))
@@ -185,13 +185,13 @@ async function runBenchmarks() {
 		.add('block: spoiler with formatting', () => parse(fixtures.spoilerWithFormatting));
 
 	// Group 8: KaTeX (with options enabled)
-	const katexBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
+	const katexBench = new Bench({ time: 1000, warmupTime: 200 });
 	katexBench
 		.add('katex: inline', () => parse(fixtures.katexInline, fullOptions))
 		.add('katex: block', () => parse(fixtures.katexBlock, fullOptions));
 
 	// Group 9: Adversarial / stress
-	const stressBench = new Bench({ time: 2000, warmupTime: 500, retainSamples: true });
+	const stressBench = new Bench({ time: 2000, warmupTime: 500 });
 	stressBench
 		.add('stress: adversarial emphasis', () => parse(fixtures.adversarialEmphasis))
 		.add('stress: adversarial mixed', () => parse(fixtures.adversarialMixed))
@@ -199,14 +199,14 @@ async function runBenchmarks() {
 		.add('stress: long with formatting', () => parse(fixtures.longWithFormatting));
 
 	// Group 10: Real-world
-	const realWorldBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
+	const realWorldBench = new Bench({ time: 1000, warmupTime: 200 });
 	realWorldBench
 		.add('real-world: simple', () => parse(fixtures.realWorldSimple))
 		.add('real-world: medium', () => parse(fixtures.realWorldMedium))
 		.add('real-world: complex', () => parse(fixtures.realWorldComplex, fullOptions));
 
 	// Group 11: Timestamps
-	const timestampBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
+	const timestampBench = new Bench({ time: 1000, warmupTime: 200 });
 	timestampBench.add('timestamp: unix format', () => parse(fixtures.timestampUnix));
 
 	// ── Run all benchmarks ─────────────────────────────────────────────────
@@ -256,12 +256,20 @@ async function runBenchmarks() {
 
 	console.log('\n  Slowest operations (potential optimization targets):');
 	for (const task of sorted.slice(0, 5)) {
-		console.log(`    ${Math.round(task.result?.hz ?? 0).toLocaleString().padStart(12)} ops/sec  │  ${task.name}`);
+		console.log(
+			`    ${Math.round(task.result?.hz ?? 0)
+				.toLocaleString()
+				.padStart(12)} ops/sec  │  ${task.name}`,
+		);
 	}
 
 	console.log('\n  Fastest operations:');
 	for (const task of sorted.slice(-5).reverse()) {
-		console.log(`    ${Math.round(task.result?.hz ?? 0).toLocaleString().padStart(12)} ops/sec  │  ${task.name}`);
+		console.log(
+			`    ${Math.round(task.result?.hz ?? 0)
+				.toLocaleString()
+				.padStart(12)} ops/sec  │  ${task.name}`,
+		);
 	}
 
 	console.log();
