@@ -1,4 +1,5 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { ILoginToken } from './IUser';
 
 export type IPushTokenTypes = 'gcm' | 'apn';
 
@@ -7,6 +8,7 @@ export interface IPushToken extends IRocketChatRecord {
 	appName: string;
 	userId: string;
 	enabled: boolean;
+	authToken: ILoginToken['hashedToken'];
+	metadata?: Record<string, unknown>;
 	createdAt: Date;
-	updatedAt: Date;
 }

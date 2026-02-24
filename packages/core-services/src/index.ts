@@ -181,6 +181,7 @@ export const OmnichannelEEService = proxify<IOmnichannelEEService>('omnichannel-
 export const Import = proxify<IImportService>('import');
 export const OmnichannelAnalytics = proxify<IOmnichannelAnalyticsService>('omnichannel-analytics');
 export const User = proxify<IUserService>('user');
+export const Push = proxify<IPushService>('push');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

@@ -1,6 +1,6 @@
-import type { IAppsTokens } from '@rocket.chat/core-typings';
-import { Messages, AppsTokens, Users, Rooms, Settings } from '@rocket.chat/models';
-import { Random } from '@rocket.chat/random';
+import { Push } from '@rocket.chat/core-services';
+import type { IPushToken } from '@rocket.chat/core-typings';
+import { Messages, PushToken, Users, Rooms, Settings } from '@rocket.chat/models';
 import {
 	ajv,
 	validateNotFoundErrorResponse,
@@ -14,7 +14,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { executePushTest } from '../../../../server/lib/pushConfig';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { pushUpdate } from '../../../push/server/methods';
 import PushNotification from '../../../push-notifications/server/lib/PushNotification';
 import { settings } from '../../../settings/server';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -72,12 +71,31 @@ const PushTokenDELETESchema: JSONSchemaType<PushTokenDELETE> = {
 
 export const isPushTokenDELETEProps = ajv.compile<PushTokenDELETE>(PushTokenDELETESchema);
 
+type PushTokenResult = Pick<IPushToken, '_id' | 'token' | 'appName' | 'userId' | 'enabled' | 'createdAt' | '_updatedAt'>;
+
+/**
+ * Pick only the attributes we actually want to return on the endpoint, ensuring nothing from older schemas get mixed in
+ */
+function cleanTokenResult(result: Omit<IPushToken, 'authToken'>): PushTokenResult {
+	const { _id, token, appName, userId, enabled, createdAt, _updatedAt } = result;
+
+	return {
+		_id,
+		token,
+		appName,
+		userId,
+		enabled,
+		createdAt,
+		_updatedAt,
+	};
+}
+
 const pushTokenEndpoints = API.v1
 	.post(
 		'push.token',
 		{
 			response: {
-				200: ajv.compile<SuccessResult<{ result: Omit<IAppsTokens, '_updatedAt'> }>['body']>({
+				200: ajv.compile<SuccessResult<{ result: PushTokenResult }>['body']>({
 					additionalProperties: false,
 					type: 'object',
 					properties: {
@@ -105,19 +123,12 @@ const pushTokenEndpoints = API.v1
 									required: [],
 									additionalProperties: false,
 								},
-								authToken: {
-									type: 'string',
-								},
 								appName: {
 									type: 'string',
 								},
 								userId: {
 									type: 'string',
 									nullable: true,
-								},
-								metadata: {
-									type: 'object',
-									additionalProperties: true,
 								},
 								enabled: {
 									type: 'boolean',
@@ -129,6 +140,7 @@ const pushTokenEndpoints = API.v1
 									type: 'string',
 								},
 							},
+							additionalProperties: false,
 						},
 					},
 					required: ['success', 'result'],
@@ -143,38 +155,21 @@ const pushTokenEndpoints = API.v1
 		async function action() {
 			const { id, type, value, appName } = this.bodyParams;
 
-			if (id && typeof id !== 'string') {
-				throw new Meteor.Error('error-id-param-not-valid', 'The required "id" body param is invalid.');
-			}
-
-			const deviceId = id || Random.id();
-
-			if (!type || (type !== 'apn' && type !== 'gcm')) {
-				throw new Meteor.Error('error-type-param-not-valid', 'The required "type" body param is missing or invalid.');
-			}
-
-			if (!value || typeof value !== 'string') {
-				throw new Meteor.Error('error-token-param-not-valid', 'The required "value" body param is missing or invalid.');
-			}
-
-			if (!appName || typeof appName !== 'string') {
-				throw new Meteor.Error('error-appName-param-not-valid', 'The required "appName" body param is missing or invalid.');
-			}
-
-			const authToken = this.request.headers.get('x-auth-token');
-			if (!authToken) {
+			const rawToken = this.request.headers.get('x-auth-token');
+			if (!rawToken) {
 				throw new Meteor.Error('error-authToken-param-not-valid', 'The required "authToken" header param is missing or invalid.');
 			}
+			const authToken = Accounts._hashLoginToken(rawToken);
 
-			const result = await pushUpdate({
-				id: deviceId,
-				token: { [type]: value } as IAppsTokens['token'],
+			const result = await Push.registerPushToken({
+				...(id && { _id: id }),
+				token: { [type]: value } as IPushToken['token'],
 				authToken,
 				appName,
 				userId: this.userId,
 			});
 
-			return API.v1.success({ result });
+			return API.v1.success({ result: cleanTokenResult(result) });
 		},
 	)
 	.delete(
@@ -202,25 +197,9 @@ const pushTokenEndpoints = API.v1
 		async function action() {
 			const { token } = this.bodyParams;
 
-			if (!token || typeof token !== 'string') {
-				throw new Meteor.Error('error-token-param-not-valid', 'The required "token" body param is missing or invalid.');
-			}
+			const removeResult = await PushToken.removeAllByTokenStringAndUserId(token, this.userId);
 
-			const affectedRecords = (
-				await AppsTokens.deleteMany({
-					$or: [
-						{
-							'token.apn': token,
-						},
-						{
-							'token.gcm': token,
-						},
-					],
-					userId: this.userId,
-				})
-			).deletedCount;
-
-			if (affectedRecords === 0) {
+			if (removeResult.deletedCount === 0) {
 				return API.v1.notFound();
 			}
 
