@@ -122,14 +122,14 @@ async function runBenchmarks() {
 	console.log();
 
 	// Group 1: Plain text parsing
-	const plainTextBench = new Bench({ time: 1000, warmupTime: 200 });
+	const plainTextBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
 	plainTextBench
 		.add('plain: short', () => parse(fixtures.plainShort))
 		.add('plain: medium', () => parse(fixtures.plainMedium))
 		.add('plain: long', () => parse(fixtures.plainLong));
 
 	// Group 2: Emphasis / formatting
-	const emphasisBench = new Bench({ time: 1000, warmupTime: 200 });
+	const emphasisBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
 	emphasisBench
 		.add('emphasis: bold', () => parse(fixtures.boldSimple))
 		.add('emphasis: italic', () => parse(fixtures.italicSimple))
@@ -139,7 +139,7 @@ async function runBenchmarks() {
 		.add('emphasis: multiple', () => parse(fixtures.multipleEmphasis));
 
 	// Group 3: URLs
-	const urlBench = new Bench({ time: 1000, warmupTime: 200 });
+	const urlBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
 	urlBench
 		.add('url: single', () => parse(fixtures.singleUrl))
 		.add('url: multiple', () => parse(fixtures.multipleUrls))
@@ -148,7 +148,7 @@ async function runBenchmarks() {
 		.add('url: with path', () => parse(fixtures.urlWithPath));
 
 	// Group 4: Emoji
-	const emojiBench = new Bench({ time: 1000, warmupTime: 200 });
+	const emojiBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
 	emojiBench
 		.add('emoji: single shortcode', () => parse(fixtures.singleEmoji))
 		.add('emoji: triple shortcode (BigEmoji)', () => parse(fixtures.tripleEmoji))
@@ -158,7 +158,7 @@ async function runBenchmarks() {
 		.add('emoji: mixed', () => parse(fixtures.mixedEmoji));
 
 	// Group 5: Mentions
-	const mentionBench = new Bench({ time: 1000, warmupTime: 200 });
+	const mentionBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
 	mentionBench
 		.add('mention: single user', () => parse(fixtures.singleMention))
 		.add('mention: multiple users', () => parse(fixtures.multipleMentions))
@@ -166,14 +166,14 @@ async function runBenchmarks() {
 		.add('mention: mixed', () => parse(fixtures.mixedMentions));
 
 	// Group 6: Code
-	const codeBench = new Bench({ time: 1000, warmupTime: 200 });
+	const codeBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
 	codeBench
 		.add('code: inline', () => parse(fixtures.inlineCode))
 		.add('code: block', () => parse(fixtures.codeBlock))
 		.add('code: multi inline', () => parse(fixtures.multiInlineCode));
 
 	// Group 7: Structured blocks
-	const blockBench = new Bench({ time: 1000, warmupTime: 200 });
+	const blockBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
 	blockBench
 		.add('block: ordered list', () => parse(fixtures.orderedList))
 		.add('block: unordered list', () => parse(fixtures.unorderedList))
@@ -181,16 +181,17 @@ async function runBenchmarks() {
 		.add('block: blockquote', () => parse(fixtures.blockquote))
 		.add('block: heading', () => parse(fixtures.heading))
 		.add('block: heading multi-level', () => parse(fixtures.headingMultiLevel))
-		.add('block: spoiler', () => parse(fixtures.spoiler));
+		.add('block: spoiler', () => parse(fixtures.spoiler))
+		.add('block: spoiler with formatting', () => parse(fixtures.spoilerWithFormatting));
 
 	// Group 8: KaTeX (with options enabled)
-	const katexBench = new Bench({ time: 1000, warmupTime: 200 });
+	const katexBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
 	katexBench
 		.add('katex: inline', () => parse(fixtures.katexInline, fullOptions))
 		.add('katex: block', () => parse(fixtures.katexBlock, fullOptions));
 
 	// Group 9: Adversarial / stress
-	const stressBench = new Bench({ time: 2000, warmupTime: 500 });
+	const stressBench = new Bench({ time: 2000, warmupTime: 500, retainSamples: true });
 	stressBench
 		.add('stress: adversarial emphasis', () => parse(fixtures.adversarialEmphasis))
 		.add('stress: adversarial mixed', () => parse(fixtures.adversarialMixed))
@@ -198,14 +199,14 @@ async function runBenchmarks() {
 		.add('stress: long with formatting', () => parse(fixtures.longWithFormatting));
 
 	// Group 10: Real-world
-	const realWorldBench = new Bench({ time: 1000, warmupTime: 200 });
+	const realWorldBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
 	realWorldBench
 		.add('real-world: simple', () => parse(fixtures.realWorldSimple))
 		.add('real-world: medium', () => parse(fixtures.realWorldMedium))
 		.add('real-world: complex', () => parse(fixtures.realWorldComplex, fullOptions));
 
 	// Group 11: Timestamps
-	const timestampBench = new Bench({ time: 1000, warmupTime: 200 });
+	const timestampBench = new Bench({ time: 1000, warmupTime: 200, retainSamples: true });
 	timestampBench.add('timestamp: unix format', () => parse(fixtures.timestampUnix));
 
 	// ── Run all benchmarks ─────────────────────────────────────────────────
@@ -233,12 +234,12 @@ async function runBenchmarks() {
 		console.table(
 			bench.tasks.map((task: Task) => ({
 				'Task': task.name,
-				'ops/sec': Math.round(task.result!.hz).toLocaleString(),
-				'Avg (ms)': (task.result!.mean * 1000).toFixed(4),
-				'Min (ms)': (task.result!.min * 1000).toFixed(4),
-				'Max (ms)': (task.result!.max * 1000).toFixed(4),
-				'P99 (ms)': (task.result!.p99 * 1000).toFixed(4),
-				'Samples': task.result!.samples.length,
+				'ops/sec': Math.round(task.result?.hz ?? 0).toLocaleString(),
+				'Avg (ms)': ((task.result?.mean ?? 0) * 1000).toFixed(4),
+				'Min (ms)': ((task.result?.min ?? 0) * 1000).toFixed(4),
+				'Max (ms)': ((task.result?.max ?? 0) * 1000).toFixed(4),
+				'P99 (ms)': ((task.result?.p99 ?? 0) * 1000).toFixed(4),
+				'Samples': task.result?.samples?.length ?? 0,
 			})),
 		);
 		console.log();
@@ -251,16 +252,16 @@ async function runBenchmarks() {
 	console.log('='.repeat(72));
 
 	const allTasks = groups.flatMap(({ bench }) => bench.tasks);
-	const sorted = [...allTasks].sort((a, b) => a.result!.hz - b.result!.hz);
+	const sorted = [...allTasks].sort((a, b) => (a.result?.hz ?? 0) - (b.result?.hz ?? 0));
 
 	console.log('\n  Slowest operations (potential optimization targets):');
 	for (const task of sorted.slice(0, 5)) {
-		console.log(`    ${Math.round(task.result!.hz).toLocaleString().padStart(12)} ops/sec  │  ${task.name}`);
+		console.log(`    ${Math.round(task.result?.hz ?? 0).toLocaleString().padStart(12)} ops/sec  │  ${task.name}`);
 	}
 
 	console.log('\n  Fastest operations:');
 	for (const task of sorted.slice(-5).reverse()) {
-		console.log(`    ${Math.round(task.result!.hz).toLocaleString().padStart(12)} ops/sec  │  ${task.name}`);
+		console.log(`    ${Math.round(task.result?.hz ?? 0).toLocaleString().padStart(12)} ops/sec  │  ${task.name}`);
 	}
 
 	console.log();
