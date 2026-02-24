@@ -8,7 +8,6 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import globals from 'globals';
-// eslint-disable-next-line import/no-unresolved
 // import tseslint from 'typescript-eslint';
 
 import bestPractices from './best-practices.mjs';
@@ -22,6 +21,9 @@ import variables from './variables.mjs';
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
 	{
+		linterOptions: {
+			reportUnusedDisableDirectives: true,
+		},
 		languageOptions: {
 			ecmaVersion: 2024,
 			sourceType: 'module',
