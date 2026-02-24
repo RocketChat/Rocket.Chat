@@ -292,6 +292,8 @@ export type AvatarUrlObj = {
 
 export type AvatarReset = 'reset';
 
+export type AvatarUnchanged = '';
+
 export type AvatarServiceObject = {
 	blob: Blob;
 	contentType: string;
@@ -299,7 +301,7 @@ export type AvatarServiceObject = {
 	url: string;
 };
 
-export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;
+export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject | AvatarUnchanged;
 
 export const getUserDisplayName = (name: IUser['name'], username: IUser['username'], useRealName: boolean): string | undefined =>
 	useRealName ? name || username : username;
