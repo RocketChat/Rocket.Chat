@@ -101,6 +101,7 @@ const RoomBody = (): ReactElement => {
 		sendToBottom,
 		sendToBottomIfNecessary,
 		isAtBottom,
+		isScrolledFarFromBottom,
 		jumpToRef: jumpToRefIsAtBottom,
 	} = useListIsAtBottom();
 
@@ -132,6 +133,8 @@ const RoomBody = (): ReactElement => {
 			sendToBottomIfNecessary,
 			isAtBottom,
 		});
+
+	const showScrollToRecentButton = isScrolledFarFromBottom && !hasNewMessages && !hasMoreNextMessages;
 
 	const innerRef = useMergedRefsV2(
 		dateScrollInnerRef,
@@ -230,6 +233,13 @@ const RoomBody = (): ReactElement => {
 
 							<div className={['messages-box'].filter(isTruthy).join(' ')}>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
+								{showScrollToRecentButton && (
+									<JumpToRecentMessageButton
+										visible={showScrollToRecentButton}
+										onClick={handleNewMessageButtonClick}
+										text={t('Jump_to_recent_messages')}
+									/>
+								)}
 								<JumpToRecentMessageButton
 									visible={hasMoreNextMessages}
 									onClick={handleJumpToRecentButtonClick}
