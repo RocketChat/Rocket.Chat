@@ -57,7 +57,7 @@ export const useWorkspaceInfo = ({ refreshStatistics }: { refreshStatistics?: bo
 					const statsData = data as Serialized<IStats>;
 					return {
 						...statsData,
-						lastMessageSentAt: statsData.lastMessageSentAt ? new Date(statsData.lastMessageSentAt) : undefined,
+						lastMessageSentAt: statsData.lastMessageSentAt,
 					};
 				},
 			},

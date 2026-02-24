@@ -3,39 +3,6 @@ import type { IStats } from '@rocket.chat/core-typings';
 import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
-type SlashCommand = { command: string };
-
-type SettingsCounter = { settingsId: string };
-
-export type TelemetryMap = { slashCommandsStats: SlashCommand; updateCounter: SettingsCounter };
-
-export type TelemetryEvents = keyof TelemetryMap;
-
-type Param = {
-	eventName: TelemetryEvents;
-	timestamp?: number;
-} & (SlashCommand | SettingsCounter);
-
-type TelemetryPayload = {
-	params: Param[];
-};
-
-type StatisticsProps = { refresh?: 'true' | 'false' };
-
-const StatisticsSchema = {
-	type: 'object',
-	properties: {
-		refresh: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: [],
-	additionalProperties: false,
-};
-
-export const isStatisticsProps = ajv.compile<StatisticsProps>(StatisticsSchema);
-
 type StatisticsListProps = PaginatedRequest<{ fields?: string }>;
 
 const StatisticsListSchema = {
@@ -69,9 +36,6 @@ const StatisticsListSchema = {
 export const isStatisticsListProps = ajv.compile<StatisticsListProps>(StatisticsListSchema);
 
 export type StatisticsEndpoints = {
-	'/v1/statistics': {
-		GET: (params: StatisticsProps) => IStats;
-	};
 	'/v1/statistics.list': {
 		GET: (params: StatisticsListProps) => {
 			statistics: IStats[];
@@ -79,8 +43,5 @@ export type StatisticsEndpoints = {
 			offset: number;
 			total: number;
 		};
-	};
-	'/v1/statistics.telemetry': {
-		POST: (params: TelemetryPayload) => any;
 	};
 };
