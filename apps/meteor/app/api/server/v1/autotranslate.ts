@@ -1,5 +1,5 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
-import { IMessage } from '@rocket.chat/core-typings';
 import {
 	ajv,
 	validateUnauthorizedErrorResponse,
@@ -103,7 +103,7 @@ const autotranslateEndpoints = API.v1.post(
 		authRequired: true,
 		body: isAutotranslateTranslateMessageParamsPOST,
 		response: {
-			200: ajv.compile<{ message: IMessage; }>({
+			200: ajv.compile<{ message: IMessage }>({
 				type: 'object',
 				properties: {
 					message: { $ref: '#/components/schemas/IMessage' },
@@ -143,5 +143,5 @@ type AutotranslateEndpoints = ExtractRoutesFromAPI<typeof autotranslateEndpoints
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends AutotranslateEndpoints { }
+	interface Endpoints extends AutotranslateEndpoints {}
 }
