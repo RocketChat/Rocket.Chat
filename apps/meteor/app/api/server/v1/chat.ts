@@ -365,7 +365,6 @@ const chatEndpoints = API.v1
 		},
 
 		async function action() {
-
 			const msg: IMessage | null = await getSingleMessage(this.userId, this.queryParams.msgId);
 
 			if (!msg) {
