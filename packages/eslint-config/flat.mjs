@@ -22,7 +22,13 @@ import variables from './variables.mjs';
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
 	{
-		ignores: ['**/dist'],
+		languageOptions: {
+			ecmaVersion: 2024,
+			sourceType: 'module',
+		},
+	},
+	{
+		ignores: ['**/dist', '**/coverage'],
 	},
 	bestPractices,
 	errors,
@@ -31,18 +37,6 @@ export default [
 	variables,
 	es6,
 	imports,
-	{
-		languageOptions: {
-			ecmaVersion: 2018,
-			sourceType: 'module',
-			globals: {
-				...globals.browser,
-				...globals.commonjs,
-				...globals.es6,
-				...globals.node,
-			},
-		},
-	},
 	jsxA11yPlugin.flatConfigs.recommended,
 	{
 		plugins: {

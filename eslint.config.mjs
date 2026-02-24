@@ -25,15 +25,12 @@ export default [
 			'apps/meteor/**/public',
 			'apps/meteor/**/private/moment-locales',
 			'apps/meteor/**/imports',
-			'apps/meteor/**/ee/server/services/dist',
 			'!apps/meteor/**/.mocharc.js',
 			'!apps/meteor/**/.mocharc.*.js',
 			'!apps/meteor/**/.scripts',
 			'!apps/meteor/**/.storybook',
 			'apps/meteor/**/storybook-static',
 			'apps/meteor/**/packages',
-			'apps/meteor/**/coverage',
-			'apps/meteor/**/dist',
 		],
 	},
 	{
@@ -45,6 +42,7 @@ export default [
 				Assets: 'readonly',
 				chrome: 'readonly',
 				jscolor: 'readonly',
+				...globals.browser,
 			},
 		},
 		plugins: {
@@ -350,7 +348,6 @@ export default [
 	},
 	{
 		ignores: [
-			'apps/uikit-playground/dist',
 			'apps/uikit-playground/build',
 			'apps/uikit-playground/storybook-static',
 			'!apps/uikit-playground/.jest',
@@ -367,23 +364,7 @@ export default [
 		],
 	},
 	{
-		ignores: ['ee/apps/account-service/dist'],
-		languageOptions: {
-			globals: {
-				...globals.jest,
-			},
-		},
-	},
-	{
 		files: ['ee/apps/account-service/**/*.spec.js', 'ee/apps/account-service/**/*.spec.jsx'],
-		languageOptions: {
-			globals: {
-				...globals.jest,
-			},
-		},
-	},
-	{
-		ignores: ['ee/apps/authorization-service/dist'],
 		languageOptions: {
 			globals: {
 				...globals.jest,
@@ -399,26 +380,7 @@ export default [
 		},
 	},
 	{
-		ignores: ['ee/apps/ddp-streamer/dist'],
-		languageOptions: {
-			globals: {
-				...globals.jest,
-			},
-		},
-	},
-	{
 		files: ['ee/apps/ddp-streamer/**/*.spec.js', 'ee/apps/ddp-streamer/**/*.spec.jsx'],
-		languageOptions: {
-			globals: {
-				...globals.jest,
-			},
-		},
-	},
-	{
-		ignores: ['ee/apps/omnichannel-transcript/dist'],
-	},
-	{
-		ignores: ['ee/apps/presence-service/dist'],
 		languageOptions: {
 			globals: {
 				...globals.jest,
@@ -434,49 +396,10 @@ export default [
 		},
 	},
 	{
-		ignores: ['ee/apps/queue-worker/dist'],
+		ignores: ['ee/packages/federation-matrix/src/api/.well-known/server.ts'],
 	},
 	{
-		ignores: ['ee/packages/abac/dist'],
-	},
-	{
-		ignores: ['ee/packages/federation-matrix/dist', 'ee/packages/federation-matrix/src/api/.well-known/server.ts'],
-	},
-	{
-		ignores: ['ee/packages/license/dist'],
-	},
-	{
-		ignores: ['ee/packages/media-calls/dist'],
-	},
-	{
-		ignores: ['ee/packages/network-broker/dist'],
-	},
-	{
-		ignores: ['ee/packages/omni-core-ee/dist'],
-	},
-	{
-		ignores: ['ee/packages/omnichannel-services/dist'],
-	},
-	{
-		ignores: ['ee/packages/pdf-worker/dist', '!ee/packages/pdf-worker/.storybook'],
-	},
-	{
-		ignores: ['ee/packages/presence/dist'],
-	},
-	{
-		ignores: ['ee/packages/ui-theming/dist'],
-	},
-	{
-		ignores: ['packages/account-utils/dist'],
-	},
-	{
-		ignores: ['packages/agenda/dist'],
-	},
-	{
-		ignores: ['packages/api-client/dist'],
-	},
-	{
-		ignores: ['packages/apps/dist'],
+		ignores: ['!ee/packages/pdf-worker/.storybook'],
 	},
 	{
 		files: ['packages/apps-engine/**/*'],
@@ -554,17 +477,7 @@ export default [
 		],
 	},
 	{
-		ignores: ['packages/base64/dist'],
-	},
-	{
-		ignores: ['packages/cas-validate/dist'],
-	},
-	{
-		ignores: ['packages/core-services/dist'],
-	},
-	{
 		files: ['packages/core-typings/**/*'],
-		ignores: ['packages/core-typings/dist'],
 		rules: {
 			'@typescript-eslint/no-empty-interface': 'off',
 		},
@@ -578,11 +491,7 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/cron/dist'],
-	},
-	{
 		files: ['packages/ddp-client/**/*'],
-		ignores: ['packages/ddp-client/**/dist', 'packages/ddp-client/**/coverage'],
 		rules: {
 			'@typescript-eslint/naming-convention': [
 				'error',
@@ -607,17 +516,13 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/desktop-api/dist'],
-	},
-	{
 		files: ['packages/favicon/**/*'],
-		ignores: ['packages/favicon/dist'],
 		rules: {
 			'@typescript-eslint/explicit-function-return-type': 'off',
 		},
 	},
 	{
-		ignores: ['packages/fuselage-ui-kit/dist', 'packages/fuselage-ui-kit/storybook-static', '!packages/fuselage-ui-kit/.storybook'],
+		ignores: ['packages/fuselage-ui-kit/storybook-static', '!packages/fuselage-ui-kit/.storybook'],
 	},
 	{
 		files: ['packages/fuselage-ui-kit/**/*.ts', 'packages/fuselage-ui-kit/**/*.tsx'],
@@ -626,16 +531,7 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/gazzodown/dist', 'packages/gazzodown/storybook-static', '!packages/gazzodown/.storybook'],
-	},
-	{
-		ignores: ['packages/http-router/dist'],
-	},
-	{
-		ignores: ['packages/i18n/dist'],
-	},
-	{
-		ignores: ['packages/instance-status/dist'],
+		ignores: ['packages/gazzodown/storybook-static', '!packages/gazzodown/.storybook'],
 	},
 	{
 		files: ['packages/instance-status/**/*.spec.js', 'packages/instance-status/**/*.spec.jsx'],
@@ -646,14 +542,16 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/jest-presets/dist/**', 'packages/jest-presets/client/**', 'packages/jest-presets/server/**'],
-	},
-	{
-		ignores: ['packages/jwt/dist'],
+		ignores: ['packages/jest-presets/client/**', 'packages/jest-presets/server/**'],
 	},
 	{
 		files: ['packages/livechat/**/*'],
-		ignores: ['packages/livechat/dist', 'packages/livechat/storybook-static', '!packages/livechat/.storybook'],
+		ignores: ['packages/livechat/storybook-static', '!packages/livechat/.storybook'],
+		languageOptions: {
+			globals: {
+				...globals.browser,
+			},
+		},
 		settings: {
 			'import/resolver': {
 				node: {
@@ -757,65 +655,21 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/log-format/dist'],
-	},
-	{
-		ignores: ['packages/logger/dist'],
-	},
-	{
-		ignores: ['packages/media-signaling/dist'],
-	},
-	{
-		ignores: ['packages/message-parser/dist'],
-	},
-	{
-		ignores: ['packages/message-types/dist'],
-	},
-	{
-		ignores: ['packages/mock-providers/dist'],
-	},
-	{
-		ignores: ['packages/model-typings/dist'],
-	},
-	{
-		ignores: ['packages/models/dist', 'packages/models/coverage'],
-	},
-	{
-		ignores: ['packages/mongo-adapter/dist'],
-	},
-	{
-		ignores: ['packages/omni-core/dist'],
-	},
-	{
 		files: ['packages/password-policies/**/*'],
 		plugins: {
 			jest: jestPlugin,
 		},
-		ignores: ['packages/password-policies/dist'],
 		languageOptions: {
 			globals: {
 				...globals.jest,
 			},
 		},
-	},
-	{
-		ignores: ['packages/patch-injection/dist'],
-	},
-	{
-		ignores: ['packages/peggy-loader/dist'],
-	},
-	{
-		ignores: ['packages/random/dist'],
-	},
-	{
-		ignores: ['packages/release-action/dist'],
 	},
 	{
 		files: ['packages/release-changelog/**/*'],
 		plugins: {
 			jest: jestPlugin,
 		},
-		ignores: ['packages/release-changelog/dist'],
 		languageOptions: {
 			globals: {
 				...globals.jest,
@@ -823,31 +677,13 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/rest-typings/dist'],
+		ignores: ['packages/storybook-config/*.d.ts', 'packages/storybook-config/*.js'],
 	},
 	{
-		ignores: ['packages/server-cloud-communication/dist'],
+		ignores: ['packages/ui-avatar/storybook-static', '!packages/ui-avatar/.storybook'],
 	},
 	{
-		ignores: ['packages/server-fetch/dist'],
-	},
-	{
-		ignores: ['packages/sha256/dist'],
-	},
-	{
-		ignores: ['packages/storybook-config/**/dist', 'packages/storybook-config/*.d.ts', 'packages/storybook-config/*.js'],
-	},
-	{
-		ignores: ['packages/tools/dist'],
-	},
-	{
-		ignores: ['packages/tracing/dist'],
-	},
-	{
-		ignores: ['packages/ui-avatar/dist', 'packages/ui-avatar/storybook-static', '!packages/ui-avatar/.storybook'],
-	},
-	{
-		ignores: ['packages/ui-client/dist', 'packages/ui-client/storybook-static', '!packages/ui-client/.storybook'],
+		ignores: ['packages/ui-client/storybook-static', '!packages/ui-client/.storybook'],
 	},
 	{
 		files: ['packages/ui-client/**/*.ts', 'packages/ui-client/**/*.tsx'],
@@ -856,10 +692,7 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/ui-composer/dist', 'packages/ui-composer/storybook-static', '!packages/ui-composer/.storybook'],
-	},
-	{
-		ignores: ['packages/ui-contexts/dist'],
+		ignores: ['packages/ui-composer/storybook-static', '!packages/ui-composer/.storybook'],
 	},
 	{
 		files: ['packages/ui-contexts/**/*.ts', 'packages/ui-contexts/**/*.tsx'],
@@ -868,13 +701,10 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/ui-kit/dist'],
+		ignores: ['packages/ui-video-conf/storybook-static', '!packages/ui-video-conf/.storybook'],
 	},
 	{
-		ignores: ['packages/ui-video-conf/dist', 'packages/ui-video-conf/storybook-static', '!packages/ui-video-conf/.storybook'],
-	},
-	{
-		ignores: ['packages/ui-voip/dist', 'packages/ui-voip/storybook-static', '!packages/ui-voip/.storybook'],
+		ignores: ['packages/ui-voip/storybook-static', '!packages/ui-voip/.storybook'],
 	},
 	{
 		files: ['packages/ui-voip/**/*.ts', 'packages/ui-voip/**/*.tsx'],
@@ -884,11 +714,7 @@ export default [
 	},
 	{
 		files: ['packages/web-ui-registration/**/*'],
-		ignores: [
-			'packages/web-ui-registration/dist',
-			'packages/web-ui-registration/storybook-static',
-			'!packages/web-ui-registration/.storybook',
-		],
+		ignores: ['packages/web-ui-registration/storybook-static', '!packages/web-ui-registration/.storybook'],
 	},
 	{
 		files: ['packages/web-ui-registration/**/*.ts', 'packages/web-ui-registration/**/*.tsx'],
