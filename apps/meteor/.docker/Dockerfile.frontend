@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM nginx:alpine-slim
 
 RUN rm -rf /etc/nginx/conf.d/*
 
