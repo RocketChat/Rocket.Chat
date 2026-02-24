@@ -10,6 +10,8 @@ import { NpmModuleMongodb } from 'meteor/npm-mongo';
 import mime from 'mime-type/with-db';
 import mkdirp from 'mkdirp';
 
+import { sanitizeFileName } from './functions/sanitizeFileName';
+
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 type IFile = {
@@ -141,7 +143,7 @@ class FileSystem implements IRocketChatFileStore {
 	}
 
 	createWriteStream(fileName: string) {
-		const ws = fs.createWriteStream(path.join(this.absolutePath, fileName));
+		const ws = fs.createWriteStream(path.join(this.absolutePath, sanitizeFileName(fileName)));
 		ws.on('close', () => {
 			return ws.emit('end');
 		});
@@ -149,15 +151,15 @@ class FileSystem implements IRocketChatFileStore {
 	}
 
 	createReadStream(fileName: string) {
-		return fs.createReadStream(path.join(this.absolutePath, fileName));
+		return fs.createReadStream(path.join(this.absolutePath, sanitizeFileName(fileName)));
 	}
 
 	stat(fileName: string) {
-		return fsp.stat(path.join(this.absolutePath, fileName));
+		return fsp.stat(path.join(this.absolutePath, sanitizeFileName(fileName)));
 	}
 
 	async remove(fileName: string) {
-		return fsp.unlink(path.join(this.absolutePath, fileName));
+		return fsp.unlink(path.join(this.absolutePath, sanitizeFileName(fileName)));
 	}
 
 	async getFileWithReadStream(fileName: string) {
