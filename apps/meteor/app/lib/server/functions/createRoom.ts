@@ -192,7 +192,7 @@ export const createRoom = async <T extends RoomType>(
 	if (type === 'd') {
 		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || owner?._id });
 	}
-	
+
 	const memberList = [...members];
 
 	if (!onlyUsernames(memberList)) {
