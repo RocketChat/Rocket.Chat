@@ -289,6 +289,8 @@ describe('[CustomSounds]', () => {
 		after(async () => {
 			await deleteCustomSound(fsFileId);
 			await deleteCustomSound(gridFsFileId);
+			await updateSetting('CustomSounds_Storage_Type', 'GridFS', false);
+			await updateSetting('CustomSounds_FileSystemPath', '', false);
 		});
 	});
 });

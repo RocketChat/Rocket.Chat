@@ -486,6 +486,14 @@ describe('[EmojiCustom]', () => {
 	describe('Emoji storage settings reactivity', () => {
 		const fsEmojiName = 'emoji-fs';
 		const gridFsEmojiName = 'emoji-gridfs';
+		const svgFallback = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" pointer-events="none" width="50" height="50" style="width: 50px; height: 50px; background-color: #000;">
+	<text text-anchor="middle" y="50%" x="50%" dy="0.36em" pointer-events="auto" fill="#ffffff" font-family="Helvetica, Arial, Lucida Grande, sans-serif" style="font-weight: 400; font-size: 28px;">
+		?
+	</text>
+</svg>`;
+
+		const normalizeSvg = (svg: string) => svg.replace(/\r\n/g, '\n').trim();
 
 		before(async () => {
 			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem', true);
@@ -496,7 +504,6 @@ describe('[EmojiCustom]', () => {
 
 		it('should resolve emojis correctly when switching EmojiUpload_Storage_Type', async () => {
 			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem', true);
-			// If content-type = image/png, it means the file was found. Otherwise, a SVG fallback is returned, as the custom 'Not Found' behavior.
 			await request
 				.get(`/emoji-custom/${fsEmojiName}.png`)
 				.set(credentials)
@@ -504,12 +511,20 @@ describe('[EmojiCustom]', () => {
 			await request
 				.get(`/emoji-custom/${gridFsEmojiName}.png`)
 				.set(credentials)
-				.expect((res) => expect(res.headers).to.have.property('content-type', 'image/svg+xml'));
+				.expect((res) => {
+					const received = normalizeSvg(res.body.toString());
+					const expected = normalizeSvg(svgFallback);
+					expect(received).to.equal(expected);
+				});
 			await updateSetting('EmojiUpload_Storage_Type', 'GridFS', true);
 			await request
 				.get(`/emoji-custom/${fsEmojiName}.png`)
 				.set(credentials)
-				.expect((res) => expect(res.headers).to.have.property('content-type', 'image/svg+xml'));
+				.expect((res) => {
+					const received = normalizeSvg(res.body.toString());
+					const expected = normalizeSvg(svgFallback);
+					expect(received).to.equal(expected);
+				});
 			await request
 				.get(`/emoji-custom/${gridFsEmojiName}.png`)
 				.set(credentials)
@@ -522,7 +537,11 @@ describe('[EmojiCustom]', () => {
 			await request
 				.get(`/emoji-custom/${fsEmojiName}.png`)
 				.set(credentials)
-				.expect((res) => expect(res.headers).to.have.property('content-type', 'image/svg+xml'));
+				.expect((res) => {
+					const received = normalizeSvg(res.body.toString());
+					const expected = normalizeSvg(svgFallback);
+					expect(received).to.equal(expected);
+				});
 			await updateSetting('EmojiUpload_FileSystemPath', '', true);
 			await request
 				.get(`/emoji-custom/${fsEmojiName}.png`)
@@ -531,11 +550,17 @@ describe('[EmojiCustom]', () => {
 		});
 
 		after(async () => {
+			await updateSetting('EmojiUpload_Storage_Type', 'GridFS', false);
+			await updateSetting('EmojiUpload_FileSystemPath', '', false);
 			const list = await request.get(api('emoji-custom.all')).set(credentials);
 			const fsEmoji = list.body.emojis.find((e: IEmojiCustom) => e.name === fsEmojiName);
 			const gridEmoji = list.body.emojis.find((e: IEmojiCustom) => e.name === gridFsEmojiName);
-			await request.post(api('emoji-custom.delete')).set(credentials).send({ emojiId: fsEmoji._id });
-			await request.post(api('emoji-custom.delete')).set(credentials).send({ emojiId: gridEmoji._id });
+			if (fsEmoji) {
+				await request.post(api('emoji-custom.delete')).set(credentials).send({ emojiId: fsEmoji._id });
+			}
+			if (gridEmoji) {
+				await request.post(api('emoji-custom.delete')).set(credentials).send({ emojiId: gridEmoji._id });
+			}
 		});
 	});
 });
