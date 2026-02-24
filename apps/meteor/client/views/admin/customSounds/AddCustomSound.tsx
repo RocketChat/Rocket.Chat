@@ -19,7 +19,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [name, setName] = useState('');
-	const [sound, setSound] = useState<{ name: string }>();
+	const [sound, setSound] = useState<File>();
 
 	const uploadCustomSound = useMethod('uploadCustomSound');
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
@@ -73,6 +73,10 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 
 	const handleSave = useCallback(async () => {
 		try {
+			if (!sound) {
+				dispatchToastMessage({ type: 'error', message: t('Required_field', { field: t('Sound File') }) });
+				return;
+			}
 			const result = await saveAction(name, sound);
 			if (result) {
 				dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });

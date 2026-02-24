@@ -48,9 +48,11 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 
 	const saveAction = useCallback(
 		async (sound: SoundData | File) => {
-			const extension = sound instanceof File ? undefined : sound.extension;
-			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension });
-			const validation = validate(soundData, sound);
+			const isFile = sound instanceof File;
+			const extension = isFile ? undefined : sound.extension;
+			const soundFile = isFile ? sound : undefined;
+			const soundData = createSoundData(soundFile, name, { previousName, previousSound, _id, extension });
+			const validation = validate(soundData, soundFile);
 			if (validation.length === 0) {
 				let soundId: string;
 				try {
@@ -63,14 +65,14 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				soundData._id = soundId;
 				soundData.random = Math.round(Math.random() * 1000);
 
-				if (sound && sound !== previousSound) {
+				if (soundFile && sound !== previousSound) {
 					dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
 
 					const reader = new FileReader();
-					reader.readAsBinaryString(sound);
+					reader.readAsBinaryString(soundFile);
 					reader.onloadend = (): void => {
 						try {
-							uploadCustomSound(reader.result as string, sound.type, { ...soundData, _id: soundId });
+							uploadCustomSound(reader.result as string, soundFile.type, { ...soundData, _id: soundId });
 							return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 						} catch (error) {
 							dispatchToastMessage({ type: 'error', message: error });
@@ -87,7 +89,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				}),
 			);
 		},
-		[_id, dispatchToastMessage, insertOrUpdateSound, name, previousName, previousSound, t, uploadCustomSound],
+		[_id, close, dispatchToastMessage, insertOrUpdateSound, name, previousName, previousSound, t, uploadCustomSound],
 	);
 
 	const handleSave = useCallback(async () => {
