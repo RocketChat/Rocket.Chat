@@ -10,9 +10,11 @@ test.use({ storageState: Users.admin.state });
 
 test.describe('teams-management-permissions', () => {
 	let poHomeTeam: HomeTeam;
+	let newTeamModal: CreateNewTeamModal;
 
 	test.beforeEach(async ({ page }) => {
 		poHomeTeam = new HomeTeam(page);
+		newTeamModal = new CreateNewTeamModal(page);
 
 		await page.goto('/home');
 	});
@@ -37,8 +39,8 @@ test.describe('teams-management-permissions', () => {
 
 		await poHomeTeam.navbar.openCreate('Team');
 
-		await expect(poHomeTeam.textPrivate).toBeDisabled();
-		await expect(poHomeTeam.textPrivate).toBeChecked();
+		await expect(newTeamModal.checkboxPrivate).toBeDisabled();
+		await expect(newTeamModal.checkboxPrivate).toBeChecked();
 	});
 
 	test('should not allow to create private team if user does not have the create-p permission', async ({ api }) => {
@@ -52,8 +54,8 @@ test.describe('teams-management-permissions', () => {
 
 		await poHomeTeam.navbar.openCreate('Team');
 
-		await expect(poHomeTeam.textPrivate).toBeDisabled();
-		await expect(poHomeTeam.textPrivate).not.toBeChecked();
+		await expect(newTeamModal.checkboxPrivate).toBeDisabled();
+		await expect(newTeamModal.checkboxPrivate).not.toBeChecked();
 	});
 
 	test('should not allow to create team if user does not have both create-p and create-c permissions', async ({ api }) => {
@@ -436,7 +438,7 @@ test.describe.serial('teams-management', () => {
 	test('should delete targetTeamNonPrivate', async () => {
 		await poHomeTeam.navbar.openChat(targetTeamNonPrivate);
 		await poHomeTeam.headerToolbar.openTeamInfo();
-		await poHomeTeam.tabs.teamInfo.deleteTeam();
+		await poHomeTeam.tabs.room.deleteTeam();
 
 		await poHomeTeam.navbar.typeSearch(targetTeamNonPrivate);
 		await expect(poHomeTeam.navbar.getSearchRoomByName(targetTeamNonPrivate)).not.toBeVisible();
@@ -462,7 +464,7 @@ test.describe.serial('teams-management', () => {
 	test('should convert team into a channel', async () => {
 		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.headerToolbar.openTeamInfo();
-		await poHomeTeam.tabs.teamInfo.convertIntoChannel();
+		await poHomeTeam.tabs.room.convertIntoChannel();
 
 		// TODO: improve this locator and check the action reactivity
 		await expect(poHomeTeam.content.getSystemMessageByText(`converted #${targetTeam} to channel`)).toBeVisible();
