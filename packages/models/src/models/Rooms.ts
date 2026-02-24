@@ -1597,6 +1597,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
+	findArchivedByRoomIds(roomIds: IRoom['_id'][], options?: FindOptions<IRoom>): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
+			_id: { $in: roomIds },
+			archived: true,
+		};
+
+		return this.find(query, options || {});
+	}
+
 	setNameById(_id: IRoom['_id'], name: IRoom['name'], fname: IRoom['fname']): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 

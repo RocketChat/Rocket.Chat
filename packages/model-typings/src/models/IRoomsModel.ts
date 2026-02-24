@@ -261,6 +261,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	addImportIds(rid: string, importIds: string[]): Promise<UpdateResult>;
 	archiveById(rid: string): Promise<UpdateResult>;
 	unarchiveById(rid: string): Promise<UpdateResult>;
+	findArchivedByRoomIds(roomIds: IRoom['_id'][], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	setNameById(rid: string, name: string, fname: string): Promise<UpdateResult>;
 	setIncMsgCountAndSetLastMessageUpdateQuery(
 		inc: number,

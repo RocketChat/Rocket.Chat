@@ -67,6 +67,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ key: { rid: 1, ls: 1 } },
 			{ key: { 'u._id': 1, 'autotranslate': 1 } },
 			{ key: { 'v._id': 1, 'open': 1 } },
+			{ key: { rid: 1, archived: 1, ls: 1 } },
 		];
 	}
 
@@ -135,17 +136,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	}
 
-	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number> {
-		const query = {
-			rid,
-			'u._id': {
-				$ne: uid,
-			},
-		};
-
-		return this.countDocuments(query);
-	}
-
 	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
 		const query = {
 			'rid': roomId,
@@ -172,6 +162,17 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			rid,
 			'archived': { $ne: true },
 			'u._id': { $exists: true },
+		};
+		return this.countDocuments(query);
+	}
+
+	countUnarchivedByRoomIdAndNotUserId(rid: string, uid: string): Promise<number> {
+		const query = {
+			rid,
+			'archived': { $ne: true },
+			'u._id': {
+				$ne: uid,
+			},
 		};
 		return this.countDocuments(query);
 	}
@@ -1283,6 +1284,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.findOne(
 			{
 				rid,
+				archived: { $ne: true },
 			},
 			{
 				sort: {
@@ -1317,6 +1319,22 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			$set: {
 				alert: false,
 				open: true,
+				archived: false,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	unarchiveByUsernameExcludingRoomIds(username: string, excludeRoomIds: string[]): Promise<UpdateResult | Document> {
+		const query: Filter<ISubscription> = {
+			'u.username': username,
+			'rid': { $nin: excludeRoomIds },
+			'archived': true,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
 				archived: false,
 			},
 		};
@@ -1736,8 +1754,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 	setArchivedByUsername(username: string, archived: boolean): Promise<UpdateResult | Document> {
 		const query: Filter<ISubscription> = {
-			t: 'd',
-			name: username,
+			'u.username': username,
 		};
 
 		const update: UpdateFilter<ISubscription> = {

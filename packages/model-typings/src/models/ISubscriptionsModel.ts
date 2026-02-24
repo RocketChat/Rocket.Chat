@@ -38,6 +38,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	countUnarchivedByRoomId(rid: string): Promise<number>;
 
+	countUnarchivedByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
+
 	isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<boolean>;
 
 	setAsReadByRoomIdAndUserId(
@@ -241,6 +243,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	archiveByRoomId(roomId: string): Promise<UpdateResult | Document>;
 	unarchiveByRoomId(roomId: string): Promise<UpdateResult | Document>;
+	unarchiveByUsernameExcludingRoomIds(username: string, excludeRoomIds: string[]): Promise<UpdateResult | Document>;
 	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document>;
 	findByRoomIdWhenUsernameExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	setCustomFieldsDirectMessagesByUserId(userId: string, fields: Record<string, any>): Promise<UpdateResult | Document>;
@@ -331,7 +334,6 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	countByRoomId(roomId: string, options?: CountDocumentsOptions): Promise<number>;
 	countByUserIdExceptType(userId: string, typeException: ISubscription['t']): Promise<number>;
 	openByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
-	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number>;
 	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<null | WithId<ISubscription>>;
 	countUsersInRoles(roles: IRole['_id'][], rid: IRoom['_id'] | undefined): Promise<number>;

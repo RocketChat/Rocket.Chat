@@ -72,7 +72,7 @@ class ReadReceiptClass {
 		}
 
 		// mark message as read if the sender is the only one in the room
-		const isUserAlone = (await Subscriptions.countByRoomIdAndNotUserId(roomId, userId)) === 0;
+		const isUserAlone = (await Subscriptions.countUnarchivedByRoomIdAndNotUserId(roomId, userId)) === 0;
 		if (isUserAlone) {
 			const result = await Messages.setAsReadById(message._id);
 			if (result.modifiedCount > 0) {

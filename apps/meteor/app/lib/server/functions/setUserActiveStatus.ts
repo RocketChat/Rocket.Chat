@@ -15,7 +15,7 @@ import { settings } from '../../../settings/server';
 import {
 	notifyOnRoomChangedById,
 	notifyOnRoomChangedByUserDM,
-	notifyOnSubscriptionChangedByNameAndRoomType,
+	notifyOnSubscriptionChangedByUserId,
 	notifyOnUserChange,
 } from '../lib/notifyListener';
 
@@ -112,10 +112,23 @@ export async function setUserActiveStatus(
 		await callbacks.run('afterDeactivateUser', user);
 	}
 
-	if (user.username) {
-		const { modifiedCount } = await Subscriptions.setArchivedByUsername(user.username, !active);
+	if (user.username && active === false) {
+		const { modifiedCount } = await Subscriptions.setArchivedByUsername(user.username, true);
 		if (modifiedCount) {
-			void notifyOnSubscriptionChangedByNameAndRoomType({ t: 'd', name: user.username });
+			void notifyOnSubscriptionChangedByUserId(userId);
+		}
+	}
+
+	if (user.username && active === true && !user.active) {
+		// When reactivating, only unarchive subscriptions to non-archived rooms
+		const subscriptions = await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray();
+		const roomIds = subscriptions.map((sub) => sub.rid);
+		const archivedRooms = await Rooms.findArchivedByRoomIds(roomIds, { projection: { _id: 1 } }).toArray();
+		const archivedRoomIds = archivedRooms.map((room) => room._id);
+
+		const { modifiedCount } = await Subscriptions.unarchiveByUsernameExcludingRoomIds(user.username, archivedRoomIds);
+		if (modifiedCount) {
+			void notifyOnSubscriptionChangedByUserId(userId);
 		}
 	}
 
