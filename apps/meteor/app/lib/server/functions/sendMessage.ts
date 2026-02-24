@@ -5,7 +5,6 @@ import { Messages } from '@rocket.chat/models';
 import { isAbsoluteURL } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 
-import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
@@ -257,9 +256,7 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 		}
 	}
 
-	parseUrlsInMessage(message, previewUrls);
-
-	message = await Message.beforeSave({ message, room, user });
+	message = await Message.beforeSave({ message, room, user, previewUrls, parseUrls: message.parseUrls });
 
 	if (!message) {
 		return;
