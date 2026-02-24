@@ -11,7 +11,7 @@ import {
 	useRouter,
 } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactNode } from 'react';
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import semver from 'semver';
 
 import { useAppInstallationHandler } from './useAppInstallationHandler';
@@ -63,8 +63,14 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const { data: workspaceHasInstalledAddon = false } = useHasLicenseModule(app.installedAddon);
 
 	const [isLoading, setLoading] = useState(false);
-	const [hasEndUserRequest, setHasEndUserRequest] = useState(app.requestedEndUser);
+	const [hasEndUserRequest, setHasEndUserRequest] = useState(app.requestedEndUser ?? false);
 	const [isAppPurchased, setPurchased] = useState(app?.isPurchased);
+
+	useEffect(() => {
+		if (app.requestedEndUser) {
+			setHasEndUserRequest(true);
+		}
+	}, [app.requestedEndUser]);
 
 	const button = appButtonProps({ ...app, isAdminUser, hasEndUserRequest });
 	const buttonLabel = button?.label.replace(' ', '_') as
