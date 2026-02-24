@@ -87,7 +87,7 @@ export class RoomToolbar extends Toolbar {
 		return this.menu.getMenuItem('Notifications Preferences');
 	}
 
-	get menuItemDisabledE2EEncryption(): Locator {
+	get menuItemDisableE2EEncryption(): Locator {
 		return this.menu.getMenuItem('Disable E2E encryption');
 	}
 
@@ -142,11 +142,7 @@ export class TeamToolbar extends RoomToolbar {
 	}
 }
 
-export class EncryptedRoomToolbar extends RoomToolbar {
-	get btnEnableE2EEncryption(): Locator {
-		return this.root.getByRole('button', { name: 'Enable E2E encryption' });
-	}
-}
+export class EncryptedRoomToolbar extends RoomToolbar {}
 
 export class OmnichannelRoomToolbar extends RoomToolbar {
 	private get btnContactInfo(): Locator {

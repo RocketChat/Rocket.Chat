@@ -32,7 +32,7 @@ export class EncryptedRoomPage extends HomeContent {
 		const enableRoomEncryptionModal = new EnableRoomEncryptionModal(this.page);
 
 		await this.toolbar.openMoreOptions();
-		await this.toolbar.btnEnableE2EEncryption.click();
+		await this.toolbar.menuItemEnableE2EEncryption.click();
 		await enableRoomEncryptionModal.enable();
 	}
 
@@ -40,7 +40,7 @@ export class EncryptedRoomPage extends HomeContent {
 		const disableRoomEncryptionModal = new DisableRoomEncryptionModal(this.page);
 
 		await this.toolbar.openMoreOptions();
-		await this.toolbar.menuItemDisabledE2EEncryption.click();
+		await this.toolbar.menuItemDisableE2EEncryption.click();
 		await disableRoomEncryptionModal.disable();
 	}
 
