@@ -82,7 +82,7 @@ export class HomeContent {
 	}
 
 	get lastUserMessageNotSequential(): Locator {
-		return this.messageListItems.filter({ has: this.page.locator('[data-sequential="false"]') }).last();
+		return this.mainMessageList.locator('[role="listitem"][aria-roledescription="message"][data-sequential="false"]').last();
 	}
 
 	get encryptedRoomHeaderIcon(): Locator {
