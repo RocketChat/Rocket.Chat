@@ -1,3 +1,4 @@
+import { Push } from '@rocket.chat/core-services';
 import type { IPushToken } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { PushToken } from '@rocket.chat/models';
@@ -7,7 +8,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { logger } from './logger';
 import { _matchToken } from './push';
-import { Push } from '@rocket.chat/core-services';
 
 type PushUpdateOptions = {
 	id?: string;
@@ -45,7 +45,7 @@ Meteor.methods<ServerMethods>({
 
 		// Retain old behavior: if id is not specified but userId is explicitly set, then update the user's first token
 		if (!options.id && options.userId) {
-			const firstDoc = await PushToken.findFirstByUserId(options.userId, { projection: { _id: 1 }});
+			const firstDoc = await PushToken.findFirstByUserId(options.userId, { projection: { _id: 1 } });
 			if (firstDoc) {
 				options.id = firstDoc._id;
 			}

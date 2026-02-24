@@ -4,7 +4,7 @@ import type { ILoginToken } from './IUser';
 export type IPushTokenTypes = 'gcm' | 'apn';
 
 export interface IPushToken extends IRocketChatRecord {
-	token: Record<IPushTokenTypes, string>;
+	token: Partial<Record<IPushTokenTypes, string>>;
 	appName: string;
 	userId: string;
 	enabled: boolean;
