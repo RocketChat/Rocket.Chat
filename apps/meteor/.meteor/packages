@@ -5,7 +5,6 @@
 
 rocketchat:mongo-config
 rocketchat:livechat
-rocketchat:streamer
 rocketchat:version
 
 accounts-base@3.1.2

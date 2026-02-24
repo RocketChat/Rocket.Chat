@@ -9,10 +9,9 @@ import type { TypedOptions } from './definition';
 type HonoContext = Context<{
 	Bindings: { incoming: IncomingMessage };
 	Variables: {
-		'remoteAddress': string;
-		'bodyParams': Record<string, unknown>;
-		'bodyParams-override': Record<string, unknown> | undefined;
-		'queryParams': Record<string, unknown>;
+		remoteAddress: string;
+		bodyParams: Record<string, unknown>;
+		queryParams: Record<string, unknown>;
 	};
 }>;
 
@@ -46,7 +45,7 @@ export class RocketChatAPIRouter<
 				requestIp: c.get('remoteAddress'),
 				urlParams: req.param(),
 				queryParams: c.get('queryParams'),
-				bodyParams: c.get('bodyParams-override') || c.get('bodyParams'),
+				bodyParams: c.get('bodyParams'),
 				request,
 				path: req.path,
 				response: res,
