@@ -26,7 +26,7 @@ const loggerStub = sinon.stub();
 
 const { BusinessHourManager } = proxyquire.noCallThru().load('../../../../../../app/livechat/server/business-hour/BusinessHourManager', {
 	'../../../settings/server': {},
-	'../../../../lib/callbacks': {},
+	'../../../../server/lib/callbacks': {},
 	'../../../../ee/app/livechat-enterprise/server/business-hour/Helper': {},
 	'./AbstractBusinessHour': {},
 	'moment-timezone': momentStub,
@@ -182,7 +182,7 @@ describe('[OC] BusinessHourManager', () => {
 			const error = new Error('update error');
 			saveBusinessHourStub.onSecondCall().rejects(error);
 			await manager.startDaylightSavingTimeVerifier();
-			expect(loggerStub.calledWith('Failed to update business hours with new timezone', error)).to.be.true;
+			expect(loggerStub.calledWith(sinon.match({ msg: 'Failed to update business hours with new timezone' }))).to.be.true;
 			expect(manager.createCronJobsForWorkHours.called).to.be.true;
 		});
 

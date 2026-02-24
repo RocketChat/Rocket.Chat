@@ -1,11 +1,6 @@
-import Ajv from 'ajv';
-
+import { ajv } from '../Ajv';
 import type { GroupsBaseProps } from './BaseProps';
 import { withGroupBaseProperties } from './BaseProps';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 export type GroupsSetCustomFieldsProps = GroupsBaseProps & { customFields: Record<string, any> };
 const groupsSetCustomFieldsPropsSchema = withGroupBaseProperties(

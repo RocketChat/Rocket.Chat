@@ -129,10 +129,6 @@ export async function getServicesStatistics(): Promise<Record<string, unknown>> 
 				enabled: settings.get('Accounts_OAuth_Nextcloud'),
 				users: await Users.countActiveUsersByService('nextcloud', { readPreference }),
 			},
-			tokenpass: {
-				enabled: settings.get('Accounts_OAuth_Tokenpass'),
-				users: await Users.countActiveUsersByService('tokenpass', { readPreference }),
-			},
 			twitter: {
 				enabled: settings.get('Accounts_OAuth_Twitter'),
 				users: await Users.countActiveUsersByService('twitter', { readPreference }),

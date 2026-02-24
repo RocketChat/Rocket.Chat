@@ -1,7 +1,7 @@
 import { createFakeDepartment } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelAgents } from '../page-objects';
+import { OmnichannelAgents } from '../page-objects/omnichannel';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
@@ -21,7 +21,7 @@ test.describe.serial('OC - Manage Agents', () => {
 		poOmnichannelAgents = new OmnichannelAgents(page);
 
 		await page.goto('/omnichannel');
-		await poOmnichannelAgents.sidenav.linkAgents.click();
+		await poOmnichannelAgents.sidebar.linkAgents.click();
 	});
 
 	// Ensure that there is no leftover data even if test fails
@@ -42,20 +42,18 @@ test.describe.serial('OC - Manage Agents', () => {
 
 		await test.step('expect add "user1" as agent', async () => {
 			await poOmnichannelAgents.selectUsername('user1');
-			await poOmnichannelAgents.btnAdd.click();
+			await poOmnichannelAgents.btnAddAgent.click();
 
-			await poOmnichannelAgents.inputSearch.fill('user1');
-			await expect(poOmnichannelAgents.firstRowInTable).toBeVisible();
-			await expect(poOmnichannelAgents.firstRowInTable).toHaveText('user1');
+			await poOmnichannelAgents.search('user1');
+			await expect(poOmnichannelAgents.table.findRowByName('user1')).toBeVisible();
 		});
 
 		await test.step('expect remove "user1" as agent', async () => {
-			await poOmnichannelAgents.inputSearch.fill('user1');
-			await poOmnichannelAgents.btnDeleteFirstRowInTable.click();
-			await poOmnichannelAgents.btnModalRemove.click();
+			await poOmnichannelAgents.search('user1');
+			await poOmnichannelAgents.deleteAgent('user1');
 
-			await poOmnichannelAgents.inputSearch.fill('user1');
-			await expect(poOmnichannelAgents.findRowByUsername('user1')).not.toBeVisible();
+			await poOmnichannelAgents.search('user1');
+			await expect(poOmnichannelAgents.table.findRowByName('user1')).not.toBeVisible();
 		});
 	});
 
@@ -63,26 +61,26 @@ test.describe.serial('OC - Manage Agents', () => {
 		test.skip(IS_EE, 'Community Edition Only');
 
 		await poOmnichannelAgents.selectUsername('user1');
-		await poOmnichannelAgents.btnAdd.click();
+		await poOmnichannelAgents.btnAddAgent.click();
 
-		await poOmnichannelAgents.inputSearch.fill('user1');
-		await poOmnichannelAgents.firstRowInTable.click();
-		await poOmnichannelAgents.btnEdit.click();
+		await poOmnichannelAgents.search('user1');
+		await poOmnichannelAgents.table.findRowByName('user1').click();
+		await poOmnichannelAgents.agentInfo.btnEdit.click();
 
 		await test.step('expect max chats fields to be hidden', async () => {
-			await expect(poOmnichannelAgents.inputMaxChats).toBeHidden();
+			await expect(poOmnichannelAgents.editAgent.inputMaxChats).toBeHidden();
 		});
 
 		await test.step('expect update "user1" information', async () => {
-			await poOmnichannelAgents.selectStatus('Not available');
-			await poOmnichannelAgents.selectDepartment(department.data.name);
-			await poOmnichannelAgents.btnSave.click();
+			await poOmnichannelAgents.editAgent.selectStatus('Not Available');
+			await poOmnichannelAgents.editAgent.selectDepartment(department.data.name);
+			await poOmnichannelAgents.editAgent.btnSave.click();
 		});
 
 		await test.step('expect removing "user1" via sidebar', async () => {
-			await poOmnichannelAgents.inputSearch.fill('user1');
-			await poOmnichannelAgents.firstRowInTable.click();
-			await poOmnichannelAgents.btnRemove.click();
+			await poOmnichannelAgents.search('user1');
+			await poOmnichannelAgents.table.findRowByName('user1').click();
+			await poOmnichannelAgents.agentInfo.btnRemove.click();
 		});
 	});
 
@@ -90,34 +88,33 @@ test.describe.serial('OC - Manage Agents', () => {
 		test.skip(!IS_EE, 'Enterprise Only');
 
 		await poOmnichannelAgents.selectUsername('user1');
-		await poOmnichannelAgents.btnAdd.click();
+		await poOmnichannelAgents.btnAddAgent.click();
 
-		await poOmnichannelAgents.inputSearch.fill('user1');
-		await poOmnichannelAgents.findRowByUsername('user1').click();
-		await poOmnichannelAgents.btnEdit.click();
+		await poOmnichannelAgents.search('user1');
+		await poOmnichannelAgents.table.findRowByName('user1').click();
+		await poOmnichannelAgents.agentInfo.btnEdit.click();
 
 		await test.step('expect max chats field to be visible', async () => {
-			await expect(poOmnichannelAgents.inputMaxChats).toBeVisible();
+			await expect(poOmnichannelAgents.editAgent.inputMaxChats).toBeVisible();
 		});
 
 		await test.step('expect update "user1" information', async () => {
-			await poOmnichannelAgents.inputMaxChats.click();
-			await poOmnichannelAgents.inputMaxChats.fill('2');
-			await poOmnichannelAgents.btnSave.click();
+			await poOmnichannelAgents.editAgent.inputMaxChats.click();
+			await poOmnichannelAgents.editAgent.inputMaxChats.fill('2');
+			await poOmnichannelAgents.editAgent.btnSave.click();
 		});
 	});
 
 	test('OC - Edit agent  - Manage departments', async ({ page }) => {
 		await poOmnichannelAgents.selectUsername('user1');
-		await poOmnichannelAgents.btnAdd.click();
-		await poOmnichannelAgents.inputSearch.fill('user1');
-		await poOmnichannelAgents.findRowByUsername('user1').click();
+		await poOmnichannelAgents.btnAddAgent.click();
+		await poOmnichannelAgents.search('user1');
+		await poOmnichannelAgents.table.findRowByName('user1').click();
 
-		await poOmnichannelAgents.btnEdit.click();
-		await poOmnichannelAgents.selectDepartment(department.data.name);
-		const reg = new RegExp(`/api/v1/method.call/${encodeURIComponent('livechat:saveAgentInfo')}`);
-		const response = page.waitForResponse(reg);
-		await poOmnichannelAgents.btnSave.click();
+		await poOmnichannelAgents.agentInfo.btnEdit.click();
+		await poOmnichannelAgents.editAgent.selectDepartment(department.data.name);
+		const response = page.waitForResponse('**/api/v1/livechat/agents.saveInfo');
+		await poOmnichannelAgents.editAgent.btnSave.click();
 
 		/**
 		 * between saving and opening the agent info again it is necessary to
@@ -128,18 +125,18 @@ test.describe.serial('OC - Manage Agents', () => {
 
 		await response;
 
-		await expect(poOmnichannelAgents.editCtxBar).not.toBeVisible();
+		await expect(poOmnichannelAgents.editAgent.root).not.toBeVisible();
 
 		await test.step('expect the selected department is visible', async () => {
-			await poOmnichannelAgents.findRowByUsername('user1').click();
+			await poOmnichannelAgents.table.findRowByName('user1').click();
 
 			// mock the endpoint to use the one without pagination
 			await page.route('/api/v1/livechat/department?showArchived=true', async (route) => {
 				await route.fulfill({ json: { departments: [] } });
 			});
 
-			await poOmnichannelAgents.btnEdit.click();
-			await expect(poOmnichannelAgents.findSelectedDepartment(department.data.name)).toBeVisible();
+			await poOmnichannelAgents.agentInfo.btnEdit.click();
+			await expect(poOmnichannelAgents.editAgent.findSelectedDepartment(department.data.name)).toBeVisible();
 		});
 	});
 
@@ -160,32 +157,31 @@ test.describe.serial('OC - Manage Agents', () => {
 
 		await test.step('expect to add agent', async () => {
 			await poOmnichannelAgents.selectUsername('user1');
-			await poOmnichannelAgents.btnAdd.click();
+			await poOmnichannelAgents.btnAddAgent.click();
 		});
 
 		await test.step('expect to edit agent', async () => {
-			await poOmnichannelAgents.inputSearch.fill('user1');
-			await poOmnichannelAgents.findRowByUsername('user1').click();
-			await poOmnichannelAgents.btnEdit.click();
+			await poOmnichannelAgents.search('user1');
+			await poOmnichannelAgents.table.findRowByName('user1').click();
+			await poOmnichannelAgents.agentInfo.btnEdit.click();
 		});
 
 		await test.step('expect department field to be paginated', async () => {
-			await poOmnichannelAgents.inputDepartment.click();
-			await expect(poOmnichannelAgents.findOption('Department 0')).toBeVisible();
+			await poOmnichannelAgents.editAgent.inputDepartment.click();
+			await expect(poOmnichannelAgents.editAgent.getDepartmentOption('Department 0')).toBeVisible();
 			await poOmnichannelAgents.scrollToListBottom();
-			await expect(poOmnichannelAgents.findOption('Department 49')).toBeVisible();
+			await expect(poOmnichannelAgents.editAgent.getDepartmentOption('Department 49')).toBeVisible();
 			await poOmnichannelAgents.scrollToListBottom();
-			await expect(poOmnichannelAgents.findOption('Department 99')).toBeVisible();
-			await poOmnichannelAgents.btnClose.click();
+			await expect(poOmnichannelAgents.editAgent.getDepartmentOption('Department 99')).toBeVisible();
+			await poOmnichannelAgents.editAgent.close();
 		});
 
 		await test.step('expect remove "user1" as agent', async () => {
-			await poOmnichannelAgents.inputSearch.fill('user1');
-			await poOmnichannelAgents.btnDeleteFirstRowInTable.click();
-			await poOmnichannelAgents.btnModalRemove.click();
+			await poOmnichannelAgents.search('user1');
+			await poOmnichannelAgents.deleteAgent('user1');
 
-			await poOmnichannelAgents.inputSearch.fill('user1');
-			await expect(poOmnichannelAgents.findRowByUsername('user1')).not.toBeVisible();
+			await poOmnichannelAgents.search('user1');
+			await expect(poOmnichannelAgents.table.findRowByName('user1')).not.toBeVisible();
 		});
 	});
 });

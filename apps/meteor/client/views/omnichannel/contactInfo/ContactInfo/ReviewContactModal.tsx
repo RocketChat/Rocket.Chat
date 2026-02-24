@@ -26,7 +26,7 @@ type HandleConflictsPayload = {
 
 const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 	const { t } = useTranslation();
-	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
 	const {
 		control,

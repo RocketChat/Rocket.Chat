@@ -19,7 +19,7 @@ export class CsvImporter extends Importer {
 		this.csvParser = parse;
 	}
 
-	async prepareUsingLocalFile(fullFilePath: string): Promise<ImporterProgress> {
+	override async prepareUsingLocalFile(fullFilePath: string): Promise<ImporterProgress> {
 		this.logger.debug('start preparing import operation');
 		await this.converter.clearImportData();
 
@@ -40,7 +40,7 @@ export class CsvImporter extends Importer {
 					oldRate = rate;
 				}
 			} catch (e) {
-				this.logger.error(e);
+				this.logger.error({ msg: 'Error while increasing CSV import progress', err: e });
 			}
 		};
 
@@ -66,18 +66,18 @@ export class CsvImporter extends Importer {
 		};
 
 		for await (const entry of zip.getEntries()) {
-			this.logger.debug(`Entry: ${entry.entryName}`);
+			this.logger.debug({ msg: 'Entry', entryName: entry.entryName });
 
 			// Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
 			if (entry.entryName.indexOf('__MACOSX') > -1) {
-				this.logger.debug(`Ignoring the file: ${entry.entryName}`);
+				this.logger.debug({ msg: 'Ignoring the file', entryName: entry.entryName });
 				increaseProgressCount();
 				continue;
 			}
 
 			// Directories are ignored, since they are "virtual" in a zip file
 			if (entry.isDirectory) {
-				this.logger.debug(`Ignoring the directory entry: ${entry.entryName}`);
+				this.logger.debug({ msg: 'Ignoring the directory entry', entryName: entry.entryName });
 				increaseProgressCount();
 				continue;
 			}
@@ -168,7 +168,7 @@ export class CsvImporter extends Importer {
 				try {
 					msgs = this.csvParser(entry.getData().toString());
 				} catch (e) {
-					this.logger.warn(`The file ${entry.entryName} contains invalid syntax`, e);
+					this.logger.warn({ msg: 'The file contains invalid syntax', entryName: entry.entryName, err: e });
 					increaseProgressCount();
 					continue;
 				}
@@ -277,7 +277,7 @@ export class CsvImporter extends Importer {
 
 		// Ensure we have at least a single record of any kind
 		if (usersCount === 0 && channelsCount === 0 && messagesCount === 0 && contactsCount === 0) {
-			this.logger.error('No valid record found in the import file.');
+			this.logger.error({ msg: 'No valid record found in the import file.' });
 			await super.updateProgress(ProgressStep.ERROR);
 		}
 

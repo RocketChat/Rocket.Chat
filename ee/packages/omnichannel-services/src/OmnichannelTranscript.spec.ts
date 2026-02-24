@@ -15,7 +15,9 @@ jest.mock('@rocket.chat/pdf-worker', () => ({
 }));
 
 jest.mock('@rocket.chat/core-services', () => ({
-	ServiceClass: class {},
+	ServiceClass: class {
+		onSettingChanged = jest.fn();
+	},
 	Upload: {
 		getFileBuffer: jest.fn().mockResolvedValue(Buffer.from('')),
 		uploadFile: jest.fn().mockResolvedValue({ _id: 'fileId', name: 'fileName' }),
@@ -88,7 +90,7 @@ describe('OmnichannelTranscript', () => {
 	});
 
 	it('should parse the messages', async () => {
-		const parsedMessages = await omnichannelTranscript.getMessagesData(messages as unknown as IMessage[], 'en');
+		const parsedMessages = await omnichannelTranscript.getMessagesData(messages as unknown as IMessage[], i18next.t);
 		expect(parsedMessages).toBeDefined();
 		expect(parsedMessages).toHaveLength(3);
 		expect(parsedMessages[0]).toHaveProperty('files');
@@ -98,7 +100,10 @@ describe('OmnichannelTranscript', () => {
 	});
 
 	it('should parse system message without a valid translation key', async () => {
-		const parsedMessages = await omnichannelTranscript.getMessagesData([...messages, validSystemMessage] as unknown as IMessage[], 'en');
+		const parsedMessages = await omnichannelTranscript.getMessagesData(
+			[...messages, validSystemMessage] as unknown as IMessage[],
+			i18next.t,
+		);
 		const systemMessage = parsedMessages[3];
 		expect(parsedMessages).toBeDefined();
 		expect(parsedMessages).toHaveLength(4);
@@ -115,7 +120,7 @@ describe('OmnichannelTranscript', () => {
 	it('should translate a system message with available translation keys', async () => {
 		const parsedMessages = await omnichannelTranscript.getMessagesData(
 			[...messages, validTranslatableSystemMessage] as unknown as IMessage[],
-			'en',
+			i18next.t,
 		);
 		const systemMessage = parsedMessages[3];
 		expect(parsedMessages).toBeDefined();
@@ -133,7 +138,7 @@ describe('OmnichannelTranscript', () => {
 	it('should translate a system message to the default language when the server language provided doesnt work', async () => {
 		const parsedMessages = await omnichannelTranscript.getMessagesData(
 			[...messages, validTranslatableSystemMessage] as unknown as IMessage[],
-			'es',
+			i18next.getFixedT('es'),
 		);
 		const systemMessage = parsedMessages[3];
 		expect(parsedMessages).toBeDefined();
@@ -149,7 +154,10 @@ describe('OmnichannelTranscript', () => {
 	});
 
 	it('should parse an invalid system message', async () => {
-		const parsedMessages = await omnichannelTranscript.getMessagesData([...messages, invalidSystemMessage] as unknown as IMessage[], 'en');
+		const parsedMessages = await omnichannelTranscript.getMessagesData(
+			[...messages, invalidSystemMessage] as unknown as IMessage[],
+			i18next.t,
+		);
 		const systemMessage = parsedMessages[3];
 		expect(parsedMessages).toBeDefined();
 		expect(parsedMessages).toHaveLength(4);

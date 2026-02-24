@@ -1,12 +1,12 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Tabs, TabsItem, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarClose, ContextualbarDialog } from '@rocket.chat/ui-client';
 import { useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 
 import UserMessages from './UserMessages';
 import UserReportInfo from './UserReports/UserReportInfo';
-import { ContextualbarClose, ContextualbarDialog } from '../../../components/Contextualbar';
 
 type ModConsoleReportDetailsProps = {
 	userId: IUser['_id'];

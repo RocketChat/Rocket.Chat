@@ -9,7 +9,7 @@ export class ImportsModel extends BaseRaw<IImport> implements IImportsModel {
 		super(db, 'import');
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { ts: -1 } }, { key: { valid: 1 } }];
 	}
 

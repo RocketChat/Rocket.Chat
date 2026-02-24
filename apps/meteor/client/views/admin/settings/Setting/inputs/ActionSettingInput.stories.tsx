@@ -6,7 +6,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import ActionSettingInput from './ActionSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/ActionSettingInput',
 	component: ActionSettingInput,
 	decorators: [(fn) => <Field>{fn()}</Field>],
 } satisfies Meta<typeof ActionSettingInput>;

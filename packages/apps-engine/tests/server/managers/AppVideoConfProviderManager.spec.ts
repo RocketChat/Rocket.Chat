@@ -8,7 +8,7 @@ import type { AppApiManager, AppExternalComponentManager, AppSchedulerManager, A
 import { AppAccessorManager, AppVideoConfProviderManager } from '../../../src/server/managers';
 import { AppVideoConfProvider } from '../../../src/server/managers/AppVideoConfProvider';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
-import type { AppLogStorage } from '../../../src/server/storage';
+import type { AppLogStorage, IAppStorageItem } from '../../../src/server/storage';
 import { TestsAppBridges } from '../../test-data/bridges/appBridges';
 import { TestsAppLogStorage } from '../../test-data/storage/logStorage';
 import { TestData } from '../../test-data/utilities';
@@ -28,7 +28,7 @@ export class AppVideoConfProviderManagerTestFixture {
 	public setupFixture() {
 		this.mockBridges = new TestsAppBridges();
 
-		this.mockApp = TestData.getMockApp('testing', 'testing');
+		this.mockApp = TestData.getMockApp({ info: { id: 'testing', name: 'testing' } } as IAppStorageItem, this.mockManager);
 
 		const bri = this.mockBridges;
 		const app = this.mockApp;

@@ -1,3 +1,7 @@
+import type { AppStatus } from '../../../src/definition/AppStatus';
+import type { IAppInfo } from '../../../src/definition/metadata';
+import type { ISetting } from '../../../src/definition/settings';
+import type { IMarketplaceInfo } from '../../../src/server/marketplace';
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { AppMetadataStorage } from '../../../src/server/storage';
 
@@ -82,20 +86,6 @@ export class TestsAppStorage extends AppMetadataStorage {
 		});
 	}
 
-	public update(item: IAppStorageItem): Promise<IAppStorageItem> {
-		return new Promise((resolve, reject) => {
-			this.db.update({ id: item.id }, item, {}, (err, _numOfUpdated: number) => {
-				if (err) {
-					reject(err);
-				} else {
-					this.retrieveOne(item.id)
-						.then((updated: IAppStorageItem) => resolve(updated))
-						.catch((err2: Error) => reject(err2));
-				}
-			});
-		});
-	}
-
 	public remove(id: string): Promise<{ success: boolean }> {
 		return new Promise((resolve, reject) => {
 			this.db.remove({ id }, (err) => {
@@ -106,5 +96,28 @@ export class TestsAppStorage extends AppMetadataStorage {
 				}
 			});
 		});
+	}
+
+	public updatePartialAndReturnDocument(
+		item: Partial<IAppStorageItem>,
+		options?: { unsetPermissionsGranted?: boolean },
+	): Promise<IAppStorageItem> {
+		throw new Error('Method not implemented.');
+	}
+
+	public updateStatus(_id: string, status: AppStatus): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+
+	public updateSetting(_id: string, setting: ISetting): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+
+	public updateAppInfo(_id: string, info: IAppInfo): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+
+	public updateMarketplaceInfo(_id: string, marketplaceInfo: IMarketplaceInfo[]): Promise<boolean> {
+		throw new Error('Method not implemented.');
 	}
 }

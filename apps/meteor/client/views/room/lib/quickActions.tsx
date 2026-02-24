@@ -11,7 +11,7 @@ export type QuickActionsActionOptions = Array<{
 
 export type QuickActionsActionConfig = {
 	id: string;
-	icon?: IconName;
+	icon: IconName;
 	title: TranslationKey;
 	order?: number;
 	featured?: boolean;

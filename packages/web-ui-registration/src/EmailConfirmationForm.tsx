@@ -32,7 +32,7 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 				if (sendEmail.isPending) {
 					return;
 				}
-				sendEmail.mutate(data.email);
+				sendEmail.mutate({ email: data.email });
 			})}
 		>
 			<Form.Header>

@@ -1,4 +1,5 @@
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +9,6 @@ import { useAppActionButtons } from '../../../../hooks/useAppActionButtons';
 import { useApplyButtonFilters } from '../../../../hooks/useApplyButtonFilters';
 import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
 import { useRoom } from '../../contexts/RoomContext';
-import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
 
 export const useAppsRoomActions = () => {
 	const result = useAppActionButtons('roomAction');
@@ -23,8 +23,8 @@ export const useAppsRoomActions = () => {
 			result.data?.filter(applyButtonFilters).map(
 				(action): RoomToolboxActionConfig => ({
 					id: action.actionId,
-					icon: undefined,
 					variant: action.variant,
+					icon: undefined as unknown as RoomToolboxActionConfig['icon'],
 					order: 300,
 					title: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
 					groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],

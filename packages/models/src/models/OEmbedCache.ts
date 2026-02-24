@@ -9,7 +9,7 @@ export class OEmbedCacheRaw extends BaseRaw<IOEmbedCache> implements IOEmbedCach
 		super(db, 'oembed_cache', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { updatedAt: 1 } }];
 	}
 

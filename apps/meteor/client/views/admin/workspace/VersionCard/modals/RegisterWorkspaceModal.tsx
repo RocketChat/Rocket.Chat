@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 
 import RegisterWorkspaceSetupModal from './RegisterWorkspaceSetupModal';
 import RegisterWorkspaceTokenModal from './RegisterWorkspaceTokenModal';
+import { links } from '../../../../../lib/links';
 import useFeatureBullets from '../hooks/useFeatureBullets';
 
 type RegisterWorkspaceModalProps = {
@@ -23,7 +24,7 @@ type RegisterWorkspaceModalProps = {
 	onStatusChange?: () => void;
 };
 
-const documentationLink = 'https://go.rocket.chat/i/register-info-collected';
+const documentationLink = links.go.registerInfoCollected;
 
 const RegisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: RegisterWorkspaceModalProps) => {
 	const setModal = useSetModal();

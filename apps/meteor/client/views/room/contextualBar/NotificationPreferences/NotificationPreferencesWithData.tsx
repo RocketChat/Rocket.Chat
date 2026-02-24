@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useCustomSound, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useCustomSound, useToastMessageDispatch, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import NotificationPreferences from './NotificationPreferences';
 import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 const NotificationPreferencesWithData = (): ReactElement => {
 	const { t } = useTranslation();

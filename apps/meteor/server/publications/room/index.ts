@@ -79,7 +79,16 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (userId && !(await canAccessRoomAsync(room, { _id: userId }))) {
+		if (
+			userId &&
+			!(await canAccessRoomAsync(
+				room,
+				{ _id: userId },
+				{
+					includeInvitations: true,
+				},
+			))
+		) {
 			throw new Meteor.Error('error-no-permission', 'No permission', {
 				method: 'getRoomByTypeAndName',
 			});

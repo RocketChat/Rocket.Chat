@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import { forwardRef, type ComponentProps } from 'react';
+import { forwardRef } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface MultiSelectCustomListWrapperProps extends ComponentProps<typeof Box> {}
+export type MultiSelectCustomListWrapperProps = ComponentPropsWithoutRef<typeof Box>;
 
 const MultiSelectCustomListWrapper = forwardRef<Element, MultiSelectCustomListWrapperProps>(function MultiSelectCustomListWrapper(
 	{ children },

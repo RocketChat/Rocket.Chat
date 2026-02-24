@@ -1,5 +1,5 @@
 import { Team, Room } from '@rocket.chat/core-services';
-import { TEAM_TYPE, type IRoom, type ISubscription, type IUser, type RoomType, type UserStatus } from '@rocket.chat/core-typings';
+import { TeamType, type IRoom, type ISubscription, type IUser, type RoomType, type UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
 	isChannelsAddAllProps,
@@ -22,9 +22,9 @@ import {
 	isChannelsFilesListProps,
 	isChannelsOnlineProps,
 } from '@rocket.chat/rest-typings';
+import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
@@ -54,7 +54,6 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
-import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
 
@@ -311,6 +310,7 @@ API.v1.addRoute(
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
 				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+				_hidden: { $ne: true },
 			};
 
 			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
@@ -492,7 +492,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			await eraseRoom(room._id, this.userId);
+			await eraseRoom(room._id, this.user);
 
 			return API.v1.success();
 		},
@@ -806,7 +806,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isChannelsFilesListProps },
 	{
 		async get() {
-			const { typeGroup, name, roomId, roomName } = this.queryParams;
+			const { typeGroup, name, roomId, roomName, onlyConfirmed } = this.queryParams;
 
 			const findResult = await findChannelByIdOrName({
 				params: {
@@ -828,6 +828,7 @@ API.v1.addRoute(
 				...query,
 				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
+				...(onlyConfirmed && { expiresAt: { $exists: false } }),
 			};
 
 			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
@@ -1145,9 +1146,7 @@ API.v1.addRoute(
 				return API.v1.failure('Channel does not exists');
 			}
 
-			const user = await getLoggedInUser(this.request);
-
-			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
+			if (!(await canAccessRoomAsync(room, this.user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 
@@ -1464,7 +1463,7 @@ API.v1.addRoute(
 			// Public rooms of private teams should be accessible only by team members
 			if (findResult.teamId) {
 				const team = await Team.getOneById(findResult.teamId);
-				if (team?.type === TEAM_TYPE.PRIVATE) {
+				if (team?.type === TeamType.PRIVATE) {
 					if (!this.userId || !(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
 						return API.v1.notFound('Room not found');
 					}

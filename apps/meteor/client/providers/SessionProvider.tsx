@@ -15,6 +15,8 @@ type SessionProviderProps = {
 	children?: ReactNode;
 };
 
-const SessionProvider = ({ children }: SessionProviderProps) => <SessionContext.Provider children={children} value={contextValue} />;
+const SessionProvider = ({ children }: SessionProviderProps) => (
+	<SessionContext.Provider value={contextValue}>{children}</SessionContext.Provider>
+);
 
 export default SessionProvider;

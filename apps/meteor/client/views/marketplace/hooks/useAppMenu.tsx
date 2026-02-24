@@ -59,8 +59,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const { data } = useIsEnterprise();
 	const isEnterpriseLicense = !!data?.isEnterprise;
 
-	const workspaceHasMarketplaceAddon = useHasLicenseModule(app.addon);
-	const workspaceHasInstalledAddon = useHasLicenseModule(app.installedAddon);
+	const { data: workspaceHasMarketplaceAddon = false } = useHasLicenseModule(app.addon);
+	const { data: workspaceHasInstalledAddon = false } = useHasLicenseModule(app.installedAddon);
 
 	const [isLoading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
@@ -79,7 +79,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const action = button?.action || '';
 
 	const setAppStatus = useEndpoint<'POST', '/apps/:id/status'>('POST', '/apps/:id/status', { id: app.id });
-	const buildExternalUrl = useEndpoint('GET', '/apps');
+	const buildExternalUrl = useEndpoint('GET', '/apps/buildExternalUrl');
 	const syncApp = useEndpoint<'POST', '/apps/:id/sync'>('POST', '/apps/:id/sync', { id: app.id });
 	const uninstallApp = useEndpoint<'DELETE', '/apps/:id'>('DELETE', '/apps/:id', { id: app.id });
 
@@ -161,12 +161,11 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 		let data;
 		try {
-			data = (await buildExternalUrl({
-				buildExternalUrl: 'true',
+			data = await buildExternalUrl({
 				appId: app.id,
 				purchaseType: app.purchaseType,
 				details: 'true',
-			})) as { url: string };
+			});
 		} catch (error) {
 			handleAPIError(error);
 			return;

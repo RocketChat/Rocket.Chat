@@ -1,9 +1,9 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Flex } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import type { KeyboardEvent, MouseEvent } from 'react';
 
-import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 

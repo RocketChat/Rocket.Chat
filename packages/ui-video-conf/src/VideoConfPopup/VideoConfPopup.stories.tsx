@@ -12,6 +12,7 @@ import VideoConfPopupFooter from './VideoConfPopupFooter';
 import VideoConfPopupFooterButtons from './VideoConfPopupFooterButtons';
 import VideoConfPopupHeader from './VideoConfPopupHeader';
 import VideoConfPopupInfo from './VideoConfPopupInfo';
+import VideoConfPopupSkeleton from './VideoConfPopupSkeleton';
 import VideoConfPopupTitle from './VideoConfPopupTitle';
 
 export default {
@@ -52,3 +53,5 @@ export const StartCall: StoryFn<typeof VideoConfPopup> = () => (
 		</VideoConfPopupFooter>
 	</VideoConfPopup>
 );
+
+export const Skeleton: StoryFn<typeof VideoConfPopup> = () => <VideoConfPopupSkeleton />;

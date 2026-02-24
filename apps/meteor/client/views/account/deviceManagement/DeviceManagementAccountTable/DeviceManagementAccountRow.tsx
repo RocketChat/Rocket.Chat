@@ -1,9 +1,9 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
 import DeviceIcon from '../../../../components/deviceManagement/DeviceIcon';
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
@@ -24,7 +24,7 @@ const DeviceManagementAccountRow = ({ _id, deviceName, deviceType = 'browser', d
 	const handleDeviceLogout = useDeviceLogout(_id, '/v1/sessions/logout.me');
 
 	return (
-		<GenericTableRow key={_id}>
+		<GenericTableRow key={_id} aria-label={_id}>
 			<GenericTableCell>
 				<Box display='flex' alignItems='center'>
 					<DeviceIcon deviceType={deviceType} />

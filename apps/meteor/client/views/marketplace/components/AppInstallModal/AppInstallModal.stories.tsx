@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import AppInstallModal from './AppInstallModal';
 
 export default {
-	title: 'Marketplace/components/AppInstallModal',
 	component: AppInstallModal,
 	parameters: {
 		layout: 'centered',

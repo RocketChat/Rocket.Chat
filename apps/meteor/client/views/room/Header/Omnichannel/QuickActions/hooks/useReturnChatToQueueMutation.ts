@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useMethod } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -8,13 +8,13 @@ import { roomsQueryKeys, subscriptionsQueryKeys } from '../../../../../../lib/qu
 export const useReturnChatToQueueMutation = (
 	options?: Omit<UseMutationOptions<void, Error, IRoom['_id']>, 'mutationFn'>,
 ): UseMutationResult<void, Error, IRoom['_id']> => {
-	const returnChatToQueue = useMethod('livechat:returnAsInquiry');
+	const returnChatToQueue = useEndpoint('POST', '/v1/livechat/inquiries.returnAsInquiry');
 
 	const queryClient = useQueryClient();
 
 	return useMutation({
 		mutationFn: async (rid) => {
-			await returnChatToQueue(rid);
+			await returnChatToQueue({ roomId: rid });
 		},
 		...options,
 		onSuccess: async (data, rid, context) => {
