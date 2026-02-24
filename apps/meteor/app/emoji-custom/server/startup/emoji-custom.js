@@ -1,3 +1,4 @@
+import { EmojiCustom } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
@@ -7,6 +8,35 @@ import { RocketChatFile } from '../../../file/server';
 import { settings } from '../../../settings/server';
 
 export let RocketChatFileEmojiCustomInstance;
+
+const writeSvgFallback = (res, req) => {
+	res.setHeader('Content-Type', 'image/svg+xml');
+	res.setHeader('Cache-Control', 'public, max-age=0');
+	res.setHeader('Expires', '-1');
+	res.setHeader('Last-Modified', 'Thu, 01 Jan 2015 00:00:00 GMT');
+
+	const reqModifiedHeader = req.headers['if-modified-since'];
+	if (reqModifiedHeader != null) {
+		if (reqModifiedHeader === 'Thu, 01 Jan 2015 00:00:00 GMT') {
+			res.writeHead(304);
+			res.end();
+			return;
+		}
+	}
+
+	const color = '#000';
+	const initials = '?';
+
+	const svg = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" pointer-events="none" width="50" height="50" style="width: 50px; height: 50px; background-color: ${color};">
+	<text text-anchor="middle" y="50%" x="50%" dy="0.36em" pointer-events="auto" fill="#ffffff" font-family="Helvetica, Arial, Lucida Grande, sans-serif" style="font-weight: 400; font-size: 28px;">
+		${initials}
+	</text>
+</svg>`;
+
+	res.write(svg);
+	res.end();
+};
 
 const initializeEmojiCustomStorage = () => {
 	let storeType = 'GridFS';
@@ -48,39 +78,19 @@ const initializeEmojiCustomStorage = () => {
 			return;
 		}
 
-		const file = await RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(params.emoji));
-
 		res.setHeader('Content-Disposition', 'inline');
+
+		const emoji = await EmojiCustom.findOneByName(params.emoji.split('.')[0], { projection: { _id: 1 } });
+
+		if (!emoji) {
+			return writeSvgFallback(res, req);
+		}
+
+		const file = await RocketChatFileEmojiCustomInstance.getFileWithReadStream(encodeURIComponent(params.emoji));
 
 		if (!file) {
 			// use code from username initials renderer until file upload is complete
-			res.setHeader('Content-Type', 'image/svg+xml');
-			res.setHeader('Cache-Control', 'public, max-age=0');
-			res.setHeader('Expires', '-1');
-			res.setHeader('Last-Modified', 'Thu, 01 Jan 2015 00:00:00 GMT');
-
-			const reqModifiedHeader = req.headers['if-modified-since'];
-			if (reqModifiedHeader != null) {
-				if (reqModifiedHeader === 'Thu, 01 Jan 2015 00:00:00 GMT') {
-					res.writeHead(304);
-					res.end();
-					return;
-				}
-			}
-
-			const color = '#000';
-			const initials = '?';
-
-			const svg = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg xmlns="http://www.w3.org/2000/svg" pointer-events="none" width="50" height="50" style="width: 50px; height: 50px; background-color: ${color};">
-	<text text-anchor="middle" y="50%" x="50%" dy="0.36em" pointer-events="auto" fill="#ffffff" font-family="Helvetica, Arial, Lucida Grande, sans-serif" style="font-weight: 400; font-size: 28px;">
-		${initials}
-	</text>
-</svg>`;
-
-			res.write(svg);
-			res.end();
-			return;
+			return writeSvgFallback(res, req);
 		}
 
 		const fileUploadDate = file.uploadDate != null ? file.uploadDate.toUTCString() : undefined;
