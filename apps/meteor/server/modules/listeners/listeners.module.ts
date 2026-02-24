@@ -223,6 +223,10 @@ export class ListenersModule {
 			notifications.streamUser.__emit(subscription.u._id, clientAction, subscription);
 
 			notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', clientAction, subscription as any);
+
+			if ((clientAction === 'inserted' || clientAction === 'removed') && subscription.rid) {
+				notifications.notifyRoomInThisInstance(subscription.rid, 'user-subscriptions-changed', clientAction);
+			}
 		});
 
 		service.onEvent('watch.roles', ({ clientAction, role }): void => {

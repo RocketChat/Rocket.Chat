@@ -136,6 +136,13 @@ export const useMembersList = (options: MembersListOptions) => {
 		return unsubscribe;
 	}, [options, queryClient, subscribeToNotifyLoggedIn, useRealName]);
 
+	const subscribeToNotifyRoom = useStream('notify-room');
+	useEffect(() => {
+		return subscribeToNotifyRoom(`${options.rid}/user-subscriptions-changed`, () => {
+			void queryClient.invalidateQueries({ queryKey: [...roomsQueryKeys.room(options.rid), 'members'] });
+		});
+	}, [options.rid, queryClient, subscribeToNotifyRoom]);
+
 	return useInfiniteQuery({
 		queryKey: roomsQueryKeys.members(options.rid, options.roomType, options.type, options.debouncedText),
 		queryFn: async ({ pageParam }) => {
