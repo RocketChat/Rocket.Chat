@@ -9081,7 +9081,6 @@ __metadata:
     "@types/ejson": "npm:^2.2.2"
     "@types/express": "npm:^4.17.25"
     "@types/express-rate-limit": "npm:^5.1.3"
-    "@types/google-libphonenumber": "npm:^7.4.30"
     "@types/gravatar": "npm:^1.8.6"
     "@types/he": "npm:^1.2.3"
     "@types/i18next-sprintf-postprocessor": "npm:^0.2.3"
@@ -9142,6 +9141,7 @@ __metadata:
     asterisk-manager: "npm:^0.2.0"
     atlassian-crowd-patched: "npm:^0.5.1"
     autoprefixer: "npm:^9.8.8"
+    awesome-phonenumber: "npm:^7.8.0"
     aws-sdk: "npm:^2.1691.0"
     babel-loader: "npm:~10.0.0"
     babel-plugin-array-includes: "npm:^2.0.3"
@@ -9207,7 +9207,6 @@ __metadata:
     filenamify: "npm:^4.3.0"
     filesize: "npm:9.0.11"
     generate-password: "npm:^1.7.1"
-    google-libphonenumber: "npm:^3.2.44"
     gravatar: "npm:^1.8.2"
     he: "npm:^1.2.0"
     highlight.js: "npm:11.8.0"
@@ -10437,7 +10436,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.4
-    "@rocket.chat/ui-contexts": 27.0.0
+    "@rocket.chat/ui-contexts": 27.0.1
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
@@ -12816,13 +12815,6 @@ __metadata:
   version: 7946.0.10
   resolution: "@types/geojson@npm:7946.0.10"
   checksum: 10/12c407c2dc93ecb26c08af533ee732f1506a9b29456616ba7ba1d525df96206c28ddf44a528f6a5415d7d22893e9d967420940a9c095ee5e539c1eba5fefc1f4
-  languageName: node
-  linkType: hard
-
-"@types/google-libphonenumber@npm:^7.4.30":
-  version: 7.4.30
-  resolution: "@types/google-libphonenumber@npm:7.4.30"
-  checksum: 10/70e90971a6218ab2900d29e801a85e59147d6af7b9fccfbb46df6846215d7e62aa1817c0f34c800080815eed2d4eda61a43a20353290db9429dc140ab6887356
   languageName: node
   linkType: hard
 
@@ -15526,6 +15518,13 @@ __metadata:
   dependencies:
     possible-typed-array-names: "npm:^1.0.0"
   checksum: 10/6c9da3a66caddd83c875010a1ca8ef11eac02ba15fb592dc9418b2b5e7b77b645fa7729380a92d9835c2f05f2ca1b6251f39b993e0feb3f1517c74fa1af02cab
+  languageName: node
+  linkType: hard
+
+"awesome-phonenumber@npm:^7.8.0":
+  version: 7.8.0
+  resolution: "awesome-phonenumber@npm:7.8.0"
+  checksum: 10/abb7c79ec95d82a1ba30a613bda9ee1bced7e7cf809da0b87adf7f22442fa191ea73eb3e980d8ba2a22a611a6539b386057f564ee937b89b0adff784f6a4314f
   languageName: node
   linkType: hard
 
@@ -22352,13 +22351,6 @@ __metadata:
     gtoken: "npm:^7.0.0"
     jws: "npm:^4.0.0"
   checksum: 10/fba2db9732bbf1b3a3a2e2b45131ba8e8aba297377f1c104d0b2ab3386bbc1e02047f20b8a7afca1c6308492da1540104618f1c7b5cd539703552e10399c560e
-  languageName: node
-  linkType: hard
-
-"google-libphonenumber@npm:^3.2.44":
-  version: 3.2.44
-  resolution: "google-libphonenumber@npm:3.2.44"
-  checksum: 10/aaae09935ffe55f438630aca44648ca36f046e59a18d34a9edf16e1521cb88b87ca772e377018f1455375a01ece983143fd8fe2a49857db62dee3ac09d03c62e
   languageName: node
   linkType: hard
 
