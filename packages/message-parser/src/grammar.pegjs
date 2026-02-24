@@ -257,8 +257,6 @@ InlinePattern = InlineItem / InlineItemFallback
 
 InlineItem = item:InlineItemPattern { skipInlineEmoji = false; return item; }
 
-InlineItemFallback = item:Any { skipInlineEmoji = true; return item; }
-
 InlineEmoji = & { return !skipInlineEmoji; } emo:Emoji { return emo; }
 
 InlineEmoticon = & { return !skipInlineEmoji; } emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { skipInlineEmoji = false; return emo; }
@@ -281,6 +279,8 @@ InlineItemPattern = Whitespace
   / Color
   / KatexInline
   / Escaped
+
+InlineItemFallback = item:Any { skipInlineEmoji = true; return item; }
 
 /**
  *
@@ -540,7 +540,7 @@ ItalicContentPreferentialItemPattern = Whitespace
 
 ItalicContentFallbackItem = item:ItalicContentFallbackItemPattern { skipItalicEmoji = true; return item; }
 
-ItalicContentFallbackItemPattern = AnyItalic / Line
+ItalicContentFallbackItemPattern = ItalicPlainRun / AnyItalic / Line
 
 ItalicEmoji = & { return !skipItalicEmoji; } emo:Emoji { return emo; }
 
@@ -557,7 +557,7 @@ BoldContentPreferentialItemPattern = Whitespace / InlineCode / MaybeReferences /
 
 BoldContentFallbackItem = item:BoldContentFallbackItemPattern { skipBoldEmoji = true; return item; }
 
-BoldContentFallbackItemPattern = AnyBold / Line
+BoldContentFallbackItemPattern = BoldPlainRun / AnyBold / Line
 
 BoldContentItem = BoldContentPreferentialItem / BoldContentFallbackItem
 
@@ -568,15 +568,21 @@ BoldEmoticon = & { return !skipBoldEmoji; } emo:Emoticon & (EmoticonNeighbor / B
 /* Strike */
 Strikethrough = [\x7E] [\x7E] @StrikethroughContent [\x7E] [\x7E] / [\x7E] @StrikethroughContent [\x7E]
 
-StrikethroughContent = text:(TimestampRules / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
+StrikethroughContent = text:(TimestampRules / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / StrikePlainRun / AnyStrike / Line)+ {
       return strike(reducePlainTexts(text));
     }
 
+// Exclude _ and ~ so nested italic/strike can be parsed
+BoldPlainRun = run:[^\x0a\* _~ ]+ { return plain(run.join('')); }
 AnyBold = t:[^\x0a\* ] { return plain(t); }
 
-AnyStrike = t:[^\x0a\~ ] { return plain(t); }
-
+// Exclude * and ~ so nested bold/strike can be parsed
+ItalicPlainRun = run:[^\x0a\_ *~]+ { return plain(run.join('')); }
 AnyItalic = t:[^\x0a\_ ] { return plain(t); }
+
+// Exclude * and _ so nested bold/italic can be parsed
+StrikePlainRun = run:[^\x0a\~ *_]+ { return plain(run.join('')); }
+AnyStrike = t:[^\x0a\~ ] { return plain(t); }
 
 /**
  * Emphasis with only whitespaces return plain text
